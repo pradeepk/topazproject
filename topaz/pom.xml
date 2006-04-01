@@ -6,9 +6,9 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>info.anumana</groupId>
   <artifactId>topaz</artifactId>
-  <packaging>jar</packaging>
+  <packaging>war</packaging>
   <version>0.5</version>
-  <name>Maven Quick Start Archetype</name>
+  <name>Topaz web application</name>
   <url>http://maven.apache.org</url>
 
   <dependencies>
@@ -18,19 +18,43 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+    <dependency>
+      <groupId>cocoon</groupId>
+      <artifactId>cocoon-war</artifactId>
+      <version>2.1.7</version>
+      <type>war</type>
+    </dependency>
   </dependencies>
 
   <build>
+    <finalName>topaz</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>1.4</source>
+          <target>1.4</target>
         </configuration>
       </plugin>
+      <plugin>
+        <groupId>info.anumana</groupId>
+        <artifactId>topaz-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>compile</phase>
+            <configuration>
+              <war-groupId>cocoon</war-groupId>
+              <war-artifactId>cocoon-war</war-artifactId>
+            </configuration>
+            <goals>
+              <goal>unwar</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
-  </build>>
+  </build>
+
 
 </project>
