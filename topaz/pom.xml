@@ -20,8 +20,8 @@
     </dependency>
     <dependency>
       <groupId>cocoon</groupId>
-      <artifactId>cocoon-war</artifactId>
-      <version>2.1.7</version>
+      <artifactId>cocoon</artifactId>
+      <version>2.1.8</version>
       <type>war</type>
     </dependency>
   </dependencies>
@@ -46,8 +46,12 @@
             <configuration>
               <tasks>
                 <unwar 
-                  src="${settings.localRepository}/cocoon/cocoon-war/2.1.7/cocoon-war-2.1.7.war"
-                  dest="${project.build.directory}/${project.build.finalName}"/>
+                  src="${settings.localRepository}/cocoon/cocoon/2.1.8/cocoon-2.1.8.war"
+                  dest="${project.build.directory}/${project.build.finalName}">
+                  <patternset>
+                    <exclude name="samples/**"/>
+                  </patternset>
+                </unwar>
               </tasks>
             </configuration>
             <goals>
