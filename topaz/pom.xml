@@ -49,7 +49,74 @@
                   src="${settings.localRepository}/cocoon/cocoon/2.1.8/cocoon-2.1.8.war"
                   dest="${project.build.directory}/${project.build.finalName}">
                   <patternset>
+                    <!-- 
+                    The cocoon 2.1.8 war at ibiblio contains everything. 
+                    Trim it down to the minimum. The cocoon.xconf and
+                    web.xml needs to reflect these changes and so does the
+                    top level sitemap.xmap
+                    -->
+                    
                     <exclude name="samples/**"/>
+                    <exclude name="test-suite/**"/>
+                    <exclude name="META-INF/**"/>
+                    
+                    <exclude name="WEB-INF/db/**"/>
+                    <exclude name="WEB-INF/deli/**"/>
+                    <exclude name="WEB-INF/sitemap-additions/**"/>
+                    <exclude name="WEB-INF/portlet.xml"/>
+                    <exclude name="WEB-INF/faces-config.xml"/>
+                    <exclude name="WEB-INF/slide.xconf"/>
+                    <exclude name="WEB-INF/tidy.properties"/>
+                    <exclude name="WEB-INF/xindice.xml"/>
+                    
+                    <exclude name="WEB-INF/lib/antlr*"/>
+                    <exclude name="WEB-INF/lib/asm*"/>
+                    <exclude name="WEB-INF/lib/axis*"/>
+                    <exclude name="WEB-INF/lib/batik*"/>
+                    <exclude name="WEB-INF/lib/bsf*"/>
+                    <exclude name="WEB-INF/lib/castor*"/>
+                    <exclude name="WEB-INF/lib/cocoon*block.jar"/>
+                    <exclude name="WEB-INF/lib/cocoon*deprecated.jar"/>
+                    <exclude name="WEB-INF/lib/chaperon*"/>
+                    <exclude name="WEB-INF/lib/cowarp*"/>
+                    <exclude name="WEB-INF/lib/daisy*"/>
+                    <exclude name="WEB-INF/lib/db-ojb*"/>
+                    <exclude name="WEB-INF/lib/deli*"/>
+                    <exclude name="WEB-INF/lib/fop*"/>
+                    <exclude name="WEB-INF/lib/geronimo*"/>
+                    <exclude name="WEB-INF/lib/groovy*"/>
+                    <exclude name="WEB-INF/lib/hsqldb*"/>
+                    <exclude name="WEB-INF/lib/icu4j*"/>
+                    <exclude name="WEB-INF/lib/itext*"/>
+                    <exclude name="WEB-INF/lib/jackrabbit*"/>
+                    <exclude name="WEB-INF/lib/jakarta-slide*"/>
+                    <exclude name="WEB-INF/lib/jcr*"/>
+                    <exclude name="WEB-INF/lib/jdbi*"/>
+                    <exclude name="WEB-INF/lib/jdom*"/>
+                    <exclude name="WEB-INF/lib/jena*"/>
+                    <exclude name="WEB-INF/lib/jfor*"/>
+                    <exclude name="WEB-INF/lib/jing*"/>
+                    <exclude name="WEB-INF/lib/joost*"/>
+                    <exclude name="WEB-INF/lib/jsp-api*"/>
+                    <exclude name="WEB-INF/lib/jtidy*"/>
+                    <exclude name="WEB-INF/lib/lucene*"/>
+                    <exclude name="WEB-INF/lib/myfaces*"/>
+                    <exclude name="WEB-INF/lib/neko*"/>
+                    <exclude name="WEB-INF/lib/pizza*"/>
+                    <exclude name="WEB-INF/lib/pluto*"/>
+                    <exclude name="WEB-INF/lib/poi*"/>
+                    <exclude name="WEB-INF/lib/portals*"/>
+                    <exclude name="WEB-INF/lib/portlet*"/>
+                    <exclude name="WEB-INF/lib/qdox*"/>
+                    <exclude name="WEB-INF/lib/quartz*"/>
+                    <exclude name="WEB-INF/lib/slide*"/>
+                    <exclude name="WEB-INF/lib/velocity*"/>
+                    <exclude name="WEB-INF/lib/wsdl4j*"/>
+                    <exclude name="WEB-INF/lib/wsrp4j*"/>
+                    <exclude name="WEB-INF/lib/xindice*"/>
+                    <exclude name="WEB-INF/lib/xmldb*"/>
+                    <exclude name="WEB-INF/lib/xmlrpc*"/>
+                    <exclude name="WEB-INF/lib/xreporter*"/>
                   </patternset>
                 </unwar>
               </tasks>
@@ -62,6 +129,5 @@
       </plugin>
     </plugins>
   </build>
-
 
 </project>
