@@ -1,0 +1,56 @@
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+    
+  <groupId>info.anumana.plugins</groupId>
+  <artifactId>ant-tasks</artifactId>
+  <version>1.0-SNAPSHOT</version>
+    
+  <packaging>maven-plugin</packaging>
+  
+  <name>Topaz Ant Tasks</name>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.apache.maven</groupId>
+      <artifactId>maven-script-ant</artifactId>
+      <version>2.0.1</version>
+    </dependency>
+
+    <dependency>
+      <groupId>ant</groupId>
+      <artifactId>ant-trax</artifactId>
+      <version>1.6.5</version>
+    </dependency>
+  </dependencies>
+  
+  <build>
+    <plugins>
+      <plugin>
+        <!-- NOTE: We don't need groupId if the plugin's groupId is
+             org.apache.maven.plugins OR org.codehaus.mojo.
+             We also don't have to specify a version, since Maven can
+             automatically resolve the newest one.
+        -->
+        <artifactId>maven-plugin-plugin</artifactId>
+
+        <!-- Add the Ant plugin tools -->
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-plugin-tools-ant</artifactId>
+            <version>2.0.1</version>
+          </dependency>
+        </dependencies>
+        
+        <!-- Tell the plugin-plugin which prefix we will use.-->
+        <configuration>
+          <goalPrefix>ant-tasks</goalPrefix>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
