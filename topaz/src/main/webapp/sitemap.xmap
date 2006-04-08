@@ -455,7 +455,9 @@
     </map:view>
 
     <map:view from-label="content" name="pretty-content">
-      <map:transform src="stylesheets/system/xml2html.xslt"/>
+     <map:transform src="context://stylesheets/system/xml2html.xslt">
+        <map:parameter name="contextPath" value="{request:contextPath}"/>
+     </map:transform>                     
       <map:serialize type="html"/>
     </map:view>
 
@@ -531,8 +533,13 @@
   <!-- main pipeline -->
   <map:pipeline>
 
-    <!-- welcome page -->
-    <map:match pattern="">
+   <!-- welcome page - redirected to fedora -->
+   <map:match pattern="">
+    <map:redirect-to uri="fedora/"/>
+   </map:match>
+   
+   <!-- original welcome page -->
+    <map:match pattern="welcome">
 
       <!--+
           | Start generating SAX events inside the pipeline. In this case,
