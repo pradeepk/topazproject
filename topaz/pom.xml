@@ -160,6 +160,8 @@
 
   <scm>
     <developerConnection>scm:svn:http://localhost/svn/head/topaz/</developerConnection>
+    <connection>scm:svn:http://localhost/svn/head/topaz/</connection>
+    <url>http://localhost/svn/</url>
   </scm>
 
 </project>
