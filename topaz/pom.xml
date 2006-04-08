@@ -158,5 +158,8 @@
     </plugins>
   </build>
 
+  <scm>
+    <developerConnection>scm:svn:http://localhost/svn/head/topaz/</developerConnection>
+  </scm>
 
 </project>
