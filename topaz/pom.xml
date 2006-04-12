@@ -1,7 +1,6 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0
-  http://maven.apache.org/maven-v4_0_0.xsd">
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>info.anumana</groupId>
@@ -10,21 +9,13 @@
   <version>0.5</version>
   <name>Topaz web application</name>
   <url>http://maven.apache.org</url>
-
-  <repositories>
-    <repository>
-      <id>codehaus</id>
-      <name>Codehaus Repo</name>
-      <url>http://dist.codehaus.org</url>
-      <layout>legacy</layout>
-    </repository>
-    <repository>
-      <id>central</id>
-      <name>Maven 2 Repository on ibibio</name>
-      <url>http://www.ibiblio.org/maven2</url>
-    </repository>
-  </repositories>
   
+  <parent>
+    <groupId>info.anumana</groupId>
+    <artifactId>the-whole-shebang</artifactId>
+    <version>0.5-SNAPSHOT</version>
+  </parent>
+
   <dependencies>
     <dependency>
       <groupId>junit</groupId>

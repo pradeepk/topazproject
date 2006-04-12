@@ -7,6 +7,11 @@
   <version>1.0-SNAPSHOT</version>
   <name>Topaz maven plugins</name>
   <url>http://maven.apache.org</url>
+  <parent>
+    <groupId>info.anumana</groupId>
+    <artifactId>the-whole-shebang</artifactId>
+    <version>0.5-SNAPSHOT</version>
+  </parent>
   <dependencies>
     <dependency>
       <groupId>junit</groupId>
