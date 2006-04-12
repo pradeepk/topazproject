@@ -20,6 +20,11 @@
       <name>Maven 2 Repository on ibibio</name>
       <url>http://www.ibiblio.org/maven2</url>
     </repository>
+    <repository>
+      <id>topaz</id>
+      <name>Maven 2 Repository for Topaz</name>
+      <url>http://gandalf/maven2</url>
+    </repository>
   </repositories>
 
   <modules>
