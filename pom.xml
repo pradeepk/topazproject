@@ -29,7 +29,6 @@
 
   <modules>
     <module>ant-task-plugins</module>
-    <module>filter-resolver</module>
     <module>topaz</module>
   </modules>
 </project>
