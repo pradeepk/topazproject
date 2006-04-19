@@ -7,7 +7,7 @@
   <artifactId>the-whole-shebang</artifactId>
   <version>0.5-SNAPSHOT</version>
   <packaging>pom</packaging>
-
+      
   <repositories>
     <repository>
       <id>codehaus</id>
@@ -28,6 +28,7 @@
   </repositories>
 
   <modules>
+    <module>fedora</module>
     <module>ant-task-plugins</module>
     <module>topaz</module>
   </modules>
