@@ -1,0 +1,138 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <!-- To install a new version of fedora in our repository 
+       do something like this while ssh'd into gandalf: 
+       
+  mvn deploy:deploy-file -DgroupId=info.fedora
+  -DartifactId=client -Dversion=${version} -Dpackaging=tar
+  -Dfile=/home/pradeep/fedora-${version}-client.tar -DrepositoryId=topaz
+  -Durl=file:///home/maven2/repository
+
+  mvn deploy:deploy-file -DgroupId=info.fedora
+  -DartifactId=server -Dversion=${version} -Dpackaging=tar
+  -Dfile=/home/pradeep/fedora-${version}-server.tar -DrepositoryId=topaz
+  -Durl=file:///home/maven2/repository
+
+
+  mvn deploy:deploy-file -DgroupId=info.fedora
+  -DartifactId=diringest -Dversion=${version} -Dpackaging=zip
+  -Dfile=/home/pradeep/diringest-service.zip -DrepositoryId=topaz
+  -Durl=file:///home/maven2/repository
+  -->
+  
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>info.anumana</groupId>
+  <artifactId>fedora</artifactId>
+  <packaging>jar</packaging>
+  <version>2.1.1</version>
+  <name>Fedora with Topaz config</name>
+  <url>http://gandalf/</url>
+  <inceptionYear>2006</inceptionYear>
+
+  <parent>
+    <groupId>info.anumana</groupId>
+    <artifactId>the-whole-shebang</artifactId>
+    <version>0.5-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>info.fedora</groupId>
+      <artifactId>server</artifactId>
+      <version>2.1.1</version>
+      <type>tar</type>
+    </dependency>
+    <dependency>
+      <groupId>info.fedora</groupId>
+      <artifactId>client</artifactId>
+      <version>2.1.1</version>
+      <type>tar</type>
+    </dependency>
+    <dependency>
+      <groupId>info.fedora</groupId>
+      <artifactId>diringest</artifactId>
+      <version>2.1.1</version>
+      <type>zip</type>
+    </dependency>
+  </dependencies>
+
+
+  <build>
+    <finalName>fedora</finalName>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <configuration>
+              <tasks>
+                <!-- set up a few variables for stuff that are likely to
+                change when upgrading fedora-->
+
+                <property name="version" value="2.1.1"/>
+                <property name="tomcat" value="jakarta-tomcat-5.0.28"/>
+                
+                <!-- untar fedora server distribution -->
+                <untar 
+                  src="${settings.localRepository}/info/fedora/server/${version}/server-${version}.tar"
+                  dest="${project.build.directory}/${project.build.finalName}">
+                </untar>
+                <!-- untar fedora client distribution -->
+                <untar 
+                  src="${settings.localRepository}/info/fedora/client/${version}/client-${version}.tar"
+                  dest="${project.build.directory}/${project.build.finalName}">
+                </untar>
+                <!-- setup execute permissions for bin/* -->
+                <chmod perm="u+x">
+                  <fileset
+                    dir="${project.build.directory}/${project.build.finalName}">
+                    <include name="**/bin/*"/>
+                  </fileset>
+                </chmod>
+                <!-- execute fedora-setup with no-ssl-authenticate-apim -->
+                <exec
+                  dir="${project.build.directory}/${project.build.finalName}/fedora-${version}"
+                  executable="${project.build.directory}/${project.build.finalName}/fedora-${version}/server/bin/fedora-setup">
+                  <arg line="no-ssl-authenticate-apim"/>
+                  <env key="FEDORA_HOME"
+                    file="${project.build.directory}/${project.build.finalName}/fedora-${version}"/>
+                </exec>
+                <!-- configure fedora (overwrite with our local copy) -->
+                <copy file="server/fedora.fcfg"
+                  tofile="${project.build.directory}/${project.build.finalName}/fedora-${version}/server/config/fedora.fcfg/"
+                  overwrite="true"/>
+                <!-- unzip the diringest service -->
+                <unzip 
+                  src="${settings.localRepository}/info/fedora/diringest/${version}/diringest-${version}.zip"
+                  dest="${project.build.directory}/${project.build.finalName}/fedora-${version}">
+                </unzip>
+                <!-- unwar the diringest war file -->
+                <unwar 
+                  src="${project.build.directory}/${project.build.finalName}/fedora-${version}/diringest-service/diringest.war"
+                  dest="${project.build.directory}/${project.build.finalName}/fedora-${version}/server/${tomcat}/webapps/diringest/">
+                </unwar>
+                <!-- configure diringest (overwrite with our local copy) -->
+                <copy file="diringest/diringest.properties"
+                  tofile="${project.build.directory}/${project.build.finalName}/fedora-${version}/server/${tomcat}/webapps/diringest/WEB-INF/classes/diringest.properties"
+                  overwrite="true"/>
+                <!-- jar everything up and 
+                overwrite the package target created by maven -->
+                <jar
+                  destfile="${project.build.directory}/${project.build.finalName}.jar"
+                  basedir="${project.build.directory}/${project.build.finalName}"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+
+</project>
