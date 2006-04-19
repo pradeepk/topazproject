@@ -1,0 +1,61 @@
+<?xml version="1.0" ?>
+<project>
+
+  <target name="fedora-install">
+    <property name="FEDORA_JAR"
+      value="${localRepository}/${fedora-groupId}/${fedora-artifactId}/${fedora-version}/${fedora-artifactId}-${fedora-version}.jar"/> 
+
+    <property name="FEDORA_HOME"
+      value="${FEDORA_INSTALL_DIR}/fedora-${fedora-version}"/>
+
+    <mkdir dir="${FEDORA_INSTALL_DIR}"/>
+    <unjar src="${FEDORA_JAR}" dest="${FEDORA_INSTALL_DIR}"/>
+    <chmod perm="u+x">
+      <fileset dir="${FEDORA_HOME}">
+        <include name="**/bin/*"/>
+      </fileset>
+    </chmod>
+    <exec dir="${FEDORA_HOME}"
+      executable="${FEDORA_HOME}/server/bin/mckoi-init">
+      <arg line="fedoraAdmin fedoraAdmin"/>
+      <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
+    </exec>
+  </target>
+
+  <target name="fedora-start">
+    <echo>Starting mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
+    <exec dir="${FEDORA_HOME}" 
+      executable="${FEDORA_HOME}/server/bin/mckoi-start"
+      spawn="true">
+      <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
+    </exec>
+
+    <echo>Spawned off mckoi</echo>
+    <!-- <sleep seconds="2"/> -->
+  
+    <echo>Starting fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
+    <echo>You can safely hit Ctl-C to kill the mvn command</echo>
+    <exec dir="${FEDORA_HOME}"
+      executable="${FEDORA_HOME}/server/bin/fedora-start"
+      spawn="false">
+      <arg line="mckoi"/>
+      <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
+    </exec>
+  </target>
+
+  <target name="fedora-stop">
+    <echo>Stopping fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
+    <exec dir="${FEDORA_HOME}" 
+      executable="${FEDORA_HOME}/server/bin/fedora-stop">
+      <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
+    </exec>
+    <echo>Stopping mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
+    <exec dir="${FEDORA_HOME}"
+      executable="${FEDORA_HOME}/server/bin/mckoi-stop">
+      <arg line="fedoraAdmin fedoraAdmin"/>
+      <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
+    </exec>
+  </target>
+
+
+</project>

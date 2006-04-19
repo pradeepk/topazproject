@@ -1,0 +1,103 @@
+<pluginMetadata>
+  <mojos>
+    <mojo>
+      <goal>fedora-install</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>fedora-install</call>
+
+      <description>
+        Installs Fedora on the local machine at FEDORA_HOME.
+      </description>
+
+      <parameters>
+        <parameter>
+          <name>FEDORA_INSTALL_DIR</name>
+          <property>FEDORA_INSTALL_DIR</property>
+          <required>true</required>
+          <defaultValue>${user.home}/fedora-install</defaultValue>
+          <type>java.lang.String</type>
+          <description>The name of the input file.</description>
+        </parameter>
+        <parameter>
+          <name>localRepository</name>
+          <property>localRepository</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}</defaultValue>
+          <type>java.lang.String</type>
+          <description>Maven local repository.</description>
+        </parameter>
+        <parameter>
+          <name>fedora-groupId</name>
+          <property>fedora-groupId</property>
+          <required>true</required>
+          <defaultValue>info/anumana</defaultValue>
+          <type>java.lang.String</type>
+          <description>groupId for fedora.</description>
+        </parameter>
+        <parameter>
+          <name>fedora-artifactId</name>
+          <property>fedora-artifactId</property>
+          <required>true</required>
+          <defaultValue>fedora</defaultValue>
+          <type>java.lang.String</type>
+          <description>artifactId of fedora.</description>
+        </parameter>
+        <parameter>
+          <name>fedora-version</name>
+          <property>fedora-version</property>
+          <required>true</required>
+          <defaultValue>2.1.1</defaultValue>
+          <type>java.lang.String</type>
+          <description>version of fedora.</description>
+        </parameter>
+      </parameters>
+    
+    </mojo>
+    <mojo>
+      <goal>fedora-start</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>fedora-start</call>
+
+      <description>
+        Start fedora on the local machine..
+      </description>
+
+      <parameters>
+        <parameter>
+          <name>FEDORA_HOME</name>
+          <property>FEDORA_HOME</property>
+          <required>true</required>
+          <defaultValue>${user.home}/fedora-install/fedora-2.1.1</defaultValue>
+          <type>java.lang.String</type>
+          <description>Fedora Home directory</description>
+        </parameter>
+      </parameters>
+    
+    </mojo>
+    <mojo>
+      <goal>fedora-stop</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>fedora-stop</call>
+
+      <description>
+        Stop fedora on the local machine..
+      </description>
+
+      <parameters>
+        <parameter>
+          <name>FEDORA_HOME</name>
+          <property>FEDORA_HOME</property>
+          <required>true</required>
+          <defaultValue>${user.home}/fedora-install/fedora-2.1.1</defaultValue>
+          <type>java.lang.String</type>
+          <description>Fedora Home directory</description>
+        </parameter>
+      </parameters>
+    
+    </mojo>
+  </mojos>
+</pluginMetadata>
+
