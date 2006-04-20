@@ -7,7 +7,8 @@
   <artifactId>the-whole-shebang</artifactId>
   <version>0.5-SNAPSHOT</version>
   <packaging>pom</packaging>
-      
+  <name>All Plos and Topaz stuff</name>
+
   <repositories>
     <repository>
       <id>codehaus</id>
