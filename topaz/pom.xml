@@ -8,8 +8,6 @@
   <packaging>war</packaging>
   <version>0.5</version>
   <name>Topaz web application</name>
-  <url>http://maven.apache.org</url>
-  <inceptionYear>2001</inceptionYear>
   
   <parent>
     <groupId>info.anumana</groupId>
