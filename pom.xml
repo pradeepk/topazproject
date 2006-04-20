@@ -27,6 +27,12 @@
     </repository>
   </repositories>
 
+  <scm>
+    <developerConnection>scm:svn:http://gandalf/svn/head/</developerConnection>
+    <connection>scm:svn:http://gandalf/svn/head/</connection>
+    <url>http://gandalf/svn/</url>
+  </scm>
+
   <modules>
     <module>ant-task-plugins</module>
     <module>topaz</module>

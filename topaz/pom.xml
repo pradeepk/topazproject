@@ -175,10 +175,4 @@
     </plugins>
   </build>
 
-  <scm>
-    <developerConnection>scm:svn:http://gandalf/svn/head/topaz/</developerConnection>
-    <connection>scm:svn:http://gandalf/svn/head/topaz/</connection>
-    <url>http://gandalf/svn/</url>
-  </scm>
-
 </project>
