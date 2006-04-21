@@ -57,5 +57,61 @@
     </exec>
   </target>
 
+  <target name="fedora-package">
+    <!-- untar fedora server distribution -->
+    <untar
+      src="${LOCAL_REPOSITORY}/info/fedora/server/${VERSION}/server-${VERSION}.tar"
+      dest="${BUILD_DIRECTORY}/${FINAL_NAME}">
+    </untar>
 
+    <!-- untar fedora client distribution -->
+    <untar
+      src="${LOCAL_REPOSITORY}/info/fedora/client/${VERSION}/client-${VERSION}.tar"
+      dest="${BUILD_DIRECTORY}/${FINAL_NAME}">
+    </untar>
+
+    <!-- setup execute permissions for bin/* -->
+    <chmod perm="u+x">
+      <fileset
+        dir="${BUILD_DIRECTORY}/${FINAL_NAME}">
+        <include name="**/bin/*"/>
+      </fileset>
+    </chmod>
+
+    <!-- execute fedora-setup with no-ssl-authenticate-apim -->
+    <exec
+      dir="${BUILD_DIRECTORY}/${FINAL_NAME}/fedora-${VERSION}"
+      executable="${BUILD_DIRECTORY}/${FINAL_NAME}/fedora-${VERSION}/server/bin/fedora-setup">
+      <arg line="no-ssl-authenticate-apim"/>
+      <env key="FEDORA_HOME"
+        file="${BUILD_DIRECTORY}/${FINAL_NAME}/fedora-${VERSION}"/>
+    </exec>
+
+    <!-- configure fedora (overwrite with our local copy) -->
+    <copy file="server/fedora.fcfg"
+      tofile="${BUILD_DIRECTORY}/${FINAL_NAME}/fedora-${VERSION}/server/config/fedora.fcfg/"
+      overwrite="true"/>
+
+    <!-- unzip the diringest service -->
+    <unzip
+      src="${LOCAL_REPOSITORY}/info/fedora/diringest/${VERSION}/diringest-${VERSION}.zip"
+      dest="${BUILD_DIRECTORY}/${FINAL_NAME}/fedora-${VERSION}">
+    </unzip>
+
+    <!-- unwar the diringest war file -->
+    <unwar
+      src="${BUILD_DIRECTORY}/${FINAL_NAME}/fedora-${VERSION}/diringest-service/diringest.war"
+      dest="${BUILD_DIRECTORY}/${FINAL_NAME}/fedora-${VERSION}/server/${TOMCAT}/webapps/diringest/">
+    </unwar>
+
+    <!-- configure diringest (overwrite with our local copy) -->
+    <copy file="diringest/diringest.properties"
+      tofile="${BUILD_DIRECTORY}/${FINAL_NAME}/fedora-${VERSION}/server/${TOMCAT}/webapps/diringest/WEB-INF/classes/diringest.properties"
+      overwrite="true"/>
+
+    <!-- jar everything up and overwrite the package target created by maven -->
+    <jar
+      destfile="${BUILD_DIRECTORY}/${FINAL_NAME}.jar"
+      basedir="${BUILD_DIRECTORY}/${FINAL_NAME}"/>
+  </target>
 </project>

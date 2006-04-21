@@ -1,5 +1,6 @@
 <pluginMetadata>
   <mojos>
+
     <mojo>
       <goal>fedora-install</goal>
 
@@ -11,6 +12,7 @@
       </description>
 
       <parameters>
+
         <parameter>
           <name>FEDORA_INSTALL_DIR</name>
           <property>FEDORA_INSTALL_DIR</property>
@@ -19,6 +21,7 @@
           <type>java.lang.String</type>
           <description>The name of the input file.</description>
         </parameter>
+
         <parameter>
           <name>localRepository</name>
           <property>localRepository</property>
@@ -27,6 +30,7 @@
           <type>java.lang.String</type>
           <description>Maven local repository.</description>
         </parameter>
+
         <parameter>
           <name>fedora-groupId</name>
           <property>fedora-groupId</property>
@@ -35,6 +39,7 @@
           <type>java.lang.String</type>
           <description>groupId for fedora.</description>
         </parameter>
+
         <parameter>
           <name>fedora-artifactId</name>
           <property>fedora-artifactId</property>
@@ -43,6 +48,7 @@
           <type>java.lang.String</type>
           <description>artifactId of fedora.</description>
         </parameter>
+
         <parameter>
           <name>fedora-version</name>
           <property>fedora-version</property>
@@ -52,8 +58,8 @@
           <description>version of fedora.</description>
         </parameter>
       </parameters>
-    
     </mojo>
+
     <mojo>
       <goal>fedora-start</goal>
 
@@ -74,8 +80,8 @@
           <description>Fedora Home directory</description>
         </parameter>
       </parameters>
-    
     </mojo>
+
     <mojo>
       <goal>fedora-stop</goal>
 
@@ -96,8 +102,55 @@
           <description>Fedora Home directory</description>
         </parameter>
       </parameters>
-    
+    </mojo>
+
+    <mojo>
+      <goal>fedora-package</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>fedora-package</call>
+
+      <description>
+        Package fedora with Topaz configuration files
+      </description>
+
+      <parameters>
+        <parameter>
+          <name>VERSION</name>
+          <property>VERSION</property>
+          <required>true</required>
+          <defaultValue>2.1.1</defaultValue>
+        </parameter>
+
+        <parameter>
+          <name>FINAL_NAME</name>
+          <property>FINAL_NAME</property>
+          <required>true</required>
+          <defaultValue>${project.build.finalName}</defaultValue>
+        </parameter>
+
+        <parameter>
+          <name>LOCAL_REPOSITORY</name>
+          <property>LOCAL_REPOSITORY</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}</defaultValue>
+        </parameter>
+
+        <parameter>
+          <name>BUILD_DIRECTORY</name>
+          <property>BUILD_DIRECTORY</property>
+          <required>true</required>
+          <defaultValue>${project.build.directory}</defaultValue>
+        </parameter>
+
+        <parameter>
+          <name>TOMCAT</name>
+          <property>TOMCAT</property>
+          <required>true</required>
+          <defaultValue>jakarta-tomcat-5.0.28</defaultValue>
+        </parameter>
+      </parameters>
+
     </mojo>
   </mojos>
 </pluginMetadata>
-
