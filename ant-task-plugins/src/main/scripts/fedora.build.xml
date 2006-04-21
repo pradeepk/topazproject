@@ -1,7 +1,17 @@
 <?xml version="1.0" ?>
 <project>
 
-  <target name="fedora-install">
+  <target name="exec-ext">
+    <condition property="ext" value=".sh">
+      <os family="unix"/>
+    </condition>
+    <condition property="ext" value=".bat">
+      <os family="windows"/>
+    </condition>
+    <property name="ext" value=""/>
+  </target>
+
+  <target name="fedora-install" depends="exec-ext">
     <property name="FEDORA_JAR"
       value="${localRepository}/${fedora-groupId}/${fedora-artifactId}/${fedora-version}/${fedora-artifactId}-${fedora-version}.jar"/> 
 
@@ -16,16 +26,16 @@
       </fileset>
     </chmod>
     <exec dir="${FEDORA_HOME}"
-      executable="${FEDORA_HOME}/server/bin/mckoi-init">
+      executable="${FEDORA_HOME}/server/bin/mckoi-init${ext}">
       <arg line="fedoraAdmin fedoraAdmin"/>
       <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>
   </target>
 
-  <target name="fedora-start">
+  <target name="fedora-start" depends="exec-ext">
     <echo>Starting mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
     <exec dir="${FEDORA_HOME}" 
-      executable="${FEDORA_HOME}/server/bin/mckoi-start"
+      executable="${FEDORA_HOME}/server/bin/mckoi-start${ext}"
       spawn="true">
       <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>
@@ -36,28 +46,28 @@
     <echo>Starting fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
     <echo>You can safely hit Ctl-C to kill the mvn command</echo>
     <exec dir="${FEDORA_HOME}"
-      executable="${FEDORA_HOME}/server/bin/fedora-start"
+      executable="${FEDORA_HOME}/server/bin/fedora-start${ext}"
       spawn="false">
       <arg line="mckoi"/>
       <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>
   </target>
 
-  <target name="fedora-stop">
+  <target name="fedora-stop" depends="exec-ext">
     <echo>Stopping fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
     <exec dir="${FEDORA_HOME}" 
-      executable="${FEDORA_HOME}/server/bin/fedora-stop">
+      executable="${FEDORA_HOME}/server/bin/fedora-stop${ext}">
       <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>
     <echo>Stopping mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
     <exec dir="${FEDORA_HOME}"
-      executable="${FEDORA_HOME}/server/bin/mckoi-stop">
+      executable="${FEDORA_HOME}/server/bin/mckoi-stop${ext}">
       <arg line="fedoraAdmin fedoraAdmin"/>
       <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>
   </target>
 
-  <target name="fedora-package">
+  <target name="fedora-package" depends="exec-ext">
     <!-- untar fedora server distribution -->
     <untar
       src="${LOCAL_REPOSITORY}/info/fedora/server/${VERSION}/server-${VERSION}.tar"
@@ -81,7 +91,7 @@
     <!-- execute fedora-setup with no-ssl-authenticate-apim -->
     <exec
       dir="${BUILD_DIRECTORY}/${FINAL_NAME}/fedora-${VERSION}"
-      executable="${BUILD_DIRECTORY}/${FINAL_NAME}/fedora-${VERSION}/server/bin/fedora-setup">
+      executable="${BUILD_DIRECTORY}/${FINAL_NAME}/fedora-${VERSION}/server/bin/fedora-setup${ext}">
       <arg line="no-ssl-authenticate-apim"/>
       <env key="FEDORA_HOME"
         file="${BUILD_DIRECTORY}/${FINAL_NAME}/fedora-${VERSION}"/>
