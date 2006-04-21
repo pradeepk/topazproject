@@ -62,6 +62,8 @@
         </executions>
       </plugin>
     </plugins>
+
+    <defaultGoal>package</defaultGoal>
   </build>
 
 </project>
