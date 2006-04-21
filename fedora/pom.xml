@@ -63,7 +63,7 @@
       </plugin>
     </plugins>
 
-    <defaultGoal>package</defaultGoal>
+    <defaultGoal>install</defaultGoal>
   </build>
 
 </project>
