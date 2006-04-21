@@ -123,24 +123,24 @@
         </parameter>
 
         <parameter>
-          <name>FINAL_NAME</name>
-          <property>FINAL_NAME</property>
+          <name>DEST_DIR</name>
+          <property>DEST_DIR</property>
           <required>true</required>
-          <defaultValue>${project.build.finalName}</defaultValue>
+          <defaultValue>${project.build.directory}/${project.build.finalName}</defaultValue>
         </parameter>
 
         <parameter>
-          <name>LOCAL_REPOSITORY</name>
-          <property>LOCAL_REPOSITORY</property>
+          <name>SRC_CLIENT_TAR</name>
+          <property>SRC_CLIENT_TAR</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}</defaultValue>
+          <defaultValue>${settings.localRepository}/info/fedora/client/2.1.1/client-2.1.1.tar</defaultValue>
         </parameter>
 
         <parameter>
-          <name>BUILD_DIRECTORY</name>
-          <property>BUILD_DIRECTORY</property>
+          <name>SRC_SERVER_TAR</name>
+          <property>SRC_SERVER_TAR</property>
           <required>true</required>
-          <defaultValue>${project.build.directory}</defaultValue>
+          <defaultValue>${settings.localRepository}/info/fedora/server/2.1.1/server-2.1.1.tar</defaultValue>
         </parameter>
 
         <parameter>
@@ -149,8 +149,14 @@
           <required>true</required>
           <defaultValue>jakarta-tomcat-5.0.28</defaultValue>
         </parameter>
-      </parameters>
 
+        <parameter>
+          <name>SRC_DIRINGEST_ZIP</name>
+          <property>SRC_DIRINGEST_ZIP</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/info/fedora/diringest/2.1.1/diringest-2.1.1.zip</defaultValue>
+        </parameter>
+      </parameters>
     </mojo>
   </mojos>
 </pluginMetadata>
