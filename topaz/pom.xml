@@ -36,13 +36,6 @@
     </dependency>
   </dependencies>
 
-  <distributionManagement>
-    <site>
-      <id>website</id>
-      <url>file:/home/amit/tmp/foobar</url>
-    </site>
-  </distributionManagement>
-
   <build>
     <finalName>topaz</finalName>
     <plugins>

@@ -34,6 +34,13 @@
     <url>http://gandalf/svn/</url>
   </scm>
 
+  <distributionManagement>
+    <repository>
+      <id>topaz</id>
+      <url>http://gandalf/maven2/</url>
+    </repository>
+  </distributionManagement>
+
   <modules>
     <module>ant-task-plugins</module>
     <module>topaz</module>
