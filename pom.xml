@@ -43,8 +43,8 @@
 
   <modules>
     <module>ant-task-plugins</module>
+    <module>re-package</module>
     <module>topaz</module>
     <module>filter-resolver</module>
-    <module>fedora</module>
   </modules>
 </project>
