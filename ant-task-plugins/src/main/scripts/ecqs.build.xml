@@ -22,13 +22,17 @@
   <target name="ecqs-package" depends="patch-keytool">
     <!-- unzip the package -->
     <unzip src="${SRC_ZIP}" dest="${DEST_DIR}"/>
+    
     <!-- configure it -->
     <copy file="properties/build.properties"
       tofile="${DEST_DIR}/${ROOT}/properties/build.properties"
       overwrite="true"/>
     <echo file="${DEST_DIR}/${ROOT}/properties/build.properties"
       append="yes" message="${patch-keytool-string}"/>
-     
+    <copy todir="${DEST_DIR}/${ROOT}/custom">
+      <fileset dir="custom"/>
+    </copy>
+    
     <!-- jar it up -->
     <jar destfile="${DEST_DIR}.jar" basedir="${DEST_DIR}"/>
   </target>
