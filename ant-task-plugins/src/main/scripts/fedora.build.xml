@@ -44,7 +44,7 @@
     <!-- <sleep seconds="2"/> -->
   
     <echo>Starting fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
-    <echo>You can safely hit Ctl-C to kill the mvn command</echo>
+    <echo>You can safely hit Ctl-C to kill the mvn command after fedora starts</echo>
     <exec dir="${FEDORA_HOME}"
       executable="${FEDORA_HOME}/server/bin/fedora-start${ext}"
       spawn="false">
