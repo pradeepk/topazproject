@@ -53,7 +53,7 @@
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
-          <defaultValue>${user.home}/anumana-install</defaultValue>
+          <defaultValue>${anumana.install.dir}</defaultValue>
         </parameter>
 
         <parameter>
@@ -89,7 +89,7 @@
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
-          <defaultValue>${user.home}/anumana-install</defaultValue>
+          <defaultValue>${anumana.install.dir}</defaultValue>
         </parameter>
 
         <parameter>
@@ -118,7 +118,7 @@
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
-          <defaultValue>${user.home}/anumana-install</defaultValue>
+          <defaultValue>${anumana.install.dir}</defaultValue>
         </parameter>
 
         <parameter>
@@ -147,7 +147,7 @@
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
-          <defaultValue>${user.home}/anumana-install</defaultValue>
+          <defaultValue>${anumana.install.dir}</defaultValue>
         </parameter>
 
         <parameter>

@@ -34,6 +34,17 @@
     <url>http://gandalf/svn/</url>
   </scm>
 
+  <profiles>
+    <profile>
+      <activation>
+        <jdk>!1.0</jdk> <!-- always active (<activeByDefault/> doesn't seem to work) -->
+      </activation>
+      <properties>
+        <anumana.install.dir>${user.home}/anumana-install</anumana.install.dir>
+      </properties>
+    </profile>
+  </profiles>
+
   <distributionManagement>
     <repository>
       <id>topaz</id>
