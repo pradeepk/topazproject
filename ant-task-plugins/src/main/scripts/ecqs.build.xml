@@ -1,0 +1,63 @@
+<?xml version="1.0" ?>
+<project>
+
+  <target name="exec-ext">
+    <condition property="ext" value="">
+      <os family="unix"/>
+    </condition>
+    <condition property="ext" value=".bat">
+      <os family="windows"/>
+    </condition>
+    <property name="ext" value=""/>
+  </target>
+
+  <target name="patch-keytool">
+    <condition property="patch-keytool-string"
+     value="jakarta-tomcat.keytool.path=${env.JAVA_HOME}/bin/keytool">
+       <os family="unix"/>
+    </condition>
+    <property name="patch-keytool-string" value=""/>
+  </target>
+
+  <target name="ecqs-package" depends="patch-keytool">
+    <!-- unzip the package -->
+    <unzip src="${SRC_ZIP}" dest="${DEST_DIR}"/>
+    <!-- configure it -->
+    <copy file="properties/build.properties"
+      tofile="${DEST_DIR}/${ROOT}/properties/build.properties"
+      overwrite="true"/>
+    <echo file="${DEST_DIR}/${ROOT}/properties/build.properties"
+      append="yes" message="${patch-keytool-string}"/>
+     
+    <!-- jar it up -->
+    <jar destfile="${DEST_DIR}.jar" basedir="${DEST_DIR}"/>
+  </target>
+
+  <target name="ecqs-install" depends="exec-ext">
+    <unjar src="${SRC_JAR}" dest="${DEST_DIR}"/>
+    <!--
+     Bloody maven; javac task won't execute 
+     <ant dir="${DEST_DIR}/${ROOT}" target="install"/> 
+     -->
+    <exec dir="${DEST_DIR}/${ROOT}" executable="ant${ext}">
+      <arg line="install"/>
+    </exec>
+  </target>
+
+  <target name="ecqs-uninstall" depends="exec-ext">
+   <delete dir="${DEST_DIR}/${ROOT}"/>
+  </target>
+  
+  <target name="ecqs-start" depends="exec-ext">
+    <exec dir="${DEST_DIR}/${ROOT}" executable="ant${ext}">
+      <arg line="tomcat-start"/>
+    </exec>
+  </target>
+ 
+  <target name="ecqs-stop" depends="exec-ext">
+    <exec dir="${DEST_DIR}/${ROOT}" executable="ant${ext}">
+      <arg line="tomcat-stop"/>
+    </exec>
+  </target>
+    
+</project>

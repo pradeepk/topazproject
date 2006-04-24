@@ -1,0 +1,163 @@
+<pluginMetadata>
+  <mojos>
+
+    <mojo>
+      <goal>ecqs-package</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>ecqs-package</call>
+
+      <description>
+        Package esup-cas-quick-start with Topaz/Anumana configuration files
+      </description>
+
+      <parameters>
+
+        <parameter>
+          <name>DEST_DIR</name>
+          <property>DEST_DIR</property>
+          <required>true</required>
+          <defaultValue>${project.build.directory}/${project.build.finalName}</defaultValue>
+        </parameter>
+
+        <parameter>
+          <name>SRC_ZIP</name>
+          <property>SRC_ZIP</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/org/esup-portail/esup-cas-quick-start/2.0.6-1/esup-cas-quick-start-2.0.6-1.zip</defaultValue>
+        </parameter>
+
+        <parameter>
+          <name>ROOT</name>
+          <property>ROOT</property>
+          <required>true</required>
+          <defaultValue>esup-cas-quick-start-2.0.6-1</defaultValue>
+        </parameter>
+
+      </parameters>
+    </mojo>
+    
+    <mojo>
+      <goal>ecqs-install</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>ecqs-install</call>
+
+      <description>
+        Install the esup-cas-quick-start locally
+      </description>
+
+      <parameters>
+
+        <parameter>
+          <name>DEST_DIR</name>
+          <property>DEST_DIR</property>
+          <required>true</required>
+          <defaultValue>${user.home}/anumana-install</defaultValue>
+        </parameter>
+
+        <parameter>
+          <name>SRC_JAR</name>
+          <property>SRC_JAR</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/info/anumana/ecqs/2.0.6-1/ecqs-2.0.6-1.jar</defaultValue>
+        </parameter>
+
+        <parameter>
+          <name>ROOT</name>
+          <property>ROOT</property>
+          <required>true</required>
+          <defaultValue>esup-cas-quick-start-2.0.6-1</defaultValue>
+        </parameter>
+
+      </parameters>
+    </mojo>
+    
+    <mojo>
+      <goal>ecqs-start</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>ecqs-start</call>
+
+      <description>
+        Start the esup-cas-quick-start tomcat server
+      </description>
+
+      <parameters>
+
+        <parameter>
+          <name>DEST_DIR</name>
+          <property>DEST_DIR</property>
+          <required>true</required>
+          <defaultValue>${user.home}/anumana-install</defaultValue>
+        </parameter>
+
+        <parameter>
+          <name>ROOT</name>
+          <property>ROOT</property>
+          <required>true</required>
+          <defaultValue>esup-cas-quick-start-2.0.6-1</defaultValue>
+        </parameter>
+
+      </parameters>
+    </mojo>
+    
+    <mojo>
+      <goal>ecqs-stop</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>ecqs-stop</call>
+
+      <description>
+        Stop the esup-cas-quick-start tomcat server
+      </description>
+
+      <parameters>
+
+        <parameter>
+          <name>DEST_DIR</name>
+          <property>DEST_DIR</property>
+          <required>true</required>
+          <defaultValue>${user.home}/anumana-install</defaultValue>
+        </parameter>
+
+        <parameter>
+          <name>ROOT</name>
+          <property>ROOT</property>
+          <required>true</required>
+          <defaultValue>esup-cas-quick-start-2.0.6-1</defaultValue>
+        </parameter>
+
+      </parameters>
+    </mojo>
+    
+    <mojo>
+      <goal>ecqs-uninstall</goal>
+
+      <!-- this element refers to the Ant target we'll invoke -->
+      <call>ecqs-uninstall</call>
+
+      <description>
+        Uninstall esup-cas-quick-start from local machine
+      </description>
+
+      <parameters>
+
+        <parameter>
+          <name>DEST_DIR</name>
+          <property>DEST_DIR</property>
+          <required>true</required>
+          <defaultValue>${user.home}/anumana-install</defaultValue>
+        </parameter>
+
+        <parameter>
+          <name>ROOT</name>
+          <property>ROOT</property>
+          <required>true</required>
+          <defaultValue>esup-cas-quick-start-2.0.6-1</defaultValue>
+        </parameter>
+
+      </parameters>
+    </mojo>
+  </mojos>
+</pluginMetadata>
