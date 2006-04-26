@@ -6,7 +6,8 @@
 
       <!-- this element refers to the Ant target we'll invoke -->
       <call>ecqs-package</call>
-
+      <requiresProject>true</requiresProject>
+      
       <description>
         Package esup-cas-quick-start with Topaz/Anumana configuration files
       </description>
@@ -42,6 +43,7 @@
 
       <!-- this element refers to the Ant target we'll invoke -->
       <call>ecqs-install</call>
+      <requiresProject>false</requiresProject>
 
       <description>
         Install the esup-cas-quick-start locally
@@ -78,6 +80,7 @@
 
       <!-- this element refers to the Ant target we'll invoke -->
       <call>ecqs-start</call>
+      <requiresProject>false</requiresProject>
 
       <description>
         Start the esup-cas-quick-start tomcat server
@@ -107,6 +110,7 @@
 
       <!-- this element refers to the Ant target we'll invoke -->
       <call>ecqs-stop</call>
+      <requiresProject>false</requiresProject>
 
       <description>
         Stop the esup-cas-quick-start tomcat server
@@ -136,6 +140,7 @@
 
       <!-- this element refers to the Ant target we'll invoke -->
       <call>ecqs-uninstall</call>
+      <requiresProject>false</requiresProject>
 
       <description>
         Uninstall esup-cas-quick-start from local machine

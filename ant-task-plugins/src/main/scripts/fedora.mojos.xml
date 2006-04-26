@@ -6,7 +6,8 @@
 
       <!-- this element refers to the Ant target we'll invoke -->
       <call>fedora-install</call>
-
+      <requiresProject>false</requiresProject>
+      
       <description>
         Installs Fedora on the local machine at FEDORA_HOME.
       </description>
@@ -65,6 +66,7 @@
 
       <!-- this element refers to the Ant target we'll invoke -->
       <call>fedora-start</call>
+      <requiresProject>false</requiresProject>
 
       <description>
         Start fedora on the local machine..
@@ -87,6 +89,7 @@
 
       <!-- this element refers to the Ant target we'll invoke -->
       <call>fedora-stop</call>
+      <requiresProject>false</requiresProject>
 
       <description>
         Stop fedora on the local machine..
@@ -109,6 +112,7 @@
 
       <!-- this element refers to the Ant target we'll invoke -->
       <call>fedora-package</call>
+      <requiresProject>true</requiresProject>
 
       <description>
         Package fedora with Topaz configuration files
