@@ -47,6 +47,7 @@
     <module>re-package</module>
     <module>topaz</module>
     <module>filter-resolver</module>
+    <module>cas-client-sample</module>
   </modules>
 
   <properties>
