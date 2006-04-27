@@ -51,5 +51,6 @@
 
   <properties>
     <anumana.install.dir>${user.home}/anumana-install</anumana.install.dir>
+    <javax.net.ssl.trustStore>${anumana.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/cacert.ks</javax.net.ssl.trustStore>
   </properties>
 </project>
