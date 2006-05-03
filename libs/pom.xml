@@ -17,5 +17,6 @@
 
   <modules>
     <module>jetty-jaas-cas</module>
+    <module>tomcat-jaas-cas</module>
   </modules>
 </project>
