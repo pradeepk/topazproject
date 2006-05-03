@@ -58,6 +58,21 @@
           <type>java.lang.String</type>
           <description>version of fedora.</description>
         </parameter>
+        
+        <parameter>
+          <name>ECQS_KEYSTORE</name>
+          <property>ECQS_KEYSTORE</property>
+          <required>true</required>
+          <defaultValue>${anumana.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/cacert.ks</defaultValue>
+        </parameter>
+        
+        <parameter>
+          <name>TOMCAT</name>
+          <property>TOMCAT</property>
+          <required>true</required>
+          <defaultValue>jakarta-tomcat-5.0.28</defaultValue>
+        </parameter>
+
       </parameters>
     </mojo>
 
@@ -160,7 +175,23 @@
           <required>true</required>
           <defaultValue>${settings.localRepository}/info/fedora/diringest/2.1.1/diringest-2.1.1.zip</defaultValue>
         </parameter>
+
+        <parameter>
+          <name>CAS_AUTHENTICATOR</name>
+          <property>CAS_AUTHENTICATOR</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/org/topazproject/tomcat-jaas-cas/0.5-SNAPSHOT/tomcat-jaas-cas-0.5-SNAPSHOT.jar</defaultValue>
+        </parameter>
+
+        <parameter>
+          <name>CAS_CLIENT</name>
+          <property>CAS_CLIENT</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/cas/casclient/2.1.1/casclient-2.1.1.jar</defaultValue>
+        </parameter>
+        
       </parameters>
+      
     </mojo>
   </mojos>
 </pluginMetadata>

@@ -11,12 +11,22 @@
     <property name="ext" value=""/>
   </target>
 
-  <target name="fedora-install" depends="exec-ext">
+  <target name="keytool">
+    <condition property="keytool" value="keytool.exe">
+      <os family="windows"/>
+    </condition>
+    <property name="keytool" value="keytool"/>
+  </target>
+
+
+  <target name="fedora-install" depends="exec-ext,keytool">
     <property name="FEDORA_JAR"
       value="${localRepository}/${fedora-groupId}/${fedora-artifactId}/${fedora-version}/${fedora-artifactId}-${fedora-version}.jar"/> 
 
     <property name="FEDORA_HOME"
       value="${FEDORA_INSTALL_DIR}/fedora-${fedora-version}"/>
+    <property name="TOMCAT_HOME"
+      value="${FEDORA_HOME}/server/${TOMCAT}"/>
 
     <mkdir dir="${FEDORA_INSTALL_DIR}"/>
     <unjar src="${FEDORA_JAR}" dest="${FEDORA_INSTALL_DIR}"/>
@@ -30,6 +40,21 @@
       <arg line="fedoraAdmin fedoraAdmin"/>
       <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>
+    <!-- install CAS server root cert in tomcat keystore -->
+    <exec
+      dir="${TOMCAT_HOME}/server"
+      executable="${keytool}">
+      <arg line="-export -alias jakarta-tomcat -keystore ${ECQS_KEYSTORE} -file
+        ecqs.cert"/>
+    </exec>
+    <exec
+      dir="${TOMCAT_HOME}/server"
+      executable="${keytool}">
+      <arg line="-import -alias jakarta-tomcat -keystore truststore -storepass
+        tomcat -file ecqs.cert -noprompt"/>
+    </exec>
+
+    <delete file="${TOMCAT_HOME}/server/ecqs.cert"/>
   </target>
 
   <target name="fedora-start" depends="exec-ext">
@@ -42,7 +67,7 @@
 
     <echo>Spawned off mckoi</echo>
     <!-- <sleep seconds="2"/> -->
-  
+
     <echo>Starting fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
     <echo>You can safely hit Ctl-C to kill the mvn command after fedora starts</echo>
     <exec dir="${FEDORA_HOME}"
@@ -84,36 +109,80 @@
       </fileset>
     </chmod>
 
+    <property name="FEDORA_HOME"
+      value="${DEST_DIR}/fedora-${VERSION}"/>
+
+    <property name="TOMCAT_HOME"
+      value="${FEDORA_HOME}/server/${TOMCAT}"/>
+
     <!-- execute fedora-setup with no-ssl-authenticate-apim -->
     <exec
-      dir="${DEST_DIR}/fedora-${VERSION}"
-      executable="${DEST_DIR}/fedora-${VERSION}/server/bin/fedora-setup${ext}">
+      dir="${FEDORA_HOME}"
+      executable="${FEDORA_HOME}/server/bin/fedora-setup${ext}">
       <arg line="no-ssl-authenticate-apim"/>
-      <env key="FEDORA_HOME" file="${DEST_DIR}/fedora-${VERSION}"/>
+      <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>
 
     <!-- configure fedora (overwrite with our local copy) -->
     <copy file="server/fedora.fcfg"
-      tofile="${DEST_DIR}/fedora-${VERSION}/server/config/fedora.fcfg/"
+      tofile="${FEDORA_HOME}/server/config/fedora.fcfg/"
       overwrite="true"/>
 
     <!-- unzip the diringest service -->
     <unzip
       src="${SRC_DIRINGEST_ZIP}"
-      dest="${DEST_DIR}/fedora-${VERSION}">
+      dest="${FEDORA_HOME}">
     </unzip>
 
     <!-- unwar the diringest war file -->
     <unwar
-      src="${DEST_DIR}/fedora-${VERSION}/diringest-service/diringest.war"
-      dest="${DEST_DIR}/fedora-${VERSION}/server/${TOMCAT}/webapps/diringest/">
+      src="${FEDORA_HOME}/diringest-service/diringest.war"
+      dest="${TOMCAT_HOME}/webapps/diringest/">
     </unwar>
 
     <!-- configure diringest (overwrite with our local copy) -->
     <copy file="diringest/diringest.properties"
-      tofile="${DEST_DIR}/fedora-${VERSION}/server/${TOMCAT}/webapps/diringest/WEB-INF/classes/diringest.properties"
+      tofile="${TOMCAT_HOME}/webapps/diringest/WEB-INF/classes/diringest.properties"
       overwrite="true"/>
 
+    <!-- configure CAS -->
+    <copy file="CAS/CAS.properties"
+      tofile="${TOMCAT_HOME}/server/classes/CAS.properties" overwrite="true"/>
+
+    <copy file="CAS/jaas.config"
+      tofile="${TOMCAT_HOME}/conf/jaas.config" overwrite="true"/>
+
+    <!-- copy jar files for CAS-BASIC -->
+    <copy file="${CAS_AUTHENTICATOR}" todir="${TOMCAT_HOME}/server/lib"
+      overwrite="true" flatten="true"/>
+
+    <copy file="${CAS_CLIENT}" todir="${TOMCAT_HOME}/server/lib"
+      overwrite="true" flatten="true"/>
+
+    <!-- make an entry for CAS-BASIC in catalina.jar -->
+    <mkdir dir="${TOMCAT_HOME}/catalina-jar-edit"/>
+    <unjar src="${TOMCAT_HOME}/server/lib/catalina.jar"
+      dest="${TOMCAT_HOME}/catalina-jar-edit"/>
+    <echo
+      file="${TOMCAT_HOME}/catalina-jar-edit/org/apache/catalina/startup/Authenticators.properties"
+      append ="yes"
+      message="CAS-BASIC=org.topazproject.tomcat.catalina.authenticator.CASBasicAuthenticator"
+      />
+    <jar destfile="${TOMCAT_HOME}/server/lib/catalina.jar"
+      basedir="${TOMCAT_HOME}/catalina-jar-edit"/>
+
+    <delete dir="${TOMCAT_HOME}/catalina-jar-edit"/>
+
+    <!-- replace BASIC auth with CAS-BASIC -->
+    <xslt basedir="${TOMCAT_HOME}/webapps" destdir="${TOMCAT_HOME}/web-xml-temp"
+      includes="**/web.xml" style="CAS/web-xml-convert.xslt" extension=".xml"/>
+
+    <copy todir="${TOMCAT_HOME}/webapps" overwrite="yes">
+      <fileset dir="${TOMCAT_HOME}/web-xml-temp"/>
+    </copy>
+    
+    <delete dir="${TOMCAT_HOME}/web-xml-temp"/>
+    
     <!-- jar everything up and overwrite the package target created by maven -->
     <jar destfile="${DEST_DIR}.jar" basedir="${DEST_DIR}"/>
   </target>
