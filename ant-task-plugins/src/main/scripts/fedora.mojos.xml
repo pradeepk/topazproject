@@ -7,7 +7,7 @@
       <!-- this element refers to the Ant target we'll invoke -->
       <call>fedora-install</call>
       <requiresProject>false</requiresProject>
-      
+
       <description>
         Installs Fedora on the local machine at FEDORA_HOME.
       </description>
@@ -58,19 +58,12 @@
           <type>java.lang.String</type>
           <description>version of fedora.</description>
         </parameter>
-        
+
         <parameter>
           <name>ECQS_KEYSTORE</name>
           <property>ECQS_KEYSTORE</property>
           <required>true</required>
           <defaultValue>${anumana.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/cacert.ks</defaultValue>
-        </parameter>
-        
-        <parameter>
-          <name>TOMCAT</name>
-          <property>TOMCAT</property>
-          <required>true</required>
-          <defaultValue>jakarta-tomcat-5.0.28</defaultValue>
         </parameter>
 
       </parameters>
@@ -189,9 +182,9 @@
           <required>true</required>
           <defaultValue>${settings.localRepository}/cas/casclient/2.1.1/casclient-2.1.1.jar</defaultValue>
         </parameter>
-        
+
       </parameters>
-      
+
     </mojo>
   </mojos>
 </pluginMetadata>
