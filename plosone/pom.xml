@@ -3,20 +3,16 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.topazproject</groupId>
-  <artifactId>topazproject-libs</artifactId>
+  <groupId>org.plosone</groupId>
+  <artifactId>plosone</artifactId>
   <version>0.5-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>TopazProject Libs</name>
-  
+  <name>All PLoSONE Project stuff</name>
+
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
     <version>0.5-SNAPSHOT</version>
   </parent>
 
-  <modules>
-    <module>jetty-jaas-cas</module>
-    <module>tomcat-jaas-cas</module>
-  </modules>
 </project>

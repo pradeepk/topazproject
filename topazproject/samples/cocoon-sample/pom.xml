@@ -4,14 +4,14 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
-  <artifactId>topaz</artifactId>
+  <artifactId>cocoon-sample</artifactId>
   <packaging>war</packaging>
   <version>0.5</version>
   <name>Topaz web application</name>
   
   <parent>
     <groupId>org.topazproject</groupId>
-    <artifactId>the-whole-shebang</artifactId>
+    <artifactId>topazproject-samples</artifactId>
     <version>0.5-SNAPSHOT</version>
   </parent>
 
