@@ -8,6 +8,26 @@
   <name>Journal Admin Webservice</name>
   <version>0.1</version>
 
+  <pluginRepositories>
+    <pluginRepository>
+      <id>cargo m2 snapshot repository</id>
+      <url>http://cargo.codehaus.org/dist2-snapshot</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
+    <pluginRepository>
+      <id>Codehaus Snapshots</id>
+      <url>http://snapshots.maven.codehaus.org/maven2/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
   <reporting>
     <plugins>
       <plugin>
