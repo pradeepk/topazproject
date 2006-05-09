@@ -3,7 +3,7 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>info.anumana</groupId>
+  <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
   <version>0.5-SNAPSHOT</version>
   <packaging>pom</packaging>
@@ -51,7 +51,7 @@
   </modules>
 
   <properties>
-    <anumana.install.dir>${user.home}/anumana-install</anumana.install.dir>
-    <javax.net.ssl.trustStore>${anumana.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/cacert.ks</javax.net.ssl.trustStore>
+    <topazproject.install.dir>${user.home}/topazproject-install</topazproject.install.dir>
+    <javax.net.ssl.trustStore>${topazproject.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/cacert.ks</javax.net.ssl.trustStore>
   </properties>
 </project>

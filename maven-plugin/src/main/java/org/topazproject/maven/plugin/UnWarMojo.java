@@ -1,4 +1,4 @@
-package info.anumana.maven.plugin;
+package org.topazproject.maven.plugin;
 
 import java.io.File;
 import java.io.FileInputStream;

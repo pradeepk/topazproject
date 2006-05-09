@@ -1,5 +1,5 @@
 
-package info.anumana.kowari;
+package org.topazproject.kowari;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;

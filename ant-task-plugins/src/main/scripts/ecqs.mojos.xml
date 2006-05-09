@@ -9,7 +9,7 @@
       <requiresProject>true</requiresProject>
       
       <description>
-        Package esup-cas-quick-start with Topaz/Anumana configuration files
+        Package esup-cas-quick-start with Topaz configuration files
       </description>
 
       <parameters>
@@ -55,14 +55,14 @@
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
-          <defaultValue>${anumana.install.dir}</defaultValue>
+          <defaultValue>${topazproject.install.dir}</defaultValue>
         </parameter>
 
         <parameter>
           <name>SRC_JAR</name>
           <property>SRC_JAR</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/info/anumana/ecqs/2.0.6-1/ecqs-2.0.6-1.jar</defaultValue>
+          <defaultValue>${settings.localRepository}/org/topazproject/ecqs/2.0.6-1/ecqs-2.0.6-1.jar</defaultValue>
         </parameter>
 
         <parameter>
@@ -92,7 +92,7 @@
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
-          <defaultValue>${anumana.install.dir}</defaultValue>
+          <defaultValue>${topazproject.install.dir}</defaultValue>
         </parameter>
 
         <parameter>
@@ -122,7 +122,7 @@
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
-          <defaultValue>${anumana.install.dir}</defaultValue>
+          <defaultValue>${topazproject.install.dir}</defaultValue>
         </parameter>
 
         <parameter>
@@ -152,7 +152,7 @@
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
-          <defaultValue>${anumana.install.dir}</defaultValue>
+          <defaultValue>${topazproject.install.dir}</defaultValue>
         </parameter>
 
         <parameter>

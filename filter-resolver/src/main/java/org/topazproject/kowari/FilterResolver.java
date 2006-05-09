@@ -1,5 +1,5 @@
 
-package info.anumana.kowari;
+package org.topazproject.kowari;
 
 import java.net.URI;
 import java.util.AbstractSet;
@@ -55,7 +55,7 @@ import org.kowari.store.tuples.Tuples;
  */
 public class FilterResolver implements Resolver, ViewMarker {
   /** the model type we handle */
-  public static final URI MODEL_TYPE = URI.create("http://anumana.info/models#filter");
+  public static final URI MODEL_TYPE = URI.create("http://topazproject.org/models#filter");
 
   private static final Logger logger = Logger.getLogger(FilterResolver.class);
   private static final Map    modelTranslationCache = new HashMap();

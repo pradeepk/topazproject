@@ -3,15 +3,15 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>info.anumana</groupId>
+  <groupId>org.topazproject</groupId>
   <artifactId>ecqs</artifactId>
   <packaging>jar</packaging>
   <version>2.0.6-1</version>
   <name>ESUP CAS Quick Start</name>
 
   <parent>
-    <groupId>info.anumana</groupId>
-    <artifactId>anumana-repackage</artifactId>
+    <groupId>org.topazproject</groupId>
+    <artifactId>topazproject-repackage</artifactId>
     <version>0.5-SNAPSHOT</version>
   </parent>
 
@@ -31,7 +31,7 @@
     <plugins>
 
       <plugin>
-        <groupId>info.anumana.plugins</groupId>
+        <groupId>org.topazproject.plugins</groupId>
         <artifactId>ant-tasks</artifactId>
 
         <executions>

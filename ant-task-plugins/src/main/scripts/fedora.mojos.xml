@@ -18,7 +18,7 @@
           <name>FEDORA_INSTALL_DIR</name>
           <property>FEDORA_INSTALL_DIR</property>
           <required>true</required>
-          <defaultValue>${anumana.install.dir}</defaultValue>
+          <defaultValue>${topazproject.install.dir}</defaultValue>
           <type>java.lang.String</type>
           <description>The name of the input file.</description>
         </parameter>
@@ -36,7 +36,7 @@
           <name>fedora-groupId</name>
           <property>fedora-groupId</property>
           <required>true</required>
-          <defaultValue>info/anumana</defaultValue>
+          <defaultValue>org/topazproject</defaultValue>
           <type>java.lang.String</type>
           <description>groupId for fedora.</description>
         </parameter>
@@ -63,7 +63,7 @@
           <name>ECQS_KEYSTORE</name>
           <property>ECQS_KEYSTORE</property>
           <required>true</required>
-          <defaultValue>${anumana.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/cacert.ks</defaultValue>
+          <defaultValue>${topazproject.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/cacert.ks</defaultValue>
         </parameter>
 
       </parameters>
@@ -85,7 +85,7 @@
           <name>FEDORA_HOME</name>
           <property>FEDORA_HOME</property>
           <required>true</required>
-          <defaultValue>${anumana.install.dir}/fedora-2.1.1</defaultValue>
+          <defaultValue>${topazproject.install.dir}/fedora-2.1.1</defaultValue>
           <type>java.lang.String</type>
           <description>Fedora Home directory</description>
         </parameter>
@@ -108,7 +108,7 @@
           <name>FEDORA_HOME</name>
           <property>FEDORA_HOME</property>
           <required>true</required>
-          <defaultValue>${anumana.install.dir}/fedora-2.1.1</defaultValue>
+          <defaultValue>${topazproject.install.dir}/fedora-2.1.1</defaultValue>
           <type>java.lang.String</type>
           <description>Fedora Home directory</description>
         </parameter>

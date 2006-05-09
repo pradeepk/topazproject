@@ -8,7 +8,7 @@
  <name>A sample CAS client</name>
 
  <parent>
-  <groupId>info.anumana</groupId>
+  <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
   <version>0.5-SNAPSHOT</version>
  </parent>
