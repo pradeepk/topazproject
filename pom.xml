@@ -45,7 +45,7 @@
     <module>ant-task-plugins</module>
     <module>libs</module>
     <module>re-package</module>
-    <module>topaz</module>
+    <module>cocoon-sample</module>
     <module>filter-resolver</module>
     <module>cas-client-sample</module>
   </modules>
