@@ -27,6 +27,13 @@
       <url>http://gandalf/maven2</url>
     </repository>
   </repositories>
+  <pluginRepositories>
+    <pluginRepository>
+      <id>topaz</id>
+      <name>Maven 2 Repository for Topaz</name>
+      <url>http://gandalf/maven2</url>
+    </pluginRepository>
+  </pluginRepositories>
 
   <scm>
     <developerConnection>scm:svn:http://gandalf/svn/head/</developerConnection>
