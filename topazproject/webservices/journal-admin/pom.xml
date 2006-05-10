@@ -50,4 +50,8 @@
       <module>ws-server-impl</module>
       <module>ws-webapp</module>
   </modules>
+
+  <properties>
+    <wsdl.filename>journal-admin-service.wsdl</wsdl.filename>
+  </properties>
 </project>
