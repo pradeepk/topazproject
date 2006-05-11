@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.topazproject.ws</groupId>
+  <artifactId>ws-annotation-admin</artifactId>
+  <packaging>pom</packaging>
+  <name>Annotation Admin Webservice</name>
+  <version>0.1</version>
+
+  <parent>
+    <groupId>org.topazproject</groupId>
+    <artifactId>topazproject</artifactId>
+    <version>0.5-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>cargo m2 snapshot repository</id>
+      <url>http://cargo.codehaus.org/dist2-snapshot</url>
+      <releases>
+        <enabled>true</enabled>
+      </releases>
+    </pluginRepository>
+    <pluginRepository>
+      <id>Codehaus Snapshots</id>
+      <url>http://snapshots.maven.codehaus.org/maven2/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <modules>
+      <module>ws-api</module>
+      <module>ws-client-impl</module>
+      <module>ws-server-impl</module>
+      <module>ws-webapp</module>
+  </modules>
+
+  <properties>
+    <wsdl.filename>annotation-admin-service.wsdl</wsdl.filename>
+  </properties>
+</project>

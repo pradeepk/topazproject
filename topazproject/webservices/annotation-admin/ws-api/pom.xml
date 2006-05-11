@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>${pom.parent.artifactId}-api</artifactId>
+  <packaging>jar</packaging>
+  <name>Annotation Admin API</name>
+
+  <parent>
+    <groupId>org.topazproject.ws</groupId>
+    <artifactId>ws-annotation-admin</artifactId>
+    <version>0.1</version>
+  </parent>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>axistools-maven-plugin</artifactId>
+        <version>0.1-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <id>generate-wsdl</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>java2wsdl</goal>
+            </goals>
+            <configuration>
+              <implementationClassName>AnnotationServiceImplementation</implementationClassName>
+              <filename>${wsdl.filename}</filename>
+              <all>true</all>
+              <namespace>service.admin.ws.topazproject.org</namespace>
+              <servicePortName>AnnotationServicePort</servicePortName>
+              <location>http://localhost/service-location</location>
+              <classesDirectory>${project.build.directory}/classes</classesDirectory>
+              <classOfPortType>org.topazproject.ws.admin.Annotation</classOfPortType>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin> 
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>process-classes</phase>
+            <configuration>
+              <tasks>
+                <copy todir="${project.build.directory}/classes" 
+                  file="${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
