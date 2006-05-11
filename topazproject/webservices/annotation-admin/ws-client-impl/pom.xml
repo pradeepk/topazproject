@@ -78,7 +78,7 @@
           <configuration> 
             <home>${project.build.directory}/jetty</home>
             <properties>
-              <cargo.servlet.port>9999</cargo.servlet.port>
+              <cargo.servlet.port>9998</cargo.servlet.port>
               <cargo.logging>high</cargo.logging>
             </properties>
             <deployables>

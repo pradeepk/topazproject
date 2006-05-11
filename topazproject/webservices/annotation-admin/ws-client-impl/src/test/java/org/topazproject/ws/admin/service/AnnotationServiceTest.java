@@ -20,7 +20,7 @@ public class AnnotationServiceTest extends TestCase {
 
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
     URL url =
-        new URL("http://localhost:9999/ws-annotation-admin-webapp-0.1/services/AnnotationServicePort");
+        new URL("http://localhost:9998/ws-annotation-admin-webapp-0.1/services/AnnotationServicePort");
     AnnotationServiceLocator locator = new AnnotationServiceLocator();
     service = locator.getAnnotationServicePort(url);
   }
