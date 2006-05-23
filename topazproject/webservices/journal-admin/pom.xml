@@ -16,6 +16,7 @@
   </parent>
 
   <pluginRepositories>
+    <!--
     <pluginRepository>
       <id>cargo m2 snapshot repository</id>
       <url>http://cargo.codehaus.org/dist2-snapshot</url>
@@ -23,6 +24,7 @@
         <enabled>true</enabled>
       </releases>
     </pluginRepository>
+    -->
     <pluginRepository>
       <id>Codehaus Snapshots</id>
       <url>http://snapshots.maven.codehaus.org/maven2/</url>
