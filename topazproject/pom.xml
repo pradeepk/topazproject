@@ -19,6 +19,7 @@
     <module>libs</module>
     <module>webservices/journal-admin</module>
     <module>webservices/annotation-admin</module>
+    <module>webservices/articles</module>
     <module>samples</module>
   </modules>
 
