@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>${pom.parent.artifactId}-client-impl</artifactId>
+  <packaging>jar</packaging>
+  <name>Articles Webservice Client</name>
+
+  <parent>
+    <groupId>org.topazproject.ws</groupId>
+    <artifactId>ws-articles</artifactId>
+    <version>0.1</version>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>${pom.parent.groupId}</groupId>
+      <artifactId>${pom.parent.artifactId}-api</artifactId>
+      <version>0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>${pom.parent.groupId}</groupId>
+      <artifactId>${pom.parent.artifactId}-webapp</artifactId>
+      <type>war</type>
+      <version>0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis-jaxrpc</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis-saaj</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <version>3.8.1</version>
+      <scope>test</scope>
+    </dependency>    
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>axistools-maven-plugin</artifactId>
+        <version>0.1-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <phase>generate-sources</phase>
+            <goals><goal>wsdl2java</goal></goals>
+            <configuration>
+              <sourceDependencies>
+                <sourceDependency>${pom.parent.groupId}:${pom.parent.artifactId}-api:${pom.parent.version}:/${wsdl.filename}</sourceDependency>
+              </sourceDependencies>
+              <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.cargo</groupId>
+        <artifactId>cargo-maven2-plugin</artifactId>
+        <configuration>
+          <wait>false</wait>
+          <container>
+            <containerId>jetty4x</containerId>
+            <type>embedded</type>
+          </container>
+          <configuration> 
+            <home>${project.build.directory}/jetty</home>
+            <properties>
+              <cargo.servlet.port>9999</cargo.servlet.port>
+              <cargo.logging>high</cargo.logging>
+            </properties>
+            <deployables>
+              <deployable>
+                <groupId>${pom.parent.groupId}</groupId>
+                <artifactId>${pom.parent.artifactId}-webapp</artifactId>
+                <type>war</type>
+              </deployable>
+            </deployables>
+          </configuration> 
+        </configuration> 
+        <executions>
+          <execution>
+            <id>jetty-start</id>
+            <phase>pre-integration-test</phase>
+            <goals><goal>start</goal></goals>
+          </execution>
+          <execution>
+            <id>jetty-stop</id>
+            <phase>post-integration-test</phase>
+            <goals><goal>stop</goal></goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <configuration>
+          <skip>true</skip>     <!-- don't run the tests in the test phase -->
+        </configuration>
+        <executions>
+          <execution>
+            <id>it-test</id>
+            <phase>integration-test</phase>
+            <goals><goal>test</goal></goals>
+            <configuration>
+              <skip>false</skip><!-- instead, run the tests in the integration-test phase -->
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+</project>
