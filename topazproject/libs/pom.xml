@@ -19,5 +19,6 @@
     <module>jetty-jaas-cas</module>
     <module>tomcat-jaas-cas</module>
     <module>filter-resolver</module>
+    <module>xacml-extensions</module>
   </modules>
 </project>
