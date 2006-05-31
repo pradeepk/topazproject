@@ -158,13 +158,13 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
       Set s = pep.checkAccess(action,on,id);
       
       if (log.isDebugEnabled())
-        log.info("allowed access to " + action  + "(" + on + ", " + id + ")"); 
+        log.debug("allowed access to " + action  + "(" + on + ", " + id + ")"); 
     
       return s;
     }
     catch (SecurityException e){
       if (log.isDebugEnabled())
-        log.info("denied access to " + action  + "(" + on + ", " + id + ")", e); 
+        log.debug("denied access to " + action  + "(" + on + ", " + id + ")", e); 
       
       throw e;
     }
