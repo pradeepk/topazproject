@@ -20,10 +20,8 @@
   <attributeFactory name="attr" useStandardDatatypes="true"/>
   <combiningAlgFactory name="comb" useStandardAlgorithms="true"/>
   <functionFactory name="func" useStandardFunctions="true">
-    <!--
     <condition>
-      <function class="TimeInRangeFunction"/>
+      <function class="org.topazproject.xacml.cond.ItqlQueryFunction"/>
     </condition>
-    -->
   </functionFactory>
 </config>
