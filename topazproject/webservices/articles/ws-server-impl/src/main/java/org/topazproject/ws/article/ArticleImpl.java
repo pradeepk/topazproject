@@ -5,13 +5,18 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
-
+import java.util.List;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.log4j.Logger;
+import org.jrdf.graph.URIReference;
 import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.mulgara.itql.ItqlHelper.Answer;
+import org.topazproject.mulgara.itql.ItqlHelper.AnswerException;
+import org.topazproject.mulgara.itql.ItqlHelper.QueryAnswer;
 
 import fedora.client.APIMStubFactory;
 import fedora.client.Uploader;
@@ -23,7 +28,8 @@ import fedora.server.management.FedoraAPIM;
  * @author Ronald Tschalär
  */
 public class ArticleImpl implements Article {
-  private static final Logger log = Logger.getLogger(ArticleImpl.class);
+  private static final Logger log   = Logger.getLogger(ArticleImpl.class);
+  private static final String MODEL = "<rmi://localhost/fedora#ri>";
 
   private final URI        fedoraServer;
   private final FedoraAPIM apim;
@@ -82,17 +88,27 @@ public class ArticleImpl implements Article {
 
   public void delete(String doi, int version, boolean purge)
       throws NoSuchIdException, RemoteException {
-    // FIXME
-    if (version != -1)
-      throw new IllegalArgumentException("delete of individual versions not supported yet");
+    try {
+      // FIXME
+      if (version != -1)
+        throw new IllegalArgumentException("delete of individual versions not supported yet");
 
-    String[] objList = findAllObjects(doi);
-    for (int idx = 0; idx < objList.length; idx++) {
-      if (purge) {
-        apim.purgeObject(objList[idx], "Purged object", false);
-      } else {
-        apim.modifyObject(objList[idx], "D", null, "Deleted object");
+      String[] objList = findAllObjects(doi);
+      if (log.isDebugEnabled())
+        log.debug("deleting all objects for doi '" + doi + "'");
+
+      for (int idx = 0; idx < objList.length; idx++) {
+        if (log.isDebugEnabled())
+          log.debug("deleting pid '" + objList[idx] + "'");
+
+        if (purge) {
+          apim.purgeObject(objList[idx], "Purged object", false);
+        } else {
+          apim.modifyObject(objList[idx], "D", null, "Deleted object");
+        }
       }
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error querying RDF", ae);
     }
   }
 
@@ -117,9 +133,28 @@ public class ArticleImpl implements Article {
     }
   }
 
-  protected String[] findAllObjects(String doi) throws NoSuchIdException {
-    // XXX
-    return new String[] { doi };
+  protected String[] findAllObjects(String doi)
+      throws NoSuchIdException, RemoteException, AnswerException {
+    String subj = "<" + pid2URI(doi2PID(doi)) + ">";
+    Answer ans = itql.doQuery("select $doi from " + MODEL + " where " +
+                              // ensure it's an article
+                              subj + " <fedora:fedora-system:def/model#contentModel> 'PlosArticle' and (" +
+                              // find all related objects
+                              subj + " <topaz:hasMember> $doi or " +
+                              // find the article itself
+                              "$doi <tucana:is> " + subj + ");");
+
+    List dois = ((QueryAnswer) ans.getAnswers().get(0)).getRows();
+    if (dois.size() == 0)
+      throw new NoSuchIdException(doi);
+
+    String[] res = new String[dois.size()];
+    for (int idx = 0; idx < res.length; idx++) {
+      URIReference ref = (URIReference) ((Object[]) dois.get(idx))[0];
+      res[idx] = uri2PID(ref.getURI().toString());
+    }
+
+    return res;
   }
 
   protected String findDateForVersion(String doi, int version) throws NoSuchIdException {
@@ -129,9 +164,25 @@ public class ArticleImpl implements Article {
 
   protected String doi2PID(String doi) {
     try {
-      return URLEncoder.encode("doi:" + doi, "UTF-8");
+      return "doi:" + URLEncoder.encode(doi, "UTF-8");
     } catch (UnsupportedEncodingException uee) {
       throw new RuntimeException(uee);          // shouldn't happen
     }
+  }
+
+  protected String pid2DOI(String pid) {
+    try {
+      return URLDecoder.decode(pid.substring(4), "UTF-8");
+    } catch (UnsupportedEncodingException uee) {
+      throw new RuntimeException(uee);          // shouldn't happen
+    }
+  }
+
+  protected String pid2URI(String pid) {
+    return "info:fedora/" + pid;
+  }
+
+  protected String uri2PID(String uri) {
+    return uri.substring(12);
   }
 }
