@@ -11,6 +11,7 @@ import java.rmi.RemoteException;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.log4j.Logger;
+import org.topazproject.mulgara.itql.ItqlHelper;
 
 import fedora.client.APIMStubFactory;
 import fedora.client.Uploader;
@@ -28,6 +29,7 @@ public class ArticleImpl implements Article {
   private final FedoraAPIM apim;
   private final Uploader   uploader;
   private final Ingester   ingester;
+  private final ItqlHelper itql;
 
   /** 
    * Create a new manager instance. 
@@ -35,10 +37,11 @@ public class ArticleImpl implements Article {
    * @param fedora   the uri of the fedora server
    * @param username the username to talk to fedora
    * @param password the password to talk to fedora
+   * @param mulgara  the uri of the mulgara server
    * @param hostname the hostname under which this service is visible; this is used to generate the
    *                 proper URL for {@link #getObjectURL getObjectURL}.
    */
-  public ArticleImpl(URI fedora, String username, String password, String hostname)
+  public ArticleImpl(URI fedora, String username, String password, URI mulgara, String hostname)
       throws IOException, ServiceException {
     if (fedora.getHost().equals("localhost")) {
       try {
@@ -55,7 +58,9 @@ public class ArticleImpl implements Article {
                                    username, password);
     uploader = new Uploader(fedora.getScheme(), fedora.getHost(), fedora.getPort(),
                             username, password);
-    ingester = new Ingester(apim, uploader);
+    itql = new ItqlHelper(mulgara);
+
+    ingester = new Ingester(apim, uploader, itql);
   }
 
   public void ingestNew(byte[] zip) throws DuplicateIdException, IngestException {

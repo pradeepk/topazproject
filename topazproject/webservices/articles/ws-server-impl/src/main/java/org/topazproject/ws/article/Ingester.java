@@ -20,6 +20,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+import org.topazproject.mulgara.itql.ItqlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -41,16 +42,19 @@ public class Ingester {
   private final TransformerFactory tFactory;
   private final FedoraAPIM         apim;
   private final Uploader           uploader;
+  private final ItqlHelper         itql;
 
   /** 
    * Create a new ingester pointing to the given fedora server.
    * 
    * @param apim     the Fedora APIM client
    * @param uploader the Fedora uploader client
+   * @param itql     the mulgara iTQL client client
    */
-  public Ingester(FedoraAPIM apim, Uploader uploader) {
+  public Ingester(FedoraAPIM apim, Uploader uploader, ItqlHelper itql) {
     this.apim     = apim;
     this.uploader = uploader;
+    this.itql     = itql;
 
     tFactory = new TransformerFactoryImpl();
   }
