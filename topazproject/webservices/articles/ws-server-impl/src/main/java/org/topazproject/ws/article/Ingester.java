@@ -20,9 +20,9 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
-
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
+import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
 import fedora.client.Uploader;
@@ -67,12 +67,18 @@ public class Ingester {
     try {
       // get zip info
       String zipInfo = Zip2Xml.describeZip(zip);
+      if (log.isDebugEnabled())
+        log.debug("Extracted zip-description: " + zipInfo);
 
       // find ingest format handler
       String handler = findIngestHandler(zipInfo);
+      if (log.isDebugEnabled())
+        log.debug("Using ingest handler '" + handler + "'");
 
       // use handler to convert zip to fedora-object descriptions
       Document objInfo = zip2Obj(zip, zipInfo, handler);
+      if (log.isDebugEnabled())
+        log.debug("Got object-info '" + dom2String(objInfo) + "'");
 
       // ingest into fedora
       fedoraIngest(zip, objInfo);
@@ -242,6 +248,18 @@ public class Ingester {
                        logMsg);
   }
 
+  private String dom2String(Node dom) {
+    try {
+      StringWriter sw = new StringWriter(500);
+      Transformer t = tFactory.newTransformer();
+      t.transform(new DOMSource(dom), new StreamResult(sw));
+      return sw.toString();
+    } catch (TransformerException te) {
+      log.error("Error converting dom to string", te);
+      return "";
+    }
+  }
+
   /**
    * This allows the stylesheets to access XML docs (such as pmc.xml) in the zip archive.
    */
@@ -258,12 +276,19 @@ public class Ingester {
     }
 
     public Source resolve(String href, String base) throws TransformerException {
+      if (log.isDebugEnabled())
+        log.debug("resolving: base='" + base + "', href='" + href + "'");
+
       if (!base.startsWith("zip:"))
         return null;
 
       try {
         URI uri = URI.create(base).resolve(href);
         InputStream is = zip.getStream(uri.getPath());
+
+        if (log.isDebugEnabled())
+          log.debug("resolved: uri='" + uri + "', found=" + (is != null));
+
         return (is != null) ? new StreamSource(is, uri.toString()) : null;
       } catch (IOException ioe) {
         throw new TransformerException(ioe);
