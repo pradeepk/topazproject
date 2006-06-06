@@ -16,7 +16,7 @@
 
   <xsl:param name="is_update" select="false()"/>
 
-  <xsl:variable name="article"      select="document('pmc.xml')/article"/>
+  <xsl:variable name="article"      select="document('pmc.xml', .)/article"/>
   <xsl:variable name="meta"         select="$article/front/article-meta"/>
   <xsl:variable name="doi"          select="$meta/article-id[@pub-id-type = 'doi']"/>
   <xsl:variable name="file-entries" select="/ZipInfo/ZipEntry[not(@isDirectory)]"/>
