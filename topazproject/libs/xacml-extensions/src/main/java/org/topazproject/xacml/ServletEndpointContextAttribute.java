@@ -19,7 +19,7 @@ public class ServletEndpointContextAttribute extends AttributeValue {
   /**
    * The type (attribute-type) of this AttributeValue.
    */
-  public static final URI TYPE = Util.createUri(ServletEndpointContext.class.getName());
+  public static final URI TYPE = URI.create(ServletEndpointContext.class.getName());
 
   /**
    * A convenient id for use by attribute finder modules.

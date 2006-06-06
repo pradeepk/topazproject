@@ -36,21 +36,21 @@ import com.sun.xacml.finder.AttributeFinderModule;
  */
 public class ServletEndpointContextAttributeFinderModule extends AttributeFinderModule {
   // Set up URIs for the XACML Attribute Types that we need
-  public static final URI STRING_TYPE_URI = Util.createUri(StringAttribute.identifier);
+  public static final URI STRING_TYPE_URI = URI.create(StringAttribute.identifier);
 
   // Default Subject Category
   public static final URI SUBJECT_CATEGORY_DEFAULT_URI =
-    Util.createUri(AttributeDesignator.SUBJECT_CATEGORY_DEFAULT);
+    URI.create(AttributeDesignator.SUBJECT_CATEGORY_DEFAULT);
 
   // HttpSession Subject Category
   public static final URI SUBJECT_CATEGORY_HTTPSESSION_URI =
-    Util.createUri(HttpSession.class.getName());
+    URI.create(HttpSession.class.getName());
 
   // ServletContext Subject Category
   public static final URI  SUBJECT_CATEGORY_SERVLETCONTEXT_URI =
-    Util.createUri(ServletContext.class.getName());
+    URI.create(ServletContext.class.getName());
   public static final URI  SUBJECT_ID_URI =
-    Util.createUri("urn:oasis:names:tc:xacml:1.0:subject:subject-id");
+    URI.create("urn:oasis:names:tc:xacml:1.0:subject:subject-id");
   private static final Map resolvers                = new HashMap();
   private static final Set supportedDesignatorTypes =
     Collections.singleton(new Integer(AttributeDesignator.SUBJECT_TARGET));

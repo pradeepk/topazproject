@@ -7,8 +7,6 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
-import org.topazproject.xacml.Util;
-
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.attr.BagAttribute;
 import com.sun.xacml.attr.StringAttribute;
@@ -31,7 +29,7 @@ public abstract class DBQueryFunction implements Function {
   public static final String FUNCTION_BASE = "urn:topazproject:names:tc:xacml:1.0:function:query:";
 
   // URI version of StringAttribute's identifier
-  private static final URI STRING_TYPE = Util.createUri(StringAttribute.identifier);
+  private static final URI STRING_TYPE = URI.create(StringAttribute.identifier);
 
   // The identifier for this function.
   private URI identifier;
@@ -45,7 +43,7 @@ public abstract class DBQueryFunction implements Function {
    * @param functionName The function name as it appears in XACML policies
    */
   public DBQueryFunction(String functionName) {
-    identifier = Util.createUri(functionName);
+    identifier = URI.create(functionName);
   }
 
   /*

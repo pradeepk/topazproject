@@ -75,8 +75,8 @@ public class PEP extends DenyBiasedPEP {
    */
   public static final String LIST_ANNOTATIONS_QUERY_OBLIGATION =
     "urn:topazproject:names:tc:xacml:1.0:obligation:list-annotations-query";
-  private static final URI   ANNOTATION_ID_URI   = Util.createUri(ANNOTATION_ID);
-  private static final URI   ANNOTATION_ON_URI   = Util.createUri(ANNOTATION_ON);
+  private static final URI   ANNOTATION_ID_URI   = URI.create(ANNOTATION_ID);
+  private static final URI   ANNOTATION_ON_URI   = URI.create(ANNOTATION_ON);
   private static Set         envAttrs            = new HashSet();
   private static Map         actionAttrsMap      = new HashMap();
   private static Map         knownObligationsMap = new HashMap();
@@ -95,7 +95,7 @@ public class PEP extends DenyBiasedPEP {
     knownObligationsMap.put(SET_ANNOTATION_INFO, noKnownObligations);
 
     HashSet set = new HashSet();
-    set.add(Util.createUri(LIST_ANNOTATIONS_QUERY_OBLIGATION));
+    set.add(URI.create(LIST_ANNOTATIONS_QUERY_OBLIGATION));
     knownObligationsMap.put(LIST_ANNOTATIONS, set);
   }
 

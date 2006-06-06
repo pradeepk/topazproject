@@ -30,30 +30,13 @@ public class Util {
   /**
    * Resource URI that must be present in all xacml requests.
    */
-  public static final URI RESOURCE_ID = createUri(EvaluationCtx.RESOURCE_ID);
+  public static final URI RESOURCE_ID = URI.create(EvaluationCtx.RESOURCE_ID);
 
   /**
    * The Action URI that must be present in all xacml requests.
    */
-  public static final URI ACTION_ID = createUri("urn:oasis:names:tc:xacml:1.0:action:action-id");
+  public static final URI ACTION_ID = URI.create("urn:oasis:names:tc:xacml:1.0:action:action-id");
 
-  /**
-   * Creates a URI from its string representation. The URISyntaxException is caught and a
-   * RuntimeException is thrown so that we can use it in initialization lists etc.
-   *
-   * @param str the string to be parsed into a URI
-   *
-   * @return the newly created <code>URI</code>
-   *
-   * @throws RuntimeException on URISyntaxException
-   */
-  public static URI createUri(String str) {
-    try {
-      return new URI(str);
-    } catch (URISyntaxException e) {
-      throw new RuntimeException("bad uri", e);
-    }
-  }
 
   /**
    * Creates a set of action attributes for use in a XACML request.
