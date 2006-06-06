@@ -73,9 +73,10 @@
   </xsl:template>
 
   <xsl:template name="main-rdf">
-    <RDF xmlns:topaz="http://rdf.topazproject.org/RDF#">
+    <RDF xmlns:topaz="http://rdf.topazproject.org/RDF#"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
       <xsl:for-each select="distinct-values(my:get-doi($file-entries[my:is-secondary(@name)]/@name))">
-        <topaz:hasMember><xsl:value-of select="."/></topaz:hasMember>
+        <topaz:hasMember rdf:resource="{my:pid-to-uri(my:doi-to-pid(.))}"/>
       </xsl:for-each>
       <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
     </RDF>
@@ -117,8 +118,9 @@
   </xsl:template>
 
   <xsl:template name="sec-rdf">
-    <RDF xmlns:topaz="http://rdf.topazproject.org/RDF#">
-      <topaz:isMemberOf><xsl:value-of select="$doi"/></topaz:isMemberOf>
+    <RDF xmlns:topaz="http://rdf.topazproject.org/RDF#"
+         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <topaz:isMemberOf rdf:resource="{my:pid-to-uri(my:doi-to-pid($doi))}"/>
       <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
     </RDF>
   </xsl:template>
@@ -129,8 +131,10 @@
   </xsl:template>
 
   <!-- common templates for all datastream definitions -->
-  <xsl:template match="ZipEntry" mode="ds-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF#">
+  <xsl:template match="ZipEntry" mode="ds-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF#"
+      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <xsl:element name="topaz:{my:ext-to-ds-id(my:get-ext(@name))}-objectSize">
+      <xsl:attribute name="rdf:datatype">http://www.w3.org/2001/XMLSchema#int</xsl:attribute>
       <xsl:value-of select="@size"/>
     </xsl:element>
   </xsl:template>
@@ -171,6 +175,12 @@
   <xsl:function name="my:doi-to-pid" as="xs:string">
     <xsl:param name="doi" as="xs:string"/>
     <xsl:value-of select="concat('doi:', my:urlencode($doi))"/>
+  </xsl:function>
+
+  <!-- Fedora-PID to URI mapping -->
+  <xsl:function name="my:pid-to-uri" as="xs:string">
+    <xsl:param name="pid" as="xs:string"/>
+    <xsl:value-of select="concat('info:fedora/', $pid)"/>
   </xsl:function>
 
   <!-- determines if the filename is that of a secondary object or not -->
