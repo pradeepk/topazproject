@@ -20,5 +20,6 @@
     <module>tomcat-jaas-cas</module>
     <module>filter-resolver</module>
     <module>xacml-extensions</module>
+    <module>mulgara-client</module>
   </modules>
 </project>
