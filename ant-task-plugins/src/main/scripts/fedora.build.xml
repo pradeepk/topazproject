@@ -123,7 +123,7 @@
 
     <!-- configure fedora (overwrite with our local copy) -->
     <copy file="server/fedora.fcfg"
-      tofile="${FEDORA_HOME}/server/config/fedora.fcfg/"
+      tofile="${FEDORA_HOME}/server/config/fedora.fcfg"
       overwrite="true"/>
 
     <!-- unzip the diringest service -->
@@ -180,6 +180,22 @@
     </copy>
 
     <delete dir="${TOMCAT_HOME}/web-xml-temp"/>
+
+    <!-- enable SOAP access to Kowari/Mulgara -->
+    <xslt basedir="${TOMCAT_HOME}/webapps/fedora/WEB-INF" destdir="${TOMCAT_HOME}/mulgara-temp"
+      includes="web.xml" style="mulgara/web-xml-convert.xslt" extension=".xml"/>
+    <xslt basedir="${TOMCAT_HOME}/webapps/fedora/WEB-INF" destdir="${TOMCAT_HOME}/mulgara-temp"
+      includes="server-config.wsdd" style="mulgara/server-config-convert.xslt" extension=".wsdd"/>
+
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF" overwrite="yes">
+      <fileset dir="${TOMCAT_HOME}/mulgara-temp"/>
+    </copy>
+
+    <delete dir="${TOMCAT_HOME}/mulgara-temp"/>
+
+    <copy todir="${FEDORA_HOME}/server/fedora-internal-use/deploy" overwrite="true">
+      <fileset dir="server/deploy"/>
+    </copy>
 
     <!-- jar everything up and overwrite the package target created by maven -->
     <jar destfile="${DEST_DIR}.jar" basedir="${DEST_DIR}"/>
