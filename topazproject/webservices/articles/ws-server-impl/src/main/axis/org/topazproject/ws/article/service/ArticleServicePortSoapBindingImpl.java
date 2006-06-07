@@ -19,11 +19,11 @@ public class ArticleServicePortSoapBindingImpl implements Article {
    */
   public ArticleServicePortSoapBindingImpl() throws IOException, ServiceException {
     // FIXME: get from config
-    URI fedora = URI.create("http://localhost:8080/fedora/");
+    URI fedora = URI.create("http://localhost:9090/fedora/");
     String username = "fedoraAdmin";
     String password = "fedoraAdmin";
     String hostname = "localhost";
-    URI mulgara = URI.create("http://localhost:8080/fedora/services/ItqlBeanService");
+    URI mulgara = URI.create("http://localhost:9090/fedora/services/ItqlBeanService");
 
     impl = new ArticleImpl(fedora, username, password, mulgara, hostname);
   }
