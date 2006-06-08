@@ -28,6 +28,11 @@
       <artifactId>jrdf</artifactId>
       <version>0.3.4</version>
     </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>auth-helper</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
   <build>

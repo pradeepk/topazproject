@@ -6,6 +6,7 @@ import java.io.StringReader;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -16,13 +17,17 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.Stub;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.topazproject.authentication.ProtectedService;
 import org.topazproject.mulgara.itql.service.ItqlInterpreterBean;
 import org.topazproject.mulgara.itql.service.ItqlInterpreterBeanServiceLocator;
 import org.topazproject.mulgara.itql.service.ItqlInterpreterException;
 import org.topazproject.mulgara.itql.service.QueryException;
+
 import org.jrdf.graph.GraphElementFactory;
 import org.jrdf.graph.GraphElementFactoryException;
 import org.jrdf.graph.GraphException;
@@ -85,6 +90,35 @@ public class ItqlHelper {
     setAliases(defaultAliases);
   }
 
+
+  /** 
+   * Create a new instance pointed at the given service. The instance is initialized with the
+   * default set of aliases.
+   * 
+   * @param  service  the database web-service
+   * 
+   * @throws MalformedURLException if <var>database</var> is not a valid URL
+   * @throws ServiceException if an error occurred locating the web-service
+   * @throws RemoteException if an error occurred talking to the web-service
+   */
+  public ItqlHelper(ProtectedService service) 
+      throws MalformedURLException, ServiceException, RemoteException {
+    
+    ItqlInterpreterBeanServiceLocator locator = new ItqlInterpreterBeanServiceLocator();
+    locator.setMaintainSession(true);
+    
+    interpreter = locator.getItqlInterpreterBeanServicePort(new URL(service.getServiceUri()));
+    
+    if (service.requiresUserNamePassword()){
+      Stub stub = (Stub)interpreter;
+      stub._setProperty(Stub.USERNAME_PROPERTY, service.getUserName());
+      stub._setProperty(Stub.PASSWORD_PROPERTY, service.getPassword());
+    }
+    
+    interpreter.setServerURI("local:///");
+    setAliases(defaultAliases);
+  }
+  
   /** 
    * Set the current list of aliases.
    * 
