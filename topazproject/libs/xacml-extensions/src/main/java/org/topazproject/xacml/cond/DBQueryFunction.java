@@ -7,6 +7,9 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.attr.BagAttribute;
 import com.sun.xacml.attr.StringAttribute;
@@ -28,8 +31,12 @@ public abstract class DBQueryFunction implements Function {
    */
   public static final String FUNCTION_BASE = "urn:topazproject:names:tc:xacml:1.0:function:query:";
 
-  // URI version of StringAttribute's identifier
-  private static final URI STRING_TYPE = URI.create(StringAttribute.identifier);
+  /**
+   * URI version of StringAttribute's identifier
+   */
+  protected static final URI STRING_TYPE = URI.create(StringAttribute.identifier);
+  // shared logger
+  private static final Log   log = LogFactory.getLog(DBQueryFunction.class);
 
   // The identifier for this function.
   private URI identifier;
@@ -109,36 +116,33 @@ public abstract class DBQueryFunction implements Function {
       bindings[i] = result.getAttributeValue().encode();
     }
 
+    // Execute the query
     try {
-      // Execute the query
-      String[] results = executeQuery(conf, query, bindings);
+      return executeQuery(context, conf, query, bindings);
+    } catch (QueryException e) {
+      log.warn(e.getMessage(), e);
 
-      // Convert that to a result
-      result = makeResult(results);
-    } catch (Exception e) {
-      // Create a processing error with the exception message
-      result = makeProcessingError(e.getMessage());
-
-      // xxx: log may be?
+      return makeProcessingError(e.getMessage());
     }
-
-    return result;
   }
 
   /**
    * Executes a database specific query. The query currently is supposed to return only a single
    * column of results.
    *
+   * @param context The xacml evaluation context
    * @param conf A database specific configuration identifier; eg. a connect String
    * @param query A database specific query
    * @param bindings An array of values that may be bound to the query before executing it.
    *
-   * @return an array of query results. (single column for now)
+   * @return Returns an <code>EvaluationResult</code> with a bag of values or a processing error
+   *         status
    *
-   * @throws Exception when there is a failure in executing the query
+   * @throws QueryException to indicate a failure in query execution
    */
-  public abstract String[] executeQuery(String conf, String query, String[] bindings)
-                                 throws Exception;
+  public abstract EvaluationResult executeQuery(EvaluationCtx context, String conf, String query,
+                                                String[] bindings)
+                                         throws QueryException;
 
   /*
    * @see com.sun.xacml.cond.Function#getIdentifier
@@ -179,7 +183,7 @@ public abstract class DBQueryFunction implements Function {
    *
    * @return the desired <code>EvaluationResult</code>
    */
-  private EvaluationResult makeProcessingError(String message) {
+  protected EvaluationResult makeProcessingError(String message) {
     // Build up the processing error Status.
     if (processingErrList == null) {
       String[] errStrings = { Status.STATUS_PROCESSING_ERROR };
@@ -199,7 +203,7 @@ public abstract class DBQueryFunction implements Function {
    *
    * @return the desired <code>EvaluationResult</code>
    */
-  private EvaluationResult makeResult(String[] results) {
+  protected EvaluationResult makeResult(String[] results) {
     // Create a bag with the results
     ArrayList bag = new ArrayList(results.length);
 
@@ -209,5 +213,29 @@ public abstract class DBQueryFunction implements Function {
     BagAttribute attr = new BagAttribute(STRING_TYPE, bag);
 
     return new EvaluationResult(attr);
+  }
+
+  /**
+   * Indicates an error in parsing and executing a query.
+   */
+  public static class QueryException extends Exception {
+    /**
+     * Creates a new instance with the given message.
+     *
+     * @param msg the error message
+     */
+    public QueryException(String msg) {
+      super(msg);
+    }
+
+    /**
+     * Creates a new instance with the given message and a cause.
+     *
+     * @param msg the error message
+     * @param cause the cause of this exception
+     */
+    public QueryException(String msg, Throwable cause) {
+      super(msg, cause);
+    }
   }
 }
