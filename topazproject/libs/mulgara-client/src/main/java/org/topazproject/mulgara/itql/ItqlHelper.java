@@ -101,34 +101,40 @@ public class ItqlHelper {
    * @throws ServiceException if an error occurred locating the web-service
    * @throws RemoteException if an error occurred talking to the web-service
    */
-  public ItqlHelper(ProtectedService service) 
+  public ItqlHelper(ProtectedService service)
       throws MalformedURLException, ServiceException, RemoteException {
-    
+
     ItqlInterpreterBeanServiceLocator locator = new ItqlInterpreterBeanServiceLocator();
     locator.setMaintainSession(true);
-    
+
     interpreter = locator.getItqlInterpreterBeanServicePort(new URL(service.getServiceUri()));
-    
-    if (service.requiresUserNamePassword()){
+
+    if (service.requiresUserNamePassword()) {
       Stub stub = (Stub)interpreter;
       stub._setProperty(Stub.USERNAME_PROPERTY, service.getUserName());
       stub._setProperty(Stub.PASSWORD_PROPERTY, service.getPassword());
     }
-    
+
     interpreter.setServerURI("local:///");
     setAliases(defaultAliases);
   }
-  
+
   /** 
    * Set the current list of aliases.
    * 
    * @param aliases the aliases to use; keys and values must be {@link java.lang.String String}'s
    */
   public void setAliases(Map aliases) {
-    /* This doesn't work because the values in the map should be URI's. So instead we handle
-     * the aliases locally.
-    interpreter.setAliasMap(defaultAliases);
-    */
+    /* Ideally we would send a bunch of iTQL alias commands. However, those are local to an
+     * ItqlInterpreter instance, which in turn is bound to a (http) session. The problem is
+     * that if there is a long period of inactivity that causes the server to time-out the
+     * session, then the ItqlInterpreter instance goes away and a new is created, meaning we
+     * loose the aliases. If we could easily detect this case then that wouldn't be a problem,
+     * but I know of no way to do so.
+     *
+     * Hence we do the aliases locally. It's a bit of a hack, since we don't truly parse the
+     * iTQL, but it seems to work for most cases.
+     */
     this.aliases = aliases;
   }
 
@@ -411,9 +417,9 @@ public class ItqlHelper {
   }
 
   /**
-   * This represents a list of answers to a list of queries. Each answer in the list is either a
-   * {@link QueryAnswer QueryAnswer} or a {@link java.lang.String String}; the latter indicates
-   * some warning message.
+   * This represents a list of answers to a list of commands. The number of answers equals the
+   * number of commands sent. Each answer in the list is either a {@link QueryAnswer QueryAnswer}
+   * or a {@link java.lang.String String}, depending on whether the command was a query or not.
    */
   public static class Answer {
     private final List answers;
