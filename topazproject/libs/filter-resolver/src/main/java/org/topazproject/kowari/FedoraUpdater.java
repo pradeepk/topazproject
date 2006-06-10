@@ -164,20 +164,20 @@ class FedoraUpdater {
     // update dublin-core
     try {
       apim.modifyDatastreamByValue(objId, "DC", null, null, true, null, null,
-                                   dcCont, null, null, false);
+                                   dcCont, null, "Modifed by FedoraUpdater", false);
     } catch (Exception e) {
       logger.debug("Object '" + objId + "' doesn't seem to exist - creating it", e);
 
       // Hmm, object doesn't exist, so create and try again
       createObject(objId, "RDF subject node", "RDF");
       apim.modifyDatastreamByValue(objId, "DC", null, null, true, null, null,
-                                   dcCont, null, null, false);
+                                   dcCont, null, "Modifed by FedoraUpdater", false);
     }
 
     // update rels-ext
     try {
       apim.modifyDatastreamByValue(objId, "RELS-EXT", null, null, true, null, null,
-                                   reCont, null, null, false);
+                                   reCont, null, "Modifed by FedoraUpdater", false);
     } catch (RemoteException re) {
       // Ugh! What a hack...
       if (re.getMessage() == null || !re.getMessage().startsWith("java.lang.NullPointerException:"))
@@ -188,7 +188,7 @@ class FedoraUpdater {
       // Hmm, rels-ext doesn't exist, so create instead
       String reLoc = uploader.upload(new ByteArrayInputStream(reCont));
       apim.addDatastream(objId, "RELS-EXT", new String[0], "RDF statements", true, "text/xml",
-                         null, reLoc, "X", "A", "Created by FedoraUpater");
+                         null, reLoc, "X", "A", "Created by FedoraUpdater");
     }
 
     if (logger.isDebugEnabled())
@@ -200,8 +200,8 @@ class FedoraUpdater {
     xml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     xml.append("<foxml:digitalObject xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\"\n");
     xml.append("           xmlns:foxml=\"info:fedora/fedora-system:def/foxml#\"\n");
-    xml.append("           xsi:schemaLocation=\"info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-0.xsd\"");
-    xml.append("\n           PID=\"" + xmlEscape(objId) + "\">\n");
+    xml.append("           xsi:schemaLocation=\"info:fedora/fedora-system:def/foxml# http://www.fedora.info/definitions/1/0/foxml1-0.xsd\"\n");
+    xml.append("           PID=\"" + xmlEscape(objId) + "\">\n");
     xml.append("  <foxml:objectProperties>\n");
     xml.append("    <foxml:property NAME=\"http://www.w3.org/1999/02/22-rdf-syntax-ns#type\" VALUE=\"FedoraObject\"/>\n");
     xml.append("    <foxml:property NAME=\"info:fedora/fedora-system:def/model#label\" VALUE=\"" + xmlEscape(label) + "\"/>\n");
@@ -210,7 +210,7 @@ class FedoraUpdater {
     xml.append("</foxml:digitalObject>");
     String objXML = xml.toString();
 
-    apim.ingest(objXML.getBytes("UTF-8"), "foxml1.0", "Created by FedoraUpater");
+    apim.ingest(objXML.getBytes("UTF-8"), "foxml1.0", "Created by FedoraUpdater");
   }
 
   private static final String xmlEscape(String in) {
