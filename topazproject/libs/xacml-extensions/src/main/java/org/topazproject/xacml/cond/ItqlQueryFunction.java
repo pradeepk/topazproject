@@ -13,6 +13,7 @@ import javax.xml.rpc.server.ServletEndpointContext;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 
+import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.topazproject.xacml.ServletEndpointContextAttribute;
@@ -116,16 +117,16 @@ public class ItqlQueryFunction extends DBQueryFunction {
     // Create the query
     query = bindStatic(query, bindings);
 
-    ItqlHelper.Answer answer;
+    Answer answer;
 
     // Execute the query
     try {
-      answer = itql.doQuery(query);
+      answer = new Answer(itql.doQuery(query));
     } catch (org.topazproject.mulgara.itql.service.ItqlInterpreterException e) {
       throw new QueryException("query '" + query + "' execution failed.", e);
     } catch (java.rmi.RemoteException e) {
       throw new QueryException("query '" + query + "' execution failed.", e);
-    } catch (org.topazproject.mulgara.itql.ItqlHelper.AnswerException e) {
+    } catch (org.topazproject.mulgara.itql.AnswerException e) {
       throw new QueryException("query '" + query + "' execution failed.", e);
     }
 
@@ -137,12 +138,12 @@ public class ItqlQueryFunction extends DBQueryFunction {
     for (int i = 0; it.hasNext(); i++) {
       Object o = it.next();
 
-      if (!(o instanceof ItqlHelper.QueryAnswer))
+      if (!(o instanceof Answer.QueryAnswer))
         throw new QueryException("query '" + query + "' execution returned a message: " + o);
 
-      ItqlHelper.QueryAnswer result  = (ItqlHelper.QueryAnswer) o;
-      List                   rows    = result.getRows();
-      String[]               columns = result.getVariables();
+      Answer.QueryAnswer result  = (Answer.QueryAnswer) o;
+      List               rows    = result.getRows();
+      String[]           columns = result.getVariables();
 
       if (columns.length != 1)
         throw new QueryException("query '" + query + "' execution returned " + columns.length
