@@ -23,7 +23,8 @@
 
   <!-- top-level template - generates the ObjectList -->
   <xsl:template match="/ZipInfo">
-    <ObjectList logMessage="Ingest of article '{$meta/title-group/article-title}'">
+    <ObjectList logMessage="Ingest of article '{$meta/title-group/article-title}'"
+                articleId="{$doi}">
       <xsl:call-template name="main-entry"/>
       <xsl:for-each-group select="$file-entries[my:is-secondary(@name)]"
                           group-by="my:get-doi(@name)">

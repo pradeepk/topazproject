@@ -63,11 +63,12 @@ public class Ingester {
    * Ingest a new article. 
    * 
    * @param zip  the zip archive containing the article and it's related objects
+   * @return the DOI of the new article
    * @throws DuplicateIdException if an article or other object already exists with any of the
    *                              DOI's specified in the zip
    * @throws IngestException if there's any other problem ingesting the article
    */
-  public void ingest(Zip zip) throws DuplicateIdException, IngestException {
+  public String ingest(Zip zip) throws DuplicateIdException, IngestException {
     try {
       // get zip info
       String zipInfo = Zip2Xml.describeZip(zip);
@@ -86,6 +87,10 @@ public class Ingester {
 
       // ingest into fedora
       fedoraIngest(zip, objInfo);
+
+      // return the article id
+      Element objList = objInfo.getDocumentElement();
+      return objList.getAttribute("articleId");
     } catch (RemoteException re) {
       throw new IngestException("Error ingesting into fedora", re);
     } catch (IOException ioe) {

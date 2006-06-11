@@ -68,8 +68,8 @@ public class ArticleImpl implements Article {
     ingester = new Ingester(apim, uploader, itql);
   }
 
-  public void ingest(byte[] zip) throws DuplicateIdException, IngestException {
-    ingester.ingest(new Zip.MemoryZip(zip));
+  public String ingest(byte[] zip) throws DuplicateIdException, IngestException {
+    return ingester.ingest(new Zip.MemoryZip(zip));
   }
 
   public void markSuperseded(String oldDoi, String newDoi)

@@ -8,6 +8,7 @@
 
 <!ELEMENT ObjectList (Object*) >
 <!ATTLIST ObjectList
+    articleId   CDATA  #REQUIRED
     logMessage  CDATA  #IMPLIED >
 
 <!ELEMENT Object (DC?, RDF?, Datastream*) >

@@ -18,11 +18,12 @@ public interface Article {
    * Add a new article.
    * 
    * @param zip    a zip archive containing the pmc.xml and associated objects
+   * @return the DOI of the new article
    * @throws DuplicateIdException if the article already exists (as determined by its DOI)
    * @throws IngestException if there's a problem ingesting the archive
    * @throws RemoteException if some other error occured
    */
-  public void ingest(byte[] zip) throws DuplicateIdException, IngestException, RemoteException;
+  public String ingest(byte[] zip) throws DuplicateIdException, IngestException, RemoteException;
 
   /** 
    * Marks an article as superseded by another article.

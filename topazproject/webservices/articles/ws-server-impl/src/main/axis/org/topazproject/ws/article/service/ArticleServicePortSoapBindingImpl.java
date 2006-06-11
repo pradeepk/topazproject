@@ -29,11 +29,11 @@ public class ArticleServicePortSoapBindingImpl implements Article {
   }
 
   /**
-   * @see org.topazproject.ws.article.Article#ingestNew
+   * @see org.topazproject.ws.article.Article#ingest
    */
-  public void ingest(byte[] zip) throws RemoteException, DuplicateIdException, IngestException {
+  public String ingest(byte[] zip) throws RemoteException, DuplicateIdException, IngestException {
     try {
-      impl.ingest(zip);
+      return impl.ingest(zip);
     } catch (org.topazproject.ws.article.DuplicateIdException die) {
       log.info(die);
       throw new DuplicateIdException(die.getId());
