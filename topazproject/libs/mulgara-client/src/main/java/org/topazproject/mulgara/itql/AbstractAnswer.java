@@ -20,6 +20,14 @@ public abstract class AbstractAnswer {
   protected static final String QUERY      = "query";
   protected static final String MESSAGE    = "message";
 
+  /** 
+   * Parse the given answer. This just invokes {@link #parseAnswer parseAnswer} with a new
+   * GraphElementFactory.
+   * 
+   * @param root the answer element to parse
+   * @param xml  the whole answer as an xml string; used for error messages only
+   * @throws AnswerException 
+   */
   protected void parse(Element root, String xml) throws AnswerException {
     try {
       parseAnswer(root, new GraphImpl().getElementFactory());
