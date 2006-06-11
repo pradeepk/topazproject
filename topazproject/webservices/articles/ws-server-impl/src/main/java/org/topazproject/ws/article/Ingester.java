@@ -20,6 +20,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.log4j.Logger;
+import org.apache.commons.lang.StringUtils;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,6 +39,20 @@ import net.sf.saxon.TransformerFactoryImpl;
  */
 public class Ingester {
   private static final Logger log = Logger.getLogger(Ingester.class);
+
+  private static final String OL_LOG_A     = "logMessage";
+  private static final String OL_AID_A     = "articleId";
+  private static final String OBJECT       = "Object";
+  private static final String O_PID_A      = "pid";
+  private static final String DATASTREAM   = "Datastream";
+  private static final String DS_FIL_A     = "filename";
+  private static final String DS_ID_A      = "id";
+  private static final String DS_ST_A      = "state";
+  private static final String DS_CGRP_A    = "controlGroup";
+  private static final String DS_MIME_A    = "mimeType";
+  private static final String DS_LBL_A     = "label";
+  private static final String DS_ALTID_A   = "altIds";
+  private static final String DS_FMT_A     = "formatUri";
 
   private final TransformerFactory tFactory;
   private final FedoraAPIM         apim;
@@ -90,7 +105,7 @@ public class Ingester {
 
       // return the article id
       Element objList = objInfo.getDocumentElement();
-      return objList.getAttribute("articleId");
+      return objList.getAttribute(OL_AID_A);
     } catch (RemoteException re) {
       throw new IngestException("Error ingesting into fedora", re);
     } catch (IOException ioe) {
@@ -157,12 +172,12 @@ public class Ingester {
 
     // get the log message to use
     Element objList = objInfo.getDocumentElement();
-    String logMsg = objList.getAttribute("logMessage");
+    String logMsg = objList.getAttribute(OL_LOG_A);
     if (logMsg == null)
       logMsg = "Ingest";
 
     // create the fedora objects
-    NodeList objs = objList.getElementsByTagName("Object");
+    NodeList objs = objList.getElementsByTagName(OBJECT);
     int idx = 0;
     try {
       for (idx = 0; idx < objs.getLength(); idx++) {
@@ -174,7 +189,7 @@ public class Ingester {
       while (idx >= 0) {
         try {
           Element obj = (Element) objs.item(idx--);
-          String pid = obj.getAttribute("pid");
+          String pid = obj.getAttribute(O_PID_A);
           apim.purgeObject(pid, "Rolling back failed ingest", false);
         } catch (Exception ee) {
           log.error("Error while rolling back failed ingest; ingest-exception was '" + e + "'", ee);
@@ -201,11 +216,11 @@ public class Ingester {
     t.transform(new DOMSource(obj), new StreamResult(sw));
 
     // create the fedora object
-    String pid = obj.getAttribute("pid");
+    String pid = obj.getAttribute(O_PID_A);
     fedoraCreateObject(pid, sw.toString(), logMsg);
 
     // add all (non-DC/non-RDF) datastreams
-    NodeList dss = obj.getElementsByTagName("Datastream");
+    NodeList dss = obj.getElementsByTagName(DATASTREAM);
     for (int idx = 0; idx < dss.getLength(); idx++) {
       Element ds = (Element) dss.item(idx);
       fedoraAddDatastream(pid, ds, zip, logMsg);
@@ -223,12 +238,13 @@ public class Ingester {
 
   private void fedoraAddDatastream(String pid, Element ds, Zip zip, String logMsg)
       throws IOException, RemoteException {
-    String reLoc = uploader.upload(zip.getStream(ds.getAttribute("filename")));
-    apim.addDatastream(pid, ds.getAttribute("id"), new String[0], ds.getAttribute("label"), true,
-                       ds.getAttribute("mimeType"), ds.getAttribute("formatUri"), reLoc,
-                       ds.getAttribute("controlGroup").substring(0, 1),
-                       ds.getAttribute("state").length() > 0 ?
-                          ds.getAttribute("state").substring(0, 1) : "A",
+    String reLoc = uploader.upload(zip.getStream(ds.getAttribute(DS_FIL_A)));
+    apim.addDatastream(pid, ds.getAttribute(DS_ID_A),
+                       StringUtils.split(ds.getAttribute(DS_ALTID_A)),
+                       ds.getAttribute(DS_LBL_A), true, ds.getAttribute(DS_MIME_A),
+                       ds.getAttribute(DS_FMT_A), reLoc, ds.getAttribute(DS_CGRP_A).substring(0, 1),
+                       ds.getAttribute(DS_ST_A).length() > 0 ?
+                          ds.getAttribute(DS_ST_A).substring(0, 1) : "A",
                        logMsg);
   }
 
