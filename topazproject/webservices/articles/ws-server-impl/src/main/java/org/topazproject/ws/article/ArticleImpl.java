@@ -68,16 +68,21 @@ public class ArticleImpl implements Article {
     ingester = new Ingester(apim, uploader, itql);
   }
 
-  public void ingestNew(byte[] zip) throws DuplicateIdException, IngestException {
-    ingester.ingestNew(new Zip.MemoryZip(zip));
+  public void ingest(byte[] zip) throws DuplicateIdException, IngestException {
+    ingester.ingest(new Zip.MemoryZip(zip));
   }
 
-  public int ingestUpdate(byte[] zip) throws NoSuchIdException, IngestException {
-    return ingester.ingestUpdate(new Zip.MemoryZip(zip));
-  }
-
-  public void setState(String doi, int version, int state)
+  public void markSuperseded(String oldDoi, String newDoi)
       throws NoSuchIdException, RemoteException {
+    String old_subj = "<" + pid2URI(doi2PID(oldDoi)) + ">";
+    String new_subj = "<" + pid2URI(doi2PID(newDoi)) + ">";
+
+    itql.doUpdate("insert " + old_subj + " <topaz:supersededBy> " + new_subj +
+                            new_subj + " <topaz:supersedes> " + old_subj +
+                            " into " + MODEL + ";");
+  }
+
+  public void setState(String doi, int state) throws NoSuchIdException, RemoteException {
     try {
       apim.modifyObject(doi2PID(doi), state2Str(state), null, "Changed state");
     } catch (RemoteException re) {
@@ -85,13 +90,8 @@ public class ArticleImpl implements Article {
     }
   }
 
-  public void delete(String doi, int version, boolean purge)
-      throws NoSuchIdException, RemoteException {
+  public void delete(String doi, boolean purge) throws NoSuchIdException, RemoteException {
     try {
-      // FIXME
-      if (version != -1)
-        throw new IllegalArgumentException("delete of individual versions not supported yet");
-
       String[] objList = findAllObjects(doi);
       if (log.isDebugEnabled())
         log.debug("deleting all objects for doi '" + doi + "'");
@@ -111,13 +111,8 @@ public class ArticleImpl implements Article {
     }
   }
 
-  public String getObjectURL(String doi, int version, String rep)
-      throws NoSuchIdException, RemoteException {
-    String date = findDateForVersion(doi, version);
+  public String getObjectURL(String doi, String rep) throws NoSuchIdException, RemoteException {
     String path = "/fedora/get/" + doi2PID(doi) + "/" + rep;
-    if (date != null)
-      path += "/" + date;
-
     return fedoraServer.resolve(path).toString();
   }
 
@@ -154,11 +149,6 @@ public class ArticleImpl implements Article {
     }
 
     return res;
-  }
-
-  protected String findDateForVersion(String doi, int version) throws NoSuchIdException {
-    // XXX  format: YYYY-MM-DDTHH:MM:SS.SSSZ
-    return null;
   }
 
   protected String doi2PID(String doi) {

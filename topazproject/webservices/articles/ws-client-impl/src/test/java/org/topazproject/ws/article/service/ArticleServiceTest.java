@@ -34,8 +34,8 @@ public class ArticleServiceTest extends TestCase {
 
   private void basicArticleTest() throws RemoteException, IOException {
     byte[] zip = loadURL(getClass().getResource("/test_article.zip"));
-    service.ingestNew(zip);
-    service.delete("10.1371/journal.pbio.0020294", -1, true);
+    service.ingest(zip);
+    service.delete("10.1371/journal.pbio.0020294", true);
   }
 
   private static byte[] loadURL(URL url) throws IOException {

@@ -67,7 +67,7 @@ public class Ingester {
    *                              DOI's specified in the zip
    * @throws IngestException if there's any other problem ingesting the article
    */
-  public void ingestNew(Zip zip) throws DuplicateIdException, IngestException {
+  public void ingest(Zip zip) throws DuplicateIdException, IngestException {
     try {
       // get zip info
       String zipInfo = Zip2Xml.describeZip(zip);
@@ -92,31 +92,6 @@ public class Ingester {
       throw new IngestException("Error talking to fedora", ioe);
     } catch (TransformerException te) {
       throw new IngestException("Zip format error", te);
-    }
-  }
-
-  /** 
-   * Ingest an update of an existing article. 
-   * 
-   * @param zip  the zip archive containing the article and it's related objects
-   * @return the version number assigned to this version
-   * @throws NoSuchIdException if not article exists with the DOI specified in the zip
-   * @throws IngestException if there's any other problem ingesting the article
-   */
-  public int ingestUpdate(Zip zip) throws NoSuchIdException, IngestException {
-    try {
-      // get zip info
-      String zipInfo = Zip2Xml.describeZip(zip);
-
-      // find ingest format handler
-      String handler = findIngestHandler(zipInfo);
-
-      // XXX
-      return -1;
-    } catch (RemoteException re) {
-      throw new IngestException("Error ingesting into fedora", re);
-    } catch (IOException ioe) {
-      throw new IngestException("Error talking to fedora", ioe);
     }
   }
 

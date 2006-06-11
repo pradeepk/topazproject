@@ -22,54 +22,48 @@ public interface Article {
    * @throws IngestException if there's a problem ingesting the archive
    * @throws RemoteException if some other error occured
    */
-  public void ingestNew(byte[] zip) throws DuplicateIdException, IngestException, RemoteException;
+  public void ingest(byte[] zip) throws DuplicateIdException, IngestException, RemoteException;
 
   /** 
-   * Update an article.
+   * Marks an article as superseded by another article.
    * 
-   * @param zip    a zip archive containing the pmc.xml and associated objects
-   * @return the current (latest) version number of the article after the update
-   * @throws NoSuchIdException if the article doesn't exist (as determined by its DOI)
-   * @throws IngestException if there's a problem ingesting the archive
+   * @param oldDoi the doi of the article that has been superseded by <var>newDoi</var>
+   * @param newDoi the doi of the article that supersedes <var>oldDoi</var>
+   * @throws NoSuchIdException if the article does not exist
    * @throws RemoteException if some other error occured
    */
-  public int ingestUpdate(byte[] zip) throws NoSuchIdException, IngestException, RemoteException;
+  public void markSuperseded(String oldDoi, String newDoi)
+      throws NoSuchIdException, RemoteException;
 
   /** 
    * Change an articles state.
    * 
    * @param doi     the DOI of the article (e.g. "10.1371/journal.pbio.003811")
-   * @param version the version of the article for which to change the state.
    * @param state   the new state
    * @throws NoSuchIdException if the article does not exist
    * @throws RemoteException if some other error occured
    */
-  public void setState(String doi, int version, int state)
-      throws NoSuchIdException, RemoteException;
+  public void setState(String doi, int state) throws NoSuchIdException, RemoteException;
 
   /** 
    * Delete an article.
    * 
    * @param doi     the DOI of the article (e.g. "10.1371/journal.pbio.003811")
-   * @param version the version of the article to delete; or -1 for all versions
    * @param purge   if true, erase all traces; otherwise only the contents are deleted, leaving a
    *                "tombstone"
    * @throws NoSuchIdException if the article or version does not exist
    * @throws RemoteException if some other error occured
    */
-  public void delete(String doi, int version, boolean purge)
-      throws NoSuchIdException, RemoteException;
+  public void delete(String doi, boolean purge) throws NoSuchIdException, RemoteException;
 
   /** 
    * Get the URL from which the objects contents can retrieved via GET.
    * 
    * @param doi     the DOI of the article (e.g. "10.1371/journal.pbio.003811")
-   * @param version the version of the article to retrieve; or -1 for the latest version
    * @param rep     the desired representation of the article
    * @return the URL, or null if this object doesn't exist in the desired version
    * @throws NoSuchIdException if the article or version does not exist
    * @throws RemoteException if some other error occured
    */
-  public String getObjectURL(String doi, int version, String rep)
-      throws NoSuchIdException, RemoteException;
+  public String getObjectURL(String doi, String rep) throws NoSuchIdException, RemoteException;
 }

@@ -31,9 +31,9 @@ public class ArticleServicePortSoapBindingImpl implements Article {
   /**
    * @see org.topazproject.ws.article.Article#ingestNew
    */
-  public void ingestNew(byte[] zip) throws RemoteException, DuplicateIdException, IngestException {
+  public void ingest(byte[] zip) throws RemoteException, DuplicateIdException, IngestException {
     try {
-      impl.ingestNew(zip);
+      impl.ingest(zip);
     } catch (org.topazproject.ws.article.DuplicateIdException die) {
       log.info(die);
       throw new DuplicateIdException(die.getId());
@@ -44,27 +44,24 @@ public class ArticleServicePortSoapBindingImpl implements Article {
   }
 
   /**
-   * @see org.topazproject.ws.article.Article#ingestUpdate
+   * @see org.topazproject.ws.article.Article#markSuperseded
    */
-  public int ingestUpdate(byte[] zip) throws RemoteException, IngestException, NoSuchIdException {
+  public void markSuperseded(String oldDoi, String newDoi)
+      throws RemoteException, NoSuchIdException {
     try {
-      return impl.ingestUpdate(zip);
+      impl.markSuperseded(oldDoi, newDoi);
     } catch (org.topazproject.ws.article.NoSuchIdException nsie) {
       log.info(nsie);
       throw new NoSuchIdException(nsie.getId());
-    } catch (org.topazproject.ws.article.IngestException ie) {
-      log.info(ie);
-      throw new IngestException(ie.getMessage());
     }
   }
 
   /**
    * @see org.topazproject.ws.article.Article#delete
    */
-  public void delete(String doi, int version, boolean purge)
-      throws RemoteException, NoSuchIdException {
+  public void delete(String doi, boolean purge) throws RemoteException, NoSuchIdException {
     try {
-      impl.delete(doi, version, purge);
+      impl.delete(doi, purge);
     } catch (org.topazproject.ws.article.NoSuchIdException nsie) {
       log.info(nsie);
       throw new NoSuchIdException(nsie.getId());
@@ -74,10 +71,9 @@ public class ArticleServicePortSoapBindingImpl implements Article {
   /**
    * @see org.topazproject.ws.article.Article#setState
    */
-  public void setState(String doi, int version, int state)
-      throws RemoteException, NoSuchIdException {
+  public void setState(String doi, int state) throws RemoteException, NoSuchIdException {
     try {
-      impl.setState(doi, version, state);
+      impl.setState(doi, state);
     } catch (org.topazproject.ws.article.NoSuchIdException nsie) {
       log.info(nsie);
       throw new NoSuchIdException(nsie.getId());
@@ -87,10 +83,9 @@ public class ArticleServicePortSoapBindingImpl implements Article {
   /**
    * @see org.topazproject.ws.article.Article#getObjectURL
    */
-  public String getObjectURL(String doi, int version, String rep)
-      throws RemoteException, NoSuchIdException {
+  public String getObjectURL(String doi, String rep) throws RemoteException, NoSuchIdException {
     try {
-      return impl.getObjectURL(doi, version, rep);
+      return impl.getObjectURL(doi, rep);
     } catch (org.topazproject.ws.article.NoSuchIdException nsie) {
       log.info(nsie);
       throw new NoSuchIdException(nsie.getId());
