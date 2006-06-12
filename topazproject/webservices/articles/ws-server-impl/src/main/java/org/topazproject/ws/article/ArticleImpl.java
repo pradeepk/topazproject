@@ -13,6 +13,7 @@ import javax.xml.rpc.ServiceException;
 
 import org.apache.log4j.Logger;
 import org.jrdf.graph.URIReference;
+import org.topazproject.authentication.ProtectedService;
 import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
@@ -37,36 +38,77 @@ public class ArticleImpl implements Article {
   private final ItqlHelper itql;
 
   /** 
-   * Create a new manager instance. 
+   * Create a new article manager instance. 
    *
-   * @param fedora   the uri of the fedora server
-   * @param username the username to talk to fedora
-   * @param password the password to talk to fedora
-   * @param mulgara  the uri of the mulgara server
-   * @param hostname the hostname under which this service is visible; this is used to generate the
-   *                 proper URL for {@link #getObjectURL getObjectURL}.
+   * @param fedoraUri   the uri of the fedora server
+   * @param username    the username to talk to fedora
+   * @param password    the password to talk to fedora
+   * @param mulgaraUri  the uri of the mulgara server
+   * @param hostname    the hostname under which this service is visible; this is used to generate
+   *                    the proper URL for {@link #getObjectURL getObjectURL}.
    */
-  public ArticleImpl(URI fedora, String username, String password, URI mulgara, String hostname)
+  public ArticleImpl(URI fedoraUri, String username, String password, URI mulgaraUri, String hostname)
       throws IOException, ServiceException {
-    if (fedora.getHost().equals("localhost")) {
-      try {
-        this.fedoraServer = new URI(fedora.getScheme(), null, hostname, fedora.getPort(),
-                                    fedora.getPath(), null, null);
-      } catch (URISyntaxException use) {
-        throw new Error(use);   // Can't happen
-      }
-    } else {
-      this.fedoraServer = fedora;
-    }
+    fedoraServer = getRemoteFedoraURI(fedoraUri, hostname);
 
-    apim = APIMStubFactory.getStub(fedora.getScheme(), fedora.getHost(), fedora.getPort(),
-                                   username, password);
-    uploader = new Uploader(fedora.getScheme(), fedora.getHost(), fedora.getPort(),
+    apim     = APIMStubFactory.getStub(fedoraUri.getScheme(), fedoraUri.getHost(),
+                                       fedoraUri.getPort(), username, password);
+    uploader = new Uploader(fedoraUri.getScheme(), fedoraUri.getHost(), fedoraUri.getPort(),
                             username, password);
-    itql = new ItqlHelper(mulgara);
-
+    itql     = new ItqlHelper(mulgaraUri);
     ingester = new Ingester(apim, uploader, itql);
   }
+
+  /** 
+   * Create a new article manager instance. 
+   *
+   * @param fedorSvc  the fedora management web-service
+   * @param mulgarSvc the mulgara web-service
+   * @param hostname  the hostname under which this service is visible; this is used to generate
+   *                  the proper URL for {@link #getObjectURL getObjectURL}.
+   */
+  public ArticleImpl(ProtectedService fedoraSvc, ProtectedService mulgaraSvc, String hostname)
+      throws URISyntaxException, IOException, ServiceException {
+    URI fedoraURI = new URI(fedoraSvc.getServiceUri());
+    fedoraServer = getRemoteFedoraURI(fedoraURI, hostname);
+
+    if (fedoraSvc.requiresUserNamePassword()) {
+      apim = APIMStubFactory.getStub(fedoraURI.getScheme(), fedoraURI.getHost(),
+                                     fedoraURI.getPort(), fedoraSvc.getUserName(),
+                                     fedoraSvc.getPassword());
+      uploader = new Uploader(fedoraURI.getScheme(), fedoraURI.getHost(), fedoraURI.getPort(),
+                              fedoraSvc.getUserName(), fedoraSvc.getPassword());
+    } else {
+      String pqf = fedoraURI.getPath();
+      if (fedoraURI.getQuery() != null)
+        pqf += "?" + fedoraURI.getQuery();
+      if (fedoraURI.getFragment() != null)
+        pqf += "#" + fedoraURI.getFragment();
+
+      apim = APIMStubFactory.getStubAltPath(fedoraURI.getScheme(), fedoraURI.getHost(),
+                                            fedoraURI.getPort(), pqf, null, null);
+      // XXX: short of wholesale copying and modifying of Uploader, I see no way to get the
+      // path in there.
+      uploader = new Uploader(fedoraURI.getScheme(), fedoraURI.getHost(), fedoraURI.getPort(),
+                              fedoraSvc.getUserName(), fedoraSvc.getPassword());
+    }
+
+    itql     = new ItqlHelper(mulgaraSvc);
+    ingester = new Ingester(apim, uploader, itql);
+  }
+
+  private static URI getRemoteFedoraURI(URI fedoraURI, String hostname) {
+    if (!fedoraURI.getHost().equals("localhost"))
+      return fedoraURI;         // it's already remote
+
+    try {
+      return new URI(fedoraURI.getScheme(), null, hostname, fedoraURI.getPort(),
+                     fedoraURI.getPath(), null, null);
+    } catch (URISyntaxException use) {
+      throw new Error(use);   // Can't happen
+    }
+  }
+
 
   public String ingest(byte[] zip) throws DuplicateIdException, IngestException {
     return ingester.ingest(new Zip.MemoryZip(zip));
