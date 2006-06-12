@@ -33,6 +33,10 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
+  <listener>
+    <listener-class>org.topazproject.configuration.WebAppListener</listener-class>
+  </listener>
+
   <!-- Axis Web Service -->
   <listener>
     <listener-class>org.apache.axis.transport.http.AxisHTTPSessionListener</listener-class>
