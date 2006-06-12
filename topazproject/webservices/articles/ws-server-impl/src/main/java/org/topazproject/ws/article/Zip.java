@@ -8,6 +8,7 @@ import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
+import javax.activation.DataSource;
 
 /** 
  * A simple abstraction of a zip archive, as needed by the ingester. 
@@ -60,23 +61,13 @@ public interface Zip {
   }
 
   /**
-   * An implementation of {@link Zip Zip} where the zip archive is stored in memory.
+   * An implementation of {@link Zip Zip} where the zip archive is available from a stream.
    */
-  public static class MemoryZip implements Zip {
-    private final ByteArrayInputStream zs;
+  public static abstract class StreamZip implements Zip {
+    protected abstract InputStream getStream() throws IOException;
 
-    /** 
-     * Create a new instance. 
-     * 
-     * @param zipBytes the zip archive as an array of bytes
-     */
-    public MemoryZip(byte[] zipBytes) {
-      zs = new ByteArrayInputStream(zipBytes);
-    }
-
-    public Enumeration getEntries() {
-      zs.reset();
-      final ZipInputStream zis = new ZipInputStream(zs);
+    public Enumeration getEntries() throws IOException {
+      final ZipInputStream zis = new ZipInputStream(getStream());
 
       return new Enumeration() {
         private ZipEntry ze;
@@ -92,7 +83,11 @@ public interface Zip {
         public Object nextElement() {
           try {
             ZipEntry cur = ze;
+
             ze = zis.getNextEntry();
+            if (ze == null)
+              zis.close();
+
             return cur;
           } catch (IOException ioe) {
             throw new RuntimeException(ioe);
@@ -102,8 +97,7 @@ public interface Zip {
     }
 
     public InputStream getStream(String name) throws IOException {
-      zs.reset();
-      final ZipInputStream zis = new ZipInputStream(zs);
+      final ZipInputStream zis = new ZipInputStream(getStream());
 
       ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null) {
@@ -111,7 +105,55 @@ public interface Zip {
           return zis;
       }
 
+      zis.close();
       return null;
+    }
+  }
+
+  /**
+   * An implementation of {@link Zip Zip} where the zip archive is stored in memory.
+   */
+  public static class MemoryZip extends StreamZip {
+    private final ByteArrayInputStream zs;
+
+    /** 
+     * Create a new instance. 
+     * 
+     * @param zipBytes the zip archive as an array of bytes
+     */
+    public MemoryZip(byte[] zipBytes) {
+      zs = new ByteArrayInputStream(zipBytes);
+    }
+
+    protected InputStream getStream() {
+      zs.reset();
+      return zs;
+    }
+  }
+
+  /**
+   * An implementation of {@link Zip Zip} where the zip archive available as a DataSource.
+   * NOTE: this assumes that either A) the data-source's input-stream supports reset(), or
+   * that B) each DataSource.getInputStream() returns a new stream that starts at the beginning
+   * (like Axis's ManagedMemoryDataSource does).
+   */
+  public static class DataSourceZip extends StreamZip {
+    private final DataSource zs;
+
+    /** 
+     * Create a new instance. 
+     * 
+     * @param zipSource the zip archive as a datasource
+     */
+    public DataSourceZip(DataSource zipSource) {
+      zs = zipSource;
+    }
+
+    protected InputStream getStream() throws IOException {
+      InputStream is = zs.getInputStream();
+      if (is.markSupported())
+        is.reset();
+      return is;
     }
   }
 }

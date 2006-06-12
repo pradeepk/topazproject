@@ -9,6 +9,7 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.List;
+import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.log4j.Logger;
@@ -110,8 +111,8 @@ public class ArticleImpl implements Article {
   }
 
 
-  public String ingest(byte[] zip) throws DuplicateIdException, IngestException {
-    return ingester.ingest(new Zip.MemoryZip(zip));
+  public String ingest(DataHandler zip) throws DuplicateIdException, IngestException {
+    return ingester.ingest(new Zip.DataSourceZip(zip.getDataSource()));
   }
 
   public void markSuperseded(String oldDoi, String newDoi)

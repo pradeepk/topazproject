@@ -11,6 +11,14 @@
     <version>0.1</version>
   </parent>
 
+  <dependencies>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+  </dependencies>
+
   <build>
     <plugins>
       <plugin>

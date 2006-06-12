@@ -4,6 +4,7 @@ package org.topazproject.ws.article.service;
 import java.io.IOException;
 import java.net.URI;
 import java.rmi.RemoteException;
+import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
 import org.topazproject.ws.article.ArticleImpl;
@@ -31,7 +32,8 @@ public class ArticleServicePortSoapBindingImpl implements Article {
   /**
    * @see org.topazproject.ws.article.Article#ingest
    */
-  public String ingest(byte[] zip) throws RemoteException, DuplicateIdException, IngestException {
+  public String ingest(DataHandler zip)
+      throws RemoteException, DuplicateIdException, IngestException {
     try {
       return impl.ingest(zip);
     } catch (org.topazproject.ws.article.DuplicateIdException die) {

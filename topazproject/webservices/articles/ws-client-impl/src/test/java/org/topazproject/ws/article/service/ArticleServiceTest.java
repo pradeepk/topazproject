@@ -7,6 +7,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.rmi.RemoteException;
+import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
 import junit.framework.TestCase;
@@ -29,12 +30,13 @@ public class ArticleServiceTest extends TestCase {
   }
 
   public void testAll() throws RemoteException, IOException {
-    //basicArticleTest();
+    basicArticleTest();
   }
 
   private void basicArticleTest() throws RemoteException, IOException {
-    byte[] zip = loadURL(getClass().getResource("/test_article.zip"));
-    String doi = service.ingest(zip);
+    //service.delete("10.1371/journal.pbio.0020294", true);
+    URL article = getClass().getResource("/test_article.zip");
+    String doi = service.ingest(new DataHandler(article));
     service.delete(doi, true);
   }
 

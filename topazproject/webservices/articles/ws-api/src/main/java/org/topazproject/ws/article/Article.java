@@ -2,6 +2,7 @@
 package org.topazproject.ws.article;
 
 import java.rmi.RemoteException;
+import javax.activation.DataHandler;
 
 /** 
  * Article storage and retrieval.
@@ -23,7 +24,8 @@ public interface Article {
    * @throws IngestException if there's a problem ingesting the archive
    * @throws RemoteException if some other error occured
    */
-  public String ingest(byte[] zip) throws DuplicateIdException, IngestException, RemoteException;
+  public String ingest(DataHandler zip)
+      throws DuplicateIdException, IngestException, RemoteException;
 
   /** 
    * Marks an article as superseded by another article.
