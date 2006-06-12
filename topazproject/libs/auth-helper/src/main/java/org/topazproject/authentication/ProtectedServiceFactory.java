@@ -4,6 +4,8 @@ import java.io.IOException;
 
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.configuration.Configuration;
+
 import edu.yale.its.tp.cas.client.CASReceipt;
 import edu.yale.its.tp.cas.client.filter.CASFilter;
 import edu.yale.its.tp.cas.proxy.ProxyTicketReceptor;
@@ -14,6 +16,37 @@ import edu.yale.its.tp.cas.proxy.ProxyTicketReceptor;
  * @author Pradeep Krishnan
  */
 public class ProtectedServiceFactory {
+  /**
+   * Creates a ProtectedService instance based on configuration.
+   * 
+   * <p>
+   * The expected configuration is:
+   * <pre>
+   *   uri         = the service uri 
+   *   auth-method = CAS or BASIC
+   *   userName    = userName for BASIC auth 
+   *   password    = password for BASIC auth
+   * </pre>
+   * </p>
+   *
+   * @param config The service configuration.
+   * @param session HttpSession to retrieve any run-time info (eg. CASReceipt)
+   *
+   * @return Returns the newly created instance
+   *
+   * @throws IOException thrown from CAS service creation
+   */
+  public static ProtectedService createService(Configuration config, HttpSession session)
+                                        throws IOException {
+    String service = config.getString("uri");
+    String auth = config.getString("auth-method");
+
+    if ("CAS".equals(auth))
+      return createService(service, getCASReceipt(session));
+
+    return createService(service, config.getString("userName"), config.getString("password"));
+  }
+
   /**
    * Creates a ProtectedService instance with the service/username/password triple.
    *
@@ -56,8 +89,8 @@ public class ProtectedServiceFactory {
    *
    * @throws IOException when there is an error in contacting CAS server.
    */
-  public static ProtectedService createCASService(String service, CASReceipt receipt)
-                                           throws IOException {
+  public static ProtectedService createService(String service, CASReceipt receipt)
+                                        throws IOException {
     // If no authenticated user, assume an unprotected service
     if (receipt == null)
       return createService(service, null, null);

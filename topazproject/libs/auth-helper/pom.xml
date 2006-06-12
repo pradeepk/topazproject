@@ -15,6 +15,12 @@
   <dependencies>
 
     <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+      <version>1.2</version>
+    </dependency>
+    
+    <dependency>
       <groupId>cas</groupId>
       <artifactId>casclient</artifactId>
       <version>2.1.1</version>
