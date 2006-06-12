@@ -30,7 +30,7 @@ public class ArticleServiceTest extends TestCase {
   }
 
   public void testAll() throws RemoteException, IOException {
-    basicArticleTest();
+    //basicArticleTest();
   }
 
   private void basicArticleTest() throws RemoteException, IOException {
