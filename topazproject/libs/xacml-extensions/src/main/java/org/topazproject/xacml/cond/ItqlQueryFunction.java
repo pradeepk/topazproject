@@ -10,8 +10,12 @@ import javax.servlet.http.HttpSession;
 
 import javax.xml.rpc.server.ServletEndpointContext;
 
+import org.apache.commons.configuration.Configuration;
+
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
+
+import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.ItqlHelper;
@@ -59,6 +63,14 @@ public class ItqlQueryFunction extends DBQueryFunction {
                                 throws QueryException {
     ProtectedService service;
 
+    Configuration    configuration = ConfigurationStore.getInstance().getConfiguration();
+
+    if (configuration != null)
+      configuration = configuration.subset(conf);
+
+    if (configuration == null)
+      throw new QueryException("Can't find configuration " + conf);
+
     // Get the JAX-RPC context.
     EvaluationResult result =
       context.getSubjectAttribute(ServletEndpointContextAttribute.TYPE,
@@ -70,24 +82,24 @@ public class ItqlQueryFunction extends DBQueryFunction {
 
     BagAttribute bag = (BagAttribute) result.getAttributeValue();
 
+    HttpSession  session;
+
     if (bag.isEmpty()) {
-      // Servlet endpoint context attribute is not found. So try accessing unprotected.
-      service = ProtectedServiceFactory.createService(conf, null, null);
+      // Servlet endpoint context attribute is not found. So no session.
+      session = null;
     } else {
       // Retrieve the JAX-RPC context.
       ServletEndpointContext epc =
         ((ServletEndpointContextAttribute) bag.iterator().next()).getValue();
 
-      HttpSession            session = epc.getHttpSession();
+      session = epc.getHttpSession();
+    }
 
-      try {
-        service =
-          ProtectedServiceFactory.createCASService(conf,
-                                                   ProtectedServiceFactory.getCASReceipt(session));
-      } catch (java.io.IOException e) {
-        throw new QueryException("Unable to obtain a CAS proxy ticket to authenticate to "
-                                 + "ITQL interpreter bean service", e);
-      }
+    try {
+      service = ProtectedServiceFactory.createService(configuration, session);
+    } catch (java.io.IOException e) {
+      throw new QueryException("Unable to obtain a CAS proxy ticket to authenticate to "
+                               + "ITQL interpreter bean service", e);
     }
 
     // Now execute the query against the ITQL service
