@@ -3,9 +3,9 @@
 <project>
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject.ws</groupId>
-  <artifactId>ws-annotation-admin</artifactId>
+  <artifactId>ws-annotation</artifactId>
   <packaging>pom</packaging>
-  <name>Annotation Admin Webservice</name>
+  <name>Annotations Webservice</name>
   <version>0.1</version>
 
   <parent>
@@ -54,6 +54,6 @@
   </modules>
 
   <properties>
-    <wsdl.filename>annotation-admin-service.wsdl</wsdl.filename>
+    <wsdl.filename>annotation-service.wsdl</wsdl.filename>
   </properties>
 </project>

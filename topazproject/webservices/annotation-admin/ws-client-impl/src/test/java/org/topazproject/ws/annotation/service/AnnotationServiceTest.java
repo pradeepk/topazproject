@@ -1,4 +1,4 @@
-package org.topazproject.ws.admin.service;
+package org.topazproject.ws.annotation.service;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -19,7 +19,7 @@ public class AnnotationServiceTest extends TestCase {
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
    // CAS Integration hint: append a ?token=xxx to the url
     URL                      url =
-      new URL("http://localhost:9998/ws-annotation-admin-webapp-0.1/services/AnnotationServicePort?token=xxx");
+      new URL("http://localhost:9998/ws-annotation-webapp-0.1/services/AnnotationServicePort?token=xxx");
     AnnotationServiceLocator locator = new AnnotationServiceLocator();
     locator.setMaintainSession(true);
     service = locator.getAnnotationServicePort(url);

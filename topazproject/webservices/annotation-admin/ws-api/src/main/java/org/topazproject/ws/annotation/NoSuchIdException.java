@@ -1,5 +1,5 @@
 
-package org.topazproject.ws.admin;
+package org.topazproject.ws.annotation;
 
 /** 
  * Signifies that the requested object does not exist. 

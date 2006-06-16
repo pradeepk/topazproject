@@ -1,4 +1,4 @@
-package org.topazproject.ws.admin.service;
+package org.topazproject.ws.annotation.service;
 
 import java.net.URI;
 

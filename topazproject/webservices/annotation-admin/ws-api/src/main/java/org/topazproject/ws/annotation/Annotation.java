@@ -1,4 +1,4 @@
-package org.topazproject.ws.admin;
+package org.topazproject.ws.annotation;
 
 import java.rmi.RemoteException;
 

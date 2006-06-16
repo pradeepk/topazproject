@@ -3,11 +3,11 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>${pom.parent.artifactId}-server</artifactId>
   <packaging>jar</packaging>
-  <name>Annotation-Admin Webservice Server</name>
+  <name>Annotations Webservice Server</name>
 
   <parent>
     <groupId>org.topazproject.ws</groupId>
-    <artifactId>ws-annotation-admin</artifactId>
+    <artifactId>ws-annotation</artifactId>
     <version>0.1</version>
   </parent>
 
