@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy xmlns="urn:oasis:names:tc:xacml:1.0:policy"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  PolicyId="setAnnotationStatePolicy"
+  RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:deny-overrides">
+
+  <Description>
+    This policy defines the rules for setting annotation state.
+  </Description>
+
+  <Target>
+    <Subjects>
+      <AnySubject/>
+    </Subjects>
+    <Resources>
+      <AnyResource/>
+    </Resources>
+    <Actions>
+      <Action>
+        <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+          <AttributeValue
+            DataType="http://www.w3.org/2001/XMLSchema#string">setAnnotationState</AttributeValue>
+          <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
+            AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>
+        </ActionMatch>
+      </Action>
+    </Actions>
+  </Target>
+
+  <Rule RuleId="AllowAll" Effect="Permit"/>
+
+</Policy>

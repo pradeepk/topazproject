@@ -39,7 +39,7 @@ public class AnnotationServiceTest extends TestCase {
     boolean gotExc = false;
 
     try {
-      String info = service.getAnnotationInfo(subject, annotation);
+      String info = service.getAnnotationInfo(annotation);
     } catch (NoSuchIdException nsie) {
       gotExc = true;
     }
@@ -49,7 +49,7 @@ public class AnnotationServiceTest extends TestCase {
     gotExc = false;
 
     try {
-      service.setAnnotationInfo(subject, annotation, "hello");
+      service.setAnnotationInfo(annotation, "hello");
     } catch (NoSuchIdException nsie) {
       gotExc = true;
     }
@@ -59,32 +59,38 @@ public class AnnotationServiceTest extends TestCase {
     gotExc = false;
 
     try {
-      service.deleteAnnotation(subject, annotation);
+      service.deleteAnnotation(annotation);
     } catch (NoSuchIdException nsie) {
       gotExc = true;
     }
 
     assertTrue("Failed to get expected NoSuchIdException", gotExc);
 
-    service.createAnnotation(subject, annotation);
+    annotation = service.createAnnotation(subject, "hello");
 
     annotations = service.listAnnotations(subject);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
     assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0] + "'",
                  annotations[0], annotation);
 
-    String info = service.getAnnotationInfo(subject, annotation);
-    assertNull("Expected no info, got '" + info + "'", info);
-
-    service.setAnnotationInfo(subject, annotation, "hello");
-    info = service.getAnnotationInfo(subject, annotation);
+    String info = service.getAnnotationInfo(annotation);
     assertEquals("Info mismatch, got '" + info + "'", info, "hello");
 
-    service.deleteAnnotation(subject, annotation);
+    service.setAnnotationInfo(annotation, "bye");
+    info = service.getAnnotationInfo(annotation);
+    assertEquals("Info mismatch, got '" + info + "'", info, "bye");
+
+    service.setAnnotationState(annotation, 42);
+    annotations = service.listAnnotations(42);
+    assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
+    assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0] + "'",
+                 annotations[0], annotation);
+
+    service.deleteAnnotation(annotation);
     gotExc = false;
 
     try {
-      service.deleteAnnotation(subject, annotation);
+      service.deleteAnnotation(annotation);
     } catch (NoSuchIdException nsie) {
       gotExc = true;
     }

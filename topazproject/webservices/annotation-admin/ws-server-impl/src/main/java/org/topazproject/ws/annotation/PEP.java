@@ -22,7 +22,7 @@ import org.topazproject.xacml.Util;
 import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
-import com.sun.xacml.attr.StringAttribute;
+import com.sun.xacml.attr.AnyURIAttribute;
 import com.sun.xacml.ctx.Attribute;
 import com.sun.xacml.ctx.RequestCtx;
 import com.sun.xacml.ctx.Subject;
@@ -33,18 +33,6 @@ import com.sun.xacml.ctx.Subject;
  * @author Pradeep Krishnan
  */
 public class PEP extends DenyBiasedPEP {
-  /**
-   * The attribute id that represents an annotation-id in XACML policies.
-   */
-  public static final String ANNOTATION_ID =
-    "urm:topazproject:names:tc:xacml:1.0:resource:annotation-id";
-
-  /**
-   * The attribute id that represents the resource that is annotated on in XACML policies.
-   */
-  public static final String ANNOTATION_ON =
-    "urn:topazproject:names:tc:xacml:1.0:resource:annotation-on";
-
   /**
    * The action that represents a createAnnotation operation in XACML policies.
    */
@@ -71,12 +59,20 @@ public class PEP extends DenyBiasedPEP {
   public static final String LIST_ANNOTATIONS = "listAnnotations";
 
   /**
+   * The action that represents a listAnnotations operation in XACML policies.
+   */
+  public static final String LIST_ANNOTATIONS_IN_STATE = "listAnnotationsInState";
+
+  /**
+   * The action that represents a listAnnotations operation in XACML policies.
+   */
+  public static final String SET_ANNOTATION_STATE = "setAnnotationState";
+
+  /**
    * The obligation that represents the query used in listAnnotations in XACML policies.
    */
   public static final String LIST_ANNOTATIONS_QUERY_OBLIGATION =
     "urn:topazproject:names:tc:xacml:1.0:obligation:list-annotations-query";
-  private static final URI   ANNOTATION_ID_URI   = URI.create(ANNOTATION_ID);
-  private static final URI   ANNOTATION_ON_URI   = URI.create(ANNOTATION_ON);
   private static Set         envAttrs            = new HashSet();
   private static Map         actionAttrsMap      = new HashMap();
   private static Map         knownObligationsMap = new HashMap();
@@ -87,12 +83,16 @@ public class PEP extends DenyBiasedPEP {
     actionAttrsMap.put(GET_ANNOTATION_INFO, Util.createActionAttrs(GET_ANNOTATION_INFO));
     actionAttrsMap.put(SET_ANNOTATION_INFO, Util.createActionAttrs(SET_ANNOTATION_INFO));
     actionAttrsMap.put(LIST_ANNOTATIONS, Util.createActionAttrs(LIST_ANNOTATIONS));
+    actionAttrsMap.put(LIST_ANNOTATIONS_IN_STATE, Util.createActionAttrs(LIST_ANNOTATIONS_IN_STATE));
+    actionAttrsMap.put(SET_ANNOTATION_STATE, Util.createActionAttrs(SET_ANNOTATION_STATE));
 
     HashSet noKnownObligations = new HashSet();
     knownObligationsMap.put(CREATE_ANNOTATION, noKnownObligations);
     knownObligationsMap.put(DELETE_ANNOTATION, noKnownObligations);
     knownObligationsMap.put(GET_ANNOTATION_INFO, noKnownObligations);
     knownObligationsMap.put(SET_ANNOTATION_INFO, noKnownObligations);
+    knownObligationsMap.put(SET_ANNOTATION_STATE, noKnownObligations);
+    knownObligationsMap.put(LIST_ANNOTATIONS_IN_STATE, noKnownObligations);
 
     HashSet set = new HashSet();
     set.add(URI.create(LIST_ANNOTATIONS_QUERY_OBLIGATION));
@@ -145,14 +145,13 @@ public class PEP extends DenyBiasedPEP {
    * Checks if access to an Annotation service operation is permitted.
    *
    * @param action The Annotation service operation
-   * @param on The resource that is annotated
-   * @param id The annotation id or <code>null</code>
+   * @param resource The resource that is annotated
    *
    * @return A set of XACML obligations that needs to be satisfied.
    *
    * @throws SecurityException if the operation is not permitted
    */
-  public Set checkAccess(String action, String on, String id) {
+  public Set checkAccess(String action, URI resource) {
     Set actionAttrs = (Set) actionAttrsMap.get(action);
 
     if (actionAttrs == null)
@@ -160,19 +159,8 @@ public class PEP extends DenyBiasedPEP {
 
     Set resourceAttrs = new HashSet();
 
-    if (on != null)
-      resourceAttrs.add(new Attribute(ANNOTATION_ON_URI, null, null, new StringAttribute(on)));
-    else
-      on = "";
-
-    if (id != null)
-      resourceAttrs.add(new Attribute(ANNOTATION_ID_URI, null, null, new StringAttribute(id)));
-    else
-      id = "";
-
     // Must have a RESOURCE_ID 
-    resourceAttrs.add(new Attribute(Util.RESOURCE_ID, null, null,
-                                    new StringAttribute("Annotation {{" + on + "}, {" + id + "}}")));
+    resourceAttrs.add(new Attribute(Util.RESOURCE_ID, null, null, new AnyURIAttribute(resource)));
 
     return evaluate(new RequestCtx(subjectAttrs, resourceAttrs, actionAttrs, envAttrs),
                     (Set) knownObligationsMap.get(action));

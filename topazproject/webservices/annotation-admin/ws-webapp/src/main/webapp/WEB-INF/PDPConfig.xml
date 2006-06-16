@@ -14,6 +14,8 @@
         <string>policy/getAnnotationInfo.xml</string>
         <string>policy/setAnnotationInfo.xml</string>
         <string>policy/listAnnotations.xml</string>
+        <string>policy/listAnnotationsInState.xml</string>
+        <string>policy/setAnnotationState.xml</string>
       </list>
     </policyFinderModule>
   </pdp>
