@@ -1,5 +1,7 @@
 package org.topazproject.xacml;
 
+import java.io.IOException;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -9,8 +11,11 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.xml.rpc.server.ServletEndpointContext;
+
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.ParsingException;
+import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.attr.AttributeFactory;
 import com.sun.xacml.attr.AttributeValue;
@@ -20,6 +25,7 @@ import com.sun.xacml.cond.EvaluationResult;
 import com.sun.xacml.ctx.Attribute;
 import com.sun.xacml.ctx.Status;
 import com.sun.xacml.ctx.StatusDetail;
+import com.sun.xacml.ctx.Subject;
 
 /**
  * XACML related Utility functions.
@@ -148,5 +154,35 @@ public class Util {
       c.add(toAttributeValue(type, o[i]));
 
     return new BagAttribute(type, c);
+  }
+
+  /**
+   * Creates the set of subject attributes used in the xacml evaluation request from the given
+   * web-server context. The only subject attribute we know of is the JAX-RPC end point context.
+   *
+   * @param context the web-service context
+   * @return the subject attributes
+   */
+  public static Set createSubjAttrs(ServletEndpointContext context) {
+    Attribute attr  = new Attribute(ServletEndpointContextAttribute.ID, null, null,
+                                    new ServletEndpointContextAttribute(context));
+    return Collections.singleton(new Subject(Collections.singleton(attr)));
+  }
+
+  /** 
+   * Look up the PDP for the given service. 
+   * 
+   * @param context  the web-service context; used to locate the configuration
+   * @param svcName  the name of the service
+   * @return the PDP
+   * @throws IOException on error in accessing the config file
+   * @throws ParsingException on error in parsing the config file
+   * @throws UnknownIdentifierException when an unknown identifier was used in a standard xacml
+   *                                    factory
+   */
+  public static PDP lookupPDP(ServletEndpointContext context, String svcName)
+      throws IOException, ParsingException, UnknownIdentifierException {
+    PDPFactory factory = PDPFactory.getInstance(context.getServletContext());
+    return (svcName == null) ? factory.getDefaultPDP() : factory.getPDP(svcName);
   }
 }
