@@ -2,37 +2,20 @@ package org.topazproject.ws.annotation;
 
 import java.io.IOException;
 
-import java.net.URI;
-
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
-
-import javax.servlet.ServletContext;
-
 import javax.xml.rpc.server.ServletEndpointContext;
 
-import org.topazproject.xacml.DenyBiasedPEP;
-import org.topazproject.xacml.PDPFactory;
-import org.topazproject.xacml.ServletEndpointContextAttribute;
+import org.topazproject.xacml.AbstractSimplePEP;
 import org.topazproject.xacml.Util;
 
-import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
-import com.sun.xacml.attr.AnyURIAttribute;
-import com.sun.xacml.ctx.Attribute;
-import com.sun.xacml.ctx.RequestCtx;
-import com.sun.xacml.ctx.Subject;
 
 /**
  * The XACML PEP for Annotation Web Service.
  *
  * @author Pradeep Krishnan
  */
-public class PEP extends DenyBiasedPEP {
+public class PEP extends AbstractSimplePEP {
   /**
    * The action that represents a createAnnotation operation in XACML policies.
    */
@@ -73,33 +56,29 @@ public class PEP extends DenyBiasedPEP {
    */
   public static final String LIST_ANNOTATIONS_QUERY_OBLIGATION =
     "urn:topazproject:names:tc:xacml:1.0:obligation:list-annotations-query";
-  private static Set         envAttrs            = new HashSet();
-  private static Map         actionAttrsMap      = new HashMap();
-  private static Map         knownObligationsMap = new HashMap();
 
   static {
-    actionAttrsMap.put(CREATE_ANNOTATION, Util.createActionAttrs(CREATE_ANNOTATION));
-    actionAttrsMap.put(DELETE_ANNOTATION, Util.createActionAttrs(DELETE_ANNOTATION));
-    actionAttrsMap.put(GET_ANNOTATION_INFO, Util.createActionAttrs(GET_ANNOTATION_INFO));
-    actionAttrsMap.put(SET_ANNOTATION_INFO, Util.createActionAttrs(SET_ANNOTATION_INFO));
-    actionAttrsMap.put(LIST_ANNOTATIONS, Util.createActionAttrs(LIST_ANNOTATIONS));
-    actionAttrsMap.put(LIST_ANNOTATIONS_IN_STATE, Util.createActionAttrs(LIST_ANNOTATIONS_IN_STATE));
-    actionAttrsMap.put(SET_ANNOTATION_STATE, Util.createActionAttrs(SET_ANNOTATION_STATE));
-
-    HashSet noKnownObligations = new HashSet();
-    knownObligationsMap.put(CREATE_ANNOTATION, noKnownObligations);
-    knownObligationsMap.put(DELETE_ANNOTATION, noKnownObligations);
-    knownObligationsMap.put(GET_ANNOTATION_INFO, noKnownObligations);
-    knownObligationsMap.put(SET_ANNOTATION_INFO, noKnownObligations);
-    knownObligationsMap.put(SET_ANNOTATION_STATE, noKnownObligations);
-    knownObligationsMap.put(LIST_ANNOTATIONS_IN_STATE, noKnownObligations);
-
-    HashSet set = new HashSet();
-    set.add(URI.create(LIST_ANNOTATIONS_QUERY_OBLIGATION));
-    knownObligationsMap.put(LIST_ANNOTATIONS, set);
+    init(PEP.class,
+         new String[] {
+           CREATE_ANNOTATION,
+           DELETE_ANNOTATION,
+           GET_ANNOTATION_INFO,
+           SET_ANNOTATION_INFO,
+           LIST_ANNOTATIONS,
+           LIST_ANNOTATIONS_IN_STATE,
+           SET_ANNOTATION_STATE
+         },
+         new String[][] {
+           null,
+           null,
+           null,
+           null,
+           { LIST_ANNOTATIONS_QUERY_OBLIGATION },
+           null,
+           null
+         }
+         );
   }
-
-  private Set subjectAttrs;
 
   /**
    * Creates a new PEP object.
@@ -112,57 +91,6 @@ public class PEP extends DenyBiasedPEP {
    */
   public PEP(ServletEndpointContext context)
       throws IOException, ParsingException, UnknownIdentifierException {
-    // Get the servlet context.
-    ServletContext servletContext = context.getServletContext();
-
-    // Get the PDP factory for this web-app.
-    PDPFactory factory = PDPFactory.getInstance(servletContext);
-
-    // Get the default PDP for now. May be we should make it configurable.
-    PDP pdp = factory.getDefaultPDP();
-
-    // Use this pdp to evaluate requests against. 
-    setPDP(pdp);
-
-    initSubjectAttrs(context);
-  }
-
-  /**
-   * Initializes the set of subject attributes used in the xacml evaluation request. The only
-   * subject attribute we know of is the JAX-RPC end point context.
-   *
-   * @param context
-   */
-  private void initSubjectAttrs(ServletEndpointContext context) {
-    ServletEndpointContextAttribute value = new ServletEndpointContextAttribute(context);
-    Attribute                       attr =
-      new Attribute(ServletEndpointContextAttribute.ID, null, null, value);
-    Subject                         sub = new Subject(Collections.singleton(attr));
-    subjectAttrs = Collections.singleton(new Subject(Collections.singleton(attr)));
-  }
-
-  /**
-   * Checks if access to an Annotation service operation is permitted.
-   *
-   * @param action The Annotation service operation
-   * @param resource The resource that is annotated
-   *
-   * @return A set of XACML obligations that needs to be satisfied.
-   *
-   * @throws SecurityException if the operation is not permitted
-   */
-  public Set checkAccess(String action, URI resource) {
-    Set actionAttrs = (Set) actionAttrsMap.get(action);
-
-    if (actionAttrs == null)
-      throw new SecurityException("Unknown action '" + action + "' for PEP");
-
-    Set resourceAttrs = new HashSet();
-
-    // Must have a RESOURCE_ID 
-    resourceAttrs.add(new Attribute(Util.RESOURCE_ID, null, null, new AnyURIAttribute(resource)));
-
-    return evaluate(new RequestCtx(subjectAttrs, resourceAttrs, actionAttrs, envAttrs),
-                    (Set) knownObligationsMap.get(action));
+    super(Util.lookupPDP(context, null), Util.createSubjAttrs(context));
   }
 }
