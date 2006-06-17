@@ -9,21 +9,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-import javax.servlet.ServletContext;
-import javax.xml.rpc.server.ServletEndpointContext;
-
-import org.topazproject.xacml.DenyBiasedPEP;
-import org.topazproject.xacml.PDPFactory;
-import org.topazproject.xacml.ServletEndpointContextAttribute;
-import org.topazproject.xacml.Util;
-
 import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.attr.AnyURIAttribute;
 import com.sun.xacml.ctx.Attribute;
 import com.sun.xacml.ctx.RequestCtx;
-import com.sun.xacml.ctx.Subject;
 
 /**
  * A superclass for simple XACML PEP's.

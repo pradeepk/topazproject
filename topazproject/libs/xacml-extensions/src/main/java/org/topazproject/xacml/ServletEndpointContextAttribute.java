@@ -1,7 +1,6 @@
 package org.topazproject.xacml;
 
 import java.net.URI;
-import java.net.URISyntaxException;
 
 import javax.xml.rpc.server.ServletEndpointContext;
 
