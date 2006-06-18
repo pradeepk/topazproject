@@ -1,37 +1,53 @@
 package org.topazproject.ws.annotation.service;
 
-import java.net.URI;
+import java.io.IOException;
 
 import java.rmi.RemoteException;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
+import javax.servlet.http.HttpSession;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.authentication.ProtectedService;
+import org.topazproject.authentication.ProtectedServiceFactory;
+
+import org.topazproject.configuration.ConfigurationStore;
+
+import org.topazproject.mulgara.itql.ItqlHelper;
+
+import org.topazproject.ws.annotation.AnnotationImpl;
 import org.topazproject.ws.annotation.PEP;
 
 /**
- * The implementation of the annotation administration. Just a dummy for now.
+ * The implementation of the annotation service.
  */
 public class AnnotationServicePortSoapBindingImpl implements Annotation, ServiceLifecycle {
-  private static Log       log = LogFactory.getLog(AnnotationServicePortSoapBindingImpl.class);
-  private static final Map annotations = new HashMap();
-  private static int       nextId      = 0;
-  private PEP              pep         = null;
+  private static Log     log = LogFactory.getLog(AnnotationServicePortSoapBindingImpl.class);
+  private AnnotationImpl impl       = null;
+  private Configuration  itqlConfig;
+
+  /**
+   * Creates a new AnnotationServicePortSoapBindingImpl object.
+   */
+  public AnnotationServicePortSoapBindingImpl() {
+    Configuration root = ConfigurationStore.getInstance().getConfiguration();
+    itqlConfig = root.subset("topaz.services.itql");
+  }
 
   /**
    * @see javax.xml.rpc.server.ServiceLifecycle#init
    */
   public void init(Object context) throws ServiceException {
+    PEP              pep;
+    ProtectedService fedora;
+    ItqlHelper       itql;
+
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#init");
 
@@ -43,6 +59,19 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
 
       throw new ServiceException(e);
     }
+
+    HttpSession session = ((ServletEndpointContext) context).getHttpSession();
+
+    try {
+      itql = new ItqlHelper(ProtectedServiceFactory.createService(itqlConfig, session));
+    } catch (Exception e) {
+      if (log.isErrorEnabled())
+        log.error("Failed to create itql service interface", e);
+
+      throw new ServiceException(e);
+    }
+
+    impl = new AnnotationImpl(itql, pep);
   }
 
   /**
@@ -52,155 +81,86 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#destroy");
 
-    pep = null; // release context
+    impl = null; // release context
   }
 
   /**
-   * @see org.topazproject.ws.admin.Annotation#createAnnotation
+   * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
   public String createAnnotation(String on, String annotationInfo)
                           throws RemoteException {
-    checkAccess(PEP.CREATE_ANNOTATION, on);
-
-    String id;
-
-    synchronized (annotations) {
-      id = "annotations:id#" + ++nextId;
-      annotations.put(id, new AnnotationInfo(on, annotationInfo));
-    }
-
-    return id;
+    return impl.createAnnotation(on, annotationInfo);
   }
 
   /**
-   * @see org.topazproject.ws.admin.Annotation#deleteAnnotation
+   * @see org.topazproject.ws.annotation.Annotation#deleteAnnotation
    */
   public void deleteAnnotation(String id) throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.DELETE_ANNOTATION, id);
+    try {
+      impl.deleteAnnotation(id);
+    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+      if (log.isDebugEnabled())
+        log.debug("Failed to delete annotation", e);
 
-    synchronized (annotations) {
-      if (annotations.remove(id) == null)
-        throw new NoSuchIdException(id);
+      throw new NoSuchIdException(e.getId());
     }
   }
 
   /**
-   * @see org.topazproject.ws.admin.Annotation#setAnnotationInfo
+   * @see org.topazproject.ws.annotation.Annotation#setAnnotationInfo
    */
   public void setAnnotationInfo(String id, String annotationDef)
                          throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.SET_ANNOTATION_INFO, id);
+    try {
+      impl.setAnnotationInfo(id, annotationDef);
+    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+      if (log.isDebugEnabled())
+        log.debug("Failed to set annotation info", e);
 
-    synchronized (annotations) {
-      AnnotationInfo annotation = (AnnotationInfo) annotations.get(id);
-
-      if (annotation == null)
-        throw new NoSuchIdException(id);
-
-      annotation.info = annotationDef;
+      throw new NoSuchIdException(e.getId());
     }
   }
 
   /**
-   * @see org.topazproject.ws.admin.Annotation#getAnnotationInfo
+   * @see org.topazproject.ws.annotation.Annotation#getAnnotationInfo
    */
   public String getAnnotationInfo(String id) throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.GET_ANNOTATION_INFO, id);
+    try {
+      return impl.getAnnotationInfo(id);
+    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+      if (log.isDebugEnabled())
+        log.debug("Failed to get annotation info", e);
 
-    synchronized (annotations) {
-      AnnotationInfo annotation = (AnnotationInfo) annotations.get(id);
-
-      if (annotation == null)
-        throw new NoSuchIdException(id);
-
-      return annotation.info;
+      throw new NoSuchIdException(e.getId());
     }
   }
 
   /**
-   * @see org.topazproject.ws.admin.Annotation#listAnnotations
+   * @see org.topazproject.ws.annotation.Annotation#listAnnotations
    */
   public String[] listAnnotations(String on) throws RemoteException {
-    checkAccess(PEP.LIST_ANNOTATIONS, on);
-
-    synchronized (annotations) {
-      ArrayList ids = new ArrayList();
-
-      for (Iterator it = annotations.entrySet().iterator(); it.hasNext();) {
-        Map.Entry e = (Map.Entry) it.next();
-
-        if (((AnnotationInfo) e.getValue()).on.equals(on))
-          ids.add(e.getKey());
-      }
-
-      return (String[]) ids.toArray(new String[0]);
-    }
+    return impl.listAnnotations(on);
   }
 
   /**
-   * @see org.topazproject.ws.admin.Annotation#setAnnotationState
+   * @see org.topazproject.ws.annotation.Annotation#setAnnotationState
    */
   public void setAnnotationState(String id, int state)
                           throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.SET_ANNOTATION_STATE, id);
+    try {
+      impl.setAnnotationState(id, state);
+    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+      if (log.isDebugEnabled())
+        log.debug("Failed to set annotation state", e);
 
-    synchronized (annotations) {
-      AnnotationInfo annotation = (AnnotationInfo) annotations.get(id);
-
-      if (annotation == null)
-        throw new NoSuchIdException(id);
-
-      annotation.state = state;
+      throw new NoSuchIdException(e.getId());
     }
   }
 
   /**
-   * @see org.topazproject.ws.admin.Annotation#listAnnotations
+   * @see org.topazproject.ws.annotation.Annotation#listAnnotations
    */
   public String[] listAnnotations(int state) throws RemoteException {
-    checkAccess(PEP.LIST_ANNOTATIONS_IN_STATE, "" + state);
-
-    synchronized (annotations) {
-      ArrayList ids = new ArrayList();
-
-      for (Iterator it = annotations.entrySet().iterator(); it.hasNext();) {
-        Map.Entry e = (Map.Entry) it.next();
-
-        if (((AnnotationInfo) e.getValue()).state == state)
-          ids.add(e.getKey());
-      }
-
-      return (String[]) ids.toArray(new String[0]);
-    }
-  }
-
-  private Set checkAccess(String action, String resource) {
-    try {
-      if (log.isTraceEnabled())
-        log.trace("checkAccess(" + action + ", " + resource + ")");
-
-      Set s = pep.checkAccess(action, URI.create(resource));
-
-      if (log.isDebugEnabled())
-        log.debug("allowed access to " + action + "(" + resource + ")");
-
-      return s;
-    } catch (SecurityException e) {
-      if (log.isDebugEnabled())
-        log.debug("denied access to " + action + "(" + resource + ")", e);
-
-      throw e;
-    }
-  }
-
-  private static class AnnotationInfo {
-    String on;
-    String info;
-    int    state = 0;
-
-    public AnnotationInfo(String on, String info) {
-      this.on     = on;
-      this.info   = info;
-    }
+    return impl.listAnnotations(state);
   }
 }
