@@ -9,9 +9,12 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
+import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.article.ArticleImpl;
 import org.topazproject.ws.article.ArticlePEP;
 import org.topazproject.xacml.Util;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.log4j.Logger;
 
 public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecycle {
@@ -28,12 +31,21 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
       ArticlePEP pep = new WSArticlePEP((ServletEndpointContext) context);
 
       // get other config
-      // FIXME: get from config
-      URI fedora = URI.create("http://localhost:9090/fedora/");
-      String username = "fedoraAdmin";
-      String password = "fedoraAdmin";
-      String hostname = "localhost";
-      URI mulgara = URI.create("http://localhost:9090/fedora/services/ItqlBeanService");
+      Configuration conf = ConfigurationStore.getInstance().getConfiguration();
+      conf = conf.subset("topaz");
+
+      if (!conf.containsKey("services.fedora.uri"))
+        throw new ConfigurationException("missing key 'topaz.services.fedora.uri'");
+      if (!conf.containsKey("services.itql.uri"))
+        throw new ConfigurationException("missing key 'topaz.services.itql.uri'");
+      if (!conf.containsKey("server.hostname"))
+        throw new ConfigurationException("missing key 'topaz.server.hostname'");
+
+      URI fedora = new URI(conf.getString("services.fedora.uri"));
+      String username = conf.getString("services.fedora.userName", null);
+      String password = conf.getString("services.fedora.password", null);
+      String hostname = conf.getString("server.hostname");
+      URI mulgara = new URI(conf.getString("services.itql.uri"));
 
       // create the impl
       impl = new ArticleImpl(fedora, username, password, mulgara, hostname, pep);
