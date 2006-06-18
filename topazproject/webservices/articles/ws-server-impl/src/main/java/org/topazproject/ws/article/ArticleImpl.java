@@ -37,6 +37,7 @@ public class ArticleImpl implements Article {
   private final Uploader   uploader;
   private final Ingester   ingester;
   private final ItqlHelper itql;
+  private final ArticlePEP pep;
 
   /** 
    * Create a new article manager instance. 
@@ -47,8 +48,10 @@ public class ArticleImpl implements Article {
    * @param mulgaraUri  the uri of the mulgara server
    * @param hostname    the hostname under which this service is visible; this is used to generate
    *                    the proper URL for {@link #getObjectURL getObjectURL}.
+   * @param pep         the policy-enforcer to use for access-control
    */
-  public ArticleImpl(URI fedoraUri, String username, String password, URI mulgaraUri, String hostname)
+  public ArticleImpl(URI fedoraUri, String username, String password, URI mulgaraUri,
+                     String hostname, ArticlePEP pep)
       throws IOException, ServiceException {
     fedoraServer = getRemoteFedoraURI(fedoraUri, hostname);
 
@@ -57,7 +60,9 @@ public class ArticleImpl implements Article {
     uploader = new Uploader(fedoraUri.getScheme(), fedoraUri.getHost(), fedoraUri.getPort(),
                             username, password);
     itql     = new ItqlHelper(mulgaraUri);
-    ingester = new Ingester(apim, uploader, itql);
+    ingester = new Ingester(apim, uploader, itql, pep);
+
+    this.pep = pep;
   }
 
   /** 
@@ -67,8 +72,10 @@ public class ArticleImpl implements Article {
    * @param mulgarSvc the mulgara web-service
    * @param hostname  the hostname under which this service is visible; this is used to generate
    *                  the proper URL for {@link #getObjectURL getObjectURL}.
+   * @param pep       the policy-enforcer to use for access-control
    */
-  public ArticleImpl(ProtectedService fedoraSvc, ProtectedService mulgaraSvc, String hostname)
+  public ArticleImpl(ProtectedService fedoraSvc, ProtectedService mulgaraSvc, String hostname,
+                     ArticlePEP pep)
       throws URISyntaxException, IOException, ServiceException {
     URI fedoraURI = new URI(fedoraSvc.getServiceUri());
     fedoraServer = getRemoteFedoraURI(fedoraURI, hostname);
@@ -95,7 +102,9 @@ public class ArticleImpl implements Article {
     }
 
     itql     = new ItqlHelper(mulgaraSvc);
-    ingester = new Ingester(apim, uploader, itql);
+    ingester = new Ingester(apim, uploader, itql, pep);
+
+    this.pep = pep;
   }
 
   private static URI getRemoteFedoraURI(URI fedoraURI, String hostname) {
@@ -117,6 +126,8 @@ public class ArticleImpl implements Article {
 
   public void markSuperseded(String oldDoi, String newDoi)
       throws NoSuchIdException, RemoteException {
+    checkAccess(pep.INGEST_ARTICLE, newDoi);
+
     String old_subj = "<" + pid2URI(doi2PID(oldDoi)) + ">";
     String new_subj = "<" + pid2URI(doi2PID(newDoi)) + ">";
 
@@ -126,6 +137,8 @@ public class ArticleImpl implements Article {
   }
 
   public void setState(String doi, int state) throws NoSuchIdException, RemoteException {
+    checkAccess(pep.SET_ARTICLE_STATE, doi);
+
     try {
       apim.modifyObject(doi2PID(doi), state2Str(state), null, "Changed state");
     } catch (RemoteException re) {
@@ -134,6 +147,8 @@ public class ArticleImpl implements Article {
   }
 
   public void delete(String doi, boolean purge) throws NoSuchIdException, RemoteException {
+    checkAccess(pep.DELETE_ARTICLE, doi);
+
     try {
       String[] objList = findAllObjects(doi);
       if (log.isDebugEnabled())
@@ -155,11 +170,13 @@ public class ArticleImpl implements Article {
   }
 
   public String getObjectURL(String doi, String rep) throws NoSuchIdException, RemoteException {
+    checkAccess(pep.GET_OBJECT_URL, doi);
+
     String path = "/fedora/get/" + doi2PID(doi) + "/" + rep;
     return fedoraServer.resolve(path).toString();
   }
 
-  protected String state2Str(int state) {
+  protected static String state2Str(int state) {
     switch (state) {
       case ST_ACTIVE:
         return "A";
@@ -194,7 +211,11 @@ public class ArticleImpl implements Article {
     return res;
   }
 
-  protected String doi2PID(String doi) {
+  protected void checkAccess(String action, String doi) {
+    pep.checkAccess(action, URI.create(pid2URI(doi2PID(doi))));
+  }
+
+  protected static String doi2PID(String doi) {
     try {
       return "doi:" + URLEncoder.encode(doi, "UTF-8");
     } catch (UnsupportedEncodingException uee) {
@@ -202,7 +223,7 @@ public class ArticleImpl implements Article {
     }
   }
 
-  protected String pid2DOI(String pid) {
+  protected static String pid2DOI(String pid) {
     try {
       return URLDecoder.decode(pid.substring(4), "UTF-8");
     } catch (UnsupportedEncodingException uee) {
@@ -210,11 +231,11 @@ public class ArticleImpl implements Article {
     }
   }
 
-  protected String pid2URI(String pid) {
+  protected static String pid2URI(String pid) {
     return "info:fedora/" + pid;
   }
 
-  protected String uri2PID(String uri) {
+  protected static String uri2PID(String uri) {
     return uri.substring(12);
   }
 }

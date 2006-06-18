@@ -58,6 +58,7 @@ public class Ingester {
   private final FedoraAPIM         apim;
   private final Uploader           uploader;
   private final ItqlHelper         itql;
+  private final ArticlePEP         pep;
 
   /** 
    * Create a new ingester pointing to the given fedora server.
@@ -65,11 +66,13 @@ public class Ingester {
    * @param apim     the Fedora APIM client
    * @param uploader the Fedora uploader client
    * @param itql     the mulgara iTQL client client
+   * @param pep      the policy-enforcer to use for access-control
    */
-  public Ingester(FedoraAPIM apim, Uploader uploader, ItqlHelper itql) {
+  public Ingester(FedoraAPIM apim, Uploader uploader, ItqlHelper itql, ArticlePEP pep) {
     this.apim     = apim;
     this.uploader = uploader;
     this.itql     = itql;
+    this.pep      = pep;
 
     tFactory = new TransformerFactoryImpl();
   }
@@ -100,12 +103,16 @@ public class Ingester {
       if (log.isDebugEnabled())
         log.debug("Got object-info '" + dom2String(objInfo) + "'");
 
+      // get the article id
+      Element objList = objInfo.getDocumentElement();
+      String doi = objList.getAttribute(OL_AID_A);
+
       // ingest into fedora
+      pep.checkAccess(pep.INGEST_ARTICLE,
+                      URI.create(ArticleImpl.pid2URI(ArticleImpl.doi2PID(doi))));
       fedoraIngest(zip, objInfo);
 
-      // return the article id
-      Element objList = objInfo.getDocumentElement();
-      return objList.getAttribute(OL_AID_A);
+      return doi;
     } catch (RemoteException re) {
       throw new IngestException("Error ingesting into fedora", re);
     } catch (IOException ioe) {

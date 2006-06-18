@@ -6,27 +6,48 @@ import java.net.URI;
 import java.rmi.RemoteException;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
+import javax.xml.rpc.server.ServiceLifecycle;
+import javax.xml.rpc.server.ServletEndpointContext;
 
 import org.topazproject.ws.article.ArticleImpl;
+import org.topazproject.ws.article.ArticlePEP;
+import org.topazproject.xacml.Util;
 import org.apache.log4j.Logger;
 
-public class ArticleServicePortSoapBindingImpl implements Article {
+public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecycle {
   private static final Logger log = Logger.getLogger(ArticleServicePortSoapBindingImpl.class);
 
-  private final ArticleImpl impl;
+  private ArticleImpl impl;
 
-  /** 
-   * Create a new binding. 
-   */
-  public ArticleServicePortSoapBindingImpl() throws IOException, ServiceException {
-    // FIXME: get from config
-    URI fedora = URI.create("http://localhost:9090/fedora/");
-    String username = "fedoraAdmin";
-    String password = "fedoraAdmin";
-    String hostname = "localhost";
-    URI mulgara = URI.create("http://localhost:9090/fedora/services/ItqlBeanService");
+  public void init(Object context) throws ServiceException {
+    if (log.isTraceEnabled())
+      log.trace("ServiceLifecycle#init");
 
-    impl = new ArticleImpl(fedora, username, password, mulgara, hostname);
+    try {
+      // get the pep
+      ArticlePEP pep = new WSArticlePEP((ServletEndpointContext) context);
+
+      // get other config
+      // FIXME: get from config
+      URI fedora = URI.create("http://localhost:9090/fedora/");
+      String username = "fedoraAdmin";
+      String password = "fedoraAdmin";
+      String hostname = "localhost";
+      URI mulgara = URI.create("http://localhost:9090/fedora/services/ItqlBeanService");
+
+      // create the impl
+      impl = new ArticleImpl(fedora, username, password, mulgara, hostname, pep);
+    } catch (Exception e) {
+      log.error("Failed to initialize ArticleImpl.", e);
+      throw new ServiceException(e);
+    }
+  }
+
+  public void destroy() {
+    if (log.isTraceEnabled())
+      log.trace("ServiceLifecycle#destroy");
+
+    impl = null;
   }
 
   /**
@@ -91,6 +112,16 @@ public class ArticleServicePortSoapBindingImpl implements Article {
     } catch (org.topazproject.ws.article.NoSuchIdException nsie) {
       log.info(nsie);
       throw new NoSuchIdException(nsie.getId());
+    }
+  }
+
+  private static class WSArticlePEP extends ArticlePEP {
+    static {
+      init(WSArticlePEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
+    }
+
+    public WSArticlePEP(ServletEndpointContext context) throws Exception {
+      super(Util.lookupPDP(context, null), Util.createSubjAttrs(context));
     }
   }
 }
