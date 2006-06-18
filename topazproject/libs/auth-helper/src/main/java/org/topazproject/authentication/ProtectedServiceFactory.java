@@ -23,7 +23,7 @@ public class ProtectedServiceFactory {
    * The expected configuration is:
    * <pre>
    *   uri         = the service uri 
-   *   auth-method = CAS or BASIC
+   *   auth-method = CAS, BASIC, CAS-BASIC or NONE
    *   userName    = userName for BASIC auth 
    *   password    = password for BASIC auth
    * </pre>
@@ -38,13 +38,22 @@ public class ProtectedServiceFactory {
    */
   public static ProtectedService createService(Configuration config, HttpSession session)
                                         throws IOException {
-    String service = config.getString("uri");
+    String uri  = config.getString("uri");
     String auth = config.getString("auth-method");
 
     if ("CAS".equals(auth))
-      return createService(service, getCASReceipt(session));
+      return createService(uri, getCASReceipt(session));
 
-    return createService(service, config.getString("userName"), config.getString("password"));
+    String  userName         = config.getString("userName");
+    String  password         = config.getString("password");
+    boolean requiresPassword = false;
+
+    if ("CAS-BASIC".equals(auth))
+      uri = appendCASticket(uri, getCASReceipt(session));
+    else if ("BASIC".equals(auth))
+      requiresPassword = true;
+
+    return createService(uri, userName, password, requiresPassword);
   }
 
   /**
@@ -53,18 +62,19 @@ public class ProtectedServiceFactory {
    * @param service the service URL
    * @param userName the user name or null
    * @param password the password or null
+   * @param requiresPassword true if password authentication is required
    *
    * @return Returns the newly created instance
    */
   public static ProtectedService createService(final String service, final String userName,
-                                               final String password) {
+                                               final String password, final boolean requiresPassword) {
     return new ProtectedService() {
         public String getServiceUri() {
           return service;
         }
 
         public boolean requiresUserNamePassword() {
-          return (userName != null) || (password != null);
+          return requiresPassword;
         }
 
         public String getUserName() {
@@ -91,9 +101,25 @@ public class ProtectedServiceFactory {
    */
   public static ProtectedService createService(String service, CASReceipt receipt)
                                         throws IOException {
+    return createService(appendCASticket(service, receipt), null, null, false);
+  }
+
+  /**
+   * A utility function to retrieve the CAS receipt from an HTTP Session.
+   *
+   * @param session the HTTPSession or null
+   *
+   * @return Returns CASReceipt or null
+   */
+  public static CASReceipt getCASReceipt(HttpSession session) {
+    return (session == null) ? null : (CASReceipt) session.getAttribute(CASFilter.CAS_FILTER_RECEIPT);
+  }
+
+  private static String appendCASticket(String service, CASReceipt receipt)
+                                 throws IOException {
     // If no authenticated user, assume an unprotected service
     if (receipt == null)
-      return createService(service, null, null);
+      return service;
 
     // get the PGT-IOU from the CAS receipt. (contained in the validate response from CAS server) 
     String pgtIou = receipt.getPgtIou();
@@ -113,17 +139,6 @@ public class ProtectedServiceFactory {
     // (assumes the URL does not have any other params and does not have any fragments)
     service = service + "?ticket=" + pt;
 
-    return createService(service, null, null);
-  }
-
-  /**
-   * A utility function to retrieve the CAS receipt from an HTTP Session.
-   *
-   * @param session the HTTPSession or null
-   *
-   * @return Returns CASReceipt or null
-   */
-  public static CASReceipt getCASReceipt(HttpSession session) {
-    return (session == null) ? null : (CASReceipt) session.getAttribute(CASFilter.CAS_FILTER_RECEIPT);
+    return service;
   }
 }
