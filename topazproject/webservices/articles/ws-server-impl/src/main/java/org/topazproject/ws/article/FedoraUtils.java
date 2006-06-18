@@ -2,7 +2,9 @@
 package org.topazproject.ws.article;
 
 import java.rmi.RemoteException;
-import org.apache.log4j.Logger;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /** 
  * Some utilities for dealing with Fedora.
@@ -10,7 +12,7 @@ import org.apache.log4j.Logger;
  * @author Ronald Tschalär
  */
 class FedoraUtil {
-  private static final Logger log = Logger.getLogger(FedoraUtil.class);
+  private static final Log log = LogFactory.getLog(FedoraUtil.class);
 
   /** 
    * Not mean to be instantiated. 

@@ -9,16 +9,18 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.article.ArticleImpl;
 import org.topazproject.ws.article.ArticlePEP;
 import org.topazproject.xacml.Util;
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.log4j.Logger;
 
 public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecycle {
-  private static final Logger log = Logger.getLogger(ArticleServicePortSoapBindingImpl.class);
+  private static final Log log = LogFactory.getLog(ArticleServicePortSoapBindingImpl.class);
 
   private ArticleImpl impl;
 

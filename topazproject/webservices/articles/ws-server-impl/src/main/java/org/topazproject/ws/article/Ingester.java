@@ -19,8 +19,9 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -38,7 +39,7 @@ import net.sf.saxon.TransformerFactoryImpl;
  * @author Ronald Tschalär
  */
 public class Ingester {
-  private static final Logger log = Logger.getLogger(Ingester.class);
+  private static final Log    log = LogFactory.getLog(Ingester.class);
 
   private static final String OL_LOG_A     = "logMessage";
   private static final String OL_AID_A     = "articleId";

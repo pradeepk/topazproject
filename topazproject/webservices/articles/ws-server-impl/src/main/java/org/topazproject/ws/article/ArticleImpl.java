@@ -12,7 +12,8 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.jrdf.graph.URIReference;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.mulgara.itql.Answer;
@@ -29,7 +30,7 @@ import fedora.server.management.FedoraAPIM;
  * @author Ronald Tschalär
  */
 public class ArticleImpl implements Article {
-  private static final Logger log   = Logger.getLogger(ArticleImpl.class);
+  private static final Log    log   = LogFactory.getLog(ArticleImpl.class);
   private static final String MODEL = "<rmi://localhost/fedora#ri>";
 
   private final URI        fedoraServer;
