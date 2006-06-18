@@ -9,37 +9,65 @@ import javax.xml.rpc.ServiceException;
 
 import junit.framework.TestCase;
 
+/**
+ * Tests the Annotation web service.
+ *
+ * @author Pradeep Krishnan
+ */
 public class AnnotationServiceTest extends TestCase {
   private Annotation service;
 
+  /**
+   * Creates a new AnnotationServiceTest object.
+   *
+   * @param testName name of this test
+   */
   public AnnotationServiceTest(String testName) {
     super(testName);
   }
 
-  protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    URL                      url =
-      new URL("http://localhost:9998/ws-annotation-webapp-0.1/services/AnnotationServicePort");
+  /**
+   * Sets up the test. Gets the client stub for making calls to the service.
+   *
+   * @throws ServiceException indicates an error in setting up the client stub
+   * @throws RemoteException indicates an error in setting up the client stub
+   */
+  protected void setUp() throws ServiceException, RemoteException {
+    URL url;
+
+    try {
+      url =
+        new URL("http://localhost:9998/ws-annotation-webapp-0.1/services/AnnotationServicePort");
+    } catch (MalformedURLException e) {
+      throw new Error(e);
+    }
+
     AnnotationServiceLocator locator = new AnnotationServiceLocator();
     locator.setMaintainSession(true);
     service = locator.getAnnotationServicePort(url);
   }
 
+  /**
+   * Runs all tests
+   *
+   * @throws RemoteException on an error from the service
+   */
   public void testAll() throws RemoteException {
     //basicAnnotationTest();
   }
 
   private void basicAnnotationTest() throws RemoteException {
     String   subject     = "foo:bar";
-    String   annotation  = "annotaion:id#42";
+    String   annotation  = "annotation:id#42";
     String[] annotations = service.listAnnotations(subject);
-   
+
     try {
       for (int i = 0; i < annotations.length; i++)
         service.deleteAnnotation(annotations[i]);
-    } catch (NoSuchIdException nsie){
-      assertTrue("Unexpected NoSuchIdException", false);
+    } catch (NoSuchIdException nsie) {
+      fail("Unexpected NoSuchIdException");
     }
-    
+
     annotations = service.listAnnotations(subject);
     assertTrue("Expected empty list of annotations, got " + annotations.length,
                annotations.length == 0);
@@ -74,7 +102,7 @@ public class AnnotationServiceTest extends TestCase {
 
     assertTrue("Failed to get expected NoSuchIdException", gotExc);
 
-    annotation = service.createAnnotation(subject, "hello");
+    annotation   = service.createAnnotation(subject, "hello");
 
     annotations = service.listAnnotations(subject);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
