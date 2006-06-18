@@ -125,6 +125,15 @@ public class ItqlHelper {
     return aliases;
   }
 
+  /**
+   * Get a copy of the default aliases.
+   *
+   * @return the default aliases
+   */
+  public static Map getDefaultAliases() {
+    return new HashMap(defaultAliases);
+  }
+  
   private String unalias(String itql) {
     // this is not particularly sophisticated, but should catch most stuff
     for (Iterator iter = aliases.keySet().iterator(); iter.hasNext(); ) {
