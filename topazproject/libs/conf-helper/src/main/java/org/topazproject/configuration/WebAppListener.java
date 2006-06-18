@@ -71,7 +71,7 @@ public class WebAppListener implements ServletContextListener {
         url = context.getResource(config.name);
 
         if (url == null)
-          throw new MalformedURLException("not found in the web-app context");
+          throw new MalformedURLException("'" + config.name + "' not found in the web-app context");
       }
 
       // Now load the config
