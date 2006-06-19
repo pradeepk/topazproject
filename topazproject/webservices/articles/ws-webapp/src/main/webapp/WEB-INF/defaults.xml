@@ -17,5 +17,8 @@
     <server>
       <hostname>localhost</hostname>
     </server>
+    <articles>
+      <pdpName>_default_</pdpName>
+    </articles>
   </topaz>
 </config>

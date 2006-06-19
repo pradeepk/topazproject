@@ -135,7 +135,7 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
     }
 
     public WSArticlePEP(ServletEndpointContext context) throws Exception {
-      super(Util.lookupPDP(context, null), Util.createSubjAttrs(context));
+      super(Util.lookupPDP(context, "topaz.articles.pdpName"), Util.createSubjAttrs(context));
     }
   }
 }

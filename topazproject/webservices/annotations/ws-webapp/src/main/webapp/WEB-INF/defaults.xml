@@ -16,5 +16,8 @@
         <password>fedoraAdmin</password>
       </itql>
     </services>
+    <annotations>
+      <pdpName>_default_</pdpName>
+    </annotations>
   </topaz>
 </config>

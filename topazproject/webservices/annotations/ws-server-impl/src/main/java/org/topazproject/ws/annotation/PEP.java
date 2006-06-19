@@ -91,6 +91,6 @@ public class PEP extends AbstractSimplePEP {
    */
   public PEP(ServletEndpointContext context)
       throws IOException, ParsingException, UnknownIdentifierException {
-    super(Util.lookupPDP(context, null), Util.createSubjAttrs(context));
+    super(Util.lookupPDP(context, "topaz.annotations.pdpName"), Util.createSubjAttrs(context));
   }
 }
