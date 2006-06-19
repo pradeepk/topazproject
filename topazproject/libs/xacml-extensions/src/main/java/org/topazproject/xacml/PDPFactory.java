@@ -91,9 +91,6 @@ public class PDPFactory {
    *         factory
    */
   public PDP getDefaultPDP() throws UnknownIdentifierException {
-    if (defaultPDP != null)
-      return defaultPDP;
-
     synchronized (this) {
       if (defaultPDP == null)
         defaultPDP = new PDP(store.getDefaultPDPConfig());
