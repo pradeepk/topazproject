@@ -2,7 +2,12 @@ package org.topazproject.ws.annotation.service;
 
 import java.io.IOException;
 
+import java.net.URI;
+import java.net.URISyntaxException;
+
 import java.rmi.RemoteException;
+
+import java.security.Principal;
 
 import javax.servlet.http.HttpSession;
 
@@ -24,20 +29,30 @@ import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.ws.annotation.AnnotationImpl;
 import org.topazproject.ws.annotation.PEP;
 
+import fedora.client.APIMStubFactory;
+import fedora.client.Uploader;
+
+import fedora.server.management.FedoraAPIM;
+
 /**
  * The implementation of the annotation service.
  */
 public class AnnotationServicePortSoapBindingImpl implements Annotation, ServiceLifecycle {
-  private static Log     log = LogFactory.getLog(AnnotationServicePortSoapBindingImpl.class);
-  private AnnotationImpl impl       = null;
+  private static Log     log          =
+    LogFactory.getLog(AnnotationServicePortSoapBindingImpl.class);
+  private AnnotationImpl impl         = null;
   private Configuration  itqlConfig;
+  private Configuration  fedoraConfig;
+  private String         hostname;
 
   /**
    * Creates a new AnnotationServicePortSoapBindingImpl object.
    */
   public AnnotationServicePortSoapBindingImpl() {
     Configuration root = ConfigurationStore.getInstance().getConfiguration();
-    itqlConfig = root.subset("topaz.services.itql");
+    itqlConfig     = root.subset("topaz.services.itql");
+    fedoraConfig   = root.subset("topaz.services.fedora");
+    hostname       = root.getString("topaz.server.hostname");
   }
 
   /**
@@ -71,7 +86,64 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
       throw new ServiceException(e);
     }
 
-    impl = new AnnotationImpl(itql, pep);
+    URI        fedoraServer;
+    FedoraAPIM apim;
+    Uploader   uploader;
+
+    try {
+      ProtectedService fedoraSvc = ProtectedServiceFactory.createService(fedoraConfig, session);
+      URI              fedoraURI = new URI(fedoraSvc.getServiceUri());
+      fedoraServer = getRemoteFedoraURI(fedoraURI, hostname);
+
+      if (fedoraSvc.requiresUserNamePassword()) {
+        apim =
+          APIMStubFactory.getStub(fedoraURI.getScheme(), fedoraURI.getHost(), fedoraURI.getPort(),
+                                  fedoraSvc.getUserName(), fedoraSvc.getPassword());
+        uploader =
+          new Uploader(fedoraURI.getScheme(), fedoraURI.getHost(), fedoraURI.getPort(),
+                       fedoraSvc.getUserName(), fedoraSvc.getPassword());
+      } else {
+        String pqf = fedoraURI.getPath();
+
+        if (fedoraURI.getQuery() != null)
+          pqf += ("?" + fedoraURI.getQuery());
+
+        if (fedoraURI.getFragment() != null)
+          pqf += ("#" + fedoraURI.getFragment());
+
+        apim =
+          APIMStubFactory.getStubAltPath(fedoraURI.getScheme(), fedoraURI.getHost(),
+                                         fedoraURI.getPort(), pqf, null, null);
+
+        // XXX: short of wholesale copying and modifying of Uploader, I see no way to get the
+        // path in there.
+        uploader =
+          new Uploader(fedoraURI.getScheme(), fedoraURI.getHost(), fedoraURI.getPort(),
+                       fedoraSvc.getUserName(), fedoraSvc.getPassword());
+      }
+    } catch (Exception e) {
+      if (log.isErrorEnabled())
+        log.error("Failed to create fedora service interface", e);
+
+      throw new ServiceException(e);
+    }
+
+    Principal principal = ((ServletEndpointContext) context).getUserPrincipal();
+    String    user = (principal == null) ? null : principal.getName();
+
+    impl = new AnnotationImpl(pep, itql, fedoraServer, apim, uploader, user);
+  }
+
+  private static URI getRemoteFedoraURI(URI fedoraURI, String hostname) {
+    if (!fedoraURI.getHost().equals("localhost"))
+      return fedoraURI; // it's already remote
+
+    try {
+      return new URI(fedoraURI.getScheme(), null, hostname, fedoraURI.getPort(),
+                     fedoraURI.getPath(), null, null);
+    } catch (URISyntaxException use) {
+      throw new Error(use); // Can't happen
+    }
   }
 
   /**
@@ -87,17 +159,41 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
   /**
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
-  public String createAnnotation(String on, String annotationInfo)
-                          throws RemoteException {
-    return impl.createAnnotation(on, annotationInfo);
+  public String createAnnotation(String type, String annotates, String context, String supersedes,
+                                 String body) throws NoSuchIdException, RemoteException {
+    try {
+      return impl.createAnnotation(type, annotates, context, supersedes, body);
+    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+      if (log.isDebugEnabled())
+        log.debug("Failed to create annotation", e);
+
+      throw new NoSuchIdException(e.getId());
+    }
+  }
+
+  /**
+   * @see org.topazproject.ws.annotation.Annotation#createAnnotation
+   */
+  public String createAnnotation(String type, String annotates, String context, String supersedes,
+                                 String contentType, String content)
+                          throws NoSuchIdException, RemoteException {
+    try {
+      return impl.createAnnotation(type, annotates, context, supersedes, contentType, content);
+    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+      if (log.isDebugEnabled())
+        log.debug("Failed to create annotation", e);
+
+      throw new NoSuchIdException(e.getId());
+    }
   }
 
   /**
    * @see org.topazproject.ws.annotation.Annotation#deleteAnnotation
    */
-  public void deleteAnnotation(String id) throws NoSuchIdException, RemoteException {
+  public void deleteAnnotation(String id, boolean deletePreceding)
+                        throws NoSuchIdException, RemoteException {
     try {
-      impl.deleteAnnotation(id);
+      impl.deleteAnnotation(id, deletePreceding);
     } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("Failed to delete annotation", e);
@@ -107,29 +203,44 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
   }
 
   /**
-   * @see org.topazproject.ws.annotation.Annotation#setAnnotationInfo
+   * @see org.topazproject.ws.annotation.Annotation#getAnnotation
    */
-  public void setAnnotationInfo(String id, String annotationDef)
-                         throws NoSuchIdException, RemoteException {
+  public String getAnnotation(String id) throws NoSuchIdException, RemoteException {
     try {
-      impl.setAnnotationInfo(id, annotationDef);
+      return impl.getAnnotation(id);
     } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
       if (log.isDebugEnabled())
-        log.debug("Failed to set annotation info", e);
+        log.debug("Failed to get annotation", e);
 
       throw new NoSuchIdException(e.getId());
     }
   }
 
   /**
-   * @see org.topazproject.ws.annotation.Annotation#getAnnotationInfo
+   * @see org.topazproject.ws.annotation.Annotation#getLatestAnnotations
    */
-  public String getAnnotationInfo(String id) throws NoSuchIdException, RemoteException {
+  public String[] getLatestAnnotations(String id, boolean idsOnly)
+                                throws NoSuchIdException, RemoteException {
     try {
-      return impl.getAnnotationInfo(id);
+      return impl.getLatestAnnotations(id, idsOnly);
     } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
       if (log.isDebugEnabled())
-        log.debug("Failed to get annotation info", e);
+        log.debug("Failed to get latest annotations", e);
+
+      throw new NoSuchIdException(e.getId());
+    }
+  }
+
+  /**
+   * @see org.topazproject.ws.annotation.Annotation#getPrecedingAnnotations
+   */
+  public String[] getPrecedingAnnotations(String id, boolean idsOnly)
+                                   throws NoSuchIdException, RemoteException {
+    try {
+      return impl.getPrecedingAnnotations(id, idsOnly);
+    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+      if (log.isDebugEnabled())
+        log.debug("Failed to get preceding annotations", e);
 
       throw new NoSuchIdException(e.getId());
     }
@@ -138,8 +249,9 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
   /**
    * @see org.topazproject.ws.annotation.Annotation#listAnnotations
    */
-  public String[] listAnnotations(String on) throws RemoteException {
-    return impl.listAnnotations(on);
+  public String[] listAnnotations(String on, String type, boolean idsOnly)
+                           throws RemoteException {
+    return impl.listAnnotations(on, type, idsOnly);
   }
 
   /**

@@ -16,6 +16,9 @@
         <password>fedoraAdmin</password>
       </itql>
     </services>
+    <server>
+      <hostname>localhost</hostname>
+    </server>
     <annotations>
       <pdpName>_default_</pdpName>
     </annotations>

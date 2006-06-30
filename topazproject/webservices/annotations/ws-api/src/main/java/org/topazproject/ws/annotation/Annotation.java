@@ -3,77 +3,168 @@ package org.topazproject.ws.annotation;
 import java.rmi.RemoteException;
 
 /**
- * Annotation related administrative operations.
+ * Annotation related operations.
  *
  * @author Pradeep Krishnan
  */
 public interface Annotation {
   /**
-   * Create a new annotation.
+   * Creates a new annotation.
    *
-   * @param annotates the subject of this annotation
-   * @param annotationDef an xml document containing the new meta-data for this annotation; it must
-   *        follow the ??? DTD.
+   * @param type An annotation type or <code>null</code>. The different types of annotations
+   *        defined in <code>http://www.w3.org/2000/10/annotationTypes#</code> are:
+   *        <ul><li><code>http://www.w3.org/2000/10/annotationTypes#Advice</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationTypes#Change</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationTypes#Comment</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationTypes#Example</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationTypes#Explantion</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationTypes#Question</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationTypes#SeeAlso</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationTypes#Annotation</code></li> </ul>
+   *        Defaults to <code>http://www.w3.org/2000/10/annotationTypes#Annotation</code>
+   * @param annotates the resource to which this annotation applies. Defined by
+   *        <code>http://www.w3.org/2000/10/annotation-ns#annotation</code> and the inverse
+   *        <code>http://www.w3.org/2000/10/annotation-ns#hasAnnotation</code>. Must be a valid
+   *        <code>URI</code>.
+   * @param context the context within the resource named in <code>annotates</code> to which this
+   *        annotation applies or <code>null</code>. Defined by
+   *        <code>http://www.w3.org/2000/10/annotation-ns#context</code>
+   * @param supersedes the annotation that this supersedes or <code>null</code>. Defined by
+   *        <code>http://www.w3.org/2000/10/annotation-ns#supersedes</code> and the inverse
+   *        relation <code>http://www.w3.org/2000/10/annotation-ns#supersededBy</code> both of
+   *        which are sub properties of
+   *        <code>http://www.w3.org/2000/10/annotation-ns#related</code>.. Defaults to
+   *        <code>http://www.w3.org/1999/02/22-rdf-syntax-ns#nil</code>
+   * @param body the resource representing the content of an annotation. Defined by
+   *        <code>http://www.w3.org/2000/10/annotation-ns#body</code>, a sub property of
+   *        <code>http://www.w3.org/2000/10/annotation-ns#related</code>. Must be a valid
+   *        <code>URL</code>
    *
    * @return Returns a unique identifier for the newly created annotation
    *
-   * @throws RemoteException if an error occured
+   * @throws NoSuchIdException if <code>supersedes</code> is not a valid annotation id
+   * @throws RemoteException if some other error occured
    */
-  public String createAnnotation(String annotates, String annotationDef)
-                          throws RemoteException;
+  public String createAnnotation(String type, String annotates, String context, String supersedes,
+                                 String body) throws NoSuchIdException, RemoteException;
 
   /**
-   * Delete an annotation.
+   * Creates a new annotation. A new resource URL is created for the annotation body from the
+   * supplied content.
+   *
+   * @param type An annotation type or <code>null</code>.
+   * @param annotates the resource to which this annotation applies. Defined by
+   * @param context the context within the resource named in <code>annotates</code> to which this
+   *        annotation applies or <code>null</code>.
+   * @param supersedes the annotation that this supersedes or <code>null</code>.
+   * @param contentType the mime-type of the annotation body <code>content</code>
+   * @param content the annotation body content
+   *
+   * @return Returns a unique identifier for the newly created annotation
+   *
+   * @throws NoSuchIdException if <code>supersedes</code> is not a valid annotation id
+   * @throws RemoteException if some other error occured
+   */
+  public String createAnnotation(String type, String annotates, String context, String supersedes,
+                                 String contentType, String content)
+                          throws NoSuchIdException, RemoteException;
+
+  /**
+   * Deletes an annotation. Deletes all triples for which this annotation is the subject.
+   * Additionally if the <code>deletePreceding</code> is <code>true</code>  then all preceding
+   * annotations to this are deleted.
    *
    * @param id the id of the annotation to remove
+   * @param deletePreceding whether to delete all annotations that are supersed by this annotation.
    *
    * @throws NoSuchIdException if the annotation does not exist
    * @throws RemoteException if some other error occured
    */
-  public void deleteAnnotation(String id) throws NoSuchIdException, RemoteException;
+  public void deleteAnnotation(String id, boolean deletePreceding)
+                        throws NoSuchIdException, RemoteException;
 
   /**
-   * Set the given annotation's meta-data. The new data completely replaces the old.
-   *
-   * @param id the id of the annotation to update
-   * @param annotationDef an xml document containing the new meta-data for this annotation; it must
-   *        follow the ??? DTD.
-   *
-   * @throws NoSuchIdException if the annotation does not exist
-   * @throws RemoteException if some other error occured
-   */
-  public void setAnnotationInfo(String id, String annotationDef)
-                         throws NoSuchIdException, RemoteException;
-
-  /**
-   * Retrieve the given annotation's current meta-data.
+   * Retrieve the annotation meta-data. Note that there may be other annotations that supersede
+   * this. To always get the latest version(s), use {@link #getLatestAnnotations}. An example for
+   * the annotations metadata returned is:
+   * <pre>
+   * &lt;annotation xmlns:a="http://www.w3.org/2000/10/annotation-ns#" 
+   *                xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   *                xmlns:d="http://purl.org/dc/elements/1.1/"
+   *                id="annotations:2"&gt;
+   *   &lt;r:type&gt;http://www.w3.org/2000/10/annotationTypes#Annotation&lt;/r:type&gt;
+   *   &lt;a:annotates&gt;http://serv1.example.com/some/page.html&lt;/a:annotates&gt;
+   *   &lt;a:context&gt;http://serv1.example.com/some/page.html#xpointer(id("Main")/p[2])&lt;/a:context&gt;
+   *   &lt;a:body&gt;http://serv2.example.com/mycomment.html&lt;/a:body&gt;
+   *   &lt;d:creator&gt;Ralph Swick&lt;/d:creator&gt;
+   *   &lt;a:created&gt;2006-06-28T12:10Z&lt;/a:created&gt;
+   *   &lt;a:state&gt;0&lt;/a:state&gt;
+   *   &lt;a:supersededBy&gt;annotations:5&lt;/a:supersededBy&gt;
+   *   &lt;a:supersededBy&gt;annotations:6&lt;/a:supersededBy&gt;
+   * &lt;/annotation&gt;
+   * </pre>
    *
    * @param id the id of the annotation for which to get the meta-data
    *
-   * @return an xml document containing the current meta-data for this annotation, or null if none
-   *         has been set yet; it follows the ???  DTD.
+   * @return Returns the annotation meta data as an xml document.
    *
    * @throws NoSuchIdException if the annotation does not exist
    * @throws RemoteException if some other error occured
    */
-  public String getAnnotationInfo(String id) throws NoSuchIdException, RemoteException;
+  public String getAnnotation(String id) throws NoSuchIdException, RemoteException;
 
   /**
-   * List the set of annotations on a resource.
+   * Gets the latest version(s) of this annotation. The latest version(s) are the ones that are not
+   * superseded by other annotations and therefore could just be this annotation itself.
+   *
+   * @param id the annotation id.
+   * @param idsOnly true to return just the ids; false for the annotation meta-data.
+   *
+   * @return an array of annotation ids or metadata; the array will atleast contain one element
+   *
+   * @throws NoSuchIdException if the annotation does not exist
+   * @throws RemoteException if an error occured
+   */
+  public String[] getLatestAnnotations(String id, boolean idsOnly)
+                                throws NoSuchIdException, RemoteException;
+
+  /**
+   * Gets the set of annotations of the given type on a resource. Matching annotations are further
+   * filtered out if they are superseded by other annotations or if they are in an administrator
+   * review state.
    *
    * @param annotates the resource for which annotations are to be looked-up
+   * @param type the annotation type to use in filtering the annotations or null to include all
+   * @param idsOnly true to return just the ids; false for the annotation meta-data.
    *
-   * @return an array of id's; if no annotations have been defined, an empty array is returned
+   * @return an array of annotation ids or metadata for matching annotations; if no annotations
+   *         have been defined, an empty array is returned
    *
    * @throws RemoteException if an error occured
    */
-  public String[] listAnnotations(String annotates) throws RemoteException;
+  public String[] listAnnotations(String annotates, String type, boolean idsOnly)
+                           throws RemoteException;
 
   /**
-   * Sets the state of an annotation. (eg. flagged for review)
+   * Gets the chain of annotations that precede this to give a history of changes.
    *
-   * @param id the id of the annotation whose state is changed
-   * @param state the new state
+   * @param id the annotation id
+   * @param idsOnly true to return just the ids; false for the annotation meta-data.
+   *
+   * @return an array of annotation ids or metadata; if this annotation does not supersede any
+   *         other annotation, then an empty array is returned
+   *
+   * @throws NoSuchIdException if the annotation does not exist
+   * @throws RemoteException if an error occured
+   */
+  public String[] getPrecedingAnnotations(String id, boolean idsOnly)
+                                   throws NoSuchIdException, RemoteException;
+
+  /**
+   * Sets the administrative state of an annotation. (eg. flagged for review)
+   *
+   * @param id the annotation id
+   * @param state the new state or 0 to take the annotation out of an administrator state
    *
    * @throws NoSuchIdException if the annotation does not exist
    * @throws RemoteException if some other error occured
@@ -82,11 +173,12 @@ public interface Annotation {
                           throws NoSuchIdException, RemoteException;
 
   /**
-   * List the set of annotations in a specific state.
+   * List the set of annotations in a specific administrative state.
    *
-   * @param state the state to filter the list of annotations by (eg. flagged for review)
+   * @param state the state to filter the list of annotations by or 0 to return annotations in any
+   *        administartive state
    *
-   * @return an array of id's; if no annotations have been defined, an empty array is returned
+   * @return an array of id's; if no matching annotations are found, an empty array is returned
    *
    * @throws RemoteException if some error occured
    */
