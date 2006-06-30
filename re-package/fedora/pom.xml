@@ -8,7 +8,7 @@
   <packaging>jar</packaging>
   <version>2.1.1</version>
   <name>Fedora with Topaz config</name>
-  <url>http://gandalf/</url>
+  <url>http://gandalf.topazproject.org/</url>
   <inceptionYear>2006</inceptionYear>
 
   <parent>

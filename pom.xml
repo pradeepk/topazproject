@@ -24,27 +24,27 @@
     <repository>
       <id>topaz</id>
       <name>Maven 2 Repository for Topaz</name>
-      <url>http://gandalf/maven2</url>
+      <url>http://gandalf.topazproject.org/maven2</url>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
       <id>topaz</id>
       <name>Maven 2 Repository for Topaz</name>
-      <url>http://gandalf/maven2</url>
+      <url>http://gandalf.topazproject.org/maven2</url>
     </pluginRepository>
   </pluginRepositories>
 
   <scm>
-    <developerConnection>scm:svn:http://gandalf/svn/head/</developerConnection>
-    <connection>scm:svn:http://gandalf/svn/head/</connection>
-    <url>http://gandalf/svn/</url>
+    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/head/</developerConnection>
+    <connection>scm:svn:http://gandalf.topazproject.org/svn/head/</connection>
+    <url>http://gandalf.topazproject.org/svn/</url>
   </scm>
 
   <distributionManagement>
     <repository>
       <id>topaz</id>
-      <url>http://gandalf/maven2/</url>
+      <url>http://gandalf.topazproject.org/maven2/</url>
     </repository>
   </distributionManagement>
 
