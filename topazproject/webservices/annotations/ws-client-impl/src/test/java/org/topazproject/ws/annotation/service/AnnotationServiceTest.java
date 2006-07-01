@@ -38,18 +38,13 @@ public class AnnotationServiceTest extends TestCase {
    * @throws Error DOCUMENT ME!
    */
   protected void setUp() throws ServiceException, RemoteException {
-    URL url;
 
     try {
-      url =
-        new URL("http://localhost:9998/ws-annotation-webapp-0.1/services/AnnotationServicePort");
+      service = AnnotationClientFactory.create("http://localhost:9998/ws-annotation-webapp-0.1/services/AnnotationServicePort");
     } catch (MalformedURLException e) {
       throw new Error(e);
     }
 
-    AnnotationServiceLocator locator = new AnnotationServiceLocator();
-    locator.setMaintainSession(true);
-    service = locator.getAnnotationServicePort(url);
   }
 
   /**
