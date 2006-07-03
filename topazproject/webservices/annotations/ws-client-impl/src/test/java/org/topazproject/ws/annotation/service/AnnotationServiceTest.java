@@ -38,13 +38,12 @@ public class AnnotationServiceTest extends TestCase {
    * @throws Error DOCUMENT ME!
    */
   protected void setUp() throws ServiceException, RemoteException {
-
     try {
-      service = AnnotationClientFactory.create("http://localhost:9998/ws-annotation-webapp-0.1/services/AnnotationServicePort");
+      service =
+        AnnotationClientFactory.create("http://localhost:9998/ws-annotation-webapp-0.1/services/AnnotationServicePort");
     } catch (MalformedURLException e) {
       throw new Error(e);
     }
-
   }
 
   /**
@@ -108,7 +107,14 @@ public class AnnotationServiceTest extends TestCase {
     assertEquals("Info mismatch, got '" + info + "'", info, "u:hello");
 
     String superseded = annotation;
-    annotation   = service.createAnnotation(null, subject, null, annotation, "text/plain", "bye");
+
+    try {
+      annotation =
+        service.createAnnotation(null, subject, null, annotation, "text/plain;charset=utf-8",
+                                 "bye".getBytes("utf-8"));
+    } catch (java.io.UnsupportedEncodingException e) {
+      throw new Error(e);
+    }
 
     //annotation = service.createAnnotation(null, subject, null, annotation, "u:bye");
     info = service.getAnnotation(annotation);

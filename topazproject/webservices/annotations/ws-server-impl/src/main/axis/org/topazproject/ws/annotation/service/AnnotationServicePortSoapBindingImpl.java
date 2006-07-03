@@ -175,7 +175,7 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
   public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String contentType, String content)
+                                 String contentType, byte[] content)
                           throws NoSuchIdException, RemoteException {
     try {
       return impl.createAnnotation(type, annotates, context, supersedes, contentType, content);

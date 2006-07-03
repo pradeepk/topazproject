@@ -169,13 +169,13 @@ public class AnnotationImpl implements Annotation {
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
   public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String contentType, String content)
+                                 String contentType, byte[] content)
                           throws NoSuchIdException, RemoteException {
     return createAnnotation(type, annotates, context, supersedes, null, contentType, content);
   }
 
   private String createAnnotation(String type, String annotates, String context, String supersedes,
-                                  String body, String contentType, String content)
+                                  String body, String contentType, byte[] content)
                            throws NoSuchIdException, RemoteException {
     if (annotates == null)
       throw new IllegalArgumentException("annotates cannot be null");
@@ -233,10 +233,10 @@ public class AnnotationImpl implements Annotation {
     return id;
   }
 
-  private String createBody(String contentType, String content)
+  private String createBody(String contentType, byte[] content)
                      throws RemoteException {
     try {
-      String ref   = uploader.upload(new ByteArrayInputStream(content.getBytes("UTF-8")));
+      String ref   = uploader.upload(new ByteArrayInputStream(content));
       String foxml = FOXML.replaceAll("\\$CONTENTTYPE", contentType).replaceAll("\\$CONTENT", ref);
 
       return pid2URI(apim.ingest(foxml.getBytes("UTF-8"), "foxml1.0", "created"));

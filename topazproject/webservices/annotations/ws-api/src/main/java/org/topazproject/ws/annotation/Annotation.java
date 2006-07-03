@@ -53,12 +53,16 @@ public interface Annotation {
    * supplied content.
    *
    * @param type An annotation type or <code>null</code>.
-   * @param annotates the resource to which this annotation applies. Defined by
+   * @param annotates the resource to which this annotation applies.
    * @param context the context within the resource named in <code>annotates</code> to which this
    *        annotation applies or <code>null</code>.
    * @param supersedes the annotation that this supersedes or <code>null</code>.
-   * @param contentType the mime-type of the annotation body <code>content</code>
-   * @param content the annotation body content
+   * @param contentType the mime-type and optionally the character encoding of the annotation body.
+   *        eg. <code>text/html;charset=utf-8</code>, <code>text/plain;charset=iso-8859-1</code>,
+   *        <code>text/plain</code> etc.
+   * @param content the annotation body content in the character encoding specified. If no
+   *        character encoding is specified the interpretation will be left upto the client that
+   *        later retrieves the annotation body.
    *
    * @return Returns a unique identifier for the newly created annotation
    *
@@ -66,7 +70,7 @@ public interface Annotation {
    * @throws RemoteException if some other error occured
    */
   public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String contentType, String content)
+                                 String contentType, byte[] content)
                           throws NoSuchIdException, RemoteException;
 
   /**
