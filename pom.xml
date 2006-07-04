@@ -58,5 +58,7 @@
   <properties>
     <topazproject.install.dir>${user.home}/topazproject-install</topazproject.install.dir>
     <javax.net.ssl.trustStore>${topazproject.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/cacert.ks</javax.net.ssl.trustStore>
+    <maven.compiler.source>1.4</maven.compiler.source>
+    <maven.compiler.target>1.4</maven.compiler.target>
   </properties>
 </project>
