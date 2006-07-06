@@ -197,6 +197,10 @@
       <fileset dir="server/deploy"/>
     </copy>
 
+    <!-- copy resource-indexer -->
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
+      file="${RESOURCE_INDEXER}"/>
+    
     <!-- jar everything up and overwrite the package target created by maven -->
     <jar destfile="${DEST_DIR}.jar" basedir="${DEST_DIR}"/>
   </target>

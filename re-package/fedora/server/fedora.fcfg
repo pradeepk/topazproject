@@ -319,7 +319,8 @@
     <param name="maxSecondsPerSession" value="500"/>
     <param name="connectionPool" value="localMySQLPool" mysqlvalue="localMySQLPool" oraclevalue="localOracle9iPool" mckoivalue="localMcKoiPool"/>
   </module>
-  <module role="fedora.server.resourceIndex.ResourceIndex" class="fedora.server.resourceIndex.ResourceIndexModule">
+ 
+  <module role="fedora.server.resourceIndex.ResourceIndex" class="org.topazproject.fedora.ResourceIndexer">
     <comment>Description: Supports the ResourceIndex. 
              Parameters:
                  - level (required) 

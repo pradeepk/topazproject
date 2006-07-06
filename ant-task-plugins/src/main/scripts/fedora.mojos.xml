@@ -183,6 +183,13 @@
           <defaultValue>${settings.localRepository}/cas/casclient/2.1.1/casclient-2.1.1.jar</defaultValue>
         </parameter>
 
+        <parameter>
+          <name>RESOURCE_INDEXER</name>
+          <property>RESOURCE_INDEXER</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/org/topazproject/resource-indexer/0.5-SNAPSHOT/resource-indexer-0.5-SNAPSHOT.jar</defaultValue>
+        </parameter>
+
       </parameters>
 
     </mojo>
