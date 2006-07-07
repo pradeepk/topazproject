@@ -187,7 +187,7 @@ public class AnnotationImpl implements Annotation {
       context = annotates;
 
     if (type == null)
-      type = "http://www.w3.org/2000/10/annotationTypes#Annotation";
+      type = "http://www.w3.org/2000/10/annotationType#Annotation";
 
     checkAccess(PEP.CREATE_ANNOTATION, annotates);
 

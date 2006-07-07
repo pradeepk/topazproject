@@ -12,16 +12,16 @@ public interface Annotation {
    * Creates a new annotation.
    *
    * @param type An annotation type or <code>null</code>. The different types of annotations
-   *        defined in <code>http://www.w3.org/2000/10/annotationTypes#</code> are:
-   *        <ul><li><code>http://www.w3.org/2000/10/annotationTypes#Advice</code></li>
-   *        <li><code>http://www.w3.org/2000/10/annotationTypes#Change</code></li>
-   *        <li><code>http://www.w3.org/2000/10/annotationTypes#Comment</code></li>
-   *        <li><code>http://www.w3.org/2000/10/annotationTypes#Example</code></li>
-   *        <li><code>http://www.w3.org/2000/10/annotationTypes#Explantion</code></li>
-   *        <li><code>http://www.w3.org/2000/10/annotationTypes#Question</code></li>
-   *        <li><code>http://www.w3.org/2000/10/annotationTypes#SeeAlso</code></li>
-   *        <li><code>http://www.w3.org/2000/10/annotationTypes#Annotation</code></li> </ul>
-   *        Defaults to <code>http://www.w3.org/2000/10/annotationTypes#Annotation</code>
+   *        defined in <code>http://www.w3.org/2000/10/annotationType#</code> are:
+   *        <ul><li><code>http://www.w3.org/2000/10/annotationType#Advice</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationType#Change</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationType#Comment</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationType#Example</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationType#Explantion</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationType#Question</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationType#SeeAlso</code></li>
+   *        <li><code>http://www.w3.org/2000/10/annotationType#Annotation</code></li> </ul>
+   *        Defaults to <code>http://www.w3.org/2000/10/annotationType#Annotation</code>
    * @param annotates the resource to which this annotation applies. Defined by
    *        <code>http://www.w3.org/2000/10/annotation-ns#annotation</code> and the inverse
    *        <code>http://www.w3.org/2000/10/annotation-ns#hasAnnotation</code>. Must be a valid
@@ -96,7 +96,7 @@ public interface Annotation {
    *                xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
    *                xmlns:d="http://purl.org/dc/elements/1.1/"
    *                id="annotations:2"&gt;
-   *   &lt;r:type&gt;http://www.w3.org/2000/10/annotationTypes#Annotation&lt;/r:type&gt;
+   *   &lt;r:type&gt;http://www.w3.org/2000/10/annotationType#Annotation&lt;/r:type&gt;
    *   &lt;a:annotates&gt;http://serv1.example.com/some/page.html&lt;/a:annotates&gt;
    *   &lt;a:context&gt;http://serv1.example.com/some/page.html#xpointer(id("Main")/p[2])&lt;/a:context&gt;
    *   &lt;a:body&gt;http://serv2.example.com/mycomment.html&lt;/a:body&gt;
