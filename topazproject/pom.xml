@@ -20,7 +20,6 @@
     <module>webservices/journal-admin</module>
     <module>webservices/annotations</module>
     <module>webservices/articles</module>
-    <module>samples</module>
   </modules>
 
 </project>
