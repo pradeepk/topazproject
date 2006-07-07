@@ -53,9 +53,10 @@
             <configuration>
               <tasks>
                 <property name="fedora.webapp" value="${fedora.tomcat.home}/webapps/fedora"/>
-                <echo>${fedora.webapp}</echo>
                 <mkdir dir="target/classes"/>
-                <javac srcdir="src/main/java" destdir="target/classes">
+                <javac srcdir="src/main/java" destdir="target/classes" 
+                  source="${maven.compiler.source}"
+                  target="${maven.compiler.target}">
                   <classpath>
                     <pathelement path="${maven.compiler.path}"/>
                     <pathelement path="${fedora.webapp}/WEB-INF/classes"/>
