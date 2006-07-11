@@ -49,7 +49,7 @@
   </distributionManagement>
 
   <modules>
-    <module>ant-task-plugins</module>
+    <module>build/ant-tasks-plugin</module>
     <module>topazproject</module>
     <module>plosone</module>
     <module>re-package</module>

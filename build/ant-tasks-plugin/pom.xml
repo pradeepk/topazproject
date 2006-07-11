@@ -17,6 +17,7 @@
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
     <version>0.5-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <dependencies>
@@ -36,6 +37,10 @@
   <build>
     <plugins>
       <plugin>
+        <!-- The documentation for this plugin is in the Maven guide
+	     "Developing Ant Plugins for Maven 2.x"
+             (http://maven.apache.org/guides/plugin/guide-ant-plugin-development.html)
+        -->
         <!-- NOTE: We don't need groupId if the plugin's groupId is
              org.apache.maven.plugins OR org.codehaus.mojo.
              We also don't have to specify a version, since Maven can
