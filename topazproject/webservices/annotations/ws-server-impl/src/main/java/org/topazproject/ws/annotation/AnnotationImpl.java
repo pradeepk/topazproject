@@ -163,6 +163,8 @@ public class AnnotationImpl implements Annotation {
    */
   public String createAnnotation(String type, String annotates, String context, String supersedes,
                                  String body) throws NoSuchIdException, RemoteException {
+    validateUri(body, "body");
+
     return createAnnotation(type, annotates, context, supersedes, body, null, null);
   }
 
@@ -172,19 +174,18 @@ public class AnnotationImpl implements Annotation {
   public String createAnnotation(String type, String annotates, String context, String supersedes,
                                  String contentType, byte[] content)
                           throws NoSuchIdException, RemoteException {
+    if (contentType == null)
+      throw new NullPointerException("'contentType' cannot be null");
+
+    if (content == null)
+      throw new NullPointerException("'content' cannot be null");
+
     return createAnnotation(type, annotates, context, supersedes, null, contentType, content);
   }
 
   private String createAnnotation(String type, String annotates, String context, String supersedes,
                                   String body, String contentType, byte[] content)
                            throws NoSuchIdException, RemoteException {
-    boolean managed = (body == null);
-
-    if (!managed)
-      validateUri(body, "body");
-    else if ((contentType == null) || (content == null))
-      throw new IllegalArgumentException("'body' cannot be null");
-
     if (context == null)
       context = annotates;
     else
@@ -206,7 +207,7 @@ public class AnnotationImpl implements Annotation {
     String id =
       apim.getNextPID(new org.apache.axis.types.NonNegativeInteger("1"), ANNOTATION_PID_NS)[0];
 
-    if (managed) {
+    if (body == null) {
       body = createBody(contentType, content);
 
       if (log.isDebugEnabled())
