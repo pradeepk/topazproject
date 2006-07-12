@@ -1,0 +1,52 @@
+#set( $service = $artifactId )
+#set( $Svc = "${service.substring(0, 1).toUpperCase()}${service.substring(1)}" )
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>${groupId}</groupId>
+  <artifactId>${artifactId}</artifactId>
+  <packaging>pom</packaging>
+  <name>${Svc} Webservice</name>
+  <version>0.1-SNAPSHOT</version>
+
+  <parent>
+    <groupId>org.topazproject</groupId>
+    <artifactId>topazproject</artifactId>
+    <version>0.5-SNAPSHOT</version>
+    <relativePath>../../pom.xml</relativePath>
+  </parent>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>Codehaus Snapshots</id>
+      <url>http://snapshots.maven.codehaus.org/maven2/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <reporting>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
+      </plugin>
+    </plugins>
+  </reporting>
+
+  <modules>
+      <module>core</module>
+      <module>ws-client-impl</module>
+      <module>ws-server-impl</module>
+      <module>ws-webapp</module>
+  </modules>
+
+  <properties>
+    <wsdl.filename>${artifactId}-service.wsdl</wsdl.filename>
+  </properties>
+</project>

@@ -1,0 +1,26 @@
+<archetype>
+  <id>webservice</id>
+  <sources>
+    <source>core/src/main/java/XYZ.java</source>
+    <source>core/src/main/java/XYZImpl.java</source>
+  </sources>
+  <testSources>
+    <source>ws-client-impl/src/test/java/XYZServiceTest.java</source>
+  </testSources>
+  <resources>
+    <resource>pom.xml</resource>
+    <resource>core/pom.xml</resource>
+    <resource>ws-client-impl/pom.xml</resource>
+    <resource>ws-server-impl/pom.xml</resource>
+    <resource>ws-webapp/pom.xml</resource>
+    <resource>ws-client-impl/src/main/wsdl/dummy</resource>
+    <resource>ws-server-impl/src/main/wsdl/dummy</resource>
+    <resource>ws-server-impl/src/main/axis/dummy</resource>
+    <resource>ws-webapp/src/main/webapp/WEB-INF/defaults.xml</resource>
+    <resource>ws-webapp/src/main/webapp/WEB-INF/config.xml</resource>
+    <resource>ws-webapp/src/main/webapp/WEB-INF/PDPConfig.xml</resource>
+    <resource>ws-webapp/src/main/webapp/WEB-INF/web.xml</resource>
+    <resource>ws-webapp/src/main/stylesheets/server-config.xslt</resource>
+    <resource>ws-webapp/src/main/resources/policy/XYZ.xml</resource>
+  </resources>
+</archetype>
