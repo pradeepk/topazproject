@@ -17,13 +17,13 @@
     <dependency>
       <groupId>${pom.parent.groupId}</groupId>
       <artifactId>${pom.parent.artifactId}-api</artifactId>
-      <version>0.1</version>
+      <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>${pom.parent.groupId}</groupId>
       <artifactId>${pom.parent.artifactId}-webapp</artifactId>
       <type>war</type>
-      <version>0.1</version>
+      <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>axis</groupId>
