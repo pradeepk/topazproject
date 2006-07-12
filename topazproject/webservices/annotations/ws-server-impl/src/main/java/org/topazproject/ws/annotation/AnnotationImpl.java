@@ -3,6 +3,7 @@ package org.topazproject.ws.annotation;
 import java.io.ByteArrayInputStream;
 
 import java.net.URI;
+import java.net.URISyntaxException;
 
 import java.rmi.RemoteException;
 
@@ -177,30 +178,33 @@ public class AnnotationImpl implements Annotation {
   private String createAnnotation(String type, String annotates, String context, String supersedes,
                                   String body, String contentType, byte[] content)
                            throws NoSuchIdException, RemoteException {
-    if (annotates == null)
-      throw new IllegalArgumentException("annotates cannot be null");
+    boolean managed = (body == null);
 
-    if ((body == null) && ((contentType == null) || (content == null)))
-      throw new IllegalArgumentException("body cannot be null");
+    if (!managed)
+      validateUri(body, "body");
+    else if ((contentType == null) || (content == null))
+      throw new IllegalArgumentException("'body' cannot be null");
 
     if (context == null)
       context = annotates;
+    else
+      validateUri(context, "context");
 
     if (type == null)
       type = "http://www.w3.org/2000/10/annotationType#Annotation";
+    else
+      validateUri(type, "type");
 
-    checkAccess(PEP.CREATE_ANNOTATION, annotates);
+    checkAccess(PEP.CREATE_ANNOTATION, validateUri(annotates, "annotates"));
 
     if (supersedes != null) {
-      checkAccess(PEP.SET_ANNOTATION_INFO, supersedes);
+      checkAccess(PEP.SET_ANNOTATION_INFO, validateUri(supersedes, "supersedes"));
       checkId(supersedes);
     }
 
     // xxx: cache a bunch of ids
     String id =
       apim.getNextPID(new org.apache.axis.types.NonNegativeInteger("1"), ANNOTATION_PID_NS)[0];
-
-    boolean managed = (body == null);
 
     if (managed) {
       body = createBody(contentType, content);
@@ -252,7 +256,7 @@ public class AnnotationImpl implements Annotation {
    */
   public void deleteAnnotation(String id, boolean deletePreceding)
                         throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.DELETE_ANNOTATION, id);
+    checkAccess(PEP.DELETE_ANNOTATION, validateUri(id, "annotation-id"));
     checkId(id);
 
     String[] purgeList = getFedoraObjects(id, deletePreceding);
@@ -313,7 +317,7 @@ public class AnnotationImpl implements Annotation {
    * @see org.topazproject.ws.annotation.Annotation#getAnnotation
    */
   public String getAnnotation(String id) throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.GET_ANNOTATION_INFO, id);
+    checkAccess(PEP.GET_ANNOTATION_INFO, validateUri(id, "annotation-id"));
 
     try {
       String query = GET_ITQL.replaceAll("\\$id", id);
@@ -335,11 +339,13 @@ public class AnnotationImpl implements Annotation {
    */
   public String[] listAnnotations(String annotates, String type, boolean idsOnly)
                            throws RemoteException {
-    checkAccess(PEP.LIST_ANNOTATIONS, annotates);
+    checkAccess(PEP.LIST_ANNOTATIONS, validateUri(annotates, "annotates"));
 
     try {
       if (type == null)
         type = "a:Annotation";
+      else
+        validateUri(type, "type");
 
       String subquery = idsOnly ? "" : SUBQUERY;
 
@@ -362,7 +368,7 @@ public class AnnotationImpl implements Annotation {
    */
   public String[] getLatestAnnotations(String id, boolean idsOnly)
                                 throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.GET_ANNOTATION_INFO, id);
+    checkAccess(PEP.GET_ANNOTATION_INFO, validateUri(id, "annotation-id"));
 
     try {
       String subquery = idsOnly ? "" : SUBQUERY;
@@ -387,7 +393,7 @@ public class AnnotationImpl implements Annotation {
    */
   public String[] getPrecedingAnnotations(String id, boolean idsOnly)
                                    throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.GET_ANNOTATION_INFO, id);
+    checkAccess(PEP.GET_ANNOTATION_INFO, validateUri(id, "annotation-id"));
     checkId(id);
 
     try {
@@ -410,7 +416,7 @@ public class AnnotationImpl implements Annotation {
    */
   public void setAnnotationState(String id, int state)
                           throws RemoteException, NoSuchIdException {
-    checkAccess(PEP.SET_ANNOTATION_STATE, id);
+    checkAccess(PEP.SET_ANNOTATION_STATE, validateUri(id, "annotation-id"));
 
     String set = SET_STATE_ITQL.replaceAll("\\$id", id).replaceAll("\\$state", "" + state);
 
@@ -421,7 +427,7 @@ public class AnnotationImpl implements Annotation {
    * @see org.topazproject.ws.annotation.Annotation#listAnnotations
    */
   public String[] listAnnotations(int state) throws RemoteException {
-    checkAccess(PEP.LIST_ANNOTATIONS_IN_STATE, "" + state);
+    checkAccess(PEP.LIST_ANNOTATIONS_IN_STATE, URI.create("" + state));
 
     try {
       String query = LIST_STATE_ITQL.replaceAll("\\$state", "" + state);
@@ -448,12 +454,12 @@ public class AnnotationImpl implements Annotation {
     }
   }
 
-  private Set checkAccess(String action, String resource) {
+  private Set checkAccess(String action, URI resource) {
     try {
       if (log.isTraceEnabled())
         log.trace("checkAccess(" + action + ", " + resource + ")");
 
-      Set s = pep.checkAccess(action, URI.create(resource));
+      Set s = pep.checkAccess(action, resource);
 
       if (log.isDebugEnabled())
         log.debug("allowed access to " + action + "(" + resource + ")");
@@ -619,5 +625,24 @@ public class AnnotationImpl implements Annotation {
     Date     utcDate = new Date(utcTime);
 
     return XSD_DATE_TIME_FMT.format(utcDate) + "Z";
+  }
+
+  private URI validateUri(String uri, String name) {
+    if (uri == null)
+      throw new NullPointerException("'" + name + "' cannot be null");
+
+    try {
+      URI u = new URI(uri);
+
+      if (!u.isAbsolute())
+        throw new URISyntaxException(uri, "missing scheme component", 0);
+
+      return u;
+    } catch (URISyntaxException e) {
+      IllegalArgumentException iae =
+        new IllegalArgumentException("'" + name + "' must be a valid absolute URI");
+      iae.initCause(e);
+      throw iae;
+    }
   }
 }

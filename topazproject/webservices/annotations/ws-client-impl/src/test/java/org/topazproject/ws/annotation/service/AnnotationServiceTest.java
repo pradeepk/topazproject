@@ -58,6 +58,8 @@ public class AnnotationServiceTest extends TestCase {
   private void basicAnnotationTest() throws RemoteException {
     String   subject     = "foo:bar";
     String   annotation  = "annotation:id#42";
+    String   bodyUrl     = "http://gandalf.topazproject.org";
+    String   bodyContent = "This is a comment on foo:bar";
     String[] annotations = service.listAnnotations(subject, null, true);
 
     try {
@@ -91,7 +93,17 @@ public class AnnotationServiceTest extends TestCase {
 
     assertTrue("Failed to get expected NoSuchIdException", gotExc);
 
-    annotation   = service.createAnnotation(null, subject, null, null, "u:hello");
+    gotExc = false;
+
+    try {
+      annotation = service.createAnnotation(null, subject, null, null, "invalid-body-uri");
+    } catch (Exception e) {
+      gotExc = true;
+    }
+
+    assertTrue("Failed to get expected IllegalArgumentException", gotExc);
+
+    annotation   = service.createAnnotation(null, subject, null, null, bodyUrl);
 
     annotations = service.listAnnotations(subject, null, true);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
@@ -104,22 +116,21 @@ public class AnnotationServiceTest extends TestCase {
     int i1 = info.indexOf("<a:body>") + 8;
     int i2 = info.indexOf("</a:body>");
     info = info.substring(i1, i2);
-    assertEquals("Info mismatch, got '" + info + "'", info, "u:hello");
+    assertEquals("Info mismatch, got '" + info + "'", info, bodyUrl);
 
     String superseded = annotation;
 
     try {
       annotation =
         service.createAnnotation(null, subject, null, annotation, "text/plain;charset=utf-8",
-                                 "bye".getBytes("utf-8"));
+                                 bodyContent.getBytes("utf-8"));
     } catch (java.io.UnsupportedEncodingException e) {
       throw new Error(e);
     }
 
-    //annotation = service.createAnnotation(null, subject, null, annotation, "u:bye");
-    info = service.getAnnotation(annotation);
-    System.out.println(info);
+    info   = service.getAnnotation(annotation);
 
+    //System.out.println(info);
     i1     = info.indexOf("<a:body>") + 8;
     i2     = info.indexOf("</a:body>");
     info   = info.substring(i1, i2);
@@ -133,9 +144,8 @@ public class AnnotationServiceTest extends TestCase {
       throw new RemoteException("failed to read annotation body", e);
     }
 
-    assertEquals("Info mismatch, got '" + info + "'", info, "bye");
+    assertEquals("Info mismatch, got '" + info + "'", info, bodyContent);
 
-    //assertEquals("Info mismatch, got '" + info + "'", info, "u:bye");
     annotations = service.listAnnotations(subject, null, true);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
     assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0] + "'",
