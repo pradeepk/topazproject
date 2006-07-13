@@ -4,8 +4,8 @@ import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  */
 public class AllTests {
   public static Test suite() {

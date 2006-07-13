@@ -4,8 +4,8 @@ import junit.framework.TestCase;
 import org.plos.User;
 
 /**
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  */
 public class TestRegistrationService extends TestCase {
   private ServiceFactory serviceFactory;

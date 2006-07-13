@@ -11,8 +11,8 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  */
 public class ForgotPasswordAction extends ActionSupport {
 

@@ -11,8 +11,8 @@ import java.util.Collection;
 import java.util.ArrayList;
 
 /**
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  */
 public class ConfirmationAction extends ActionSupport {
 

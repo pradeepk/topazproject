@@ -5,8 +5,8 @@ import org.plos.User;
 import com.opensymphony.util.GUID;
 
 /**
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  */
 public class PlosRegistrationService implements RegistrationService {
   private UserDAO userDAO;

@@ -11,8 +11,8 @@ import org.hibernate.criterion.Restrictions;
 import java.util.List;
 
 /**
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  */
  public class UserDAO {
 

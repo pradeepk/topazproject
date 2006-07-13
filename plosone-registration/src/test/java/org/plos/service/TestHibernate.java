@@ -7,8 +7,8 @@ import org.hibernate.Transaction;
 import org.plos.User;
 
 /**
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  */
 public class TestHibernate extends TestCase {
 

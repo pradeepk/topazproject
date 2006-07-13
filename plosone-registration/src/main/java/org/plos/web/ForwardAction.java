@@ -3,8 +3,8 @@ package org.plos.web;
 import com.opensymphony.xwork.ActionSupport;
 
 /**
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  */
 public class ForwardAction extends ActionSupport {
 

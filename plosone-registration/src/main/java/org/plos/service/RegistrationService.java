@@ -3,8 +3,8 @@ package org.plos.service;
 import org.plos.User;
 
 /**
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  */
 public interface RegistrationService {
   User createUser(final String emailAddress, final String password);

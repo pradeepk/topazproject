@@ -4,8 +4,8 @@ import java.util.Map;
 import java.util.Hashtable;
 
 /**
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  */
 public class ServiceFactory {
   /** All the service instances are cached in the map as only one instance should be sufficient for a single jvm */
