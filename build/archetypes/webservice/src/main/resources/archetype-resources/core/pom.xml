@@ -8,7 +8,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>${pom.parent.artifactId}-api</artifactId>
+  <artifactId>$!{pom.parent.artifactId}-api</artifactId>
   <packaging>jar</packaging>
   <name>${Svc} Core</name>
 
@@ -41,12 +41,12 @@
             </goals>
             <configuration>
               <implementationClassName>${Svc}ServiceImplementation</implementationClassName>
-              <filename>${wsdl.filename}</filename>
+              <filename>$!{wsdl.filename}</filename>
               <all>true</all>
               <namespace>service.${rev_pkg}</namespace>
               <servicePortName>${Svc}ServicePort</servicePortName>
               <location>http://localhost/service-location</location>
-              <classesDirectory>${project.build.directory}/classes</classesDirectory>
+              <classesDirectory>$!{project.build.directory}/classes</classesDirectory>
               <classOfPortType>${package}.${Svc}</classOfPortType>
             </configuration>
           </execution>
@@ -60,8 +60,8 @@
             <phase>process-classes</phase>
             <configuration>
               <tasks>
-                <copy todir="${project.build.directory}/classes" 
-                  file="${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}"/>
+                <copy todir="$!{project.build.directory}/classes" 
+                  file="$!{project.build.directory}/generated-sources/axistools/java2wsdl/$!{wsdl.filename}"/>
               </tasks>
             </configuration>
             <goals>

@@ -3,7 +3,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>${pom.parent.artifactId}-webapp</artifactId>
+  <artifactId>$!{pom.parent.artifactId}-webapp</artifactId>
   <packaging>war</packaging>
   <name>${Svc} Webservice Webapp</name>
 
@@ -15,9 +15,9 @@
 
   <dependencies>
     <dependency>
-      <groupId>${pom.parent.groupId}</groupId>
-      <artifactId>${pom.parent.artifactId}-server</artifactId>
-      <version>${pom.parent.version}</version>
+      <groupId>$!{pom.parent.groupId}</groupId>
+      <artifactId>$!{pom.parent.artifactId}-server</artifactId>
+      <version>$!{pom.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
@@ -44,13 +44,13 @@
             <configuration>
               <artifactItems>
                 <artifactItem>
-                  <groupId>${pom.parent.groupId}</groupId>
-                  <artifactId>${pom.parent.artifactId}-server</artifactId>
-                  <version>${pom.parent.version}</version>
+                  <groupId>$!{pom.parent.groupId}</groupId>
+                  <artifactId>$!{pom.parent.artifactId}-server</artifactId>
+                  <version>$!{pom.parent.version}</version>
                   <type>jar</type>
                 </artifactItem>
               </artifactItems>
-              <outputDirectory>${project.build.directory}/exploded-server-jar</outputDirectory>
+              <outputDirectory>$!{project.build.directory}/exploded-server-jar</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -64,10 +64,10 @@
             <phase>generate-resources</phase>
             <goals><goal>transform</goal></goals>
             <configuration>
-              <xslFile>${basedir}/src/main/stylesheets/server-config.xslt</xslFile>
-              <srcDir>${project.build.directory}/exploded-server-jar/</srcDir>
+              <xslFile>$!{basedir}/src/main/stylesheets/server-config.xslt</xslFile>
+              <srcDir>$!{project.build.directory}/exploded-server-jar/</srcDir>
               <srcIncludes>deploy.wsdd</srcIncludes>
-              <destDir>${project.build.directory}/${project.build.finalName}/WEB-INF/</destDir>
+              <destDir>$!{project.build.directory}/$!{project.build.finalName}/WEB-INF/</destDir>
               <fileNameRegex>deploy</fileNameRegex>
               <fileNameReplacement>server-config</fileNameReplacement>
             </configuration>
