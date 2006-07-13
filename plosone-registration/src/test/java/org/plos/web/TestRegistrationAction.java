@@ -154,7 +154,7 @@ public class TestRegistrationAction extends TestCase {
   }
 
   public void testShouldSendFailToVerifyForgotPasswordTokenIfItIsWrong() throws Exception {
-    final String emailAddress = "viru-forgot-password-verified-and-active@home.com";
+    final String emailAddress = "viru-forgot-password-verified-and-active-number2@home.com";
     createUser(emailAddress, "virupasswd");
 
     final User beforeVerificationUser = registrationService.getUser(emailAddress);
