@@ -1,0 +1,37 @@
+<!DOCTYPE xwork PUBLIC "-//OpenSymphony Group//XWork 1.1.1//EN" "http://www.opensymphony.com/xwork/xwork-1.1.1.dtd">
+
+<xwork>
+    <include file="webwork-default.xml"/>
+
+    <package name="default" extends="webwork-default">
+
+        <default-action-ref name="home" />
+
+        <action name="home" class="org.plos.web.ForwardAction">
+            <result>/WEB-INF/pages/home.jsp</result>
+        </action>
+
+      <action name="registerPart1" class="org.plos.web.ForwardAction">
+          <result name="success">/WEB-INF/pages/registration/registerPart1.jsp</result>
+      </action>
+
+      <action name="registerSubmit" class="org.plos.web.RegisterAction" method="execute">
+        <interceptor-ref name="validationWorkflowStack"/>
+        <result name="input">/WEB-INF/pages/registration/registerPart1.jsp</result>
+        <result name="error">/WEB-INF/pages/registration/registerPart1.jsp</result>
+        <result name="success">/WEB-INF/pages/registration/registration-success.jsp</result>
+        <!--<result name="success" type="freemarker">/WEB-INF/pages/registration-success.ftl</result>-->
+      </action>
+
+      <action name="emailVerification" class="org.plos.web.ConfirmationAction">
+        <result>/WEB-INF/pages/registration/confirmation.jsp</result>
+      </action>
+
+      <action name="forgotPassword" class="org.plos.web.ForgotPasswordAction">
+        <result name="input">/WEB-INF/pages/registration/forgot-password.jsp</result>
+        <result name="error">/WEB-INF/pages/registration/forgot-password.jsp</result>
+        <result name="success">/WEB-INF/pages/registration/forgot-password-success.jsp</result>
+      </action>
+
+    </package>
+</xwork>
