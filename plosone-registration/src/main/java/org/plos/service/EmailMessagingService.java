@@ -1,6 +1,6 @@
 package org.plos.service;
 
-/**
+/*
  * $HeadURL: $
  * @version: $Id: $
  */
