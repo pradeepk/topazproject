@@ -1,7 +1,7 @@
 package org.plos.service;
 
-import org.plos.User;
 import org.plos.ApplicationException;
+import org.plos.registration.User;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.HibernateException;

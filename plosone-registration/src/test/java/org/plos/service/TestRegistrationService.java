@@ -1,7 +1,7 @@
 package org.plos.service;
 
 import junit.framework.TestCase;
-import org.plos.User;
+import org.plos.registration.User;
 
 /**
  * $HeadURL$

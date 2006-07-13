@@ -1,4 +1,4 @@
-package org.plos;
+package org.plos.registration;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;

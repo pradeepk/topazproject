@@ -1,10 +1,9 @@
 package org.plos.web;
 
 import junit.framework.TestCase;
+import org.plos.registration.User;
 import org.plos.service.RegistrationService;
 import org.plos.service.ServiceFactory;
-import org.plos.User;
-import org.plos.web.ConfirmationAction;
 
 /**
  */

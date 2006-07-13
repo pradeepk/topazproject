@@ -4,7 +4,7 @@ import junit.framework.TestCase;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.plos.User;
+import org.plos.registration.User;
 
 /**
  * $HeadURL$

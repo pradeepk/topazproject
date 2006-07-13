@@ -1,7 +1,7 @@
 package org.plos.service;
 
 import org.plos.ApplicationException;
-import org.plos.User;
+import org.plos.registration.User;
 import com.opensymphony.util.GUID;
 
 /**

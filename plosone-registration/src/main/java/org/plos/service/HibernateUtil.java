@@ -16,7 +16,7 @@ public class HibernateUtil {
   static {
     try {
       sessionFactory = new AnnotationConfiguration()
-              .addAnnotatedClass(org.plos.User.class)
+              .addAnnotatedClass(org.plos.registration.User.class)
 //              .addPackage("org.plos") //the fully qualified package name
 //              .setProperty("hibernate.show_sql", "true")
 //              .setProperty("hibernate.dialect", "org.hibernate.dialect.PostgreSQLDialect")

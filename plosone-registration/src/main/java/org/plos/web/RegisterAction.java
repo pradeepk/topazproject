@@ -3,7 +3,7 @@ package org.plos.web;
 import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.*;
 import org.plos.service.ServiceFactory;
-import org.plos.User;
+import org.plos.registration.User;
 
 import java.util.ArrayList;
 import java.util.Collection;
