@@ -1,12 +1,12 @@
 package org.plos.service;
 
-import org.plos.ApplicationException;
-import org.plos.registration.User;
+import org.hibernate.Criteria;
+import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
-import org.hibernate.HibernateException;
-import org.hibernate.Criteria;
 import org.hibernate.criterion.Restrictions;
+import org.plos.ApplicationException;
+import org.plos.registration.User;
 
 import java.util.List;
 

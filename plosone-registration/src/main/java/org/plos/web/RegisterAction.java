@@ -1,9 +1,12 @@
 package org.plos.web;
 
 import com.opensymphony.xwork.ActionSupport;
-import com.opensymphony.xwork.validator.annotations.*;
-import org.plos.service.ServiceFactory;
+import com.opensymphony.xwork.validator.annotations.EmailValidator;
+import com.opensymphony.xwork.validator.annotations.FieldExpressionValidator;
+import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.plos.registration.User;
+import org.plos.service.ServiceFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;

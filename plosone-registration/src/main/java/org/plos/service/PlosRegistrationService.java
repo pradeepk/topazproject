@@ -1,8 +1,9 @@
 package org.plos.service;
 
+import com.opensymphony.util.GUID;
 import org.plos.ApplicationException;
 import org.plos.registration.User;
-import com.opensymphony.util.GUID;
+import org.plos.registration.UserImpl;
 
 /**
  * $HeadURL$
@@ -12,7 +13,7 @@ public class PlosRegistrationService implements RegistrationService {
   private UserDAO userDAO;
 
   public User createUser(final String emailAddress, final String password) {
-    final User user = new User(emailAddress, password);
+    final User user = new UserImpl(emailAddress, password);
 
     user.setEmailVerificationToken(UniqueTokenGenerator.getUniqueToken());
     user.setVerified(false);
