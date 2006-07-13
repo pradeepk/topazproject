@@ -22,12 +22,6 @@ public class RegisterAction extends ActionSupport {
 
   private ServiceFactory  serviceFactory;
 
-  @Validations (
-    expressions = {
-      @ExpressionValidator (expression = "email1==email2", message="Email addresses must match"),
-      @ExpressionValidator (expression = "password1==password2", message="Passwords must match")
-    }
-  )
   public String execute() throws Exception {
     final Collection<String> errors = new ArrayList<String>(2);
 
@@ -57,6 +51,7 @@ public class RegisterAction extends ActionSupport {
 
   @EmailValidator(type=ValidatorType.SIMPLE, fieldName="email1", message="You must enter a valid email")
   @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="email1", message="You must enter an email address")
+  @FieldExpressionValidator(fieldName="email2", expression = "email1==email2", message="Email addresses must match")
   public String getEmail1() {
     return email1;
   }
@@ -74,6 +69,7 @@ public class RegisterAction extends ActionSupport {
   }
 
   @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="password1", message="You must enter a password")
+  @FieldExpressionValidator(fieldName="password2", expression = "password1==password2", message="Passwords must match")
   public String getPassword1() {
     return password1;
   }
