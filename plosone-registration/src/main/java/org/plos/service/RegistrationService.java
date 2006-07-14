@@ -19,5 +19,18 @@ public interface RegistrationService {
 
   void sendForgotPasswordMessage(final String loginName);
 
-  void changePassword(final String loginName, final String password);
+  /**
+   * @param loginName login name
+   * @param newPassword new password
+   * @param resetPasswordToken reset password token
+   */
+  void changePassword(final String loginName, final String newPassword, final String resetPasswordToken);
+
+  /**
+   * Return the user with the given loginName and resetPasswordToken
+   * @param loginName
+   * @param resetPasswordToken
+   * @return User
+   */
+  User getUserWithResetPasswordToken(final String loginName, final String resetPasswordToken);
 }

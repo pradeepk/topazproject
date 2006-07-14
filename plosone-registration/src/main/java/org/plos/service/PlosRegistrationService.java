@@ -77,10 +77,26 @@ public class PlosRegistrationService implements RegistrationService {
               "email:" + loginName + ";" + "passwordToken:" + user.getResetPasswordToken());
   }
 
-  public void changePassword(final String loginName, final String password) {
-    final User user = getUserDAO().findUserWithLoginName(loginName);
-    user.setPassword(password);
+  public void changePassword(final String loginName, final String newPassword, final String resetPasswordToken) {
+    final User user = getUserWithResetPasswordToken(loginName, resetPasswordToken);
+
+    user.setPassword(newPassword);
+    user.setResetPasswordToken(null);
     saveUser(user);
+  }
+
+  public User getUserWithResetPasswordToken(final String loginName, final String resetPasswordToken) {
+    final User user = getUserDAO().findUserWithLoginName(loginName);
+
+    if (null == user) {
+      throw new NoUserFoundWithGivenLoginNameException();
+    }
+
+    if (user.getResetPasswordToken().equals(resetPasswordToken)) {
+      return user;
+    } else {
+      throw new ResetPasswordTokenInvalidException();
+    }
   }
 
   private EmailMessagingService getMessagingService() {
