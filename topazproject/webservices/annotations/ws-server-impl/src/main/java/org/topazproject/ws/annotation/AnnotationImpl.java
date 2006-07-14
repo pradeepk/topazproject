@@ -25,6 +25,7 @@ import java.util.regex.Pattern;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.jrdf.graph.Literal;
 import org.jrdf.graph.URIReference;
 
 import org.topazproject.mulgara.itql.Answer;
@@ -192,7 +193,7 @@ public class AnnotationImpl implements Annotation {
     if (context == null)
       context = annotates;
     else
-      validateUri(context, "context");
+      context = escapeLiteral(context);
 
     if (type == null)
       type = "http://www.w3.org/2000/10/annotationType#Annotation";
@@ -518,8 +519,10 @@ public class AnnotationImpl implements Annotation {
       String value;
 
       if (!(o instanceof URIReference)) {
-        value   = o.toString();
-        value   = value.substring(1, value.length() - 1);
+        if (o instanceof Literal)
+          value = ((Literal) o).getLexicalForm();
+        else
+          value = o.toString();
       } else {
         URI v = ((URIReference) o).getURI();
 
@@ -681,5 +684,9 @@ public class AnnotationImpl implements Annotation {
     sb.append(fmt.substring(pos));
 
     return sb.toString();
+  }
+
+  private String escapeLiteral(String val) {
+    return val.replaceAll("\\\\", "\\\\\\\\").replaceAll("'", "\\\\'");
   }
 }
