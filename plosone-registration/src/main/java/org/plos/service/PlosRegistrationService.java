@@ -12,20 +12,24 @@ import org.plos.registration.UserImpl;
 public class PlosRegistrationService implements RegistrationService {
   private UserDAO userDAO;
 
-  public User createUser(final String emailAddress, final String password) {
-    final User user = new UserImpl(emailAddress, password);
+  public User createUser(final String loginName, final String password) {
+    if (null == getUserWithLoginName(loginName)) {
+      final User user = new UserImpl(loginName, password);
 
-    user.setEmailVerificationToken(UniqueTokenGenerator.getUniqueToken());
-    user.setVerified(false);
-    user.setActive(false);
+      user.setEmailVerificationToken(UniqueTokenGenerator.getUniqueToken());
+      user.setVerified(false);
+      user.setActive(false);
 
-    saveUser(user);
+      saveUser(user);
 
-    return user;
+      return user;
+    } else {
+      throw new ApplicationException("User already exists for the loginName address: " + loginName);
+    }
   }
 
-  public User getUser(final String emailAddress) {
-    return getUserDAO().findUserWithEmailAddress(emailAddress);
+  public User getUserWithLoginName(final String loginName) {
+    return getUserDAO().findUserWithLoginName(loginName);
   }
 
   public void setVerified(final User user) {
@@ -42,10 +46,10 @@ public class PlosRegistrationService implements RegistrationService {
     saveUser(user);
   }
 
-  public void verifyUser(final String emailAddress, final String emailVerificationToken) {
-    final User user = getUser(emailAddress);
+  public void verifyUser(final String loginName, final String emailVerificationToken) {
+    final User user = getUserWithLoginName(loginName);
     if (user.isVerified()) {
-      throw new ApplicationException("The email address:" + emailAddress + " has already been verified");
+      throw new ApplicationException("The login name:" + loginName + " has already been verified");
     }
 
     if (!user.getEmailVerificationToken().equals(emailVerificationToken)) {
@@ -59,10 +63,10 @@ public class PlosRegistrationService implements RegistrationService {
     saveUser(user);
   }
 
-  public void sendForgotPasswordMessage(final String emailAddress) {
-    final User user = getUserDAO().findUserWithEmailAddress(emailAddress);
+  public void sendForgotPasswordMessage(final String loginName) {
+    final User user = getUserDAO().findUserWithLoginName(loginName);
     if (null == user) {
-      throw new ApplicationException("No user found for the given email address:" + emailAddress);
+      throw new ApplicationException("No user found for the given loginName address:" + loginName);
     }
 
     user.setResetPasswordToken(UniqueTokenGenerator.getUniqueToken());
@@ -70,7 +74,7 @@ public class PlosRegistrationService implements RegistrationService {
 
     getMessagingService()
             .sendMessage(
-              "emailAddress:" + emailAddress + ";" + "passwordToken:" + user.getResetPasswordToken());
+              "email:" + loginName + ";" + "passwordToken:" + user.getResetPasswordToken());
   }
 
   private EmailMessagingService getMessagingService() {

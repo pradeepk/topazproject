@@ -1,11 +1,11 @@
 package org.plos.web;
 
 import com.opensymphony.xwork.ActionSupport;
+import com.opensymphony.xwork.validator.annotations.EmailValidator;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
-import com.opensymphony.xwork.validator.annotations.EmailValidator;
-import org.plos.service.ServiceFactory;
 import org.plos.ApplicationException;
+import org.plos.service.ServiceFactory;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,15 +18,15 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
 
   private ServiceFactory serviceFactory;
   private String resetPasswordToken;
-  private ArrayList messages = new ArrayList();
-  private String emailAddress;
+  private ArrayList<String> messages = new ArrayList<String>();
+  private String loginName;
 
   public String execute() throws Exception {
 
     try {
       getServiceFactory()
               .getRegistrationService()
-              .verifyUser(emailAddress, resetPasswordToken);
+              .verifyUser(loginName, resetPasswordToken);
 
     } catch (ApplicationException e) {
       messages.add(e.getMessage());
@@ -48,13 +48,13 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
     this.resetPasswordToken = resetPasswordToken;
   }
 
-  @EmailValidator(type= ValidatorType.SIMPLE, fieldName="email", message="Not a valid email")
-  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="email1", message="Email address not specified")
-  public void setEmail(final String emailAddress) {
-    this.emailAddress = emailAddress;
+  @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid email address")
+  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName", message="Email address not specified")
+  public void setLoginName(final String loginName) {
+    this.loginName = loginName;
   }
 
-  public Collection getMessages() {
+  public Collection<String> getMessages() {
     return messages;
   }
 }

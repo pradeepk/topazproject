@@ -5,7 +5,6 @@ import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.criterion.Restrictions;
-import org.plos.ApplicationException;
 import org.plos.registration.User;
 
 import java.util.List;
@@ -25,14 +24,14 @@ import java.util.List;
     });
   }
 
-  public User findUserWithEmailAddress(final String emailAddress) {
+  public User findUserWithLoginName(final String loginName) {
     return (User) DBUtil.execute(new DBCommand() {
       public Object execute(final Session session) {
         final Criteria criteria = session.createCriteria(User.class);
-        criteria.add(Restrictions.eq("emailAddress", emailAddress));
+        criteria.add(Restrictions.eq("loginName", loginName));
         final List list = criteria.list();
         if (list.size() > 1) {
-          throw new ApplicationException("Data error: More than one user account found with the same email address.");
+          throw new DuplicateLoginNameException("More than one user account found with the same login name.");
         }
 
         if (list.isEmpty()) {

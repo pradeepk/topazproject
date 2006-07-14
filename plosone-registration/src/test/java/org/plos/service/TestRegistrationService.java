@@ -31,9 +31,9 @@ public class TestRegistrationService extends TestCase {
   }
 
   public void testDeactivatedUser() {
-    final String emailAddress = "susie@home.com";
-    registrationService.createUser(emailAddress, "susan");
-    User user = registrationService.getUser(emailAddress);
+    final String email = "susie@home.com";
+    registrationService.createUser(email, "susan");
+    User user = registrationService.getUserWithLoginName(email);
     registrationService.deactivate(user);
     assertFalse(user.isVerified());
     assertFalse(user.isActive());

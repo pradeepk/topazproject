@@ -4,14 +4,13 @@ import java.sql.Date;
 
 /**
  * $HeadURL: $
- *
  * @version: $Id: $
  */
 public interface User {
 
-  String getEmailAddress();
+  String getLoginName();
 
-  void setEmailAddress(String emailAddress);
+  void setLoginName(String email);
 
   String getPassword();
 

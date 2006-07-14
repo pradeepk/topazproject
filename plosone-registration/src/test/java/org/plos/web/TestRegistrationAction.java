@@ -17,8 +17,8 @@ public class TestRegistrationAction extends TestCase {
   }
 
   public void testShouldSetUserAsVerified() throws Exception {
-    final String emailAddress = "viru-verifying@home.com";
-    final User beforeVerificationUser = registrationService.createUser(emailAddress, "virupasswd");
+    final String email = "viru-verifying@home.com";
+    final User beforeVerificationUser = registrationService.createUser(email, "virupasswd");
 
     assertFalse(beforeVerificationUser.isVerified());
     final String emailVerificationToken = beforeVerificationUser.getEmailVerificationToken();
@@ -28,18 +28,18 @@ public class TestRegistrationAction extends TestCase {
 
     final ConfirmationAction confirmationAction = new ConfirmationAction();
     confirmationAction.setServiceFactory(new ServiceFactory());
-    confirmationAction.setEmail(emailAddress);
+    confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(emailVerificationToken);
     confirmationAction.execute();
 
     assertTrue(confirmationAction.getMessages().isEmpty());
-    final User verifiedUser = registrationService.getUser(emailAddress);
+    final User verifiedUser = registrationService.getUserWithLoginName(email);
     assertTrue(verifiedUser.isVerified());
   }
 
   public void testShouldNotVerifyUser() throws Exception {
-    final String emailAddress = "viru-verifying-another-time@home.com";
-    final User beforeVerificationUser = registrationService.createUser(emailAddress, "virupasswd");
+    final String email = "viru-verifying-another-time@home.com";
+    final User beforeVerificationUser = registrationService.createUser(email, "virupasswd");
 
     assertFalse(beforeVerificationUser.isVerified());
     final String emailVerificationToken = beforeVerificationUser.getEmailVerificationToken();
@@ -49,22 +49,22 @@ public class TestRegistrationAction extends TestCase {
 
     final ConfirmationAction confirmationAction = new ConfirmationAction();
     confirmationAction.setServiceFactory(new ServiceFactory());
-    confirmationAction.setEmail(emailAddress);
+    confirmationAction.setLoginName(email);
     //change the verification token
     confirmationAction.setEmailVerificationToken(emailVerificationToken+"11");
     confirmationAction.execute();
 
     assertFalse(confirmationAction.getMessages().isEmpty());
-    final User verifiedUser = registrationService.getUser(emailAddress);
+    final User verifiedUser = registrationService.getUserWithLoginName(email);
     assertFalse(verifiedUser.isVerified());
   }
 
   public void testShouldGiveErrorMessageAsUserIsAlreadyVerified() throws Exception {
-    final String emailAddress = "viru-verifying-again@home.com";
+    final String email = "viru-verifying-again@home.com";
     final String password = "virupasswd";
 
-    createUser(emailAddress, password);
-    final User beforeVerificationUser = registrationService.getUser(emailAddress);
+    createUser(email, password);
+    final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
     assertFalse(beforeVerificationUser.isVerified());
     final String emailVerificationToken = beforeVerificationUser.getEmailVerificationToken();
 
@@ -73,7 +73,7 @@ public class TestRegistrationAction extends TestCase {
 
     final ConfirmationAction confirmationAction = new ConfirmationAction();
     confirmationAction.setServiceFactory(serviceFactory);
-    confirmationAction.setEmail(emailAddress);
+    confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(emailVerificationToken);
     confirmationAction.execute();
 
@@ -81,106 +81,120 @@ public class TestRegistrationAction extends TestCase {
     confirmationAction.execute();
 
     assertFalse(confirmationAction.getMessages().isEmpty());
-    final User verifiedUser = registrationService.getUser(emailAddress);
+    final User verifiedUser = registrationService.getUserWithLoginName(email);
     assertTrue(verifiedUser.isVerified());
   }
 
-  private void createUser(String emailAddress, String password) throws Exception {
+  private void createUser(String email, String password) throws Exception {
     final RegisterAction registerAction = new RegisterAction();
 
     registerAction.setServiceFactory(serviceFactory);
-    registerAction.setEmail1(emailAddress);
-    registerAction.setEmail2(emailAddress);
+    registerAction.setLoginName1(email);
+    registerAction.setLoginName2(email);
     registerAction.setPassword1(password);
     registerAction.setPassword2(password);
     registerAction.execute();
   }
 
   public void testShouldFailToAcceptForgotPasswordEmailAsItIsNotRegistered() throws Exception {
-    final String emailAddress = "viru-forgot-password-not-registered@home.com";
+    final String email = "viru-forgot-password-not-registered@home.com";
 
     final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
     forgotPasswordAction.setServiceFactory(serviceFactory);
-    forgotPasswordAction.setEmail(emailAddress);
+    forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertFalse(forgotPasswordAction.getMessages().isEmpty());
   }
 
   public void testShouldSendEmailForForgotPasswordEmailEvenIfTheEmailItIsNotVerified() throws Exception {
-    final String emailAddress = "viru-forgot-password-not-verified-yet@home.com";
+    final String email = "viru-forgot-password-not-verified-yet@home.com";
 
-    createUser(emailAddress, "virupasswd");
-    final User beforeVerificationUser = registrationService.getUser(emailAddress);
+    createUser(email, "virupasswd");
+    final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
     assertFalse(beforeVerificationUser.isVerified());
 
     final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
     forgotPasswordAction.setServiceFactory(serviceFactory);
-    forgotPasswordAction.setEmail(emailAddress);
+    forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
   }
 
   public void testShouldAcceptForgotPasswordRequestIfItIsNotActive() throws Exception {
-    final String emailAddress = "viru-forgot-password-not-active-yet@home.com";
-    createUser(emailAddress, "virupasswd");
-    final User beforeVerificationUser = registrationService.getUser(emailAddress);
+    final String email = "viru-forgot-password-not-active-yet@home.com";
+    createUser(email, "virupasswd");
+    final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
     assertFalse(beforeVerificationUser.isActive());
 
     final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
     forgotPasswordAction.setServiceFactory(serviceFactory);
-    forgotPasswordAction.setEmail(emailAddress);
+    forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
   }
 
   public void testShouldSendEmailForForgotPasswordEmailIfTheEmailIsVerifiedAndActive() throws Exception {
-    final String emailAddress = "viru-forgot-password-verified-and-active@home.com";
-    createUser(emailAddress, "virupasswd");
+    final String email = "viru-forgot-password-verified-and-active@home.com";
+    createUser(email, "virupasswd");
 
-    final User beforeVerificationUser = registrationService.getUser(emailAddress);
+    final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
 
     final ConfirmationAction confirmationAction = new ConfirmationAction();
     confirmationAction.setServiceFactory(serviceFactory);
-    confirmationAction.setEmail(emailAddress);
+    confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(beforeVerificationUser.getEmailVerificationToken());
     confirmationAction.execute();
     assertTrue(confirmationAction.getMessages().isEmpty());
 
     final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
     forgotPasswordAction.setServiceFactory(serviceFactory);
-    forgotPasswordAction.setEmail(emailAddress);
+    forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
   }
 
   public void testShouldSendFailToVerifyForgotPasswordTokenIfItIsWrong() throws Exception {
-    final String emailAddress = "viru-forgot-password-verified-and-active-number2@home.com";
-    createUser(emailAddress, "virupasswd");
+    final String email = "viru-forgot-password-verified-and-active-number2@home.com";
+    createUser(email, "virupasswd");
 
-    final User beforeVerificationUser = registrationService.getUser(emailAddress);
+    final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
 
     final ConfirmationAction confirmationAction = new ConfirmationAction();
     confirmationAction.setServiceFactory(serviceFactory);
-    confirmationAction.setEmail(emailAddress);
+    confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(beforeVerificationUser.getEmailVerificationToken());
     confirmationAction.execute();
     assertTrue(confirmationAction.getMessages().isEmpty());
 
     final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
     forgotPasswordAction.setServiceFactory(serviceFactory);
-    forgotPasswordAction.setEmail(emailAddress);
+    forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
 
 
-    final User forgotPasswordUser = registrationService.getUser(emailAddress);
+    final User forgotPasswordUser = registrationService.getUserWithLoginName(email);
     assertNotNull(forgotPasswordUser.getResetPasswordToken());
     assertTrue(forgotPasswordUser.getResetPasswordToken().length() > 0);
-
-
-
-
   }
 
+  public void testShouldFailToCreateAnotherAccountWithSameEmail() throws Exception {
+    final String email = "viru-creating-a-account-twice@home.com";
+    final String password = "virupasswd";
+
+    createUser(email, password);
+    final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
+    assertNotNull(beforeVerificationUser);
+
+    final RegisterAction registerAction = new RegisterAction();
+
+    registerAction.setServiceFactory(serviceFactory);
+    registerAction.setLoginName1(email);
+    registerAction.setLoginName2(email);
+    registerAction.setPassword1(password);
+    registerAction.setPassword2(password);
+    registerAction.execute();
+    assertTrue(registerAction.getFieldErrors().size() > 0);
+  }
 
 }

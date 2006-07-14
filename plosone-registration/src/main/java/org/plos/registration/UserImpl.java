@@ -3,14 +3,19 @@ package org.plos.registration;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
 import java.sql.Date;
 
 
 @Entity
 @Table (name = "plos_user")
 public class UserImpl implements User {
-  private String emailAddress;
+  private String loginName;
 
   @Id @GeneratedValue(strategy= GenerationType.AUTO)
   private String id;
@@ -36,19 +41,19 @@ public class UserImpl implements User {
   public UserImpl() {
   }
 
-  public UserImpl(final String emailAddress, final String password) {
-    this.emailAddress = emailAddress;
+  public UserImpl(final String loginName, final String password) {
+    this.loginName = loginName;
     this.password = password;
   }
 
   @Transactional(readOnly=true)
-  public String getEmailAddress() {
-    return emailAddress;
+  public String getLoginName() {
+    return loginName;
   }
 
   @Transactional(propagation= Propagation.MANDATORY)
-  public void setEmailAddress(final String emailAddress) {
-    this.emailAddress = emailAddress;
+  public void setLoginName(final String loginName) {
+    this.loginName = loginName;
   }
 
   @Transactional(readOnly=true)

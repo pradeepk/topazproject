@@ -2,7 +2,7 @@
 
 <html>
     <head>
-        <title>Email sent</title>
+        <title>Verification successful</title>
     </head>
     <body>
         <br/>

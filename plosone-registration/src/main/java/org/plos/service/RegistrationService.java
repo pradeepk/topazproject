@@ -7,15 +7,15 @@ import org.plos.registration.User;
  * @version: $Id$
  */
 public interface RegistrationService {
-  User createUser(final String emailAddress, final String password);
+  User createUser(final String loginName, final String password);
 
-  User getUser(final String emailAddress);
+  User getUserWithLoginName(final String loginName);
 
   void setVerified(final User user);
 
   void deactivate(final User user);
 
-  void verifyUser(final String emailAddress, final String emailVerificationToken);
+  void verifyUser(final String loginName, final String emailVerificationToken);
 
-  void sendForgotPasswordMessage(final String emailAddress);
+  void sendForgotPasswordMessage(final String loginName);
 }

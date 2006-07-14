@@ -5,11 +5,9 @@ import com.opensymphony.xwork.validator.annotations.EmailValidator;
 import com.opensymphony.xwork.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
+import org.plos.ApplicationException;
 import org.plos.registration.User;
 import org.plos.service.ServiceFactory;
-
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * $HeadURL$
@@ -17,58 +15,58 @@ import java.util.Collection;
  */
 public class RegisterAction extends ActionSupport {
 
-  private String email1;
-  private String email2;
+  private String loginName1;
+  private String loginName2;
   private String password1;
   private String password2;
-  private User user;
-
   private ServiceFactory  serviceFactory;
 
+  /**
+   * @deprecated remove when we drop the link from the web page
+   */
+  private User user;
+
+
   public String execute() throws Exception {
-    final Collection<String> errors = new ArrayList<String>(2);
 
-    if ((!email1.equals(email2))) {
-      errors.add("Email addresses don't match");
-    }
+    try {
+      final User user = getServiceFactory()
+              .getRegistrationService()
+              .createUser(loginName1, password1);
 
-    if (!password1.equals(password2)) {
-      errors.add("Passwords don't match");
-    }
+      sendMessage(user);
 
-    if (errors.isEmpty()) {
-      createUser(email1, password1);
-      return SUCCESS;
-    } else {
-      setActionErrors(errors);
+    } catch (final ApplicationException e) {
+      addFieldError("loginName1", e.getMessage());
       return ERROR;
     }
+    return SUCCESS;
+
   }
 
-
-  private void createUser(final String userId, final String password) {
-    user = getServiceFactory()
-            .getRegistrationService()
-            .createUser(userId, password);
+  private void sendMessage(final User user) {
+    this.user = user;
+//    user.getLoginName(),
+//    user.getEmailVerificationToken());
   }
 
-  @EmailValidator(type=ValidatorType.SIMPLE, fieldName="email1", message="You must enter a valid email")
-  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="email1", message="You must enter an email address")
-  @FieldExpressionValidator(fieldName="email2", expression = "email1==email2", message="Email addresses must match")
-  public String getEmail1() {
-    return email1;
+  @EmailValidator(type=ValidatorType.SIMPLE, fieldName="loginName1", message="You must enter a valid email")
+  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName1", message="You must enter an email address")
+  @FieldExpressionValidator(fieldName="loginName2", expression = "loginName1==loginName2", message="Email addresses must match")
+  public String getLoginName1() {
+    return loginName1;
   }
 
-  public void setEmail1(final String email1) {
-    this.email1 = email1;
+  public void setLoginName1(final String loginName1) {
+    this.loginName1 = loginName1;
   }
 
-  public String getEmail2() {
-    return email2;
+  public String getLoginName2() {
+    return loginName2;
   }
 
-  public void setEmail2(String email2) {
-    this.email2 = email2;
+  public void setLoginName2(String loginName2) {
+    this.loginName2 = loginName2;
   }
 
   @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="password1", message="You must enter a password")
