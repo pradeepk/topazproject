@@ -429,6 +429,7 @@ public class AnnotationImpl implements Annotation {
   public void setAnnotationState(String id, int state)
                           throws RemoteException, NoSuchIdException {
     checkAccess(PEP.SET_ANNOTATION_STATE, validateUri(id, "annotation-id"));
+    checkId(id);
 
     String set = SET_STATE_ITQL.replaceAll("\\$id", id).replaceAll("\\$state", "" + state);
 
