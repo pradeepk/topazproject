@@ -13,11 +13,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -215,22 +218,22 @@ public class AnnotationImpl implements Annotation {
     }
 
     String create = CREATE_ITQL;
+    Map    values = new HashMap();
 
-    if (supersedes != null)
+    values.put("id", id);
+    values.put("type", type);
+    values.put("annotates", annotates);
+    values.put("context", context);
+    values.put("body", body);
+    values.put("user", user);
+    values.put("created", getUTCTime());
+
+    if (supersedes != null) {
       create += SUPERSEDE_ITQL;
+      values.put("supersedes", supersedes);
+    }
 
-    create   = create.replaceAll("\\$id", id);
-    create   = create.replaceAll("\\$type", type);
-    create   = create.replaceAll("\\$annotates", annotates);
-    create   = create.replaceAll("\\$context", context);
-    create   = create.replaceAll("\\$body", body);
-    create   = create.replaceAll("\\$user", user);
-    create   = create.replaceAll("\\$created", getUTCTime());
-
-    if (supersedes != null)
-      create = create.replaceAll("\\$supersedes", supersedes);
-
-    itql.doUpdate(create);
+    itql.doUpdate(replaceAll(create, values));
 
     if (log.isDebugEnabled())
       log.debug("created annotaion " + id + " for " + annotates + " annotated by " + body);
@@ -241,8 +244,13 @@ public class AnnotationImpl implements Annotation {
   private String createBody(String contentType, byte[] content)
                      throws RemoteException {
     try {
-      String ref   = uploader.upload(new ByteArrayInputStream(content));
-      String foxml = FOXML.replaceAll("\\$CONTENTTYPE", contentType).replaceAll("\\$CONTENT", ref);
+      String ref = uploader.upload(new ByteArrayInputStream(content));
+
+      Map    values = new HashMap();
+      values.put("CONTENTTYPE", contentType);
+      values.put("CONTENT", ref);
+
+      String foxml = replaceAll(FOXML, values);
 
       return pid2URI(apim.ingest(foxml.getBytes("UTF-8"), "foxml1.0", "created"));
     } catch (java.io.UnsupportedEncodingException e) {
@@ -350,9 +358,12 @@ public class AnnotationImpl implements Annotation {
 
       String subquery = idsOnly ? "" : SUBQUERY;
 
-      String query =
-        LIST_ITQL.replaceAll("\\$subquery", subquery).replaceAll("\\$annotates", annotates)
-                  .replaceAll("\\$type", type);
+      Map    values = new HashMap();
+      values.put("subquery", subquery);
+      values.put("annotates", annotates);
+      values.put("type", type);
+
+      String query = replaceAll(LIST_ITQL, values);
 
       Answer ans = new Answer(itql.doQuery(query));
 
@@ -645,5 +656,29 @@ public class AnnotationImpl implements Annotation {
       iae.initCause(e);
       throw iae;
     }
+  }
+
+  private String replaceAll(String fmt, Map values) {
+    Pattern      p   = Pattern.compile("\\$(\\w*)");
+    Matcher      m   = p.matcher(fmt);
+    StringBuffer sb  = new StringBuffer(fmt.length() * 2);
+    int          pos = 0;
+
+    while (m.find()) {
+      int    ts    = m.start();
+      int    te    = m.end();
+      String token = fmt.substring(ts + 1, te);
+      String val   = (String) values.get(token);
+
+      if (val != null) {
+        sb.append(fmt.substring(pos, ts));
+        sb.append(val);
+        pos = te;
+      }
+    }
+
+    sb.append(fmt.substring(pos));
+
+    return sb.toString();
   }
 }
