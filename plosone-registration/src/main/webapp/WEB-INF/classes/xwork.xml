@@ -39,11 +39,11 @@
         <result name="success">/WEB-INF/pages/registration/forgot-password-success.jsp</result>
       </action>
 
-      <action name="forgotPasswordSubmit" class="org.plos.web.ForgotPasswordAction">
+      <action name="forgotPasswordChangePasswordSubmit" class="org.plos.web.ForgotPasswordChangePasswordAction">
         <interceptor-ref name="validationWorkflowStack"/>
-        <result name="input">/WEB-INF/pages/registration/forgot-password.jsp</result>
-        <result name="error">/WEB-INF/pages/registration/forgot-password.jsp</result>
-        <result name="success">/WEB-INF/pages/registration/forgot-password-success.jsp</result>
+        <result name="input">/WEB-INF/pages/registration/forgot-password-change-password.jsp</result>
+        <result name="error">/WEB-INF/pages/registration/forgot-password-change-password.jsp</result>
+        <result name="success">/WEB-INF/pages/registration/forgot-password-change-password-success.jsp</result>
       </action>
 
     </package>

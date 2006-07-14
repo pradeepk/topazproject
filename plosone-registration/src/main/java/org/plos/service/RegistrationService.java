@@ -18,4 +18,6 @@ public interface RegistrationService {
   void verifyUser(final String loginName, final String emailVerificationToken);
 
   void sendForgotPasswordMessage(final String loginName);
+
+  void changePassword(final String loginName, final String password);
 }

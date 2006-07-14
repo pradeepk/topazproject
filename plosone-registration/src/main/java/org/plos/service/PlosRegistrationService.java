@@ -66,7 +66,7 @@ public class PlosRegistrationService implements RegistrationService {
   public void sendForgotPasswordMessage(final String loginName) {
     final User user = getUserDAO().findUserWithLoginName(loginName);
     if (null == user) {
-      throw new ApplicationException("No user found for the given loginName address:" + loginName);
+      throw new NoUserFoundWithGivenLoginNameException();
     }
 
     user.setResetPasswordToken(UniqueTokenGenerator.getUniqueToken());
@@ -75,6 +75,12 @@ public class PlosRegistrationService implements RegistrationService {
     getMessagingService()
             .sendMessage(
               "email:" + loginName + ";" + "passwordToken:" + user.getResetPasswordToken());
+  }
+
+  public void changePassword(final String loginName, final String password) {
+    final User user = getUserDAO().findUserWithLoginName(loginName);
+    user.setPassword(password);
+    saveUser(user);
   }
 
   private EmailMessagingService getMessagingService() {
