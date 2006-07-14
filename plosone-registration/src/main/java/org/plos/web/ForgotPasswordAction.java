@@ -33,7 +33,9 @@ public class ForgotPasswordAction extends ActionSupport {
       setUser(user);
 
     } catch (final NoUserFoundWithGivenLoginNameException noUserEx) {
-      addFieldError("loginName", "No user found for the given email address:" + loginName);
+      final String message = "No user found for the given email address:" + loginName;
+      messages.add(message);
+      addFieldError("loginName", message);
       return ERROR;
     } catch (final ApplicationException e) {
       messages.add(e.getMessage());
