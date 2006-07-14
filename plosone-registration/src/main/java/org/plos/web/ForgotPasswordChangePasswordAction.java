@@ -7,7 +7,6 @@ import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.plos.ApplicationException;
 import org.plos.registration.User;
-import org.plos.service.RegistrationService;
 import org.plos.service.ServiceFactory;
 
 import java.util.ArrayList;
@@ -20,6 +19,7 @@ import java.util.Collection;
 public class ForgotPasswordChangePasswordAction extends ActionSupport {
 
   private ServiceFactory serviceFactory;
+
   private String loginName;
   private String resetPasswordToken;
   private String password1;
@@ -29,16 +29,32 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
 
   public String execute() throws Exception {
     try {
-      final RegistrationService registrationService = getServiceFactory().getRegistrationService();
-      final User user = registrationService.getUserWithLoginName(loginName);
-      if (user.getResetPasswordToken().equals(resetPasswordToken)) {
-        registrationService.changePassword(loginName, password1);
-      } else {
-        addFieldError("password1",  "Changing password failed");
+      getServiceFactory()
+              .getRegistrationService()
+              .changePassword(loginName, password1, resetPasswordToken);
+    } catch (final ApplicationException e) {
+      addFieldError("password1",  e.getMessage());
+      return ERROR;
+    }
+    return SUCCESS;
+  }
+
+  /**
+   * Validate the reset password request.
+   * @return {@link #SUCCESS} if request is valid, else {@link #ERROR}
+   * @throws Exception
+   */
+  public String validateResetPasswordRequest() throws Exception {
+    try {
+      final User user
+              = getServiceFactory()
+                  .getRegistrationService()
+                  .getUserWithResetPasswordToken(loginName, resetPasswordToken);
+      if (null == user) {
+        messages.add("No user found for the given email address and password token combination");
       }
     } catch (final ApplicationException e) {
       messages.add(e.getMessage());
-      addFieldError("password1",  e.getMessage());
       return ERROR;
     }
     return SUCCESS;
@@ -58,6 +74,20 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
     this.loginName = loginName;
   }
 
+  /**
+   * @return login name
+   */
+  public String getLoginName() {
+    return loginName;
+  }
+
+  /**
+   * @return the reset password token
+   */
+  public String getResetPasswordToken() {
+    return resetPasswordToken;
+  }
+
   @RequiredStringValidator(type= ValidatorType.FIELD, fieldName="resetPasswordToken", message="Verification token missing")
   public void setResetPasswordToken(final String resetPasswordToken) {
     this.resetPasswordToken = resetPasswordToken;
@@ -69,7 +99,7 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
     return password1;
   }
 
-  public void setPassword1(String password1) {
+  public void setPassword1(final String password1) {
     this.password1 = password1;
   }
 
@@ -77,12 +107,11 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
     return password2;
   }
 
-  public void setPassword2(String password2) {
+  public void setPassword2(final String password2) {
     this.password2 = password2;
   }
 
   public Collection<String> getMessages() {
     return messages;
   }
-
 }
