@@ -1,5 +1,3 @@
-<%@ taglib prefix="ww" uri="/webwork" %>
-
 <html>
     <head>
         <title>Change password successful</title>

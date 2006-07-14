@@ -1,5 +1,3 @@
-<%@ taglib prefix="ww" uri="/webwork" %>
-
 <html>
     <head>
         <title>Welcome</title>
@@ -11,13 +9,13 @@
             <fieldset>
                 <legend>A few things for you to do</legend>
                 <p>
-                    <ww:url id="registerURL" action="registerPart1" />
-                    <ww:a href="%{registerURL}">Register</ww:a>
+                    <@ww.url id="registerURL" action="registerPart1" />
+                    <@ww.a href="%{registerURL}">Register</@ww.a>
                 </p>
 
                 <p>
-                    <ww:url id="forgotPasswordURL" action="forgotPassword" />
-                    <ww:a href="%{forgotPasswordURL}">Forgot Password</ww:a>
+                    <@ww.url id="forgotPasswordURL" action="forgotPassword" />
+                    <@ww.a href="%{forgotPasswordURL}">Forgot Password</@ww.a>
                 </p>
 
 

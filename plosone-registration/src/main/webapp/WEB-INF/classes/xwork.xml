@@ -8,42 +8,52 @@
         <default-action-ref name="home" />
 
         <action name="home" class="org.plos.web.ForwardAction">
-            <result>/WEB-INF/pages/home.jsp</result>
+            <result type="freemarker">/WEB-INF/pages/home.ftl</result>
         </action>
 
       <action name="registerPart1" class="org.plos.web.ForwardAction">
-          <result name="success">/WEB-INF/pages/registration/registerPart1.jsp</result>
+          <result name="success" type="freemarker">/WEB-INF/pages/registration/registerPart1.ftl</result>
       </action>
 
       <action name="registerSubmit" class="org.plos.web.RegisterAction" method="execute">
         <interceptor-ref name="validationWorkflowStack"/>
-        <result name="input">/WEB-INF/pages/registration/registerPart1.jsp</result>
-        <result name="error">/WEB-INF/pages/registration/registerPart1.jsp</result>
-        <result name="success">/WEB-INF/pages/registration/registration-success.jsp</result>
+        <result name="input" type="freemarker">/WEB-INF/pages/registration/registerPart1.ftl</result>
+        <result name="error" type="freemarker">/WEB-INF/pages/registration/registerPart1.ftl</result>
+        <result name="success" type="freemarker">/WEB-INF/pages/registration/registration-success.ftl</result>
         <!--<result name="success" type="freemarker">/WEB-INF/pages/registration-success.ftl</result>-->
       </action>
 
       <action name="emailVerification" class="org.plos.web.ConfirmationAction">
-        <result name="error">/WEB-INF/pages/registration/error.jsp</result>
-        <result name="success">/WEB-INF/pages/registration/confirmation.jsp</result>
+        <result name="error" type="freemarker">/WEB-INF/pages/registration/error.ftl</result>
+        <result name="success" type="freemarker">/WEB-INF/pages/registration/confirmation.ftl</result>
       </action>
 
       <action name="forgotPassword" class="org.plos.web.ForwardAction">
-        <result>/WEB-INF/pages/registration/forgot-password.jsp</result>
+        <result type="freemarker">/WEB-INF/pages/registration/forgot-password.ftl</result>
       </action>
 
       <action name="forgotPasswordSubmit" class="org.plos.web.ForgotPasswordAction">
         <interceptor-ref name="validationWorkflowStack"/>
-        <result name="input">/WEB-INF/pages/registration/forgot-password.jsp</result>
-        <result name="error">/WEB-INF/pages/registration/forgot-password.jsp</result>
-        <result name="success">/WEB-INF/pages/registration/forgot-password-success.jsp</result>
+        <interceptor-ref name="timer"/>
+        <result name="input" type="freemarker">/WEB-INF/pages/registration/forgot-password.ftl</result>
+        <result name="error" type="freemarker">/WEB-INF/pages/registration/forgot-password.ftl</result>
+        <result name="success" type="freemarker">/WEB-INF/pages/registration/forgot-password-success.ftl</result>
       </action>
 
-      <action name="forgotPasswordChangePasswordSubmit" class="org.plos.web.ForgotPasswordChangePasswordAction">
+
+      <action name="forgotPasswordChangePasswordShow" class="org.plos.web.ForgotPasswordChangePasswordAction" method="validateRequest">
         <interceptor-ref name="validationWorkflowStack"/>
-        <result name="input">/WEB-INF/pages/registration/forgot-password-change-password.jsp</result>
-        <result name="error">/WEB-INF/pages/registration/forgot-password-change-password.jsp</result>
-        <result name="success">/WEB-INF/pages/registration/forgot-password-change-password-success.jsp</result>
+        <interceptor-ref name="timer"/>
+        <result name="error" type="freemarker">/WEB-INF/pages/registration/error.ftl</result>
+        <result name="success" type="freemarker">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
+      </action>
+
+      <action name="forgotPasswordChangePasswordSubmit" class="org.plos.web.ForgotPasswordChangePasswordAction" method="execute">
+        <interceptor-ref name="validationWorkflowStack"/>
+        <interceptor-ref name="timer"/>
+        <result name="input" type="freemarker">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
+        <result name="error" type="freemarker">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
+        <result name="success" type="freemarker">/WEB-INF/pages/registration/forgot-password-change-password-success.ftl</result>
       </action>
 
     </package>
