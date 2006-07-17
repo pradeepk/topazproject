@@ -3,7 +3,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>$!{pom.parent.artifactId}-client-impl</artifactId>
+  <artifactId>${pom.parent.artifactId}-client-impl</artifactId>
   <packaging>jar</packaging>
   <name>${Svc} Webservice Client</name>
 
@@ -15,15 +15,15 @@
 
   <dependencies>
     <dependency>
-      <groupId>$!{pom.parent.groupId}</groupId>
-      <artifactId>$!{pom.parent.artifactId}-api</artifactId>
-      <version>$!{pom.parent.version}</version>
+      <groupId>${pom.parent.groupId}</groupId>
+      <artifactId>${pom.parent.artifactId}-api</artifactId>
+      <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>$!{pom.parent.groupId}</groupId>
-      <artifactId>$!{pom.parent.artifactId}-webapp</artifactId>
+      <groupId>${pom.parent.groupId}</groupId>
+      <artifactId>${pom.parent.artifactId}-webapp</artifactId>
       <type>war</type>
-      <version>$!{pom.parent.version}</version>
+      <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>axis</groupId>
@@ -60,9 +60,9 @@
             <goals><goal>wsdl2java</goal></goals>
             <configuration>
               <sourceDependencies>
-                <sourceDependency>$!{pom.parent.groupId}:$!{pom.parent.artifactId}-api:$!{pom.parent.version}:/$!{wsdl.filename}</sourceDependency>
+                <sourceDependency>${pom.parent.groupId}:${pom.parent.artifactId}-api:${pom.parent.version}:/${wsdl.filename}</sourceDependency>
               </sourceDependencies>
-              <outputDirectory>$!{project.build.directory}/generated-sources</outputDirectory>
+              <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -78,15 +78,15 @@
             <type>embedded</type>
           </container>
           <configuration> 
-            <home>$!{project.build.directory}/jetty</home>
+            <home>${project.build.directory}/jetty</home>
             <properties>
               <cargo.servlet.port>9997</cargo.servlet.port>
               <cargo.logging>high</cargo.logging>
             </properties>
             <deployables>
               <deployable>
-                <groupId>$!{pom.parent.groupId}</groupId>
-                <artifactId>$!{pom.parent.artifactId}-webapp</artifactId>
+                <groupId>${pom.parent.groupId}</groupId>
+                <artifactId>${pom.parent.artifactId}-webapp</artifactId>
                 <type>war</type>
               </deployable>
             </deployables>
