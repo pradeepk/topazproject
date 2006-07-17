@@ -202,7 +202,9 @@ public class CASLoginModule implements LoginModule {
     }
 
     if (!pv.isAuthenticationSuccesful())
-      throw new FailedLoginException("Login failed.");
+      throw new FailedLoginException("CAS authentication(ie. proxy validate) failed. CAS error code: '"
+                                     + pv.getErrorCode() + "' CAS error message: '"
+                                     + pv.getErrorMessage() + "'");
 
     final String name = pv.getUser();
     principal = new Principal() {
