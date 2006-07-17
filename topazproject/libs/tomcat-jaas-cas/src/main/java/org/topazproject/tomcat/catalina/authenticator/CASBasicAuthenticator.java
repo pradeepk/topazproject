@@ -174,10 +174,10 @@ public class CASBasicAuthenticator extends BasicAuthenticator {
 
     if (ticket == null) {
       if (log.isDebugEnabled())
-        log.debug("No CAS ticket found. Not attempting a CAS Login.");
+        log.debug("No CAS ticket found. Not attempting a CAS Validate.");
     } else {
       if (log.isDebugEnabled())
-        log.debug("Found a CAS ticket. Attempting CAS Login.");
+        log.debug("Found a CAS ticket. Attempting CAS Validate.");
 
       String service;
 
@@ -200,17 +200,20 @@ public class CASBasicAuthenticator extends BasicAuthenticator {
         register(request, response, principal, Constants.BASIC_METHOD, principal.getName(), null);
 
         if (log.isDebugEnabled())
-          log.debug("CAS login success.");
+          log.debug("CAS validate success.");
 
         return true;
       }
+
+      if (log.isDebugEnabled())
+        log.debug("CAS validate failed. ticket: " + ticket + " service: " + service);
     }
 
     if (casLogin != null) {
       try {
         redirectToCAS(hreq, (HttpServletResponse) response.getResponse());
       } catch (ServletException e) {
-        IOException ie = new IOException("redirect to CAS failed.");
+        IOException ie = new IOException("redirect to CAS login failed.");
         ie.initCause(e);
         throw ie;
       }
@@ -307,7 +310,7 @@ public class CASBasicAuthenticator extends BasicAuthenticator {
   /**
    * Redirects the user to CAS, determining the service from the request.
    *
-   * @param request The request 
+   * @param request The request
    * @param response The response
    *
    * @throws IOException on redirect failure
