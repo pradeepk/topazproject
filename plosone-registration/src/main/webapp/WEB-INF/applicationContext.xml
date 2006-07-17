@@ -1,6 +1,86 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
 <beans default-autowire="autodetect">
-  <bean id="serviceFactory" class="org.plos.service.ServiceFactory" singleton="true" />
-    <!-- add your spring beans here -->
+  <bean id="serviceFactory" class="org.plos.service.ServiceFactory" singleton="true"/>
+  <!-- add your spring beans here -->
+
+
+<!-- Postgres datasource -->
+  <bean id="registrationDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="org.postgresql.Driver"/>
+    <property name="url" value="jdbc:postgresql://localhost/postgres"/>
+    <property name="username" value="postgres"/>
+    <property name="password" value="postgres"/>
+  </bean>
+
+<!--  Injection for hibernate SessionFactory -->
+  <bean id="registrationSessionFactory" class="org.springframework.orm.hibernate.LocalSessionFactoryBean">
+    <property name="dataSource" ref="registrationDataSource"/>
+    <!--  TODO
+          <property name="mappingResources">
+            <list>
+              <value>product.hbm.xml</value>
+            </list>
+          </property>
+    -->
+    <property name="hibernateProperties">
+      <props>
+        <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+      </props>
+    </property>
+  </bean>
+
+
+  <bean id="User" class="org.plos.registration.User"></bean>
+  <bean id="RegistrationMgr" class="org.plos.management.RegistrationMgr">
+    <property name="sessionFactory" ref="registrationSessionFactory"/>
+  </bean>
+
+  <bean id="testBean" class="org.plos.management.AnnotationTestBean">
+    <property name="name" value="TEST"/>
+    <property name="age" value="100"/>
+  </bean>
+
+
+  <!--  Transaction injection for annotated transaction classes-->
+  <bean id="registrationTxManager" class="org.springframework.orm.hibernate.HibernateTransactionManager">
+    <property name="sessionFactory" ref="registrationSessionFactory"/>
+  </bean>
+
+  <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+  <bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
+    <property name="transactionInterceptor" ref="transactionInterceptor"/>
+  </bean>
+
+  <bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+    <property name="transactionManager" ref="txManager"/>
+    <property name="transactionAttributeSource">
+      <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+    </property>
+  </bean>
+  <!--  END - Transaction injection for annotated transaction classes-->
+
+  <!--  injection for JMX beans-->
+    <bean id="exporter" class="org.springframework.jmx.export.MBeanExporter">
+      <property name="assembler" ref="assembler"/>
+      <property name="namingStrategy" ref="namingStrategy"/>
+      <property name="autodetect" value="true"/>
+      <property name="registrationBehaviorName" value="REGISTRATION_IGNORE_EXISTING"/>
+    </bean>
+    <bean id="jmxAttributeSource"
+          class="org.springframework.jmx.export.annotation.AnnotationJmxAttributeSource"/>
+    <!--will create management interface using annotation metadata -->-->
+
+    <bean id="assembler"
+          class="org.springframework.jmx.export.assembler.MetadataMBeanInfoAssembler">
+      <property name="attributeSource" ref="jmxAttributeSource"/>
+    </bean>
+    <!--will pick up ObjectName from annotation -->
+    <bean id="namingStrategy"
+          class="org.springframework.jmx.export.naming.MetadataNamingStrategy">
+      <property name="attributeSource" ref="jmxAttributeSource"/>
+    </bean>
+  <!-- END - injection for JMX beans-->
+
 </beans>
