@@ -3,9 +3,10 @@ package org.plos.service;
 import org.plos.ApplicationException;
 import org.plos.registration.User;
 import org.plos.registration.UserImpl;
-import org.plos.util.UniqueTokenGenerator;
+import org.plos.util.TokenGenerator;
 
 /**
+ * Plos registration service implementation.
  * $HeadURL$
  * @version: $Id$
  */
@@ -16,7 +17,7 @@ public class PlosRegistrationService implements RegistrationService {
     if (null == getUserWithLoginName(loginName)) {
       final User user = new UserImpl(loginName, password);
 
-      user.setEmailVerificationToken(UniqueTokenGenerator.getUniqueToken());
+      user.setEmailVerificationToken(TokenGenerator.getUniqueToken());
       user.setVerified(false);
       user.setActive(false);
 
@@ -24,12 +25,18 @@ public class PlosRegistrationService implements RegistrationService {
 
       return user;
     } else {
-      throw new ApplicationException("User already exists for the loginName address: " + loginName);
+      throw new UserAlreadyExistsException();
     }
   }
 
   public User getUserWithLoginName(final String loginName) {
-    return getUserDAO().findUserWithLoginName(loginName);
+    final User user;
+    try {
+      user = getUserDAO().findUserWithLoginName(loginName);
+    } catch (DuplicateLoginNameException ex) {
+      throw new ApplicationException("More than one user account found with the same login name.");
+    }
+    return user;
   }
 
   public void setVerified(final User user) {
@@ -69,7 +76,7 @@ public class PlosRegistrationService implements RegistrationService {
       throw new NoUserFoundWithGivenLoginNameException();
     }
 
-    user.setResetPasswordToken(UniqueTokenGenerator.getUniqueToken());
+    user.setResetPasswordToken(TokenGenerator.getUniqueToken());
     saveUser(user);
 
     getMessagingService()
