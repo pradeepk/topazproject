@@ -30,13 +30,7 @@ public class PlosRegistrationService implements RegistrationService {
   }
 
   public User getUserWithLoginName(final String loginName) {
-    final User user;
-    try {
-      user = getUserDAO().findUserWithLoginName(loginName);
-    } catch (DuplicateLoginNameException ex) {
-      throw new ApplicationException("More than one user account found with the same login name.");
-    }
-    return user;
+    return getUserDAO().findUserWithLoginName(loginName);
   }
 
   public void setVerified(final User user) {
