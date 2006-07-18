@@ -7,7 +7,7 @@
   RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:deny-overrides">
 
   <Description>
-    This policy defines the rules for doing -some-method-.
+    This policy defines the access rules for operations on ${service}.
   </Description>
 
   <Target>
@@ -18,10 +18,19 @@
       <AnyResource/>
     </Resources>
     <Actions>
+      <!-- the blahFoo attribute values must match those in your ${Svc}PEP. -->
       <Action>
         <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
           <AttributeValue
-            DataType="http://www.w3.org/2001/XMLSchema#string">-some-method-</AttributeValue>
+            DataType="http://www.w3.org/2001/XMLSchema#string">createFoo</AttributeValue>
+          <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
+            AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>
+        </ActionMatch>
+      </Action>
+      <Action>
+        <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
+          <AttributeValue
+            DataType="http://www.w3.org/2001/XMLSchema#string">deleteFoo</AttributeValue>
           <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
             AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>
         </ActionMatch>

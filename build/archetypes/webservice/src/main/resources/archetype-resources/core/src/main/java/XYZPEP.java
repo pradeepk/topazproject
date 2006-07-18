@@ -18,12 +18,16 @@ import com.sun.xacml.UnknownIdentifierException;
  * @author foo
  */
 public abstract class ${Svc}PEP extends AbstractSimplePEP {
-  /** The action that represents a -bar- operation in XACML policies. */
-  public static final String DO_BAR = "-do-bar-";
+  // Note: these operations must be referenced in the policy/${Svc}.xml policy file
+  /** The action that represents the create-a-foo operation in XACML policies. */
+  public static final String CREATE_FOO = "createFoo";
+  /** The action that represents the delete-a-foo operation in XACML policies. */
+  public static final String DELETE_FOO = "deleteFoo";
 
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
-                                                           DO_BAR,
+                                                           CREATE_FOO,
+                                                           DELETE_FOO,
                                                          };
 
   /** The list of all supported obligations */
