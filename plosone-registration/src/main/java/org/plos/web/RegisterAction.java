@@ -8,6 +8,7 @@ import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.plos.ApplicationException;
 import org.plos.registration.User;
 import org.plos.service.RegistrationService;
+import org.plos.service.UserAlreadyExistsException;
 
 /**
  * $HeadURL$
@@ -35,6 +36,9 @@ public class RegisterAction extends ActionSupport {
 
       sendMessage(user);
 
+    } catch (final UserAlreadyExistsException e) {
+      addFieldError("loginName1", "User already exists for the given email address");
+      return ERROR;
     } catch (final ApplicationException e) {
       addFieldError("loginName1", e.getMessage());
       return ERROR;
