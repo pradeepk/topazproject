@@ -1,6 +1,13 @@
 #set( $service = $artifactId )
 #set( $Svc = "${service.substring(0, 1).toUpperCase()}${service.substring(1)}" )
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  - Copyright (c) 2006 by Topaz, Inc.
+  - http://topazproject.org
+  -
+  - Licensed under the Educational Community License version 1.0
+  - http://opensource.org/licenses/ecl1.php
+  -->
 <Policy xmlns="urn:oasis:names:tc:xacml:1.0:policy"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   PolicyId="${Svc}Policy"

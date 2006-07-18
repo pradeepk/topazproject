@@ -17,6 +17,13 @@
     <relativePath>../../pom.xml</relativePath>
   </parent>
 
+  <licenses>
+    <license>
+      <name>Educational Community License version 1.0</name>
+      <url>http://opensource.org/licenses/ecl1.php</url>
+    </license>
+  </licenses>
+
   <pluginRepositories>
     <pluginRepository>
       <id>Codehaus Snapshots</id>

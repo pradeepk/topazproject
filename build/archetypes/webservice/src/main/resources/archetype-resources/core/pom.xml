@@ -18,6 +18,13 @@
     <version>0.1-SNAPSHOT</version>
   </parent>
 
+  <licenses>
+    <license>
+      <name>Educational Community License version 1.0</name>
+      <url>http://opensource.org/licenses/ecl1.php</url>
+    </license>
+  </licenses>
+
   <dependencies>
     <dependency>
       <groupId>commons-logging</groupId>
