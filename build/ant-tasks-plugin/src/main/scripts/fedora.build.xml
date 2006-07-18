@@ -126,6 +126,11 @@
       tofile="${FEDORA_HOME}/server/config/fedora.fcfg"
       overwrite="true"/>
 
+    <!-- copy xacml policies -->
+    <copy todir="${FEDORA_HOME}/data/fedora-xacml-policies" overwrite="true">
+      <fileset dir="server/fedora-xacml-policies"/>
+    </copy>
+    
     <!-- unzip the diringest service -->
     <unzip
       src="${SRC_DIRINGEST_ZIP}"
