@@ -1,5 +1,5 @@
+#set( $service = $artifactId )
 <?xml version="1.0" encoding="UTF-8" ?>
-
 <config>
   <topaz>
     <services>
@@ -14,11 +14,8 @@
         <auth-method>CAS</auth-method>
       </itql>
     </services>
-    <server>
-      <hostname>localhost</hostname>
-    </server>
-    <articles>
+    <${service}>
       <pdpName>_default_</pdpName>
-    </articles>
+    </${service}>
   </topaz>
 </config>

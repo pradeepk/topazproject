@@ -4,6 +4,7 @@
     <source>core/src/main/java/XYZ.java</source>
     <source>core/src/main/java/XYZImpl.java</source>
     <source>core/src/main/java/XYZPEP.java</source>
+    <source>ws-server-impl/src/main/axis/XYZServicePortSoapBindingImpl.java</source>
   </sources>
   <testSources>
     <source>ws-client-impl/src/test/java/XYZServiceTest.java</source>
@@ -16,7 +17,6 @@
     <resource>ws-webapp/pom.xml</resource>
     <resource>ws-client-impl/src/main/wsdl/dummy</resource>
     <resource>ws-server-impl/src/main/wsdl/dummy</resource>
-    <resource>ws-server-impl/src/main/axis/dummy</resource>
     <resource>ws-webapp/src/main/webapp/WEB-INF/defaults.xml</resource>
     <resource>ws-webapp/src/main/webapp/WEB-INF/config.xml</resource>
     <resource>ws-webapp/src/main/webapp/WEB-INF/PDPConfig.xml</resource>
