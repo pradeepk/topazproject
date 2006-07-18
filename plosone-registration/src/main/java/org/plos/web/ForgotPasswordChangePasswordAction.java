@@ -7,7 +7,7 @@ import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.plos.ApplicationException;
 import org.plos.registration.User;
-import org.plos.service.ServiceFactory;
+import org.plos.service.RegistrationService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -18,19 +18,17 @@ import java.util.Collection;
  */
 public class ForgotPasswordChangePasswordAction extends ActionSupport {
 
-  private ServiceFactory serviceFactory;
-
   private String loginName;
   private String resetPasswordToken;
   private String password1;
   private String password2;
 
   private ArrayList<String> messages = new ArrayList<String>();
+  private RegistrationService registrationService;
 
   public String execute() throws Exception {
     try {
-      getServiceFactory()
-              .getRegistrationService()
+      registrationService
               .changePassword(loginName, password1, resetPasswordToken);
     } catch (final ApplicationException e) {
       addFieldError("password1",  e.getMessage());
@@ -47,8 +45,7 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
   public String validateResetPasswordRequest() throws Exception {
     try {
       final User user
-              = getServiceFactory()
-                  .getRegistrationService()
+              = registrationService
                   .getUserWithResetPasswordToken(loginName, resetPasswordToken);
       if (null == user) {
         messages.add("No user found for the given email address and password token combination");
@@ -58,14 +55,6 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
       return ERROR;
     }
     return SUCCESS;
-  }
-
-  private ServiceFactory getServiceFactory() {
-    return serviceFactory;
-  }
-
-  public void setServiceFactory(final ServiceFactory serviceFactory) {
-    this.serviceFactory = serviceFactory;
   }
 
   @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid email address")
@@ -113,5 +102,9 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
 
   public Collection<String> getMessages() {
     return messages;
+  }
+
+  public void setRegistrationService(final RegistrationService registrationService) {
+    this.registrationService = registrationService;
   }
 }

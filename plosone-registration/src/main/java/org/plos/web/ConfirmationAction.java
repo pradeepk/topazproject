@@ -4,7 +4,7 @@ import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.EmailValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.plos.ApplicationException;
-import org.plos.service.ServiceFactory;
+import org.plos.service.RegistrationService;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -14,17 +14,15 @@ import java.util.Collection;
  * @version: $Id$
  */
 public class ConfirmationAction extends ActionSupport {
-
-  private ServiceFactory serviceFactory;
   private String emailVerificationToken;
   private ArrayList<String> messages = new ArrayList<String>();
   private String loginName;
+  private RegistrationService registrationService;
 
   public String execute() throws Exception {
 
     try {
-      getServiceFactory()
-              .getRegistrationService()
+      registrationService
               .verifyUser(loginName, emailVerificationToken);
 
     } catch (ApplicationException e) {
@@ -35,12 +33,8 @@ public class ConfirmationAction extends ActionSupport {
     return SUCCESS;
   }
 
-  private ServiceFactory getServiceFactory() {
-    return serviceFactory;
-  }
-
-  public void setServiceFactory(final ServiceFactory serviceFactory) {
-    this.serviceFactory = serviceFactory;
+  public void setRegistrationService(final RegistrationService registrationService) {
+    this.registrationService = registrationService;
   }
 
 //  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="emailVerificationToken", message="Verification token missing")

@@ -1,9 +1,9 @@
 package org.plos.service;
 
-import com.opensymphony.util.GUID;
 import org.plos.ApplicationException;
 import org.plos.registration.User;
 import org.plos.registration.UserImpl;
+import org.plos.util.UniqueTokenGenerator;
 
 /**
  * $HeadURL$
@@ -115,7 +115,7 @@ public class PlosRegistrationService implements RegistrationService {
     getUserDAO().saveOrUpdate(user);
   }
 
-  private UserDAO getUserDAO() {
+  public UserDAO getUserDAO() {
     return userDAO;
   }
 
@@ -124,9 +124,3 @@ public class PlosRegistrationService implements RegistrationService {
   }
 }
 
-class UniqueTokenGenerator {
-
-  public static String getUniqueToken() {
-    return GUID.generateGUID();
-  }
-}

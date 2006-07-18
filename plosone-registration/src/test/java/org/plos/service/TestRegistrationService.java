@@ -1,20 +1,13 @@
 package org.plos.service;
 
-import junit.framework.TestCase;
 import org.plos.registration.User;
 
 /**
  * $HeadURL$
  * @version: $Id$
  */
-public class TestRegistrationService extends TestCase {
-  private ServiceFactory serviceFactory;
+public class TestRegistrationService extends BasePlosoneRegistrationTest {
   private RegistrationService registrationService;
-
-  protected void setUp() throws Exception {
-    serviceFactory = new ServiceFactory();
-    registrationService = serviceFactory.getRegistrationService();
-  }
 
   public void testNewUser() {
     User user = registrationService.createUser("dave@home.com", "david");
@@ -39,9 +32,7 @@ public class TestRegistrationService extends TestCase {
     assertFalse(user.isActive());
   }
 
-  public void testSameInstanceOfUserServiceIsReturnedByServiceFactory() {
-    org.plos.service.RegistrationService registrationService1 = serviceFactory.getRegistrationService();
-    org.plos.service.RegistrationService registrationService2 = serviceFactory.getRegistrationService();
-    assertEquals(registrationService1, registrationService2);
+  public void setRegistrationService(final RegistrationService registrationService) {
+    this.registrationService = registrationService;
   }
 }

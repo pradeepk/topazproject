@@ -7,7 +7,7 @@ import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.plos.ApplicationException;
 import org.plos.registration.User;
-import org.plos.service.ServiceFactory;
+import org.plos.service.RegistrationService;
 
 /**
  * $HeadURL$
@@ -19,20 +19,19 @@ public class RegisterAction extends ActionSupport {
   private String loginName2;
   private String password1;
   private String password2;
-  private ServiceFactory  serviceFactory;
+
+  private RegistrationService registrationService;
 
   /**
    * @deprecated remove when we drop the link from the web page
    */
   private User user;
 
-
   public String execute() throws Exception {
 
     try {
-      final User user = getServiceFactory()
-              .getRegistrationService()
-              .createUser(loginName1, password1);
+      final User user
+              = registrationService.createUser(loginName1, password1);
 
       sendMessage(user);
 
@@ -87,15 +86,11 @@ public class RegisterAction extends ActionSupport {
     this.password2 = password2;
   }
 
-  private ServiceFactory getServiceFactory() {
-    return serviceFactory;
-  }
-
-  public void setServiceFactory(final ServiceFactory serviceFactory) {
-    this.serviceFactory = serviceFactory;
-  }
-
   public User getUser() {
     return user;
+  }
+
+  public void setRegistrationService(final RegistrationService registrationService) {
+    this.registrationService = registrationService;
   }
 }

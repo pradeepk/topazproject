@@ -1,20 +1,15 @@
 package org.plos.web;
 
-import junit.framework.TestCase;
 import org.plos.registration.User;
+import org.plos.service.BasePlosoneRegistrationTest;
 import org.plos.service.RegistrationService;
 import org.plos.service.ServiceFactory;
 
 /**
  */
-public class TestRegistrationAction extends TestCase {
-  private ServiceFactory serviceFactory;
+public class TestRegistrationAction extends BasePlosoneRegistrationTest {
   private RegistrationService registrationService;
-
-  protected void setUp() throws Exception {
-    serviceFactory = new ServiceFactory();
-    registrationService = serviceFactory.getRegistrationService();
-  }
+  private ServiceFactory serviceFactory;
 
   public void testShouldSetUserAsVerified() throws Exception {
     final String email = "viru-verifying@home.com";
@@ -27,7 +22,7 @@ public class TestRegistrationAction extends TestCase {
     assertTrue(emailVerificationToken.length() > 0);
 
     final ConfirmationAction confirmationAction = new ConfirmationAction();
-    confirmationAction.setServiceFactory(new ServiceFactory());
+    confirmationAction.setRegistrationService(registrationService);
     confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(emailVerificationToken);
     confirmationAction.execute();
@@ -48,7 +43,7 @@ public class TestRegistrationAction extends TestCase {
     assertTrue(emailVerificationToken.length() > 0);
 
     final ConfirmationAction confirmationAction = new ConfirmationAction();
-    confirmationAction.setServiceFactory(new ServiceFactory());
+    confirmationAction.setRegistrationService(registrationService);
     confirmationAction.setLoginName(email);
     //change the verification token
     confirmationAction.setEmailVerificationToken(emailVerificationToken+"11");
@@ -72,7 +67,7 @@ public class TestRegistrationAction extends TestCase {
     assertTrue(emailVerificationToken.length() > 0);
 
     final ConfirmationAction confirmationAction = new ConfirmationAction();
-    confirmationAction.setServiceFactory(serviceFactory);
+    confirmationAction.setRegistrationService(registrationService);
     confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(emailVerificationToken);
     confirmationAction.execute();
@@ -88,7 +83,7 @@ public class TestRegistrationAction extends TestCase {
   private void createUser(String email, String password) throws Exception {
     final RegisterAction registerAction = new RegisterAction();
 
-    registerAction.setServiceFactory(serviceFactory);
+    registerAction.setRegistrationService(registrationService);
     registerAction.setLoginName1(email);
     registerAction.setLoginName2(email);
     registerAction.setPassword1(password);
@@ -100,7 +95,7 @@ public class TestRegistrationAction extends TestCase {
     final String email = "viru-forgot-password-not-registered@home.com";
 
     final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
-    forgotPasswordAction.setServiceFactory(serviceFactory);
+    forgotPasswordAction.setRegistrationService(registrationService);
     forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertFalse(forgotPasswordAction.getMessages().isEmpty());
@@ -114,7 +109,7 @@ public class TestRegistrationAction extends TestCase {
     assertFalse(beforeVerificationUser.isVerified());
 
     final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
-    forgotPasswordAction.setServiceFactory(serviceFactory);
+    forgotPasswordAction.setRegistrationService(registrationService);
     forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
@@ -127,7 +122,7 @@ public class TestRegistrationAction extends TestCase {
     assertFalse(beforeVerificationUser.isActive());
 
     final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
-    forgotPasswordAction.setServiceFactory(serviceFactory);
+    forgotPasswordAction.setRegistrationService(registrationService);
     forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
@@ -140,14 +135,14 @@ public class TestRegistrationAction extends TestCase {
     final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
 
     final ConfirmationAction confirmationAction = new ConfirmationAction();
-    confirmationAction.setServiceFactory(serviceFactory);
+    confirmationAction.setRegistrationService(registrationService);
     confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(beforeVerificationUser.getEmailVerificationToken());
     confirmationAction.execute();
     assertTrue(confirmationAction.getMessages().isEmpty());
 
     final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
-    forgotPasswordAction.setServiceFactory(serviceFactory);
+    forgotPasswordAction.setRegistrationService(registrationService);
     forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
@@ -160,14 +155,14 @@ public class TestRegistrationAction extends TestCase {
     final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
 
     final ConfirmationAction confirmationAction = new ConfirmationAction();
-    confirmationAction.setServiceFactory(serviceFactory);
+    confirmationAction.setRegistrationService(registrationService);
     confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(beforeVerificationUser.getEmailVerificationToken());
     confirmationAction.execute();
     assertTrue(confirmationAction.getMessages().isEmpty());
 
     final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
-    forgotPasswordAction.setServiceFactory(serviceFactory);
+    forgotPasswordAction.setRegistrationService(registrationService);
     forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
@@ -188,7 +183,7 @@ public class TestRegistrationAction extends TestCase {
 
     final RegisterAction registerAction = new RegisterAction();
 
-    registerAction.setServiceFactory(serviceFactory);
+    registerAction.setRegistrationService(registrationService);
     registerAction.setLoginName1(email);
     registerAction.setLoginName2(email);
     registerAction.setPassword1(password);
@@ -197,4 +192,11 @@ public class TestRegistrationAction extends TestCase {
     assertTrue(registerAction.getFieldErrors().size() > 0);
   }
 
+  public void setServiceFactory(final ServiceFactory serviceFactory) {
+    this.serviceFactory = serviceFactory;
+  }
+
+  public void setRegistrationService(final RegistrationService registrationService) {
+    this.registrationService = registrationService;
+  }
 }

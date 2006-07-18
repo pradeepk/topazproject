@@ -33,4 +33,15 @@ public interface RegistrationService {
    * @return User
    */
   User getUserWithResetPasswordToken(final String loginName, final String resetPasswordToken);
+
+  /**
+   * @return UserDAO
+   */
+  UserDAO getUserDAO();
+
+  /**
+   * Sets the UserDAO.
+   * @param userDAO
+   */
+  void setUserDAO(UserDAO userDAO);
 }

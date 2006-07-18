@@ -1,71 +1,26 @@
 package org.plos.service;
 
-import org.hibernate.Criteria;
-import org.hibernate.HibernateException;
-import org.hibernate.Session;
-import org.hibernate.Transaction;
-import org.hibernate.criterion.Restrictions;
 import org.plos.registration.User;
 
-import java.util.List;
-
 /**
+ * Contract for all User DAO's.
  * $HeadURL$
  * @version: $Id$
  */
- public class UserDAO {
+ public interface UserDAO {
 
-  public void saveOrUpdate(final User user) {
-    DBUtil.execute(new DBCommand() {
-      public Object execute(final Session session) {
-        session.saveOrUpdate(user);
-        return null;
-      }
-    });
-  }
+  /**
+   * Save or update the user
+   * @param user User
+   */
+  void saveOrUpdate(final User user);
 
-  public User findUserWithLoginName(final String loginName) {
-    return (User) DBUtil.execute(new DBCommand() {
-      public Object execute(final Session session) {
-        final Criteria criteria = session.createCriteria(User.class);
-        criteria.add(Restrictions.eq("loginName", loginName));
-        final List list = criteria.list();
-        if (list.size() > 1) {
-          throw new DuplicateLoginNameException("More than one user account found with the same login name.");
-        }
-
-        if (list.isEmpty()) {
-          return null;
-        }
-        return (User) list.get(0);
-      }
-    });
-  }
+  /**
+   * Find user with a given login name.
+   * @param loginName
+   * @return User
+   */
+  User findUserWithLoginName(final String loginName);
 
 }
 
-class DBUtil {
-  public static Object execute(final DBCommand dbCommand) {
-    final Session session = HibernateUtil.getSession();
-    final Transaction tx = session.beginTransaction();
-
-    final Object result;
-    try {
-      result = dbCommand.execute(session);
-      tx.commit();
-    } catch (final HibernateException e) {
-      if (tx!=null) tx.rollback();
-      throw e;
-    } finally {
-      session.close();
-    }
-
-    return result;
-
-  }
-
-}
-
-interface DBCommand {
-  Object execute(final Session session);
-}
