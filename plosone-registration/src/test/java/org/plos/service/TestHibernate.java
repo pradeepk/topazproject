@@ -1,5 +1,6 @@
 package org.plos.service;
 
+import org.plos.BasePlosoneRegistrationTest;
 import org.plos.registration.UserImpl;
 
 /**

@@ -9,6 +9,23 @@
     <property name="registrationService" ref="registrationService"/>
   </bean>
 
+  <!-- creating all actions with the right injections, used also by the -->
+  <bean id="registerAction" class="org.plos.web.RegisterAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+  <bean id="confirmationAction" class="org.plos.web.ConfirmationAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+  <bean id="forgotPasswordAction" class="org.plos.web.ForgotPasswordAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+  <bean id="forgotPasswordChangePasswordAction" class="org.plos.web.ForgotPasswordChangePasswordAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
   <bean id="persistenceService" class="org.plos.service.PlosPersistenceService">
     <property name="userDAO" ref="userDAO"/>
   </bean>

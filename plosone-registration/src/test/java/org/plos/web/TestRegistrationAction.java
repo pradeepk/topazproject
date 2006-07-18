@@ -1,19 +1,13 @@
 package org.plos.web;
 
+import org.plos.BasePlosoneRegistrationTest;
 import org.plos.registration.User;
-import org.plos.service.BasePlosoneRegistrationTest;
-import org.plos.service.RegistrationService;
-import org.plos.service.ServiceFactory;
 
-/**
- */
 public class TestRegistrationAction extends BasePlosoneRegistrationTest {
-  private RegistrationService registrationService;
-  private ServiceFactory serviceFactory;
 
   public void testShouldSetUserAsVerified() throws Exception {
     final String email = "viru-verifying@home.com";
-    final User beforeVerificationUser = registrationService.createUser(email, "virupasswd");
+    final User beforeVerificationUser = getRegistrationService().createUser(email, "virupasswd");
 
     assertFalse(beforeVerificationUser.isVerified());
     final String emailVerificationToken = beforeVerificationUser.getEmailVerificationToken();
@@ -21,20 +15,19 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTest {
     assertNotNull(emailVerificationToken);
     assertTrue(emailVerificationToken.length() > 0);
 
-    final ConfirmationAction confirmationAction = new ConfirmationAction();
-    confirmationAction.setRegistrationService(registrationService);
+    final ConfirmationAction confirmationAction = getConfirmationAction();
     confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(emailVerificationToken);
     confirmationAction.execute();
 
     assertTrue(confirmationAction.getMessages().isEmpty());
-    final User verifiedUser = registrationService.getUserWithLoginName(email);
+    final User verifiedUser = getRegistrationService().getUserWithLoginName(email);
     assertTrue(verifiedUser.isVerified());
   }
 
   public void testShouldNotVerifyUser() throws Exception {
     final String email = "viru-verifying-another-time@home.com";
-    final User beforeVerificationUser = registrationService.createUser(email, "virupasswd");
+    final User beforeVerificationUser = getRegistrationService().createUser(email, "virupasswd");
 
     assertFalse(beforeVerificationUser.isVerified());
     final String emailVerificationToken = beforeVerificationUser.getEmailVerificationToken();
@@ -42,15 +35,14 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTest {
     assertNotNull(emailVerificationToken);
     assertTrue(emailVerificationToken.length() > 0);
 
-    final ConfirmationAction confirmationAction = new ConfirmationAction();
-    confirmationAction.setRegistrationService(registrationService);
+    final ConfirmationAction confirmationAction = getConfirmationAction();
     confirmationAction.setLoginName(email);
     //change the verification token
     confirmationAction.setEmailVerificationToken(emailVerificationToken+"11");
     confirmationAction.execute();
 
     assertFalse(confirmationAction.getMessages().isEmpty());
-    final User verifiedUser = registrationService.getUserWithLoginName(email);
+    final User verifiedUser = getRegistrationService().getUserWithLoginName(email);
     assertFalse(verifiedUser.isVerified());
   }
 
@@ -59,15 +51,14 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTest {
     final String password = "virupasswd";
 
     createUser(email, password);
-    final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
+    final User beforeVerificationUser = getRegistrationService().getUserWithLoginName(email);
     assertFalse(beforeVerificationUser.isVerified());
     final String emailVerificationToken = beforeVerificationUser.getEmailVerificationToken();
 
     assertNotNull(emailVerificationToken);
     assertTrue(emailVerificationToken.length() > 0);
 
-    final ConfirmationAction confirmationAction = new ConfirmationAction();
-    confirmationAction.setRegistrationService(registrationService);
+    final ConfirmationAction confirmationAction = getConfirmationAction();
     confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(emailVerificationToken);
     confirmationAction.execute();
@@ -76,14 +67,12 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTest {
     confirmationAction.execute();
 
     assertFalse(confirmationAction.getMessages().isEmpty());
-    final User verifiedUser = registrationService.getUserWithLoginName(email);
+    final User verifiedUser = getRegistrationService().getUserWithLoginName(email);
     assertTrue(verifiedUser.isVerified());
   }
 
   private void createUser(String email, String password) throws Exception {
-    final RegisterAction registerAction = new RegisterAction();
-
-    registerAction.setRegistrationService(registrationService);
+    final RegisterAction registerAction = getRegistrationAction();
     registerAction.setLoginName1(email);
     registerAction.setLoginName2(email);
     registerAction.setPassword1(password);
@@ -94,8 +83,7 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTest {
   public void testShouldFailToAcceptForgotPasswordEmailAsItIsNotRegistered() throws Exception {
     final String email = "viru-forgot-password-not-registered@home.com";
 
-    final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
-    forgotPasswordAction.setRegistrationService(registrationService);
+    final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertFalse(forgotPasswordAction.getMessages().isEmpty());
@@ -105,11 +93,10 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTest {
     final String email = "viru-forgot-password-not-verified-yet@home.com";
 
     createUser(email, "virupasswd");
-    final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
+    final User beforeVerificationUser = getRegistrationService().getUserWithLoginName(email);
     assertFalse(beforeVerificationUser.isVerified());
 
-    final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
-    forgotPasswordAction.setRegistrationService(registrationService);
+    final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
@@ -118,11 +105,10 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTest {
   public void testShouldAcceptForgotPasswordRequestIfItIsNotActive() throws Exception {
     final String email = "viru-forgot-password-not-active-yet@home.com";
     createUser(email, "virupasswd");
-    final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
+    final User beforeVerificationUser = getRegistrationService().getUserWithLoginName(email);
     assertFalse(beforeVerificationUser.isActive());
 
-    final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
-    forgotPasswordAction.setRegistrationService(registrationService);
+    final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
@@ -132,17 +118,15 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTest {
     final String email = "viru-forgot-password-verified-and-active@home.com";
     createUser(email, "virupasswd");
 
-    final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
+    final User beforeVerificationUser = getRegistrationService().getUserWithLoginName(email);
 
-    final ConfirmationAction confirmationAction = new ConfirmationAction();
-    confirmationAction.setRegistrationService(registrationService);
+    final ConfirmationAction confirmationAction = getConfirmationAction();
     confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(beforeVerificationUser.getEmailVerificationToken());
     confirmationAction.execute();
     assertTrue(confirmationAction.getMessages().isEmpty());
 
-    final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
-    forgotPasswordAction.setRegistrationService(registrationService);
+    final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
@@ -152,23 +136,21 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTest {
     final String email = "viru-forgot-password-verified-and-active-number2@home.com";
     createUser(email, "virupasswd");
 
-    final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
+    final User beforeVerificationUser = getRegistrationService().getUserWithLoginName(email);
 
-    final ConfirmationAction confirmationAction = new ConfirmationAction();
-    confirmationAction.setRegistrationService(registrationService);
+    final ConfirmationAction confirmationAction = getConfirmationAction();
     confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(beforeVerificationUser.getEmailVerificationToken());
     confirmationAction.execute();
     assertTrue(confirmationAction.getMessages().isEmpty());
 
-    final ForgotPasswordAction forgotPasswordAction = new ForgotPasswordAction();
-    forgotPasswordAction.setRegistrationService(registrationService);
+    final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
 
 
-    final User forgotPasswordUser = registrationService.getUserWithLoginName(email);
+    final User forgotPasswordUser = getRegistrationService().getUserWithLoginName(email);
     assertNotNull(forgotPasswordUser.getResetPasswordToken());
     assertTrue(forgotPasswordUser.getResetPasswordToken().length() > 0);
   }
@@ -178,12 +160,10 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTest {
     final String password = "virupasswd";
 
     createUser(email, password);
-    final User beforeVerificationUser = registrationService.getUserWithLoginName(email);
+    final User beforeVerificationUser = getRegistrationService().getUserWithLoginName(email);
     assertNotNull(beforeVerificationUser);
 
-    final RegisterAction registerAction = new RegisterAction();
-
-    registerAction.setRegistrationService(registrationService);
+    final RegisterAction registerAction = getRegistrationAction();
     registerAction.setLoginName1(email);
     registerAction.setLoginName2(email);
     registerAction.setPassword1(password);
@@ -192,11 +172,4 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTest {
     assertTrue(registerAction.getFieldErrors().size() > 0);
   }
 
-  public void setServiceFactory(final ServiceFactory serviceFactory) {
-    this.serviceFactory = serviceFactory;
-  }
-
-  public void setRegistrationService(final RegistrationService registrationService) {
-    this.registrationService = registrationService;
-  }
 }
