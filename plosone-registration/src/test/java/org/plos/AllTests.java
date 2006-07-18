@@ -12,6 +12,7 @@ public class AllTests {
     final TestSuite suite = new TestSuite();
     suite.addTest(org.plos.service.AllTests.suite());
     suite.addTest(org.plos.web.AllTests.suite());
+    suite.addTest(org.plos.util.AllTests.suite());
     return suite;
   }
 }
