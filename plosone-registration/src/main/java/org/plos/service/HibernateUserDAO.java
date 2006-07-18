@@ -18,6 +18,10 @@ import java.util.List;
  */
 public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
 
+  /**
+   * Save or update the user
+   * @param user User
+   */
   public void saveOrUpdate(final User user) {
     getHibernateTemplate().execute(
       new HibernateCallback(){
@@ -28,6 +32,12 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
       });
   }
 
+  /**
+   * Find the user for the given loginName. If more than one user is found it throws a {@see org.plos.service.DuplicateLoginNameException}
+   *
+   * @param loginName
+   * @return the user for the given loginName
+   */
   public User findUserWithLoginName(final String loginName) {
     return (User) getHibernateTemplate().execute(
       new HibernateCallback(){
@@ -36,7 +46,7 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
         detachedCriteria.add(Restrictions.eq("loginName", loginName));
         final List list = getHibernateTemplate().findByCriteria(detachedCriteria);
         if (list.size() > 1) {
-          throw new DuplicateLoginNameException("More than one user account found with the same login name.");
+          throw new DuplicateLoginNameException();
         }
 
         if (list.isEmpty()) {
