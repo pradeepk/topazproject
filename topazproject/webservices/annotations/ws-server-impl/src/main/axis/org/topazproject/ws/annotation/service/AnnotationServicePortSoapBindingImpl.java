@@ -2,8 +2,10 @@ package org.topazproject.ws.annotation.service;
 
 import java.io.IOException;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import java.rmi.RemoteException;
 
@@ -38,11 +40,13 @@ import fedora.server.management.FedoraAPIM;
  * The implementation of the annotation service.
  */
 public class AnnotationServicePortSoapBindingImpl implements Annotation, ServiceLifecycle {
-  private static Log     log          =
-    LogFactory.getLog(AnnotationServicePortSoapBindingImpl.class);
-  private AnnotationImpl impl         = null;
+  private static Log log = LogFactory.getLog(AnnotationServicePortSoapBindingImpl.class);
+
+  //
+  private AnnotationImpl impl                 = null;
   private Configuration  itqlConfig;
   private Configuration  fedoraConfig;
+  private Configuration  fedoraUploaderConfig;
   private String         hostname;
 
   /**
@@ -50,100 +54,41 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
    */
   public AnnotationServicePortSoapBindingImpl() {
     Configuration root = ConfigurationStore.getInstance().getConfiguration();
-    itqlConfig     = root.subset("topaz.services.itql");
-    fedoraConfig   = root.subset("topaz.services.fedora");
-    hostname       = root.getString("topaz.server.hostname");
+    itqlConfig             = root.subset("topaz.services.itql");
+    fedoraConfig           = root.subset("topaz.services.fedora");
+    fedoraUploaderConfig   = root.subset("topaz.services.fedoraUploader");
+    hostname               = root.getString("topaz.server.hostname");
   }
 
   /**
    * @see javax.xml.rpc.server.ServiceLifecycle#init
    */
   public void init(Object context) throws ServiceException {
-    PEP              pep;
-    ProtectedService fedora;
-    ItqlHelper       itql;
-
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#init");
 
-    try {
-      pep = new PEP((ServletEndpointContext) context);
-    } catch (Exception e) {
-      if (log.isErrorEnabled())
-        log.error("Failed to create PEP.", e);
+    PEP              pep = createPEP((ServletEndpointContext) context);
 
-      throw new ServiceException(e);
-    }
+    HttpSession      session = ((ServletEndpointContext) context).getHttpSession();
 
-    HttpSession session = ((ServletEndpointContext) context).getHttpSession();
+    ProtectedService itqlSvc     = createService(itqlConfig, session, "itql");
+    ProtectedService fedoraSvc   = createService(fedoraConfig, session, "fedora");
+    ProtectedService uploaderSvc = createService(fedoraUploaderConfig, session, "fedora-uploader");
 
-    try {
-      itql = new ItqlHelper(ProtectedServiceFactory.createService(itqlConfig, session));
-    } catch (Exception e) {
-      if (log.isErrorEnabled())
-        log.error("Failed to create itql service interface", e);
+    URI              itqlURI     = createServiceUri(itqlSvc.getServiceUri(), "itql");
+    URI              fedoraURI   = createServiceUri(fedoraSvc.getServiceUri(), "fedora");
+    URI              uploaderURI = createServiceUri(uploaderSvc.getServiceUri(), "fedora-uploader");
 
-      throw new ServiceException(e);
-    }
+    URI              fedoraServer = getRemoteFedoraURI(fedoraURI, hostname);
 
-    URI        fedoraServer;
-    FedoraAPIM apim;
-    Uploader   uploader;
+    ItqlHelper       itql     = createItqlHelper(itqlSvc);
+    FedoraAPIM       apim     = createFedoraAPIM(fedoraSvc, fedoraURI);
+    Uploader         uploader = createFedoraUploader(uploaderSvc, uploaderURI);
 
-    try {
-      ProtectedService fedoraSvc = ProtectedServiceFactory.createService(fedoraConfig, session);
-      URI              fedoraURI = new URI(fedoraSvc.getServiceUri());
-      fedoraServer = getRemoteFedoraURI(fedoraURI, hostname);
-
-      if (fedoraSvc.requiresUserNamePassword()) {
-        apim =
-          APIMStubFactory.getStub(fedoraURI.getScheme(), fedoraURI.getHost(), fedoraURI.getPort(),
-                                  fedoraSvc.getUserName(), fedoraSvc.getPassword());
-        uploader =
-          new Uploader(fedoraURI.getScheme(), fedoraURI.getHost(), fedoraURI.getPort(),
-                       fedoraSvc.getUserName(), fedoraSvc.getPassword());
-      } else {
-        String pqf = fedoraURI.getPath();
-
-        if (fedoraURI.getQuery() != null)
-          pqf += ("?" + fedoraURI.getQuery());
-
-        if (fedoraURI.getFragment() != null)
-          pqf += ("#" + fedoraURI.getFragment());
-
-        apim =
-          APIMStubFactory.getStubAltPath(fedoraURI.getScheme(), fedoraURI.getHost(),
-                                         fedoraURI.getPort(), pqf, null, null);
-
-        // XXX: short of wholesale copying and modifying of Uploader, I see no way to get the
-        // path in there.
-        uploader =
-          new Uploader(fedoraURI.getScheme(), fedoraURI.getHost(), fedoraURI.getPort(),
-                       fedoraSvc.getUserName(), fedoraSvc.getPassword());
-      }
-    } catch (Exception e) {
-      if (log.isErrorEnabled())
-        log.error("Failed to create fedora service interface", e);
-
-      throw new ServiceException(e);
-    }
-
-    Principal principal = ((ServletEndpointContext) context).getUserPrincipal();
-    String    user = (principal == null) ? null : principal.getName();
+    Principal        principal = ((ServletEndpointContext) context).getUserPrincipal();
+    String           user      = (principal == null) ? null : principal.getName();
 
     impl = new AnnotationImpl(pep, itql, fedoraServer, apim, uploader, user);
-  }
-
-  private static URI getRemoteFedoraURI(URI fedoraURI, String hostname) {
-    if (!fedoraURI.getHost().equals("localhost"))
-      return fedoraURI; // it's already remote
-
-    try {
-      return new URI(fedoraURI.getScheme(), null, hostname, fedoraURI.getPort(),
-                     fedoraURI.getPath(), null, null);
-    } catch (URISyntaxException use) {
-      throw new Error(use); // Can't happen
-    }
   }
 
   /**
@@ -274,5 +219,99 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
    */
   public String[] listAnnotations(int state) throws RemoteException {
     return impl.listAnnotations(state);
+  }
+
+  private static ProtectedService createService(Configuration conf, HttpSession session, String name)
+                                         throws ServiceException {
+    try {
+      return ProtectedServiceFactory.createService(conf, session);
+    } catch (IOException e) {
+      throw new ServiceException("Failed to create a service URI for '" + name + "'", e);
+    }
+  }
+
+  private static PEP createPEP(ServletEndpointContext context)
+                        throws ServiceException {
+    try {
+      return new PEP(context);
+    } catch (IOException e) {
+      throw new ServiceException("Failed to create PEP", e);
+    } catch (com.sun.xacml.ParsingException e) {
+      throw new ServiceException("Failed to create PEP", e);
+    } catch (com.sun.xacml.UnknownIdentifierException e) {
+      throw new ServiceException("Failed to create PEP", e);
+    }
+  }
+
+  private static URI createServiceUri(String uri, String name) {
+    try {
+      URL u = new URL(uri);
+
+      return URI.create(u.toString());
+    } catch (MalformedURLException e) {
+      throw new Error("Misconfigured uri for service '" + name + "'", e);
+    }
+  }
+
+  private static ItqlHelper createItqlHelper(ProtectedService itqlSvc)
+                                      throws ServiceException {
+    try {
+      return new ItqlHelper(itqlSvc);
+    } catch (MalformedURLException e) {
+      throw new ServiceException("Misconfigured URL for itql service", e);
+    } catch (RemoteException e) {
+      throw new ServiceException("Failed to initialize itql service", e);
+    }
+  }
+
+  private static URI getRemoteFedoraURI(URI fedoraURI, String hostname) {
+    if (!fedoraURI.getHost().equals("localhost"))
+      return fedoraURI; // it's already remote
+
+    try {
+      return new URI(fedoraURI.getScheme(), null, hostname, fedoraURI.getPort(),
+                     fedoraURI.getPath(), null, null);
+    } catch (URISyntaxException use) {
+      throw new Error(use); // Can't happen
+    }
+  }
+
+  private static FedoraAPIM createFedoraAPIM(ProtectedService fedoraSvc, URI fedoraURI)
+                                      throws ServiceException {
+    try {
+      if (fedoraSvc.requiresUserNamePassword())
+        return APIMStubFactory.getStub(fedoraURI.getScheme(), fedoraURI.getHost(),
+                                       fedoraURI.getPort(), fedoraSvc.getUserName(),
+                                       fedoraSvc.getPassword());
+
+      String pqf = fedoraURI.getPath();
+
+      if (fedoraURI.getQuery() != null)
+        pqf += ("?" + fedoraURI.getQuery());
+
+      if (fedoraURI.getFragment() != null)
+        pqf += ("#" + fedoraURI.getFragment());
+
+      return APIMStubFactory.getStubAltPath(fedoraURI.getScheme(), fedoraURI.getHost(),
+                                            fedoraURI.getPort(), pqf, null, null);
+    } catch (MalformedURLException e) {
+      throw new ServiceException("Failed to create fedora-API-M client stub", e);
+    }
+  }
+
+  private static Uploader createFedoraUploader(ProtectedService uploaderSvc, URI uploaderURI)
+                                        throws ServiceException {
+    try {
+      if (uploaderSvc.requiresUserNamePassword())
+        return new Uploader(uploaderURI.getScheme(), uploaderURI.getHost(), uploaderURI.getPort(),
+                            uploaderSvc.getUserName(), uploaderSvc.getPassword());
+
+      // XXX: short of wholesale copying and modifying of Uploader, I see no way to get the
+      // path in there.
+      return new Uploader(uploaderURI.getScheme(), uploaderURI.getHost(), uploaderURI.getPort(),
+                          uploaderSvc.getUserName(), uploaderSvc.getPassword());
+    } catch (IOException e) {
+      throw new ServiceException("Failed to create fedora-uploader client stub", e);
+    }
   }
 }
