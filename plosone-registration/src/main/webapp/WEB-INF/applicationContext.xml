@@ -38,7 +38,10 @@
 
   <bean id="registrationService" class="org.plos.service.PlosRegistrationService">
     <property name="userDAO" ref="userDAO"/>
+    <property name="registrationMessagingService" ref="registrationMessagingService"/>
   </bean>
+
+  <bean id="registrationMessagingService" class="org.plos.service.PlosRegistrationMessagingService"/>
 
   <!--<bean id="User" class="org.plos.registration.UserImpl"></bean>-->
 
