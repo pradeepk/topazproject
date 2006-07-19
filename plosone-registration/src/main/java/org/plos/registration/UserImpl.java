@@ -15,10 +15,12 @@ import java.sql.Date;
 @Entity
 @Table (name = "plos_user")
 public class UserImpl implements User {
-  private String loginName;
-
+  // TODO: Make this field a GUID generated value like the tokens
   @Id @GeneratedValue(strategy= GenerationType.AUTO)
   private String id;
+
+  @Column  (unique = true)
+  private String loginName;
 
   @Column (nullable = false)
   private String password;
@@ -30,10 +32,10 @@ public class UserImpl implements User {
   private boolean active;
   private String emailVerificationToken;
 
-//  @Column (nullable = false)
+// TODO:  @Column (nullable = false)
   private Date createdOn;
 
-//  @Column (nullable = false)
+// TODO: @Column (nullable = false)
   private Date updatedOn;
 
   private String resetPasswordToken;
@@ -112,6 +114,7 @@ public class UserImpl implements User {
     return createdOn;
   }
 
+  // TODO: set the date
   @Transactional(propagation= Propagation.MANDATORY)
   public void setCreatedOn(Date createdOn) {
     this.createdOn = createdOn;
@@ -122,6 +125,7 @@ public class UserImpl implements User {
     return updatedOn;
   }
 
+  // TODO: set the date
   @Transactional(propagation= Propagation.MANDATORY)
   public void setUpdatedOn(Date updatedOn) {
     this.updatedOn = updatedOn;
