@@ -9,4 +9,7 @@ import org.plos.ApplicationException;
  */
 public class DuplicateLoginNameException extends ApplicationException {
 
+  public DuplicateLoginNameException(final String loginName) {
+    super(loginName);
+  }
 }

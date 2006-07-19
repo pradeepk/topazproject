@@ -1,6 +1,7 @@
 package org.plos.service;
 
-import org.plos.ApplicationException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plos.registration.User;
 import org.plos.registration.UserImpl;
 import org.plos.util.TokenGenerator;
@@ -12,6 +13,9 @@ import org.plos.util.TokenGenerator;
  */
 public class PlosRegistrationService implements RegistrationService {
   private UserDAO userDAO;
+  private RegistrationMessagingService registrationMessagingService;
+
+  private static final Log log = LogFactory.getLog(PlosPersistenceService.class);
 
   public User createUser(final String loginName, final String password) throws UserAlreadyExistsException {
     if (null == getUserWithLoginName(loginName)) {
@@ -25,7 +29,7 @@ public class PlosRegistrationService implements RegistrationService {
 
       return user;
     } else {
-      throw new UserAlreadyExistsException();
+      throw new UserAlreadyExistsException(loginName);
     }
   }
 
@@ -47,14 +51,14 @@ public class PlosRegistrationService implements RegistrationService {
     saveUser(user);
   }
 
-  public void verifyUser(final String loginName, final String emailVerificationToken) {
+  public void verifyUser(final String loginName, final String emailVerificationToken) throws VerificationTokenInvalidException, UserAlreadyVerifiedException {
     final User user = getUserWithLoginName(loginName);
     if (user.isVerified()) {
-      throw new ApplicationException("The login name:" + loginName + " has already been verified");
+      throw new UserAlreadyVerifiedException(loginName);
     }
 
     if (!user.getEmailVerificationToken().equals(emailVerificationToken)) {
-      throw new ApplicationException("Invalid token. Please use the same link or reply to the email that was sent to you.");
+      throw new VerificationTokenInvalidException("loginName:"+loginName + ", emailVerificationToken:"+emailVerificationToken);
     }
 
     user.setVerified(true);
@@ -64,21 +68,29 @@ public class PlosRegistrationService implements RegistrationService {
     saveUser(user);
   }
 
-  public void sendForgotPasswordMessage(final String loginName) {
+  public void sendForgotPasswordMessage(final String loginName) throws NoUserFoundWithGivenLoginNameException {
     final User user = getUserDAO().findUserWithLoginName(loginName);
     if (null == user) {
-      throw new NoUserFoundWithGivenLoginNameException();
+      throw new NoUserFoundWithGivenLoginNameException(loginName);
     }
 
     user.setResetPasswordToken(TokenGenerator.getUniqueToken());
     saveUser(user);
 
-    getMessagingService()
-            .sendMessage(
-              "email:" + loginName + ";" + "passwordToken:" + user.getResetPasswordToken());
+    getRegistrationMessagingService()
+            .sendForgotPasswordVerificationEmail(
+                    loginName,
+                    user.getResetPasswordToken());
   }
 
-  public void changePassword(final String loginName, final String newPassword, final String resetPasswordToken) {
+  /**
+   *
+   * @param loginName
+   * @param newPassword
+   * @param resetPasswordToken
+   * @throws NoUserFoundWithGivenLoginNameException
+   */
+  public void changePassword(final String loginName, final String newPassword, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException {
     final User user = getUserWithResetPasswordToken(loginName, resetPasswordToken);
 
     user.setPassword(newPassword);
@@ -86,30 +98,31 @@ public class PlosRegistrationService implements RegistrationService {
     saveUser(user);
   }
 
-  public User getUserWithResetPasswordToken(final String loginName, final String resetPasswordToken) {
+  /**
+   * Get the user with the given loginName and resetPasswordToken.
+   *
+   * @param loginName
+   * @param resetPasswordToken
+   * @return User
+   * @throws NoUserFoundWithGivenLoginNameException
+   * @throws VerificationTokenInvalidException
+   */
+  public User getUserWithResetPasswordToken(final String loginName, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException {
     final User user = getUserDAO().findUserWithLoginName(loginName);
 
     if (null == user) {
-      throw new NoUserFoundWithGivenLoginNameException();
+      throw new NoUserFoundWithGivenLoginNameException(loginName);
     }
 
     if (user.getResetPasswordToken().equals(resetPasswordToken)) {
       return user;
     } else {
-      throw new ResetPasswordTokenInvalidException();
+      throw new VerificationTokenInvalidException("loginName:"+loginName + ", resetPasswordToken:"+resetPasswordToken);
     }
   }
 
-  private EmailMessagingService getMessagingService() {
-    return new EmailMessagingService() {
-      public void sendMessage(final String message) {
-        log("message sent");
-      }
-    };
-  }
-
-  private void log(final String logMessage) {
-    System.out.println(logMessage);
+  public RegistrationMessagingService getRegistrationMessagingService() {
+    return registrationMessagingService;
   }
 
   private void saveUser(final User user) {
@@ -122,6 +135,10 @@ public class PlosRegistrationService implements RegistrationService {
 
   public void setUserDAO(final UserDAO userDAO) {
     this.userDAO = userDAO;
+  }
+
+  public void setRegistrationMessagingService (final RegistrationMessagingService registrationMessagingService) {
+    this.registrationMessagingService = registrationMessagingService;
   }
 }
 

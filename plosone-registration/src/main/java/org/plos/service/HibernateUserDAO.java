@@ -1,5 +1,7 @@
 package org.plos.service;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
@@ -17,6 +19,7 @@ import java.util.List;
  * @version: $Id: $
  */
 public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
+  private static final Log log = LogFactory.getLog(HibernateUserDAO.class);
 
   /**
    * Save or update the user
@@ -42,27 +45,32 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
 
 
   /**
-   * Find the user for the given loginName. If more than one user is found it throws a {@see org.plos.service.DuplicateLoginNameException}
+   * Find the user for the given loginName. If more than one user is found it throws an Exception.
    *
    * @param loginName
    * @return the user for the given loginName
+   * @throws DuplicateLoginNameException
    */
   public User findUserWithLoginName(final String loginName) {
     return (User) getHibernateTemplate().execute(
       new HibernateCallback(){
         public Object doInHibernate(final Session session) throws HibernateException, SQLException {
-        final DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
-        detachedCriteria.add(Restrictions.eq("loginName", loginName));
-        final List list = getHibernateTemplate().findByCriteria(detachedCriteria);
-        if (list.size() > 1) {
-          throw new DuplicateLoginNameException();
-        }
+          final DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
+          detachedCriteria.add(Restrictions.eq("loginName", loginName));
+          final List list = getHibernateTemplate().findByCriteria(detachedCriteria);
 
-        if (list.isEmpty()) {
-          return null;
+          if (list.size() > 1) {
+            final DuplicateLoginNameException duplicateLoginNameException = new DuplicateLoginNameException(loginName);
+
+            log.error("DuplicateLoginName:"+loginName, duplicateLoginNameException);
+            throw duplicateLoginNameException;
+          }
+
+          if (list.isEmpty()) {
+            return null;
+          }
+          return (User) list.get(0);
         }
-        return (User) list.get(0);
-      }
     });
   }
 

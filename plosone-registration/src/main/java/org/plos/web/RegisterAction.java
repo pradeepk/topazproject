@@ -37,13 +37,17 @@ public class RegisterAction extends ActionSupport {
       final User user
               = registrationService.createUser(loginName1, password1);
 
-      sendMessage(user);
+      //TODO remove when we drop the link from the web page 
+      {
+        sendMessage(user);
+      }
 
     } catch (final UserAlreadyExistsException e) {
+      log.error("UserAlreadyExists:"+loginName1, e);
       addFieldError("loginName1", "User already exists for the given email address");
       return ERROR;
     } catch (final ApplicationException e) {
-      log.error(e);
+      log.error("Application error", e);
       addFieldError("loginName1", e.getMessage());
       return ERROR;
     }
@@ -53,8 +57,6 @@ public class RegisterAction extends ActionSupport {
 
   private void sendMessage(final User user) {
     this.user = user;
-//    user.getLoginName(),
-//    user.getEmailVerificationToken());
   }
 
   @EmailValidator(type=ValidatorType.SIMPLE, fieldName="loginName1", message="You must enter a valid email")

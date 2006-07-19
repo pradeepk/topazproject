@@ -3,8 +3,12 @@ package org.plos.web;
 import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.EmailValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.service.RegistrationService;
+import org.plos.service.UserAlreadyVerifiedException;
+import org.plos.service.VerificationTokenInvalidException;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -19,15 +23,27 @@ public class ConfirmationAction extends ActionSupport {
   private String loginName;
   private RegistrationService registrationService;
 
+  private static final Log log = LogFactory.getLog(ConfirmationAction.class);
+
   public String execute() throws Exception {
 
     try {
       registrationService
               .verifyUser(loginName, emailVerificationToken);
-
-    } catch (ApplicationException e) {
+    } catch (final UserAlreadyVerifiedException e) {
+      final String message = "UserAlreadyVerified:" + loginName;
+      messages.add(message);
+      log.trace(message, e);
+      return ERROR;
+    } catch (final VerificationTokenInvalidException e) {
+      final String message = "VerificationTokenInvalid:"+ emailVerificationToken+", loginName:" + loginName;
+      messages.add(message);
+      log.trace(message, e);
+      return ERROR;
+    } catch (final ApplicationException e) {
       messages.add(e.getMessage());
       addFieldError("loginName", e.getMessage());
+      log.warn(e, e);
       return ERROR;
     }
     return SUCCESS;

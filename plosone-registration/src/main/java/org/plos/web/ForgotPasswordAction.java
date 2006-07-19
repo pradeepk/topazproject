@@ -2,8 +2,9 @@ package org.plos.web;
 
 import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.EmailValidator;
-import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.registration.User;
 import org.plos.service.NoUserFoundWithGivenLoginNameException;
@@ -13,6 +14,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
+ * Used when a user makes a forgot password request.
  * $HeadURL$
  * @version: $Id$
  */
@@ -21,6 +23,8 @@ public class ForgotPasswordAction extends ActionSupport {
   private RegistrationService registrationService;
   private ArrayList<String> messages = new ArrayList<String>();
   private String loginName;
+
+  private static final Log log = LogFactory.getLog(ForgotPasswordAction.class);
 
   /**
    * @deprecated
@@ -31,16 +35,22 @@ public class ForgotPasswordAction extends ActionSupport {
   public String execute() throws Exception {
     try {
       registrationService.sendForgotPasswordMessage(loginName);
-      final User user = registrationService.getUserWithLoginName(loginName);
-      setUser(user);
+
+      //TODO to be removed when we change the forgot-password-success.jsp so that it does not display the forgot password link
+      {
+        final User user = registrationService.getUserWithLoginName(loginName);
+        setUser(user);
+      }
 
     } catch (final NoUserFoundWithGivenLoginNameException noUserEx) {
       final String message = "No user found for the given email address:" + loginName;
-      messages.add(message);
+      messages.add(noUserEx.getMessage());
+      log.trace(message, noUserEx);
       addFieldError("loginName", message);
       return ERROR;
     } catch (final ApplicationException e) {
       messages.add(e.getMessage());
+      log.error(e, e);
       addFieldError("loginName", e.getMessage());
       return ERROR;
     }
@@ -52,7 +62,7 @@ public class ForgotPasswordAction extends ActionSupport {
   }
 
   @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "loginName", message = "Not a valid loginName")
-  @RequiredStringValidator(type = ValidatorType.FIELD, fieldName = "loginName", message = "Email address is required")
+//  @RequiredStringValidator(type = ValidatorType.FIELD, fieldName = "loginName", message = "Email address is required")
   public void setLoginName(final String loginName) {
     this.loginName = loginName;
   }

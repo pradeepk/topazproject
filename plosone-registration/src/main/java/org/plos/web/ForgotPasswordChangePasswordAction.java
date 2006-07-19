@@ -5,14 +5,16 @@ import com.opensymphony.xwork.validator.annotations.EmailValidator;
 import com.opensymphony.xwork.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import org.plos.registration.User;
 import org.plos.service.RegistrationService;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
 /**
+ * Used to present the user with reset password facility after having forgotten their password.
  * $HeadURL$
  * @version: $Id$
  */
@@ -26,11 +28,14 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
   private ArrayList<String> messages = new ArrayList<String>();
   private RegistrationService registrationService;
 
+  private static final Log log = LogFactory.getLog(ForgotPasswordChangePasswordAction.class);
+
   public String execute() throws Exception {
     try {
       registrationService
               .changePassword(loginName, password1, resetPasswordToken);
     } catch (final ApplicationException e) {
+      log.warn("Error changing password", e);
       addFieldError("password1",  e.getMessage());
       return ERROR;
     }
@@ -44,14 +49,10 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
    */
   public String validateResetPasswordRequest() throws Exception {
     try {
-      final User user
-              = registrationService
-                  .getUserWithResetPasswordToken(loginName, resetPasswordToken);
-      if (null == user) {
-        messages.add("No user found for the given email address and password token combination");
-      }
+      registrationService.getUserWithResetPasswordToken(loginName, resetPasswordToken);
     } catch (final ApplicationException e) {
-      messages.add(e.getMessage());
+      log.warn("Error validating password request", e);
+      addFieldError("password1",  e.getMessage());
       return ERROR;
     }
     return SUCCESS;
