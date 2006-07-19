@@ -16,6 +16,13 @@ import org.plos.registration.User;
   void saveOrUpdate(final User user);
 
   /**
+   * Delete user
+   * @param user User
+   */
+  void delete(final User user);
+
+
+  /**
    * Find user with a given login name.
    * @param loginName
    * @return User

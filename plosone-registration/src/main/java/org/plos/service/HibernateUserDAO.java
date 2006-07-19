@@ -33,6 +33,21 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
   }
 
   /**
+   * Delete user
+   * @param user User
+   */
+  public void delete(final User user) {
+    getHibernateTemplate().execute(
+      new HibernateCallback(){
+        public Object doInHibernate(final Session session) throws HibernateException, SQLException {
+          session.delete(user);
+          return null;
+        }
+      });
+  }
+
+
+  /**
    * Find the user for the given loginName. If more than one user is found it throws a {@see org.plos.service.DuplicateLoginNameException}
    *
    * @param loginName

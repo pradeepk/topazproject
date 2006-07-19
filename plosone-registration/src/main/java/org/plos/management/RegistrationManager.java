@@ -1,9 +1,7 @@
 package org.plos.management;
 
-import org.hibernate.Session;
-import org.hibernate.SessionFactory;
-import org.hibernate.Transaction;
 import org.plos.registration.User;
+import org.plos.service.UserDAO;
 import org.springframework.jmx.export.annotation.ManagedOperation;
 import org.springframework.jmx.export.annotation.ManagedOperationParameter;
 import org.springframework.jmx.export.annotation.ManagedOperationParameters;
@@ -24,11 +22,16 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 public class RegistrationManager implements RegistrationManagerMBean
 {
 
-  private SessionFactory sessionFactory;
-  private Session session;
+  private UserDAO userDAO;
 
-  public void setSessionFactory(SessionFactory sessionFactory) {
-    this.sessionFactory = sessionFactory;
+  /**
+    * Set the seesionFactory, used via Spring injection
+    *
+    * @param userDAO
+    *
+    */
+  public void setUserDAO(final UserDAO userDAO) {
+    this.userDAO = userDAO;
   }
 
   /**
@@ -40,20 +43,12 @@ public class RegistrationManager implements RegistrationManagerMBean
    */
   @ManagedOperation(description = "Delete User")
   @ManagedOperationParameters({@ManagedOperationParameter(name = "userName", description = "User Name")})
-//  @Transactional(propagation = Propagation.REQUIRED)
   public String deleteUser(String userName) {
-    org.hibernate.Query userQuery;
 
     try {
-      userQuery = getUserNameQuery(userName);
-      //user.setPassword(password);
-      java.util.List results = userQuery.list();
-      if (results.isEmpty()) return "User" + userName + " Not Found";
-      User user = (User) results.get(0);
-      //Transaction tx = session.beginTransaction();
-      //session.delete(user);
-      //tx.commit();
-
+      User user = userDAO.findUserWithLoginName(userName);
+      if (null == user)  return "User " + userName + "NOT found";
+      userDAO.delete(user);
     }
     catch (Exception e) {
       System.out.println(e.toString());
@@ -72,16 +67,13 @@ public class RegistrationManager implements RegistrationManagerMBean
 
   @ManagedOperation(description = "Change User Password")
   @ManagedOperationParameters({@ManagedOperationParameter(name = "userName", description = "User Name")})
-//  @Transactional(propagation = Propagation.REQUIRED)
   public String changeUserPassword(String userName, String password) {
-    org.hibernate.Query userQuery;
 
     try {
-      userQuery = getUserNameQuery(userName);
-      java.util.List results = userQuery.list();
-      User user = (User) results.get(0);
+      User user = userDAO.findUserWithLoginName(userName);
+      if (null == user)  return "User " + userName + "NOT found";
       user.setPassword(password);
-      saveUser(user);
+      userDAO.saveOrUpdate(user);
     }
     catch (Exception e) {
       System.out.println(e.toString());
@@ -101,7 +93,6 @@ public class RegistrationManager implements RegistrationManagerMBean
 
   @ManagedOperation(description = "Deactivate User")
   @ManagedOperationParameters({@ManagedOperationParameter(name = "userName", description = "User Name")})
-//  @Transactional(propagation = Propagation.REQUIRED)
   public String deactivateUser(String userName) {
     return setActiveFlag(userName, false);
   }
@@ -117,7 +108,6 @@ public class RegistrationManager implements RegistrationManagerMBean
 
   @ManagedOperation(description = "Activate User")
   @ManagedOperationParameters({@ManagedOperationParameter(name = "userName", description = "User Name")})
-//  @Transactional(propagation = Propagation.REQUIRED)
   public String activateUser(String userName) {
     return setActiveFlag(userName, true);
   }
@@ -126,44 +116,22 @@ public class RegistrationManager implements RegistrationManagerMBean
   //  Private Methods
   //
 
-  private org.hibernate.Query getUserNameQuery(String userName) {
-    if (sessionFactory == null) {
-      System.out.println("sessionFactory is NULL");
-      //session = HibernateUtil.getSession();
-    }
-    session = sessionFactory.getCurrentSession();
-
-    if (session == null) System.out.println("session NULL!!");
-    org.hibernate.Query q = session.getNamedQuery("userName");
-    q.setString("userName", userName);
-    return q;
-  }
-
-
   private String setActiveFlag(String userName, boolean flag) {
-    org.hibernate.Query userQuery;
     try {
-      userQuery = getUserNameQuery(userName);
-      java.util.List results = userQuery.list();
-      if (results.isEmpty()) return "User" + userName + " Not Found";
-      User user = (User) results.get(0);
+      User user = userDAO.findUserWithLoginName(userName);
+      if (null == user)  return "User " + userName + "NOT found";
+      user.setVerified(flag);
       user.setActive(flag);
-      saveUser(user);
+      userDAO.saveOrUpdate(user);
     }
     catch (Exception e) {
       System.out.println(e.toString());
-      return "ERROR: " + e.toString();
+      e.printStackTrace();
+      return "Activeflag operation FAILED for User " + userName + " ERROR: " + e.toString();
     }
     return "User " + userName + " succesfuly activated/deactivated";
 
   }
-
-  private void saveUser(User user) {
-    Transaction tx = session.beginTransaction();
-    session.save(user);
-    tx.commit();
-  }
-
 
 }
 

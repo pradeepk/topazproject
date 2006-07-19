@@ -8,18 +8,28 @@ import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
+import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
+
 
 /**
  * $HeadURL: $
  *
  * @version: $Id: $
+ *
+ *  This class starts up non Plosone MBeans.  It is declared in web.xml.
+ *  Plosone MBeans use Spring injection and are NOT listed here.
+ *  The class defaults to checking if there are currently any JMX servers
+ *  currently running, if so then it uses the first one it finds, otherwise
+ *  it creates a JMX server.
  */
 public class JMXStartupListener implements ServletContextListener
 {
 
     private static Logger logger = Logger.getLogger("org.plos");
     private MBeanServer server;
-    private HtmlAdaptorServer htmlAdaptor = new HtmlAdaptorServer();
+
+    private HtmlAdaptorServer htmlAdaptor;
 
     public void contextDestroyed(ServletContextEvent arg0)
     {
@@ -28,31 +38,33 @@ public class JMXStartupListener implements ServletContextListener
     }
 
 
-    public void contextInitialized(ServletContextEvent arg0)
-    {
-        logger.debug("STARTING MBEAN Server");
-        server = MBeanServerFactory.createMBeanServer("RegistrationManager");
+  public void contextInitialized(ServletContextEvent arg0) {
+    logger.debug("STARTING MBEAN Server");
+    server = MBeanServerFactory.createMBeanServer("RegistrationManager");
 
-        try {
+    ArrayList servers = MBeanServerFactory.findMBeanServer(null);
+    if (servers == null) {
+      System.out.println("NO MBean Server found, creating one");
+      //TODO log warning    check this probably the same thing
+      server = ManagementFactory.getPlatformMBeanServer();
+    } else {
+      server = (MBeanServer) servers.get(0);
+    }
+    System.out.println("MBEAN Server" + server.toString());
+
+
+    try {
 
           //
-          //   Register your MBeans Here
+          //   Register your non Plosone MBeans Here
           //
+          startHtmlAdaptor();
 
-
-/*
-            server.registerMBean(new RegistrationManager(),
-                new ObjectName("RegistrationManagerAgent:name=RegistrationManager"));
-            logger.debug("Registered RegistrationManager");
-*/
-
-
-            startHtmlAdaptor();
         } catch (Exception e) {
           logger.error("Cannot start JMX Listener " + e.toString());
+          System.out.println(("Cannot start JMX Listener " + e.toString()));
         }
     }
-
 
     protected void startHtmlAdaptor() throws Exception
     {
