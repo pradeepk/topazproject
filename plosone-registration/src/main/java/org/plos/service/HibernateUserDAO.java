@@ -37,13 +37,7 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
    * @param user User
    */
   public void delete(final User user) {
-    getHibernateTemplate().execute(
-      new HibernateCallback(){
-        public Object doInHibernate(final Session session) throws HibernateException, SQLException {
-          session.delete(user);
-          return null;
-        }
-      });
+     getHibernateTemplate().delete(user);
   }
 
 

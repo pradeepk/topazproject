@@ -1,6 +1,7 @@
 package org.plos.service;
 
 import org.plos.BasePlosoneRegistrationTest;
+import org.plos.registration.User;
 import org.plos.registration.UserImpl;
 
 /**
@@ -16,6 +17,16 @@ public class TestHibernate extends BasePlosoneRegistrationTest {
 
   public void setUserDAO(final UserDAO userDao) {
       this.userDao = userDao;
+  }
+
+  public void testDeleteUser() {
+    User user = new UserImpl("deleteUser@home.com", "delete");
+    userDao.saveOrUpdate(user);
+    user = userDao.findUserWithLoginName("deleteUser@home.com");
+    assertNotNull(user);
+    userDao.delete(user);
+    user = userDao.findUserWithLoginName("deleteUser@home.com");
+    assertNull(user);
   }
 
 }
