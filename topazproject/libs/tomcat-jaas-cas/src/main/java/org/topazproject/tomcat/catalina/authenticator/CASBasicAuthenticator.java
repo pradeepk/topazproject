@@ -209,7 +209,8 @@ public class CASBasicAuthenticator extends BasicAuthenticator {
         log.debug("CAS validate failed. ticket: " + ticket + " service: " + service);
     }
 
-    if (casLogin != null) {
+    // Redirect to cas login only for direct user-agent access. Not for proxies. 
+    if ((casLogin != null) && ((ticket == null) || !ticket.startsWith("PT"))) {
       try {
         redirectToCAS(hreq, (HttpServletResponse) response.getResponse());
       } catch (ServletException e) {
@@ -219,7 +220,7 @@ public class CASBasicAuthenticator extends BasicAuthenticator {
       }
     } else {
       if (log.isDebugEnabled())
-        log.debug("Login failed. Sending a challenge response.");
+        log.debug("Login failed. Sending a BASIC challenge response.");
 
       // Send an "unauthorized" response and an appropriate challenge
       String realmName = config.getRealmName();
