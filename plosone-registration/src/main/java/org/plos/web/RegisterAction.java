@@ -5,6 +5,8 @@ import com.opensymphony.xwork.validator.annotations.EmailValidator;
 import com.opensymphony.xwork.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.registration.User;
 import org.plos.service.RegistrationService;
@@ -22,6 +24,7 @@ public class RegisterAction extends ActionSupport {
   private String password2;
 
   private RegistrationService registrationService;
+  private static final Log log = LogFactory.getLog(RegisterAction.class);
 
   /**
    * @deprecated remove when we drop the link from the web page
@@ -40,6 +43,7 @@ public class RegisterAction extends ActionSupport {
       addFieldError("loginName1", "User already exists for the given email address");
       return ERROR;
     } catch (final ApplicationException e) {
+      log.error(e);
       addFieldError("loginName1", e.getMessage());
       return ERROR;
     }
