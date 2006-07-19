@@ -13,7 +13,7 @@ import org.plos.util.TokenGenerator;
 public class PlosRegistrationService implements RegistrationService {
   private UserDAO userDAO;
 
-  public User createUser(final String loginName, final String password) {
+  public User createUser(final String loginName, final String password) throws UserAlreadyExistsException {
     if (null == getUserWithLoginName(loginName)) {
       final User user = new UserImpl(loginName, password);
 

@@ -7,7 +7,7 @@ import org.plos.registration.User;
  * @version: $Id$
  */
 public interface RegistrationService {
-  User createUser(final String loginName, final String password);
+  User createUser(final String loginName, final String password) throws UserAlreadyExistsException;
 
   User getUserWithLoginName(final String loginName);
 
