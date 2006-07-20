@@ -26,13 +26,7 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
    * @param user User
    */
   public void saveOrUpdate(final User user) {
-    getHibernateTemplate().execute(
-      new HibernateCallback(){
-        public Object doInHibernate(final Session session) throws HibernateException, SQLException {
-          session.saveOrUpdate(user);
-          return null;
-        }
-      });
+    getHibernateTemplate().saveOrUpdate(user);
   }
 
   /**
