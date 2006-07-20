@@ -18,6 +18,7 @@ import org.apache.catalina.HttpResponse;
 import org.apache.catalina.LifecycleException;
 import org.apache.catalina.Request;
 import org.apache.catalina.Response;
+import org.apache.catalina.Session;
 import org.apache.catalina.authenticator.BasicAuthenticator;
 import org.apache.catalina.authenticator.Constants;
 import org.apache.catalina.deploy.LoginConfig;
@@ -197,6 +198,10 @@ public class CASBasicAuthenticator extends BasicAuthenticator {
       Principal principal = context.getRealm().authenticate(ticket, service);
 
       if (principal != null) {
+        // Force create a session for proxies
+        if (ticket.startsWith("PT"))
+          createSession(request, ticket);
+
         register(request, response, principal, Constants.BASIC_METHOD, principal.getName(), null);
 
         if (log.isDebugEnabled())
@@ -336,5 +341,18 @@ public class CASBasicAuthenticator extends BasicAuthenticator {
     if (log.isTraceEnabled()) {
       log.trace("returning from redirectToCAS()");
     }
+  }
+
+  private Session createSession(HttpRequest request, String ticket) {
+    Session s = getSession(request, true);
+
+    if (log.isDebugEnabled()) {
+      if (s == null)
+        log.debug("Failed to create a session for : " + ticket);
+      else
+        log.debug("Created a session for ticket: " + ticket);
+    }
+
+    return s;
   }
 }
