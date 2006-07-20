@@ -43,7 +43,7 @@ public class RegisterAction extends ActionSupport {
       }
 
     } catch (final UserAlreadyExistsException e) {
-      log.error("UserAlreadyExists:"+loginName1, e);
+      log.debug("UserAlreadyExists:"+loginName1, e);
       addFieldError("loginName1", "User already exists for the given email address");
       return ERROR;
     } catch (final ApplicationException e) {
