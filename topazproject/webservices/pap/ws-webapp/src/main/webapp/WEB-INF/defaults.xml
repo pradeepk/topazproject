@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  - Copyright (c) 2006 by Topaz, Inc.
+  - http://topazproject.org
+  -
+  - Licensed under the Educational Community License version 1.0
+  - http://opensource.org/licenses/ecl1.php
+  -->
+<config>
+  <topaz>
+    <services>
+      <fedora>
+        <uri>http://localhost:9090/fedora/services/management</uri>
+        <auth-method>CAS-BASIC</auth-method>
+        <userName>fedoraAdmin</userName>
+        <password>fedoraAdmin</password>
+      </fedora>
+      <itql>
+        <uri>http://localhost:9090/fedora/services/ItqlBeanService</uri>
+        <auth-method>CAS</auth-method>
+      </itql>
+    </services>
+    <profiles>
+      <pdpName>_default_</pdpName>
+    </profiles>
+    <preferences>
+      <pdpName>_default_</pdpName>
+    </preferences>
+  </topaz>
+</config>
