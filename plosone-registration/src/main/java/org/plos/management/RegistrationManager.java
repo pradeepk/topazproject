@@ -1,5 +1,7 @@
 package org.plos.management;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plos.registration.User;
 import org.plos.service.UserDAO;
 import org.springframework.jmx.export.annotation.ManagedOperation;
@@ -21,6 +23,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 public class RegistrationManager implements RegistrationManagerMBean
 {
+  private static final Log logger = LogFactory.getLog(RegistrationManager.class);
 
   private UserDAO userDAO;
 
@@ -51,7 +54,8 @@ public class RegistrationManager implements RegistrationManagerMBean
       userDAO.delete(user);
     }
     catch (Exception e) {
-      System.out.println(e.toString());
+      logger.error(e.toString());
+      e.printStackTrace();
       return "Cannot delete " + userName;
     }
     return "User " + userName + " deleted";
@@ -76,7 +80,8 @@ public class RegistrationManager implements RegistrationManagerMBean
       userDAO.saveOrUpdate(user);
     }
     catch (Exception e) {
-      System.out.println(e.toString());
+      logger.error(e.toString());
+      e.printStackTrace();
       return userName + "Error" + e.toString();
     }
     return "Password for user " + userName + " succesfuly changed";
@@ -125,7 +130,7 @@ public class RegistrationManager implements RegistrationManagerMBean
       userDAO.saveOrUpdate(user);
     }
     catch (Exception e) {
-      System.out.println(e.toString());
+      logger.error(e.toString());
       e.printStackTrace();
       return "Activeflag operation FAILED for User " + userName + " ERROR: " + e.toString();
     }
