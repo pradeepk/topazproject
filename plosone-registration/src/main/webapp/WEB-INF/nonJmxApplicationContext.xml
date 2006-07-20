@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans default-autowire="autodetect">
+
+  <!--Plosone developer beans here -->
+
+  <bean id="serviceFactory" class="org.plos.service.ServiceFactory">
+    <property name="persistenceService" ref="persistenceService"/>
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+  <!-- creating all actions with the right injections, used also by the -->
+  <bean id="registerAction" class="org.plos.web.RegisterAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+  <bean id="confirmationAction" class="org.plos.web.ConfirmationAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+  <bean id="forgotPasswordAction" class="org.plos.web.ForgotPasswordAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+  <bean id="forgotPasswordChangePasswordAction" class="org.plos.web.ForgotPasswordChangePasswordAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+  <bean id="persistenceService" class="org.plos.service.PlosPersistenceService">
+    <property name="userDAO" ref="userDAO"/>
+  </bean>
+
+  <bean id="userDAO" class="org.plos.service.HibernateUserDAO">
+    <property name="sessionFactory">
+      <ref bean="registrationSessionFactory"/>
+    </property>
+  </bean>
+
+  <bean id="registrationService" class="org.plos.service.PlosRegistrationService">
+    <property name="userDAO" ref="userDAO"/>
+    <property name="registrationMessagingService" ref="registrationMessagingService"/>
+  </bean>
+
+  <bean id="registrationMessagingService" class="org.plos.service.PlosRegistrationMessagingService"/>
+
+  <!--<bean id="User" class="org.plos.registration.UserImpl"></bean>-->
+
+  <bean id="RegistrationManager" class="org.plos.management.RegistrationManager">
+    <property name="userDAO" ref="userDAO"/>
+  </bean>
+
+
+  <!--<bean id="testBean" class="org.plos.management.AnnotationTestBean">-->
+  <!--<property name="name" value="TEST"/>-->
+  <!--<property name="age" value="100"/>-->
+  <!--</bean>-->
+
+
+  <!--Beans from Spring distribution  -->
+
+  <!-- Postgres datasource -->
+  <bean id="registrationDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
+    <property name="driverClassName" value="org.postgresql.Driver"/>
+    <property name="url" value="jdbc:postgresql://localhost/postgres"/>
+    <property name="username" value="postgres"/>
+    <property name="password" value="postgres"/>
+  </bean>
+
+  <!--  Injection for hibernate SessionFactory -->
+  <bean id="registrationSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+    <property name="dataSource" ref="registrationDataSource"/>
+    <!--<property name="mappingResources">-->
+    <!--<list>-->
+    <!--<value>org.plos.registration.UserImpl</value>-->
+    <!--</list>-->
+    <!--</property>-->
+    <property name="configLocation">
+      <value>hibernate.cfg.xml</value>
+    </property>
+    <property  name="configurationClass">
+      <value>org.hibernate.cfg.AnnotationConfiguration</value>
+    </property>
+    <property name="hibernateProperties">
+      <props>
+        <prop key="hibernate.dialect">org.hibernate.dialect.PostgreSQLDialect</prop>
+        <prop key="hibernate.hbm2ddl.auto">create</prop>
+        <prop key="hibernate.show_sql">true</prop>
+      </props>
+    </property>
+  </bean>
+
+
+  <!--  Transaction injection for annotated transaction classes-->
+  <bean id="registrationTxManager" class="org.springframework.orm.hibernate3.HibernateTransactionManager">
+    <property name="sessionFactory" ref="registrationSessionFactory"/>
+  </bean>
+
+  <bean class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator"/>
+
+  <bean class="org.springframework.transaction.interceptor.TransactionAttributeSourceAdvisor">
+    <property name="transactionInterceptor" ref="transactionInterceptor"/>
+  </bean>
+
+  <bean id="transactionInterceptor" class="org.springframework.transaction.interceptor.TransactionInterceptor">
+    <property name="transactionManager" ref="registrationTxManager"/>
+    <property name="transactionAttributeSource">
+      <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
+    </property>
+  </bean>
+<!--  END - Transaction injection for annotated transaction classes-->
+</beans>

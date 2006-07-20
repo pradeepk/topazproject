@@ -18,7 +18,7 @@ public class BasePlosoneRegistrationTest extends AbstractDependencyInjectionSpri
   private RegisterAction registerAction;
 
   protected String[] getConfigLocations() {
-    return new String[] {"applicationContext.xml"};
+    return new String[] {"nonJmxApplicationContext.xml"};
   }
 
   public final void setRegistrationService(final RegistrationService registrationService) {
