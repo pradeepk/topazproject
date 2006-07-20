@@ -63,7 +63,7 @@ public class Answer extends AbstractAnswer {
   public static class QueryAnswer extends AbstractQueryAnswer {
     private final List rows;
 
-    QueryAnswer(Element query, GraphElementFactory gef)
+    protected QueryAnswer(Element query, GraphElementFactory gef)
         throws URISyntaxException, GraphElementFactoryException, AnswerException {
       rows = new ArrayList();
       parseQueryAnswer(query, gef);
