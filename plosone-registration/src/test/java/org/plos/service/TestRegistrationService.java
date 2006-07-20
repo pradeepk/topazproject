@@ -1,13 +1,13 @@
 package org.plos.service;
 
-import org.plos.BasePlosoneRegistrationTest;
+import org.plos.BasePlosoneRegistrationTestCase;
 import org.plos.registration.User;
 
 /**
  * $HeadURL$
  * @version: $Id$
  */
-public class TestRegistrationService extends BasePlosoneRegistrationTest {
+public class TestRegistrationService extends BasePlosoneRegistrationTestCase {
 
   public void testNewUser() throws UserAlreadyExistsException {
     User user = getRegistrationService().createUser("dave@home.com", "david");

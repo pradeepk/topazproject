@@ -1,9 +1,9 @@
 package org.plos.web;
 
-import org.plos.BasePlosoneRegistrationTest;
+import org.plos.BasePlosoneRegistrationTestCase;
 import org.plos.registration.User;
 
-public class TestRegistrationAction extends BasePlosoneRegistrationTest {
+public class TestRegistrationAction extends BasePlosoneRegistrationTestCase {
 
   public void testShouldSetUserAsVerified() throws Exception {
     final String email = "viru-verifying@home.com";

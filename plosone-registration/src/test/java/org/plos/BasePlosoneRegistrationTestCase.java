@@ -12,7 +12,7 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
  * $HeadURL: $
  * @version: $Id: $
  */
-public class BasePlosoneRegistrationTest extends AbstractDependencyInjectionSpringContextTests {
+public abstract class BasePlosoneRegistrationTestCase extends AbstractDependencyInjectionSpringContextTests {
   protected RegistrationService registrationService;
   private ConfirmationAction confirmationAction;
   private RegisterAction registerAction;

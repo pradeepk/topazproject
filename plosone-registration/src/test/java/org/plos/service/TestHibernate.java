@@ -1,6 +1,6 @@
 package org.plos.service;
 
-import org.plos.BasePlosoneRegistrationTest;
+import org.plos.BasePlosoneRegistrationTestCase;
 import org.plos.registration.User;
 import org.plos.registration.UserImpl;
 
@@ -8,7 +8,7 @@ import org.plos.registration.UserImpl;
  * $HeadURL$
  * @version: $Id$
  */
-public class TestHibernate extends BasePlosoneRegistrationTest {
+public class TestHibernate extends BasePlosoneRegistrationTestCase {
   private UserDAO userDao;
 
   public void testHibernate() {
