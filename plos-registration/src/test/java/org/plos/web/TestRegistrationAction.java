@@ -3,11 +3,16 @@ package org.plos.web;
 import org.plos.BasePlosoneRegistrationTestCase;
 import org.plos.registration.User;
 
+/**
+ * $HeadURL$
+ * @version: $Id$
+ */
 public class TestRegistrationAction extends BasePlosoneRegistrationTestCase {
 
   public void testShouldSetUserAsVerified() throws Exception {
     final String email = "viru-verifying@home.com";
-    final User beforeVerificationUser = getRegistrationService().createUser(email, "virupasswd");
+    final String password = "virupasswd";
+    final User beforeVerificationUser = getRegistrationService().createUser(email, password);
 
     assertFalse(beforeVerificationUser.isVerified());
     final String emailVerificationToken = beforeVerificationUser.getEmailVerificationToken();

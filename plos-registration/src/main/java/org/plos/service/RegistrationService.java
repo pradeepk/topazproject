@@ -69,27 +69,4 @@ public interface RegistrationService {
    */
   User getUserWithResetPasswordToken(final String loginName, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException;
 
-  /**
-   * Get a UserDAO.
-   * @return UserDAO
-   */
-  UserDAO getUserDAO();
-
-  /**
-   * Sets the UserDAO.
-   * @param userDAO userDAO
-   */
-  void setUserDAO(UserDAO userDAO);
-
-  /**
-   * Get the messaging service
-   * @return RegistrationMessagingService
-   */
-  RegistrationMessagingService getRegistrationMessagingService();
-
-  /**
-   * Set the messaging service
-   * @param registrationMessagingService registrationMessagingService
-   */
-  void setRegistrationMessagingService (RegistrationMessagingService registrationMessagingService);
 }

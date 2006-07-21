@@ -4,6 +4,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.registration.User;
 import org.plos.registration.UserImpl;
+import org.plos.util.PasswordEncryptionService;
 import org.plos.util.TokenGenerator;
 
 /**
@@ -15,12 +16,14 @@ import org.plos.util.TokenGenerator;
 public class PlosRegistrationService implements RegistrationService {
   private UserDAO userDAO;
   private RegistrationMessagingService registrationMessagingService;
-
+  private PasswordEncryptionService passwordEncryptionService;
   private static final Log log = LogFactory.getLog(PlosPersistenceService.class);
 
   public User createUser(final String loginName, final String password) throws UserAlreadyExistsException {
     if (null == getUserWithLoginName(loginName)) {
-      final User user = new UserImpl(loginName, password);
+      final User user = new UserImpl(
+                              loginName,
+                              passwordEncryptionService.getEncryptedPassword(password));
 
       user.setEmailVerificationToken(TokenGenerator.getUniqueToken());
       user.setVerified(false);
@@ -105,7 +108,7 @@ public class PlosRegistrationService implements RegistrationService {
   public void changePassword(final String loginName, final String newPassword, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException {
     final User user = getUserWithResetPasswordToken(loginName, resetPasswordToken);
 
-    user.setPassword(newPassword);
+    user.setPassword(passwordEncryptionService.getEncryptedPassword(newPassword));
     user.setResetPasswordToken(null);
     saveUser(user);
   }
@@ -128,7 +131,8 @@ public class PlosRegistrationService implements RegistrationService {
   }
 
   /**
-   * @see org.plos.service.RegistrationService#getRegistrationMessagingService()
+   * Get the messaging service
+   * @return RegistrationMessagingService
    */
   public RegistrationMessagingService getRegistrationMessagingService() {
     return registrationMessagingService;
@@ -143,24 +147,34 @@ public class PlosRegistrationService implements RegistrationService {
   }
 
   /**
-   * @see org.plos.service.RegistrationService#getUserDAO()
+   * Get a UserDAO.
+   * @return UserDAO
    */
   public UserDAO getUserDAO() {
     return userDAO;
   }
 
   /**
-   * @see RegistrationService#setUserDAO(UserDAO)
+   * Sets the UserDAO.
+   * @param userDAO userDAO
    */
   public void setUserDAO(final UserDAO userDAO) {
     this.userDAO = userDAO;
   }
 
   /**
-   * @see RegistrationService#setRegistrationMessagingService(RegistrationMessagingService)
+   * Set the messaging service
+   * @param registrationMessagingService registrationMessagingService
    */
   public void setRegistrationMessagingService (final RegistrationMessagingService registrationMessagingService) {
     this.registrationMessagingService = registrationMessagingService;
   }
-}
 
+  /**
+   * Set the passwordEncryptionService
+   * @param passwordEncryptionService passwordEncryptionService
+   */
+  public void setPasswordEncryptionService(final PasswordEncryptionService passwordEncryptionService) {
+    this.passwordEncryptionService = passwordEncryptionService;
+  }
+}
