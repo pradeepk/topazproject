@@ -49,21 +49,36 @@ public class ConfirmationAction extends ActionSupport {
     return SUCCESS;
   }
 
+  /**
+   * Set registrationService
+   * @param registrationService registrationService
+   */
   public void setRegistrationService(final RegistrationService registrationService) {
     this.registrationService = registrationService;
   }
 
+  /**
+   * Set emailVerificationToken
+   * @param emailVerificationToken emailVerificationToken
+   */
 //  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="emailVerificationToken", message="Verification token missing")
   public void setEmailVerificationToken(final String emailVerificationToken) {
     this.emailVerificationToken = emailVerificationToken;
   }
 
+  /**
+   * Set loginName
+   * @param loginName loginName
+   */
   @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid email address")
 //  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName", message="Email address not specified")
   public void setLoginName(final String loginName) {
     this.loginName = loginName;
   }
 
+  /**
+   * @return Error or warning messages to be shown to the user.
+   */
   public Collection<String> getMessages() {
     return messages;
   }

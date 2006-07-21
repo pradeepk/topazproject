@@ -2,6 +2,7 @@ package org.plos.web;
 
 import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.EmailValidator;
+import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,24 +58,44 @@ public class ForgotPasswordAction extends ActionSupport {
     return SUCCESS;
   }
 
+  /**
+   * Set the user.
+   * @param user
+   */
+  // TODO to be removed when we change the forgot-password-success.jsp so that it does not display the forgot password link
   private void setUser(final User user) {
     this.user = user;
   }
 
-  @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "loginName", message = "Not a valid loginName")
-//  @RequiredStringValidator(type = ValidatorType.FIELD, fieldName = "loginName", message = "Email address is required")
+  /**
+   * Set loginName
+   * @param loginName
+   */
+  @EmailValidator(type=ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid loginName")
+  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName", message="Email address is required")
   public void setLoginName(final String loginName) {
     this.loginName = loginName;
   }
 
+  /**
+   * @return Error or warning messages to be shown to the user.
+   */
   public Collection<String> getMessages() {
     return messages;
   }
 
+  /**
+   * @return user
+   */
+  // TODO to be removed when we change the forgot-password-success.jsp so that it does not display the forgot password link
   public User getUser() {
     return user;
   }
 
+  /**
+   * Set registrationService
+   * @param registrationService
+   */
   public void setRegistrationService(final RegistrationService registrationService) {
     this.registrationService = registrationService;
   }

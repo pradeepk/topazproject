@@ -58,6 +58,10 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
     return SUCCESS;
   }
 
+  /**
+   * Set loginName.
+   * @param loginName
+   */
   @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid email address")
   @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName", message="Email address not specified")
   public void setLoginName(final String loginName) {
@@ -65,7 +69,7 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
   }
 
   /**
-   * @return login name
+   * @return loginName
    */
   public String getLoginName() {
     return loginName;
@@ -78,33 +82,58 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
     return resetPasswordToken;
   }
 
+  /**
+   * Set resetPasswordToken.
+   * @param resetPasswordToken token used to verify the reset the password request.
+   */
   @RequiredStringValidator(type= ValidatorType.FIELD, fieldName="resetPasswordToken", message="Verification token missing")
   public void setResetPasswordToken(final String resetPasswordToken) {
     this.resetPasswordToken = resetPasswordToken;
   }
 
+  /**
+   * @return password1
+   */
   @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="password1", message="You must enter a password")
   @FieldExpressionValidator(fieldName="password2", expression = "password1==password2", message="Passwords must match")
   public String getPassword1() {
     return password1;
   }
 
+  /**
+   * Set password1
+   * @param password1
+   */
   public void setPassword1(final String password1) {
     this.password1 = password1;
   }
 
+  /**
+   * @return password2
+   */
   public String getPassword2() {
     return password2;
   }
 
+  /**
+   * Set password2
+   * @param password2
+   */
   public void setPassword2(final String password2) {
     this.password2 = password2;
   }
 
+  /**
+   * @return Error or warning messages to be shown to the user.
+   */
   public Collection<String> getMessages() {
     return messages;
   }
 
+  /**
+   * Set registrationService
+   * @param registrationService
+   */
   public void setRegistrationService(final RegistrationService registrationService) {
     this.registrationService = registrationService;
   }
