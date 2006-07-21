@@ -1,9 +1,10 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.service;
 
 /**
- * $HeadURL$
- * @version: $Id$
- *
  * Provides service implementations for all kinds of services.
  */
 public class ServiceFactory {

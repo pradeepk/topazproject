@@ -1,11 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.service;
 
 import org.plos.ApplicationException;
 
 /**
- * $HeadURL$
- * @version: $Id$
- * 
  * Indicates that multiple users have been found with the same loginName. 
  * 
  */

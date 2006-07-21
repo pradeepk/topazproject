@@ -1,11 +1,14 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos;
 
 import junit.framework.Test;
 import junit.framework.TestSuite;
 
 /**
- * $HeadURL$
- * @version: $Id$
+ *
  */
 public class AllTests {
   public static Test suite() {

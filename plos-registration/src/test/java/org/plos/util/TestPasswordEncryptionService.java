@@ -1,3 +1,7 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.util;
 
 import org.plos.BasePlosoneRegistrationTestCase;
@@ -7,8 +11,7 @@ import org.plos.service.UserAlreadyExistsException;
 import java.util.Random;
 
 /**
- * $HeadURL$
- * @version: $Id$
+ *
  */
 public class TestPasswordEncryptionService extends BasePlosoneRegistrationTestCase {
 

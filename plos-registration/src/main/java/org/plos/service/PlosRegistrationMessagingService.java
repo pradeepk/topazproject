@@ -1,12 +1,13 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * $HeadURL$
- * @version: $Id$
- * 
  * Plos implementation of the messaging service.
  */
 public class PlosRegistrationMessagingService implements RegistrationMessagingService {

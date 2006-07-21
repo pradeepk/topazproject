@@ -1,3 +1,7 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.management;
 
 import com.sun.jdmk.comm.HtmlAdaptorServer;
@@ -15,9 +19,6 @@ import javax.servlet.ServletContextListener;
 
 
 /**
- * $HeadURL$
- * @version: $Id$
- *
  *  This class starts up non Plosone MBeans.  It is declared in web.xml.
  *  Plosone MBeans use Spring injection and are NOT listed here.
  *  The class defaults to checking if there are currently any JMX servers

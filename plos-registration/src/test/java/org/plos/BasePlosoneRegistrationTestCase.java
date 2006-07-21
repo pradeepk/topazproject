@@ -1,3 +1,7 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos;
 
 import org.plos.service.RegistrationService;
@@ -9,8 +13,6 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 /**
  * Base test case for the registration unit tests. It provides spring injection from one of its superclasses.
  *
- * $HeadURL: $
- * @version: $Id: $
  */
 public abstract class BasePlosoneRegistrationTestCase extends AbstractDependencyInjectionSpringContextTests {
   protected RegistrationService registrationService;

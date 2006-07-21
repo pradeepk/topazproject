@@ -1,9 +1,10 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.util;
 
 /**
- * $HeadURL$
- * @version: $Id$
- * 
  * Password encryption service. It should encrypt the password such that it should be difficult to get the original password back from it.
  */
 public interface PasswordEncryptionService {

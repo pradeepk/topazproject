@@ -1,3 +1,7 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.web;
 
 import com.opensymphony.xwork.ActionSupport;
@@ -14,8 +18,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * $HeadURL$
- * @version: $Id$
+ *
  */
 public class ConfirmationAction extends ActionSupport {
   private String emailVerificationToken;

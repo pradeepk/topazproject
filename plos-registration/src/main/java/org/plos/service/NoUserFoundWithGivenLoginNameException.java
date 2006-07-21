@@ -1,9 +1,10 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.service;
 
 /**
- * $HeadURL$
- * @version: $Id$
- * 
  * No user found with given login name exception.
  */
 public class NoUserFoundWithGivenLoginNameException extends Exception {

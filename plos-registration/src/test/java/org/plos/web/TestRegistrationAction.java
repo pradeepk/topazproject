@@ -1,11 +1,14 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.web;
 
 import org.plos.BasePlosoneRegistrationTestCase;
 import org.plos.registration.User;
 
 /**
- * $HeadURL$
- * @version: $Id$
+ *
  */
 public class TestRegistrationAction extends BasePlosoneRegistrationTestCase {
 

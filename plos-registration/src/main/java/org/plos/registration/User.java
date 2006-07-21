@@ -1,11 +1,13 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
+
 package org.plos.registration;
 
 import java.sql.Date;
 
 /**
- * $HeadURL$
- * @version: $Id$
- *
  * Interface for Plos Reistration User
  */
 public interface User {

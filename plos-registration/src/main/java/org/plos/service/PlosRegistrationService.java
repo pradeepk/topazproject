@@ -1,3 +1,7 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.service;
 
 import org.apache.commons.logging.Log;
@@ -8,9 +12,6 @@ import org.plos.util.PasswordEncryptionService;
 import org.plos.util.TokenGenerator;
 
 /**
- * $HeadURL$
- * @version: $Id$
- *
  * Plos registration service implementation.
  */
 public class PlosRegistrationService implements RegistrationService {

@@ -1,3 +1,7 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.web;
 
 import com.opensymphony.xwork.ActionSupport;
@@ -14,9 +18,6 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * $HeadURL$
- * @version: $Id$
- * 
  * Used to present the user with reset password facility after having forgotten their password.
  */
 public class ForgotPasswordChangePasswordAction extends ActionSupport {

@@ -1,10 +1,13 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.service;
 
 import org.plos.registration.User;
 
 /**
- * $HeadURL$
- * @version: $Id$
+ *
  */
 public interface RegistrationService {
   /**

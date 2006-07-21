@@ -1,3 +1,7 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.management;
 
 import org.apache.commons.logging.Log;
@@ -10,9 +14,6 @@ import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
- * $HeadURL$
- * @version: $Id$
- *
  *  The RegistrationManager is a JMX Bean that allows management of the Plos registration
  */
 

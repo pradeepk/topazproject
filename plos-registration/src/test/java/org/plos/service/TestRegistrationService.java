@@ -1,11 +1,14 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.service;
 
 import org.plos.BasePlosoneRegistrationTestCase;
 import org.plos.registration.User;
 
 /**
- * $HeadURL$
- * @version: $Id$
+ *
  */
 public class TestRegistrationService extends BasePlosoneRegistrationTestCase {
 

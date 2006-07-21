@@ -1,9 +1,10 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.management;
 
 /**
- * $HeadURL$
- * @version: $Id$
- *
  * Management Bean for Registration
  */
 

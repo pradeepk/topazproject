@@ -1,9 +1,10 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.util;
 
 /**
- * $HeadURL$
- * @version: $Id$
- * 
  * Plos implementation of the PasswordEncryptionService
  */
 public class PlosPasswordEncryptionService implements PasswordEncryptionService {

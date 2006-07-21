@@ -1,10 +1,13 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.util;
 
 import junit.framework.TestCase;
 
 /**
- * $HeadURL$
- * @version: $Id$
+ *
  */
 public class TestUniqueTokenGenerator extends TestCase {
   public void testShouldGenerateUniqueTokens() {

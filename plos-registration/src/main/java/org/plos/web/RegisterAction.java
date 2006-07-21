@@ -1,3 +1,7 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.web;
 
 import com.opensymphony.xwork.ActionSupport;
@@ -13,9 +17,6 @@ import org.plos.service.RegistrationService;
 import org.plos.service.UserAlreadyExistsException;
 
 /**
- * $HeadURL$
- * @version: $Id$
- * 
  * Uses use this to register as a new user. Verification stage is separate from this.
  */
 public class RegisterAction extends ActionSupport {

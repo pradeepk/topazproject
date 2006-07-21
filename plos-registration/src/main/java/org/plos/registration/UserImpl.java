@@ -1,3 +1,7 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.registration;
 
 import org.springframework.transaction.annotation.Propagation;
@@ -12,9 +16,6 @@ import javax.persistence.Table;
 import java.sql.Date;
 
 /**
- * $HeadURL$
- * @version: $Id$
- *
  * Implementation for Plos Reistration User
  */
 

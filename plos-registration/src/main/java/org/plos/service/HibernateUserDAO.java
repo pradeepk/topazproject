@@ -1,3 +1,7 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.service;
 
 import org.apache.commons.logging.Log;
@@ -14,9 +18,6 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
- * $HeadURL$
- * @version: $Id$
- * 
  * Hibernate based implementation of the UserDAO.
  */
 public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {

@@ -1,11 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.service;
 
 import org.plos.registration.User;
 
 /**
- * $HeadURL$
- * @version: $Id$
- *
  * Contract for all User DAO's.
  */
  public interface UserDAO {

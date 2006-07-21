@@ -1,9 +1,10 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.service;
 
 /**
- * $HeadURL$
- * @version: $Id$
- *
  * To be used when a user who has been already verified requests a verification again
  */
 public class UserAlreadyVerifiedException extends Exception {

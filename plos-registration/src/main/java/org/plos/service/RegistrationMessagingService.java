@@ -1,9 +1,10 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.service;
 
 /**
- * $HeadURL$
- * @version: $Id$
- *
  * Messaging service for the registration service.
  */
  public interface RegistrationMessagingService {

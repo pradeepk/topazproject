@@ -1,9 +1,10 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ */
 package org.plos.service;
 
 /**
- * $HeadURL$
- * @version: $Id$
- * 
  * Plos implementation of the Persistence Service.
  */
 public class PlosPersistenceService implements PersistenceService {
