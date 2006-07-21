@@ -9,6 +9,9 @@ import org.plos.ApplicationException;
  */
 public class DuplicateLoginNameException extends ApplicationException {
 
+  /**
+   * @param loginName loginName for which exception occured
+   */
   public DuplicateLoginNameException(final String loginName) {
     super(loginName);
   }

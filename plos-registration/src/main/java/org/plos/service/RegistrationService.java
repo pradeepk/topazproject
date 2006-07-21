@@ -7,14 +7,41 @@ import org.plos.registration.User;
  * @version: $Id$
  */
 public interface RegistrationService {
+  /**
+   * Create user.
+   * @param loginName
+   * @param password
+   * @return created user
+   * @throws UserAlreadyExistsException
+   */
   User createUser(final String loginName, final String password) throws UserAlreadyExistsException;
 
+  /**
+   * Get user with loginName
+   * @param loginName
+   * @return user
+   */
   User getUserWithLoginName(final String loginName);
 
+  /**
+   * Set the user as verified.
+   * @param user user
+   */
   void setVerified(final User user);
 
+  /**
+   * Deactivate the user.
+   * @param user user
+   */
   void deactivate(final User user);
 
+  /**
+   * Verify the users account
+   * @param loginName
+   * @param emailVerificationToken
+   * @throws VerificationTokenInvalidException
+   * @throws UserAlreadyVerifiedException
+   */
   void verifyUser(final String loginName, final String emailVerificationToken) throws VerificationTokenInvalidException, UserAlreadyVerifiedException;
 
   /**
@@ -25,9 +52,11 @@ public interface RegistrationService {
   void sendForgotPasswordMessage(final String loginName) throws NoUserFoundWithGivenLoginNameException;
 
   /**
+   * Change password request.
    * @param loginName login name
    * @param newPassword new password
    * @param resetPasswordToken reset password token
+   * @throws NoUserFoundWithGivenLoginNameException
    */
   void changePassword(final String loginName, final String newPassword, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException;
 
@@ -36,6 +65,7 @@ public interface RegistrationService {
    * @param loginName
    * @param resetPasswordToken
    * @return User
+   * @throws NoUserFoundWithGivenLoginNameException
    */
   User getUserWithResetPasswordToken(final String loginName, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException;
 
@@ -47,16 +77,19 @@ public interface RegistrationService {
 
   /**
    * Sets the UserDAO.
-   * @param userDAO
+   * @param userDAO userDAO
    */
   void setUserDAO(UserDAO userDAO);
 
-  /** Get the messaging service */
+  /**
+   * Get the messaging service
+   * @return RegistrationMessagingService
+   */
   RegistrationMessagingService getRegistrationMessagingService();
 
   /**
    * Set the messaging service
-   * @param registrationMessagingService
+   * @param registrationMessagingService registrationMessagingService
    */
   void setRegistrationMessagingService (RegistrationMessagingService registrationMessagingService);
 }

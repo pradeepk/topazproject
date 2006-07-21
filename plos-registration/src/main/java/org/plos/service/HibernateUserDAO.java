@@ -22,16 +22,14 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
   private static final Log log = LogFactory.getLog(HibernateUserDAO.class);
 
   /**
-   * Save or update the user
-   * @param user User
+   * @see UserDAO#saveOrUpdate(org.plos.registration.User)
    */
   public void saveOrUpdate(final User user) {
     getHibernateTemplate().saveOrUpdate(user);
   }
 
   /**
-   * Delete user
-   * @param user User
+   * @see UserDAO#delete(org.plos.registration.User)
    */
   public void delete(final User user) {
      getHibernateTemplate().delete(user);
@@ -39,11 +37,8 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
 
 
   /**
-   * Find the user for the given loginName. If more than one user is found it throws an Exception.
-   *
-   * @param loginName
-   * @return the user for the given loginName
-   * @throws DuplicateLoginNameException
+   * If more than one user is found it throws an Exception.
+   * @see UserDAO#findUserWithLoginName(String)
    */
   public User findUserWithLoginName(final String loginName) {
     return (User) getHibernateTemplate().execute(
