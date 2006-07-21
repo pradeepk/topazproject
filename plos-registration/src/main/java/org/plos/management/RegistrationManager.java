@@ -31,18 +31,13 @@ public class RegistrationManager implements RegistrationManagerMBean
     * Set the seesionFactory, used via Spring injection
     *
     * @param userDAO
-    *
     */
   public void setUserDAO(final UserDAO userDAO) {
     this.userDAO = userDAO;
   }
 
   /**
-   * Deletes user from registry
-   *
-   * @param userName The user name
-   * @return  Success or failure message
-   *
+   * @see RegistrationManagerMBean#deleteUser(String)
    */
   @ManagedOperation(description = "Delete User")
   @ManagedOperationParameters({@ManagedOperationParameter(name = "userName", description = "User Name")})
@@ -62,11 +57,7 @@ public class RegistrationManager implements RegistrationManagerMBean
   }
 
   /**
-   * Changes users password
-   *
-   * @param userName The user name
-   * @return  Success or failure message
-   *
+   * @see RegistrationManagerMBean#changeUserPassword(String, String) )
    */
 
   @ManagedOperation(description = "Change User Password")
@@ -89,11 +80,7 @@ public class RegistrationManager implements RegistrationManagerMBean
 
 
   /**
-   * Deactivate user
-   *
-   * @param userName The user name
-   * @return  Success or failure message
-   *
+   * @see RegistrationManagerMBean#deactivateUser(String)
    */
 
   @ManagedOperation(description = "Deactivate User")
@@ -104,11 +91,7 @@ public class RegistrationManager implements RegistrationManagerMBean
 
 
   /**
-   * Activate user
-   *
-   * @param userName The user name
-   * @return  Success or failure message
-   *
+   * @see RegistrationManagerMBean#activateUser(String)
    */
 
   @ManagedOperation(description = "Activate User")
