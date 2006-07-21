@@ -1,5 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project>
+<!--
+  $HeadURL::                                                                             $
+  $Id$
+
+  Copyright (c) 2006 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Educational Community License version 1.0
+  http://opensource.org/licenses/ecl1.php
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
   <modelVersion>4.0.0</modelVersion>
   <artifactId>${pom.parent.artifactId}-client-impl</artifactId>
   <packaging>jar</packaging>
@@ -73,63 +86,35 @@
         </executions>
       </plugin>
 
-      <plugin>
-        <groupId>org.codehaus.cargo</groupId>
-        <artifactId>cargo-maven2-plugin</artifactId>
-        <configuration>
-          <wait>false</wait>
-          <container>
-            <containerId>jetty4x</containerId>
-            <type>embedded</type>
-          </container>
-          <configuration> 
-            <home>${project.build.directory}/jetty</home>
-            <properties>
-              <cargo.servlet.port>9997</cargo.servlet.port>
-              <cargo.logging>high</cargo.logging>
-            </properties>
-            <deployables>
-              <deployable>
-                <groupId>${pom.parent.groupId}</groupId>
-                <artifactId>${pom.parent.artifactId}-webapp</artifactId>
-                <type>war</type>
-              </deployable>
-            </deployables>
-          </configuration> 
-        </configuration> 
-        <executions>
-          <execution>
-            <id>jetty-start</id>
-            <phase>pre-integration-test</phase>
-            <goals><goal>start</goal></goals>
-          </execution>
-          <!-- doesn't work properly (yet)
-          <execution>
-            <id>jetty-stop</id>
-            <phase>post-integration-test</phase>
-            <goals><goal>stop</goal></goals>
-          </execution>
-          -->
-        </executions>
-      </plugin>
-
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
-        <configuration>
-          <skip>true</skip>     <!-- don't run the tests in the test phase -->
-        </configuration>
-        <executions>
-          <execution>
-            <id>it-test</id>
-            <phase>integration-test</phase>
-            <goals><goal>test</goal></goals>
-            <configuration>
-              <skip>false</skip><!-- instead, run the tests in the integration-test phase -->
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
+
+  <!-- Profiles Section: Define custom profiles here -->
+  
+  <profiles>
+    <!-- it-helper: Integration-test helper - Turn on integration testing within modules -->
+    <profile>
+      <id>it-helper</id>
+      
+      <build>
+        <plugins>
+
+          <!-- deploy for integration testing -->
+          <!-- This just steals the configuration from our super-pom -->
+          <plugin>
+            <groupId>org.codehaus.cargo</groupId>
+            <artifactId>cargo-maven2-plugin</artifactId>
+            <executions>
+              <execution>
+                <id>jetty-start</id>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+
+  </profiles>
+  
 </project>
