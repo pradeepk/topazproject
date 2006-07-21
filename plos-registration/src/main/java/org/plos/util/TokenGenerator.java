@@ -3,9 +3,10 @@ package org.plos.util;
 import com.opensymphony.util.GUID;
 
 /**
+ * $HeadURL$
+ * @version: $Id$
+ *
  * Token generator to be used for generating unique tokens.
- * $HeadURL: $
- * @version: $Id: $
  */
 public class TokenGenerator {
 

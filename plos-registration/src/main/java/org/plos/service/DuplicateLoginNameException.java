@@ -3,9 +3,11 @@ package org.plos.service;
 import org.plos.ApplicationException;
 
 /**
- * Indicates that multiple users have been found with the same loginName.
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
+ * 
+ * Indicates that multiple users have been found with the same loginName. 
+ * 
  */
 public class DuplicateLoginNameException extends ApplicationException {
 

@@ -14,9 +14,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Used to present the user with reset password facility after having forgotten their password.
  * $HeadURL$
  * @version: $Id$
+ * 
+ * Used to present the user with reset password facility after having forgotten their password.
  */
 public class ForgotPasswordChangePasswordAction extends ActionSupport {
 

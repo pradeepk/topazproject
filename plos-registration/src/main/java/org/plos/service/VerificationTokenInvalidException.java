@@ -1,9 +1,10 @@
 package org.plos.service;
 
 /**
+ * $HeadURL$
+ * @version: $Id$
+ *
  * Used to indicate that the verification token is invalid.
- * $HeadURL: $
- * @version: $Id: $
  */
 public class VerificationTokenInvalidException extends Exception {
   /**

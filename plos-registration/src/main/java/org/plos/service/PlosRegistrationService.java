@@ -7,9 +7,10 @@ import org.plos.registration.UserImpl;
 import org.plos.util.TokenGenerator;
 
 /**
- * Plos registration service implementation.
  * $HeadURL$
  * @version: $Id$
+ *
+ * Plos registration service implementation.
  */
 public class PlosRegistrationService implements RegistrationService {
   private UserDAO userDAO;

@@ -10,9 +10,8 @@ import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
- * $HeadURL: $
- *
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  *
  *  The RegistrationManager is a JMX Bean that allows management of the Plos registration
  */

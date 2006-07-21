@@ -1,9 +1,10 @@
 package org.plos.service;
 
 /**
+ * $HeadURL$
+ * @version: $Id$
+ * 
  * Plos implementation of the Persistence Service.
- * $HeadURL: $
- * @version: $Id: $
  */
 public class PlosPersistenceService implements PersistenceService {
   private UserDAO userDAO;

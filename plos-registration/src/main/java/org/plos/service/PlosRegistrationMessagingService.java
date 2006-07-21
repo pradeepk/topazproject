@@ -4,9 +4,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
+ * $HeadURL$
+ * @version: $Id$
+ * 
  * Plos implementation of the messaging service.
- * $HeadURL: $
- * @version: $Id: $
  */
 public class PlosRegistrationMessagingService implements RegistrationMessagingService {
   private static final Log log = LogFactory.getLog(PlosRegistrationMessagingService.class);

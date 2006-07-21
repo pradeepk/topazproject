@@ -1,10 +1,10 @@
 package org.plos.service;
 
 /**
+ * $HeadURL$
+ * @version: $Id$
+ * 
  * To manage the interactions with the persistence service, including database persistence.
- *
- * $HeadURL: $
- * @version: $Id: $
  */
 public interface PersistenceService {
   /**

@@ -13,9 +13,10 @@ import org.plos.service.RegistrationService;
 import org.plos.service.UserAlreadyExistsException;
 
 /**
- * Uses use this to register as a new user. Verification stage is separate from this.
  * $HeadURL$
  * @version: $Id$
+ * 
+ * Uses use this to register as a new user. Verification stage is separate from this.
  */
 public class RegisterAction extends ActionSupport {
 

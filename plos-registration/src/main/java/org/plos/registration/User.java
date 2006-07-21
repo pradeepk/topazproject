@@ -3,8 +3,8 @@ package org.plos.registration;
 import java.sql.Date;
 
 /**
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  *
  * Interface for Plos Reistration User
  */

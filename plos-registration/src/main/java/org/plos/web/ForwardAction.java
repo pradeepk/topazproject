@@ -3,9 +3,10 @@ package org.plos.web;
 import com.opensymphony.xwork.ActionSupport;
 
 /**
- * Simply returns a success so as to forward to the the next flow.
  * $HeadURL$
  * @version: $Id$
+ * 
+ * Simply returns a success so as to forward to the the next flow.
  */
 public class ForwardAction extends ActionSupport {
 

@@ -15,9 +15,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Used when a user makes a forgot password request.
  * $HeadURL$
  * @version: $Id$
+ * 
+ * Used when a user makes a forgot password request.
  */
 public class ForgotPasswordAction extends ActionSupport {
 

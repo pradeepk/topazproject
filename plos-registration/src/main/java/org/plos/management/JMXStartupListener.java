@@ -1,21 +1,22 @@
 package org.plos.management;
 
 import com.sun.jdmk.comm.HtmlAdaptorServer;
+
 import org.apache.log4j.Logger;
+
+import java.lang.management.ManagementFactory;
+import java.util.ArrayList;
 
 import javax.management.MBeanServer;
 import javax.management.MBeanServerFactory;
 import javax.management.ObjectName;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
-import java.lang.management.ManagementFactory;
-import java.util.ArrayList;
 
 
 /**
- * $HeadURL: $
- *
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  *
  *  This class starts up non Plosone MBeans.  It is declared in web.xml.
  *  Plosone MBeans use Spring injection and are NOT listed here.

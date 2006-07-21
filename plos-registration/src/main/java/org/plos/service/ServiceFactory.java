@@ -1,10 +1,10 @@
 package org.plos.service;
 
 /**
- * Provides service implementations for all kinds of services.
- * 
  * $HeadURL$
  * @version: $Id$
+ *
+ * Provides service implementations for all kinds of services.
  */
 public class ServiceFactory {
   private PersistenceService persistenceService;

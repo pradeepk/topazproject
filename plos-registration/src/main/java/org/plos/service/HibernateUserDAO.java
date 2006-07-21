@@ -14,9 +14,10 @@ import java.sql.SQLException;
 import java.util.List;
 
 /**
+ * $HeadURL$
+ * @version: $Id$
+ * 
  * Hibernate based implementation of the UserDAO.
- * $HeadURL: $
- * @version: $Id: $
  */
 public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
   private static final Log log = LogFactory.getLog(HibernateUserDAO.class);

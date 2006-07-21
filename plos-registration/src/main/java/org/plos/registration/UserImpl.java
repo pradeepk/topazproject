@@ -12,8 +12,8 @@ import javax.persistence.Table;
 import java.sql.Date;
 
 /**
- * $HeadURL: $
- * @version: $Id: $
+ * $HeadURL$
+ * @version: $Id$
  *
  * Implementation for Plos Reistration User
  */
