@@ -26,15 +26,14 @@ import org.topazproject.authentication.ProtectedServiceFactory;
 
 import org.topazproject.configuration.ConfigurationStore;
 
+import org.topazproject.fedora.client.APIMStubFactory;
+import org.topazproject.fedora.client.FedoraAPIM;
+import org.topazproject.fedora.client.Uploader;
+
 import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.topazproject.ws.annotation.AnnotationImpl;
 import org.topazproject.ws.annotation.PEP;
-
-import fedora.client.APIMStubFactory;
-import fedora.client.Uploader;
-
-import fedora.server.management.FedoraAPIM;
 
 /**
  * The implementation of the annotation service.
@@ -82,8 +81,8 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
     URI              fedoraServer = getRemoteFedoraURI(fedoraURI, hostname);
 
     ItqlHelper       itql     = createItqlHelper(itqlSvc);
-    FedoraAPIM       apim     = createFedoraAPIM(fedoraSvc, fedoraURI);
-    Uploader         uploader = createFedoraUploader(uploaderSvc, uploaderURI);
+    FedoraAPIM       apim     = createFedoraAPIM(fedoraSvc);
+    Uploader         uploader = createFedoraUploader(uploaderSvc);
 
     Principal        principal = ((ServletEndpointContext) context).getUserPrincipal();
     String           user      = (principal == null) ? null : principal.getName();
@@ -276,42 +275,16 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
     }
   }
 
-  private static FedoraAPIM createFedoraAPIM(ProtectedService fedoraSvc, URI fedoraURI)
+  private static FedoraAPIM createFedoraAPIM(ProtectedService fedoraSvc)
                                       throws ServiceException {
     try {
-      if (fedoraSvc.requiresUserNamePassword())
-        return APIMStubFactory.getStub(fedoraURI.getScheme(), fedoraURI.getHost(),
-                                       fedoraURI.getPort(), fedoraSvc.getUserName(),
-                                       fedoraSvc.getPassword());
-
-      String pqf = fedoraURI.getPath();
-
-      if (fedoraURI.getQuery() != null)
-        pqf += ("?" + fedoraURI.getQuery());
-
-      if (fedoraURI.getFragment() != null)
-        pqf += ("#" + fedoraURI.getFragment());
-
-      return APIMStubFactory.getStubAltPath(fedoraURI.getScheme(), fedoraURI.getHost(),
-                                            fedoraURI.getPort(), pqf, null, null);
+      return APIMStubFactory.create(fedoraSvc);
     } catch (MalformedURLException e) {
       throw new ServiceException("Failed to create fedora-API-M client stub", e);
     }
   }
 
-  private static Uploader createFedoraUploader(ProtectedService uploaderSvc, URI uploaderURI)
-                                        throws ServiceException {
-    try {
-      if (uploaderSvc.requiresUserNamePassword())
-        return new Uploader(uploaderURI.getScheme(), uploaderURI.getHost(), uploaderURI.getPort(),
-                            uploaderSvc.getUserName(), uploaderSvc.getPassword());
-
-      // XXX: short of wholesale copying and modifying of Uploader, I see no way to get the
-      // path in there.
-      return new Uploader(uploaderURI.getScheme(), uploaderURI.getHost(), uploaderURI.getPort(),
-                          uploaderSvc.getUserName(), uploaderSvc.getPassword());
-    } catch (IOException e) {
-      throw new ServiceException("Failed to create fedora-uploader client stub", e);
-    }
+  private static Uploader createFedoraUploader(ProtectedService uploaderSvc) {
+    return new Uploader(uploaderSvc);
   }
 }

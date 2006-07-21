@@ -1,7 +1,5 @@
 package org.topazproject.ws.annotation;
 
-import java.io.ByteArrayInputStream;
-
 import java.net.URI;
 import java.net.URISyntaxException;
 
@@ -28,13 +26,12 @@ import org.apache.commons.logging.LogFactory;
 import org.jrdf.graph.Literal;
 import org.jrdf.graph.URIReference;
 
+import org.topazproject.fedora.client.FedoraAPIM;
+import org.topazproject.fedora.client.Uploader;
+
 import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
-
-import fedora.client.Uploader;
-
-import fedora.server.management.FedoraAPIM;
 
 /**
  * The implementation of the annotation service.
@@ -245,7 +242,7 @@ public class AnnotationImpl implements Annotation {
   private String createBody(String contentType, byte[] content)
                      throws RemoteException {
     try {
-      String ref = uploader.upload(new ByteArrayInputStream(content));
+      String ref = uploader.upload(content);
 
       Map    values = new HashMap();
       values.put("CONTENTTYPE", contentType);
