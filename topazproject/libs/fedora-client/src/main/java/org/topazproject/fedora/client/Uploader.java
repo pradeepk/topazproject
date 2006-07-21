@@ -17,6 +17,7 @@ import org.apache.commons.httpclient.methods.MultipartPostMethod;
 import org.apache.commons.httpclient.methods.multipart.ByteArrayPartSource;
 import org.apache.commons.httpclient.methods.multipart.FilePart;
 import org.apache.commons.httpclient.methods.multipart.Part;
+import org.apache.commons.httpclient.methods.multipart.PartSource;
 
 import org.topazproject.authentication.ProtectedService;
 
@@ -85,7 +86,36 @@ public class Uploader {
   }
 
   /**
-   * Uploads the contents of an input stream. Copies to a local file before upload.
+   * Uploads the contents of a fixed length input stream to fedora.
+   *
+   * @param in the input stream to upload.
+   * @param length the length of the input stream.
+   *
+   * @return Returns a uri that can be used in setting up a data-stream for a fedora object.
+   *
+   * @throws IOException on an error
+   */
+  public String upload(final InputStream in, final long length)
+                throws IOException {
+    return upload(new FilePart("file",
+                               new PartSource() {
+        public InputStream createInputStream() {
+          return in;
+        }
+
+        public String getFileName() {
+          return "fixed-length-input-stream";
+        }
+
+        public long getLength() {
+          return length;
+        }
+      }));
+  }
+
+  /**
+   * Uploads the contents of an input stream. Copies to a local file before upload. Use only if any
+   * of the other upload methods cannot be used.
    *
    * @param in the input stream to upload
    *

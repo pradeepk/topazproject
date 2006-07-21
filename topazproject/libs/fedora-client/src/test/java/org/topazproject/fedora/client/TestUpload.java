@@ -71,4 +71,18 @@ public class TestUpload extends TestCase {
     URI    u = new URI(s);
     assertTrue(u.isAbsolute());
   }
+
+  /**
+   * Tests upload
+   *
+   * @throws Exception on failure
+   */
+  public void testUploadFixedStream() throws Exception {
+    if (skip)
+      return;
+
+    String s = uploader.upload(new ByteArrayInputStream(new byte[100000]), 100000);
+    URI    u = new URI(s);
+    assertTrue(u.isAbsolute());
+  }
 }
