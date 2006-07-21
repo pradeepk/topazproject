@@ -70,7 +70,7 @@ public class PlosRegistrationService implements RegistrationService {
     }
 
     if (!user.getEmailVerificationToken().equals(emailVerificationToken)) {
-      throw new VerificationTokenInvalidException("loginName:"+loginName + ", emailVerificationToken:"+emailVerificationToken);
+      throw new VerificationTokenInvalidException(loginName, emailVerificationToken);
     }
 
     user.setVerified(true);
@@ -122,7 +122,7 @@ public class PlosRegistrationService implements RegistrationService {
     if (user.getResetPasswordToken().equals(resetPasswordToken)) {
       return user;
     } else {
-      throw new VerificationTokenInvalidException("loginName:"+loginName + ", resetPasswordToken:"+resetPasswordToken);
+      throw new VerificationTokenInvalidException(loginName, resetPasswordToken);
     }
   }
 

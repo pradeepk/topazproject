@@ -7,10 +7,11 @@ package org.plos.service;
  */
 public class VerificationTokenInvalidException extends Exception {
   /**
-   * Constructor with message.
-   * @param message
+   * Constructor with loginName and verificationToken
+   * @param loginName loginName
+   * @param verificationToken verificationToken
    */
-  public VerificationTokenInvalidException(final String message) {
-    super(message);
+  public VerificationTokenInvalidException(final String loginName, final String verificationToken) {
+    super("loginName:" + loginName + ", verificationToken:" + verificationToken);
   }
 }
