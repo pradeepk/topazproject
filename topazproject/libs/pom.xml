@@ -23,5 +23,6 @@
     <module>mulgara-client</module>
     <module>xacml-extensions</module>
     <module>resource-indexer</module>
+    <module>fedora-client</module>
   </modules>
 </project>
