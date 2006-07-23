@@ -28,8 +28,8 @@ import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 
-import fedora.client.Uploader;
-import fedora.server.management.FedoraAPIM;
+import org.topazproject.fedora.client.Uploader;
+import org.topazproject.fedora.client.FedoraAPIM;
 
 import net.sf.saxon.TransformerFactoryImpl;
 

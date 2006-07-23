@@ -8,12 +8,15 @@ import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
+import javax.servlet.http.HttpSession;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.authentication.ProtectedService;
+import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.article.ArticleImpl;
 import org.topazproject.ws.article.ArticlePEP;
@@ -38,19 +41,29 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
 
       if (!conf.containsKey("services.fedora.uri"))
         throw new ConfigurationException("missing key 'topaz.services.fedora.uri'");
+      if (!conf.containsKey("services.fedoraUploader.uri"))
+        throw new ConfigurationException("missing key 'topaz.services.fedoraUploader.uri'");
       if (!conf.containsKey("services.itql.uri"))
         throw new ConfigurationException("missing key 'topaz.services.itql.uri'");
       if (!conf.containsKey("server.hostname"))
         throw new ConfigurationException("missing key 'topaz.server.hostname'");
 
-      URI fedora = new URI(conf.getString("services.fedora.uri"));
-      String username = conf.getString("services.fedora.userName", null);
-      String password = conf.getString("services.fedora.password", null);
+      Configuration fedoraConf = conf.subset("services.fedora");
+      Configuration uploadConf = conf.subset("services.fedoraUploader");
+      Configuration itqlConf   = conf.subset("services.itql");
+
+      // xxx: since this web service is running at application-scope no sessions
+      //HttpSession session = ((ServletEndpointContext) context).getHttpSession();
+      HttpSession session = null;
+
+      ProtectedService fedoraSvc = ProtectedServiceFactory.createService(fedoraConf, session);
+      ProtectedService uploadSvc = ProtectedServiceFactory.createService(uploadConf, session);
+      ProtectedService itqlSvc   = ProtectedServiceFactory.createService(itqlConf, session);
+
       String hostname = conf.getString("server.hostname");
-      URI mulgara = new URI(conf.getString("services.itql.uri"));
 
       // create the impl
-      impl = new ArticleImpl(fedora, username, password, mulgara, hostname, pep);
+      impl = new ArticleImpl(fedoraSvc, uploadSvc, itqlSvc, hostname, pep);
     } catch (Exception e) {
       log.error("Failed to initialize ArticleImpl.", e);
       throw new ServiceException(e);

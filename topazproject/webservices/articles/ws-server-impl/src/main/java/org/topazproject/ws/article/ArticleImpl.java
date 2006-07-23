@@ -20,9 +20,9 @@ import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import fedora.client.APIMStubFactory;
-import fedora.client.Uploader;
-import fedora.server.management.FedoraAPIM;
+import org.topazproject.fedora.client.APIMStubFactory;
+import org.topazproject.fedora.client.Uploader;
+import org.topazproject.fedora.client.FedoraAPIM;
 
 /** 
  * The default implementation of the article manager.
@@ -43,65 +43,22 @@ public class ArticleImpl implements Article {
   /** 
    * Create a new article manager instance. 
    *
-   * @param fedoraUri   the uri of the fedora server
-   * @param username    the username to talk to fedora
-   * @param password    the password to talk to fedora
-   * @param mulgaraUri  the uri of the mulgara server
-   * @param hostname    the hostname under which this service is visible; this is used to generate
-   *                    the proper URL for {@link #getObjectURL getObjectURL}.
-   * @param pep         the policy-enforcer to use for access-control
-   */
-  public ArticleImpl(URI fedoraUri, String username, String password, URI mulgaraUri,
-                     String hostname, ArticlePEP pep)
-      throws IOException, ServiceException {
-    fedoraServer = getRemoteFedoraURI(fedoraUri, hostname);
-
-    apim     = APIMStubFactory.getStub(fedoraUri.getScheme(), fedoraUri.getHost(),
-                                       fedoraUri.getPort(), username, password);
-    uploader = new Uploader(fedoraUri.getScheme(), fedoraUri.getHost(), fedoraUri.getPort(),
-                            username, password);
-    itql     = new ItqlHelper(mulgaraUri);
-    ingester = new Ingester(apim, uploader, itql, pep);
-
-    this.pep = pep;
-  }
-
-  /** 
-   * Create a new article manager instance. 
-   *
    * @param fedorSvc  the fedora management web-service
+   * @param uploadSvc the fedora management web-service
    * @param mulgarSvc the mulgara web-service
    * @param hostname  the hostname under which this service is visible; this is used to generate
    *                  the proper URL for {@link #getObjectURL getObjectURL}.
    * @param pep       the policy-enforcer to use for access-control
    */
-  public ArticleImpl(ProtectedService fedoraSvc, ProtectedService mulgaraSvc, String hostname,
-                     ArticlePEP pep)
+  public ArticleImpl(ProtectedService fedoraSvc, ProtectedService uploadSvc, 
+                     ProtectedService mulgaraSvc, String hostname, ArticlePEP pep)
       throws URISyntaxException, IOException, ServiceException {
     URI fedoraURI = new URI(fedoraSvc.getServiceUri());
     fedoraServer = getRemoteFedoraURI(fedoraURI, hostname);
 
-    if (fedoraSvc.requiresUserNamePassword()) {
-      apim = APIMStubFactory.getStub(fedoraURI.getScheme(), fedoraURI.getHost(),
-                                     fedoraURI.getPort(), fedoraSvc.getUserName(),
-                                     fedoraSvc.getPassword());
-      uploader = new Uploader(fedoraURI.getScheme(), fedoraURI.getHost(), fedoraURI.getPort(),
-                              fedoraSvc.getUserName(), fedoraSvc.getPassword());
-    } else {
-      String pqf = fedoraURI.getPath();
-      if (fedoraURI.getQuery() != null)
-        pqf += "?" + fedoraURI.getQuery();
-      if (fedoraURI.getFragment() != null)
-        pqf += "#" + fedoraURI.getFragment();
-
-      apim = APIMStubFactory.getStubAltPath(fedoraURI.getScheme(), fedoraURI.getHost(),
-                                            fedoraURI.getPort(), pqf, null, null);
-      // XXX: short of wholesale copying and modifying of Uploader, I see no way to get the
-      // path in there.
-      uploader = new Uploader(fedoraURI.getScheme(), fedoraURI.getHost(), fedoraURI.getPort(),
-                              fedoraSvc.getUserName(), fedoraSvc.getPassword());
-    }
-
+    uploader = new Uploader(uploadSvc);
+    apim = APIMStubFactory.create(fedoraSvc);
+    
     itql     = new ItqlHelper(mulgaraSvc);
     ingester = new Ingester(apim, uploader, itql, pep);
 
