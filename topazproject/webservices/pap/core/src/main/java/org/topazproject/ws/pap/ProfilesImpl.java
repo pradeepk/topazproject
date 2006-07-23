@@ -22,12 +22,13 @@ import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
+import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import fedora.client.APIMStubFactory;
-import fedora.server.management.FedoraAPIM;
+import org.topazproject.fedora.client.APIMStubFactory;
+import org.topazproject.fedora.client.FedoraAPIM;
 
 /** 
  * This provides the implementation of the profiles service.
@@ -131,21 +132,7 @@ public class ProfilesImpl implements Profiles {
     itql = new ItqlHelper(mulgaraSvc);
     initMulgara();
 
-    URI fedoraURI = new URI(fedoraSvc.getServiceUri());
-    if (fedoraSvc.requiresUserNamePassword()) {
-      apim = APIMStubFactory.getStub(fedoraURI.getScheme(), fedoraURI.getHost(),
-                                     fedoraURI.getPort(), fedoraSvc.getUserName(),
-                                     fedoraSvc.getPassword());
-    } else {
-      String pqf = fedoraURI.getPath();
-      if (fedoraURI.getQuery() != null)
-        pqf += "?" + fedoraURI.getQuery();
-      if (fedoraURI.getFragment() != null)
-        pqf += "#" + fedoraURI.getFragment();
-
-      apim = APIMStubFactory.getStubAltPath(fedoraURI.getScheme(), fedoraURI.getHost(),
-                                            fedoraURI.getPort(), pqf, null, null);
-    }
+    apim = APIMStubFactory.create(fedoraSvc);
   }
 
   /** 
@@ -166,8 +153,8 @@ public class ProfilesImpl implements Profiles {
     itql = new ItqlHelper(mulgaraUri);
     initMulgara();
 
-    apim = APIMStubFactory.getStub(fedoraUri.getScheme(), fedoraUri.getHost(),
-                                   fedoraUri.getPort(), username, password);
+    ProtectedService fedoraSvc = ProtectedServiceFactory.createService(fedoraUri.toString(), username, password, true);
+    apim = APIMStubFactory.create(fedoraSvc);
   }
 
   private void initMulgara() throws IOException {
