@@ -116,6 +116,7 @@
 
   <modules>
     <module>build/ant-tasks-plugin</module>
+    <module>build/archetypes/webservice</module>
     <module>topazproject</module>
     <module>plosone</module>
     <module>re-package</module>
