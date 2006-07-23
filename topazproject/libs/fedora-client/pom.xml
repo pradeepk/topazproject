@@ -9,7 +9,7 @@
   <groupId>org.topazproject</groupId>
   <artifactId>fedora-client</artifactId>
   <name>Fedora client stub</name>
-  <version>2.1.1</version>
+  <version>0.5-SNAPSHOT</version>
 
   <dependencies>
     <dependency>
@@ -73,6 +73,12 @@
             <goals><goal>wsdl2java</goal></goals>
             <configuration>
               <packageSpace>org.topazproject.fedora.client</packageSpace>
+              <sourceDependencies>
+                <sourceDependency>info.fedora:fedora-server:2.1.1:/wsdl/fedora-types.xsd</sourceDependency>
+                <sourceDependency>info.fedora:fedora-server:2.1.1:/wsdl/fedora-auditing.xsd</sourceDependency>
+                <sourceDependency>info.fedora:fedora-server:2.1.1:/wsdl/Fedora-API-M.wsdl</sourceDependency>
+                <sourceDependency>info.fedora:fedora-server:2.1.1:/wsdl/Fedora-API-A.wsdl</sourceDependency>
+              </sourceDependencies>
               <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
               <serverSide>false</serverSide>
               <deployScope>session</deployScope>
