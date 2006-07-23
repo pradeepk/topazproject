@@ -38,11 +38,6 @@ import org.topazproject.fedora.client.FedoraAPIM;
  * topaz:ProfileReadPermissions node which is linked to foaf:Person via a topaz:readPermissions
  * predicate.
  *
- * <p>TODO:
- * <ul>
- *   <li>app-id support</li>
- * </ul>
- *
  * @author Ronald Tschalär
  */
 public class ProfilesImpl implements Profiles {
