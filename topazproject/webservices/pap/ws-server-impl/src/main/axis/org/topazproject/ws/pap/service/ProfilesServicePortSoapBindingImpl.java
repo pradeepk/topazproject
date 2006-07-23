@@ -19,9 +19,6 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.impl.StackObjectPool;
 
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.pap.ProfilesImpl;
@@ -37,7 +34,7 @@ import org.topazproject.xacml.Util;
 public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLifecycle {
   private static final Log log = LogFactory.getLog(ProfilesServicePortSoapBindingImpl.class);
 
-  private ObjectPool implPool;
+  private ProfilesImpl impl;
 
   public void init(Object context) throws ServiceException {
     if (log.isTraceEnabled())
@@ -61,13 +58,8 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
       final String password = conf.getString("services.fedora.password", null);
       final URI mulgara = new URI(conf.getString("services.itql.uri"));
 
-      // create the implPool
-      implPool = new StackObjectPool(new BasePoolableObjectFactory() {
-        public Object makeObject() throws ServiceException, IOException { 
-          return new ProfilesImpl(mulgara, fedora, username, password, pep);
-        }
-      });
-      implPool.returnObject(implPool.borrowObject());   // test config
+      // create the impl
+      impl = new ProfilesImpl(mulgara, fedora, username, password, pep);
     } catch (Exception e) {
       log.error("Failed to initialize ProfilesImpl.", e);
       throw new ServiceException(e);
@@ -78,12 +70,7 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#destroy");
 
-    try {
-      implPool.close();
-    } catch (Exception e) {
-      log.warn("Error closing ProfilesImpl pool.", e);
-    }
-    implPool = null;
+    impl = null;
   }
 
   /**
@@ -91,7 +78,6 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
    */
   public void createProfile(String userId, UserProfile profile)
       throws RemoteException, DuplicateIdException {
-    ProfilesImpl impl = getProfilesImpl();
     try {
       impl.createProfile(userId, (profile != null) ? toProfile(profile) : null);
     } catch (org.topazproject.ws.pap.DuplicateIdException die) {
@@ -103,8 +89,6 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
     } catch (Error e) {
       log.error("", e);
       throw e;
-    } finally {
-      freeProfilesImpl(impl);
     }
   }
 
@@ -112,7 +96,6 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
    * @see org.topazproject.ws.pap.Profiles#getProfile
    */
   public UserProfile getProfile(String userId) throws RemoteException, NoSuchIdException {
-    ProfilesImpl impl = getProfilesImpl();
     try {
       org.topazproject.ws.pap.UserProfile prof = impl.getProfile(userId);
       return new UserProfile(prof.getBiography(), prof.getBiographyReaders(), prof.getDisplayName(),
@@ -132,8 +115,6 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
     } catch (Error e) {
       log.error("", e);
       throw e;
-    } finally {
-      freeProfilesImpl(impl);
     }
   }
 
@@ -142,7 +123,6 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
    */
   public void updateProfile(String userId, UserProfile profile)
       throws RemoteException, NoSuchIdException {
-    ProfilesImpl impl = getProfilesImpl();
     try {
       impl.updateProfile(userId, toProfile(profile));
     } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
@@ -154,8 +134,6 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
     } catch (Error e) {
       log.error("", e);
       throw e;
-    } finally {
-      freeProfilesImpl(impl);
     }
   }
 
@@ -163,7 +141,6 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
    * @see org.topazproject.ws.pap.Profiles#deleteProfile
    */
   public void deleteProfile(String userId) throws RemoteException, NoSuchIdException {
-    ProfilesImpl impl = getProfilesImpl();
     try {
       impl.deleteProfile(userId);
     } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
@@ -175,8 +152,6 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
     } catch (Error e) {
       log.error("", e);
       throw e;
-    } finally {
-      freeProfilesImpl(impl);
     }
   }
 
@@ -206,23 +181,6 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
     res.setWeblogReaders(prof.getWeblogReaders());
 
     return res;
-  }
-
-  private ProfilesImpl getProfilesImpl() throws RemoteException {
-    try {
-      return (ProfilesImpl) implPool.borrowObject();
-    } catch (Exception e) {
-      log.error("Error getting impl from pool", e);     // shouldn't happen
-      throw new RemoteException("Error getting profiles impl", e);
-    }
-  }
-
-  private void freeProfilesImpl(ProfilesImpl impl) {
-    try {
-      implPool.returnObject(impl);
-    } catch (Exception e) {
-      log.error("Error returning impl to pool", e);     // can't happen
-    }
   }
 
   private static class WSProfilesPEP extends ProfilesPEP {

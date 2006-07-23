@@ -19,9 +19,6 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.impl.StackObjectPool;
 
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.pap.PreferencesImpl;
@@ -37,7 +34,7 @@ import org.topazproject.xacml.Util;
 public class PreferencesServicePortSoapBindingImpl implements Preferences, ServiceLifecycle {
   private static final Log log = LogFactory.getLog(PreferencesServicePortSoapBindingImpl.class);
 
-  private ObjectPool implPool;
+  private PreferencesImpl impl;
 
   public void init(Object context) throws ServiceException {
     if (log.isTraceEnabled())
@@ -58,13 +55,8 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
 
       final URI mulgara = new URI(conf.getString("services.itql.uri"));
 
-      // create the implPool
-      implPool = new StackObjectPool(new BasePoolableObjectFactory() {
-        public Object makeObject() throws ServiceException, IOException { 
-          return new PreferencesImpl(mulgara, pep);
-        }
-      });
-      implPool.returnObject(implPool.borrowObject());   // test config
+      // create the impl
+      impl = new PreferencesImpl(mulgara, pep);
     } catch (Exception e) {
       log.error("Failed to initialize PreferencesImpl.", e);
       throw new ServiceException(e);
@@ -75,12 +67,7 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#destroy");
 
-    try {
-      implPool.close();
-    } catch (Exception e) {
-      log.warn("Error closing PreferencesImpl pool.", e);
-    }
-    implPool = null;
+    impl = null;
   }
 
   /**
@@ -88,7 +75,6 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
    */
   public void setPreferences(String appId, String userId, UserPreference[] prefs)
       throws RemoteException, NoSuchIdException {
-    PreferencesImpl impl = getPreferencesImpl();
     try {
       impl.setPreferences(appId, userId, fromSvcPrefs(prefs));
     } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
@@ -100,8 +86,6 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
     } catch (Error e) {
       log.error("", e);
       throw e;
-    } finally {
-      freePreferencesImpl(impl);
     }
   }
 
@@ -110,7 +94,6 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
    */
   public UserPreference[] getPreferences(String appId, String userId)
       throws RemoteException, NoSuchIdException {
-    PreferencesImpl impl = getPreferencesImpl();
     try {
       return toSvcPrefs(impl.getPreferences(appId, userId));
     } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
@@ -122,8 +105,6 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
     } catch (Error e) {
       log.error("", e);
       throw e;
-    } finally {
-      freePreferencesImpl(impl);
     }
   }
 
@@ -154,23 +135,6 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
     }
 
     return res;
-  }
-
-  private PreferencesImpl getPreferencesImpl() throws RemoteException {
-    try {
-      return (PreferencesImpl) implPool.borrowObject();
-    } catch (Exception e) {
-      log.error("Error getting impl from pool", e);     // shouldn't happen
-      throw new RemoteException("Error getting preferences impl", e);
-    }
-  }
-
-  private void freePreferencesImpl(PreferencesImpl impl) {
-    try {
-      implPool.returnObject(impl);
-    } catch (Exception e) {
-      log.error("Error returning impl to pool", e);     // can't happen
-    }
   }
 
   private static class WSPreferencesPEP extends PreferencesPEP {
