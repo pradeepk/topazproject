@@ -54,13 +54,16 @@ public class ${Svc}ServicePortSoapBindingImpl implements ${Svc}, ServiceLifecycl
       if (!conf.containsKey("services.itql.uri"))
         throw new ConfigurationException("missing key 'topaz.services.itql.uri'");
 
-      URI fedora = new URI(conf.getString("services.fedora.uri"));
-      String username = conf.getString("services.fedora.userName", null);
-      String password = conf.getString("services.fedora.password", null);
-      URI mulgara = new URI(conf.getString("services.itql.uri"));
+      Configuration fedoraConf = conf.subset("services.fedora");
+      Configuration itqlConf   = conf.subset("services.itql");
+
+      HttpSession session = ((ServletEndpointContext) context).getHttpSession();
+
+      ProtectedService fedoraSvc = ProtectedServiceFactory.createService(fedoraConf, session);
+      ProtectedService itqlSvc   = ProtectedServiceFactory.createService(itqlConf, session);
 
       // create the impl
-      impl = new ${Svc}Impl(mulgara, fedora, username, password, pep);
+      impl = new ${Svc}Impl(itqlSvc, fedoraSvc, pep);
     } catch (Exception e) {
       log.error("Failed to initialize ${Svc}Impl.", e);
       throw new ServiceException(e);
