@@ -124,13 +124,16 @@ public class ProfilesImpl implements Profiles {
    * @param mulgaraSvc the mulgara web-service
    * @param fedoraSvc  the fedora management web-service
    * @param pep        the policy-enforcer to use for access-control
+   * @throws ServiceException if an error occurred locating the mulgara or fedora services
+   * @throws IOException if an error occurred talking to the mulgara or fedora services
    */
   public ProfilesImpl(ProtectedService mulgaraSvc, ProtectedService fedoraSvc, ProfilesPEP pep)
-      throws URISyntaxException, IOException, ServiceException {
+      throws IOException, ServiceException {
     this.pep = pep;
 
     itql = new ItqlHelper(mulgaraSvc);
-    initMulgara();
+    itql.setAliases(aliases);
+    itql.doUpdate("create " + MODEL + ";");
 
     apim = APIMStubFactory.create(fedoraSvc);
   }
@@ -143,23 +146,14 @@ public class ProfilesImpl implements Profiles {
    * @param username    the username to talk to fedora
    * @param password    the password to talk to fedora
    * @param pep         the policy-enforcer to use for access-control
-   * @throws IOException 
-   * @throws ServiceException 
+   * @throws ServiceException if an error occurred locating the mulgara or fedora services
+   * @throws IOException if an error occurred talking to the mulgara or fedora services
    */
   public ProfilesImpl(URI mulgaraUri, URI fedoraUri, String username, String password,
                       ProfilesPEP pep) throws IOException, ServiceException {
-    this.pep = pep;
-
-    itql = new ItqlHelper(mulgaraUri);
-    initMulgara();
-
-    ProtectedService fedoraSvc = ProtectedServiceFactory.createService(fedoraUri.toString(), username, password, true);
-    apim = APIMStubFactory.create(fedoraSvc);
-  }
-
-  private void initMulgara() throws IOException {
-    itql.setAliases(aliases);
-    itql.doUpdate("create " + MODEL + ";");
+    this(ProtectedServiceFactory.createService(mulgaraUri.toString(), null, null, false),
+         ProtectedServiceFactory.createService(fedoraUri.toString(), username, password, true),
+         pep);
   }
 
   public void createProfile(String userId, UserProfile profile)
