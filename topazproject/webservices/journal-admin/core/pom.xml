@@ -14,9 +14,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>${pom.parent.artifactId}-api</artifactId>
+  <artifactId>${pom.parent.artifactId}-core</artifactId>
   <packaging>jar</packaging>
-  <name>Journal Admin API</name>
+  <name>Journal Admin Core</name>
 
   <parent>
     <groupId>org.topazproject.ws</groupId>

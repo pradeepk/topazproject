@@ -1,21 +1,41 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>${pom.parent.artifactId}-api</artifactId>
+  <artifactId>${pom.parent.artifactId}-core</artifactId>
   <packaging>jar</packaging>
-  <name>Articles API</name>
+  <name>Annotations Core</name>
 
   <parent>
     <groupId>org.topazproject.ws</groupId>
-    <artifactId>ws-articles</artifactId>
+    <artifactId>ws-annotation</artifactId>
     <version>0.1</version>
   </parent>
 
   <dependencies>
     <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <version>1.0.2</version>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>fedora-client</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>mulgara-client</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>xacml</groupId>
+      <artifactId>sunxacml</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>xacml-extensions</artifactId>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -33,14 +53,14 @@
               <goal>java2wsdl</goal>
             </goals>
             <configuration>
-              <implementationClassName>ArticleServiceImplementation</implementationClassName>
+              <implementationClassName>AnnotationServiceImplementation</implementationClassName>
               <filename>${wsdl.filename}</filename>
               <all>true</all>
-              <namespace>service.article.ws.topazproject.org</namespace>
-              <servicePortName>ArticleServicePort</servicePortName>
+              <namespace>service.annotation.ws.topazproject.org</namespace>
+              <servicePortName>AnnotationServicePort</servicePortName>
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
-              <classOfPortType>org.topazproject.ws.article.Article</classOfPortType>
+              <classOfPortType>org.topazproject.ws.annotation.Annotation</classOfPortType>
             </configuration>
           </execution>
         </executions>

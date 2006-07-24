@@ -14,13 +14,8 @@
   <dependencies>
     <dependency>
       <groupId>${pom.parent.groupId}</groupId>
-      <artifactId>${pom.parent.artifactId}-api</artifactId>
+      <artifactId>${pom.parent.artifactId}-core</artifactId>
       <version>${pom.parent.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>fedora-client</artifactId>
-      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>axis</groupId>
@@ -38,13 +33,28 @@
       <version>1.2.1</version>
     </dependency>
     <dependency>
-      <groupId>xacml</groupId>
-      <artifactId>sunxacml</artifactId>
-      <version>1.2</version>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
-      <artifactId>xacml-extensions</artifactId>
+      <artifactId>fedora-client</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>mulgara-client</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>auth-helper</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>conf-helper</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>
@@ -95,7 +105,7 @@
             <goals><goal>wsdl2java</goal></goals>
             <configuration>
               <sourceDependencies>
-                <sourceDependency>${pom.parent.groupId}:${pom.parent.artifactId}-api:${pom.parent.version}:/${wsdl.filename}</sourceDependency>
+                <sourceDependency>${pom.parent.groupId}:${pom.parent.artifactId}-core:${pom.parent.version}:/${wsdl.filename}</sourceDependency>
               </sourceDependencies>
               <serverSide>true</serverSide>
               <deployScope>session</deployScope>

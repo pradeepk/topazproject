@@ -47,7 +47,7 @@
   </reporting>
 
   <modules>
-      <module>ws-api</module>
+      <module>core</module>
       <module>ws-client-impl</module>
       <module>ws-server-impl</module>
       <module>ws-webapp</module>

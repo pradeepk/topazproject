@@ -3,26 +3,44 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>${pom.parent.artifactId}-core</artifactId>
   <packaging>jar</packaging>
-  <name>Pap Core</name>
+  <name>Articles Core</name>
 
   <parent>
     <groupId>org.topazproject.ws</groupId>
-    <artifactId>ws-pap</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <artifactId>ws-articles</artifactId>
+    <version>0.1</version>
   </parent>
 
-  <licenses>
-    <license>
-      <name>Educational Community License version 1.0</name>
-      <url>http://opensource.org/licenses/ecl1.php</url>
-    </license>
-  </licenses>
-
   <dependencies>
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.3</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.1</version>
+    </dependency>
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
       <version>1.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>8.7</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon-dom</artifactId>
+      <version>8.7</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
@@ -54,38 +72,20 @@
         <version>1.0</version>
         <executions>
           <execution>
-            <id>generate-wsdl-prof</id>
+            <id>generate-wsdl</id>
             <phase>process-classes</phase>
             <goals>
               <goal>java2wsdl</goal>
             </goals>
             <configuration>
-              <implementationClassName>ProfilesServiceImplementation</implementationClassName>
+              <implementationClassName>ArticleServiceImplementation</implementationClassName>
               <filename>${wsdl.filename}</filename>
               <all>true</all>
-              <namespace>service.pap.ws.topazproject.org</namespace>
-              <servicePortName>ProfilesServicePort</servicePortName>
+              <namespace>service.article.ws.topazproject.org</namespace>
+              <servicePortName>ArticleServicePort</servicePortName>
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
-              <classOfPortType>org.topazproject.ws.pap.Profiles</classOfPortType>
-            </configuration>
-          </execution>
-          <execution>
-            <id>generate-wsdl-pref</id>
-            <phase>process-classes</phase>
-            <goals>
-              <goal>java2wsdl</goal>
-            </goals>
-            <configuration>
-              <implementationClassName>PreferencesServiceImplementation</implementationClassName>
-              <input>${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}</input>
-              <filename>${wsdl.filename}</filename>
-              <all>true</all>
-              <namespace>service.pap.ws.topazproject.org</namespace>
-              <servicePortName>PreferencesServicePort</servicePortName>
-              <location>http://localhost/service-location</location>
-              <classesDirectory>${project.build.directory}/classes</classesDirectory>
-              <classOfPortType>org.topazproject.ws.pap.Preferences</classOfPortType>
+              <classOfPortType>org.topazproject.ws.article.Article</classOfPortType>
             </configuration>
           </execution>
         </executions>

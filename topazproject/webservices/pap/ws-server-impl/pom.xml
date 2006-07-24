@@ -21,7 +21,7 @@
   <dependencies>
     <dependency>
       <groupId>${pom.parent.groupId}</groupId>
-      <artifactId>${pom.parent.artifactId}-api</artifactId>
+      <artifactId>${pom.parent.artifactId}-core</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
@@ -103,7 +103,7 @@
             <goals><goal>wsdl2java</goal></goals>
             <configuration>
               <sourceDependencies>
-                <sourceDependency>${pom.parent.groupId}:${pom.parent.artifactId}-api:${pom.parent.version}:/${wsdl.filename}</sourceDependency>
+                <sourceDependency>${pom.parent.groupId}:${pom.parent.artifactId}-core:${pom.parent.version}:/${wsdl.filename}</sourceDependency>
               </sourceDependencies>
               <serverSide>true</serverSide>
               <deployScope>session</deployScope>
