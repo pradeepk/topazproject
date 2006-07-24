@@ -46,10 +46,9 @@ public class AnnotationImpl implements Annotation {
 
   //
   private static final URI a            = URI.create("http://www.w3.org/2000/10/annotation-ns#");
-  private static final URI r            = URI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
-  private static final URI d            = URI.create("http://purl.org/dc/elements/1.1/");
-  private static final URI nil          =
-    URI.create("http://www.w3.org/1999/02/22-rdf-syntax-ns#nil");
+  private static final URI r            = URI.create(ItqlHelper.RDF_URI);
+  private static final URI d            = URI.create(ItqlHelper.DC_URI);
+  private static final URI nil          = URI.create(ItqlHelper.RDF_URI + "nil");
   private static final URI a_Annotation =
     URI.create("http://www.w3.org/2000/10/annotation-ns#Annotation");
 

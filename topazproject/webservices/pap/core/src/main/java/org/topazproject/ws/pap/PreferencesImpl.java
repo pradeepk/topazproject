@@ -41,13 +41,12 @@ import org.topazproject.mulgara.itql.ItqlHelper;
 public class PreferencesImpl implements Preferences {
   private static final Log    log            = LogFactory.getLog(PreferencesImpl.class);
 
-  private static final String TOPAZ_URL      = "http://rdf.topazproject.org/RDF#";
-  private static final String FOAF_URL       = "http://xmlns.com/foaf/0.1/";
+  private static final String FOAF_URI       = "http://xmlns.com/foaf/0.1/";
 
   private static final String PREF_MODEL     = "<rmi://localhost/fedora#preferences>";
   private static final String PROF_MODEL     = "<rmi://localhost/fedora#profiles>";
-  private static final String PREFS_URI_PFX  = TOPAZ_URL + "preferences/";
-  private static final String PROF_URI_PFX   = TOPAZ_URL + "profile/";
+  private static final String PREFS_URI_PFX  = ItqlHelper.TOPAZ_URI + "preferences/";
+  private static final String PROF_URI_PFX   = ItqlHelper.TOPAZ_URI + "profile/";
 
   private static final Map    aliases;
 
@@ -91,7 +90,7 @@ public class PreferencesImpl implements Preferences {
 
   static {
     aliases = ItqlHelper.getDefaultAliases();
-    aliases.put("foaf", FOAF_URL);
+    aliases.put("foaf", FOAF_URI);
   }
 
   /** 

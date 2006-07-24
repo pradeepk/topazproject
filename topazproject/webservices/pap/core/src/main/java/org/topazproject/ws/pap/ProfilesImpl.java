@@ -43,13 +43,12 @@ import org.topazproject.fedora.client.FedoraAPIM;
 public class ProfilesImpl implements Profiles {
   private static final Log    log            = LogFactory.getLog(ProfilesImpl.class);
 
-  private static final String TOPAZ_URL      = "http://rdf.topazproject.org/RDF#";
-  private static final String FOAF_URL       = "http://xmlns.com/foaf/0.1/";
-  private static final String BIO_URL        = "http://purl.org/vocab/bio/0.1/";
+  private static final String FOAF_URI       = "http://xmlns.com/foaf/0.1/";
+  private static final String BIO_URI        = "http://purl.org/vocab/bio/0.1/";
 
   private static final String MODEL          = "<rmi://localhost/fedora#profiles>";
-  private static final String PROF_URI_PFX   = TOPAZ_URL + "profile/";
-  private static final String PERM_URI_PFX   = TOPAZ_URL + "profile-perms/";
+  private static final String PROF_URI_PFX   = ItqlHelper.TOPAZ_URI + "profile/";
+  private static final String PERM_URI_PFX   = ItqlHelper.TOPAZ_URI + "profile-perms/";
   private static final String PROFILE_PID_NS = "profile";
   private static final String ACCT_URI_PFX   = "topaz:account/";
   private static final String ACCOUNT_PID_NS = "account";
@@ -109,8 +108,8 @@ public class ProfilesImpl implements Profiles {
 
   static {
     aliases = ItqlHelper.getDefaultAliases();
-    aliases.put("foaf", FOAF_URL);
-    aliases.put("bio",  BIO_URL);
+    aliases.put("foaf", FOAF_URI);
+    aliases.put("bio",  BIO_URI);
   }
 
   /** 
@@ -415,25 +414,25 @@ public class ProfilesImpl implements Profiles {
     for (int idx = 0; idx < rows.size(); idx++) {
       String[] row = (String[]) rows.get(idx);
 
-      if (row[0].equals(TOPAZ_URL + "displayName"))
+      if (row[0].equals(ItqlHelper.TOPAZ_URI + "displayName"))
         prof.setDisplayName(row[1]);
-      else if (row[0].equals(FOAF_URL + "name"))
+      else if (row[0].equals(FOAF_URI + "name"))
         prof.setRealName(row[1]);
-      else if (row[0].equals(FOAF_URL + "title"))
+      else if (row[0].equals(FOAF_URI + "title"))
         prof.setTitle(row[1]);
-      else if (row[0].equals(FOAF_URL + "gender"))
+      else if (row[0].equals(FOAF_URI + "gender"))
         prof.setGender(row[1]);
-      else if (row[0].equals(BIO_URL + "olb"))
+      else if (row[0].equals(BIO_URI + "olb"))
         prof.setBiography(row[1]);
-      else if (row[0].equals(FOAF_URL + "mbox"))
+      else if (row[0].equals(FOAF_URI + "mbox"))
         prof.setEmail(row[1].substring(7));
-      else if (row[0].equals(FOAF_URL + "homepage"))
+      else if (row[0].equals(FOAF_URI + "homepage"))
         prof.setHomePage(row[1]);
-      else if (row[0].equals(FOAF_URL + "weblog"))
+      else if (row[0].equals(FOAF_URI + "weblog"))
         prof.setWeblog(row[1]);
-      else if (row[0].equals(FOAF_URL + "publications"))
+      else if (row[0].equals(FOAF_URI + "publications"))
         prof.setPublications(row[1]);
-      else if (row[0].equals(FOAF_URL + "interest"))
+      else if (row[0].equals(FOAF_URI + "interest"))
         interests.add(row[1]);
       else {
         List rl = (List) readers.get(row[0]);
@@ -446,16 +445,16 @@ public class ProfilesImpl implements Profiles {
     if (interests.size() > 0)
       prof.setInterests((String[]) interests.toArray(new String[interests.size()]));
 
-    prof.setDisplayNameReaders(getReaders(readers, TOPAZ_URL + "displayNameReaders"));
-    prof.setRealNameReaders(getReaders(readers, TOPAZ_URL + "realNameReaders"));
-    prof.setTitleReaders(getReaders(readers, TOPAZ_URL + "titleReaders"));
-    prof.setGenderReaders(getReaders(readers, TOPAZ_URL + "genderReaders"));
-    prof.setBiographyReaders(getReaders(readers, TOPAZ_URL + "biographyReaders"));
-    prof.setEmailReaders(getReaders(readers, TOPAZ_URL + "emailReaders"));
-    prof.setHomePageReaders(getReaders(readers, TOPAZ_URL + "homePageReaders"));
-    prof.setWeblogReaders(getReaders(readers, TOPAZ_URL + "weblogReaders"));
-    prof.setPublicationsReaders(getReaders(readers, TOPAZ_URL + "publicationsReaders"));
-    prof.setInterestsReaders(getReaders(readers, TOPAZ_URL + "interestsReaders"));
+    prof.setDisplayNameReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "displayNameReaders"));
+    prof.setRealNameReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "realNameReaders"));
+    prof.setTitleReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "titleReaders"));
+    prof.setGenderReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "genderReaders"));
+    prof.setBiographyReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "biographyReaders"));
+    prof.setEmailReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "emailReaders"));
+    prof.setHomePageReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "homePageReaders"));
+    prof.setWeblogReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "weblogReaders"));
+    prof.setPublicationsReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "publicationsReaders"));
+    prof.setInterestsReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "interestsReaders"));
 
     return prof;
   }
