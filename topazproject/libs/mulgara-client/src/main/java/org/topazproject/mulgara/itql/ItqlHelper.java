@@ -54,7 +54,7 @@ public class ItqlHelper {
   /** The base URI for fedora defined URIs: {@value} */
   public static final String FEDORA_URI = "info:fedora/";
   /** The base URI for topaz defined URIs: {@value} */
-  public static final String TOPAZ_URI  = "http://rdf.topazproject.org/RDF#";
+  public static final String TOPAZ_URI  = "http://rdf.topazproject.org/RDF/";
 
   private final ItqlInterpreterBean interpreter;
   private       Map                 aliases = new HashMap();
