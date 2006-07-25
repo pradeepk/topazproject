@@ -37,7 +37,7 @@
 
        <!ATTLIST RDF
            xmlns:rdf   CDATA #FIXED "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-           xmlns:topaz CDATA #FIXED "http://rdf.topazproject.org/RDF#">
+           xmlns:topaz CDATA #FIXED "http://rdf.topazproject.org/RDF/">
 
        <!ELEMENT rdf:type      (EMPTY) >
        <!ATTLIST rdf:type rdf:resource CDATA #REQUIRED >
@@ -70,7 +70,7 @@
       <dc:title>The mechanics of X</dc:title>
       <dc:creator>Joe D. Maggio</dc:creator>
     </DC>
-    <RDF xmlns:topaz="http://rdf.topazproject.org/RDF#">
+    <RDF xmlns:topaz="http://rdf.topazproject.org/RDF/">
       <topaz:keyword>Yummy</topaz:keyword>
       <topaz:keyword>Dummy</topaz:keyword>
     </RDF>

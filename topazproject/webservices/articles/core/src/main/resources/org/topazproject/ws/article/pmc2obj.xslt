@@ -74,7 +74,7 @@
   </xsl:template>
 
   <xsl:template name="main-rdf">
-    <RDF xmlns:topaz="http://rdf.topazproject.org/RDF#"
+    <RDF xmlns:topaz="http://rdf.topazproject.org/RDF/"
          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
       <xsl:for-each select="distinct-values(my:get-doi($file-entries[my:is-secondary(@name)]/@name))">
         <topaz:hasMember rdf:resource="{my:pid-to-uri(my:doi-to-pid(.))}"/>
@@ -119,7 +119,7 @@
   </xsl:template>
 
   <xsl:template name="sec-rdf">
-    <RDF xmlns:topaz="http://rdf.topazproject.org/RDF#"
+    <RDF xmlns:topaz="http://rdf.topazproject.org/RDF/"
          xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
       <topaz:isMemberOf rdf:resource="{my:pid-to-uri(my:doi-to-pid($doi))}"/>
       <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
@@ -132,7 +132,7 @@
   </xsl:template>
 
   <!-- common templates for all datastream definitions -->
-  <xsl:template match="ZipEntry" mode="ds-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF#"
+  <xsl:template match="ZipEntry" mode="ds-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/"
       xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <xsl:element name="topaz:{my:ext-to-ds-id(my:get-ext(@name))}-objectSize">
       <xsl:attribute name="rdf:datatype">http://www.w3.org/2001/XMLSchema#int</xsl:attribute>
