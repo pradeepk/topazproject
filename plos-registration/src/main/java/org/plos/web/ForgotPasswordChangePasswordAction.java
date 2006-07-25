@@ -61,25 +61,26 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
   }
 
   /**
-   * Set loginName.
-   * @param loginName
+   * @return loginName
    */
   @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid email address")
   @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName", message="Email address not specified")
-  public void setLoginName(final String loginName) {
-    this.loginName = loginName;
-  }
-
-  /**
-   * @return loginName
-   */
   public String getLoginName() {
     return loginName;
   }
 
   /**
+   * Set loginName.
+   * @param loginName loginName
+   */
+  public void setLoginName(final String loginName) {
+    this.loginName = loginName;
+  }
+
+  /**
    * @return the reset password token
    */
+  @RequiredStringValidator(type= ValidatorType.FIELD, fieldName="resetPasswordToken", message="Verification token missing")
   public String getResetPasswordToken() {
     return resetPasswordToken;
   }
@@ -88,7 +89,6 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
    * Set resetPasswordToken.
    * @param resetPasswordToken token used to verify the reset the password request.
    */
-  @RequiredStringValidator(type= ValidatorType.FIELD, fieldName="resetPasswordToken", message="Verification token missing")
   public void setResetPasswordToken(final String resetPasswordToken) {
     this.resetPasswordToken = resetPasswordToken;
   }
@@ -104,7 +104,7 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
 
   /**
    * Set password1
-   * @param password1
+   * @param password1 password1
    */
   public void setPassword1(final String password1) {
     this.password1 = password1;
@@ -119,7 +119,7 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
 
   /**
    * Set password2
-   * @param password2
+   * @param password2 password2
    */
   public void setPassword2(final String password2) {
     this.password2 = password2;
@@ -134,7 +134,7 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
 
   /**
    * Set registrationService
-   * @param registrationService
+   * @param registrationService registrationService
    */
   public void setRegistrationService(final RegistrationService registrationService) {
     this.registrationService = registrationService;

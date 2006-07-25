@@ -25,6 +25,7 @@ public class ForgotPasswordAction extends ActionSupport {
 
   private RegistrationService registrationService;
   private ArrayList<String> messages = new ArrayList<String>();
+
   private String loginName;
 
   private static final Log log = LogFactory.getLog(ForgotPasswordAction.class);
@@ -61,20 +62,18 @@ public class ForgotPasswordAction extends ActionSupport {
   }
 
   /**
-   * Set the user.
-   * @param user
+   * @return loginName
    */
-  // TODO to be removed when we change the forgot-password-success.jsp so that it does not display the forgot password link
-  private void setUser(final User user) {
-    this.user = user;
+  @EmailValidator(type=ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid email address")
+  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName", message="Email address is required")
+  public String getLoginName() {
+    return loginName;
   }
 
   /**
    * Set loginName
-   * @param loginName
+   * @param loginName loginName
    */
-  @EmailValidator(type=ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid loginName")
-  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName", message="Email address is required")
   public void setLoginName(final String loginName) {
     this.loginName = loginName;
   }
@@ -87,6 +86,15 @@ public class ForgotPasswordAction extends ActionSupport {
   }
 
   /**
+   * Set the user.
+   * @param user user
+   */
+  // TODO to be removed when we change the forgot-password-success.jsp so that it does not display the forgot password link
+  private void setUser(final User user) {
+    this.user = user;
+  }
+
+  /**
    * @return user
    */
   // TODO to be removed when we change the forgot-password-success.jsp so that it does not display the forgot password link
@@ -96,7 +104,7 @@ public class ForgotPasswordAction extends ActionSupport {
 
   /**
    * Set registrationService
-   * @param registrationService
+   * @param registrationService registrationService
    */
   public void setRegistrationService(final RegistrationService registrationService) {
     this.registrationService = registrationService;
