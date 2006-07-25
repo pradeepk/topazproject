@@ -1,3 +1,6 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ */
 package org.plos.web;
 
 import org.plos.registration.User;

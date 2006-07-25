@@ -1,6 +1,5 @@
 /* $HeadURL::                                                                            $
  * $Id$
- *
  */
 package org.plos.web;
 
