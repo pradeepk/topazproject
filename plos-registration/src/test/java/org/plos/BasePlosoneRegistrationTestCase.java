@@ -62,4 +62,13 @@ public abstract class BasePlosoneRegistrationTestCase extends AbstractDependency
   protected PasswordDigestService getPasswordDigestService() {
     return passwordDigestService;
   }
+
+  protected final void createUser(final String email, final String password) throws Exception {
+    final RegisterAction registerAction = getRegistrationAction();
+    registerAction.setLoginName1(email);
+    registerAction.setLoginName2(email);
+    registerAction.setPassword1(password);
+    registerAction.setPassword2(password);
+    registerAction.execute();
+  }
 }
