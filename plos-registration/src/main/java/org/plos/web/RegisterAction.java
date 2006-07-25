@@ -60,7 +60,7 @@ public class RegisterAction extends ActionSupport {
 
   /**
    * @deprecated The web pages should not need this after the email messaging service is integrated.
-   * @param user
+   * @param user user
    */
   private void setUser(final User user) {
     this.user = user;
@@ -68,9 +68,10 @@ public class RegisterAction extends ActionSupport {
 
   @EmailValidator(type=ValidatorType.SIMPLE, fieldName="loginName1", message="You must enter a valid email")
   @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName1", message="You must enter an email address")
-  @FieldExpressionValidator(fieldName="loginName2", expression = "loginName1==loginName2", message="Email addresses must match")
+  @FieldExpressionValidator(fieldName="loginName2", expression = "loginName1==loginName2 && loginName1.length < 256", message="Email addresses must match and field length must be less than 256")
   /**
    * @return loginName1.
+   * TODO Find a way to specify multiple FieldExpressionValidator's
    */
   public String getLoginName1() {
     return loginName1;
@@ -78,7 +79,7 @@ public class RegisterAction extends ActionSupport {
 
   /**
    * Set loginName1
-   * @param loginName1
+   * @param loginName1 loginName1
    */
   public void setLoginName1(final String loginName1) {
     this.loginName1 = loginName1;
@@ -93,14 +94,14 @@ public class RegisterAction extends ActionSupport {
 
   /**
    * Set loginName2
-   * @param loginName2
+   * @param loginName2 loginName2
    */
   public void setLoginName2(String loginName2) {
     this.loginName2 = loginName2;
   }
 
   @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="password1", message="You must enter a password")
-  @FieldExpressionValidator(fieldName="password2", expression = "password1==password2", message="Passwords must match")
+  @FieldExpressionValidator(fieldName="password2", expression = "password1==password2 && password1.length < 256", message="Passwords must match and field length must be less than 256")
   /**
    * Get password1
    */
@@ -110,13 +111,14 @@ public class RegisterAction extends ActionSupport {
 
   /**
    * Set password1
+   * @param password1 password1
    */
   public void setPassword1(String password1) {
     this.password1 = password1;
   }
 
   /**
-   * Get password2
+   * @return password2
    */
   public String getPassword2() {
     return password2;
@@ -124,6 +126,7 @@ public class RegisterAction extends ActionSupport {
 
   /**
    * Set password2
+   * @param password2 password2
    */
   public void setPassword2(String password2) {
     this.password2 = password2;
@@ -131,6 +134,7 @@ public class RegisterAction extends ActionSupport {
 
   /**
    * @deprecated The web pages should not need this after the email messaging service is integrated.
+   * @return User
    */
   public User getUser() {
     return user;
@@ -138,7 +142,7 @@ public class RegisterAction extends ActionSupport {
 
   /**
    * Set the registrationService.
-   * @param registrationService
+   * @param registrationService registrationService
    */
   public void setRegistrationService(final RegistrationService registrationService) {
     this.registrationService = registrationService;

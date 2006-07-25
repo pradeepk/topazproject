@@ -7,11 +7,17 @@ package org.plos.registration;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.*;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+import javax.persistence.Version;
 import java.sql.Timestamp;
 
 /**
- * Implementation for Plos Reistration User
+ * Implementation of Plos Registered User
  */
 
 @Entity
@@ -24,7 +30,7 @@ public class UserImpl implements User {
   @Column  (unique = true, length = 256)
   private String loginName;
 
-  @Column (nullable = false)
+  @Column (nullable = false, length = 256)
   private String password;
 
   @Column (nullable = false)
