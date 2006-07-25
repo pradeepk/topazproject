@@ -21,7 +21,7 @@ public class UserImpl implements User {
   @Id @GeneratedValue(strategy= GenerationType.AUTO)
   private String id;
 
-  @Column  (unique = true)
+  @Column  (unique = true, length = 256)
   private String loginName;
 
   @Column (nullable = false)
@@ -165,7 +165,6 @@ public class UserImpl implements User {
   /**
    * @see User#setCreatedOn(java.sql.Timestamp)
    */
-  // TODO: set the date
   @Transactional(propagation= Propagation.MANDATORY)
   public void setCreatedOn(final Timestamp createdOn) {
     this.createdOn = createdOn;
