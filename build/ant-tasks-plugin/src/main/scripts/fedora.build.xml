@@ -1,7 +1,26 @@
-<?xml version="1.0" ?>
-<project>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $HeadURL::                                                                             $
+  $Id$
+
+  Copyright (c) 2006 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Educational Community License version 1.0
+  http://opensource.org/licenses/ecl1.php
+-->
+<project xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <!-- Define dependencies needed if we want to use <classpath refid="dependency.classpath" />
+       in a <java /> task. See antlib: http://maven.apache.org/ant-tasks.html -->
+  <artifact:dependencies pathId="dependency.classpath"
+      xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+    <dependency groupId="ant" artifactId="ant" version="1.6.5"/>
+    <dependency groupId="ant" artifactId="ant-launcher" version="1.6.5"/>
+  </artifact:dependencies>
 
   <target name="exec-ext">
+    <!-- Define extension desired by fedora's scripts -->
     <condition property="ext" value=".sh">
       <os family="unix"/>
     </condition>
@@ -9,6 +28,14 @@
       <os family="windows"/>
     </condition>
     <property name="ext" value=""/>
+    <!-- Now find an extension for ant/mvn -->
+    <condition property="antext" value="">
+      <os family="unix"/>
+    </condition>
+    <condition property="antext" value=".bat">
+      <os family="windows"/>
+    </condition>
+    <property name="antext" value=""/>
   </target>
 
   <target name="keytool">
@@ -55,7 +82,16 @@
     <delete file="${FEDORA_HOME}/server/ecqs.cert"/>
   </target>
 
-  <target name="fedora-start" depends="exec-ext">
+  <!-- Runs fedora-install IF the INSTALL propery/config is set - used by fedora-start -->
+  <target name="fedora-install-if" if="INSTALL" depends="exec-ext">
+    <echo>Installing fedora</echo>
+    <!-- Stupid maven-plugin-plugin/maven-plugin-tools-ant - won't let us use <antcall /> -->
+    <exec executable="mvn${antext}">
+      <arg line="ant-tasks:fedora-install"/>
+    </exec>
+  </target>
+  
+  <target name="fedora-start" depends="exec-ext,fedora-install-if">
     <echo>Starting mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
     <exec dir="${FEDORA_HOME}" 
       executable="${FEDORA_HOME}/server/bin/mckoi-start${ext}"
@@ -70,7 +106,7 @@
     <echo>You can safely hit Ctl-C to kill the mvn command after fedora starts</echo>
     <exec dir="${FEDORA_HOME}"
       executable="${FEDORA_HOME}/server/bin/fedora-start${ext}"
-      spawn="false">
+      spawn="${SPAWN}">
       <arg line="mckoi"/>
       <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>

@@ -1,6 +1,24 @@
-<?xml version="1.0" ?>
-<project>
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $HeadURL::                                                                             $
+  $Id$
 
+  Copyright (c) 2006 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Educational Community License version 1.0
+  http://opensource.org/licenses/ecl1.php
+-->
+<project xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <!-- Define dependencies needed if we want to use <classpath refid="dependency.classpath" />
+       in a <java /> task. See antlib: http://maven.apache.org/ant-tasks.html -->
+  <artifact:dependencies pathId="dependency.classpath"
+      xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+    <dependency groupId="ant" artifactId="ant" version="1.6.5"/>
+    <dependency groupId="ant" artifactId="ant-launcher" version="1.6.5"/>
+  </artifact:dependencies>
+  
   <target name="exec-ext">
     <condition property="ext" value="">
       <os family="unix"/>
@@ -48,16 +66,29 @@
     </exec>
   </target>
 
-  <target name="ecqs-uninstall" depends="exec-ext">
-   <delete dir="${DEST_DIR}/${ROOT}"/>
+  <target name="ecqs-uninstall">
+    <delete dir="${DEST_DIR}/${ROOT}"/>
   </target>
-  
-  <target name="ecqs-start" depends="exec-ext">
-    <exec dir="${DEST_DIR}/${ROOT}" executable="ant${ext}">
-      <arg line="tomcat-start"/>
+
+  <!-- Runs ecqs-install IF the INSTALL propery/config is set - used by ecqs-start -->
+  <target name="ecqs-install-if" if="INSTALL" depends="exec-ext">
+    <echo>Installing ECQS</echo>
+    <!-- Stupid maven-plugin-plugin/maven-plugin-tools-ant - won't let us use <antcall /> -->
+    <exec executable="mvn${ext}">
+      <arg line="ant-tasks:ecqs-install"/>
     </exec>
   </target>
- 
+  
+  <target name="ecqs-start" depends="ecqs-install-if">
+    <echo>Starting CAS (spawn=${SPAWN})</echo>
+    <java classname="org.apache.tools.ant.Main"
+          dir="${DEST_DIR}/${ROOT}"
+          fork="true" spawn="${SPAWN}">
+      <classpath refid="dependency.classpath" />
+      <arg line="-f ${DEST_DIR}/${ROOT}/build.xml tomcat-start"/>
+    </java>
+  </target>
+
   <target name="ecqs-stop" depends="exec-ext">
     <exec dir="${DEST_DIR}/${ROOT}" executable="ant${ext}">
       <arg line="tomcat-stop"/>

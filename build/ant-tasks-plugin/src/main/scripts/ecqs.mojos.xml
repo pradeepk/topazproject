@@ -1,3 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $HeadURL::                                                                             $
+  $Id$
+
+  Copyright (c) 2006 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Educational Community License version 1.0
+  http://opensource.org/licenses/ecl1.php
+-->
 <pluginMetadata>
   <mojos>
 
@@ -102,6 +113,21 @@
           <defaultValue>esup-cas-quick-start-2.0.6-1</defaultValue>
         </parameter>
 
+        <parameter>
+          <name>SPAWN</name>
+          <property>SPAWN</property>
+          <required>true</required>
+          <expression>${SPAWN}</expression>
+          <defaultValue>false</defaultValue>
+          <description>Whether we should spawn or not</description>
+        </parameter>
+
+        <parameter>
+          <name>INSTALL</name>
+          <property>INSTALL</property>
+          <description>Whether we should install first</description>
+        </parameter>
+        
       </parameters>
     </mojo>
     

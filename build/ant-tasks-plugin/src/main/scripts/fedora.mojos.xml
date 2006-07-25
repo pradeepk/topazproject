@@ -1,3 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $HeadURL::                                                                             $
+  $Id$
+
+  Copyright (c) 2006 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Educational Community License version 1.0
+  http://opensource.org/licenses/ecl1.php
+-->
 <pluginMetadata>
   <mojos>
 
@@ -89,6 +100,22 @@
           <type>java.lang.String</type>
           <description>Fedora Home directory</description>
         </parameter>
+        
+        <parameter>
+          <name>SPAWN</name>
+          <property>SPAWN</property>
+          <required>true</required>
+          <expression>${SPAWN}</expression>
+          <defaultValue>false</defaultValue>
+          <description>Whether we should spawn or not</description>
+        </parameter>
+
+        <parameter>
+          <name>INSTALL</name>
+          <property>INSTALL</property>
+          <description>Whether we should install first</description>
+        </parameter>
+        
       </parameters>
     </mojo>
 
