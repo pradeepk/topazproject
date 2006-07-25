@@ -42,7 +42,9 @@
     <property name="passwordEncryptionService" ref="plosPasswordEncryptionService"/>
   </bean>
 
-  <bean id="plosPasswordEncryptionService" class="org.plos.util.PlosPasswordEncryptionService" />
+  <bean id="plosPasswordEncryptionService" class="org.plos.util.PlosPasswordEncryptionService">
+    <property name="algorithm" value="SHA-256"/>
+  </bean>
 
   <bean id="registrationMessagingService" class="org.plos.service.PlosRegistrationMessagingService"/>
 

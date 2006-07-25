@@ -14,4 +14,20 @@ public interface PasswordEncryptionService {
    * @return encrypted password
    */
   String getEncryptedPassword(final String password);
+
+  /**
+   * Return a one-way encryption of the password also known as hashing. Use the salt as provided to make the deduction of the original password more time consuming.
+   * @param password password
+   * @param salt salt
+   * @return encrypted password
+   */
+  String getEncryptedPassword(String password, String salt);
+
+  /**
+   * Verify that the user password matached the encrypted password
+   * @param originalPassword user's password
+   * @param encryptedPassword encypted password
+   * @return true if verified successfully, false otherwise
+   */
+  boolean verifyPassword(String originalPassword, String encryptedPassword);
 }

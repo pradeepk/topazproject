@@ -8,6 +8,7 @@ import org.plos.service.RegistrationService;
 import org.plos.web.ConfirmationAction;
 import org.plos.web.ForgotPasswordAction;
 import org.plos.web.RegisterAction;
+import org.plos.util.PasswordEncryptionService;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 /**
@@ -18,6 +19,7 @@ public abstract class BasePlosoneRegistrationTestCase extends AbstractDependency
   protected RegistrationService registrationService;
   private ConfirmationAction confirmationAction;
   private RegisterAction registerAction;
+  private PasswordEncryptionService passwordEncryptionService;
 
   protected String[] getConfigLocations() {
     return new String[] {"nonJmxApplicationContext.xml"};
@@ -53,4 +55,11 @@ public abstract class BasePlosoneRegistrationTestCase extends AbstractDependency
     return forgotPasswordAction;
   }
 
+  public void setPasswordEncryptionService(final PasswordEncryptionService passwordEncryptionService) {
+    this.passwordEncryptionService = passwordEncryptionService;
+  }
+
+  protected PasswordEncryptionService getPasswordEncryptionService() {
+    return passwordEncryptionService;
+  }
 }
