@@ -28,7 +28,7 @@ import javax.servlet.ServletContextListener;
 public class JMXStartupListener implements ServletContextListener
 {
 
-    private static Logger logger = Logger.getLogger("org.impl");
+    private static Logger logger = Logger.getLogger("org.plos");
     private MBeanServer server;
 
     private HtmlAdaptorServer htmlAdaptor;
