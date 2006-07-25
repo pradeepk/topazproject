@@ -39,10 +39,10 @@
   <bean id="registrationService" class="org.plos.service.PlosRegistrationService">
     <property name="userDAO" ref="userDAO"/>
     <property name="registrationMessagingService" ref="registrationMessagingService"/>
-    <property name="passwordEncryptionService" ref="plosPasswordEncryptionService"/>
+    <property name="passwordDigestService" ref="plosPasswordDigestService"/>
   </bean>
 
-  <bean id="plosPasswordEncryptionService" class="org.plos.util.PlosPasswordEncryptionService">
+  <bean id="plosPasswordDigestService" class="org.plos.util.PlosPasswordDigestService">
     <property name="algorithm" value="SHA-256"/>
   </bean>
 

@@ -46,6 +46,6 @@ public class TestRegistrationService extends BasePlosoneRegistrationTestCase {
     getRegistrationService().deactivate(user);
     final User updatedUser = getRegistrationService().getUserWithLoginName(email);
     final Timestamp newUpdatedOn = updatedUser.getUpdatedOn();
-    assertTrue(initialUpdatedOn.before(newUpdatedOn));
+    assertFalse(initialUpdatedOn.after(newUpdatedOn));
   }
 }

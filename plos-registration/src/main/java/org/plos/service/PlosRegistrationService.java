@@ -8,7 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.registration.User;
 import org.plos.registration.UserImpl;
-import org.plos.util.PasswordEncryptionService;
+import org.plos.util.PasswordDigestService;
 import org.plos.util.TokenGenerator;
 
 /**
@@ -17,14 +17,14 @@ import org.plos.util.TokenGenerator;
 public class PlosRegistrationService implements RegistrationService {
   private UserDAO userDAO;
   private RegistrationMessagingService registrationMessagingService;
-  private PasswordEncryptionService passwordEncryptionService;
+  private PasswordDigestService passwordDigestService;
   private static final Log log = LogFactory.getLog(PlosPersistenceService.class);
 
   public User createUser(final String loginName, final String password) throws UserAlreadyExistsException {
     if (null == getUserWithLoginName(loginName)) {
       final User user = new UserImpl(
                               loginName,
-                              passwordEncryptionService.getEncryptedPassword(password));
+                              passwordDigestService.getDigestPassword(password));
 
       user.setEmailVerificationToken(TokenGenerator.getUniqueToken());
       user.setVerified(false);
@@ -109,7 +109,7 @@ public class PlosRegistrationService implements RegistrationService {
   public void changePassword(final String loginName, final String newPassword, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException {
     final User user = getUserWithResetPasswordToken(loginName, resetPasswordToken);
 
-    user.setPassword(passwordEncryptionService.getEncryptedPassword(newPassword));
+    user.setPassword(passwordDigestService.getDigestPassword(newPassword));
     user.setResetPasswordToken(null);
     saveUser(user);
   }
@@ -172,10 +172,10 @@ public class PlosRegistrationService implements RegistrationService {
   }
 
   /**
-   * Set the passwordEncryptionService
-   * @param passwordEncryptionService passwordEncryptionService
+   * Set the passwordDigestService
+   * @param passwordDigestService passwordDigestService
    */
-  public void setPasswordEncryptionService(final PasswordEncryptionService passwordEncryptionService) {
-    this.passwordEncryptionService = passwordEncryptionService;
+  public void setPasswordDigestService(final PasswordDigestService passwordDigestService) {
+    this.passwordDigestService = passwordDigestService;
   }
 }

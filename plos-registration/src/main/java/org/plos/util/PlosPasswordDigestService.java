@@ -14,13 +14,13 @@ import java.io.ByteArrayOutputStream;
 import java.util.StringTokenizer;
 
 /**
- * Plos implementation of the PasswordEncryptionService
+ * Plos implementation of the PasswordDigestService
  */
-public class PlosPasswordEncryptionService implements PasswordEncryptionService {
+public class PlosPasswordDigestService implements PasswordDigestService {
   private String algorithm;
   private final String ERROR_MESSAGE = "Password digesting failed";
 
-  private static final Log log = LogFactory.getLog(PlosPasswordEncryptionService.class);
+  private static final Log log = LogFactory.getLog(PlosPasswordDigestService.class);
 
   /**
    * Set the algorithm.
@@ -31,18 +31,18 @@ public class PlosPasswordEncryptionService implements PasswordEncryptionService 
   }
 
   /**
-   * @see PasswordEncryptionService#getEncryptedPassword(String)
+   * @see PasswordDigestService#getDigestPassword(String)
    */
-  public String getEncryptedPassword(final String password) {
+  public String getDigestPassword(final String password) {
     final String randomSalt = createRandomSalt();
 
-    return getEncryptedPassword(password, randomSalt);
+    return getDigestPassword(password, randomSalt);
   }
 
   /**
-   * @see PasswordEncryptionService#getEncryptedPassword(String, String)
+   * @see PasswordDigestService#getDigestPassword(String, String)
    */
-  public String getEncryptedPassword(final String password, final String salt) {
+  public String getDigestPassword(final String password, final String salt) {
     try {
       final MessageDigest md = MessageDigest.getInstance(algorithm);
       final byte[] bytes = md.digest((password + salt).getBytes());
@@ -55,25 +55,25 @@ public class PlosPasswordEncryptionService implements PasswordEncryptionService 
   }
 
   /**
-   * @see PasswordEncryptionService#verifyPassword(String, String)
+   * @see PasswordDigestService#verifyPassword(String, String)
    */
-  public boolean verifyPassword(final String password, final String printableEncryptedPassword) {
-    final String encryptedPassword = new String(getBytes(printableEncryptedPassword));
-    final int saltSuffixIndex = encryptedPassword.length() - getSaltLength();
-    final String salt = getSalt(encryptedPassword, saltSuffixIndex);
-    final String newEncryptedPassword = getEncryptedPassword(password, salt);
+  public boolean verifyPassword(final String password, final String printableDigestPassword) {
+    final String digestPassword = new String(getBytes(printableDigestPassword));
+    final int saltSuffixIndex = digestPassword.length() - getSaltLength();
+    final String salt = getSalt(digestPassword, saltSuffixIndex);
+    final String newDigestPassword = getDigestPassword(password, salt);
 
-    return printableEncryptedPassword.equals(newEncryptedPassword);
+    return printableDigestPassword.equals(newDigestPassword);
   }
 
   /**
    * Extract the salt from the input
-   * @param encryptedPassword encryptedPassword
+   * @param digestPassword digestPassword
    * @param saltSuffixIndex saltSuffixIndex
    * @return the salt
    */
-  private String getSalt(final String encryptedPassword, final int saltSuffixIndex) {
-    return encryptedPassword.substring(saltSuffixIndex, encryptedPassword.length());
+  private String getSalt(final String digestPassword, final int saltSuffixIndex) {
+    return digestPassword.substring(saltSuffixIndex, digestPassword.length());
   }
 
   private String createRandomSalt() {
@@ -121,6 +121,7 @@ public class PlosPasswordEncryptionService implements PasswordEncryptionService 
     return bos.toByteArray();
   }
 
+  //TODO: Add the salt back into the game when i get some time.
   private int getSaltLength() {
 //    return 6;
     return 0;
