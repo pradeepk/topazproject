@@ -15,4 +15,12 @@ package org.plos;
     super(message);
   }
 
+  /**
+   * Constructor with message and exception.
+   * @param message message
+   * @param ex exception
+   */
+  public ApplicationException(final String message, final Exception ex) {
+    super(message, ex);
+  }
 }
