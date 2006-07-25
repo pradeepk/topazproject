@@ -68,8 +68,12 @@ public class PlosRegistrationService implements RegistrationService {
   /**
    * @see RegistrationService#verifyUser(String, String)
    */
-  public void verifyUser(final String loginName, final String emailVerificationToken) throws VerificationTokenInvalidException, UserAlreadyVerifiedException {
+  public void verifyUser(final String loginName, final String emailVerificationToken) throws VerificationTokenInvalidException, UserAlreadyVerifiedException, NoUserFoundWithGivenLoginNameException {
     final User user = getUserWithLoginName(loginName);
+    if (null == user) {
+      throw new NoUserFoundWithGivenLoginNameException(loginName);
+    }
+
     if (user.isVerified()) {
       throw new UserAlreadyVerifiedException(loginName);
     }

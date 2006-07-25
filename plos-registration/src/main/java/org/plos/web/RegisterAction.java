@@ -67,14 +67,13 @@ public class RegisterAction extends ActionSupport {
     this.user = user;
   }
 
+  /**
+   * @return loginName1.
+   */
   @EmailValidator(type=ValidatorType.SIMPLE, fieldName="loginName1", message="You must enter a valid email")
   @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName1", message="You must enter an email address")
   @FieldExpressionValidator(fieldName="loginName2", expression = "loginName1==loginName2", message="Email addresses must match")
-  @StringLengthFieldValidator(fieldName="loginName1", maxLength = "256", message="Login name must be less than 256")
-  /**
-   * @return loginName1.
-   * TODO Find a way to specify multiple FieldExpressionValidator's
-   */
+  @StringLengthFieldValidator(fieldName="loginName1", maxLength = "256", message="Email must be less than 256")
   public String getLoginName1() {
     return loginName1;
   }
@@ -102,12 +101,13 @@ public class RegisterAction extends ActionSupport {
     this.loginName2 = loginName2;
   }
 
-  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="password1", message="You must enter a password")
-  @FieldExpressionValidator(fieldName="password2", expression = "password1==password2", message="Passwords must match")
-  @StringLengthFieldValidator(fieldName="password1", maxLength = "256", message="Password must be less than 256") 
   /**
    * Get password1
+   * @return password1
    */
+  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="password1", message="You must enter a password")
+  @FieldExpressionValidator(fieldName="password2", expression = "password1==password2", message="Passwords must match")
+  @StringLengthFieldValidator(fieldName="password1", maxLength = "256", message="Password must be less than 256")
   public String getPassword1() {
     return password1;
   }

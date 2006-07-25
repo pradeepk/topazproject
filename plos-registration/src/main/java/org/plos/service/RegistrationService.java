@@ -12,8 +12,8 @@ import org.plos.registration.User;
 public interface RegistrationService {
   /**
    * Create user.
-   * @param loginName
-   * @param password
+   * @param loginName loginName
+   * @param password password
    * @return created user
    * @throws UserAlreadyExistsException
    */
@@ -21,7 +21,7 @@ public interface RegistrationService {
 
   /**
    * Get user with loginName
-   * @param loginName
+   * @param loginName loginName
    * @return user
    */
   User getUserWithLoginName(final String loginName);
@@ -40,16 +40,17 @@ public interface RegistrationService {
 
   /**
    * Verify the users account
-   * @param loginName
-   * @param emailVerificationToken
+   * @param loginName loginName
+   * @param emailVerificationToken emailVerificationToken
    * @throws VerificationTokenInvalidException
    * @throws UserAlreadyVerifiedException
+   * @throws NoUserFoundWithGivenLoginNameException
    */
-  void verifyUser(final String loginName, final String emailVerificationToken) throws VerificationTokenInvalidException, UserAlreadyVerifiedException;
+  void verifyUser(final String loginName, final String emailVerificationToken) throws VerificationTokenInvalidException, UserAlreadyVerifiedException, NoUserFoundWithGivenLoginNameException;
 
   /**
    * Send a forgot password message.
-   * @param loginName
+   * @param loginName loginName
    * @throws NoUserFoundWithGivenLoginNameException
    */
   void sendForgotPasswordMessage(final String loginName) throws NoUserFoundWithGivenLoginNameException;
@@ -60,15 +61,17 @@ public interface RegistrationService {
    * @param newPassword new password
    * @param resetPasswordToken reset password token
    * @throws NoUserFoundWithGivenLoginNameException
+   * @throws VerificationTokenInvalidException
    */
   void changePassword(final String loginName, final String newPassword, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException;
 
   /**
    * Return the user with the given loginName and resetPasswordToken
-   * @param loginName
-   * @param resetPasswordToken
+   * @param loginName loginName
+   * @param resetPasswordToken resetPasswordToken
    * @return User
    * @throws NoUserFoundWithGivenLoginNameException
+   * @throws VerificationTokenInvalidException
    */
   User getUserWithResetPasswordToken(final String loginName, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException;
 

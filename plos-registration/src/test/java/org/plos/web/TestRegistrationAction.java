@@ -11,83 +11,6 @@ import org.plos.registration.User;
  *
  */
 public class TestRegistrationAction extends BasePlosoneRegistrationTestCase {
-
-  public void testShouldSetUserAsVerified() throws Exception {
-    final String email = "viru-verifying@home.com";
-    final String password = "virupasswd";
-    final User beforeVerificationUser = getRegistrationService().createUser(email, password);
-
-    assertFalse(beforeVerificationUser.isVerified());
-    final String emailVerificationToken = beforeVerificationUser.getEmailVerificationToken();
-
-    assertNotNull(emailVerificationToken);
-    assertTrue(emailVerificationToken.length() > 0);
-
-    final ConfirmationAction confirmationAction = getConfirmationAction();
-    confirmationAction.setLoginName(email);
-    confirmationAction.setEmailVerificationToken(emailVerificationToken);
-    confirmationAction.execute();
-
-    assertTrue(confirmationAction.getMessages().isEmpty());
-    final User verifiedUser = getRegistrationService().getUserWithLoginName(email);
-    assertTrue(verifiedUser.isVerified());
-  }
-
-  public void testShouldNotVerifyUser() throws Exception {
-    final String email = "viru-verifying-another-time@home.com";
-    final User beforeVerificationUser = getRegistrationService().createUser(email, "virupasswd");
-
-    assertFalse(beforeVerificationUser.isVerified());
-    final String emailVerificationToken = beforeVerificationUser.getEmailVerificationToken();
-
-    assertNotNull(emailVerificationToken);
-    assertTrue(emailVerificationToken.length() > 0);
-
-    final ConfirmationAction confirmationAction = getConfirmationAction();
-    confirmationAction.setLoginName(email);
-    //change the verification token
-    confirmationAction.setEmailVerificationToken(emailVerificationToken+"11");
-    confirmationAction.execute();
-
-    assertFalse(confirmationAction.getMessages().isEmpty());
-    final User verifiedUser = getRegistrationService().getUserWithLoginName(email);
-    assertFalse(verifiedUser.isVerified());
-  }
-
-  public void testShouldGiveErrorMessageAsUserIsAlreadyVerified() throws Exception {
-    final String email = "viru-verifying-again@home.com";
-    final String password = "virupasswd";
-
-    createUser(email, password);
-    final User beforeVerificationUser = getRegistrationService().getUserWithLoginName(email);
-    assertFalse(beforeVerificationUser.isVerified());
-    final String emailVerificationToken = beforeVerificationUser.getEmailVerificationToken();
-
-    assertNotNull(emailVerificationToken);
-    assertTrue(emailVerificationToken.length() > 0);
-
-    final ConfirmationAction confirmationAction = getConfirmationAction();
-    confirmationAction.setLoginName(email);
-    confirmationAction.setEmailVerificationToken(emailVerificationToken);
-    confirmationAction.execute();
-
-    //try to verify the email address again
-    confirmationAction.execute();
-
-    assertFalse(confirmationAction.getMessages().isEmpty());
-    final User verifiedUser = getRegistrationService().getUserWithLoginName(email);
-    assertTrue(verifiedUser.isVerified());
-  }
-
-  private void createUser(String email, String password) throws Exception {
-    final RegisterAction registerAction = getRegistrationAction();
-    registerAction.setLoginName1(email);
-    registerAction.setLoginName2(email);
-    registerAction.setPassword1(password);
-    registerAction.setPassword2(password);
-    registerAction.execute();
-  }
-
   public void testShouldFailToAcceptForgotPasswordEmailAsItIsNotRegistered() throws Exception {
     final String email = "viru-forgot-password-not-registered@home.com";
 
@@ -178,6 +101,16 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTestCase {
     registerAction.setPassword2(password);
     registerAction.execute();
     assertTrue(registerAction.getFieldErrors().size() > 0);
+  }
+
+
+  private void createUser(String email, String password) throws Exception {
+    final RegisterAction registerAction = getRegistrationAction();
+    registerAction.setLoginName1(email);
+    registerAction.setLoginName2(email);
+    registerAction.setPassword1(password);
+    registerAction.setPassword2(password);
+    registerAction.execute();
   }
 
 }
