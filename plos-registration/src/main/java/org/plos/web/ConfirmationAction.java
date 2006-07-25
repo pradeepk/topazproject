@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- * Action for
+ * Action for verifying a user.
  */
 public class ConfirmationAction extends ActionSupport {
   private String emailVerificationToken;
@@ -46,7 +46,7 @@ public class ConfirmationAction extends ActionSupport {
       log.trace(message, e);
       return ERROR;
     } catch (final NoUserFoundWithGivenLoginNameException e) {
-      final String message = "No user found with given email:"+ emailVerificationToken+", email:" + loginName;
+      final String message = "No user found with given email:"+ loginName;
       messages.add(message);
       log.trace(message, e);
       return ERROR;
