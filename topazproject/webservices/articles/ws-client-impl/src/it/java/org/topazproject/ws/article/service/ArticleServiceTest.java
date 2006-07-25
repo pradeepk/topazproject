@@ -42,10 +42,33 @@ public class ArticleServiceTest extends TestCase {
   }
 
   private void basicArticleTest() throws RemoteException, IOException {
-    //service.delete("10.1371/journal.pbio.0020294", true);
+    try {
+      service.delete("10.1371/journal.pbio.0020294", true);
+    } catch (NoSuchIdException nsie) {
+      // ignore - this just means there wasn't any stale stuff left
+    }
+
     URL article = getClass().getResource("/test_article.zip");
     String doi = service.ingest(new DataHandler(article));
+    assertEquals("Wrong doi returned,", doi, "10.1371/journal.pbio.0020294");
+
+    boolean gotE = false;
+    try {
+      doi = service.ingest(new DataHandler(article));
+    } catch (DuplicateIdException die) {
+      gotE = true;
+    }
+    assertTrue("Failed to get expected duplicate-id exception", gotE);
+
     service.delete(doi, true);
+
+    gotE = false;
+    try {
+      service.delete(doi, true);
+    } catch (NoSuchIdException nsie) {
+      gotE = true;
+    }
+    assertTrue("Failed to get expected no-such-id exception", gotE);
   }
 
   private static byte[] loadURL(URL url) throws IOException {
