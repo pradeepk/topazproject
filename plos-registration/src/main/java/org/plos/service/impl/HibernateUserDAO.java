@@ -2,7 +2,7 @@
  * $Id$
  *
  */
-package org.plos.service;
+package org.plos.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -11,6 +11,8 @@ import org.hibernate.Session;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.plos.registration.User;
+import org.plos.service.UserDAO;
+import org.plos.service.DuplicateLoginNameException;
 import org.springframework.orm.hibernate3.HibernateCallback;
 import org.springframework.orm.hibernate3.support.HibernateDaoSupport;
 

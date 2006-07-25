@@ -2,10 +2,11 @@
  * $Id$
  *
  */
-package org.plos.service;
+package org.plos.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.service.RegistrationMessagingService;
 
 /**
  * Plos implementation of the messaging service.

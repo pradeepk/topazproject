@@ -30,17 +30,17 @@
     <property name="registrationService" ref="registrationService"/>
   </bean>
 
-  <bean id="persistenceService" class="org.plos.service.PlosPersistenceService">
+  <bean id="persistenceService" class="org.plos.service.impl.PlosPersistenceService">
     <property name="userDAO" ref="userDAO"/>
   </bean>
 
-  <bean id="userDAO" class="org.plos.service.HibernateUserDAO">
+  <bean id="userDAO" class="org.plos.service.impl.HibernateUserDAO">
     <property name="sessionFactory">
       <ref bean="registrationSessionFactory"/>
     </property>
   </bean>
 
-  <bean id="registrationService" class="org.plos.service.PlosRegistrationService">
+  <bean id="registrationService" class="org.plos.service.impl.PlosRegistrationService">
     <property name="userDAO" ref="userDAO"/>
     <property name="registrationMessagingService" ref="registrationMessagingService"/>
     <property name="passwordDigestService" ref="plosPasswordDigestService"/>
@@ -50,7 +50,7 @@
     <property name="algorithm" value="SHA-256"/>
   </bean>
 
-  <bean id="registrationMessagingService" class="org.plos.service.PlosRegistrationMessagingService"/>
+  <bean id="registrationMessagingService" class="org.plos.service.impl.PlosRegistrationMessagingService"/>
 
   <!--<bean id="User" class="org.plos.registration.UserImpl"></bean>-->
 

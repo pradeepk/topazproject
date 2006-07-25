@@ -2,7 +2,10 @@
  * $Id$
  *
  */
-package org.plos.service;
+package org.plos.service.impl;
+
+import org.plos.service.PersistenceService;
+import org.plos.service.UserDAO;
 
 /**
  * Plos implementation of the Persistence Service.

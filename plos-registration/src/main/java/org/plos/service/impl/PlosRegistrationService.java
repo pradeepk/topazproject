@@ -2,7 +2,7 @@
  * $Id$
  *
  */
-package org.plos.service;
+package org.plos.service.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -10,6 +10,15 @@ import org.plos.registration.User;
 import org.plos.registration.UserImpl;
 import org.plos.util.PasswordDigestService;
 import org.plos.util.TokenGenerator;
+import org.plos.service.RegistrationService;
+import org.plos.service.UserDAO;
+import org.plos.service.RegistrationMessagingService;
+import org.plos.service.UserAlreadyExistsException;
+import org.plos.service.VerificationTokenInvalidException;
+import org.plos.service.UserAlreadyVerifiedException;
+import org.plos.service.NoUserFoundWithGivenLoginNameException;
+import org.plos.service.PasswordInvalidException;
+import org.plos.service.UserNotVerifiedException;
 
 /**
  * Plos registration service implementation.
