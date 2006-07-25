@@ -7,13 +7,8 @@ package org.plos.registration;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.Table;
-import java.sql.Date;
+import javax.persistence.*;
+import java.sql.Timestamp;
 
 /**
  * Implementation for Plos Reistration User
@@ -39,11 +34,12 @@ public class UserImpl implements User {
   private boolean active;
   private String emailVerificationToken;
 
-// TODO:  @Column (nullable = false)
-  private Date createdOn;
+  @Column (insertable = false, updatable = false, columnDefinition = "timestamp DEFAULT now()")
+  private Timestamp createdOn;
 
-// TODO: @Column (nullable = false)
-  private Date updatedOn;
+  @Column (insertable = false, updatable = false,  columnDefinition = "timestamp DEFAULT now()")
+  @Version
+  private Timestamp updatedOn;
 
   private String resetPasswordToken;
 
@@ -162,16 +158,16 @@ public class UserImpl implements User {
    * @see org.plos.registration.User#getCreatedOn()
    */
   @Transactional(readOnly=true)
-  public Date getCreatedOn() {
+  public Timestamp getCreatedOn() {
     return createdOn;
   }
 
   /**
-   * @see User#setCreatedOn(java.sql.Date)
+   * @see User#setCreatedOn(java.sql.Timestamp)
    */
   // TODO: set the date
   @Transactional(propagation= Propagation.MANDATORY)
-  public void setCreatedOn(Date createdOn) {
+  public void setCreatedOn(final Timestamp createdOn) {
     this.createdOn = createdOn;
   }
 
@@ -179,16 +175,15 @@ public class UserImpl implements User {
    * @see org.plos.registration.User#getUpdatedOn()
    */
   @Transactional(readOnly=true)
-  public Date getUpdatedOn() {
+  public Timestamp getUpdatedOn() {
     return updatedOn;
   }
 
   /**
-   * @see User#setUpdatedOn(java.sql.Date)
+   * @see User#setUpdatedOn(java.sql.Timestamp)
    */
-  // TODO: set the date
   @Transactional(propagation= Propagation.MANDATORY)
-  public void setUpdatedOn(Date updatedOn) {
+  public void setUpdatedOn(final Timestamp updatedOn) {
     this.updatedOn = updatedOn;
   }
 

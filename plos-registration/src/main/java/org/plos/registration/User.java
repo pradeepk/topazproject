@@ -5,7 +5,7 @@
 
 package org.plos.registration;
 
-import java.sql.Date;
+import java.sql.Timestamp;
 
 /**
  * Interface for Plos Reistration User
@@ -32,15 +32,15 @@ public interface User {
 
   /**
     * Set the User Password
-    * @param password
+    * @param password password
     */
   void setPassword(String password);
 
   /**
     * Set the User to varified
-    * @param  verified
+    * @param  verified verified
     */
-  void setVerified(boolean verified);
+  void setVerified(final boolean verified);
 
   /**
    * Is the user verified
@@ -50,9 +50,9 @@ public interface User {
 
   /**
     * Set the User to active
-    * @param active
+    * @param active active
     */
-  void setActive(boolean active);
+  void setActive(final boolean active);
 
   /**
    * Is the user active
@@ -68,9 +68,9 @@ public interface User {
 
   /**
     * Set the User Id
-    * @param id
+    * @param id id
     */
-  void setId(String id);
+  void setId(final String id);
 
   /**
    * Get the Email Verification Token
@@ -80,7 +80,7 @@ public interface User {
 
   /**
     * Set the Email Verification Token
-    * @param emailVerificationToken
+    * @param emailVerificationToken emailVerificationToken
     */
   void setEmailVerificationToken(String emailVerificationToken);
 
@@ -88,25 +88,25 @@ public interface User {
    * Get the Date the User was created
    * @return User Creation Date
    */
-  Date getCreatedOn();
+  Timestamp getCreatedOn();
 
   /**
     * Set the Date the User was created
-    * @param createdOn
+    * @param createdOn createdOn
     */
-  void setCreatedOn(Date createdOn);
+  void setCreatedOn(final Timestamp createdOn);
 
   /**
    * Get the Date of last update
    * @return Date of last update
    */
-  Date getUpdatedOn();
+  Timestamp getUpdatedOn();
 
   /**
     * Set the Date of last update
-    * @param updatedOn
+    * @param updatedOn updatedOn
     */
-  void setUpdatedOn(Date updatedOn);
+  void setUpdatedOn(final Timestamp updatedOn);
 
   /**
    * Get the Reset Password Token
@@ -116,8 +116,8 @@ public interface User {
 
   /**
     * Set the Reset Password Token
-    * @param resetPasswordToken
+    * @param resetPasswordToken resetPasswordToken
     */
-  void setResetPasswordToken(String resetPasswordToken);
+  void setResetPasswordToken(final String resetPasswordToken);
 
 }
