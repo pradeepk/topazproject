@@ -186,13 +186,18 @@ public class Ingester {
 
     // create the fedora objects
     NodeList objs = objList.getElementsByTagName(OBJECT);
+    boolean[] objCreated = new boolean[1];
     int idx = 0;
     try {
       for (idx = 0; idx < objs.getLength(); idx++) {
         Element obj = (Element) objs.item(idx);
-        fedoraIngestOneObj(obj, t, zip, logMsg);
+        objCreated[0] = false;
+        fedoraIngestOneObj(obj, t, zip, logMsg, objCreated);
       }
     } catch (Exception e) {
+      if (!objCreated[0])
+        idx--;          // don't purge an existing object...
+
       // try to rollback the already completed stuff
       while (idx >= 0) {
         try {
@@ -217,7 +222,8 @@ public class Ingester {
     }
   }
 
-  private void fedoraIngestOneObj(Element obj, Transformer t, Zip zip, String logMsg)
+  private void fedoraIngestOneObj(Element obj, Transformer t, Zip zip, String logMsg,
+                                  boolean[] objCreated)
       throws DuplicateIdException, TransformerException, IOException, RemoteException {
     // create the foxml doc
     StringWriter sw = new StringWriter(200);
@@ -226,6 +232,7 @@ public class Ingester {
     // create the fedora object
     String pid = obj.getAttribute(O_PID_A);
     fedoraCreateObject(pid, sw.toString(), logMsg);
+    objCreated[0] = true;
 
     // add all (non-DC/non-RDF) datastreams
     NodeList dss = obj.getElementsByTagName(DATASTREAM);
