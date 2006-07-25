@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 
 @Entity
 @Table (name = "plos_user")
+//@Table (name = "plos_user", indexes = {@Index(name="idx", columnNames={"loginName"})})
 public class UserImpl implements User {
   // TODO: Make this field a GUID generated value like the tokens
   @Id @GeneratedValue(strategy= GenerationType.AUTO)
@@ -43,7 +44,6 @@ public class UserImpl implements User {
   @Column (insertable = false, updatable = false, columnDefinition = "timestamp DEFAULT now()")
   private Timestamp createdOn;
 
-  @Column (insertable = false, updatable = false,  columnDefinition = "timestamp DEFAULT now()")
   @Version
   private Timestamp updatedOn;
 
