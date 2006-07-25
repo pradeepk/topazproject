@@ -20,7 +20,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 
 /**
- *
+ * Action for
  */
 public class ConfirmationAction extends ActionSupport {
   private String emailVerificationToken;
