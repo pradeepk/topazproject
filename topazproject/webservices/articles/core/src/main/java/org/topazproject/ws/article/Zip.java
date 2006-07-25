@@ -29,10 +29,12 @@ public interface Zip {
    * Get the given entry's contents as an InputStream.
    * 
    * @param name the full pathname of the entry to retrieve
+   * @param size (output) must be an array of length &gt;= 1; on return the 0'th
+   *             element will contain the size of the contents, or -1 if unknown.
    * @return the entry's contents, or null if no entry by the given name exists
    * @throws IOException if an error occurred getting the contents
    */
-  public InputStream getStream(String name) throws IOException;
+  public InputStream getStream(String name, long[] size) throws IOException;
 
   /**
    * An implementation of {@link Zip Zip} where the zip archive is stored in a file.
@@ -54,9 +56,15 @@ public interface Zip {
       return zf.entries();
     }
 
-    public InputStream getStream(String name) throws IOException {
+    public InputStream getStream(String name, long[] size) throws IOException {
       ZipEntry ze = zf.getEntry(name);
-      return (ze != null) ? zf.getInputStream(ze) : null;
+      if (ze != null) {
+        size[0] = ze.getSize();
+        return zf.getInputStream(ze);
+      }
+
+      size[0] = -1;
+      return null;
     }
   }
 
@@ -96,16 +104,19 @@ public interface Zip {
       };
     }
 
-    public InputStream getStream(String name) throws IOException {
+    public InputStream getStream(String name, long[] size) throws IOException {
       final ZipInputStream zis = new ZipInputStream(getStream());
 
       ZipEntry ze;
       while ((ze = zis.getNextEntry()) != null) {
-        if (ze.getName().equals(name))
+        if (ze.getName().equals(name)) {
+          size[0] = ze.getSize();
           return zis;
+        }
       }
 
       zis.close();
+      size[0] = -1;
       return null;
     }
   }

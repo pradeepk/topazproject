@@ -246,7 +246,10 @@ public class Ingester {
 
   private void fedoraAddDatastream(String pid, Element ds, Zip zip, String logMsg)
       throws IOException, RemoteException {
-    String reLoc = uploader.upload(zip.getStream(ds.getAttribute(DS_FIL_A)));
+    long[] size = new long[1];
+    InputStream is = zip.getStream(ds.getAttribute(DS_FIL_A), size);
+    String reLoc = (size[0] >= 0) ? uploader.upload(is, size[0]) : uploader.upload(is);
+
     apim.addDatastream(pid, ds.getAttribute(DS_ID_A),
                        StringUtils.split(ds.getAttribute(DS_ALTID_A)),
                        ds.getAttribute(DS_LBL_A), true, ds.getAttribute(DS_MIME_A),
@@ -292,7 +295,7 @@ public class Ingester {
 
       try {
         URI uri = URI.create(base).resolve(href);
-        InputStream is = zip.getStream(uri.getPath().substring(1));
+        InputStream is = zip.getStream(uri.getPath().substring(1), new long[1]);
 
         if (log.isDebugEnabled())
           log.debug("resolved: uri='" + uri + "', found=" + (is != null));
