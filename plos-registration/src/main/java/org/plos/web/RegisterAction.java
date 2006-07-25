@@ -9,6 +9,7 @@ import com.opensymphony.xwork.validator.annotations.EmailValidator;
 import com.opensymphony.xwork.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
+import com.opensymphony.xwork.validator.annotations.StringLengthFieldValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
@@ -68,7 +69,8 @@ public class RegisterAction extends ActionSupport {
 
   @EmailValidator(type=ValidatorType.SIMPLE, fieldName="loginName1", message="You must enter a valid email")
   @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName1", message="You must enter an email address")
-  @FieldExpressionValidator(fieldName="loginName2", expression = "loginName1==loginName2 && loginName1.length < 256", message="Email addresses must match and field length must be less than 256")
+  @FieldExpressionValidator(fieldName="loginName2", expression = "loginName1==loginName2", message="Email addresses must match")
+  @StringLengthFieldValidator(fieldName="loginName1", maxLength = "256", message="Login name must be less than 256")
   /**
    * @return loginName1.
    * TODO Find a way to specify multiple FieldExpressionValidator's
@@ -101,7 +103,8 @@ public class RegisterAction extends ActionSupport {
   }
 
   @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="password1", message="You must enter a password")
-  @FieldExpressionValidator(fieldName="password2", expression = "password1==password2 && password1.length < 256", message="Passwords must match and field length must be less than 256")
+  @FieldExpressionValidator(fieldName="password2", expression = "password1==password2", message="Passwords must match")
+  @StringLengthFieldValidator(fieldName="password1", maxLength = "256", message="Password must be less than 256") 
   /**
    * Get password1
    */
