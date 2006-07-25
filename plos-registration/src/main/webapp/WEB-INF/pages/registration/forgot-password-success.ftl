@@ -15,7 +15,7 @@
                 <@ww.param name="loginName" value="user.loginName"/>
                 <@ww.param name="resetPasswordToken" value="user.resetPasswordToken"/>
               </@ww.url>
-              <@ww.a href="%{forgotPasswordEmailURL}"  >%{forgotPasswordEmailURL}</@ww.a>
+              <@ww.a href="%{forgotPasswordEmailURL}"  >${forgotPasswordEmailURL}</@ww.a>
             </p>
         </fieldset>
 

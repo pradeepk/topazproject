@@ -20,7 +20,7 @@
                   <@ww.param name="loginName" value="user.loginName"/>
                   <@ww.param name="emailVerificationToken" value="user.emailVerificationToken"/>
                 </@ww.url>
-                <@ww.a href="%{emailVerificationURL}"  >%{emailVerificationURL}</@ww.a>
+                <@ww.a href="%{emailVerificationURL}"  >${emailVerificationURL}</@ww.a>
             </p>
         </fieldset>
 
