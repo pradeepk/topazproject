@@ -8,6 +8,7 @@ import org.plos.service.RegistrationService;
 import org.plos.web.ConfirmationAction;
 import org.plos.web.ForgotPasswordAction;
 import org.plos.web.RegisterAction;
+import org.plos.web.ChangePasswordAction;
 import org.plos.util.PasswordDigestService;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
@@ -20,6 +21,7 @@ public abstract class BasePlosoneRegistrationTestCase extends AbstractDependency
   private ConfirmationAction confirmationAction;
   private RegisterAction registerAction;
   private PasswordDigestService passwordDigestService;
+  private ChangePasswordAction changePasswordAction;
 
   protected String[] getConfigLocations() {
     return new String[] {"nonJmxApplicationContext.xml"};
@@ -61,6 +63,14 @@ public abstract class BasePlosoneRegistrationTestCase extends AbstractDependency
 
   protected PasswordDigestService getPasswordDigestService() {
     return passwordDigestService;
+  }
+
+  protected ChangePasswordAction getChangePasswordAction() {
+    return changePasswordAction;
+  }
+
+  public void setChangePasswordAction(final ChangePasswordAction changePasswordAction) {
+    this.changePasswordAction = changePasswordAction;
   }
 
   protected final void createUser(final String email, final String password) throws Exception {

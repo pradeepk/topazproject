@@ -35,7 +35,7 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
   public String execute() throws Exception {
     try {
       registrationService
-              .changePassword(loginName, password1, resetPasswordToken);
+              .resetPassword(loginName, resetPasswordToken, password1);
     } catch (final ApplicationException e) {
       log.warn("Error changing password", e);
       addFieldError("password1",  e.getMessage());

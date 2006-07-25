@@ -26,6 +26,10 @@
     <property name="registrationService" ref="registrationService"/>
   </bean>
 
+  <bean id="changePasswordAction" class="org.plos.web.ChangePasswordAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
   <bean id="persistenceService" class="org.plos.service.PlosPersistenceService">
     <property name="userDAO" ref="userDAO"/>
   </bean>

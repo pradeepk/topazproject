@@ -14,6 +14,11 @@
                 </p>
 
                 <p>
+                    <@ww.url id="changePasswordURL" action="changePassword" />
+                    <@ww.a href="%{changePasswordURL}">Change Password</@ww.a>
+                </p>
+
+                <p>
                     <@ww.url id="forgotPasswordURL" action="forgotPassword" />
                     <@ww.a href="%{forgotPasswordURL}">Forgot Password</@ww.a>
                 </p>

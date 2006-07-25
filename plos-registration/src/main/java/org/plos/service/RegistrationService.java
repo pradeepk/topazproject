@@ -56,14 +56,25 @@ public interface RegistrationService {
   void sendForgotPasswordMessage(final String loginName) throws NoUserFoundWithGivenLoginNameException;
 
   /**
-   * Change password request.
+   * Change password.
+   * @param loginName loginName
+   * @param oldPassword oldPassword
+   * @param newPassword newPassword
+   * @throws PasswordInvalidException
+   * @throws NoUserFoundWithGivenLoginNameException
+   * @throws UserNotVerifiedException
+   */
+  void changePassword(final String loginName, final String oldPassword, final String newPassword) throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException, UserNotVerifiedException;
+
+  /**
+   * Reset the user's password to a new one.
    * @param loginName login name
-   * @param newPassword new password
    * @param resetPasswordToken reset password token
+   * @param newPassword new password
    * @throws NoUserFoundWithGivenLoginNameException
    * @throws VerificationTokenInvalidException
    */
-  void changePassword(final String loginName, final String newPassword, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException;
+  void resetPassword(final String loginName, final String resetPasswordToken, final String newPassword) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException;
 
   /**
    * Return the user with the given loginName and resetPasswordToken
@@ -74,5 +85,4 @@ public interface RegistrationService {
    * @throws VerificationTokenInvalidException
    */
   User getUserWithResetPasswordToken(final String loginName, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException;
-
 }

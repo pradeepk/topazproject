@@ -93,10 +93,7 @@ public class PlosRegistrationService implements RegistrationService {
    * @see RegistrationService#sendForgotPasswordMessage(String)
    */
   public void sendForgotPasswordMessage(final String loginName) throws NoUserFoundWithGivenLoginNameException {
-    final User user = getUserDAO().findUserWithLoginName(loginName);
-    if (null == user) {
-      throw new NoUserFoundWithGivenLoginNameException(loginName);
-    }
+    final User user = findExistingUser(loginName);
 
     user.setResetPasswordToken(TokenGenerator.getUniqueToken());
     saveUser(user);
@@ -108,9 +105,37 @@ public class PlosRegistrationService implements RegistrationService {
   }
 
   /**
-   * @see RegistrationService#changePassword(String, String, String)
+   * @see PlosRegistrationService#changePassword(String, String, String)
    */
-  public void changePassword(final String loginName, final String newPassword, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException {
+  public void changePassword(final String loginName, final String oldPassword, final String newPassword) throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException, UserNotVerifiedException {
+    final User user = findExistingUser(loginName);
+
+    if (user.isVerified()) {
+      final boolean validPassword = passwordDigestService.verifyPassword(oldPassword, user.getPassword());
+      if (validPassword) {
+        user.setPassword(passwordDigestService.getDigestPassword(newPassword));
+      } else {
+        throw new PasswordInvalidException(loginName, oldPassword);
+      }
+    } else {
+      throw new UserNotVerifiedException(loginName);
+    }
+
+    saveUser(user);
+  }
+
+  private User findExistingUser(String loginName) throws NoUserFoundWithGivenLoginNameException {
+    final User user = getUserDAO().findUserWithLoginName(loginName);
+    if (null == user) {
+      throw new NoUserFoundWithGivenLoginNameException(loginName);
+    }
+    return user;
+  }
+
+  /**
+   * @see RegistrationService#resetPassword(String, String, String)
+   */
+  public void resetPassword(final String loginName, final String resetPasswordToken, final String newPassword) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException {
     final User user = getUserWithResetPasswordToken(loginName, resetPasswordToken);
 
     user.setPassword(passwordDigestService.getDigestPassword(newPassword));
@@ -122,11 +147,7 @@ public class PlosRegistrationService implements RegistrationService {
    * @see RegistrationService#getUserWithResetPasswordToken(String, String)
    */
   public User getUserWithResetPasswordToken(final String loginName, final String resetPasswordToken) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException {
-    final User user = getUserDAO().findUserWithLoginName(loginName);
-
-    if (null == user) {
-      throw new NoUserFoundWithGivenLoginNameException(loginName);
-    }
+    final User user = findExistingUser(loginName);
 
     if (user.getResetPasswordToken().equals(resetPasswordToken)) {
       return user;

@@ -5,6 +5,7 @@ package org.plos.web;
 
 import org.plos.registration.User;
 import org.plos.BasePlosoneRegistrationTestCase;
+import com.opensymphony.xwork.Action;
 
 public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
   public void testShouldFailToAcceptForgotPasswordEmailAsItIsNotRegistered() throws Exception {
@@ -12,7 +13,7 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
 
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
-    forgotPasswordAction.execute();
+    assertEquals(Action.ERROR, forgotPasswordAction.execute());
     assertFalse(forgotPasswordAction.getMessages().isEmpty());
   }
 
@@ -26,6 +27,7 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
     forgotPasswordAction.execute();
+    assertEquals(Action.SUCCESS, forgotPasswordAction.execute());
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
   }
 
@@ -37,7 +39,7 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
 
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
-    forgotPasswordAction.execute();
+    assertEquals(Action.SUCCESS, forgotPasswordAction.execute());
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
   }
 
@@ -50,12 +52,13 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     final ConfirmationAction confirmationAction = getConfirmationAction();
     confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(beforeVerificationUser.getEmailVerificationToken());
-    confirmationAction.execute();
+
+    assertEquals(Action.SUCCESS, confirmationAction.execute());
     assertTrue(confirmationAction.getMessages().isEmpty());
 
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
-    forgotPasswordAction.execute();
+    assertEquals(Action.SUCCESS, forgotPasswordAction.execute());
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
   }
 
@@ -68,12 +71,12 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     final ConfirmationAction confirmationAction = getConfirmationAction();
     confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(beforeVerificationUser.getEmailVerificationToken());
-    confirmationAction.execute();
+    assertEquals(Action.SUCCESS, confirmationAction.execute());
     assertTrue(confirmationAction.getMessages().isEmpty());
 
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
-    forgotPasswordAction.execute();
+    assertEquals(Action.SUCCESS, forgotPasswordAction.execute());
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
 
     final User forgotPasswordUser = getRegistrationService().getUserWithLoginName(email);

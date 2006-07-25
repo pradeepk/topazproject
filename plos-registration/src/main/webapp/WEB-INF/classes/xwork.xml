@@ -40,7 +40,6 @@
         <result name="success" type="freemarker">/WEB-INF/pages/registration/forgot-password-success.ftl</result>
       </action>
 
-
       <action name="forgotPasswordChangePasswordShow" class="org.plos.web.ForgotPasswordChangePasswordAction" method="validateRequest">
         <interceptor-ref name="validationWorkflowStack"/>
         <interceptor-ref name="timer"/>
@@ -53,7 +52,17 @@
         <interceptor-ref name="timer"/>
         <result name="input" type="freemarker">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
         <result name="error" type="freemarker">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
-        <result name="success" type="freemarker">/WEB-INF/pages/registration/forgot-password-change-password-success.ftl</result>
+        <result name="success" type="freemarker">/WEB-INF/pages/registration/change-password-success.ftl</result>
+      </action>
+
+      <action name="changePassword" class="org.plos.web.ForwardAction">
+        <result type="freemarker">/WEB-INF/pages/registration/change-password.ftl</result>
+      </action>
+
+      <action name="changePasswordSubmit" class="org.plos.web.ChangePasswordAction">
+        <result name="input" type="freemarker">/WEB-INF/pages/registration/change-password.ftl</result>
+        <result name="error" type="freemarker">/WEB-INF/pages/registration/change-password.ftl</result>
+        <result name="success" type="freemarker">/WEB-INF/pages/registration/change-password-success.ftl</result>
       </action>
 
     </package>
