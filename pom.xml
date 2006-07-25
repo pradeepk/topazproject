@@ -259,6 +259,46 @@
       </build>
 
     </profile>
+
+    <!-- it-startenv: Start and stop fedora/ecqs before and after integration testing -->
+    
+    <profile>
+      <id>it-startenv</id>
+      <build>
+        <plugins>
+
+          <!-- Run ant-tasks:ecqs/fedora-start/stop around integration tests -->
+          <plugin>
+            <groupId>org.topazproject.plugins</groupId>
+            <artifactId>ant-tasks</artifactId>
+            <executions>
+              <execution>
+                <id>it-startenv-exe</id>
+                <phase>pre-integration-test</phase>
+                <goals>
+                  <goal>ecqs-start</goal>
+                  <goal>fedora-start</goal>
+                </goals>
+                <configuration>
+                  <INSTALL>true</INSTALL>  <!-- Install before starting -->
+                  <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
+                </configuration>
+              </execution>
+              <execution>
+                <id>it-stopenv-exe</id>
+                <phase>post-integration-test</phase>
+                <goals>
+                  <goal>ecqs-stop</goal>
+                  <goal>fedora-stop</goal>
+                </goals>
+              </execution>
+            </executions>
+          </plugin>
+
+        </plugins>
+      </build>
+    </profile>
+    
   </profiles>
         
 </project>
