@@ -85,25 +85,25 @@ public interface User {
   void setEmailVerificationToken(String emailVerificationToken);
 
   /**
-   * Get the Date the User was created
-   * @return User Creation Date
+   * Get the Timestamp the User was created
+   * @return Timestamp when the user was created
    */
   Timestamp getCreatedOn();
 
   /**
-    * Set the Date the User was created
+    * Set the Timestamp the User was created
     * @param createdOn createdOn
     */
   void setCreatedOn(final Timestamp createdOn);
 
   /**
-   * Get the Date of last update
-   * @return Date of last update
+   * Get the Timestamp of last update
+   * @return Timestamp of last update
    */
   Timestamp getUpdatedOn();
 
   /**
-    * Set the Date of last update
+    * Set the Timestamp of last update
     * @param updatedOn updatedOn
     */
   void setUpdatedOn(final Timestamp updatedOn);
