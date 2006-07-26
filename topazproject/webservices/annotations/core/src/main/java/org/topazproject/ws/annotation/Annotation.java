@@ -23,7 +23,7 @@ public interface Annotation {
    *        <li><code>http://www.w3.org/2000/10/annotationType#Annotation</code></li> </ul>
    *        Defaults to <code>http://www.w3.org/2000/10/annotationType#Annotation</code>
    * @param annotates the resource to which this annotation applies. Defined by
-   *        <code>http://www.w3.org/2000/10/annotation-ns#annotation</code> and the inverse
+   *        <code>http://www.w3.org/2000/10/annotation-ns#annotates</code> and the inverse
    *        <code>http://www.w3.org/2000/10/annotation-ns#hasAnnotation</code>. Must be a valid
    *        <code>URI</code>.
    * @param context the context within the resource named in <code>annotates</code> to which this
