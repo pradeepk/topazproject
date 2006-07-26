@@ -23,7 +23,7 @@ import org.springframework.jmx.export.annotation.ManagedResource;
 
 public class RegistrationManager implements RegistrationManagerMBean
 {
-  private static final Log logger = LogFactory.getLog(RegistrationManager.class);
+  private static final Log log= LogFactory.getLog(RegistrationManager.class);
 
   private UserDAO userDAO;
 
@@ -45,12 +45,14 @@ public class RegistrationManager implements RegistrationManagerMBean
 
     try {
       User user = userDAO.findUserWithLoginName(userName);
-      if (null == user)  return "User " + userName + "NOT found";
+      if (null == user)  
+        return "User " + userName + "NOT found";
       userDAO.delete(user);
     }
     catch (Exception e) {
-      logger.error(e.toString());
-      e.printStackTrace();
+      if (log.isInfoEnabled()){
+        log.info("Could not delete user: " + userName, e);
+      }
       return "Cannot delete " + userName;
     }
     return "User " + userName + " deleted";
@@ -71,8 +73,9 @@ public class RegistrationManager implements RegistrationManagerMBean
       userDAO.saveOrUpdate(user);
     }
     catch (Exception e) {
-      logger.error(e.toString());
-      e.printStackTrace();
+      if (log.isInfoEnabled()) {
+        log.info("Could not change password for user: " + userName, e);
+      }
       return userName + "Error" + e.toString();
     }
     return "Password for user " + userName + " succesfuly changed";
@@ -113,8 +116,9 @@ public class RegistrationManager implements RegistrationManagerMBean
       userDAO.saveOrUpdate(user);
     }
     catch (Exception e) {
-      logger.error(e.toString());
-      e.printStackTrace();
+      if (log.isInfoEnabled()){
+        log.info("Could not set Active flag for user: " + userName, e);
+      }
       return "Activeflag operation FAILED for User " + userName + " ERROR: " + e.toString();
     }
     return "User " + userName + " succesfuly activated/deactivated";

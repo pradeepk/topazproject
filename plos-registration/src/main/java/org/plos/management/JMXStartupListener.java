@@ -6,7 +6,8 @@ package org.plos.management;
 
 import com.sun.jdmk.comm.HtmlAdaptorServer;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
@@ -28,31 +29,31 @@ import javax.servlet.ServletContextListener;
 public class JMXStartupListener implements ServletContextListener
 {
 
-    private static Logger logger = Logger.getLogger("org.plos");
+    private static final Log log = LogFactory.getLog(JMXStartupListener.class);
     private MBeanServer server;
 
     private HtmlAdaptorServer htmlAdaptor;
 
     public void contextDestroyed(ServletContextEvent arg0)
     {
-        logger.debug("STOPPING MBEAN Server");
+        log.debug("STOPPING MBEAN Server");
         htmlAdaptor.stop();
     }
 
 
   public void contextInitialized(ServletContextEvent arg0) {
-    logger.debug("STARTING MBEAN Server");
+    log.debug("STARTING MBEAN Server");
     server = MBeanServerFactory.createMBeanServer("RegistrationManager");
 
     ArrayList servers = MBeanServerFactory.findMBeanServer(null);
     if (servers == null) {
-      System.out.println("NO MBean Server found, creating one");
+      log.debug ("NO MBean Server found, creating one");
       //TODO log warning    check this probably the same thing
       server = ManagementFactory.getPlatformMBeanServer();
     } else {
       server = (MBeanServer) servers.get(0);
     }
-    System.out.println("MBEAN Server" + server.toString());
+    log.debug("MBEAN Server" + server.toString());
 
 
     try {
@@ -63,8 +64,7 @@ public class JMXStartupListener implements ServletContextListener
           startHtmlAdaptor();
 
         } catch (Exception e) {
-          logger.error("Cannot start JMX Listener " + e.toString());
-          System.out.println(("Cannot start JMX Listener " + e.toString()));
+          log.error("Cannot start JMX Listener", e);
         }
     }
 
