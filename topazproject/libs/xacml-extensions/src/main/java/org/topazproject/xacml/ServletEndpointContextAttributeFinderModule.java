@@ -20,7 +20,6 @@ import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.attr.AttributeDesignator;
 import com.sun.xacml.attr.AttributeValue;
 import com.sun.xacml.attr.BagAttribute;
-import com.sun.xacml.attr.StringAttribute;
 import com.sun.xacml.cond.EvaluationResult;
 import com.sun.xacml.finder.AttributeFinderModule;
 
@@ -30,9 +29,6 @@ import com.sun.xacml.finder.AttributeFinderModule;
  * @author Pradeep Krishnan
  */
 public class ServletEndpointContextAttributeFinderModule extends AttributeFinderModule {
-  // Set up URIs for the XACML Attribute Types that we need
-  public static final URI STRING_TYPE_URI = URI.create(StringAttribute.identifier);
-
   // Default Subject Category
   public static final URI SUBJECT_CATEGORY_DEFAULT_URI =
     URI.create(AttributeDesignator.SUBJECT_CATEGORY_DEFAULT);
@@ -185,14 +181,12 @@ public class ServletEndpointContextAttributeFinderModule extends AttributeFinder
       if (!SUBJECT_ID_URI.equals(id))
         return null;
 
-      if (!STRING_TYPE_URI.equals(type))
-        throw new UnknownIdentifierException("Expecting type " + STRING_TYPE_URI + " for " + id
-                                             + ". Type used in policy is " + type);
-
       Principal principal = context.getUserPrincipal();
-      String    name = (principal == null) ? null : principal.getName();
 
-      return (name == null) ? null : new StringAttribute(name);
+      if (principal == null)
+        return null;
+
+      return Util.toAttributeValue(type, principal.getName());
     }
   }
 
