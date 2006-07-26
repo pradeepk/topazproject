@@ -11,6 +11,7 @@ package org.topazproject.ws.pap.service;
 import java.io.IOException;
 import java.net.URI;
 import java.rmi.RemoteException;
+import javax.servlet.http.HttpSession;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
@@ -20,6 +21,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.authentication.ProtectedService;
+import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.pap.PreferencesImpl;
 import org.topazproject.ws.pap.PreferencesPEP;
@@ -53,10 +56,12 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
       if (!conf.containsKey("services.itql.uri"))
         throw new ConfigurationException("missing key 'topaz.services.itql.uri'");
 
-      final URI mulgara = new URI(conf.getString("services.itql.uri"));
+      HttpSession      session  = ((ServletEndpointContext) context).getHttpSession();
+      Configuration    itqlConf = conf.subset("services.itql");
+      ProtectedService itqlSvc  = ProtectedServiceFactory.createService(itqlConf, session);
 
       // create the impl
-      impl = new PreferencesImpl(mulgara, pep);
+      impl = new PreferencesImpl(itqlSvc, pep);
     } catch (Exception e) {
       log.error("Failed to initialize PreferencesImpl.", e);
       throw new ServiceException(e);

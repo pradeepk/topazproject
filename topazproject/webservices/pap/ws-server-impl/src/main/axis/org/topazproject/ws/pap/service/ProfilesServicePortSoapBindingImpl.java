@@ -11,6 +11,7 @@ package org.topazproject.ws.pap.service;
 import java.io.IOException;
 import java.net.URI;
 import java.rmi.RemoteException;
+import javax.servlet.http.HttpSession;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
@@ -20,6 +21,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.authentication.ProtectedService;
+import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.pap.ProfilesImpl;
 import org.topazproject.ws.pap.ProfilesPEP;
@@ -53,13 +56,14 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
       if (!conf.containsKey("services.itql.uri"))
         throw new ConfigurationException("missing key 'topaz.services.itql.uri'");
 
-      final URI fedora = new URI(conf.getString("services.fedora.uri"));
-      final String username = conf.getString("services.fedora.userName", null);
-      final String password = conf.getString("services.fedora.password", null);
-      final URI mulgara = new URI(conf.getString("services.itql.uri"));
+      HttpSession      session   = ((ServletEndpointContext) context).getHttpSession();
+      Configuration    itqlConf  = conf.subset("services.itql");
+      Configuration    fdraConf  = conf.subset("services.fedora");
+      ProtectedService itqlSvc   = ProtectedServiceFactory.createService(itqlConf, session);
+      ProtectedService fedoraSvc = ProtectedServiceFactory.createService(fdraConf, session);
 
       // create the impl
-      impl = new ProfilesImpl(mulgara, fedora, username, password, pep);
+      impl = new ProfilesImpl(itqlSvc, fedoraSvc, pep);
     } catch (Exception e) {
       log.error("Failed to initialize ProfilesImpl.", e);
       throw new ServiceException(e);
