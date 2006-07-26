@@ -74,6 +74,7 @@ public class TestPasswordDigestService extends BasePlosoneRegistrationTestCase {
 //    }
 //  }
 
+  //TODO move this test to the right location
   public void testUserPasswdSavedInDatabaseShouldBeDifferentFromWhatUserEntered() throws UserAlreadyExistsException {
     final String email = "viru-verifying-for-password-digest@home.com";
     final String password = "virupasswd";
