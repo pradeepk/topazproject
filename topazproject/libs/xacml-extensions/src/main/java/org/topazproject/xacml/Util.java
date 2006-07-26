@@ -15,8 +15,8 @@ import javax.xml.rpc.server.ServletEndpointContext;
 import org.topazproject.configuration.ConfigurationStore;
 
 import com.sun.xacml.EvaluationCtx;
-import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
+import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.attr.AttributeFactory;
 import com.sun.xacml.attr.AttributeValue;
@@ -45,14 +45,13 @@ public class Util {
   public static final URI ACTION_ID = URI.create("urn:oasis:names:tc:xacml:1.0:action:action-id");
 
   /**
-   * The special value for when looking up a PDP in the config to indicate the default PDP.
-   * Example config entry:
+   * The special value for when looking up a PDP in the config to indicate the default PDP. Example
+   * config entry:
    * <pre>
    *   topaz.annotations.pdpName={@value}
    * </pre>
    */
   public static final String SN_DEFAULT_PDP = "_default_";
-
 
   /**
    * Creates a set of action attributes for use in a XACML request.
@@ -171,30 +170,37 @@ public class Util {
    * web-server context. The only subject attribute we know of is the JAX-RPC end point context.
    *
    * @param context the web-service context
+   *
    * @return the subject attributes
    */
   public static Set createSubjAttrs(ServletEndpointContext context) {
-    Attribute attr  = new Attribute(ServletEndpointContextAttribute.ID, null, null,
-                                    new ServletEndpointContextAttribute(context));
-    return Collections.singleton(new Subject(Collections.singleton(attr)));
+    Attribute attr =
+      new Attribute(ServletEndpointContextAttribute.ID, null, null,
+                    new ServletEndpointContextAttribute(context));
+
+    return Collections.singleton(new Subject(ServletEndpointContextAttribute.CATEGORY,
+                                             Collections.singleton(attr)));
   }
 
-  /** 
-   * Look up the PDP for the given service. 
-   * 
-   * @param context  the web-service context; used to locate the PDP configuration
-   * @param pdpProp  the name of config property defining name of the PDP configuration to use;
-   *                 the value must be the name of valid PDP configuration, or the special value
-   *                 {@link #SN_DEFAULT_PDP SN_DEFAULT_PDP} to indicate the default PDP config.
+  /**
+   * Look up the PDP for the given service.
+   *
+   * @param context the web-service context; used to locate the PDP configuration
+   * @param pdpProp the name of config property defining name of the PDP configuration to use; the
+   *        value must be the name of valid PDP configuration, or the special value {@link
+   *        #SN_DEFAULT_PDP SN_DEFAULT_PDP} to indicate the default PDP config.
+   *
    * @return the PDP
+   *
    * @throws IOException on error in accessing the PDP config file
    * @throws ParsingException on error in parsing the PDP config file
    * @throws UnknownIdentifierException if no config entry named <var>pdpProp</var> is found or if
-   *                                    the entry's value does not identify a valid PDP config
+   *         the entry's value does not identify a valid PDP config
    */
   public static PDP lookupPDP(ServletEndpointContext context, String pdpProp)
-      throws IOException, ParsingException, UnknownIdentifierException {
+                       throws IOException, ParsingException, UnknownIdentifierException {
     String pdpName = ConfigurationStore.getInstance().getConfiguration().getString(pdpProp, null);
+
     if (pdpName == null)
       throw new UnknownIdentifierException("No config entry named '" + pdpProp + "' found");
 

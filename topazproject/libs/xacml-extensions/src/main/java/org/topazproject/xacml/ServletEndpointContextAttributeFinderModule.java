@@ -92,7 +92,8 @@ public class ServletEndpointContextAttributeFinderModule extends AttributeFinder
     // Get the JAX-RPC context.
     EvaluationResult result =
       context.getSubjectAttribute(ServletEndpointContextAttribute.TYPE,
-                                  ServletEndpointContextAttribute.ID, null);
+                                  ServletEndpointContextAttribute.ID,
+                                  ServletEndpointContextAttribute.CATEGORY);
 
     // Abort policy evaluation if there is a failure in look up.
     if (result.indeterminate())

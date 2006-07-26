@@ -21,9 +21,16 @@ public class ServletEndpointContextAttribute extends AttributeValue {
   public static final URI TYPE = URI.create(ServletEndpointContext.class.getName());
 
   /**
+   * The category (subject-category) of this AttributeValue.
+   */
+  public static final URI CATEGORY = TYPE;
+
+  /**
    * A convenient id for use by attribute finder modules.
    */
-  public static final URI        ID    = TYPE;
+  public static final URI ID = TYPE;
+
+  //
   private ServletEndpointContext value;
 
   /**
