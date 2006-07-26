@@ -4,13 +4,13 @@
  */
 package org.plos.registration;
 
+import org.hibernate.annotations.Index;
+import org.plos.util.TokenGenerator;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Version;
@@ -22,10 +22,8 @@ import java.sql.Timestamp;
 
 @Entity
 @Table (name = "plos_user")
-//@Table (name = "plos_user", indexes = {@Index(name="idx", columnNames={"loginName"})})
 public class UserImpl implements User {
-  // TODO: Make this field a GUID generated value like the tokens
-  @Id @GeneratedValue(strategy= GenerationType.AUTO)
+  @Id
   private String id;
 
   @Column  (unique = true, length = 256)
@@ -61,12 +59,14 @@ public class UserImpl implements User {
   public UserImpl(final String loginName, final String password) {
     this.loginName = loginName;
     this.password = password;
+    this.id = TokenGenerator.getUniqueToken();
   }
 
   /**
    * @see org.plos.registration.User#getLoginName()
    */
   @Transactional(readOnly=true)
+  @Index(name="login_name_idx") 
   public String getLoginName() {
     return loginName;
   }
