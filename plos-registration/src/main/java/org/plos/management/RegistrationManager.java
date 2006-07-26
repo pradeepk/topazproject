@@ -1,6 +1,7 @@
-/* $HeadURL::                                                                            $
- * $Id$
- *
+/*
+ * $HeadURL::                                                                            $ $Id:
+ * RegistrationManager.java 310 2006-07-26 00:51:32Z stevec $
+ * 
  */
 package org.plos.management;
 
@@ -14,24 +15,22 @@ import org.springframework.jmx.export.annotation.ManagedOperationParameters;
 import org.springframework.jmx.export.annotation.ManagedResource;
 
 /**
- *  The RegistrationManager is a JMX Bean that allows management of the Plos registration
+ * The RegistrationManager is a JMX Bean that allows management of the Plos registration
  */
 
-@ManagedResource(objectName = "bean:name=RegistrationManager", description = "Registration Manager", log = true,
-        logFile = "jmx.log", currencyTimeLimit = 15, persistPolicy = "OnUpdate", persistPeriod = 200,
-        persistLocation = "foo", persistName = "bar")
-
-public class RegistrationManager implements RegistrationManagerMBean
-{
-  private static final Log log= LogFactory.getLog(RegistrationManager.class);
+@ManagedResource(objectName = "bean:name=RegistrationManager", description = "Registration Manager",
+                log = true, logFile = "jmx.log", currencyTimeLimit = 15, persistPolicy = "OnUpdate", 
+                 persistPeriod = 200, persistLocation = "foo", persistName = "bar")
+public class RegistrationManager implements RegistrationManagerMBean {
+  private static final Log log = LogFactory.getLog(RegistrationManager.class);
 
   private UserDAO userDAO;
 
   /**
-    * Set the seesionFactory, used via Spring injection
-    *
-    * @param userDAO
-    */
+   * Set the seesionFactory, used via Spring injection
+   * 
+   * @param userDAO
+   */
   public void setUserDAO(final UserDAO userDAO) {
     this.userDAO = userDAO;
   }
@@ -40,17 +39,16 @@ public class RegistrationManager implements RegistrationManagerMBean
    * @see RegistrationManagerMBean#deleteUser(String)
    */
   @ManagedOperation(description = "Delete User")
-  @ManagedOperationParameters({@ManagedOperationParameter(name = "userName", description = "User Name")})
+  @ManagedOperationParameters( { @ManagedOperationParameter(name = "userName", description = "User Name") })
   public String deleteUser(String userName) {
 
     try {
       User user = userDAO.findUserWithLoginName(userName);
-      if (null == user)  
+      if (null == user)
         return "User " + userName + "NOT found";
       userDAO.delete(user);
-    }
-    catch (Exception e) {
-      if (log.isInfoEnabled()){
+    } catch (Exception e) {
+      if (log.isInfoEnabled()) {
         log.info("Could not delete user: " + userName, e);
       }
       return "Cannot delete " + userName;
@@ -63,16 +61,16 @@ public class RegistrationManager implements RegistrationManagerMBean
    */
 
   @ManagedOperation(description = "Change User Password")
-  @ManagedOperationParameters({@ManagedOperationParameter(name = "userName", description = "User Name")})
+  @ManagedOperationParameters( { @ManagedOperationParameter(name = "userName", description = "User Name") })
   public String changeUserPassword(String userName, String password) {
 
     try {
       User user = userDAO.findUserWithLoginName(userName);
-      if (null == user)  return "User " + userName + "NOT found";
+      if (null == user)
+        return "User " + userName + "NOT found";
       user.setPassword(password);
       userDAO.saveOrUpdate(user);
-    }
-    catch (Exception e) {
+    } catch (Exception e) {
       if (log.isInfoEnabled()) {
         log.info("Could not change password for user: " + userName, e);
       }
@@ -81,42 +79,40 @@ public class RegistrationManager implements RegistrationManagerMBean
     return "Password for user " + userName + " succesfuly changed";
   }
 
-
   /**
    * @see RegistrationManagerMBean#deactivateUser(String)
    */
 
   @ManagedOperation(description = "Deactivate User")
-  @ManagedOperationParameters({@ManagedOperationParameter(name = "userName", description = "User Name")})
+  @ManagedOperationParameters( { @ManagedOperationParameter(name = "userName", description = "User Name") })
   public String deactivateUser(String userName) {
     return setActiveFlag(userName, false);
   }
-
 
   /**
    * @see RegistrationManagerMBean#activateUser(String)
    */
 
   @ManagedOperation(description = "Activate User")
-  @ManagedOperationParameters({@ManagedOperationParameter(name = "userName", description = "User Name")})
+  @ManagedOperationParameters( { @ManagedOperationParameter(name = "userName", description = "User Name") })
   public String activateUser(String userName) {
     return setActiveFlag(userName, true);
   }
 
   //
-  //  Private Methods
+  // Private Methods
   //
 
   private String setActiveFlag(String userName, boolean flag) {
     try {
       User user = userDAO.findUserWithLoginName(userName);
-      if (null == user)  return "User " + userName + "NOT found";
+      if (null == user)
+        return "User " + userName + "NOT found";
       user.setVerified(flag);
       user.setActive(flag);
       userDAO.saveOrUpdate(user);
-    }
-    catch (Exception e) {
-      if (log.isInfoEnabled()){
+    } catch (Exception e) {
+      if (log.isInfoEnabled()) {
         log.info("Could not set Active flag for user: " + userName, e);
       }
       return "Activeflag operation FAILED for User " + userName + " ERROR: " + e.toString();
@@ -126,8 +122,3 @@ public class RegistrationManager implements RegistrationManagerMBean
   }
 
 }
-
-
-
-
-
