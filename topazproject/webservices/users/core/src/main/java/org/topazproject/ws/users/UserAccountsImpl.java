@@ -39,7 +39,7 @@ import org.topazproject.mulgara.itql.ItqlHelper;
  *
  * @author Ronald Tschalär
  */
-public class UserAccountsImpl implements UserAccounts {
+public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   private static final Log    log            = LogFactory.getLog(UserAccountsImpl.class);
 
   private static final String FOAF_URI       = "http://xmlns.com/foaf/0.1/";
@@ -91,6 +91,23 @@ public class UserAccountsImpl implements UserAccounts {
   static {
     aliases = ItqlHelper.getDefaultAliases();
     aliases.put("foaf", FOAF_URI);
+  }
+
+  /** 
+   * Create a new user lookup instance. <em>Only use this if all you intend to use is the
+   * {@link UserAccountLookup UserAccountLookup} interface.</em>
+   *
+   * @param itql the mulgara itql-service
+   * @throws IOException if an error occurred initializing the itql service
+   */
+  public UserAccountsImpl(ItqlHelper itql) throws IOException {
+    this.itql    = itql;
+    this.apim    = null;
+    this.pep     = null;
+    this.baseURI = null;
+
+    itql.getAliases().putAll(aliases);
+    itql.doUpdate("create " + MODEL + ";");
   }
 
   /** 
@@ -296,6 +313,10 @@ public class UserAccountsImpl implements UserAccounts {
       throw new Error("Impossible...", nsie);   // can't happen
     }
 
+    return lookUpUserByAuthIdNoAC(authId);
+  }
+
+  public String lookUpUserByAuthIdNoAC(String authId) throws RemoteException {
     if (log.isDebugEnabled())
       log.debug("Looking up user for auth-id '" + authId + "'");
 

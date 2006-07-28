@@ -22,7 +22,7 @@ import java.rmi.RemoteException;
  *
  * @author Ronald Tschalär
  */
-public interface UserAccounts extends UserAccountLookup {
+public interface UserAccounts {
   /** 
    * Create a new user account and associate a single authentication id with it.
    * 
@@ -64,4 +64,13 @@ public interface UserAccounts extends UserAccountLookup {
    */
   public void setAuthenticationIds(String userId, String[] authIds)
       throws NoSuchIdException, RemoteException;
+
+  /** 
+   * Look up a user-id given an authentication id.
+   * 
+   * @param authId the user's authentication id
+   * @return the user's internal id, or null if not found
+   * @throws RemoteException if some lookup error occured
+   */
+  public String lookUpUserByAuthId(String authId) throws RemoteException;
 }
