@@ -126,6 +126,8 @@
     <topazproject.install.dir>${user.home}/topazproject-install</topazproject.install.dir>
     <maven.compiler.source>1.4</maven.compiler.source>
     <maven.compiler.target>1.4</maven.compiler.target>
+    <!-- aggregate some documentation - javadocs & jxr -->
+    <aggregate>true</aggregate>
   </properties>
 
   <!-- Profiles Section: Define custom profiles here -->
@@ -196,6 +198,24 @@
                 <goals><goal>test</goal></goals>
                 <configuration>
                   <skip>false</skip><!-- instead, run the tests in the integration-test phase -->
+                </configuration>
+              </execution>
+            </executions>
+          </plugin>
+
+          <!-- Blow away the target/test-classes directory so non it-helper builds don't
+               get confused. (Would be better to build in it-classes (or move classes there
+               when testing, but maven is so f**king broken as to make that impossible). -->
+          <plugin>
+            <artifactId>maven-antrun-plugin</artifactId>
+            <executions>
+              <execution>
+                <phase>post-integration-test</phase>
+                <goals><goal>run</goal></goals>
+                <configuration>
+                  <tasks>
+                    <delete dir="${project.build.directory}/test-classes"/>
+                  </tasks>
                 </configuration>
               </execution>
             </executions>
