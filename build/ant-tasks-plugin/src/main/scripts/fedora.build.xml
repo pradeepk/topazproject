@@ -222,6 +222,17 @@
 
     <delete dir="${TOMCAT_HOME}/web-xml-temp"/>
 
+    <!-- Upgrade Kowari to 1.1.0-pre2 -->
+    <delete file="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib/driver-1.0.5.jar"/>
+    <delete file="${TOMCAT_HOME}/common/lib/jrdf-0.3.3.jar"/>
+
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true">
+      <fileset dir="server/fedora-lib"/>
+    </copy>
+    <copy todir="${TOMCAT_HOME}/common/lib" overwrite="true">
+      <fileset dir="server/common-lib"/>
+    </copy>
+
     <!-- enable SOAP access to Kowari/Mulgara -->
     <xslt basedir="${TOMCAT_HOME}/webapps/fedora/WEB-INF" destdir="${TOMCAT_HOME}/mulgara-temp"
       includes="web.xml" style="mulgara/web-xml-convert.xslt" extension=".xml"/>
