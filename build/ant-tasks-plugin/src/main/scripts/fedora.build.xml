@@ -233,6 +233,9 @@
       <fileset dir="server/common-lib"/>
     </copy>
 
+    <jar destfile="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib/trippi.jar" update="true"
+         basedir="trippi" includes="**" filesonly="true"/>
+
     <!-- enable SOAP access to Kowari/Mulgara -->
     <xslt basedir="${TOMCAT_HOME}/webapps/fedora/WEB-INF" destdir="${TOMCAT_HOME}/mulgara-temp"
       includes="web.xml" style="mulgara/web-xml-convert.xslt" extension=".xml"/>
