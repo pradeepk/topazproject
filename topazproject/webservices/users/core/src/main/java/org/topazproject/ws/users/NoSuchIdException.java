@@ -6,27 +6,27 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.pap;
+package org.topazproject.ws.users;
 
 /** 
- * Signifies that an object with the requested id already exists.
+ * Signifies that the requested object does not exist. 
  * 
  * @author Ronald Tschalär
  */
-public class DuplicateIdException extends Exception {
+public class NoSuchIdException extends Exception {
   private final String id;
 
   /** 
    * Create a new exception instance. 
    * 
-   * @param id  the (duplicate) id
+   * @param id  the (non-existant) id
    */
-  public DuplicateIdException(String id) {
+  public NoSuchIdException(String id) {
     this.id = id;
   }
 
   /** 
-   * @return the (duplicate) id
+   * @return the (non-existant) id
    */
   public String getId() {
     return id;

@@ -20,6 +20,7 @@
     <module>webservices/journal-admin</module>
     <module>webservices/annotations</module>
     <module>webservices/articles</module>
+    <module>webservices/users</module>
     <module>webservices/pap</module>
   </modules>
 

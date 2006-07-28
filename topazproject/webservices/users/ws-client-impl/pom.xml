@@ -1,14 +1,4 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!--
-  $HeadURL::                                                                             $
-  $Id$
-
-  Copyright (c) 2006 by Topaz, Inc.
-  http://topazproject.org
-
-  Licensed under the Educational Community License version 1.0
-  http://opensource.org/licenses/ecl1.php
--->
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
@@ -16,11 +6,11 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>${pom.parent.artifactId}-client-impl</artifactId>
   <packaging>jar</packaging>
-  <name>Pap Webservice Client</name>
+  <name>Users Webservice Client</name>
 
   <parent>
     <groupId>org.topazproject.ws</groupId>
-    <artifactId>ws-pap</artifactId>
+    <artifactId>ws-users</artifactId>
     <version>0.1-SNAPSHOT</version>
   </parent>
 
@@ -64,18 +54,6 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>    
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-users-client-impl</artifactId>
-      <version>0.1-SNAPSHOT</version>
-      <scope>test</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-users-webapp</artifactId>
-      <version>0.1-SNAPSHOT</version>
-      <type>war</type>
-    </dependency>
   </dependencies>
 
   <build>
@@ -107,27 +85,9 @@
       <id>it-helper</id>
       <build>
         <plugins>
-          <!-- deploy for integration testing -->
-          <!-- This just steals the configuration from our super-pom -->
           <plugin>
             <groupId>org.codehaus.cargo</groupId>
             <artifactId>cargo-maven2-plugin</artifactId>
-            <configuration>
-              <configuration>
-                <deployables>
-                  <deployable>
-                    <groupId>${pom.parent.groupId}</groupId>
-                    <artifactId>${pom.parent.artifactId}-webapp</artifactId>
-                    <type>war</type>
-                  </deployable>
-                  <deployable>
-                    <groupId>org.topazproject.ws</groupId>
-                    <artifactId>ws-users-webapp</artifactId>
-                    <type>war</type>
-                  </deployable>
-                </deployables>
-              </configuration>
-            </configuration>
             <executions>
               <execution>
                 <id>jetty-start</id>

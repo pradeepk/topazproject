@@ -18,13 +18,18 @@ import javax.xml.rpc.ServiceException;
 
 import junit.framework.TestCase;
 
+import org.topazproject.ws.users.service.UserAccounts;
+import org.topazproject.ws.users.service.UserAccountsServiceLocator;
+
 /**
  * Simple tests for the profiles service.
  *
  * @author Ronald Tschalär
  */
 public class ProfilesServiceTest extends TestCase {
-  private Profiles service;
+  private Profiles     service;
+  private UserAccounts userService;
+  private String       userId;
 
   public ProfilesServiceTest(String testName) {
     super(testName);
@@ -34,55 +39,66 @@ public class ProfilesServiceTest extends TestCase {
     URL url =
         new URL("http://localhost:9997/ws-pap-webapp-0.1-SNAPSHOT/services/ProfilesServicePort");
     ProfilesServiceLocator locator = new ProfilesServiceLocator();
+    locator.setMaintainSession(true);
     service = locator.getProfilesServicePort(url);
 
-    // ensure stuff is clean
-    try {
-      service.deleteProfile("muster");
-    } catch (NoSuchIdException nsie) {
-      // looks like it was clean
-    }
+    url =
+      new URL("http://localhost:9997/ws-users-webapp-0.1-SNAPSHOT/services/UserAccountsServicePort");
+    UserAccountsServiceLocator uaLoc = new UserAccountsServiceLocator();
+    uaLoc.setMaintainSession(true);
+    userService = uaLoc.getUserAccountsServicePort(url);
+
+    // create a user
+    userId = userService.createUser("musterAuth");
   }
 
   protected void tearDown() throws RemoteException {
     try {
-      service.deleteProfile("muster");
+      service.setProfile(userId, null);
+    } catch (NoSuchIdException nsie) {
+      // looks like it was clean
+    }
+
+    try {
+      userService.deleteUser(userId);
     } catch (NoSuchIdException nsie) {
       // looks like it was clean
     }
   }
 
   public void testBasicProfiles() throws RemoteException, IOException {
+    // test non-existent user
     boolean gotE = false;
     try {
-      service.deleteProfile("muster");
+      service.setProfile("id:muster42", null);
     } catch (NoSuchIdException nsie) {
       gotE = true;
     }
     assertTrue("Failed to get expected NoSuchIdException", gotE);
 
-    service.createProfile("muster", null);
-
     gotE = false;
     try {
-      service.createProfile("muster", null);
-    } catch (DuplicateIdException die) {
+      service.getProfile("id:muster42");
+    } catch (NoSuchIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected DuplicateIdException", gotE);
+    assertTrue("Failed to get expected NoSuchIdException", gotE);
 
-    service.deleteProfile("muster");
+    // test empty profile
+    UserProfile prof = service.getProfile(userId);
+    assertNull("non-null profile for user '" + userId + "'", prof);
 
-    UserProfile prof = new UserProfile();
+    // test profile
+    prof = new UserProfile();
     prof.setDisplayName("Hans");
     prof.setEmail("hans@muster.eu");
     prof.setHomePage("http://www.muster.eu/");
-    service.createProfile("muster", prof);
+    service.setProfile(userId, prof);
 
-    prof = service.getProfile("muster");
-    assertEquals("Name mismatch", prof.getDisplayName(), "Hans");
-    assertEquals("Email mismatch", prof.getEmail(), "hans@muster.eu");
-    assertEquals("Homepage mismatch", prof.getHomePage(), "http://www.muster.eu/");
+    prof = service.getProfile(userId);
+    assertEquals("Name mismatch", "Hans", prof.getDisplayName());
+    assertEquals("Email mismatch", "hans@muster.eu", prof.getEmail());
+    assertEquals("Homepage mismatch", "http://www.muster.eu/", prof.getHomePage());
     assertNull("non-null real-name, got '" + prof.getRealName() + "'", prof.getRealName());
     assertNull("non-null title, got '" + prof.getTitle() + "'", prof.getTitle());
     assertNull("non-null gender, got '" + prof.getGender() + "'", prof.getGender());
@@ -116,12 +132,12 @@ public class ProfilesServiceTest extends TestCase {
     prof.setEmail("hans.muster@sample.com");
     prof.setWeblog("http://muster.blogs.org");
     prof.setInterests(new String[] { "http://i1.org/", "http://i2.org/" });
-    service.updateProfile("muster", prof);
+    service.setProfile(userId, prof);
 
-    prof = service.getProfile("muster");
-    assertEquals("Name mismatch;", prof.getDisplayName(), "Hans");
-    assertEquals("Email mismatch;", prof.getEmail(), "hans.muster@sample.com");
-    assertEquals("Weblog mismatch;", prof.getWeblog(), "http://muster.blogs.org");
+    prof = service.getProfile(userId);
+    assertEquals("Name mismatch;", "Hans", prof.getDisplayName());
+    assertEquals("Email mismatch;", "hans.muster@sample.com", prof.getEmail());
+    assertEquals("Weblog mismatch;", "http://muster.blogs.org", prof.getWeblog());
     assertNull("non-null homepage, got '" + prof.getHomePage() + "'", prof.getHomePage());
     assertNull("non-null real-name, got '" + prof.getRealName() + "'", prof.getRealName());
     assertNull("non-null title, got '" + prof.getTitle() + "'", prof.getTitle());
@@ -129,7 +145,7 @@ public class ProfilesServiceTest extends TestCase {
     assertNull("non-null pubs, got '" + prof.getPublications() + "'", prof.getPublications());
     assertNull("non-null biography, got '" + prof.getBiography() + "'", prof.getBiography());
     String[] i = prof.getInterests();
-    assertEquals("Interests mismatch;", i.length, 2);
+    assertEquals("Interests mismatch;", 2, i.length);
     if (!(i[0].equals("http://i1.org/") && i[1].equals("http://i2.org/") ||
           i[1].equals("http://i1.org/") && i[0].equals("http://i2.org/")))
       fail("Interests mismatch; i0='" + i[0] + "', i1='" + i[1] + "'");
@@ -161,17 +177,17 @@ public class ProfilesServiceTest extends TestCase {
     prof.setBiography("http://bio/");
     prof.setPublications("http://pubs/");
     prof.setInterests(null);
-    service.updateProfile("muster", prof);
+    service.setProfile(userId, prof);
 
-    prof = service.getProfile("muster");
-    assertEquals("Name mismatch;", prof.getDisplayName(), "Hans");
-    assertEquals("Email mismatch;", prof.getEmail(), "hans.muster@sample.com");
-    assertEquals("Weblog mismatch;", prof.getWeblog(), "http://muster.blogs.org");
-    assertEquals("Publications mismatch;", prof.getPublications(), "http://pubs/");
-    assertEquals("Real-name mismatch;", prof.getRealName(), "rn");
-    assertEquals("Title mismatch;", prof.getTitle(), "mr");
-    assertEquals("Gender mismatch;", prof.getGender(), "male");
-    assertEquals("Biography mismatch;", prof.getBiography(), "http://bio/");
+    prof = service.getProfile(userId);
+    assertEquals("Name mismatch;", "Hans", prof.getDisplayName());
+    assertEquals("Email mismatch;", "hans.muster@sample.com", prof.getEmail());
+    assertEquals("Weblog mismatch;", "http://muster.blogs.org", prof.getWeblog());
+    assertEquals("Publications mismatch;", "http://pubs/", prof.getPublications());
+    assertEquals("Real-name mismatch;", "rn", prof.getRealName());
+    assertEquals("Title mismatch;", "mr", prof.getTitle());
+    assertEquals("Gender mismatch;", "male", prof.getGender());
+    assertEquals("Biography mismatch;", "http://bio/", prof.getBiography());
     assertNull("non-null interests, got '" + prof.getInterests() + "'", prof.getInterests());
 
     assertNull("non-null display-name readers, got '" + prof.getDisplayNameReaders() + "'",
@@ -195,7 +211,9 @@ public class ProfilesServiceTest extends TestCase {
     assertNull("non-null interests readers, got '" + prof.getInterestsReaders() + "'",
                prof.getInterestsReaders());
 
-    service.deleteProfile("muster");
+    service.setProfile(userId, null);
+    prof = service.getProfile(userId);
+    assertNull("non-null profile for user '" + userId + "'", prof);
   }
 
   public void testProfilesPermissions() throws RemoteException, IOException {
@@ -204,12 +222,12 @@ public class ProfilesServiceTest extends TestCase {
     prof.setEmail("hans@muster.eu");
     prof.setHomePage("http://www.muster.eu/");
     prof.setEmailReaders(new String[0]);
-    service.createProfile("muster", prof);
+    service.setProfile(userId, prof);
 
-    prof = service.getProfile("muster");
-    assertEquals("Name mismatch;", prof.getDisplayName(), "Hans");
-    assertEquals("Email mismatch;", prof.getEmail(), "hans@muster.eu");
-    assertEquals("Homepage mismatch;", prof.getHomePage(), "http://www.muster.eu/");
+    prof = service.getProfile(userId);
+    assertEquals("Name mismatch;", "Hans", prof.getDisplayName());
+    assertEquals("Email mismatch;", "hans@muster.eu", prof.getEmail());
+    assertEquals("Homepage mismatch;", "http://www.muster.eu/", prof.getHomePage());
     assertNull("non-null real-name, got '" + prof.getRealName() + "'", prof.getRealName());
     assertNull("non-null title, got '" + prof.getTitle() + "'", prof.getTitle());
     assertNull("non-null gender, got '" + prof.getGender() + "'", prof.getGender());
@@ -225,7 +243,7 @@ public class ProfilesServiceTest extends TestCase {
 
     String[] r = prof.getEmailReaders();
     assertNotNull("Email-readers mismatch, got null instead of array", r);
-    assertEquals("Email-readers mismatch;", r.length, 0);
+    assertEquals("Email-readers mismatch;", 0, r.length);
 
     assertNull("non-null title readers, got '" + prof.getTitleReaders() + "'",
                prof.getTitleReaders());
@@ -243,12 +261,12 @@ public class ProfilesServiceTest extends TestCase {
                prof.getInterestsReaders());
 
     prof.setEmailReaders(new String[] { "id:joe" });
-    service.updateProfile("muster", prof);
+    service.setProfile(userId, prof);
 
-    prof = service.getProfile("muster");
-    assertEquals("Name mismatch;", prof.getDisplayName(), "Hans");
-    assertEquals("Email mismatch;", prof.getEmail(), "hans@muster.eu");
-    assertEquals("Homepage mismatch;", prof.getHomePage(), "http://www.muster.eu/");
+    prof = service.getProfile(userId);
+    assertEquals("Name mismatch;", "Hans", prof.getDisplayName());
+    assertEquals("Email mismatch;", "hans@muster.eu", prof.getEmail());
+    assertEquals("Homepage mismatch;", "http://www.muster.eu/", prof.getHomePage());
     assertNull("non-null real-name, got '" + prof.getRealName() + "'", prof.getRealName());
     assertNull("non-null title, got '" + prof.getTitle() + "'", prof.getTitle());
     assertNull("non-null gender, got '" + prof.getGender() + "'", prof.getGender());
@@ -264,7 +282,7 @@ public class ProfilesServiceTest extends TestCase {
 
     r = prof.getEmailReaders();
     assertNotNull("Email-readers mismatch, got null instead of array", r);
-    assertEquals("Number of Email-readers wrong;", r.length, 1);
+    assertEquals("Number of Email-readers wrong;", 1, r.length);
 
     assertNull("non-null title readers, got '" + prof.getTitleReaders() + "'",
                prof.getTitleReaders());
@@ -282,12 +300,12 @@ public class ProfilesServiceTest extends TestCase {
                prof.getInterestsReaders());
 
     prof.setEmailReaders(new String[] { "id:joe", "id:bob" });
-    service.updateProfile("muster", prof);
+    service.setProfile(userId, prof);
 
-    prof = service.getProfile("muster");
-    assertEquals("Name mismatch;", prof.getDisplayName(), "Hans");
-    assertEquals("Email mismatch;", prof.getEmail(), "hans@muster.eu");
-    assertEquals("Homepage mismatch;", prof.getHomePage(), "http://www.muster.eu/");
+    prof = service.getProfile(userId);
+    assertEquals("Name mismatch;", "Hans", prof.getDisplayName());
+    assertEquals("Email mismatch;", "hans@muster.eu", prof.getEmail());
+    assertEquals("Homepage mismatch;", "http://www.muster.eu/", prof.getHomePage());
     assertNull("non-null real-name, got '" + prof.getRealName() + "'", prof.getRealName());
     assertNull("non-null title, got '" + prof.getTitle() + "'", prof.getTitle());
     assertNull("non-null gender, got '" + prof.getGender() + "'", prof.getGender());
@@ -303,7 +321,7 @@ public class ProfilesServiceTest extends TestCase {
 
     r = prof.getEmailReaders();
     assertNotNull("Email-readers mismatch, got null instead of array", r);
-    assertEquals("Number of Email-readers wrong", r.length, 2);
+    assertEquals("Number of Email-readers wrong", 2, r.length);
 
     assertNull("non-null title readers, got '" + prof.getTitleReaders() + "'",
                prof.getTitleReaders());
@@ -320,6 +338,8 @@ public class ProfilesServiceTest extends TestCase {
     assertNull("non-null interests readers, got '" + prof.getInterestsReaders() + "'",
                prof.getInterestsReaders());
 
-    service.deleteProfile("muster");
+    service.setProfile(userId, null);
+    prof = service.getProfile(userId);
+    assertNull("non-null profile for user '" + userId + "'", prof);
   }
 }

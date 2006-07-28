@@ -20,14 +20,18 @@ import javax.xml.rpc.ServiceException;
 
 import junit.framework.TestCase;
 
+import org.topazproject.ws.users.service.UserAccounts;
+import org.topazproject.ws.users.service.UserAccountsServiceLocator;
+
 /**
  * Simple tests for the preferences service.
  *
  * @author Ronald Tschalär
  */
 public class PreferencesServiceTest extends TestCase {
-  private Preferences service;
-  private Profiles    profService;
+  private Preferences  service;
+  private UserAccounts userService;
+  private String       userId;
 
   public PreferencesServiceTest(String testName) {
     super(testName);
@@ -37,35 +41,28 @@ public class PreferencesServiceTest extends TestCase {
     URL url =
         new URL("http://localhost:9997/ws-pap-webapp-0.1-SNAPSHOT/services/PreferencesServicePort");
     PreferencesServiceLocator locator = new PreferencesServiceLocator();
+    locator.setMaintainSession(true);
     service = locator.getPreferencesServicePort(url);
 
-    url = new URL("http://localhost:9997/ws-pap-webapp-0.1-SNAPSHOT/services/ProfilesServicePort");
-    profService = new ProfilesServiceLocator().getProfilesServicePort(url);
+    url =
+      new URL("http://localhost:9997/ws-users-webapp-0.1-SNAPSHOT/services/UserAccountsServicePort");
+    UserAccountsServiceLocator uaLoc = new UserAccountsServiceLocator();
+    uaLoc.setMaintainSession(true);
+    userService = uaLoc.getUserAccountsServicePort(url);
 
-    // ensure the user exists
-    try {
-      profService.createProfile("muster", null);
-    } catch (DuplicateIdException die) {
-      // oh well, already there
-    }
-
-    // ensure the settings are clean
-    try {
-      service.setPreferences(null, "muster", null);
-    } catch (NoSuchIdException nsie) {
-      nsie.printStackTrace();
-    }
+    // create a user
+    userId = userService.createUser("musterAuth");
   }
 
   protected void tearDown() throws RemoteException {
     try {
-      service.setPreferences(null, "muster", null);
+      service.setPreferences(null, userId, null);
     } catch (NoSuchIdException nsie) {
       // looks like it was clean
     }
 
     try {
-      profService.deleteProfile("muster");
+      userService.deleteUser(userId);
     } catch (NoSuchIdException nsie) {
       // looks like it was clean
     }
@@ -84,17 +81,17 @@ public class PreferencesServiceTest extends TestCase {
     assertTrue("Failed to get expected NoSuchIdException", gotE);
 
     // test null prefs
-    service.setPreferences("testApp1", "muster", null);
+    service.setPreferences("testApp1", userId, null);
 
-    prefs = service.getPreferences("testApp1", "muster");
+    prefs = service.getPreferences("testApp1", userId);
     assertNull("non-null prefs, got " + prefs, prefs);
 
-    prefs = service.getPreferences(null, "muster");
+    prefs = service.getPreferences(null, userId);
     assertNull("non-null prefs, got " + prefs, prefs);
 
     // test 0-length prefs
-    service.setPreferences("testApp1", "muster", new UserPreference[0]);
-    prefs = service.getPreferences(null, "muster");
+    service.setPreferences("testApp1", userId, new UserPreference[0]);
+    prefs = service.getPreferences(null, userId);
     assertNull("non-null prefs, got " + prefs, prefs);
 
     // test simple prefs
@@ -110,9 +107,9 @@ public class PreferencesServiceTest extends TestCase {
     prefs[2].setName("langs");
     prefs[2].setValues(new String[] { "english", "swahili" });
 
-    service.setPreferences("testApp1", "muster", prefs);
+    service.setPreferences("testApp1", userId, prefs);
 
-    got = service.getPreferences("testApp1", "muster");
+    got = service.getPreferences("testApp1", userId);
 
     exp = new UserPreference[2];
     exp[0] = prefs[1];
@@ -120,7 +117,7 @@ public class PreferencesServiceTest extends TestCase {
     compare(got, exp);
 
     // test app-ids
-    got = service.getPreferences(null, "muster");
+    got = service.getPreferences(null, userId);
     compare(got, exp);
 
     prefs = new UserPreference[3];
@@ -134,15 +131,15 @@ public class PreferencesServiceTest extends TestCase {
     prefs[1].setValues(new String[] { "no" });
     prefs[2].setName("langs2");
     prefs[2].setValues(new String[] { "french", "korean" });
-    service.setPreferences("testApp2", "muster", prefs);
+    service.setPreferences("testApp2", userId, prefs);
 
-    got = service.getPreferences("testApp1", "muster");
+    got = service.getPreferences("testApp1", userId);
     compare(got, exp);
 
-    got = service.getPreferences("testApp2", "muster");
+    got = service.getPreferences("testApp2", userId);
     compare(got, prefs);
 
-    got = service.getPreferences(null, "muster");
+    got = service.getPreferences(null, userId);
     exp2 = new UserPreference[5];
     exp2[0] = prefs[0];
     exp2[1] = prefs[1];
@@ -151,13 +148,15 @@ public class PreferencesServiceTest extends TestCase {
     exp2[4] = exp[1];
     compare(got, exp2);
 
-    service.setPreferences("testApp1", "muster", null);
+    service.setPreferences("testApp1", userId, null);
 
-    got = service.getPreferences("testApp2", "muster");
+    got = service.getPreferences("testApp2", userId);
     compare(got, prefs);
 
-    got = service.getPreferences(null, "muster");
+    got = service.getPreferences(null, userId);
     compare(got, prefs);
+
+    service.setPreferences(null, userId, null);
   }
 
   private static void sort(UserPreference[] prefs) {
@@ -175,13 +174,13 @@ public class PreferencesServiceTest extends TestCase {
 
   private static void compare(UserPreference[] got, UserPreference[] exp) {
     assertNotNull("got null prefs", got);
-    assertEquals("wrong nubmer of prefs,", got.length,  exp.length);
+    assertEquals("wrong nubmer of prefs,", exp.length,  got.length);
 
     sort(got);
     sort(exp);
 
     for (int idx = 0; idx < got.length; idx++) {
-      assertEquals("Pref name mismatch", got[idx].getName(), exp[idx].getName());
+      assertEquals("Pref name mismatch", exp[idx].getName(), got[idx].getName());
       assertNotNull("Pref null values", got[idx].getValues());
       assertTrue("values mismatch for " + got[idx].getName(),
                  Arrays.equals(got[idx].getValues(), exp[idx].getValues()));

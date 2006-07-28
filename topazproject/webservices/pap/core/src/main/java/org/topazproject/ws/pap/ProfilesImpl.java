@@ -19,22 +19,24 @@ import java.util.Map;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.types.NonNegativeInteger;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.configuration.ConfigurationStore;
+import org.topazproject.fedora.client.APIMStubFactory;
+import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import org.topazproject.fedora.client.APIMStubFactory;
-import org.topazproject.fedora.client.FedoraAPIM;
-
 /** 
  * This provides the implementation of the profiles service.
  * 
- * <p>A profile is stored as a foaf:Person. Additionally a foaf:OnlineAccount node is used
- * which represents the internal topaz account. Permissions are stored hanging off a separate
+ * <p>A profile is stored as a foaf:Person. Permissions are stored hanging off a separate
  * topaz:ProfileReadPermissions node which is linked to foaf:Person via a topaz:readPermissions
  * predicate.
  *
@@ -47,64 +49,53 @@ public class ProfilesImpl implements Profiles {
   private static final String BIO_URI        = "http://purl.org/vocab/bio/0.1/";
 
   private static final String MODEL          = "<rmi://localhost/fedora#profiles>";
-  private static final String PROF_URI_PFX   = ItqlHelper.TOPAZ_URI + "profile/";
-  private static final String PERM_URI_PFX   = ItqlHelper.TOPAZ_URI + "profile-perms/";
-  private static final String PROFILE_PID_NS = "profile";
-  private static final String ACCT_URI_PFX   = "topaz:account/";
-  private static final String ACCOUNT_PID_NS = "account";
+  private static final String USER_MODEL     = "<rmi://localhost/fedora#users>";
+  private static final String IDS_NS         = "topaz.ids";
+  private static final String PROF_PATH_PFX  = "profile";
+  private static final String PERM_PATH_PFX  = "profile-perms";
   private static final String PUBLIC_READ    = "";
 
   private static final Map    aliases;
 
-  private static final String ITQL_CREATE_ACCT =
-      ("insert <${profId}> <rdf:type> <foaf:Person> " +
-              "<${profId}> <topaz:readPermissions> <${permsId}> " +
-              "<${permsId}> <rdf:type> <topaz:ProfileReadPermissions> " +
-              "<${profId}> <foaf:holdsAccount> <${acctId}> " +
-              "<${acctId}> <rdf:type> <foaf:OnlineAccount> " +
-              "<${acctId}> <foaf:accountName> '${userId}' into ${MODEL};").
-      replaceAll("\\Q${MODEL}", MODEL);
-
-  private static final String ITQL_DELETE_ACCT =
-      ("delete select $s $p $o from ${MODEL} where " +
-       "( $s <tucana:is> <${profId}> or <${profId}> <foaf:holdsAccount> $s or " +
-       "  <${profId}> <topaz:readPermissions> $s ) " +
-       "and $s $p $o from ${MODEL};").
-      replaceAll("\\Q${MODEL}", MODEL);
-
-  private static final String ITQL_GET_ACCTID =
-      "select $acctId from ${MODEL} where $acctId <foaf:accountName> '${userId}'".
-      replaceAll("\\Q${MODEL}", MODEL);
-
   private static final String ITQL_GET_PROFID =
       ("select $profId from ${MODEL} where " +
        "$profId <rdf:type> <foaf:Person> and " +
-       "$profId <foaf:holdsAccount> $acctId and " +
-       "$acctId <foaf:accountName> '${userId}'").
-      replaceAll("\\Q${MODEL}", MODEL);
-
-  private static final String ITQL_CLEAR_PROF =
-      ("delete select $s $p $o from ${MODEL} where " +
-       "( $s <tucana:is> <${profId}> or <${profId}> <topaz:readPermissions> $s ) and $s $p $o " +
-       "and exclude($s <rdf:type> $o) and exclude($s <topaz:readPermissions> $o) and " +
-       "exclude($s <foaf:holdsAccount> $o) from ${MODEL};").
+       "$profId <foaf:holdsAccount> <${userId}>;").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_GET_PROF =
       ("select $p $o from ${MODEL} where " +
        "$profId <rdf:type> <foaf:Person> and " +
-       "$profId <foaf:holdsAccount> $acctId and $acctId <foaf:accountName> '${userId}' and " +
+       "$profId <foaf:holdsAccount> <${userId}> and " +
        "( $profId $p $o or ( $profId <topaz:readPermissions> $perms and $perms $p $o ) );").
       replaceAll("\\Q${MODEL}", MODEL);
 
+  private static final String ITQL_CLEAR_PROF =
+      ("delete select $s $p $o from ${MODEL} where " +
+       "( $s <tucana:is> <${profId}> or <${profId}> <topaz:readPermissions> $s ) and $s $p $o " +
+       "from ${MODEL};").
+      replaceAll("\\Q${MODEL}", MODEL);
+
+  private static final String ITQL_CREATE_PROF =
+      ("insert <${profId}> <rdf:type> <foaf:Person> " +
+              "<${profId}> <topaz:readPermissions> <${permsId}> " +
+              "<${permsId}> <rdf:type> <topaz:ProfileReadPermissions> " +
+              "<${profId}> <foaf:holdsAccount> <${userId}> " +
+              "into ${MODEL};").
+      replaceAll("\\Q${MODEL}", MODEL);
+
+  private static final String ITQL_TEST_USERID =
+      ("select $userId from ${USER_MODEL} where " +
+       "  $userId <rdf:type> <foaf:OnlineAccount> and $userId <tucana:is> <${userId}>;").
+      replaceAll("\\Q${USER_MODEL}", USER_MODEL);
+
   private final ItqlHelper  itql;
-  private final ProfilesPEP pep;
   private final FedoraAPIM  apim;
+  private final ProfilesPEP pep;
+  private final String      baseURI;
 
   private String[] newProfIds = new String[0];
   private int      newProfIdIdx;
-  private String[] newAcctIds = new String[0];
-  private int      newAcctIdIdx;
 
   static {
     aliases = ItqlHelper.getDefaultAliases();
@@ -119,17 +110,32 @@ public class ProfilesImpl implements Profiles {
    * @param fedoraSvc  the fedora management web-service
    * @param pep        the policy-enforcer to use for access-control
    * @throws ServiceException if an error occurred locating the mulgara or fedora services
+   * @throws ConfigurationException if any required config is missing
    * @throws IOException if an error occurred talking to the mulgara or fedora services
    */
   public ProfilesImpl(ProtectedService mulgaraSvc, ProtectedService fedoraSvc, ProfilesPEP pep)
-      throws IOException, ServiceException {
+      throws IOException, ServiceException, ConfigurationException {
     this.pep = pep;
 
     itql = new ItqlHelper(mulgaraSvc);
-    itql.setAliases(aliases);
+    itql.getAliases().putAll(aliases);
     itql.doUpdate("create " + MODEL + ";");
 
     apim = APIMStubFactory.create(fedoraSvc);
+
+    Configuration conf = ConfigurationStore.getInstance().getConfiguration();
+    conf = conf.subset("topaz");
+
+    if (!conf.containsKey("objects.base-uri"))
+      throw new ConfigurationException("missing key 'topaz.objects.base-uri'");
+    baseURI = conf.getString("objects.base-uri");
+
+    try {
+      new URI(baseURI);
+    } catch (URISyntaxException use) {
+      throw new ConfigurationException("key 'topaz.objects.base-uri' does not contain a valid URI",
+                                       use);
+    }
   }
 
   /** 
@@ -141,65 +147,28 @@ public class ProfilesImpl implements Profiles {
    * @param password    the password to talk to fedora
    * @param pep         the policy-enforcer to use for access-control
    * @throws ServiceException if an error occurred locating the mulgara or fedora services
+   * @throws ConfigurationException if any required config is missing
    * @throws IOException if an error occurred talking to the mulgara or fedora services
    */
   public ProfilesImpl(URI mulgaraUri, URI fedoraUri, String username, String password,
-                      ProfilesPEP pep) throws IOException, ServiceException {
+                      ProfilesPEP pep)
+      throws IOException, ServiceException, ConfigurationException {
     this(ProtectedServiceFactory.createService(mulgaraUri.toString(), null, null, false),
          ProtectedServiceFactory.createService(fedoraUri.toString(), username, password, true),
          pep);
   }
 
-  public void createProfile(String userId, UserProfile profile)
-      throws DuplicateIdException, RemoteException {
-    pep.checkUserAccess(pep.CREATE_PROFILE, userId);
-
-    if (log.isDebugEnabled())
-      log.debug("Creating profile for '" + userId + "'");
-
-    String txn = "create " + userId;
-    try {
-      itql.beginTxn(txn);
-
-      if (getProfileId(userId) != null)
-        throw new DuplicateIdException(userId);
-
-      String acctId = null;
-      try {
-        StringAnswer ans =
-            new StringAnswer(itql.doQuery(ITQL_GET_ACCTID.replaceAll("\\Q${userId}", userId)));
-        List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
-        acctId = rows.size() > 0 ? ((String[]) rows.get(0))[0] : getNewAcctId();
-      } catch (AnswerException ae) {
-        throw new RemoteException("Error getting account-url for user '" + userId + "'", ae);
-      }
-
-      String profId  = getNewProfId();
-      String permsId = getPermsId(profId);
-      itql.doUpdate(ITQL_CREATE_ACCT.replaceAll("\\Q${profId}", profId).
-                                     replaceAll("\\Q${permsId}", permsId).
-                                     replaceAll("\\Q${acctId}", acctId).
-                                     replaceAll("\\Q${userId}", userId));
-
-      if (profile != null)
-        setProfile(profId, profile);
-
-      itql.commitTxn(txn);
-      txn = null;
-    } finally {
-      if (txn != null)
-        itql.rollbackTxn(txn);
-    }
-  }
-
   public UserProfile getProfile(String userId) throws NoSuchIdException, RemoteException {
+    if (userId == null)
+      throw new NullPointerException("userId may not be null");
+
     if (log.isDebugEnabled())
       log.debug("Getting profile for '" + userId + "'");
 
     // get raw profile
-    UserProfile prof = getProfileIntern(userId);
+    UserProfile prof = getRawProfile(userId);
     if (prof == null)
-      throw new NoSuchIdException(userId);
+      return null;
 
     // filter profile based on access-controls.
     if (prof.getDisplayName() != null &&
@@ -249,46 +218,25 @@ public class ProfilesImpl implements Profiles {
     }
   }
 
-  public void updateProfile(String userId, UserProfile profile)
+  public void setProfile(String userId, UserProfile profile)
       throws NoSuchIdException, RemoteException {
-    pep.checkUserAccess(pep.UPDATE_PROFILE, userId);
+    if (userId == null)
+      throw new NullPointerException("userId may not be null");
+
+    pep.checkUserAccess(pep.SET_PROFILE, userId);
 
     if (log.isDebugEnabled())
-      log.debug("Updating profile for '" + userId + "'");
+      log.debug("Setting profile for '" + userId + "'");
 
-    String txn = "update " + userId;
+    String txn = "set-profile " + userId;
     try {
       itql.beginTxn(txn);
 
       String profId = getProfileId(userId);
       if (profId == null)
-        throw new NoSuchIdException(userId);
+        profId = getNewProfId();
 
-      setProfile(profId, profile);
-
-      itql.commitTxn(txn);
-      txn = null;
-    } finally {
-      if (txn != null)
-        itql.rollbackTxn(txn);
-    }
-  }
-
-  public void deleteProfile(String userId) throws NoSuchIdException, RemoteException {
-    pep.checkUserAccess(pep.DELETE_PROFILE, userId);
-
-    if (log.isDebugEnabled())
-      log.debug("Deleting profile for '" + userId + "'");
-
-    String txn = "delete " + userId;
-    try {
-      itql.beginTxn(txn);
-
-      String profId = getProfileId(userId);
-      if (profId == null)
-        throw new NoSuchIdException(userId);
-
-      itql.doUpdate(ITQL_DELETE_ACCT.replaceAll("\\Q${profId}", profId));
+      setRawProfile(userId, profId, profile);
 
       itql.commitTxn(txn);
       txn = null;
@@ -303,13 +251,31 @@ public class ProfilesImpl implements Profiles {
    *
    * @param userId the user's internal id
    * @return the profile id, or null if this user doesn't have one (doesn't exist)
+   * @throws NoSuchIdException if the user does not exist
    * @throws RemoteException if an error occurred talking to the db
    */
-  protected String getProfileId(String userId) throws RemoteException {
+  protected String getProfileId(String userId) throws NoSuchIdException, RemoteException {
     try {
-      StringAnswer ans =
-          new StringAnswer(itql.doQuery(ITQL_GET_PROFID.replaceAll("\\Q${userId}", userId)));
-      List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+      /* Implementation note:
+       * Instead of doing two queries we could also use a subquery:
+       *
+       *   select $userId subquery(
+       *     select $profId from <profiles-model> where $profId <foaf:holdsAccount> $userId )
+       *   from <user-model> where $userId <rdf:type> <foaf:OnlineAccount> and
+       *                           $userId <tucana:is> <${userId}>;
+       *
+       * But the answer is harder to parse, and I'm not sure it gains anything over the two-query
+       * solution in this case.
+       */
+      String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
+                   ITQL_GET_PROFID.replaceAll("\\Q${userId}", userId);
+      StringAnswer ans = new StringAnswer(itql.doQuery(qry));
+
+      List user = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+      if (user.size() == 0)
+        throw new NoSuchIdException(userId);
+
+      List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(1)).getRows();
       return rows.size() == 0 ? null : ((String[]) rows.get(0))[0];
     } catch (AnswerException ae) {
       throw new RemoteException("Error getting profile-url for user '" + userId + "'", ae);
@@ -317,50 +283,59 @@ public class ProfilesImpl implements Profiles {
   }
 
   /**
-   * Set the profile. This does no access-checks and assumes the profile node exists.
+   * Set the profile. This does no access-checks.
    *
+   * @param userId  the user's internal id
    * @param profId  the url of the profile node
    * @param profile the new profile
    * @throws RemoteException if an error occurred updating the profile
    */
-  protected void setProfile(String profId, UserProfile profile) throws RemoteException {
-    StringBuffer cmd = new StringBuffer(100);
+  protected void setRawProfile(String userId, String profId, UserProfile profile)
+      throws RemoteException {
+    StringBuffer cmd = new StringBuffer(500);
 
     cmd.append(ITQL_CLEAR_PROF.replaceAll("\\Q${profId}", profId));
 
-    cmd.append("insert ");
+    if (profile != null) {
+      String permsId = getPermsId(profId);
+      cmd.append(ITQL_CREATE_PROF.replaceAll("\\Q${profId}", profId).
+                                  replaceAll("\\Q${permsId}", permsId).
+                                  replaceAll("\\Q${userId}", userId));
 
-    addLiteralVal(cmd, profId, "topaz:displayName", profile.getDisplayName());
-    addLiteralVal(cmd, profId, "foaf:name", profile.getRealName());
-    addLiteralVal(cmd, profId, "foaf:title", profile.getTitle());
-    addLiteralVal(cmd, profId, "foaf:gender", profile.getGender());
-    addLiteralVal(cmd, profId, "bio:olb", profile.getBiography());
+      cmd.append("insert ");
 
-    String email = profile.getEmail();
-    if (email != null)
-      addReference(cmd, profId, "foaf:mbox", "mailto:" + email);
+      addLiteralVal(cmd, profId, "topaz:displayName", profile.getDisplayName());
+      addLiteralVal(cmd, profId, "foaf:name", profile.getRealName());
+      addLiteralVal(cmd, profId, "foaf:title", profile.getTitle());
+      addLiteralVal(cmd, profId, "foaf:gender", profile.getGender());
+      addLiteralVal(cmd, profId, "bio:olb", profile.getBiography());
 
-    addReference(cmd, profId, "foaf:homepage", profile.getHomePage());
-    addReference(cmd, profId, "foaf:weblog", profile.getWeblog());
-    addReference(cmd, profId, "foaf:publications", profile.getPublications());
+      String email = profile.getEmail();
+      if (email != null)
+        addReference(cmd, profId, "foaf:mbox", "mailto:" + email);
 
-    String[] interests = profile.getInterests();
-    for (int idx = 0; interests != null && idx < interests.length; idx++)
-      addReference(cmd, profId, "foaf:interest", interests[idx]);
+      addReference(cmd, profId, "foaf:homepage", profile.getHomePage());
+      addReference(cmd, profId, "foaf:weblog", profile.getWeblog());
+      addReference(cmd, profId, "foaf:publications", profile.getPublications());
 
-    String permsId = getPermsId(profId);
-    addPerms(cmd, permsId, "topaz:displayNameReaders", profile.getDisplayNameReaders());
-    addPerms(cmd, permsId, "topaz:realNameReaders", profile.getRealNameReaders());
-    addPerms(cmd, permsId, "topaz:titleReaders", profile.getTitleReaders());
-    addPerms(cmd, permsId, "topaz:genderReaders", profile.getGenderReaders());
-    addPerms(cmd, permsId, "topaz:biographyReaders", profile.getBiographyReaders());
-    addPerms(cmd, permsId, "topaz:emailReaders", profile.getEmailReaders());
-    addPerms(cmd, permsId, "topaz:homePageReaders", profile.getHomePageReaders());
-    addPerms(cmd, permsId, "topaz:weblogReaders", profile.getWeblogReaders());
-    addPerms(cmd, permsId, "topaz:publicationsReaders", profile.getPublicationsReaders());
-    addPerms(cmd, permsId, "topaz:interestsReaders", profile.getInterestsReaders());
+      String[] interests = profile.getInterests();
+      for (int idx = 0; interests != null && idx < interests.length; idx++)
+        addReference(cmd, profId, "foaf:interest", interests[idx]);
 
-    cmd.append(" into ").append(MODEL).append(";");
+      addPerms(cmd, permsId, "topaz:displayNameReaders", profile.getDisplayNameReaders());
+      addPerms(cmd, permsId, "topaz:realNameReaders", profile.getRealNameReaders());
+      addPerms(cmd, permsId, "topaz:titleReaders", profile.getTitleReaders());
+      addPerms(cmd, permsId, "topaz:genderReaders", profile.getGenderReaders());
+      addPerms(cmd, permsId, "topaz:biographyReaders", profile.getBiographyReaders());
+      addPerms(cmd, permsId, "topaz:emailReaders", profile.getEmailReaders());
+      addPerms(cmd, permsId, "topaz:homePageReaders", profile.getHomePageReaders());
+      addPerms(cmd, permsId, "topaz:weblogReaders", profile.getWeblogReaders());
+      addPerms(cmd, permsId, "topaz:publicationsReaders", profile.getPublicationsReaders());
+      addPerms(cmd, permsId, "topaz:interestsReaders", profile.getInterestsReaders());
+
+      cmd.append(" into ").append(MODEL).append(";");
+    }
+
     itql.doUpdate(cmd.toString());
   }
 
@@ -389,21 +364,28 @@ public class ProfilesImpl implements Profiles {
   }
 
   /**
-   * Get the profile. This does no access-checks and assumes the profile node exists.
+   * Get the profile. This does no access-checks.
    *
    * @param userId  the user's id
    * @return the user's profile, or null
+   * @throws NoSuchIdException if the user does not exist
    * @throws RemoteException if an error occurred retrieving the profile
    */
-  protected UserProfile getProfileIntern(String userId) throws RemoteException {
+  protected UserProfile getRawProfile(String userId) throws NoSuchIdException, RemoteException {
     StringAnswer ans;
     try {
-      ans = new StringAnswer(itql.doQuery(ITQL_GET_PROF.replaceAll("\\Q${userId}", userId)));
+      String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
+                   ITQL_GET_PROF.replaceAll("\\Q${userId}", userId);
+      ans = new StringAnswer(itql.doQuery(qry));
     } catch (AnswerException ae) {
       throw new RemoteException("Error getting profile-info for user '" + userId + "'", ae);
     }
 
-    List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+    List user = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+    if (user.size() == 0)
+      throw new NoSuchIdException(userId);
+
+    List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(1)).getRows();
     if (rows.size() == 0)
       return null;
 
@@ -476,11 +458,12 @@ public class ProfilesImpl implements Profiles {
    */
   protected synchronized String getNewProfId() throws RemoteException {
     if (newProfIdIdx >= newProfIds.length) {
-      newProfIds = apim.getNextPID(new NonNegativeInteger("20"), PROFILE_PID_NS);
+      newProfIds = apim.getNextPID(new NonNegativeInteger("20"), IDS_NS);
       newProfIdIdx = 0;
     }
 
-    return PROF_URI_PFX + newProfIds[newProfIdIdx++];
+    return baseURI + PROF_PATH_PFX + '/' +
+           newProfIds[newProfIdIdx++].substring(IDS_NS.length() + 1);
   }
 
   /** 
@@ -490,21 +473,6 @@ public class ProfilesImpl implements Profiles {
    * @return the url
    */
   protected String getPermsId(String profId) {
-    return PERM_URI_PFX + profId.substring(PROF_URI_PFX.length());
-  }
-
-  /** 
-   * Get an id (url) for a new account node. 
-   * 
-   * @return the url
-   * @throws RemoteException if an error occurred getting the new id
-   */
-  protected synchronized String getNewAcctId() throws RemoteException {
-    if (newAcctIdIdx >= newAcctIds.length) {
-      newAcctIds = apim.getNextPID(new NonNegativeInteger("20"), ACCOUNT_PID_NS);
-      newAcctIdIdx = 0;
-    }
-
-    return ACCT_URI_PFX + newAcctIds[newAcctIdIdx++];
+    return baseURI + PERM_PATH_PFX + profId.substring(baseURI.length() + PROF_PATH_PFX.length());
   }
 }

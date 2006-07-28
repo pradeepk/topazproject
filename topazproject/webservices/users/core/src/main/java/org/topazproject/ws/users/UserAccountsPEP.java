@@ -6,7 +6,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.pap;
+package org.topazproject.ws.users;
 
 import java.io.IOException;
 import java.net.URI;
@@ -20,30 +20,45 @@ import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;
 
 /**
- * The XACML PEP for preferences.
+ * The XACML PEP for the user accounts manager.
  *
  * @author Ronald Tschalär
  */
-public abstract class PreferencesPEP extends AbstractSimplePEP {
-  /** The action that represents a write operation in XACML policies. */
-  public static final String SET_PREFERENCES = "setPreferences";
+public abstract class UserAccountsPEP extends AbstractSimplePEP {
+  /** The action that represents a user account creation operation in XACML policies. */
+  public static final String CREATE_USER = "createUser";
 
-  /** The action that represents a read operation in XACML policies. */
-  public static final String GET_PREFERENCES = "getPreferences";
+  /** The action that represents a delete user account operation in XACML policies. */
+  public static final String DELETE_USER = "deleteUser";
+
+  /** The action that represents a get-authentication-ids operation in XACML policies. */
+  public static final String GET_AUTH_IDS = "getAuthIds";
+
+  /** The action that represents a set-authentication-ids operation in XACML policies. */
+  public static final String SET_AUTH_IDS = "setAuthIds";
+
+  /** The action that represents a look-up-user operation in XACML policies. */
+  public static final String LOOKUP_USER = "lookUpUser";
 
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
-                                                           SET_PREFERENCES,
-                                                           GET_PREFERENCES,
+                                                           CREATE_USER,
+                                                           DELETE_USER,
+                                                           GET_AUTH_IDS,
+                                                           SET_AUTH_IDS,
+                                                           LOOKUP_USER,
                                                          };
 
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
                                                            null,
                                                            null,
+                                                           null,
+                                                           null,
+                                                           null,
                                                          };
 
-  protected PreferencesPEP(PDP pdp, Set subjAttrs)
+  protected UserAccountsPEP(PDP pdp, Set subjAttrs)
       throws IOException, ParsingException, UnknownIdentifierException {
     super(pdp, subjAttrs);
   }
@@ -52,10 +67,10 @@ public abstract class PreferencesPEP extends AbstractSimplePEP {
    * Check if the curent user may perform the requested action.
    * 
    * @param action one of the actions defined above
-   * @param userId the preferences owner's internal id
+   * @param userId the user's internal account id
    */
   protected void checkUserAccess(String action, String userId)
-      throws NoSuchIdException, SecurityException {
+      throws SecurityException, NoSuchIdException {
     URI userURI;
     try {
       userURI = new URI(userId);

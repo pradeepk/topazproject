@@ -8,8 +8,6 @@
 
 package org.topazproject.ws.pap.service;
 
-import java.io.IOException;
-import java.net.URI;
 import java.rmi.RemoteException;
 import javax.servlet.http.HttpSession;
 import javax.xml.rpc.ServiceException;
@@ -81,9 +79,11 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
   public void setPreferences(String appId, String userId, UserPreference[] prefs)
       throws RemoteException, NoSuchIdException {
     try {
-      impl.setPreferences(appId, userId, fromSvcPrefs(prefs));
+      synchronized (impl) {
+        impl.setPreferences(appId, userId, fromSvcPrefs(prefs));
+      }
     } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
-      log.info("", nsie);
+      log.debug("", nsie);
       throw new NoSuchIdException(nsie.getId());
     } catch (RuntimeException re) {
       log.warn("", re);
@@ -100,9 +100,11 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
   public UserPreference[] getPreferences(String appId, String userId)
       throws RemoteException, NoSuchIdException {
     try {
-      return toSvcPrefs(impl.getPreferences(appId, userId));
+      synchronized (impl) {
+        return toSvcPrefs(impl.getPreferences(appId, userId));
+      }
     } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
-      log.info("", nsie);
+      log.debug("", nsie);
       throw new NoSuchIdException(nsie.getId());
     } catch (RuntimeException re) {
       log.warn("", re);

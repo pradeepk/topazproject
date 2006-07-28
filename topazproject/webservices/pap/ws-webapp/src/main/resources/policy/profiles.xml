@@ -26,7 +26,7 @@
       <Action>
         <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
           <AttributeValue
-            DataType="http://www.w3.org/2001/XMLSchema#string">createProfile</AttributeValue>
+            DataType="http://www.w3.org/2001/XMLSchema#string">setProfile</AttributeValue>
           <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
             AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>
         </ActionMatch>
@@ -34,23 +34,7 @@
       <Action>
         <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
           <AttributeValue
-            DataType="http://www.w3.org/2001/XMLSchema#string">deleteProfile</AttributeValue>
-          <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-            AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>
-        </ActionMatch>
-      </Action>
-      <Action>
-        <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-          <AttributeValue
-            DataType="http://www.w3.org/2001/XMLSchema#string">updateProfile</AttributeValue>
-          <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-            AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>
-        </ActionMatch>
-      </Action>
-      <Action>
-        <ActionMatch MatchId="urn:oasis:names:tc:xacml:1.0:function:string-equal">
-          <AttributeValue
-            DataType="http://www.w3.org/2001/XMLSchema#string">readProfile</AttributeValue>
+            DataType="http://www.w3.org/2001/XMLSchema#string">getProfile</AttributeValue>
           <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
             AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>
         </ActionMatch>

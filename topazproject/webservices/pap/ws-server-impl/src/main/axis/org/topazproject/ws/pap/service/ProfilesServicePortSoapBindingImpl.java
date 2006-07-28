@@ -8,8 +8,6 @@
 
 package org.topazproject.ws.pap.service;
 
-import java.io.IOException;
-import java.net.URI;
 import java.rmi.RemoteException;
 import javax.servlet.http.HttpSession;
 import javax.xml.rpc.ServiceException;
@@ -78,40 +76,15 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
   }
 
   /**
-   * @see org.topazproject.ws.pap.Profiles#createProfile
-   */
-  public void createProfile(String userId, UserProfile profile)
-      throws RemoteException, DuplicateIdException {
-    try {
-      impl.createProfile(userId, (profile != null) ? toProfile(profile) : null);
-    } catch (org.topazproject.ws.pap.DuplicateIdException die) {
-      log.info("", die);
-      throw new DuplicateIdException(die.getId());
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
-    }
-  }
-
-  /**
    * @see org.topazproject.ws.pap.Profiles#getProfile
    */
   public UserProfile getProfile(String userId) throws RemoteException, NoSuchIdException {
     try {
-      org.topazproject.ws.pap.UserProfile prof = impl.getProfile(userId);
-      return new UserProfile(prof.getBiography(), prof.getBiographyReaders(), prof.getDisplayName(),
-                             prof.getDisplayNameReaders(), prof.getEmail(), prof.getEmailReaders(),
-                             prof.getGender(), prof.getGenderReaders(), prof.getHomePage(),
-                             prof.getHomePageReaders(), prof.getInterests(),
-                             prof.getInterestsReaders(), prof.getPublications(),
-                             prof.getPublicationsReaders(), prof.getRealName(),
-                             prof.getRealNameReaders(), prof.getTitle(), prof.getTitleReaders(),
-                             prof.getWeblog(), prof.getWeblogReaders());
+      synchronized (impl) {
+        return fromProfile(impl.getProfile(userId));
+      }
     } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
-      log.info("", nsie);
+      log.debug("", nsie);
       throw new NoSuchIdException(nsie.getId());
     } catch (RuntimeException re) {
       log.warn("", re);
@@ -123,14 +96,16 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
   }
 
   /**
-   * @see org.topazproject.ws.pap.Profiles#updateProfile
+   * @see org.topazproject.ws.pap.Profiles#setProfile
    */
-  public void updateProfile(String userId, UserProfile profile)
+  public void setProfile(String userId, UserProfile profile)
       throws RemoteException, NoSuchIdException {
     try {
-      impl.updateProfile(userId, toProfile(profile));
+      synchronized (impl) {
+        impl.setProfile(userId, toProfile(profile));
+      }
     } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
-      log.info("", nsie);
+      log.debug("", nsie);
       throw new NoSuchIdException(nsie.getId());
     } catch (RuntimeException re) {
       log.warn("", re);
@@ -141,25 +116,24 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
     }
   }
 
-  /**
-   * @see org.topazproject.ws.pap.Profiles#deleteProfile
-   */
-  public void deleteProfile(String userId) throws RemoteException, NoSuchIdException {
-    try {
-      impl.deleteProfile(userId);
-    } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
-      log.info("", nsie);
-      throw new NoSuchIdException(nsie.getId());
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
-    }
+  private static final UserProfile fromProfile(org.topazproject.ws.pap.UserProfile prof) {
+    if (prof == null)
+      return null;
+
+    return new UserProfile(prof.getBiography(), prof.getBiographyReaders(), prof.getDisplayName(),
+                           prof.getDisplayNameReaders(), prof.getEmail(), prof.getEmailReaders(),
+                           prof.getGender(), prof.getGenderReaders(), prof.getHomePage(),
+                           prof.getHomePageReaders(), prof.getInterests(),
+                           prof.getInterestsReaders(), prof.getPublications(),
+                           prof.getPublicationsReaders(), prof.getRealName(),
+                           prof.getRealNameReaders(), prof.getTitle(), prof.getTitleReaders(),
+                           prof.getWeblog(), prof.getWeblogReaders());
   }
 
   private static final org.topazproject.ws.pap.UserProfile toProfile(UserProfile prof) {
+    if (prof == null)
+      return null;
+
     org.topazproject.ws.pap.UserProfile res = new org.topazproject.ws.pap.UserProfile();
 
     res.setBiography(prof.getBiography());

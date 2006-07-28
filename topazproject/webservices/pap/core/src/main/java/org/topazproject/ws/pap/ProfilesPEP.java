@@ -10,6 +10,7 @@ package org.topazproject.ws.pap;
 
 import java.io.IOException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
@@ -31,30 +32,20 @@ import com.sun.xacml.ctx.Attribute;
  * @author Ronald Tschalär
  */
 public abstract class ProfilesPEP extends AbstractSimplePEP {
-  /** The action that represents a profile creation operation in XACML policies. */
-  public static final String CREATE_PROFILE = "createProfile";
+  /** The action that represents a set-profile operation in XACML policies. */
+  public static final String SET_PROFILE = "setProfile";
 
-  /** The action that represents a delete profile in XACML policies. */
-  public static final String DELETE_PROFILE = "deleteProfile";
-
-  /** The action that represents an update operation in XACML policies. */
-  public static final String UPDATE_PROFILE = "updateProfile";
-
-  /** The action that represents a read operation in XACML policies. */
-  public static final String READ_PROFILE = "readProfile";
+  /** The action that represents a get-profile operation in XACML policies. */
+  public static final String GET_PROFILE = "getProfile";
 
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
-                                                           CREATE_PROFILE,
-                                                           DELETE_PROFILE,
-                                                           UPDATE_PROFILE,
-                                                           READ_PROFILE,
+                                                           SET_PROFILE,
+                                                           GET_PROFILE,
                                                          };
 
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
-                                                           null,
-                                                           null,
                                                            null,
                                                            null,
                                                          };
@@ -78,9 +69,23 @@ public abstract class ProfilesPEP extends AbstractSimplePEP {
    * 
    * @param action one of the actions defined above
    * @param userId the profile owner's internal id
+   * @throws NoSuchIdException if the userId is not a valid URL
+   * @throws SecurityException if access is denied
    */
-  protected void checkUserAccess(String action, String userId) throws SecurityException {
-    checkAccess(action, userIdToURI(userId));
+  protected void checkUserAccess(String action, String userId)
+      throws NoSuchIdException, SecurityException {
+    URI userURI;
+    try {
+      userURI = new URI(userId);
+      if (!userURI.isAbsolute())
+        throw new NoSuchIdException(userId);
+    } catch (URISyntaxException use) {
+      NoSuchIdException nsie = new NoSuchIdException(userId);
+      nsie.initCause(use);
+      throw nsie;
+    }
+
+    checkAccess(action, userURI);
   }
 
   /**
@@ -94,19 +99,15 @@ public abstract class ProfilesPEP extends AbstractSimplePEP {
     Set resourceAttrs = new HashSet();
 
     resourceAttrs.add(new Attribute(Util.RESOURCE_ID, null, null,
-                      new AnyURIAttribute(userIdToURI(owner))));
+                      new AnyURIAttribute(URI.create(owner))));
 
     Collection ras = new ArrayList(readers.length);
     for (int idx = 0; idx < readers.length; idx++)
-      ras.add(new AnyURIAttribute(userIdToURI(readers[idx])));
+      ras.add(new AnyURIAttribute(URI.create(readers[idx])));
 
     resourceAttrs.add(
         new Attribute(ALLOWED_READERS_ID, null, null, new BagAttribute(ANY_URI_TYPE, ras)));
 
-    checkAccess(READ_PROFILE, resourceAttrs);
-  }
-
-  private static final URI userIdToURI(String userId) {
-    return URI.create("id:" + userId);
+    checkAccess(GET_PROFILE, resourceAttrs);
   }
 }

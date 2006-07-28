@@ -23,11 +23,8 @@
         <auth-method>CAS</auth-method>
       </itql>
     </services>
-    <profiles>
+    <user-accounts>
       <pdpName>_default_</pdpName>
-    </profiles>
-    <preferences>
-      <pdpName>_default_</pdpName>
-    </preferences>
+    </user-accounts>
   </topaz>
 </config>
