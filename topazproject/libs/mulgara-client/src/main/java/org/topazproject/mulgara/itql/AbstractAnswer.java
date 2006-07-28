@@ -53,6 +53,8 @@ public abstract class AbstractAnswer {
    */
   protected void parseAnswer(Element ansElem, GraphElementFactory gef)
       throws URISyntaxException, GraphElementFactoryException, AnswerException {
+    fixKowariBug(ansElem);
+
     for (Element q = XmlHelper.getFirstChild(ansElem, QUERY); q != null;
          q = XmlHelper.getNextSibling(q, QUERY)) {
       Element first = XmlHelper.getFirstChild(q, "*");
@@ -88,4 +90,35 @@ public abstract class AbstractAnswer {
    * </pre>
    */
   protected abstract void parseMessage(String msg) throws AnswerException;
+
+  /**
+   * Kowari currently has a bug in that it puts the answers to all queries in a single
+   * &lt;query&gt; tag. So we go through here and insert the missing tags.
+   */
+  private static final void fixKowariBug(Element ansElem) {
+    for (Element q = XmlHelper.getFirstChild(ansElem, QUERY); q != null;
+         q = XmlHelper.getNextSibling(q, QUERY)) {
+      // skip first answer
+      Element s = XmlHelper.getFirstChild(q, "*");
+      if (s == null)
+        return; // empty?
+      while ((s = XmlHelper.getNextSibling(s, "*")) != null && s.getNodeName().equals("solution"))
+        ;
+
+      // handle rest
+      while (s != null) {
+        if (!s.getNodeName().equals("solution")) {
+          // insert a new <query> node
+          Element qq = (Element) q.cloneNode(false);
+          q.getParentNode().insertBefore(qq, q.getNextSibling());
+          q = qq;
+        }
+
+        // move the element to the new node
+        Element next = XmlHelper.getNextSibling(s, "*");
+        q.appendChild(s);
+        s = next;
+      }
+    }
+  }
 }
