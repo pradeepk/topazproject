@@ -3,11 +3,21 @@ package org.topazproject.mulgara.itql;
 
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+
+import java.text.SimpleDateFormat;
+
 import java.rmi.RemoteException;
+
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.SimpleTimeZone;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.Stub;
 
@@ -249,5 +259,93 @@ public class ItqlHelper {
       log.debug("sending rollback '" + txnName + "'");
 
     interpreter.rollback(txnName);
+  }
+
+  /**
+   * Bind values to an itql fmt string containing ${xxx} placeholders.
+   *
+   * @param fmt the ITQL fmt string
+   * @param values the name value pair for substitusion. name appears  in the fmt string as ${name}
+   *        and the value is its replacement
+   *
+   * @return Returns an ITQL query string with all local values bound
+   *
+   * @throws IllegalArgumentException if a value is missing for a ${token}
+   */
+  public static String bindValues(String fmt, Map values) {
+    Pattern      p   = Pattern.compile("\\$\\{(\\w*)\\}");
+    Matcher      m   = p.matcher(fmt);
+    StringBuffer sb  = new StringBuffer(fmt.length() * 2);
+    int          pos = 0;
+
+    while (m.find()) {
+      int    ts    = m.start();
+      int    te    = m.end();
+      String token = fmt.substring(ts + 2, te - 1);
+      String val   = (String) values.get(token);
+
+      if (val == null)
+        throw new IllegalArgumentException("Missing value for ${'" + token + "}");
+
+      sb.append(fmt.substring(pos, ts));
+      sb.append(val);
+      pos = te;
+    }
+
+    sb.append(fmt.substring(pos));
+
+    return sb.toString();
+  }
+
+  /**
+   * Does input valdation for uri parameters. Only absolute (non-relative) URIs are valid.
+   *
+   * @param uri the uri string to validate
+   * @param name the name of this uri for use in error messages
+   *
+   * @return Returns the uri
+   *
+   * @throws NullPointerException if the uri string is null
+   * @throws IllegalArgumentException if the uri is not a valid absolure URI
+   */
+  public static URI validateUri(String uri, String name) {
+    if (uri == null)
+      throw new NullPointerException("'" + name + "' cannot be null");
+
+    try {
+      URI u = new URI(uri);
+
+      if (!u.isAbsolute())
+        throw new URISyntaxException(uri, "missing scheme component", 0);
+
+      return u;
+    } catch (URISyntaxException e) {
+      IllegalArgumentException iae =
+        new IllegalArgumentException("'" + name + "' must be a valid absolute URI");
+      iae.initCause(e);
+      throw iae;
+    }
+  }
+
+  /**
+   * Escape a literal before binding to an ITQL statement.
+   *
+   * @param val the literal value that is to be escaped
+   *
+   * @return Returns the escaped literal
+   */
+  public static String escapeLiteral(String val) {
+    return val.replaceAll("\\\\", "\\\\\\\\").replaceAll("'", "\\\\'");
+  }
+
+  /**
+   * Get the current UTC time formatted as an xsd:dateTime string. (eg. '2006-07-24T17:54:42Z')
+   *
+   * @return Returns a string usable as a literal in rdf.
+   */
+  public static String getUTCTime() {
+    SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    fmt.setTimeZone(new SimpleTimeZone(0, "UTC"));
+    return fmt.format(new Date());
   }
 }

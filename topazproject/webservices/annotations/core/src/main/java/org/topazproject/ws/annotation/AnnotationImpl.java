@@ -5,18 +5,13 @@ import java.net.URISyntaxException;
 
 import java.rmi.RemoteException;
 
-import java.text.SimpleDateFormat;
-
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -37,20 +32,17 @@ import org.topazproject.mulgara.itql.ItqlHelper;
  * The implementation of the annotation service.
  */
 public class AnnotationImpl implements Annotation {
-  private static final Log              log               = LogFactory.getLog(AnnotationImpl.class);
-  private static final Map              aliases           = ItqlHelper.getDefaultAliases();
-  private static final String           MODEL             = "<rmi://localhost/fedora#ri>";
-  private static final String           ANNOTATION_PID_NS = "annotation";
-  private static final SimpleDateFormat XSD_DATE_TIME_FMT =
-    new SimpleDateFormat("yyyy-MM-dd'T'HH:mm");
+  private static final Log    log               = LogFactory.getLog(AnnotationImpl.class);
+  private static final Map    aliases           = ItqlHelper.getDefaultAliases();
+  private static final String MODEL             = "<rmi://localhost/fedora#ri>";
+  private static final String ANNOTATION_PID_NS = "annotation";
 
   //
   private static final URI a            = URI.create("http://www.w3.org/2000/10/annotation-ns#");
   private static final URI r            = URI.create(ItqlHelper.RDF_URI);
   private static final URI d            = URI.create(ItqlHelper.DC_URI);
   private static final URI nil          = URI.create(ItqlHelper.RDF_URI + "nil");
-  private static final URI a_Annotation =
-    URI.create("http://www.w3.org/2000/10/annotation-ns#Annotation");
+  private static final URI a_Annotation = a.resolve("#Annotation");
 
   //
   private static final String FOXML =
@@ -163,7 +155,7 @@ public class AnnotationImpl implements Annotation {
    */
   public String createAnnotation(String type, String annotates, String context, String supersedes,
                                  String body) throws NoSuchIdException, RemoteException {
-    validateUri(body, "body");
+    itql.validateUri(body, "body");
 
     return createAnnotation(type, annotates, context, supersedes, body, null, null);
   }
@@ -189,17 +181,17 @@ public class AnnotationImpl implements Annotation {
     if (context == null)
       context = annotates;
     else
-      context = escapeLiteral(context);
+      context = itql.escapeLiteral(context);
 
     if (type == null)
       type = "http://www.w3.org/2000/10/annotationType#Annotation";
     else
-      validateUri(type, "type");
+      itql.validateUri(type, "type");
 
-    checkAccess(PEP.CREATE_ANNOTATION, validateUri(annotates, "annotates"));
+    checkAccess(PEP.CREATE_ANNOTATION, itql.validateUri(annotates, "annotates"));
 
     if (supersedes != null) {
-      checkAccess(PEP.SET_ANNOTATION_INFO, validateUri(supersedes, "supersedes"));
+      checkAccess(PEP.SET_ANNOTATION_INFO, itql.validateUri(supersedes, "supersedes"));
       checkId(supersedes);
     }
 
@@ -223,7 +215,7 @@ public class AnnotationImpl implements Annotation {
     values.put("context", context);
     values.put("body", body);
     values.put("user", user);
-    values.put("created", getUTCTime());
+    values.put("created", itql.getUTCTime());
 
     if (supersedes != null) {
       create += SUPERSEDE_ITQL;
@@ -262,7 +254,7 @@ public class AnnotationImpl implements Annotation {
    */
   public void deleteAnnotation(String id, boolean deletePreceding)
                         throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.DELETE_ANNOTATION, validateUri(id, "annotation-id"));
+    checkAccess(PEP.DELETE_ANNOTATION, itql.validateUri(id, "annotation-id"));
     checkId(id);
 
     String[] purgeList = getFedoraObjects(id, deletePreceding);
@@ -323,7 +315,7 @@ public class AnnotationImpl implements Annotation {
    * @see org.topazproject.ws.annotation.Annotation#getAnnotation
    */
   public String getAnnotation(String id) throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.GET_ANNOTATION_INFO, validateUri(id, "annotation-id"));
+    checkAccess(PEP.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
 
     try {
       String query = GET_ITQL.replaceAll("\\$id", id);
@@ -345,13 +337,13 @@ public class AnnotationImpl implements Annotation {
    */
   public String[] listAnnotations(String annotates, String type, boolean idsOnly)
                            throws RemoteException {
-    checkAccess(PEP.LIST_ANNOTATIONS, validateUri(annotates, "annotates"));
+    checkAccess(PEP.LIST_ANNOTATIONS, itql.validateUri(annotates, "annotates"));
 
     try {
       if (type == null)
         type = "a:Annotation";
       else
-        validateUri(type, "type");
+        itql.validateUri(type, "type");
 
       String subquery = idsOnly ? "" : SUBQUERY;
 
@@ -377,7 +369,7 @@ public class AnnotationImpl implements Annotation {
    */
   public String[] getLatestAnnotations(String id, boolean idsOnly)
                                 throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.GET_ANNOTATION_INFO, validateUri(id, "annotation-id"));
+    checkAccess(PEP.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
 
     try {
       String subquery = idsOnly ? "" : SUBQUERY;
@@ -402,7 +394,7 @@ public class AnnotationImpl implements Annotation {
    */
   public String[] getPrecedingAnnotations(String id, boolean idsOnly)
                                    throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.GET_ANNOTATION_INFO, validateUri(id, "annotation-id"));
+    checkAccess(PEP.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
     checkId(id);
 
     try {
@@ -425,7 +417,7 @@ public class AnnotationImpl implements Annotation {
    */
   public void setAnnotationState(String id, int state)
                           throws RemoteException, NoSuchIdException {
-    checkAccess(PEP.SET_ANNOTATION_STATE, validateUri(id, "annotation-id"));
+    checkAccess(PEP.SET_ANNOTATION_STATE, itql.validateUri(id, "annotation-id"));
     checkId(id);
 
     String set = SET_STATE_ITQL.replaceAll("\\$id", id).replaceAll("\\$state", "" + state);
@@ -625,39 +617,6 @@ public class AnnotationImpl implements Annotation {
     return fedoraServer.resolve(path).toString();
   }
 
-  private String getUTCTime() {
-    Calendar cal    = Calendar.getInstance();
-    TimeZone tz     = cal.getTimeZone();
-    Date     myDate = cal.getTime();
-
-    long     rawOffset = tz.getRawOffset();
-    long     myTime    = myDate.getTime();
-    long     utcTime   = myTime - rawOffset;
-
-    Date     utcDate = new Date(utcTime);
-
-    return XSD_DATE_TIME_FMT.format(utcDate) + "Z";
-  }
-
-  private URI validateUri(String uri, String name) {
-    if (uri == null)
-      throw new NullPointerException("'" + name + "' cannot be null");
-
-    try {
-      URI u = new URI(uri);
-
-      if (!u.isAbsolute())
-        throw new URISyntaxException(uri, "missing scheme component", 0);
-
-      return u;
-    } catch (URISyntaxException e) {
-      IllegalArgumentException iae =
-        new IllegalArgumentException("'" + name + "' must be a valid absolute URI");
-      iae.initCause(e);
-      throw iae;
-    }
-  }
-
   private String replaceAll(String fmt, Map values) {
     Pattern      p   = Pattern.compile("\\$(\\w*)");
     Matcher      m   = p.matcher(fmt);
@@ -680,9 +639,5 @@ public class AnnotationImpl implements Annotation {
     sb.append(fmt.substring(pos));
 
     return sb.toString();
-  }
-
-  private String escapeLiteral(String val) {
-    return val.replaceAll("\\\\", "\\\\\\\\").replaceAll("'", "\\\\'");
   }
 }
