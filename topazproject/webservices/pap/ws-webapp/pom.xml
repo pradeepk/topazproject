@@ -25,6 +25,11 @@
       <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-users-core</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>conf-helper</artifactId>
       <version>0.5-SNAPSHOT</version>

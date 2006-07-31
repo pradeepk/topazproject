@@ -39,9 +39,19 @@
     </init-param>
   </filter>
 
+  <filter>
+    <filter-name>User Accounts Filter</filter-name>
+    <filter-class>org.topazproject.ws.users.filter.UserAccountsFilter</filter-class>
+  </filter>
+
   <filter-mapping>
     <filter-name>CAS Filter</filter-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/services/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>User Accounts Filter</filter-name>
+    <url-pattern>/services/*</url-pattern>
   </filter-mapping>
 
   <listener>

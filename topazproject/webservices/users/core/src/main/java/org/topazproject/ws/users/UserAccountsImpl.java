@@ -320,6 +320,9 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     if (log.isDebugEnabled())
       log.debug("Looking up user for auth-id '" + authId + "'");
 
+    if (authId == null)
+      return null;
+
     try {
       StringAnswer ans =
           new StringAnswer(itql.doQuery(ITQL_GET_USERID.replaceAll("\\Q${authId}", authId)));
