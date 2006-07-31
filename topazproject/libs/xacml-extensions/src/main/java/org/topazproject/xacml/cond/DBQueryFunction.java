@@ -11,6 +11,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import com.sun.xacml.EvaluationCtx;
+import com.sun.xacml.ParsingException;
+import com.sun.xacml.UnknownIdentifierException;
+import com.sun.xacml.attr.AttributeFactory;
 import com.sun.xacml.attr.BagAttribute;
 import com.sun.xacml.attr.StringAttribute;
 import com.sun.xacml.cond.Evaluatable;
@@ -35,11 +38,15 @@ public abstract class DBQueryFunction implements Function {
    * URI version of StringAttribute's identifier
    */
   protected static final URI STRING_TYPE = URI.create(StringAttribute.identifier);
+
   // shared logger
-  private static final Log   log = LogFactory.getLog(DBQueryFunction.class);
+  private static final Log log = LogFactory.getLog(DBQueryFunction.class);
 
   // The identifier for this function.
   private URI identifier;
+
+  // The return-type for this function.
+  private URI returnType;
 
   // A List used by makeProcessingError() to save some steps.
   private static List processingErrList = null;
@@ -50,7 +57,19 @@ public abstract class DBQueryFunction implements Function {
    * @param functionName The function name as it appears in XACML policies
    */
   public DBQueryFunction(String functionName) {
-    identifier = URI.create(functionName);
+    identifier   = URI.create(functionName);
+    returnType   = STRING_TYPE;
+  }
+
+  /**
+   * Creates a new DBQueryFunction object.
+   *
+   * @param functionName The function name as it appears in XACML policies
+   * @param returnType The return type for this function
+   */
+  public DBQueryFunction(String functionName, URI returnType) {
+    this.identifier   = URI.create(functionName);
+    this.returnType   = returnType;
   }
 
   /*
@@ -152,15 +171,14 @@ public abstract class DBQueryFunction implements Function {
   }
 
   /**
-   * Gets the return type of this function. Query results are string type. So always return string
-   * type.
+   * Gets the return type of this function.
    *
-   * @return returns <code>StringAttribute.identifier</code> as a URI
+   * @return returns a URI
    *
    * @see com.sun.xacml.cond.Function#getReturnType
    */
   public final URI getReturnType() {
-    return STRING_TYPE;
+    return returnType;
   }
 
   /**
@@ -184,7 +202,6 @@ public abstract class DBQueryFunction implements Function {
    * @return the desired <code>EvaluationResult</code>
    */
   protected EvaluationResult makeProcessingError(String message) {
-    // Build up the processing error Status.
     if (processingErrList == null) {
       String[] errStrings = { Status.STATUS_PROCESSING_ERROR };
       processingErrList = Arrays.asList(errStrings);
@@ -202,15 +219,26 @@ public abstract class DBQueryFunction implements Function {
    * @param results an array of result strings
    *
    * @return the desired <code>EvaluationResult</code>
+   *
+   * @throws QueryException when there is an error in converting results to return-type
    */
-  protected EvaluationResult makeResult(String[] results) {
-    // Create a bag with the results
-    ArrayList bag = new ArrayList(results.length);
+  protected EvaluationResult makeResult(String[] results)
+                                 throws QueryException {
+    ArrayList        bag         = new ArrayList(results.length);
+    AttributeFactory attrFactory = AttributeFactory.getInstance();
+    URI              returnType  = getReturnType();
 
-    for (int i = 0; i < results.length; i++)
-      bag.add(new StringAttribute(results[i]));
+    try {
+      for (int i = 0; i < results.length; i++)
+        bag.add(attrFactory.createValue(returnType, results[i]));
+    } catch (UnknownIdentifierException e) {
+      throw new QueryException("Invalid return-type", e);
+    } catch (ParsingException e) {
+      throw new QueryException("Type conversion error while converting"
+                               + " query results to return-type", e);
+    }
 
-    BagAttribute attr = new BagAttribute(STRING_TYPE, bag);
+    BagAttribute attr = new BagAttribute(returnType, bag);
 
     return new EvaluationResult(attr);
   }

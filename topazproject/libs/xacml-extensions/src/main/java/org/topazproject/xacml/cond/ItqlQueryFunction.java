@@ -17,14 +17,13 @@ import org.topazproject.authentication.ProtectedServiceFactory;
 
 import org.topazproject.configuration.ConfigurationStore;
 
-import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.mulgara.itql.StringAnswer;
 
 import org.topazproject.xacml.ServletEndpointContextAttribute;
 
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.attr.BagAttribute;
-import com.sun.xacml.attr.StringAttribute;
 import com.sun.xacml.cond.EvaluationResult;
 
 /**
@@ -44,6 +43,15 @@ public class ItqlQueryFunction extends DBQueryFunction {
    */
   public ItqlQueryFunction() {
     super(FUNCTION_NAME);
+  }
+
+  /**
+   * Creates an ItqlQueryFunction instance.
+   *
+   * @param returnType the return type of this function
+   */
+  public ItqlQueryFunction(URI returnType) {
+    super(FUNCTION_NAME, returnType);
   }
 
   /**
@@ -68,13 +76,14 @@ public class ItqlQueryFunction extends DBQueryFunction {
     if (configuration != null)
       configuration = configuration.subset(conf);
 
-    if (configuration == null)
+    if ((configuration == null) || (configuration.getString("uri") == null))
       throw new QueryException("Can't find configuration " + conf);
 
     // Get the JAX-RPC context.
     EvaluationResult result =
       context.getSubjectAttribute(ServletEndpointContextAttribute.TYPE,
-                                  ServletEndpointContextAttribute.ID, null);
+                                  ServletEndpointContextAttribute.ID, 
+                                  ServletEndpointContextAttribute.CATEGORY);
 
     // Abort policy evaluation if there is a failure in look up.
     if (result.indeterminate())
@@ -98,8 +107,7 @@ public class ItqlQueryFunction extends DBQueryFunction {
     try {
       service = ProtectedServiceFactory.createService(configuration, session);
     } catch (java.io.IOException e) {
-      throw new QueryException("Unable to obtain a CAS proxy ticket to authenticate to "
-                               + "ITQL interpreter bean service", e);
+      throw new QueryException("Unable to obtain an itql service configuration instance", e);
     }
 
     // Now execute the query against the ITQL service
@@ -115,13 +123,7 @@ public class ItqlQueryFunction extends DBQueryFunction {
     // Create an ItqlHelper
     try {
       itql = new ItqlHelper(service);
-    } catch (java.net.MalformedURLException e) {
-      throw new QueryException(serviceUri
-                               + " is not a valid URL to the ITQL interpreter bean service.", e);
-    } catch (javax.xml.rpc.ServiceException e) {
-      throw new QueryException("Unable to initialize connector to ITQL interpreter bean service at "
-                               + serviceUri, e);
-    } catch (java.rmi.RemoteException e) {
+    } catch (Exception e) {
       throw new QueryException("Unable to initialize connector to ITQL interpreter bean service at "
                                + serviceUri, e);
     }
@@ -129,16 +131,12 @@ public class ItqlQueryFunction extends DBQueryFunction {
     // Create the query
     query = bindStatic(query, bindings);
 
-    Answer answer;
+    StringAnswer answer;
 
     // Execute the query
     try {
-      answer = new Answer(itql.doQuery(query));
-    } catch (org.topazproject.mulgara.itql.service.ItqlInterpreterException e) {
-      throw new QueryException("query '" + query + "' execution failed.", e);
-    } catch (java.rmi.RemoteException e) {
-      throw new QueryException("query '" + query + "' execution failed.", e);
-    } catch (org.topazproject.mulgara.itql.AnswerException e) {
+      answer = new StringAnswer(itql.doQuery(query));
+    } catch (Exception e) {
       throw new QueryException("query '" + query + "' execution failed.", e);
     }
 
@@ -150,12 +148,12 @@ public class ItqlQueryFunction extends DBQueryFunction {
     for (int i = 0; it.hasNext(); i++) {
       Object o = it.next();
 
-      if (!(o instanceof Answer.QueryAnswer))
-        throw new QueryException("query '" + query + "' execution returned a message: " + o);
+      if (!(o instanceof StringAnswer.StringQueryAnswer))
+        continue; 
 
-      Answer.QueryAnswer result  = (Answer.QueryAnswer) o;
-      List               rows    = result.getRows();
-      String[]           columns = result.getVariables();
+      StringAnswer.StringQueryAnswer result  = (StringAnswer.StringQueryAnswer) o;
+      List                           rows    = result.getRows();
+      String[]                       columns = result.getVariables();
 
       if (columns.length != 1)
         throw new QueryException("query '" + query + "' execution returned " + columns.length
@@ -163,17 +161,16 @@ public class ItqlQueryFunction extends DBQueryFunction {
 
       for (Iterator i2 = rows.iterator(); i2.hasNext();) {
         String[] row = (String[]) i2.next();
-        results.add(new StringAttribute(row[0]));
+        results.add(row[0]);
       }
     }
 
-    return new EvaluationResult(new BagAttribute(STRING_TYPE, results));
+    return makeResult((String[]) results.toArray(new String[results.size()]));
   }
 
   private String bindStatic(String query, String[] bindings)
                      throws QueryException {
-    // xxx escapes?
-    String[] parts = query.split("?");
+    String[] parts = query.split("\\?");
 
     if ((parts.length - 1) != bindings.length)
       throw new QueryException("query '" + query + "' requires " + (parts.length - 1)
