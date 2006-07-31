@@ -40,7 +40,7 @@
     <!-- Fire "-Pit-startenv integration-test" from topazproject/integrationtests -->
     <exec executable="mvn${ext}" failonerror="true"
           dir="${BASEDIR}/topazproject/integrationtests">
-      <arg line="clean -Pit-startenv integration-test --batch-mode"/>
+      <arg line="clean -Pit-startenv install --batch-mode"/>
     </exec>
   </target>
     
