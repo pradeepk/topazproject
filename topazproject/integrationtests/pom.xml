@@ -170,6 +170,28 @@
       <type>war</type>
       <version>0.1-SNAPSHOT</version>
     </dependency>
+    <!-- permissions -->
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-permissions-core</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-permissions-server</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-permissions-client-impl</artifactId>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-permissions-webapp</artifactId>
+      <type>war</type>
+      <version>0.1-SNAPSHOT</version>
+    </dependency>
     <!-- journal-admin -->
     <dependency>
       <groupId>org.topazproject.ws</groupId>
@@ -328,6 +350,11 @@
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-pap-webapp</artifactId>
+                <type>war</type>
+              </deployable>
+              <deployable>
+                <groupId>org.topazproject.ws</groupId>
+                <artifactId>ws-permissions-webapp</artifactId>
                 <type>war</type>
               </deployable>
               <deployable>

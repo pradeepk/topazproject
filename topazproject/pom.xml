@@ -22,6 +22,7 @@
     <module>webservices/annotations</module>
     <module>webservices/articles</module>
     <module>webservices/pap</module>
+    <module>webservices/permissions</module>
   </modules>
 
 </project>

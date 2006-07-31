@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  - Copyright (c) 2006 by Topaz, Inc.
+  - http://topazproject.org
+  -
+  - Licensed under the Educational Community License version 1.0
+  - http://opensource.org/licenses/ecl1.php
+  -->
+<configuration>
+  <!-- Allow command-line overrides etc. (eg. -Dtopaz.services.fedora.uri=xxx) -->
+  <system/>
+  <!-- Allow administrator overrides -->
+  <xml fileName="file:///etc/topaz/topaz.xml" optional="true"/>
+  <!-- Defaults if no admin overrides -->
+  <xml fileName="defaults.xml"/>
+</configuration>

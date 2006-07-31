@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  - Copyright (c) 2006 by Topaz, Inc.
+  - http://topazproject.org
+  -
+  - Licensed under the Educational Community License version 1.0
+  - http://opensource.org/licenses/ecl1.php
+  -->
+<config>
+  <topaz>
+    <objects>
+      <base-uri>doi:10.1371/</base-uri>
+    </objects>
+    <services>
+      <itql>
+        <uri>http://localhost:9090/fedora/services/ItqlBeanService</uri>
+        <auth-method>CAS</auth-method>
+      </itql>
+    </services>
+    <permissions>
+      <pdpName>_default_</pdpName>
+    </permissions>
+  </topaz>
+</config>
