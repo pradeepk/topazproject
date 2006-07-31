@@ -80,6 +80,9 @@ public class PDPFactory {
    */
   public PDPFactory(File configFile) throws ParsingException {
     store = new ConfigurationStore(configFile);
+
+    // xxx: use defaults now; may be provide ability to choose factories later
+    store.useDefaultFactories();
   }
 
   /**
