@@ -40,6 +40,7 @@ public abstract class ${Svc}PEP extends AbstractSimplePEP {
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
                                                            null,
+                                                           null,
                                                          };
 
   protected ${Svc}PEP(PDP pdp, Set subjAttrs)

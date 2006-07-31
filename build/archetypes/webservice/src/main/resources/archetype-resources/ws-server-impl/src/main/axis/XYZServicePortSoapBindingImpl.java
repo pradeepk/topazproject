@@ -12,6 +12,7 @@ package ${package}.service;
 
 import java.net.URI;
 import java.rmi.RemoteException;
+import javax.servlet.http.HttpSession;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
@@ -21,6 +22,8 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.authentication.ProtectedService;
+import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
 import ${package}.${Svc}Impl;
 import ${package}.${Svc}PEP;

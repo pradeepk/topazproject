@@ -47,6 +47,6 @@ public class ${Svc}Impl implements ${Svc} {
       throws IOException, ServiceException {
     this.pep = pep;
     itql = new ItqlHelper(itqlService);
-    apim = APIMStubFactory.create(fedoraSvc);
+    apim = APIMStubFactory.create(fedoraService);
   }
 }

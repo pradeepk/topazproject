@@ -30,7 +30,7 @@ public class ${Svc}ServiceTest extends TestCase {
 
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
     URL url =
-        new URL("http://localhost:9997/ws-${service}-webapp-0.1-SNAPSHOT/services/${Svc}ServicePort");
+        new URL("http://localhost:9997/ws-${service}-webapp-0.5-SNAPSHOT/services/${Svc}ServicePort");
     ${Svc}ServiceLocator locator = new ${Svc}ServiceLocator();
     service = locator.get${Svc}ServicePort(url);
   }
