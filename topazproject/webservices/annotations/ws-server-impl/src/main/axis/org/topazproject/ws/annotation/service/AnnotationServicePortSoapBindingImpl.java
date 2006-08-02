@@ -33,7 +33,12 @@ import org.topazproject.fedora.client.Uploader;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.topazproject.ws.annotation.AnnotationImpl;
-import org.topazproject.ws.annotation.PEP;
+import org.topazproject.ws.annotation.AnnotationPEP;
+
+import org.topazproject.xacml.Util;
+
+import com.sun.xacml.ParsingException;
+import com.sun.xacml.UnknownIdentifierException;
 
 /**
  * The implementation of the annotation service.
@@ -66,7 +71,7 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#init");
 
-    PEP              pep = createPEP((ServletEndpointContext) context);
+    AnnotationPEP    pep = createPEP((ServletEndpointContext) context);
 
     HttpSession      session = ((ServletEndpointContext) context).getHttpSession();
 
@@ -229,15 +234,15 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
     }
   }
 
-  private static PEP createPEP(ServletEndpointContext context)
-                        throws ServiceException {
+  private static AnnotationPEP createPEP(ServletEndpointContext context)
+                                  throws ServiceException {
     try {
-      return new PEP(context);
+      return new WSAnnotationPEP(context);
     } catch (IOException e) {
       throw new ServiceException("Failed to create PEP", e);
-    } catch (com.sun.xacml.ParsingException e) {
+    } catch (ParsingException e) {
       throw new ServiceException("Failed to create PEP", e);
-    } catch (com.sun.xacml.UnknownIdentifierException e) {
+    } catch (UnknownIdentifierException e) {
       throw new ServiceException("Failed to create PEP", e);
     }
   }
@@ -286,5 +291,16 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
 
   private static Uploader createFedoraUploader(ProtectedService uploaderSvc) {
     return new Uploader(uploaderSvc);
+  }
+
+  private static class WSAnnotationPEP extends AnnotationPEP {
+    static {
+      init(WSAnnotationPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
+    }
+
+    public WSAnnotationPEP(ServletEndpointContext context)
+                    throws IOException, ParsingException, UnknownIdentifierException {
+      super(Util.lookupPDP(context, "topaz.annotations.pdpName"), Util.createSubjAttrs(context));
+    }
   }
 }

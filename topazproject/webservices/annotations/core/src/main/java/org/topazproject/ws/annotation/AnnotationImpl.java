@@ -121,12 +121,12 @@ public class AnnotationImpl implements Annotation {
     aliases.put("d", d.toString());
   }
 
-  private final PEP        pep;
-  private final ItqlHelper itql;
-  private final URI        fedoraServer;
-  private final FedoraAPIM apim;
-  private final Uploader   uploader;
-  private final String     user;
+  private final AnnotationPEP pep;
+  private final ItqlHelper    itql;
+  private final URI           fedoraServer;
+  private final FedoraAPIM    apim;
+  private final Uploader      uploader;
+  private final String        user;
 
   /**
    * Creates a new AnnotationImpl object.
@@ -138,7 +138,7 @@ public class AnnotationImpl implements Annotation {
    * @param uploader Fedora uploader stub
    * @param user The authenticated user
    */
-  public AnnotationImpl(PEP pep, ItqlHelper itql, URI fedoraServer, FedoraAPIM apim,
+  public AnnotationImpl(AnnotationPEP pep, ItqlHelper itql, URI fedoraServer, FedoraAPIM apim,
                         Uploader uploader, String user) {
     this.pep            = pep;
     this.itql           = itql;
@@ -188,10 +188,10 @@ public class AnnotationImpl implements Annotation {
     else
       itql.validateUri(type, "type");
 
-    checkAccess(PEP.CREATE_ANNOTATION, itql.validateUri(annotates, "annotates"));
+    checkAccess(AnnotationPEP.CREATE_ANNOTATION, itql.validateUri(annotates, "annotates"));
 
     if (supersedes != null) {
-      checkAccess(PEP.SET_ANNOTATION_INFO, itql.validateUri(supersedes, "supersedes"));
+      checkAccess(AnnotationPEP.SET_ANNOTATION_INFO, itql.validateUri(supersedes, "supersedes"));
       checkId(supersedes);
     }
 
@@ -254,7 +254,7 @@ public class AnnotationImpl implements Annotation {
    */
   public void deleteAnnotation(String id, boolean deletePreceding)
                         throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.DELETE_ANNOTATION, itql.validateUri(id, "annotation-id"));
+    checkAccess(AnnotationPEP.DELETE_ANNOTATION, itql.validateUri(id, "annotation-id"));
     checkId(id);
 
     String[] purgeList = getFedoraObjects(id, deletePreceding);
@@ -315,7 +315,7 @@ public class AnnotationImpl implements Annotation {
    * @see org.topazproject.ws.annotation.Annotation#getAnnotation
    */
   public String getAnnotation(String id) throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
+    checkAccess(AnnotationPEP.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
 
     try {
       String query = GET_ITQL.replaceAll("\\$id", id);
@@ -337,7 +337,7 @@ public class AnnotationImpl implements Annotation {
    */
   public String[] listAnnotations(String annotates, String type, boolean idsOnly)
                            throws RemoteException {
-    checkAccess(PEP.LIST_ANNOTATIONS, itql.validateUri(annotates, "annotates"));
+    checkAccess(AnnotationPEP.LIST_ANNOTATIONS, itql.validateUri(annotates, "annotates"));
 
     try {
       if (type == null)
@@ -369,7 +369,7 @@ public class AnnotationImpl implements Annotation {
    */
   public String[] getLatestAnnotations(String id, boolean idsOnly)
                                 throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
+    checkAccess(AnnotationPEP.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
 
     try {
       String subquery = idsOnly ? "" : SUBQUERY;
@@ -394,7 +394,7 @@ public class AnnotationImpl implements Annotation {
    */
   public String[] getPrecedingAnnotations(String id, boolean idsOnly)
                                    throws NoSuchIdException, RemoteException {
-    checkAccess(PEP.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
+    checkAccess(AnnotationPEP.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
     checkId(id);
 
     try {
@@ -417,7 +417,7 @@ public class AnnotationImpl implements Annotation {
    */
   public void setAnnotationState(String id, int state)
                           throws RemoteException, NoSuchIdException {
-    checkAccess(PEP.SET_ANNOTATION_STATE, itql.validateUri(id, "annotation-id"));
+    checkAccess(AnnotationPEP.SET_ANNOTATION_STATE, itql.validateUri(id, "annotation-id"));
     checkId(id);
 
     String set = SET_STATE_ITQL.replaceAll("\\$id", id).replaceAll("\\$state", "" + state);
@@ -429,7 +429,7 @@ public class AnnotationImpl implements Annotation {
    * @see org.topazproject.ws.annotation.Annotation#listAnnotations
    */
   public String[] listAnnotations(int state) throws RemoteException {
-    checkAccess(PEP.LIST_ANNOTATIONS_IN_STATE, URI.create("" + state));
+    checkAccess(AnnotationPEP.LIST_ANNOTATIONS_IN_STATE, URI.create("" + state));
 
     try {
       String query = LIST_STATE_ITQL.replaceAll("\\$state", "" + state);
