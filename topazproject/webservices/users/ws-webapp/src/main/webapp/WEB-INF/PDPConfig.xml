@@ -17,6 +17,7 @@
     <policyFinderModule class="org.topazproject.xacml.ResourcePolicyModule">
       <list>
         <string>policy/users.xml</string>
+        <string>policy/roles.xml</string>
       </list>
     </policyFinderModule>
   </pdp>

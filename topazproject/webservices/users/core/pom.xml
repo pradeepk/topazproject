@@ -25,6 +25,11 @@
       <version>1.0.4</version>
     </dependency>
     <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
+      <version>2.1</version>
+    </dependency>
+    <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>fedora-client</artifactId>
       <version>0.5-SNAPSHOT</version>
@@ -68,6 +73,24 @@
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.users.UserAccounts</classOfPortType>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-wsdl-roles</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>java2wsdl</goal>
+            </goals>
+            <configuration>
+              <implementationClassName>UserRolesServiceImplementation</implementationClassName>
+              <input>${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}</input>
+              <filename>${wsdl.filename}</filename>
+              <all>true</all>
+              <namespace>service.users.ws.topazproject.org</namespace>
+              <servicePortName>UserRolesServicePort</servicePortName>
+              <location>http://localhost/service-location</location>
+              <classesDirectory>${project.build.directory}/classes</classesDirectory>
+              <classOfPortType>org.topazproject.ws.users.UserRoles</classOfPortType>
             </configuration>
           </execution>
         </executions>
