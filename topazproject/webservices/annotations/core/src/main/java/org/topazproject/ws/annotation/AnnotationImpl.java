@@ -55,65 +55,68 @@ public class AnnotationImpl implements Annotation {
     + "<foxml:property NAME=\"info:fedora/fedora-system:def/model#contentModel\" VALUE=\"Annotation\"/>"
     + "</foxml:objectProperties>"
     + "<foxml:datastream CONTROL_GROUP=\"M\" ID=\"BODY\" STATE=\"A\">"
-    + "<foxml:datastreamVersion ID=\"BODY1.0\" MIMETYPE=\"$CONTENTTYPE\" LABEL=\"Annotation Body\">"
-    + "<foxml:contentLocation REF=\"$CONTENT\" TYPE=\"URL\"/>" + "</foxml:datastreamVersion>"
+    + "<foxml:datastreamVersion ID=\"BODY1.0\" MIMETYPE=\"${CONTENTTYPE}\" LABEL=\"Annotation Body\">"
+    + "<foxml:contentLocation REF=\"${CONTENT}\" TYPE=\"URL\"/>" + "</foxml:datastreamVersion>"
     + "</foxml:datastream>" + "</foxml:digitalObject>";
 
   //
   private static final String CREATE_ITQL =
-    ("insert <$id> <r:type> <a:Annotation> <$id> <r:type> <$type>"
-    + " <$id> <a:state> '0' <$id> <a:annotates> <$annotates> <$id> <a:created> '$created'"
-    + " <$id> <a:context> '$context' <$id> <a:body> <$body> <$id> <d:creator> '$user'"
-    + " <$id> <a:supersededBy> <r:nil> into $MODEL;").replaceAll("\\$MODEL", MODEL);
+    ("insert <${id}> <r:type> <a:Annotation> <${id}> <r:type> <${type}>"
+    + " <${id}> <a:state> '0' <${id}> <a:annotates> <${annotates}> <${id}> <a:created> '${created}'"
+    + " <${id}> <a:context> '${context}' <${id}> <a:body> <${body}> <${id}> <d:creator> '${user}'"
+    + " <${id}> <a:supersededBy> <r:nil> into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String SUPERSEDE_ITQL =
-    ("insert <$supersedes> <a:supersededBy> <$id> into $MODEL;"
-    + " delete <$supersedes> <a:supersededBy> <r:nil> from $MODEL;").replaceAll("\\$MODEL", MODEL);
+    ("insert <${supersedes}> <a:supersededBy> <${id}> into ${MODEL};"
+    + " delete <${supersedes}> <a:supersededBy> <r:nil> from ${MODEL};").replaceAll("\\Q${MODEL}",
+                                                                                    MODEL);
   private static final String DELETE_ITQL =
-    ("insert select $a <a:supersededBy> $c from $MODEL"
-    + " where $a <a:supersededBy> <$id> and <$id> <a:supersededBy> $c into $MODEL;"
-    + " delete select $a <a:supersededBy> <$id> from $MODEL where $a <a:supersededBy> <$id>"
-    + " from $MODEL; delete select <$id> $p $o from $MODEL where <$id> $p $o"
-    + " from $MODEL; delete select $a <a:supersededBy> <r:nil>"
-    + " from $MODEL where $a <a:supersededBy> $c and $c <r:type> <a:Annotation> from $MODEL;")
-     .replaceAll("\\$MODEL", MODEL);
+    ("insert select $a <a:supersededBy> $c from ${MODEL}"
+    + " where $a <a:supersededBy> <${id}> and <${id}> <a:supersededBy> $c into ${MODEL};"
+    + " delete select $a <a:supersededBy> <${id}> from ${MODEL} where $a <a:supersededBy> <${id}>"
+    + " from ${MODEL}; delete select <${id}> $p $o from ${MODEL} where <${id}> $p $o"
+    + " from ${MODEL}; delete select $a <a:supersededBy> <r:nil>"
+    + " from ${MODEL} where $a <a:supersededBy> $c and $c <r:type> <a:Annotation> from ${MODEL};")
+     .replaceAll("\\Q${MODEL}", MODEL);
   private static final String GET_ITQL =
-    ("select $p $o from $MODEL where <$id> $p $o;").replaceAll("\\$MODEL", MODEL);
+    ("select $p $o from ${MODEL} where <${id}> $p $o;").replaceAll("\\Q${MODEL}", MODEL);
   private static final String SUBQUERY =
-    ("subquery(select $p $o from $MODEL where $s $p $o)").replaceAll("\\$MODEL", MODEL);
+    ("subquery(select $p $o from ${MODEL} where $s $p $o)").replaceAll("\\Q${MODEL}", MODEL);
   private static final String LIST_ITQL =
-    ("select $s $subquery from $MODEL where $s <a:annotates> <$annotates> and $s <a:state> '0'"
-    + " and $s <a:supersededBy> <r:nil> and $s <r:type> <$type>;").replaceAll("\\$MODEL", MODEL);
+    ("select $s ${subquery} from ${MODEL} where $s <a:annotates> <${annotates}> and $s <a:state> '0'"
+    + " and $s <a:supersededBy> <r:nil> and $s <r:type> <${type}>;").replaceAll("\\Q${MODEL}", MODEL);
   private static final String LATEST_ITQL =
-    ("select $s $subquery from $MODEL where"
-    + " ( (walk(<$id> <a:supersededBy> $c and $c <a:supersededBy> $s)"
+    ("select $s ${subquery} from ${MODEL} where"
+    + " ( (walk(<${id}> <a:supersededBy> $c and $c <a:supersededBy> $s)"
     + "  and $s <a:supersededBy> <r:nil>)"
-    + " or ($s <a:supersededBy> <r:nil> and $s <tucana:is> <$id>) ) and $s <a:state> '0'"
-    + " and $s <r:type> <a:Annotation>" + ";").replaceAll("\\$MODEL", MODEL);
+    + " or ($s <a:supersededBy> <r:nil> and $s <tucana:is> <${id}>) ) and $s <a:state> '0'"
+    + " and $s <r:type> <a:Annotation>" + ";").replaceAll("\\Q${MODEL}", MODEL);
   private static final String PRECEDING_ITQL =
-    ("select $s $subquery from $MODEL where"
-    + " walk($s <a:supersededBy> <$id> and $s <a:supersededBy> $c) and $s <a:state> '0'"
-    + " and $s <r:type> <a:Annotation>;").replaceAll("\\$MODEL", MODEL);
+    ("select $s ${subquery} from ${MODEL} where"
+    + " walk($s <a:supersededBy> <${id}> and $s <a:supersededBy> $c) and $s <a:state> '0'"
+    + " and $s <r:type> <a:Annotation>;").replaceAll("\\Q${MODEL}", MODEL);
   private static final String PRECEDING_ALL_ITQL =
-    ("select $s from $MODEL where" + " walk($c <a:supersededBy> <$id> and $s <a:supersededBy> $c) "
-    + " and $s <r:type> <a:Annotation>;").replaceAll("\\$MODEL", MODEL);
+    ("select $s from ${MODEL} where"
+    + " walk($c <a:supersededBy> <${id}> and $s <a:supersededBy> $c) "
+    + " and $s <r:type> <a:Annotation>;").replaceAll("\\Q${MODEL}", MODEL);
   private static final String SET_STATE_ITQL =
-    ("delete select <$id> <a:state> $o from $MODEL" + " where <$id> <a:state> $o from $MODEL;"
-    + " insert <$id> <a:state> '$state' into $MODEL;").replaceAll("\\$MODEL", MODEL);
+    ("delete select <${id}> <a:state> $o from ${MODEL}"
+    + " where <${id}> <a:state> $o from ${MODEL};"
+    + " insert <${id}> <a:state> '${state}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String LIST_STATE_ITQL =
-    ("select $a from $MODEL where $a <a:state> '$state';").replaceAll("\\$MODEL", MODEL);
+    ("select $a from ${MODEL} where $a <a:state> '${state}';").replaceAll("\\Q${MODEL}", MODEL);
   private static final String CHECK_ID_ITQL =
-    ("select $s from $MODEL where $s <r:type> <a:Annotation> and   $s <tucana:is> <$id>")
-     .replaceAll("\\$MODEL", MODEL);
+    ("select $s from ${MODEL} where $s <r:type> <a:Annotation> and   $s <tucana:is> <${id}>")
+     .replaceAll("\\Q${MODEL}", MODEL);
 
   // xxx : can't find the fedora stuff. 
   private static final String FEDORA_LIST_ITQL =
-    ("select $f from $MODEL where" // + " $f <fedora:fedora-system:def/model#contentModel> 'Annotation' and"
-    + " $s <a:body> $f and ($s <tucana:is> <$id>"
-    + " or (walk($c <a:supersededBy> <$id> and $s <a:supersededBy> $c)"
-    + " and $s <r:type> <a:Annotation>))").replaceAll("\\$MODEL", MODEL);
+    ("select $f from ${MODEL} where" // + " $f <fedora:fedora-system:def/model#contentModel> 'Annotation' and"
+    + " $s <a:body> $f and ($s <tucana:is> <${id}>"
+    + " or (walk($c <a:supersededBy> <${id}> and $s <a:supersededBy> $c)"
+    + " and $s <r:type> <a:Annotation>))").replaceAll("\\Q${MODEL}", MODEL);
   private static final String FEDORA_ID_ITQL =
-    ("select $f from $MODEL where" //  + " $f <fedora:fedora-system:def/model#contentModel> 'Annotation' and"
-    + " $s <a:body> $f and $s <tucana:is> <$id>").replaceAll("\\$MODEL", MODEL);
+    ("select $f from ${MODEL} where" //  + " $f <fedora:fedora-system:def/model#contentModel> 'Annotation' and"
+    + " $s <a:body> $f and $s <tucana:is> <${id}>").replaceAll("\\Q${MODEL}", MODEL);
 
   static {
     aliases.put("a", a.toString());
@@ -222,7 +225,7 @@ public class AnnotationImpl implements Annotation {
       values.put("supersedes", supersedes);
     }
 
-    itql.doUpdate(replaceAll(create, values));
+    itql.doUpdate(itql.bindValues(create, values));
 
     if (log.isDebugEnabled())
       log.debug("created annotaion " + id + " for " + annotates + " annotated by " + body);
@@ -239,7 +242,7 @@ public class AnnotationImpl implements Annotation {
       values.put("CONTENTTYPE", contentType);
       values.put("CONTENT", ref);
 
-      String foxml = replaceAll(FOXML, values);
+      String foxml = itql.bindValues(FOXML, values);
 
       return pid2URI(apim.ingest(foxml.getBytes("UTF-8"), "foxml1.0", "created"));
     } catch (java.io.UnsupportedEncodingException e) {
@@ -261,7 +264,7 @@ public class AnnotationImpl implements Annotation {
 
     String[] preceding = deletePreceding ? getPrecedingAll(id) : new String[0];
 
-    String   delete = DELETE_ITQL.replaceAll("\\$id", id);
+    String   delete = DELETE_ITQL.replaceAll("\\Q${id}", id);
 
     String   txn = "delete " + id;
 
@@ -273,7 +276,7 @@ public class AnnotationImpl implements Annotation {
         log.debug("deleted " + id);
 
       for (int i = 0; i < preceding.length; i++) {
-        delete = DELETE_ITQL.replaceAll("\\$id", preceding[i]);
+        delete = DELETE_ITQL.replaceAll("\\Q${id}", preceding[i]);
         itql.doUpdate(delete);
 
         if (log.isDebugEnabled())
@@ -318,7 +321,7 @@ public class AnnotationImpl implements Annotation {
     checkAccess(AnnotationPEP.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
 
     try {
-      String query = GET_ITQL.replaceAll("\\$id", id);
+      String query = GET_ITQL.replaceAll("\\Q${id}", id);
 
       Answer ans  = new Answer(itql.doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
@@ -352,7 +355,7 @@ public class AnnotationImpl implements Annotation {
       values.put("annotates", annotates);
       values.put("type", type);
 
-      String query = replaceAll(LIST_ITQL, values);
+      String query = itql.bindValues(LIST_ITQL, values);
 
       Answer ans = new Answer(itql.doQuery(query));
 
@@ -374,7 +377,7 @@ public class AnnotationImpl implements Annotation {
     try {
       String subquery = idsOnly ? "" : SUBQUERY;
 
-      String query = LATEST_ITQL.replaceAll("\\$subquery", subquery).replaceAll("\\$id", id);
+      String query = LATEST_ITQL.replaceAll("\\Q${subquery}", subquery).replaceAll("\\Q${id}", id);
 
       Answer ans = new Answer(itql.doQuery(query));
 
@@ -400,7 +403,8 @@ public class AnnotationImpl implements Annotation {
     try {
       String subquery = idsOnly ? "" : SUBQUERY;
 
-      String query = PRECEDING_ITQL.replaceAll("\\$subquery", subquery).replaceAll("\\$id", id);
+      String query =
+        PRECEDING_ITQL.replaceAll("\\Q${subquery}", subquery).replaceAll("\\Q${id}", id);
 
       Answer ans = new Answer(itql.doQuery(query));
 
@@ -420,7 +424,7 @@ public class AnnotationImpl implements Annotation {
     checkAccess(AnnotationPEP.SET_ANNOTATION_STATE, itql.validateUri(id, "annotation-id"));
     checkId(id);
 
-    String set = SET_STATE_ITQL.replaceAll("\\$id", id).replaceAll("\\$state", "" + state);
+    String set = SET_STATE_ITQL.replaceAll("\\Q${id}", id).replaceAll("\\Q$state", "" + state);
 
     itql.doUpdate(set);
   }
@@ -432,7 +436,7 @@ public class AnnotationImpl implements Annotation {
     checkAccess(AnnotationPEP.LIST_ANNOTATIONS_IN_STATE, URI.create("" + state));
 
     try {
-      String query = LIST_STATE_ITQL.replaceAll("\\$state", "" + state);
+      String query = LIST_STATE_ITQL.replaceAll("\\Q$state", "" + state);
 
       Answer ans  = new Answer(itql.doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
@@ -445,7 +449,7 @@ public class AnnotationImpl implements Annotation {
 
   private void checkId(String id) throws RemoteException, NoSuchIdException {
     try {
-      String query = CHECK_ID_ITQL.replaceAll("\\$id", id);
+      String query = CHECK_ID_ITQL.replaceAll("\\Q${id}", id);
       Answer ans  = new Answer(itql.doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -562,7 +566,7 @@ public class AnnotationImpl implements Annotation {
   private String[] getFedoraObjects(String id, boolean preceding)
                              throws RemoteException {
     String query = preceding ? FEDORA_LIST_ITQL : FEDORA_ID_ITQL;
-    query = query.replaceAll("\\$id", id);
+    query = query.replaceAll("\\Q${id}", id);
 
     try {
       Answer ans  = new Answer(itql.doQuery(query));
@@ -588,7 +592,7 @@ public class AnnotationImpl implements Annotation {
 
   private String[] getPrecedingAll(String id) throws RemoteException {
     try {
-      String query = PRECEDING_ALL_ITQL.replaceAll("\\$id", id);
+      String query = PRECEDING_ALL_ITQL.replaceAll("\\Q${id}", id);
 
       Answer ans = new Answer(itql.doQuery(query));
 
@@ -615,29 +619,5 @@ public class AnnotationImpl implements Annotation {
     String path = "/fedora/get/" + uri2PID(uri) + "/BODY";
 
     return fedoraServer.resolve(path).toString();
-  }
-
-  private String replaceAll(String fmt, Map values) {
-    Pattern      p   = Pattern.compile("\\$(\\w*)");
-    Matcher      m   = p.matcher(fmt);
-    StringBuffer sb  = new StringBuffer(fmt.length() * 2);
-    int          pos = 0;
-
-    while (m.find()) {
-      int    ts    = m.start();
-      int    te    = m.end();
-      String token = fmt.substring(ts + 1, te);
-      String val   = (String) values.get(token);
-
-      if (val != null) {
-        sb.append(fmt.substring(pos, ts));
-        sb.append(val);
-        pos = te;
-      }
-    }
-
-    sb.append(fmt.substring(pos));
-
-    return sb.toString();
   }
 }
