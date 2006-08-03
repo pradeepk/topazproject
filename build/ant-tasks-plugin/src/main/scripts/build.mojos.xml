@@ -31,6 +31,15 @@
           <type>java.lang.String</type>
           <description>Project basedir</description>
         </parameter>
+        <parameter>
+          <name>topazproject.install.dir</name>
+          <property>topazproject.install.dir</property>
+          <required>true</required>
+          <defaultValue>${topazproject.install.dir}</defaultValue>
+          <expression>${topazproject.install.dir}</expression>
+          <type>java.lang.String</type>
+          <description>Project install dir</description>
+        </parameter>
       </parameters>
 
     </mojo>
