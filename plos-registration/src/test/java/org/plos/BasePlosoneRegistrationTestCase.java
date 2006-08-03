@@ -24,7 +24,7 @@ public abstract class BasePlosoneRegistrationTestCase extends AbstractDependency
   private ChangePasswordAction changePasswordAction;
 
   protected String[] getConfigLocations() {
-    return new String[] {"nonJmxApplicationContext.xml"};
+    return new String[] {"testApplicationContext.xml"};
   }
 
   public final void setRegistrationService(final RegistrationService registrationService) {

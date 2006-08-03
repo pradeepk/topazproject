@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans default-autowire="autodetect">
+  <import resource="nonJmxApplicationContext.xml"/>
+
+  <!-- creating all actions with the right injections -->
+  <bean id="registerAction" class="org.plos.web.RegisterAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+  <bean id="confirmationAction" class="org.plos.web.ConfirmationAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+  <bean id="forgotPasswordAction" class="org.plos.web.ForgotPasswordAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+  <bean id="forgotPasswordChangePasswordAction" class="org.plos.web.ForgotPasswordChangePasswordAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+  <bean id="changePasswordAction" class="org.plos.web.ChangePasswordAction" singleton="false">
+    <property name="registrationService" ref="registrationService"/>
+  </bean>
+
+</beans>

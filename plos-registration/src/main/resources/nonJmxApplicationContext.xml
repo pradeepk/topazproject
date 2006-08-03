@@ -3,30 +3,8 @@
 <beans default-autowire="autodetect">
 
   <!--Plosone developer beans here -->
-
   <bean id="serviceFactory" class="org.plos.service.ServiceFactory">
     <property name="persistenceService" ref="persistenceService"/>
-    <property name="registrationService" ref="registrationService"/>
-  </bean>
-
-  <!-- creating all actions with the right injections, used also by the -->
-  <bean id="registerAction" class="org.plos.web.RegisterAction" singleton="false">
-    <property name="registrationService" ref="registrationService"/>
-  </bean>
-
-  <bean id="confirmationAction" class="org.plos.web.ConfirmationAction" singleton="false">
-    <property name="registrationService" ref="registrationService"/>
-  </bean>
-
-  <bean id="forgotPasswordAction" class="org.plos.web.ForgotPasswordAction" singleton="false">
-    <property name="registrationService" ref="registrationService"/>
-  </bean>
-
-  <bean id="forgotPasswordChangePasswordAction" class="org.plos.web.ForgotPasswordChangePasswordAction" singleton="false">
-    <property name="registrationService" ref="registrationService"/>
-  </bean>
-
-  <bean id="changePasswordAction" class="org.plos.web.ChangePasswordAction" singleton="false">
     <property name="registrationService" ref="registrationService"/>
   </bean>
 
@@ -52,17 +30,9 @@
 
   <bean id="registrationMessagingService" class="org.plos.service.impl.PlosRegistrationMessagingService"/>
 
-  <!--<bean id="User" class="org.plos.registration.UserImpl"></bean>-->
-
   <bean id="RegistrationManager" class="org.plos.management.RegistrationManager">
     <property name="userDAO" ref="userDAO"/>
   </bean>
-
-
-  <!--<bean id="testBean" class="org.plos.management.AnnotationTestBean">-->
-  <!--<property name="name" value="TEST"/>-->
-  <!--<property name="age" value="100"/>-->
-  <!--</bean>-->
 
 
   <!--Beans from Spring distribution  -->
