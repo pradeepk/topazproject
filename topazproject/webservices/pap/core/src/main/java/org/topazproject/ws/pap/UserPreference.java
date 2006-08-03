@@ -44,7 +44,8 @@ public class UserPreference {
   /**
    * Get the values of the preference.
    *
-   * @return the preference values; may be null
+   * @return the preference values; may be null. Note that the order of the entries will be
+   *         arbitrary.
    */
   public String[] getValues()
   {
@@ -54,7 +55,7 @@ public class UserPreference {
   /**
    * Set the values of the preference.
    *
-   * @param values the preference values; may be null
+   * @param values the preference values; may be null. Note that the order will not be preserved.
    */
   public void setValues(String[] values)
   {

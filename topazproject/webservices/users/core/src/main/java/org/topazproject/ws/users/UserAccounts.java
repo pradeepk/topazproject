@@ -47,7 +47,8 @@ public interface UserAccounts {
    * Get the list of currently known authentication id's for the specified user account.
    * 
    * @param userId  the user account's id
-   * @return the list of authentication id's; this may be empty
+   * @return the list of authentication id's; this may be empty. Note that the order of the entries
+   *         will be arbitrary.
    * @throws NoSuchIdException if the user account does not exist
    * @throws RemoteException if some other error occured
    */
@@ -58,7 +59,8 @@ public interface UserAccounts {
    * may be empty, which will probably have the effect of disabling logins to the account.
    * 
    * @param userId  the user account's id
-   * @param authId  the list of authentication id's; this may be empty
+   * @param authId  the list of authentication id's; this may be empty. Note that the order will not
+   *                be preserved.
    * @throws NoSuchIdException if the user account does not exist
    * @throws RemoteException if some other error occured
    */

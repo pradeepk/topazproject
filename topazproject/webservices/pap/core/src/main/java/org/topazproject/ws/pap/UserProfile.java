@@ -232,7 +232,7 @@ public class UserProfile {
   /**
    * Get a list of url's, usually of webpages, representing the user's interests.
    *
-   * @return the list of url's, or null
+   * @return the list of url's, or null. Note that the order of the entries will be arbitrary.
    */
   public String[] getInterests()
   {
@@ -242,7 +242,7 @@ public class UserProfile {
   /**
    * Set a list of url's, usually of webpages, representing the user's interests.
    *
-   * @param interests the list of url's; may be null
+   * @param interests the list of url's; may be null. Note that the order will not be preserved.
    */
   public void setInterests(String[] interests)
   {

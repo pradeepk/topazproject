@@ -23,7 +23,8 @@ public interface Preferences {
    * 
    * @param appId  the application id; may be null
    * @param userId the user's internal id
-   * @return the user's preferences, or null if none exist for this user
+   * @return the user's preferences, or null if none exist for this user. Note that the order of the
+   *         entries will be arbitrary.
    * @throws NoSuchIdException the user does not exist
    * @throws RemoteException if some error occured accessing the preferences
    */
@@ -36,7 +37,8 @@ public interface Preferences {
    * @param appId  the application id; may only be null if <var>prefs</var> is also null, which
    *               causes all settings for the given user under all app-ids to be erased.
    * @param userId the user's internal id
-   * @param prefs  the user's preferences; may be null in which case all settings are erased
+   * @param prefs  the user's preferences; may be null in which case all settings are erased. Note
+   *               that the order will not be preserved.
    * @throws NoSuchIdException the user does not exist
    * @throws RemoteException if some error occured accessing the preferences
    */
