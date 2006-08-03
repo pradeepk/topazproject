@@ -1,0 +1,19 @@
+ -----
+ Topaz Project / PLOS-One
+ -----
+ -----
+ -----
+
+Maven Documentation Site for the Topaz Project
+
+ This site is automatically generated and has links to documentation. Primay documentation
+is available at:
+
+  * The {{{http://gandalf.topazproject.org/trac}Topaz Wiki/Trac}}
+  
+  * Generated {{{http://gandalf.topazproject.org/docs/project-reports.html}Reports}}
+    (like {{{http://gandalf.topazproject.org/docs/apidocs/}javadocs}},
+    {{{http://gandalf.topazproject.org/docs/xref/}xref}}, etc...)
+
+  * {{{http://gandalf.topazproject.org/continuum/}Continuum continous integration}}
+
