@@ -89,24 +89,7 @@ public interface Annotation {
 
   /**
    * Retrieve the annotation meta-data. Note that there may be other annotations that supersede
-   * this. To always get the latest version(s), use {@link #getLatestAnnotations}. An example for
-   * the annotations metadata returned is:
-   * <pre>
-   * &lt;annotation xmlns:a="http://www.w3.org/2000/10/annotation-ns#" 
-   *                xmlns:r="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-   *                xmlns:d="http://purl.org/dc/elements/1.1/"
-   *                id="annotations:2"&gt;
-   *   &lt;r:type&gt;http://www.w3.org/2000/10/annotationType#Annotation&lt;/r:type&gt;
-   *   &lt;a:annotates&gt;http://serv1.example.com/some/page.html&lt;/a:annotates&gt;
-   *   &lt;a:context&gt;http://serv1.example.com/some/page.html#xpointer(id("Main")/p[2])&lt;/a:context&gt;
-   *   &lt;a:body&gt;http://serv2.example.com/mycomment.html&lt;/a:body&gt;
-   *   &lt;d:creator&gt;Ralph Swick&lt;/d:creator&gt;
-   *   &lt;a:created&gt;2006-06-28T12:10Z&lt;/a:created&gt;
-   *   &lt;a:state&gt;0&lt;/a:state&gt;
-   *   &lt;a:supersededBy&gt;annotations:5&lt;/a:supersededBy&gt;
-   *   &lt;a:supersededBy&gt;annotations:6&lt;/a:supersededBy&gt;
-   * &lt;/annotation&gt;
-   * </pre>
+   * this. To always get the latest version(s), use {@link #getLatestAnnotations}.
    *
    * @param id the id of the annotation for which to get the meta-data
    *
@@ -115,22 +98,21 @@ public interface Annotation {
    * @throws NoSuchIdException if the annotation does not exist
    * @throws RemoteException if some other error occured
    */
-  public String getAnnotation(String id) throws NoSuchIdException, RemoteException;
+  public AnnotationInfo getAnnotationInfo(String id) throws NoSuchIdException, RemoteException;
 
   /**
    * Gets the latest version(s) of this annotation. The latest version(s) are the ones that are not
    * superseded by other annotations and therefore could just be this annotation itself.
    *
    * @param id the annotation id.
-   * @param idsOnly true to return just the ids; false for the annotation meta-data.
    *
    * @return an array of annotation ids or metadata; the array will atleast contain one element
    *
    * @throws NoSuchIdException if the annotation does not exist
    * @throws RemoteException if an error occured
    */
-  public String[] getLatestAnnotations(String id, boolean idsOnly)
-                                throws NoSuchIdException, RemoteException;
+  public AnnotationInfo[] getLatestAnnotations(String id)
+                                        throws NoSuchIdException, RemoteException;
 
   /**
    * Gets the set of annotations of the given type on a resource. Matching annotations are further
@@ -139,21 +121,19 @@ public interface Annotation {
    *
    * @param annotates the resource for which annotations are to be looked-up
    * @param type the annotation type to use in filtering the annotations or null to include all
-   * @param idsOnly true to return just the ids; false for the annotation meta-data.
    *
    * @return an array of annotation ids or metadata for matching annotations; if no annotations
    *         have been defined, an empty array is returned
    *
    * @throws RemoteException if an error occured
    */
-  public String[] listAnnotations(String annotates, String type, boolean idsOnly)
-                           throws RemoteException;
+  public AnnotationInfo[] listAnnotations(String annotates, String type)
+                                   throws RemoteException;
 
   /**
    * Gets the chain of annotations that precede this to give a history of changes.
    *
    * @param id the annotation id
-   * @param idsOnly true to return just the ids; false for the annotation meta-data.
    *
    * @return an array of annotation ids or metadata; if this annotation does not supersede any
    *         other annotation, then an empty array is returned
@@ -161,8 +141,8 @@ public interface Annotation {
    * @throws NoSuchIdException if the annotation does not exist
    * @throws RemoteException if an error occured
    */
-  public String[] getPrecedingAnnotations(String id, boolean idsOnly)
-                                   throws NoSuchIdException, RemoteException;
+  public AnnotationInfo[] getPrecedingAnnotations(String id)
+                                           throws NoSuchIdException, RemoteException;
 
   /**
    * Sets the administrative state of an annotation. (eg. flagged for review)
