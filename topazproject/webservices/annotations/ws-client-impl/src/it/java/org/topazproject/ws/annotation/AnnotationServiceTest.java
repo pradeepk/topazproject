@@ -28,7 +28,7 @@ import junit.framework.TestCase;
  * @author Pradeep Krishnan
  */
 public class AnnotationServiceTest extends TestCase {
-  private Annotation service;
+  private Annotations service;
 
   /**
    * Creates a new AnnotationServiceTest object.

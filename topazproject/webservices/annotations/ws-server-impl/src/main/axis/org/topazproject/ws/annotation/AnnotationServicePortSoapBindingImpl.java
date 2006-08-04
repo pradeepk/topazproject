@@ -32,8 +32,8 @@ import org.topazproject.fedora.client.Uploader;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import org.topazproject.ws.annotation.impl.AnnotationImpl;
-import org.topazproject.ws.annotation.impl.AnnotationPEP;
+import org.topazproject.ws.annotation.impl.AnnotationsImpl;
+import org.topazproject.ws.annotation.impl.AnnotationsPEP;
 
 import org.topazproject.xacml.Util;
 
@@ -43,15 +43,15 @@ import com.sun.xacml.UnknownIdentifierException;
 /**
  * The implementation of the annotation service.
  */
-public class AnnotationServicePortSoapBindingImpl implements Annotation, ServiceLifecycle {
+public class AnnotationServicePortSoapBindingImpl implements Annotations, ServiceLifecycle {
   private static Log log = LogFactory.getLog(AnnotationServicePortSoapBindingImpl.class);
 
   //
-  private AnnotationImpl impl                 = null;
-  private Configuration  itqlConfig;
-  private Configuration  fedoraConfig;
-  private Configuration  fedoraUploaderConfig;
-  private String         hostname;
+  private AnnotationsImpl impl                 = null;
+  private Configuration   itqlConfig;
+  private Configuration   fedoraConfig;
+  private Configuration   fedoraUploaderConfig;
+  private String          hostname;
 
   /**
    * Creates a new AnnotationServicePortSoapBindingImpl object.
@@ -71,7 +71,7 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#init");
 
-    AnnotationPEP    pep = createPEP((ServletEndpointContext) context);
+    AnnotationsPEP   pep = createPEP((ServletEndpointContext) context);
 
     HttpSession      session = ((ServletEndpointContext) context).getHttpSession();
 
@@ -92,7 +92,7 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
     Principal        principal = ((ServletEndpointContext) context).getUserPrincipal();
     String           user      = (principal == null) ? null : principal.getName();
 
-    impl = new AnnotationImpl(pep, itql, fedoraServer, apim, uploader, user);
+    impl = new AnnotationsImpl(pep, itql, fedoraServer, apim, uploader, user);
   }
 
   /**
@@ -319,10 +319,10 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
     }
   }
 
-  private static AnnotationPEP createPEP(ServletEndpointContext context)
-                                  throws ServiceException {
+  private static AnnotationsPEP createPEP(ServletEndpointContext context)
+                                   throws ServiceException {
     try {
-      return new WSAnnotationPEP(context);
+      return new WSAnnotationsPEP(context);
     } catch (IOException e) {
       throw new ServiceException("Failed to create PEP", e);
     } catch (ParsingException e) {
@@ -378,13 +378,13 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
     return new Uploader(uploaderSvc);
   }
 
-  private static class WSAnnotationPEP extends AnnotationPEP {
+  private static class WSAnnotationsPEP extends AnnotationsPEP {
     static {
-      init(WSAnnotationPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
+      init(WSAnnotationsPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
     }
 
-    public WSAnnotationPEP(ServletEndpointContext context)
-                    throws IOException, ParsingException, UnknownIdentifierException {
+    public WSAnnotationsPEP(ServletEndpointContext context)
+                     throws IOException, ParsingException, UnknownIdentifierException {
       super(Util.lookupPDP(context, "topaz.annotations.pdpName"), Util.createSubjAttrs(context));
     }
   }

@@ -16,7 +16,7 @@ import com.sun.xacml.UnknownIdentifierException;
  *
  * @author Pradeep Krishnan
  */
-public class AnnotationPEP extends AbstractSimplePEP {
+public class AnnotationsPEP extends AbstractSimplePEP {
   /**
    * The action that represents a createAnnotation operation in XACML policies.
    */
@@ -84,7 +84,7 @@ public class AnnotationPEP extends AbstractSimplePEP {
    *    *@see org.topazproject.xacml.AbstractSimplePEP
    *
    */
-  protected AnnotationPEP(PDP pdp, Set subjAttrs)
+  protected AnnotationsPEP(PDP pdp, Set subjAttrs)
                    throws IOException, ParsingException, UnknownIdentifierException {
     super(pdp, subjAttrs);
   }

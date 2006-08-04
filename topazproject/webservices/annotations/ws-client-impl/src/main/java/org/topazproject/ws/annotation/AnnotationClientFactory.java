@@ -20,27 +20,27 @@ public class AnnotationClientFactory {
    *
    * @param service the service configuration (url and credentials)
    *
-   * @return Returns an Annotation service client stub.
+   * @return Returns an Annotations service client stub.
    *
    * @throws MalformedURLException If the service url is misconfigured
    * @throws ServiceException If there is an error in creating the stub
    */
-  public static Annotation create(ProtectedService service)
+  public static Annotations create(ProtectedService service)
                            throws MalformedURLException, ServiceException {
     URL                      url     = new URL(service.getServiceUri());
-    AnnotationServiceLocator locator = new AnnotationServiceLocator();
+    AnnotationsServiceLocator locator = new AnnotationsServiceLocator();
 
     locator.setMaintainSession(true);
 
-    Annotation annotation = locator.getAnnotationServicePort(url);
+    Annotations annotations = locator.getAnnotationServicePort(url);
 
     if (service.requiresUserNamePassword()) {
-      Stub stub = (Stub) annotation;
+      Stub stub = (Stub) annotations;
       stub._setProperty(Stub.USERNAME_PROPERTY, service.getUserName());
       stub._setProperty(Stub.PASSWORD_PROPERTY, service.getPassword());
     }
 
-    return annotation;
+    return annotations;
   }
 
   /**
@@ -48,12 +48,12 @@ public class AnnotationClientFactory {
    *
    * @param annotationServiceUri the uri for annotation service
    *
-   * @return Returns an Annotation service client stub.
+   * @return Returns an Annotations service client stub.
    *
    * @throws MalformedURLException If the service url is misconfigured
    * @throws ServiceException If there is an error in creating the stub
    */
-  public static Annotation create(String annotationServiceUri)
+  public static Annotations create(String annotationServiceUri)
                            throws MalformedURLException, ServiceException {
     return create(ProtectedServiceFactory.createService(annotationServiceUri, null, null, false));
   }

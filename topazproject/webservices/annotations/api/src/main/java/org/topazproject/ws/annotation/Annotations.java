@@ -7,7 +7,7 @@ import java.rmi.RemoteException;
  *
  * @author Pradeep Krishnan
  */
-public interface Annotation {
+public interface Annotations {
   /**
    * Creates a new annotation.
    *

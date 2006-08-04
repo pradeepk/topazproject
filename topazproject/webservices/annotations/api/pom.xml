@@ -32,7 +32,7 @@
               <servicePortName>AnnotationServicePort</servicePortName>
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
-              <classOfPortType>org.topazproject.ws.annotation.Annotation</classOfPortType>
+              <classOfPortType>org.topazproject.ws.annotation.Annotations</classOfPortType>
             </configuration>
           </execution>
         </executions>
