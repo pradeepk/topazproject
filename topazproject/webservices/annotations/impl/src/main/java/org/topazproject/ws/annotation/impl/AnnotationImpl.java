@@ -1,4 +1,4 @@
-package org.topazproject.ws.annotation;
+package org.topazproject.ws.annotation.impl;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -27,6 +27,9 @@ import org.topazproject.fedora.client.Uploader;
 import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
+
+import org.topazproject.ws.annotation.Annotation;
+import org.topazproject.ws.annotation.NoSuchIdException;
 
 /**
  * The implementation of the annotation service.

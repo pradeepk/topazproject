@@ -1,4 +1,4 @@
-package org.topazproject.ws.annotation;
+package org.topazproject.ws.annotation.impl;
 
 import java.io.IOException;
 

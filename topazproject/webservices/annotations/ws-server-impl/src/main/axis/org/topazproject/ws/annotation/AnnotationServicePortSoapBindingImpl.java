@@ -1,4 +1,4 @@
-package org.topazproject.ws.annotation.service;
+package org.topazproject.ws.annotation;
 
 import java.io.IOException;
 
@@ -32,8 +32,8 @@ import org.topazproject.fedora.client.Uploader;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import org.topazproject.ws.annotation.AnnotationImpl;
-import org.topazproject.ws.annotation.AnnotationPEP;
+import org.topazproject.ws.annotation.impl.AnnotationImpl;
+import org.topazproject.ws.annotation.impl.AnnotationPEP;
 
 import org.topazproject.xacml.Util;
 
@@ -128,11 +128,11 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
                           throws NoSuchIdException, RemoteException {
     try {
       return impl.createAnnotation(type, annotates, context, supersedes, contentType, content);
-    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+    } catch (NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("Failed to create annotation", e);
 
-      throw new NoSuchIdException(e.getId());
+      throw e;
     }
   }
 
@@ -143,11 +143,11 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
                         throws NoSuchIdException, RemoteException {
     try {
       impl.deleteAnnotation(id, deletePreceding);
-    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+    } catch (NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("Failed to delete annotation", e);
 
-      throw new NoSuchIdException(e.getId());
+      throw e;
     }
   }
 
@@ -157,11 +157,11 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
   public String getAnnotation(String id) throws NoSuchIdException, RemoteException {
     try {
       return impl.getAnnotation(id);
-    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+    } catch (NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("Failed to get annotation", e);
 
-      throw new NoSuchIdException(e.getId());
+      throw e;
     }
   }
 
@@ -172,11 +172,11 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
                                 throws NoSuchIdException, RemoteException {
     try {
       return impl.getLatestAnnotations(id, idsOnly);
-    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+    } catch (NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("Failed to get latest annotations", e);
 
-      throw new NoSuchIdException(e.getId());
+      throw e;
     }
   }
 
@@ -187,11 +187,11 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
                                    throws NoSuchIdException, RemoteException {
     try {
       return impl.getPrecedingAnnotations(id, idsOnly);
-    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+    } catch (NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("Failed to get preceding annotations", e);
 
-      throw new NoSuchIdException(e.getId());
+      throw e;
     }
   }
 
@@ -210,11 +210,11 @@ public class AnnotationServicePortSoapBindingImpl implements Annotation, Service
                           throws NoSuchIdException, RemoteException {
     try {
       impl.setAnnotationState(id, state);
-    } catch (org.topazproject.ws.annotation.NoSuchIdException e) {
+    } catch (NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("Failed to set annotation state", e);
 
-      throw new NoSuchIdException(e.getId());
+      throw e;
     }
   }
 

@@ -1,4 +1,4 @@
-package org.topazproject.ws.annotation.service;
+package org.topazproject.ws.annotation;
 
 import java.net.MalformedURLException;
 import java.net.URL;
