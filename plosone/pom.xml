@@ -91,18 +91,6 @@
 
     <dependency>
       <groupId>org.springframework</groupId>
-      <artifactId>spring-dao</artifactId>
-      <version>2.0-rc2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-hibernate3</artifactId>
-      <version>2.0-rc2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.springframework</groupId>
       <artifactId>spring-context</artifactId>
       <version>2.0-rc2</version>
     </dependency>
@@ -133,8 +121,8 @@
     </dependency>
 
     <dependency>
-      <groupId>servletapi</groupId>
-      <artifactId>servletapi</artifactId>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
       <version>2.4</version>
       <scope>provided</scope>
       <type>jar</type>
