@@ -15,7 +15,7 @@
     <source>ws-server-impl/src/main/axis/XYZServicePortSoapBindingImpl.java</source>
   </sources>
   <testSources>
-    <source>ws-client-impl/src/test/java/XYZServiceTest.java</source>
+    <source>ws-client-impl/src/it/java/XYZServiceTest.java</source>
   </testSources>
   <resources>
     <resource>pom.xml</resource>
