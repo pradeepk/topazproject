@@ -16,7 +16,7 @@
     </action>
 
     <action name="fetchArticle" class="org.plos.article.web.FetchArticleAction">
-      <result name="error" type="freemarker">/WEB-INF/pages/article/error.ftl</result>
+      <result name="error" type="freemarker">/WEB-INF/pages/error.ftl</result>
       <result name="success" type="freemarker">/WEB-INF/pages/article/displayArticle.ftl</result>
     </action>
 
