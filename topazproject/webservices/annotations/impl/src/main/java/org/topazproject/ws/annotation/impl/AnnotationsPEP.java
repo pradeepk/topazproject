@@ -20,37 +20,37 @@ public class AnnotationsPEP extends AbstractSimplePEP {
   /**
    * The action that represents a createAnnotation operation in XACML policies.
    */
-  public static final String CREATE_ANNOTATION = "createAnnotation";
+  public static final String CREATE_ANNOTATION = "annotations:createAnnotation";
 
   /**
    * The action that represents a deleteAnnotation operation in XACML policies.
    */
-  public static final String DELETE_ANNOTATION = "deleteAnnotation";
+  public static final String DELETE_ANNOTATION = "annotations:deleteAnnotation";
 
   /**
    * The action that represents a getAnnotation operation in XACML policies.
    */
-  public static final String GET_ANNOTATION_INFO = "getAnnotationInfo";
+  public static final String GET_ANNOTATION_INFO = "annotations:getAnnotationInfo";
 
   /**
    * The action that represents a setAnnotation operation in XACML policies.
    */
-  public static final String SET_ANNOTATION_INFO = "setAnnotationInfo";
+  public static final String SET_ANNOTATION_INFO = "annotations:setAnnotationInfo";
 
   /**
    * The action that represents a listAnnotations operation in XACML policies.
    */
-  public static final String LIST_ANNOTATIONS = "listAnnotations";
+  public static final String LIST_ANNOTATIONS = "annotations:listAnnotations";
 
   /**
    * The action that represents a listAnnotations operation in XACML policies.
    */
-  public static final String LIST_ANNOTATIONS_IN_STATE = "listAnnotationsInState";
+  public static final String LIST_ANNOTATIONS_IN_STATE = "annotations:listAnnotationsInState";
 
   /**
    * The action that represents a listAnnotations operation in XACML policies.
    */
-  public static final String SET_ANNOTATION_STATE = "setAnnotationState";
+  public static final String SET_ANNOTATION_STATE = "annotations:setAnnotationState";
 
   /**
    * The obligation that represents the query used in listAnnotations in XACML policies.

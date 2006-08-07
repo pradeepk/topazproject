@@ -9,13 +9,7 @@
       class="org.topazproject.xacml.ServletEndpointContextAttributeFinderModule"/>
     <policyFinderModule class="org.topazproject.xacml.ResourcePolicyModule">
       <list>
-        <string>policy/createAnnotation.xml</string>
-        <string>policy/deleteAnnotation.xml</string>
-        <string>policy/getAnnotationInfo.xml</string>
-        <string>policy/setAnnotationInfo.xml</string>
-        <string>policy/listAnnotations.xml</string>
-        <string>policy/listAnnotationsInState.xml</string>
-        <string>policy/setAnnotationState.xml</string>
+        <string>policy/annotations.xml</string>
         <string>policy/replies.xml</string>
       </list>
     </policyFinderModule>
