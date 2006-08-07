@@ -1,3 +1,4 @@
+#set( $service = $artifactId )
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   - Copyright (c) 2006 by Topaz, Inc.
@@ -16,7 +17,7 @@
       class="org.topazproject.xacml.ServletEndpointContextAttributeFinderModule"/>
     <policyFinderModule class="org.topazproject.xacml.ResourcePolicyModule">
       <list>
-        <string>policy/XYZ.xml</string>
+        <string>policy/${service}.xml</string>
       </list>
     </policyFinderModule>
   </pdp>

@@ -21,9 +21,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>${pom.parent.artifactId}-core</artifactId>
+  <artifactId>${pom.parent.artifactId}-api</artifactId>
   <packaging>jar</packaging>
-  <name>${Svc} Core</name>
+  <name>${Svc} API</name>
 
   <parent>
     <groupId>${groupId}</groupId>
@@ -37,34 +37,6 @@
       <url>http://opensource.org/licenses/ecl1.php</url>
     </license>
   </licenses>
-
-  <dependencies>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>fedora-client</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>mulgara-client</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>auth-helper</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>xacml-extensions</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
 
   <build>
     <plugins>
@@ -83,7 +55,7 @@
               <implementationClassName>${Svc}ServiceImplementation</implementationClassName>
               <filename>${wsdl.filename}</filename>
               <all>true</all>
-              <namespace>service.${rev_pkg}</namespace>
+              <namespace>${rev_pkg}</namespace>
               <servicePortName>${Svc}ServicePort</servicePortName>
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>

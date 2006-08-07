@@ -9,9 +9,9 @@
 <archetype>
   <id>webservice</id>
   <sources>
-    <source>core/src/main/java/XYZ.java</source>
-    <source>core/src/main/java/XYZImpl.java</source>
-    <source>core/src/main/java/XYZPEP.java</source>
+    <source>api/src/main/java/XYZ.java</source>
+    <source>impl/src/main/java/XYZImpl.java</source>
+    <source>impl/src/main/java/XYZPEP.java</source>
     <source>ws-server-impl/src/main/axis/XYZServicePortSoapBindingImpl.java</source>
   </sources>
   <testSources>
@@ -19,7 +19,8 @@
   </testSources>
   <resources>
     <resource>pom.xml</resource>
-    <resource>core/pom.xml</resource>
+    <resource>api/pom.xml</resource>
+    <resource>impl/pom.xml</resource>
     <resource>ws-client-impl/pom.xml</resource>
     <resource>ws-server-impl/pom.xml</resource>
     <resource>ws-webapp/pom.xml</resource>

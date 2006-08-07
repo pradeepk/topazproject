@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package ${package}.service;
+package ${package};
 
 import java.net.URI;
 import java.rmi.RemoteException;
@@ -25,8 +25,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
-import ${package}.${Svc}Impl;
-import ${package}.${Svc}PEP;
+import ${package}.impl.${Svc}Impl;
+import ${package}.impl.${Svc}PEP;
 import org.topazproject.xacml.Util;
 
 /** 

@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package ${package};
+package ${package}.impl;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -21,6 +21,7 @@ import org.topazproject.authentication.ProtectedService;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.fedora.client.APIMStubFactory;
 import org.topazproject.fedora.client.FedoraAPIM;
+import ${package}.${Svc};
 
 /** 
  * This provides the implementation of the ${service} service.

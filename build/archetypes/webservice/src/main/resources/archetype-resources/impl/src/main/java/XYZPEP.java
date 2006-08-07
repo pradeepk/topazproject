@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package ${package};
+package ${package}.impl;
 
 import java.io.IOException;
 import java.util.Set;
