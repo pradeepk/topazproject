@@ -342,11 +342,13 @@ public class ItqlHelper {
   }
 
   /**
-   * Escape a literal before binding to an ITQL statement.
-   *
+   * Inserts escapes in a literal so that it is suitable for binding to an ITQL statement.
+   * Literals are bracketted with single-quotes in ITQL. This function  inserts escapes into 
+   * a literal so that it is now suitable for binding. 
+   * 
    * @param val the literal value that is to be escaped
    *
-   * @return Returns the escaped literal
+   * @return Returns the escaped literal suitable for use in an ITQL statement
    */
   public static String escapeLiteral(String val) {
     return val.replaceAll("\\\\", "\\\\\\\\").replaceAll("'", "\\\\'");
