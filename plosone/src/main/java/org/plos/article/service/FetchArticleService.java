@@ -3,6 +3,8 @@
  */
 package org.plos.article.service;
 
+import org.topazproject.ws.article.service.NoSuchIdException;
+
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -16,6 +18,8 @@ import java.io.InputStreamReader;
 import java.io.Writer;
 import java.util.Properties;
 import java.net.URL;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 
 /**
  * Fetch article service
@@ -31,8 +35,12 @@ public class FetchArticleService {
    * @param writer writer
    * @throws IOException
    * @throws TransformerException
+   * @throws java.net.MalformedURLException
+   * @throws java.io.FileNotFoundException
+   * @throws java.rmi.RemoteException
+   * @throws org.topazproject.ws.article.service.NoSuchIdException
    */
-  public void getDOIAsHTML(final String articleDOI, final Writer writer) throws IOException, TransformerException {
+  public void getDOIAsHTML(final String articleDOI, final Writer writer) throws TransformerException, NoSuchIdException, IOException, RemoteException, MalformedURLException, FileNotFoundException {
     final String objectURL = articleService.getObjectURL(articleDOI, articleRep);
 
     final StreamSource streamSource = new StreamSource(new InputStreamReader(new URL(objectURL).openStream()));
@@ -62,7 +70,7 @@ public class FetchArticleService {
    * @return Transformer
    * @throws TransformerConfigurationException
    */
-  private Transformer getXSLTransformer(final String xslStyleSheet) throws TransformerConfigurationException {
+  private Transformer getXSLTransformer(final String xslStyleSheet) throws TransformerException {
     // 1. Instantiate a TransformerFactory.
     final TransformerFactory tFactory = TransformerFactory.newInstance();
 
@@ -80,16 +88,16 @@ public class FetchArticleService {
   public Transformer getTranslet() throws TransformerException, FileNotFoundException {
     // Set the TransformerFactory system property.
     // Note: For more flexibility, load properties from a properties file.
-    String key = "javax.xml.transform.TransformerFactory";
-    String value = "org.apache.xalan.xsltc.trax.TransformerFactoryImpl";
-    Properties props = System.getProperties();
+    final String key = "javax.xml.transform.TransformerFactory";
+    final String value = "org.apache.xalan.xsltc.trax.TransformerFactoryImpl";
+    final Properties props = System.getProperties();
     props.put(key, value);
     System.setProperties(props);
 
     // Instantiate the TransformerFactory, and use it with a StreamSource
     // XSL stylesheet to create a translet as a Templates object.      y
-    TransformerFactory tFactory = TransformerFactory.newInstance();
-    Templates translet = tFactory.newTemplates(new StreamSource(xslTemplate));
+    final TransformerFactory tFactory = TransformerFactory.newInstance();
+    final Templates translet = tFactory.newTemplates(new StreamSource(xslTemplate));
 
     // For each thread, instantiate a new Transformer, and perform the
     // transformations on that thread from a StreamSource to a StreamResult;

@@ -9,16 +9,22 @@ import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.article.service.FetchArticleService;
+import org.topazproject.ws.article.service.NoSuchIdException;
 
+import javax.xml.transform.TransformerException;
 import java.util.ArrayList;
 import java.io.StringWriter;
+import java.io.IOException;
+import java.io.FileNotFoundException;
+import java.rmi.RemoteException;
+import java.net.MalformedURLException;
 
 /**
  * Fetch article action. 
  */
 public class FetchArticleAction extends ActionSupport {
   private String articleDOI;
-  private static final int TRANSFORMED_XML_FILE_SIZE = 1000000;
+  private static final int INITIAL_TRANSFORMED_FILE_SIZE = 1000000;
 
   private ArrayList<String> messages = new ArrayList<String>();
   private static final Log log = LogFactory.getLog(FetchArticleAction.class);
@@ -26,11 +32,32 @@ public class FetchArticleAction extends ActionSupport {
   private String transformedArticle;
 
   public String execute() throws Exception {
+    
     try {
-      final StringWriter stringWriter = new StringWriter(TRANSFORMED_XML_FILE_SIZE);
+      final StringWriter stringWriter = new StringWriter(INITIAL_TRANSFORMED_FILE_SIZE);
       fetchArticleService.getDOIAsHTML(articleDOI, stringWriter);
       setTransformedArticle(stringWriter.toString());
-    } catch (Exception e) {
+    } catch (NoSuchIdException e) {
+      messages.add("No article found for id: " + articleDOI);
+      log.warn(e, e);
+      return ERROR;
+    } catch (TransformerException e) {
+      messages.add("Transforming error: " + e.getMessage());
+      log.error(e, e);
+      return ERROR;
+    } catch (RemoteException e) {
+      messages.add(e.getMessage());
+      log.warn(e, e);
+      return ERROR;
+    } catch (MalformedURLException e) {
+      messages.add("Incorrect id syntax: " + e.getMessage());
+      log.warn(e, e);
+      return ERROR;
+    } catch (FileNotFoundException e) {
+      messages.add("File not found exception: " + e.getMessage());
+      log.error(e, e);
+      return ERROR;
+    } catch (IOException e) {
       messages.add(e.getMessage());
       log.error(e, e);
       return ERROR;
