@@ -51,6 +51,8 @@ public class AnnotationsImpl implements Annotations {
     ("insert <${supersedes}> <a:supersededBy> <${id}> into ${MODEL};"
     + "delete <${supersedes}> <a:supersededBy> <r:nil> from ${MODEL};                     ")
      .replaceAll("\\Q${MODEL}", MODEL);
+  private static final String INSERT_TITLE_ITQL =
+    ("insert <${id}> <d:title> '${title}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String DELETE_ITQL =
     ("insert select $a <a:supersededBy> $c from ${MODEL}"
     + " where $a <a:supersededBy> <${id}> and <${id}> <a:supersededBy> $c into ${MODEL};"
@@ -137,17 +139,18 @@ public class AnnotationsImpl implements Annotations {
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
   public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String body) throws NoSuchIdException, RemoteException {
+                                 String title, String body)
+                          throws NoSuchIdException, RemoteException {
     itql.validateUri(body, "body");
 
-    return createAnnotation(type, annotates, context, supersedes, body, null, null);
+    return createAnnotation(type, annotates, context, supersedes, title, body, null, null);
   }
 
   /**
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
   public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String contentType, byte[] content)
+                                 String title, String contentType, byte[] content)
                           throws NoSuchIdException, RemoteException {
     if (contentType == null)
       throw new NullPointerException("'contentType' cannot be null");
@@ -155,11 +158,11 @@ public class AnnotationsImpl implements Annotations {
     if (content == null)
       throw new NullPointerException("'content' cannot be null");
 
-    return createAnnotation(type, annotates, context, supersedes, null, contentType, content);
+    return createAnnotation(type, annotates, context, supersedes, title, null, contentType, content);
   }
 
   private String createAnnotation(String type, String annotates, String context, String supersedes,
-                                  String body, String contentType, byte[] content)
+                                  String title, String body, String contentType, byte[] content)
                            throws NoSuchIdException, RemoteException {
     if (context == null)
       context = annotates;
@@ -201,6 +204,11 @@ public class AnnotationsImpl implements Annotations {
     if (supersedes != null) {
       create += SUPERSEDE_ITQL;
       values.put("supersedes", supersedes);
+    }
+
+    if (title != null) {
+      create += INSERT_TITLE_ITQL;
+      values.put("title", itql.escapeLiteral(title));
     }
 
     itql.doUpdate(itql.bindValues(create, values));

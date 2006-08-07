@@ -14,6 +14,7 @@ public class AnnotationInfo {
   private String body;
   private String supersedes;
   private String id;
+  private String title;
 
   /**
    * Creates a new AnnotationInfo object.
@@ -163,5 +164,23 @@ public class AnnotationInfo {
    */
   public void setId(String id) {
     this.id = id;
+  }
+
+  /**
+   * Get title.
+   *
+   * @return title as String.
+   */
+  public String getTitle() {
+    return title;
+  }
+
+  /**
+   * Set title.
+   *
+   * @param title the value to set.
+   */
+  public void setTitle(String title) {
+    this.title = title;
   }
 }

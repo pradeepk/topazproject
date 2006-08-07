@@ -109,9 +109,10 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
   public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String body) throws NoSuchIdException, RemoteException {
+                                 String title, String body)
+                          throws NoSuchIdException, RemoteException {
     try {
-      return impl.createAnnotation(type, annotates, context, supersedes, body);
+      return impl.createAnnotation(type, annotates, context, supersedes, title, body);
     } catch (NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("", e);
@@ -133,10 +134,10 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
   public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String contentType, byte[] content)
+                                 String title, String contentType, byte[] content)
                           throws NoSuchIdException, RemoteException {
     try {
-      return impl.createAnnotation(type, annotates, context, supersedes, contentType, content);
+      return impl.createAnnotation(type, annotates, context, supersedes, title, contentType, content);
     } catch (NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("", e);

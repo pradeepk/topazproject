@@ -55,6 +55,7 @@ public class AnnotationModel extends AnnotationInfo {
     setCreated((String) map.get(a_created));
     setBody((String) map.get(a_body));
     setSupersedes((String) map.get(a_supersedes));
+    setTitle((String) map.get(d_title));
   }
 
   /**

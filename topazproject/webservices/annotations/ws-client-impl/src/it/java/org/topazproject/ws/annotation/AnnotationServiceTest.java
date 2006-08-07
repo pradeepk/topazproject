@@ -65,12 +65,13 @@ public class AnnotationServiceTest extends TestCase {
   }
 
   private void basicAnnotationTest() throws RemoteException {
-    String   subject     = "foo:bar";
-    String   context     = "foo:bar##xpointer(id(\"Main\")/p[2])";
-    String   hackContext = "$user/$annotates/$s/$created/\\'\"\'";
-    String   annotation  = "annotation:id#42";
-    String   bodyUrl     = "http://gandalf.topazproject.org";
-    String   bodyContent = "This is a comment on foo:bar";
+    String           subject     = "foo:bar";
+    String           context     = "foo:bar##xpointer(id(\"Main\")/p[2])";
+    String           hackContext = "$user/$annotates/$s/$created/\\'\"\'";
+    String           annotation  = "annotation:id#42";
+    String           bodyUrl     = "http://gandalf.topazproject.org";
+    String           bodyContent = "This is a comment on foo:bar";
+    String           title       = "Title";
     AnnotationInfo[] annotations = service.listAnnotations(subject, null);
 
     try {
@@ -107,20 +108,19 @@ public class AnnotationServiceTest extends TestCase {
     gotExc = false;
 
     try {
-      annotation = service.createAnnotation(null, subject, null, null, "bad:url/{context}");
+      annotation = service.createAnnotation(null, subject, null, null, title, "bad:url/{context}");
     } catch (Exception e) {
       gotExc = true;
     }
 
     assertTrue("Failed to get expected IllegalArgumentException", gotExc);
 
-    annotation   = service.createAnnotation(null, subject, hackContext, null, bodyUrl);
+    annotation   = service.createAnnotation(null, subject, hackContext, null, title, bodyUrl);
 
     annotations = service.listAnnotations(subject, null);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
-    assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0].getId() 
-        + "'",
-                 annotations[0].getId(), annotation);
+    assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0].getId()
+                 + "'", annotations[0].getId(), annotation);
 
     AnnotationInfo info = service.getAnnotationInfo(annotation);
     assertEquals(info.getId(), annotations[0].getId());
@@ -131,27 +131,30 @@ public class AnnotationServiceTest extends TestCase {
     assertEquals(info.getSupersedes(), annotations[0].getSupersedes());
     assertEquals(info.getCreator(), annotations[0].getCreator());
     assertEquals(info.getCreated(), annotations[0].getCreated());
+    assertEquals(info.getTitle(), annotations[0].getTitle());
 
     assertEquals(info.getBody(), bodyUrl);
     assertEquals(info.getAnnotates(), subject);
     assertEquals(info.getContext(), hackContext);
+    assertEquals(info.getTitle(), title);
 
     String superseded = annotation;
 
     try {
       annotation =
-        service.createAnnotation(null, subject, context, annotation, "text/plain;charset=utf-8",
-                                 bodyContent.getBytes("utf-8"));
+        service.createAnnotation(null, subject, context, annotation, title,
+                                 "text/plain;charset=utf-8", bodyContent.getBytes("utf-8"));
     } catch (java.io.UnsupportedEncodingException e) {
       throw new Error(e);
     }
 
-    info   = service.getAnnotationInfo(annotation);
+    info = service.getAnnotationInfo(annotation);
 
     String s;
-    try {
-      s = (new BufferedReader(new InputStreamReader((new URL(info.getBody())).openStream()))).readLine();
 
+    try {
+      s = (new BufferedReader(new InputStreamReader((new URL(info.getBody())).openStream())))
+           .readLine();
     } catch (IOException e) {
       throw new RemoteException("failed to read annotation body", e);
     }
@@ -162,39 +165,40 @@ public class AnnotationServiceTest extends TestCase {
 
     annotations = service.listAnnotations(subject, null);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
-    assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0].getId() + "'",
-                 annotations[0].getId(), annotation);
+    assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0].getId()
+                 + "'", annotations[0].getId(), annotation);
 
     annotations = service.getPrecedingAnnotations(annotation);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
-    assertEquals("Expected annotation-id '" + superseded + "', got '" + annotations[0].getId() + "'",
-                 annotations[0].getId(), superseded);
+    assertEquals("Expected annotation-id '" + superseded + "', got '" + annotations[0].getId()
+                 + "'", annotations[0].getId(), superseded);
 
     annotations = service.getPrecedingAnnotations(superseded);
     assertTrue("Expected zero annotation, got " + annotations.length, annotations.length == 0);
 
     annotations = service.getLatestAnnotations(annotation);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
-    assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0].getId() + "'",
-                 annotations[0].getId(), annotation);
+    assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0].getId()
+                 + "'", annotations[0].getId(), annotation);
 
     annotations = service.getLatestAnnotations(superseded);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
-    assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0].getId() + "'",
-                 annotations[0].getId(), annotation);
+    assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0].getId()
+                 + "'", annotations[0].getId(), annotation);
 
     service.setAnnotationState(annotation, 42);
+
     String[] ids = service.listAnnotations(42);
     assertTrue("Expected one annotation, got " + ids.length, ids.length == 1);
-    assertEquals("Expected annotation-id '" + annotation + "', got '" + ids[0] + "'",
-                 ids[0], annotation);
+    assertEquals("Expected annotation-id '" + annotation + "', got '" + ids[0] + "'", ids[0],
+                 annotation);
 
     service.deleteAnnotation(annotation, false);
 
     annotations = service.listAnnotations(subject, null);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
-    assertEquals("Expected annotation-id '" + superseded + "', got '" + annotations[0].getId() + "'",
-                 annotations[0].getId(), superseded);
+    assertEquals("Expected annotation-id '" + superseded + "', got '" + annotations[0].getId()
+                 + "'", annotations[0].getId(), superseded);
 
     service.deleteAnnotation(superseded, true);
 

@@ -35,6 +35,8 @@ public interface Annotations {
    *        which are sub properties of
    *        <code>http://www.w3.org/2000/10/annotation-ns#related</code>.. Defaults to
    *        <code>http://www.w3.org/1999/02/22-rdf-syntax-ns#nil</code>
+   * @param title the annotation title or <code>null</code>. Defined by
+   *        <code>http://purl.org/dc/elements/1.1/title</code>
    * @param body the resource representing the content of an annotation. Defined by
    *        <code>http://www.w3.org/2000/10/annotation-ns#body</code>, a sub property of
    *        <code>http://www.w3.org/2000/10/annotation-ns#related</code>. Must be a valid
@@ -46,7 +48,8 @@ public interface Annotations {
    * @throws RemoteException if some other error occured
    */
   public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String body) throws NoSuchIdException, RemoteException;
+                                 String title, String body)
+                          throws NoSuchIdException, RemoteException;
 
   /**
    * Creates a new annotation. A new resource URL is created for the annotation body from the
@@ -57,6 +60,7 @@ public interface Annotations {
    * @param context the context within the resource named in <code>annotates</code> to which this
    *        annotation applies or <code>null</code>.
    * @param supersedes the annotation that this supersedes or <code>null</code>.
+   * @param title the annotation title or <code>null</code>
    * @param contentType the mime-type and optionally the character encoding of the annotation body.
    *        eg. <code>text/html;charset=utf-8</code>, <code>text/plain;charset=iso-8859-1</code>,
    *        <code>text/plain</code> etc.
@@ -70,7 +74,7 @@ public interface Annotations {
    * @throws RemoteException if some other error occured
    */
   public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String contentType, byte[] content)
+                                 String title, String contentType, byte[] content)
                           throws NoSuchIdException, RemoteException;
 
   /**
