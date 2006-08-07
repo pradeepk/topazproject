@@ -224,7 +224,6 @@ public class PreferencesImpl implements Preferences {
 
       if (!userExists(userId))
         throw new NoSuchIdException(userId);
-      itql.doQuery("select $s $p $o from " + MODEL + " where $s $p $o;");
 
       String prefId = getPrefsId(userId, appId);
 
