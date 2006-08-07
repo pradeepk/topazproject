@@ -3,8 +3,6 @@
  */
 package org.plos.article.service;
 
-import org.topazproject.ws.article.service.Article;
-
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
@@ -13,39 +11,32 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.io.StringWriter;
 import java.io.Writer;
-import java.net.URL;
 import java.util.Properties;
+import java.net.URL;
 
 /**
  * Fetch article service
  */
 public class FetchArticleService {
-  private Article articleService;
-
-  private static final String ARTICLE_REP = "XML";
-  private static final int TRANSFORMED_XML_FILE_SIZE = 1000000;
-
-  private final String XSL_TEMPLATE = "viewnlm-v2.xsl";
-  private static final String XML_SOURCE = "no needed";
-  private static final String OUTPUT_FILENAME = "not needed";
+  private ArticleService articleService;
+  private String xslTemplate;
+  private String articleRep;
 
   /**
    * Get the DOI transformed as HTML.
    * @param articleDOI articleDOI
+   * @param writer writer
    * @throws IOException
    * @throws TransformerException
    */
-  public void getDOIAsHTML(final String articleDOI) throws IOException, TransformerException {
-    final Writer writer = new StringWriter(TRANSFORMED_XML_FILE_SIZE);
-    final String objectURL = articleService.getObjectURL(articleDOI, ARTICLE_REP);
+  public void getDOIAsHTML(final String articleDOI, final Writer writer) throws IOException, TransformerException {
+    final String objectURL = articleService.getObjectURL(articleDOI, articleRep);
 
     final StreamSource streamSource = new StreamSource(new InputStreamReader(new URL(objectURL).openStream()));
-    final Transformer transformer = getXSLTransformer(XSL_TEMPLATE);
+    final Transformer transformer = getXSLTransformer(xslTemplate);
 
     transformXML(transformer, streamSource, writer);
   }
@@ -54,7 +45,7 @@ public class FetchArticleService {
    * Set articleService
    * @param articleService articleService
    */
-  public void setArticleService(final Article articleService) {
+  public void setArticleService(final ArticleService articleService) {
     this.articleService = articleService;
   }
 
@@ -80,10 +71,6 @@ public class FetchArticleService {
     return tFactory.newTransformer(new StreamSource(xslStyleSheet));
   }
 
-  private void logTime() {
-    System.out.println(System.currentTimeMillis());
-  }
-
   /**
    * Get a translet - a compiled stylesheet.
    * @return translet
@@ -102,10 +89,25 @@ public class FetchArticleService {
     // Instantiate the TransformerFactory, and use it with a StreamSource
     // XSL stylesheet to create a translet as a Templates object.      y
     TransformerFactory tFactory = TransformerFactory.newInstance();
-    Templates translet = tFactory.newTemplates(new StreamSource(XSL_TEMPLATE));
+    Templates translet = tFactory.newTemplates(new StreamSource(xslTemplate));
 
     // For each thread, instantiate a new Transformer, and perform the
     // transformations on that thread from a StreamSource to a StreamResult;
     return translet.newTransformer();
+  }
+
+  /** Set the XSL Template to be used for transformation
+   * @param xslTemplate xslTemplate
+   */
+  public void setXslTemplate(final String xslTemplate) {
+    this.xslTemplate = xslTemplate;
+  }
+
+  /**
+   * Set the representation of the article that we want to work with
+   * @param articleRep articleRep
+   */
+  public void setArticleRep(final String articleRep) {
+    this.articleRep = articleRep;
   }
 }

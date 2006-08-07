@@ -5,12 +5,20 @@
 
   <package name="default" extends="webwork-default">
 
-    <default-action-ref name="home" />
+    <default-action-ref name="articleList" />
 
     <action name="home" class="org.plosone.action.RegistrationAction">
       <result name="success" type="freemarker">/WEB-INF/pages/home.ftl</result>
     </action>
 
-    <!-- Add your actions here -->
+    <action name="articleList" class="org.plos.web.ForwardAction">
+      <result type="freemarker">/WEB-INF/pages/article/articleList.ftl</result>
+    </action>
+
+    <action name="fetchArticle" class="org.plos.article.web.FetchArticleAction">
+      <result name="error" type="freemarker">/WEB-INF/pages/article/error.ftl</result>
+      <result name="success" type="freemarker">/WEB-INF/pages/article/displayArticle.ftl</result>
+    </action>
+
   </package>
 </xwork>

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
+<beans default-autowire="autodetect">
+
+  <!--Plosone developer beans here -->
+  <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService">
+    <property name="articleRep" value="XML"/>
+    <property name="xslTemplate" value="viewnlm-v2.xsl"/>
+    <property name="articleService" ref="articleService"/>
+  </bean>
+
+  <bean id="articleService" class="org.plos.article.service.ArticleService">
+    <property name="servicePort" value="http://localhost:8080/ws-articles-webapp-0.1/services/ArticleServicePort"/>
+  </bean>
+
+</beans>

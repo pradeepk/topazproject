@@ -5,28 +5,26 @@ package org.plos.web;
 
 import junit.framework.TestCase;
 import org.topazproject.ws.article.service.Article;
-import org.topazproject.ws.article.service.NoSuchIdException;
 import org.topazproject.ws.article.service.ArticleServiceLocator;
 import org.topazproject.ws.article.service.DuplicateIdException;
+import org.topazproject.ws.article.service.NoSuchIdException;
 
-import javax.xml.transform.TransformerException;
+import javax.activation.DataHandler;
+import javax.xml.rpc.ServiceException;
+import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
+import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.Templates;
-import javax.xml.transform.stream.StreamSource;
 import javax.xml.transform.stream.StreamResult;
-import javax.xml.rpc.ServiceException;
-import javax.activation.DataHandler;
-import java.rmi.RemoteException;
-import java.io.IOException;
-import java.io.InputStreamReader;
+import javax.xml.transform.stream.StreamSource;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.InputStream;
-import java.net.URL;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.MalformedURLException;
-import java.net.URLConnection;
+import java.net.URL;
+import java.rmi.RemoteException;
 import java.util.Properties;
 
 public class XSLTransformationTest extends TestCase {
@@ -35,10 +33,9 @@ public class XSLTransformationTest extends TestCase {
 
   private final String XML_SOURCE = "pbio.0000001-embedded-dtd.xml";
   private final String XSL_SOURCE = "viewnlm-v2.xsl";
-  private final String CSS = "ViewNLM.css";
   private final String OUTPUT_FILENAME = "foo.html";
 
-  public void testWorkWithIngestedArticle() throws RemoteException, IOException, TransformerException {
+  public void testWorkWithIngestedArticle() throws IOException, TransformerException {
     {
       final String resourceToIngest = "/test_article.zip";
       final String resourceDOI = "10.1371/journal.pbio.0020294";
@@ -164,7 +161,7 @@ public class XSLTransformationTest extends TestCase {
     service = locator.getArticleServicePort(url);
   }
 
-  public void testBasicArticle() throws RemoteException, IOException {
+  public void testBasicArticle() throws IOException {
     final String resourceToIngest = "/test_article.zip";
     final String resourceDOI = "10.1371/journal.pbio.0020294";
 
@@ -193,19 +190,7 @@ public class XSLTransformationTest extends TestCase {
     }
   }
 
-  private static byte[] loadURL(URL url) throws IOException {
-    URLConnection con = url.openConnection();
-    con.connect();
-    byte[] res = new byte[con.getContentLength()];
-
-    InputStream is = con.getInputStream();
-    is.read(res);
-    is.close();
-
-    return res;
-  }
 }
-
 
 class TimeIt {
   public static void run(final Command command) {
