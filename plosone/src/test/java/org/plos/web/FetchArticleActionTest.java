@@ -9,7 +9,7 @@ import org.topazproject.ws.article.service.ArticleServiceLocator;
 import org.topazproject.ws.article.service.DuplicateIdException;
 import org.topazproject.ws.article.service.NoSuchIdException;
 import org.plos.article.web.FetchArticleAction;
-import org.plos.article.web.FetchArticleService;
+import org.plos.article.service.FetchArticleService;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
