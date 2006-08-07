@@ -60,8 +60,7 @@ public class FetchArticleAction extends ActionSupport {
   }
 
   /**
-   * Set articleDOI.
-   *
+   * Set articleDOI to fetch the article for.
    * @param articleDOI articleDOI
    */
   public void setArticleDOI(final String articleDOI) {
