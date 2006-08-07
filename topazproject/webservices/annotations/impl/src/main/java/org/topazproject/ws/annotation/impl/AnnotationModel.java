@@ -35,6 +35,7 @@ public class AnnotationModel extends AnnotationInfo {
   static final URI a_annotates  = a.resolve("#annotates");
   static final URI a_context    = a.resolve("#context");
   static final URI d_creator    = d.resolve("creator");
+  static final URI d_title      = d.resolve("title");
   static final URI a_created    = a.resolve("#created");
   static final URI a_body       = a.resolve("#body");
   static final URI a_supersedes = a.resolve("#supersedes");

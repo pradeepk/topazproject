@@ -19,7 +19,7 @@
         <version>1.0</version>
         <executions>
           <execution>
-            <id>generate-wsdl</id>
+            <id>generate-annotation-wsdl</id>
             <phase>process-classes</phase>
             <goals>
               <goal>java2wsdl</goal>
@@ -33,6 +33,24 @@
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.annotation.Annotations</classOfPortType>
+            </configuration>
+          </execution>
+          <execution>
+            <id>generate-reply-wsdl</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>java2wsdl</goal>
+            </goals>
+            <configuration>
+              <implementationClassName>ReplyServiceImplementation</implementationClassName>
+              <filename>${wsdl.filename}</filename>
+              <input>${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}</input>
+              <all>true</all>
+              <namespace>annotation.ws.topazproject.org</namespace>
+              <servicePortName>ReplyServicePort</servicePortName>
+              <location>http://localhost/service-location</location>
+              <classesDirectory>${project.build.directory}/classes</classesDirectory>
+              <classOfPortType>org.topazproject.ws.annotation.Replies</classOfPortType>
             </configuration>
           </execution>
         </executions>

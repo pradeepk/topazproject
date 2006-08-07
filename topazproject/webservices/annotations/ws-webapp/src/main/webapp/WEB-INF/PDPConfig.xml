@@ -16,6 +16,7 @@
         <string>policy/listAnnotations.xml</string>
         <string>policy/listAnnotationsInState.xml</string>
         <string>policy/setAnnotationState.xml</string>
+        <string>policy/replies.xml</string>
       </list>
     </policyFinderModule>
   </pdp>
