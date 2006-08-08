@@ -211,7 +211,7 @@
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-surefire-plugin</artifactId>
         <configuration>
-          <skip>false</skip>  <!-- disable tests by default until we get a DB up or mock objects -->
+          <skip>true</skip>  <!-- disable tests by default until we get a DB up or mock objects -->
         </configuration>
       </plugin>
 
