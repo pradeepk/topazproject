@@ -6,24 +6,17 @@ package org.plos.web;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
-import org.topazproject.ws.article.service.Article;
-import org.topazproject.ws.article.service.NoSuchIdException;
 
-import javax.activation.DataHandler;
-import javax.xml.rpc.ServiceException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.File;
 import java.net.URISyntaxException;
-import java.net.URL;
 
 public class XSLTransformationTest extends BasePlosoneTestCase {
   public static final Log log = LogFactory.getLog(XSLTransformationTest.class);
@@ -34,8 +27,8 @@ public class XSLTransformationTest extends BasePlosoneTestCase {
 
   public void testXSLTransformation() throws TransformerException, FileNotFoundException, URISyntaxException {
     final Transformer transformer = getXSLTransformer(XSL_SOURCE);
+    
     TimeIt.logTime();
-
     final File file = getAsURI(XML_SOURCE);
     transformXML(transformer, new StreamSource(file), OUTPUT_FILENAME);
     TimeIt.logTime();
