@@ -16,9 +16,12 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Writer;
+import java.io.File;
 import java.util.Properties;
 import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.net.URI;
 import java.rmi.RemoteException;
 
 /**
@@ -26,8 +29,10 @@ import java.rmi.RemoteException;
  */
 public class FetchArticleService {
   private ArticleService articleService;
-  private String xslTemplate;
+  private File xslTemplate;
   private String articleRep;
+  private Templates translet;
+  private boolean useTranslet = true;
 
   /**
    * Get the DOI transformed as HTML.
@@ -43,10 +48,19 @@ public class FetchArticleService {
   public void getDOIAsHTML(final String articleDOI, final Writer writer) throws TransformerException, NoSuchIdException, IOException, RemoteException, MalformedURLException, FileNotFoundException {
     final String objectURL = articleService.getObjectURL(articleDOI, articleRep);
 
-    final StreamSource streamSource = new StreamSource(new InputStreamReader(new URL(objectURL).openStream()));
-    final Transformer transformer = getXSLTransformer(xslTemplate);
+    final StreamSource streamSource = new StreamSource(
+                                          new InputStreamReader(
+                                                new URL(objectURL).openStream()));
+    final Transformer transformer = getTransformer();
 
     transformXML(transformer, streamSource, writer);
+  }
+
+  private Transformer getTransformer() throws FileNotFoundException, TransformerException {
+    if (useTranslet) {
+      return getTranslet();
+    }
+    return getXSLTransformer();
   }
 
   /**
@@ -64,19 +78,22 @@ public class FetchArticleService {
             new StreamResult(writer));
   }
 
+  private TransformerFactory tFactory;
+  private StreamSource source;
   /**
    * Get the XSL transformer
-   * @param xslStyleSheet xslStyleSheet
    * @return Transformer
    * @throws TransformerConfigurationException
    */
-  private Transformer getXSLTransformer(final String xslStyleSheet) throws TransformerException {
-    // 1. Instantiate a TransformerFactory.
-    final TransformerFactory tFactory = TransformerFactory.newInstance();
+  private Transformer getXSLTransformer() throws TransformerException {
+    if (null == tFactory || null == source) {
+      // 1. Instantiate a TransformerFactory.
+      tFactory = TransformerFactory.newInstance();
+      source = new StreamSource(xslTemplate);
+    }
 
-    // 2. Use the TransformerFactory to process the stylesheet Source and
-    //    generate a Transformer.
-    return tFactory.newTransformer(new StreamSource(xslStyleSheet));
+    // 2. Use the TransformerFactory to process the stylesheet Source and generate a Transformer.
+    return tFactory.newTransformer(source);
   }
 
   /**
@@ -86,18 +103,20 @@ public class FetchArticleService {
    * @throws FileNotFoundException
    */
   public Transformer getTranslet() throws TransformerException, FileNotFoundException {
-    // Set the TransformerFactory system property.
-    // Note: For more flexibility, load properties from a properties file.
-    final String key = "javax.xml.transform.TransformerFactory";
-    final String value = "org.apache.xalan.xsltc.trax.TransformerFactoryImpl";
-    final Properties props = System.getProperties();
-    props.put(key, value);
-    System.setProperties(props);
+    if (null == translet) {
+      // Set the TransformerFactory system property.
+      // Note: For more flexibility, load properties from a properties file.
+      final String KEY = "javax.xml.transform.TransformerFactory";
+      final String VALUE = "org.apache.xalan.xsltc.trax.TransformerFactoryImpl";
+      final Properties props = System.getProperties();
+      props.put(KEY, VALUE);
+      System.setProperties(props);
 
-    // Instantiate the TransformerFactory, and use it with a StreamSource
-    // XSL stylesheet to create a translet as a Templates object.      y
-    final TransformerFactory tFactory = TransformerFactory.newInstance();
-    final Templates translet = tFactory.newTemplates(new StreamSource(xslTemplate));
+      // Instantiate the TransformerFactory, and use it with a StreamSource
+      // XSL stylesheet to create a translet as a Templates object.
+      final TransformerFactory tFactory = TransformerFactory.newInstance();
+      translet = tFactory.newTemplates(new StreamSource(xslTemplate));
+    }
 
     // For each thread, instantiate a new Transformer, and perform the
     // transformations on that thread from a StreamSource to a StreamResult;
@@ -106,9 +125,12 @@ public class FetchArticleService {
 
   /** Set the XSL Template to be used for transformation
    * @param xslTemplate xslTemplate
+   * @throws java.net.URISyntaxException
    */
-  public void setXslTemplate(final String xslTemplate) {
-    this.xslTemplate = xslTemplate;
+  public void setXslTemplate(final String xslTemplate) throws URISyntaxException {
+    final URI uri = getClass().getResource(xslTemplate).toURI();
+    
+    this.xslTemplate = new File(uri);
   }
 
   /**
@@ -118,4 +140,13 @@ public class FetchArticleService {
   public void setArticleRep(final String articleRep) {
     this.articleRep = articleRep;
   }
+
+  /**
+   * Whether or not use the translet
+   * @param useTranslet true if useTranslet, false otherwise
+   */
+  public void setUseTranslet(final boolean useTranslet) {
+    this.useTranslet = useTranslet;
+  }
+
 }

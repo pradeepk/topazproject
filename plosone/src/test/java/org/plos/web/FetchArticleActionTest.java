@@ -15,10 +15,6 @@ import java.io.IOException;
 import java.net.URL;
 
 public class FetchArticleActionTest extends BasePlosoneTestCase {
-  private final String XML_SOURCE = "pbio.0000001-embedded-dtd.xml";
-  private final String XSL_SOURCE = "viewnlm-v2.xsl";
-  private final String OUTPUT_FILENAME = "foo.html";
-
   public void testShouldReturnTransformedArticle() throws Exception {
     final String resourceToIngest = "/test2.zip";
     final String resourceDOI = "10.1371/journal.pbio.0020294";
@@ -41,36 +37,10 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
   }
 
   public void testShouldInjestArticle() throws IOException, TransformerException, ServiceException {
-    {
-//      final String resourceToIngest = "/pbio.0000001-embedded-dtd.zip";
-//      final String resourceDOI = "10.1371/journal.pbio.0000001";
+    // final String resourceToIngest = "/pbio.0000001-embedded-dtd.zip";
+    // final String resourceDOI = "10.1371/journal.pbio.0000001";
 
-      final String resourceToIngest = "/test2.zip";
-      final String resourceDOI = "10.1371/journal.pbio.0020294";
-
-      try {
-        getArticleService().delete(resourceDOI, true);
-      } catch (NoSuchIdException nsie) {
-        // ignore - this just means there wasn't any stale stuff left
-      }
-
-      final URL article = getClass().getResource(resourceToIngest);
-      String doi = getArticleService().ingest(new DataHandler(article));
-      assertEquals(doi, resourceDOI);
-
-      String objectURL = getArticleService().getObjectURL(doi, "XML");
-
-      try {
-        getArticleService().delete(doi, true);
-      } catch (Exception e) {
-        fail();
-      }
-    }
-
-  }
-
-  public void testBasicArticle() throws IOException, ServiceException {
-    final String resourceToIngest = "/test_article.zip";
+    final String resourceToIngest = "/test2.zip";
     final String resourceDOI = "10.1371/journal.pbio.0020294";
 
     try {
@@ -82,6 +52,8 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     final URL article = getClass().getResource(resourceToIngest);
     String doi = getArticleService().ingest(new DataHandler(article));
     assertEquals(doi, resourceDOI);
+
+    assertNotNull(getArticleService().getObjectURL(doi, "XML"));
 
     try {
       doi = getArticleService().ingest(new DataHandler(article));

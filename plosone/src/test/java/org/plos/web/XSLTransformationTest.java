@@ -3,15 +3,14 @@
  */
 package org.plos.web;
 
-import junit.framework.TestCase;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.plos.BasePlosoneTestCase;
 import org.topazproject.ws.article.service.Article;
-import org.topazproject.ws.article.service.ArticleServiceLocator;
-import org.topazproject.ws.article.service.DuplicateIdException;
 import org.topazproject.ws.article.service.NoSuchIdException;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
-import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
@@ -22,90 +21,24 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.MalformedURLException;
+import java.io.File;
+import java.net.URISyntaxException;
 import java.net.URL;
-import java.rmi.RemoteException;
-import java.util.Properties;
 
-public class XSLTransformationTest extends TestCase {
-  private Article service;
-  private String serviceUrl = "http://localhost:8080/ws-articles-webapp-0.1/services/ArticleServicePort";
+public class XSLTransformationTest extends BasePlosoneTestCase {
+  public static final Log log = LogFactory.getLog(XSLTransformationTest.class);
 
-  private final String XML_SOURCE = "pbio.0000001-embedded-dtd.xml";
-  private final String XSL_SOURCE = "viewnlm-v2.xsl";
+  private final String XML_SOURCE = "/pbio.0000001-embedded-math-dtd.xml";
+  private final String XSL_SOURCE = "/viewnlm-v2.xsl";
   private final String OUTPUT_FILENAME = "foo.html";
 
-  public void testWorkWithIngestedArticle() throws IOException, TransformerException {
-    {
-      final String resourceToIngest = "/test_article.zip";
-      final String resourceDOI = "10.1371/journal.pbio.0020294";
-
-      try {
-        service.delete(resourceDOI, true);
-      } catch (NoSuchIdException nsie) {
-        // ignore - this just means there wasn't any stale stuff left
-      }
-
-      final URL article = getClass().getResource(resourceToIngest);
-      String doi = service.ingest(new DataHandler(article));
-      assertEquals(doi, resourceDOI);
-
-      String objectURL = service.getObjectURL(doi, "XML");
-
-      final StreamSource streamSource = new StreamSource(new InputStreamReader(new URL(objectURL).openStream()));
-      final Transformer transformer = getXSLTransformer(XSL_SOURCE);
-
-      TimeIt.run(new Command() {
-        public void execute() {
-          try {
-            transformXML(transformer, streamSource, OUTPUT_FILENAME);
-          } catch (Exception e) {
-          }
-        }
-      });
-
-      service.delete(doi, true);
-    }
-
-
-    {
-      final String resourceToIngest = "/pbio.0000001.zip";
-      final String resourceDOI = "10.1371/journal.pbio.0000001";
-
-      try {
-        service.delete(resourceDOI, true);
-      } catch (NoSuchIdException nsie) {
-        // ignore - this just means there wasn't any stale stuff left
-      }
-
-      final URL article = getClass().getResource(resourceToIngest);
-      String doi = service.ingest(new DataHandler(article));
-      assertEquals(doi, resourceDOI);
-
-      String objectURL = service.getObjectURL(doi, "XML");
-
-      final StreamSource streamSource = new StreamSource(new InputStreamReader(new URL(objectURL).openStream()));
-      final Transformer transformer = getXSLTransformer(XSL_SOURCE);
-
-      TimeIt.run(new Command() {
-        public void execute() {
-          try {
-            transformXML(transformer, streamSource, "junk.html");
-          } catch (Exception e) {
-          }
-        }
-      });
-
-      service.delete(doi, true);
-    }
-  }
-
-  public void testXSLTransformation() throws TransformerException, FileNotFoundException {
+  public void testXSLTransformation() throws TransformerException, FileNotFoundException, URISyntaxException {
     final Transformer transformer = getXSLTransformer(XSL_SOURCE);
-    logTime();
+    TimeIt.logTime();
 
-    transformXML(transformer, new StreamSource(XML_SOURCE), OUTPUT_FILENAME);
-    logTime();
+    final File file = getAsURI(XML_SOURCE);
+    transformXML(transformer, new StreamSource(file), OUTPUT_FILENAME);
+    TimeIt.logTime();
   }
 
   private void transformXML(final Transformer transformer, final StreamSource xmlSource, final String outputFileName) throws TransformerException, FileNotFoundException {
@@ -116,87 +49,31 @@ public class XSLTransformationTest extends TestCase {
             new StreamResult(new FileOutputStream(outputFileName)));
   }
 
-  private Transformer getXSLTransformer(final String xslStyleSheet) throws TransformerConfigurationException {
+  private Transformer getXSLTransformer(final String xslStyleSheet) throws TransformerConfigurationException, URISyntaxException {
     // 1. Instantiate a TransformerFactory.
     final TransformerFactory tFactory = TransformerFactory.newInstance();
 
     // 2. Use the TransformerFactory to process the stylesheet Source and
     //    generate a Transformer.
-    return tFactory.newTransformer(new StreamSource(xslStyleSheet));
+    final File file = getAsURI(xslStyleSheet);
+    return tFactory.newTransformer(new StreamSource(file));
   }
 
-  private void logTime() {
-    System.out.println(System.currentTimeMillis());
-  }
-
-  public void testTranslet() throws TransformerException, FileNotFoundException {
-
-// Set the TransformerFactory system property.
-// Note: For more flexibility, load properties from a properties file.
-    String key = "javax.xml.transform.TransformerFactory";
-    String value = "org.apache.xalan.xsltc.trax.TransformerFactoryImpl";
-    Properties props = System.getProperties();
-    props.put(key, value);
-    System.setProperties(props);
-
-// Instantiate the TransformerFactory, and use it with a StreamSource
-// XSL stylesheet to create a translet as a Templates object.      y
-    TransformerFactory tFactory = TransformerFactory.newInstance();
-    Templates translet = tFactory.newTemplates(new StreamSource(XSL_SOURCE));
-
-// For each thread, instantiate a new Transformer, and perform the
-// transformations on that thread from a StreamSource to a StreamResult;
-    Transformer transformer = translet.newTransformer();
-    final StreamSource streamSource = new StreamSource(XML_SOURCE);
-    final StreamResult streamResult = new StreamResult(new FileOutputStream(OUTPUT_FILENAME));
-    logTime();
-    transformer.transform(streamSource,
-            streamResult);
-    logTime();
-  }
-
-  protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    URL url = new URL(serviceUrl);
-    ArticleServiceLocator locator = new ArticleServiceLocator();
-    service = locator.getArticleServicePort(url);
-  }
-
-  public void testBasicArticle() throws IOException {
-    final String resourceToIngest = "/test_article.zip";
-    final String resourceDOI = "10.1371/journal.pbio.0020294";
-
-    try {
-      service.delete(resourceDOI, true);
-    } catch (NoSuchIdException nsie) {
-      // ignore - this just means there wasn't any stale stuff left
-    }
-
-    final URL article = getClass().getResource(resourceToIngest);
-    String doi = service.ingest(new DataHandler(article));
-    assertEquals(doi, resourceDOI);
-
-    try {
-      doi = service.ingest(new DataHandler(article));
-      fail("Failed to get expected duplicate-id exception");
-    } catch (DuplicateIdException die) {
-    }
-
-    service.delete(doi, true);
-
-    try {
-      service.delete(doi, true);
-      fail("Failed to get NoSuchIdException");
-    } catch (NoSuchIdException nsie) {
-    }
+  private File getAsURI(final String filename) throws URISyntaxException {
+    return new File(getClass().getResource(filename).toURI());
   }
 
 }
 
 class TimeIt {
   public static void run(final Command command) {
-    System.out.println(System.currentTimeMillis());
+    logTime();
     command.execute();
-    System.out.println(System.currentTimeMillis());
+    logTime();
+  }
+
+  public static void logTime() {
+    XSLTransformationTest.log.info(System.currentTimeMillis());
   }
 }
 

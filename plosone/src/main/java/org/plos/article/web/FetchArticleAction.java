@@ -65,6 +65,9 @@ public class FetchArticleAction extends ActionSupport {
     return SUCCESS;
   }
 
+  /**
+   * @return transformed output
+   */
   public String getTransformedArticle() {
     return transformedArticle;
   }
@@ -73,6 +76,9 @@ public class FetchArticleAction extends ActionSupport {
     this.transformedArticle = transformedArticle;
   }
 
+  /** Set the fetch article service
+   * @param fetchArticleService fetchArticleService
+   */
   public void setFetchArticleService(final FetchArticleService fetchArticleService) {
     this.fetchArticleService = fetchArticleService;
   }

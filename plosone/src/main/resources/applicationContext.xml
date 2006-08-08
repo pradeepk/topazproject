@@ -5,8 +5,10 @@
   <!--Plosone developer beans here -->
   <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService">
     <property name="articleRep" value="XML"/>
-    <property name="xslTemplate" value="viewnlm-v2.xsl"/>
+    <!-- Note: remember to prefix the filename with a "/" -->
+    <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
     <property name="articleService" ref="articleService"/>
+    <property name="useTranslet" value="true"/>
   </bean>
 
   <bean id="articleService" class="org.plos.article.service.ArticleService">

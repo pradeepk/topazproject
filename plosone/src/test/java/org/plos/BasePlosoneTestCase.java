@@ -11,7 +11,7 @@ import org.plos.article.web.FetchArticleAction;
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
 
-public class BasePlosoneTestCase extends AbstractDependencyInjectionSpringContextTests {
+public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpringContextTests {
   private FetchArticleService fetchArticleService;
   private ArticleService articleService;
   private FetchArticleAction fetchArticleAction;
