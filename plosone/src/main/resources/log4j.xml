@@ -10,7 +10,7 @@
   </appender>
 
   <appender name="rolling" class="org.apache.log4j.RollingFileAppender">
-    <param name="File" value="registration.log"/>
+    <param name="File" value="plosone_article.log"/>
     <param name="MaxFileSize" value="1MB"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="&lt;%d&gt; &lt;%p&gt; &lt;%F:%M&gt;-%m%n"/>
