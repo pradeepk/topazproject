@@ -20,7 +20,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.io.FileWriter;
-import org.apache.avalon.excalibur.io.IOUtil;
+import org.codehaus.spice.salt.io.IOUtil;
 
 import junit.framework.TestCase;
 
@@ -159,7 +159,8 @@ public class AlertsServiceTest extends TestCase {
     //writeResult(testResult, "/tmp/" + resourceName);
 
     // Read the result we expect from a resource
-    String desiredResult = IOUtil.toString(getClass().getResourceAsStream("/" + resourceName));
+    String desiredResult =
+      IOUtil.toString(getClass().getResourceAsStream("/" + resourceName), "UTF-8");
     
     String comment = resourceName + " did not match search from " + startDate +
       " to " + endDate + " on categories (";
@@ -184,7 +185,7 @@ public class AlertsServiceTest extends TestCase {
    */
   private static void writeResult(String result, String fileName) throws IOException {
     FileWriter fw = new FileWriter(fileName);
-    IOUtil.copy(result, fw);
+    IOUtil.copy(result.getBytes("UTF-8"), fw);
     fw.close();
   }
 

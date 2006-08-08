@@ -100,9 +100,9 @@
     </dependency>
     <!-- Get IOUtil -->
     <dependency>
-      <groupId>excalibur-io</groupId>
-      <artifactId>excalibur-io</artifactId>
-      <version>1.1</version>
+      <groupId>spice</groupId>
+      <artifactId>spice-salt</artifactId>
+      <version>1.0</version>
     </dependency>
   </dependencies>
 
