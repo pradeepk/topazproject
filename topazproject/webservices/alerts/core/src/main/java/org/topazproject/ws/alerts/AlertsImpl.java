@@ -102,10 +102,10 @@ public class AlertsImpl implements Alerts {
     
     if (categories != null && categories.length > 0) {
       for (int i = 0; i < categories.length; i++)
-        params.add("$doi <dc:subject> '" + categories[i] + "' ");
+        params.add("$doi <dc:subject> '" + ItqlHelper.escapeLiteral(categories[i]) + "' ");
     } else if (authors != null && authors.length > 0) {
       for (int i = 0; i < authors.length; i++)
-        params.add("$doi <dc:creator> '" + authors[i] + "' ");
+        params.add("$doi <dc:creator> '" + ItqlHelper.escapeLiteral(authors[i]) + "' ");
     }
 
     StringBuffer args = new StringBuffer();
