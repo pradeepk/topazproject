@@ -24,7 +24,7 @@ import java.net.MalformedURLException;
  */
 public class FetchArticleAction extends ActionSupport {
   private String articleDOI;
-  private static final int INITIAL_TRANSFORMED_FILE_SIZE = 1000000;
+  private static final int INITIAL_TRANSFORMED_FILE_SIZE = 100000;
 
   private ArrayList<String> messages = new ArrayList<String>();
   private static final Log log = LogFactory.getLog(FetchArticleAction.class);
@@ -32,7 +32,6 @@ public class FetchArticleAction extends ActionSupport {
   private String transformedArticle;
 
   public String execute() throws Exception {
-    
     try {
       final StringWriter stringWriter = new StringWriter(INITIAL_TRANSFORMED_FILE_SIZE);
       fetchArticleService.getDOIAsHTML(articleDOI, stringWriter);
