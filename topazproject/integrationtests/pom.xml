@@ -192,6 +192,28 @@
       <type>war</type>
       <version>0.1-SNAPSHOT</version>
     </dependency>
+    <!-- alerts -->
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-alerts-core</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-alerts-server</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-alerts-client-impl</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-alerts-webapp</artifactId>
+      <type>war</type>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
     <!-- journal-admin -->
     <dependency>
       <groupId>org.topazproject.ws</groupId>
@@ -280,6 +302,7 @@
             <link>http://jakarta.apache.org/commons/logging/apidocs</link>
             <link>http://jrdf.sourceforge.net/0.3/doc/javadoc</link>
             <link>http://java.sun.com/j2ee/1.4/docs/api</link>
+            <link>http://excalibur.apache.org/apidocs</link>
           </links>
         </configuration>
       </plugin>
@@ -287,6 +310,26 @@
       <!-- TODO: Neeed to use our own style.xml - see target/checkstyle*.xml for ex -->
       <!-- <plugin>
         <artifactId>maven-checkstyle-plugin</artifactId>
+      </plugin> -->
+
+      <!-- changelog for past 2 weeks -->
+      <!-- <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-changelog-plugin</artifactId>
+        <reportSets>
+          <reportSet>
+            <id>dual-report</id>
+            <configuration>
+              <type>range</type>
+              <range>14</range>
+            </configuration>
+            <reports>
+              <report>changelog</report>
+              <report>file-activity</report>
+              <report>dev-activity</report>
+            </reports>
+          </reportSet>
+        </reportSets>
       </plugin> -->
       
     </plugins>
@@ -520,6 +563,11 @@
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-permissions-webapp</artifactId>
+                <type>war</type>
+              </deployable>
+              <deployable>
+                <groupId>org.topazproject.ws</groupId>
+                <artifactId>ws-alerts-webapp</artifactId>
                 <type>war</type>
               </deployable>
               <deployable>

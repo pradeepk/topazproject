@@ -23,6 +23,7 @@
     <module>webservices/articles</module>
     <module>webservices/pap</module>
     <module>webservices/permissions</module>
+    <module>webservices/alerts</module>
   </modules>
 
 </project>

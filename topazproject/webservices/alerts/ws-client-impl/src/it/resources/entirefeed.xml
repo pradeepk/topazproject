@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<articles>
+  <article>
+    <doi>info:fedora/doi:10.1371%2Fjournal.pbio.0020382</doi>
+    <title>Correction: Nicotine's Defensive Function in Nature</title>
+    <description>July correction</description>
+    <date>2004-10-12</date>
+    
+    <categories>
+      <category>Biotechnology</category>
+      <category>Genetics/Genomics/Gene Therapy</category>
+      <category>Ecology</category>
+      <category>Plant Science</category>
+    </categories>
+  </article>
+  <article>
+    <doi>info:fedora/doi:10.1371%2Fjournal.pbio.0020317</doi>
+    <title>Submission of Microarray Data to Public Repositories</title>
+    <description>The Microarray Gene Expression Data Society believe that the time is right for journals to require that microarray data be deposited in public repositories, as a condition for publication</description>
+    <date>2004-08-31</date>
+    <authors>
+      <author>Ball, Catherine A</author>
+      <author>Matese, John C</author>
+      <author>Causton, Helen</author>
+      <author>Brazma, Alvis</author>
+      <author>Stoeckert, Chris</author>
+      <author>Taylor, Ronald</author>
+      <author>Hingamp, Pascal</author>
+      <author>Sansone, Susanna-Assunta</author>
+      <author>Winegarden, Neil</author>
+      <author>Parkinson, Helen</author>
+      <author>Spellman, Paul</author>
+      <author>Chervitz, Steve</author>
+      <author>Tateno, Yoshio</author>
+      <author>Sherlock, Gavin</author>
+      <author>Ringwald, Martin</author>
+      <author>White, Joseph</author>
+      <author>Quackenbush, John</author>
+      <author>Edgar, Ron</author>
+    </authors>
+    <categories>
+      <category>Genetics/Genomics/Gene Therapy</category>
+      <category>Bioinformatics/Computational Biology</category>
+    </categories>
+  </article>
+  <article>
+    <doi>info:fedora/doi:10.1371%2Fjournal.pbio.0020294</doi>
+    <title>Regulation of Muscle Fiber Type and Running Endurance by PPAR </title>
+    <description>Engineered expression of the peroxisome proliferator-activated receptor   in skeletal muscle increases type I muscle fibers allowing the modified mice to run twice the distance of wild-type littermates</description>
+    <date>2004-08-24</date>
+    <authors>
+      <author>Ham, Jungyeob</author>
+      <author>Kang, Heonjoong</author>
+      <author>Bayuga-Ocampo, Corinne R</author>
+      <author>Nelson, Michael C</author>
+      <author>Zhang, Chun-Li</author>
+      <author>Cho, Helen K</author>
+      <author>Yu, Ruth T</author>
+      <author>Evans, Ronald M</author>
+      <author>Wang, Yong-Xu</author>
+    </authors>
+    <categories>
+      <category>Biotechnology</category>
+      <category>Physiology</category>
+      <category>Molecular Biology/Structural Biology</category>
+      <category>Bioengineering</category>
+      <category>Cell Biology</category>
+      <category>Development</category>
+    </categories>
+  </article>
+  <article>
+    <doi>info:fedora/doi:10.1371%2Fjournal.pbio.0020042</doi>
+    <title>Identifying Protein Function—A Call for Community Action</title>
+    <description>Functional information is lacking for many of the hypothetical proteins encoded within sequenced genomes. Richard Roberts proposes that a community-based approach might offer an effecient way to fill the function gap</description>
+    <date>2004-03-16</date>
+    <authors>
+      <author>Roberts, Richard J</author>
+    </authors>
+    <categories>
+      <category>Genetics/Genomics/Gene Therapy</category>
+      <category>Microbiology</category>
+      <category>Bioinformatics/Computational Biology</category>
+    </categories>
+  </article>
+</articles>

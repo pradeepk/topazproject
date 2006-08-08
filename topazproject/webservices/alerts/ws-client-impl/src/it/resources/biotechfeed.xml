@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<articles>
+  <article>
+    <doi>info:fedora/doi:10.1371%2Fjournal.pbio.0020382</doi>
+    <title>Correction: Nicotine's Defensive Function in Nature</title>
+    <description>July correction</description>
+    <date>2004-10-12</date>
+    
+    <categories>
+      <category>Biotechnology</category>
+      <category>Genetics/Genomics/Gene Therapy</category>
+      <category>Ecology</category>
+      <category>Plant Science</category>
+    </categories>
+  </article>
+  <article>
+    <doi>info:fedora/doi:10.1371%2Fjournal.pbio.0020294</doi>
+    <title>Regulation of Muscle Fiber Type and Running Endurance by PPARÊ</title>
+    <description>Engineered expression of the peroxisome proliferator-activated receptor Ê in skeletal muscle increases type I muscle fibers allowing the modified mice to run twice the distance of wild-type littermates</description>
+    <date>2004-08-24</date>
+    <authors>
+      <author>Ham, Jungyeob</author>
+      <author>Kang, Heonjoong</author>
+      <author>Bayuga-Ocampo, Corinne R</author>
+      <author>Nelson, Michael C</author>
+      <author>Zhang, Chun-Li</author>
+      <author>Cho, Helen K</author>
+      <author>Yu, Ruth T</author>
+      <author>Evans, Ronald M</author>
+      <author>Wang, Yong-Xu</author>
+    </authors>
+    <categories>
+      <category>Biotechnology</category>
+      <category>Physiology</category>
+      <category>Molecular Biology/Structural Biology</category>
+      <category>Bioengineering</category>
+      <category>Cell Biology</category>
+      <category>Development</category>
+    </categories>
+  </article>
+</articles>
