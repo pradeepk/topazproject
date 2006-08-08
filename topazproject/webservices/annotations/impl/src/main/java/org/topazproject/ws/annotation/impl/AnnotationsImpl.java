@@ -89,7 +89,7 @@ public class AnnotationsImpl implements Annotations {
     + " where <${id}> <a:state> $o from ${MODEL};"
     + " insert <${id}> <a:state> '${state}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String LIST_STATE_ITQL =
-    ("select $a from ${MODEL} where $s <r:type> <a:Annotation> and $a <a:state> '${state}';")
+    ("select $a from ${MODEL} where $a <r:type> <a:Annotation> and $a <a:state> '${state}';")
      .replaceAll("\\Q${MODEL}", MODEL);
   private static final String CHECK_ID_ITQL =
     ("select $s from ${MODEL} where $s <r:type> <a:Annotation> and   $s <tucana:is> <${id}>")
