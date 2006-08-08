@@ -3,6 +3,11 @@
 <web-app>
   <display-name>PLoS ONE</display-name>
 
+  <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value>/WEB-INF/classes/applicationContext.xml</param-value>
+  </context-param>
+
   <filter>
     <filter-name>CAS Filter</filter-name>
     <filter-class>edu.yale.its.tp.cas.client.filter.CASFilter</filter-class>
