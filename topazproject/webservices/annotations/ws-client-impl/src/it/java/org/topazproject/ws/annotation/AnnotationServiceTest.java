@@ -73,10 +73,14 @@ public class AnnotationServiceTest extends TestCase {
     String           bodyContent = "This is a comment on foo:bar";
     String           title       = "Title";
     AnnotationInfo[] annotations = service.listAnnotations(subject, null);
+    String[]         ids         = service.listAnnotations(42);
 
     try {
       for (int i = 0; i < annotations.length; i++)
         service.deleteAnnotation(annotations[i].getId(), true);
+
+      for (int i = 0; i < ids.length; i++)
+        service.deleteAnnotation(ids[i], true);
     } catch (NoSuchIdException nsie) {
       fail("Unexpected NoSuchIdException");
     }
@@ -188,7 +192,7 @@ public class AnnotationServiceTest extends TestCase {
 
     service.setAnnotationState(annotation, 42);
 
-    String[] ids = service.listAnnotations(42);
+    ids = service.listAnnotations(42);
     assertTrue("Expected one annotation, got " + ids.length, ids.length == 1);
     assertEquals("Expected annotation-id '" + annotation + "', got '" + ids[0] + "'", ids[0],
                  annotation);
