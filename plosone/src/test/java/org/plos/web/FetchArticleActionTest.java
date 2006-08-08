@@ -13,6 +13,8 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerException;
 import java.io.IOException;
 import java.net.URL;
+import java.net.MalformedURLException;
+import java.rmi.RemoteException;
 
 public class FetchArticleActionTest extends BasePlosoneTestCase {
   public void testShouldReturnTransformedArticle() throws Exception {
@@ -40,9 +42,15 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     // final String resourceToIngest = "/pbio.0000001-embedded-dtd.zip";
     // final String resourceDOI = "10.1371/journal.pbio.0000001";
 
-    final String resourceToIngest = "/test2.zip";
-    final String resourceDOI = "10.1371/journal.pbio.0020294";
+    doIngestTest("10.1371/journal.pbio.0020294", "/test2.zip");
 
+//    doIngestTest("10.1371/journal.pbio.0020042", "/pbio.0020042.zip");
+//    doIngestTest("10.1371/journal.pbio.0020294", "/pbio.0020294.zip");
+//    doIngestTest("10.1371/journal.pbio.0020317", "/pbio.0020317.zip");
+//    doIngestTest("10.1371/journal.pbio.0020382", "/pbio.0020382.zip");
+  }
+
+  private void doIngestTest(String resourceDOI, String resourceToIngest) throws RemoteException, MalformedURLException, ServiceException {
     try {
       getArticleService().delete(resourceDOI, true);
     } catch (NoSuchIdException nsie) {
