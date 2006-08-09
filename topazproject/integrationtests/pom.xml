@@ -85,21 +85,6 @@
     <!-- annotation -->
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-annotation-api</artifactId>
-      <version>0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-annotation-impl</artifactId>
-      <version>0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-annotation-server</artifactId>
-      <version>0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-annotation-client-impl</artifactId>
       <version>0.1</version>
     </dependency>
