@@ -45,19 +45,15 @@
     <property name="password" value="postgres"/>
   </bean>
 
+  <!-- Useful link:
+  http://static.springframework.org/spring/docs/2.0.x/api/org/springframework/orm/hibernate3/annotation/AnnotationSessionFactoryBean.html -->
   <!--  Injection for hibernate SessionFactory -->
-  <bean id="registrationSessionFactory" class="org.springframework.orm.hibernate3.LocalSessionFactoryBean">
+  <bean id="registrationSessionFactory" class="org.springframework.orm.hibernate3.annotation.AnnotationSessionFactoryBean">
     <property name="dataSource" ref="registrationDataSource"/>
-    <!--<property name="mappingResources">-->
-    <!--<list>-->
-    <!--<value>org.plos.registration.UserImpl</value>-->
-    <!--</list>-->
-    <!--</property>-->
-    <property name="configLocation">
-      <value>hibernate.cfg.xml</value>
-    </property>
-    <property  name="configurationClass">
-      <value>org.hibernate.cfg.AnnotationConfiguration</value>
+    <property name="annotatedClasses">
+      <list>
+        <value>org.plos.registration.UserImpl</value>
+      </list>
     </property>
     <property name="hibernateProperties">
       <props>
