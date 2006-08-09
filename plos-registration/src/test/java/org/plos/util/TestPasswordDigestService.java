@@ -5,8 +5,6 @@
 package org.plos.util;
 
 import org.plos.BasePlosoneRegistrationTestCase;
-import org.plos.registration.User;
-import org.plos.service.UserAlreadyExistsException;
 
 import java.util.Random;
 
@@ -73,13 +71,4 @@ public class TestPasswordDigestService extends BasePlosoneRegistrationTestCase {
 //
 //    }
 //  }
-
-  //TODO move this test to the right location
-  public void testUserPasswdSavedInDatabaseShouldBeDifferentFromWhatUserEntered() throws UserAlreadyExistsException {
-    final String email = "viru-verifying-for-password-digest@home.com";
-    final String password = "virupasswd";
-    final User saveUser = getRegistrationService().createUser(email, password);
-    assertFalse(saveUser.getPassword().equalsIgnoreCase(password));
-  }
-
 }

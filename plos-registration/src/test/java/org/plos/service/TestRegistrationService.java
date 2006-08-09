@@ -48,4 +48,12 @@ public class TestRegistrationService extends BasePlosoneRegistrationTestCase {
     final Timestamp newUpdatedOn = updatedUser.getUpdatedOn();
     assertFalse(initialUpdatedOn.after(newUpdatedOn));
   }
+
+  public void testUserPasswdSavedInDatabaseShouldBeDifferentFromWhatUserEntered() throws UserAlreadyExistsException {
+    final String email = "viru-verifying-for-password-digest@home.com";
+    final String password = "virupasswd";
+    final User saveUser = getRegistrationService().createUser(email, password);
+    assertFalse(saveUser.getPassword().equalsIgnoreCase(password));
+  }
+
 }
