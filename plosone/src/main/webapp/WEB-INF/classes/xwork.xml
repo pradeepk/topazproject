@@ -16,6 +16,8 @@
     </action>
 
     <action name="fetchArticle" class="org.plos.article.web.FetchArticleAction">
+      <interceptor-ref name="validationWorkflowStack"/>
+      <interceptor-ref name="timer"/>
       <result name="error" type="freemarker">/WEB-INF/pages/error.ftl</result>
       <result name="success" type="freemarker">/WEB-INF/pages/article/displayArticle.ftl</result>
     </action>
