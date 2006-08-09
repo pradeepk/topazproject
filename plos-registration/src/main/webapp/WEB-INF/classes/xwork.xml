@@ -17,10 +17,10 @@
 
       <action name="registerSubmit" class="org.plos.web.RegisterAction" method="execute">
         <interceptor-ref name="validationWorkflowStack"/>
+        <interceptor-ref name="timer"/>
         <result name="input" type="freemarker">/WEB-INF/pages/registration/registerPart1.ftl</result>
         <result name="error" type="freemarker">/WEB-INF/pages/registration/registerPart1.ftl</result>
         <result name="success" type="freemarker">/WEB-INF/pages/registration/registration-success.ftl</result>
-        <!--<result name="success" type="freemarker">/WEB-INF/pages/registration-success.ftl</result>-->
       </action>
 
       <action name="emailVerification" class="org.plos.web.ConfirmationAction">

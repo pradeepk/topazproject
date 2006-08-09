@@ -17,6 +17,9 @@
     </layout>
   </appender>
 
+  <logger name="com.opensymphony.xwork.interceptor.TimerInterceptor">
+    <level value="info"/>
+  </logger>
 
   <root>
     <priority value ="error" />
