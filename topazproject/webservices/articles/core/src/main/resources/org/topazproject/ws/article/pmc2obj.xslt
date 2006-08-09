@@ -267,7 +267,7 @@
       <xsl:when test="$contrib/name">
         <xsl:value-of select="
           if ($contrib/name/given-names) then
-            concat($contrib/name/surname, ', ', $contrib/name/given-names)
+            concat($contrib/name/given-names, ' ', $contrib/name/surname)
           else
             $contrib/name/surname
           "/>
