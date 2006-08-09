@@ -85,7 +85,12 @@
     <!-- annotation -->
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-annotation-core</artifactId>
+      <artifactId>ws-annotation-api</artifactId>
+      <version>0.1</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-annotation-impl</artifactId>
       <version>0.1</version>
     </dependency>
     <dependency>
@@ -235,6 +240,18 @@
       <artifactId>ws-journal-admin-webapp</artifactId>
       <type>war</type>
       <version>0.1</version>
+    </dependency>
+    <!-- ratings -->
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-ratings-client-impl</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-ratings-webapp</artifactId>
+      <type>war</type>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -573,6 +590,11 @@
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-journal-admin-webapp</artifactId>
+                <type>war</type>
+              </deployable>
+              <deployable>
+                <groupId>org.topazproject.ws</groupId>
+                <artifactId>ws-ratings-webapp</artifactId>
                 <type>war</type>
               </deployable>
             </deployables>
