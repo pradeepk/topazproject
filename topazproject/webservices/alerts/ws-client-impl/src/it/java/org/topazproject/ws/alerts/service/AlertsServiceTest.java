@@ -139,7 +139,7 @@ public class AlertsServiceTest extends TestCase {
   }
 
   private void tstAuthors() throws RemoteException, IOException {
-    String[] authors = new String[] { "Roberts, Richard J" };
+    String[] authors = new String[] { "Richard J Roberts" };
     this.testFeed(null, null, null, authors, "author_roberts.xml");
   }
 
@@ -172,7 +172,13 @@ public class AlertsServiceTest extends TestCase {
       for (int i = 0; i < authors.length; i++)
         comment += authors[i];
     comment += ")";
-    assertEquals(comment, testResult.trim(), desiredResult.trim());
+    
+    if (!testResult.trim().equals(desiredResult.trim())) {
+      log.warn("Comparison failed!");
+      writeResult(testResult, "/tmp/" + resourceName);
+    }
+    
+    assertEquals(comment, desiredResult.trim(), testResult.trim());
   }
 
   /**

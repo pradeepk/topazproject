@@ -6,24 +6,24 @@
     <description>The Microarray Gene Expression Data Society believe that the time is right for journals to require that microarray data be deposited in public repositories, as a condition for publication</description>
     <date>2004-08-31</date>
     <authors>
-      <author>Ball, Catherine A</author>
-      <author>Matese, John C</author>
-      <author>Causton, Helen</author>
-      <author>Brazma, Alvis</author>
-      <author>Stoeckert, Chris</author>
-      <author>Taylor, Ronald</author>
-      <author>Hingamp, Pascal</author>
-      <author>Sansone, Susanna-Assunta</author>
-      <author>Winegarden, Neil</author>
-      <author>Parkinson, Helen</author>
-      <author>Spellman, Paul</author>
-      <author>Chervitz, Steve</author>
-      <author>Tateno, Yoshio</author>
-      <author>Sherlock, Gavin</author>
-      <author>Ringwald, Martin</author>
-      <author>White, Joseph</author>
-      <author>Quackenbush, John</author>
-      <author>Edgar, Ron</author>
+      <author>Neil Winegarden</author>
+      <author>Catherine A Ball</author>
+      <author>Gavin Sherlock</author>
+      <author>Alvis Brazma</author>
+      <author>John C Matese</author>
+      <author>Martin Ringwald</author>
+      <author>Helen Parkinson</author>
+      <author>Pascal Hingamp</author>
+      <author>Ron Edgar</author>
+      <author>Ronald Taylor</author>
+      <author>John Quackenbush</author>
+      <author>Steve Chervitz</author>
+      <author>Paul Spellman</author>
+      <author>Helen Causton</author>
+      <author>Chris Stoeckert</author>
+      <author>Yoshio Tateno</author>
+      <author>Joseph White</author>
+      <author>Susanna-Assunta Sansone</author>
     </authors>
     <categories>
       <category>Genetics/Genomics/Gene Therapy</category>
@@ -36,15 +36,15 @@
     <description>Engineered expression of the peroxisome proliferator-activated receptor   in skeletal muscle increases type I muscle fibers allowing the modified mice to run twice the distance of wild-type littermates</description>
     <date>2004-08-24</date>
     <authors>
-      <author>Ham, Jungyeob</author>
-      <author>Kang, Heonjoong</author>
-      <author>Bayuga-Ocampo, Corinne R</author>
-      <author>Nelson, Michael C</author>
-      <author>Zhang, Chun-Li</author>
-      <author>Cho, Helen K</author>
-      <author>Yu, Ruth T</author>
-      <author>Evans, Ronald M</author>
-      <author>Wang, Yong-Xu</author>
+      <author>Chun-Li Zhang</author>
+      <author>Ruth T Yu</author>
+      <author>Corinne R Bayuga-Ocampo</author>
+      <author>Heonjoong Kang</author>
+      <author>Ronald M Evans</author>
+      <author>Michael C Nelson</author>
+      <author>Jungyeob Ham</author>
+      <author>Helen K Cho</author>
+      <author>Yong-Xu Wang</author>
     </authors>
     <categories>
       <category>Biotechnology</category>
