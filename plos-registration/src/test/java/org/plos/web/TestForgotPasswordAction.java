@@ -20,13 +20,12 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
   public void testShouldSendEmailForForgotPasswordEmailEvenIfTheEmailItIsNotVerified() throws Exception {
     final String email = "viru-forgot-password-not-verified-yet@home.com";
 
-    createUser(email, "virupasswd");
+    assertEquals(Action.SUCCESS, createUser(email, "virupasswd"));
     final User beforeVerificationUser = getRegistrationService().getUserWithLoginName(email);
     assertFalse(beforeVerificationUser.isVerified());
 
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
-    forgotPasswordAction.execute();
     assertEquals(Action.SUCCESS, forgotPasswordAction.execute());
     assertTrue(forgotPasswordAction.getMessages().isEmpty());
   }
@@ -54,7 +53,6 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     confirmationAction.setEmailVerificationToken(beforeVerificationUser.getEmailVerificationToken());
 
     assertEquals(Action.SUCCESS, confirmationAction.execute());
-    assertTrue(confirmationAction.getMessages().isEmpty());
 
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);

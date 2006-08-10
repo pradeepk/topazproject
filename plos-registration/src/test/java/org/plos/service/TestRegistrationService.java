@@ -14,15 +14,18 @@ import java.sql.Timestamp;
  */
 public class TestRegistrationService extends BasePlosoneRegistrationTestCase {
 
-  public void testNewUser() throws UserAlreadyExistsException {
-    User user = getRegistrationService().createUser("dave@home.com", "david");
+  public void testCreateNewUserWithExpectedValues() throws UserAlreadyExistsException {
+    final String loginName = "dave@home.com";
+    final User user = getRegistrationService().createUser(loginName, "david");
     assertNotNull(user.getId());
+    assertEquals(user.getLoginName(), loginName);
+    assertNotNull(user.getPassword());
     assertFalse(user.isVerified());
     assertFalse(user.isActive());
   }
 
-  public void testVerifiedUser() throws UserAlreadyExistsException {
-    User user = getRegistrationService().createUser("viru@home.com", "virender");
+  public void testVerifyUser() throws UserAlreadyExistsException {
+    final User user = getRegistrationService().createUser("viru@home.com", "virender");
     getRegistrationService().setVerified(user);
     assertTrue(user.isVerified());
     assertTrue(user.isActive());

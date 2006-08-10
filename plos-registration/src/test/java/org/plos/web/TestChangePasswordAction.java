@@ -14,15 +14,14 @@ public class TestChangePasswordAction extends BasePlosoneRegistrationTestCase {
     final String oldPassword = "changethispassword";
 
     createUser(email, oldPassword);
-    final User beforeVerificationUser = getRegistrationService().getUserWithLoginName(email);
-    assertNotNull(beforeVerificationUser);
 
+    final User beforeVerificationUser = getRegistrationService().getUserWithLoginName(email);
     getRegistrationService().verifyUser(email, beforeVerificationUser.getEmailVerificationToken());
 
     final ChangePasswordAction changePasswordAction = getChangePasswordAction();
     changePasswordAction.setLoginName(email);
     changePasswordAction.setOldPassword(oldPassword);
-    changePasswordAction.setNewPassword1("newPassword1");
+    changePasswordAction.setNewPassword1("new"+oldPassword);
     assertEquals(Action.SUCCESS, changePasswordAction.execute());
     assertEquals(0, changePasswordAction.getFieldErrors().size());
   }
@@ -36,7 +35,7 @@ public class TestChangePasswordAction extends BasePlosoneRegistrationTestCase {
     final ChangePasswordAction changePasswordAction = getChangePasswordAction();
     changePasswordAction.setLoginName(email);
     changePasswordAction.setOldPassword(oldPassword);
-    changePasswordAction.setNewPassword1("newPassword1");
+    changePasswordAction.setNewPassword1("new"+oldPassword);
     assertEquals(Action.ERROR, changePasswordAction.execute());
     assertEquals(1, changePasswordAction.getFieldErrors().size());
   }
@@ -51,8 +50,8 @@ public class TestChangePasswordAction extends BasePlosoneRegistrationTestCase {
 
     final ChangePasswordAction changePasswordAction = getChangePasswordAction();
     changePasswordAction.setLoginName(email);
-    changePasswordAction.setOldPassword(oldPassword+"11");
-    changePasswordAction.setNewPassword1("newPassword1");
+    changePasswordAction.setOldPassword(oldPassword+"change");
+    changePasswordAction.setNewPassword1("new"+oldPassword);
     assertEquals(Action.ERROR, changePasswordAction.execute());
     assertEquals(1, changePasswordAction.getFieldErrors().size());
   }
@@ -64,7 +63,7 @@ public class TestChangePasswordAction extends BasePlosoneRegistrationTestCase {
     final ChangePasswordAction changePasswordAction = getChangePasswordAction();
     changePasswordAction.setLoginName(email);
     changePasswordAction.setOldPassword(oldPassword);
-    changePasswordAction.setNewPassword1("newPassword1");
+    changePasswordAction.setNewPassword1("new"+oldPassword);
     assertEquals(Action.ERROR, changePasswordAction.execute());
     assertEquals(1, changePasswordAction.getFieldErrors().size());
   }
