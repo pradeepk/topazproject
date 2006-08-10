@@ -23,20 +23,15 @@
       <version>0.1-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>conf-helper</artifactId>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>base-ws-webapp</artifactId>
       <version>0.5-SNAPSHOT</version>
+      <type>war</type>
     </dependency>
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.13</version>
-    </dependency>
-    <dependency>
-      <groupId>cas</groupId>
-      <artifactId>casclient</artifactId>
-      <version>2.1.1</version>
-      <type>jar</type>
     </dependency>
   </dependencies>
 

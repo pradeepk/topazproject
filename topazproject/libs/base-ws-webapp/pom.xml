@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.topazproject.ws</groupId>
+  <artifactId>base-ws-webapp</artifactId>
+  <packaging>war</packaging>
+  <name>Base WebService Webapp</name>
+
+  <parent>
+    <groupId>org.topazproject</groupId>
+    <artifactId>topazproject-libs</artifactId>
+    <version>0.5-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>xacml-extensions</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>cas</groupId>
+      <artifactId>casclient</artifactId>
+      <version>2.1.1</version>
+      <type>jar</type>
+    </dependency>
+  </dependencies>
+
+</project>

@@ -17,16 +17,16 @@ import com.sun.xacml.UnknownIdentifierException;
  */
 public abstract class ArticlePEP extends AbstractSimplePEP {
   /** The action that represents an ingest operation in XACML policies. */
-  public static final String INGEST_ARTICLE = "ingestArticle";
+  public static final String INGEST_ARTICLE = "articles:ingestArticle";
 
   /** The action that represents a delete operation in XACML policies. */
-  public static final String DELETE_ARTICLE = "deleteArticle";
+  public static final String DELETE_ARTICLE = "articles:deleteArticle";
 
   /** The action that represents a set-state operation in XACML policies. */
-  public static final String SET_ARTICLE_STATE = "setArticleState";
+  public static final String SET_ARTICLE_STATE = "articles:setArticleState";
 
   /** The action that represents a get-object-url operation in XACML policies. */
-  public static final String GET_OBJECT_URL = "getObjectURL";
+  public static final String GET_OBJECT_URL = "articles:getObjectURL";
 
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {

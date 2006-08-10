@@ -26,10 +26,10 @@ import com.sun.xacml.UnknownIdentifierException;
  */
 public abstract class PreferencesPEP extends AbstractSimplePEP {
   /** The action that represents a write operation in XACML policies. */
-  public static final String SET_PREFERENCES = "setPreferences";
+  public static final String SET_PREFERENCES = "preferences:setPreferences";
 
   /** The action that represents a read operation in XACML policies. */
-  public static final String GET_PREFERENCES = "getPreferences";
+  public static final String GET_PREFERENCES = "preferences:getPreferences";
 
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {

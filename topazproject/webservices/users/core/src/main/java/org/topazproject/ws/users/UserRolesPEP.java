@@ -26,10 +26,10 @@ import com.sun.xacml.UnknownIdentifierException;
  */
 public abstract class UserRolesPEP extends AbstractSimplePEP {
   /** The action that represents a get-roles operation in XACML policies. */
-  public static final String GET_ROLES = "getRoles";
+  public static final String GET_ROLES = "userRoles:getRoles";
 
   /** The action that represents a set-roles operation in XACML policies. */
-  public static final String SET_ROLES = "setRoles";
+  public static final String SET_ROLES = "userRoles:setRoles";
 
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {

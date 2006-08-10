@@ -32,11 +32,11 @@ import com.sun.xacml.ctx.Attribute;
 public abstract class RatingsPEP extends AbstractSimplePEP {
   // Note: these operations must be referenced in the policy/Ratings.xml policy file
   /** The action that represents the set-ratings operation in XACML policies. */
-  public static final String SET_RATINGS = "setRatings";
+  public static final String SET_RATINGS = "ratings:setRatings";
   /** The action that represents the get-ratings operation in XACML policies. */
-  public static final String GET_RATINGS = "getRatings";
+  public static final String GET_RATINGS = "ratings:getRatings";
   /** The action that represents the get-stats operation in XACML policies. */
-  public static final String GET_STATS = "getStats";
+  public static final String GET_STATS = "ratings:getStats";
 
   /** The id of the attribute containing the URI of the object: {@value} */
   public static final URI OBJ_ID =

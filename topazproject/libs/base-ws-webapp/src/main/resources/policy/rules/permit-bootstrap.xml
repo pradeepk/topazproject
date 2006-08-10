@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Policy xmlns="urn:oasis:names:tc:xacml:1.0:policy"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  PolicyId="permit-bootstrap"
+  RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
+
+  <Description>
+    A policy that permits all operations to users if there are no users with role 'admin'.
+  </Description>
+
+  <Target>
+    <AnyTarget/>
+  </Target>
+
+  <!-- Enabling this rule causes Kowari session lock-up. 
+  <Rule RuleId="create-kowari-user-model-psudo-rule" Effect="Permit">
+
+    <Description>
+      The condition is deliberately set to fail so that this rule is 'not-applicable'.
+      But as a side-effect creates the model so that queries won't fail.
+      Remove this rule once the database is initialized properly.
+    </Description>
+    
+    <Target>
+      <AnyTarget/>
+    </Target>
+    
+    <Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-less-than">
+      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
+        <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:itql">
+          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql</AttributeValue>
+          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
+            create &lt;rmi://localhost/fedora#users&gt;;commit;
+          </AttributeValue>
+        </Apply> 
+      </Apply>
+      <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#integer">0</AttributeValue>  
+    </Condition>
+    
+  </Rule>
+  -->
+  
+  <Rule RuleId="permitAllIfNoAdmin" Effect="Permit">
+    
+    <Target>
+      <AnyTarget/>
+    </Target>
+    
+    <Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-less-than">
+      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
+        <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:itql">
+          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql</AttributeValue>
+          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
+            select $s from &lt;rmi://localhost/fedora#users&gt;
+            where $s &lt;topaz:hasRoles&gt; $roles and $roles &lt;topaz:role&gt; 'admin'; 
+          </AttributeValue>
+        </Apply> 
+      </Apply>
+      <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#integer">1</AttributeValue>  
+    </Condition>
+    
+  </Rule>
+  
+</Policy>

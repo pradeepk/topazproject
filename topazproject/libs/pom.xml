@@ -24,5 +24,6 @@
     <module>xacml-extensions</module>
     <module>resource-indexer</module>
     <module>fedora-client</module>
+    <module>base-ws-webapp</module>
   </modules>
 </project>

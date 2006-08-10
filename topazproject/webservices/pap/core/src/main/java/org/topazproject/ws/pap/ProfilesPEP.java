@@ -33,10 +33,10 @@ import com.sun.xacml.ctx.Attribute;
  */
 public abstract class ProfilesPEP extends AbstractSimplePEP {
   /** The action that represents a set-profile operation in XACML policies. */
-  public static final String SET_PROFILE = "setProfile";
+  public static final String SET_PROFILE = "profiles:setProfile";
 
   /** The action that represents a get-profile operation in XACML policies. */
-  public static final String GET_PROFILE = "getProfile";
+  public static final String GET_PROFILE = "profiles:getProfile";
 
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {

@@ -1,17 +1,24 @@
-package org.topazproject.xacml;
+package org.topazproject.xacml.finder;
 
 import java.io.File;
+import java.io.IOException;
+import java.io.InputStream;
 
-import java.util.ArrayList;
+import java.net.URI;
+
+import java.util.Collections;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -24,6 +31,7 @@ import com.sun.xacml.AbstractPolicy;
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.MatchResult;
 import com.sun.xacml.Policy;
+import com.sun.xacml.PolicyReference;
 import com.sun.xacml.PolicySet;
 import com.sun.xacml.ctx.Status;
 import com.sun.xacml.finder.PolicyFinder;
@@ -32,23 +40,19 @@ import com.sun.xacml.finder.PolicyFinderResult;
 
 /**
  * This module represents a collection of resourcess containing polices, each of which will be
- * searched through when trying to find a policy that is applicable to a specific request.
- * 
- * <p>
- * Copied from com.sun.xacml.finder.impl.FilePolicyModule and adapted to load policy files using
- * the thread-context class loader.
- * </p>
+ * searched through when trying to find a policy that is applicable to a specific request. Based
+ * on  {@link com.sun.xacml.finder.impl.FilePolicyModule}.
  *
  * @author Pradeep Krishnan
  */
-public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHandler {
+public abstract class AbstractPolicyModule extends PolicyFinderModule implements ErrorHandler {
   /**
    * The property which is used to specify the schema file to validate against (if any)
    */
   public static final String POLICY_SCHEMA_PROPERTY = "com.sun.xacml.PolicySchema";
   public static final String JAXP_SCHEMA_LANGUAGE =
     "http://java.sun.com/xml/jaxp/properties/schemaLanguage";
-  public static final String W3C_XML_SCHEMA = "http://www.w3.org/2001/XMLSchema";
+  public static final String W3C_XML_SCHEMA     = "http://www.w3.org/2001/XMLSchema";
   public static final String JAXP_SCHEMA_SOURCE =
     "http://java.sun.com/xml/jaxp/properties/schemaSource";
 
@@ -60,21 +64,21 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
 
   //
   private Set resources;
-
-  //
   private Set policies;
+  private Map policyMap;
 
   // the logger we'll use for all messages
-  private static final Logger logger = Logger.getLogger(ResourcePolicyModule.class.getName());
+  private static final Log logger = LogFactory.getLog(AbstractPolicyModule.class);
 
   /**
    * Constructor which retrieves the schema file to validate policies against from the
    * POLICY_SCHEMA_PROPERTY. If the retrieved property is null, then no schema validation will
    * occur.
    */
-  public ResourcePolicyModule() {
+  public AbstractPolicyModule() {
     resources   = new HashSet();
     policies    = new HashSet();
+    policyMap   = new HashMap();
 
     String schemaName = System.getProperty(POLICY_SCHEMA_PROPERTY);
 
@@ -91,9 +95,10 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
    * @param schemaFile the schema file to validate policies against, or null if schema validation
    *        is not desired.
    */
-  public ResourcePolicyModule(File schemaFile) {
+  public AbstractPolicyModule(File schemaFile) {
     resources   = new HashSet();
     policies    = new HashSet();
+    policyMap   = new HashMap();
 
     this.schemaFile = schemaFile;
   }
@@ -104,21 +109,11 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
    *
    * @param resources a <code>List</code> of <code>String</code>s that identify policy resources
    */
-  public ResourcePolicyModule(List resources) {
+  public AbstractPolicyModule(List resources) {
     this();
 
     if (resources != null)
       this.resources.addAll(resources);
-  }
-
-  /**
-   * Indicates whether this module supports finding policies based on a request (target matching).
-   * Since this module does support finding policies based on requests, it returns true.
-   *
-   * @return true, since finding policies based on requests is supported
-   */
-  public boolean isRequestSupported() {
-    return true;
   }
 
   /**
@@ -135,10 +130,28 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
 
     while (it.hasNext()) {
       String         name   = (String) (it.next());
-      AbstractPolicy policy = loadPolicy(name, finder, schemaFile, this);
+      AbstractPolicy policy = loadPolicy(name, finder);
 
-      if (policy != null)
-        policies.add(policy);
+      if (policy == null)
+        continue;
+
+      policies.add(policy);
+
+      URI    id   = policy.getId();
+      Object prev = policyMap.put(id, policy);
+
+      if (prev == null)
+        continue;
+
+      String message = "Duplicate policy '" + id + "' found in resource '" + name + "'";
+      logger.warn(message);
+
+      // We have to cause an error in policy eval.
+      Status status =
+        new Status(Collections.singletonList(Status.STATUS_PROCESSING_ERROR), message);
+
+      // stick this in place of policy
+      policyMap.put(id, status);
     }
   }
 
@@ -148,24 +161,10 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
    *
    * @param resource the resource to add to this module's collection of resources
    *
-   * @return DOCUMENT ME!
+   * @return true if this module did not already contain the specified resource
    */
   public boolean addPolicy(String resource) {
     return resources.add(resource);
-  }
-
-  /**
-   * Loads a policy from the specified resource and uses the specified <code>PolicyFinder</code> to
-   * help with instantiating PolicySets.
-   *
-   * @param resource the resource to load the policy from
-   * @param finder a PolicyFinder used to help in instantiating PolicySets
-   *
-   * @return a (potentially schema-validated) policy associated with the  specified resource, or
-   *         null if there was an error
-   */
-  public static AbstractPolicy loadPolicy(String resource, PolicyFinder finder) {
-    return loadPolicy(resource, finder, null, null);
   }
 
   /**
@@ -176,15 +175,11 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
    *
    * @param resource the resource to load the policy from
    * @param finder a PolicyFinder used to help in instantiating PolicySets
-   * @param schemaFile the schema file to validate policies against, or null if schema validation
-   *        is not desired
-   * @param handler an error handler used to print warnings and errors during parsing
    *
    * @return a (potentially schema-validated) policy associated with the  specified resource, or
    *         null if there was an error
    */
-  public static AbstractPolicy loadPolicy(String resource, PolicyFinder finder, File schemaFile,
-                                          ErrorHandler handler) {
+  public AbstractPolicy loadPolicy(String resource, PolicyFinder finder) {
     try {
       // create the factory
       DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
@@ -209,12 +204,11 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
         factory.setAttribute(JAXP_SCHEMA_SOURCE, schemaFile);
 
         db = factory.newDocumentBuilder();
-        db.setErrorHandler(handler);
+        db.setErrorHandler(this);
       }
 
       // try to load the policy resource
-      ClassLoader cl  = Thread.currentThread().getContextClassLoader();
-      Document    doc = db.parse(cl.getResourceAsStream(resource));
+      Document doc = db.parse(getPolicyResourceAsStream(resource));
 
       // handle the policy, if it's a known type
       Element root = doc.getDocumentElement();
@@ -229,13 +223,25 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
         throw new Exception("Unknown root document type: " + name);
       }
     } catch (Exception e) {
-      if (logger.isLoggable(Level.WARNING))
-        logger.log(Level.WARNING, "Error reading policy from resource " + resource, e);
+      if (logger.isWarnEnabled())
+        logger.warn("Error reading policy from resource " + resource, e);
     }
 
     // a default fall-through in the case of an error
     return null;
   }
+
+  /**
+   * Gets the InputStream corresponding to the policy resource.
+   *
+   * @param resource the policy resource
+   *
+   * @return the InputStream
+   *
+   * @throws IOException if an error occured
+   */
+  public abstract InputStream getPolicyResourceAsStream(String resource)
+                                                 throws IOException;
 
   /**
    * Finds a policy based on a request's context. This may involve using the request data as
@@ -266,10 +272,9 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
       if (result == MatchResult.MATCH) {
         // if we matched before, this is an error...
         if (selectedPolicy != null) {
-          ArrayList code = new ArrayList();
-          code.add(Status.STATUS_PROCESSING_ERROR);
-
-          Status status = new Status(code, "too many applicable top-" + "level policies");
+          Status status =
+            new Status(Collections.singletonList(Status.STATUS_PROCESSING_ERROR),
+                       "too many applicable top-level policies");
 
           return new PolicyFinderResult(status);
         }
@@ -288,6 +293,33 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
   }
 
   /**
+   * Tries to find one and only one matching policy given the idReference If more than one policy
+   * is found, this is an error and must be reported as such. If no policies are found, then an
+   * empty result must be returned. By default this method returns an empty result. This method
+   * should never return null.
+   *
+   * @param idReference an identifier specifying some policy
+   * @param type type of reference (policy or policySet) as identified by the fields in
+   *        <code>PolicyReference</code>
+   *
+   * @return the result of looking for a matching policy
+   */
+  public PolicyFinderResult findPolicy(URI idReference, int type) {
+    Object o = policyMap.get(idReference);
+
+    if ((o instanceof Policy) && (type == PolicyReference.POLICY_REFERENCE))
+      return new PolicyFinderResult((Policy) o);
+
+    if ((o instanceof PolicySet) && (type == PolicyReference.POLICYSET_REFERENCE))
+      return new PolicyFinderResult((PolicySet) o);
+
+    if (o instanceof Status)
+      return new PolicyFinderResult((Status) o);
+
+    return new PolicyFinderResult();
+  }
+
+  /**
    * Standard handler routine for the XML parsing.
    *
    * @param exception information on what caused the problem
@@ -295,8 +327,8 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
    * @throws SAXException DOCUMENT ME!
    */
   public void warning(SAXParseException exception) throws SAXException {
-    if (logger.isLoggable(Level.WARNING))
-      logger.warning("Warning on line " + exception.getLineNumber() + ": " + exception.getMessage());
+    if (logger.isWarnEnabled())
+      logger.warn("Warning on line " + exception.getLineNumber() + ": " + exception.getMessage());
   }
 
   /**
@@ -307,9 +339,9 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
    * @throws SAXException always to halt parsing on errors
    */
   public void error(SAXParseException exception) throws SAXException {
-    if (logger.isLoggable(Level.WARNING))
-      logger.warning("Error on line " + exception.getLineNumber() + ": " + exception.getMessage()
-                     + " ... " + "Policy will not be available");
+    if (logger.isWarnEnabled())
+      logger.warn("Error on line " + exception.getLineNumber() + ": " + exception.getMessage()
+                  + " ... " + "Policy will not be available");
 
     throw new SAXException("error parsing policy");
   }
@@ -322,9 +354,9 @@ public class ResourcePolicyModule extends PolicyFinderModule implements ErrorHan
    * @throws SAXException always to halt parsing on errors
    */
   public void fatalError(SAXParseException exception) throws SAXException {
-    if (logger.isLoggable(Level.WARNING))
-      logger.warning("Fatal error on line " + exception.getLineNumber() + ": "
-                     + exception.getMessage() + " ... " + "Policy will not be available");
+    if (logger.isWarnEnabled())
+      logger.warn("Fatal error on line " + exception.getLineNumber() + ": "
+                  + exception.getMessage() + " ... " + "Policy will not be available");
 
     throw new SAXException("fatal error parsing policy");
   }

@@ -27,10 +27,6 @@
     <resource>ws-client-impl/src/main/wsdl/dummy</resource>
     <resource>ws-server-impl/src/main/wsdl/dummy</resource>
     <resource>ws-webapp/src/main/webapp/WEB-INF/defaults.xml</resource>
-    <resource>ws-webapp/src/main/webapp/WEB-INF/config.xml</resource>
-    <resource>ws-webapp/src/main/webapp/WEB-INF/PDPConfig.xml</resource>
-    <resource>ws-webapp/src/main/webapp/WEB-INF/web.xml</resource>
     <resource>ws-webapp/src/main/stylesheets/server-config.xslt</resource>
-    <resource>ws-webapp/src/main/resources/policy/XYZ.xml</resource>
   </resources>
 </archetype>

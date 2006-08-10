@@ -27,9 +27,9 @@ import com.sun.xacml.UnknownIdentifierException;
 public abstract class AlertsPEP extends AbstractSimplePEP {
   // Note: these operations must be referenced in the policy/Alerts.xml policy file
   /** The action that represents the create-a-foo operation in XACML policies. */
-  public static final String CREATE_ALERT = "createAlert";
+  public static final String CREATE_ALERT = "alerts:createAlert";
   /** The action that represents the delete-a-foo operation in XACML policies. */
-  public static final String DELETE_ALERT = "deleteAlert";
+  public static final String DELETE_ALERT = "alerts:deleteAlert";
 
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
