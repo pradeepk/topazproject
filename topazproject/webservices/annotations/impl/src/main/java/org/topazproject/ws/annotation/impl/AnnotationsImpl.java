@@ -115,6 +115,7 @@ public class AnnotationsImpl implements Annotations {
   private final ItqlHelper     itql;
   private final FedoraHelper   fedora;
   private final String         user;
+  private final String         baseURI;
 
   /**
    * Creates a new AnnotationsImpl object.
@@ -125,13 +126,15 @@ public class AnnotationsImpl implements Annotations {
    * @param apim Fedora API-M stub
    * @param uploader Fedora uploader stub
    * @param user The authenticated user
+   * @param baseURI The base uri for annotation ids
    */
   public AnnotationsImpl(AnnotationsPEP pep, ItqlHelper itql, URI fedoraServer, FedoraAPIM apim,
-                         Uploader uploader, String user) {
-    this.pep      = pep;
-    this.itql     = itql;
-    this.fedora   = new FedoraHelper(fedoraServer, apim, uploader);
-    this.user     = (user == null) ? "anonymous" : user;
+                         Uploader uploader, String user, String baseURI) {
+    this.pep       = pep;
+    this.itql      = itql;
+    this.fedora    = new FedoraHelper(fedoraServer, apim, uploader);
+    this.user      = (user == null) ? "anonymous" : user;
+    this.baseURI   = baseURI;
 
     itql.setAliases(aliases);
   }
@@ -178,11 +181,12 @@ public class AnnotationsImpl implements Annotations {
     pep.checkAccess(pep.CREATE_ANNOTATION, itql.validateUri(annotates, "annotates"));
 
     if (supersedes != null) {
-      pep.checkAccess(pep.SET_ANNOTATION_INFO, itql.validateUri(supersedes, "supersedes"));
-      checkId(supersedes);
+      URI supersedesUri = itql.validateUri(supersedes, "supersedes");
+      pep.checkAccess(pep.SUPERSEDE, supersedesUri);
+      checkId(supersedesUri);
     }
 
-    String id = fedora.getNextId(ANNOTATION_PID_NS);
+    String id = getNextId();
 
     if (body == null) {
       body = fedora.createBody(contentType, content, "Annotation", "Annotation Body");
@@ -225,27 +229,31 @@ public class AnnotationsImpl implements Annotations {
    */
   public void deleteAnnotation(String id, boolean deletePreceding)
                         throws NoSuchIdException, RemoteException {
-    pep.checkAccess(pep.DELETE_ANNOTATION, itql.validateUri(id, "annotation-id"));
-    checkId(id);
-
-    String[] purgeList = getFedoraObjects(id, deletePreceding);
+    URI thisUri = itql.validateUri(id, "annotation-id");
+    pep.checkAccess(pep.DELETE_ANNOTATION, thisUri);
+    checkId(thisUri);
 
     String[] preceding = deletePreceding ? getPrecedingAll(id) : new String[0];
 
-    String   delete = DELETE_ITQL.replaceAll("\\Q${id}", id);
+    for (int i = 0; i < preceding.length; i++)
+      pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(preceding[i]));
+
+    String[] purgeList = getFedoraObjects(id, deletePreceding);
+
+    String   del = DELETE_ITQL.replaceAll("\\Q${id}", id);
 
     String   txn = "delete " + id;
 
     try {
       itql.beginTxn(txn);
-      itql.doUpdate(delete);
+      itql.doUpdate(del);
 
       if (log.isDebugEnabled())
         log.debug("deleted " + id);
 
       for (int i = 0; i < preceding.length; i++) {
-        delete = DELETE_ITQL.replaceAll("\\Q${id}", preceding[i]);
-        itql.doUpdate(delete);
+        del = DELETE_ITQL.replaceAll("\\Q${id}", preceding[i]);
+        itql.doUpdate(del);
 
         if (log.isDebugEnabled())
           log.debug("deleted preceding " + preceding[i]);
@@ -308,7 +316,7 @@ public class AnnotationsImpl implements Annotations {
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
-      return buildAnnotationInfoList(rows);
+      return allowedSubset(buildAnnotationInfoList(rows));
     } catch (AnswerException e) {
       throw new RemoteException("Error querying RDF", e);
     }
@@ -319,7 +327,8 @@ public class AnnotationsImpl implements Annotations {
    */
   public AnnotationInfo[] getLatestAnnotations(String id)
                                         throws NoSuchIdException, RemoteException {
-    pep.checkAccess(pep.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
+    URI thisUri = itql.validateUri(id, "annotation-id");
+    pep.checkAccess(pep.GET_ANNOTATION_INFO, thisUri);
 
     try {
       String query = LATEST_ITQL.replaceAll("\\Q${id}", id);
@@ -331,7 +340,7 @@ public class AnnotationsImpl implements Annotations {
       if (rows.size() == 0)
         throw new NoSuchIdException(id);
 
-      return buildAnnotationInfoList(rows);
+      return checkAccess(thisUri, buildAnnotationInfoList(rows));
     } catch (AnswerException e) {
       throw new RemoteException("Error querying RDF", e);
     }
@@ -342,8 +351,9 @@ public class AnnotationsImpl implements Annotations {
    */
   public AnnotationInfo[] getPrecedingAnnotations(String id)
                                            throws NoSuchIdException, RemoteException {
-    pep.checkAccess(pep.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
-    checkId(id);
+    URI thisUri = itql.validateUri(id, "annotation-id");
+    pep.checkAccess(pep.GET_ANNOTATION_INFO, thisUri);
+    checkId(thisUri);
 
     try {
       String query = PRECEDING_ITQL.replaceAll("\\Q${id}", id);
@@ -352,7 +362,7 @@ public class AnnotationsImpl implements Annotations {
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
-      return buildAnnotationInfoList(rows);
+      return checkAccess(thisUri, buildAnnotationInfoList(rows));
     } catch (AnswerException e) {
       throw new RemoteException("Error querying RDF", e);
     }
@@ -363,10 +373,11 @@ public class AnnotationsImpl implements Annotations {
    */
   public void setAnnotationState(String id, int state)
                           throws RemoteException, NoSuchIdException {
-    pep.checkAccess(pep.SET_ANNOTATION_STATE, itql.validateUri(id, "annotation-id"));
-    checkId(id);
+    URI thisUri = itql.validateUri(id, "annotation-id");
+    pep.checkAccess(pep.SET_ANNOTATION_STATE, thisUri);
+    checkId(thisUri);
 
-    String set = SET_STATE_ITQL.replaceAll("\\Q${id}", id).replaceAll("\\Q$state", "" + state);
+    String set = SET_STATE_ITQL.replaceAll("\\Q${id}", id).replaceAll("\\Q${state}", "" + state);
 
     itql.doUpdate(set);
   }
@@ -375,10 +386,10 @@ public class AnnotationsImpl implements Annotations {
    * @see org.topazproject.ws.annotation.Annotation#listAnnotations
    */
   public String[] listAnnotations(int state) throws RemoteException {
-    pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, URI.create("" + state));
+    pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, URI.create(baseURI + ANNOTATION_PID_NS));
 
     try {
-      String query = LIST_STATE_ITQL.replaceAll("\\Q$state", "" + state);
+      String query = LIST_STATE_ITQL.replaceAll("\\Q${state}", "" + state);
 
       Answer ans  = new Answer(itql.doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
@@ -389,7 +400,9 @@ public class AnnotationsImpl implements Annotations {
     }
   }
 
-  private void checkId(String id) throws RemoteException, NoSuchIdException {
+  private void checkId(URI uri) throws RemoteException, NoSuchIdException {
+    String id = uri.toString();
+
     try {
       String query = CHECK_ID_ITQL.replaceAll("\\Q${id}", id);
       Answer ans  = new Answer(itql.doQuery(query));
@@ -421,6 +434,35 @@ public class AnnotationsImpl implements Annotations {
     }
 
     return annotations;
+  }
+
+  private AnnotationInfo[] allowedSubset(AnnotationInfo[] list) {
+    ArrayList allowed = new ArrayList();
+
+    for (int i = 0; i < list.length; i++) {
+      AnnotationInfo info = list[i];
+
+      try {
+        pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(info.getId()));
+        allowed.add(info);
+      } catch (SecurityException e) {
+        if (log.isDebugEnabled())
+          log.debug("no permission for " + info.getId() + " filtered out from result-set");
+      }
+    }
+
+    return (AnnotationInfo[]) allowed.toArray(new AnnotationInfo[0]);
+  }
+
+  private AnnotationInfo[] checkAccess(URI id, AnnotationInfo[] list) {
+    for (int i = 0; i < list.length; i++) {
+      URI u = URI.create(list[i].getId());
+
+      if (!u.equals(id))
+        pep.checkAccess(pep.GET_ANNOTATION_INFO, u);
+    }
+
+    return list;
   }
 
   private String[] buildAnnotationIdList(List rows) {
@@ -475,5 +517,9 @@ public class AnnotationsImpl implements Annotations {
     } catch (AnswerException e) {
       throw new RemoteException("Error querying RDF", e);
     }
+  }
+
+  private String getNextId() throws RemoteException {
+    return baseURI + fedora.getNextId(ANNOTATION_PID_NS).replace(':', '/');
   }
 }

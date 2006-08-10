@@ -33,17 +33,19 @@ public class AnnotationsPEP extends AbstractSimplePEP {
   public static final String GET_ANNOTATION_INFO = "annotations:getAnnotationInfo";
 
   /**
-   * The action that represents a setAnnotation operation in XACML policies.
+   * The action that represents a supersede operation in XACML policies.
    */
-  public static final String SET_ANNOTATION_INFO = "annotations:setAnnotationInfo";
+  public static final String SUPERSEDE = "annotations:supersede";
 
   /**
    * The action that represents a listAnnotations operation in XACML policies.
+   * Note that this permission is checked against the a:annotates resource.
    */
   public static final String LIST_ANNOTATIONS = "annotations:listAnnotations";
 
   /**
    * The action that represents a listAnnotations operation in XACML policies.
+   * Note that this permission is checked against the base uri of annotations.
    */
   public static final String LIST_ANNOTATIONS_IN_STATE = "annotations:listAnnotationsInState";
 
@@ -53,17 +55,11 @@ public class AnnotationsPEP extends AbstractSimplePEP {
   public static final String SET_ANNOTATION_STATE = "annotations:setAnnotationState";
 
   /**
-   * The obligation that represents the query used in listAnnotations in XACML policies.
-   */
-  public static final String LIST_ANNOTATIONS_QUERY_OBLIGATION =
-    "urn:topazproject:names:tc:xacml:1.0:obligation:list-annotations-query";
-
-  /**
    * The list of all supported actions
    */
   public static final String[] SUPPORTED_ACTIONS =
     new String[] {
-                   CREATE_ANNOTATION, DELETE_ANNOTATION, GET_ANNOTATION_INFO, SET_ANNOTATION_INFO,
+                   CREATE_ANNOTATION, DELETE_ANNOTATION, GET_ANNOTATION_INFO, SUPERSEDE,
                    LIST_ANNOTATIONS, LIST_ANNOTATIONS_IN_STATE, SET_ANNOTATION_STATE
     };
 
@@ -71,21 +67,14 @@ public class AnnotationsPEP extends AbstractSimplePEP {
    * The list of all supported obligations
    */
   public static final String[][] SUPPORTED_OBLIGATIONS =
-    new String[][] {null,
-                     null,
-                     null,
-                     null,
-                     { LIST_ANNOTATIONS_QUERY_OBLIGATION },
-                     null,
-                     null
-    };
+    new String[][] { null, null, null, null, null, null, null };
 
   /*
    *    *@see org.topazproject.xacml.AbstractSimplePEP
    *
    */
   protected AnnotationsPEP(PDP pdp, Set subjAttrs)
-                   throws IOException, ParsingException, UnknownIdentifierException {
+                    throws IOException, ParsingException, UnknownIdentifierException {
     super(pdp, subjAttrs);
   }
 }

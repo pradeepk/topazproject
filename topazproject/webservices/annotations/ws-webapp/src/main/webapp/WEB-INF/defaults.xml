@@ -2,6 +2,9 @@
 
 <config>
   <topaz>
+    <objects>
+      <base-uri>doi:10.1371/</base-uri>
+    </objects>
     <services>
       <fedora>
         <uri>http://localhost:9090/fedora/services/management</uri>

@@ -110,6 +110,7 @@ public class RepliesImpl implements Replies {
   private final ItqlHelper   itql;
   private final FedoraHelper fedora;
   private final String       user;
+  private final String       baseURI;
 
   /**
    * Creates a new RepliesImpl object.
@@ -120,13 +121,15 @@ public class RepliesImpl implements Replies {
    * @param apim Fedora API-M stub
    * @param uploader Fedora uploader stub
    * @param user The authenticated user
+   * @param user Base URI for generating reply ids
    */
   public RepliesImpl(RepliesPEP pep, ItqlHelper itql, URI fedoraServer, FedoraAPIM apim,
-                     Uploader uploader, String user) {
-    this.pep      = pep;
-    this.itql     = itql;
-    this.fedora   = new FedoraHelper(fedoraServer, apim, uploader);
-    this.user     = (user == null) ? "anonymous" : user;
+                     Uploader uploader, String user, String baseURI) {
+    this.pep       = pep;
+    this.itql      = itql;
+    this.fedora    = new FedoraHelper(fedoraServer, apim, uploader);
+    this.user      = (user == null) ? "anonymous" : user;
+    this.baseURI   = baseURI;
 
     itql.setAliases(aliases);
   }
@@ -170,9 +173,11 @@ public class RepliesImpl implements Replies {
     checkInReplyTo(rootUri, inReplyToUri);
 
     pep.checkAccess(pep.CREATE_REPLY, rootUri);
-    pep.checkAccess(pep.CREATE_REPLY, inReplyToUri);
 
-    String id = fedora.getNextId(REPLY_PID_NS);
+    if (!inReplyToUri.equals(rootUri))
+      pep.checkAccess(pep.CREATE_REPLY, inReplyToUri);
+
+    String id = getNextId();
 
     if (body == null) {
       body = fedora.createBody(contentType, content, "Reply", "Reply Body");
@@ -461,5 +466,9 @@ public class RepliesImpl implements Replies {
     }
 
     return replies;
+  }
+
+  private String getNextId() throws RemoteException {
+    return baseURI + fedora.getNextId(REPLY_PID_NS).replace(':', '/');
   }
 }

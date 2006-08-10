@@ -52,6 +52,7 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
   private Configuration   fedoraConfig;
   private Configuration   fedoraUploaderConfig;
   private String          hostname;
+  private String          baseURI;
 
   /**
    * Creates a new AnnotationServicePortSoapBindingImpl object.
@@ -62,6 +63,7 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
     fedoraConfig           = root.subset("topaz.services.fedora");
     fedoraUploaderConfig   = root.subset("topaz.services.fedoraUploader");
     hostname               = root.getString("topaz.server.hostname");
+    baseURI                = root.getString("topaz.objects.base-uri");
   }
 
   /**
@@ -70,6 +72,16 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
   public void init(Object context) throws ServiceException {
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#init");
+
+    try {
+      ItqlHelper.validateUri(baseURI, "topaz.objects.base-uri");
+      ItqlHelper.validateUri(itqlConfig.getString("uri"), "topaz.services.itql.uri");
+      ItqlHelper.validateUri(fedoraConfig.getString("uri"), "topaz.services.fedora.uri");
+      ItqlHelper.validateUri(fedoraUploaderConfig.getString("uri"),
+                             "topaz.services.fedoraUploader.uri");
+    } catch (Throwable t) {
+      throw new ServiceException("invalid/missing configuration", t);
+    }
 
     AnnotationsPEP   pep = createPEP((ServletEndpointContext) context);
 
@@ -92,7 +104,7 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
     Principal        principal = ((ServletEndpointContext) context).getUserPrincipal();
     String           user      = (principal == null) ? null : principal.getName();
 
-    impl = new AnnotationsImpl(pep, itql, fedoraServer, apim, uploader, user);
+    impl = new AnnotationsImpl(pep, itql, fedoraServer, apim, uploader, user, baseURI);
   }
 
   /**
