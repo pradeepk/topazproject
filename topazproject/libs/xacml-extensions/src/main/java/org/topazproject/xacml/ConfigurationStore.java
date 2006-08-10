@@ -36,6 +36,7 @@ package org.topazproject.xacml;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 
 import java.lang.reflect.Constructor;
@@ -43,6 +44,7 @@ import java.lang.reflect.InvocationTargetException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import java.util.ArrayList;
 import java.util.Collections;
@@ -194,6 +196,17 @@ public class ConfigurationStore {
     }
   }
 
+  public ConfigurationStore(URL configFile) throws ParsingException {
+    try {
+      setupConfig(configFile);
+    } catch (ParsingException pe) {
+      logger.log(Level.SEVERE,
+                 "Runtime config file couldn't be loaded"
+                 + " so no configurations will be available", pe);
+      throw pe;
+    }
+  }
+  
   /**
    * Private helper function used by both constructors to actually load the configuration data.
    * This is the root of several private methods used to setup all the pdps and factories.
@@ -203,6 +216,28 @@ public class ConfigurationStore {
    * @throws ParsingException DOCUMENT ME!
    */
   private void setupConfig(File configFile) throws ParsingException {
+    InputStream in = null;
+    try {
+      setupConfig(in = new FileInputStream(configFile));
+    } catch (IOException ioe) {
+      throw new ParsingException("failed to load the file ", ioe);
+    } finally {
+      try { in.close(); } catch (Throwable t) {}
+    }
+  }
+
+  private void setupConfig(URL configFile) throws ParsingException {
+    InputStream in = null;
+    try {
+      setupConfig(in = configFile.openStream());
+    } catch (IOException ioe) {
+      throw new ParsingException("failed to load the file ", ioe);
+    } finally {
+      try { in.close(); } catch (Throwable t) {}
+    } 
+  }
+  
+  private void setupConfig(InputStream configFile) throws ParsingException {
     logger.config("Loading runtime configuration");
 
     // get the root node from the configuration file
@@ -291,7 +326,7 @@ public class ConfigurationStore {
    *
    * @throws ParsingException DOCUMENT ME!
    */
-  private Node getRootNode(File configFile) throws ParsingException {
+  private Node getRootNode(InputStream configFile) throws ParsingException {
     DocumentBuilderFactory dbFactory = DocumentBuilderFactory.newInstance();
 
     dbFactory.setIgnoringComments(true);
@@ -309,7 +344,7 @@ public class ConfigurationStore {
     Document doc = null;
 
     try {
-      doc = db.parse(new FileInputStream(configFile));
+      doc = db.parse(configFile);
     } catch (IOException ioe) {
       throw new ParsingException("failed to load the file ", ioe);
     } catch (SAXException saxe) {
