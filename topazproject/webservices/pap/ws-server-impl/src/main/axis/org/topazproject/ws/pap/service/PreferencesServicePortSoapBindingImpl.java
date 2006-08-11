@@ -51,8 +51,6 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
       Configuration conf = ConfigurationStore.getInstance().getConfiguration();
       conf = conf.subset("topaz");
 
-      if (!conf.containsKey("services.fedora.uri"))
-        throw new ConfigurationException("missing key 'topaz.services.fedora.uri'");
       if (!conf.containsKey("services.itql.uri"))
         throw new ConfigurationException("missing key 'topaz.services.itql.uri'");
 
