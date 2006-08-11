@@ -1,4 +1,6 @@
-/*
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
  * Copyright (c) 2006 by Topaz, Inc.
  * http://topazproject.org
  *
