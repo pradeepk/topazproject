@@ -3,26 +3,39 @@
  */
 package org.plos.article.service;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.plos.util.FileUtils;
 import org.topazproject.ws.article.service.NoSuchIdException;
+import org.w3c.dom.Document;
+import org.xml.sax.EntityResolver;
+import org.xml.sax.InputSource;
+import org.xml.sax.SAXException;
 
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.io.Writer;
 import java.io.File;
-import java.util.Properties;
-import java.net.URL;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.Writer;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URI;
+import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.Properties;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Fetch article service
@@ -33,6 +46,17 @@ public class FetchArticleService {
   private String articleRep;
   private Templates translet;
   private boolean useTranslet = true;
+  private String transformerFactory;
+
+  public static final Log log = LogFactory.getLog(FetchArticleService.class);
+  private Map<String, InputSource> entityResolvers = new HashMap<String, InputSource>();
+
+  public void init() {
+    // Set the TransformerFactory system property.
+    final Properties props = System.getProperties();
+    props.put("javax.xml.transform.TransformerFactory", getTransformerFactory());
+    System.setProperties(props);
+  }
 
   /**
    * Get the DOI transformed as HTML.
@@ -44,16 +68,22 @@ public class FetchArticleService {
    * @throws java.io.FileNotFoundException
    * @throws java.rmi.RemoteException
    * @throws org.topazproject.ws.article.service.NoSuchIdException
+   * @throws javax.xml.parsers.ParserConfigurationException
+   * @throws org.xml.sax.SAXException
+   * @throws java.net.URISyntaxException
    */
-  public void getDOIAsHTML(final String articleDOI, final Writer writer) throws TransformerException, NoSuchIdException, IOException, RemoteException, MalformedURLException, FileNotFoundException {
+  public void getDOIAsHTML(final String articleDOI, final Writer writer) throws TransformerException, NoSuchIdException, IOException, RemoteException, MalformedURLException, FileNotFoundException, ParserConfigurationException, SAXException, URISyntaxException {
     final String objectURL = articleService.getObjectURL(articleDOI, articleRep);
 
-    final StreamSource streamSource = new StreamSource(
-                                          new InputStreamReader(
-                                                new URL(objectURL).openStream()));
+    transform(objectURL, writer);
+  }
+
+  private void transform(final String objectURL, final Writer writer) throws TransformerException, ParserConfigurationException, SAXException, IOException, URISyntaxException {
     final Transformer transformer = getTransformer();
 
-    transformXML(transformer, streamSource, writer);
+    transformer.transform(
+                          getDOMSource(objectURL),
+                          new StreamResult(writer));
   }
 
   private Transformer getTransformer() throws FileNotFoundException, TransformerException {
@@ -71,17 +101,11 @@ public class FetchArticleService {
     this.articleService = articleService;
   }
 
-  private void transformXML(final Transformer transformer, final StreamSource xmlSource, final Writer writer) throws TransformerException, FileNotFoundException {
-    // Use the Transformer to transform an XML_SOURCE Source and send the output to a Result object.
-    transformer.transform(
-            xmlSource,
-            new StreamResult(writer));
-  }
-
   private TransformerFactory tFactory;
   private StreamSource source;
+
   /**
-   * Get the XSL transformer
+   * Get an XSL transformer.
    * @return Transformer
    * @throws TransformerConfigurationException
    */
@@ -104,14 +128,6 @@ public class FetchArticleService {
    */
   public Transformer getTranslet() throws TransformerException, FileNotFoundException {
     if (null == translet) {
-      // Set the TransformerFactory system property.
-      // Note: For more flexibility, load properties from a properties file.
-      final String KEY = "javax.xml.transform.TransformerFactory";
-      final String VALUE = "org.apache.xalan.xsltc.trax.TransformerFactoryImpl";
-      final Properties props = System.getProperties();
-      props.put(KEY, VALUE);
-      System.setProperties(props);
-
       // Instantiate the TransformerFactory, and use it with a StreamSource
       // XSL stylesheet to create a translet as a Templates object.
       final TransformerFactory tFactory = TransformerFactory.newInstance();
@@ -123,14 +139,35 @@ public class FetchArticleService {
     return translet.newTransformer();
   }
 
+  private String getTransformerFactory() {
+    return transformerFactory;
+  }
+
+  public void setTransformerFactory(final String transformerFactory) {
+    this.transformerFactory = transformerFactory;
+  }
+
   /** Set the XSL Template to be used for transformation
    * @param xslTemplate xslTemplate
    * @throws java.net.URISyntaxException
    */
   public void setXslTemplate(final String xslTemplate) throws URISyntaxException {
-    final URI uri = getClass().getResource(xslTemplate).toURI();
-    
-    this.xslTemplate = new File(uri);
+    this.xslTemplate = getAsFile(xslTemplate);
+  }
+
+  /**
+   * @param filenameOrURL filenameOrURL
+   * @throws URISyntaxException
+   * @return the local or remote file or url as a java.io.File
+   */
+  public File getAsFile(final String filenameOrURL) throws URISyntaxException {
+    final URL resource = getClass().getResource(filenameOrURL);
+    if (null == resource) {
+      //access it as a local file resource
+      return new File(FileUtils.getFileName(filenameOrURL));
+    } else {
+      return new File(resource.toURI());
+    }
   }
 
   /**
@@ -147,6 +184,60 @@ public class FetchArticleService {
    */
   public void setUseTranslet(final boolean useTranslet) {
     this.useTranslet = useTranslet;
+  }
+
+  public Source getDOMSource(final String xmlFile) throws ParserConfigurationException, SAXException, IOException, URISyntaxException {
+    // Create a builder factory
+    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+    factory.setNamespaceAware(true);
+    factory.setValidating(false);
+
+    // Create the builder and parse the file
+    final DocumentBuilder builder = factory.newDocumentBuilder();
+    builder.setEntityResolver(new EntityResolver() {
+      public InputSource resolveEntity(final String publicId, final String systemId) throws SAXException, IOException {
+        return getInputSource(systemId);
+      }
+
+    });
+
+    final Document doc;
+    if (FileUtils.isURL(xmlFile)) {
+      doc = builder.parse(xmlFile);
+    } else {
+      doc = builder.parse(getAsFile(xmlFile));
+    }
+
+    // Prepare the DOM source
+    return new DOMSource(doc);
+  }
+
+  private InputSource getInputSource(final String systemId) throws IOException {
+    final String entityFilename = FileUtils.getFileName(systemId);
+
+    createLocalCopyOfEntity(systemId, entityFilename);
+    final FileReader fileReader = new FileReader(entityFilename);
+
+    //Get an instance from the cache
+    InputSource entityResolver = entityResolvers.get(systemId);
+    if (null == entityResolver) {
+      entityResolver = new InputSource(fileReader);
+      entityResolvers.put(systemId, entityResolver);
+    }
+    return entityResolver;
+  }
+
+  private static void createLocalCopyOfEntity(String systemId, String entityFilename) throws IOException {
+    //TODO: This keeps creating the "journalpublishing.dtd" again and again. Need to not create it if already existing.
+    if (systemId.startsWith("http:")) {
+      try {
+        FileUtils.createLocalCopyOfTextFile(systemId, entityFilename);
+        log.debug("local dtd created = " + entityFilename);
+      } catch (IOException e) {
+        log.warn("Entity creation failed", e);
+        throw e;
+      }
+    }
   }
 
 }

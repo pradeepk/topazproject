@@ -7,19 +7,27 @@ import org.plos.BasePlosoneTestCase;
 import org.plos.article.web.FetchArticleAction;
 import org.topazproject.ws.article.service.DuplicateIdException;
 import org.topazproject.ws.article.service.NoSuchIdException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 import javax.xml.transform.TransformerException;
+import java.io.File;
 import java.io.IOException;
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
 import java.rmi.RemoteException;
 
 public class FetchArticleActionTest extends BasePlosoneTestCase {
+  public static final Log log = LogFactory.getLog(FetchArticleActionTest.class);
+
   public void testShouldReturnTransformedArticle() throws Exception {
-    final String resourceToIngest = "/test2.zip";
-    final String resourceDOI = "10.1371/journal.pbio.0020294";
+//    final String resourceToIngest = "/test_article.zip";
+//    final String resourceDOI = "10.1371/journal.pbio.0020294";
+
+    final String resourceToIngest = "pbio.0020042.zip";
+    final String resourceDOI = "10.1371/journal.pbio.0020042";
 
     try {
       getArticleService().delete(resourceDOI, true);
@@ -27,14 +35,23 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
       // ignore - this just means there wasn't any stale stuff left
     }
 
-    final URL article = getClass().getResource(resourceToIngest);
+    URL article = getClass().getResource(resourceToIngest);
+    if (null == article) {
+      article = new File(resourceToIngest).toURL();
+    }
     String doi = getArticleService().ingest(new DataHandler(article));
     assertEquals(doi, resourceDOI);
 
     final FetchArticleAction fetchArticleAction = getFetchArticleAction();
     fetchArticleAction.setArticleDOI(resourceDOI);
-    assertEquals(FetchArticleAction.SUCCESS, fetchArticleAction.execute());
-    final String transformedArticle = fetchArticleAction.getTransformedArticle();
+
+    String transformedArticle = "";
+    for (int i = 0; i < 10; i++) {
+      long t1 = System.currentTimeMillis();
+      assertEquals(FetchArticleAction.SUCCESS, fetchArticleAction.execute());
+      transformedArticle = fetchArticleAction.getTransformedArticle();
+      log.info("Transformation time in secs:" + (System.currentTimeMillis() - t1)/1000.0);
+    }
     assertNotNull(transformedArticle);
   }
 
@@ -42,9 +59,9 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     // final String resourceToIngest = "/pbio.0000001-embedded-dtd.zip";
     // final String resourceDOI = "10.1371/journal.pbio.0000001";
 
-    doIngestTest("10.1371/journal.pbio.0020294", "/test2.zip");
+    doIngestTest("10.1371/journal.pbio.0020294", "/test_article.zip");
 
-//    doIngestTest("10.1371/journal.pbio.0020042", "/pbio.0020042.zip");
+    doIngestTest("10.1371/journal.pbio.0020042", "/pbio.0020042.zip");
 //    doIngestTest("10.1371/journal.pbio.0020294", "/pbio.0020294.zip");
 //    doIngestTest("10.1371/journal.pbio.0020317", "/pbio.0020317.zip");
 //    doIngestTest("10.1371/journal.pbio.0020382", "/pbio.0020382.zip");

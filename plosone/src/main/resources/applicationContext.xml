@@ -3,10 +3,11 @@
 <beans default-autowire="autodetect">
 
   <!--Plosone developer beans here -->
-  <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService">
+  <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" init-method="init">
     <property name="articleRep" value="XML"/>
     <!-- Note: remember to prefix the filename with a "/" -->
     <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
+    <property name="transformerFactory" value="org.apache.xalan.xsltc.trax.TransformerFactoryImpl"/>
     <property name="articleService" ref="articleService"/>
     <property name="useTranslet" value="true"/>
   </bean>
@@ -14,5 +15,6 @@
   <bean id="articleService" class="org.plos.article.service.ArticleService">
     <property name="servicePort" value="http://localhost:8080/ws-articles-webapp-0.1/services/ArticleServicePort"/>
   </bean>
+
 
 </beans>

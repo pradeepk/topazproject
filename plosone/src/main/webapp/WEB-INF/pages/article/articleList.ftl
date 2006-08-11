@@ -7,12 +7,12 @@
 
     <fieldset>
         <legend>Available articles</legend>
-        <p>
-            <@ww.url id="fetchArticleURL" action="fetchArticle">
-              <@ww.param name="articleDOI" value="%{'10.1371/journal.pbio.0020294'}"/>
-            </@ww.url>
-            <@ww.a href="%{fetchArticleURL}">${fetchArticleURL}</@ww.a>
-        </p>
+
+        <#list articles as article>
+
+          <@ww.url id="fetchArticleURL" action="fetchArticle" articleDOI="${article}"/>
+          <@ww.a href="%{fetchArticleURL}">${fetchArticleURL}</@ww.a><br/>
+        </#list>
 
     </fieldset>
 

@@ -11,8 +11,8 @@
       <result name="success" type="freemarker">/WEB-INF/pages/home.ftl</result>
     </action>
 
-    <action name="articleList" class="org.plos.web.ForwardAction">
-      <result type="freemarker">/WEB-INF/pages/article/articleList.ftl</result>
+    <action name="articleList" class="org.plos.article.web.ArticleListAction">
+      <result name="success" type="freemarker">/WEB-INF/pages/article/articleList.ftl</result>
     </action>
 
     <action name="fetchArticle" class="org.plos.article.web.FetchArticleAction">
