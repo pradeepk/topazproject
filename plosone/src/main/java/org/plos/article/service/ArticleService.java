@@ -4,19 +4,18 @@
 package org.plos.article.service;
 
 import org.topazproject.ws.article.service.Article;
-import org.topazproject.ws.article.service.DuplicateIdException;
+import org.topazproject.ws.article.service.ArticleServiceLocator;
 import org.topazproject.ws.article.service.IngestException;
 import org.topazproject.ws.article.service.NoSuchIdException;
-import org.topazproject.ws.article.service.ArticleServiceLocator;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
-import java.rmi.RemoteException;
-import java.net.URL;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.rmi.RemoteException;
 
 /**
- * Wrapper around Article to reduce the confusion around Article vs ArticleService.
+ * Wrapper around {@link org.topazproject.ws.article.service.Article} to reduce the confusion around Article vs the service facet of it.
  * This provides a way to access the "Article" service.
  */
 public class ArticleService implements Article {
@@ -45,6 +44,12 @@ public class ArticleService implements Article {
     delegateService.setState(doi, state);
   }
 
+  /**
+   * Set the article service to delegate to.
+   * @param serviceUrl serviceUrl
+   * @throws ServiceException
+   * @throws MalformedURLException
+   */
   public void setServicePort(final String serviceUrl) throws ServiceException, MalformedURLException {
     delegateService = new ArticleServiceLocator()
             .getArticleServicePort(new URL(serviceUrl));
