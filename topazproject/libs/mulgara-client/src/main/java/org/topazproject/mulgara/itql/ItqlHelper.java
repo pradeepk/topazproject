@@ -10,6 +10,8 @@
 
 package org.topazproject.mulgara.itql;
 
+import java.lang.ref.WeakReference;
+
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -22,6 +24,8 @@ import java.rmi.RemoteException;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.regex.Matcher;
@@ -52,6 +56,7 @@ import org.topazproject.mulgara.itql.service.QueryException;
 public class ItqlHelper {
   private static final Log     log = LogFactory.getLog(ItqlHelper.class);
   private static final HashMap defaultAliases = new HashMap();
+  private static final List    instanceList   = new LinkedList();
 
   private static final String ANSWER     = "answer";
   private static final String QUERY      = "query";
@@ -81,6 +86,7 @@ public class ItqlHelper {
   public static final String TOPAZ_URI  = "http://rdf.topazproject.org/RDF/";
 
   private final ItqlInterpreterBean interpreter;
+  private       BeanReference       cleanupRef;
   private       Map                 aliases = new HashMap();
 
   static {
@@ -93,6 +99,56 @@ public class ItqlHelper {
     defaultAliases.put("oai_dc", OAI_DC_URI);
     defaultAliases.put("fedora", FEDORA_URI);
     defaultAliases.put("topaz",  TOPAZ_URI);
+
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        for (Iterator iter = instanceList.iterator(); iter.hasNext(); ) {
+          BeanReference ref = (BeanReference) iter.next();
+          try {
+            ref.interpreter.close();
+          } catch (Throwable t) {
+          }
+        }
+      }
+    });
+  }
+
+  /** 
+   * This registers the ItqlHelper instance so we can close the underlying ItqlInterpreterBean
+   * session when it is gc'd or when the app exits.
+   */
+  private static void registerInstance(ItqlHelper inst) {
+    synchronized (instanceList) {
+      // first some housekeeping: clean up gc'd instances
+      for (Iterator iter = instanceList.iterator(); iter.hasNext(); ) {
+        BeanReference ref = (BeanReference) iter.next();
+        if (ref.get() == null) {
+          iter.remove();
+          try {
+            ref.interpreter.close();
+          } catch (Throwable t) {
+            if (log.isDebugEnabled())
+              log.debug("Error closing interpreter instance", t);
+          }
+          ref.interpreter = null;
+        }
+      }
+
+      // register it
+      instanceList.add(inst.cleanupRef = new BeanReference(inst));
+    }
+  }
+
+  /** 
+   * This keeps a reference to the underlying ItqlInterpreterBean instance.
+   */
+  private static class BeanReference extends WeakReference {
+    ItqlInterpreterBean interpreter;
+
+    BeanReference(ItqlHelper helper) {
+      super(helper);
+      interpreter = helper.interpreter;
+    }
   }
 
   /** 
@@ -108,8 +164,8 @@ public class ItqlHelper {
     ItqlInterpreterBeanServiceLocator locator = new ItqlInterpreterBeanServiceLocator();
     locator.setMaintainSession(true);
     interpreter = locator.getItqlInterpreterBeanServicePort(database.toURL());
-    interpreter.setServerURI("local:///");
-    setAliases(defaultAliases);
+
+    init();
   }
 
 
@@ -136,6 +192,11 @@ public class ItqlHelper {
       stub._setProperty(Stub.PASSWORD_PROPERTY, service.getPassword());
     }
 
+    init();
+  }
+
+  private void init() throws RemoteException {
+    registerInstance(this);
     interpreter.setServerURI("local:///");
     setAliases(defaultAliases);
   }
@@ -273,6 +334,21 @@ public class ItqlHelper {
       log.debug("sending rollback '" + txnName + "'");
 
     interpreter.rollback(txnName);
+  }
+
+  /** 
+   * Close the session. 
+   * 
+   * @throws RemoteException if an exception occurred talking to the service
+   */
+  public void close() throws RemoteException {
+    boolean wasActive;
+    synchronized (instanceList) {
+      wasActive = instanceList.remove(cleanupRef);
+    }
+
+    if (wasActive)
+      interpreter.close();
   }
 
   /**

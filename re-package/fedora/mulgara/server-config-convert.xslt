@@ -21,7 +21,7 @@
 
   <xsl:template name="add-itql-svc" xml:space="preserve">
  <service name="ItqlBeanService" provider="java:RPC">
-  <parameter name="allowedMethods" value="setServerURI setAliasMap getAliasMap executeQueryToString executeUpdate beginTransaction commit rollback"/>
+  <parameter name="allowedMethods" value="setServerURI setAliasMap getAliasMap executeQueryToString executeUpdate beginTransaction commit rollback close"/>
   <parameter name="scope" value="Session"/>
   <parameter name="className" value="org.kowari.itql.ItqlInterpreterBean"/>
   <namespace>http://tucana.org/</namespace>

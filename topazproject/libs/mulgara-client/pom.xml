@@ -78,7 +78,7 @@
             <configuration>
               <classOfPortType>org.kowari.itql.ItqlInterpreterBean</classOfPortType>
               <methods>
-                <method>executeQueryToString, executeUpdate, setServerURI, beginTransaction, commit, rollback</method>
+                <method>executeQueryToString, executeUpdate, setServerURI, beginTransaction, commit, rollback, close</method>
               </methods>
               <servicePortName>ItqlInterpreterBeanServicePort</servicePortName>
               <location>http://localhost/service-location</location>
