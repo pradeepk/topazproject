@@ -20,7 +20,7 @@
   </xsl:template>
 
   <xsl:template name="add-itql-svc" xml:space="preserve">
- <service name="ItqlBeanService" provider="java:RPC">
+ <service name="ItqlBeanService" style="RPC">
   <parameter name="allowedMethods" value="setServerURI setAliasMap getAliasMap executeQueryToString executeUpdate beginTransaction commit rollback close"/>
   <parameter name="scope" value="Session"/>
   <parameter name="className" value="org.kowari.itql.ItqlInterpreterBean"/>
