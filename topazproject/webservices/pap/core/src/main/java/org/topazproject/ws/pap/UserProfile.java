@@ -76,8 +76,7 @@ public class UserProfile {
    *
    * @return the display name, or null
    */
-  public String getDisplayName()
-  {
+  public String getDisplayName() {
     return displayName;
   }
 
@@ -86,8 +85,7 @@ public class UserProfile {
    *
    * @param displayName the display name; may be null
    */
-  public void setDisplayName(String displayName)
-  {
+  public void setDisplayName(String displayName) {
     this.displayName = displayName;
   }
 
@@ -96,8 +94,7 @@ public class UserProfile {
    *
    * @return real name, or null
    */
-  public String getRealName()
-  {
+  public String getRealName() {
     return realName;
   }
 
@@ -106,8 +103,7 @@ public class UserProfile {
    *
    * @param realName the real name; may be null
    */
-  public void setRealName(String realName)
-  {
+  public void setRealName(String realName) {
     this.realName = realName;
   }
 
@@ -116,8 +112,7 @@ public class UserProfile {
    *
    * @return the title, or null
    */
-  public String getTitle()
-  {
+  public String getTitle() {
     return title;
   }
 
@@ -126,8 +121,7 @@ public class UserProfile {
    *
    * @param title the title; may be null
    */
-  public void setTitle(String title)
-  {
+  public void setTitle(String title) {
     this.title = title;
   }
 
@@ -136,8 +130,7 @@ public class UserProfile {
    *
    * @return the gender, or null
    */
-  public String getGender()
-  {
+  public String getGender() {
     return gender;
   }
 
@@ -146,8 +139,7 @@ public class UserProfile {
    *
    * @param gender the gender; may be null
    */
-  public void setGender(String gender)
-  {
+  public void setGender(String gender) {
     this.gender = gender;
   }
 
@@ -156,8 +148,7 @@ public class UserProfile {
    *
    * @return the email, or null
    */
-  public String getEmail()
-  {
+  public String getEmail() {
     return email;
   }
 
@@ -166,8 +157,7 @@ public class UserProfile {
    *
    * @param email the email; may be null
    */
-  public void setEmail(String email)
-  {
+  public void setEmail(String email) {
     this.email = email;
   }
 
@@ -176,8 +166,7 @@ public class UserProfile {
    *
    * @return the homepage url, or null
    */
-  public String getHomePage()
-  {
+  public String getHomePage() {
     return homePage;
   }
 
@@ -186,8 +175,7 @@ public class UserProfile {
    *
    * @param homePage the homepage url; may be null
    */
-  public void setHomePage(String homePage)
-  {
+  public void setHomePage(String homePage) {
     this.homePage = homePage;
   }
 
@@ -196,8 +184,7 @@ public class UserProfile {
    *
    * @return the weblog url, or null
    */
-  public String getWeblog()
-  {
+  public String getWeblog() {
     return weblog;
   }
 
@@ -206,8 +193,7 @@ public class UserProfile {
    *
    * @param weblog the weblog url; may be null
    */
-  public void setWeblog(String weblog)
-  {
+  public void setWeblog(String weblog) {
     this.weblog = weblog;
   }
 
@@ -216,8 +202,7 @@ public class UserProfile {
    *
    * @return the biography url, or null
    */
-  public String getBiography()
-  {
+  public String getBiography() {
     return biography;
   }
 
@@ -226,8 +211,7 @@ public class UserProfile {
    *
    * @param biography the biography url; may be null
    */
-  public void setBiography(String biography)
-  {
+  public void setBiography(String biography) {
     this.biography = biography;
   }
 
@@ -236,9 +220,8 @@ public class UserProfile {
    *
    * @return the list of url's, or null. Note that the order of the entries will be arbitrary.
    */
-  public String[] getInterests()
-  {
-      return interests;
+  public String[] getInterests() {
+    return interests;
   }
 
   /**
@@ -246,9 +229,8 @@ public class UserProfile {
    *
    * @param interests the list of url's; may be null. Note that the order will not be preserved.
    */
-  public void setInterests(String[] interests)
-  {
-      this.interests = interests;
+  public void setInterests(String[] interests) {
+    this.interests = interests;
   }
 
   /**
@@ -256,9 +238,8 @@ public class UserProfile {
    *
    * @return a url, or null
    */
-  public String getPublications()
-  {
-      return publications;
+  public String getPublications() {
+    return publications;
   }
 
   /**
@@ -266,9 +247,8 @@ public class UserProfile {
    *
    * @param publications the url; may be null
    */
-  public void setPublications(String publications)
-  {
-      this.publications = publications;
+  public void setPublications(String publications) {
+    this.publications = publications;
   }
 
   /**
@@ -276,9 +256,8 @@ public class UserProfile {
    *
    * @return the list of readers; may be null
    */
-  public String[] getDisplayNameReaders()
-  {
-      return displayNameReaders;
+  public String[] getDisplayNameReaders() {
+    return displayNameReaders;
   }
 
   /**
@@ -286,9 +265,8 @@ public class UserProfile {
    *
    * @param displayNameReaders the list of readers; may be null
    */
-  public void setDisplayNameReaders(String[] displayNameReaders)
-  {
-      this.displayNameReaders = displayNameReaders;
+  public void setDisplayNameReaders(String[] displayNameReaders) {
+    this.displayNameReaders = displayNameReaders;
   }
 
   /**
@@ -296,9 +274,8 @@ public class UserProfile {
    *
    * @return the list of readers; may be null
    */
-  public String[] getRealNameReaders()
-  {
-      return realNameReaders;
+  public String[] getRealNameReaders() {
+    return realNameReaders;
   }
 
   /**
@@ -306,9 +283,8 @@ public class UserProfile {
    *
    * @param realNameReaders the list of readers; may be null
    */
-  public void setRealNameReaders(String[] realNameReaders)
-  {
-      this.realNameReaders = realNameReaders;
+  public void setRealNameReaders(String[] realNameReaders) {
+    this.realNameReaders = realNameReaders;
   }
 
   /**
@@ -316,9 +292,8 @@ public class UserProfile {
    *
    * @return the list of readers; may be null
    */
-  public String[] getTitleReaders()
-  {
-      return titleReaders;
+  public String[] getTitleReaders() {
+    return titleReaders;
   }
 
   /**
@@ -326,9 +301,8 @@ public class UserProfile {
    *
    * @param titleReaders the list of readers; may be null
    */
-  public void setTitleReaders(String[] titleReaders)
-  {
-      this.titleReaders = titleReaders;
+  public void setTitleReaders(String[] titleReaders) {
+    this.titleReaders = titleReaders;
   }
 
   /**
@@ -336,9 +310,8 @@ public class UserProfile {
    *
    * @return the list of readers; may be null
    */
-  public String[] getGenderReaders()
-  {
-      return genderReaders;
+  public String[] getGenderReaders() {
+    return genderReaders;
   }
 
   /**
@@ -346,9 +319,8 @@ public class UserProfile {
    *
    * @param genderReaders the list of readers; may be null
    */
-  public void setGenderReaders(String[] genderReaders)
-  {
-      this.genderReaders = genderReaders;
+  public void setGenderReaders(String[] genderReaders) {
+    this.genderReaders = genderReaders;
   }
 
   /**
@@ -356,9 +328,8 @@ public class UserProfile {
    *
    * @return the list of readers; may be null
    */
-  public String[] getEmailReaders()
-  {
-      return emailReaders;
+  public String[] getEmailReaders() {
+    return emailReaders;
   }
 
   /**
@@ -366,9 +337,8 @@ public class UserProfile {
    *
    * @param emailReaders the list of readers; may be null
    */
-  public void setEmailReaders(String[] emailReaders)
-  {
-      this.emailReaders = emailReaders;
+  public void setEmailReaders(String[] emailReaders) {
+    this.emailReaders = emailReaders;
   }
 
   /**
@@ -376,9 +346,8 @@ public class UserProfile {
    *
    * @return the list of readers; may be null
    */
-  public String[] getHomePageReaders()
-  {
-      return homePageReaders;
+  public String[] getHomePageReaders() {
+    return homePageReaders;
   }
 
   /**
@@ -386,9 +355,8 @@ public class UserProfile {
    *
    * @param homePageReaders the list of readers; may be null
    */
-  public void setHomePageReaders(String[] homePageReaders)
-  {
-      this.homePageReaders = homePageReaders;
+  public void setHomePageReaders(String[] homePageReaders) {
+    this.homePageReaders = homePageReaders;
   }
 
   /**
@@ -396,9 +364,8 @@ public class UserProfile {
    *
    * @return the list of readers; may be null
    */
-  public String[] getWeblogReaders()
-  {
-      return weblogReaders;
+  public String[] getWeblogReaders() {
+    return weblogReaders;
   }
 
   /**
@@ -406,9 +373,8 @@ public class UserProfile {
    *
    * @param weblogReaders the list of readers; may be null
    */
-  public void setWeblogReaders(String[] weblogReaders)
-  {
-      this.weblogReaders = weblogReaders;
+  public void setWeblogReaders(String[] weblogReaders) {
+    this.weblogReaders = weblogReaders;
   }
 
   /**
@@ -416,9 +382,8 @@ public class UserProfile {
    *
    * @return the list of readers; may be null
    */
-  public String[] getBiographyReaders()
-  {
-      return biographyReaders;
+  public String[] getBiographyReaders() {
+    return biographyReaders;
   }
 
   /**
@@ -426,9 +391,8 @@ public class UserProfile {
    *
    * @param biographyReaders the list of readers; may be null
    */
-  public void setBiographyReaders(String[] biographyReaders)
-  {
-      this.biographyReaders = biographyReaders;
+  public void setBiographyReaders(String[] biographyReaders) {
+    this.biographyReaders = biographyReaders;
   }
 
   /**
@@ -436,9 +400,8 @@ public class UserProfile {
    *
    * @return the list of readers; may be null
    */
-  public String[] getInterestsReaders()
-  {
-      return interestsReaders;
+  public String[] getInterestsReaders() {
+    return interestsReaders;
   }
 
   /**
@@ -446,9 +409,8 @@ public class UserProfile {
    *
    * @param interestsReaders the list of readers; may be null
    */
-  public void setInterestsReaders(String[] interestsReaders)
-  {
-      this.interestsReaders = interestsReaders;
+  public void setInterestsReaders(String[] interestsReaders) {
+    this.interestsReaders = interestsReaders;
   }
 
   /**
@@ -456,9 +418,8 @@ public class UserProfile {
    *
    * @return the list of readers; may be null
    */
-  public String[] getPublicationsReaders()
-  {
-      return publicationsReaders;
+  public String[] getPublicationsReaders() {
+    return publicationsReaders;
   }
 
   /**
@@ -466,8 +427,7 @@ public class UserProfile {
    *
    * @param publicationsReaders the list of readers; may be null
    */
-  public void setPublicationsReaders(String[] publicationsReaders)
-  {
-      this.publicationsReaders = publicationsReaders;
+  public void setPublicationsReaders(String[] publicationsReaders) {
+    this.publicationsReaders = publicationsReaders;
   }
 }

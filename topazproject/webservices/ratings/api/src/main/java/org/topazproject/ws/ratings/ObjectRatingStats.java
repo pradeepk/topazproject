@@ -32,9 +32,8 @@ public class ObjectRatingStats {
    *
    * @return the category
    */
-  public String getCategory()
-  {
-      return category;
+  public String getCategory() {
+    return category;
   }
 
   /**
@@ -42,9 +41,8 @@ public class ObjectRatingStats {
    *
    * @param category the category
    */
-  public void setCategory(String category)
-  {
-      this.category = category;
+  public void setCategory(String category) {
+    this.category = category;
   }
 
   /**
@@ -52,9 +50,8 @@ public class ObjectRatingStats {
    *
    * @return the number of ratings
    */
-  public int getNumberOfRatings()
-  {
-      return numRatings;
+  public int getNumberOfRatings() {
+    return numRatings;
   }
 
   /**
@@ -62,9 +59,8 @@ public class ObjectRatingStats {
    *
    * @param numRatings the number of ratings
    */
-  public void setNumberOfRatings(int numRatings)
-  {
-      this.numRatings = numRatings;
+  public void setNumberOfRatings(int numRatings) {
+    this.numRatings = numRatings;
   }
 
   /**
@@ -72,9 +68,8 @@ public class ObjectRatingStats {
    *
    * @return the average rating
    */
-  public float getAverage()
-  {
-      return average;
+  public float getAverage() {
+    return average;
   }
 
   /**
@@ -82,9 +77,8 @@ public class ObjectRatingStats {
    *
    * @param rating the average rating
    */
-  public void setAverage(float average)
-  {
-      this.average = average;
+  public void setAverage(float average) {
+    this.average = average;
   }
 
   /**
@@ -92,9 +86,8 @@ public class ObjectRatingStats {
    *
    * @return the variance
    */
-  public float getVariance()
-  {
-      return variance;
+  public float getVariance() {
+    return variance;
   }
 
   /**
@@ -102,8 +95,7 @@ public class ObjectRatingStats {
    *
    * @param variance the variance
    */
-  public void setVariance(float variance)
-  {
-      this.variance = variance;
+  public void setVariance(float variance) {
+    this.variance = variance;
   }
 }

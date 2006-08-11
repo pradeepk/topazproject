@@ -28,9 +28,8 @@ public class UserPreference {
    *
    * @return the preference name
    */
-  public String getName()
-  {
-      return name;
+  public String getName() {
+    return name;
   }
 
   /**
@@ -38,9 +37,8 @@ public class UserPreference {
    *
    * @param name the preference name
    */
-  public void setName(String name)
-  {
-      this.name = name;
+  public void setName(String name) {
+    this.name = name;
   }
 
   /**
@@ -49,9 +47,8 @@ public class UserPreference {
    * @return the preference values; may be null. Note that the order of the entries will be
    *         arbitrary.
    */
-  public String[] getValues()
-  {
-      return values;
+  public String[] getValues() {
+    return values;
   }
 
   /**
@@ -59,8 +56,7 @@ public class UserPreference {
    *
    * @param values the preference values; may be null. Note that the order will not be preserved.
    */
-  public void setValues(String[] values)
-  {
-      this.values = values;
+  public void setValues(String[] values) {
+    this.values = values;
   }
 }

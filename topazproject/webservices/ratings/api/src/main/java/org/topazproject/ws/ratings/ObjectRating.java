@@ -28,9 +28,8 @@ public class ObjectRating {
    *
    * @return the category
    */
-  public String getCategory()
-  {
-      return category;
+  public String getCategory() {
+    return category;
   }
 
   /**
@@ -38,9 +37,8 @@ public class ObjectRating {
    *
    * @param category the category
    */
-  public void setCategory(String category)
-  {
-      this.category = category;
+  public void setCategory(String category) {
+    this.category = category;
   }
 
   /**
@@ -48,9 +46,8 @@ public class ObjectRating {
    *
    * @return the rating
    */
-  public float getRating()
-  {
-      return rating;
+  public float getRating() {
+    return rating;
   }
 
   /**
@@ -58,8 +55,7 @@ public class ObjectRating {
    *
    * @param rating the rating
    */
-  public void setRating(float rating)
-  {
-      this.rating = rating;
+  public void setRating(float rating) {
+    this.rating = rating;
   }
 }
