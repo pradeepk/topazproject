@@ -51,12 +51,12 @@ public class ArticleImpl implements Article {
   /** 
    * Create a new article manager instance. 
    *
-   * @param fedorSvc  the fedora management web-service
-   * @param uploadSvc the fedora management web-service
-   * @param mulgarSvc the mulgara web-service
-   * @param hostname  the hostname under which this service is visible; this is used to generate
-   *                  the proper URL for {@link #getObjectURL getObjectURL}.
-   * @param pep       the policy-enforcer to use for access-control
+   * @param fedoraSvc  the fedora management web-service
+   * @param uploadSvc  the fedora management web-service
+   * @param mulgaraSvc the mulgara web-service
+   * @param hostname   the hostname under which this service is visible; this is used to generate
+   *                   the proper URL for {@link #getObjectURL getObjectURL}.
+   * @param pep        the policy-enforcer to use for access-control
    */
   public ArticleImpl(ProtectedService fedoraSvc, ProtectedService uploadSvc, 
                      ProtectedService mulgaraSvc, String hostname, ArticlePEP pep)
