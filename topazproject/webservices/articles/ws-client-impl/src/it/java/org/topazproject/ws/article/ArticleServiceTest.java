@@ -37,11 +37,11 @@ public class ArticleServiceTest extends TestCase {
     service = locator.getArticleServicePort(url);
   }
 
-  public void testAll() throws RemoteException, IOException {
+  public void testAll() throws Exception {
     basicArticleTest();
   }
 
-  private void basicArticleTest() throws RemoteException, IOException {
+  private void basicArticleTest() throws Exception {
     try {
       service.delete("10.1371/journal.pbio.0020294", true);
     } catch (NoSuchIdException nsie) {

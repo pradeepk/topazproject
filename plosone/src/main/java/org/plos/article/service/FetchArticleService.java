@@ -6,7 +6,7 @@ package org.plos.article.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.util.FileUtils;
-import org.topazproject.ws.article.service.NoSuchIdException;
+import org.topazproject.ws.article.NoSuchIdException;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -66,7 +66,7 @@ public class FetchArticleService {
    * @throws java.net.MalformedURLException
    * @throws java.io.FileNotFoundException
    * @throws java.rmi.RemoteException
-   * @throws org.topazproject.ws.article.service.NoSuchIdException
+   * @throws org.topazproject.ws.article.NoSuchIdException
    * @throws javax.xml.parsers.ParserConfigurationException
    * @throws org.xml.sax.SAXException
    * @throws java.net.URISyntaxException
@@ -181,6 +181,15 @@ public class FetchArticleService {
     this.useTranslet = useTranslet;
   }
 
+  /**
+   * Get the xmlFile as a DOMSource.
+   * @param xmlFile xmlFile
+   * @return an instance of DOMSource
+   * @throws ParserConfigurationException
+   * @throws SAXException
+   * @throws IOException
+   * @throws URISyntaxException
+   */
   public Source getDOMSource(final String xmlFile) throws ParserConfigurationException, SAXException, IOException, URISyntaxException {
     // Create a builder factory
     final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();

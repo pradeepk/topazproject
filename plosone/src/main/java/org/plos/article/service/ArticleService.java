@@ -3,10 +3,11 @@
  */
 package org.plos.article.service;
 
-import org.topazproject.ws.article.service.Article;
-import org.topazproject.ws.article.service.ArticleServiceLocator;
-import org.topazproject.ws.article.service.IngestException;
-import org.topazproject.ws.article.service.NoSuchIdException;
+import org.topazproject.ws.article.Article;
+import org.topazproject.ws.article.ArticleServiceLocator;
+import org.topazproject.ws.article.IngestException;
+import org.topazproject.ws.article.NoSuchIdException;
+import org.topazproject.ws.article.DuplicateIdException;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
@@ -15,7 +16,7 @@ import java.net.URL;
 import java.rmi.RemoteException;
 
 /**
- * Wrapper around {@link org.topazproject.ws.article.service.Article} to reduce the confusion around Article vs the service facet of it.
+ * Wrapper around {@link org.topazproject.ws.article.Article} to reduce the confusion around Article vs the service facet of it.
  * This provides a way to access the "Article" service.
  */
 public class ArticleService implements Article {
@@ -24,7 +25,7 @@ public class ArticleService implements Article {
   public ArticleService() {
   }
 
-  public String ingest(final DataHandler dataHandler) throws RemoteException, IngestException {
+  public String ingest(final DataHandler dataHandler) throws RemoteException, IngestException, DuplicateIdException {
     return delegateService.ingest(dataHandler);
   }
 

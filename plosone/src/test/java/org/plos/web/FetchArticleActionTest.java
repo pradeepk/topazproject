@@ -5,8 +5,9 @@ package org.plos.web;
 
 import org.plos.BasePlosoneTestCase;
 import org.plos.article.web.FetchArticleAction;
-import org.topazproject.ws.article.service.DuplicateIdException;
-import org.topazproject.ws.article.service.NoSuchIdException;
+import org.topazproject.ws.article.DuplicateIdException;
+import org.topazproject.ws.article.NoSuchIdException;
+import org.topazproject.ws.article.IngestException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -29,6 +30,12 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     final String resourceToIngest = "pbio.0020042.zip";
     final String resourceDOI = "10.1371/journal.pbio.0020042";
 
+//    final String resourceToIngest = "pbio.0020382.zip";
+//    final String resourceDOI = "10.1371/journal.pbio.0020382";
+
+//    final String resourceToIngest = "pbio.0020317.zip";
+//    final String resourceDOI = "10.1371/journal.pbio.0020317";
+
     try {
       getArticleService().delete(resourceDOI, true);
     } catch (NoSuchIdException nsie) {
@@ -46,7 +53,7 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     fetchArticleAction.setArticleDOI(resourceDOI);
 
     String transformedArticle = "";
-    for (int i = 0; i < 10; i++) {
+    for (int i = 0; i < 3; i++) {
       long t1 = System.currentTimeMillis();
       assertEquals(FetchArticleAction.SUCCESS, fetchArticleAction.execute());
       transformedArticle = fetchArticleAction.getTransformedArticle();
@@ -55,7 +62,7 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     assertNotNull(transformedArticle);
   }
 
-  public void testShouldInjestArticle() throws IOException, TransformerException, ServiceException {
+  public void testShouldInjestArticle() throws Exception {
     // final String resourceToIngest = "/pbio.0000001-embedded-dtd.zip";
     // final String resourceDOI = "10.1371/journal.pbio.0000001";
 
@@ -67,7 +74,7 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
 //    doIngestTest("10.1371/journal.pbio.0020382", "/pbio.0020382.zip");
   }
 
-  private void doIngestTest(String resourceDOI, String resourceToIngest) throws RemoteException, MalformedURLException, ServiceException {
+  private void doIngestTest(String resourceDOI, String resourceToIngest) throws Exception {
     try {
       getArticleService().delete(resourceDOI, true);
     } catch (NoSuchIdException nsie) {
