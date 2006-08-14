@@ -307,6 +307,9 @@
             <link>http://jrdf.sourceforge.net/0.3/doc/javadoc</link>
             <link>http://java.sun.com/j2ee/1.4/docs/api</link>
             <link>http://excalibur.apache.org/apidocs</link>
+            <link>http://jakarta.apache.org/commons/email/api-release</link>
+            <link>http://java.sun.com/products/javamail/javadocs</link>
+            <link>http://quintanasoft.com/dumbster/javadoc</link>
           </links>
         </configuration>
       </plugin>

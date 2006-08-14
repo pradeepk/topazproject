@@ -8,8 +8,8 @@
     
     <categories>
       <category>Biotechnology</category>
-      <category>Genetics/Genomics/Gene Therapy</category>
       <category>Ecology</category>
+      <category>Genetics/Genomics/Gene Therapy</category>
       <category>Plant Science</category>
     </categories>
   </article>
@@ -19,28 +19,28 @@
     <description>The Microarray Gene Expression Data Society believe that the time is right for journals to require that microarray data be deposited in public repositories, as a condition for publication</description>
     <date>2004-08-31</date>
     <authors>
-      <author>Neil Winegarden</author>
-      <author>Catherine A Ball</author>
-      <author>Gavin Sherlock</author>
       <author>Alvis Brazma</author>
-      <author>John C Matese</author>
-      <author>Martin Ringwald</author>
+      <author>Catherine A Ball</author>
+      <author>Chris Stoeckert</author>
+      <author>Gavin Sherlock</author>
+      <author>Helen Causton</author>
       <author>Helen Parkinson</author>
+      <author>John C Matese</author>
+      <author>John Quackenbush</author>
+      <author>Joseph White</author>
+      <author>Martin Ringwald</author>
+      <author>Neil Winegarden</author>
       <author>Pascal Hingamp</author>
+      <author>Paul Spellman</author>
       <author>Ron Edgar</author>
       <author>Ronald Taylor</author>
-      <author>John Quackenbush</author>
       <author>Steve Chervitz</author>
-      <author>Paul Spellman</author>
-      <author>Helen Causton</author>
-      <author>Chris Stoeckert</author>
-      <author>Yoshio Tateno</author>
-      <author>Joseph White</author>
       <author>Susanna-Assunta Sansone</author>
+      <author>Yoshio Tateno</author>
     </authors>
     <categories>
-      <category>Genetics/Genomics/Gene Therapy</category>
       <category>Bioinformatics/Computational Biology</category>
+      <category>Genetics/Genomics/Gene Therapy</category>
     </categories>
   </article>
   <article>
@@ -50,22 +50,22 @@
     <date>2004-08-24</date>
     <authors>
       <author>Chun-Li Zhang</author>
-      <author>Ruth T Yu</author>
       <author>Corinne R Bayuga-Ocampo</author>
-      <author>Heonjoong Kang</author>
-      <author>Ronald M Evans</author>
-      <author>Michael C Nelson</author>
-      <author>Jungyeob Ham</author>
       <author>Helen K Cho</author>
+      <author>Heonjoong Kang</author>
+      <author>Jungyeob Ham</author>
+      <author>Michael C Nelson</author>
+      <author>Ronald M Evans</author>
+      <author>Ruth T Yu</author>
       <author>Yong-Xu Wang</author>
     </authors>
     <categories>
-      <category>Biotechnology</category>
-      <category>Physiology</category>
-      <category>Molecular Biology/Structural Biology</category>
       <category>Bioengineering</category>
+      <category>Biotechnology</category>
       <category>Cell Biology</category>
       <category>Development</category>
+      <category>Molecular Biology/Structural Biology</category>
+      <category>Physiology</category>
     </categories>
   </article>
   <article>
@@ -77,9 +77,9 @@
       <author>Richard J Roberts</author>
     </authors>
     <categories>
+      <category>Bioinformatics/Computational Biology</category>
       <category>Genetics/Genomics/Gene Therapy</category>
       <category>Microbiology</category>
-      <category>Bioinformatics/Computational Biology</category>
     </categories>
   </article>
 </articles>

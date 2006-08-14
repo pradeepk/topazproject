@@ -10,6 +10,7 @@
 
 package org.topazproject.ws.alerts.service;
 
+import java.util.Calendar;
 import java.net.URI;
 import java.rmi.RemoteException;
 import javax.servlet.http.HttpSession;
@@ -102,6 +103,27 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
     }
   }
 
+  public boolean sendAlerts(Calendar endDate, int count) throws RemoteException {
+    return impl.sendAlerts(endDate, count);
+  }
+
+  public boolean sendAllAlerts() throws RemoteException {
+    return impl.sendAllAlerts();
+  }
+
+  public void startUser(String userId, Calendar date) throws RemoteException {
+    impl.startUser(userId, date);
+  }
+
+  public void startUser(String userId) throws RemoteException {
+    impl.startUser(userId);
+  }
+  
+  public void clearUser(String userId) throws RemoteException {
+    impl.clearUser(userId);
+  }
+
+  
   private static class WSAlertsPEP extends AlertsPEP {
     static {
       init(WSAlertsPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
