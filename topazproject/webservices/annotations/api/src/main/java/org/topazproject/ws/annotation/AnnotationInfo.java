@@ -25,6 +25,7 @@ public class AnnotationInfo {
   private String id;
   private String title;
   private String supersededBy;
+  private String mediator;
 
   /**
    * Creates a new AnnotationInfo object.
@@ -210,5 +211,23 @@ public class AnnotationInfo {
    */
   public void setSupersededBy(String supersededBy) {
     this.supersededBy = supersededBy;
+  }
+
+  /**
+   * Get mediator.
+   *
+   * @return mediator as String.
+   */
+  public String getMediator() {
+    return mediator;
+  }
+
+  /**
+   * Set mediator.
+   *
+   * @param mediator the value to set.
+   */
+  public void setMediator(String mediator) {
+    this.mediator = mediator;
   }
 }

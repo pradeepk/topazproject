@@ -63,6 +63,8 @@ public class AnnotationsImpl implements Annotations {
     + "insert <${id}> <dt:replaces> <${supersedes}> into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String INSERT_TITLE_ITQL =
     ("insert <${id}> <d:title> '${title}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
+  private static final String INSERT_MEDIATOR_ITQL =
+    ("insert <${id}> <dt:mediator> '${mediator}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String DELETE_ITQL =
     ("insert select $a <dt:isReplacedBy> $c from ${MODEL}"
     + " where $a <dt:isReplacedBy> <${id}> and <${id}> <dt:isReplacedBy> $c into ${MODEL};"
@@ -79,6 +81,13 @@ public class AnnotationsImpl implements Annotations {
     + " where $s <a:annotates> <${annotates}>            "
     + "    and $s <topaz:state> '0'                      "
     + "    and $s <dt:isReplacedBy> <r:nil>              "
+    + "    and $s <r:type> <${type}>;                    ").replaceAll("\\Q${MODEL}", MODEL);
+  private static final String LIST_BY_MEDIATOR_ITQL =
+    ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL} "
+    + " where $s <a:annotates> <${annotates}>            "
+    + "    and $s <topaz:state> '0'                      "
+    + "    and $s <dt:isReplacedBy> <r:nil>              "
+    + "    and $s <dt:mediator> '${mediator}'            "
     + "    and $s <r:type> <${type}>;                    ").replaceAll("\\Q${MODEL}", MODEL);
   private static final String LATEST_ITQL =
     ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL} "
@@ -99,9 +108,6 @@ public class AnnotationsImpl implements Annotations {
     ("delete select <${id}> <topaz:state> $o from ${MODEL}"
     + " where <${id}> <topaz:state> $o from ${MODEL};"
     + " insert <${id}> <topaz:state> '${state}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
-  private static final String LIST_STATE_ITQL =
-    ("select $a from ${MODEL} where $a <r:type> <a:Annotation> and $a <topaz:state> '${state}';")
-     .replaceAll("\\Q${MODEL}", MODEL);
   private static final String CHECK_ID_ITQL =
     ("select $s from ${MODEL} where $s <r:type> <a:Annotation> and   $s <tucana:is> <${id}>")
      .replaceAll("\\Q${MODEL}", MODEL);
@@ -154,19 +160,19 @@ public class AnnotationsImpl implements Annotations {
   /**
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
-  public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String title, String body)
+  public String createAnnotation(String mediator, String type, String annotates, String context,
+                                 String supersedes, String title, String body)
                           throws NoSuchIdException, RemoteException {
     itql.validateUri(body, "body");
 
-    return createAnnotation(type, annotates, context, supersedes, title, body, null, null);
+    return createAnnotation(mediator, type, annotates, context, supersedes, title, body, null, null);
   }
 
   /**
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
-  public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String title, String contentType, byte[] content)
+  public String createAnnotation(String mediator, String type, String annotates, String context,
+                                 String supersedes, String title, String contentType, byte[] content)
                           throws NoSuchIdException, RemoteException {
     if (contentType == null)
       throw new NullPointerException("'contentType' cannot be null");
@@ -174,12 +180,13 @@ public class AnnotationsImpl implements Annotations {
     if (content == null)
       throw new NullPointerException("'content' cannot be null");
 
-    return createAnnotation(type, annotates, context, supersedes, title, null, contentType, content);
+    return createAnnotation(mediator, type, annotates, context, supersedes, title, null,
+                            contentType, content);
   }
 
-  private String createAnnotation(String type, String annotates, String context, String supersedes,
-                                  String title, String body, String contentType, byte[] content)
-                           throws NoSuchIdException, RemoteException {
+  private String createAnnotation(String mediator, String type, String annotates, String context,
+                                  String supersedes, String title, String body, String contentType,
+                                  byte[] content) throws NoSuchIdException, RemoteException {
     if (context == null)
       context = annotates;
     else
@@ -226,6 +233,11 @@ public class AnnotationsImpl implements Annotations {
     if (title != null) {
       create += INSERT_TITLE_ITQL;
       values.put("title", itql.escapeLiteral(title));
+    }
+
+    if (mediator != null) {
+      create += INSERT_MEDIATOR_ITQL;
+      values.put("mediator", itql.escapeLiteral(mediator));
     }
 
     itql.doUpdate(itql.bindValues(create, values));
@@ -308,7 +320,7 @@ public class AnnotationsImpl implements Annotations {
   /**
    * @see org.topazproject.ws.annotation.Annotation#listAnnotations
    */
-  public AnnotationInfo[] listAnnotations(String annotates, String type)
+  public AnnotationInfo[] listAnnotations(String mediator, String annotates, String type)
                                    throws RemoteException {
     pep.checkAccess(pep.LIST_ANNOTATIONS, itql.validateUri(annotates, "annotates"));
 
@@ -322,7 +334,16 @@ public class AnnotationsImpl implements Annotations {
       values.put("annotates", annotates);
       values.put("type", type);
 
-      String query = itql.bindValues(LIST_ITQL, values);
+      String query;
+
+      if (mediator == null)
+        query = LIST_ITQL;
+      else {
+        query = LIST_BY_MEDIATOR_ITQL;
+        values.put("mediator", itql.escapeLiteral(mediator));
+      }
+
+      query = itql.bindValues(query, values);
 
       Answer ans = new Answer(itql.doQuery(query));
 
@@ -397,16 +418,39 @@ public class AnnotationsImpl implements Annotations {
   /**
    * @see org.topazproject.ws.annotation.Annotation#listAnnotations
    */
-  public String[] listAnnotations(int state) throws RemoteException {
+  public String[] listAnnotations(String mediator, int state)
+                           throws RemoteException {
     pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, URI.create(baseURI + ANNOTATION_PID_NS));
 
     try {
-      String query = LIST_STATE_ITQL.replaceAll("\\Q${state}", "" + state);
+      String query =
+        "select $a $o from " + MODEL + " where $a <r:type> <a:Annotation> and $a <topaz:state> $o";
 
-      Answer ans  = new Answer(itql.doQuery(query));
-      List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
+      if (mediator != null)
+        query += (" and $a <dt:mediator> '" + itql.escapeLiteral(mediator) + "'");
 
-      return buildAnnotationIdList(rows);
+      if (state == 0)
+        query += " and exclude($a <topaz:state> '0');";
+      else
+        query += (" and $a <topaz:state> '" + state + "';");
+
+      Answer    ans  = new Answer(itql.doQuery(query));
+      List      rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
+
+      int       c      = rows.size();
+      ArrayList result = new ArrayList(c);
+
+      for (int i = 0; i < c; i++) {
+        Object[] cols = (Object[]) rows.get(i);
+
+        // xxx: work around an exclude bug in ITQL
+        if ((state == 0) && AnnotationModel.getColumnValue(cols[1]).toString().equals("0"))
+          continue;
+
+        result.add(AnnotationModel.getColumnValue(cols[0]).toString());
+      }
+
+      return (String[]) result.toArray(new String[0]);
     } catch (AnswerException e) {
       throw new RemoteException("Error querying RDF", e);
     }

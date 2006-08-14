@@ -20,6 +20,9 @@ public interface Annotations {
   /**
    * Creates a new annotation.
    *
+   * @param mediator an entity that mediates access to the created annotation. Can be used by an
+   *        application to identify the annotations it created. Defined by
+   *        <code>http://purl.org/dc/terms/mediator</code>. May be <code>null</code>.
    * @param type An annotation type or <code>null</code>. The different types of annotations
    *        defined in <code>http://www.w3.org/2000/10/annotationType#</code> are:
    *        <ul><li><code>http://www.w3.org/2000/10/annotationType#Advice</code></li>
@@ -55,14 +58,15 @@ public interface Annotations {
    * @throws NoSuchIdException if <code>supersedes</code> is not a valid annotation id
    * @throws RemoteException if some other error occured
    */
-  public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String title, String body)
+  public String createAnnotation(String mediator, String type, String annotates, String context,
+                                 String supersedes, String title, String body)
                           throws NoSuchIdException, RemoteException;
 
   /**
    * Creates a new annotation. A new resource URL is created for the annotation body from the
    * supplied content.
    *
+   * @param mediator an entity that mediates access to the created annotation. (eg. an app-id)
    * @param type An annotation type or <code>null</code>.
    * @param annotates the resource to which this annotation applies.
    * @param context the context within the resource named in <code>annotates</code> to which this
@@ -81,8 +85,8 @@ public interface Annotations {
    * @throws NoSuchIdException if <code>supersedes</code> is not a valid annotation id
    * @throws RemoteException if some other error occured
    */
-  public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String title, String contentType, byte[] content)
+  public String createAnnotation(String mediator, String type, String annotates, String context,
+                                 String supersedes, String title, String contentType, byte[] content)
                           throws NoSuchIdException, RemoteException;
 
   /**
@@ -132,6 +136,7 @@ public interface Annotations {
    * review state. Note that this returns only those annotations that the caller has permissions
    * to view.
    *
+   * @param mediator if present only those annotations that match this mediator are returned
    * @param annotates the resource for which annotations are to be looked-up
    * @param type the annotation type to use in filtering the annotations or <code>null</code>  to
    *        include all
@@ -141,7 +146,7 @@ public interface Annotations {
    *
    * @throws RemoteException if an error occured
    */
-  public AnnotationInfo[] listAnnotations(String annotates, String type)
+  public AnnotationInfo[] listAnnotations(String mediator, String annotates, String type)
                                    throws RemoteException;
 
   /**
@@ -173,6 +178,7 @@ public interface Annotations {
   /**
    * List the set of annotations in a specific administrative state.
    *
+   * @param mediator if present only those annotations that match this mediator are returned
    * @param state the state to filter the list of annotations by or 0 to return annotations in any
    *        administartive state
    *
@@ -180,5 +186,6 @@ public interface Annotations {
    *
    * @throws RemoteException if some error occured
    */
-  public String[] listAnnotations(int state) throws RemoteException;
+  public String[] listAnnotations(String mediator, int state)
+                           throws RemoteException;
 }

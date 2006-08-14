@@ -72,8 +72,9 @@ public class AnnotationServiceTest extends TestCase {
     String           bodyUrl     = "http://gandalf.topazproject.org";
     String           bodyContent = "This is a comment on foo:bar";
     String           title       = "Title";
-    AnnotationInfo[] annotations = service.listAnnotations(subject, null);
-    String[]         ids         = service.listAnnotations(42);
+    String           mediator    = "integration-test";
+    AnnotationInfo[] annotations = service.listAnnotations(mediator, subject, null);
+    String[]         ids         = service.listAnnotations(mediator, 0);
 
     try {
       for (int i = 0; i < annotations.length; i++)
@@ -85,7 +86,7 @@ public class AnnotationServiceTest extends TestCase {
       fail("Unexpected NoSuchIdException");
     }
 
-    annotations = service.listAnnotations(subject, null);
+    annotations = service.listAnnotations(mediator, subject, null);
     assertTrue("Expected empty list of annotations, got " + annotations.length,
                annotations.length == 0);
 
@@ -112,16 +113,18 @@ public class AnnotationServiceTest extends TestCase {
     gotExc = false;
 
     try {
-      annotation = service.createAnnotation(null, subject, null, null, title, "bad:url/{context}");
+      annotation =
+        service.createAnnotation(mediator, null, subject, null, null, title, "bad:url/{context}");
     } catch (Exception e) {
       gotExc = true;
     }
 
     assertTrue("Failed to get expected IllegalArgumentException", gotExc);
 
-    annotation   = service.createAnnotation(null, subject, hackContext, null, title, bodyUrl);
+    annotation =
+      service.createAnnotation(mediator, null, subject, hackContext, null, title, bodyUrl);
 
-    annotations = service.listAnnotations(subject, null);
+    annotations = service.listAnnotations(mediator, subject, null);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
     assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0].getId()
                  + "'", annotations[0].getId(), annotation);
@@ -137,17 +140,19 @@ public class AnnotationServiceTest extends TestCase {
     assertEquals(info.getCreator(), annotations[0].getCreator());
     assertEquals(info.getCreated(), annotations[0].getCreated());
     assertEquals(info.getTitle(), annotations[0].getTitle());
+    assertEquals(info.getMediator(), annotations[0].getMediator());
 
     assertEquals(info.getBody(), bodyUrl);
     assertEquals(info.getAnnotates(), subject);
     assertEquals(info.getContext(), hackContext);
     assertEquals(info.getTitle(), title);
+    assertEquals(info.getMediator(), mediator);
 
     String superseded = annotation;
 
     try {
       annotation =
-        service.createAnnotation(null, subject, context, annotation, title,
+        service.createAnnotation(mediator, null, subject, context, annotation, title,
                                  "text/plain;charset=utf-8", bodyContent.getBytes("utf-8"));
     } catch (java.io.UnsupportedEncodingException e) {
       throw new Error(e);
@@ -172,7 +177,7 @@ public class AnnotationServiceTest extends TestCase {
 
     assertEquals("<a:context> mismatch, got '" + s + "'", info.getContext(), context);
 
-    annotations = service.listAnnotations(subject, null);
+    annotations = service.listAnnotations(mediator, subject, null);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
     assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0].getId()
                  + "'", annotations[0].getId(), annotation);
@@ -197,14 +202,19 @@ public class AnnotationServiceTest extends TestCase {
 
     service.setAnnotationState(annotation, 42);
 
-    ids = service.listAnnotations(42);
+    ids = service.listAnnotations(mediator, 42);
+    assertTrue("Expected one annotation, got " + ids.length, ids.length == 1);
+    assertEquals("Expected annotation-id '" + annotation + "', got '" + ids[0] + "'", ids[0],
+                 annotation);
+
+    ids = service.listAnnotations(mediator, 0);
     assertTrue("Expected one annotation, got " + ids.length, ids.length == 1);
     assertEquals("Expected annotation-id '" + annotation + "', got '" + ids[0] + "'", ids[0],
                  annotation);
 
     service.deleteAnnotation(annotation, false);
 
-    annotations = service.listAnnotations(subject, null);
+    annotations = service.listAnnotations(mediator, subject, null);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
     assertEquals("Expected annotation-id '" + superseded + "', got '" + annotations[0].getId()
                  + "'", annotations[0].getId(), superseded);
@@ -221,7 +231,7 @@ public class AnnotationServiceTest extends TestCase {
 
     assertTrue("Failed to get expected NoSuchIdException", gotExc);
 
-    annotations = service.listAnnotations(subject, null);
+    annotations = service.listAnnotations(mediator, subject, null);
     assertTrue("Expected zero annotations, got " + annotations.length, annotations.length == 0);
   }
 }

@@ -50,6 +50,7 @@ public class AnnotationModel extends AnnotationInfo {
   static final URI a_body          = a.resolve("#body");
   static final URI dt_replaces     = dt.resolve("replaces");
   static final URI dt_isReplacedBy = dt.resolve("isReplacedBy");
+  static final URI dt_mediator     = dt.resolve("mediator");
 
   /**
    * Creates a new AnnotationModel object.
@@ -68,6 +69,7 @@ public class AnnotationModel extends AnnotationInfo {
     setSupersedes((String) map.get(dt_replaces));
     setSupersededBy((String) map.get(dt_isReplacedBy));
     setTitle((String) map.get(d_title));
+    setMediator((String) map.get(dt_mediator));
   }
 
   /**
@@ -83,29 +85,16 @@ public class AnnotationModel extends AnnotationInfo {
 
     for (Iterator it = rows.iterator(); it.hasNext();) {
       Object[] cols      = (Object[]) it.next();
-      URI      predicate = ((URIReference) (cols[0])).getURI();
+      URI      predicate = (URI) getColumnValue(cols[0]);
+      Object   object    = getColumnValue(cols[1]);
 
-      Object o     = cols[1];
-      String value;
+      if (nil.equals(object))
+        continue;
 
-      if (!(o instanceof URIReference)) {
-        if (o instanceof Literal)
-          value = ((Literal) o).getLexicalForm();
-        else
-          value = o.toString();
-      } else {
-        URI v = ((URIReference) o).getURI();
+      if (r_type.equals(predicate) && a_Annotation.equals(object))
+        continue;
 
-        if (nil.equals((Object) v))
-          continue;
-
-        if (r_type.equals(predicate) && a_Annotation.equals((Object) v))
-          continue;
-
-        value = v.toString();
-      }
-
-      String prev = (String) map.put(predicate, value);
+      String prev = (String) map.put(predicate, object.toString());
 
       if (prev != null) {
         log.warn("Unexpected duplicate triple found. Ignoring <" + id + "> <" + predicate + "> <"
@@ -114,5 +103,22 @@ public class AnnotationModel extends AnnotationInfo {
     }
 
     return new AnnotationModel(id, map);
+  }
+
+  /**
+   * Get the column value for an ITQL result column.
+   *
+   * @param o the raw value from ITQL result
+   *
+   * @return the value that is of any use
+   */
+  static Object getColumnValue(Object o) {
+    if (o instanceof URIReference)
+      return ((URIReference) o).getURI();
+
+    if (o instanceof Literal)
+      return ((Literal) o).getLexicalForm();
+
+    return o;
   }
 }

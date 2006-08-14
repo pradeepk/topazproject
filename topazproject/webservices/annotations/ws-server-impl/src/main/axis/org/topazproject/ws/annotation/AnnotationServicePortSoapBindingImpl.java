@@ -129,11 +129,11 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
   /**
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
-  public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String title, String body)
+  public String createAnnotation(String mediator, String type, String annotates, String context,
+                                 String supersedes, String title, String body)
                           throws NoSuchIdException, RemoteException {
     try {
-      return impl.createAnnotation(type, annotates, context, supersedes, title, body);
+      return impl.createAnnotation(mediator, type, annotates, context, supersedes, title, body);
     } catch (NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("", e);
@@ -154,11 +154,12 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
   /**
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
-  public String createAnnotation(String type, String annotates, String context, String supersedes,
-                                 String title, String contentType, byte[] content)
+  public String createAnnotation(String mediator, String type, String annotates, String context,
+                                 String supersedes, String title, String contentType, byte[] content)
                           throws NoSuchIdException, RemoteException {
     try {
-      return impl.createAnnotation(type, annotates, context, supersedes, title, contentType, content);
+      return impl.createAnnotation(mediator, type, annotates, context, supersedes, title,
+                                   contentType, content);
     } catch (NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("", e);
@@ -274,10 +275,10 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
   /**
    * @see org.topazproject.ws.annotation.Annotation#listAnnotations
    */
-  public AnnotationInfo[] listAnnotations(String on, String type)
+  public AnnotationInfo[] listAnnotations(String mediator, String on, String type)
                                    throws RemoteException {
     try {
-      return impl.listAnnotations(on, type);
+      return impl.listAnnotations(mediator, on, type);
     } catch (RemoteException e) {
       log.info("", e);
       throw e;
@@ -317,9 +318,10 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
   /**
    * @see org.topazproject.ws.annotation.Annotation#listAnnotations
    */
-  public String[] listAnnotations(int state) throws RemoteException {
+  public String[] listAnnotations(String mediator, int state)
+                           throws RemoteException {
     try {
-      return impl.listAnnotations(state);
+      return impl.listAnnotations(mediator, state);
     } catch (RemoteException e) {
       log.info("", e);
       throw e;
