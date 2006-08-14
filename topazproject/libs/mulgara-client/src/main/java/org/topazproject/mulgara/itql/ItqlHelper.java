@@ -67,38 +67,41 @@ public class ItqlHelper {
   private static final String BNODE_ATTR = "blank-node";
 
   /** The base URI for rdf defined URIs: {@value} */
-  public static final String RDF_URI    = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+  public static final String RDF_URI      = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
   /** The base URI for rdf-schema defined URIs: {@value} */
-  public static final String RDFS_URI   = "http://www.w3.org/2000/01/rdf-schema#";
+  public static final String RDFS_URI     = "http://www.w3.org/2000/01/rdf-schema#";
   /** The base URI for owl defined URIs: {@value} */
-  public static final String OWL_URI    = "http://www.w3.org/2002/07/owl#";
+  public static final String OWL_URI      = "http://www.w3.org/2002/07/owl#";
   /** The base URI for xml-schema defined URIs: {@value} */
-  public static final String XSD_URI    = "http://www.w3.org/2001/XMLSchema#";
+  public static final String XSD_URI      = "http://www.w3.org/2001/XMLSchema#";
   /** The base URI for tucana defined URIs: {@value} */
-  public static final String TUCANA_URI = "http://tucana.org/tucana#";
+  public static final String TUCANA_URI   = "http://tucana.org/tucana#";
   /** The base URI for dublin-core defined URIs: {@value} */
-  public static final String DC_URI     = "http://purl.org/dc/elements/1.1/";
+  public static final String DC_URI       = "http://purl.org/dc/elements/1.1/";
+  /** The base URI for dublin-core terms URIs: {@value} */
+  public static final String DC_TERMS_URI = "http://purl.org/dc/terms/";
   /** The base URI for oai-dublin-core defined URIs: {@value} */
-  public static final String OAI_DC_URI = "http://www.openarchives.org/OAI/2.0/oai_dc/";
+  public static final String OAI_DC_URI   = "http://www.openarchives.org/OAI/2.0/oai_dc/";
   /** The base URI for fedora defined URIs: {@value} */
-  public static final String FEDORA_URI = "info:fedora/";
+  public static final String FEDORA_URI   = "info:fedora/";
   /** The base URI for topaz defined URIs: {@value} */
-  public static final String TOPAZ_URI  = "http://rdf.topazproject.org/RDF/";
+  public static final String TOPAZ_URI    = "http://rdf.topazproject.org/RDF/";
 
   private final ItqlInterpreterBean interpreter;
   private       BeanReference       cleanupRef;
   private       Map                 aliases = new HashMap();
 
   static {
-    defaultAliases.put("rdf",    RDF_URI);
-    defaultAliases.put("rdfs",   RDFS_URI);
-    defaultAliases.put("owl",    OWL_URI);
-    defaultAliases.put("xsd",    XSD_URI);
-    defaultAliases.put("tucana", TUCANA_URI);
-    defaultAliases.put("dc",     DC_URI);
-    defaultAliases.put("oai_dc", OAI_DC_URI);
-    defaultAliases.put("fedora", FEDORA_URI);
-    defaultAliases.put("topaz",  TOPAZ_URI);
+    defaultAliases.put("rdf",      RDF_URI);
+    defaultAliases.put("rdfs",     RDFS_URI);
+    defaultAliases.put("owl",      OWL_URI);
+    defaultAliases.put("xsd",      XSD_URI);
+    defaultAliases.put("tucana",   TUCANA_URI);
+    defaultAliases.put("dc",       DC_URI);
+    defaultAliases.put("dc_terms", DC_TERMS_URI);
+    defaultAliases.put("oai_dc",   OAI_DC_URI);
+    defaultAliases.put("fedora",   FEDORA_URI);
+    defaultAliases.put("topaz",    TOPAZ_URI);
 
     Runtime.getRuntime().addShutdownHook(new Thread() {
       public void run() {
