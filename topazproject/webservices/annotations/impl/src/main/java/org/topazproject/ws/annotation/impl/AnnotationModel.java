@@ -35,19 +35,21 @@ public class AnnotationModel extends AnnotationInfo {
   private static final Log log = LogFactory.getLog(AnnotationModel.class);
 
   //
-  static final URI a            = URI.create("http://www.w3.org/2000/10/annotation-ns#");
-  static final URI r            = URI.create(ItqlHelper.RDF_URI);
-  static final URI d            = URI.create(ItqlHelper.DC_URI);
-  static final URI nil          = URI.create(ItqlHelper.RDF_URI + "nil");
-  static final URI a_Annotation = a.resolve("#Annotation");
-  static final URI r_type       = r.resolve("#type");
-  static final URI a_annotates  = a.resolve("#annotates");
-  static final URI a_context    = a.resolve("#context");
-  static final URI d_creator    = d.resolve("creator");
-  static final URI d_title      = d.resolve("title");
-  static final URI a_created    = a.resolve("#created");
-  static final URI a_body       = a.resolve("#body");
-  static final URI a_supersedes = a.resolve("#supersedes");
+  static final URI a               = URI.create("http://www.w3.org/2000/10/annotation-ns#");
+  static final URI r               = URI.create(ItqlHelper.RDF_URI);
+  static final URI d               = URI.create(ItqlHelper.DC_URI);
+  static final URI dt              = URI.create(ItqlHelper.DC_TERMS_URI);
+  static final URI nil             = URI.create(ItqlHelper.RDF_URI + "nil");
+  static final URI a_Annotation    = a.resolve("#Annotation");
+  static final URI r_type          = r.resolve("#type");
+  static final URI a_annotates     = a.resolve("#annotates");
+  static final URI a_context       = a.resolve("#context");
+  static final URI d_creator       = d.resolve("creator");
+  static final URI d_title         = d.resolve("title");
+  static final URI a_created       = a.resolve("#created");
+  static final URI a_body          = a.resolve("#body");
+  static final URI dt_replaces     = dt.resolve("replaces");
+  static final URI dt_isReplacedBy = dt.resolve("isReplacedBy");
 
   /**
    * Creates a new AnnotationModel object.
@@ -63,7 +65,8 @@ public class AnnotationModel extends AnnotationInfo {
     setCreator((String) map.get(d_creator));
     setCreated((String) map.get(a_created));
     setBody((String) map.get(a_body));
-    setSupersedes((String) map.get(a_supersedes));
+    setSupersedes((String) map.get(dt_replaces));
+    setSupersededBy((String) map.get(dt_isReplacedBy));
     setTitle((String) map.get(d_title));
   }
 

@@ -53,52 +53,54 @@ public class AnnotationsImpl implements Annotations {
   //
   private static final String CREATE_ITQL =
     ("insert <${id}> <r:type> <a:Annotation> <${id}> <r:type> <${type}>"
-    + " <${id}> <a:state> '0' <${id}> <a:annotates> <${annotates}> <${id}> <a:created> '${created}'"
-    + " <${id}> <a:context> '${context}' <${id}> <a:body> <${body}> <${id}> <d:creator> '${user}'"
-    + " <${id}> <a:supersededBy> <r:nil> into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
+    + " <${id}> <topaz:state> '0' <${id}> <a:annotates> <${annotates}>"
+    + " <${id}> <a:created> '${created}' <${id}> <a:context> '${context}'"
+    + " <${id}> <a:body> <${body}> <${id}> <dc:creator> '${user}'"
+    + " <${id}> <dt:isReplacedBy> <r:nil> into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String SUPERSEDE_ITQL =
-    ("insert <${supersedes}> <a:supersededBy> <${id}> into ${MODEL};"
-    + "delete <${supersedes}> <a:supersededBy> <r:nil> from ${MODEL};                     ")
-     .replaceAll("\\Q${MODEL}", MODEL);
+    ("insert <${supersedes}> <dt:isReplacedBy> <${id}> into ${MODEL};"
+    + "delete <${supersedes}> <dt:isReplacedBy> <r:nil> from ${MODEL};"
+    + "insert <${id}> <dt:replaces> <${supersedes}> into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String INSERT_TITLE_ITQL =
     ("insert <${id}> <d:title> '${title}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String DELETE_ITQL =
-    ("insert select $a <a:supersededBy> $c from ${MODEL}"
-    + " where $a <a:supersededBy> <${id}> and <${id}> <a:supersededBy> $c into ${MODEL};"
-    + " delete select $a <a:supersededBy> <${id}> from ${MODEL} where $a <a:supersededBy> <${id}>"
+    ("insert select $a <dt:isReplacedBy> $c from ${MODEL}"
+    + " where $a <dt:isReplacedBy> <${id}> and <${id}> <dt:isReplacedBy> $c into ${MODEL};"
+    + " delete select $a <dt:isReplacedBy> <${id}> from ${MODEL} where $a <dt:isReplacedBy> <${id}>"
     + " from ${MODEL}; delete select <${id}> $p $o from ${MODEL} where <${id}> $p $o"
-    + " from ${MODEL}; delete select $a <a:supersededBy> <r:nil>"
-    + " from ${MODEL} where $a <a:supersededBy> $c and $c <r:type> <a:Annotation> from ${MODEL};")
-     .replaceAll("\\Q${MODEL}", MODEL);
+    + " from ${MODEL}; delete select $a <dt:isReplacedBy> <r:nil>"
+    + " from ${MODEL} where $a <dt:isReplacedBy> $c and $c <r:type> <a:Annotation> from ${MODEL};"
+    + "delete select $a <dt:replaces> <${id}> from ${MODEL} where $a <dt:replaces> <${id}> "
+    + " from ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String GET_ITQL =
     ("select $p $o from ${MODEL} where <${id}> $p $o;").replaceAll("\\Q${MODEL}", MODEL);
   private static final String LIST_ITQL =
     ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL} "
     + " where $s <a:annotates> <${annotates}>            "
-    + "    and $s <a:state> '0'                          "
-    + "    and $s <a:supersededBy> <r:nil>               "
+    + "    and $s <topaz:state> '0'                      "
+    + "    and $s <dt:isReplacedBy> <r:nil>              "
     + "    and $s <r:type> <${type}>;                    ").replaceAll("\\Q${MODEL}", MODEL);
   private static final String LATEST_ITQL =
     ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL} "
-    + " where ( (walk(<${id}> <a:supersededBy> $c and $c <a:supersededBy> $s)"
-    + "          and $s <a:supersededBy> <r:nil>)       "
+    + " where ( (walk(<${id}> <dt:isReplacedBy> $c and $c <dt:isReplacedBy> $s)"
+    + "          and $s <dt:isReplacedBy> <r:nil>)      "
     + "          or                                     "
-    + "         ($s <a:supersededBy> <r:nil> and $s <tucana:is> <${id}>) )"
-    + " and $s <a:state> '0' and $s <r:type> <a:Annotation>;").replaceAll("\\Q${MODEL}", MODEL);
+    + "         ($s <dt:isReplacedBy> <r:nil> and $s <tucana:is> <${id}>) )"
+    + " and $s <topaz:state> '0' and $s <r:type> <a:Annotation>;").replaceAll("\\Q${MODEL}", MODEL);
   private static final String PRECEDING_ITQL =
     ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL} "
-    + " where walk($s <a:supersededBy> <${id}> and $s <a:supersededBy> $c)"
-    + " and $s <a:state> '0' and $s <r:type> <a:Annotation>;").replaceAll("\\Q${MODEL}", MODEL);
+    + " where walk($s <dt:isReplacedBy> <${id}> and $s <dt:isReplacedBy> $c)"
+    + " and $s <topaz:state> '0' and $s <r:type> <a:Annotation>;").replaceAll("\\Q${MODEL}", MODEL);
   private static final String PRECEDING_ALL_ITQL =
     ("select $s from ${MODEL} where"
-    + " walk($c <a:supersededBy> <${id}> and $s <a:supersededBy> $c) "
+    + " walk($c <dt:isReplacedBy> <${id}> and $s <dt:isReplacedBy> $c) "
     + " and $s <r:type> <a:Annotation>;").replaceAll("\\Q${MODEL}", MODEL);
   private static final String SET_STATE_ITQL =
-    ("delete select <${id}> <a:state> $o from ${MODEL}"
-    + " where <${id}> <a:state> $o from ${MODEL};"
-    + " insert <${id}> <a:state> '${state}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
+    ("delete select <${id}> <topaz:state> $o from ${MODEL}"
+    + " where <${id}> <topaz:state> $o from ${MODEL};"
+    + " insert <${id}> <topaz:state> '${state}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String LIST_STATE_ITQL =
-    ("select $a from ${MODEL} where $a <r:type> <a:Annotation> and $a <a:state> '${state}';")
+    ("select $a from ${MODEL} where $a <r:type> <a:Annotation> and $a <topaz:state> '${state}';")
      .replaceAll("\\Q${MODEL}", MODEL);
   private static final String CHECK_ID_ITQL =
     ("select $s from ${MODEL} where $s <r:type> <a:Annotation> and   $s <tucana:is> <${id}>")
@@ -108,7 +110,7 @@ public class AnnotationsImpl implements Annotations {
   private static final String FEDORA_LIST_ITQL =
     ("select $f from ${MODEL} where" // + " $f <fedora:fedora-system:def/model#contentModel> 'Annotation' and"
     + " $s <a:body> $f and ($s <tucana:is> <${id}>"
-    + " or (walk($c <a:supersededBy> <${id}> and $s <a:supersededBy> $c)"
+    + " or (walk($c <dt:isReplacedBy> <${id}> and $s <dt:isReplacedBy> $c)"
     + " and $s <r:type> <a:Annotation>))").replaceAll("\\Q${MODEL}", MODEL);
   private static final String FEDORA_ID_ITQL =
     ("select $f from ${MODEL} where" //  + " $f <fedora:fedora-system:def/model#contentModel> 'Annotation' and"
@@ -118,6 +120,7 @@ public class AnnotationsImpl implements Annotations {
     aliases.put("a", AnnotationModel.a.toString());
     aliases.put("r", AnnotationModel.r.toString());
     aliases.put("d", AnnotationModel.d.toString());
+    aliases.put("dt", AnnotationModel.dt.toString());
   }
 
   private final AnnotationsPEP pep;

@@ -39,10 +39,9 @@ public interface Annotations {
    *        annotation applies or <code>null</code>. Defined by
    *        <code>http://www.w3.org/2000/10/annotation-ns#context</code>
    * @param supersedes the annotation that this supersedes or <code>null</code>. Defined by
-   *        <code>http://www.w3.org/2000/10/annotation-ns#supersedes</code> and the inverse
-   *        relation <code>http://www.w3.org/2000/10/annotation-ns#supersededBy</code> both of
-   *        which are sub properties of
-   *        <code>http://www.w3.org/2000/10/annotation-ns#related</code>.. Defaults to
+   *        <code>http://purl.org/dc/terms/replaces</code> and the inverse relation
+   *        <code>http://purl.org/dc/terms/isReplacedBy</code> both of which are sub properties of
+   *        <code>http://purl.org/dc/elements/1.1/relation</code>. Defaults to
    *        <code>http://www.w3.org/1999/02/22-rdf-syntax-ns#nil</code>
    * @param title the annotation title or <code>null</code>. Defined by
    *        <code>http://purl.org/dc/elements/1.1/title</code>
@@ -130,10 +129,12 @@ public interface Annotations {
   /**
    * Gets the set of annotations of the given type on a resource. Matching annotations are further
    * filtered out if they are superseded by other annotations or if they are in an administrator
-   * review state.
+   * review state. Note that this returns only those annotations that the caller has permissions
+   * to view.
    *
    * @param annotates the resource for which annotations are to be looked-up
-   * @param type the annotation type to use in filtering the annotations or null to include all
+   * @param type the annotation type to use in filtering the annotations or <code>null</code>  to
+   *        include all
    *
    * @return an array of annotation ids or metadata for matching annotations; if no annotations
    *         have been defined, an empty array is returned

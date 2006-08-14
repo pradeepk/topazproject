@@ -133,6 +133,7 @@ public class AnnotationServiceTest extends TestCase {
     assertEquals(info.getContext(), annotations[0].getContext());
     assertEquals(info.getBody(), annotations[0].getBody());
     assertEquals(info.getSupersedes(), annotations[0].getSupersedes());
+    assertEquals(info.getSupersededBy(), annotations[0].getSupersededBy());
     assertEquals(info.getCreator(), annotations[0].getCreator());
     assertEquals(info.getCreated(), annotations[0].getCreated());
     assertEquals(info.getTitle(), annotations[0].getTitle());
@@ -152,7 +153,11 @@ public class AnnotationServiceTest extends TestCase {
       throw new Error(e);
     }
 
+    info = service.getAnnotationInfo(superseded);
+    assertEquals(info.getSupersededBy(), annotation);
+
     info = service.getAnnotationInfo(annotation);
+    assertEquals(info.getSupersedes(), superseded);
 
     String s;
 

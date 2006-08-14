@@ -24,6 +24,7 @@ public class AnnotationInfo {
   private String supersedes;
   private String id;
   private String title;
+  private String supersededBy;
 
   /**
    * Creates a new AnnotationInfo object.
@@ -191,5 +192,23 @@ public class AnnotationInfo {
    */
   public void setTitle(String title) {
     this.title = title;
+  }
+
+  /**
+   * Get supersededBy.
+   *
+   * @return supersededBy as String.
+   */
+  public String getSupersededBy() {
+    return supersededBy;
+  }
+
+  /**
+   * Set supersededBy.
+   *
+   * @param supersededBy the value to set.
+   */
+  public void setSupersededBy(String supersededBy) {
+    this.supersededBy = supersededBy;
   }
 }
