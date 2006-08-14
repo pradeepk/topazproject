@@ -33,7 +33,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.Properties;
 import java.util.Map;
 import java.util.HashMap;
 
@@ -46,16 +45,16 @@ public class FetchArticleService {
   private String articleRep;
   private Templates translet;
   private boolean useTranslet = true;
-  private String transformerFactory;
+  private Map<String, String> xmlFactoryProperty;
 
   public static final Log log = LogFactory.getLog(FetchArticleService.class);
   private Map<String, InputSource> entityResolvers = new HashMap<String, InputSource>();
 
   public void init() {
     // Set the TransformerFactory system property.
-    final Properties props = System.getProperties();
-    props.put("javax.xml.transform.TransformerFactory", getTransformerFactory());
-    System.setProperties(props);
+    for (Map.Entry<String, String> entry : xmlFactoryProperty.entrySet()) {
+      System.setProperty(entry.getKey(), entry.getValue());
+    }
   }
 
   /**
@@ -139,12 +138,8 @@ public class FetchArticleService {
     return translet.newTransformer();
   }
 
-  private String getTransformerFactory() {
-    return transformerFactory;
-  }
-
-  public void setTransformerFactory(final String transformerFactory) {
-    this.transformerFactory = transformerFactory;
+  public void setXmlFactoryProperty(final Map<String, String> xmlFactoryProperty) {
+    this.xmlFactoryProperty = xmlFactoryProperty;
   }
 
   /** Set the XSL Template to be used for transformation
@@ -219,6 +214,7 @@ public class FetchArticleService {
     final FileReader fileReader = new FileReader(entityFilename);
 
     //Get an instance from the cache
+    //TODO: A potential bottleneck place when multiple callers are trying to work with the same instance of the entity resolver
     InputSource entityResolver = entityResolvers.get(systemId);
     if (null == entityResolver) {
       entityResolver = new InputSource(fileReader);

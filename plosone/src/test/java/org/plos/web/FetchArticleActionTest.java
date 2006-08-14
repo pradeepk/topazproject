@@ -59,7 +59,7 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     // final String resourceToIngest = "/pbio.0000001-embedded-dtd.zip";
     // final String resourceDOI = "10.1371/journal.pbio.0000001";
 
-    doIngestTest("10.1371/journal.pbio.0020294", "/test_article.zip");
+//    doIngestTest("10.1371/journal.pbio.0020294", "/test_article.zip");
 
     doIngestTest("10.1371/journal.pbio.0020042", "/pbio.0020042.zip");
 //    doIngestTest("10.1371/journal.pbio.0020294", "/pbio.0020294.zip");
