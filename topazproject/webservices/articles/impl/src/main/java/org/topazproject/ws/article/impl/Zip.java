@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.ws.article;
+package org.topazproject.ws.article.impl;
 
 import java.io.ByteArrayInputStream;
 import java.io.InputStream;

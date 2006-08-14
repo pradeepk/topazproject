@@ -7,12 +7,15 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.ws.article;
+package org.topazproject.ws.article.impl;
 
 import java.rmi.RemoteException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.topazproject.ws.article.DuplicateIdException;
+import org.topazproject.ws.article.NoSuchIdException;
 
 /** 
  * Some utilities for dealing with Fedora.

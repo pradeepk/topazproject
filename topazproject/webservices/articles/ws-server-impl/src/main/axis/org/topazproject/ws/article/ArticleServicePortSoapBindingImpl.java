@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.ws.article.service;
+package org.topazproject.ws.article;
 
 import java.io.IOException;
 import java.net.URI;
@@ -26,8 +26,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
-import org.topazproject.ws.article.ArticleImpl;
-import org.topazproject.ws.article.ArticlePEP;
+import org.topazproject.ws.article.impl.ArticleImpl;
+import org.topazproject.ws.article.impl.ArticlePEP;
 import org.topazproject.xacml.Util;
 
 public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecycle {
@@ -92,12 +92,18 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
       throws RemoteException, DuplicateIdException, IngestException {
     try {
       return impl.ingest(zip);
-    } catch (org.topazproject.ws.article.DuplicateIdException die) {
-      log.info(die);
-      throw new DuplicateIdException(die.getId());
-    } catch (org.topazproject.ws.article.IngestException ie) {
-      log.info(ie);
-      throw new IngestException(ie.getMessage());
+    } catch (DuplicateIdException die) {
+      log.info("", die);
+      throw die;
+    } catch (IngestException ie) {
+      log.info("", ie);
+      throw ie;
+    } catch (RuntimeException re) {
+      log.warn("", re);
+      throw re;
+    } catch (Error e) {
+      log.error("", e);
+      throw e;
     }
   }
 
@@ -108,9 +114,15 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
       throws RemoteException, NoSuchIdException {
     try {
       impl.markSuperseded(oldDoi, newDoi);
-    } catch (org.topazproject.ws.article.NoSuchIdException nsie) {
-      log.info(nsie);
-      throw new NoSuchIdException(nsie.getId());
+    } catch (NoSuchIdException nsie) {
+      log.info("", nsie);
+      throw nsie;
+    } catch (RuntimeException re) {
+      log.warn("", re);
+      throw re;
+    } catch (Error e) {
+      log.error("", e);
+      throw e;
     }
   }
 
@@ -120,9 +132,15 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   public void delete(String doi, boolean purge) throws RemoteException, NoSuchIdException {
     try {
       impl.delete(doi, purge);
-    } catch (org.topazproject.ws.article.NoSuchIdException nsie) {
-      log.info(nsie);
-      throw new NoSuchIdException(nsie.getId());
+    } catch (NoSuchIdException nsie) {
+      log.info("", nsie);
+      throw nsie;
+    } catch (RuntimeException re) {
+      log.warn("", re);
+      throw re;
+    } catch (Error e) {
+      log.error("", e);
+      throw e;
     }
   }
 
@@ -132,9 +150,15 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   public void setState(String doi, int state) throws RemoteException, NoSuchIdException {
     try {
       impl.setState(doi, state);
-    } catch (org.topazproject.ws.article.NoSuchIdException nsie) {
-      log.info(nsie);
-      throw new NoSuchIdException(nsie.getId());
+    } catch (NoSuchIdException nsie) {
+      log.info("", nsie);
+      throw nsie;
+    } catch (RuntimeException re) {
+      log.warn("", re);
+      throw re;
+    } catch (Error e) {
+      log.error("", e);
+      throw e;
     }
   }
 
@@ -144,9 +168,15 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   public String getObjectURL(String doi, String rep) throws RemoteException, NoSuchIdException {
     try {
       return impl.getObjectURL(doi, rep);
-    } catch (org.topazproject.ws.article.NoSuchIdException nsie) {
-      log.info(nsie);
-      throw new NoSuchIdException(nsie.getId());
+    } catch (NoSuchIdException nsie) {
+      log.info("", nsie);
+      throw nsie;
+    } catch (RuntimeException re) {
+      log.warn("", re);
+      throw re;
+    } catch (Error e) {
+      log.error("", e);
+      throw e;
     }
   }
 

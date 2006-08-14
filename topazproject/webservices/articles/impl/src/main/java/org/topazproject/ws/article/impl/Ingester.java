@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.ws.article;
+package org.topazproject.ws.article.impl;
 
 import java.io.InputStream;
 import java.io.IOException;
@@ -38,6 +38,8 @@ import org.w3c.dom.NodeList;
 
 import org.topazproject.fedora.client.Uploader;
 import org.topazproject.fedora.client.FedoraAPIM;
+import org.topazproject.ws.article.DuplicateIdException;
+import org.topazproject.ws.article.IngestException;
 
 import net.sf.saxon.TransformerFactoryImpl;
 
@@ -122,12 +124,23 @@ public class Ingester {
       fedoraIngest(zip, objInfo);
 
       return doi;
+    } catch (DuplicateIdException die) {        // needed to avoid being caught as RE below
+      throw die;
     } catch (RemoteException re) {
-      throw new IngestException("Error ingesting into fedora", re);
+      throw getIngestException("Error ingesting into fedora", re);
     } catch (IOException ioe) {
-      throw new IngestException("Error talking to fedora", ioe);
+      throw getIngestException("Error talking to fedora", ioe);
     } catch (TransformerException te) {
-      throw new IngestException("Zip format error", te);
+      throw getIngestException("Zip format error", te);
+    }
+  }
+
+  private static final IngestException getIngestException(String msg, Throwable t) {
+    if (RemoteException.class.isAssignableFrom(IngestException.class)) {
+      log.warn(msg, t);
+      return new IngestException(msg + ": " + t);
+    } else {
+      return new IngestException(msg, t);
     }
   }
 
