@@ -24,8 +24,13 @@
           <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql</AttributeValue>
           <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
             select $s from &lt;rmi://localhost/fedora#ri&gt;
-            where $s &lt;dc:creator&gt; &lt;?&gt; and $s &lt;tucana:is&gt; &lt;?&gt;;
+            where ($s &lt;dc:creator&gt; &lt;?&gt; or $s &lt;topaz:anonymousCreator&gt; &lt;?&gt;) 
+            and $s &lt;tucana:is&gt; &lt;?&gt;;
           </AttributeValue>
+          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
+            <SubjectAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
+              AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"/>   
+          </Apply>
           <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
             <SubjectAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
               AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"/>   
