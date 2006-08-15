@@ -175,7 +175,7 @@ public class AlertsImpl implements Alerts {
 
     this.itql.getAliases().putAll(this.aliases);
     this.itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";");
-    this.itql.doUpdate("create " + MODEL_ARTICLES + ";");
+    this.itql.doUpdate("create " + MODEL_ALERTS + ";");
     
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
     conf = conf.subset("topaz");
