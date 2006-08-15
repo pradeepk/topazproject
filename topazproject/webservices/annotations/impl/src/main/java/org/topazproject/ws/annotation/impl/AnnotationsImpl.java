@@ -55,7 +55,7 @@ public class AnnotationsImpl implements Annotations {
     ("insert <${id}> <r:type> <a:Annotation> <${id}> <r:type> <${type}>"
     + " <${id}> <topaz:state> '0' <${id}> <a:annotates> <${annotates}>"
     + " <${id}> <a:created> '${created}' <${id}> <a:context> '${context}'"
-    + " <${id}> <a:body> <${body}> <${id}> <dc:creator> '${user}'"
+    + " <${id}> <a:body> <${body}> <${id}> <${creator}> '${user}'"
     + " <${id}> <dt:isReplacedBy> <r:nil> into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String SUPERSEDE_ITQL =
     ("insert <${supersedes}> <dt:isReplacedBy> <${id}> into ${MODEL};"
@@ -161,18 +161,20 @@ public class AnnotationsImpl implements Annotations {
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
   public String createAnnotation(String mediator, String type, String annotates, String context,
-                                 String supersedes, String title, String body)
+                                 String supersedes, boolean anonymize, String title, String body)
                           throws NoSuchIdException, RemoteException {
     itql.validateUri(body, "body");
 
-    return createAnnotation(mediator, type, annotates, context, supersedes, title, body, null, null);
+    return createAnnotation(mediator, type, annotates, context, supersedes, anonymize, title, body,
+                            null, null);
   }
 
   /**
    * @see org.topazproject.ws.annotation.Annotation#createAnnotation
    */
   public String createAnnotation(String mediator, String type, String annotates, String context,
-                                 String supersedes, String title, String contentType, byte[] content)
+                                 String supersedes, boolean anonymize, String title,
+                                 String contentType, byte[] content)
                           throws NoSuchIdException, RemoteException {
     if (contentType == null)
       throw new NullPointerException("'contentType' cannot be null");
@@ -180,13 +182,14 @@ public class AnnotationsImpl implements Annotations {
     if (content == null)
       throw new NullPointerException("'content' cannot be null");
 
-    return createAnnotation(mediator, type, annotates, context, supersedes, title, null,
+    return createAnnotation(mediator, type, annotates, context, supersedes, anonymize, title, null,
                             contentType, content);
   }
 
   private String createAnnotation(String mediator, String type, String annotates, String context,
-                                  String supersedes, String title, String body, String contentType,
-                                  byte[] content) throws NoSuchIdException, RemoteException {
+                                  String supersedes, boolean anonymize, String title, String body,
+                                  String contentType, byte[] content)
+                           throws NoSuchIdException, RemoteException {
     if (context == null)
       context = annotates;
     else
@@ -224,6 +227,8 @@ public class AnnotationsImpl implements Annotations {
     values.put("body", body);
     values.put("user", user);
     values.put("created", itql.getUTCTime());
+
+    values.put("creator", (anonymize ? "topaz:anonymousCreator" : "dc:creator"));
 
     if (supersedes != null) {
       create += SUPERSEDE_ITQL;

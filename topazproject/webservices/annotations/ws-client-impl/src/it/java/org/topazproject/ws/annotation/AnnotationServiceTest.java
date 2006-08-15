@@ -114,7 +114,8 @@ public class AnnotationServiceTest extends TestCase {
 
     try {
       annotation =
-        service.createAnnotation(mediator, null, subject, null, null, title, "bad:url/{context}");
+        service.createAnnotation(mediator, null, subject, null, null, false, title,
+                                 "bad:url/{context}");
     } catch (Exception e) {
       gotExc = true;
     }
@@ -122,7 +123,7 @@ public class AnnotationServiceTest extends TestCase {
     assertTrue("Failed to get expected IllegalArgumentException", gotExc);
 
     annotation =
-      service.createAnnotation(mediator, null, subject, hackContext, null, title, bodyUrl);
+      service.createAnnotation(mediator, null, subject, hackContext, null, false, title, bodyUrl);
 
     annotations = service.listAnnotations(mediator, subject, null);
     assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
@@ -152,7 +153,7 @@ public class AnnotationServiceTest extends TestCase {
 
     try {
       annotation =
-        service.createAnnotation(mediator, null, subject, context, annotation, title,
+        service.createAnnotation(mediator, null, subject, context, annotation, true, title,
                                  "text/plain;charset=utf-8", bodyContent.getBytes("utf-8"));
     } catch (java.io.UnsupportedEncodingException e) {
       throw new Error(e);
@@ -161,8 +162,12 @@ public class AnnotationServiceTest extends TestCase {
     info = service.getAnnotationInfo(superseded);
     assertEquals(info.getSupersededBy(), annotation);
 
+    assertTrue("expected a creator", info.getCreator() != null);
+
     info = service.getAnnotationInfo(annotation);
     assertEquals(info.getSupersedes(), superseded);
+
+    assertTrue("expected anonymous creator", info.getCreator() == null);
 
     String s;
 
