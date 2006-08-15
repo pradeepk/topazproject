@@ -1,6 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE beans PUBLIC "-//SPRING//DTD BEAN//EN" "http://www.springframework.org/dtd/spring-beans.dtd">
-<beans default-autowire="autodetect">
+<beans default-autowire="autodetect"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
   <!--Plosone developer beans here -->
   <bean id="serviceFactory" class="org.plos.service.ServiceFactory">
@@ -18,7 +25,9 @@
     </property>
   </bean>
 
-  <bean id="registrationService" class="org.plos.service.impl.PlosRegistrationService">
+  <bean id="registrationService" class="org.plos.service.impl.PlosRegistrationService" scope="session">
+    <!-- proxy needed as this bean is a part of a singleton's reference  -->
+    <aop:scoped-proxy/>
     <property name="userDAO" ref="userDAO"/>
     <property name="registrationMessagingService" ref="registrationMessagingService"/>
     <property name="passwordDigestService" ref="plosPasswordDigestService"/>
@@ -33,7 +42,6 @@
   <bean id="RegistrationManager" class="org.plos.management.RegistrationManager">
     <property name="userDAO" ref="userDAO"/>
   </bean>
-
 
   <!--Beans from Spring distribution  -->
 

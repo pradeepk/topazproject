@@ -15,7 +15,6 @@
     <filter-name>webwork</filter-name>
     <filter-class>com.opensymphony.webwork.dispatcher.FilterDispatcher</filter-class>
   </filter>
-
   <filter-mapping>
     <filter-name>webwork</filter-name>
     <url-pattern>/*</url-pattern>
@@ -25,9 +24,14 @@
       <listener-class>org.plos.management.JMXStartupListener</listener-class>
   </listener>
 
-
+  <!-- to hook in the spring container -->
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
+  </listener>
+
+  <!-- to hook in the scope management system that provides scopes like session, request for Servlet 2.4 and Spring 2.0 above  -->
+  <listener>
+    <listener-class>org.springframework.web.context.scope.RequestContextListener</listener-class>
   </listener>
 
   <servlet>

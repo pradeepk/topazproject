@@ -3,12 +3,14 @@
        xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:aop="http://www.springframework.org/schema/aop"
        xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd 
-http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
   <!--Plosone developer beans here -->
-  <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" init-method="init">
+  <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" scope="session" init-method="init">
     <property name="articleRep" value="XML"/>
     <!-- Note: remember to prefix the filename with a "/" -->
     <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
@@ -22,7 +24,7 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
            value="org.apache.xalan.xsltc.trax.TransformerFactoryImpl"/>
   </util:map>
 
-  <bean id="articleService" class="org.plos.article.service.ArticleService">
+  <bean id="articleService" class="org.plos.article.service.ArticleService" scope="session">
     <property name="servicePort" value="http://localhost:8080/ws-articles-webapp-0.1/services/ArticleServicePort"/>
   </bean>
 
