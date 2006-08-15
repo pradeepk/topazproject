@@ -20,21 +20,21 @@
   <dependencies>
     <dependency>
       <groupId>info.fedora</groupId>
-      <artifactId>server</artifactId>
+      <artifactId>server-distribution</artifactId>
       <version>2.1.1</version>
       <type>tar</type>
     </dependency>
 
     <dependency>
       <groupId>info.fedora</groupId>
-      <artifactId>client</artifactId>
+      <artifactId>client-distribution</artifactId>
       <version>2.1.1</version>
       <type>tar</type>
     </dependency>
 
     <dependency>
       <groupId>info.fedora</groupId>
-      <artifactId>diringest</artifactId>
+      <artifactId>diringest-distribution</artifactId>
       <version>2.1.1</version>
       <type>zip</type>
     </dependency>
