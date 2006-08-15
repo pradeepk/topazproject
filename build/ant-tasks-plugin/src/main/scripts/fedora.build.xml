@@ -110,6 +110,9 @@
       <arg line="mckoi"/>
       <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>
+    <!-- needed only in case of spawn. give some time to complete startuo-->
+    <sleep seconds="10"/>
+    
   </target>
 
   <target name="fedora-stop" depends="exec-ext">
