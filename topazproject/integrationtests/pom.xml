@@ -97,7 +97,7 @@
     <!-- articles -->
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-articles-core</artifactId>
+      <artifactId>ws-articles-api</artifactId>
       <version>0.1</version>
     </dependency>
     <dependency>

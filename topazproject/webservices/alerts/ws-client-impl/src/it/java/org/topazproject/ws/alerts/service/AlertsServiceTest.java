@@ -27,10 +27,10 @@ import org.codehaus.spice.salt.io.IOUtil;
 
 import junit.framework.TestCase;
 
-import org.topazproject.ws.article.service.NoSuchIdException;
+import org.topazproject.ws.article.NoSuchIdException;
 
-import org.topazproject.ws.article.service.Article;
-import org.topazproject.ws.article.service.ArticleServiceLocator;
+import org.topazproject.ws.article.Article;
+import org.topazproject.ws.article.ArticleServiceLocator;
 
 import org.topazproject.ws.users.service.UserAccounts;
 import org.topazproject.ws.users.service.UserAccountsServiceLocator;
@@ -153,7 +153,7 @@ public class AlertsServiceTest extends TestCase {
       log.info("deleted article " + doi);
     } catch (NoSuchIdException nsie) {
       // so what
-      log.debug(nsie);
+      //log.debug(nsie);
     }
   }
 
