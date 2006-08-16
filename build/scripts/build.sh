@@ -14,7 +14,7 @@
 #  JAVA_HOME must be set appropriately
 
 # TODO: Subroutines to stop servers. Check to see if running. If so and fail to stop, show errors.
-# TODO: If ecqs starts but fedora fails to start, shutdown ecqs
+# TODO: Consider starting env ourselves for integrationtests instead of -Pit-startenv
 # TODO: Build site so it integrates with trac
 # TODO: Prefix all logs w/something easy to search on
 # TODO: Copy failed surefire reports to stdout/err
@@ -52,24 +52,10 @@ N=$?
 echo "Removing potentially stale directory: ${TOPAZ_INSTALL_DIR}"
 rm -rf ${TOPAZ_INSTALL_DIR}
 
-# If any of these fail, we should just give up
-set -e
-echo "Installing ecqs: mvn ant-tasks:ecqs-install"
-${MVN} ant-tasks:ecqs-install
-echo "Installing fedora: mvn ant-tasks:fedora-install"
-${MVN} ant-tasks:fedora-install
-echo "Starting ecqs: mvn ant-tasks:ecqs-start"
-${MVN} -DSPAWN=true ant-tasks:ecqs-start
-echo "Starting fedora: mvn ant-tasks:fedora-start"
-${MVN} -DSPAWN=true ant-tasks:fedora-start
-
 # The rest of these things we do whether they succeed or not
 set +e
 
-# Make sure fedora has time to startup
-echo "Sleeping a bit........(10 seconds)"
-sleep 10
-
+# Run integration tests and generate documentation
 if [ ${N} -eq 0 ]; then
   echo "Running integration tests: mvn clean -Pit-startenv install --batch-mode"
   (cd topazproject/integrationtests; ${MVN} -Pit-startenv clean install --batch-mode)
