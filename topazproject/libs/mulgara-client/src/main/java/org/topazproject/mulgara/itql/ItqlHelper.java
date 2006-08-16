@@ -406,6 +406,45 @@ public class ItqlHelper {
   }
 
   /**
+   * Bind values to an itql fmt string containing ${xxx} placeholders. This is convenience
+   * method for {@link bindValues(java.lang.String, java.util.Map) bindValues} when there's
+   * only one variable.
+   *
+   * @param fmt   the ITQL fmt string
+   * @param var   the name of the variable to substitute. name appears in the fmt string as ${name}
+   * @param value the value to substite for the variable.
+   * @return Returns an ITQL query string with all local values bound
+   * @throws IllegalArgumentException if a value is missing for a ${token}
+   */
+  public static String bindValues(String fmt, String var, String value) {
+    Map values = new HashMap();
+    values.put(var, value);
+    return bindValues(fmt, values);
+  }
+
+  /**
+   * Bind values to an itql fmt string containing ${xxx} placeholders. This is convenience
+   * method for {@link bindValues(java.lang.String, java.util.Map) bindValues} when there
+   * are only two variables.
+   *
+   * @param fmt    the ITQL fmt string
+   * @param var1   the name of the first variable to substitute. name appears in the fmt string as
+   *               ${name}
+   * @param value1 the value to substite for the first variable.
+   * @param var2   the name of the second variable to substitute.
+   * @param value2 the value to substite for the second variable.
+   * @return Returns an ITQL query string with all local values bound
+   * @throws IllegalArgumentException if a value is missing for a ${token}
+   */
+  public static String bindValues(String fmt, String var1, String value1, String var2,
+                                  String value2) {
+    Map values = new HashMap();
+    values.put(var1, value1);
+    values.put(var2, value2);
+    return bindValues(fmt, values);
+  }
+
+  /**
    * Does input valdation for uri parameters. Only absolute (non-relative) URIs are valid.
    *
    * @param uri the uri string to validate
