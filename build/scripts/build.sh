@@ -15,15 +15,15 @@
 
 # TODO: Subroutines to stop servers. Check to see if running. If so and fail to stop, show errors.
 # TODO: Consider starting env ourselves for integrationtests instead of -Pit-startenv
-# TODO: Build site so it integrates with trac
 # TODO: Prefix all logs w/something easy to search on
 # TODO: Copy failed surefire reports to stdout/err
 # TODO: Command line args to select what part of build to do? (for testing)
-# TODO: Get TOPAZ_INSTALL_DIR from project somehow (incl. settings.xml) OR write more ant-tasks
 
 [ -z "$MVN" ] && MVN=mvn
 
-[ -z "$TOPAZ_INSTALL_DIR" ] && TOPAZ_INSTALL_DIR=$HOME/topazproject-install
+[ -z "$TOPAZ_INSTALL_DIR" ] && \
+  TOPAZ_INSTALL_DIR=`$MVN help:effective-pom | grep 'topazproject.install.dir' | head -1 | \
+                     sed 's/.*>\(.*\)<.*/\1/'`
 
 MVN_REPOSITORY=$HOME/.m2/repository
 MVN_REPOSITORY_TOPAZ=${MVN_REPOSITORY}/org/topazproject
