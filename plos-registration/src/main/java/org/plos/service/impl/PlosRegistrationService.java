@@ -10,6 +10,7 @@ import org.plos.registration.User;
 import org.plos.registration.UserImpl;
 import org.plos.util.PasswordDigestService;
 import org.plos.util.TokenGenerator;
+import org.plos.util.TemplateMailer;
 import org.plos.service.RegistrationService;
 import org.plos.service.UserDAO;
 import org.plos.service.RegistrationMessagingService;
@@ -20,6 +21,9 @@ import org.plos.service.NoUserFoundWithGivenLoginNameException;
 import org.plos.service.PasswordInvalidException;
 import org.plos.service.UserNotVerifiedException;
 
+import java.util.Map;
+import java.util.HashMap;
+
 /**
  * Plos registration service implementation.
  */
@@ -27,6 +31,7 @@ public class PlosRegistrationService implements RegistrationService {
   private UserDAO userDAO;
   private RegistrationMessagingService registrationMessagingService;
   private PasswordDigestService passwordDigestService;
+  private TemplateMailer mailer;
   private static final Log log = LogFactory.getLog(PlosPersistenceService.class);
 
   public User createUser(final String loginName, final String password) throws UserAlreadyExistsException {
@@ -40,11 +45,18 @@ public class PlosRegistrationService implements RegistrationService {
       user.setActive(false);
 
       saveUser(user);
+      sendVerificationMail(user);
 
       return user;
     } else {
       throw new UserAlreadyExistsException(loginName);
     }
+  }
+
+  private void sendVerificationMail(final User user) {
+    final Map<String, Object> context = new HashMap<String, Object>();
+    context.put("user", user);
+    mailer.mail(user.getLoginName(), context);
   }
 
   /**
@@ -211,5 +223,13 @@ public class PlosRegistrationService implements RegistrationService {
    */
   public void setPasswordDigestService(final PasswordDigestService passwordDigestService) {
     this.passwordDigestService = passwordDigestService;
+  }
+
+  /**
+   * Set the mailer for emailing the users.
+   * @param mailer mailer
+   */
+  public void setMailer(final TemplateMailer mailer) {
+    this.mailer = mailer;
   }
 }

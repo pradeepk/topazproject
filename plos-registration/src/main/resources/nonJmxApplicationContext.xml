@@ -31,9 +31,49 @@
     <property name="userDAO" ref="userDAO"/>
     <property name="registrationMessagingService" ref="registrationMessagingService"/>
     <property name="passwordDigestService" ref="plosPasswordDigestService"/>
+    <property name="mailer" ref="registrationVerificationMailer"/>
   </bean>
 
-  <bean id="plosPasswordDigestService" class="org.plos.util.PlosPasswordDigestService">
+  <!-- required for email -->
+  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="localhost"/>
+  </bean>
+
+<!--
+  <bean id="mailSession" class="org.springframework.jndi.JndiObjectFactoryBean">
+    <property name="jndiName">
+      <value>java:comp/env/mail/Session</value>
+    </property>
+  </bean>
+
+  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="session">
+      <ref bean="mailSession"/>
+    </property>
+  </bean>
+-->
+
+  <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+  <!--<bean id="freemarkerConfig" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">-->
+    <property name="templateLoaderPath" value="/WEB-INF/emailTemplates/"/>
+  </bean>
+
+  <bean id="registrationVerificationMailer" class="org.plos.util.impl.FreemarkerTemplateMailer">
+    <property name="mailSender" ref="mailSender"/>
+    <property name="fromEmailAddress" value="registration@plosone.org"/>
+    <property name="subject" value="Please verify your newly registered email address at Plosone"/>
+    <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>
+    <property name="textTemplateFilename" value="verifyEmail-text.ftl"/>
+    <property name="htmlTemplateFilename" value="verifyEmail-html.ftl"/>
+    <property name="mapValues">
+      <!-- NOTE: moving this map out as a util:map somehow makes hibernate fail -->
+      <map>
+        <entry key="verificationUrl" value="http://localhost:8080/registration/emailVerification.action"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="plosPasswordDigestService" class="org.plos.util.impl.PlosPasswordDigestService">
     <property name="algorithm" value="SHA-256"/>
   </bean>
 

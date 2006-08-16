@@ -2,12 +2,13 @@
  * $Id$
  *
  */
-package org.plos.util;
+package org.plos.util.impl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math.random.RandomDataImpl;
 import org.plos.ApplicationException;
+import org.plos.util.PasswordDigestService;
 
 import java.security.MessageDigest;
 import java.io.ByteArrayOutputStream;

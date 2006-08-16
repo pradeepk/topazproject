@@ -5,11 +5,11 @@
 package org.plos;
 
 import org.plos.service.RegistrationService;
+import org.plos.util.PasswordDigestService;
+import org.plos.web.ChangePasswordAction;
 import org.plos.web.ConfirmationAction;
 import org.plos.web.ForgotPasswordAction;
 import org.plos.web.RegisterAction;
-import org.plos.web.ChangePasswordAction;
-import org.plos.util.PasswordDigestService;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 /**
