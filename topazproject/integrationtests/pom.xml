@@ -18,7 +18,7 @@
   <artifactId>topazproject-integrationtests</artifactId>
   <version>0.5-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>TopazProject Integration Test Framework</name>
+  <name>Topaz integrationtests sub-module</name>
   
   <parent>
     <groupId>org.topazproject</groupId>
@@ -242,7 +242,7 @@
 
   <properties>
     <!-- This is where the site-deploy phase will put the documentation -->
-    <topazproject.site.url>file:///tmp/site/</topazproject.site.url>
+    <topazproject.site.url>file://${topazproject.install.dir}/topazdocs</topazproject.site.url>
   </properties>
   
   <distributionManagement>
@@ -312,6 +312,21 @@
             <link>http://quintanasoft.com/dumbster/javadoc</link>
           </links>
         </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId> 
+        <artifactId>surefire-report-maven-plugin</artifactId> 
+      </plugin>
+
+      <!-- TODO: surefire report moved to apache.org, but borken?
+      <plugin> 
+        <groupId>org.apache.maven.plugins</groupId> 
+        <artifactId>maven-surefire-report-plugin</artifactId> 
+      </plugin> -->
+      
+      <plugin>
+        <artifactId>maven-project-info-reports-plugin</artifactId>
       </plugin>
       
       <!-- TODO: Neeed to use our own style.xml - see target/checkstyle*.xml for ex -->
@@ -405,7 +420,6 @@
             <phase>clean</phase>
             <configuration>
               <tasks>
-                <echo message="hello world"/>
                 <delete dir="${basedir}/src/main/java"/>
               </tasks>
             </configuration>
@@ -420,7 +434,6 @@
             <phase>post-site</phase>
             <configuration>
               <tasks>
-                <echo message="hello world"/>
                 <delete dir="${basedir}/src/main/java"/>
               </tasks>
             </configuration>

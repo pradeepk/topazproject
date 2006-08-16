@@ -19,20 +19,20 @@
 # TODO: Prefix all logs w/something easy to search on
 # TODO: Copy failed surefire reports to stdout/err
 # TODO: Command line args to select what part of build to do? (for testing)
+# TODO: Get TOPAZ_INSTALL_DIR from project somehow (incl. settings.xml) OR write more ant-tasks
 
-MVN=/home/tools/maven2/bin/mvn
-RM=rm
+[ -z "$MVN" ] && MVN=mvn
 
-TOPAZ_INSTALL_DIR=$HOME/topazproject-install
+[ -z "$TOPAZ_INSTALL_DIR" ] && TOPAZ_INSTALL_DIR=$HOME/topazproject-install
+
 MVN_REPOSITORY=$HOME/.m2/repository
 MVN_REPOSITORY_TOPAZ=${MVN_REPOSITORY}/org/topazproject
-SITE_ABS_DIR=/home/mavensite/docssite
 
 # Don't exit if we get a meaningless error
 set +e
 
-echo "Removing potentially stale directory: ${MVN_REPOSITORY_TOPAZ}"
-rm -rf ${MVN_REPOSITORY_TOPAZ}
+echo "Removing potentially stale directory: ${MVN_REPOSITORY_TOPAZ}/{esup*,fedora*}"
+rm -rf ${MVN_REPOSITORY_TOPAZ}/{esup*,fedora*}
 
 # Build our ant-tasks first
 echo "Building ant-tasks-plugin first"
@@ -61,9 +61,8 @@ if [ ${N} -eq 0 ]; then
   (cd topazproject/integrationtests; ${MVN} -Pit-startenv clean install --batch-mode)
 
   echo "Creating documentation: cd integrationtests; mvn site-deploy"
-  rm -rf ${SITE_ABS_DIR}/*
-  (cd topazproject/integrationtests; \
-    ${MVN} -Dtopazproject.site.url=file://${SITE_ABS_DIR} site-deploy)
+  rm -rf ${TOPAZ_INSTALL_DIR}/topazdocs
+  (cd topazproject/integrationtests; ${MVN} site-deploy)
 fi
 
 echo "Stopping ecqs"

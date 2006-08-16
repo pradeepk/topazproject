@@ -81,6 +81,11 @@
       <name>Maven 2 Repository for Topaz</name>
       <url>http://gandalf.topazproject.org/maven2</url>
     </repository>
+    <repository>
+      <id>rectang</id> <!-- maventrac integration -->
+      <name>Retang repository</name>
+      <url>http://maven.rectang.com/snapshot/</url>
+    </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
@@ -232,37 +237,39 @@
         <pluginManagement>
           <plugins>
             
-          <!-- deploy for integration testing -->
-          <plugin>
-            <groupId>org.codehaus.cargo</groupId>
-            <artifactId>cargo-maven2-plugin</artifactId>
-            <configuration>
-              <wait>false</wait>
-              <container>
-                <containerId>jetty4x</containerId>
-                <type>embedded</type>
-              </container>
-              <configuration> 
-                <home>${project.build.directory}/jetty</home>
-                <properties>
-                  <cargo.servlet.port>9997</cargo.servlet.port>
-                  <cargo.logging>high</cargo.logging>
-                </properties>
-                <deployables>
-                  <deployable>
-                    <groupId>${pom.parent.groupId}</groupId>
-                    <artifactId>${pom.parent.artifactId}-webapp</artifactId>
-                    <type>war</type>
-                  </deployable>
-                </deployables>
+            <!-- deploy for integration testing -->
+            <plugin>
+              <groupId>org.codehaus.cargo</groupId>
+              <artifactId>cargo-maven2-plugin</artifactId>
+              <configuration>
+                <wait>false</wait>
+                <container>
+                  <containerId>jetty4x</containerId>
+                  <type>embedded</type>
+                  <output>${project.build.directory}/jetty.log</output>
+                  <log>${project.build.directory}/cargo.log</log>
+                </container>
+                <configuration> 
+                  <home>${project.build.directory}/jetty</home>
+                  <properties>
+                    <cargo.servlet.port>9997</cargo.servlet.port>
+                    <cargo.logging>high</cargo.logging>
+                  </properties>
+                  <deployables>
+                    <deployable>
+                      <groupId>${pom.parent.groupId}</groupId>
+                      <artifactId>${pom.parent.artifactId}-webapp</artifactId>
+                      <type>war</type>
+                    </deployable>
+                  </deployables>
+                </configuration>
               </configuration> 
-            </configuration> 
-            <executions>
-              <execution>
-                <id>jetty-start</id>
-                <phase>pre-integration-test</phase>
-                <goals><goal>start</goal></goals>
-              </execution>
+              <executions>
+                <execution>
+                  <id>jetty-start</id>
+                  <phase>pre-integration-test</phase>
+                  <goals><goal>start</goal></goals>
+                </execution>
               <!-- doesn't work properly (yet)
               <execution>
               <id>jetty-stop</id>
@@ -270,8 +277,8 @@
               <goals><goal>stop</goal></goals>
             </execution>
               -->
-            </executions>
-          </plugin>
+              </executions>
+            </plugin>
           
           </plugins>
         </pluginManagement>
