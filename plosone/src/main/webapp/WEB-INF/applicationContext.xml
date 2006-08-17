@@ -25,7 +25,7 @@
   </util:map>
 
   <bean id="articleService" class="org.plos.article.service.ArticleService" scope="session">
-    <property name="servicePort" value="http://localhost:8080/ws-articles-webapp-0.1/services/ArticleServicePort"/>
+    <property name="servicePort" value="http://localhost:9080/ws-articles-webapp-0.1/services/ArticleServicePort"/>
   </bean>
 
 
