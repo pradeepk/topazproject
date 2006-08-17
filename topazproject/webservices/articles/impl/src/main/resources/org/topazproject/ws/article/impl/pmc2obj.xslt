@@ -56,14 +56,15 @@
     </rdf:RDF>
   </xsl:template>
 
-  <xsl:template name="main-dc" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <xsl:template name="main-dc" xmlns:dc="http://purl.org/dc/elements/1.1/"
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <dc:identifier><xsl:value-of select="concat('info:doi:', $doi)"/></dc:identifier>
     <dc:title><xsl:value-of select="$meta/title-group/article-title"/></dc:title>
     <dc:type>http://purl.org/dc/dcmitype/Text</dc:type>
     <dc:format>text/xml</dc:format>
     <dc:language>en</dc:language>
     <xsl:if test="$meta/pub-date">
-        <dc:date><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
     </xsl:if>
     <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
       <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
@@ -123,12 +124,13 @@
     </rdf:RDF>
   </xsl:template>
 
-  <xsl:template name="sec-dc" xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <xsl:template name="sec-dc" xmlns:dc="http://purl.org/dc/elements/1.1/"
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <xsl:variable name="sdoi" select="my:get-doi(@name)"/>
 
     <dc:identifier><xsl:value-of select="concat('info:doi:', $sdoi)"/></dc:identifier>
     <xsl:if test="$meta/pub-date">
-        <dc:date><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
+        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
     </xsl:if>
     <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
       <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
