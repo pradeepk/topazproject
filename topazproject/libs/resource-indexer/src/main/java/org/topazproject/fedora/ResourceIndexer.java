@@ -46,7 +46,7 @@ public class ResourceIndexer extends ResourceIndexModule {
    */
   public void addDigitalObject(DigitalObject digitalObject)
                         throws ResourceIndexException {
-    super.addDigitalObject(digitalObject);
+    //super.addDigitalObject(digitalObject);
     commit();
   }
 
@@ -55,7 +55,7 @@ public class ResourceIndexer extends ResourceIndexModule {
    */
   public void modifyDigitalObject(DigitalObject digitalObject)
                            throws ResourceIndexException {
-    super.modifyDigitalObject(digitalObject);
+    //super.modifyDigitalObject(digitalObject);
     commit();
   }
 
@@ -64,7 +64,7 @@ public class ResourceIndexer extends ResourceIndexModule {
    */
   public void deleteDigitalObject(DigitalObject digitalObject)
                            throws ResourceIndexException {
-    super.deleteDigitalObject(digitalObject);
+    //super.deleteDigitalObject(digitalObject);
     commit();
   }
 }
