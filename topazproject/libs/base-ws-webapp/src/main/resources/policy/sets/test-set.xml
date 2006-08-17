@@ -12,8 +12,6 @@
       <AnyTarget/>
   </Target>
 
-  <PolicyIdReference>permit-all</PolicyIdReference>
-  <!-- disabled so that continuum build can go thru.
   <PolicyIdReference>permit-bootstrap</PolicyIdReference>
   
   <PolicyIdReference>permit-admin</PolicyIdReference>
@@ -25,5 +23,5 @@
   <PolicyIdReference>permit-creator</PolicyIdReference>
 
   <PolicyIdReference>permit-all</PolicyIdReference>
-   -->
+
 </PolicySet>

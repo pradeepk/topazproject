@@ -12,8 +12,6 @@
       <AnyTarget/>
   </Target>
 
-  <PolicyIdReference>permit-bootstrap</PolicyIdReference>
-
   <PolicyIdReference>permit-admin</PolicyIdReference>
 
   <PolicyIdReference>deny-revokes</PolicyIdReference>
@@ -21,7 +19,7 @@
   <PolicyIdReference>permit-grants</PolicyIdReference>
 
   <PolicyIdReference>permit-creator</PolicyIdReference>
-
-  <PolicyIdReference>deny-anonymous</PolicyIdReference>
-
+  
+  <PolicyIdReference>permit-bootstrap</PolicyIdReference>
+  
 </PolicySet>

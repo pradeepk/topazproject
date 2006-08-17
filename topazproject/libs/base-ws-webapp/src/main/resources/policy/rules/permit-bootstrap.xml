@@ -12,34 +12,6 @@
     <AnyTarget/>
   </Target>
 
-  <!-- Enabling this rule causes Kowari session lock-up. 
-  <Rule RuleId="create-kowari-user-model-psudo-rule" Effect="Permit">
-
-    <Description>
-      The condition is deliberately set to fail so that this rule is 'not-applicable'.
-      But as a side-effect creates the model so that queries won't fail.
-      Remove this rule once the database is initialized properly.
-    </Description>
-    
-    <Target>
-      <AnyTarget/>
-    </Target>
-    
-    <Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-less-than">
-      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
-        <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:itql">
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql</AttributeValue>
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
-            create &lt;rmi://localhost/fedora#users&gt;;commit;
-          </AttributeValue>
-        </Apply> 
-      </Apply>
-      <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#integer">0</AttributeValue>  
-    </Condition>
-    
-  </Rule>
-  -->
-  
   <Rule RuleId="permitAllIfNoAdmin" Effect="Permit">
     
     <Target>
