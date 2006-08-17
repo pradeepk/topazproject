@@ -13,11 +13,11 @@
   </Target>
 
   <Rule RuleId="permitAllIfNoAdmin" Effect="Permit">
-    
+
     <Target>
       <AnyTarget/>
     </Target>
-    
+
     <Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-less-than">
       <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
         <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:itql">
@@ -30,7 +30,14 @@
       </Apply>
       <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#integer">1</AttributeValue>  
     </Condition>
-    
+
   </Rule>
-  
+
+  <Obligations>
+    <Obligation ObligationId="log" FulfillOn="Permit">
+      <AttributeAssignment AttributeId="policy" 
+        DataType="http://www.w3.org/2001/XMLSchema#string">permit-bootstrap</AttributeAssignment>
+    </Obligation>
+  </Obligations>
+
 </Policy>

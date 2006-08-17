@@ -14,4 +14,11 @@
 
   <Rule RuleId="denyAll" Effect="Deny"/>
   
+  <Obligations>
+    <Obligation ObligationId="log" FulfillOn="Deny">
+      <AttributeAssignment AttributeId="policy" 
+        DataType="http://www.w3.org/2001/XMLSchema#string">deny-all</AttributeAssignment>
+    </Obligation>
+  </Obligations>
+
 </Policy>

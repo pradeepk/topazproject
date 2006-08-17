@@ -58,4 +58,11 @@
     </Condition>
   </Rule>
   
+  <Obligations>
+    <Obligation ObligationId="log" FulfillOn="Permit">
+      <AttributeAssignment AttributeId="policy" 
+        DataType="http://www.w3.org/2001/XMLSchema#string">permit-grants</AttributeAssignment>
+    </Obligation>
+  </Obligations>
+
 </Policy>

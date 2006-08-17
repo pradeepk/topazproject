@@ -11,16 +11,26 @@ package org.topazproject.xacml;
 
 import java.io.ByteArrayOutputStream;
 
+import java.security.Principal;
+
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
+import javax.xml.rpc.server.ServletEndpointContext;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import com.sun.xacml.Obligation;
 import com.sun.xacml.PDP;
+import com.sun.xacml.attr.AttributeValue;
+import com.sun.xacml.ctx.Attribute;
 import com.sun.xacml.ctx.RequestCtx;
 import com.sun.xacml.ctx.ResponseCtx;
 import com.sun.xacml.ctx.Result;
 import com.sun.xacml.ctx.Status;
+import com.sun.xacml.ctx.Subject;
 
 /**
  * A base class for Deny-Biased-PEP implementations.
@@ -28,7 +38,8 @@ import com.sun.xacml.ctx.Status;
  * @author Pradeep Krishnan
  */
 public class DenyBiasedPEP {
-  private PDP pdp;
+  private static final Log log = LogFactory.getLog(DenyBiasedPEP.class);
+  private PDP              pdp;
 
   /**
    * Constructs a DenyBiasedPEP with the given PDP.
@@ -92,52 +103,227 @@ public class DenyBiasedPEP {
    */
   public Set evaluate(RequestCtx request, Set knownObligations) {
     ResponseCtx response = pdp.evaluate(request);
-    Set         results = response.getResults();
-
-    Set         obligations = new HashSet();
-    int         permit      = 0;
+    Set         results  = response.getResults();
+    Decision    decision = new Decision(knownObligations);
 
     Iterator    it = results.iterator();
 
     while (it.hasNext()) {
       Result result = (Result) it.next();
 
-      switch (result.getDecision()) {
-      case Result.DECISION_PERMIT:
-        permit++; // Great.
-
-        break;
-
-      case Result.DECISION_DENY:
-        throw new SecurityException("A XACML policy denied acess to " + result.getResource());
-
-      case Result.DECISION_NOT_APPLICABLE:
-        throw new SecurityException("No applicable XACML policies for " + result.getResource());
-
-      case Result.DECISION_INDETERMINATE:
-
-        Status                status = result.getStatus();
-        ByteArrayOutputStream out = new ByteArrayOutputStream(512);
-        status.encode(out);
-        throw new SecurityException("XACML policy evaluation error:\n" + out.toString());
-      }
+      decision.analyze(result);
 
       Iterator oit = result.getObligations().iterator();
 
       while (oit.hasNext()) {
         Obligation o = (Obligation) oit.next();
 
-        if (!knownObligations.contains(o.getId()))
-          throw new SecurityException("XACML policy contains an obligation that this PEP cannot"
-                                      + " fulfill. The obligation id is " + o.getId());
-
-        obligations.add(o);
+        if (!o.getId().toString().equals("log"))
+          decision.analyze(o);
+        else if (log.isInfoEnabled())
+          log.info(getLogMsg(o, result.getResource(), request));
       }
     }
 
-    if (permit == 0)
-      throw new SecurityException("No explicit permissions");
+    if (!decision.isPermit())
+      throw new SecurityException(decision.explain());
 
-    return obligations;
+    if (decision.hasExplanation())
+      log.warn(decision.explain());
+
+    return decision.getObligations();
+  }
+
+  /**
+   * Logs a 'log' obligation. Helpful in identifying the policy that effected the decision.
+   * 
+   * <p>
+   * Ideally would have liked to see this obligation supply the values to be logged. It is possible
+   * to supply attribute ids as values and we do the lookup here. However that would require we
+   * build our own EvaluationCtx and that requires us to have access to the same attribute finder
+   * that PDP uses. It is all possible. But requires bit more plumbing.
+   * </p>
+   * 
+   * <p>
+   * So currently all it does is to look for the action and user from the request and logs them
+   * along with the resource from the result and the policy-id supplied by the obligation.
+   * </p>
+   *
+   * @param logObligation the logObligation that contains the policy that is firing this
+   * @param resource the resource associated with the result
+   * @param request the eval request
+   *
+   * @return Returns a log message
+   */
+  protected String getLogMsg(Obligation logObligation, String resource, RequestCtx request) {
+    String   user   = getUser(request);
+    String   action = getAction(request);
+    String   policy = null;
+
+    Iterator it = logObligation.getAssignments().iterator();
+
+    while (it.hasNext()) {
+      Attribute attr = (Attribute) (it.next());
+
+      if ("policy".equals(attr.getId().toString()))
+        policy = attr.getValue().encode();
+    }
+
+    String effects =
+      (logObligation.getFulfillOn() == Result.DECISION_PERMIT) ? "' permits '" : "' denies '";
+
+    return "'" + policy + effects + user + "' to do '" + action + "' on '" + resource + "'";
+  }
+
+  private String getAction(RequestCtx request) {
+    Iterator it = request.getAction().iterator();
+
+    if (!it.hasNext())
+      return null;
+
+    // xxx: return the firts action for now
+    Attribute attr = (Attribute) it.next();
+
+    return attr.getValue().encode();
+  }
+
+  private String getUser(RequestCtx request) {
+    Iterator it = request.getSubjects().iterator();
+
+    if (!it.hasNext())
+      return null;
+
+    // xxx: get the first subject only for now
+    Subject subject = (Subject) it.next();
+
+    it = subject.getAttributes().iterator();
+
+    if (!it.hasNext())
+      return null;
+
+    // xxx: get the first attr only for now
+    Attribute      attr = (Attribute) it.next();
+
+    AttributeValue value = attr.getValue();
+
+    if (value instanceof ServletEndpointContextAttribute) {
+      ServletEndpointContext ctx       = ((ServletEndpointContextAttribute) value).getValue();
+      Principal              principal = ctx.getUserPrincipal();
+
+      return (principal == null) ? null : principal.getName();
+    }
+
+    return value.encode();
+  }
+
+  /**
+   * Decision support class for this pep.
+   */
+  public static class Decision {
+    private int          permit           = 0;
+    private int          deny             = 0;
+    private int          inapplicable     = 0;
+    private int          indeterminate    = 0;
+    private int          unfulfillable    = 0;
+    private StringBuffer explanation      = new StringBuffer();
+    private Set          obligations      = new HashSet();
+    private Set          knownObligations;
+
+    public Decision(Set knownObligations) {
+      this.knownObligations = knownObligations;
+    }
+
+    public boolean isPermit() {
+      return (permit > 0) && (deny == 0) && (inapplicable == 0) && (indeterminate == 0)
+              && (unfulfillable == 0);
+    }
+
+    public Set getObligations() {
+      return obligations;
+    }
+
+    public boolean hasExplanation() {
+      return (explanation.length() > 0) || (permit == 0);
+    }
+
+    public String explain() {
+      if ((explanation.length() == 0) && (permit == 0))
+        return "No explicit permissions";
+
+      return explanation.toString();
+    }
+
+    public void analyze(Result result) {
+      switch (result.getDecision()) {
+      case Result.DECISION_PERMIT:
+        permit++;
+
+        break;
+
+      case Result.DECISION_DENY:
+        deny++;
+        addExplanation("A XACML policy denied acess to ", result.getResource());
+
+        break;
+
+      case Result.DECISION_NOT_APPLICABLE:
+        inapplicable++;
+        addExplanation("No applicable XACML policies for ", result.getResource());
+
+        break;
+
+      case Result.DECISION_INDETERMINATE:
+        indeterminate++;
+        addExplanation("XACML policy evaluation error:", result.getStatus());
+
+        break;
+
+      default:
+        indeterminate++;
+        addExplanation("Unknown decision " + result.getDecision());
+      }
+    }
+
+    public void analyze(Obligation o) {
+      if (!knownObligations.contains(o.getId())) {
+        unfulfillable++;
+        addExplanation("XACML policy contains an obligation that this PEP cannot"
+                       + " fulfill. The obligation id is " + o.getId());
+
+        return;
+      }
+
+      if (o.getFulfillOn() != Result.DECISION_PERMIT) {
+        unfulfillable++;
+        addExplanation("XACML policy contains an obligation that this PEP can "
+                       + " fulfill only on a PERMIT. The obligation id is " + o.getId());
+
+        return;
+      }
+
+      if (!obligations.add(o)) {
+        // xxx: currently duplicates are not an error; revisit later
+        addExplanation("XACML policy contains a duplicate obligation. The obligation id is "
+                       + o.getId());
+      }
+    }
+
+    public void addExplanation(String msg) {
+      if (explanation.length() != 0)
+        explanation.append(System.getProperty("line.separator"));
+
+      explanation.append(msg);
+    }
+
+    public void addExplanation(String msg, String arg) {
+      addExplanation(msg);
+      explanation.append(arg);
+    }
+
+    public void addExplanation(String msg, Status status) {
+      ByteArrayOutputStream out = new ByteArrayOutputStream(512);
+      status.encode(out);
+      addExplanation(msg, out.toString());
+    }
   }
 }

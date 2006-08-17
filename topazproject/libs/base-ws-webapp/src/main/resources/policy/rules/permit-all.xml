@@ -14,4 +14,11 @@
 
   <Rule RuleId="permitAll" Effect="Permit"/>
   
+  <Obligations>
+    <Obligation ObligationId="log" FulfillOn="Permit">
+      <AttributeAssignment AttributeId="policy" 
+        DataType="http://www.w3.org/2001/XMLSchema#string">permit-all</AttributeAssignment>
+    </Obligation>
+  </Obligations>
+
 </Policy>
