@@ -22,10 +22,9 @@ import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jrdf.graph.URIReference;
 import org.topazproject.authentication.ProtectedService;
-import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
+import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.topazproject.fedora.client.APIMStubFactory;
@@ -45,6 +44,19 @@ import org.topazproject.ws.article.NoSuchIdException;
 public class ArticleImpl implements Article {
   private static final Log    log   = LogFactory.getLog(ArticleImpl.class);
   private static final String MODEL = "<rmi://localhost/fedora#ri>";
+
+  private static final String ITQL_DELETE_DOI =
+      ("delete select $s $p $o from ${MODEL} where $s $p $o and " +
+       "  $s <tucana:is> <${subj}> from ${MODEL};").
+      replaceAll("\\Q${MODEL}", MODEL);
+
+  private static final String ITQL_FIND_OBJS =
+      ("select $doi from ${MODEL} where " +
+          // ensure it's an article
+       "  <${subj}> <rdf:type> <topaz:Article> and (" +
+          // find all related objects       find the article itself
+       "  <${subj}> <topaz:hasMember> $doi or $doi <tucana:is> <${subj}> );").
+      replaceAll("\\Q${MODEL}", MODEL);
 
   private final URI        fedoraServer;
   private final FedoraAPIM apim;
@@ -71,7 +83,7 @@ public class ArticleImpl implements Article {
 
     uploader = new Uploader(uploadSvc);
     apim = APIMStubFactory.create(fedoraSvc);
-    
+
     itql     = new ItqlHelper(mulgaraSvc);
     ingester = new Ingester(apim, uploader, itql, pep);
 
@@ -120,7 +132,11 @@ public class ArticleImpl implements Article {
   public void delete(String doi, boolean purge) throws NoSuchIdException, RemoteException {
     checkAccess(pep.DELETE_ARTICLE, doi);
 
+    String txn = purge ? "delete " + doi : null;
     try {
+      if (txn != null)
+        itql.beginTxn(txn);
+
       String[] objList = findAllObjects(doi);
       if (log.isDebugEnabled())
         log.debug("deleting all objects for doi '" + doi + "'");
@@ -131,12 +147,21 @@ public class ArticleImpl implements Article {
 
         if (purge) {
           apim.purgeObject(objList[idx], "Purged object", false);
+          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_DOI, "subj", pid2URI(objList[idx])));
         } else {
           apim.modifyObject(objList[idx], "D", null, "Deleted object");
         }
       }
+
+      if (txn != null) {
+        itql.commitTxn(txn);
+        txn = null;
+      }
     } catch (AnswerException ae) {
       throw new RemoteException("Error querying RDF", ae);
+    } finally {
+      if (txn != null)
+        itql.rollbackTxn(txn);
     }
   }
 
@@ -160,24 +185,18 @@ public class ArticleImpl implements Article {
 
   protected String[] findAllObjects(String doi)
       throws NoSuchIdException, RemoteException, AnswerException {
-    String subj = "<" + pid2URI(doi2PID(doi)) + ">";
-    Answer ans = new Answer(itql.doQuery("select $doi from " + MODEL + " where " +
-                      // ensure it's an article
-                      subj + " <fedora:fedora-system:def/model#contentModel> 'PlosArticle' and (" +
-                      // find all related objects
-                      subj + " <topaz:hasMember> $doi or " +
-                      // find the article itself
-                      "$doi <tucana:is> " + subj + ");"));
+    String subj = pid2URI(doi2PID(doi));
+    ItqlHelper.validateUri(subj, "doi");
 
-    List dois = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
+    StringAnswer ans =
+        new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_FIND_OBJS, "subj", subj)));
+    List dois = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
     if (dois.size() == 0)
       throw new NoSuchIdException(doi);
 
     String[] res = new String[dois.size()];
-    for (int idx = 0; idx < res.length; idx++) {
-      URIReference ref = (URIReference) ((Object[]) dois.get(idx))[0];
-      res[idx] = uri2PID(ref.getURI().toString());
-    }
+    for (int idx = 0; idx < res.length; idx++)
+      res[idx] = uri2PID(((String[]) dois.get(idx))[0]);
 
     return res;
   }

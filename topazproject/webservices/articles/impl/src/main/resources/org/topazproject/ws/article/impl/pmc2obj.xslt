@@ -14,7 +14,7 @@
 
   <xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
 
-  <xsl:param name="is_update" select="false()"/>
+  <xsl:param name="is_update"       select="false()"/>
 
   <xsl:variable name="article"      select="document('pmc.xml', .)/article"/>
   <xsl:variable name="meta"         select="$article/front/article-meta"/>
@@ -36,51 +36,62 @@
   <!-- templates for the main (pmc) entry -->
   <xsl:template name="main-entry">
     <Object pid="{my:doi-to-pid($doi)}" cModel="PlosArticle">
-      <xsl:call-template name="main-dc"/>
-      <xsl:call-template name="main-rdf"/>
+      <DC xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <xsl:call-template name="main-dc"/>
+      </DC>
+      <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+        <xsl:call-template name="main-rdf"/>
+      </RELS-EXT>
       <xsl:call-template name="main-ds"/>
     </Object>
+
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+             xmlns:topaz="http://rdf.topazproject.org/RDF/"
+             xmlns:dc="http://purl.org/dc/elements/1.1/">
+      <rdf:Description rdf:about="{my:pid-to-uri(my:doi-to-pid($doi))}">
+        <xsl:call-template name="main-dc"/>
+        <xsl:call-template name="main-rdf"/>
+      </rdf:Description>
+    </rdf:RDF>
   </xsl:template>
 
-  <xsl:template name="main-dc">
-    <DC xmlns:dc="http://purl.org/dc/elements/1.1/">
-      <dc:identifier><xsl:value-of select="concat('info:doi:', $doi)"/></dc:identifier>
-      <dc:title><xsl:value-of select="$meta/title-group/article-title"/></dc:title>
-      <dc:type>http://purl.org/dc/dcmitype/Text</dc:type>
-      <dc:format>text/xml</dc:format>
-      <dc:language>en</dc:language>
-      <xsl:if test="$meta/pub-date">
-          <dc:date><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
-      </xsl:if>
-      <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
-        <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
-      </xsl:for-each>
-      <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'contributor']">
-        <dc:contributor><xsl:value-of select="my:format-name(.)"/></dc:contributor>
-      </xsl:for-each>
-      <xsl:for-each select="$meta/article-categories/subj-group[@subj-group-type = 'Discipline']/subject">
-        <dc:subject><xsl:value-of select="."/></dc:subject>
-      </xsl:for-each>
-      <xsl:if test="$meta/abstract">
-        <dc:description><xsl:value-of select="normalize-space(my:select-abstract($meta/abstract))"/></dc:description>
-      </xsl:if>
-      <xsl:if test="$article/front/journal-meta/publisher">
-        <dc:publisher><xsl:value-of select="$article/front/journal-meta/publisher/publisher-name"/></dc:publisher>
-      </xsl:if>
-      <xsl:if test="$meta/copyright-statement">
-        <dc:rights><xsl:value-of select="normalize-space($meta/copyright-statement)"/></dc:rights>
-      </xsl:if>
-    </DC>
+  <xsl:template name="main-dc" xmlns:dc="http://purl.org/dc/elements/1.1/">
+    <dc:identifier><xsl:value-of select="concat('info:doi:', $doi)"/></dc:identifier>
+    <dc:title><xsl:value-of select="$meta/title-group/article-title"/></dc:title>
+    <dc:type>http://purl.org/dc/dcmitype/Text</dc:type>
+    <dc:format>text/xml</dc:format>
+    <dc:language>en</dc:language>
+    <xsl:if test="$meta/pub-date">
+        <dc:date><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
+    </xsl:if>
+    <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
+      <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
+    </xsl:for-each>
+    <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'contributor']">
+      <dc:contributor><xsl:value-of select="my:format-name(.)"/></dc:contributor>
+    </xsl:for-each>
+    <xsl:for-each select="$meta/article-categories/subj-group[@subj-group-type = 'Discipline']/subject">
+      <dc:subject><xsl:value-of select="."/></dc:subject>
+    </xsl:for-each>
+    <xsl:if test="$meta/abstract">
+      <dc:description><xsl:value-of select="normalize-space(my:select-abstract($meta/abstract))"/></dc:description>
+    </xsl:if>
+    <xsl:if test="$article/front/journal-meta/publisher">
+      <dc:publisher><xsl:value-of select="$article/front/journal-meta/publisher/publisher-name"/></dc:publisher>
+    </xsl:if>
+    <xsl:if test="$meta/copyright-statement">
+      <dc:rights><xsl:value-of select="normalize-space($meta/copyright-statement)"/></dc:rights>
+    </xsl:if>
   </xsl:template>
 
-  <xsl:template name="main-rdf">
-    <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
-              xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-      <xsl:for-each select="distinct-values(my:get-doi($file-entries[my:is-secondary(@name)]/@name))">
-        <topaz:hasMember rdf:resource="{my:pid-to-uri(my:doi-to-pid(.))}"/>
-      </xsl:for-each>
-      <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
-    </RELS-EXT>
+  <xsl:template name="main-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/"
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <rdf:type rdf:resource="http://rdf.topazproject.org/RDF/Article"/>
+    <xsl:for-each select="distinct-values(my:get-doi($file-entries[my:is-secondary(@name)]/@name))">
+      <topaz:hasMember rdf:resource="{my:pid-to-uri(my:doi-to-pid(.))}"/>
+    </xsl:for-each>
+    <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
   </xsl:template>
 
   <xsl:template name="main-ds">
@@ -92,38 +103,48 @@
     <xsl:variable name="sdoi" select="my:get-doi(@name)"/>
 
     <Object pid="{my:doi-to-pid($sdoi)}" cModel="PlosArticleSecObj">
-      <xsl:call-template name="sec-dc"/>
-      <xsl:call-template name="sec-rdf"/>
+      <DC xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <xsl:call-template name="sec-dc"/>
+      </DC>
+      <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+        <xsl:call-template name="sec-rdf"/>
+      </RELS-EXT>
       <xsl:call-template name="sec-ds"/>
     </Object>
+
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+             xmlns:topaz="http://rdf.topazproject.org/RDF/"
+             xmlns:dc="http://purl.org/dc/elements/1.1/">
+      <rdf:Description rdf:about="{my:pid-to-uri(my:doi-to-pid($sdoi))}">
+        <xsl:call-template name="sec-dc"/>
+        <xsl:call-template name="sec-rdf"/>
+      </rdf:Description>
+    </rdf:RDF>
   </xsl:template>
 
-  <xsl:template name="sec-dc">
+  <xsl:template name="sec-dc" xmlns:dc="http://purl.org/dc/elements/1.1/">
     <xsl:variable name="sdoi" select="my:get-doi(@name)"/>
 
-    <DC xmlns:dc="http://purl.org/dc/elements/1.1/">
-      <dc:identifier><xsl:value-of select="concat('info:doi:', $sdoi)"/></dc:identifier>
-      <xsl:if test="$meta/pub-date">
-          <dc:date><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
-      </xsl:if>
-      <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
-        <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
-      </xsl:for-each>
-      <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'contributor']">
-        <dc:contributor><xsl:value-of select="my:format-name(.)"/></dc:contributor>
-      </xsl:for-each>
-      <xsl:if test="$meta/copyright-statement">
-        <dc:rights><xsl:value-of select="normalize-space($meta/copyright-statement)"/></dc:rights>
-      </xsl:if>
-    </DC>
+    <dc:identifier><xsl:value-of select="concat('info:doi:', $sdoi)"/></dc:identifier>
+    <xsl:if test="$meta/pub-date">
+        <dc:date><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
+    </xsl:if>
+    <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
+      <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
+    </xsl:for-each>
+    <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'contributor']">
+      <dc:contributor><xsl:value-of select="my:format-name(.)"/></dc:contributor>
+    </xsl:for-each>
+    <xsl:if test="$meta/copyright-statement">
+      <dc:rights><xsl:value-of select="normalize-space($meta/copyright-statement)"/></dc:rights>
+    </xsl:if>
   </xsl:template>
 
-  <xsl:template name="sec-rdf">
-    <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
-              xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <xsl:template name="sec-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/"
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
       <topaz:isMemberOf rdf:resource="{my:pid-to-uri(my:doi-to-pid($doi))}"/>
       <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
-    </RELS-EXT>
   </xsl:template>
 
   <xsl:template name="sec-ds">
@@ -133,7 +154,7 @@
 
   <!-- common templates for all datastream definitions -->
   <xsl:template match="ZipEntry" mode="ds-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/"
-      xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <xsl:element name="topaz:{my:ext-to-ds-id(my:get-ext(@name))}-objectSize">
       <xsl:attribute name="rdf:datatype">http://www.w3.org/2001/XMLSchema#int</xsl:attribute>
       <xsl:value-of select="@size"/>

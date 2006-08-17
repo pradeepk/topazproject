@@ -61,7 +61,8 @@ public interface Article {
    * 
    * @param doi     the DOI of the article (e.g. "10.1371/journal.pbio.003811")
    * @param purge   if true, erase all traces; otherwise only the contents are deleted, leaving a
-   *                "tombstone"
+   *                "tombstone". Note that it may not be possible to find and therefore erase
+   *                all traces from the ingest.
    * @throws NoSuchIdException if the article or version does not exist
    * @throws RemoteException if some other error occured
    */
