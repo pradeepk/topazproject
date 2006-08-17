@@ -6,7 +6,7 @@
     exclude-result-prefixes="my">
 
   <!--
-    - This converts an Object and its DC and RDF children (see fedora.dtd) to a foxml
+    - This converts an Object and its DC and RELS-EXT children (see fedora.dtd) to a foxml
     - document suitable for use in Fedora's ingest() method.
     -->
 
@@ -34,7 +34,7 @@
       </foxml:objectProperties>
 
       <xsl:apply-templates select="DC"/>
-      <xsl:apply-templates select="RDF"/>
+      <xsl:apply-templates select="RELS-EXT"/>
     </foxml:digitalObject>
   </xsl:template>
 
@@ -50,7 +50,7 @@
     </foxml:datastream>
   </xsl:template>
 
-  <xsl:template match="RDF">
+  <xsl:template match="RELS-EXT">
     <foxml:datastream ID="RELS-EXT" STATE="A" CONTROL_GROUP="X" VERSIONABLE="true">
       <foxml:datastreamVersion ID="RELS-EXT.0" MIMETYPE="text/xml"
           LABEL="Fedora Object-to-Object Relationship Metadata">

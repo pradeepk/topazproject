@@ -74,13 +74,13 @@
   </xsl:template>
 
   <xsl:template name="main-rdf">
-    <RDF xmlns:topaz="http://rdf.topazproject.org/RDF/"
-         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
+              xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
       <xsl:for-each select="distinct-values(my:get-doi($file-entries[my:is-secondary(@name)]/@name))">
         <topaz:hasMember rdf:resource="{my:pid-to-uri(my:doi-to-pid(.))}"/>
       </xsl:for-each>
       <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
-    </RDF>
+    </RELS-EXT>
   </xsl:template>
 
   <xsl:template name="main-ds">
@@ -119,11 +119,11 @@
   </xsl:template>
 
   <xsl:template name="sec-rdf">
-    <RDF xmlns:topaz="http://rdf.topazproject.org/RDF/"
-         xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+    <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
+              xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
       <topaz:isMemberOf rdf:resource="{my:pid-to-uri(my:doi-to-pid($doi))}"/>
       <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
-    </RDF>
+    </RELS-EXT>
   </xsl:template>
 
   <xsl:template name="sec-ds">

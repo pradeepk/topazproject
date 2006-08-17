@@ -64,6 +64,10 @@ public class Ingester {
   private static final String DS_LBL_A     = "label";
   private static final String DS_ALTID_A   = "altIds";
   private static final String DS_FMT_A     = "formatUri";
+  private static final String RDF          = "RDF";
+  private static final String RDFNS        = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+
+  private static final String MODEL        = "<rmi://localhost/fedora#ri>";
 
   private final TransformerFactory tFactory;
   private final FedoraAPIM         apim;
@@ -76,7 +80,7 @@ public class Ingester {
    * 
    * @param apim     the Fedora APIM client
    * @param uploader the Fedora uploader client
-   * @param itql     the mulgara iTQL client client
+   * @param itql     the mulgara iTQL client
    * @param pep      the policy-enforcer to use for access-control
    */
   public Ingester(FedoraAPIM apim, Uploader uploader, ItqlHelper itql, ArticlePEP pep) {
@@ -109,7 +113,7 @@ public class Ingester {
       if (log.isDebugEnabled())
         log.debug("Using ingest handler '" + handler + "'");
 
-      // use handler to convert zip to fedora-object descriptions
+      // use handler to convert zip to fedora-object and RDF descriptions
       Document objInfo = zip2Obj(zip, zipInfo, handler);
       if (log.isDebugEnabled())
         log.debug("Got object-info '" + dom2String(objInfo) + "'");
@@ -118,10 +122,27 @@ public class Ingester {
       Element objList = objInfo.getDocumentElement();
       String doi = objList.getAttribute(OL_AID_A);
 
-      // ingest into fedora
+      // do the access check, now that we have the doi
       pep.checkAccess(pep.INGEST_ARTICLE,
                       URI.create(ArticleImpl.pid2URI(ArticleImpl.doi2PID(doi))));
-      fedoraIngest(zip, objInfo);
+
+      // add the stuff
+      String txn = "ingest " + doi;
+      try {
+        itql.beginTxn(txn);
+
+        /* put the RDF into the triple-store before ingesting into Fedora, because it's much
+         * harder to properly roll back Fedora if an error occurs there.
+         */
+        mulgaraInsert(objInfo);
+        fedoraIngest(zip, objInfo);
+
+        itql.commitTxn(txn);
+        txn = null;
+      } finally {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      }
 
       return doi;
     } catch (DuplicateIdException die) {        // needed to avoid being caught as RE below
@@ -157,6 +178,16 @@ public class Ingester {
   }
 
   /**
+   * Get the stylesheet that generates the triples from an RDF/XML doc.
+   *
+   * @return the URL of the stylesheet
+   */
+  private String findRDFXML2TriplesConverter() {
+    // FIXME: make this configurable
+    return getClass().getResource("RdfXmlToTriples.xslt").toString();
+  }
+
+  /**
    * Get the stylesheet that generates the foxml doc from an object description (fedora.dtd).
    *
    * @return the URL of the stylesheet
@@ -185,6 +216,37 @@ public class Ingester {
     t.transform(inp, res);
 
     return (Document) res.getNode();
+  }
+
+  /** 
+   * Insert the RDF into the triple-store according to the given object-info doc. 
+   * 
+   * @param objInfo the document describing the RDF to insert
+   */
+  private void mulgaraInsert(Document objInfo)
+      throws TransformerException, IOException, RemoteException {
+    // set up the transformer to generate the triples
+    Transformer t = tFactory.newTransformer(new StreamSource(findRDFXML2TriplesConverter()));
+
+    // create the fedora objects
+    Element objList = objInfo.getDocumentElement();
+    NodeList objs = objList.getElementsByTagNameNS(RDFNS, RDF);
+    for (int idx = 0; idx < objs.getLength(); idx++) {
+      Element obj = (Element) objs.item(idx);
+      mulgaraInsertOneRDF(obj, t);
+    }
+  }
+
+  private void mulgaraInsertOneRDF(Element obj, Transformer t)
+      throws TransformerException, IOException, RemoteException {
+    StringWriter sw = new StringWriter(500);
+    sw.write("insert ");
+
+    t.transform(new DOMSource(obj), new StreamResult(sw));
+
+    sw.write(" into " + MODEL + ";");
+
+    itql.doUpdate(sw.toString());
   }
 
   /** 
