@@ -14,7 +14,7 @@
   <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" init-method="init">
     <property name="articleRep" value="XML"/>
     <!-- Note: remember to prefix the filename with a "/" -->
-    <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
+    <property name="xslTemplate" value="src/main/resources/viewnlm-v2.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleService"/>
     <property name="useTranslet" value="true"/>

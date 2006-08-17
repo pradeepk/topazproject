@@ -147,7 +147,12 @@ public class FetchArticleService {
    * @throws java.net.URISyntaxException
    */
   public void setXslTemplate(final String xslTemplate) throws URISyntaxException {
-    this.xslTemplate = getAsFile(xslTemplate);
+    File file = getAsFile(xslTemplate);
+    if (!file.exists()) {
+      file = new File(xslTemplate);
+    }
+    System.out.println("file = " + file.getAbsolutePath());
+    this.xslTemplate = file;
   }
 
   /**
@@ -205,11 +210,15 @@ public class FetchArticleService {
 
     });
 
-    final Document doc;
+    Document doc;
     if (FileUtils.isURL(xmlFile)) {
       doc = builder.parse(xmlFile);
     } else {
-      doc = builder.parse(getAsFile(xmlFile));
+      try {
+        doc = builder.parse(getAsFile(xmlFile));
+      } catch (Exception e) {
+        doc = builder.parse(xmlFile);
+      }
     }
 
     // Prepare the DOM source

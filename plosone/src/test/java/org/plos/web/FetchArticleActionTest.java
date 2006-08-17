@@ -3,37 +3,32 @@
 */
 package org.plos.web;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
 import org.plos.article.web.FetchArticleAction;
 import org.topazproject.ws.article.DuplicateIdException;
 import org.topazproject.ws.article.NoSuchIdException;
-import org.topazproject.ws.article.IngestException;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 import javax.activation.DataHandler;
-import javax.xml.rpc.ServiceException;
-import javax.xml.transform.TransformerException;
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.RemoteException;
 
 public class FetchArticleActionTest extends BasePlosoneTestCase {
   public static final Log log = LogFactory.getLog(FetchArticleActionTest.class);
+  private String BASE_TEST_PATH = "src/test/resources/";
 
   public void testShouldReturnTransformedArticle() throws Exception {
-//    final String resourceToIngest = "/test_article.zip";
+//    final String resourceToIngest = BASE_TEST_PATH  + "test_article.zip";
 //    final String resourceDOI = "10.1371/journal.pbio.0020294";
 
-    final String resourceToIngest = "pbio.0020042.zip";
+    final String resourceToIngest = BASE_TEST_PATH  + "pbio.0020042.zip";
     final String resourceDOI = "10.1371/journal.pbio.0020042";
 
-//    final String resourceToIngest = "pbio.0020382.zip";
+//    final String resourceToIngest = BASE_TEST_PATH  + "pbio.0020382.zip";
 //    final String resourceDOI = "10.1371/journal.pbio.0020382";
 
-//    final String resourceToIngest = "pbio.0020317.zip";
+//    final String resourceToIngest = BASE_TEST_PATH  + "pbio.0020317.zip";
 //    final String resourceDOI = "10.1371/journal.pbio.0020317";
 
     try {
@@ -63,15 +58,12 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
   }
 
   public void testShouldInjestArticle() throws Exception {
-    // final String resourceToIngest = "/pbio.0000001-embedded-dtd.zip";
-    // final String resourceDOI = "10.1371/journal.pbio.0000001";
+//    doIngestTest("10.1371/journal.pbio.0020294", BASE_TEST_PATH  + "test_article.zip");
 
-//    doIngestTest("10.1371/journal.pbio.0020294", "/test_article.zip");
-
-    doIngestTest("10.1371/journal.pbio.0020042", "/pbio.0020042.zip");
-//    doIngestTest("10.1371/journal.pbio.0020294", "/pbio.0020294.zip");
-//    doIngestTest("10.1371/journal.pbio.0020317", "/pbio.0020317.zip");
-//    doIngestTest("10.1371/journal.pbio.0020382", "/pbio.0020382.zip");
+    doIngestTest("10.1371/journal.pbio.0020042", BASE_TEST_PATH  + "pbio.0020042.zip");
+//    doIngestTest("10.1371/journal.pbio.0020294", BASE_TEST_PATH  + "pbio.0020294.zip");
+//    doIngestTest("10.1371/journal.pbio.0020317", BASE_TEST_PATH  + "pbio.0020317.zip");
+//    doIngestTest("10.1371/journal.pbio.0020382", BASE_TEST_PATH  + "pbio.0020382.zip");
   }
 
   private void doIngestTest(String resourceDOI, String resourceToIngest) throws Exception {
