@@ -292,7 +292,7 @@
           <!-- <sourcepath>${project.build.directory}/generated-sources</sourcepath> -->
           <linksource>true</linksource>
           <stylesheet>maven</stylesheet>
-          <show>private</show>
+          <show>package</show>
           <encoding>UTF-8</encoding>
           <charset>UTF-8</charset>
           <links>
