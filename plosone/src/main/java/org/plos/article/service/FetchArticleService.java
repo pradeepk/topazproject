@@ -47,7 +47,7 @@ public class FetchArticleService {
   private boolean useTranslet = true;
   private Map<String, String> xmlFactoryProperty;
 
-  public static final Log log = LogFactory.getLog(FetchArticleService.class);
+  private static final Log log = LogFactory.getLog(FetchArticleService.class);
   private Map<String, InputSource> entityResolvers = new HashMap<String, InputSource>();
 
   public void init() {
@@ -151,7 +151,7 @@ public class FetchArticleService {
     if (!file.exists()) {
       file = new File(xslTemplate);
     }
-    System.out.println("file = " + file.getAbsolutePath());
+    log.debug("XSL template location = " + file.getAbsolutePath());
     this.xslTemplate = file;
   }
 
