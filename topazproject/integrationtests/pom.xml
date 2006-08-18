@@ -310,6 +310,7 @@
             <link>http://jakarta.apache.org/commons/email/api-release</link>
             <link>http://java.sun.com/products/javamail/javadocs</link>
             <link>http://quintanasoft.com/dumbster/javadoc</link>
+            <link>http://logging.apache.org/log4j/docs/api</link>
           </links>
         </configuration>
       </plugin>
