@@ -118,7 +118,12 @@ public class ProxyLogger extends java.util.logging.Logger {
     super(log4jLogger.getName(), null);
     this.log4jLogger = log4jLogger;
     this.setLevel(Level.ALL); // We decide this based on log4j level, NOT jdk level
-    //this.setLevel(getJdkLevel(log4jLogger.getEffectiveLevel()));
+    
+    /* If we want to be most efficient and don't care about any log4j configuration changes
+     * or initialization order dependencies, setting a fixed level here would offer the
+     * greates performance:
+     *   this.setLevel(getJdkLevel(log4jLogger.getEffectiveLevel()));
+     */
   }
 
   /**
@@ -149,9 +154,10 @@ public class ProxyLogger extends java.util.logging.Logger {
                                           record.getMessage(),
                                           record.getThrown()) {
         public LocationInfo getLocationInformation() {
-          // Find location by finding entry in Throwable's stack-trace after calling class
-          // This proxy is usually (always) seen as the jdk Logger
-          // FYI: LocationInfo for class name could be more efficient from LogRecord (maybe)
+          /* Find location by finding entry in Throwable's stack-trace after calling class
+           * This proxy is usually (always) seen as the jdk Logger
+           * FYI: LocationInfo for class name could be more efficient from LogRecord (maybe)
+           */
           return new LocationInfo(new Throwable(), "java.util.logging.Logger");
         }
       };
@@ -176,9 +182,11 @@ public class ProxyLogger extends java.util.logging.Logger {
     return this.log4jLogger.isEnabledFor(getLog4jLevel(level));
   }
 
-  // TODO: If we really wanted to be efficient, this would be the way to do things
+  // TODO: If we really wanted to be efficient, this would be the way to do things (#64)
   public void warning(String msg) {
-    //if (org.apache.log4j.Level.WARN_INT < this.log4jLogger.getEffectiveLevel().toInt())
+    /* Could compare level values directly and possibly save some function call overhead.
+     *   if (org.apache.log4j.Level.WARN_INT < this.log4jLogger.getEffectiveLevel().toInt()) {...}
+     */
     if (!this.log4jLogger.isEnabledFor(org.apache.log4j.Level.WARN))
       return;
     log(Level.WARNING, msg);

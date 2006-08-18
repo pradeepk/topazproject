@@ -95,10 +95,11 @@ public class LogProxyTest extends TestCase {
                  org.apache.log4j.Level.INFO, appender.currentEvent.getLevel());
     assertEquals("Logger name not set correctly",
                  LogProxyTest.class.getName(), appender.currentEvent.getLoggerName());
-    // TODO: Don't know why next lines fail, but info is clearly there from log results
-    //   Probably a problem with MyAppender
-    //assertEquals("Logger location not set properly",
-    //             "testLogging", appender.currentEvent.getLocationInformation().getMethodName());
+    /* XXX: Don't know why next lines fail, but info is clearly there from log results
+     *   Probably a problem with MyAppender
+     * assertEquals("Logger location not set properly",
+     *              "testLogging", appender.currentEvent.getLocationInformation().getMethodName());
+     */
 
     log4jRootLogger.setLevel(org.apache.log4j.Level.WARN);
     String msg2 = "test-2";
