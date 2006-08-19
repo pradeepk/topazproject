@@ -9,8 +9,8 @@
  */
 package org.topazproject.fedora.client;
 
+import org.topazproject.authentication.PasswordProtectedService;
 import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
 
 import junit.framework.TestCase;
 
@@ -24,9 +24,6 @@ public class TestAPIM extends TestCase {
   private static String uname  = "fedoraAdmin";
   private static String passwd = "fedoraAdmin";
 
-  //
-  private static ProtectedService svc =
-    ProtectedServiceFactory.createService(uri, uname, passwd, true);
 
   //
   private static final String FOXML =
@@ -41,14 +38,6 @@ public class TestAPIM extends TestCase {
 
   //
   private FedoraAPIM apim;
-  private boolean    skip = true;
-
-  /**
-   * Creates a new TestAPIM object.
-   */
-  public TestAPIM() {
-    //skip = false;
-  }
 
   /**
    * Sets up the tests. Creats the stub.
@@ -56,9 +45,7 @@ public class TestAPIM extends TestCase {
    * @throws Exception on failure
    */
   public void setUp() throws Exception {
-    if (skip)
-      return;
-
+    ProtectedService svc = new ReAuthProtectedService(uri, uname, passwd);
     apim = APIMStubFactory.create(svc);
   }
 
@@ -68,9 +55,6 @@ public class TestAPIM extends TestCase {
    * @throws Exception on failure
    */
   public void testIngest() throws Exception {
-    if (skip)
-      return;
-
     String pid = apim.ingest(FOXML.getBytes("UTF-8"), "foxml1.0", "created");
     apim.purgeObject(pid, "deleted", false);
   }
@@ -81,10 +65,33 @@ public class TestAPIM extends TestCase {
    * @throws Exception on failure
    */
   public void testGetNextPID() throws Exception {
-    if (skip)
-      return;
-
     String pid = apim.getNextPID(new org.apache.axis.types.NonNegativeInteger("1"), "test")[0];
     assertTrue(pid.startsWith("test:"));
+  }
+
+  private static class ReAuthProtectedService extends PasswordProtectedService {
+    boolean reload = true;
+
+    public ReAuthProtectedService(String uri, String uname, String pswd) {
+      super(uri, uname, pswd);
+    }
+
+    public String getPassword() {
+      if (reload)
+        return "";
+
+      return super.getPassword();
+    }
+
+    public boolean hasRenewableCredentials() {
+      return reload;
+    }
+
+    public boolean renew() {
+      boolean status = reload;
+      reload = false;
+
+      return status;
+    }
   }
 }

@@ -38,6 +38,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
+import org.topazproject.authentication.reauth.AbstractReAuthStubFactory;
 import org.topazproject.mulgara.itql.service.ItqlInterpreterBean;
 import org.topazproject.mulgara.itql.service.ItqlInterpreterBeanServiceLocator;
 import org.topazproject.mulgara.itql.service.ItqlInterpreterException;
@@ -89,6 +90,7 @@ public class ItqlHelper {
 
   private final ItqlInterpreterBean interpreter;
   private       BeanReference       cleanupRef;
+  private       boolean             inTransaction = false;
   private       Map                 aliases = new HashMap();
 
   static {
@@ -183,10 +185,41 @@ public class ItqlHelper {
    */
   public ItqlHelper(ProtectedService service)
       throws MalformedURLException, ServiceException, RemoteException {
+   
+    ItqlInterpreterBean stub = createStub(service);
+    
+    if (service.hasRenewableCredentials()) {
+      AbstractReAuthStubFactory factory = new AbstractReAuthStubFactory() {
+        
+        public Object newStub(ProtectedService service) throws Exception {
+          return initServer(createStub(service));
+        }
+        
+        public Object rebuildStub(Object old, ProtectedService service, Throwable fault) 
+            throws Exception {
+          
+          if (inTransaction)
+            throw new Exception("Cannot rebuild a stub in middle of a transaction");
+          return super.rebuildStub(old, service, fault);
+        }
+      };
+      
+      stub = (ItqlInterpreterBean)factory.newProxyStub(stub, service);
+    }
+    
+    interpreter = stub;
+    
+    init();
 
+  }
+   
+  private static ItqlInterpreterBean createStub(ProtectedService service) 
+      throws MalformedURLException, ServiceException, RemoteException {
+    
     ItqlInterpreterBeanServiceLocator locator = new ItqlInterpreterBeanServiceLocator();
     locator.setMaintainSession(true);
 
+    ItqlInterpreterBean interpreter;
     interpreter = locator.getItqlInterpreterBeanServicePort(new URL(service.getServiceUri()));
 
     if (service.requiresUserNamePassword()) {
@@ -194,14 +227,18 @@ public class ItqlHelper {
       stub._setProperty(Stub.USERNAME_PROPERTY, service.getUserName());
       stub._setProperty(Stub.PASSWORD_PROPERTY, service.getPassword());
     }
-
-    init();
+    
+    return interpreter;
   }
 
   private void init() throws RemoteException {
     registerInstance(this);
     setAliases(defaultAliases);
-
+    initServer(interpreter);
+  }
+  
+  private static ItqlInterpreterBean initServer(ItqlInterpreterBean interpreter) 
+      throws RemoteException {
     /* There is a bug in ItqlInterpreter where it starts off assuming the connection is not
      * local. Combined with the fact that no rmi server is running this leads to it failing
      * to connect to the db (only if local does it fall back to using direct connection if
@@ -217,6 +254,8 @@ public class ItqlHelper {
      */
     interpreter.setServerURI("local:///");
     interpreter.setServerURI("rmi://localhost/fedora");
+    
+    return interpreter;
   }
 
   /** 
@@ -324,6 +363,7 @@ public class ItqlHelper {
       log.debug("sending beginTransaction '" + txnName + "'");
 
     interpreter.beginTransaction(txnName);
+    inTransaction = true;
   }
 
   /** 
@@ -338,6 +378,7 @@ public class ItqlHelper {
       log.debug("sending commit '" + txnName + "'");
 
     interpreter.commit(txnName);
+    inTransaction = false;
   }
 
   /** 
@@ -352,6 +393,7 @@ public class ItqlHelper {
       log.debug("sending rollback '" + txnName + "'");
 
     interpreter.rollback(txnName);
+    inTransaction = false;
   }
 
   /** 

@@ -13,8 +13,8 @@ import java.io.ByteArrayInputStream;
 
 import java.net.URI;
 
+import org.topazproject.authentication.PasswordProtectedService;
 import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
 
 import junit.framework.TestCase;
 
@@ -29,17 +29,7 @@ public class TestUpload extends TestCase {
   private static String passwd = "fedoraAdmin";
 
   //
-  private static ProtectedService svc =
-    ProtectedServiceFactory.createService(uri, uname, passwd, true);
   private Uploader                uploader;
-  private boolean                 skip = true;
-
-  /**
-   * Creates a new TestUpload object.
-   */
-  public TestUpload() {
-    //skip = false;
-  }
 
   /**
    * Sets up the tests. Creats the stub.
@@ -47,9 +37,7 @@ public class TestUpload extends TestCase {
    * @throws Exception on failure
    */
   public void setUp() throws Exception {
-    if (skip)
-      return;
-
+    ProtectedService svc      = new ReAuthProtectedService(uri, uname, passwd);
     uploader = new Uploader(svc);
   }
 
@@ -59,9 +47,6 @@ public class TestUpload extends TestCase {
    * @throws Exception on failure
    */
   public void testUploadBytes() throws Exception {
-    if (skip)
-      return;
-
     String s = uploader.upload(new byte[100000]);
     URI    u = new URI(s);
     assertTrue(u.isAbsolute());
@@ -73,9 +58,6 @@ public class TestUpload extends TestCase {
    * @throws Exception on failure
    */
   public void testUploadStream() throws Exception {
-    if (skip)
-      return;
-
     String s = uploader.upload(new ByteArrayInputStream(new byte[100000]));
     URI    u = new URI(s);
     assertTrue(u.isAbsolute());
@@ -87,11 +69,35 @@ public class TestUpload extends TestCase {
    * @throws Exception on failure
    */
   public void testUploadFixedStream() throws Exception {
-    if (skip)
-      return;
-
     String s = uploader.upload(new ByteArrayInputStream(new byte[100000]), 100000);
     URI    u = new URI(s);
     assertTrue(u.isAbsolute());
+  }
+
+
+  private static class ReAuthProtectedService extends PasswordProtectedService {
+    boolean reload = true;
+
+    public ReAuthProtectedService(String uri, String uname, String pswd) {
+      super(uri, uname, pswd);
+    }
+
+    public String getPassword() {
+      if (reload)
+        return "";
+
+      return super.getPassword();
+    }
+
+    public boolean hasRenewableCredentials() {
+      return reload;
+    }
+
+    public boolean renew() {
+      boolean status = reload;
+      reload = false;
+
+      return status;
+    }
   }
 }

@@ -16,14 +16,17 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.Stub;
 
 import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.authentication.UnProtectedService;
+import org.topazproject.authentication.reauth.AbstractReAuthStubFactory;
 
 /**
  * Factory class to generate Annotation web-service client stubs.
  *
  * @author Pradeep Krishnan
  */
-public class AnnotationClientFactory {
+public class AnnotationClientFactory extends AbstractReAuthStubFactory {
+  private static AnnotationClientFactory instance = new AnnotationClientFactory();
+
   /**
    * Creates an Annotation service client stub..
    *
@@ -35,8 +38,18 @@ public class AnnotationClientFactory {
    * @throws ServiceException If there is an error in creating the stub
    */
   public static Annotations create(ProtectedService service)
-                           throws MalformedURLException, ServiceException {
-    URL                      url     = new URL(service.getServiceUri());
+                            throws MalformedURLException, ServiceException {
+    Annotations stub = instance.createStub(service);
+
+    if (service.hasRenewableCredentials())
+      stub = (Annotations) instance.newProxyStub(stub, service);
+
+    return stub;
+  }
+
+  private Annotations createStub(ProtectedService service)
+                          throws MalformedURLException, ServiceException {
+    URL                       url     = new URL(service.getServiceUri());
     AnnotationsServiceLocator locator = new AnnotationsServiceLocator();
 
     locator.setMaintainSession(true);
@@ -63,7 +76,14 @@ public class AnnotationClientFactory {
    * @throws ServiceException If there is an error in creating the stub
    */
   public static Annotations create(String annotationServiceUri)
-                           throws MalformedURLException, ServiceException {
-    return create(ProtectedServiceFactory.createService(annotationServiceUri, null, null, false));
+                            throws MalformedURLException, ServiceException {
+    return create(new UnProtectedService(annotationServiceUri));
+  }
+
+  /*
+   * @see org.topazproject.authentication.StubFactory#newStub
+   */
+  public Object newStub(ProtectedService service) throws Exception {
+    return createStub(service);
   }
 }

@@ -25,7 +25,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.authentication.PasswordProtectedService;
+import org.topazproject.authentication.UnProtectedService;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.fedora.client.APIMStubFactory;
 import org.topazproject.fedora.client.FedoraAPIM;
@@ -175,9 +176,8 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   public UserAccountsImpl(URI mulgaraUri, URI fedoraUri, String username, String password,
                           UserAccountsPEP pep)
       throws IOException, ServiceException, ConfigurationException {
-    this(ProtectedServiceFactory.createService(mulgaraUri.toString(), null, null, false),
-         ProtectedServiceFactory.createService(fedoraUri.toString(), username, password,
-                                               username != null),
+    this(new UnProtectedService(mulgaraUri.toString()),
+         new PasswordProtectedService(fedoraUri.toString(), username, password),
          pep);
   }
 

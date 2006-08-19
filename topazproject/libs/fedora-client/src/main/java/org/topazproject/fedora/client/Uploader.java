@@ -40,8 +40,8 @@ public class Uploader {
     new MultiThreadedHttpConnectionManager();
 
   //
-  private HttpClient client;
-  private String     uploaderUri;
+  private HttpClient       client;
+  private ProtectedService service;
 
   static {
     // xxx: tune this
@@ -55,8 +55,8 @@ public class Uploader {
    * @param service The uploader service configuration
    */
   public Uploader(ProtectedService service) {
-    this.uploaderUri   = service.getServiceUri();
-    client             = new HttpClient(connectionManager);
+    this.service   = service;
+    client         = new HttpClient(connectionManager);
 
     if (service.requiresUserNamePassword()) {
       client.getParams().setAuthenticationPreemptive(true);
@@ -106,9 +106,19 @@ public class Uploader {
    */
   public String upload(final InputStream in, final long length)
                 throws IOException {
+    final int markLength = 20000; // Auth errors will probably be reported before this
+
     return upload(new FilePart("file",
                                new PartSource() {
-        public InputStream createInputStream() {
+        private boolean marked = false;
+
+        public InputStream createInputStream() throws IOException {
+          if (marked)
+            in.reset();
+
+          in.mark(markLength);
+          marked = true;
+
           return in;
         }
 
@@ -119,7 +129,11 @@ public class Uploader {
         public long getLength() {
           return length;
         }
-      }));
+      }) {
+        public boolean isRepeatable() {
+          return in.markSupported() && super.isRepeatable();
+        }
+      });
   }
 
   /**
@@ -172,11 +186,26 @@ public class Uploader {
   }
 
   private String upload(Part part) throws IOException {
-    MultipartPostMethod post = new MultipartPostMethod(uploaderUri);
+    MultipartPostMethod post = new MultipartPostMethod(service.getServiceUri());
     post.addPart(part);
 
     try {
       int resultCode = client.executeMethod(post);
+
+      // renew credentials if auth failure
+      if ((resultCode == 401) && part.isRepeatable() && service.renew()) {
+        if (service.requiresUserNamePassword()) {
+          Credentials defaultcreds =
+            new UsernamePasswordCredentials(service.getUserName(), service.getPassword());
+
+          client.getState().setCredentials(AuthScope.ANY, defaultcreds);
+        }
+
+        post.releaseConnection();
+        post = new MultipartPostMethod(service.getServiceUri());
+        post.addPart(part);
+        resultCode = client.executeMethod(post);
+      }
 
       if (resultCode != 201)
         throw new IOException(HttpStatus.getStatusText(resultCode) + ":"

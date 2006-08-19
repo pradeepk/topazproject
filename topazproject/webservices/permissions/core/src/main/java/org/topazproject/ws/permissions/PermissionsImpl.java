@@ -29,7 +29,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.authentication.UnProtectedService;
 
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
@@ -107,7 +107,7 @@ public class PermissionsImpl implements Permissions {
    */
   public PermissionsImpl(URI mulgaraUri, PermissionsPEP pep, String user)
                   throws IOException, ServiceException, ConfigurationException {
-    this(ProtectedServiceFactory.createService(mulgaraUri.toString(), null, null, false), pep, user);
+    this(new UnProtectedService(mulgaraUri.toString()), pep, user);
   }
 
   /*

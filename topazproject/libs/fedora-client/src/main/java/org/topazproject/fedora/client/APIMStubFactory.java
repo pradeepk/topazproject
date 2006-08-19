@@ -16,14 +16,17 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.Stub;
 
 import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.authentication.UnProtectedService;
+import org.topazproject.authentication.reauth.AbstractReAuthStubFactory;
 
 /**
  * Factory class to generate FedoraAPIM web-service client stubs.
  *
  * @author Pradeep Krishnan
  */
-public class APIMStubFactory {
+public class APIMStubFactory extends AbstractReAuthStubFactory {
+  private static APIMStubFactory instance = new APIMStubFactory();
+
   /**
    * Creates a FedoraAPIM service client stub..
    *
@@ -35,6 +38,16 @@ public class APIMStubFactory {
    * @throws ServiceException If there is an error in creating the stub
    */
   public static FedoraAPIM create(ProtectedService service)
+                           throws MalformedURLException, ServiceException {
+    FedoraAPIM stub = instance.createStub(service);
+
+    if (service.hasRenewableCredentials())
+      stub = (FedoraAPIM) instance.newProxyStub(stub, service);
+
+    return stub;
+  }
+
+  private FedoraAPIM createStub(ProtectedService service) 
                            throws MalformedURLException, ServiceException {
     URL                      url      = new URL(service.getServiceUri());
     String                   protocol = url.getProtocol();
@@ -72,6 +85,13 @@ public class APIMStubFactory {
    * @throws ServiceException If there is an error in creating the stub
    */
   public static FedoraAPIM create(String serviceUri) throws MalformedURLException, ServiceException {
-    return create(ProtectedServiceFactory.createService(serviceUri, null, null, false));
+    return create(new UnProtectedService(serviceUri));
+  }
+
+  /*
+   * @see org.topazproject.authentication.StubFactory#newStub
+   */
+  public Object newStub(ProtectedService service) throws Exception {
+    return createStub(service);
   }
 }

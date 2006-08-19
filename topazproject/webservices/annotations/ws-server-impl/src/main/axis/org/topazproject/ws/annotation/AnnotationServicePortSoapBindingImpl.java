@@ -340,7 +340,7 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
                                          throws ServiceException {
     try {
       return ProtectedServiceFactory.createService(conf, session);
-    } catch (IOException e) {
+    } catch (Exception e) {
       throw new ServiceException("Failed to create a service URI for '" + name + "'", e);
     }
   }

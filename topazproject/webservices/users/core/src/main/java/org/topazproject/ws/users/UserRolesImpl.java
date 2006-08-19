@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.StringUtils;
 
 import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.authentication.UnProtectedService;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
@@ -132,7 +132,7 @@ public class UserRolesImpl implements UserRoles {
    */
   public UserRolesImpl(URI mulgaraUri, UserRolesPEP pep)
       throws IOException, ServiceException, ConfigurationException {
-    this(ProtectedServiceFactory.createService(mulgaraUri.toString(), null, null, false), pep);
+    this(new UnProtectedService(mulgaraUri.toString()), pep);
   }
 
   public String[] getRoles(String userId) throws NoSuchIdException, RemoteException {

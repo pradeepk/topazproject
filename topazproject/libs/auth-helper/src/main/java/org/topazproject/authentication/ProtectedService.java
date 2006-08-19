@@ -42,4 +42,25 @@ public interface ProtectedService {
    * @return Returns the password or null
    */
   public String getPassword();
+
+  /**
+   * Tests to see if this service has credentials that may need to be renewed either after a
+   * certain time or after a certain number of uses.
+   * 
+   * <p>
+   * eg. CAS single signon tickets are valid only for a single use. However if the server is
+   * maintaining an HTTP session, the credentials are valid as long as the session is alive. But
+   * if the session goes down, a new ticket is needed from CAS server
+   * </p>
+   *
+   * @return Returns true if the credentials are renewable, false otherwise
+   */
+  public boolean hasRenewableCredentials();
+
+  /**
+   * Renew any expired authentication credentials.
+   *
+   * @return Returns true if the credentials are renewed. false if there is no change.
+   */
+  public boolean renew();
 }

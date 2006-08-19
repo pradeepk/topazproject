@@ -115,7 +115,7 @@ public class ItqlQueryFunction extends DBQueryFunction {
 
     try {
       service = ProtectedServiceFactory.createService(configuration, session);
-    } catch (java.io.IOException e) {
+    } catch (Exception e) {
       throw new QueryException("Unable to obtain an itql service configuration instance", e);
     }
 
