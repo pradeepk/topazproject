@@ -14,7 +14,9 @@
     <services>
       <itql>
         <uri>http://localhost:9090/fedora/services/ItqlBeanService</uri>
-        <auth-method>CAS</auth-method>
+        <auth-method>BASIC</auth-method>
+        <userName>fedoraAdmin</userName>
+        <password>fedoraAdmin</password>
       </itql>
     </services>
     <permissions>
