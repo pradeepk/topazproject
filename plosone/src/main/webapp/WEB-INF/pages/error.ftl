@@ -10,7 +10,7 @@
             <legend>Error message</legend>
             <p>
 
-              <#list messages as message>
+              <#list actionErrors as message>
                 ${message} <br/>
               </#list>
 

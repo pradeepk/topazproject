@@ -14,4 +14,15 @@
     <property name="fetchArticleService" ref="fetchArticleService"/>
   </bean>
 
+  <bean id="createAnnotation" class="org.plos.annotation.web.CreateAction" singleton="false">
+    <property name="annotationService" ref="annotationService"/>
+  </bean>
+
+  <bean id="deleteAnnotation" class="org.plos.annotation.web.DeleteAction" singleton="false">
+    <property name="annotationService" ref="annotationService"/>
+  </bean>
+
+  <bean id="listAnnotation" class="org.plos.annotation.web.ListAction" singleton="false">
+    <property name="annotationService" ref="annotationService"/>
+  </bean>
 </beans>

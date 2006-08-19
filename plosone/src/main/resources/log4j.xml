@@ -17,9 +17,12 @@
     </layout>
   </appender>
 
-
   <logger name="com.opensymphony.xwork.interceptor.TimerInterceptor">
     <level value="info"/>
+  </logger>
+
+  <logger name="org.plos.web">
+    <level value="debug"/>
   </logger>
 
   <logger name="org.topazproject">
