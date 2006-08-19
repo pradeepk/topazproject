@@ -50,10 +50,6 @@
         <configuration>
           <systemProperties>
             <property>
-              <name>testme</name>
-              <value>bla</value>
-            </property>
-            <property>
               <name>java.util.logging.manager</name>
               <value>org.topazproject.logging.jdk2log4j.LogManager</value>
             </property>

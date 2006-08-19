@@ -158,7 +158,10 @@ public class ProxyLogger extends java.util.logging.Logger {
            * This proxy is usually (always) seen as the jdk Logger
            * FYI: LocationInfo for class name could be more efficient from LogRecord (maybe)
            */
-          return new LocationInfo(new Throwable(), "java.util.logging.Logger");
+          return new LocationInfo(new Throwable(), "java.util.logging.Logger") {
+              public String getClassName()  { return record.getSourceClassName();  }
+              public String getMethodName() { return record.getSourceMethodName(); }
+            };
         }
       };
 
