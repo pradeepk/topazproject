@@ -378,11 +378,11 @@
     <xsl:value-of select="upper-case($ext)"/>
   </xsl:function>
 
-  <!-- Filename extension to Fedora control-group mapping: 'xml' results in 'XML', all others
-     - in 'Managed' -->
+  <!-- Filename extension to Fedora control-group mapping: everything is 'Managed'. Note:
+       don't use 'XML' because Fedora messes with it then. -->
   <xsl:function name="my:ext-to-ctrlgrp" as="xs:string">
     <xsl:param name="ext" as="xs:string"/>
-    <xsl:value-of select="if (lower-case($ext) = 'xml') then 'XML' else 'Managed'"/>
+    <xsl:value-of select="'Managed'"/>
   </xsl:function>
 
   <!-- Filename extension to mime-type mapping; defaults to application/octet-stream if extension

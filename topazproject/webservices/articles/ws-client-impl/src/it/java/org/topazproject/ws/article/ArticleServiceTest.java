@@ -15,9 +15,12 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.rmi.RemoteException;
+import java.util.Arrays;
+import java.util.zip.ZipInputStream;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
+import org.apache.commons.io.IOUtils;
 import junit.framework.TestCase;
 
 /**
@@ -59,6 +62,14 @@ public class ArticleServiceTest extends TestCase {
       gotE = true;
     }
     assertTrue("Failed to get expected duplicate-id exception", gotE);
+
+    ZipInputStream zis = new ZipInputStream(article.openStream());
+    while (!zis.getNextEntry().getName().equals("pmc.xml"))
+      ;
+    byte[] orig  = IOUtils.toByteArray(zis);
+    byte[] saved = IOUtils.toByteArray(new URL(service.getObjectURL(doi, "XML")).openStream());
+    assertTrue("Content mismatch: got '" + new String(saved, "UTF-8") + "'",
+               Arrays.equals(orig, saved));
 
     service.delete(doi, true);
 
