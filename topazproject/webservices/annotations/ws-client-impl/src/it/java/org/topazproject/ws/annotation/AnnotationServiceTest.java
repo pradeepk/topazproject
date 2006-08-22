@@ -142,12 +142,14 @@ public class AnnotationServiceTest extends TestCase {
     assertEquals(info.getCreated(), annotations[0].getCreated());
     assertEquals(info.getTitle(), annotations[0].getTitle());
     assertEquals(info.getMediator(), annotations[0].getMediator());
+    assertEquals(info.getState(), annotations[0].getState());
 
     assertEquals(info.getBody(), bodyUrl);
     assertEquals(info.getAnnotates(), subject);
     assertEquals(info.getContext(), hackContext);
     assertEquals(info.getTitle(), title);
     assertEquals(info.getMediator(), mediator);
+    assertEquals(info.getState(), 0);
 
     String superseded = annotation;
 
@@ -212,10 +214,16 @@ public class AnnotationServiceTest extends TestCase {
     assertEquals("Expected annotation-id '" + annotation + "', got '" + ids[0] + "'", ids[0],
                  annotation);
 
+    info = service.getAnnotationInfo(ids[0]);
+    assertEquals(info.getState(), 42);
+
     ids = service.listAnnotations(mediator, 0);
     assertTrue("Expected one annotation, got " + ids.length, ids.length == 1);
     assertEquals("Expected annotation-id '" + annotation + "', got '" + ids[0] + "'", ids[0],
                  annotation);
+
+    info = service.getAnnotationInfo(ids[0]);
+    assertEquals(info.getState(), 42);
 
     service.deleteAnnotation(annotation, false);
 

@@ -26,6 +26,7 @@ public class AnnotationInfo {
   private String title;
   private String supersededBy;
   private String mediator;
+  private int    state;
 
   /**
    * Creates a new AnnotationInfo object.
@@ -229,5 +230,23 @@ public class AnnotationInfo {
    */
   public void setMediator(String mediator) {
     this.mediator = mediator;
+  }
+
+  /**
+   * Get state.
+   *
+   * @return state as int.
+   */
+  public int getState() {
+    return state;
+  }
+
+  /**
+   * Set state.
+   *
+   * @param state the value to set.
+   */
+  public void setState(int state) {
+    this.state = state;
   }
 }

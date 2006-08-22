@@ -135,9 +135,8 @@ public interface Annotations {
 
   /**
    * Gets the set of annotations of the given type on a resource. Matching annotations are further
-   * filtered out if they are superseded by other annotations or if they are in an administrator
-   * review state. Note that this returns only those annotations that the caller has permissions
-   * to view.
+   * filtered out if they are superseded by other annotations. Note that this returns only those
+   * annotations that the caller has permissions to view.
    *
    * @param mediator if present only those annotations that match this mediator are returned
    * @param annotates the resource for which annotations are to be looked-up

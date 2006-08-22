@@ -39,6 +39,7 @@ public class AnnotationModel extends AnnotationInfo {
   static final URI r               = URI.create(ItqlHelper.RDF_URI);
   static final URI d               = URI.create(ItqlHelper.DC_URI);
   static final URI dt              = URI.create(ItqlHelper.DC_TERMS_URI);
+  static final URI topaz           = URI.create(ItqlHelper.TOPAZ_URI);
   static final URI nil             = URI.create(ItqlHelper.RDF_URI + "nil");
   static final URI a_Annotation    = a.resolve("#Annotation");
   static final URI r_type          = r.resolve("#type");
@@ -51,6 +52,7 @@ public class AnnotationModel extends AnnotationInfo {
   static final URI dt_replaces     = dt.resolve("replaces");
   static final URI dt_isReplacedBy = dt.resolve("isReplacedBy");
   static final URI dt_mediator     = dt.resolve("mediator");
+  static final URI topaz_state     = topaz.resolve("state");
 
   /**
    * Creates a new AnnotationModel object.
@@ -70,6 +72,7 @@ public class AnnotationModel extends AnnotationInfo {
     setSupersededBy((String) map.get(dt_isReplacedBy));
     setTitle((String) map.get(d_title));
     setMediator((String) map.get(dt_mediator));
+    setState(Integer.parseInt((String) map.get(topaz_state)));
   }
 
   /**

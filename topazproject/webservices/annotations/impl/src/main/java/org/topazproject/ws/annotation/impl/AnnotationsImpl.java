@@ -79,13 +79,11 @@ public class AnnotationsImpl implements Annotations {
   private static final String LIST_ITQL =
     ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL} "
     + " where $s <a:annotates> <${annotates}>            "
-    + "    and $s <topaz:state> '0'                      "
     + "    and $s <dt:isReplacedBy> <r:nil>              "
     + "    and $s <r:type> <${type}>;                    ").replaceAll("\\Q${MODEL}", MODEL);
   private static final String LIST_BY_MEDIATOR_ITQL =
     ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL} "
     + " where $s <a:annotates> <${annotates}>            "
-    + "    and $s <topaz:state> '0'                      "
     + "    and $s <dt:isReplacedBy> <r:nil>              "
     + "    and $s <dt:mediator> '${mediator}'            "
     + "    and $s <r:type> <${type}>;                    ").replaceAll("\\Q${MODEL}", MODEL);
@@ -95,11 +93,11 @@ public class AnnotationsImpl implements Annotations {
     + "          and $s <dt:isReplacedBy> <r:nil>)      "
     + "          or                                     "
     + "         ($s <dt:isReplacedBy> <r:nil> and $s <tucana:is> <${id}>) )"
-    + " and $s <topaz:state> '0' and $s <r:type> <a:Annotation>;").replaceAll("\\Q${MODEL}", MODEL);
+    + " and $s <r:type> <a:Annotation>;").replaceAll("\\Q${MODEL}", MODEL);
   private static final String PRECEDING_ITQL =
     ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL} "
     + " where walk($s <dt:isReplacedBy> <${id}> and $s <dt:isReplacedBy> $c)"
-    + " and $s <topaz:state> '0' and $s <r:type> <a:Annotation>;").replaceAll("\\Q${MODEL}", MODEL);
+    + " and $s <r:type> <a:Annotation>;").replaceAll("\\Q${MODEL}", MODEL);
   private static final String PRECEDING_ALL_ITQL =
     ("select $s from ${MODEL} where"
     + " walk($c <dt:isReplacedBy> <${id}> and $s <dt:isReplacedBy> $c) "
