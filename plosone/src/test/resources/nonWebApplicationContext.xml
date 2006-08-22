@@ -35,4 +35,7 @@
     <property name="defaultAnnotationType" value="http://www.w3.org/2000/10/annotationType#Annotation"/>
   </bean>
 
+  <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService"/>
+  <bean id="userInputSecurityCheckingService" class="org.plos.util.UserInputSecurityCheckingService"/>
+
 </beans>

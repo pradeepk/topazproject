@@ -24,6 +24,14 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private ListAction listAnnotationAction;
   private AnnotationService annotationService;
 
+  public BasePlosoneTestCase() {
+    super();
+  }
+
+  public BasePlosoneTestCase(final String testName) {
+    super(testName);
+  }
+
   protected String[] getConfigLocations() {
     return new String[]{"testApplicationContext.xml"};
   }

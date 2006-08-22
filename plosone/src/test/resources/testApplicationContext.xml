@@ -16,6 +16,8 @@
 
   <bean id="createAnnotation" class="org.plos.annotation.web.CreateAction" singleton="false">
     <property name="annotationService" ref="annotationService"/>
+    <property name="profanityCheckingService" ref="profanityCheckingService"/>
+    <property name="userInputSecurityCheckingService" ref="userInputSecurityCheckingService"/>
   </bean>
 
   <bean id="deleteAnnotation" class="org.plos.annotation.web.DeleteAction" singleton="false">

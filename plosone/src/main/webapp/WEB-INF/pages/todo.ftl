@@ -1,11 +1,20 @@
 <html>
     <head>
-        <title>Welcome</title>
+        <title>Welcome to Plosone</title>
     </head>
     <body>
         <h1>Welcome to the Plosone webapp</h1>
+        <legend>Messages</legend>
 
-        <p>
+          <fieldset>
+            <p>
+              <#list actionMessages as message>
+              ${message} <br/>
+            </#list>
+            </p>
+          </fieldset>
+
+
             <fieldset>
                 <legend>A few things for you to do</legend>
                 <p>
@@ -19,11 +28,12 @@
                 </p>
 
                 <p>
-                    <@ww.url id="createAnnotationURL" action="createAnnotation" />
-                    <@ww.a href="%{createAnnotationURL}">Create Annotation</@ww.a>
+                    <@ww.url id="listAnnotationURL" action="listAnnotation">
+                      <@ww.param name="target" value="%{'http://here.is/viru'}"/>
+                    </@ww.url>
+                    <@ww.a href="%{listAnnotationURL}">List Annotations</@ww.a>
                 </p>
 
             </fieldset>
-        </p>
     </body>
 </html>

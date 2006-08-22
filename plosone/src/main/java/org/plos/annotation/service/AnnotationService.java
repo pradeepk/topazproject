@@ -9,11 +9,14 @@ import org.topazproject.ws.annotation.AnnotationClientFactory;
 import org.topazproject.ws.annotation.Annotations;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.NoSuchIdException;
+import org.springframework.beans.factory.annotation.Required;
+import org.plos.util.FileUtils;
 
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import java.io.UnsupportedEncodingException;
+import java.io.IOException;
 
 /**
  * Provides the Create/Read/Delete annotation operations.
@@ -94,6 +97,7 @@ public class AnnotationService {
    * Set the id of the application
    * @param applicationId applicationId
    */
+  @Required
   public void setApplicationId(final String applicationId) {
     this.applicationId = applicationId;
   }
@@ -115,4 +119,15 @@ public class AnnotationService {
   public void setServicePort(final String serviceUrl) throws ServiceException, MalformedURLException {
     annotationService = AnnotationClientFactory.create(serviceUrl);
   }
+
+  /**
+   * Get the bodyUrl of the annotation.
+   * @param bodyUrl bodyUrl
+   * @return content of the annotation
+   * @throws java.net.MalformedURLException
+   */
+  public String getBody(final String bodyUrl) throws IOException {
+    return FileUtils.getTextFromUrl(bodyUrl);
+  }
+
 }

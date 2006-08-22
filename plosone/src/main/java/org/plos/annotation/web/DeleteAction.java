@@ -4,6 +4,8 @@
 package org.plos.annotation.web;
 
 import com.opensymphony.xwork.ActionSupport;
+import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.annotation.service.AnnotationService;
@@ -29,6 +31,7 @@ public class DeleteAction extends ActionSupport {
       addActionError("Annotation deletion failed with error message: " + e.getMessage());
       return ERROR;
     }
+    addActionMessage("Annotation deleted with id:" + annotationId);
     return SUCCESS;
   }
 
@@ -42,6 +45,14 @@ public class DeleteAction extends ActionSupport {
 
   public void setDeletePreceding(final boolean deletePreceding) {
     this.deletePreceding = deletePreceding;
+  }
+
+  /**
+   * @return the annotation id
+   */
+  @RequiredStringValidator(type= ValidatorType.FIELD, fieldName= "annotationId", message="You must specify the id of the annotation that you want to delete")
+  public String getAnnotationId() {
+    return annotationId;
   }
 
   /**

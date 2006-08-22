@@ -12,16 +12,16 @@
           id          =${annotation.id}            <br/>
           annotates   =${annotation.annotates}     <br/>
           title       =${annotation.title}         <br/>
-          body        =${annotation.body}          <br/>
+          body        =<@ww.a href="${annotation.body}">${annotation.body}</@ww.a>  
+                    [Text : ${annotationBodyContent(annotation.id)}]<br/>
           context     =${annotation.context}       <br/>
           created     =${annotation.created}       <br/>
           creator     =${annotation.creator}       <br/>
           mediator    =${annotation.mediator}      <br/>
           type        =${annotation.type}          <br/>
-          supersededBy=${annotation.supersededBy}  <br/>
-          supersedes  =${annotation.supersedes}    <br/>
 
-          <@ww.url id="deleteAnnotationURL" action="deleteAnnotation" annotationId="${annotation}"/>
+
+          <@ww.url id="deleteAnnotationURL" action="deleteAnnotation" annotationId="${annotation.id}"/>
           <@ww.a href="%{deleteAnnotationURL}">delete</@ww.a><br/>
           <hr/>
         </#list>

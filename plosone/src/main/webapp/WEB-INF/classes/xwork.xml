@@ -5,7 +5,11 @@
 
   <package name="default" extends="webwork-default">
 
-    <default-action-ref name="articleList" />
+    <default-action-ref name="todo" />
+
+    <action name="todo" class="org.plos.web.ForwardAction">
+      <result name="success" type="freemarker">/WEB-INF/pages/todo.ftl</result>
+    </action>
 
     <action name="home" class="org.plosone.action.RegistrationAction">
       <result name="success" type="freemarker">/WEB-INF/pages/home.ftl</result>
@@ -22,5 +26,24 @@
       <result name="success" type="freemarker">/WEB-INF/pages/article/displayArticle.ftl</result>
     </action>
 
+    <action name="createAnnotation" class="org.plos.web.ForwardAction">
+        <result name="success" type="freemarker">/WEB-INF/pages/annotation/create.ftl</result>
+    </action>
+
+    <action name="deleteAnnotation" class="org.plos.annotation.web.DeleteAction">
+        <result name="success" type="freemarker">/WEB-INF/pages/todo.ftl</result>
+    </action>
+
+    <action name="listAnnotation" class="org.plos.annotation.web.ListAction">
+        <result name="success" type="freemarker">/WEB-INF/pages/annotation/list.ftl</result>
+    </action>
+
+    <action name="createAnnotationSubmit" class="org.plos.annotation.web.CreateAction">
+      <interceptor-ref name="validationWorkflowStack"/>
+      <interceptor-ref name="timer"/>
+      <result name="input" type="freemarker">/WEB-INF/pages/annotation/create.ftl</result>
+      <result name="error" type="freemarker">/WEB-INF/pages/annotation/create.ftl</result>
+      <result name="success" type="freemarker">/WEB-INF/pages/todo.ftl</result>
+    </action>
   </package>
 </xwork>

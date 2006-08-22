@@ -76,4 +76,26 @@ public class FileUtils {
   public static boolean isURL(final String url) {
     return url.startsWith("http");
   }
+
+  /**
+   * Gets all the text content from the given url. It is expected that the url will have all content as a text type.
+   * @param bodyUrl bodyUrl
+   * @throws IOException
+   * @return the whole content from the url
+   */
+  public static String getTextFromUrl(final String bodyUrl) throws IOException {
+    final StringBuilder sb = new StringBuilder();
+    final URL url = new URL(bodyUrl);
+
+    // Read all the text returned by the server
+    final BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
+    String line;
+    while ((line = in.readLine()) != null) {
+      // line is one line of text; readLine() strips the newline character(s)
+      sb.append(line).append(NEW_LINE);
+    }
+    in.close();
+
+    return sb.toString().trim();
+  }
 }
