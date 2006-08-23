@@ -75,7 +75,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
     baseURI                = root.getString("topaz.objects.base-uri");
   }
 
-  /**
+  /*
    * @see javax.xml.rpc.server.ServiceLifecycle#init
    */
   public void init(Object context) throws ServiceException {
@@ -116,7 +116,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
     impl = new RepliesImpl(pep, itql, fedoraServer, apim, uploader, user, baseURI);
   }
 
-  /**
+  /*
    * @see javax.xml.rpc.server.ServiceLifecycle#destroy
    */
   public void destroy() {
@@ -126,13 +126,14 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
     impl = null; // release context
   }
 
-  /**
+  /*
    * @see org.topazproject.ws.annotation.Reply#createReply
    */
-  public String createReply(String type, String root, String inReplyTo, String title, String body)
+  public String createReply(String mediator, String type, String root, String inReplyTo,
+                            boolean anonymize, String title, String body)
                      throws RemoteException, NoSuchIdException {
     try {
-      return impl.createReply(type, root, inReplyTo, title, body);
+      return impl.createReply(mediator, type, root, inReplyTo, anonymize, title, body);
     } catch (NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("", e);
@@ -150,14 +151,15 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
     }
   }
 
-  /**
+  /*
    * @see org.topazproject.ws.annotation.Reply#createReply
    */
-  public String createReply(String type, String root, String inReplyTo, String title,
-                            String contentType, byte[] content)
+  public String createReply(String mediator, String type, String root, String inReplyTo,
+                            boolean anonymize, String title, String contentType, byte[] content)
                      throws RemoteException, NoSuchIdException {
     try {
-      return impl.createReply(type, root, inReplyTo, title, contentType, content);
+      return impl.createReply(mediator, type, root, inReplyTo, anonymize, title, contentType,
+                              content);
     } catch (NoSuchIdException e) {
       if (log.isDebugEnabled())
         log.debug("", e);
@@ -175,7 +177,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
     }
   }
 
-  /**
+  /*
    * @see org.topazproject.ws.annotation.Reply#deleteReplies
    */
   public void deleteReplies(String root, String inReplyTo)
@@ -199,7 +201,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
     }
   }
 
-  /**
+  /*
    * @see org.topazproject.ws.annotation.Reply#deleteReplies
    */
   public void deleteReplies(String id) throws NoSuchIdException, RemoteException {
@@ -222,7 +224,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
     }
   }
 
-  /**
+  /*
    * @see org.topazproject.ws.annotation.Reply#getReplyInfo
    */
   public ReplyInfo getReplyInfo(String id) throws NoSuchIdException, RemoteException {
@@ -245,13 +247,18 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
     }
   }
 
-  /**
+  /*
    * @see org.topazproject.ws.annotation.Reply#listReplies
    */
   public ReplyInfo[] listReplies(String root, String inReplyTo)
                           throws NoSuchIdException, RemoteException {
     try {
       return impl.listReplies(root, inReplyTo);
+    } catch (NoSuchIdException e) {
+      if (log.isDebugEnabled())
+        log.debug("", e);
+
+      throw e;
     } catch (RemoteException e) {
       log.info("", e);
       throw e;
@@ -264,13 +271,18 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
     }
   }
 
-  /**
+  /*
    * @see org.topazproject.ws.annotation.Reply#listReplies
    */
   public ReplyInfo[] listAllReplies(String root, String inReplyTo)
                              throws NoSuchIdException, RemoteException {
     try {
       return impl.listAllReplies(root, inReplyTo);
+    } catch (NoSuchIdException e) {
+      if (log.isDebugEnabled())
+        log.debug("", e);
+
+      throw e;
     } catch (RemoteException e) {
       log.info("", e);
       throw e;
@@ -283,13 +295,65 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
     }
   }
 
-  /**
+  /*
    * @see org.topazproject.ws.annotation.Reply#listReplies
    */
   public ReplyThread getReplyThread(String root, String inReplyTo)
                              throws NoSuchIdException, RemoteException {
     try {
       return impl.getReplyThread(root, inReplyTo);
+    } catch (NoSuchIdException e) {
+      if (log.isDebugEnabled())
+        log.debug("", e);
+
+      throw e;
+    } catch (RemoteException e) {
+      log.info("", e);
+      throw e;
+    } catch (RuntimeException re) {
+      log.warn("", re);
+      throw re;
+    } catch (Error e) {
+      log.error("", e);
+      throw e;
+    }
+  }
+
+  /*
+   * @see org.topazproject.ws.annotation.Reply#setReplyState
+   */
+  public void setReplyState(String id, int state) throws NoSuchIdException, RemoteException {
+    try {
+      impl.setReplyState(id, state);
+    } catch (NoSuchIdException e) {
+      if (log.isDebugEnabled())
+        log.debug("", e);
+
+      throw e;
+    } catch (RemoteException e) {
+      log.info("", e);
+      throw e;
+    } catch (RuntimeException re) {
+      log.warn("", re);
+      throw re;
+    } catch (Error e) {
+      log.error("", e);
+      throw e;
+    }
+  }
+
+  /*
+   * @see org.topazproject.ws.annotation.Reply#listReplies
+   */
+  public String[] listReplies(String mediator, int state)
+                       throws RemoteException {
+    try {
+      return impl.listReplies(mediator, state);
+    } catch (NoSuchIdException e) {
+      if (log.isDebugEnabled())
+        log.debug("", e);
+
+      throw e;
     } catch (RemoteException e) {
       log.info("", e);
       throw e;

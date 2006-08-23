@@ -33,11 +33,12 @@ import junit.framework.TestCase;
  */
 public class ReplyServiceTest extends TestCase {
   private Replies service;
-  private String  root    = "foo:bar";
-  private String  body    = "foo:body";
-  private String  title   = "a title";
-  private String  type    = null;
-  private String  content = "This foo:bar stuff is a classic";
+  private String  root     = "foo:bar";
+  private String  body     = "foo:body";
+  private String  title    = "a title";
+  private String  type     = null;
+  private String  content  = "This foo:bar stuff is a classic";
+  private String  mediator = "integration-test";
 
   /**
    * Creates a new ReplyServiceTest object.
@@ -98,7 +99,7 @@ public class ReplyServiceTest extends TestCase {
     ReplyInfo info  = null;
 
     try {
-      reply = service.createReply(type, root, root, title, body);
+      reply = service.createReply(mediator, type, root, root, false, title, body);
     } catch (NoSuchIdException e) {
       noSuchId = true;
     }
@@ -112,6 +113,9 @@ public class ReplyServiceTest extends TestCase {
       assertEquals(info.getInReplyTo(), root);
       assertEquals(info.getBody(), body);
       assertEquals(info.getTitle(), title);
+      assertEquals(info.getMediator(), mediator);
+      assertTrue(info.getCreator() != null);
+      assertEquals(info.getState(), 0);
     } catch (NoSuchIdException e) {
       noSuchId = true;
     }
@@ -130,11 +134,50 @@ public class ReplyServiceTest extends TestCase {
   /*
    *
    */
+  public void testAnonymize() throws RemoteException {
+    boolean   noSuchId = false;
+    String    reply = null;
+    ReplyInfo info  = null;
+
+    try {
+      reply = service.createReply(mediator, type, root, root, true, title, body);
+    } catch (NoSuchIdException e) {
+      noSuchId = true;
+    }
+
+    assertFalse(noSuchId);
+
+    try {
+      info = service.getReplyInfo(reply);
+      assertEquals(info.getId(), reply);
+      assertEquals(info.getRoot(), root);
+      assertEquals(info.getInReplyTo(), root);
+      assertEquals(info.getBody(), body);
+      assertEquals(info.getTitle(), title);
+      assertEquals(info.getCreator(), null);
+      assertEquals(info.getState(), 0);
+    } catch (NoSuchIdException e) {
+      noSuchId = true;
+    }
+
+    assertFalse(noSuchId);
+
+    try {
+      service.deleteReplies(reply);
+    } catch (NoSuchIdException e) {
+      noSuchId = true;
+    }
+
+    assertFalse(noSuchId);
+  }
+  /*
+   *
+   */
   public void testNonExistentReplyToCreate() throws RemoteException {
     boolean noSuchId = false;
 
     try {
-      String id = service.createReply(type, root, "foo:nonExistent", title, body);
+      String id = service.createReply(mediator, type, root, "foo:nonExistent", false, title, body);
       service.deleteReplies(id);
     } catch (NoSuchIdException e) {
       noSuchId = true;
@@ -153,7 +196,7 @@ public class ReplyServiceTest extends TestCase {
 
     try {
       reply =
-        service.createReply(type, root, root, title, "text/plain;charset=utf-8",
+        service.createReply(mediator, type, root, root, false, title, "text/plain;charset=utf-8",
                             toBytes(content, "UTF-8"));
     } catch (NoSuchIdException e) {
       noSuchId = true;
@@ -168,6 +211,9 @@ public class ReplyServiceTest extends TestCase {
       assertEquals(info.getInReplyTo(), root);
       assertEquals(info.getTitle(), title);
       assertContent(info.getBody(), content);
+      assertEquals(info.getMediator(), mediator);
+      assertTrue(info.getCreator() != null);
+      assertEquals(info.getState(), 0);
     } catch (NoSuchIdException e) {
       noSuchId = true;
     }
@@ -217,7 +263,7 @@ public class ReplyServiceTest extends TestCase {
 
     for (int i = 0; i < children; i++) {
       String child =
-        service.createReply(type, root, inReplyTo, title + ":" + levels + "." + i,
+        service.createReply(mediator, type, root, inReplyTo, false, title + ":" + levels + "." + i,
                             "text/plain;charset=utf-8",
                             toBytes(content + ":" + levels + "." + i, "UTF-8"));
       createThread(child, levels - 1, children);
@@ -296,6 +342,8 @@ public class ReplyServiceTest extends TestCase {
     assertEquals(i1.getBody(), i2.getBody());
     assertEquals(i1.getCreator(), i2.getCreator());
     assertEquals(i1.getCreated(), i2.getCreated());
+    assertEquals(i1.getMediator(), i2.getMediator());
+    assertEquals(i1.getState(), i2.getState());
   }
 
   private void sort(ReplyInfo[] l) {

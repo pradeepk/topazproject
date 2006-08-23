@@ -23,6 +23,8 @@ public class ReplyInfo {
   private String creator;
   private String created;
   private String body;
+  private String mediator;
+  private int    state;
 
   /**
    * Get id.
@@ -166,5 +168,41 @@ public class ReplyInfo {
    */
   public void setBody(String body) {
     this.body = body;
+  }
+
+  /**
+   * Get mediator.
+   *
+   * @return mediator as String.
+   */
+  public String getMediator() {
+    return mediator;
+  }
+
+  /**
+   * Set mediator.
+   *
+   * @param mediator the value to set.
+   */
+  public void setMediator(String mediator) {
+    this.mediator = mediator;
+  }
+
+  /**
+   * Get state.
+   *
+   * @return state as int.
+   */
+  public int getState() {
+    return state;
+  }
+
+  /**
+   * Set state.
+   *
+   * @param state the value to set.
+   */
+  public void setState(int state) {
+    this.state = state;
   }
 }

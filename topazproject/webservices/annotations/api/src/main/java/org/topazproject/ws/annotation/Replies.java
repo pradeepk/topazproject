@@ -37,6 +37,9 @@ public interface Replies {
   /**
    * Creates a reply for an annotation.
    *
+   * @param mediator an entity that mediates access to the created reply. Can be used by an
+   *        application to identify the replies it created. Defined by
+   *        <code>http://purl.org/dc/terms/mediator</code>. May be <code>null</code>.
    * @param type the type of reply or <code>null</code>. The different types of replies defined in
    *        <code>http://www.w3.org/2001/12/replyType</code>
    *        are:<ul><li><code>http://www.w3.org/2001/12/replyType#SeeAlso</code></li>
@@ -49,6 +52,7 @@ public interface Replies {
    *        thread. Every resource in the thread will have the same resource as its root.
    * @param inReplyTo the URI of the resource the user is replying to (in this case, either an
    *        annotation or reply)
+   * @param anonymize a boolean to indicate that the creator wishes to remain anonymous.
    * @param title the title of this reply or <code>null</code>, Defined by
    *        <code>http://purl.org/dc/elements/1.1/title</code>
    * @param body the resource representing the content of this reply. Defined by
@@ -61,15 +65,18 @@ public interface Replies {
    *         <code>inReplyTo</code> is not a valid annotation or reply.
    * @throws RemoteException when some other error occurs
    */
-  public String createReply(String type, String root, String inReplyTo, String title, String body)
+  public String createReply(String mediator, String type, String root, String inReplyTo,
+                            boolean anonymize, String title, String body)
                      throws NoSuchIdException, RemoteException;
 
   /**
    * Creates a reply for an annotation. A new reply body URL is created from the supplied content.
    *
+   * @param mediator an entity that mediates access to the created reply. (eg. an app-id)
    * @param type the type of reply or <code>null</code>.
    * @param root the URI of the resource naming the start of a discussion.
    * @param inReplyTo the URI of the resource the user is replying to
+   * @param anonymize a boolean to indicate that the creator wishes to remain anonymous.
    * @param title the title of this reply or <code>null</code>,
    * @param contentType the mime-type and optionally the character encoding of the reply body. eg.
    *        <code>text/html;charset=utf-8</code>, <code>text/plain;charset=iso-8859-1</code>,
@@ -84,8 +91,8 @@ public interface Replies {
    *         <code>inReplyTo</code> is not a valid annotation or reply.
    * @throws RemoteException when some other error occurs
    */
-  public String createReply(String type, String root, String inReplyTo, String title,
-                            String contentType, byte[] content)
+  public String createReply(String mediator, String type, String root, String inReplyTo,
+                            boolean anonymize, String title, String contentType, byte[] content)
                      throws NoSuchIdException, RemoteException;
 
   /**
@@ -173,4 +180,29 @@ public interface Replies {
    */
   public ReplyThread getReplyThread(String root, String inReplyTo)
                              throws NoSuchIdException, RemoteException;
+
+  /**
+   * Sets the administrative state of a reply. (eg. flagged for review)
+   *
+   * @param id the reply id
+   * @param state the new state or 0 to take the reply out of an administrator state
+   *
+   * @throws NoSuchIdException if the reply does not exist
+   * @throws RemoteException if some other error occured
+   */
+  public void setReplyState(String id, int state) throws NoSuchIdException, RemoteException;
+
+  /**
+   * List the set of replies in a specific administrative state.
+   *
+   * @param mediator if present only those replies that match this mediator are returned
+   * @param state the state to filter the list of replies by or 0 to return replies in any
+   *        administartive state
+   *
+   * @return an array of id's; if no matching replies are found, an empty array is returned
+   *
+   * @throws RemoteException if some error occured
+   */
+  public String[] listReplies(String mediator, int state)
+                       throws RemoteException;
 }

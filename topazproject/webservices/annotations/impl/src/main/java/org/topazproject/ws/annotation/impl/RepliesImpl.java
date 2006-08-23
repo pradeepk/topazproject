@@ -55,14 +55,18 @@ public class RepliesImpl implements Replies {
 
   //
   private static final String ITQL_CREATE =
-    ("insert <${id}> <r:type> <tr:Reply> <${id}> <r:type> <${type}>"
+    ("insert <${id}> <r:type> <tr:Reply> <${id}> <r:type> <${type}> <${id}> <topaz:state> '0'"
     + " <${id}> <tr:root> <${root}> <${id}> <a:created> '${created}'"
     + " <${id}> <tr:inReplyTo> <${inReplyTo}> <${id}> <a:body> <${body}>"
-    + " <${id}> <d:creator> '${user}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
+    + " <${id}> <${creator}> '${user}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
 
   // 
   private static final String ITQL_INSERT_TITLE =
     ("insert <${id}> <d:title> '${title}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
+
+  // 
+  private static final String ITQL_INSERT_MEDIATOR =
+    ("insert <${id}> <dt:mediator> '${mediator}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
 
   //
   private static final String ITQL_CHECK_ID =
@@ -108,11 +112,18 @@ public class RepliesImpl implements Replies {
     + " where walk($c <tr:inReplyTo> <${inReplyTo}> and $s <tr:inReplyTo> $c)"
     + " and $s <tr:root> <${root}> and $s <r:type> <tr:Reply>;").replaceAll("\\Q${MODEL}", MODEL);
 
+  //
+  private static final String SET_STATE_ITQL =
+    ("delete select <${id}> <topaz:state> $o from ${MODEL}"
+    + " where <${id}> <topaz:state> $o from ${MODEL};"
+    + " insert <${id}> <topaz:state> '${state}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
+
   static {
     aliases.put("a", AnnotationModel.a.toString());
     aliases.put("r", AnnotationModel.r.toString());
     aliases.put("d", AnnotationModel.d.toString());
     aliases.put("tr", ReplyModel.tr.toString());
+    aliases.put("dt", AnnotationModel.dt.toString());
   }
 
   private final RepliesPEP   pep;
@@ -146,18 +157,19 @@ public class RepliesImpl implements Replies {
   /*
    * @see org.topazproject.ws.annotation.Replies#createReply
    */
-  public String createReply(String type, String root, String inReplyTo, String title, String body)
+  public String createReply(String mediator, String type, String root, String inReplyTo,
+                            boolean anonymize, String title, String body)
                      throws NoSuchIdException, RemoteException {
     itql.validateUri(body, "body");
 
-    return createReply(type, root, inReplyTo, title, body, null, null);
+    return createReply(mediator, type, root, inReplyTo, anonymize, title, body, null, null);
   }
 
   /*
    * @see org.topazproject.ws.annotation.Replies#createReply
    */
-  public String createReply(String type, String root, String inReplyTo, String title,
-                            String contentType, byte[] content)
+  public String createReply(String mediator, String type, String root, String inReplyTo,
+                            boolean anonymize, String title, String contentType, byte[] content)
                      throws NoSuchIdException, RemoteException {
     if (contentType == null)
       throw new NullPointerException("'contentType' cannot be null");
@@ -165,12 +177,12 @@ public class RepliesImpl implements Replies {
     if (content == null)
       throw new NullPointerException("'content' cannot be null");
 
-    return createReply(type, root, inReplyTo, title, null, contentType, content);
+    return createReply(mediator, type, root, inReplyTo, anonymize, title, null, contentType, content);
   }
 
-  private String createReply(String type, String root, String inReplyTo, String title, String body,
-                             String contentType, byte[] content)
-                      throws NoSuchIdException, RemoteException {
+  private String createReply(String mediator, String type, String root, String inReplyTo,
+                             boolean anonymize, String title, String body, String contentType,
+                             byte[] content) throws NoSuchIdException, RemoteException {
     if (type == null)
       type = "http://www.w3.org/2001/12/replyType#Comment";
     else
@@ -206,9 +218,16 @@ public class RepliesImpl implements Replies {
     values.put("user", user);
     values.put("created", itql.getUTCTime());
 
+    values.put("creator", (anonymize ? "topaz:anonymousCreator" : "dc:creator"));
+
     if (title != null) {
       values.put("title", itql.escapeLiteral(title));
       create += ITQL_INSERT_TITLE;
+    }
+
+    if (mediator != null) {
+      values.put("mediator", itql.escapeLiteral(mediator));
+      create += ITQL_INSERT_MEDIATOR;
     }
 
     itql.doUpdate(itql.bindValues(create, values));
@@ -418,6 +437,60 @@ public class RepliesImpl implements Replies {
     }
 
     return root;
+  }
+
+  /*
+   * @see org.topazproject.ws.annotation.Replies#setAnnotationState
+   */
+  public void setReplyState(String id, int state) throws RemoteException, NoSuchIdException {
+    URI thisUri = itql.validateUri(id, "id");
+    pep.checkAccess(pep.SET_REPLY_STATE, thisUri);
+    checkId(thisUri);
+
+    String set = SET_STATE_ITQL.replaceAll("\\Q${id}", id).replaceAll("\\Q${state}", "" + state);
+
+    itql.doUpdate(set);
+  }
+
+  /*
+   * @see org.topazproject.ws.annotation.Replies#listReplies
+   */
+  public String[] listReplies(String mediator, int state)
+                       throws RemoteException {
+    pep.checkAccess(pep.LIST_REPLIES_IN_STATE, URI.create(baseURI + REPLY_PID_NS));
+
+    try {
+      String query =
+        "select $a $o from " + MODEL + " where $a <r:type> <tr:Reply> and $a <topaz:state> $o";
+
+      if (mediator != null)
+        query += (" and $a <dt:mediator> '" + itql.escapeLiteral(mediator) + "'");
+
+      if (state == 0)
+        query += " and exclude($a <topaz:state> '0');";
+      else
+        query += (" and $a <topaz:state> '" + state + "';");
+
+      Answer    ans  = new Answer(itql.doQuery(query));
+      List      rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
+
+      int       c      = rows.size();
+      ArrayList result = new ArrayList(c);
+
+      for (int i = 0; i < c; i++) {
+        Object[] cols = (Object[]) rows.get(i);
+
+        // xxx: work around an exclude bug in ITQL
+        if ((state == 0) && AnnotationModel.getColumnValue(cols[1]).toString().equals("0"))
+          continue;
+
+        result.add(AnnotationModel.getColumnValue(cols[0]).toString());
+      }
+
+      return (String[]) result.toArray(new String[0]);
+    } catch (AnswerException e) {
+      throw new RemoteException("Error querying RDF", e);
+    }
   }
 
   private URI checkId(URI id) throws RemoteException, NoSuchIdException {

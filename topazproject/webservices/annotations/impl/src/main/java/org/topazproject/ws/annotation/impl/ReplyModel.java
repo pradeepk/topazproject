@@ -58,6 +58,8 @@ public class ReplyModel extends ReplyInfo {
     setCreator((String) map.get(AnnotationModel.d_creator));
     setCreated((String) map.get(AnnotationModel.a_created));
     setBody((String) map.get(AnnotationModel.a_body));
+    setMediator((String) map.get(AnnotationModel.dt_mediator));
+    setState(Integer.parseInt((String) map.get(AnnotationModel.topaz_state)));
   }
 
   /**
@@ -65,7 +67,7 @@ public class ReplyModel extends ReplyInfo {
    *
    * @param clz The sub-class of ReplyInfo to create
    *
-   * @return DOCUMENT ME!
+   * @return the clone
    *
    * @throws InstantiationException if a newInstance fails on the clz
    * @throws IllegalAccessException if a newInstance fails on the clz
@@ -80,6 +82,8 @@ public class ReplyModel extends ReplyInfo {
     to.setCreator(getCreator());
     to.setCreated(getCreated());
     to.setBody(getBody());
+    to.setMediator(getMediator());
+    to.setState(getState());
 
     return to;
   }
