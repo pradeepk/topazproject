@@ -349,11 +349,6 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
                        throws RemoteException {
     try {
       return impl.listReplies(mediator, state);
-    } catch (NoSuchIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
     } catch (RemoteException e) {
       log.info("", e);
       throw e;
