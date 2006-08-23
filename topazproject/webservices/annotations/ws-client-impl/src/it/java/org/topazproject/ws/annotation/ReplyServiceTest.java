@@ -54,7 +54,6 @@ public class ReplyServiceTest extends TestCase {
    *
    * @throws ServiceException indicates an error in setting up the client stub
    * @throws RemoteException indicates an error in setting up the client stub
-   * @throws Error DOCUMENT ME!
    */
   protected void setUp() throws ServiceException, RemoteException {
     try {

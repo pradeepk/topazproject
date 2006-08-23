@@ -27,7 +27,7 @@ public class NoSuchIdException extends Exception {
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the string that caused this exception.
    *
    * @return the (non-existant) id
    */

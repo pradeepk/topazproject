@@ -155,8 +155,8 @@ public class AnnotationsImpl implements Annotations {
     itql.setAliases(aliases);
   }
 
-  /**
-   * @see org.topazproject.ws.annotation.Annotation#createAnnotation
+  /*
+   * @see org.topazproject.ws.annotation.Annotations#createAnnotation
    */
   public String createAnnotation(String mediator, String type, String annotates, String context,
                                  String supersedes, boolean anonymize, String title, String body)
@@ -167,8 +167,8 @@ public class AnnotationsImpl implements Annotations {
                             null, null);
   }
 
-  /**
-   * @see org.topazproject.ws.annotation.Annotation#createAnnotation
+  /*
+   * @see org.topazproject.ws.annotation.Annotations#createAnnotation
    */
   public String createAnnotation(String mediator, String type, String annotates, String context,
                                  String supersedes, boolean anonymize, String title,
@@ -251,8 +251,8 @@ public class AnnotationsImpl implements Annotations {
     return id;
   }
 
-  /**
-   * @see org.topazproject.ws.annotation.Annotation#deleteAnnotation
+  /*
+   * @see org.topazproject.ws.annotation.Annotations#deleteAnnotation
    */
   public void deleteAnnotation(String id, boolean deletePreceding)
                         throws NoSuchIdException, RemoteException {
@@ -299,8 +299,8 @@ public class AnnotationsImpl implements Annotations {
     fedora.purgeObjects(purgeList);
   }
 
-  /**
-   * @see org.topazproject.ws.annotation.Annotation#getAnnotationInfo
+  /*
+   * @see org.topazproject.ws.annotation.Annotations#getAnnotationInfo
    */
   public AnnotationInfo getAnnotationInfo(String id) throws NoSuchIdException, RemoteException {
     pep.checkAccess(pep.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
@@ -320,8 +320,8 @@ public class AnnotationsImpl implements Annotations {
     }
   }
 
-  /**
-   * @see org.topazproject.ws.annotation.Annotation#listAnnotations
+  /*
+   * @see org.topazproject.ws.annotation.Annotations#listAnnotations
    */
   public AnnotationInfo[] listAnnotations(String mediator, String annotates, String type)
                                    throws RemoteException {
@@ -358,8 +358,8 @@ public class AnnotationsImpl implements Annotations {
     }
   }
 
-  /**
-   * @see org.topazproject.ws.annotation.Annotation#getLatestAnnotations
+  /*
+   * @see org.topazproject.ws.annotation.Annotations#getLatestAnnotations
    */
   public AnnotationInfo[] getLatestAnnotations(String id)
                                         throws NoSuchIdException, RemoteException {
@@ -382,8 +382,8 @@ public class AnnotationsImpl implements Annotations {
     }
   }
 
-  /**
-   * @see org.topazproject.ws.annotation.Annotation#getPrecedingAnnotations
+  /*
+   * @see org.topazproject.ws.annotation.Annotations#getPrecedingAnnotations
    */
   public AnnotationInfo[] getPrecedingAnnotations(String id)
                                            throws NoSuchIdException, RemoteException {
@@ -404,8 +404,8 @@ public class AnnotationsImpl implements Annotations {
     }
   }
 
-  /**
-   * @see org.topazproject.ws.annotation.Annotation#setAnnotationState
+  /*
+   * @see org.topazproject.ws.annotation.Annotations#setAnnotationState
    */
   public void setAnnotationState(String id, int state)
                           throws RemoteException, NoSuchIdException {
@@ -418,8 +418,8 @@ public class AnnotationsImpl implements Annotations {
     itql.doUpdate(set);
   }
 
-  /**
-   * @see org.topazproject.ws.annotation.Annotation#listAnnotations
+  /*
+   * @see org.topazproject.ws.annotation.Annotations#listAnnotations
    */
   public String[] listAnnotations(String mediator, int state)
                            throws RemoteException {
