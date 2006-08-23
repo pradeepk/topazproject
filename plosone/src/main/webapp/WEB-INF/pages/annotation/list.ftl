@@ -12,8 +12,7 @@
           id          =${annotation.id}            <br/>
           annotates   =${annotation.annotates}     <br/>
           title       =${annotation.title}         <br/>
-          body        =<@ww.a href="${annotation.body}">${annotation.body}</@ww.a>  
-                    [Text : ${annotationBodyContent(annotation.id)}]<br/>
+          body        =<@ww.a href="${annotation.body}">${annotation.body}</@ww.a>  <br/>
           context     =${annotation.context}       <br/>
           created     =${annotation.created}       <br/>
           creator     =${annotation.creator}       <br/>

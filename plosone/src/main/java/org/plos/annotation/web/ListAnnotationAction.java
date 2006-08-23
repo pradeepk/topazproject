@@ -12,17 +12,15 @@ import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.ApplicationException;
 import org.topazproject.ws.annotation.AnnotationInfo;
 
-import java.io.IOException;
-import java.util.HashMap;
-import java.util.Map;
-
-public class ListAction  extends ActionSupport {
+/**
+ * Action class to get a list of annotations.
+ */
+public class ListAnnotationAction extends ActionSupport {
   private AnnotationService annotationService;
   private String target;
   private AnnotationInfo[] annotations;
-  private Map<String, String> annotationBodyContent;
 
-  private static final Log log = LogFactory.getLog(ListAction.class);
+  private static final Log log = LogFactory.getLog(ListAnnotationAction.class);
 
   /**
    * List annotations.
@@ -32,8 +30,6 @@ public class ListAction  extends ActionSupport {
   public String execute() throws Exception {
     try {
       annotations = annotationService.listAnnotations(target);
-
-      populateAnnotationBodyContent();
     } catch (final ApplicationException e) {
       log.error(e, e);
       addActionError("Annotation fetching failed with error message: " + e.getMessage());
@@ -72,21 +68,6 @@ public class ListAction  extends ActionSupport {
   @RequiredStringValidator(type= ValidatorType.FIELD, fieldName= "target", message="You must specify the target that you want to list the annotations for")
   public String getTarget() {
     return target;
-  }
-
-  /**
-   * Get the body content for a given annotation id.
-   * @return content of the annotation
-   */
-  public Map<String, String> getAnnotationBodyContent() {
-    return annotationBodyContent;
-  }
-
-  private void populateAnnotationBodyContent() throws IOException {
-    annotationBodyContent = new HashMap<String, String>(annotations.length);
-    for (AnnotationInfo annotation : annotations) {
-      annotationBodyContent.put(annotation.getId(), annotationService.getBody(annotation.getBody()));
-    }
   }
 
 }

@@ -25,6 +25,7 @@ public class AnnotationService {
   private Annotations annotationService;
   private String applicationId;
   private String defaultAnnotationType;
+  private String encodingCharset = "UTF-8";
 
   private static final Log log = LogFactory.getLog(AnnotationService.class);
 
@@ -40,7 +41,6 @@ public class AnnotationService {
    */
   public String createAnnotation(final String target, final String context, final String title, final String mimeType, final String body) throws ApplicationException {
     try {
-      final String encodingCharset = "UTF-8";
       final String contentType = mimeType + ";charset=" + encodingCharset;
       return annotationService.createAnnotation(applicationId, defaultAnnotationType, target, context, null, false, title, contentType, body.getBytes(encodingCharset));
     } catch (RemoteException e) {
@@ -130,4 +130,10 @@ public class AnnotationService {
     return FileUtils.getTextFromUrl(bodyUrl);
   }
 
+  /**
+   * @param encodingCharset charset for encoding the data to be persisting in
+   */
+  public void setEncodingCharset(final String encodingCharset) {
+    this.encodingCharset = encodingCharset;
+  }
 }

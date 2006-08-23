@@ -18,17 +18,17 @@
             <fieldset>
                 <legend>A few things for you to do</legend>
                 <p>
-                    <@ww.url id="articleListURL" action="articleList" />
+                    <@ww.url id="articleListURL"  namespace="/article" action="articleList" />
                     <@ww.a href="%{articleListURL}">View Articles</@ww.a>
                 </p>
 
                 <p>
-                    <@ww.url id="createAnnotationURL" action="createAnnotation" />
+                    <@ww.url id="createAnnotationURL" namespace="/annotation" action="createAnnotation" />
                     <@ww.a href="%{createAnnotationURL}">Create Annotation</@ww.a>
                 </p>
 
                 <p>
-                    <@ww.url id="listAnnotationURL" action="listAnnotation">
+                    <@ww.url id="listAnnotationURL" namespace="/annotation" action="listAnnotation">
                       <@ww.param name="target" value="%{'http://here.is/viru'}"/>
                     </@ww.url>
                     <@ww.a href="%{listAnnotationURL}">List Annotations</@ww.a>

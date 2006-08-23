@@ -14,7 +14,9 @@
     <action name="home" class="org.plosone.action.RegistrationAction">
       <result name="success" type="freemarker">/WEB-INF/pages/home.ftl</result>
     </action>
+  </package>
 
+  <package name="article" extends="webwork-default" namespace="/article">
     <action name="articleList" class="org.plos.article.web.ArticleListAction">
       <result name="success" type="freemarker">/WEB-INF/pages/article/articleList.ftl</result>
     </action>
@@ -25,25 +27,28 @@
       <result name="error" type="freemarker">/WEB-INF/pages/error.ftl</result>
       <result name="success" type="freemarker">/WEB-INF/pages/article/displayArticle.ftl</result>
     </action>
-
+  </package>
+  
+  <package name="annotation" extends="webwork-default" namespace="/annotation">
     <action name="createAnnotation" class="org.plos.web.ForwardAction">
         <result name="success" type="freemarker">/WEB-INF/pages/annotation/create.ftl</result>
     </action>
 
-    <action name="deleteAnnotation" class="org.plos.annotation.web.DeleteAction">
+    <action name="deleteAnnotation" class="org.plos.annotation.web.DeleteAnnotationAction">
         <result name="success" type="freemarker">/WEB-INF/pages/todo.ftl</result>
     </action>
 
-    <action name="listAnnotation" class="org.plos.annotation.web.ListAction">
+    <action name="listAnnotation" class="org.plos.annotation.web.ListAnnotationAction">
         <result name="success" type="freemarker">/WEB-INF/pages/annotation/list.ftl</result>
     </action>
 
-    <action name="createAnnotationSubmit" class="org.plos.annotation.web.CreateAction">
+    <action name="createAnnotationSubmit" class="org.plos.annotation.web.CreateAnnotationAction">
       <interceptor-ref name="validationWorkflowStack"/>
       <interceptor-ref name="timer"/>
       <result name="input" type="freemarker">/WEB-INF/pages/annotation/create.ftl</result>
       <result name="error" type="freemarker">/WEB-INF/pages/annotation/create.ftl</result>
       <result name="success" type="freemarker">/WEB-INF/pages/todo.ftl</result>
     </action>
+
   </package>
 </xwork>

@@ -11,12 +11,12 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.ApplicationException;
 
-public class DeleteAction extends ActionSupport {
+public class DeleteAnnotationAction extends ActionSupport {
   private AnnotationService annotationService;
   private String annotationId;
   private boolean deletePreceding;
 
-  private static final Log log = LogFactory.getLog(DeleteAction.class);
+  private static final Log log = LogFactory.getLog(DeleteAnnotationAction.class);
 
   /**
    * Annotation deletion action.

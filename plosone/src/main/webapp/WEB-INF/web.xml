@@ -19,7 +19,7 @@
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.serverName</param-name>
-      <param-value>localhost:8080</param-value>
+      <param-value>localhost:9080</param-value>
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.proxyCallbackUrl</param-name>
@@ -37,7 +37,7 @@
   </filter>
 
 
-  <filter-mapping>
+  <filter-mapping >
     <filter-name>CAS Filter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>

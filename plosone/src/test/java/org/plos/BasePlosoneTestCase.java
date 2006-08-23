@@ -4,9 +4,12 @@
 package org.plos;
 
 import org.plos.annotation.service.AnnotationService;
-import org.plos.annotation.web.CreateAction;
-import org.plos.annotation.web.DeleteAction;
-import org.plos.annotation.web.ListAction;
+import org.plos.annotation.web.CreateAnnotationAction;
+import org.plos.annotation.web.DeleteAnnotationAction;
+import org.plos.annotation.web.ListAnnotationAction;
+import org.plos.annotation.web.ListReplyAction;
+import org.plos.annotation.web.DeleteReplyAction;
+import org.plos.annotation.web.CreateReplyAction;
 import org.plos.article.service.ArticleService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.web.FetchArticleAction;
@@ -19,10 +22,13 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private FetchArticleService fetchArticleService;
   private ArticleService articleService;
   private FetchArticleAction fetchArticleAction;
-  private CreateAction createAnnotationAction;
-  private DeleteAction deleteAnnotationAction;
-  private ListAction listAnnotationAction;
+  private CreateAnnotationAction createAnnotationAction;
+  private DeleteAnnotationAction deleteAnnotationAction;
+  private ListAnnotationAction listAnnotationAction;
   private AnnotationService annotationService;
+  private ListReplyAction listReplyAction;
+  private DeleteReplyAction deleteReplyAction;
+  private CreateReplyAction createReplyAction;
 
   public BasePlosoneTestCase() {
     super();
@@ -68,27 +74,51 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
     this.annotationService = annotationService;
   }
 
-  public CreateAction getCreateAnnotationAction() {
+  public CreateAnnotationAction getCreateAnnotationAction() {
     return createAnnotationAction;
   }
 
-  public void setCreateAnnotationAction(final CreateAction createAnnotationAction) {
-    this.createAnnotationAction = createAnnotationAction;
+  public void setCreateAnnotationAction(final CreateAnnotationAction createAnnotationAnnotationAction) {
+    this.createAnnotationAction = createAnnotationAnnotationAction;
   }
 
-  public DeleteAction getDeleteAnnotationAction() {
+  public DeleteAnnotationAction getDeleteAnnotationAction() {
     return deleteAnnotationAction;
   }
 
-  public void setDeleteAnnotationAction(final DeleteAction deleteAnnotationAction) {
-    this.deleteAnnotationAction = deleteAnnotationAction;
+  public void setDeleteAnnotationAction(final DeleteAnnotationAction deleteAnnotationAnnotationAction) {
+    this.deleteAnnotationAction = deleteAnnotationAnnotationAction;
   }
 
-  public ListAction getListAnnotationAction() {
+  public ListAnnotationAction getListAnnotationAction() {
     return listAnnotationAction;
   }
 
-  public void setListAnnotationAction(final ListAction listAnnotationAction) {
-    this.listAnnotationAction = listAnnotationAction;
+  public void setListAnnotationAction(final ListAnnotationAction listAnnotationAnnotationAction) {
+    this.listAnnotationAction = listAnnotationAnnotationAction;
+  }
+
+  public ListReplyAction getListReplyAction() {
+    return listReplyAction;
+  }
+
+  public void setListReplyAction(final ListReplyAction listReplyAction) {
+    this.listReplyAction = listReplyAction;
+  }
+
+  public DeleteReplyAction getDeleteReplyAction() {
+    return deleteReplyAction;
+  }
+
+  public void setDeleteReplyAction(final DeleteReplyAction deleteReplyAction) {
+    this.deleteReplyAction = deleteReplyAction;
+  }
+
+  public CreateReplyAction getCreateReplyAction() {
+    return createReplyAction;
+  }
+
+  public void setCreateReplyAction(final CreateReplyAction createReplyAction) {
+    this.createReplyAction = createReplyAction;
   }
 }

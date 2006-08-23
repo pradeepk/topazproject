@@ -25,7 +25,7 @@ import java.util.List;
 /**
  * Actions for working with annotations.
  */
-public class CreateAction extends ActionSupport {
+public class CreateAnnotationAction extends ActionSupport {
   private AnnotationService annotationService;
   private String target;
   private String targetContext;
@@ -37,7 +37,7 @@ public class CreateAction extends ActionSupport {
   private ProfanityCheckingService profanityCheckingService;
   private UserInputSecurityCheckingService userInputSecurityCheckingService;
 
-  public static final Log log = LogFactory.getLog(CreateAction.class);
+  public static final Log log = LogFactory.getLog(CreateAnnotationAction.class);
 
   /**
    * Create annotation failed.
