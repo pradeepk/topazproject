@@ -5,6 +5,19 @@
     <objects>
       <base-uri>doi:10.1371/</base-uri>
     </objects>
+    <models>
+      <ri>rmi://localhost/fedora#ri</ri>
+      <articles>${topaz.models.ri}</articles>
+      <annotations>${topaz.models.ri}</annotations>
+      <users>rmi://localhost/fedora#users</users>
+      <grants>rmi://localhost/fedora#grants</grants>
+      <revokes>rmi://localhost/fedora#revokes</revokes>
+      <preferences>rmi://localhost/fedora#preferences</preferences>
+      <profiles>rmi://localhost/fedora#profiles</profiles>
+      <ratings>rmi://localhost/fedora#ratings</ratings>
+      <alerts>rmi://localhost/fedora#alerts</alerts>
+      <xsd type="http://tucana.org/tucana#XMLSchemaModel">rmi://localhost/fedora#xsd</xsd>
+    </models>
     <services>
       <fedora>
         <uri>http://localhost:9090/fedora/services/management</uri>
@@ -24,6 +37,12 @@
         <userName>fedoraAdmin</userName>
         <password>fedoraAdmin</password>
       </itql>
+      <itql-admin>
+        <uri>${topaz.services.itql.uri}</uri>
+        <auth-method>BASIC</auth-method>
+        <userName>fedoraAdmin</userName>
+        <password>fedoraAdmin</password>
+      </itql-admin>
     </services>
     <server>
       <hostname>localhost</hostname>
