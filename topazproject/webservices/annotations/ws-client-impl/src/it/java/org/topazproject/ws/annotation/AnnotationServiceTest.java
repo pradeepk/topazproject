@@ -94,6 +94,7 @@ public class AnnotationServiceTest extends TestCase {
     try {
       AnnotationInfo info = service.getAnnotationInfo(annotation);
     } catch (NoSuchIdException nsie) {
+      assertEquals(nsie.getId(), annotation);
       gotExc = true;
     }
 
@@ -104,6 +105,7 @@ public class AnnotationServiceTest extends TestCase {
     try {
       service.deleteAnnotation(annotation, false);
     } catch (NoSuchIdException nsie) {
+      assertEquals(nsie.getId(), annotation);
       gotExc = true;
     }
 
@@ -238,6 +240,7 @@ public class AnnotationServiceTest extends TestCase {
     try {
       service.deleteAnnotation(annotation, true);
     } catch (NoSuchIdException nsie) {
+      assertEquals(nsie.getId(), annotation);
       gotExc = true;
     }
 
