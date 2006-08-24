@@ -24,11 +24,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.jrdf.graph.Literal;
 import org.jrdf.graph.URIReference;
+
+import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedora.client.Uploader;
@@ -47,8 +50,13 @@ import org.topazproject.ws.annotation.NoSuchIdException;
 public class AnnotationsImpl implements Annotations {
   private static final Log    log               = LogFactory.getLog(AnnotationsImpl.class);
   private static final Map    aliases           = ItqlHelper.getDefaultAliases();
-  private static final String MODEL             = "<rmi://localhost/fedora#ri>";
   private static final String ANNOTATION_PID_NS = "annotation";
+
+  //
+  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
+
+  //
+  private static final String MODEL = "<" + CONF.getString("topaz.models.annotations") + ">";
 
   //
   private static final String CREATE_ITQL =

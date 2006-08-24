@@ -83,7 +83,8 @@ public class Ingester {
   private static final String RDF          = "RDF";
   private static final String RDFNS        = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
-  private static final String MODEL        = "<rmi://localhost/fedora#ri>";
+  private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
+  private static final String MODEL        = "<" + CONF.getString("topaz.models.articles") + ">";
 
   private final TransformerFactory tFactory;
   private final FedoraAPIM         apim;

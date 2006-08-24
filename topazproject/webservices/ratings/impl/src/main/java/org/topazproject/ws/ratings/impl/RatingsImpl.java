@@ -50,8 +50,9 @@ public class RatingsImpl implements Ratings {
 
   private static final String FOAF_URI         = "http://xmlns.com/foaf/0.1/";
 
-  private static final String MODEL            = "<rmi://localhost/fedora#ratings>";
-  private static final String USER_MODEL       = "<rmi://localhost/fedora#users>";
+  private static final Configuration CONF      = ConfigurationStore.getInstance().getConfiguration();
+  private static final String MODEL            = "<" + CONF.getString("topaz.models.ratings") + ">";
+  private static final String USER_MODEL       = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String RATINGS_PATH_PFX = "ratings";
 
   private static final Map    aliases;

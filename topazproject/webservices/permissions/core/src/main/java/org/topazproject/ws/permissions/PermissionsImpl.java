@@ -31,6 +31,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.UnProtectedService;
 
+import org.topazproject.configuration.ConfigurationStore;
+
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.mulgara.itql.StringAnswer;
@@ -48,11 +50,20 @@ import org.topazproject.mulgara.itql.StringAnswer;
  * @author Pradeep Krishnan
  */
 public class PermissionsImpl implements Permissions {
-  private static final Log     log           = LogFactory.getLog(PermissionsImpl.class);
-  private static final String  GRANTS_MODEL  = "<rmi://localhost/fedora#grants>";
-  private static final String  REVOKES_MODEL = "<rmi://localhost/fedora#revokes>";
-  private static final String  ITQL_LIST     =
+  private static final Log log = LogFactory.getLog(PermissionsImpl.class);
+
+  //
+  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
+
+  //
+  private static final String GRANTS_MODEL  = "<" + CONF.getString("topaz.models.grants") + ">";
+  private static final String REVOKES_MODEL = "<" + CONF.getString("topaz.models.revokes") + ">";
+
+  //
+  private static final String ITQL_LIST =
     "select $p from ${MODEL} where <${resource}> $p <${principal}>;";
+
+  //
   private final ItqlHelper     itql;
   private final PermissionsPEP pep;
   private final String         user;

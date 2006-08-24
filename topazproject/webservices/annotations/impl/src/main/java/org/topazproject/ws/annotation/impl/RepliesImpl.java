@@ -24,11 +24,14 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.jrdf.graph.Literal;
 import org.jrdf.graph.URIReference;
+
+import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedora.client.Uploader;
@@ -50,8 +53,13 @@ import org.topazproject.ws.annotation.ReplyThread;
 public class RepliesImpl implements Replies {
   private static final Log    log          = LogFactory.getLog(RepliesImpl.class);
   private static final Map    aliases      = ItqlHelper.getDefaultAliases();
-  private static final String MODEL        = "<rmi://localhost/fedora#ri>";
   private static final String REPLY_PID_NS = "reply";
+
+  //
+  private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
+
+  //
+  private static final String MODEL = "<" + CONF.getString("topaz.models.annotations") + ">";
 
   //
   private static final String ITQL_CREATE =

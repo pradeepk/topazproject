@@ -20,9 +20,13 @@ import java.util.List;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.authentication.ProtectedService;
+import org.topazproject.configuration.ConfigurationStore;
+
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.ItqlHelper;
@@ -42,8 +46,9 @@ import org.topazproject.ws.article.NoSuchIdException;
  * @author Ronald Tschalär
  */
 public class ArticleImpl implements Article {
-  private static final Log    log   = LogFactory.getLog(ArticleImpl.class);
-  private static final String MODEL = "<rmi://localhost/fedora#ri>";
+  private static final Log           log   = LogFactory.getLog(ArticleImpl.class);
+  private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
+  private static final String        MODEL = "<" + CONF.getString("topaz.models.articles") + ">";
 
   private static final String ITQL_DELETE_DOI =
       ("delete select $s $p $o from ${MODEL} where $s $p $o and " +

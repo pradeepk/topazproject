@@ -44,7 +44,9 @@ public class UserRolesImpl implements UserRoles {
 
   private static final String FOAF_URI       = "http://xmlns.com/foaf/0.1/";
 
-  private static final String MODEL          = "<rmi://localhost/fedora#users>";
+  private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
+  
+  private static final String MODEL          = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String ROLES_PATH_PFX = "roles";
 
   private static final Map    aliases;

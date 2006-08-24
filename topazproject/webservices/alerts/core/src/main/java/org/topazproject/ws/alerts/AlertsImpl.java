@@ -55,11 +55,13 @@ public class AlertsImpl implements Alerts {
   private static final String ALERTS_URI     = ItqlHelper.TOPAZ_URI + "alerts/";
   private static final String XSD_URI        = "http://www.w3.org/2001/XMLSchema#";
 
-  private static final String MODEL_ALERTS   = "<rmi://localhost/fedora#alerts>";
-  private static final String MODEL_ARTICLES = "<rmi://localhost/fedora#ri>";
-  private static final String MODEL_PREFS    = "<rmi://localhost/fedora#preferences>";
-  private static final String MODEL_XSD      = "<rmi://localhost/fedora#xsd>";
-  private static final String XSD_TYPE       = "<http://tucana.org/tucana#XMLSchemaModel>";
+  private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
+  
+  private static final String MODEL_ALERTS   = "<" + CONF.getString("topaz.models.alerts") + ">";
+  private static final String MODEL_ARTICLES = "<" + CONF.getString("topaz.models.articles") + ">";
+  private static final String MODEL_PREFS    = "<" + CONF.getString("topaz.models.preferences") + ">";
+  private static final String MODEL_XSD      = "<" + CONF.getString("topaz.models.xsd") + ">";
+  private static final String XSD_TYPE       = "<" + CONF.getString("topaz.models.xsd[@type]") + ">";
 
   // Email Alert Queries
   private static final String UPDATE_TIMESTAMP_ITQL =

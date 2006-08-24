@@ -51,8 +51,10 @@ public class ProfilesImpl implements Profiles {
   private static final String FOAF_URI       = "http://xmlns.com/foaf/0.1/";
   private static final String BIO_URI        = "http://purl.org/vocab/bio/0.1/";
 
-  private static final String MODEL          = "<rmi://localhost/fedora#profiles>";
-  private static final String USER_MODEL     = "<rmi://localhost/fedora#users>";
+  private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
+  
+  private static final String MODEL          = "<" + CONF.getString("topaz.models.profiles") + ">";
+  private static final String USER_MODEL     = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String IDS_NS         = "topaz.ids";
   private static final String PROF_PATH_PFX  = "profile";
   private static final String PERM_PATH_PFX  = "profile-perms";

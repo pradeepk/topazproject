@@ -50,8 +50,10 @@ public class PreferencesImpl implements Preferences {
 
   private static final String FOAF_URI       = "http://xmlns.com/foaf/0.1/";
 
-  private static final String MODEL          = "<rmi://localhost/fedora#preferences>";
-  private static final String USER_MODEL     = "<rmi://localhost/fedora#users>";
+  private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
+  
+  private static final String MODEL          = "<" + CONF.getString("topaz.models.preferences") + ">";
+  private static final String USER_MODEL     = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String PREFS_PATH_PFX = "preferences";
 
   private static final Map    aliases;
