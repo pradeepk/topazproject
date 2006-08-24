@@ -22,6 +22,8 @@ import javax.xml.rpc.server.ServletEndpointContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.xacml.attr.ServletEndpointContextAttribute;
+
 import com.sun.xacml.Obligation;
 import com.sun.xacml.PDP;
 import com.sun.xacml.attr.AttributeValue;

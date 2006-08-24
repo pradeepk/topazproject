@@ -23,6 +23,8 @@ import javax.xml.rpc.server.ServletEndpointContext;
 
 import org.topazproject.configuration.ConfigurationStore;
 
+import org.topazproject.xacml.attr.ServletEndpointContextAttribute;
+
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;

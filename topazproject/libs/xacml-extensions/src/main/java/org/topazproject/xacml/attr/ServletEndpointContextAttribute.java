@@ -7,11 +7,13 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.xacml;
+package org.topazproject.xacml.attr;
 
 import java.net.URI;
 
 import javax.xml.rpc.server.ServletEndpointContext;
+
+import org.topazproject.xacml.Util;
 
 import com.sun.xacml.attr.AttributeValue;
 
