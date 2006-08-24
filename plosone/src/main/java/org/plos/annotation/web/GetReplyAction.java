@@ -1,0 +1,50 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2006 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
+package org.plos.annotation.web;
+
+import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.plos.annotation.service.ApplicationException;
+import org.topazproject.ws.annotation.ReplyInfo;
+
+/**
+ * Used to fetch a reply given an id.
+ */
+public class GetReplyAction extends AnnotationActionSupport {
+  private String replyId;
+  private ReplyInfo reply;
+
+  private static final Log log = LogFactory.getLog(GetReplyAction.class);
+
+  public String execute() throws Exception {
+    try {
+      reply = getAnnotationService().getReply(replyId);
+    } catch (final ApplicationException e) {
+      log.error(e, e);
+      addActionError("Reply fetching failed with error message: " + e.getMessage());
+      return ERROR;
+    }
+    return SUCCESS;
+  }
+
+  public void setReplyId(final String replyId) {
+    this.replyId = replyId;
+  }
+
+  @RequiredStringValidator(message = "Reply id is a required field")
+  public String getReplyId() {
+    return replyId;
+  }
+
+  public ReplyInfo getReply() {
+    return reply;
+  }
+}

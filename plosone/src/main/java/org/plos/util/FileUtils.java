@@ -10,15 +10,14 @@
 
 package org.plos.util;
 
+import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import org.w3c.dom.Document;
 
-import java.io.IOException;
 import java.io.BufferedReader;
-import java.io.InputStreamReader;
 import java.io.FileWriter;
+import java.io.IOException;
+import java.io.InputStreamReader;
 import java.net.URL;
-
-import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 
 /**
  * Utility methods for working with files
@@ -46,13 +45,8 @@ public class FileUtils {
    * @throws IOException
    */
   public static void createLocalCopyOfTextFile(final String url, final String targetFilename) throws IOException {
-    final BufferedReader in = new BufferedReader(new InputStreamReader(new URL(url).openStream()));
     final FileWriter fileWriter = new FileWriter(targetFilename);
-    String str;
-    while ((str = in.readLine()) != null) {
-      fileWriter.write(str + NEW_LINE);
-    }
-    in.close();
+    fileWriter.write(getTextFromUrl(url));
     fileWriter.close();
   }
 
@@ -69,33 +63,33 @@ public class FileUtils {
   }
 
   /**
-   * Is this a syntactically valid URL.
+   * Is this a http like URL.
    * @param url url
    * @return true if it a url
    */
-  public static boolean isURL(final String url) {
-    return url.startsWith("http");
+  public static boolean isHttpURL(final String url) {
+    return url.startsWith("http://") || url.startsWith("https://") ;
   }
 
   /**
    * Gets all the text content from the given url. It is expected that the url will have all content as a text type.
-   * @param bodyUrl bodyUrl
-   * @throws IOException
+   * @param url url
    * @return the whole content from the url
+   * @throws IOException
    */
-  public static String getTextFromUrl(final String bodyUrl) throws IOException {
+  public static String getTextFromUrl(final String url) throws IOException {
     final StringBuilder sb = new StringBuilder();
-    final URL url = new URL(bodyUrl);
 
     // Read all the text returned by the server
-    final BufferedReader in = new BufferedReader(new InputStreamReader(url.openStream()));
-    String line;
-    while ((line = in.readLine()) != null) {
-      // line is one line of text; readLine() strips the newline character(s)
-      sb.append(line).append(NEW_LINE);
+    final BufferedReader in = new BufferedReader(new InputStreamReader(new URL(url).openStream()));
+
+    final char[] cbuf = new char[1024];
+    int numRead;
+    while (((numRead = in.read(cbuf)) >= 0)) {
+      sb.append(cbuf, 0, numRead);
     }
     in.close();
 
-    return sb.toString().trim();
+    return sb.toString();
   }
 }

@@ -3,16 +3,12 @@
  */
 package org.plos.annotation.web;
 
-import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.ApplicationException;
 
-public class DeleteAnnotationAction extends ActionSupport {
-  private AnnotationService annotationService;
+public class DeleteAnnotationAction extends AnnotationActionSupport {
   private String annotationId;
   private boolean deletePreceding;
 
@@ -25,7 +21,7 @@ public class DeleteAnnotationAction extends ActionSupport {
    */
   public String execute() throws Exception {
     try {
-      annotationService.deleteAnnotation(annotationId, deletePreceding);
+      getAnnotationService().deleteAnnotation(annotationId, deletePreceding);
     } catch (final ApplicationException e) {
       log.error(e, e);
       addActionError("Annotation deletion failed with error message: " + e.getMessage());
@@ -50,17 +46,8 @@ public class DeleteAnnotationAction extends ActionSupport {
   /**
    * @return the annotation id
    */
-  @RequiredStringValidator(type= ValidatorType.FIELD, fieldName= "annotationId", message="You must specify the id of the annotation that you want to delete")
+  @RequiredStringValidator(message="You must specify the id of the annotation that you want to delete")
   public String getAnnotationId() {
     return annotationId;
-  }
-
-  /**
-   * TODO: move up to a parent class
-   * Set the annotations service.
-   * @param annotationService annotationService
-   */
-  public void setAnnotationService(final AnnotationService annotationService) {
-    this.annotationService = annotationService;
   }
 }

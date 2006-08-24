@@ -3,20 +3,16 @@
  */
 package org.plos.annotation.web;
 
-import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.ApplicationException;
 import org.topazproject.ws.annotation.AnnotationInfo;
 
 /**
  * Action class to get a list of annotations.
  */
-public class ListAnnotationAction extends ActionSupport {
-  private AnnotationService annotationService;
+public class ListAnnotationAction extends AnnotationActionSupport {
   private String target;
   private AnnotationInfo[] annotations;
 
@@ -29,7 +25,7 @@ public class ListAnnotationAction extends ActionSupport {
    */
   public String execute() throws Exception {
     try {
-      annotations = annotationService.listAnnotations(target);
+      annotations = getAnnotationService().listAnnotations(target);
     } catch (final ApplicationException e) {
       log.error(e, e);
       addActionError("Annotation fetching failed with error message: " + e.getMessage());
@@ -39,19 +35,11 @@ public class ListAnnotationAction extends ActionSupport {
   }
 
   /**
+   * TODO: return the wrapped annotations so that the title can be htmlEncoded and hence any dangerous scripting can be declawed. See if ActionChaining can help here. 
    * @return a list of annotations
    */
   public AnnotationInfo[] getAnnotations() {
     return annotations;
-  }
-
-  /**
-   * TODO: move up to a parent class
-   * Set the annotations service.
-   * @param annotationService annotationService
-   */
-  public void setAnnotationService(final AnnotationService annotationService) {
-    this.annotationService = annotationService;
   }
 
   /**
@@ -65,7 +53,7 @@ public class ListAnnotationAction extends ActionSupport {
   /**
    * @return the target of the annotation
    */
-  @RequiredStringValidator(type= ValidatorType.FIELD, fieldName= "target", message="You must specify the target that you want to list the annotations for")
+  @RequiredStringValidator(message="You must specify the target that you want to list the annotations for")
   public String getTarget() {
     return target;
   }

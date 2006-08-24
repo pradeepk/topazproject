@@ -20,10 +20,13 @@ import org.topazproject.ws.annotation.ReplyInfo;
 
 public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static final String target = "http://here.is/viru";
+  private final String body = "spmething that I always wanted to say about everything and more about nothing\n";
 //  private final String target = "doi:10.1371/annotation/21";
 
   private static final Log log = LogFactory.getLog(AnnotationActionsTest.class);
-  private static String annotationId;
+  private static String annotationId = "doi:somedefaultvalue";
+  private static String replyId;
+  private final String PROFANE_WORD = "BUSH";
 
   public static Test suite() {
     final TestSuite orderedTests = new TestSuite();
@@ -31,12 +34,19 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String[] testsInSequence =
             new String[]{
                     "testDeleteAllAnnotations",
+                    "testDeleteAllReplies",
                     "testCreateAnnotation",
+                    "testCreateReply",
                     "testListAnnotations",
+                    "testListReplies",
                     "testDeleteAnnotations",
-                    "testCreateAnnotationShouldFailDueToProfanity",
-                    "testCreateAnnotationShouldFailDueToSecurityImplications",
-                    "testDeleteAllReplies"
+                    "testDeleteRepliesWithId",
+                    "testCreateAnnotationShouldFailDueToProfanityInBody",
+                    "testCreateAnnotationShouldFailDueToProfanityInTitle",
+                    "testCreateReplyShouldFailDueToProfanityInBody",
+                    "testCreateReplyShouldFailDueToProfanityInTitle",
+                    "testGetAnnotationBodyShouldDeclawTheContentDueToSecurityImplications",
+                    "testGetReplyBodyShouldDeclawTheContentDueToSecurityImplications"
             };
 
     for (final String testName : testsInSequence) {
@@ -75,6 +85,20 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(1, deleteAnnotationAction.getActionErrors().size());
   }
 
+  public void testDeleteRepliesWithId() throws Exception {
+    DeleteReplyAction deleteReplyAction = getDeleteReplyAction();
+    deleteReplyAction.setId(replyId);
+    assertEquals(Action.SUCCESS, deleteReplyAction.deleteReplyWithId());
+    log.debug("annotation deleted with id:" + replyId);
+    assertEquals(0, deleteReplyAction.getActionErrors().size());
+
+    deleteReplyAction = getDeleteReplyAction();
+    deleteReplyAction.setId(replyId);
+    assertEquals(Action.ERROR, deleteReplyAction.deleteReplyWithId());
+
+    assertEquals(1, deleteReplyAction.getActionErrors().size());
+  }
+
   public void testListAnnotations() throws Exception {
     final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
     listAnnotationAction.setTarget(target);
@@ -82,8 +106,15 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(1, listAnnotationAction.getAnnotations().length);
   }
 
+  public void testListReplies() throws Exception {
+    final ListReplyAction listReplyAction = getListReplyAction();
+    listReplyAction.setRoot(annotationId);
+    listReplyAction.setInReplyTo(annotationId);
+    assertEquals(Action.SUCCESS, listReplyAction.execute());
+    assertEquals(1, listReplyAction.getReplies().length);
+  }
+
   public void testCreateAnnotation() throws Exception {
-    final String body = "spmething that I always wanted to say";
     final String title = "Annotation1";
     final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
@@ -91,29 +122,129 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);
     assertNotNull(annotationId);
-    final AnnotationInfo savedAnnotation = getAnnotationService().getAnnotationInfo(annotationId);
+
+    final GetAnnotationAction getAnnotationAction = getGetAnnotationAction();
+    getAnnotationAction.setAnnotationId(annotationId);
+    assertEquals(Action.SUCCESS, getAnnotationAction.execute());
+    final AnnotationInfo savedAnnotation = getAnnotationAction.getAnnotation();
     assertEquals(target, savedAnnotation.getAnnotates());
     assertEquals(title, savedAnnotation.getTitle());
     assertEquals(context, savedAnnotation.getContext());
-    assertEquals(body.trim(), getAnnotationService().getBody(savedAnnotation.getBody()));
 
-    this.annotationId = annotationId;
+    final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
+    bodyFetchAction.setBodyUrl(savedAnnotation.getBody());
+    assertEquals(Action.SUCCESS, bodyFetchAction.execute());
+    assertEquals(body, bodyFetchAction.getBody());
+
+    AnnotationActionsTest.annotationId = annotationId;
   }
 
   public void testCreateReply() throws Exception {
-    final String body = "spmething that I always wanted to say";
     final String title = "Reply1";
-    final CreateReplyAction createReplyAction = getCreateReplyAction(target, target, title, "text/plain", body);
+    final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
     assertEquals(Action.SUCCESS, createReplyAction.execute());
-    final String annotationId = createReplyAction.getReplyId();
-    log.debug("annotation created with id:" + annotationId);
-    assertNotNull(annotationId);
-    final AnnotationInfo savedAnnotation = getAnnotationService().getAnnotationInfo(annotationId);
-    assertEquals(target, savedAnnotation.getAnnotates());
-    assertEquals(title, savedAnnotation.getTitle());
-    assertEquals(body.trim(), getAnnotationService().getBody(savedAnnotation.getBody()));
+    final String replyId = createReplyAction.getReplyId();
+    log.debug("annotation created with id:" + replyId);
+    assertNotNull(replyId);
 
-    this.annotationId = annotationId;
+    final GetReplyAction getReplyAction = getGetReplyAction();
+    getReplyAction.setReplyId(replyId);
+    assertEquals(Action.SUCCESS, getReplyAction.execute());
+    final ReplyInfo savedReply = getAnnotationService().getReply(replyId);
+    assertEquals(annotationId, savedReply.getRoot());
+    assertEquals(annotationId, savedReply.getInReplyTo());
+    assertEquals(title, savedReply.getTitle());
+
+    final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
+    bodyFetchAction.setBodyUrl(savedReply.getBody());
+    assertEquals(Action.SUCCESS, bodyFetchAction.execute());
+    assertEquals(body, bodyFetchAction.getBody());
+
+    AnnotationActionsTest.replyId = replyId;
+  }
+
+  public void testCreateAnnotationShouldFailDueToProfanityInBody() throws Exception {
+    final String body = "something that I always wanted to say " + PROFANE_WORD;
+    final String title = "Annotation1";
+    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    assertEquals(Action.ERROR, createAnnotationAction.execute());
+    assertTrue(createAnnotationAction.getFieldErrors().size() > 1);
+  }
+
+  public void testCreateAnnotationShouldFailDueToProfanityInTitle() throws Exception {
+    final String body = "something that I always wanted to say";
+    final String title = "Annotation " + PROFANE_WORD;
+    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    assertEquals(Action.ERROR, createAnnotationAction.execute());
+    assertTrue(createAnnotationAction.getFieldErrors().size() > 1);
+  }
+
+  public void testCreateReplyShouldFailDueToProfanityInBody() throws Exception {
+    final String body = "something that I always wanted to say " + PROFANE_WORD;
+    final String title = "Reply1";
+    final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
+    assertEquals(Action.ERROR, createReplyAction.execute());
+    assertTrue(createReplyAction.getFieldErrors().size() > 1);
+  }
+
+  public void testCreateReplyShouldFailDueToProfanityInTitle() throws Exception {
+    final String body = "something that I always wanted to say";
+    final String title = "Reply1" + PROFANE_WORD;
+    final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
+    assertEquals(Action.ERROR, createReplyAction.execute());
+    assertTrue(createReplyAction.getFieldErrors().size() > 1);
+  }
+
+  public void testGetAnnotationBodyShouldDeclawTheContentDueToSecurityImplications() throws Exception {
+    final String body = "something that I always <div>document.write('Booooom');office.cancellunch('tuesday')</div>";
+    final String declawedBody = "something that I always &lt;div&gt;document.write('Booooom');office.cancellunch('tuesday')&lt;/div&gt;";
+//    final String body = "something that I always $div$document.write('Booooom');office.cancellunch('tuesday')$/div$";
+//    final String declawedBody = "something that I always dollardivdollardocument.write('Booooom');office.cancellunch('tuesday')dollar/divdollar";
+
+    final String title = "Annotation1";
+    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
+
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    final String annotationId1 = createAnnotationAction.getAnnotationId();
+
+    final AnnotationInfo savedAnnotation = getAnnotationService().getAnnotation(annotationId1);
+    final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
+    bodyFetchAction.setBodyUrl(savedAnnotation.getBody());
+
+    assertEquals(Action.SUCCESS, bodyFetchAction.execute());
+    assertEquals(declawedBody, bodyFetchAction.getBody());
+
+  }
+
+  public void testGetReplyBodyShouldDeclawTheContentDueToSecurityImplications() throws Exception {
+    final String body = "something that I always <div>document.write('Booooom');office.cancellunch('tuesday')</div>";
+    final String declawedBody = "something that I always &lt;div&gt;document.write('Booooom');office.cancellunch('tuesday')&lt;/div&gt;";
+//    final String body = "something that I always $div$document.write('Booooom');office.cancellunch('tuesday')$/div$";
+//    final String declawedBody = "something that I always dollardivdollardocument.write('Booooom');office.cancellunch('tuesday')dollar/divdollar";
+
+    final String title = "Annotation1";
+
+    final CreateReplyAction createAnnotationAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
+    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    final String id1 = createAnnotationAction.getReplyId();
+
+    final ReplyInfo savedReply = getAnnotationService().getReply(id1);
+    final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
+    bodyFetchAction.setBodyUrl(savedReply.getBody());
+
+    assertEquals(Action.SUCCESS, bodyFetchAction.execute());
+    assertEquals(declawedBody, bodyFetchAction.getBody());
+
+  }
+
+  private DeleteAnnotationAction getDeleteAnnotationAction(final String annotationId) {
+    final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction();
+    deleteAnnotationAction.setAnnotationId(annotationId);
+    deleteAnnotationAction.setDeletePreceding(false);
+    return deleteAnnotationAction;
   }
 
   private CreateReplyAction getCreateReplyAction(final String root, final String inReplyTo, final String title, final String mimeType, final String body) {
@@ -124,31 +255,6 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     createReplyAction.setMimeType(mimeType);
     createReplyAction.setBody(body);
     return createReplyAction;
-  }
-
-  public void testCreateAnnotationShouldFailDueToProfanity() throws Exception {
-    final String body = "something that I always wanted to say BUSH ";
-    final String title = "Annotation1";
-    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
-    assertEquals(Action.ERROR, createAnnotationAction.execute());
-    assertTrue(createAnnotationAction.getFieldErrors().size() > 1);
-  }
-
-  public void testCreateAnnotationShouldFailDueToSecurityImplications() throws Exception {
-    final String body = "something that I always <div>document.write('Booooom');office.cancellunch('tuesday')</div>";
-    final String title = "Annotation1";
-    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
-    assertEquals(Action.ERROR, createAnnotationAction.execute());
-    assertTrue(createAnnotationAction.getFieldErrors().size() > 1);
-  }
-
-  private DeleteAnnotationAction getDeleteAnnotationAction(final String annotationId) {
-    final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction();
-    deleteAnnotationAction.setAnnotationId(annotationId);
-    deleteAnnotationAction.setDeletePreceding(false);
-    return deleteAnnotationAction;
   }
 
   private CreateAnnotationAction getCreateAnnotationAction(final String target, final String title, final String context, final String mimeType, final String body) {
@@ -164,5 +270,4 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   public AnnotationActionsTest(final String testName) {
     super(testName);
   }
-
 }

@@ -15,8 +15,8 @@ public class FileUtilsTest extends TestCase {
   }
 
   public void testValidateUrl() {
-    assertTrue(FileUtils.isURL("http://java.sun.com/j2se/1.4.2/docs/api/javax/xml/transform/TransformerFactory.html"));
-    assertFalse(FileUtils.isURL("/java.sun.com/j2se/1.4.2/docs/api/javax/xml/transform/TransformerFactory.html"));
-    assertFalse(FileUtils.isURL("C:\\1.4.2\\docs\\api\\javax\\xml\\transform\\TransformerFactory.txt"));
+    assertTrue(FileUtils.isHttpURL("http://java.sun.com/j2se/1.4.2/docs/api/javax/xml/transform/TransformerFactory.html"));
+    assertFalse(FileUtils.isHttpURL("/java.sun.com/j2se/1.4.2/docs/api/javax/xml/transform/TransformerFactory.html"));
+    assertFalse(FileUtils.isHttpURL("C:\\1.4.2\\docs\\api\\javax\\xml\\transform\\TransformerFactory.txt"));
   }
 }

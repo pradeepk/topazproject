@@ -211,7 +211,7 @@ public class FetchArticleService {
     });
 
     Document doc;
-    if (FileUtils.isURL(xmlFile)) {
+    if (FileUtils.isHttpURL(xmlFile)) {
       doc = builder.parse(xmlFile);
     } else {
       try {
@@ -243,7 +243,7 @@ public class FetchArticleService {
 
   private static void createLocalCopyOfEntity(String systemId, String entityFilename) throws IOException {
     //TODO: This keeps creating the "journalpublishing.dtd" again and again. Need to not create it if already existing.
-    if (systemId.startsWith("http:")) {
+    if (FileUtils.isHttpURL(systemId)) {
       try {
         FileUtils.createLocalCopyOfTextFile(systemId, entityFilename);
         log.debug("local dtd created = " + entityFilename);

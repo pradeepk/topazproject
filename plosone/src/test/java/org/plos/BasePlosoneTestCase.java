@@ -10,6 +10,9 @@ import org.plos.annotation.web.ListAnnotationAction;
 import org.plos.annotation.web.ListReplyAction;
 import org.plos.annotation.web.DeleteReplyAction;
 import org.plos.annotation.web.CreateReplyAction;
+import org.plos.annotation.web.BodyFetchAction;
+import org.plos.annotation.web.GetAnnotationAction;
+import org.plos.annotation.web.GetReplyAction;
 import org.plos.article.service.ArticleService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.web.FetchArticleAction;
@@ -29,6 +32,9 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private ListReplyAction listReplyAction;
   private DeleteReplyAction deleteReplyAction;
   private CreateReplyAction createReplyAction;
+  private BodyFetchAction bodyFetchAction;
+  private GetAnnotationAction getAnnotationAction;
+  private GetReplyAction getReplyAction;
 
   public BasePlosoneTestCase() {
     super();
@@ -120,5 +126,29 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
 
   public void setCreateReplyAction(final CreateReplyAction createReplyAction) {
     this.createReplyAction = createReplyAction;
+  }
+
+  public void setAnnotationBodyFetcherAction(final BodyFetchAction bodyFetchAction) {
+    this.bodyFetchAction = bodyFetchAction;
+  }
+
+  public BodyFetchAction getAnnotationBodyFetcherAction() {
+    return bodyFetchAction;
+  }
+
+  public GetAnnotationAction getGetAnnotationAction() {
+    return getAnnotationAction;
+  }
+
+  public void setGetAnnotationAction(final GetAnnotationAction getAnnotationAction) {
+    this.getAnnotationAction = getAnnotationAction;
+  }
+
+  public GetReplyAction getGetReplyAction() {
+    return getReplyAction;
+  }
+
+  public void setGetReplyAction(final GetReplyAction getReplyAction) {
+    this.getReplyAction = getReplyAction;
   }
 }

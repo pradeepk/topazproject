@@ -9,21 +9,39 @@
  */
 package org.plos.annotation.web;
 
-import com.opensymphony.xwork.ActionSupport;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.plos.annotation.service.ApplicationException;
 
 /**
  * Action class to delete a given reply.
  */
-public class DeleteReplyAction extends ActionSupport {
+public class DeleteReplyAction extends AnnotationActionSupport {
   private String id;
   private String root;
   private String inReplyTo;
 
+  private static final Log log = LogFactory.getLog(DeleteReplyAction.class);
+
   public String deleteReplyWithId() throws Exception {
+    try {
+      getAnnotationService().deleteReply(id);
+    } catch (final ApplicationException e) {
+      log.error(e, e);
+      addActionError("Reply deletion failed with error message: " + e.getMessage());
+      return ERROR;
+    }
     return SUCCESS;
   }
 
   public String deleteReplyWithRootAndReplyTo() throws Exception {
+    try {
+      getAnnotationService().deleteReply(root, inReplyTo);
+    } catch (final ApplicationException e) {
+      log.error(e, e);
+      addActionError("Reply deletion failed with error message: " + e.getMessage());
+      return ERROR;
+    }
     return SUCCESS;
   }
 

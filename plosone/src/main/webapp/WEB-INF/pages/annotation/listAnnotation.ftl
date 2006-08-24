@@ -9,16 +9,12 @@
         <legend>Available annotations</legend>
 
         <#list annotations as annotation>
-          id          =${annotation.id}            <br/>
+          id          =
+          <@ww.url id="getAnnotationURL" action="getAnnotation" annotationId="${annotation.id}"/>
+          <@ww.a href="%{getAnnotationURL}">${annotation.id}</@ww.a> <br/>
+
           annotates   =${annotation.annotates}     <br/>
           title       =${annotation.title}         <br/>
-          body        =<@ww.a href="${annotation.body}">${annotation.body}</@ww.a>  <br/>
-          context     =${annotation.context}       <br/>
-          created     =${annotation.created}       <br/>
-          creator     =${annotation.creator}       <br/>
-          mediator    =${annotation.mediator}      <br/>
-          type        =${annotation.type}          <br/>
-
 
           <@ww.url id="deleteAnnotationURL" action="deleteAnnotation" annotationId="${annotation.id}"/>
           <@ww.a href="%{deleteAnnotationURL}">delete</@ww.a><br/>

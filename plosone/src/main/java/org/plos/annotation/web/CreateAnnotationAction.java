@@ -9,24 +9,19 @@
  */
 package org.plos.annotation.web;
 
-import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.ApplicationException;
 import org.plos.util.FileUtils;
 import org.plos.util.ProfanityCheckingService;
-import org.plos.util.UserInputSecurityCheckingService;
 
 import java.util.List;
 
 /**
  * Actions for working with annotations.
  */
-public class CreateAnnotationAction extends ActionSupport {
-  private AnnotationService annotationService;
+public class CreateAnnotationAction extends AnnotationActionSupport {
   private String target;
   private String targetContext;
   private String title;
@@ -35,25 +30,19 @@ public class CreateAnnotationAction extends ActionSupport {
   private String annotationId;
 
   private ProfanityCheckingService profanityCheckingService;
-  private UserInputSecurityCheckingService userInputSecurityCheckingService;
 
   public static final Log log = LogFactory.getLog(CreateAnnotationAction.class);
 
-  /**
-   * Create annotation failed.
-   * @return status
-   * @throws Exception
-   */
   public String execute() throws Exception {
     try {
-      final List<String> profanityValidationMessages = profanityCheckingService.validate(body);
-      final List<String> securityValidationMessages = userInputSecurityCheckingService.escape(body);
+      final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(title);
+      final List<String> profanityValidationMessagesInBody = profanityCheckingService.validate(body);
 
-      if (profanityValidationMessages.isEmpty() && securityValidationMessages.isEmpty() ) {
-        annotationId = annotationService.createAnnotation(target, targetContext, title, mimeType, body);
+      if (profanityValidationMessagesInBody.isEmpty() && profanityValidationMessagesInTitle.isEmpty()) {
+        annotationId = getAnnotationService().createAnnotation(target, targetContext, title, mimeType, body);
       } else {
-        addMessages(profanityValidationMessages, "profanity check", "body");
-        addMessages(securityValidationMessages, "security check", "body");
+        addMessages(profanityValidationMessagesInBody, "profanity check", "body");
+        addMessages(profanityValidationMessagesInTitle, "profanity check", "title");
         return ERROR;
       }
     } catch (final ApplicationException e) {
@@ -65,23 +54,14 @@ public class CreateAnnotationAction extends ActionSupport {
     return SUCCESS;
   }
 
-  private void addMessages(final List<String> validationMessages, final String checkType, final String fieldName) {
-    if (!validationMessages.isEmpty()) {
+  private void addMessages(final List<String> messages, final String checkType, final String fieldName) {
+    if (!messages.isEmpty()) {
       final StringBuilder sb = new StringBuilder();
-      for (final String message : validationMessages) {
+      for (final String message : messages) {
         sb.append(message).append(FileUtils.NEW_LINE);
       }
       addFieldError(fieldName, "Annotation creation failed " + checkType + " with following messages: " + sb.toString().trim());
     }
-  }
-
-  /**
-   * TODO: move up to a parent class
-   * Set the annotations service.
-   * @param annotationService annotationService
-   */
-  public void setAnnotationService(final AnnotationService annotationService) {
-    this.annotationService = annotationService;
   }
 
   /**
@@ -135,7 +115,7 @@ public class CreateAnnotationAction extends ActionSupport {
   /**
    * @return the target
    */
-  @RequiredStringValidator(type= ValidatorType.FIELD, fieldName= "target", message="You must specify the target that this annotation is applied on")
+  @RequiredStringValidator(message="You must specify the target that this annotation is applied on")
   public String getTarget() {
     return target;
   }
@@ -143,7 +123,7 @@ public class CreateAnnotationAction extends ActionSupport {
   /**
    * @return the context for the annotation
    */
-  @RequiredStringValidator(type= ValidatorType.FIELD, fieldName= "targetContext", message="You must specify the context for this annotation")
+  @RequiredStringValidator(message="You must specify the context for this annotation")
   public String getTargetContext() {
     return targetContext;
   }
@@ -158,7 +138,7 @@ public class CreateAnnotationAction extends ActionSupport {
   /**
    * @return the annotation content
    */
-  @RequiredStringValidator(type= ValidatorType.FIELD, fieldName= "body", message="You must say something in your annotation")
+  @RequiredStringValidator(message="You must say something in your annotation")
   public String getBody() {
     return body;
   }
@@ -169,9 +149,5 @@ public class CreateAnnotationAction extends ActionSupport {
 
   public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {
     this.profanityCheckingService = profanityCheckingService;
-  }
-
-  public void setUserInputSecurityCheckingService(final UserInputSecurityCheckingService userInputSecurityCheckingService) {
-    this.userInputSecurityCheckingService = userInputSecurityCheckingService;
   }
 }
