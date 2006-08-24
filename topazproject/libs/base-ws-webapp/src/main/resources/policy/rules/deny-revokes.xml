@@ -21,10 +21,9 @@
     <Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-greater-than">
       <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
         <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:itql">
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql</AttributeValue>
+          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
           <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
-            select $s from &lt;rmi://localhost/fedora#revokes&gt;
-            where ($s &lt;?&gt; &lt;?&gt; or 
+            select $s from &lt;?&gt; where ($s &lt;?&gt; &lt;?&gt; or 
             $s &lt;?&gt; &lt;http://rdf.topazproject.org/RDF/permissions#all&gt; or
             $s &lt;http://rdf.topazproject.org/RDF/permissions#all&gt; &lt;?&gt; or
             $s &lt;http://rdf.topazproject.org/RDF/permissions#all&gt;
@@ -32,6 +31,10 @@
             and ($s &lt;tucana:is&gt; &lt;?&gt; or 
             $s &lt;tucana:is&gt; &lt;http://rdf.topazproject.org/RDF/permissions#all&gt;);
           </AttributeValue>
+          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+            <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
+              AttributeId="topaz.models.revokes"/>   
+          </Apply>
           <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
             <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
               AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>        
