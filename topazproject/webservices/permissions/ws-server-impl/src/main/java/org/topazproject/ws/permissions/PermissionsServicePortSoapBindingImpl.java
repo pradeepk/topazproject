@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.ws.permissions.service;
+package org.topazproject.ws.permissions;
 
 import java.rmi.RemoteException;
 
@@ -29,8 +29,8 @@ import org.topazproject.authentication.ProtectedServiceFactory;
 
 import org.topazproject.configuration.ConfigurationStore;
 
-import org.topazproject.ws.permissions.PermissionsImpl;
-import org.topazproject.ws.permissions.PermissionsPEP;
+import org.topazproject.ws.permissions.impl.PermissionsImpl;
+import org.topazproject.ws.permissions.impl.PermissionsPEP;
 
 import org.topazproject.xacml.Util;
 
