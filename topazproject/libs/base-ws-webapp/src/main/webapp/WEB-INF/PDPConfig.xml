@@ -6,6 +6,8 @@
   <pdp name="standard-pdp">
     <attributeFinderModule class="com.sun.xacml.finder.impl.CurrentEnvModule"/>
     <attributeFinderModule
+      class="org.topazproject.xacml.finder.ConfigurationAttributeFinderModule"/>
+    <attributeFinderModule
       class="org.topazproject.xacml.finder.ServletEndpointContextAttributeFinderModule"/>
     <policyFinderModule class="org.topazproject.xacml.finder.ResourcePolicyModule"
       name="standard-policy-finder">
@@ -30,6 +32,8 @@
   </pdp>
   <pdp name="test-pdp">
     <attributeFinderModule class="com.sun.xacml.finder.impl.CurrentEnvModule"/>
+    <attributeFinderModule
+      class="org.topazproject.xacml.finder.ConfigurationAttributeFinderModule"/>
     <attributeFinderModule
       class="org.topazproject.xacml.finder.ServletEndpointContextAttributeFinderModule"/>
     <policyFinderModule class="org.topazproject.xacml.finder.ResourcePolicyModule"
