@@ -28,11 +28,5 @@
     <server>
       <hostname>localhost</hostname>
     </server>
-    <annotations>
-      <pdpName>_default_</pdpName>
-    </annotations>
-    <replies>
-      <pdpName>_default_</pdpName>
-    </replies>
   </topaz>
 </config>
