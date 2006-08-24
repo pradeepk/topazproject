@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.users.service;
+package org.topazproject.ws.users;
 
 import java.rmi.RemoteException;
 import javax.servlet.http.HttpSession;
@@ -24,8 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
-import org.topazproject.ws.users.UserAccountsImpl;
-import org.topazproject.ws.users.UserAccountsPEP;
+import org.topazproject.ws.users.impl.UserAccountsImpl;
+import org.topazproject.ws.users.impl.UserAccountsPEP;
 import org.topazproject.xacml.Util;
 
 /** 
@@ -102,9 +102,9 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
       synchronized (impl) {
         impl.deleteUser(userId);
       }
-    } catch (org.topazproject.ws.users.NoSuchIdException nsie) {
+    } catch (NoSuchIdException nsie) {
       log.debug("", nsie);
-      throw new NoSuchIdException(nsie.getId());
+      throw nsie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -122,9 +122,9 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
       synchronized (impl) {
         return impl.getAuthenticationIds(userId);
       }
-    } catch (org.topazproject.ws.users.NoSuchIdException nsie) {
+    } catch (NoSuchIdException nsie) {
       log.debug("", nsie);
-      throw new NoSuchIdException(nsie.getId());
+      throw nsie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -143,9 +143,9 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
       synchronized (impl) {
         impl.setAuthenticationIds(userId, authIds);
       }
-    } catch (org.topazproject.ws.users.NoSuchIdException nsie) {
+    } catch (NoSuchIdException nsie) {
       log.debug("", nsie);
-      throw new NoSuchIdException(nsie.getId());
+      throw nsie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;

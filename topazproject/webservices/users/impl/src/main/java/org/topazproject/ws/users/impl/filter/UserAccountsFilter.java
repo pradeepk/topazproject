@@ -38,7 +38,7 @@ import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.topazproject.ws.users.UserAccountLookup;
-import org.topazproject.ws.users.UserAccountsImpl;
+import org.topazproject.ws.users.impl.UserAccountsImpl;
 
 /**
  * A servlet filter that maps the authenticated user id to an internal topaz-user-id. The topaz

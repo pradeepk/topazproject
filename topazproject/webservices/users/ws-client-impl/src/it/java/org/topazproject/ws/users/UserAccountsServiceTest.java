@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.users.service;
+package org.topazproject.ws.users;
 
 import java.io.IOException;
 import java.net.MalformedURLException;

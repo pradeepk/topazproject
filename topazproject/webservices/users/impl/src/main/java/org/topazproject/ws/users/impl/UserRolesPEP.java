@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.users;
+package org.topazproject.ws.users.impl;
 
 import java.io.IOException;
 import java.net.URI;
@@ -21,46 +21,33 @@ import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;
 
+import org.topazproject.ws.users.NoSuchIdException;
+
 /**
- * The XACML PEP for the user accounts manager.
+ * The XACML PEP for the user roles manager.
  *
  * @author Ronald Tschalär
  */
-public abstract class UserAccountsPEP extends AbstractSimplePEP {
-  /** The action that represents a user account creation operation in XACML policies. */
-  public static final String CREATE_USER = "userAccounts:createUser";
+public abstract class UserRolesPEP extends AbstractSimplePEP {
+  /** The action that represents a get-roles operation in XACML policies. */
+  public static final String GET_ROLES = "userRoles:getRoles";
 
-  /** The action that represents a delete user account operation in XACML policies. */
-  public static final String DELETE_USER = "userAccounts:deleteUser";
-
-  /** The action that represents a get-authentication-ids operation in XACML policies. */
-  public static final String GET_AUTH_IDS = "userAccounts:getAuthIds";
-
-  /** The action that represents a set-authentication-ids operation in XACML policies. */
-  public static final String SET_AUTH_IDS = "userAccounts:setAuthIds";
-
-  /** The action that represents a look-up-user operation in XACML policies. */
-  public static final String LOOKUP_USER = "userAccounts:lookUpUser";
+  /** The action that represents a set-roles operation in XACML policies. */
+  public static final String SET_ROLES = "userRoles:setRoles";
 
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
-                                                           CREATE_USER,
-                                                           DELETE_USER,
-                                                           GET_AUTH_IDS,
-                                                           SET_AUTH_IDS,
-                                                           LOOKUP_USER,
+                                                           GET_ROLES,
+                                                           SET_ROLES,
                                                          };
 
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
                                                            null,
                                                            null,
-                                                           null,
-                                                           null,
-                                                           null,
                                                          };
 
-  protected UserAccountsPEP(PDP pdp, Set subjAttrs)
+  protected UserRolesPEP(PDP pdp, Set subjAttrs)
       throws IOException, ParsingException, UnknownIdentifierException {
     super(pdp, subjAttrs);
   }
@@ -69,7 +56,7 @@ public abstract class UserAccountsPEP extends AbstractSimplePEP {
    * Check if the curent user may perform the requested action.
    * 
    * @param action one of the actions defined above
-   * @param userId the user's internal account id
+   * @param userId the user's internal id
    */
   protected void checkUserAccess(String action, String userId)
       throws SecurityException, NoSuchIdException {

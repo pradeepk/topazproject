@@ -41,7 +41,7 @@
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-users-core</artifactId>
+      <artifactId>ws-users-impl</artifactId>
       <version>0.1-SNAPSHOT</version>
     </dependency>
     <dependency>

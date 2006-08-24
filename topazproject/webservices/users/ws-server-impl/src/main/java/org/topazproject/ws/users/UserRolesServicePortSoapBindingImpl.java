@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.users.service;
+package org.topazproject.ws.users;
 
 import java.rmi.RemoteException;
 import javax.servlet.http.HttpSession;
@@ -24,8 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
-import org.topazproject.ws.users.UserRolesImpl;
-import org.topazproject.ws.users.UserRolesPEP;
+import org.topazproject.ws.users.impl.UserRolesImpl;
+import org.topazproject.ws.users.impl.UserRolesPEP;
 import org.topazproject.xacml.Util;
 
 /** 
@@ -81,9 +81,9 @@ public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLi
       synchronized (impl) {
         return impl.getRoles(userId);
       }
-    } catch (org.topazproject.ws.users.NoSuchIdException nsie) {
+    } catch (NoSuchIdException nsie) {
       log.debug("", nsie);
-      throw new NoSuchIdException(nsie.getId());
+      throw nsie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -101,9 +101,9 @@ public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLi
       synchronized (impl) {
         impl.setRoles(userId, authIds);
       }
-    } catch (org.topazproject.ws.users.NoSuchIdException nsie) {
+    } catch (NoSuchIdException nsie) {
       log.debug("", nsie);
-      throw new NoSuchIdException(nsie.getId());
+      throw nsie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;

@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.users;
+package org.topazproject.ws.users.impl;
 
 import java.io.IOException;
 import java.net.URI;
@@ -33,6 +33,10 @@ import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
+
+import org.topazproject.ws.users.NoSuchIdException;
+import org.topazproject.ws.users.UserAccounts;
+import org.topazproject.ws.users.UserAccountLookup;
 
 /** 
  * This provides the implementation of the user-accounts service.
