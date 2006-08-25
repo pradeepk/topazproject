@@ -53,6 +53,10 @@
               <name>java.util.logging.manager</name>
               <value>org.topazproject.logging.jdk2log4j.LogManager</value>
             </property>
+            <property>
+              <name>java.util.logging.manager.altclassloader</name>
+              <value>true</value>
+            </property>
           </systemProperties>
         </configuration>
       </plugin>
