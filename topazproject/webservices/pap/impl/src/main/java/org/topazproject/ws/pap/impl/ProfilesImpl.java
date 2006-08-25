@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.pap;
+package org.topazproject.ws.pap.impl;
 
 import java.io.IOException;
 import java.net.URI;
@@ -35,6 +35,10 @@ import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
+
+import org.topazproject.ws.pap.NoSuchIdException;
+import org.topazproject.ws.pap.Profiles;
+import org.topazproject.ws.pap.UserProfile;
 
 /** 
  * This provides the implementation of the profiles service.

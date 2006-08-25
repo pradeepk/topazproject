@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.pap.service;
+package org.topazproject.ws.pap;
 
 import java.rmi.RemoteException;
 import javax.servlet.http.HttpSession;
@@ -24,8 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
-import org.topazproject.ws.pap.PreferencesImpl;
-import org.topazproject.ws.pap.PreferencesPEP;
+import org.topazproject.ws.pap.impl.PreferencesImpl;
+import org.topazproject.ws.pap.impl.PreferencesPEP;
 import org.topazproject.xacml.Util;
 
 /** 
@@ -80,11 +80,11 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
       throws RemoteException, NoSuchIdException {
     try {
       synchronized (impl) {
-        impl.setPreferences(appId, userId, fromSvcPrefs(prefs));
+        impl.setPreferences(appId, userId, prefs);
       }
-    } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
+    } catch (NoSuchIdException nsie) {
       log.debug("", nsie);
-      throw new NoSuchIdException(nsie.getId());
+      throw nsie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -101,11 +101,11 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
       throws RemoteException, NoSuchIdException {
     try {
       synchronized (impl) {
-        return toSvcPrefs(impl.getPreferences(appId, userId));
+        return impl.getPreferences(appId, userId);
       }
-    } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
+    } catch (NoSuchIdException nsie) {
       log.debug("", nsie);
-      throw new NoSuchIdException(nsie.getId());
+      throw nsie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -113,35 +113,6 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
       log.error("", e);
       throw e;
     }
-  }
-
-  private static final org.topazproject.ws.pap.UserPreference[] fromSvcPrefs(UserPreference[] prefs) {
-    if (prefs == null)
-      return null;
-
-    org.topazproject.ws.pap.UserPreference[] res =
-        new org.topazproject.ws.pap.UserPreference[prefs.length];
-    for (int idx = 0; idx < res.length; idx++) {
-      res[idx] = new org.topazproject.ws.pap.UserPreference();
-      res[idx].setName(prefs[idx].getName());
-      res[idx].setValues(prefs[idx].getValues());
-    }
-
-    return res;
-  }
-
-  private static final UserPreference[] toSvcPrefs(org.topazproject.ws.pap.UserPreference[] prefs) {
-    if (prefs == null)
-      return null;
-
-    UserPreference[] res = new UserPreference[prefs.length];
-    for (int idx = 0; idx < res.length; idx++) {
-      res[idx] = new UserPreference();
-      res[idx].setName(prefs[idx].getName());
-      res[idx].setValues(prefs[idx].getValues());
-    }
-
-    return res;
   }
 
   private static class WSPreferencesPEP extends PreferencesPEP {

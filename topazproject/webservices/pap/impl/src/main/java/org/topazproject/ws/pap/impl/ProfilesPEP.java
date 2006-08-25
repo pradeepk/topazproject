@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.pap;
+package org.topazproject.ws.pap.impl;
 
 import java.io.IOException;
 import java.net.URI;
@@ -27,6 +27,8 @@ import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.attr.AnyURIAttribute;
 import com.sun.xacml.attr.BagAttribute;
 import com.sun.xacml.ctx.Attribute;
+
+import org.topazproject.ws.pap.NoSuchIdException;
 
 /**
  * The XACML PEP for profiles.

@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.pap;
+package org.topazproject.ws.pap.impl;
 
 import java.io.IOException;
 import java.net.URI;
@@ -31,6 +31,10 @@ import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
+
+import org.topazproject.ws.pap.NoSuchIdException;
+import org.topazproject.ws.pap.Preferences;
+import org.topazproject.ws.pap.UserPreference;
 
 /** 
  * This provides the implementation of the user preferences service.

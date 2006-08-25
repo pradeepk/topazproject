@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project>
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>${pom.parent.artifactId}-core</artifactId>
+  <artifactId>${pom.parent.artifactId}-api</artifactId>
   <packaging>jar</packaging>
-  <name>Pap Core</name>
+  <name>Pap API</name>
 
   <parent>
     <groupId>org.topazproject.ws</groupId>
@@ -18,33 +18,6 @@
     </license>
   </licenses>
 
-  <dependencies>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.0.4</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>fedora-client</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>mulgara-client</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>auth-helper</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>xacml-extensions</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-  </dependencies>
 
   <build>
     <plugins>
@@ -63,7 +36,7 @@
               <implementationClassName>ProfilesServiceImplementation</implementationClassName>
               <filename>${wsdl.filename}</filename>
               <all>true</all>
-              <namespace>service.pap.ws.topazproject.org</namespace>
+              <namespace>pap.ws.topazproject.org</namespace>
               <servicePortName>ProfilesServicePort</servicePortName>
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
@@ -81,7 +54,7 @@
               <input>${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}</input>
               <filename>${wsdl.filename}</filename>
               <all>true</all>
-              <namespace>service.pap.ws.topazproject.org</namespace>
+              <namespace>pap.ws.topazproject.org</namespace>
               <servicePortName>PreferencesServicePort</servicePortName>
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>

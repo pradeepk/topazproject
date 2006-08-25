@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.pap.service;
+package org.topazproject.ws.pap;
 
 import java.rmi.RemoteException;
 import javax.servlet.http.HttpSession;
@@ -24,8 +24,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
-import org.topazproject.ws.pap.ProfilesImpl;
-import org.topazproject.ws.pap.ProfilesPEP;
+import org.topazproject.ws.pap.impl.ProfilesImpl;
+import org.topazproject.ws.pap.impl.ProfilesPEP;
 import org.topazproject.xacml.Util;
 
 /** 
@@ -83,11 +83,11 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
   public UserProfile getProfile(String userId) throws RemoteException, NoSuchIdException {
     try {
       synchronized (impl) {
-        return fromProfile(impl.getProfile(userId));
+        return impl.getProfile(userId);
       }
-    } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
+    } catch (NoSuchIdException nsie) {
       log.debug("", nsie);
-      throw new NoSuchIdException(nsie.getId());
+      throw nsie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -104,11 +104,11 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
       throws RemoteException, NoSuchIdException {
     try {
       synchronized (impl) {
-        impl.setProfile(userId, toProfile(profile));
+        impl.setProfile(userId, profile);
       }
-    } catch (org.topazproject.ws.pap.NoSuchIdException nsie) {
+    } catch (NoSuchIdException nsie) {
       log.debug("", nsie);
-      throw new NoSuchIdException(nsie.getId());
+      throw nsie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -116,51 +116,6 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
       log.error("", e);
       throw e;
     }
-  }
-
-  private static final UserProfile fromProfile(org.topazproject.ws.pap.UserProfile prof) {
-    if (prof == null)
-      return null;
-
-    return new UserProfile(prof.getBiography(), prof.getBiographyReaders(), prof.getDisplayName(),
-                           prof.getDisplayNameReaders(), prof.getEmail(), prof.getEmailReaders(),
-                           prof.getGender(), prof.getGenderReaders(), prof.getHomePage(),
-                           prof.getHomePageReaders(), prof.getInterests(),
-                           prof.getInterestsReaders(), prof.getPublications(),
-                           prof.getPublicationsReaders(), prof.getRealName(),
-                           prof.getRealNameReaders(), prof.getTitle(), prof.getTitleReaders(),
-                           prof.getWeblog(), prof.getWeblogReaders());
-  }
-
-  private static final org.topazproject.ws.pap.UserProfile toProfile(UserProfile prof) {
-    if (prof == null)
-      return null;
-
-    org.topazproject.ws.pap.UserProfile res = new org.topazproject.ws.pap.UserProfile();
-
-    res.setBiography(prof.getBiography());
-    res.setDisplayName(prof.getDisplayName());
-    res.setEmail(prof.getEmail());
-    res.setGender(prof.getGender());
-    res.setHomePage(prof.getHomePage());
-    res.setInterests(prof.getInterests());
-    res.setPublications(prof.getPublications());
-    res.setRealName(prof.getRealName());
-    res.setTitle(prof.getTitle());
-    res.setWeblog(prof.getWeblog());
-
-    res.setBiographyReaders(prof.getBiographyReaders());
-    res.setDisplayNameReaders(prof.getDisplayNameReaders());
-    res.setEmailReaders(prof.getEmailReaders());
-    res.setGenderReaders(prof.getGenderReaders());
-    res.setHomePageReaders(prof.getHomePageReaders());
-    res.setInterestsReaders(prof.getInterestsReaders());
-    res.setPublicationsReaders(prof.getPublicationsReaders());
-    res.setRealNameReaders(prof.getRealNameReaders());
-    res.setTitleReaders(prof.getTitleReaders());
-    res.setWeblogReaders(prof.getWeblogReaders());
-
-    return res;
   }
 
   private static class WSProfilesPEP extends ProfilesPEP {

@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.pap;
+package org.topazproject.ws.pap.impl;
 
 import java.io.IOException;
 import java.net.URI;
@@ -20,6 +20,8 @@ import org.topazproject.xacml.AbstractSimplePEP;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;
+
+import org.topazproject.ws.pap.NoSuchIdException;
 
 /**
  * The XACML PEP for preferences.
