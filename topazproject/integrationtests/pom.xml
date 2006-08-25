@@ -119,16 +119,6 @@
     <!-- users -->
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-users-core</artifactId>
-      <version>0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-users-server</artifactId>
-      <version>0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-users-client-impl</artifactId>
       <version>0.1-SNAPSHOT</version>
     </dependency>
@@ -139,16 +129,6 @@
       <version>0.1-SNAPSHOT</version>
     </dependency>
     <!-- pap -->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-pap-core</artifactId>
-      <version>0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-pap-server</artifactId>
-      <version>0.1-SNAPSHOT</version>
-    </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-pap-client-impl</artifactId>
@@ -163,16 +143,6 @@
     <!-- permissions -->
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-permissions-core</artifactId>
-      <version>0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-permissions-server</artifactId>
-      <version>0.1-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-permissions-client-impl</artifactId>
       <version>0.1-SNAPSHOT</version>
     </dependency>
@@ -183,16 +153,6 @@
       <version>0.1-SNAPSHOT</version>
     </dependency>
     <!-- alerts -->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-alerts-core</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-alerts-server</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-alerts-client-impl</artifactId>
