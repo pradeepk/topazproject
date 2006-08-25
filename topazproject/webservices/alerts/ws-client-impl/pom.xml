@@ -37,6 +37,7 @@
       <artifactId>${pom.parent.artifactId}-webapp</artifactId>
       <type>war</type>
       <version>${pom.parent.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>axis</groupId>
@@ -64,46 +65,54 @@
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-articles-client-impl</artifactId>
       <version>0.1</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-articles-webapp</artifactId>
       <type>war</type>
       <version>0.1</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-users-client-impl</artifactId>
       <version>0.1-SNAPSHOT</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-users-webapp</artifactId>
       <type>war</type>
       <version>0.1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-pap-client-impl</artifactId>
       <version>0.1-SNAPSHOT</version>
+      <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-pap-webapp</artifactId>
       <type>war</type>
       <version>0.1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
     <!-- Get IOUtil -->
     <dependency>
       <groupId>spice</groupId>
       <artifactId>spice-salt</artifactId>
       <version>1.0</version>
+      <scope>test</scope>
     </dependency>
     <!-- mailserver junit extension: http://quintanasoft.com/dumbster/ -->
     <dependency>
       <groupId>dumbster</groupId>
       <artifactId>dumbster</artifactId>
       <version>1.6</version>
+      <scope>test</scope>
     </dependency>
   </dependencies>
 

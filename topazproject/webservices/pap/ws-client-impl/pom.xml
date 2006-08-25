@@ -37,6 +37,7 @@
       <artifactId>${pom.parent.artifactId}-webapp</artifactId>
       <type>war</type>
       <version>${pom.parent.version}</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>axis</groupId>
@@ -70,6 +71,7 @@
       <artifactId>ws-users-webapp</artifactId>
       <version>0.1-SNAPSHOT</version>
       <type>war</type>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
