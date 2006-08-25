@@ -18,8 +18,8 @@ import javax.xml.rpc.ServiceException;
 
 import junit.framework.TestCase;
 
-import org.topazproject.ws.users.service.UserAccounts;
-import org.topazproject.ws.users.service.UserAccountsServiceLocator;
+import org.topazproject.ws.users.UserAccounts;
+import org.topazproject.ws.users.UserAccountsServiceLocator;
 
 /**
  * Simple tests for the profiles service.

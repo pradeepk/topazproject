@@ -32,8 +32,8 @@ import org.topazproject.ws.article.NoSuchIdException;
 import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.ArticleServiceLocator;
 
-import org.topazproject.ws.users.service.UserAccounts;
-import org.topazproject.ws.users.service.UserAccountsServiceLocator;
+import org.topazproject.ws.users.UserAccounts;
+import org.topazproject.ws.users.UserAccountsServiceLocator;
 import org.topazproject.ws.pap.service.UserPreference;
 import org.topazproject.ws.pap.service.Preferences;
 import org.topazproject.ws.pap.service.PreferencesServiceLocator;
