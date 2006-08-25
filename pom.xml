@@ -144,6 +144,24 @@
     <profile>
       <id>it-helper</id>
 
+      <repositories>
+        <!-- Add cargo-snapshot repository -->
+        <repository>
+          <id>cargo-snapshot</id>
+          <name>Cargo's snapshot repository</name>
+          <url>http://snapshots.repository.codehaus.org/</url>
+        </repository>
+      </repositories>
+        
+      <dependencies>
+        <dependency>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+          <version>1.2.13</version>
+          <scope>provided</scope>
+        </dependency>
+      </dependencies>
+      
       <build>
         <!-- We're doing integration testing, so get test resources from appropriate location. -->
         <!-- XXX: Ideally we'd do this via configuration/resources in the maven-resourses-plugin,
@@ -239,8 +257,10 @@
             
             <!-- deploy for integration testing -->
             <plugin>
-              <groupId>org.codehaus.cargo</groupId>
+              <groupId>org.topazproject.patch.cargo</groupId>
+<!--            <groupId>org.codehaus.cargo</groupId> -->
               <artifactId>cargo-maven2-plugin</artifactId>
+              <version>0.3-SNAPSHOT</version>
               <configuration>
                 <wait>false</wait>
                 <container>
@@ -248,6 +268,18 @@
                   <type>embedded</type>
                   <output>${project.build.directory}/jetty.log</output>
                   <log>${project.build.directory}/cargo.log</log>
+                  <dependencies>
+                    <dependency>
+                      <groupId>log4j</groupId>
+                      <artifactId>log4j</artifactId>
+                    </dependency>
+                    <dependency>
+                      <location>${user.home}/.m2/topaz/container-classes</location>
+                    </dependency>
+                    <dependency>
+                      <location>${basedir}/src/it/container-classes</location>
+                    </dependency>
+                  </dependencies>
                 </container>
                 <configuration> 
                   <home>${project.build.directory}/jetty</home>

@@ -53,12 +53,14 @@ echo "Removing potentially stale directory: ${TOPAZ_INSTALL_DIR}"
 rm -rf ${TOPAZ_INSTALL_DIR}
 
 # The rest of these things we do whether they succeed or not
+# (Actually we care if integration tests fail, but need docs run even if they do)
 set +e
 
 # Run integration tests and generate documentation
 if [ ${N} -eq 0 ]; then
   echo "Running integration tests: mvn clean -Pit-startenv install --batch-mode"
   (cd topazproject/integrationtests; ${MVN} -Pit-startenv clean install --batch-mode)
+  N=$?
 
   echo "Creating documentation: cd integrationtests; mvn site-deploy"
   rm -rf ${TOPAZ_INSTALL_DIR}/topazdocs

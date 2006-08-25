@@ -82,7 +82,7 @@
       <build>
         <plugins>
           <plugin>
-            <groupId>org.codehaus.cargo</groupId>
+            <groupId>org.topazproject.patch.cargo</groupId>
             <artifactId>cargo-maven2-plugin</artifactId>
             <executions>
               <execution>
