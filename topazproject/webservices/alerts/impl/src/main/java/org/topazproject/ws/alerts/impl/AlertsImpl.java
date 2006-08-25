@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.alerts;
+package org.topazproject.ws.alerts.impl;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -41,6 +41,7 @@ import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.Answer.QueryAnswer;
 import org.topazproject.fedora.client.APIMStubFactory;
 import org.topazproject.fedora.client.FedoraAPIM;
+import org.topazproject.ws.alerts.Alerts;
 
 /** 
  * This provides the implementation of the alerts service.

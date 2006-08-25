@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.alerts;
+package org.topazproject.ws.alerts.impl;
 
 import java.io.IOException;
 import java.util.Set;

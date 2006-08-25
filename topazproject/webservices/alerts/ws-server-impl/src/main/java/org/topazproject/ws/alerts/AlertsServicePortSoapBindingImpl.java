@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.alerts.service;
+package org.topazproject.ws.alerts;
 
 import java.util.Calendar;
 import java.net.URI;
@@ -26,8 +26,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
-import org.topazproject.ws.alerts.AlertsImpl;
-import org.topazproject.ws.alerts.AlertsPEP;
+import org.topazproject.ws.alerts.impl.AlertsImpl;
+import org.topazproject.ws.alerts.impl.AlertsPEP;
 import org.topazproject.xacml.Util;
 
 /** 
@@ -103,11 +103,11 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
     }
   }
 
-  public boolean sendAlerts(Calendar endDate, int count) throws RemoteException {
+  public boolean sendAlerts(Calendar endDate, int count) {
     return impl.sendAlerts(endDate, count);
   }
 
-  public boolean sendAllAlerts() throws RemoteException {
+  public boolean sendAllAlerts() {
     return impl.sendAllAlerts();
   }
 
