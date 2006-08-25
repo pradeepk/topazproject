@@ -34,9 +34,9 @@ import org.topazproject.ws.article.ArticleServiceLocator;
 
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsServiceLocator;
-import org.topazproject.ws.pap.service.UserPreference;
-import org.topazproject.ws.pap.service.Preferences;
-import org.topazproject.ws.pap.service.PreferencesServiceLocator;
+import org.topazproject.ws.pap.UserPreference;
+import org.topazproject.ws.pap.Preferences;
+import org.topazproject.ws.pap.PreferencesServiceLocator;
 
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
@@ -141,6 +141,7 @@ public class AlertsServiceTest extends TestCase {
   }
 
   protected void ingestArticle(String doi, String resource) throws RemoteException {
+    log.info("ingesting article " + doi + " : " + resource);
     deleteArticle(doi);
     URL article = getClass().getResource(resource);
     assertEquals("Wrong doi returned,", doi, articleService.ingest(new DataHandler(article)));
@@ -151,7 +152,8 @@ public class AlertsServiceTest extends TestCase {
     try {
       articleService.delete(doi, true);
       log.info("deleted article " + doi);
-    } catch (NoSuchIdException nsie) {
+//    } catch (NoSuchIdException nsie) {
+    } catch (Exception nsie) {
       // so what
       //log.debug(nsie);
     }
