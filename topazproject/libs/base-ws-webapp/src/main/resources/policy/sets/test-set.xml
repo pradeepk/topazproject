@@ -20,6 +20,8 @@
 
   <PolicyIdReference>permit-creator</PolicyIdReference>
 
+  <PolicyIdReference>permit-self</PolicyIdReference>
+
   <PolicyIdReference>permit-bootstrap</PolicyIdReference>
   
   <PolicyIdReference>permit-all</PolicyIdReference>
