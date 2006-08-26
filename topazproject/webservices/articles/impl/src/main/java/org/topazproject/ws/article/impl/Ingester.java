@@ -350,7 +350,7 @@ public class Ingester {
     try {
       apim.ingest(foxml.getBytes("UTF-8"), "foxml1.0", logMsg);
     } catch (RemoteException re) {
-      FedoraUtil.detectDuplicateIdException(re, pid);
+      FedoraUtil.detectDuplicateIdException(re, ArticleImpl.pid2DOI(pid));
     }
   }
 
