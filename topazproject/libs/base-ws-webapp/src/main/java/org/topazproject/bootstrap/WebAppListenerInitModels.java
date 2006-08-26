@@ -30,7 +30,7 @@ import org.topazproject.mulgara.itql.ItqlHelper;
  *
  * @author Pradeep Krishnan
  */
-public class WebAppListener implements ServletContextListener {
+public class WebAppListenerInitModels implements ServletContextListener {
   private static Log log = LogFactory.getLog(WebAppListener.class);
 
   /**

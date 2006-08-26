@@ -1,5 +1,14 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  $HeadURL::                                                                                      $
+  $Id$
 
+  Copyright (c) 2006 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Educational Community License version 1.0
+  http://opensource.org/licenses/ecl1.php
+-->
 <config>
   <topaz>
     <objects>
@@ -47,5 +56,9 @@
     <server>
       <hostname>localhost</hostname>
     </server>
+    
+    <life-cycle-listeners>
+      <listener name="models">org.topazproject.bootstrap.WebAppListenerInitModels</listener>
+    </life-cycle-listeners>
   </topaz>
 </config>

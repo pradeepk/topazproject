@@ -48,7 +48,7 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   </listener>
 
   <listener>
-    <listener-class>org.topazproject.bootstrap.WebAppListener</listener-class>
+    <listener-class>org.topazproject.bootstrap.MasterWebAppListener</listener-class>
   </listener>
   
   <!-- Axis Web Service -->
