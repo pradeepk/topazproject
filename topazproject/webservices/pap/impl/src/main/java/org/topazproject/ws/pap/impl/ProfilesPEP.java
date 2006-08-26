@@ -36,31 +36,56 @@ import org.topazproject.ws.pap.NoSuchIdException;
  * @author Ronald Tschalär
  */
 public abstract class ProfilesPEP extends AbstractSimplePEP {
+  /** The action that represents a get-display-name operation in XACML policies: {@value}. */
+  public static final String GET_DISP_NAME = "profiles:getDisplayName";
+
+  /** The action that represents a get-real-name operation in XACML policies: {@value}. */
+  public static final String GET_REAL_NAME = "profiles:getRealName";
+
+  /** The action that represents a get-title operation in XACML policies: {@value}. */
+  public static final String GET_TITLE = "profiles:getTitle";
+
+  /** The action that represents a get-gender operation in XACML policies: {@value}. */
+  public static final String GET_GENDER = "profiles:getGender";
+
+  /** The action that represents a get-email operation in XACML policies: {@value}. */
+  public static final String GET_EMAIL = "profiles:getEmail";
+
+  /** The action that represents a get-home-page operation in XACML policies: {@value}. */
+  public static final String GET_HOME_PAGE = "profiles:getHomePage";
+
+  /** The action that represents a get-weblog operation in XACML policies: {@value}. */
+  public static final String GET_WEBLOG = "profiles:getWeblog";
+
+  /** The action that represents a get-biography operation in XACML policies: {@value}. */
+  public static final String GET_BIOGRAPHY = "profiles:getBiography";
+
+  /** The action that represents a get-interests operation in XACML policies: {@value}. */
+  public static final String GET_INTERESTS = "profiles:getInterests";
+
+  /** The action that represents a get-publications operation in XACML policies: {@value}. */
+  public static final String GET_PUBLICATIONS = "profiles:getPublications";
+
   /** The action that represents a set-profile operation in XACML policies. */
   public static final String SET_PROFILE = "profiles:setProfile";
 
-  /** The action that represents a get-profile operation in XACML policies. */
-  public static final String GET_PROFILE = "profiles:getProfile";
-
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
+                                                           GET_DISP_NAME,
+                                                           GET_REAL_NAME,
+                                                           GET_TITLE,
+                                                           GET_GENDER,
+                                                           GET_EMAIL,
+                                                           GET_HOME_PAGE,
+                                                           GET_WEBLOG,
+                                                           GET_BIOGRAPHY,
+                                                           GET_INTERESTS,
+                                                           GET_PUBLICATIONS,
                                                            SET_PROFILE,
-                                                           GET_PROFILE,
                                                          };
 
   /** The list of all supported obligations */
-  protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
-                                                           null,
-                                                           null,
-                                                         };
-
-  /** The id of the attribute that represents the list allowed readers. */
-  public static final URI ALLOWED_READERS_ID =
-      URI.create("urn:topazproject:names:tc:xacml:1.0:attribute:profile-readers");
-
-  /** The attribute type of an xs:anyURI attribute. */
-  public static final URI ANY_URI_TYPE = URI.create(AnyURIAttribute.identifier);
-
+  protected static final String[][] SUPPORTED_OBLIGATIONS = null;
 
   protected ProfilesPEP(PDP pdp, Set subjAttrs)
       throws IOException, ParsingException, UnknownIdentifierException {
@@ -90,28 +115,5 @@ public abstract class ProfilesPEP extends AbstractSimplePEP {
     }
 
     checkAccess(action, userURI);
-  }
-
-  /**
-   * Check if the current user is allowed read access according to the given list of readers.
-   *
-   * @param owner    the owner of the profile
-   * @param readers  the list of allowed readers 
-   * @throws SecurityException if the operation is not permitted
-   */
-  void checkReadAccess(String owner, String[] readers) throws SecurityException {
-    Set resourceAttrs = new HashSet();
-
-    resourceAttrs.add(new Attribute(Util.RESOURCE_ID, null, null,
-                      new AnyURIAttribute(URI.create(owner))));
-
-    Collection ras = new ArrayList(readers.length);
-    for (int idx = 0; idx < readers.length; idx++)
-      ras.add(new AnyURIAttribute(URI.create(readers[idx])));
-
-    resourceAttrs.add(
-        new Attribute(ALLOWED_READERS_ID, null, null, new BagAttribute(ANY_URI_TYPE, ras)));
-
-    checkAccess(GET_PROFILE, resourceAttrs);
   }
 }

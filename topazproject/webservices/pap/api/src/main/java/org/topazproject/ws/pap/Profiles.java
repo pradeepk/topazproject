@@ -19,7 +19,8 @@ import java.rmi.RemoteException;
  */
 public interface Profiles {
   /** 
-   * Get a user's profile.
+   * Get a user's profile. Note that all fields in the profile are subject to access-control checks,
+   * and any field to which the user calling this service does not have access will be null'd out.
    * 
    * @param userId  the user's internal id
    * @return the user's profile, or null if the user does not have a profile

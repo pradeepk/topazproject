@@ -15,20 +15,11 @@ package org.topazproject.ws.pap;
  * and <a href="http://vocab.org/bio/0.1/">bio</a>, and represents a subset of the
  * <var>foaf:Person</var> and <var>bio:*</var>.
  *
- * <p>Additionally, each property has a list of allowed readers associated with it. In each case
- * the list may be empty (readable by all) or a list of principals (groups and users) who are
- * allowed to see the property; if the list is empty then only the user can read the property.
- *
  * <p>This class is a bean.
  *
  * @author Ronald Tschalär
  */
 public class UserProfile {
-  /** the readers permission representing world readable property: "{@value}" */
-  public static final String[] WORLD_READABLE = null;
-  /** the readers permission representing a private property: "{@value}" */
-  public static final String[] PRIVATE        = new String[0];
-
   /** The name to use for display; stored in topaz:displayName; subPropertyOf foaf:nick */
   private String displayName;
   /** Their real name, usually as &lt;first&gt;, &lt;last&gt;; stored in foaf:name */
@@ -49,27 +40,6 @@ public class UserProfile {
   private String[] interests;
   /** url pointing to a webpage listing their publications; foaf:publications */
   private String publications;
-
-  /** The list of allowed readers of the displayName property */
-  private String[] displayNameReaders;
-  /** The list of allowed readers of the realName property */
-  private String[] realNameReaders;
-  /** The list of allowed readers of the title property */
-  private String[] titleReaders;
-  /** The list of allowed readers of the gender property */
-  private String[] genderReaders;
-  /** The list of allowed readers of the email property */
-  private String[] emailReaders;
-  /** The list of allowed readers of the homePage property */
-  private String[] homePageReaders;
-  /** The list of allowed readers of the weblog property */
-  private String[] weblogReaders;
-  /** The list of allowed readers of the biography property */
-  private String[] biographyReaders;
-  /** The list of allowed readers of the interests property */
-  private String[] interestsReaders;
-  /** The list of allowed readers of the publications property */
-  private String[] publicationsReaders;
 
   /**
    * Get the name to use for display on the site.
@@ -249,185 +219,5 @@ public class UserProfile {
    */
   public void setPublications(String publications) {
     this.publications = publications;
-  }
-
-  /**
-   * Get the allowed readers of the displayName property.
-   *
-   * @return the list of readers; may be null
-   */
-  public String[] getDisplayNameReaders() {
-    return displayNameReaders;
-  }
-
-  /**
-   * Set the allowed readers of the displayName property.
-   *
-   * @param displayNameReaders the list of readers; may be null
-   */
-  public void setDisplayNameReaders(String[] displayNameReaders) {
-    this.displayNameReaders = displayNameReaders;
-  }
-
-  /**
-   * Get the allowed readers of the realName property.
-   *
-   * @return the list of readers; may be null
-   */
-  public String[] getRealNameReaders() {
-    return realNameReaders;
-  }
-
-  /**
-   * Set the allowed readers of the realName property.
-   *
-   * @param realNameReaders the list of readers; may be null
-   */
-  public void setRealNameReaders(String[] realNameReaders) {
-    this.realNameReaders = realNameReaders;
-  }
-
-  /**
-   * Get the allowed readers of the title property.
-   *
-   * @return the list of readers; may be null
-   */
-  public String[] getTitleReaders() {
-    return titleReaders;
-  }
-
-  /**
-   * Set the allowed readers of the title property.
-   *
-   * @param titleReaders the list of readers; may be null
-   */
-  public void setTitleReaders(String[] titleReaders) {
-    this.titleReaders = titleReaders;
-  }
-
-  /**
-   * Get the allowed readers of the gender property.
-   *
-   * @return the list of readers; may be null
-   */
-  public String[] getGenderReaders() {
-    return genderReaders;
-  }
-
-  /**
-   * Set the allowed readers of the gender property.
-   *
-   * @param genderReaders the list of readers; may be null
-   */
-  public void setGenderReaders(String[] genderReaders) {
-    this.genderReaders = genderReaders;
-  }
-
-  /**
-   * Get the allowed readers of the email property.
-   *
-   * @return the list of readers; may be null
-   */
-  public String[] getEmailReaders() {
-    return emailReaders;
-  }
-
-  /**
-   * Set the allowed readers of the email property.
-   *
-   * @param emailReaders the list of readers; may be null
-   */
-  public void setEmailReaders(String[] emailReaders) {
-    this.emailReaders = emailReaders;
-  }
-
-  /**
-   * Get the allowed readers of the homePage property.
-   *
-   * @return the list of readers; may be null
-   */
-  public String[] getHomePageReaders() {
-    return homePageReaders;
-  }
-
-  /**
-   * Set the allowed readers of the homePage property.
-   *
-   * @param homePageReaders the list of readers; may be null
-   */
-  public void setHomePageReaders(String[] homePageReaders) {
-    this.homePageReaders = homePageReaders;
-  }
-
-  /**
-   * Get the allowed readers of the weblog property.
-   *
-   * @return the list of readers; may be null
-   */
-  public String[] getWeblogReaders() {
-    return weblogReaders;
-  }
-
-  /**
-   * Set the allowed readers of the weblog property.
-   *
-   * @param weblogReaders the list of readers; may be null
-   */
-  public void setWeblogReaders(String[] weblogReaders) {
-    this.weblogReaders = weblogReaders;
-  }
-
-  /**
-   * Get the allowed readers of the biography property.
-   *
-   * @return the list of readers; may be null
-   */
-  public String[] getBiographyReaders() {
-    return biographyReaders;
-  }
-
-  /**
-   * Set the allowed readers of the biography property.
-   *
-   * @param biographyReaders the list of readers; may be null
-   */
-  public void setBiographyReaders(String[] biographyReaders) {
-    this.biographyReaders = biographyReaders;
-  }
-
-  /**
-   * Get the allowed readers of the interests property.
-   *
-   * @return the list of readers; may be null
-   */
-  public String[] getInterestsReaders() {
-    return interestsReaders;
-  }
-
-  /**
-   * Set the allowed readers of the interests property.
-   *
-   * @param interestsReaders the list of readers; may be null
-   */
-  public void setInterestsReaders(String[] interestsReaders) {
-    this.interestsReaders = interestsReaders;
-  }
-
-  /**
-   * Get the allowed readers of the publications property.
-   *
-   * @return the list of readers; may be null
-   */
-  public String[] getPublicationsReaders() {
-    return publicationsReaders;
-  }
-
-  /**
-   * Set the allowed readers of the publications property.
-   *
-   * @param publicationsReaders the list of readers; may be null
-   */
-  public void setPublicationsReaders(String[] publicationsReaders) {
-    this.publicationsReaders = publicationsReaders;
   }
 }

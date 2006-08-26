@@ -43,9 +43,9 @@ import org.topazproject.ws.pap.UserProfile;
 /** 
  * This provides the implementation of the profiles service.
  * 
- * <p>A profile is stored as a foaf:Person. Permissions are stored hanging off a separate
- * topaz:ProfileReadPermissions node which is linked to foaf:Person via a topaz:readPermissions
- * predicate.
+ * <p>A profile is stored as a foaf:Person. Permissions can be managed via the {@link
+ * org.topazproject.ws.permissions.Permissions Permissions} service, where the resource is the
+ * internal user-id.
  *
  * @author Ronald Tschalär
  */
@@ -56,12 +56,11 @@ public class ProfilesImpl implements Profiles {
   private static final String BIO_URI        = "http://purl.org/vocab/bio/0.1/";
 
   private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
-  
+
   private static final String MODEL          = "<" + CONF.getString("topaz.models.profiles") + ">";
   private static final String USER_MODEL     = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String IDS_NS         = "topaz.ids";
   private static final String PROF_PATH_PFX  = "profile";
-  private static final String PERM_PATH_PFX  = "profile-perms";
   private static final String PUBLIC_READ    = "";
 
   private static final Map    aliases;
@@ -76,19 +75,15 @@ public class ProfilesImpl implements Profiles {
       ("select $p $o from ${MODEL} where " +
        "$profId <rdf:type> <foaf:Person> and " +
        "$profId <foaf:holdsAccount> <${userId}> and " +
-       "( $profId $p $o or ( $profId <topaz:readPermissions> $perms and $perms $p $o ) );").
+       "$profId $p $o;").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_CLEAR_PROF =
-      ("delete select $s $p $o from ${MODEL} where " +
-       "( $s <tucana:is> <${profId}> or <${profId}> <topaz:readPermissions> $s ) and $s $p $o " +
-       "from ${MODEL};").
+      ("delete select <${profId}> $p $o from ${MODEL} where <${profId}> $p $o from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_CREATE_PROF =
       ("insert <${profId}> <rdf:type> <foaf:Person> " +
-              "<${profId}> <topaz:readPermissions> <${permsId}> " +
-              "<${permsId}> <rdf:type> <topaz:ProfileReadPermissions> " +
               "<${profId}> <foaf:holdsAccount> <${userId}> " +
               "into ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
@@ -180,49 +175,37 @@ public class ProfilesImpl implements Profiles {
       return null;
 
     // filter profile based on access-controls.
-    if (prof.getDisplayName() != null &&
-        !checkReadAccess(prof.getDisplayNameReaders(), userId, "displayName"))
+    if (prof.getDisplayName() != null && !checkAccess(userId, pep.GET_DISP_NAME))
       prof.setDisplayName(null);
-    if (prof.getRealName() != null &&
-        !checkReadAccess(prof.getRealNameReaders(), userId, "realName"))
+    if (prof.getRealName() != null && !checkAccess(userId, pep.GET_REAL_NAME))
       prof.setRealName(null);
-    if (prof.getTitle() != null && !checkReadAccess(prof.getTitleReaders(), userId, "title"))
+    if (prof.getTitle() != null && !checkAccess(userId, pep.GET_TITLE))
       prof.setTitle(null);
-    if (prof.getGender() != null && !checkReadAccess(prof.getGenderReaders(), userId, "gender"))
+    if (prof.getGender() != null && !checkAccess(userId, pep.GET_GENDER))
       prof.setGender(null);
-    if (prof.getBiography() != null &&
-        !checkReadAccess(prof.getBiographyReaders(), userId, "biography"))
+    if (prof.getBiography() != null && !checkAccess(userId, pep.GET_BIOGRAPHY))
       prof.setBiography(null);
-    if (prof.getEmail() != null && !checkReadAccess(prof.getEmailReaders(), userId, "email"))
+    if (prof.getEmail() != null && !checkAccess(userId, pep.GET_EMAIL))
       prof.setEmail(null);
-    if (prof.getHomePage() != null &&
-        !checkReadAccess(prof.getHomePageReaders(), userId, "homePage"))
+    if (prof.getHomePage() != null && !checkAccess(userId, pep.GET_HOME_PAGE))
       prof.setHomePage(null);
-    if (prof.getWeblog() != null && !checkReadAccess(prof.getWeblogReaders(), userId, "weblog"))
+    if (prof.getWeblog() != null && !checkAccess(userId, pep.GET_WEBLOG))
       prof.setWeblog(null);
-    if (prof.getPublications() != null &&
-        !checkReadAccess(prof.getPublicationsReaders(), userId, "publications"))
+    if (prof.getPublications() != null && !checkAccess(userId, pep.GET_PUBLICATIONS))
       prof.setPublications(null);
-    if (prof.getInterests() != null &&
-        !checkReadAccess(prof.getInterestsReaders(), userId, "interests"))
+    if (prof.getInterests() != null && !checkAccess(userId, pep.GET_INTERESTS))
       prof.setInterests(null);
 
     return prof;
   }
 
-  private boolean checkReadAccess(String[] readers, String owner, String prop) {
-    /* TODO: should we use the xacml policy for everything? The public-access shortcut
-     * both simplifies logic and speeds up the common(?) case. And we've really already
-     * codified the policy, so it's not like there's much freedom in writing the xacml.
-     */
-    if (readers == null)        // public access
-      return true;
+  private boolean checkAccess(String owner, String perm) throws NoSuchIdException {
     try {
-      pep.checkReadAccess(owner, readers);
+      pep.checkUserAccess(perm, owner);
       return true;
     } catch (SecurityException se) {
       if (log.isDebugEnabled())
-        log.debug("read access to '" + prop + "' of '" + owner + "' denied", se);
+        log.debug("access '" + perm + "' to '" + owner + "'s profile denied", se);
       return false;
     }
   }
@@ -306,9 +289,7 @@ public class ProfilesImpl implements Profiles {
     cmd.append(ITQL_CLEAR_PROF.replaceAll("\\Q${profId}", profId));
 
     if (profile != null) {
-      String permsId = getPermsId(profId);
       cmd.append(ITQL_CREATE_PROF.replaceAll("\\Q${profId}", profId).
-                                  replaceAll("\\Q${permsId}", permsId).
                                   replaceAll("\\Q${userId}", userId));
 
       cmd.append("insert ");
@@ -331,17 +312,6 @@ public class ProfilesImpl implements Profiles {
       for (int idx = 0; interests != null && idx < interests.length; idx++)
         addReference(cmd, profId, "foaf:interest", interests[idx]);
 
-      addPerms(cmd, permsId, "topaz:displayNameReaders", profile.getDisplayNameReaders());
-      addPerms(cmd, permsId, "topaz:realNameReaders", profile.getRealNameReaders());
-      addPerms(cmd, permsId, "topaz:titleReaders", profile.getTitleReaders());
-      addPerms(cmd, permsId, "topaz:genderReaders", profile.getGenderReaders());
-      addPerms(cmd, permsId, "topaz:biographyReaders", profile.getBiographyReaders());
-      addPerms(cmd, permsId, "topaz:emailReaders", profile.getEmailReaders());
-      addPerms(cmd, permsId, "topaz:homePageReaders", profile.getHomePageReaders());
-      addPerms(cmd, permsId, "topaz:weblogReaders", profile.getWeblogReaders());
-      addPerms(cmd, permsId, "topaz:publicationsReaders", profile.getPublicationsReaders());
-      addPerms(cmd, permsId, "topaz:interestsReaders", profile.getInterestsReaders());
-
       cmd.append(" into ").append(MODEL).append(";");
     }
 
@@ -360,16 +330,6 @@ public class ProfilesImpl implements Profiles {
       return;
 
     buf.append("<").append(subj).append("> <").append(pred).append("> <").append(url).append("> ");
-  }
-
-  private static final void addPerms(StringBuffer buf, String subj, String pred, String[] perms) {
-    if (perms == null) {        // public access
-      addLiteralVal(buf, subj, pred, PUBLIC_READ);
-      return;
-    }
-
-    for (int idx = 0; idx < perms.length; idx++)
-      addReference(buf, subj, pred, perms[idx]);
   }
 
   /**
@@ -400,7 +360,6 @@ public class ProfilesImpl implements Profiles {
 
     UserProfile prof = new UserProfile();
     List interests   = new ArrayList();
-    Map  readers     = new HashMap();
 
     for (int idx = 0; idx < rows.size(); idx++) {
       String[] row = (String[]) rows.get(idx);
@@ -425,38 +384,12 @@ public class ProfilesImpl implements Profiles {
         prof.setPublications(row[1]);
       else if (row[0].equals(FOAF_URI + "interest"))
         interests.add(row[1]);
-      else {
-        List rl = (List) readers.get(row[0]);
-        if (rl == null)
-          readers.put(row[0], rl = new ArrayList());
-        rl.add(row[1]);
-      }
     }
 
     if (interests.size() > 0)
       prof.setInterests((String[]) interests.toArray(new String[interests.size()]));
 
-    prof.setDisplayNameReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "displayNameReaders"));
-    prof.setRealNameReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "realNameReaders"));
-    prof.setTitleReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "titleReaders"));
-    prof.setGenderReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "genderReaders"));
-    prof.setBiographyReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "biographyReaders"));
-    prof.setEmailReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "emailReaders"));
-    prof.setHomePageReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "homePageReaders"));
-    prof.setWeblogReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "weblogReaders"));
-    prof.setPublicationsReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "publicationsReaders"));
-    prof.setInterestsReaders(getReaders(readers, ItqlHelper.TOPAZ_URI + "interestsReaders"));
-
     return prof;
-  }
-
-  private static String[] getReaders(Map readers, String perm) {
-    List rl = (List) readers.get(perm);
-    if (rl == null)
-      return new String[0];     // private access only
-    if (rl.size() == 1 && ((String) rl.get(0)).equals(PUBLIC_READ))
-      return null;              // public access
-    return (String[]) rl.toArray(new String[rl.size()]);
   }
 
   /** 
@@ -473,15 +406,5 @@ public class ProfilesImpl implements Profiles {
 
     return baseURI + PROF_PATH_PFX + '/' +
            newProfIds[newProfIdIdx++].substring(IDS_NS.length() + 1);
-  }
-
-  /** 
-   * Get the id (url) for a permissions node. 
-   * 
-   * @param profId the id of the profile the permissions node belongs to
-   * @return the url
-   */
-  protected String getPermsId(String profId) {
-    return baseURI + PERM_PATH_PFX + profId.substring(baseURI.length() + PROF_PATH_PFX.length());
   }
 }

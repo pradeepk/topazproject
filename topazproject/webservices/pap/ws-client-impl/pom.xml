@@ -73,6 +73,19 @@
       <type>war</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-permissions-client-impl</artifactId>
+      <version>0.1-SNAPSHOT</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-permissions-webapp</artifactId>
+      <version>0.1-SNAPSHOT</version>
+      <type>war</type>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <build>
@@ -120,6 +133,11 @@
                   <deployable>
                     <groupId>org.topazproject.ws</groupId>
                     <artifactId>ws-users-webapp</artifactId>
+                    <type>war</type>
+                  </deployable>
+                  <deployable>
+                    <groupId>org.topazproject.ws</groupId>
+                    <artifactId>ws-permissions-webapp</artifactId>
                     <type>war</type>
                   </deployable>
                 </deployables>
