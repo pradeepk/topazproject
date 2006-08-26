@@ -48,17 +48,19 @@ public class ArticleServiceTest extends TestCase {
     try {
       service.delete("10.1371/journal.pbio.0020294", true);
     } catch (NoSuchIdException nsie) {
+      assertEquals("Mismatched id in exception, ", "10.1371/journal.pbio.0020294", nsie.getId());
       // ignore - this just means there wasn't any stale stuff left
     }
 
     URL article = getClass().getResource("/test_article.zip");
     String doi = service.ingest(new DataHandler(article));
-    assertEquals("Wrong doi returned,", doi, "10.1371/journal.pbio.0020294");
+    assertEquals("Wrong doi returned,", "10.1371/journal.pbio.0020294", doi);
 
     boolean gotE = false;
     try {
       doi = service.ingest(new DataHandler(article));
     } catch (DuplicateIdException die) {
+      assertEquals("Mismatched id in exception, ", doi, die.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected duplicate-id exception", gotE);
@@ -77,6 +79,7 @@ public class ArticleServiceTest extends TestCase {
     try {
       service.delete(doi, true);
     } catch (NoSuchIdException nsie) {
+      assertEquals("Mismatched id in exception, ", doi, nsie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected no-such-id exception", gotE);
