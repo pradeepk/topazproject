@@ -30,7 +30,7 @@ import org.topazproject.configuration.ConfigurationStore;
  * @author Eric Brown
  */
 public class MasterWebAppListener implements ServletContextListener {
-  private static Log log = LogFactory.getLog(WebAppListener.class);
+  private static Log log = LogFactory.getLog(MasterWebAppListener.class);
 
   /**
    * Shutdown things.
