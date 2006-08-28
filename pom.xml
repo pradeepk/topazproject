@@ -144,15 +144,6 @@
     <profile>
       <id>it-helper</id>
 
-      <repositories>
-        <!-- Add cargo-snapshot repository -->
-        <repository>
-          <id>cargo-snapshot</id>
-          <name>Cargo's snapshot repository</name>
-          <url>http://snapshots.repository.codehaus.org/</url>
-        </repository>
-      </repositories>
-        
       <dependencies>
         <dependency>
           <groupId>log4j</groupId>
@@ -260,7 +251,7 @@
               <groupId>org.topazproject.patch.cargo</groupId>
 <!--            <groupId>org.codehaus.cargo</groupId> -->
               <artifactId>cargo-maven2-plugin</artifactId>
-              <version>0.3-SNAPSHOT</version>
+              <version>0.2</version>
               <configuration>
                 <wait>false</wait>
                 <container>
