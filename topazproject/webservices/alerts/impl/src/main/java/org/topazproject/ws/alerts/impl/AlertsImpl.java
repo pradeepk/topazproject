@@ -273,6 +273,7 @@ public class AlertsImpl implements Alerts {
         AlertsHelper.sendEmail(msg);
         cnt++;
       }
+      log.info("Sent " + cnt + " alerts");
     } catch (Exception e) {
       log.warn("Problem sending alerts", e);
       return false;
