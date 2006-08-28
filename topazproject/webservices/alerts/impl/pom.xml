@@ -72,6 +72,12 @@
       <artifactId>mail</artifactId>
       <version>1.4</version>
     </dependency>
+    <dependency>
+      <groupId>quartz</groupId>
+      <artifactId>quartz</artifactId>
+      <version>1.5.2</version>
+      <type>jar</type>
+    </dependency>
   </dependencies>
 
 </project>

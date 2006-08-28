@@ -1,5 +1,8 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!--
+  - $HeadURL::                                                                                    $
+  - $Id$
+  -
   - Copyright (c) 2006 by Topaz, Inc.
   - http://topazproject.org
   -
@@ -11,5 +14,15 @@
     <alerts>
       <pdpName>_default_</pdpName>
     </alerts>
+
+    <scheduler>
+      <jobs>
+        <job name="sendalerts" group="topaz">
+          <class>org.topazproject.ws.alerts.impl.SendAlertsJob</class>
+          <cron>0 0 2 ? * FRI</cron> <!-- 2am Fridays -->
+          <!-- For testing / once per minute: 0 * * * * ? -->
+        </job>
+      </jobs>
+    </scheduler>
   </topaz>
 </config>

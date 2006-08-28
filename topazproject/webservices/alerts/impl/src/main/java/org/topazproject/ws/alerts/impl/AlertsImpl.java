@@ -11,6 +11,8 @@
 package org.topazproject.ws.alerts.impl;
 
 import java.io.IOException;
+import java.net.URI;
+import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 import javax.xml.rpc.ServiceException;
 import java.util.Iterator;
@@ -175,7 +177,26 @@ public class AlertsImpl implements Alerts {
     this.pep = pep;
     this.itql = new ItqlHelper(itqlService);
     this.apim = APIMStubFactory.create(fedoraService);
+    this.init();
+  }
 
+  /**
+   * Create a new alerts instance.
+   *
+   * @param mulgaraUri is the uri to kowari/mulgara.
+   * @throws MalformedURLException if the URI is invalid
+   * @throws ServiceException if an error occurred locating the itql service
+   * @throws RemoteException
+   */
+  public AlertsImpl(URI mulgaraUri)
+      throws MalformedURLException, ServiceException, RemoteException {
+    this.pep = null; // means we are super-user
+    this.itql = new ItqlHelper(mulgaraUri);
+    this.apim = null;
+    this.init();
+  }
+
+  private void init() throws ItqlInterpreterException, RemoteException {
     this.itql.getAliases().putAll(this.aliases);
     this.itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";");
     this.itql.doUpdate("create " + MODEL_ALERTS + ";");
@@ -183,7 +204,6 @@ public class AlertsImpl implements Alerts {
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
     conf = conf.subset("topaz");
   }
-
   
   // See Alerts.java interface
   public String getFeed(String startDate, String endDate, String[] categories, String[] authors)

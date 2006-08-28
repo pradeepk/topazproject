@@ -62,11 +62,12 @@ public class MasterWebAppListener implements ServletContextListener {
           ServletContextListener listener = (ServletContextListener) theClass.newInstance();
           Method method = theClass.getMethod(methodName, new Class[] {ServletContextEvent.class});
           method.invoke(listener, new Object[] {event});
+          log.info("Called " + methodName + " on " + listenerName);
         } catch (Exception e) {
           log.warn("Error calling " + methodName + " on " + listenerName, e);
         }
       }
-      log.info("Called " + methodName + " on " + listeners.size() + " topaz life-cycle-listeners");
+      log.info("Called " + methodName + " on topaz life-cycle-listeners");
     } catch (Exception e) {
       log.warn("Error calling " + methodName + " on topaz life-cycle-listeners", e);
     }
