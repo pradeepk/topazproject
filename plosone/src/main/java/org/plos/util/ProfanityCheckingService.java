@@ -10,14 +10,17 @@
 package org.plos.util;
 
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Checks that content is not profane. It could be used to check that the user's posts don't contain profane words like F***, GEORGE, BUSH, etc.
  */
 public class ProfanityCheckingService {
-  private Collection<String> profaneWords;
+  private Map<String, Pattern> profanePatterns;
 
   /**
    * Validate that the content is profane or not
@@ -28,25 +31,24 @@ public class ProfanityCheckingService {
     final List<String> messages = new ArrayList<String>();
 
     final String contentLowerCase = content.toLowerCase();
-    for (final String word : profaneWords) {
-      //TODO:  More work needed with the regular expression as it catches even when it should not.
-      final String wordLowerCase = word.toLowerCase();
-      if (contentLowerCase.matches(".*\\s*\\p{Punct}*" + wordLowerCase + ".*")) {
-        if (contentLowerCase.matches(".*[a-zA-Z]+" + wordLowerCase)) {
-          continue;
-        }
-        if (contentLowerCase.matches("^[[a-zA-Z]*\\s+\\p{Punct}*]*" + wordLowerCase + ".*")) {
-          messages.add("Found obscene word:" + word);
-          break;
-        }
+
+    for (final Map.Entry<String,Pattern> patternEntry : profanePatterns.entrySet()) {
+      final Pattern pattern = patternEntry.getValue();
+      if (pattern.matcher(contentLowerCase).find()) {
+        messages.add("Found obscene word:" + patternEntry.getKey());
+        break;
       }
     }
-    
 
     return messages;
   }
 
   public void setWords(final Collection<String> profaneWords) {
-    this.profaneWords = profaneWords;
+    final Map<String, Pattern> patterns = new HashMap<String, Pattern>(profaneWords.size());
+    for (final String profaneWord : profaneWords) {
+      final Pattern pattern = Pattern.compile("\\b" + profaneWord.toLowerCase());
+      patterns.put(profaneWord, pattern);
+    }
+    this.profanePatterns = patterns;
   }
 }

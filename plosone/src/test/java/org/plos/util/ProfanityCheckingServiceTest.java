@@ -32,6 +32,7 @@ public class ProfanityCheckingServiceTest extends TestCase {
     found("-bush", service);
     found(" bush", service);
     found(" some before Bush and some after", service);
+    found(" some /n before and some after/n before Bush and some after", service);
     found("[Bushe ", service);
     found(" (Bush ", service);
     found("[Bush]", service);
@@ -46,6 +47,7 @@ public class ProfanityCheckingServiceTest extends TestCase {
     notFound(" some ambush", service);
     notFound(" amBush ", service);
     notFound(" some before amBush and some after", service);
+    notFound(" some /n before some before some /n before amBush and some after /n adter", service);
   }
 
   private void notFound(final String content, final ProfanityCheckingService service) {
