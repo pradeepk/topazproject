@@ -115,7 +115,7 @@ public class AnnotationsImpl implements Annotations {
     + " where <${id}> <topaz:state> $o from ${MODEL};"
     + " insert <${id}> <topaz:state> '${state}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String CHECK_ID_ITQL =
-    ("select $s from ${MODEL} where $s <r:type> <a:Annotation> and   $s <tucana:is> <${id}>")
+    ("select $s from ${MODEL} where $s <r:type> <a:Annotation> and   $s <tucana:is> <${id}>;")
      .replaceAll("\\Q${MODEL}", MODEL);
 
   // xxx : can't find the fedora stuff. 
@@ -123,10 +123,10 @@ public class AnnotationsImpl implements Annotations {
     ("select $f from ${MODEL} where" // + " $f <fedora:fedora-system:def/model#contentModel> 'Annotation' and"
     + " $s <a:body> $f and ($s <tucana:is> <${id}>"
     + " or (walk($c <dt:isReplacedBy> <${id}> and $s <dt:isReplacedBy> $c)"
-    + " and $s <r:type> <a:Annotation>))").replaceAll("\\Q${MODEL}", MODEL);
+    + " and $s <r:type> <a:Annotation>));").replaceAll("\\Q${MODEL}", MODEL);
   private static final String FEDORA_ID_ITQL =
     ("select $f from ${MODEL} where" //  + " $f <fedora:fedora-system:def/model#contentModel> 'Annotation' and"
-    + " $s <a:body> $f and $s <tucana:is> <${id}>").replaceAll("\\Q${MODEL}", MODEL);
+    + " $s <a:body> $f and $s <tucana:is> <${id}>;").replaceAll("\\Q${MODEL}", MODEL);
 
   static {
     aliases.put("a", AnnotationModel.a.toString());
