@@ -6,7 +6,7 @@
   <artifactId>ws-articles</artifactId>
   <packaging>pom</packaging>
   <name>Articles Webservice</name>
-  <version>0.1</version>
+  <version>0.5-SNAPSHOT</version>
 
   <parent>
     <groupId>org.topazproject</groupId>

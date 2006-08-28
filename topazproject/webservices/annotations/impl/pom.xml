@@ -8,14 +8,14 @@
   <parent>
     <groupId>org.topazproject.ws</groupId>
     <artifactId>ws-annotation</artifactId>
-    <version>0.1</version>
+    <version>0.5-SNAPSHOT</version>
   </parent>
 
   <dependencies>
     <dependency>
       <groupId>${pom.parent.groupId}</groupId>
       <artifactId>${pom.parent.artifactId}-api</artifactId>
-      <version>0.1</version>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>commons-logging</groupId>

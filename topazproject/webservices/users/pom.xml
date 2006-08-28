@@ -6,7 +6,7 @@
   <artifactId>ws-users</artifactId>
   <packaging>pom</packaging>
   <name>Users Webservice</name>
-  <version>0.1-SNAPSHOT</version>
+  <version>0.5-SNAPSHOT</version>
 
   <parent>
     <groupId>org.topazproject</groupId>

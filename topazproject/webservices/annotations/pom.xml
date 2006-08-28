@@ -6,7 +6,7 @@
   <artifactId>ws-annotation</artifactId>
   <packaging>pom</packaging>
   <name>Annotations Webservice</name>
-  <version>0.1</version>
+  <version>0.5-SNAPSHOT</version>
 
   <parent>
     <groupId>org.topazproject</groupId>

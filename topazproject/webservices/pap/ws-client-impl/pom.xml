@@ -21,7 +21,7 @@
   <parent>
     <groupId>org.topazproject.ws</groupId>
     <artifactId>ws-pap</artifactId>
-    <version>0.1-SNAPSHOT</version>
+    <version>0.5-SNAPSHOT</version>
   </parent>
 
   <licenses>
@@ -63,26 +63,26 @@
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-users-client-impl</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.5-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-users-webapp</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.5-SNAPSHOT</version>
       <type>war</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-permissions-client-impl</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.5-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-permissions-webapp</artifactId>
-      <version>0.1-SNAPSHOT</version>
+      <version>0.5-SNAPSHOT</version>
       <type>war</type>
       <scope>provided</scope>
     </dependency>
