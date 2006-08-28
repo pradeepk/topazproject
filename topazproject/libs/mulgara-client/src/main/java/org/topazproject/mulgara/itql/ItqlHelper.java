@@ -185,37 +185,37 @@ public class ItqlHelper {
    */
   public ItqlHelper(ProtectedService service)
       throws MalformedURLException, ServiceException, RemoteException {
-   
+
     ItqlInterpreterBean stub = createStub(service);
-    
+
     if (service.hasRenewableCredentials()) {
       AbstractReAuthStubFactory factory = new AbstractReAuthStubFactory() {
-        
+
         public Object newStub(ProtectedService service) throws Exception {
           return initServer(createStub(service));
         }
-        
-        public Object rebuildStub(Object old, ProtectedService service, Throwable fault) 
+
+        public Object rebuildStub(Object old, ProtectedService service, Throwable fault)
             throws Exception {
-          
+
           if (inTransaction)
             throw new Exception("Cannot rebuild a stub in middle of a transaction");
           return super.rebuildStub(old, service, fault);
         }
       };
-      
+
       stub = (ItqlInterpreterBean)factory.newProxyStub(stub, service);
     }
-    
+
     interpreter = stub;
-    
+
     init();
 
   }
-   
-  private static ItqlInterpreterBean createStub(ProtectedService service) 
+
+  private static ItqlInterpreterBean createStub(ProtectedService service)
       throws MalformedURLException, ServiceException, RemoteException {
-    
+
     ItqlInterpreterBeanServiceLocator locator = new ItqlInterpreterBeanServiceLocator();
     locator.setMaintainSession(true);
 
@@ -227,7 +227,7 @@ public class ItqlHelper {
       stub._setProperty(Stub.USERNAME_PROPERTY, service.getUserName());
       stub._setProperty(Stub.PASSWORD_PROPERTY, service.getPassword());
     }
-    
+
     return interpreter;
   }
 
@@ -236,8 +236,8 @@ public class ItqlHelper {
     setAliases(defaultAliases);
     initServer(interpreter);
   }
-  
-  private static ItqlInterpreterBean initServer(ItqlInterpreterBean interpreter) 
+
+  private static ItqlInterpreterBean initServer(ItqlInterpreterBean interpreter)
       throws RemoteException {
     /* There is a bug in ItqlInterpreter where it starts off assuming the connection is not
      * local. Combined with the fact that no rmi server is running this leads to it failing
@@ -254,7 +254,7 @@ public class ItqlHelper {
      */
     interpreter.setServerURI("local:///");
     interpreter.setServerURI("rmi://localhost/fedora");
-    
+
     return interpreter;
   }
 
