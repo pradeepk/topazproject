@@ -26,7 +26,7 @@ import javax.xml.rpc.ServiceException;
 import junit.framework.TestCase;
 
 import org.topazproject.ws.users.UserAccounts;
-import org.topazproject.ws.users.UserAccountsServiceLocator;
+import org.topazproject.ws.users.UserAccountsClientFactory;
 
 /**
  *
@@ -41,16 +41,12 @@ public class RatingsServiceTest extends TestCase {
   }
 
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    URL url =
-        new URL("http://localhost:9997/ws-ratings-webapp-0.5-SNAPSHOT/services/RatingsServicePort");
-    RatingsServiceLocator locator = new RatingsServiceLocator();
-    service = locator.getRatingsServicePort(url);
+    String uri =
+        "http://localhost:9997/ws-ratings-webapp-0.5-SNAPSHOT/services/RatingsServicePort";
+    service = RatingsClientFactory.create(uri);
 
-    url =
-      new URL("http://localhost:9997/ws-users-webapp-0.1-SNAPSHOT/services/UserAccountsServicePort");
-    UserAccountsServiceLocator uaLoc = new UserAccountsServiceLocator();
-    uaLoc.setMaintainSession(true);
-    userService = uaLoc.getUserAccountsServicePort(url);
+    uri = "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort";
+    userService = UserAccountsClientFactory.create(uri);
 
     // create a user
     userId[0] = userService.createUser("musterAuth");

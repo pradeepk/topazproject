@@ -30,13 +30,13 @@ import junit.framework.TestCase;
 import org.topazproject.ws.article.NoSuchIdException;
 
 import org.topazproject.ws.article.Article;
-import org.topazproject.ws.article.ArticleServiceLocator;
+import org.topazproject.ws.article.ArticleClientFactory;
 
 import org.topazproject.ws.users.UserAccounts;
-import org.topazproject.ws.users.UserAccountsServiceLocator;
+import org.topazproject.ws.users.UserAccountsClientFactory;
 import org.topazproject.ws.pap.UserPreference;
 import org.topazproject.ws.pap.Preferences;
-import org.topazproject.ws.pap.PreferencesServiceLocator;
+import org.topazproject.ws.pap.PreferencesClientFactory;
 
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
@@ -65,11 +65,11 @@ public class AlertsServiceTest extends TestCase {
   protected static final String ALERTS_SVC_URL =
     "http://localhost:9997/ws-alerts-webapp-0.5-SNAPSHOT/services/AlertsServicePort";
   protected static final String ARTICLES_SVC_URL =
-    "http://localhost:9997/ws-articles-webapp-0.1/services/ArticleServicePort";
+    "http://localhost:9997/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort";
   protected static final String PREF_SVC_URL =
-    "http://localhost:9997/ws-pap-webapp-0.1-SNAPSHOT/services/PreferencesServicePort";
+    "http://localhost:9997/ws-pap-webapp-0.5-SNAPSHOT/services/PreferencesServicePort";
   protected static final String USER_SVC_URL =
-    "http://localhost:9997/ws-users-webapp-0.1-SNAPSHOT/services/UserAccountsServicePort";
+    "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort";
   protected static final String[][] TEST_ARTICLES = {
     { "10.1371/journal.pbio.0020294", "/pbio.0020294.zip" },
     { "10.1371/journal.pbio.0020042", "/pbio.0020042.zip" },
@@ -85,30 +85,22 @@ public class AlertsServiceTest extends TestCase {
     log.info("setUp");
     
     // Create alerts service
-    AlertsServiceLocator alertsLoc = new AlertsServiceLocator();
-    alertsLoc.setMaintainSession(true);
-    this.service = alertsLoc.getAlertsServicePort(new URL(ALERTS_SVC_URL));
+    this.service = AlertsClientFactory.create(ALERTS_SVC_URL);
     log.info("created alerts service");
 
     // Create articles service
-    ArticleServiceLocator articleLoc = new ArticleServiceLocator();
-    articleLoc.setMaintainSession(true);
-    this.articleService = articleLoc.getArticleServicePort(new URL(ARTICLES_SVC_URL));
+    this.articleService = ArticleClientFactory.create(ARTICLES_SVC_URL);
     log.info("ingesting article(s)");
     for (int i = 0; i < TEST_ARTICLES.length; i++)
       ingestArticle(TEST_ARTICLES[i][0], TEST_ARTICLES[i][1]);
     
     // Create userid
-    UserAccountsServiceLocator uaLoc = new UserAccountsServiceLocator();
-    uaLoc.setMaintainSession(true);
-    this.userService = uaLoc.getUserAccountsServicePort(new URL(USER_SVC_URL));
+    this.userService = UserAccountsClientFactory.create(USER_SVC_URL);
     this.userId = userService.createUser("alertTest");
     log.info("Created userid: " + this.userId);
 
     // Create preferences
-    PreferencesServiceLocator prefLoc = new PreferencesServiceLocator();
-    prefLoc.setMaintainSession(true);
-    this.prefService = prefLoc.getPreferencesServicePort(new URL(PREF_SVC_URL));
+    this.prefService = PreferencesClientFactory.create(PREF_SVC_URL);
     log.info("Created preferences service");
     
     UserPreference[] prefs = new UserPreference[2];

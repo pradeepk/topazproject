@@ -34,18 +34,12 @@ public class UserRolesServiceTest extends TestCase {
   }
 
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    URL url =
-      new URL("http://localhost:9997/ws-users-webapp-0.1-SNAPSHOT/services/UserRolesServicePort");
-    UserRolesServiceLocator locator = new UserRolesServiceLocator();
-    locator.setMaintainSession(true);
-    service = locator.getUserRolesServicePort(url);
+    String uri =
+      "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserRolesServicePort";
+    service = UserRolesClientFactory.create(uri);
 
-    url =
-      new URL("http://localhost:9997/ws-users-webapp-0.1-SNAPSHOT/services/UserAccountsServicePort");
-    UserAccountsServiceLocator uaLoc = new UserAccountsServiceLocator();
-    uaLoc.setMaintainSession(true);
-    userService = uaLoc.getUserAccountsServicePort(url);
-
+    uri = "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort";
+    userService = UserAccountsClientFactory.create(uri);
     // create a user
     userId = userService.createUser("musterAuth");
   }

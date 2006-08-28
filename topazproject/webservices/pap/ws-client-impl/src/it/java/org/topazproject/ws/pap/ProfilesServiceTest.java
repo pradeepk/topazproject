@@ -19,9 +19,9 @@ import javax.xml.rpc.ServiceException;
 import junit.framework.TestCase;
 
 import org.topazproject.ws.permissions.Permissions;
-import org.topazproject.ws.permissions.PermissionsServiceLocator;
+import org.topazproject.ws.permissions.PermissionsClientFactory;
 import org.topazproject.ws.users.UserAccounts;
-import org.topazproject.ws.users.UserAccountsServiceLocator;
+import org.topazproject.ws.users.UserAccountsClientFactory;
 
 /**
  * Simple tests for the profiles service.
@@ -40,23 +40,16 @@ public class ProfilesServiceTest extends TestCase {
   }
 
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    URL url =
-        new URL("http://localhost:9997/ws-pap-webapp-0.1-SNAPSHOT/services/ProfilesServicePort");
-    ProfilesServiceLocator locator = new ProfilesServiceLocator();
-    locator.setMaintainSession(true);
-    service = locator.getProfilesServicePort(url);
+    String uri =
+        "http://localhost:9997/ws-pap-webapp-0.5-SNAPSHOT/services/ProfilesServicePort";
+    service = ProfilesClientFactory.create(uri);
+    
+    uri = "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort";
+    userService = UserAccountsClientFactory.create(uri);
 
-    url =
-      new URL("http://localhost:9997/ws-users-webapp-0.1-SNAPSHOT/services/UserAccountsServicePort");
-    UserAccountsServiceLocator uaLoc = new UserAccountsServiceLocator();
-    uaLoc.setMaintainSession(true);
-    userService = uaLoc.getUserAccountsServicePort(url);
-
-    url =
-      new URL("http://localhost:9997/ws-permissions-webapp-0.1-SNAPSHOT/services/PermissionsServicePort");
-    PermissionsServiceLocator pLoc = new PermissionsServiceLocator();
-    pLoc.setMaintainSession(true);
-    permsService = pLoc.getPermissionsServicePort(url);
+    uri =
+      "http://localhost:9997/ws-permissions-webapp-0.5-SNAPSHOT/services/PermissionsServicePort";
+    permsService = PermissionsClientFactory.create(uri);
 
     // create the users
     userId   = userService.createUser("musterAuth");

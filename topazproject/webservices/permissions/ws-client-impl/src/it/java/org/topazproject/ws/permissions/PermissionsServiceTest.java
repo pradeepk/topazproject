@@ -30,9 +30,8 @@ import junit.framework.TestCase;
  */
 public class PermissionsServiceTest extends TestCase {
   private Permissions service;
-  private String      resource   = "foo:bar";
-  private String[]    grants     =
-    new String[] { "foo:create", "foo:get", "foo:set", "foo:delete" };
+  private String      resource = "foo:bar";
+  private String[]    grants   = new String[] { "foo:create", "foo:get", "foo:set", "foo:delete" };
   private String[]    revokes    = new String[] { "foo:list-all", "foo:purge" };
   private String[]    principals =
     new String[] { "user:joe", "group:joe-friends", "group:joe-family" };
@@ -51,11 +50,9 @@ public class PermissionsServiceTest extends TestCase {
    *
    */
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    URL                       url =
-      new URL("http://localhost:9997/ws-permissions-webapp-0.1-SNAPSHOT/services/PermissionsServicePort");
-    PermissionsServiceLocator locator = new PermissionsServiceLocator();
-    locator.setMaintainSession(true);
-    service = locator.getPermissionsServicePort(url);
+    String uri =
+      "http://localhost:9997/ws-permissions-webapp-0.5-SNAPSHOT/services/PermissionsServicePort";
+    service = PermissionsClientFactory.create(uri);
 
     //
     clearAll();

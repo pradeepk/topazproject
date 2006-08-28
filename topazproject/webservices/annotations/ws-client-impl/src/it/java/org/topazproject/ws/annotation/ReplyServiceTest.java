@@ -58,7 +58,7 @@ public class ReplyServiceTest extends TestCase {
   protected void setUp() throws ServiceException, RemoteException {
     try {
       service =
-        RepliesClientFactory.create("http://localhost:9997/ws-annotation-webapp-0.1/services/ReplyServicePort");
+        RepliesClientFactory.create("http://localhost:9997/ws-annotation-webapp-0.5-SNAPSHOT/services/ReplyServicePort");
     } catch (MalformedURLException e) {
       throw new Error(e);
     }

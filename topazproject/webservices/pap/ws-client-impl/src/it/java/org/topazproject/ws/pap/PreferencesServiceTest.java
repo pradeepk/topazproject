@@ -21,7 +21,7 @@ import javax.xml.rpc.ServiceException;
 import junit.framework.TestCase;
 
 import org.topazproject.ws.users.UserAccounts;
-import org.topazproject.ws.users.UserAccountsServiceLocator;
+import org.topazproject.ws.users.UserAccountsClientFactory;
 
 /**
  * Simple tests for the preferences service.
@@ -38,17 +38,12 @@ public class PreferencesServiceTest extends TestCase {
   }
 
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    URL url =
-        new URL("http://localhost:9997/ws-pap-webapp-0.1-SNAPSHOT/services/PreferencesServicePort");
-    PreferencesServiceLocator locator = new PreferencesServiceLocator();
-    locator.setMaintainSession(true);
-    service = locator.getPreferencesServicePort(url);
+    String uri =
+        "http://localhost:9997/ws-pap-webapp-0.5-SNAPSHOT/services/PreferencesServicePort";
+    service = PreferencesClientFactory.create(uri);
 
-    url =
-      new URL("http://localhost:9997/ws-users-webapp-0.1-SNAPSHOT/services/UserAccountsServicePort");
-    UserAccountsServiceLocator uaLoc = new UserAccountsServiceLocator();
-    uaLoc.setMaintainSession(true);
-    userService = uaLoc.getUserAccountsServicePort(url);
+    uri = "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort";
+    userService = UserAccountsClientFactory.create(uri);
 
     // create a user
     userId = userService.createUser("musterAuth");

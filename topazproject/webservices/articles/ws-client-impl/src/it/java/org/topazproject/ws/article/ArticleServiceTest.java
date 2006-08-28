@@ -34,10 +34,8 @@ public class ArticleServiceTest extends TestCase {
   }
 
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    URL url =
-        new URL("http://localhost:9997/ws-articles-webapp-0.1/services/ArticleServicePort");
-    ArticleServiceLocator locator = new ArticleServiceLocator();
-    service = locator.getArticleServicePort(url);
+    String uri = "http://localhost:9997/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort";
+    service = ArticleClientFactory.create(uri);
   }
 
   public void testAll() throws Exception {
