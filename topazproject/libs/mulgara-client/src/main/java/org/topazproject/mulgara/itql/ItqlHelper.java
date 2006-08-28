@@ -317,7 +317,7 @@ public class ItqlHelper {
    */
   public String doQuery(String itql) throws ItqlInterpreterException, RemoteException {
     itql = unalias(itql);
-    if (!itql.endsWith(";"))
+    if (!itql.trim().endsWith(";"))
       itql += ";";
 
     if (log.isDebugEnabled())
@@ -340,7 +340,7 @@ public class ItqlHelper {
    */
   public void doUpdate(String itql) throws ItqlInterpreterException, RemoteException {
     itql = unalias(itql);
-    if (!itql.endsWith(";"))
+    if (!itql.trim().endsWith(";"))
       itql += ";";
 
     if (log.isDebugEnabled())
