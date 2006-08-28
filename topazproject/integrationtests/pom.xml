@@ -180,23 +180,23 @@
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-journal-admin-core</artifactId>
-      <version>0.5</version>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-journal-admin-server</artifactId>
-      <version>0.5</version>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-journal-admin-client-impl</artifactId>
-      <version>0.5</version>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-journal-admin-webapp</artifactId>
       <type>war</type>
-      <version>0.5</version>
+      <version>0.5-SNAPSHOT</version>
     </dependency>
     <!-- ratings -->
     <dependency>
