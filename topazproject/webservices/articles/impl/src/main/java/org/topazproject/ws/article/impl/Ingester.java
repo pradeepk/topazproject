@@ -162,23 +162,12 @@ public class Ingester {
       }
 
       return doi;
-    } catch (DuplicateIdException die) {        // needed to avoid being caught as RE below
-      throw die;
     } catch (RemoteException re) {
-      throw getIngestException("Error ingesting into fedora", re);
+      throw new IngestException("Error ingesting into fedora", re);
     } catch (IOException ioe) {
-      throw getIngestException("Error talking to fedora", ioe);
+      throw new IngestException("Error talking to fedora", ioe);
     } catch (TransformerException te) {
-      throw getIngestException("Zip format error", te);
-    }
-  }
-
-  private static final IngestException getIngestException(String msg, Throwable t) {
-    if (RemoteException.class.isAssignableFrom(IngestException.class)) {
-      log.warn(msg, t);
-      return new IngestException(msg + ": " + t);
-    } else {
-      return new IngestException(msg, t);
+      throw new IngestException("Zip format error", te);
     }
   }
 
@@ -400,7 +389,7 @@ public class Ingester {
         try {
           String cname =
               SAXParserFactory.newInstance().newSAXParser().getXMLReader().getClass().getName();
-          System.getProperties().put("org.xml.sax.driver", cname);
+          System.setProperty("org.xml.sax.driver", cname);
         } catch (Exception e) {
           log.warn("Failed to set the org.xml.sax.driver property", e);
         }
