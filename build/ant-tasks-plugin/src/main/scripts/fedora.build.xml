@@ -91,7 +91,9 @@
     </exec>
   </target>
   
-  <target name="fedora-start" depends="exec-ext,fedora-install-if">
+  <target name="fedora-start" depends="fedora-start-or-spawn, fedora-if-spawned"/>
+  
+  <target name="fedora-start-or-spawn" depends="exec-ext, fedora-install-if">
     <echo>Starting mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
     <exec dir="${FEDORA_HOME}" 
       executable="${FEDORA_HOME}/server/bin/mckoi-start${ext}"
@@ -103,16 +105,22 @@
     <!-- <sleep seconds="2"/> -->
 
     <echo>Starting fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
-    <echo>You can safely hit Ctl-C to kill the mvn command after fedora starts</echo>
     <exec dir="${FEDORA_HOME}"
       executable="${FEDORA_HOME}/server/bin/fedora-start${ext}"
       spawn="${SPAWN}">
       <arg line="mckoi"/>
       <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>
-    <!-- needed only in case of spawn. give some time to complete startuo-->
+  </target>
+
+  <condition property="if-spawned">
+    <istrue value="${SPAWN}"/>
+  </condition>
+  
+  <target name="fedora-if-spawned" if="if-spawned">
+    <echo>Spawned off fedora; sleeping a bit to give it time to really start...</echo>
     <sleep seconds="10"/>
-    
+    <echo>Sleep done.</echo>
   </target>
 
   <target name="fedora-stop" depends="exec-ext">
