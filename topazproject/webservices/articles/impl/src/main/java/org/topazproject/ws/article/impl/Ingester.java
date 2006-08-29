@@ -382,9 +382,9 @@ public class Ingester {
     private final Zip zip;
 
     static {
-      /* Make sure the org.xml.sax.driver property has been set so XMLReaderFactory
-       * can create the reader. Unfortunately most parsers don't seem to set this
-       * property.
+      /* Remember the name of the XMLReader class so we can use it in the XMLReaderFactory
+       * call. Note that we don't set the org.xml.sax.driver property because there seem to
+       * be cases where that property is removed again.
        */
       String cname = null;
       try {
