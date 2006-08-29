@@ -24,19 +24,26 @@
            value="org.apache.xalan.xsltc.trax.TransformerFactoryImpl"/>
   </util:map>
 
+  <!-- TODO: Update the url automatically using maven build process itself-->
   <bean id="articleService" class="org.plos.article.service.ArticleService" scope="session">
-    <property name="servicePort" value="http://localhost:9080/ws-articles-webapp-0.1/services/ArticleServicePort"/>
+    <property name="servicePort" value="http://localhost:9080/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort"/>
   </bean>
 
   <bean id="annotationService" class="org.plos.annotation.service.AnnotationService">
-    <property name="annotationServicePort" value="http://localhost:9080/ws-annotation-webapp-0.1/services/AnnotationServicePort"/>
-    <property name="replyServicePort" value="http://localhost:9080/ws-annotation-webapp-0.1/services/ReplyServicePort"/>
+    <property name="annotationServicePort" value="http://localhost:9080/ws-annotation-webapp-0.5-SNAPSHOT/services/AnnotationServicePort"/>
+    <property name="replyServicePort" value="http://localhost:9080/ws-annotation-webapp-0.5-SNAPSHOT/services/ReplyServicePort"/>
     <property name="applicationId" value="topaz-plosone"/>
     <property name="defaultAnnotationType" value="http://www.w3.org/2000/10/annotationType#Annotation"/>
     <property name="defaultReplyType" value="http://www.w3.org/2001/12/replyType#Comment"/>
     <property name="encodingCharset" value="UTF-8"/>
   </bean>
 
-  <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService"/>
+  <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService">
+    <property name="profaneWords">
+      <list>
+        <value>bush</value>
+      </list>
+    </property>
+  </bean>
 
 </beans>
