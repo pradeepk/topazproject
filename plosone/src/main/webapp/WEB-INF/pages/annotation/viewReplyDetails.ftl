@@ -9,13 +9,10 @@
         <legend>Reply details</legend>
 
           id          =${reply.id}            <br/>
-          root        =${reply.root}     <br/>
+          root        =${reply.root}          <br/>
           inReplyTo   =${reply.inReplyTo}     <br/>
           title       =${reply.title}         <br/>
-          body        =
-          <@ww.url id="fetchBodyURL" action="fetchBody" bodyUrl="${reply.body}"/>
-          <@ww.a href="%{fetchBodyURL}">${reply.body}</@ww.a> <br/>
-
+          body        =${reply.body}          <br/>
           created     =${reply.created}       <br/>
           creator     =${reply.creator}       <br/>
           mediator    =${reply.mediator}      <br/>
@@ -25,7 +22,7 @@
           <@ww.a href="%{createReplyURL}">create reply</@ww.a> <br/>
 
           <@ww.url id="listReplyURL" action="listAllReplies" root="${reply.root}" inReplyTo="${reply.id}"/>
-          <@ww.a href="%{listReplyURL}">list replies</@ww.a> <br/>
+          <@ww.a href="%{listReplyURL}">list all replies</@ww.a> <br/>
 
     </fieldset>
 

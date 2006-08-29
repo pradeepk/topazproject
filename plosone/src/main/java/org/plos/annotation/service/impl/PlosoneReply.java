@@ -9,9 +9,8 @@
  */
 package org.plos.annotation.service.impl;
 
-import org.topazproject.ws.annotation.ReplyInfo;
 import org.plos.annotation.service.Reply;
-import com.opensymphony.util.TextUtils;
+import org.topazproject.ws.annotation.ReplyInfo;
 
 /**
  * Plosone wrapper around the ReplyInfo from topaz service. It provides
@@ -19,24 +18,11 @@ import com.opensymphony.util.TextUtils;
  * - Fetch the body content eagerly.
  * - a separation from any topaz changes
  */
-public class PlosoneReply implements Reply {
+public class PlosoneReply extends BaseAnnotation implements Reply {
   private final ReplyInfo reply;
 
   public PlosoneReply(final ReplyInfo reply) {
     this.reply = reply;
-  }
-
-  /** {@inheritDoc} */
-  public String getBody() {
-    // TODO: fetch the body content right away and escape it
-//    return TextUtils.htmlEncode(annotation.getTitle());
-    
-    return reply.getBody();
-  }
-
-  /** {@inheritDoc} */
-  public void setBody(final String s) {
-    reply.setBody(s);
   }
 
   /** {@inheritDoc} */
@@ -111,7 +97,7 @@ public class PlosoneReply implements Reply {
 
   /** {@inheritDoc} */
   public String getTitle() {
-    return TextUtils.htmlEncode(reply.getTitle());
+    return escapeText(reply.getTitle());
   }
 
   /** {@inheritDoc} */

@@ -11,10 +11,7 @@
           id          =${annotation.id}            <br/>
           annotates   =${annotation.annotates}     <br/>
           title       =${annotation.title}         <br/>
-          body        =
-          <@ww.url id="fetchAnnotationBodyURL" action="fetchBody" bodyUrl="${annotation.body}"/>
-          <@ww.a href="%{fetchAnnotationBodyURL}">${annotation.body}</@ww.a> <br/>
-
+          body        =${annotation.body}          <br/>
           context     =${annotation.context}       <br/>
           created     =${annotation.created}       <br/>
           creator     =${annotation.creator}       <br/>
@@ -24,8 +21,8 @@
           <@ww.url id="createReplyURL" action="createReplySubmit" root="${annotation.id}" inReplyTo="${annotation.id}"/>
           <@ww.a href="%{createReplyURL}">create reply</@ww.a> <br/>
 
-          <@ww.url id="listReplyURL" action="listReply" root="${annotation.id}" inReplyTo="${annotation.id}"/>
-          <@ww.a href="%{listReplyURL}">list replies</@ww.a> <br/>
+          <@ww.url id="listReplyURL" action="listAllReplies" root="${annotation.id}" inReplyTo="${annotation.id}"/>
+          <@ww.a href="%{listReplyURL}">list all replies</@ww.a> <br/>
 
     </fieldset>
 

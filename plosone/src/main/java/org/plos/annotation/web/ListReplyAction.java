@@ -22,7 +22,6 @@ public class ListReplyAction extends AnnotationActionSupport {
   private String root;
   private String inReplyTo;
   private Reply[] replies;
-  private Reply[] allReplies;
 
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
 
@@ -39,7 +38,7 @@ public class ListReplyAction extends AnnotationActionSupport {
 
   public String listAllReplies() throws Exception {
     try {
-      allReplies = getAnnotationService().listAllReplies(root, inReplyTo);
+      replies = getAnnotationService().listAllReplies(root, inReplyTo);
     } catch (final ApplicationException e) {
       log.error(e, e);
       addActionError("Reply fetching failed with error message: " + e.getMessage());
@@ -58,10 +57,6 @@ public class ListReplyAction extends AnnotationActionSupport {
 
   public Reply[] getReplies() {
     return replies;
-  }
-
-  public Reply[] getAllReplies() {
-    return allReplies;  //To change body of created methods use File | Settings | File Templates.
   }
 
   @RequiredStringValidator(message = "root is required")

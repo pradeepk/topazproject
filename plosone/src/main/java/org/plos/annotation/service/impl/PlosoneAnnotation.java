@@ -11,14 +11,14 @@ package org.plos.annotation.service.impl;
 
 import org.plos.annotation.service.Annotation;
 import org.topazproject.ws.annotation.AnnotationInfo;
-import com.opensymphony.util.TextUtils;
 
 /**
  * Plosone wrapper around the AnnotationsInfo from topaz service. It provides
  * - A way to escape title/body text when returning the result to the web layer
+ * - Fetch the body content eagerly.
  * - a separation from any topaz changes
  */
-public class PlosoneAnnotation implements Annotation {
+public class PlosoneAnnotation extends BaseAnnotation implements Annotation {
   private final AnnotationInfo annotation;
 
   /** {@inheritDoc} */
@@ -29,19 +29,6 @@ public class PlosoneAnnotation implements Annotation {
   /** {@inheritDoc} */
   public void setAnnotates(final String s) {
     annotation.setAnnotates(s);
-  }
-
-  /** {@inheritDoc} */
-  public String getBody() {
-    // TODO: fetch the body content right away and escape it
-//    return TextUtils.htmlEncode(annotation.getTitle());
-    
-    return annotation.getBody();
-  }
-
-  /** {@inheritDoc} */
-  public void setBody(final String s) {
-    annotation.setBody(s);
   }
 
   /** {@inheritDoc} */
@@ -124,9 +111,11 @@ public class PlosoneAnnotation implements Annotation {
     annotation.setSupersedes(s);
   }
 
-  /** {@inheritDoc} */
+  /** Escaped text.
+   * {@inheritDoc}
+   */
   public String getTitle() {
-    return TextUtils.htmlEncode(annotation.getTitle());
+    return escapeText(annotation.getTitle());
   }
 
   /** {@inheritDoc} */
