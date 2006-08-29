@@ -10,16 +10,14 @@
  package org.plos.annotation.web;
 
 import com.opensymphony.xwork.Action;
-import junit.framework.Test;
-import junit.framework.TestSuite;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.Reply;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static final String target = "http://here.is/viru";
@@ -32,39 +30,16 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   private final String PROFANE_WORD = "BUSH";
   private static String replyToReplyId;
 
-  public static Test suite() {
-    final TestSuite orderedTests = new TestSuite();
-
-    final String[] testsInSequence =
-            new String[]{
-                    "testDeleteAllAnnotations",
-                    "testDeleteAllReplies",
-                    "testCreateAnnotation",
-                    "testCreateReply",
-                    "testListAnnotations",
-                    "testListReplies",
-                    "testDeleteAnnotations",
-                    "testDeleteRepliesWithId",
-                    "testCreateAnnotationShouldFailDueToProfanityInBody",
-                    "testCreateAnnotationShouldFailDueToProfanityInTitle",
-                    "testCreateReplyShouldFailDueToProfanityInBody",
-                    "testCreateReplyShouldFailDueToProfanityInTitle",
-                    "testCreateThreadedReplies",
-                    "testListThreadedReplies",
-                    "testGetAnnotationBodyShouldDeclawTheContentDueToSecurityImplications",
-                    "testGetAnnotationShouldDeclawTheTitleDueToSecurityImplications",
-                    "testGetReplyBodyShouldDeclawTheContentDueToSecurityImplications",
-                    "testGetReplyShouldDeclawTheTitleDueToSecurityImplications"
-            };
-
-    for (final String testName : testsInSequence) {
-      orderedTests.addTest(new AnnotationActionsTest(testName));
-    }
-
-    return orderedTests;
+  public void testSequencedTests() throws Exception {
+    deleteAllAnnotations();
+    deleteAllReplies();
+    createAnnotation();
+    createReply();
+    listAnnotations();
+    listReplies();
   }
 
-  public void testDeleteAllAnnotations() throws Exception {
+  public void deleteAllAnnotations() throws Exception {
     final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
     listAnnotationAction.setTarget(target);
     assertEquals(Action.SUCCESS, listAnnotationAction.execute());
@@ -75,7 +50,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     }
   }
 
-  public void testDeleteAllReplies() throws Exception {
+  public void deleteAllReplies() throws Exception {
     DeleteReplyAction deleteReplyAction = getDeleteReplyAction();
     deleteReplyAction.setRoot(target);
     deleteReplyAction.setInReplyTo(target);
@@ -102,19 +77,19 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     deleteReplyAction = getDeleteReplyAction();
     deleteReplyAction.setId(replyId);
-    assertEquals(Action.ERROR, deleteReplyAction.deleteReplyWithId());
+    assertEquals("Should throw an error for a nonexisting reply id", Action.ERROR, deleteReplyAction.deleteReplyWithId());
 
     assertEquals(1, deleteReplyAction.getActionErrors().size());
   }
 
-  public void testListAnnotations() throws Exception {
+  public void listAnnotations() throws Exception {
     final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
     listAnnotationAction.setTarget(target);
     assertEquals(Action.SUCCESS, listAnnotationAction.execute());
     assertEquals(1, listAnnotationAction.getAnnotations().length);
   }
 
-  public void testCreateAnnotation() throws Exception {
+  public void createAnnotation() throws Exception {
     final String title = "Annotation1";
     final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
@@ -130,16 +105,12 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(target, savedAnnotation.getAnnotates());
     assertEquals(title, savedAnnotation.getTitle());
     assertEquals(context, savedAnnotation.getContext());
-
-    final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
-    bodyFetchAction.setBodyUrl(savedAnnotation.getBody());
-    assertEquals(Action.SUCCESS, bodyFetchAction.execute());
-    assertEquals(body, bodyFetchAction.getBody());
+    assertEquals(body, savedAnnotation.getBody());
 
     AnnotationActionsTest.annotationId = annotationId;
   }
 
-  public void testCreateReply() throws Exception {
+  public void createReply() throws Exception {
     final String title = "Reply1";
     final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
     assertEquals(Action.SUCCESS, createReplyAction.execute());
@@ -154,11 +125,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(annotationId, savedReply.getRoot());
     assertEquals(annotationId, savedReply.getInReplyTo());
     assertEquals(title, savedReply.getTitle());
-
-    final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
-    bodyFetchAction.setBodyUrl(savedReply.getBody());
-    assertEquals(Action.SUCCESS, bodyFetchAction.execute());
-    assertEquals(body, bodyFetchAction.getBody());
+    assertEquals(body, savedReply.getBody());
 
     AnnotationActionsTest.replyId = replyId;
   }
@@ -182,10 +149,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       assertEquals(annotationId, savedReply.getInReplyTo());
       assertEquals(title, savedReply.getTitle());
 
-      final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
-      bodyFetchAction.setBodyUrl(savedReply.getBody());
-      assertEquals(Action.SUCCESS, bodyFetchAction.execute());
-      assertEquals(body, bodyFetchAction.getBody());
+      assertEquals(body, savedReply.getBody());
       AnnotationActionsTest.replyId = replyId;
     }
 
@@ -206,10 +170,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       assertEquals(replyId, savedReply.getInReplyTo());
       assertEquals(title, savedReply.getTitle());
 
-      final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
-      bodyFetchAction.setBodyUrl(savedReply.getBody());
-      assertEquals(Action.SUCCESS, bodyFetchAction.execute());
-      assertEquals(replyBody2, bodyFetchAction.getBody());
+      assertEquals(replyBody2, savedReply.getBody());
       AnnotationActionsTest.replyToReplyId = replyToReplyId;
     }
 
@@ -221,7 +182,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     listReplyAction.setInReplyTo(annotationId);
     assertEquals(Action.SUCCESS, listReplyAction.listAllReplies());
 
-    final Reply[] replies = listReplyAction.getAllReplies();
+    final Reply[] replies = listReplyAction.getReplies();
 
     final Collection<String> list = new ArrayList<String>();
     for (final Reply reply : replies) {
@@ -232,7 +193,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertTrue(list.contains(replyToReplyId));
   }
 
-  public void testListReplies() throws Exception {
+  public void listReplies() throws Exception {
     final ListReplyAction listReplyAction = getListReplyAction();
     listReplyAction.setRoot(annotationId);
     listReplyAction.setInReplyTo(annotationId);
@@ -274,7 +235,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertTrue(createReplyAction.hasErrors());
   }
 
-  public void testGetAnnotationBodyShouldDeclawTheContentDueToSecurityImplications() throws Exception {
+  public void testGetAnnotationShouldDeclawTheBodyContentDueToSecurityImplications() throws Exception {
     final String body = "something that I always <div>document.write('Booooom');office.cancellunch('tuesday')</div>";
     final String declawedBody = "something that I always &lt;div&gt;document.write('Booooom');office.cancellunch('tuesday')&lt;/div&gt;";
 //    final String body = "something that I always $div$document.write('Booooom');office.cancellunch('tuesday')$/div$";
@@ -288,11 +249,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
     final Annotation savedAnnotation = getAnnotationService().getAnnotation(annotationId1);
-    final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
-    bodyFetchAction.setBodyUrl(savedAnnotation.getBody());
-
-    assertEquals(Action.SUCCESS, bodyFetchAction.execute());
-    assertEquals(declawedBody, bodyFetchAction.getBody());
+    assertEquals(declawedBody, savedAnnotation.getBody());
 
   }
 
@@ -316,9 +273,9 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
   }
 
-  public void testGetReplyBodyShouldDeclawTheContentDueToSecurityImplications() throws Exception {
-    final String body = "something that I always <div>document.write('Booooom');office.cancellunch('tuesday')</div>";
-    final String declawedBody = "something that I always &lt;div&gt;document.write('Booooom');office.cancellunch('tuesday')&lt;/div&gt;";
+  public void testGetReplyShouldDeclawTheBodyContentDueToSecurityImplications() throws Exception {
+    final String body = "something that I always & < >";
+    final String declawedBody = "something that I always &amp; &lt; &gt;";
 //    final String body = "something that I always $div$document.write('Booooom');office.cancellunch('tuesday')$/div$";
 //    final String declawedBody = "something that I always dollardivdollardocument.write('Booooom');office.cancellunch('tuesday')dollar/divdollar";
 
@@ -326,19 +283,15 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     final CreateReplyAction createAnnotationAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
     assertEquals(Action.SUCCESS, createAnnotationAction.execute());
-    final String id1 = createAnnotationAction.getReplyId();
+    final String id = createAnnotationAction.getReplyId();
 
-    final Reply savedReply = getAnnotationService().getReply(id1);
-    final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
-    bodyFetchAction.setBodyUrl(savedReply.getBody());
-
-    assertEquals(Action.SUCCESS, bodyFetchAction.execute());
-    assertEquals(declawedBody, bodyFetchAction.getBody());
+    final Reply savedReply = getAnnotationService().getReply(id);
+    assertEquals(declawedBody, savedReply.getBody());
 
   }
 
 
-  public void testGetReplyShouldDeclawTheTitleDueToSecurityImplications() throws Exception {
+  public void testGetReplyShouldDeclawTheTitleContentDueToSecurityImplications() throws Exception {
     final String body = "something that I think";
 
     final String title = "reply <&>";
