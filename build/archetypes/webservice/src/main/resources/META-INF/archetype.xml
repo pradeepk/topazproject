@@ -12,7 +12,8 @@
     <source>api/src/main/java/XYZ.java</source>
     <source>impl/src/main/java/XYZImpl.java</source>
     <source>impl/src/main/java/XYZPEP.java</source>
-    <source>ws-server-impl/src/main/axis/XYZServicePortSoapBindingImpl.java</source>
+    <source>ws-server-impl/src/main/java/XYZServicePortSoapBindingImpl.java</source>
+    <source>ws-client-impl/src/main/java/XYZClientFactory.java</source>
   </sources>
   <testSources>
     <source>ws-client-impl/src/it/java/XYZServiceTest.java</source>
@@ -24,9 +25,7 @@
     <resource>ws-client-impl/pom.xml</resource>
     <resource>ws-server-impl/pom.xml</resource>
     <resource>ws-webapp/pom.xml</resource>
-    <resource>ws-client-impl/src/main/wsdl/dummy</resource>
-    <resource>ws-server-impl/src/main/wsdl/dummy</resource>
-    <resource>ws-webapp/src/main/webapp/WEB-INF/defaults.xml</resource>
+    <resource>ws-webapp/src/main/webapp/WEB-INF/topaz-config.xml</resource>
     <resource>ws-webapp/src/main/stylesheets/server-config.xslt</resource>
   </resources>
 </archetype>

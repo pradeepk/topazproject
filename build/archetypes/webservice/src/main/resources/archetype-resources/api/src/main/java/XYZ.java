@@ -1,6 +1,9 @@
 #set( $service = $artifactId )
 #set( $Svc = "${service.substring(0, 1).toUpperCase()}${service.substring(1)}" )
 /*
+ * $HeadURL::                                                                             $
+ * $Id$
+ *
  * Copyright (c) 2006 by Topaz, Inc.
  * http://topazproject.org
  *
