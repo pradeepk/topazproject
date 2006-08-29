@@ -378,6 +378,7 @@ public class Ingester {
    * This allows the stylesheets to access XML docs (such as pmc.xml) in the zip archive.
    */
   private static class ZipURIResolver implements URIResolver {
+    private static final String xmlReaderCName;
     private final Zip zip;
 
     static {
@@ -385,15 +386,14 @@ public class Ingester {
        * can create the reader. Unfortunately most parsers don't seem to set this
        * property.
        */
-      if (System.getProperty("org.xml.sax.driver") == null) {
-        try {
-          String cname =
-              SAXParserFactory.newInstance().newSAXParser().getXMLReader().getClass().getName();
-          System.setProperty("org.xml.sax.driver", cname);
-        } catch (Exception e) {
-          log.warn("Failed to set the org.xml.sax.driver property", e);
-        }
+      String cname = null;
+      try {
+        cname =
+            SAXParserFactory.newInstance().newSAXParser().getXMLReader().getClass().getName();
+      } catch (Exception e) {
+        log.warn("Failed to get the XMLReader class", e);
       }
+      xmlReaderCName = cname;
     }
 
     /** 
@@ -425,7 +425,7 @@ public class Ingester {
         InputSource src = new InputSource(is);
         src.setSystemId(uri.toString());
 
-        XMLReader rdr = XMLReaderFactory.createXMLReader();
+        XMLReader rdr = XMLReaderFactory.createXMLReader(xmlReaderCName);
         rdr.setEntityResolver(new CachedEntityResolver());
 
         return new SAXSource(rdr, src);
