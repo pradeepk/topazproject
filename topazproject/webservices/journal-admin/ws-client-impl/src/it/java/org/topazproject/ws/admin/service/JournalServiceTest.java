@@ -141,5 +141,7 @@ public class JournalServiceTest extends TestCase {
       gotExc = true;
     }
     assertTrue("Failed to get expected NoSuchIdException", gotExc);
+
+    service.deleteJournal(jid);
   }
 }
