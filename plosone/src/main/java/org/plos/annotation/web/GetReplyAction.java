@@ -13,14 +13,14 @@ import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.annotation.service.ApplicationException;
-import org.topazproject.ws.annotation.ReplyInfo;
+import org.plos.annotation.service.Reply;
 
 /**
  * Used to fetch a reply given an id.
  */
 public class GetReplyAction extends AnnotationActionSupport {
   private String replyId;
-  private ReplyInfo reply;
+  private Reply reply;
 
   private static final Log log = LogFactory.getLog(GetReplyAction.class);
 
@@ -44,7 +44,7 @@ public class GetReplyAction extends AnnotationActionSupport {
     return replyId;
   }
 
-  public ReplyInfo getReply() {
+  public Reply getReply() {
     return reply;
   }
 }

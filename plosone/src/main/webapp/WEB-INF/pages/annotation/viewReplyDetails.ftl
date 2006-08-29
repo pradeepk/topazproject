@@ -24,7 +24,7 @@
           <@ww.url id="createReplyURL" action="createReplySubmit" root="${reply.root}" inReplyTo="${reply.id}"/>
           <@ww.a href="%{createReplyURL}">create reply</@ww.a> <br/>
 
-          <@ww.url id="listReplyURL" action="listReply" root="${reply.root}" inReplyTo="${reply.id}"/>
+          <@ww.url id="listReplyURL" action="listAllReplies" root="${reply.root}" inReplyTo="${reply.id}"/>
           <@ww.a href="%{listReplyURL}">list replies</@ww.a> <br/>
 
     </fieldset>

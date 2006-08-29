@@ -15,8 +15,11 @@ import junit.framework.TestSuite;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
-import org.topazproject.ws.annotation.AnnotationInfo;
-import org.topazproject.ws.annotation.ReplyInfo;
+import org.plos.annotation.service.Annotation;
+import org.plos.annotation.service.Reply;
+
+import java.util.Collection;
+import java.util.ArrayList;
 
 public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static final String target = "http://here.is/viru";
@@ -27,6 +30,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static String annotationId = "doi:somedefaultvalue";
   private static String replyId;
   private final String PROFANE_WORD = "BUSH";
+  private static String replyToReplyId;
 
   public static Test suite() {
     final TestSuite orderedTests = new TestSuite();
@@ -45,8 +49,12 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
                     "testCreateAnnotationShouldFailDueToProfanityInTitle",
                     "testCreateReplyShouldFailDueToProfanityInBody",
                     "testCreateReplyShouldFailDueToProfanityInTitle",
+                    "testCreateThreadedReplies",
+                    "testListThreadedReplies",
                     "testGetAnnotationBodyShouldDeclawTheContentDueToSecurityImplications",
-                    "testGetReplyBodyShouldDeclawTheContentDueToSecurityImplications"
+                    "testGetAnnotationShouldDeclawTheTitleDueToSecurityImplications",
+                    "testGetReplyBodyShouldDeclawTheContentDueToSecurityImplications",
+                    "testGetReplyShouldDeclawTheTitleDueToSecurityImplications"
             };
 
     for (final String testName : testsInSequence) {
@@ -61,7 +69,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     listAnnotationAction.setTarget(target);
     assertEquals(Action.SUCCESS, listAnnotationAction.execute());
 
-    for (final AnnotationInfo annotation : listAnnotationAction.getAnnotations()) {
+    for (final Annotation annotation : listAnnotationAction.getAnnotations()) {
       DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId());
       assertEquals(Action.SUCCESS, deleteAnnotationAction.execute());
     }
@@ -106,14 +114,6 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(1, listAnnotationAction.getAnnotations().length);
   }
 
-  public void testListReplies() throws Exception {
-    final ListReplyAction listReplyAction = getListReplyAction();
-    listReplyAction.setRoot(annotationId);
-    listReplyAction.setInReplyTo(annotationId);
-    assertEquals(Action.SUCCESS, listReplyAction.execute());
-    assertEquals(1, listReplyAction.getReplies().length);
-  }
-
   public void testCreateAnnotation() throws Exception {
     final String title = "Annotation1";
     final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
@@ -126,7 +126,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final GetAnnotationAction getAnnotationAction = getGetAnnotationAction();
     getAnnotationAction.setAnnotationId(annotationId);
     assertEquals(Action.SUCCESS, getAnnotationAction.execute());
-    final AnnotationInfo savedAnnotation = getAnnotationAction.getAnnotation();
+    final Annotation savedAnnotation = getAnnotationAction.getAnnotation();
     assertEquals(target, savedAnnotation.getAnnotates());
     assertEquals(title, savedAnnotation.getTitle());
     assertEquals(context, savedAnnotation.getContext());
@@ -150,7 +150,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final GetReplyAction getReplyAction = getGetReplyAction();
     getReplyAction.setReplyId(replyId);
     assertEquals(Action.SUCCESS, getReplyAction.execute());
-    final ReplyInfo savedReply = getAnnotationService().getReply(replyId);
+    final Reply savedReply = getAnnotationService().getReply(replyId);
     assertEquals(annotationId, savedReply.getRoot());
     assertEquals(annotationId, savedReply.getInReplyTo());
     assertEquals(title, savedReply.getTitle());
@@ -163,13 +163,90 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     AnnotationActionsTest.replyId = replyId;
   }
 
+
+  public void testCreateThreadedReplies() throws Exception {
+    final String replyId;
+    {
+      final String title = "Reply1";
+      final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
+      assertEquals(Action.SUCCESS, createReplyAction.execute());
+      replyId = createReplyAction.getReplyId();
+      log.debug("reply created with id:" + replyId);
+      assertNotNull(replyId);
+
+      final GetReplyAction getReplyAction = getGetReplyAction();
+      getReplyAction.setReplyId(replyId);
+      assertEquals(Action.SUCCESS, getReplyAction.execute());
+      final Reply savedReply = getAnnotationService().getReply(replyId);
+      assertEquals(annotationId, savedReply.getRoot());
+      assertEquals(annotationId, savedReply.getInReplyTo());
+      assertEquals(title, savedReply.getTitle());
+
+      final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
+      bodyFetchAction.setBodyUrl(savedReply.getBody());
+      assertEquals(Action.SUCCESS, bodyFetchAction.execute());
+      assertEquals(body, bodyFetchAction.getBody());
+      AnnotationActionsTest.replyId = replyId;
+    }
+
+    {
+      final String title = "Reply to Reply1";
+      final String replyBody2 = "some text in response to the earlier teply";
+      final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, replyId, title, "text/plain", replyBody2);
+      assertEquals(Action.SUCCESS, createReplyAction.execute());
+      final String replyToReplyId = createReplyAction.getReplyId();
+      log.debug("reply created with id:" + replyToReplyId);
+      assertNotNull(replyToReplyId);
+
+      final GetReplyAction getReplyAction = getGetReplyAction();
+      getReplyAction.setReplyId(replyToReplyId);
+      assertEquals(Action.SUCCESS, getReplyAction.execute());
+      final Reply savedReply = getAnnotationService().getReply(replyToReplyId);
+      assertEquals(annotationId, savedReply.getRoot());
+      assertEquals(replyId, savedReply.getInReplyTo());
+      assertEquals(title, savedReply.getTitle());
+
+      final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
+      bodyFetchAction.setBodyUrl(savedReply.getBody());
+      assertEquals(Action.SUCCESS, bodyFetchAction.execute());
+      assertEquals(replyBody2, bodyFetchAction.getBody());
+      AnnotationActionsTest.replyToReplyId = replyToReplyId;
+    }
+
+  }
+
+  public void testListThreadedReplies() throws Exception {
+    final ListReplyAction listReplyAction = getListReplyAction();
+    listReplyAction.setRoot(annotationId);
+    listReplyAction.setInReplyTo(annotationId);
+    assertEquals(Action.SUCCESS, listReplyAction.listAllReplies());
+
+    final Reply[] replies = listReplyAction.getAllReplies();
+
+    final Collection<String> list = new ArrayList<String>();
+    for (final Reply reply : replies) {
+      list.add(reply.getId());
+    }
+
+    assertTrue(list.contains(replyId));
+    assertTrue(list.contains(replyToReplyId));
+  }
+
+  public void testListReplies() throws Exception {
+    final ListReplyAction listReplyAction = getListReplyAction();
+    listReplyAction.setRoot(annotationId);
+    listReplyAction.setInReplyTo(annotationId);
+    assertEquals(Action.SUCCESS, listReplyAction.execute());
+    assertEquals(1, listReplyAction.getReplies().length);
+  }
+
   public void testCreateAnnotationShouldFailDueToProfanityInBody() throws Exception {
     final String body = "something that I always wanted to say " + PROFANE_WORD;
     final String title = "Annotation1";
     final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
     assertEquals(Action.ERROR, createAnnotationAction.execute());
-    assertTrue(createAnnotationAction.getFieldErrors().size() > 1);
+    assertTrue(createAnnotationAction.hasErrors());
   }
 
   public void testCreateAnnotationShouldFailDueToProfanityInTitle() throws Exception {
@@ -178,7 +255,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
     assertEquals(Action.ERROR, createAnnotationAction.execute());
-    assertTrue(createAnnotationAction.getFieldErrors().size() > 1);
+    assertTrue(createAnnotationAction.hasErrors());
   }
 
   public void testCreateReplyShouldFailDueToProfanityInBody() throws Exception {
@@ -186,15 +263,15 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String title = "Reply1";
     final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
     assertEquals(Action.ERROR, createReplyAction.execute());
-    assertTrue(createReplyAction.getFieldErrors().size() > 1);
+    assertTrue(createReplyAction.hasErrors());
   }
 
   public void testCreateReplyShouldFailDueToProfanityInTitle() throws Exception {
     final String body = "something that I always wanted to say";
-    final String title = "Reply1" + PROFANE_WORD;
+    final String title = "Reply1 " + PROFANE_WORD;
     final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
     assertEquals(Action.ERROR, createReplyAction.execute());
-    assertTrue(createReplyAction.getFieldErrors().size() > 1);
+    assertTrue(createReplyAction.hasErrors());
   }
 
   public void testGetAnnotationBodyShouldDeclawTheContentDueToSecurityImplications() throws Exception {
@@ -210,12 +287,32 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(Action.SUCCESS, createAnnotationAction.execute());
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
-    final AnnotationInfo savedAnnotation = getAnnotationService().getAnnotation(annotationId1);
+    final Annotation savedAnnotation = getAnnotationService().getAnnotation(annotationId1);
     final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
     bodyFetchAction.setBodyUrl(savedAnnotation.getBody());
 
     assertEquals(Action.SUCCESS, bodyFetchAction.execute());
     assertEquals(declawedBody, bodyFetchAction.getBody());
+
+  }
+
+  public void testGetAnnotationShouldDeclawTheTitleDueToSecurityImplications() throws Exception {
+    final String body = "something that I think";
+
+    final String title = "Annotation1 <&>";
+    final String declawedTitle = "Annotation1 &lt;&amp;&gt;";
+    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
+
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    final String annotationId1 = createAnnotationAction.getAnnotationId();
+
+    final GetAnnotationAction getAnnotationAction = getGetAnnotationAction();
+    getAnnotationAction.setAnnotationId(annotationId1);
+    assertEquals(Action.SUCCESS, getAnnotationAction.execute());
+    final Annotation savedAnnotation = getAnnotationAction.getAnnotation();
+    assertNotNull(savedAnnotation);
+    assertEquals(declawedTitle, savedAnnotation.getTitle());
 
   }
 
@@ -231,7 +328,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(Action.SUCCESS, createAnnotationAction.execute());
     final String id1 = createAnnotationAction.getReplyId();
 
-    final ReplyInfo savedReply = getAnnotationService().getReply(id1);
+    final Reply savedReply = getAnnotationService().getReply(id1);
     final BodyFetchAction bodyFetchAction = getAnnotationBodyFetcherAction();
     bodyFetchAction.setBodyUrl(savedReply.getBody());
 
@@ -240,6 +337,25 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
   }
 
+
+  public void testGetReplyShouldDeclawTheTitleDueToSecurityImplications() throws Exception {
+    final String body = "something that I think";
+
+    final String title = "reply <&>";
+    final String declawedTitle = "reply &lt;&amp;&gt;";
+
+    final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
+    assertEquals(Action.SUCCESS, createReplyAction.execute());
+    final String replyId1 = createReplyAction.getReplyId();
+
+    final GetReplyAction getAnnotationAction = getGetReplyAction();
+    getAnnotationAction.setReplyId(replyId1);
+    assertEquals(Action.SUCCESS, getAnnotationAction.execute());
+    final Reply savedReply = getAnnotationAction.getReply();
+    assertNotNull(savedReply);
+    assertEquals(declawedTitle, savedReply.getTitle());
+
+  }
   private DeleteAnnotationAction getDeleteAnnotationAction(final String annotationId) {
     final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction();
     deleteAnnotationAction.setAnnotationId(annotationId);

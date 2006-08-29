@@ -13,7 +13,7 @@ import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.annotation.service.ApplicationException;
-import org.topazproject.ws.annotation.ReplyInfo;
+import org.plos.annotation.service.Reply;
 
 /**
  * Action class to get a list of replies to annotations.
@@ -21,15 +21,28 @@ import org.topazproject.ws.annotation.ReplyInfo;
 public class ListReplyAction extends AnnotationActionSupport {
   private String root;
   private String inReplyTo;
-  private ReplyInfo[] replies;
+  private Reply[] replies;
+  private Reply[] allReplies;
 
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
+
   public String execute() throws Exception {
     try {
       replies = getAnnotationService().listReplies(root, inReplyTo);
     } catch (final ApplicationException e) {
       log.error(e, e);
-      addActionError("Annotation fetching failed with error message: " + e.getMessage());
+      addActionError("Reply fetching failed with error message: " + e.getMessage());
+      return ERROR;
+    }
+    return SUCCESS;
+  }
+
+  public String listAllReplies() throws Exception {
+    try {
+      allReplies = getAnnotationService().listAllReplies(root, inReplyTo);
+    } catch (final ApplicationException e) {
+      log.error(e, e);
+      addActionError("Reply fetching failed with error message: " + e.getMessage());
       return ERROR;
     }
     return SUCCESS;
@@ -43,8 +56,12 @@ public class ListReplyAction extends AnnotationActionSupport {
     this.inReplyTo = inReplyTo;
   }
 
-  public ReplyInfo[] getReplies() {
+  public Reply[] getReplies() {
     return replies;
+  }
+
+  public Reply[] getAllReplies() {
+    return allReplies;  //To change body of created methods use File | Settings | File Templates.
   }
 
   @RequiredStringValidator(message = "root is required")

@@ -5,21 +5,21 @@ package org.plos.annotation.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.util.FileUtils;
+import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.ws.annotation.AnnotationClientFactory;
-import org.topazproject.ws.annotation.Annotations;
 import org.topazproject.ws.annotation.AnnotationInfo;
+import org.topazproject.ws.annotation.Annotations;
 import org.topazproject.ws.annotation.NoSuchIdException;
 import org.topazproject.ws.annotation.Replies;
 import org.topazproject.ws.annotation.RepliesClientFactory;
 import org.topazproject.ws.annotation.ReplyInfo;
-import org.springframework.beans.factory.annotation.Required;
-import org.plos.util.FileUtils;
 
 import javax.xml.rpc.ServiceException;
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
-import java.io.UnsupportedEncodingException;
-import java.io.IOException;
 
 /**
  * Provides the Create/Read/Delete annotation operations.
@@ -124,9 +124,10 @@ public class AnnotationService {
    * @throws ApplicationException
    * @return a list of annotations
    */
-  public AnnotationInfo[] listAnnotations(final String target) throws ApplicationException {
+  public Annotation[] listAnnotations(final String target) throws ApplicationException {
     try {
-      return annotationService.listAnnotations(applicationId, target, defaultAnnotationType);
+      final AnnotationInfo[] annotations = annotationService.listAnnotations(applicationId, target, defaultAnnotationType);
+      return Converter.convert(annotations);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
@@ -139,9 +140,26 @@ public class AnnotationService {
    * @throws ApplicationException
    * @return a list of replies
    */
-  public ReplyInfo[] listReplies(final String root, final String inReplyTo) throws ApplicationException {
+  public Reply[] listReplies(final String root, final String inReplyTo) throws ApplicationException {
     try {
-      return replyService.listReplies(root, inReplyTo);
+      final ReplyInfo[] replies = replyService.listReplies(root, inReplyTo);
+      return Converter.convert(replies);
+    } catch (RemoteException e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
+   * @see org.topazproject.ws.annotation.Replies#listAllReplies(String, String)
+   * @param root the discussion thread this resource is part of
+   * @param inReplyTo the resource whose replies are to be listed
+   * @throws ApplicationException
+   * @return a list of all replies
+   */
+  public Reply[] listAllReplies(final String root, final String inReplyTo) throws ApplicationException {
+    try {
+      final ReplyInfo[] replies = replyService.listAllReplies(root, inReplyTo);
+      return Converter.convert(replies);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
@@ -153,9 +171,10 @@ public class AnnotationService {
    * @throws ApplicationException
    * @return Annotation
    */
-  public AnnotationInfo getAnnotation(final String annotationId) throws ApplicationException {
+  public Annotation getAnnotation(final String annotationId) throws ApplicationException {
     try {
-      return annotationService.getAnnotationInfo(annotationId);
+      final AnnotationInfo annotation = annotationService.getAnnotationInfo(annotationId);
+      return Converter.convert(annotation);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
@@ -168,9 +187,10 @@ public class AnnotationService {
    * @throws NoSuchIdException
    * @throws ApplicationException
    */
-  public ReplyInfo getReply(final String replyId) throws NoSuchIdException, ApplicationException {
+  public Reply getReply(final String replyId) throws NoSuchIdException, ApplicationException {
     try {
-      return replyService.getReplyInfo(replyId);
+      final ReplyInfo reply = replyService.getReplyInfo(replyId);
+      return Converter.convert(reply);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }

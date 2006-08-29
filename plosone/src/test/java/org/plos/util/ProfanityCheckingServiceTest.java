@@ -19,7 +19,7 @@ public class ProfanityCheckingServiceTest extends TestCase {
     final ProfanityCheckingService service = new ProfanityCheckingService();
     final Collection<String> profaneWordList = new ArrayList<String>();
     profaneWordList.add("BUSH");
-    service.setWords(profaneWordList);
+    service.setProfaneWords(profaneWordList);
     found("bush", service);
     found(" bush", service);
     found("  bush", service);
@@ -42,7 +42,7 @@ public class ProfanityCheckingServiceTest extends TestCase {
     final ProfanityCheckingService service = new ProfanityCheckingService();
     final Collection<String> profaneWordList = new ArrayList<String>();
     profaneWordList.add("BUSH");
-    service.setWords(profaneWordList);
+    service.setProfaneWords(profaneWordList);
     notFound("ambush", service);
     notFound(" some ambush", service);
     notFound(" amBush ", service);

@@ -7,14 +7,14 @@ import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.annotation.service.ApplicationException;
-import org.topazproject.ws.annotation.AnnotationInfo;
+import org.plos.annotation.service.Annotation;
 
 /**
  * Action class to get a list of annotations.
  */
 public class ListAnnotationAction extends AnnotationActionSupport {
   private String target;
-  private AnnotationInfo[] annotations;
+  private Annotation[] annotations;
 
   private static final Log log = LogFactory.getLog(ListAnnotationAction.class);
 
@@ -38,7 +38,7 @@ public class ListAnnotationAction extends AnnotationActionSupport {
    * TODO: return the wrapped annotations so that the title can be htmlEncoded and hence any dangerous scripting can be declawed. See if ActionChaining can help here. 
    * @return a list of annotations
    */
-  public AnnotationInfo[] getAnnotations() {
+  public Annotation[] getAnnotations() {
     return annotations;
   }
 

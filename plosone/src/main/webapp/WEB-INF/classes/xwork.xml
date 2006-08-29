@@ -74,6 +74,10 @@
       <result name="success" type="freemarker">/WEB-INF/pages/annotation/listReply.ftl</result>
     </action>
 
+    <action name="listAllReplies" class="org.plos.annotation.web.ListReplyAction" method="listAllReplies">
+      <result name="success" type="freemarker">/WEB-INF/pages/annotation/listReply.ftl</result>
+    </action>
+
     <action name="getReply" class="org.plos.annotation.web.GetReplyAction">
       <result name="success" type="freemarker">/WEB-INF/pages/annotation/viewReplyDetails.ftl</result>
     </action>

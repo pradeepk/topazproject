@@ -12,15 +12,15 @@ package org.plos.annotation.web;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.ApplicationException;
-import org.topazproject.ws.annotation.AnnotationInfo;
 
 /**
  * Used to fetch an annotation given an id.
  */
 public class GetAnnotationAction extends AnnotationActionSupport {
   private String annotationId;
-  private AnnotationInfo annotation;
+  private Annotation annotation;
 
   private static final Log log = LogFactory.getLog(GetAnnotationAction.class);
 
@@ -48,7 +48,7 @@ public class GetAnnotationAction extends AnnotationActionSupport {
     return annotationId;
   }
 
-  public AnnotationInfo getAnnotation() {
+  public Annotation getAnnotation() {
     return annotation;
   }
 }
