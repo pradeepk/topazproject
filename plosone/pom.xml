@@ -191,8 +191,8 @@
       </plugin>
 
       <!--
-        mvn clean jetty6:run to run the webapp.  
-        ecqs should also be installed and running first 
+        mvn clean jetty:run to run the webapp.
+        ecqs should also be installed and running first
       -->
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
