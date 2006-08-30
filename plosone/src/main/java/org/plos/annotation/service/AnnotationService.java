@@ -79,13 +79,13 @@ public class AnnotationService {
 
   /**
    * @see org.topazproject.ws.annotation.Annotations#deleteAnnotation(String, boolean)
-   * @param annotation annotation
+   * @param annotationId annotationId
    * @param deletePreceding deletePreceding
    * @throws ApplicationException
    */
-  public void deleteAnnotation(final String annotation, final boolean deletePreceding) throws ApplicationException {
+  public void deleteAnnotation(final String annotationId, final boolean deletePreceding) throws ApplicationException {
     try {
-      annotationService.deleteAnnotation(annotation, deletePreceding);
+      annotationService.deleteAnnotation(annotationId, deletePreceding);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
@@ -107,12 +107,12 @@ public class AnnotationService {
 
   /**
    * @see org.topazproject.ws.annotation.Replies#deleteReplies(String)
-   * @param id id of the reply
+   * @param replyId replyId of the reply
    * @throws ApplicationException
    */
-  public void deleteReply(final String id) throws ApplicationException {
+  public void deleteReply(final String replyId) throws ApplicationException {
     try {
-      replyService.deleteReplies(id);
+      replyService.deleteReplies(replyId);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
