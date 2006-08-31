@@ -193,6 +193,11 @@
       <!--
         mvn clean jetty:run to run the webapp.
         ecqs should also be installed and running first
+
+        To enable remote debug on port 4000
+        export MAVEN_OPTS="-Xdebug -Xnoagent -Djava.compiler=NONE -Xrunjdwp:transport=dt_socket,address=4000,server=y,suspend=n"
+        
+        If you supply suspend=n instead of suspend=y you can start immediately without running the debugger and launch the debugger at anytime you really wish to debug.
       -->
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
