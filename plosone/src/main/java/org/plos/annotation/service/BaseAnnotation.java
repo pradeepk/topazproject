@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.annotation.service.impl;
+package org.plos.annotation.service;
 
 import com.opensymphony.util.TextUtils;
 
@@ -18,14 +18,15 @@ import com.opensymphony.util.TextUtils;
  * if required.
  */
 public abstract class BaseAnnotation {
-  private String body;
-
   /**
    * @return the escaped body.
+   * @throws ApplicationException
    */
-  public String getBody() {
-    return escapeText(body);
+  public String getBody() throws ApplicationException {
+    return escapeText(getOriginalBody());
   }
+
+  protected abstract String getOriginalBody() throws ApplicationException;
 
   /**
    * Escape text so as to avoid any java scripting maliciousness when rendering it on a web page
@@ -36,10 +37,4 @@ public abstract class BaseAnnotation {
     return TextUtils.htmlEncode(text);
   }
 
-  /** Set the text content of the annotation, not the URL
-   * @param bodyText bodyText
-   */
-  public void setBody(final String bodyText) {
-    body = bodyText;
-  }
 }

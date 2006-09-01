@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
@@ -44,10 +45,27 @@ public class CASProtectedService implements ProtectedService {
    *
    * @throws IOException when there is an error in contacting CAS server.
    * @throws URISyntaxException If the service uri is invalid
+   * @deprecated Instead use {@link CASProtectedService#CASProtectedService(String, sessionMap)}
    */
   public CASProtectedService(String uri, HttpSession session)
                       throws IOException, URISyntaxException {
     this(uri, getCASReceipt(session));
+  }
+
+  /**
+   * Creates a ProtectedService instance that is protected by CAS Single Signon. The ticket is
+   * appended to the service URI if the HTTPSession contains a validated CASReceipt and this
+   * service has set up a ProxyTicketReceptor.
+   *
+   * @param uri the service uri
+   * @param sessionMap the map containing the CASReceipt and any other info corresponding to an authenticated user or null
+   *
+   * @throws IOException when there is an error in contacting CAS server.
+   * @throws URISyntaxException If the service uri is invalid
+   */
+  public CASProtectedService(String uri, final Map sessionMap)
+                      throws IOException, URISyntaxException {
+    this(uri, getCASReceipt(sessionMap));
   }
 
   /**
@@ -168,4 +186,9 @@ public class CASProtectedService implements ProtectedService {
   private static CASReceipt getCASReceipt(HttpSession session) {
     return (session == null) ? null : (CASReceipt) session.getAttribute(CASFilter.CAS_FILTER_RECEIPT);
   }
+  
+  private static CASReceipt getCASReceipt(final Map sessionMap) {
+    return (sessionMap == null) ? null : (CASReceipt) sessionMap.get(CASFilter.CAS_FILTER_RECEIPT);
+  }
+
 }

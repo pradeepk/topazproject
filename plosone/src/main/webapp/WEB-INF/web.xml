@@ -36,10 +36,9 @@
     <filter-class>com.opensymphony.webwork.dispatcher.FilterDispatcher</filter-class>
   </filter>
 
-
   <filter-mapping >
     <filter-name>CAS Filter</filter-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/annotation/secure/*</url-pattern>
   </filter-mapping>
 
   <filter-mapping>

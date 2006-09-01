@@ -15,8 +15,9 @@
 
           annotates   =${annotation.annotates}     <br/>
           title       =${annotation.title}         <br/>
+          creator     =${annotation.creator}       <br/>
 
-          <@ww.url id="deleteAnnotationURL" action="deleteAnnotation" annotationId="${annotation.id}"/>
+          <@ww.url id="deleteAnnotationURL" action="deleteAnnotation" annotationId="${annotation.id}" namespace="/annotation/secure" />
           <@ww.a href="%{deleteAnnotationURL}">delete</@ww.a><br/>
           <hr/>
         </#list>

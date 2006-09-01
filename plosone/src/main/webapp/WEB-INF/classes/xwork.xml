@@ -4,82 +4,90 @@
   <include file="webwork-default.xml" />
 
   <package name="default" extends="webwork-default">
+    <result-types>
+        <result-type name="freemarker" class="com.opensymphony.webwork.views.freemarker.FreemarkerResult" default="true"/>
+    </result-types>
 
-    <default-action-ref name="todo" />
+    <interceptors>
+      <interceptor-stack name="plosStack">
+        <interceptor-ref name="timer"/>
+        <!--<interceptor-ref name="logger"/>-->
+        <interceptor-ref name="defaultStack"/>
+      </interceptor-stack>
+    </interceptors>
+    <default-interceptor-ref name="plosStack"/>
 
-    <action name="todo">
-      <result type="freemarker">/WEB-INF/pages/todo.ftl</result>
+    <default-action-ref name="home" />
+
+    <action name="home">
+      <result>/WEB-INF/pages/todo.ftl</result>
     </action>
 
-    <action name="home" class="org.plosone.action.RegistrationAction">
-      <result name="success" type="freemarker">/WEB-INF/pages/home.ftl</result>
+    <action name="register" class="org.plosone.action.RegistrationAction">
+      <result name="success">/WEB-INF/pages/home.ftl</result>
     </action>
   </package>
 
-  <package name="article" extends="webwork-default" namespace="/article">
+  <package name="article" extends="default" namespace="/article">
     <action name="articleList" class="org.plos.article.web.ArticleListAction">
-      <result name="success" type="freemarker">/WEB-INF/pages/article/articleList.ftl</result>
+      <result name="success">/WEB-INF/pages/article/articleList.ftl</result>
     </action>
 
     <action name="fetchArticle" class="org.plos.article.web.FetchArticleAction">
-      <interceptor-ref name="validationWorkflowStack"/>
-      <interceptor-ref name="timer"/>
-      <result name="error" type="freemarker">/WEB-INF/pages/error.ftl</result>
-      <result name="success" type="freemarker">/WEB-INF/pages/article/displayArticle.ftl</result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+      <result name="success">/WEB-INF/pages/article/displayArticle.ftl</result>
     </action>
   </package>
   
-  <package name="annotation" extends="webwork-default" namespace="/annotation">
+  <package name="annotation" extends="default" namespace="/annotation">
+    <action name="fetchBody" class="org.plos.annotation.web.BodyFetchAction">
+      <result name="success">/WEB-INF/pages/annotation/showCommentBody.ftl</result>
+    </action>
+
+    <action name="listAnnotation" class="org.plos.annotation.web.ListAnnotationAction">
+      <result name="success">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
+    </action>
+
+    <action name="getAnnotation" class="org.plos.annotation.web.GetAnnotationAction">
+      <result name="success">/WEB-INF/pages/annotation/viewAnnotationDetails.ftl</result>
+    </action>
+
+    <action name="listReply" class="org.plos.annotation.web.ListReplyAction">
+      <result name="success">/WEB-INF/pages/annotation/listReply.ftl</result>
+    </action>
+
+    <action name="listAllReplies" class="org.plos.annotation.web.ListReplyAction" method="listAllReplies">
+      <result name="success">/WEB-INF/pages/annotation/listReply.ftl</result>
+    </action>
+
+    <action name="getReply" class="org.plos.annotation.web.GetReplyAction">
+      <result name="success">/WEB-INF/pages/annotation/viewReplyDetails.ftl</result>
+    </action>
+  </package>
+
+  <package name="annotation-secure" extends="default" namespace="/annotation/secure">
     <action name="createAnnotation">
         <result type="freemarker">/WEB-INF/pages/annotation/createAnnotation.ftl</result>
     </action>
 
     <action name="createAnnotationSubmit" class="org.plos.annotation.web.CreateAnnotationAction">
-      <interceptor-ref name="validationWorkflowStack"/>
-      <interceptor-ref name="timer"/>
-      <result name="input" type="freemarker">/WEB-INF/pages/annotation/createAnnotation.ftl</result>
-      <result name="error" type="freemarker">/WEB-INF/pages/annotation/createAnnotation.ftl</result>
-      <result name="success" type="freemarker">/WEB-INF/pages/todo.ftl</result>
+      <result name="input">/WEB-INF/pages/annotation/createAnnotation.ftl</result>
+      <result name="error">/WEB-INF/pages/annotation/createAnnotation.ftl</result>
+      <result name="success" type="redirect">/home.action</result>
     </action>
 
     <action name="deleteAnnotation" class="org.plos.annotation.web.DeleteAnnotationAction">
-      <result name="success" type="freemarker">/WEB-INF/pages/todo.ftl</result>
-    </action>
-
-    <action name="fetchBody" class="org.plos.annotation.web.BodyFetchAction">
-      <result name="success" type="freemarker">/WEB-INF/pages/annotation/showCommentBody.ftl</result>
-    </action>
-
-    <action name="listAnnotation" class="org.plos.annotation.web.ListAnnotationAction">
-      <result name="success" type="freemarker">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
-    </action>
-
-    <action name="getAnnotation" class="org.plos.annotation.web.GetAnnotationAction">
-      <result name="success" type="freemarker">/WEB-INF/pages/annotation/viewAnnotationDetails.ftl</result>
+      <result name="success" type="redirect">/home.action</result>
     </action>
 
     <action name="createReplySubmit" class="org.plos.annotation.web.CreateReplyAction">
-      <interceptor-ref name="validationWorkflowStack"/>
-      <interceptor-ref name="timer"/>
-      <result name="input" type="freemarker">/WEB-INF/pages/annotation/createReply.ftl</result>
-      <result name="error" type="freemarker">/WEB-INF/pages/annotation/createReply.ftl</result>
-      <result name="success" type="freemarker">/WEB-INF/pages/todo.ftl</result>
+      <result name="input">/WEB-INF/pages/annotation/createReply.ftl</result>
+      <result name="error">/WEB-INF/pages/annotation/createReply.ftl</result>
+      <result name="success" type="redirect">/home.action</result>
     </action>
 
     <action name="deleteReply" class="org.plos.annotation.web.DeleteReplyAction">
-      <result name="success" type="freemarker">/WEB-INF/pages/todo.ftl</result>
-    </action>
-
-    <action name="listReply" class="org.plos.annotation.web.ListReplyAction">
-      <result name="success" type="freemarker">/WEB-INF/pages/annotation/listReply.ftl</result>
-    </action>
-
-    <action name="listAllReplies" class="org.plos.annotation.web.ListReplyAction" method="listAllReplies">
-      <result name="success" type="freemarker">/WEB-INF/pages/annotation/listReply.ftl</result>
-    </action>
-
-    <action name="getReply" class="org.plos.annotation.web.GetReplyAction">
-      <result name="success" type="freemarker">/WEB-INF/pages/annotation/viewReplyDetails.ftl</result>
+      <result name="success" type="redirect">/home.action</result>
     </action>
 
   </package>

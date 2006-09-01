@@ -9,144 +9,186 @@
  */
 package org.plos.annotation.service;
 
-public interface Reply {
-  /**
-   * Get id.
-   *
-   * @return id as String.
-   */
-  String getId();
+import org.topazproject.ws.annotation.ReplyInfo;
 
-  /**
-   * Set id.
-   *
-   * @param id the value to set.
-   */
-  void setId(String id);
+/**
+ * Plosone wrapper around the ReplyInfo from topaz service. It provides
+ * - A way to escape title/body text when returning the result to the web layer
+ * - Fetch the body content eagerly.
+ * - a separation from any topaz changes
+ */
+public class Reply extends BaseAnnotation {
+  private final ReplyInfo reply;
+  private final AnnotationLazyLoader annotationLazyLoader;
 
-  /**
-   * Get type.
-   *
-   * @return type as String.
-   */
-  String getType();
-
-  /**
-   * Set type.
-   *
-   * @param type the value to set.
-   */
-  void setType(String type);
-
-  /**
-   * Get root.
-   *
-   * @return root as String.
-   */
-  String getRoot();
-
-  /**
-   * Set root.
-   *
-   * @param root the value to set.
-   */
-  void setRoot(String root);
-
-  /**
-   * Get inReplyTo.
-   *
-   * @return inReplyTo as String.
-   */
-  String getInReplyTo();
-
-  /**
-   * Set inReplyTo.
-   *
-   * @param inReplyTo the value to set.
-   */
-  void setInReplyTo(String inReplyTo);
-
-  /**
-   * Get title.
-   *
-   * @return title as String.
-   */
-  String getTitle();
-
-  /**
-   * Set title.
-   *
-   * @param title the value to set.
-   */
-  void setTitle(String title);
-
-  /**
-   * Get creator.
-   *
-   * @return creator as String.
-   */
-  String getCreator();
-
-  /**
-   * Set creator.
-   *
-   * @param creator the value to set.
-   */
-  void setCreator(String creator);
+  public Reply(final ReplyInfo reply, final AnnotationLazyLoader annotationLazyLoader) {
+    this.reply = reply;
+    this.annotationLazyLoader = annotationLazyLoader;
+  }
 
   /**
    * Get created.
    *
    * @return created as String.
    */
-  String getCreated();
+  public String getCreated() {
+    return reply.getCreated();
+  }
 
   /**
    * Set created.
    *
    * @param created the value to set.
    */
-  void setCreated(String created);
+  public void setCreated(final String created) {
+    reply.setCreated(created);
+  }
 
   /**
-   * Get body.
+   * Get creator.
    *
-   * @return body as String.
+   * @return creator as String.
    */
-  String getBody();
+  public String getCreator() {
+    return reply.getCreator();
+  }
 
   /**
-   * Set body.
+   * Set creator.
    *
-   * @param body the value to set.
+   * @param creator the value to set.
    */
-  void setBody(String body);
+  public void setCreator(final String creator) {
+    reply.setCreator(creator);
+  }
+
+  /**
+   * Get id.
+   *
+   * @return id as String.
+   */
+  public String getId() {
+    return reply.getId();
+  }
+
+  /**
+   * Set id.
+   *
+   * @param id the value to set.
+   */
+  public void setId(final String id) {
+    reply.setId(id);
+  }
+
+  /**
+   * Get inReplyTo.
+   *
+   * @return inReplyTo as String.
+   */
+  public String getInReplyTo() {
+    return reply.getInReplyTo();
+  }
+
+  /**
+   * Set inReplyTo.
+   *
+   * @param inReplyTo the value to set.
+   */
+  public void setInReplyTo(final String inReplyTo) {
+    reply.setInReplyTo(inReplyTo);
+  }
 
   /**
    * Get mediator.
    *
    * @return mediator as String.
    */
-  String getMediator();
+  public String getMediator() {
+    return reply.getMediator();
+  }
 
   /**
    * Set mediator.
    *
    * @param mediator the value to set.
    */
-  void setMediator(String mediator);
+  public void setMediator(final String mediator) {
+    reply.setMediator(mediator);
+  }
+
+  /**
+   * Get root.
+   *
+   * @return root as String.
+   */
+  public String getRoot() {
+    return reply.getRoot();
+  }
+
+  /**
+   * Set root.
+   *
+   * @param root the value to set.
+   */
+  public void setRoot(final String root) {
+    reply.setRoot(root);
+  }
 
   /**
    * Get state.
    *
    * @return state as int.
    */
-  int getState();
+  public int getState() {
+    return reply.getState();
+  }
 
   /**
    * Set state.
    *
    * @param state the value to set.
    */
-  void setState(int state);
+  public void setState(final int state) {
+    reply.setState(state);
+  }
+
+  /**
+   * Get title.
+   *
+   * @return title as String.
+   */
+  public String getTitle() {
+    return escapeText(reply.getTitle());
+  }
+
+  /**
+   * Set title.
+   *
+   * @param title the value to set.
+   */
+  public void setTitle(final String title) {
+    reply.setTitle(title);
+  }
+
+  /**
+   * Get type.
+   *
+   * @return type as String.
+   */
+  public String getType() {
+    return reply.getType();
+  }
+
+  /**
+   * Set type.
+   *
+   * @param type the value to set.
+   */
+  public void setType(final String type) {
+    reply.setType(type);
+  }
+
+  protected String getOriginalBody() throws ApplicationException {
+    return annotationLazyLoader.getBody();
+  }
 }

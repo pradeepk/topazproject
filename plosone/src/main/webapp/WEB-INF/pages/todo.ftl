@@ -23,7 +23,7 @@
                 </p>
 
                 <p>
-                    <@ww.url id="createAnnotationURL" namespace="/annotation" action="createAnnotation" />
+                    <@ww.url id="createAnnotationURL" namespace="/annotation/secure" action="createAnnotation" />
                     <@ww.a href="%{createAnnotationURL}">Create Annotation</@ww.a>
                 </p>
 

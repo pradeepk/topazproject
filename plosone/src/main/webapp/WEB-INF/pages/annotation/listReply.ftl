@@ -16,8 +16,9 @@
           inReplyTo   =${reply.inReplyTo}     <br/>
           root        =${reply.root}     <br/>
           title       =${reply.title}         <br/>
+          creator     =${reply.creator}       <br/>
 
-          <@ww.url id="deleteReplyURL" action="deleteReply" replyId="${reply.id}"/>
+          <@ww.url id="deleteReplyURL" action="deleteReply" replyId="${reply.id}" namespace="/annotation/secure" />
           <@ww.a href="%{deleteReplyURL}">delete</@ww.a><br/>
           <hr/>
         </#list>

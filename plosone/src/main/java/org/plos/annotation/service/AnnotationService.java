@@ -3,10 +3,15 @@
  */
 package org.plos.annotation.service;
 
+import com.opensymphony.xwork.ActionContext;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.MapConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.util.FileUtils;
 import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.authentication.ProtectedService;
+import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.ws.annotation.AnnotationClientFactory;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.Annotations;
@@ -19,12 +24,14 @@ import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.rmi.RemoteException;
+import java.util.Map;
 
 /**
  * Provides the Create/Read/Delete annotation operations.
  */
-public class AnnotationService {
+public class AnnotationService extends BaseConfigurableService {
   private Annotations annotationService;
   private Replies replyService;
   private String applicationId;
@@ -34,6 +41,9 @@ public class AnnotationService {
   private String encodingCharset = "UTF-8";
   private static final Log log = LogFactory.getLog(AnnotationService.class);
   private boolean isAnonymous;
+  private Configuration annotationConfiguration;
+  private Configuration replyConfiguration;
+  private AnnotationLazyLoaderFactory lazyLoaderFactory = new AnnotationLazyLoaderFactory();
 
   /**
    * @see org.topazproject.ws.annotation.Annotations#createAnnotation(String, String, String, String, String, boolean, String, String)
@@ -127,7 +137,7 @@ public class AnnotationService {
   public Annotation[] listAnnotations(final String target) throws ApplicationException {
     try {
       final AnnotationInfo[] annotations = annotationService.listAnnotations(applicationId, target, defaultAnnotationType);
-      return Converter.convert(annotations);
+      return Converter.convert(annotations, lazyLoaderFactory);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
@@ -143,7 +153,7 @@ public class AnnotationService {
   public Reply[] listReplies(final String root, final String inReplyTo) throws ApplicationException {
     try {
       final ReplyInfo[] replies = replyService.listReplies(root, inReplyTo);
-      return Converter.convert(replies);
+      return Converter.convert(replies, lazyLoaderFactory);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
@@ -159,7 +169,7 @@ public class AnnotationService {
   public Reply[] listAllReplies(final String root, final String inReplyTo) throws ApplicationException {
     try {
       final ReplyInfo[] replies = replyService.listAllReplies(root, inReplyTo);
-      return Converter.convert(replies);
+      return Converter.convert(replies, lazyLoaderFactory);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
@@ -174,7 +184,13 @@ public class AnnotationService {
   public Annotation getAnnotation(final String annotationId) throws ApplicationException {
     try {
       final AnnotationInfo annotation = annotationService.getAnnotationInfo(annotationId);
-      return Converter.convert(annotation);
+      return Converter.convert(annotation, new AnnotationLazyLoader(annotation.getBody()) {
+        public AnnotationVisibility fetchAnnotationVisibility() throws ApplicationException {
+  //        String[] perms = PermissionsWebService.list(uri, principal);
+
+          return AnnotationVisibility.PUBLIC;
+        }
+      });
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
@@ -190,7 +206,7 @@ public class AnnotationService {
   public Reply getReply(final String replyId) throws NoSuchIdException, ApplicationException {
     try {
       final ReplyInfo reply = replyService.getReplyInfo(replyId);
-      return Converter.convert(reply);
+      return Converter.convert(reply, lazyLoaderFactory.create(reply.getBody()));
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
@@ -224,13 +240,38 @@ public class AnnotationService {
   }
 
   /**
-   * Set the annotation service.
-   * @param annotationServiceUrl annotationServiceUrl
+   * Initialize the annotation service.
    * @throws ServiceException
-   * @throws MalformedURLException
+   * @throws URISyntaxException 
+   * @throws IOException 
    */
-  public void setAnnotationServicePort(final String annotationServiceUrl) throws ServiceException, MalformedURLException {
-    annotationService = AnnotationClientFactory.create(annotationServiceUrl);
+  public void init() throws ServiceException, IOException, URISyntaxException {
+    annotationService = createAnnotationService();
+    replyService = createReplyService();
+  }
+
+  private Annotations createAnnotationService() throws IOException, URISyntaxException, ServiceException {
+    final ProtectedService annProtectedService = createProtectedService(this.annotationConfiguration);
+    return AnnotationClientFactory.create(annProtectedService);
+  }
+
+  private Replies createReplyService() throws IOException, URISyntaxException, ServiceException {
+    final ProtectedService replyProtectedService = createProtectedService(this.replyConfiguration);
+    return RepliesClientFactory.create(replyProtectedService);
+  }
+
+  public void setAnnotationServiceConfiguration(final Map configMap) {
+    annotationConfiguration = createMapConfiguration(configMap);
+  }
+
+  /**
+   * Set the reply service configuration.
+   * @param configMap configMap
+   * @throws MalformedURLException
+   * @throws ServiceException
+   */
+  public void setReplyServiceConfiguration(final Map configMap) throws MalformedURLException, ServiceException {
+    replyConfiguration = createMapConfiguration(configMap);
   }
 
   /**
@@ -252,16 +293,6 @@ public class AnnotationService {
    */
   public void setEncodingCharset(final String encodingCharset) {
     this.encodingCharset = encodingCharset;
-  }
-
-  /**
-   * Set the reply service.
-   * @param replyServiceUrl replyServiceUrl
-   * @throws MalformedURLException
-   * @throws ServiceException
-   */
-  public void setReplyServicePort(final String replyServiceUrl) throws MalformedURLException, ServiceException {
-    this.replyService = RepliesClientFactory.create(replyServiceUrl);
   }
 
   /**

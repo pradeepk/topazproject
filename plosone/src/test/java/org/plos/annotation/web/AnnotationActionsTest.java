@@ -77,7 +77,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     deleteReplyAction = getDeleteReplyAction();
     deleteReplyAction.setId(replyId);
-    assertEquals("Should throw an error for a nonexisting reply id", Action.ERROR, deleteReplyAction.deleteReplyWithId());
+    assertEquals("Should throw an error when deleting a nonexisting reply id", Action.ERROR, deleteReplyAction.deleteReplyWithId());
 
     assertEquals(1, deleteReplyAction.getActionErrors().size());
   }

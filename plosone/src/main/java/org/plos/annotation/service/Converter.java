@@ -9,15 +9,11 @@
  */
 package org.plos.annotation.service;
 
-import org.plos.annotation.service.impl.PlosoneAnnotation;
-import org.plos.annotation.service.impl.PlosoneReply;
-import org.plos.util.FileUtils;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.ReplyInfo;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.io.IOException;
 
 /**
  * Utility class to convert types between topaz and plosone types
@@ -25,58 +21,49 @@ import java.io.IOException;
 public class Converter {
   /**
    * @param annotations an array of annotation-s
+   * @param lazyFactory lazyFactory
    * @return an array of Annotation objects as required by the web layer
    * @throws ApplicationException
    */
-  public static Annotation[] convert(final AnnotationInfo[] annotations) throws ApplicationException {
+  public static Annotation[] convert(final AnnotationInfo[] annotations, final AnnotationLazyLoaderFactory lazyFactory) throws ApplicationException {
     final List<Annotation> plosoneAnnotations = new ArrayList<Annotation>();
     for (final AnnotationInfo annotation : annotations) {
-      plosoneAnnotations.add(convert(annotation));
+      plosoneAnnotations.add(convert(annotation, lazyFactory.create(annotation.getBody())));
     }
-    return plosoneAnnotations.toArray(new PlosoneAnnotation[plosoneAnnotations.size()]);
+    return plosoneAnnotations.toArray(new Annotation[plosoneAnnotations.size()]);
   }
 
   /**
    * @param annotation annotation
-   * @return the PlosoneAnnotation
+   * @param annotationLazyLoader annotationLazyLoader
+   * @return the Annotation
    * @throws ApplicationException
    */
-  public static Annotation convert(final AnnotationInfo annotation) throws ApplicationException {
-    final Annotation plosAnnotation = new PlosoneAnnotation(annotation);
-    plosAnnotation.setBody(getBodyContent(annotation.getBody()));
-
-    return plosAnnotation;
-  }
-
-  private static String getBodyContent(final String bodyUrl) throws ApplicationException {
-    try {
-      return FileUtils.getTextFromUrl(bodyUrl);
-    } catch (IOException e) {
-      throw new ApplicationException(e);
-    }
+  public static Annotation convert(final AnnotationInfo annotation, final AnnotationLazyLoader annotationLazyLoader) throws ApplicationException {
+    return new Annotation(annotation, annotationLazyLoader);
   }
 
   /**
    * @param replies an array of Reply-ies
+   * @param lazyLoaderFactory lazyLoaderFactory
    * @return an array of Reply objects as required by the web layer
    * @throws ApplicationException
    */
-  public static Reply[] convert(final ReplyInfo[] replies) throws ApplicationException {
+  public static Reply[] convert(final ReplyInfo[] replies, final AnnotationLazyLoaderFactory lazyLoaderFactory) throws ApplicationException {
     final List<Reply> plosoneReplies = new ArrayList<Reply>();
     for (final ReplyInfo reply : replies) {
-      plosoneReplies.add(convert(reply));
+      plosoneReplies.add(convert(reply, lazyLoaderFactory.create(reply.getBody())));
     }
-    return plosoneReplies.toArray(new PlosoneReply[plosoneReplies.size()]);
+    return plosoneReplies.toArray(new Reply[plosoneReplies.size()]);
   }
 
   /**
    * @param reply reply
+   * @param annotationLazyLoader annotationLazyLoader
    * @return the reply for the web layer
    * @throws ApplicationException
    */
-  public static Reply convert(final ReplyInfo reply) throws ApplicationException {
-    final Reply plosReply = new PlosoneReply(reply);
-    plosReply.setBody(getBodyContent(reply.getBody()));
-    return plosReply;
+  public static Reply convert(final ReplyInfo reply, final AnnotationLazyLoader annotationLazyLoader) throws ApplicationException {
+    return new Reply(reply, annotationLazyLoader);
   }
 }

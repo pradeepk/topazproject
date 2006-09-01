@@ -9,172 +9,236 @@
  */
 package org.plos.annotation.service;
 
-public interface Annotation {
-  /**
-   * Get annotation type.
-   *
-   * @return annotation type as String.
-   */
-  String getType();
+import org.topazproject.ws.annotation.AnnotationInfo;
+
+/**
+ * Plosone wrapper around the AnnotationsInfo from topaz service. It provides
+ * - A way to escape title/body text when returning the result to the web layer
+ * - Fetch the body content eagerly.
+ * - a separation from any topaz changes
+ */
+public class Annotation extends BaseAnnotation {
+  private final AnnotationInfo annotation;
+  private AnnotationLazyLoader annotationLazyLoader;
+
+  public AnnotationLazyLoader getLoadedAdditionalAnnotationProperties() {
+    return annotationLazyLoader;
+  }
 
   /**
-   * Set annotation type.
-   *
-   * @param type the value to set.
+   * Get the target(probably a uri) that it annotates
+   * @return target
    */
-  void setType(String type);
+  public String getAnnotates() {
+    return annotation.getAnnotates();
+  }
 
   /**
-   * Get annotates.
-   *
-   * @return annotates as String.
+   * Set the target (probably a uri) that it annotates.
+   * @param annotates annotates
    */
-  String getAnnotates();
-
-  /**
-   * Set annotates.
-   *
-   * @param annotates the value to set.
-   */
-  void setAnnotates(String annotates);
+  public void setAnnotates(final String annotates) {
+    annotation.setAnnotates(annotates);
+  }
 
   /**
    * Get context.
-   *
    * @return context as String.
    */
-  String getContext();
+  public String getContext() {
+    return annotation.getContext();
+  }
 
   /**
    * Set context.
    *
    * @param context the value to set.
    */
-  void setContext(String context);
-
-  /**
-   * Get creator.
-   *
-   * @return creator as String.
-   */
-  String getCreator();
-
-  /**
-   * Set creator.
-   *
-   * @param creator the value to set.
-   */
-  void setCreator(String creator);
+  public void setContext(final String context) {
+    annotation.setContext(context);
+  }
 
   /**
    * Get created.
    *
    * @return created as String.
    */
-  String getCreated();
+  public String getCreated() {
+    return annotation.getCreated();
+  }
 
   /**
    * Set created.
    *
    * @param created the value to set.
    */
-  void setCreated(String created);
+  public void setCreated(final String created) {
+    annotation.setCreated(created);
+  }
 
   /**
-   * Get body.
+   * Get creator.
    *
-   * @return body as String.
+   * @return creator as String.
    */
-  String getBody();
+  public String getCreator() {
+    return annotation.getCreator();
+  }
 
   /**
-   * Set body.
+   * Set creator.
    *
-   * @param body the value to set.
+   * @param creator the value to set.
    */
-  void setBody(String body);
-
-  /**
-   * Get supersedes.
-   *
-   * @return supersedes as String.
-   */
-  String getSupersedes();
-
-  /**
-   * Set supersedes.
-   *
-   * @param supersedes the value to set.
-   */
-  void setSupersedes(String supersedes);
+  public void setCreator(final String creator) {
+    annotation.setCreator(creator);
+  }
 
   /**
    * Get id.
    *
    * @return id as String.
    */
-  String getId();
+  public String getId() {
+    return annotation.getId();
+  }
 
   /**
    * Set id.
    *
    * @param id the value to set.
    */
-  void setId(String id);
-
-  /**
-   * Get title.
-   *
-   * @return title as String.
-   */
-  String getTitle();
-
-  /**
-   * Set title.
-   *
-   * @param title the value to set.
-   */
-  void setTitle(String title);
-
-  /**
-   * Get supersededBy.
-   *
-   * @return supersededBy as String.
-   */
-  String getSupersededBy();
-
-  /**
-   * Set supersededBy.
-   *
-   * @param supersededBy the value to set.
-   */
-  void setSupersededBy(String supersededBy);
+  public void setId(final String id) {
+    annotation.setId(id);
+  }
 
   /**
    * Get mediator.
    *
    * @return mediator as String.
    */
-  String getMediator();
+  public String getMediator() {
+    return annotation.getMediator();
+  }
 
   /**
    * Set mediator.
    *
    * @param mediator the value to set.
    */
-  void setMediator(String mediator);
+  public void setMediator(final String mediator) {
+    annotation.setMediator(mediator);
+  }
 
   /**
    * Get state.
    *
    * @return state as int.
    */
-  int getState();
+  public int getState() {
+    return annotation.getState();
+  }
 
   /**
    * Set state.
    *
    * @param state the value to set.
    */
-  void setState(int state);
+  public void setState(final int state) {
+    annotation.setState(state);
+  }
+
+  /**
+   * Get supersededBy.
+   *
+   * @return supersededBy as String.
+   */
+  public String getSupersededBy() {
+    return annotation.getSupersededBy();
+  }
+
+  /**
+   * Set supersededBy.
+   *
+   * @param supersededBy the value to set.
+   */
+  public void setSupersededBy(final String supersededBy) {
+    annotation.setSupersededBy(supersededBy);
+  }
+
+  /**
+   * Get supersedes.
+   *
+   * @return supersedes as String.
+   */
+  public String getSupersedes() {
+    return annotation.getSupersedes();
+  }
+
+  /**
+   * Set supersedes.
+   *
+   * @param supersedes the value to set.
+   */
+  public void setSupersedes(final String supersedes) {
+    annotation.setSupersedes(supersedes);
+  }
+
+ /**
+  * Escaped text of title.
+  *
+  * @return title as String.
+  */
+  public String getTitle() {
+    return escapeText(annotation.getTitle());
+  }
+
+  /**
+   * Set title.
+   *
+   * @param title the value to set.
+   */
+  public void setTitle(final String title) {
+    annotation.setTitle(title);
+  }
+
+  /**
+   * Getter for property 'annotation'.
+   *
+   * @return Value for property 'annotation'.
+   */
+  public AnnotationInfo getAnnotation() {
+    return annotation;
+  }
+
+  /**
+   * Get annotation type.
+   *
+   * @return annotation type as String.
+   */
+  public String getType() {
+    return annotation.getType();
+  }
+
+  /**
+   * Set annotation type.
+   *
+   * @param type the value to set.
+   */
+  public void setType(final String type) {
+    annotation.setType(type);
+  }
+
+  public Annotation(final AnnotationInfo annotation, final AnnotationLazyLoader annotationLazyLoader) {
+    this.annotation = annotation;
+    this.annotationLazyLoader = annotationLazyLoader;
+  }
+
+  protected String getOriginalBody() throws ApplicationException {
+    return annotationLazyLoader.getBody();
+  }
+
+  protected AnnotationVisibility getVisibility() throws ApplicationException {
+    return annotationLazyLoader.fetchAnnotationVisibility();
+  }
 }

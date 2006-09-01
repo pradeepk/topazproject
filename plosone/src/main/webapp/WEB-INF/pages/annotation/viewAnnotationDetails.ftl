@@ -18,7 +18,7 @@
           mediator    =${annotation.mediator}      <br/>
           type        =${annotation.type}          <br/>
 
-          <@ww.url id="createReplyURL" action="createReplySubmit" root="${annotation.id}" inReplyTo="${annotation.id}"/>
+          <@ww.url id="createReplyURL" action="createReplySubmit" root="${annotation.id}" inReplyTo="${annotation.id}" namespace="/annotation/secure"/>
           <@ww.a href="%{createReplyURL}">create reply</@ww.a> <br/>
 
           <@ww.url id="listReplyURL" action="listAllReplies" root="${annotation.id}" inReplyTo="${annotation.id}"/>

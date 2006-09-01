@@ -10,18 +10,13 @@
 package org.topazproject.authentication;
 
 import java.io.IOException;
-
 import java.net.URISyntaxException;
+import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.configuration.Configuration;
-
 import org.topazproject.configuration.ConfigurationStore;
-
-import edu.yale.its.tp.cas.client.CASReceipt;
-import edu.yale.its.tp.cas.client.filter.CASFilter;
-import edu.yale.its.tp.cas.proxy.ProxyTicketReceptor;
 
 /**
  * A factory class to create ProtectedService instances.
@@ -29,6 +24,45 @@ import edu.yale.its.tp.cas.proxy.ProxyTicketReceptor;
  * @author Pradeep Krishnan
  */
 public class ProtectedServiceFactory {
+  /**
+   * Creates a ProtectedService instance based on configuration.
+   * 
+   * <p>
+   * The expected configuration is:
+   * <pre>
+   *   uri         = the service uri 
+   *   auth-method = CAS, BASIC, or NONE
+   *   userName    = userName for BASIC auth 
+   *   password    = password for BASIC auth
+   * </pre>
+   * </p>
+   *
+   * @param config The service configuration.
+   * @param sessionMap map with session properties to retrieve any run-time info (eg. CASReceipt)
+   *
+   * @return Returns the newly created instance
+   *
+   * @throws IOException if there is an error in acquiring auth credentials
+   * @throws URISyntaxException thrown from service creation
+   */
+  public static ProtectedService createService(Configuration config, Map sessionMap)
+                                        throws IOException, URISyntaxException {
+    String uri  = config.getString("uri");
+    String auth = config.getString("auth-method");
+
+    if ("CAS".equals(auth))
+      return new CASProtectedService(uri, sessionMap);
+
+    String userName = config.getString("userName");
+    String password = config.getString("password");
+
+    if ("BASIC".equals(auth))
+      return new PasswordProtectedService(uri, userName, password);
+
+    // Defaults to unprotected
+    return new UnProtectedService(uri);
+  }
+  
   /**
    * Creates a ProtectedService instance based on configuration.
    * 
