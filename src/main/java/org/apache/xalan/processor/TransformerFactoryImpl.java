@@ -960,4 +960,7 @@ public javax.xml.transform.Templates processFromNode(Node node)
 
     m_errorListener = listener;
   }
+
+  public void setFeature(String feature, boolean on){
+  }
 }

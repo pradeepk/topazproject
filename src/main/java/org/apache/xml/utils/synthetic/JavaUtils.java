@@ -165,7 +165,8 @@ public class JavaUtils
                                 
                         try
                     {
-                                return new sun.tools.javac.Main(System.err, "javac").compile(args);
+                               // return new sun.tools.javac.Main(System.err, "javac").compile(args);
+                               throw new Exception("no compiler in class-path");
                         }
                         catch (Throwable th)
                         {
