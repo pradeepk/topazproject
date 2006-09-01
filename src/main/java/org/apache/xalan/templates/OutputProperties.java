@@ -73,6 +73,7 @@ import org.apache.xml.utils.QName;
 import org.apache.xml.utils.FastStringBuffer;
 import org.apache.xml.utils.WrappedRuntimeException;
 import org.apache.xalan.serialize.Method;
+import org.apache.xalan.extensions.ExtensionHandler;
 
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.OutputKeys;
@@ -180,13 +181,58 @@ public class OutputProperties extends ElemTemplateElement
   static private Properties loadPropertiesFile(String resourceName, Properties defaults)
     throws IOException
   {
+
+    // This static method should eventually be moved to a thread-specific class
+    // so that we can cache the ContextClassLoader and bottleneck all properties file
+    // loading throughout Xalan.
+
     Properties props = new Properties(defaults);
 
-    InputStream is = OutputProperties.class.getResourceAsStream(
-                                                                resourceName);
-    BufferedInputStream bis = new BufferedInputStream(is);
+    InputStream is = null;
+    BufferedInputStream bis = null;
 
-    props.load(bis);
+    try {
+      try {
+        java.lang.reflect.Method getCCL = Thread.class.getMethod("getContextClassLoader", NO_CLASSES);
+        if (getCCL != null) {
+          ClassLoader contextClassLoader = (ClassLoader) getCCL.invoke(Thread.currentThread(), NO_OBJS);
+          is = contextClassLoader.getResourceAsStream("org/apache/xalan/templates/" + resourceName);
+        }
+      }
+      catch (Exception e) {}
+
+      if ( is == null ) {
+        is = OutputProperties.class.getResourceAsStream(resourceName);
+      }
+      
+      bis = new BufferedInputStream(is);
+      props.load(bis);
+    } 
+    catch (IOException ioe) {
+      if ( defaults == null ) {
+        throw ioe;
+      }
+      else {
+        throw new WrappedRuntimeException("Could not load '"+resourceName+"' (check CLASSPATH), now using just the defaults ", ioe);
+      }
+    }
+    catch (SecurityException se) {
+      // Repeat IOException handling for sandbox/applet case -sc
+      if ( defaults == null ) {
+        throw se;
+      }
+      else {
+        throw new WrappedRuntimeException("Could not load '"+resourceName+"' (check CLASSPATH, applet security), now using just the defaults ", se);
+      }
+    } 
+    finally {
+      if ( bis != null ) {
+        bis.close();
+      }
+      if (is != null ) {
+        is.close();
+      }
+    }
     
     // Note that we're working at the HashTable level here, 
     // and not at the Properties level!  This is important 
@@ -198,13 +244,25 @@ public class OutputProperties extends ElemTemplateElement
       // Now check if the given key was specified as a 
       // System property. If so, the system property 
       // overides the default value in the propery file.
-      String value;
-      if ((value = System.getProperty(key)) == null)      
+      String value = null;
+      try {
+        value = System.getProperty(key);
+      }
+      catch (SecurityException se) {
+        // No-op for sandbox/applet case, leave null -sc
+      }
+      if (value == null)      
         value = (String)props.get(key);                       
       
       String newKey = fixupPropertyString(key, true);
-      String newValue;
-      if ((newValue = System.getProperty(newKey)) == null)
+      String newValue = null;
+      try {
+        newValue = System.getProperty(newKey);
+      }
+      catch (SecurityException se) {
+        // No-op for sandbox/applet case, leave null -sc
+      }
+      if (newValue == null)
         newValue = fixupPropertyString(value, false);
       else
         newValue = fixupPropertyString(newValue, false);
@@ -234,19 +292,18 @@ public class OutputProperties extends ElemTemplateElement
    */
   static public Properties getDefaultMethodProperties(String method)
   {
-
+    String fileName = null;
     Properties defaultProperties = null;
-
+    // According to this article : Double-check locking does not work
+    // http://www.javaworld.com/javaworld/jw-02-2001/jw-0209-toolbox.html
     try
     {
-      if (null == m_xml_properties)  // fast check
+      synchronized (m_synch_object)
       {
-        synchronized (m_synch_object)
+        if (null == m_xml_properties)  // double check
         {
-          if (null == m_xml_properties)  // double check
-          {
-            m_xml_properties = loadPropertiesFile("output_xml.properties", null);
-          }
+          fileName = "output_xml.properties";
+          m_xml_properties = loadPropertiesFile(fileName, null);
         }
       }
 
@@ -256,38 +313,28 @@ public class OutputProperties extends ElemTemplateElement
       }
       else if (method.equals(Method.HTML))
       {
-        if (null == m_html_properties)  // fast check
-        {
-          synchronized (m_synch_object)
-          {
             if (null == m_html_properties)  // double check
             {
-              m_html_properties = loadPropertiesFile("output_html.properties", 
+              fileName = "output_html.properties";
+              m_html_properties = loadPropertiesFile(fileName,
                                                      m_xml_properties);
             }
-          }
-        }
 
         defaultProperties = m_html_properties;
       }
       else if (method.equals(Method.Text))
       {
-        if (null == m_text_properties)  // fast check
-        {
-          synchronized (m_synch_object)
-          {
             if (null == m_text_properties)  // double check
             {
-              m_text_properties = loadPropertiesFile("output_text.properties", 
-                                                     null);
+              fileName = "output_text.properties";
+              m_text_properties = loadPropertiesFile(fileName,
+                                                     m_xml_properties);
               if(null == m_text_properties.getProperty(OutputKeys.ENCODING))
               {
                 String mimeEncoding = org.apache.xalan.serialize.Encodings.getMimeEncoding(null);
                 m_text_properties.put(OutputKeys.ENCODING, mimeEncoding);
               }
             }
-          }
-        }
 
         defaultProperties = m_text_properties;
       }
@@ -300,7 +347,9 @@ public class OutputProperties extends ElemTemplateElement
     }
     catch (IOException ioe)
     {
-      throw new org.apache.xml.utils.WrappedRuntimeException(ioe);
+      throw new WrappedRuntimeException(
+            "Output method is "+method+" could not load "+fileName+" (check CLASSPATH)",
+             ioe);
     }
 
     return defaultProperties;
@@ -797,10 +846,10 @@ public class OutputProperties extends ElemTemplateElement
    * values that may be based on some other property that
    * depends on recomposition.
    */
-  public void compose()
+  public void compose() throws TransformerException
   {
 
-    super.compose();  // just good form, not really needed.
+    super.compose();
 
     m_propertiesLevels = null;
   }
@@ -1003,4 +1052,11 @@ public class OutputProperties extends ElemTemplateElement
 
   /** Synchronization object for lazy initialization of the above tables. */
   private static Integer m_synch_object = new Integer(1);
+
+  /** a zero length Class array used in loadPropertiesFile() */
+  private static final Class[] NO_CLASSES = new Class[0];
+
+  /** a zero length Object array used in loadPropertiesFile() */
+  private static final Object[] NO_OBJS = new Object[0];
+
 }

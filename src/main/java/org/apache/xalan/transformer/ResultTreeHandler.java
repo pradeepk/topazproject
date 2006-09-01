@@ -1109,6 +1109,11 @@ public class ResultTreeHandler extends QueuedEvents
     m_startElement.setContentHandler(m_contentHandler);
     m_startDoc.setContentHandler(m_contentHandler);
 
+    if (m_contentHandler instanceof LexicalHandler)
+      m_lexicalHandler = (LexicalHandler) m_contentHandler;
+    else
+      m_lexicalHandler = null;
+
     reInitEvents();
   }
 
@@ -1441,7 +1446,7 @@ public class ResultTreeHandler extends QueuedEvents
   /**
    * Use the SAX2 helper class to track result namespaces.
    */
-  private NamespaceSupport m_nsSupport = new NamespaceSupport();
+  NamespaceSupport m_nsSupport = new NamespaceSupport();
 
   /**
    * The transformer object.

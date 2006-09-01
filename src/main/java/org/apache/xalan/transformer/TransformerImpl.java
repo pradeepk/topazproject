@@ -133,6 +133,7 @@ import org.xml.sax.helpers.XMLFilterImpl;
 import org.xml.sax.InputSource;
 import javax.xml.transform.TransformerException;
 import org.xml.sax.XMLReader;
+import org.xml.sax.SAXException;
 import org.xml.sax.XMLFilter;
 import org.xml.sax.Locator;
 import org.xml.sax.helpers.XMLReaderFactory;
@@ -254,7 +255,7 @@ public class TransformerImpl extends Transformer
    * ElemTemplateElement.  Needed for the 
    * org.apache.xalan.transformer.TransformState interface,  
    * so a tool can discover the calling template. */
-  private NodeVector m_currentTemplateElements = new NodeVector(64);
+  NodeVector m_currentTemplateElements = new NodeVector(64);
 
   /** A node vector used as a stack to track the current 
    * ElemTemplate that was matched, as well as the node that 
@@ -262,7 +263,7 @@ public class TransformerImpl extends Transformer
    * org.apache.xalan.transformer.TransformState interface,  
    * so a tool can discover the matched template, and matched 
    * node. */
-  private NodeVector m_currentMatchTemplates = new NodeVector();
+  NodeVector m_currentMatchTemplates = new NodeVector();
 
   /**
    * The root of a linked set of stylesheets.
@@ -300,18 +301,18 @@ public class TransformerImpl extends Transformer
    * Stack for the purposes of flagging infinite recursion with
    * attribute sets.
    */
-  private Stack m_attrSetStack = null;
+  Stack m_attrSetStack = null;
 
   /**
    * The table of counters for xsl:number support.
    * @see ElemNumber
    */
-  private CountersTable m_countersTable = null;
+  CountersTable m_countersTable = null;
 
   /**
    * Is > 0 when we're processing a for-each.
    */
-  private BoolStack m_currentTemplateRuleIsNull = new BoolStack();
+  BoolStack m_currentTemplateRuleIsNull = new BoolStack();
 
   /** The message manager, which manages error messages, warning 
    * messages, and other types of message events.   */
@@ -356,7 +357,14 @@ public class TransformerImpl extends Transformer
   private boolean m_isTransformDone = false;
   
   private boolean m_hasBeenReset = false;
-  
+	private boolean m_shouldReset = true;
+
+	public void setShouldReset(boolean shouldReset)
+	{
+		m_shouldReset = shouldReset;
+	}
+	
+	
   //==========================================================
   // SECTION: Constructors
   //==========================================================
@@ -380,7 +388,7 @@ public class TransformerImpl extends Transformer
    */
   public void reset()
   {
-    if(!m_hasBeenReset)
+    if(!m_hasBeenReset && m_shouldReset)
     {
       m_hasBeenReset = true;
       
@@ -437,6 +445,8 @@ public class TransformerImpl extends Transformer
     return m_parserEventsOnMain;
   }
 
+  // Both get/setTransformThread are called only from this
+
   /**
    * <meta name="usage" content="internal"/>
    * Get the thread that the transform process is on.
@@ -457,6 +467,17 @@ public class TransformerImpl extends Transformer
   public void setTransformThread(Thread t)
   {
     m_transformThread = t;
+  }
+  
+  private boolean m_hasTransformThreadErrorCatcher = false;
+  
+  /**
+   * Return true if the transform was initiated from the transform method, 
+   * otherwise it was probably done from a pure parse events.
+   */
+  public boolean hasTransformThreadErrorCatcher()
+  {
+    return m_hasTransformThreadErrorCatcher;
   }
 
   /**
@@ -493,7 +514,7 @@ public class TransformerImpl extends Transformer
     if(null == xmlSource)
     {
       m_errorHandler.fatalError(new TransformerException("Can't transform a Source of type "+
-        source.getClass().getName()+"!"));
+																												 ((source == null)? "null" : source.getClass().getName())+"!"));
     }
     
     if (null != xmlSource.getSystemId())
@@ -504,6 +525,7 @@ public class TransformerImpl extends Transformer
 
     try
     {
+      m_hasTransformThreadErrorCatcher = true;
       XMLReader reader = null;
       if(source instanceof SAXSource)
         reader = ((SAXSource)source).getXMLReader();
@@ -604,9 +626,12 @@ public class TransformerImpl extends Transformer
           }
           else
           {
-            Thread t = createTransformThread();
-//            m_reportInPostExceptionFromThread = false;
-            t.start();
+	    runTransformThread();
+	    /** Code used in 2.0.1, replaced by runTransformThread
+		Thread t = createTransformThread();
+		//            m_reportInPostExceptionFromThread = false;
+		t.start();
+	    */
             transformNode(doc);
           }
         }
@@ -663,8 +688,9 @@ public class TransformerImpl extends Transformer
     {
       String msg = spe.getMessage();
       SAXSourceLocator loc = new SAXSourceLocator(spe);
-      
-      m_errorHandler.fatalError(new TransformerException( msg, loc ));
+
+      //      m_errorHandler.fatalError(new TransformerException( msg , loc ));
+      m_errorHandler.fatalError(new TransformerException( spe ));
     }
     catch(org.xml.sax.SAXException se)
     {
@@ -676,6 +702,7 @@ public class TransformerImpl extends Transformer
     }
     finally
     {
+      m_hasTransformThreadErrorCatcher = false;
       // This looks to be redundent to the one done in TransformNode.
       reset();
     }
@@ -1636,6 +1663,8 @@ public class TransformerImpl extends Transformer
     // in scope, when really only the current stylesheet's 
     // global variables should be in scope.  Have to think on 
     // this more...
+
+    XObject xobj;
     XPathContext xctxt = getXPathContext();
     VariableStack vs = xctxt.getVarStack();
     StylesheetRoot sr = getStylesheet();
@@ -1654,11 +1683,17 @@ public class TransformerImpl extends Transformer
         {
           previouslyDeclared.setIsVisible(true);
         }
+        else
+        {
+          xobj = new XUnresolvedVariable(v, contextNode, 
+                             this, vs.getSearchStartOrTop(), 0, true);
+          previouslyDeclared.setVal(xobj);
+        }
         continue;
       }
 
       // XObject xobj = v.getValue(this, contextNode);
-      XObject xobj = new XUnresolvedVariable(v, contextNode, 
+      xobj = new XUnresolvedVariable(v, contextNode, 
                              this, vs.getSearchStartOrTop(), 0, true);
 
       vs.pushVariable(v.getName(), xobj);
@@ -1990,20 +2025,34 @@ public class TransformerImpl extends Transformer
         maxImportLevel = -1;
       }
 
-      // Find the XSL template that is the best match for the 
-      // element.        
-      XPathContext xctxt = getXPathContext();
-      PrefixResolver savedPrefixResolver = xctxt.getNamespaceContext();
+      // If we're trying an xsl:apply-imports at the top level (ie there are no
+      // imported stylesheets), we need to indicate that there is no matching template.
+      // The above logic will calculate a maxImportLevel of -1 which indicates
+      // that we should find any template.  This is because a value of -1 for
+      // maxImportLevel has a special meaning.  But we don't want that.
+      // We want to match -no- templates. See bugzilla bug 1170.
 
-      try
+      if (isApplyImports && (maxImportLevel == -1))
       {
-        xctxt.setNamespaceContext(xslInstruction);
-        template = m_stylesheetRoot.getTemplateComposed(xctxt, child, mode, maxImportLevel,
-                                  m_quietConflictWarnings);
+        template = null;
       }
-      finally
+      else
       {
-        xctxt.setNamespaceContext(savedPrefixResolver);
+        // Find the XSL template that is the best match for the 
+        // element.        
+        XPathContext xctxt = getXPathContext();
+        PrefixResolver savedPrefixResolver = xctxt.getNamespaceContext();
+
+        try
+        {
+          xctxt.setNamespaceContext(xslInstruction);
+          template = m_stylesheetRoot.getTemplateComposed(xctxt, child, mode, maxImportLevel,
+                                    m_quietConflictWarnings);
+        }
+        finally
+        {
+          xctxt.setNamespaceContext(savedPrefixResolver);
+        }
       }
 
       // If that didn't locate a node, fall back to a default template rule.
@@ -2201,10 +2250,6 @@ public class TransformerImpl extends Transformer
         m_currentTemplateElements.setTail(t);
         t.execute(this, sourceNode, mode);
       }
-    }
-    catch(TransformerException te)
-    {
-      throw te;
     }
     finally
     {
@@ -2456,7 +2501,8 @@ public class TransformerImpl extends Transformer
 
     try
     {
-      return getXPathContext().getContextNodeList().cloneWithReset();
+			ContextNodeList cnl = getXPathContext().getContextNodeList();
+			return (cnl == null)? null : cnl.cloneWithReset();
     }
     catch (CloneNotSupportedException cnse)
     {
@@ -2820,21 +2866,100 @@ public class TransformerImpl extends Transformer
   ////////////////////////
   // Implement Runnable //  
   ////////////////////////
-  
-  /**
-   * Create a thread for the transform.  This can be overridden by derived 
-   * implementations to provide their own thread, for thread pooling and the 
-   * like.
-   * 
-   * @return thread suitable to use for the transformation.
-   */
-  public Thread createTransformThread()
-  {
-    Thread t = new Thread(this);
-    // System.out.println("created thread: "+t.getName());
-    return t;
+  /** Base thread controler for xalan. Must be overriden with
+      a derived class to support thread pooling.
+
+      All thread-related stuff is in this class.
+  */
+  public static class ThreadControler {
+    
+    /** Will get a thread from the pool, execute the task
+     *  and return the thread to the pool.
+     *
+     *  The return value is used only to wait for completion
+     *
+     * @param priority if >0 the task will run with the given priority
+     *  ( doesn't seem to be used in xalan, since it's allways the default )
+     * @returns The thread that is running the task, can be used
+     *          to wait for completion
+     */
+    public Thread run( Runnable task, int priority ) {
+      Thread t=new Thread(task);
+      t.start();
+//       if( priority > 0 )
+// 	t.setPriority( priority );
+      return t;
+    }
+
+
+    /**
+     *  Wait until the task is completed on the worker
+     *  thread. 
+     */
+    public void waitThread( Thread worker, Runnable task )
+      throws InterruptedException
+    {
+      // This should wait until the transformThread is considered not alive.
+      worker.join();
+    }
   }
 
+  static ThreadControler tpool=new ThreadControler();
+
+  /** Change the ThreadControler that will be used to
+   *  manage the transform threads.
+   */
+  public static void setThreadControler( ThreadControler tp ) {
+    tpool=tp;
+  }
+  
+  /** Called by SourceTreeHandler to start the transformation
+   *  in a separate thread
+   */
+  public void runTransformThread( int priority ) {
+    // used in SourceTreeHandler
+    Thread t=tpool.run( this, priority );
+    this.setTransformThread( t );
+  }
+
+  /** Called by this.transform() if isParserEventsOnMain()==false.
+   *  Similar with runTransformThread(), but no priority is set
+   *  and setTransformThread is not set.
+   */
+  public void runTransformThread( ) {
+    tpool.run( this, -1);
+  }
+
+
+  /** Used by SourceTreeHandler to wait until the transform
+   *   completes
+   */
+  public void waitTransformThread() throws SAXException {
+    // This is called to make sure the task is done.
+    // It is possible that the thread has been reused -
+    // but for a different transformation. ( what if we 
+    // recycle the transformer ? Not a problem since this is
+    // still in use. )
+    Thread transformThread = this.getTransformThread();
+    if (null != transformThread)
+      {
+        try
+	  {
+	    tpool.waitThread( transformThread, this );
+	    
+	    if(!this.hasTransformThreadErrorCatcher())
+	      {
+		Exception e = this.getExceptionThrown();
+		if(null != e)
+		  throw new org.xml.sax.SAXException(e);
+	      }
+	    this.setTransformThread(null);
+	  }
+        catch (InterruptedException ie){}
+      }
+  }
+
+  
   /**
    * Get the exception thrown by the secondary thread (normally 
    * the transform thread).
@@ -2906,17 +3031,20 @@ public class TransformerImpl extends Transformer
 
     synchronized (this)
     {
-      String msg = e.getMessage();
+      // See message from me on 3/27/2001 to Patrick Moore.
+//      String msg = e.getMessage();
 
       // System.out.println(e.getMessage());
+      
+      // Is this really needed?  -sb
       notifyAll();
 
-      if (null == msg)
-      {
-
-        // m_throwNewError = false;
-        e.printStackTrace();
-      }
+//      if (null == msg)
+//      {
+//
+//        // m_throwNewError = false;
+//        e.printStackTrace();
+//      }
 
       // throw new org.apache.xml.utils.WrappedRuntimeException(e);
     }
@@ -2966,6 +3094,40 @@ public class TransformerImpl extends Transformer
     {
       postExceptionFromThread(e);
     }
+  }
+  
+  // Fragment re-execution interfaces for a tool.
+  
+  public TransformSnapshot getSnapshot()
+  {
+    return new TransformSnapshotImpl(this);
+  }
+  
+  /**
+   * This will execute the following XSLT instructions
+   * from the snapshot point.
+   */
+  public void executeFromSnapshot(TransformSnapshot ts)
+		throws TransformerException
+  {
+    ElemTemplateElement template = getMatchedTemplate();
+		Node child = getMatchedNode();
+		pushElemTemplateElement(template); //needed??
+    m_xcontext.pushCurrentNode(child); //needed??
+		this.executeChildTemplates(template, child, null, true); // getResultTreeHandler());
+  }
+	
+	/**
+   * This will execute the following XSLT instructions
+   * from the snapshot point.
+   */
+  public void resetToStylesheet(TransformSnapshot ts)		
+  {
+    ((TransformSnapshotImpl)ts).apply(this);		
+  }
+  
+  public void stopTransformation()
+  {
   }
   
 }  // end TransformerImpl class
