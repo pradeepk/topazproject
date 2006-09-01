@@ -1,0 +1,501 @@
+/*
+
+  XPointer API  - an XPointer CR implementation
+  Copyright (C) 2002 Claudio Tasso
+
+  This product includes software developed by the Apache Software
+  Foundation (http://www.apache.org).
+  The Apache Software Foundation is NOT involved in this project.
+  
+  This program is free software; you can redistribute it and/or modify
+  it under the terms of the GNU General Public License as published by
+  the Free Software Foundation; either version 2 of the License, or
+  (at your option) any later version.
+
+  This program is distributed in the hope that it will be useful,
+  but WITHOUT ANY WARRANTY; without even the implied warranty of
+  MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+  GNU General Public License for more details.
+
+  You should have received a copy of the GNU General Public License
+  along with this program; if not, write to the Free Software
+  Foundation, Inc., 675 Mass Ave, Cambridge, MA 02139, USA.
+
+*/
+
+package xpointer;
+
+import org.w3c.dom.*;
+import org.w3c.dom.ranges.*;
+import java.util.Vector;
+import xpointer.litmatch.*;
+import org.apache.xpath.XPathAPI;
+import javax.xml.transform.TransformerException;
+
+/**
+ * This class represents the string-range() XPointer function.
+ * 
+ */
+
+public class StringRange {
+
+    /*contiene i nodi testo del frammento individuato dal parametro della string-range()*/
+    /** contains the text nodes of the document fragment selected by the first parameter of string-range()*/
+    private TextTree textTree;
+    
+    /*contiene i nodi testo dell'intero documento*/
+    /** contains text nodes of the entire document*/
+    private TextTree entireTextTree;
+    
+    private TextNodeFragment nodeFragment = null;
+    
+    
+    /** Creates new StringRange 
+     * @param location the location where the matching sting is looked for
+     */
+    public StringRange(Location location){
+       
+        
+        if(location.getType()==Location.RANGE)
+        {
+            Range searchingRange = (Range)location.getLocation();
+            
+            if(isOtherType(searchingRange))
+            {
+                Node containerNode = searchingRange.getStartContainer();
+                nodeFragment = new TextNodeFragment();
+                nodeFragment.setNode(containerNode);
+                nodeFragment.setStartIndex(searchingRange.getStartOffset());
+                nodeFragment.setEndIndex(searchingRange.getEndOffset());
+                return;
+            }
+            
+            Node cac = searchingRange.getCommonAncestorContainer();
+                
+            textTree = new TextTree(searchingRange);
+            if(cac.getNodeType()==Node.DOCUMENT_NODE)
+                entireTextTree = new TextTree(((Document)cac).getDocumentElement());
+            else
+                entireTextTree = new TextTree(cac.getOwnerDocument().getDocumentElement());
+        }    
+        else
+        {
+            Node tempNode = (Node) location.getLocation();
+            
+            if(isOtherType(tempNode))
+            {
+                nodeFragment = new TextNodeFragment();
+                nodeFragment.setNode(tempNode);
+                nodeFragment.setStartIndex(0);
+                nodeFragment.setEndIndex(tempNode.getNodeValue().length());
+                return;
+            }
+            
+            textTree = new TextTree(tempNode);   
+           
+            if(tempNode.getNodeType()==Node.DOCUMENT_NODE)
+                entireTextTree = new TextTree(tempNode);
+            else
+                entireTextTree = new TextTree(tempNode.getOwnerDocument().getDocumentElement());
+        }
+    }
+
+     /*
+     * THIS IS NOT JAVADOC
+     * Seleziona i punti da cui inizia la stringa da matchare.
+     * Esamino i nodi testo in questo modo:
+     * (i=1,2,3)
+     * 1
+     * 1 2
+     * 1 2 3 
+     * e considero le stringhe che fanno match e che iniziano nel nodo testo i-esimo.
+     * In questo modo riesco a selezionare anche più match all'interno di uno stesso nodo testo e match a cavallo di più 
+     * nodi testo.
+     * Esempio (pattern = "ciao mondo"):
+     *  <el>ciao mondo  ciao mondo </el> 
+     *  <el>ciao mo</el><el>ndo  ciao mondo</el>
+     *
+     * @param param la stringa che deve essere ricercata
+     * @return un vettore contenente i punti selezionati
+     */
+    
+    /**
+     * Creates a Vector containing points from which the matching string starts in the document.
+     * A given string may appear multiple times in a document. For each occurrence, this method 
+     * finds the point where that occurence starts from. 
+     *
+     * @param param the matching string
+     * @return a Vector of TextPoint objects  
+     */
+    private Vector getMatchPoint(String param)
+    {
+        //NodeList nodiTesto = textTree.getTextNodes();
+        TextNodeFragment [] nodiTesto = textTree.getTextNodeFragments();
+        Vector totalMatch = new Vector();
+        
+        String buffer;
+        LE litexp = new LE(param);
+        boolean matchFound;
+        LEMatch [] leMatches;
+        Range tempRange;
+        
+        for(int i=0;i<nodiTesto.length;i++)
+        {
+            matchFound = false;
+            buffer = "";
+            for(int j=i;j<nodiTesto.length && matchFound==false ;j++)
+            {
+                buffer += nodiTesto[j].getNode().getNodeValue().substring(nodiTesto[j].getStartIndex(),nodiTesto[j].getEndIndex());
+                leMatches = litexp.getAllMatches(buffer);
+                if(leMatches.length>0)
+                {
+                    /*vedo se il match comincia nel i-esimo nodo testo*/
+                    for(int k=0;k<leMatches.length;k++)
+                    {
+                        if(leMatches[k].getStartIndex()+nodiTesto[i].getStartIndex()<nodiTesto[i].getEndIndex())
+                        {
+                            TextPoint tempPoint = new TextPoint(entireTextTree); //il problema è qui
+                            tempPoint.setContainer(nodiTesto[i].getNode());
+                            tempPoint.setIndex(leMatches[k].getStartIndex()+nodiTesto[i].getStartIndex());
+                            totalMatch.addElement(tempPoint);
+                            matchFound = true;
+                        }    
+                    }
+                }
+            }
+        }
+       
+        
+        return totalMatch;
+    }
+    
+    /**
+     * Returns a range determined by searching the string-value of the location
+     * for substrings the match the given string.
+     * The empty string is defined to select the entire location.   
+     *
+     * @param match the matching string
+     * @param offset position of the first character to be in the resulting range
+     * @param length the number of characters in the resulting range
+     * @return an array of ranges which contain the matchted string
+     */
+    public Range[] getStringRange(String match,int offset,int length) throws TransformerException
+    {
+        //if(match.equals(""))
+        //{
+        //   return emptyString(match,offset,length);
+        //}
+        
+        /*perchè la string-range comincia a contare da uno*/
+        offset -= 1;
+        
+        if(nodeFragment!=null)
+            return searchGenericNodes(match,offset,length);
+        
+        /*il quarto parametro non può essere negativo!!!*/
+        if(length<0)
+            throw new TransformerException("Fourth parameter is negative");
+        
+        Vector pl = getMatchPoint(match);
+        
+        
+        
+        int startChars,endChars; //numero di caratteri prima del punto iniziale e finale
+        TextPoint textPoint,startPoint,endPoint;
+        Vector vectorRanges = new Vector();
+        
+        for(int i=0; i<pl.size();i++)
+        {
+            textPoint = (TextPoint) pl.elementAt(i);
+            startChars = textPoint.retrievePrecedingCharacters() + offset;
+            startPoint = entireTextTree.retrievePointAfter(startChars,true); 
+            if(length!=0)
+            {
+                endChars = startChars + length;
+                endPoint = entireTextTree.retrievePointAfter(endChars,false);
+            }
+            /*caso in cui devo ritornare un range collassato*/
+            else
+            {
+                endPoint = startPoint;
+            }
+            
+            /*se il punto iniziale è prima dell'inizio del documento oppure dopo la fine,si ha errore*/
+            if(startPoint==null)
+                throw new TransformerException("Subresource Error");
+            
+            /*se il punto finale è oltre la fine del documento, tronco il range in modo
+             che la fine del range coincida con quella del documento*/
+            if(endPoint==null)
+            {
+                endPoint = new TextPoint(entireTextTree);
+                endPoint.setContainer(entireTextTree.getLast());
+                endPoint.setIndex(entireTextTree.getLast().getNodeValue().length());
+            }
+            
+            Range tempRange = ((DocumentRange)(textPoint.getContainer().getOwnerDocument())).createRange();
+            tempRange.setStart(startPoint.getContainer(),startPoint.getIndex());
+            tempRange.setEnd(endPoint.getContainer(),endPoint.getIndex());
+            
+            vectorRanges.addElement(tempRange);
+        }
+        
+        Range [] rangeArray = new Range[vectorRanges.size()];
+        
+        for(int i=0;i<vectorRanges.size();i++)
+            rangeArray[i] = (Range) vectorRanges.elementAt(i);
+        
+        return rangeArray;
+    }
+    
+    /**
+     * Returns a range determined by searching the string-value of the location
+     * for substrings the match the given string.
+     * The empty string is defined to select the entire location.   
+     * The position of the first character in the range is 1, i.e. the range 
+     * starts immediatly before the first character of the matched string.
+     * The range extends to the end of the matched string. 
+     *
+     * @param match the matching string
+     * @return an array of ranges which contain the matchted string
+     */
+    public Range[] getStringRange(String match) throws TransformerException
+    {
+        if(match.equals("") && nodeFragment!=null)
+            return emptyString();
+        
+        /*La stringa vuota corrisponde a fare match sull'intero contenuto del documento*/
+        if(match.equals(""))
+            return emptyString(textTree.toString());
+        
+        return getStringRange(match,1,match.length());
+    }
+    
+    /*
+     * Se offset &egrave; minore di 1, il range risultante parte da 
+     * una posizione ottenuta contando all'indietro abs(offset)+1 posizioni a partire dall'inizio
+     * della stringa matchata. 
+     * Se offset &egrave; maggiore della lunghezza della stringa matchata,
+     * viene ritornato un range lungo zero (un punto). 
+     * @param match la stringa da ricercare per produrre il range
+     * @param offset posizione del primo carattere contenuto nel range risultante; nota che un offset pari ad 1 punta
+     * prima del primo carattere della stringa
+     * @return un array di range contenenti la stringa passata come argomento 
+     */
+    
+    /**
+     * Returns a range determined by searching the string-value of the location
+     * for substrings the match the given string.
+     * The empty string is defined to select the entire location.   
+     * The range extends to the end of the matched string. 
+     * If the offset is less than 1, the resulting range starts from a position
+     * obtained counting abs(offstet)+1 positions backwards from the beginning of
+     * the matched string.
+     * If the offset is greater than the length of the matched string, a collapsed range
+     * is returned. 
+     *
+     * @param match the matching string
+     * @param offset position of the first character to be in the resulting range
+     * @return an array of ranges which contain the matchted string
+     */
+    public Range[] getStringRange(String match,int offset) throws TransformerException
+    {
+        int len;
+        
+        //if(match.equals(""))
+        //    match = entireTextTree.toString();
+        
+        if(offset<=0)
+            len = java.lang.Math.abs(offset) + match.length() + 1;
+        else 
+            if(offset>match.length())
+                len = 0;
+            else  //caso standard
+                len = match.length() - offset + 1;
+        
+        return getStringRange(match,offset,len);
+        
+    }
+    
+    /**
+     * Search the matching string in other node types (not elements), such as attributes,
+     * processing-instructions, comments.
+     * The string must be wholly enclosed in a node.
+     *
+     * @param match the matching string
+     * @return the ranges containing the matched string
+     */
+    private Range [] searchGenericNodes(String match,int offset,int len) throws TransformerException
+    {
+        Vector result = new Vector();
+        
+        DocumentRange docRange = (DocumentRange) nodeFragment.getNode().getOwnerDocument();
+        
+        String buffer = nodeFragment.getNode().getNodeValue().substring(nodeFragment.getStartIndex(),nodeFragment.getEndIndex());
+        
+        int index = -1;
+        
+        while((index=buffer.indexOf(match,index+1))!=-1)
+        {
+            if(index+nodeFragment.getStartIndex()+offset+len > nodeFragment.getNode().getNodeValue().length())
+                throw new TransformerException("Subresource Error");
+            
+            if(index+nodeFragment.getStartIndex()+offset < 0)
+                throw new TransformerException("Subresource Error");
+            
+            Range range = docRange.createRange();
+            
+            Node targetNode;
+            
+            if(nodeFragment.getNode().getNodeType()==Node.ATTRIBUTE_NODE)
+            {
+                targetNode = nodeFragment.getNode().getFirstChild();
+            }
+            else
+            {
+                targetNode = nodeFragment.getNode();
+            }
+            
+            range.setStart(targetNode,index+offset);
+            range.setEnd(targetNode,index+offset+len);
+            
+            result.addElement(range);
+        }
+        
+        Range []retval = new Range[result.size()];
+        
+        for(int i=0;i<result.size();i++)
+        {
+            retval[i] = (Range)result.elementAt(i);
+        }
+        
+        return retval;
+    }
+     
+      
+  
+    /**
+     * An empty string is defined to match before each character of the string-value and after the final
+     * character.
+     * The corresponding ranges are returned.
+     *
+     * @param match the string-value
+     * @param offset position of the first character to be in the resulting range
+     * @param length the number of characters in the resulting range
+     * @return an array of ranges 
+     */
+    private Range []emptyString(String match) throws javax.xml.transform.TransformerException
+    {
+        Vector pl = getMatchPoint(match);
+        Vector result = new Vector();
+        
+        for(int i=0;i<pl.size();i++)
+        {
+            TextPoint textPoint = (TextPoint) pl.elementAt(i);
+            
+            Range [] temp = entireTextTree.retrieveRangeAfter(textPoint,match.length());
+            
+            for(int j=0;j<temp.length;j++)
+                result.addElement(temp[j]);
+        }
+        
+         Range []retval = new Range[result.size()];
+         
+         for(int i=0;i<result.size();i++)
+         {
+             retval[i] = (Range) result.elementAt(i);
+         }
+         
+         return retval;
+    }
+    
+    /**
+     * When string-range is invoked with an empty string and the location is 
+     * not an element node, a particular treatment is needed.
+     * Points before each character point and after the last one are returned.
+     *
+     */
+    private Range []emptyString() throws javax.xml.transform.TransformerException
+    {
+        DocumentRange docRange = (DocumentRange) nodeFragment.getNode().getOwnerDocument();
+        Node node = nodeFragment.getNode();
+        
+        if(node.getNodeType()==Node.ATTRIBUTE_NODE)
+            node = node.getFirstChild();
+        
+        Vector result = new Vector();
+        
+        String value = node.getNodeValue();
+        
+        for(int i=nodeFragment.getStartIndex();i<=nodeFragment.getEndIndex();i++)
+        {
+            Range range = docRange.createRange();
+            range.setStart(node,i);
+            range.setEnd(node,i);
+            result.addElement(range);
+        }
+        
+        Range [] retval = new Range[result.size()];
+        
+        for(int i=0;i<retval.length;i++)
+            retval[i] = (Range) result.elementAt(i);
+        
+        return retval;
+    }
+    
+    /**
+     * Returns true if the node type need to be handled
+     * in a different mode from element nodes
+     */
+    private boolean isOtherType(Node node)
+    {
+        boolean retval = false;
+        int nodeType = node.getNodeType();
+        
+        switch(nodeType)
+        {
+            case Node.ATTRIBUTE_NODE:
+            case Node.CDATA_SECTION_NODE:
+            case Node.COMMENT_NODE:
+            case Node.PROCESSING_INSTRUCTION_NODE:
+                retval = true;
+                break;
+            case Node.TEXT_NODE:
+                if(node.getParentNode().getNodeType()==Node.ATTRIBUTE_NODE)
+                    retval=true;
+                break;
+        }
+        
+        
+        return retval;
+    }
+    
+    /**
+     * Returns true if start-point and end-point of a range have the same
+     * container node,the type of which must be handled in a differnet mode from 
+     * element nodes.
+     */
+    private boolean isOtherType(Range range)
+    {
+       boolean retval = false;
+       
+       if(range.getStartContainer()==range.getEndContainer())
+       {
+            Node node = range.getStartContainer();
+            
+            switch(node.getNodeType())
+            {
+                case Node.CDATA_SECTION_NODE:
+                case Node.COMMENT_NODE:
+                case Node.PROCESSING_INSTRUCTION_NODE:
+                    retval = true;
+                    break;
+                case Node.TEXT_NODE:
+                    if(node.getParentNode().getNodeType()==Node.ATTRIBUTE_NODE)
+                        retval = true;
+            }
+       }
+       
+       return retval;
+    }
+}
