@@ -164,6 +164,15 @@ public class ElemTemplateElement extends UnImplNode
    */
   public void runtimeInit(TransformerImpl transformer) throws TransformerException{}
 
+  
+  public void execute(
+          TransformerImpl transformer, xpointer.Location sourceLocation, QName mode)
+            throws TransformerException
+  {
+      throw new RuntimeException("Not supported method.");
+  }
+  
+  
   /**
    * Execute the element's primary function.  Subclasses of this
    * function may recursivly execute down the element tree.
@@ -1240,4 +1249,5 @@ public class ElemTemplateElement extends UnImplNode
     return (null != sroot) ? sroot.canStripWhiteSpace() : false;
   }
 
+  public xpointer.Location m_lastMatchedLocation;
 }

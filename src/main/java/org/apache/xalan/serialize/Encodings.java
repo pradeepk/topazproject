@@ -67,7 +67,7 @@ import java.io.UnsupportedEncodingException;
  * to override encoding names and provide the last printable character
  * for each encoding.
  *
- * @version $Revision$ $Date: 2001-03-11 15:55:39 -0800 (Sun, 11 Mar 2001) $
+ * @version $Revision$ $Date: 2002/02/13 08:01:48 $
  * @author <a href="mailto:arkin@intalio.com">Assaf Arkin</a>
  */
 public class Encodings extends Object

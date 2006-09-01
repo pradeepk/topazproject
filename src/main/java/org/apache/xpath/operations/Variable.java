@@ -60,12 +60,14 @@ import org.apache.xml.utils.QName;
 import org.apache.xpath.Expression;
 import org.apache.xpath.XPath;
 import org.apache.xpath.XPathContext;
-import org.apache.xpath.objects.XObject;
-import org.apache.xpath.objects.XNodeSet;
+import org.apache.xpath.objects.*;
 
 import org.w3c.dom.Node;
+import org.w3c.dom.ranges.Range;
 
 import org.apache.xpath.res.XPATHErrorResources;
+
+
 
 /**
  * The variable reference expression executer.
@@ -119,6 +121,27 @@ public class Variable extends Expression
 
     if (null == result)
     {
+      //added by Tax  
+      Range [] group = xctxt.getGroup();
+      
+      if(group!=null)
+      {
+          java.lang.String varname = m_qname.getLocalName();
+          
+          try
+          {
+              int numGroup = Integer.valueOf(varname).intValue();
+              
+              if(numGroup<group.length)
+                   return new XString(group[numGroup].toString());
+              
+          }
+          catch(NumberFormatException nfe)
+          {}
+          
+      }
+        
+        
       warn(xctxt, XPATHErrorResources.WG_ILLEGAL_VARIABLE_REFERENCE,
            new Object[]{ m_qname.getLocalPart() });  //"VariableReference given for variable out "+
 //      (new RuntimeException()).printStackTrace();

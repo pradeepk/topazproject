@@ -64,6 +64,7 @@ import org.apache.xpath.XPathContext;
 import org.apache.xpath.DOMHelper;
 
 import org.w3c.dom.Node;
+import xpointer.Location;
 
 /**
  * Walker for the 'ancestor' axes.
@@ -119,6 +120,8 @@ public class AncestorWalker extends ReverseAxesWalker
     m_ancestorsPos = m_ancestors.size() - 1;
   }
 
+  
+  
   /**
    *  The root node of the TreeWalker.
    *
@@ -130,6 +133,34 @@ public class AncestorWalker extends ReverseAxesWalker
     super.setRoot(root);
   }
 
+  /*
+   * L'asse ancestor di un punto contiene il nodo 
+   * contenitore E i suoi avi.
+   * @param rootLoc la locazione radice del walker
+   */
+  public void setRoot(Location rootLoc)
+  {
+      super.setRoot(rootLoc);
+      
+      if(rootLoc.getType()==Location.RANGE)
+      {
+        /*perchè l'asse ancestor deve contenere anche il container
+        ed inoltre i nodi verso la radice devono stare in cima alla pila*/
+        Object temp;
+        m_ancestors.setSize(m_ancestors.size()+1);
+      
+        for(int j=m_ancestors.size()-1;j>0;j--)
+        {
+            temp = m_ancestors.elementAt(j-1);
+            m_ancestors.setElementAt(temp,j);
+        }
+        m_ancestors.setElementAt(m_currentNode,0); 
+     
+        m_ancestorsPos += 1;
+      }
+          
+  }
+  
   /**
    *  Moves the <code>TreeWalker</code> to the first visible child of the
    * current node, and returns the new node. If the current node has no
@@ -169,5 +200,23 @@ public class AncestorWalker extends ReverseAxesWalker
     Node p = dh.getParentOfNode(m_root);
 
     return (null == p) ? 1 : dh.getLevel(p);
+  }
+  
+  /*
+   * Vengono ritornati solo nodi
+   */
+  public xpointer.Location getNextLocation()
+  {
+      xpointer.Location loc = null;
+      Node node = getNextNode();
+      
+      if(node!=null)
+      {
+          loc = new xpointer.Location();
+          loc.setLocation(node);
+          loc.setType(xpointer.Location.NODE);
+      }
+      
+      return loc;
   }
 }

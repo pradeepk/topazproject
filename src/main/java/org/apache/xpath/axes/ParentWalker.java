@@ -62,6 +62,8 @@ import org.apache.xpath.XPathContext;
 
 import org.w3c.dom.Node;
 
+import xpointer.Location;
+
 /**
  * Walker for the 'parent' axes.
  * @see <a href="http://www.w3.org/TR/xpath#axes">XPath axes descriptions</a>
@@ -130,5 +132,33 @@ public class ParentWalker extends AxesWalker
   protected int getLevelMax()
   {
     return m_lpi.getDOMHelper().getLevel(m_root) - 1;
+  }
+  
+  public Location getNextLocation()
+  {  
+    Location loc = new Location();
+    Node node;
+    
+    if(m_currentLoc.getType()==Location.NODE)
+    {
+        node = getNextNode();
+        if(node==null)
+            return null;
+    }
+    else
+    {
+        if(m_isDone)
+            return null;
+        
+        node = ((org.w3c.dom.ranges.Range)m_currentLoc.getLocation()).getStartContainer();
+        m_isDone = true;
+    }
+    
+    loc = new Location();
+    loc.setType(Location.NODE);
+    loc.setLocation(node);
+        
+    return loc;
+        
   }
 }

@@ -85,8 +85,12 @@ import org.apache.xml.utils.IntStack;
 import org.apache.xml.utils.PrefixResolver;
 import org.apache.xml.utils.ObjectPool;
 import org.apache.xpath.objects.XNodeSet;
+import org.apache.xpath.objects.XLocationSet;
 import org.apache.xpath.axes.AxesWalker;
 import org.apache.xpath.VariableStack;
+
+import xpointer.*;
+import org.apache.xpath.compiler.FunctionTable;
 
 /**
  * <meta name="usage" content="advanced"/>
@@ -101,7 +105,7 @@ import org.apache.xpath.VariableStack;
  * in which case the UnionPathIterator will cache the nodes.</p>
  */
 public class LocPathIterator extends PredicatedNodeTest
-        implements Cloneable, NodeIterator, ContextNodeList, NodeList,
+        implements Cloneable, NodeIterator, LocationIterator, ContextNodeList, NodeList,
                    java.io.Serializable
 {
 
@@ -185,6 +189,11 @@ public class LocPathIterator extends PredicatedNodeTest
           Compiler compiler, int opPos, int analysis, boolean shouldLoadWalkers)
             throws javax.xml.transform.TransformerException
   {
+    if(isXPointer(compiler,opPos))
+        m_isXPointer = true;
+    else
+        m_isXPointer = false;
+      
     m_analysis = analysis;
 
     setLocPathIterator(this);
@@ -223,8 +232,13 @@ public class LocPathIterator extends PredicatedNodeTest
       LocPathIterator clone = (LocPathIterator) this.clone();
 
       clone.initContext(xctxt);
-
-      return new XNodeSet(clone);
+      
+      /*if the Context Location is a range, a location-set must be returned
+       beacuse then getNextLocation() must be called*/
+      if(m_isXPointer==false && ( xctxt.getCurrentLocation()==null || xctxt.getCurrentLocation().getType()==Location.NODE ) )
+            return new XNodeSet(clone);
+      else
+            return new XLocationSet(clone);
     }
     catch (CloneNotSupportedException ncse)
     {
@@ -273,6 +287,9 @@ public class LocPathIterator extends PredicatedNodeTest
     this.m_execContext = execContext;
     this.m_prefixResolver = execContext.getNamespaceContext();
     this.m_dhelper = execContext.getDOMHelper();
+    
+    //added by Tax 
+    this.m_contextLoc = execContext.getCurrentLocation();
 
     if (m_isTopLevel)
     {
@@ -734,6 +751,16 @@ public class LocPathIterator extends PredicatedNodeTest
   }
 
   /**
+   * Return the last fetched location.  Needed to support the UnionPathIterator.
+   *
+   * @return The last fetched location, or null if the last fetch was null.
+   */
+   public Location getCurrentLocation()
+   {
+       return m_lastFetchedLocation;
+   }
+  
+  /**
    * If an index is requested, NodeSet will call this method
    * to run the iterator to the index.  By default this sets
    * m_next to the index.  If the index argument is -1, this
@@ -1004,6 +1031,68 @@ public class LocPathIterator extends PredicatedNodeTest
     return super.canTraverseOutsideSubtree();
    }
 
+   public Location nextLocation() {
+    
+        if(m_firstWalker.getRoot()==null)
+        {
+            this.setNextPosition(0);
+            
+            if(m_context!=null)
+                m_firstWalker.setRoot(m_context);  //mi serve davvero? controllare!!!
+            if(m_contextLoc!=null)  //perchè FilterExprWalker se ne fotte della contextLoc ed usa m_locationSet
+                m_firstWalker.setRoot(m_contextLoc);
+
+            m_lastUsedWalker = m_firstWalker;
+        }
+        
+        Location loc=null;
+        
+        loc = m_firstWalker.nextLocation();
+        
+        m_lastFetchedLocation = loc;
+            
+        return loc;
+   }   
+   
+   
+   /**
+    * Decides if the location path contains an XPointer function or if it terminates
+    * with a range-to().
+    *
+    * @param compiler the Compiler which is creating the expression
+    * @param opPos the position of this iterator in the op list
+    * @return true if the Location Path contains XPointer functions, false otherwise
+    */
+   protected boolean isXPointer(Compiler compiler,int opPos)
+   {
+       //added by tax
+    int fcPos = compiler.getFirstChildPos(opPos);
+    int [] m_opMap = compiler.getOpMap();
+    boolean retval = false;
+    
+    int tempPos = fcPos;
+    int rangetoPos;
+    //if(opPos==2)
+    //{
+        do
+        {
+            tempPos = compiler.getNextStepPos(tempPos);
+        }
+        while(tempPos!=-1 && m_opMap[tempPos]!=OpCodes.OP_FUNCTION && m_opMap[tempPos]!=OpCodes.ENDOP);
+        rangetoPos = tempPos + 2;
+        if(m_opMap[rangetoPos] == FunctionTable.FUNC_RANGE_TO)
+            retval = true;
+    //}
+      
+      
+    if(m_opMap[fcPos]==OpCodes.OP_FUNCTION && 
+        m_opMap[compiler.getFirstChildPos(fcPos)]!=FunctionTable.FUNC_ID) //da cambiare: deve essere semplicemente una funzione che genera Locations
+    {
+        retval = true;
+    }  
+    
+    return retval;
+   }
   
   //============= State Data =============
   
@@ -1043,7 +1132,10 @@ public class LocPathIterator extends PredicatedNodeTest
 
   /** The last node that was fetched, usually by nextNode. */
   transient public Node m_lastFetched;
-
+  
+  /** The last location that was fetched, usually by nextLocation.*/
+  transient Location m_lastFetchedLocation;
+  
   /**
    * If this iterator needs to cache nodes that are fetched, they
    * are stored here.
@@ -1114,4 +1206,14 @@ public class LocPathIterator extends PredicatedNodeTest
    * @serial
    */
   protected int m_analysis = 0x00000000;
+  
+  
+  /**
+   *  deve essere transient?!
+   */
+  public boolean m_isXPointer = false;
+  
+  public Location m_contextLoc;
+  
+  protected boolean m_isPoint = false;
 }

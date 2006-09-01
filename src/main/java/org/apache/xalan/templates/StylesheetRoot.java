@@ -975,13 +975,18 @@ public class StylesheetRoot extends StylesheetComposed
 
     m_defaultTextRule.setMatch(defMatch);
 
-    ElemValueOf elemValueOf = new ElemValueOf();
+    //added by Tax
+    ElemApplyXPTRTemplates elemApplyXPTRTemplates = new ElemApplyXPTRTemplates();
+    
+    m_defaultTextRule.appendChild(elemApplyXPTRTemplates);
+    
+    /*ElemValueOf elemValueOf = new ElemValueOf();
 
     m_defaultTextRule.appendChild(elemValueOf);
 
     XPath selectPattern = new XPath(".", this, this, XPath.SELECT, errorListener);
 
-    elemValueOf.setSelect(selectPattern);
+    elemValueOf.setSelect(selectPattern); */
 
     //--------------------------------
     m_defaultRootRule = new ElemTemplate();

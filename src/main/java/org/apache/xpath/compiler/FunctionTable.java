@@ -166,7 +166,83 @@ public class FunctionTable
 
   /** The 'unparsed-entity-uri()' id (XSLT). */
   public static final int FUNC_UNPARSED_ENTITY_URI = 36;
-
+  
+  
+  //XPointer
+  
+  //added by Tax
+  public static final int XPOINTER_FUNC_START = 37;
+  
+  /** The 'range-to()' id*/
+  //added by Tax
+  public static final int FUNC_RANGE_TO = 37;
+  
+  /** The 'range()' id*/
+  //added by Tax
+  public static final int FUNC_RANGE = 39;
+  
+  /** The 'string-range()' id*/
+  //added by Tax
+  public static final int FUNC_STRING_RANGE = 38;
+  
+  /**The 'range-inside()' id*/
+  //added by Tax
+  public static final int FUNC_RANGE_INSIDE = 40;
+  
+  /**The 'start-point()' id*/
+  //added by Tax
+  public static final int FUNC_START_POINT = 41;
+  
+  /**The 'end-point() id*/
+  //added by Tax
+  public static final int FUNC_END_POINT = 42;
+  
+  /**The 'origin()' id*/
+  //added by Tax
+  public static final int FUNC_ORIGIN = 43;
+  
+  /**The 'here()' id*/
+  //added by Tax
+  public static final int FUNC_HERE = 44;
+  
+  /** The regexp() id*/
+  //added by Tax
+  public static final int FUNC_REGEXP = 45;
+  
+  /** The word() id*/
+  //added by Tax
+  public static final int FUNC_WORD = 46;
+  
+  /** The sentence() id*/
+  //added by Tax
+  public static final int FUNC_SENTENCE = 47;
+  
+   /** The duration() id*/
+  //added by Tax
+  public static final int FUNC_TEXTPOINT = 48;
+ 
+  //added by Tax
+  public static final int XPOINTER_FUNC_END = 48;
+  
+  /** The date() id*/
+  //added by Tax
+  public static final int FUNC_DATE = 49;
+ 
+  /** The today() id*/
+  //added by Tax
+  public static final int FUNC_TODAY = 50;
+  
+  /** The now() id*/
+  //added by Tax
+  public static final int FUNC_NOW = 51;
+ 
+  /** The duration() id*/
+  //added by Tax
+  public static final int FUNC_DURATION = 52;
+ 
+ 
+  
+  
   // Proprietary
 
   /** The 'document-location()' id (Proprietary). */
@@ -181,7 +257,7 @@ public class FunctionTable
    * Number of built in functions.  Be sure to update this as
    * built-in functions are added.
    */
-  private static final int NUM_BUILT_IN_FUNCS = 37;
+  private static final int NUM_BUILT_IN_FUNCS = 53;
 
   /**
    * Number of built-in functions that may be added.
@@ -253,6 +329,41 @@ public class FunctionTable
             FUNC_DOCLOCATION);
     m_functions[FUNC_UNPARSED_ENTITY_URI] =
       new FuncLoader("FuncUnparsedEntityURI", FUNC_UNPARSED_ENTITY_URI);
+    
+    
+    m_functions[FUNC_RANGE_TO] = 
+        new FuncLoader("FuncRangeTo", FUNC_RANGE_TO);
+    m_functions[FUNC_STRING_RANGE] =
+        new FuncLoader("FuncStringRange", FUNC_RANGE);
+    m_functions[FUNC_RANGE] =
+        new FuncLoader("FuncRange", FUNC_RANGE);
+    m_functions[FUNC_RANGE_INSIDE] = 
+        new FuncLoader("FuncRangeInside", FUNC_RANGE_INSIDE);
+    m_functions[FUNC_START_POINT] =
+        new FuncLoader("FuncStartPoint" , FUNC_START_POINT);
+    m_functions[FUNC_END_POINT] =
+        new FuncLoader("FuncEndPoint", FUNC_END_POINT);
+    m_functions[FUNC_ORIGIN] =
+        new FuncLoader("FuncOrigin", FUNC_ORIGIN);
+    m_functions[FUNC_HERE] =
+        new FuncLoader("FuncHere", FUNC_HERE);
+    m_functions[FUNC_REGEXP] =
+        new FuncLoader("FuncRegexp", FUNC_REGEXP);
+    m_functions[FUNC_WORD] =
+        new FuncLoader("FuncWord", FUNC_WORD);
+    m_functions[FUNC_SENTENCE] =
+        new FuncLoader("FuncSentence", FUNC_SENTENCE);
+    m_functions[FUNC_DATE] =
+        new FuncLoader("FuncDate", FUNC_DATE);
+    m_functions[FUNC_NOW] =
+        new FuncLoader("FuncNow",FUNC_NOW);
+    m_functions[FUNC_TODAY] =
+        new FuncLoader("FuncToday",FUNC_TODAY);
+    m_functions[FUNC_DURATION] =
+        new FuncLoader("FuncDuration",FUNC_TODAY);
+    m_functions[FUNC_TEXTPOINT] =
+        new FuncLoader("FuncTextPoint",FUNC_TEXTPOINT);
+    
   }
 
   /**

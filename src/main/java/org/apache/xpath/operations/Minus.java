@@ -56,8 +56,7 @@
  */
 package org.apache.xpath.operations;
 
-import org.apache.xpath.objects.XObject;
-import org.apache.xpath.objects.XNumber;
+import org.apache.xpath.objects.*;
 
 /**
  * The binary '-' operation expression executer.
@@ -80,6 +79,22 @@ public class Minus extends Operation
   public XObject operate(XObject left, XObject right)
           throws javax.xml.transform.TransformerException
   {
-    return new XNumber(left.num() - right.num());
+    if(left instanceof XDate && right instanceof XNumber)
+    {
+        ((XDate)left).addDays((int)(-1*right.num()));
+        return left;
+    }
+    else if(left instanceof XDate && right instanceof XDate)
+    {
+        return new XNumber(((XDate)left).subtractDate((XDate)right));
+    }
+    else if(left instanceof XDate && right instanceof XDuration)
+    {
+        ((XDate)left).subtractDuration((XDuration)right);
+        return left;
+    }
+    
+    else
+        return new XNumber(left.num() - right.num());
   }
 }

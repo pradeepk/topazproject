@@ -155,6 +155,11 @@ public class XObject extends Expression implements Serializable
     {
       result = new XNodeSet((NodeIterator) val);
     }
+    //added by Tax
+    else if (val instanceof xpointer.Location)
+    {   
+        result = new XLocationSet((xpointer.Location)val);
+    }
     else
     {
       result = new XObject(val);
@@ -183,7 +188,22 @@ public class XObject extends Expression implements Serializable
 
   /** Constant for RESULT TREE FRAGMENT object type         */
   public static final int CLASS_RTREEFRAG = 5;
-
+  
+  /** Constant for LOCATIONSET object type */
+  //added by Tax
+  public static final int CLASS_LOCATIONSET = 6;
+  
+  /** Constant for DATE object type */
+  //added by Tax
+  public static final int CLASS_DATE = 7;
+  
+  
+ /** Constant for DURATION object type */
+  //added by Tax
+  public static final int CLASS_DURATION = 8;
+  
+  
+  
   /** Represents an unresolved variable type as an integer.          */
   public static final int CLASS_UNRESOLVEDVARIABLE = 600;
 

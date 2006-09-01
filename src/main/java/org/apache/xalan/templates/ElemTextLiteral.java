@@ -242,4 +242,29 @@ public class ElemTextLiteral extends ElemTemplateElement
       throw new TransformerException(se);
     }
   }
+  
+  public void execute(
+          TransformerImpl transformer, xpointer.Location sourceLocation, QName mode)
+            throws TransformerException
+  {
+    try
+    {
+      ResultTreeHandler rth = transformer.getResultTreeHandler();
+      if (m_disableOutputEscaping)
+      {
+        rth.processingInstruction(javax.xml.transform.Result.PI_DISABLE_OUTPUT_ESCAPING, "");
+      }
+
+      rth.characters(m_ch, 0, m_ch.length);
+
+      if (m_disableOutputEscaping)
+      {
+        rth.processingInstruction(javax.xml.transform.Result.PI_ENABLE_OUTPUT_ESCAPING, "");
+      }
+    }
+    catch(SAXException se)
+    {
+      throw new TransformerException(se);
+    }
+  }
 }

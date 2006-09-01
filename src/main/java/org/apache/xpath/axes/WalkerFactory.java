@@ -59,6 +59,7 @@ package org.apache.xpath.axes;
 import org.apache.xpath.compiler.OpCodes;
 import org.apache.xpath.compiler.Compiler;
 import org.apache.xpath.patterns.NodeTest;
+import org.apache.xpath.compiler.FunctionTable;
 
 import org.w3c.dom.traversal.NodeFilter;
 
@@ -152,6 +153,12 @@ public class WalkerFactory
         walker.setPrevWalker(prevWalker);
       }
 
+      /*added by Tax*/
+      if(walker instanceof FilterExprWalker)
+          compiler.previousFilterExpr = true;
+      else
+          compiler.previousFilterExpr = false;
+      
       prevWalker = walker;
       stepOpCodePos = compiler.getNextStepPos(stepOpCodePos);
 
@@ -257,7 +264,7 @@ public class WalkerFactory
                     BIT_NODETEST_ANY | BIT_ANY_DESCENDANT_FROM_ROOT | BITS_COUNT))))
     )
     {
-      if (DEBUG_ITERATOR_CREATION)
+      if (DEBUG_ITERATOR_CREATION) 
         System.out.println("new iterator:  DescendantIterator: " 
                           + Integer.toBinaryString(analysis) + ", "
                            + compiler.toString());
@@ -479,6 +486,13 @@ public class WalkerFactory
         System.out.println("new walker:  FilterExprWalker: " + analysis
                            + ", " + compiler.toString());
       ai = new FilterExprWalker(lpi);
+      /*added by Tax
+      if(compiler.getOp(opPos+2)>=FunctionTable.FUNC_RANGE_TO 
+        && compiler.getOp(opPos+2) <= FunctionTable.FUNC_HERE)
+          ai.m_returnOnlyRange = true;
+      else
+          ai.m_returnOnlyRange = false;
+      */
       simpleInit = true;
       break;
     case OpCodes.FROM_ROOT :
@@ -684,7 +698,7 @@ public class WalkerFactory
       }
     }
 
-    return ai;
+    return ai; 
   }
 
   /** Set to true for diagnostics about walker creation */

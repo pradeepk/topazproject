@@ -66,6 +66,14 @@ import org.apache.xpath.objects.XObject;
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeIterator;
 
+import org.apache.xpath.objects.XLocationSet;
+import xpointer.Location;
+import xpointer.LocationIterator;
+import org.w3c.dom.ranges.Range;
+import org.apache.xalan.stree.Parent;
+import org.apache.xalan.templates.ElemTemplateElement;
+import org.apache.xpath.functions.FuncRegexp;
+
 /**
  * <meta name="usage" content="advanced"/>
  * Match pattern step that contains a function.
@@ -73,6 +81,8 @@ import org.w3c.dom.traversal.NodeIterator;
 public class FunctionPattern extends StepPattern
 {
 
+   private Location m_lastMatchedLocation; 
+    
   /**
    * Construct a FunctionPattern from a 
    * {@link org.apache.xpath.functions.Function expression}.
@@ -86,6 +96,11 @@ public class FunctionPattern extends StepPattern
     super(0, null, null);
 
     m_functionExpr = expr;
+  }
+  
+  public Expression getFunctionExpr()
+  {
+      return m_functionExpr;
   }
 
   /**
@@ -120,29 +135,141 @@ public class FunctionPattern extends StepPattern
   public XObject execute(XPathContext xctxt) throws javax.xml.transform.TransformerException
   {
 
+    Location contextLoc = xctxt.getCurrentLocation();  
     Node context = xctxt.getCurrentNode();
     XObject obj = m_functionExpr.execute(xctxt);
-    NodeIterator nl = obj.nodeset();
-    XNumber score = SCORE_NONE;
-
-    if (null != nl)
+    
+    if(m_functionExpr instanceof FuncRegexp)
     {
-      Node n;
-
-      while (null != (n = nl.nextNode()))
-      {
-        score = (n.equals(context)) ? SCORE_OTHER : SCORE_NONE;
-
-        if (score == SCORE_OTHER)
-        {
-          context = n;
-
-          break;
-        }
-      }
-      // nl.detach();
+        m_groupMap = ((FuncRegexp)m_functionExpr).getGroupMap();
     }
+    
+    if(obj instanceof XLocationSet)
+    {
+        LocationIterator ll = ((XLocationSet)obj).locationSet();
+        XNumber score = SCORE_NONE;
+        
+        if(null != ll && contextLoc != null)
+        {
+            Location loc;
+            Range contextRange = (Range)contextLoc.getLocation();
+            
+            while(null != (loc = ll.nextLocation()))
+            {
+                Range range = (Range) loc.getLocation();
+                
+                if(range.compareBoundaryPoints(Range.START_TO_START,contextRange)==0)
+                {
+                    m_lastMatchedLocation = loc;
+                    score = SCORE_OTHER;
+                    break;
+                }
+                else
+                    score = SCORE_NONE;
+            }
+        }
+        return score;
+    }
+    else
+    {
+        NodeIterator nl = obj.nodeset();
+        XNumber score = SCORE_NONE;
 
-    return score;
+        if (null != nl)
+        {
+            Node n;
+
+            while (null != (n = nl.nextNode()))
+            {
+                score = (n.equals(context)) ? SCORE_OTHER : SCORE_NONE;
+
+                if (score == SCORE_OTHER)
+                {
+                    context = n;
+
+                    break;
+                }
+            }
+      
+        }
+
+        return score;
+    }
+  }
+  
+  public boolean isInside(XPathContext xctxt) throws javax.xml.transform.TransformerException
+  {
+      Location contextLoc = xctxt.getCurrentLocation();
+      
+      if(contextLoc!=null && contextLoc.getType()==Location.RANGE)
+      {
+          Range contextRange = (Range) contextLoc.getLocation();
+          
+          //assertion
+          if(contextRange.getStartContainer()!=contextRange.getEndContainer() || 
+            contextRange.getStartOffset()!=contextRange.getEndOffset())
+              throw new RuntimeException("Not a collapsed range");
+          
+          XObject obj = m_functionExpr.execute(xctxt);
+          
+          if(obj instanceof XLocationSet)
+          {
+              LocationIterator li = ((XLocationSet)obj).locationSet();
+              Location loc;
+              
+              while((loc=li.nextLocation())!=null)
+              {
+                  if(loc.getType()==Location.RANGE)
+                  {
+                      Range range = (Range)loc.getLocation();
+                      
+                      if(range.compareBoundaryPoints(Range.START_TO_START,contextRange)<=0
+                        && range.compareBoundaryPoints(Range.START_TO_END,contextRange)>0)
+                          return true;
+                  }
+              }
+          }
+      }
+      
+      return false;
+  }
+  
+ /* public Location getMatchedLocation(XPathContext xctxt) throws javax.xml.transform.TransformerException
+  {
+      Location contextLoc = xctxt.getCurrentLocation();  
+      XObject obj = m_functionExpr.execute(xctxt);
+      
+      if(obj instanceof XLocationSet)
+      {
+          LocationIterator ll = ((XLocationSet)obj).locationSet();
+          
+          if(null != ll && contextLoc != null)
+          {
+            Location loc;
+            Range contextRange = (Range)contextLoc.getLocation();
+            
+            while((loc=ll.nextLocation())!=null)
+            {
+                Range range = (Range) loc.getLocation();
+                
+                if(range.compareBoundaryPoints(Range.START_TO_START,contextRange)==0)
+                    return loc;
+            }
+          }
+      }
+      
+      return null;
+  }*/
+  
+  public Location getMatchedLocation(XPathContext xctxt) throws javax.xml.transform.TransformerException
+  {
+      return m_lastMatchedLocation;
+  }
+  
+  private java.util.Hashtable m_groupMap = null;
+  
+  public java.util.Hashtable getGroupMap()
+  {
+      return m_groupMap;
   }
 }

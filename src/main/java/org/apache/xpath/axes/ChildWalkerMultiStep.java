@@ -60,6 +60,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeFilter;
 
 import org.apache.xpath.patterns.NodeTestFilter;
+import xpointer.Location;
 
 /**
  * <meta name="usage" content="advanced"/>
@@ -141,6 +142,7 @@ public class ChildWalkerMultiStep extends AxesWalker
 
     while (null != walker)
     {
+      
       Node next;
       if(fast)
       {
@@ -190,4 +192,70 @@ public class ChildWalkerMultiStep extends AxesWalker
     return true;
   }
 
+   /**
+   * 
+   * 
+   */
+  public Location nextLocation()
+  {
+      AxesWalker walker = m_lpi.getLastUsedWalker();
+      boolean fast = (null != walker) ? walker.isFastWalker() : false;
+      Location next;
+      
+      while(null!=walker)
+      {
+          if(fast)
+              next = walker.getNextLocation();
+          else
+          {
+              next = walker.nextLocation();
+              if(next!=null)
+                  return next;
+          }
+          
+          if(null!=next)
+          {
+              if(null!=walker.m_nextWalker)
+              {
+                  walker = walker.m_nextWalker;
+                  
+                  walker.setRoot(next);
+                  m_lpi.setLastUsedWalker(walker);
+                  fast = walker.isFastWalker();
+              }
+              else
+                  return next;
+          }
+          else
+          {
+              walker = walker.m_prevWalker;
+              
+              if(null!=walker)
+                  fast = walker.isFastWalker();
+              m_lpi.setLastUsedWalker(walker);
+          }
+      }
+      
+      return null;
+  }
+  
+  /**
+   * MultiStep walkers are created when there are only child steps an no function at all;
+   * so it can be assumed that only locations of type node will be returned.
+   */
+  public xpointer.Location getNextLocation()
+  {
+      Node node = getNextNode();
+      
+      xpointer.Location loc = null;
+      
+      if(node!=null)
+      {
+          loc = new xpointer.Location();
+          loc.setType(xpointer.Location.NODE);
+          loc.setLocation(node);
+      }
+      
+      return loc;
+  }
 }

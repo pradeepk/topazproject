@@ -101,7 +101,7 @@ import java.util.Vector;
  * quite slow and because it forces classes to get loaded.
  * 
  * @author Shane_Curcuru@lotus.com
- * @version $Id: EnvironmentCheck.java 334853 2001-05-22 21:10:35Z curcuru $
+ * @version $Id: EnvironmentCheck.java 557 2006-09-01 08:31:40Z pradeep $
  */
 public class EnvironmentCheck
 {
@@ -235,7 +235,7 @@ public class EnvironmentCheck
     boolean errors = false;
 
     logMsg(
-      "#---- BEGIN writeEnvironmentReport($Revision: 334853 $): Useful properties found: ----");
+      "#---- BEGIN writeEnvironmentReport($Revision: 557 $): Useful properties found: ----");
 
     // Fake the Properties-like output
     for (Enumeration enum = h.keys(); 

@@ -263,9 +263,10 @@ public class OpMap
       }
 
       stepType = getOp(newOpPos);
-
-      if (!((stepType >= OpCodes.AXES_START_TYPES)
-            && (stepType <= OpCodes.AXES_END_TYPES)))
+      
+      //modified by Tax
+      if (!(((stepType >= OpCodes.AXES_START_TYPES)
+            && (stepType <= OpCodes.AXES_END_TYPES)) || (previousFilterExpr)))
       {
         return OpCodes.ENDOP;
       }
@@ -307,7 +308,7 @@ public class OpMap
    */
   public int getFirstPredicateOpPos(int opPos)
   {
-
+ 
     int stepType = m_opMap[opPos];
 
     if ((stepType >= OpCodes.AXES_START_TYPES)
@@ -459,4 +460,6 @@ public class OpMap
       return null;
   }
 
+  /*vero se il walker precedente era un FilterExprWalker*/
+  public boolean previousFilterExpr = false;
 }

@@ -2,7 +2,7 @@
  * The Apache Software License, Version 1.1
  *
  *
- * Copyright (c) 1999 The Apache Software Foundation.  All rights 
+ * Copyright (c) 1999 The Apache Software Foundation.  All rights
  * reserved.
  *
  * Redistribution and use in source and binary forms, with or without
@@ -10,7 +10,7 @@
  * are met:
  *
  * 1. Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer. 
+ *    notice, this list of conditions and the following disclaimer.
  *
  * 2. Redistributions in binary form must reproduce the above copyright
  *    notice, this list of conditions and the following disclaimer in
@@ -18,7 +18,7 @@
  *    distribution.
  *
  * 3. The end-user documentation included with the redistribution,
- *    if any, must include the following acknowledgment:  
+ *    if any, must include the following acknowledgment:
  *       "This product includes software developed by the
  *        Apache Software Foundation (http://www.apache.org/)."
  *    Alternately, this acknowledgment may appear in the software itself,
@@ -26,7 +26,7 @@
  *
  * 4. The names "Xalan" and "Apache Software Foundation" must
  *    not be used to endorse or promote products derived from this
- *    software without prior written permission. For written 
+ *    software without prior written permission. For written
  *    permission, please contact apache@apache.org.
  *
  * 5. Products derived from this software may not be called "Apache",
@@ -137,6 +137,13 @@ public class Keywords
   /** Any node test string. */
   private static final String NODETYPE_NODE_STRING = "node";
 
+  /** point node test string*/
+  //added by Tax
+  private static final String NODETYPE_POINT_STRING = "point";
+
+  /** range node test string*/
+  private static final String NODETYPE_RANGE_STRING = "range";
+
   /** Wildcard element string. */
   private static final String NODETYPE_ANYELEMENT_STRING = "*";
 
@@ -246,6 +253,73 @@ public class Keywords
   private static final String FUNC_UNPARSED_ENTITY_URI_STRING =
     "unparsed-entity-uri";
 
+  //XPointer
+
+  /** range-to function string*/
+  //added by Tax
+  private static final String FUNC_RANGE_TO_STRING = "range-to";
+
+  /** string-range function string*/
+  //added by Tax
+  static final String FUNC_STRING_RANGE_STRING = "string-range";
+
+  /** range function string*/
+  //added by Tax
+  static final String FUNC_RANGE_STRING = "range";
+
+  /** range-inside() function string*/
+  //added by Tax
+  static final String FUNC_RANGE_INSIDE_STRING = "range-inside";
+
+  /** start-point() function string*/
+  //added by Tax
+  static final String FUNC_START_POINT_STRING = "start-point";
+
+  /** end-point() function string*/
+  //added by Tax
+  static final String FUNC_END_POINT_STRING = "end-point";
+
+  /** origin() function string*/
+  //added by Tax
+  private static final String FUNC_ORIGIN_STRING = "origin";
+
+  /** here() function string*/
+  //added by Tax
+  private static final String FUNC_HERE_STRING = "here";
+  
+  /**regexp() function string*/
+  //added by Tax
+  static final String FUNC_REGEXP_STRING = "regexp";
+  
+  /**word() function string*/
+  //added by Tax
+  static final String FUNC_WORD_STRING = "word";
+  
+  /**sentence() function string*/
+  //added by Tax
+  static final String FUNC_SENTENCE_STRING = "sentence";
+  
+  /**date() function string*/
+  //added by Tax
+  private static final String FUNC_DATE_STRING = "date";
+  
+  /**now() function string */
+  //added by Tax
+  private static final String FUNC_NOW_STRING = "now";
+  
+  /**today() function string */
+  //added by Tax
+  private static final String FUNC_TODAY_STRING = "today";
+  
+  /**duration() function string */
+  //added by Tax
+  private static final String FUNC_DURATION_STRING = "duration";
+  
+  /**textpoint() function string */
+  //added by Tax
+  private static final String FUNC_TEXTPOINT_STRING = "textpoint";
+  
+
   // Proprietary, built in functions
 
   /** current function string (Proprietary). */
@@ -289,6 +363,12 @@ public class Keywords
                     new Integer(OpCodes.NODETYPE_NODE));
     m_nodetypes.put(new StringKey(NODETYPE_ANYELEMENT_STRING),
                     new Integer(OpCodes.NODETYPE_ANYELEMENT));
+    
+    m_nodetypes.put(new StringKey(NODETYPE_POINT_STRING),
+                    new Integer(OpCodes.NODETYPE_POINT));
+    m_nodetypes.put(new StringKey(NODETYPE_RANGE_STRING), 
+                    new Integer(OpCodes.NODETYPE_RANGE));
+    
     m_keywords.put(new StringKey(FROM_SELF_ABBREVIATED_STRING),
                    new Integer(OpCodes.FROM_SELF));
     m_keywords.put(new StringKey(FUNC_ID_STRING),
@@ -377,6 +457,44 @@ public class Keywords
                     new Integer(OpCodes.NODETYPE_NODE));
     m_functions.put(new StringKey(FUNC_DOCLOCATION_STRING),
                     new Integer(FunctionTable.FUNC_DOCLOCATION));
+    m_functions.put(new StringKey(NODETYPE_POINT_STRING), 
+                    new Integer(OpCodes.NODETYPE_POINT));
+    m_functions.put(new StringKey(NODETYPE_RANGE_STRING),
+                    new Integer(OpCodes.NODETYPE_RANGE));
+
+    m_functions.put(new StringKey(FUNC_RANGE_TO_STRING),
+                    new Integer(FunctionTable.FUNC_RANGE_TO));
+    m_functions.put(new StringKey(FUNC_STRING_RANGE_STRING),
+                    new Integer(FunctionTable.FUNC_STRING_RANGE));
+    m_functions.put(new StringKey(FUNC_RANGE_STRING),
+                    new Integer(FunctionTable.FUNC_RANGE));
+    m_functions.put(new StringKey(FUNC_RANGE_INSIDE_STRING),
+                    new Integer(FunctionTable.FUNC_RANGE_INSIDE));
+    m_functions.put(new StringKey(FUNC_START_POINT_STRING),
+                    new Integer(FunctionTable.FUNC_START_POINT));
+    m_functions.put(new StringKey(FUNC_END_POINT_STRING),
+                    new Integer(FunctionTable.FUNC_END_POINT));
+    m_functions.put(new StringKey(FUNC_ORIGIN_STRING),
+                    new Integer(FunctionTable.FUNC_ORIGIN));
+    m_functions.put(new StringKey(FUNC_HERE_STRING),
+                    new Integer(FunctionTable.FUNC_HERE));
+    m_functions.put(new StringKey(FUNC_WORD_STRING),
+                    new Integer(FunctionTable.FUNC_WORD));
+    m_functions.put(new StringKey(FUNC_REGEXP_STRING),
+                    new Integer(FunctionTable.FUNC_REGEXP));
+    m_functions.put(new StringKey(FUNC_SENTENCE_STRING),
+                    new Integer(FunctionTable.FUNC_SENTENCE));
+    m_functions.put(new StringKey(FUNC_DATE_STRING),
+                    new Integer(FunctionTable.FUNC_DATE));
+    m_functions.put(new StringKey(FUNC_NOW_STRING),
+                    new Integer(FunctionTable.FUNC_NOW));
+    m_functions.put(new StringKey(FUNC_TODAY_STRING),
+                    new Integer(FunctionTable.FUNC_TODAY));
+    m_functions.put(new StringKey(FUNC_DURATION_STRING),
+                    new Integer(FunctionTable.FUNC_DURATION));
+    m_functions.put(new StringKey(FUNC_TEXTPOINT_STRING), 
+                    new Integer(FunctionTable.FUNC_TEXTPOINT));
+                
   }
 
   /**

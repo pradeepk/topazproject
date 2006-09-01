@@ -318,12 +318,21 @@ public class AVT implements java.io.Serializable
                       // Proper close of attribute template.
                       // Evaluate the expression.
                       buffer.setLength(0);
+                      
+                      int groupNum = getGroupNumber(exprBuffer.toString());
+                      
+                      if(groupNum!=-1)
+                      {
+                          m_parts.addElement(new AVTPartGroup(groupNum));
+                      }
+                      else
+                      {
+                        XPath xpath =
+                            handler.createXPath(exprBuffer.toString());
 
-                      XPath xpath =
-                        handler.createXPath(exprBuffer.toString());
-
-                      m_parts.addElement(new AVTPartXPath(xpath));
-
+                        m_parts.addElement(new AVTPartXPath(xpath));
+                      }
+                      
                       lookahead = null;  // breaks out of inner while loop
 
                       break;
@@ -575,5 +584,31 @@ public class AVT implements java.io.Serializable
     }
 
     return false;
+  }
+  
+  /**
+   * Checks if a string is of the form "$i",i=0,1,2...
+   *
+   * @param arg the string to be parsed
+   * @return the value of i, -1 otherwise
+   */
+  private int getGroupNumber(String arg)
+  {
+      int retval = -1;
+      
+      if(arg.charAt(0)=='$')
+      {
+          String numval = arg.substring(1);
+          try
+          {
+            retval = Integer.valueOf(numval).intValue();
+          }
+          catch(NumberFormatException nfe)
+          {
+              retval = -1;
+          }
+      }
+      
+      return retval;
   }
 }

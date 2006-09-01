@@ -59,6 +59,8 @@ package org.apache.xpath.axes;
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeFilter;
 
+import xpointer.Location;
+
 /**
  * <meta name="usage" content="advanced"/>
  * Class SelfWalkerOneStep
@@ -100,5 +102,59 @@ public class SelfWalkerOneStep extends AxesWalker
     {
       return null;
     }
+  }
+  
+  /*
+  public Location nextLocation()
+  {
+      //per ora assumo che la location sia un punto o un range
+      
+      int pattern;
+      
+      if (m_currentLoc.getType()==Location.RANGE)
+      {
+          org.w3c.dom.ranges.Range range = (org.w3c.dom.ranges.Range) m_currentLoc.getLocation();
+          
+          if(range.getStartContainer()==range.getEndContainer() && range.getStartOffset()==range.getEndOffset())
+              pattern = xpointer.ExtNodeFilter.SHOW_POINT;
+          else
+              pattern = xpointer.ExtNodeFilter.SHOW_RANGE;
+          
+       
+         return (pattern==m_whatToShow)?m_currentLoc:null;
+      }
+      else
+      {
+          System.out.println("La locazione è di tipo nodo!!!");
+          return null;
+      }
+          
+  }*/
+  
+  public Location getNextLocation()
+  {
+      int pattern;
+      
+      if(m_isDone==true)
+          return null;
+        
+      if (m_currentLoc!=null && m_currentLoc.getType()==Location.RANGE)
+      {
+          org.w3c.dom.ranges.Range range = (org.w3c.dom.ranges.Range) m_currentLoc.getLocation();
+          
+          if(range.getStartContainer()==range.getEndContainer() && range.getStartOffset()==range.getEndOffset())
+              pattern = xpointer.ExtNodeFilter.SHOW_POINT;
+          else
+              pattern = xpointer.ExtNodeFilter.SHOW_RANGE;
+          
+          m_isDone = true;    
+          return (pattern==m_whatToShow)?m_currentLoc:null;
+      }
+      else
+      {
+          System.out.println("La locazione è di tipo nodo!!!");
+          return null;
+      }
+    
   }
 }

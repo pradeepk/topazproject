@@ -68,6 +68,9 @@ import javax.xml.transform.TransformerException;
 
 import org.xml.sax.ContentHandler;
 
+import org.w3c.dom.NodeList;
+
+
 /**
  * <meta name="usage" content="internal"/>
  * Class representing a parent node. A parent is also a child unless
@@ -468,4 +471,13 @@ public class Parent extends Child
 
   }
 
+   public NodeList getChildNodes()
+   {
+       NodeListImpl nli = new NodeListImpl();
+       
+       for(int i=0;i<getChildCount();i++)
+           nli.addNode(getChild(i));
+       
+       return nli;
+   }
 }

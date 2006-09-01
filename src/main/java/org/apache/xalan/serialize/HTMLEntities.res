@@ -1,6 +1,6 @@
-# $Id: HTMLEntities.res 333934 2000-12-10 05:17:39Z sboag $
+# $Id: HTMLEntities.res,v 1.1.1.1 2002/02/13 08:01:48 tax Exp $
 #
-# @version $Revision: 333934 $ $Date: 2000-12-09 21:17:39 -0800 (Sat, 09 Dec 2000) $
+# @version $Revision: 1.1.1.1 $ $Date: 2002/02/13 08:01:48 $
 # @author <a href="mailto:arkin@intalio.com">Assaf Arkin</a>
 #
 # Character entity references for markup-significant

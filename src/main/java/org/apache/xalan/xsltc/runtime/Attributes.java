@@ -1,5 +1,5 @@
 /*
- * @(#)$Id: Attributes.java 334615 2001-04-17 18:52:52Z sboag $
+ * @(#)$Id: Attributes.java 557 2006-09-01 08:31:40Z pradeep $
  *
  * The Apache Software License, Version 1.1
  *

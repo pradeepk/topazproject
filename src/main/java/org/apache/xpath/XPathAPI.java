@@ -269,7 +269,7 @@ public class XPathAPI
       ? ((Document) namespaceNode).getDocumentElement() : namespaceNode);
 
     // Create the XPath object.
-    XPath xpath = new XPath(str, null, prefixResolver, XPath.SELECT, null);
+    XPath xpath = new XPath(str, null, prefixResolver, XPath.SELECT, null);  
 
     // Execute the XPath, and have it return the result
     return xpath.execute(xpathSupport, contextNode, prefixResolver);
@@ -312,5 +312,39 @@ public class XPathAPI
 
     // Execute the XPath, and have it return the result
     return xpath.execute(new XPathContext(), contextNode, prefixResolver);
+  }
+  
+  public static XObject eval(Node contextNode, String str,xpointer.Location here,xpointer.Location origin) throws TransformerException
+  {
+     XPathContext xpathSupport = new XPathContext();
+     Node namespaceNode = contextNode;
+     
+     xpathSupport.setHere(here);
+     xpathSupport.setOrigin(origin);
+     
+     PrefixResolverDefault prefixResolver = new PrefixResolverDefault(
+      (namespaceNode.getNodeType() == Node.DOCUMENT_NODE)
+      ? ((Document) namespaceNode).getDocumentElement() : namespaceNode);
+
+    // Create the XPath object.
+    XPath xpath = new XPath(str, null, prefixResolver, XPath.SELECT, null);  
+
+    // Execute the XPath, and have it return the result
+    return xpath.execute(xpathSupport, contextNode, prefixResolver);
+  }
+  
+  public static XObject eval(
+          Node contextNode, String str, PrefixResolver prefixResolver,xpointer.Location here,xpointer.Location origin)
+            throws TransformerException
+  {
+       XPath xpath = new XPath(str, null, prefixResolver, XPath.SELECT, null);
+
+       XPathContext xctxt = new XPathContext();
+       
+       xctxt.setHere(here);
+       xctxt.setOrigin(origin);
+       
+       return xpath.execute(xctxt, contextNode, prefixResolver);
+
   }
 }

@@ -71,9 +71,14 @@ import org.apache.xpath.XPath;
 import org.apache.xpath.XPathContext;
 import org.apache.xpath.DOMHelper;
 import org.apache.xpath.objects.XNodeSet;
+import org.apache.xpath.objects.XLocationSet;
 import org.apache.xpath.objects.XObject;
 import org.apache.xpath.compiler.Compiler;
 import org.apache.xml.utils.ObjectPool;
+import xpointer.Location;
+import xpointer.LocationIterator;
+import xpointer.TaxDomHelper;
+import org.apache.xpath.compiler.FunctionTable;
 
 /**
  * <meta name="usage" content="advanced"/>
@@ -84,7 +89,7 @@ import org.apache.xml.utils.ObjectPool;
  * in the NodeVector, so that previousNode() can easily be done.
  */
 public class UnionPathIterator extends Expression
-        implements Cloneable, NodeIterator, ContextNodeList
+        implements Cloneable, NodeIterator, ContextNodeList, LocationIterator
 {
 
   /**
@@ -118,10 +123,24 @@ public class UnionPathIterator extends Expression
     {
       int n = m_iterators.length;
 
+      //added by Tax  
       for (int i = 0; i < n; i++)
       {
-        m_iterators[i].initContext(execContext);
-        m_iterators[i].nextNode();
+        m_iterators[i].initContext(execContext); 
+      }
+      
+      for (int i = 0; i < n; i++)
+      {
+        if (m_iterators[i].m_isXPointer)
+              m_isXPointer = true;  
+      }
+      
+      for (int i = 0; i < n; i++)
+      {
+        if(m_isXPointer==true)
+            m_iterators[i].nextLocation();
+        else
+            m_iterators[i].nextNode();
       }
     }
   }
@@ -178,7 +197,11 @@ public class UnionPathIterator extends Expression
 
       clone.initContext(xctxt);
 
-      return new XNodeSet(clone);
+      //added by Tax
+      if(clone.m_isXPointer==true)
+          return new XLocationSet(clone);
+      else
+          return new XNodeSet(clone);
     }
     catch (CloneNotSupportedException ncse){}
 
@@ -369,7 +392,7 @@ public class UnionPathIterator extends Expression
   {
 
     super();
-
+    
     opPos = compiler.getFirstChildPos(opPos);
 
     loadLocationPaths(compiler, opPos, 0);
@@ -457,7 +480,15 @@ public class UnionPathIterator extends Expression
     int steptype = compiler.getOpMap()[opPos];
 
     if (steptype == OpCodes.OP_LOCATIONPATH)
-    {
+    { 
+   /*   //added by Tax  
+      //se il primo step della locazione è una funzione Xpointer
+      if( (compiler.getOpMap()[compiler.getFirstChildPos(opPos)]==OpCodes.OP_FUNCTION)
+            && ( compiler.getOpMap()[compiler.getFirstChildPos(compiler.getFirstChildPos(opPos))] != FunctionTable.FUNC_ID )
+            )
+          m_isXPointer = true;
+          
+     */   
       loadLocationPaths(compiler, compiler.getNextOpPos(opPos), count + 1);
 
       m_iterators[count] = createLocPathIterator(compiler, opPos);
@@ -478,6 +509,13 @@ public class UnionPathIterator extends Expression
         LocPathIterator iter =
           new LocPathIterator(compiler.getNamespaceContext());
           
+        //added by Tax
+        if(isXPointerFunction(compiler,opPos))
+        {
+            iter.m_isXPointer = true;
+            m_isXPointer = true;
+        }
+        
         if(compiler.getLocationPathDepth() <= 0)
           iter.setIsTopLevel(true);
 
@@ -486,6 +524,8 @@ public class UnionPathIterator extends Expression
         iter.m_firstWalker.init(compiler, opPos, steptype);
 
         m_iterators[count] = iter;
+        
+        
         break;
       default :
         m_iterators = new LocPathIterator[count];
@@ -516,6 +556,60 @@ public class UnionPathIterator extends Expression
   /** The last node that was fetched, usually by nextNode. */
   transient Node m_lastFetched;
 
+  public Location nextLocation()
+  {
+      if (m_foundLast)
+        return null;
+      
+      Location earliestLocation = null;
+      
+      if (null != m_iterators)
+      {
+        int n = m_iterators.length;
+        int iteratorUsed = -1;
+        
+        for(int i=0; i<n; i++)
+        {
+            Location loc = m_iterators[i].getCurrentLocation();
+            
+            if(loc==null)
+                continue;
+            
+            else
+                if (earliestLocation==null)
+                {
+                    earliestLocation = loc;
+                    iteratorUsed = i;
+                }
+                else
+                    if(earliestLocation.equals(loc))
+                    {
+                        m_iterators[i].nextLocation();
+                    }
+                    else
+                    {
+                        TaxDomHelper taxDomHelper = new TaxDomHelper(m_execContext.getDOMHelper());
+                        
+                        if(taxDomHelper.isLocationAfter(loc,earliestLocation))
+                        {
+                            iteratorUsed = i;
+                            earliestLocation = loc;
+                        }
+                    }
+        }
+        
+        if(null!=earliestLocation)
+          m_iterators[iteratorUsed].nextLocation();
+        else
+          m_foundLast = true;
+      }
+      
+      
+      
+      return earliestLocation;
+      
+  }
+  
   /**
    *  Returns the next node in the set and advances the position of the
    * iterator in the set. After a NodeIterator is created, the first call
@@ -706,5 +800,28 @@ public class UnionPathIterator extends Expression
   public void setLast(int last)
   {
     m_last = last;
+  }
+  
+  boolean m_isXPointer = false;
+  
+  /**
+   * Check if the current operation is an XPointer function.
+   * Useful when a LocIterator is just a function without any location step. 
+   */
+  private boolean isXPointerFunction(Compiler compiler,int opPos)
+  {
+      boolean retval = false;
+      int []opMap = compiler.getOpMap();
+      
+      if(opMap[opPos]==OpCodes.OP_FUNCTION)
+      {
+          int funcName = opMap[opPos + 2];
+          
+          if(FunctionTable.XPOINTER_FUNC_START <= funcName 
+             && funcName <= FunctionTable.XPOINTER_FUNC_END)
+              retval = true;
+      }
+      
+      return retval;
   }
 }

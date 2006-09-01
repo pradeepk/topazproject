@@ -78,6 +78,12 @@ public class AttrImpl extends Child implements Attr
 
   /** Attribute value          */
   private String m_value;
+  
+  /*adde by Tax*/
+  /*needed for compatibility with DOM*/
+  private TextImpl childTextNode;
+  
+  private DocumentImpl m_docImpl;
 
   /** 
    * Flag to determine if this attribute was explicitly given a 
@@ -98,8 +104,11 @@ public class AttrImpl extends Child implements Attr
 
     super(doc);
 
+    m_docImpl = doc;
+    
     m_name = name;
     m_value = value;
+    
   }
 
   /**
@@ -210,6 +219,8 @@ public class AttrImpl extends Child implements Attr
   public void setValue(String value) throws DOMException
   {
     m_value = value;
+    
+    childTextNode = new TextImpl(m_docImpl,value);
   }
 
   /**
@@ -311,4 +322,20 @@ public class AttrImpl extends Child implements Attr
   {
     ch.characters(m_value.toCharArray(), 0, m_value.length());
   }
+  
+  /*added by Tax*/
+  public Node getFirstChild()
+  {
+    return childTextNode;
+  }
+  
+  /*added by Tax*/
+   public org.w3c.dom.NodeList getChildNodes()
+   {
+       NodeListImpl nli = new NodeListImpl();
+       
+       nli.addNode(childTextNode);
+       
+       return nli;
+   }
 }

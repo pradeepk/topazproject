@@ -68,6 +68,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.traversal.NodeFilter;
+import xpointer.Location;
 
 /**
  * <meta name="usage" content="advanced"/>
@@ -310,4 +311,113 @@ public class DescendantIterator extends LocPathIterator
   /** True if this is a descendants-or-self axes.
    *  @serial */
   private boolean m_fromRoot;
+  
+  private boolean rangeReturned = false;
+  
+  /*
+  public Location nextLocation()
+  {
+      if(m_context==null)
+      {
+          if(m_orSelf && m_isDone==false)
+              return m_contextLoc;
+              
+          return null;
+      }
+      
+      Node node = nextNode();
+      Location loc = null;
+      
+      if(node!=null)
+      {
+          loc = new Location();
+          loc.setLocation(node);
+          loc.setType(Location.NODE);
+      }
+      else
+      {
+          if(m_isDone==false)
+              loc = m_contextLoc;
+          
+          m_isDone = true;  
+      }
+      
+      return loc;
+  }*/
+  
+  public Location nextLocation()
+  {
+      if(m_fromRoot)
+      {
+          if(m_context==null)
+          {
+            if(m_contextLoc.getType()==Location.NODE)
+            {
+                Node tempNode = (Node)m_contextLoc.getLocation();
+                
+                if(tempNode.getNodeType()==Node.DOCUMENT_NODE)
+                    m_context = tempNode;
+                else
+                    m_context = tempNode.getOwnerDocument();
+            }
+            else
+            {
+                Node tempNode = ((org.w3c.dom.ranges.Range)m_contextLoc.getLocation()).getCommonAncestorContainer();
+                
+                if(tempNode.getNodeType()==Node.DOCUMENT_NODE)
+                    m_context = tempNode;
+                else
+                    m_context = tempNode.getOwnerDocument();
+    
+            }
+          }
+          
+          Node node = nextNode();
+          Location loc = null;
+          
+          if(node!=null)
+          {
+            loc = new Location();
+            loc.setType(Location.NODE);
+            loc.setLocation(node);
+          }
+          
+          return loc;
+      }
+      
+      if(m_contextLoc!=null && m_orSelf && m_contextLoc.getType()==Location.RANGE)
+      {
+          if(!rangeReturned)
+          {
+              rangeReturned = true;
+              if(acceptLocation(m_contextLoc)==NodeFilter.FILTER_ACCEPT)
+                return m_contextLoc;
+              else
+                return null;
+          }
+          else
+              return null;
+      }
+      else if(m_contextLoc!=null && m_contextLoc.getType()==Location.RANGE)
+      {
+          return null;
+      }
+      else
+      {
+          Node node = nextNode();
+          Location loc = null;
+          
+          if(node!=null)
+          {
+            loc = new Location();
+            loc.setType(Location.NODE);
+            loc.setLocation(node);
+          }
+          
+          return loc; 
+          
+      }
+      
+      
+  }
 }

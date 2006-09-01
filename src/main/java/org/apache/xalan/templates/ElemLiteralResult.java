@@ -600,7 +600,7 @@ public class ElemLiteralResult extends ElemUse
       // Add namespace declarations.
       executeNSDecls(transformer);
       rhandler.startElement(getNamespace(), getLocalName(), getRawName(), null);
-
+ 
       try
       {
 
@@ -660,5 +660,12 @@ public class ElemLiteralResult extends ElemUse
   public Enumeration enumerateLiteralResultAttributes()
   {
     return (null == m_avts) ? null : m_avts.elements();
+  }
+  
+   public void execute(
+          TransformerImpl transformer, xpointer.Location sourceLocation, QName mode)
+            throws TransformerException
+  {
+      execute(transformer,(Node)null,mode);
   }
 }

@@ -1,6 +1,6 @@
-# $Id: XMLEntities.res 333876 2000-12-06 05:37:11Z sboag $
+# $Id: XMLEntities.res,v 1.1.1.1 2002/02/13 08:01:48 tax Exp $
 #
-# @version $Revision: 333876 $ $Date: 2000-12-05 21:37:11 -0800 (Tue, 05 Dec 2000) $
+# @version $Revision: 1.1.1.1 $ $Date: 2002/02/13 08:01:48 $
 # @author <a href="mailto:arkin@intalio.com">Assaf Arkin</a>
 #
 # Character entity references for markup-significant

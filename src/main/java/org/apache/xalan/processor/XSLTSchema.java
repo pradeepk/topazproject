@@ -267,10 +267,10 @@ public class XSLTSchema extends XSLTElementDef
     XSLTAttributeDef xslResultAttr =
       new XSLTAttributeDef(Constants.S_XSLNAMESPACEURL, "*",
                            XSLTAttributeDef.T_CDATA, false);
-    XSLTElementDef[] templateElements = new XSLTElementDef[21];
-    XSLTElementDef[] templateElementsAndParams = new XSLTElementDef[22];
+    XSLTElementDef[] templateElements = new XSLTElementDef[22];
+    XSLTElementDef[] templateElementsAndParams = new XSLTElementDef[23];
     XSLTElementDef[] templateElementsAndSort = new XSLTElementDef[22];
-    XSLTElementDef[] charTemplateElements = new XSLTElementDef[15];
+    XSLTElementDef[] charTemplateElements = new XSLTElementDef[16];
     XSLTElementDef resultElement = new XSLTElementDef(this, null, "*",
                                      null /*alias */,
                                      templateElements /* elements */,
@@ -353,6 +353,14 @@ public class XSLTSchema extends XSLTElementDef
                                                                  modeAttr }, 
 																				 new ProcessorTemplateElem(),
                                          ElemApplyTemplates.class /* class object */, 20, true);
+     //added by Tax
+    XSLTElementDef xslApplyXPTRTemplates = new XSLTElementDef(this,
+                                        Constants.S_XSLNAMESPACEURL,
+                                        "apply-XPTRtemplates",null/*alias*/,
+                                        null/*elements*/,
+                                        new XSLTAttributeDef[]{selectAttrOpt,modeAttr},new ProcessorTemplateElem(),
+                                        ElemApplyXPTRTemplates.class /*class object*/,20,true);
+                                                                 
     XSLTElementDef xslApplyImports =
       new XSLTElementDef(this, Constants.S_XSLNAMESPACEURL, "apply-imports",
                          null /*alias */, null /* elements */,
@@ -512,7 +520,10 @@ public class XSLTSchema extends XSLTElementDef
     templateElements[i++] = xslAttribute;
     templateElements[i++] = resultElement;
     templateElements[i++] = unknownElement;
-
+    
+    //added by Tax
+    templateElements[i] = xslApplyXPTRTemplates;
+    
     int k;
 
     for (k = 0; k < i; k++)
@@ -521,6 +532,8 @@ public class XSLTSchema extends XSLTElementDef
     }
 
     templateElementsAndParams[k] = xslParam;
+    //added by Tax
+    templateElementsAndParams[k+1] = xslApplyXPTRTemplates;
 
     for (k = 0; k < i; k++)
     {
@@ -546,6 +559,8 @@ public class XSLTSchema extends XSLTElementDef
     charTemplateElements[i++] = xslVariable;
     charTemplateElements[i++] = xslMessage;
     charTemplateElements[i++] = xslFallback;
+    //added by Tax
+    charTemplateElements[i++] = xslApplyXPTRTemplates;
 
     XSLTElementDef importDef = new XSLTElementDef(this,
                                  Constants.S_XSLNAMESPACEURL, "import",
@@ -678,6 +693,19 @@ public class XSLTSchema extends XSLTElementDef
                                                                   priorityAttr,
                                                                   modeAttr,
                                                                   spaceAttr }, new ProcessorTemplate(), ElemTemplate.class /* class object */, 20, true), 
+                                                               new XSLTElementDef(
+                                                                 this,
+                                                                 Constants.S_XSLNAMESPACEURL,
+                                                                 "XPTRtemplate",
+                                                                 null/*alias*/,
+                                                                 new XSLTElementDef[]{
+                                                                     charData,xslValueOf,resultElement
+                                                                  }/*elements*/,
+                                                                 new XSLTAttributeDef[]{
+                                                                    matchAttrRequired,
+                                                                    priorityAttr,
+                                                                    modeAttr
+                                                                  },new ProcessorTemplate(), ElemXPTRTemplate.class /* class object */, 20, true ),
 																				                      new XSLTElementDef(
                                                                     this,
                                                                     Constants.S_XSLNAMESPACEURL,

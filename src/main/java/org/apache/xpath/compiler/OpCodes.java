@@ -587,6 +587,13 @@ public class OpCodes
    */
   public static final int NODETYPE_FUNCTEST = 1034;
 
+  //added by Tax
+  public static final int NODETYPE_POINT = 1038;
+  
+  //added by Tax
+  public static final int NODETYPE_RANGE = 1039;
+  
+  
   /**
    * <meta name="usage" content="advanced"/>
    * [FROM_stepType]

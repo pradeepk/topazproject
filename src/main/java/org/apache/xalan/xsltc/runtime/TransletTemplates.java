@@ -1,5 +1,5 @@
 /*
- * @(#)$Id: TransletTemplates.java 334766 2001-05-16 11:46:08Z tmiller $
+ * @(#)$Id: TransletTemplates.java 557 2006-09-01 08:31:40Z pradeep $
  *
  * The Apache Software License, Version 1.1
  *

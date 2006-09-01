@@ -12,6 +12,8 @@ import org.apache.xml.utils.PrefixResolver;
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeFilter;
 
+import xpointer.Location;
+import org.apache.xpath.functions.*;
 
 public abstract class PredicatedNodeTest extends NodeTest implements SubContextList
 {
@@ -275,6 +277,7 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
       xctxt.pushSubContextList(this);
       xctxt.setNamespaceContext(m_lpi.getPrefixResolver());
       xctxt.pushCurrentNode(context);
+      xctxt.pushCurrentLocation(null);
 
       for (int i = 0; i < nPredicates; i++)
       {
@@ -334,6 +337,7 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
     finally
     {
       xctxt.popCurrentNode();
+      xctxt.popCurrentLocation();
       xctxt.setNamespaceContext(savedResolver);
       xctxt.popSubContextList();
     }
@@ -366,6 +370,52 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
   }
   
   //=============== NodeFilter Implementation ===============
+  
+  public short acceptLocation(Location loc)
+  {
+    
+    if(loc.getType()==Location.NODE)
+    {
+        return acceptNode((Node)loc.getLocation());
+    }
+    
+     org.w3c.dom.ranges.Range range = (org.w3c.dom.ranges.Range) loc.getLocation();
+     int pattern;
+     boolean locationTestPassed;
+     
+     /*gestione dei test point() e range()*/
+     //if(range.getStartContainer()==range.getEndContainer() && range.getStartOffset()==range.getEndOffset())
+     if(m_lpi.m_isPoint)
+        pattern = xpointer.ExtNodeFilter.SHOW_POINT;
+     else
+        pattern = xpointer.ExtNodeFilter.SHOW_RANGE;
+          
+    locationTestPassed = (pattern==m_whatToShow) ; 
+    
+    /*
+     * NOTA: bisogna aggiungere le pop e le push del nodo corrente
+     * per gestire bene i predicati
+     */
+    try
+    {
+      if(locationTestPassed==false)
+          return NodeFilter.FILTER_SKIP;
+        
+      if (getPredicateCount() > 0)
+      {
+        countProximityPosition(0);
+
+        if (!executePredicates(loc, m_lpi.getXPathContext()))
+          return NodeFilter.FILTER_SKIP;
+      }
+
+      return NodeFilter.FILTER_ACCEPT;
+    }
+    catch (javax.xml.transform.TransformerException se)
+    {
+      throw new RuntimeException(se.getMessage());
+    }
+  }
 
   /**
    *  Test whether a specified node is visible in the logical view of a
@@ -454,6 +504,84 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
     return false;
    }
     
+   
+  boolean executePredicates(Location loc,XPathContext xctxt) throws javax.xml.transform.TransformerException
+  {
+    m_predicateIndex = 0;
+
+    int nPredicates = getPredicateCount();
+    
+    if (nPredicates == 0)
+      return true;
+
+    PrefixResolver savedResolver = xctxt.getNamespaceContext();
+
+    try
+    {
+      xctxt.pushSubContextList(this);
+      xctxt.setNamespaceContext(m_lpi.getPrefixResolver());
+      if(loc.getType()==Location.RANGE)
+        xctxt.pushCurrentLocation(loc);
+      else
+      {
+        xctxt.pushCurrentLocation(null);  
+        xctxt.pushCurrentNode((Node)loc.getLocation());  
+      }
+
+      for (int i = 0; i < nPredicates; i++)
+      {
+        int savedWaitingBottom = m_lpi.m_waitingBottom;
+        m_lpi.m_waitingBottom = m_lpi.getWaitingCount();
+        XObject pred;
+        try
+        {
+         if(m_predicates[i] instanceof LocPathIterator)
+         {
+            if(this instanceof FilterExprWalker) 
+                if(((FilterExprWalker)this).m_expr instanceof FuncEndPoint
+                || ((FilterExprWalker)this).m_expr instanceof FuncStartPoint
+                || ((FilterExprWalker)this).m_expr instanceof FuncTextPoint) 
+                    ((LocPathIterator)m_predicates[i]).m_isPoint = true;
+            ((LocPathIterator)m_predicates[i]).m_isXPointer = true;
+         }
+          pred = m_predicates[i].execute(xctxt);
+        }
+        finally
+        {
+          m_lpi.m_waitingBottom = savedWaitingBottom;
+        }
+        
+        if (XObject.CLASS_NUMBER == pred.getType())
+        {
+          
+          int proxPos = this.getProximityPosition(m_predicateIndex);
+          if (proxPos != (int) pred.num())
+          {  
+            return false;
+          }
+         
+        }
+        else if (!pred.bool())
+          return false;
+
+        countProximityPosition(++m_predicateIndex);
+      }
+    }
+    finally
+    {
+      xctxt.popCurrentLocation();
+      
+      if(loc.getType()==Location.NODE)
+        xctxt.popCurrentNode(); 
+      
+      xctxt.setNamespaceContext(savedResolver);
+      xctxt.popSubContextList();
+    }
+
+    m_predicateIndex = -1;
+
+    return true;
+  } 
   /** The owning location path iterator.
    *  @serial */
   protected LocPathIterator m_lpi;
@@ -476,5 +604,6 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
 
   /** If true, diagnostic messages about predicate execution will be posted.  */
   static final boolean DEBUG_PREDICATECOUNTING = false;
+  
 
 }

@@ -145,4 +145,26 @@ public class ChildWalker extends AxesWalker
   {
     return m_lpi.getDOMHelper().getLevel(m_root);
   }
+  
+  /*
+   * L'asse child puo' contenere solo NODI
+   * almeno nella mia interpretazioni,poi bisogna vedere quella di Fabio
+   * Se la locazione contesto e' un range o un punto,allora non contiene nulla.
+   */
+/*  public xpointer.Location getNextLocation()
+  {
+      xpointer.Location loc = new xpointer.Location();
+      Node node = getNextNode();
+      
+      if(node==null)
+          return null;
+      
+      loc.setType(xpointer.Location.NODE);
+      loc.setLocation(node);
+      
+      if(getPrevWalker().m_returnOnlyRange)
+          return null;
+      else
+          return loc;
+  }*/
 }

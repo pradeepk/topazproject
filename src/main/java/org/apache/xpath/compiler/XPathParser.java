@@ -1469,7 +1469,7 @@ public class XPathParser
   {
 
     int opPos = m_ops.m_opMap[OpMap.MAPINDEX_LENGTH];
-
+ 
     // int locationPathOpPos = opPos;
     appendOp(2, OpCodes.OP_LOCATIONPATH);
 
@@ -1522,6 +1522,7 @@ public class XPathParser
    *
    * Step    ::=    Basis Predicate
    * | AbbreviatedStep
+   * | 'range-to' '(' Expr ')' Predicate*
    *
    * @throws javax.xml.transform.TransformerException
    */
@@ -1557,6 +1558,17 @@ public class XPathParser
         OpCodes.NODETYPE_NODE;
     }
 
+      //added by Tax
+    else if (tokenIs("range-to"))
+    {
+        FunctionCall();
+        
+        while (tokenIs('['))
+        {
+            Predicate();
+        }
+    }
+    
     // There is probably a better way to test for this 
     // transition... but it gets real hairy if you try 
     // to do it in basis().
@@ -1574,6 +1586,8 @@ public class XPathParser
       m_ops.m_opMap[opPos + OpMap.MAPINDEX_LENGTH] =
         m_ops.m_opMap[OpMap.MAPINDEX_LENGTH] - opPos;
     }
+    
+  
   }
 
   /**
@@ -1990,7 +2004,11 @@ public class XPathParser
 
     if (lookahead('(', 1)
             && (tokenIs(Keywords.FUNC_ID_STRING)
-                || tokenIs(Keywords.FUNC_KEY_STRING)))
+                || tokenIs(Keywords.FUNC_KEY_STRING) || tokenIs(Keywords.FUNC_RANGE_STRING)
+                || tokenIs(Keywords.FUNC_STRING_RANGE_STRING) || tokenIs(Keywords.FUNC_RANGE_INSIDE_STRING) 
+                || tokenIs(Keywords.FUNC_START_POINT_STRING) || tokenIs(Keywords.FUNC_END_POINT_STRING)
+                || tokenIs(Keywords.FUNC_WORD_STRING) || tokenIs(Keywords.FUNC_SENTENCE_STRING)
+                || tokenIs(Keywords.FUNC_REGEXP_STRING) ))
     {
       IdKeyPattern();
 

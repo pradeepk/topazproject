@@ -1,5 +1,5 @@
 /*
- * @(#)$Id: xpath.lex 334615 2001-04-17 18:52:52Z sboag $
+ * @(#)$Id: xpath.lex,v 1.1.1.1 2002/02/13 08:01:48 tax Exp $
  *
  * Copyright 2000 Sun Microsystems, Inc. All Rights Reserved.
  * 

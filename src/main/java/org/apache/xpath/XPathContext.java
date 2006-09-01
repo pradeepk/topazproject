@@ -74,6 +74,7 @@ import org.apache.xalan.res.XSLMessages;
 import org.apache.xpath.res.XPATHErrorResources;
 import org.apache.xpath.axes.ContextNodeList;
 import org.apache.xpath.axes.SubContextList;
+import org.apache.xpath.axes.ContextLocationList;
 import org.apache.xpath.objects.XObject;
 import org.apache.xpath.objects.XNodeSet;
 
@@ -102,6 +103,9 @@ import org.apache.xalan.extensions.ExtensionsTable;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.Source;
 import javax.xml.transform.ErrorListener;
+
+import xpointer.Location;
+import org.w3c.dom.ranges.Range;
 
 /**
  * <meta name="usage" content="advanced"/>
@@ -452,6 +456,29 @@ public class XPathContext implements ExpressionContext
   //==========================================================
 
   /**
+   * The current context location list
+   */
+  private Stack m_contextLocationLists = new Stack();
+  
+  public final ContextLocationList getContextLocationList()
+  {
+      if(m_contextLocationLists.size()>0)
+          return (ContextLocationList) m_contextLocationLists.peek();
+      else
+          return null;
+  }
+  
+  public final void pushContextLocationList(ContextLocationList cll)
+  {
+      m_contextLocationLists.push(cll);
+  }
+  
+  public final void popContextLocationList()
+  {
+      m_contextLocationLists.pop();
+  }
+  
+  /**
    * The current context node list.
    */
   private Stack m_contextNodeLists = new Stack();
@@ -713,4 +740,77 @@ public class XPathContext implements ExpressionContext
   {
     return XNodeSet.getStringFromNode(n);
   }
+  
+  private java.util.Stack m_currentLocations = new java.util.Stack();
+  
+  public void pushCurrentLocation(Location loc)
+  {
+      m_currentLocations.push(loc);
+  }
+  
+  public Location getCurrentLocation()
+  {
+      
+      if(m_currentLocations.empty()==false)
+        return (Location) m_currentLocations.peek();
+      else
+          return null;
+  }
+  
+  public Location popCurrentLocation()
+  {
+      return (Location) m_currentLocations.pop();
+  }
+  
+  private Stack m_groups = new Stack();
+  
+  public void pushGroup(Range [] group)
+  {
+      m_groups.push(group);
+  }
+  
+  public Range [] getGroup()
+  {
+      if(m_groups.isEmpty()==false)
+          return (Range[]) m_groups.peek();
+      else
+          return null;
+  }
+  
+  public Range[] popGroup()
+  {
+      return (Range[]) m_groups.pop();
+  }
+ 
+  /** Getter for property here.
+   * @return Value of property here.
+   */
+  public xpointer.Location getHere() {
+      return here;
+  }  
+   
+  /** Setter for property here.
+   * @param here New value of property here.
+   */
+  public void setHere(xpointer.Location here) {
+      this.here = here;
+  }
+  
+  /** Getter for property origin.
+   * @return Value of property origin.
+   */
+  public xpointer.Location getOrigin() {
+      return origin;
+  }
+  
+  /** Setter for property origin.
+   * @param origin New value of property origin.
+   */
+  public void setOrigin(xpointer.Location origin) {
+      this.origin = origin;
+  }
+  
+  private Location origin;
+  
+  private Location here;
 }

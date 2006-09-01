@@ -674,6 +674,31 @@ public class Compiler extends OpMap
     try
     {
       LocPathIterator iter = WalkerFactory.newLocPathIterator(this, opPos);
+      
+      //added by tax
+   /*   int fcPos = getFirstChildPos(opPos);
+      
+      int tempPos = fcPos;
+      int rangetoPos;
+      if(opPos==2)
+      {
+          do
+          {
+              tempPos = getNextStepPos(tempPos);
+          }
+          while(tempPos!=-1 && m_opMap[tempPos]!=OpCodes.OP_FUNCTION && m_opMap[tempPos]!=OpCodes.ENDOP);
+          rangetoPos = tempPos + 2;
+          if(m_opMap[rangetoPos] == FunctionTable.FUNC_RANGE_TO)
+              iter.m_isXPointer = true;
+      }
+      
+      
+      if(m_opMap[fcPos]==OpCodes.OP_FUNCTION && 
+        m_opMap[getFirstChildPos(fcPos)]!=FunctionTable.FUNC_ID) //da cambiare: deve essere semplicemente una funzione che genera Locations
+      {
+          iter.m_isXPointer = true;
+      }*/
+          
       if(locPathDepth == 0)
         iter.setIsTopLevel(true);
       return iter;
@@ -773,6 +798,10 @@ public class Compiler extends OpMap
     // System.out.println("testType: "+testType);
     switch (testType)
     {
+    case OpCodes.NODETYPE_RANGE:    
+        return xpointer.ExtNodeFilter.SHOW_RANGE;
+    case OpCodes.NODETYPE_POINT:
+        return xpointer.ExtNodeFilter.SHOW_POINT;
     case OpCodes.NODETYPE_COMMENT :
       return NodeFilter.SHOW_COMMENT;
     case OpCodes.NODETYPE_TEXT :

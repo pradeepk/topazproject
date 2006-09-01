@@ -426,6 +426,9 @@ public class NodeTest extends Expression
     if (m_whatToShow == NodeFilter.SHOW_ALL)
       return m_score;
 
+    if(m_whatToShow == xpointer.ExtNodeFilter.SHOW_POINT || m_whatToShow == xpointer.ExtNodeFilter.SHOW_RANGE)
+        return SCORE_NONE;
+    
     int nodeBit = (m_whatToShow & (0x00000001 << (nodeType - 1)));
 
     switch (nodeBit)

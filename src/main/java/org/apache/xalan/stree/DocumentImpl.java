@@ -72,13 +72,19 @@ import java.util.Hashtable;
 
 import org.apache.xml.utils.FastStringBuffer;
 
+import org.w3c.dom.ranges.DocumentRange;
+import org.w3c.dom.ranges.Range;
+import java.util.Vector;
+import java.util.Enumeration;
+import org.w3c.dom.traversal.*;
+
 /**
  * <meta name="usage" content="internal"/>
  * This is the implementation of the DOM2 Document 
  * interface.  It rules over the tree, and may contain 
  * common information for the tree.
  */
-public class DocumentImpl extends DocImpl
+public class DocumentImpl extends DocImpl implements DocumentRange,DocumentTraversal
 {
   /**
    * Constructor DocumentImpl. This constructor is 
@@ -465,4 +471,159 @@ public class DocumentImpl extends DocImpl
   {
     return null;
   }
+  
+  protected Vector ranges;
+  
+   //
+    // DocumentRange methods
+    //
+    /**
+     */
+    public Range createRange() {
+
+        if (ranges == null) {
+            ranges = new Vector();
+        }
+
+        Range range = new RangeImpl(this);
+
+        ranges.addElement(range);
+
+        return range;
+
+    }
+
+    /** Not a client function. Called by Range.detach(),
+     *  so a Range can remove itself from the list of
+     *  Ranges.
+     */
+    void removeRange(Range range) {
+
+        if (range == null) return;
+        if (ranges == null) return;
+
+        ranges.removeElement(range);
+    }
+
+    /**
+     * A method to be called when some text was changed in a text node,
+     * so that live objects can be notified.
+     */
+ /*   void replacedText(NodeImpl node) {
+        // notify ranges
+        if (ranges != null) {
+            Enumeration enum = ranges.elements();
+            while (enum.hasMoreElements()) {
+                ((RangeImpl)enum.nextElement()).receiveReplacedText(node);
+            }
+        }
+    } */
+
+    /**
+     * A method to be called when some text was deleted from a text node,
+     * so that live objects can be notified.
+     */
+/*    void deletedText(NodeImpl node, int offset, int count) {
+        // notify ranges
+        if (ranges != null) {
+            Enumeration enum = ranges.elements();
+            while (enum.hasMoreElements()) {
+                ((RangeImpl)enum.nextElement()).receiveDeletedText(node,
+                                                                   offset,
+                                                                   count);
+            }
+        }
+    } */
+
+    /**
+     * A method to be called when some text was inserted into a text node,
+     * so that live objects can be notified.
+     */
+ /*   void insertedText(NodeImpl node, int offset, int count) {
+        // notify ranges
+        if (ranges != null) {
+            Enumeration enum = ranges.elements();
+            while (enum.hasMoreElements()) {
+                ((RangeImpl)enum.nextElement()).receiveInsertedText(node,
+                                                                    offset,
+                                                                    count);
+            }
+        }
+    }*/
+
+    /**
+     * A method to be called when a text node has been split,
+     * so that live objects can be notified.
+     */
+    void splitData(Node node, Node newNode, int offset) {
+        // notify ranges
+        if (ranges != null) {
+            Enumeration enum = ranges.elements();
+            while (enum.hasMoreElements()) {
+                ((RangeImpl)enum.nextElement()).receiveSplitData(node,
+                                                                 newNode,
+                                                                 offset);
+            }
+        }
+    }
+  
+    public NodeIterator createNodeIterator(Node root,
+                                           short whatToShow,
+                                           NodeFilter filter)
+    {
+        return createNodeIterator(root, whatToShow, filter, true);
+    }
+
+    
+    public NodeIterator createNodeIterator(Node root,
+                                           int whatToShow,
+                                           NodeFilter filter,
+                                           boolean entityReferenceExpansion)
+    {
+        NodeIterator iterator = new NodeIteratorImpl(this,
+                                                     root,
+                                                     whatToShow,
+                                                     filter,
+                                                     entityReferenceExpansion);
+        if (iterators == null) {
+            iterators = new Vector();
+        }
+
+        iterators.addElement(iterator);
+
+        return iterator;
+    }
+
+
+    public TreeWalker createTreeWalker(Node root,
+                                       short whatToShow,
+                                       NodeFilter filter)
+    {
+        return createTreeWalker(root, whatToShow, filter, true);
+    }
+    
+    
+    public TreeWalker createTreeWalker(Node root,
+                                       int whatToShow,
+                                       NodeFilter filter,
+                                       boolean entityReferenceExpansion)
+    {
+        if (root == null) {
+            throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
+                                   "DOM007 Not supported");
+        }
+        return new TreeWalkerImpl(root, whatToShow, filter,
+                                  entityReferenceExpansion);
+    }
+
+     void removeNodeIterator(NodeIterator nodeIterator) {
+
+        if (nodeIterator == null) return;
+        if (iterators == null) return;
+
+        iterators.removeElement(nodeIterator);
+    }
+
+    protected Vector iterators;
+
 }

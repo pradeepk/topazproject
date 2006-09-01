@@ -62,6 +62,8 @@ import org.apache.xpath.XPathContext;
 
 import org.w3c.dom.Node;
 
+import xpointer.Location;
+
 /**
  * Walker for the 'self' axes.
  * @see <a href="http://www.w3.org/TR/xpath#axes">XPath axes descriptions</a>
@@ -129,5 +131,53 @@ public class SelfWalker extends AxesWalker
   protected int getLevelMax()
   {
     return m_lpi.getDOMHelper().getLevel(m_root);
+  }
+ 
+   
+  public Location getNextLocation()
+  {
+      if (m_currentLoc!=null && m_currentLoc.getType()==Location.RANGE)
+      {
+          if(m_isDone==true)
+            return null;
+          
+          m_isDone = true;
+          m_returnOnlyRange = true;
+          
+          return m_currentLoc;
+      }
+      else
+      {
+          Node node = getNextNode();
+          if(node==null)
+              return null;
+          
+          Location loc = new Location();
+          loc.setType(Location.NODE);
+          loc.setLocation(node);
+          return loc;
+      }
+      
+      /*
+      int pattern;    
+        
+      if (m_currentLoc.getType()==Location.RANGE)
+      {
+          org.w3c.dom.ranges.Range range = (org.w3c.dom.ranges.Range) m_currentLoc.getLocation();
+          
+          if(range.getStartContainer()==range.getEndContainer() && range.getStartOffset()==range.getEndOffset())
+              pattern = xpointer.ExtNodeFilter.SHOW_POINT;
+          else
+              pattern = xpointer.ExtNodeFilter.SHOW_RANGE;
+          
+          m_isDone = true;    
+          return (pattern==m_whatToShow)?m_currentLoc:null;
+      }
+      else
+      {
+          System.out.println("La locazione è di tipo nodo!!!");
+          return null;
+      }
+    */
   }
 }

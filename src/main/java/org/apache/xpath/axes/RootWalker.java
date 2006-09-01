@@ -133,4 +133,20 @@ public class RootWalker extends AxesWalker
   {
     return 1;
   }
+  
+  public xpointer.Location getNextLocation()
+  {
+      xpointer.Location loc = null;
+      
+      Node node = getNextNode();
+      
+      if(node!=null)
+      {
+          loc = new xpointer.Location();
+          loc.setType(xpointer.Location.NODE);
+          loc.setLocation(node);
+      }
+      
+      return loc;
+  }
 }

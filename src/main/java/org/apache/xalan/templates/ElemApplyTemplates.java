@@ -123,7 +123,7 @@ public class ElemApplyTemplates extends ElemCallTemplate
    * @see <a href="http://www.w3.org/TR/xslt#built-in-rule">built-in-rule in XSLT Specification</a>
    * @serial
    */
-  private boolean m_isDefaultTemplate = false;
+  protected boolean m_isDefaultTemplate = false;
 
   /**
    * Set if this belongs to a default template,

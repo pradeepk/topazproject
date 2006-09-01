@@ -133,4 +133,6 @@ public class PrecedingSiblingWalker extends ReverseAxesWalker
   {
     return m_lpi.getDOMHelper().getLevel(m_root);
   }
+  
+  
 }

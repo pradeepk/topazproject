@@ -116,4 +116,27 @@ public class DescendantOrSelfWalker extends DescendantWalker
 
   /** True if the self (root, context node) has been returned. */
   transient boolean m_processedSelf;
+  
+  public xpointer.Location getNextLocation()
+  {
+      if(m_currentLoc==null || m_currentLoc.getType()==xpointer.Location.NODE)
+      {
+          xpointer.Location loc = null;
+          Node node = getNextNode();
+          if(node!=null)
+          {
+              loc = new xpointer.Location();
+              loc.setType(xpointer.Location.NODE);
+              loc.setLocation(node);
+          }
+          return loc;
+      }
+      
+      if(m_isDone)
+          return null;
+      
+      m_isDone = true;
+      
+      return m_currentLoc;
+  }
 }

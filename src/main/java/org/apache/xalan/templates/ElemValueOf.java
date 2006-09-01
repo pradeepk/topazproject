@@ -73,6 +73,8 @@ import org.apache.xalan.transformer.ResultTreeHandler;
 import javax.xml.transform.TransformerException;
 import org.apache.xalan.stree.SaxEventDispatch;
 
+import xpointer.Location;
+
 /**
  * <meta name="usage" content="advanced"/>
  * Implement xsl:value-of.
@@ -321,6 +323,47 @@ public class ElemValueOf extends ElemTemplateElement
     }
   }
 
+  public void execute(
+          TransformerImpl transformer, xpointer.Location sourceLocation, QName mode)
+            throws TransformerException
+  {
+      if(sourceLocation.getType()==Location.NODE)
+      {
+          execute(transformer,(Node)sourceLocation.getLocation(),mode);
+      }
+      else
+      {
+          XPathContext xctxt = transformer.getXPathContext();
+          
+          try
+          {
+              //xctxt.pushCurrentLocation(sourceLocation);
+              ResultTreeHandler rth = transformer.getResultTreeHandler();
+              XObject obj = m_selectExpression.execute(xctxt,null,this);
+              String value = obj.str();
+              int len = (value!=null)?value.length():0;
+              
+              if(len>0)
+                if (m_disableOutputEscaping)
+                {
+                    rth.processingInstruction(javax.xml.transform.Result.PI_DISABLE_OUTPUT_ESCAPING, "");
+                    rth.characters(value.toCharArray(), 0, len);
+                    rth.processingInstruction(javax.xml.transform.Result.PI_ENABLE_OUTPUT_ESCAPING, "");
+                }
+                else
+                    rth.characters(value.toCharArray(), 0, len);
+          }
+          catch(SAXException se)
+          {
+              throw new TransformerException(se);
+          }
+          finally
+          {
+              //xctxt.popCurrentLocation();
+          }  
+      }
+  }
+  
   /**
    * Add a child to the child list.
    *

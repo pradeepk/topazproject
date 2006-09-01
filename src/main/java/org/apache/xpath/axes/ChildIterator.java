@@ -196,4 +196,9 @@ public class ChildIterator extends LocPathIterator
       return null;
     }
   }
+  
+  public xpointer.Location nextLocation()
+  {
+      return null;
+  }
 }

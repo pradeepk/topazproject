@@ -76,6 +76,13 @@ import org.apache.xalan.res.XSLTErrorResources;
 import org.apache.xpath.XPathContext;
 import org.apache.xpath.patterns.StepPattern;
 import org.apache.xpath.patterns.UnionPattern;
+import org.apache.xpath.patterns.FunctionPattern;
+
+import xpointer.Location;
+import org.w3c.dom.ranges.*;
+import org.apache.xpath.functions.*;
+import org.apache.xpath.objects.XString;
+import java.util.Hashtable;
 
 /**
  * <meta name="usage" content="advanced"/>
@@ -526,7 +533,7 @@ public class TemplateList implements java.io.Serializable
   {
 
     TemplateSubPatternAssociation head = getHead(xctxt, targetNode);
-
+ 
     if (null != head)
     {
       // XSLT functions, such as xsl:key, need to be able to get to 
@@ -545,6 +552,7 @@ public class TemplateList implements java.io.Serializable
           }
           ElemTemplate template = head.getTemplate();        
           xctxt.setNamespaceContext(template);
+          
           
           if ((head.m_stepPattern.execute(xctxt) != NodeTest.SCORE_NONE)
                   && head.matchMode(mode))
@@ -781,4 +789,215 @@ public class TemplateList implements java.io.Serializable
     }
   }
 
+  /**
+   * Given a target location, find the template that best matches.
+   * The starting point of the location must be the same of the matched 
+   * template.
+   * 
+   * 
+   */
+  public TemplateAssociation getTemplate(XPathContext xctxt,Location targetLocation,QName mode,int maxImportLevel,
+                                    boolean quietConflictWarnings) throws TransformerException
+  {
+        //if(targetLocation.getType()==Location.NODE)
+        //    return(getTemplate(xctxt,(Node)targetLocation.getLocation(),mode,maxImportLevel,quietConflictWarnings));
+    
+        Vector taCandidates = new Vector();
+        TemplateSubPatternAssociation head = m_wildCardPatterns;
+        
+        if(head!=null)
+        {
+            PrefixResolver savedPR = xctxt.getNamespaceContext();
+            try
+            {
+                xctxt.pushCurrentLocation(targetLocation);
+                
+                do
+                {
+                    if ( (maxImportLevel > -1) && (head.getImportLevel() > maxImportLevel) )
+                    {
+                        continue;
+                    }
+                    ElemTemplate template = head.getTemplate();        
+                    xctxt.setNamespaceContext(template);
+                    
+                    if ((head.m_stepPattern.execute(xctxt) != NodeTest.SCORE_NONE)
+                        && head.matchMode(mode))
+                    {
+                        Location matchedLocation = ((FunctionPattern)head.m_stepPattern).getMatchedLocation(xctxt);
+                        
+                        TemplateAssociation ta = new TemplateAssociation(template,matchedLocation);
+                        
+                        Hashtable groupMap = ((FunctionPattern)head.m_stepPattern).getGroupMap();
+                        
+                        if(groupMap!=null)
+                        {
+                            ta.group = (Range []) groupMap.get(matchedLocation);
+                        }
+                        
+                        taCandidates.addElement(ta);
+                    }
+                }
+                while((head=head.getNext())!=null);
+                
+                if(taCandidates.size()>0)
+                    return chooseTA(taCandidates);
+            }
+            finally
+            {
+                xctxt.setNamespaceContext(savedPR);
+                xctxt.popCurrentLocation();
+            }
+        }
+        
+        return null;
+  }
+  
+  /**
+   * Selects a template according to these rules:
+   * 
+   * 1) longer matched string
+   * 2) fewer wildcards
+   */
+  private TemplateAssociation chooseTA(Vector taCandidates)
+  {
+      TemplateAssociation candidate = (TemplateAssociation) taCandidates.elementAt(0);
+      
+      for(int i=1;i<taCandidates.size();i++)
+      {
+          TemplateAssociation competitor = (TemplateAssociation) taCandidates.elementAt(i);
+          
+          Range compRange = (Range) competitor.matchedLocation.getLocation();
+          Range candRange = (Range) candidate.matchedLocation.getLocation();
+          
+          if(compRange.toString().length()>candRange.toString().length())
+              candidate = competitor;
+          else if(compRange.toString().length()==candRange.toString().length())
+          {
+             Expression fpComp =  ((ElemTemplate)competitor.template).getMatch().getExpression();
+             if( fpComp instanceof org.apache.xpath.patterns.FunctionPattern)
+             {
+                  Function functionComp = (Function) ((org.apache.xpath.patterns.FunctionPattern)fpComp).getFunctionExpr();
+                  
+                  if(functionComp instanceof FuncStringRange | 
+                     functionComp instanceof FuncWord |
+                     functionComp instanceof FuncSentence)
+                      candidate = competitor;
+                  else if(functionComp instanceof FuncRegexp)
+                  {
+                      FuncRegexp compRegexp = (FuncRegexp) functionComp;
+                      String argComp = ((XString)compRegexp.getArg1()).str();
+                      int compWCnum = countWC(argComp);
+                      FunctionPattern fpCand = (FunctionPattern) ((ElemTemplate)candidate.template).getMatch().getExpression();
+                      
+                      Function funcCand = (Function) fpCand.getFunctionExpr();
+                      
+                      if(funcCand instanceof FuncRegexp)
+                      {
+                          FuncRegexp candRegexp = (FuncRegexp) funcCand;
+                          String argCand = ((XString)candRegexp.getArg1()).str();
+                          int candWCnum = countWC(argCand);
+                          if(candWCnum>compWCnum)
+                              candidate = competitor;
+                      }
+                  }
+             }
+          }
+      }
+      
+      return candidate;
+  }
+  
+  
+  /**
+   * Verifies if a template exists which contains the given point. 
+   * Boundary points are included.
+   *
+   * @param xctxt the XPath context for evaluation
+   * @param point the collapsed range to look for
+   * @return true if the template contains the point,false otherwise
+   */
+  public boolean isInsideTemplate(XPathContext xctxt,Location point,QName mode) throws TransformerException
+  {
+      TemplateSubPatternAssociation head = m_wildCardPatterns;
+        
+      if(head!=null)
+      {
+          try
+          {
+              xctxt.pushCurrentLocation(point);
+              
+              do
+              {       
+                  if(head.m_stepPattern instanceof FunctionPattern)
+                    if(((FunctionPattern)head.m_stepPattern).isInside(xctxt) && head.matchMode(mode))
+                         return true;
+                     
+              }
+              while((head=head.getNext())!=null);
+          }
+          finally
+          {
+            xctxt.popCurrentLocation();
+          }
+      }
+      
+      return false;
+  }
+  
+  private int countWC(String arg)
+  {
+      int counter = 0;
+      boolean escaping = false;
+      
+      for(int i=0;i<arg.length();i++)
+      {
+          if(arg.charAt(i)=='\\')
+          {
+              if(escaping==false)
+              {
+                  escaping=true;
+              }
+              else
+              {
+                  escaping = false;
+              }
+          }
+          else
+          {
+              if(escaping==true)
+              {
+                  switch(arg.charAt(i))
+                  {
+                      case '.':
+                      case '*':
+                      case '?':
+                      case '+':    
+                      case '[':
+                      case '{':
+                          break;
+                      default:
+                          counter++;
+                  }    
+                  escaping=false;
+              }
+              else
+              {
+                  switch(arg.charAt(i))
+                  {
+                      case '.':
+                      case '*':
+                      case '?':
+                      case '+':    
+                      case '[':
+                      case '{':
+                          counter++;
+                  }
+              }
+          }
+              
+      }
+          
+      return counter;
+  }
 }

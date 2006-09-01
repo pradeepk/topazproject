@@ -69,6 +69,8 @@ import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.traversal.NodeFilter;
 
+import xpointer.Location;
+
 /**
  * <meta name="usage" content="advanced"/>
  * This class implements an optimized iterator for
@@ -282,6 +284,22 @@ public class AttributeIterator extends LocPathIterator
     return m_nAttrs;
   }
 
+  
+  public Location nextLocation()
+  {
+     Node node = nextNode();
+     Location loc = null;
+     
+     if(node!=null)
+     {
+        loc = new Location();
+        loc.setType(Location.NODE);
+        loc.setLocation(node);
+        return loc;
+     }
+     
+     return loc;
+  }
 
   /** The attribute list for the given context. */
   transient private NamedNodeMap m_attributeList;

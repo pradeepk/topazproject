@@ -79,6 +79,11 @@ import org.apache.xalan.stree.SaxEventDispatch;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
 
+import xpointer.*;
+import org.w3c.dom.ranges.*;
+import org.apache.xpath.LocationSet;
+import org.apache.xpath.objects.XLocationSet;
+
 /**
  * <meta name="usage" content="advanced"/>
  * Implement xsl:for-each.
@@ -380,7 +385,7 @@ public class ElemForEach extends ElemTemplateElement
           TransformerImpl transformer, Node sourceNode, ElemTemplateElement template, QName mode)
             throws TransformerException
   {
-    try
+    //try
     {
       boolean rdebug = TransformerImpl.S_DEBUG;
       XPathContext xctxt = transformer.getXPathContext();
@@ -444,7 +449,7 @@ public class ElemForEach extends ElemTemplateElement
               case Node.ATTRIBUTE_NODE :
               case Node.CDATA_SECTION_NODE :
               case Node.TEXT_NODE :
-                if (child.isSupported(SaxEventDispatch.SUPPORTSINTERFACE, "1.0"))
+              /*  if (child.isSupported(SaxEventDispatch.SUPPORTSINTERFACE, "1.0"))
                 {
                   ((SaxEventDispatch) child).dispatchCharactersEvent(rth);
                 }
@@ -453,7 +458,11 @@ public class ElemForEach extends ElemTemplateElement
                   String data = child.getNodeValue();
                   rth.characters(data.toCharArray(), 0, data.length());
                 }
-                continue;
+                continue;*/
+                  
+                //added by Tax
+                template = sroot.getDefaultTextRule();  
+                break;
               case Node.DOCUMENT_NODE :
                 template = sroot.getDefaultRootRule();
                 break;
@@ -471,6 +480,7 @@ public class ElemForEach extends ElemTemplateElement
           // the value directly to the result tree.
           try
           {              
+            
             xctxt.pushCurrentNode(child);
             if(needToFindTemplate)
               transformer.pushPairCurrentMatched(template, child);
@@ -518,14 +528,15 @@ public class ElemForEach extends ElemTemplateElement
         xctxt.popContextNodeList();
         transformer.popElemTemplateElement();
         popParams(xctxt, savedSearchStart);
+       
         // if(null != sourceNodes)
         //  sourceNodes.detach();                
       }
     }
-    catch(SAXException se)
+   /* catch(SAXException se)
     {
       transformer.getErrorListener().fatalError(new TransformerException(se));
-    }
+    }*/
   }
 
   /**
@@ -556,4 +567,6 @@ public class ElemForEach extends ElemTemplateElement
     else
       return super.appendChild(newChild);
   }
+  
+  
 }

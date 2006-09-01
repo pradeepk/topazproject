@@ -114,4 +114,33 @@ public class AncestorOrSelfWalker extends AncestorWalker
   {
     return m_lpi.getDOMHelper().getLevel(m_root);
   }
+  
+  /*vera se il punto contenuto nell'asse e' gia' stato ritornato*/
+  private boolean m_pointReturned = false;
+  
+  /**
+   * Questo asse contiene (nel caso la locazione contesto sia un punto)il nodo contenitore del punto, gli avi del nodo contenitore del punto
+   * ed il punto stesso.
+   * Per primo va restituito il punto,poi i nodi
+  */
+  public xpointer.Location getNextLocation()
+  {
+    if(m_pointReturned==false && m_currentLoc!=null && m_currentLoc.getType()==xpointer.Location.RANGE)
+    {
+        m_pointReturned = true;
+        return m_currentLoc;
+    }
+    
+    xpointer.Location loc = null;
+    Node node = super.getNextNode();
+    
+    if(node!=null)
+    {
+        loc = new xpointer.Location();
+        loc.setType(xpointer.Location.NODE);
+        loc.setLocation(node);
+    }
+    
+    return loc;
+  }
 }

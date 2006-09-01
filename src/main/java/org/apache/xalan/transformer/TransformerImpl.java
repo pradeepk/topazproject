@@ -163,6 +163,8 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
+import xpointer.Location;
+
 /**
  * <meta name="usage" content="advanced"/>
  * This class implements the 
@@ -2089,7 +2091,8 @@ public class TransformerImpl extends Transformer
       pushElemTemplateElement(template);
       m_xcontext.pushCurrentNode(child);
       pushPairCurrentMatched(template, child);
-
+      
+     
       if (isDefaultTextRule)
       {
         switch (nodeType)
@@ -2143,6 +2146,7 @@ public class TransformerImpl extends Transformer
       m_xcontext.popCurrentNode();
       popCurrentMatched();
       popElemTemplateElement();
+      
     }
 
     return true;
@@ -2265,6 +2269,44 @@ public class TransformerImpl extends Transformer
       getStackGuard().pop();
   }
 
+  public void executeChildTemplates(
+          ElemTemplateElement elem, xpointer.Location sourceLocation, QName mode, boolean shouldAddAttrs)
+            throws TransformerException
+  {
+      // Does this element have any children?
+    ElemTemplateElement t = elem.getFirstChildElem();
+
+    if (null == t)
+      return;
+      
+    XPathContext xctxt = getXPathContext();
+    
+    SourceLocator savedLocator = xctxt.getSAXLocator();
+
+    try
+    {
+      pushElemTemplateElement(null);
+
+      // Loop through the children of the template, calling execute on 
+      // each of them.
+      for (; t != null;
+              t = t.getNextSiblingElem())
+      {
+        if(!shouldAddAttrs && t.getXSLToken() == Constants.ELEMNAME_ATTRIBUTE)
+          continue;
+        xctxt.setSAXLocator(t);
+        m_currentTemplateElements.setTail(t);
+        t.execute(this, sourceLocation, mode);
+      }
+    }
+    finally
+    {
+      popElemTemplateElement();
+      xctxt.setSAXLocator(savedLocator);
+
+    }
+  }
+  
   /**
    * <meta name="usage" content="advanced"/>
    * Get the keys for the xsl:sort elements.

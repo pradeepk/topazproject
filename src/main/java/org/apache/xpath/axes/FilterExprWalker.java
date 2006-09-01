@@ -74,6 +74,13 @@ import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeIterator;
 import org.w3c.dom.traversal.NodeFilter;
 
+import org.apache.xpath.objects.XLocationSet;
+import xpointer.Location;
+import org.apache.xpath.LocationSet;
+import org.apache.xpath.functions.FuncStartPoint;
+import org.apache.xpath.functions.FuncEndPoint;
+import org.apache.xpath.functions.FuncTextPoint;
+
 /**
  * Walker for the OP_VARIABLE, or OP_EXTFUNCTION, or OP_FUNCTION, or OP_GROUP,
  * op codes.
@@ -121,6 +128,13 @@ public class FilterExprWalker extends AxesWalker
     }
   }
 
+  public void setRoot(Location rootLoc)
+  {
+      m_lpi.getXPathContext().pushCurrentLocation(rootLoc);
+      super.setRoot(rootLoc);
+      m_lpi.getXPathContext().popCurrentLocation();
+  }
+  
   /**
    *  Set the root node of the TreeWalker.
    *
@@ -164,9 +178,21 @@ public class FilterExprWalker extends AxesWalker
       else
         obj = m_expr.execute(m_lpi.getXPathContext());
       
-      // System.out.println("Back from m_expr.execute(m_lpi.getXPathContext()): "+obj);
-      m_nodeSet = (null != obj) ? obj.nodeset() : null;
+      //added by Tax
+      if(m_expr instanceof FuncStartPoint || m_expr instanceof FuncEndPoint || m_expr instanceof FuncTextPoint)
+          m_lpi.m_isPoint = true;
+      else
+          m_lpi.m_isPoint = false;
       
+      switch(obj.getType())
+      {
+          case XObject.CLASS_NODESET:
+            m_nodeSet = (null != obj) ? obj.nodeset() : null;
+            break;
+          case XObject.CLASS_LOCATIONSET:
+            m_locationSet = ((XLocationSet) obj).locationSet();   
+          
+      }  
       m_peek = null;
     }
     catch (javax.xml.transform.TransformerException se)
@@ -200,6 +226,9 @@ public class FilterExprWalker extends AxesWalker
     if (null != m_nodeSet)
       clone.m_nodeSet = (NodeIterator) ((ContextNodeList) m_nodeSet).clone();
 
+    if(null!=m_locationSet)
+      clone.m_locationSet = (LocationSet) ((LocationSet)m_locationSet).clone();   
+    
     return clone;
   }
 
@@ -295,13 +324,16 @@ public class FilterExprWalker extends AxesWalker
 
   /** The contained expression. Should be non-null.
    *  @serial   */
-  private Expression m_expr;
+  protected Expression m_expr;
 
   /** The result of executing m_expr.  Needs to be deep cloned on clone op.  */
   transient private NodeIterator m_nodeSet;
 
   /** I think this is always null right now.    */
   transient private Node m_peek = null;
+  
+  //added by Tax
+  transient private xpointer.LocationIterator m_locationSet;
 
   /**
    * Tell what's the maximum level this axes can descend to (which is actually
@@ -318,4 +350,60 @@ public class FilterExprWalker extends AxesWalker
 
     // return m_lpi.getDOMHelper().getLevel(this.m_currentNode)+1;
   }
+  
+  public Location getNextLocation()
+  {          
+      if(m_locationSet!=null)
+        return m_locationSet.nextLocation();
+      else
+      {
+          /*è il caso della funzione id()*/
+          Location loc = null;
+          Node node = m_nodeSet.nextNode();
+          if(node!=null)
+          {
+              loc = new Location();
+              loc.setType(Location.NODE);
+              loc.setLocation(node);
+          }
+          return loc;
+      }
+  }
+  
+  /*
+   * Per le funzioni non si esegue il test di locazione!!!
+   */
+  public short acceptLocation(Location loc)
+  {
+    
+    if(loc.getType()==Location.NODE)
+    {
+        return acceptNode((Node)loc.getLocation());
+    }
+    
+        
+    /*
+     * NOTA: bisogna aggiungere le pop e le push del nodo corrente
+     * per gestire bene i predicati
+     */
+    try
+    {
+        
+      if (getPredicateCount() > 0)
+      {
+        countProximityPosition(0);
+
+        if (!executePredicates(loc, m_lpi.getXPathContext()))
+          return NodeFilter.FILTER_SKIP;
+      }
+
+      return NodeFilter.FILTER_ACCEPT;
+    }
+    catch (javax.xml.transform.TransformerException se)
+    {
+      throw new RuntimeException(se.getMessage());
+    }
+  }
+ 
+
 }

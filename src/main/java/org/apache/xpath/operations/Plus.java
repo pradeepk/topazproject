@@ -56,8 +56,8 @@
  */
 package org.apache.xpath.operations;
 
-import org.apache.xpath.objects.XObject;
-import org.apache.xpath.objects.XNumber;
+import org.apache.xpath.objects.*;
+
 
 /**
  * The '+' operation expression executer.
@@ -79,6 +79,27 @@ public class Plus extends Operation
   public XObject operate(XObject left, XObject right)
           throws javax.xml.transform.TransformerException
   {
-    return new XNumber(left.num() + right.num());
+    if(left instanceof XDate && right instanceof XNumber)
+    {
+        ((XDate)left).addDays((int)right.num());
+        return left;
+    }
+    else if(left instanceof XNumber && right instanceof XDate)
+    {
+        ((XDate)right).addDays((int)left.num());
+        return right;
+    }
+    else if(left instanceof XDuration && right instanceof XDate)
+    {
+        ((XDate)right).addDuration((XDuration)left);
+        return right;
+    }
+    else if(left instanceof XDate && right instanceof XDuration)
+    {
+        ((XDate)left).addDuration((XDuration)right);
+        return left;
+    }
+    else
+        return new XNumber(left.num() + right.num());
   }
 }

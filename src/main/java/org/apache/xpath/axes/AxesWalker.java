@@ -80,6 +80,9 @@ import org.w3c.dom.traversal.TreeWalker;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.DOMException;
 
+import xpointer.Location;
+import org.w3c.dom.ranges.Range;
+
 /**
  * Serves as common interface for axes Walkers, and stores common
  * state variables.
@@ -111,7 +114,8 @@ public abstract class AxesWalker extends PredicatedNodeTest
   public void init(Compiler compiler, int opPos, int stepType)
           throws javax.xml.transform.TransformerException
   {
-
+          
+      
     // int nodeTestOpPos = compiler.getFirstChildPosOfStep(opPos);
     m_stepType = stepType;
 
@@ -322,6 +326,20 @@ public abstract class AxesWalker extends PredicatedNodeTest
     resetProximityPositions();
   }
 
+  public void setRoot(Location rootLoc)
+  {
+    m_currentLoc = rootLoc;
+    Node root;
+    
+    if(rootLoc.getType()==Location.RANGE)
+        root = ((org.w3c.dom.ranges.Range)rootLoc.getLocation()).getStartContainer();
+    else
+        root = (Node) rootLoc.getLocation();
+        
+    
+    setRoot(root);
+  }
+  
   /**
    * The node at which the TreeWalker is currently positioned.
    * <br> The value must not be null. Alterations to the DOM tree may cause
@@ -1285,11 +1303,22 @@ public abstract class AxesWalker extends PredicatedNodeTest
     {
       lpi.setLastUsedWalker(walker);
 
-      Node next;
-
-      while (null != (next = walker.nextNode()))
+      //added by Tax
+      if(m_lpi.m_isXPointer)
       {
-        pos++;
+          while(null != walker.nextLocation())
+          {
+              pos++;
+          }
+      }
+      else
+      {
+        Node next;
+
+        while (null != (next = walker.nextNode()))
+        {
+            pos++;
+        }
       }
 
       // TODO: Should probably save this in the iterator.
@@ -1313,6 +1342,81 @@ public abstract class AxesWalker extends PredicatedNodeTest
     return false;
   }
 
+ 
+  
+  /**
+   * 
+   * 
+   */
+  public Location nextLocation()
+  {
+      AxesWalker walker = m_lpi.getLastUsedWalker();
+      Location next = null;
+      Node temp;
+      Location prev = null;
+      xpointer.TaxDomHelper extDomHelper = new xpointer.TaxDomHelper(m_lpi.getDOMHelper());
+  
+  do{    
+      while(true)
+      {  
+          next = walker.getNextLocation();  
+                 
+          if(next==null)
+          {  //torno indietro nei walker
+              walker = walker.m_prevWalker;
+              
+              if(walker==null)  //sono arrivato in cima alla lista dei walker
+                  break;
+          }
+          else
+          {
+              if(walker.acceptLocation(next) != NodeFilter.FILTER_ACCEPT)
+                  continue;
+              
+              if(walker.getNextWalker()!=null)
+              { //vado avanti nella lista dei walker
+                walker = walker.getNextWalker();
+                walker.setRoot(next);  
+              }
+              else 
+              {   // ho trovato la locazione da restituire
+                  m_lpi.setLastUsedWalker(walker);
+                  break;
+              }
+          }
+      }
+  } while( (next != null) && (m_prevLocReturned != null)
+            && extDomHelper.isLocationAfter(next,m_prevLocReturned));
+      
+      m_prevLocReturned = next;
+      
+      return next;
+  }
+  
+  /*
+   * Il comportamento di default e' quello di ritornare dei nodi,
+   * a meno che l'asse corrente non contenga esclusivamente punti o range.
+   */
+  public Location getNextLocation() 
+  {
+      xpointer.Location loc = new xpointer.Location();
+      Node node = getNextNode();
+      
+      if(node==null)
+          return null;
+      
+      loc.setType(xpointer.Location.NODE);
+      loc.setLocation(node);
+      
+      if(m_currentLoc!=null && m_currentLoc.getType()==Location.RANGE)
+          return null;
+      else
+          return loc;
+    
+  }
+  
+  
+  
   //============= Static Data =============
 
   // These are useful to enable if you want to turn diagnostics messages 
@@ -1331,7 +1435,7 @@ public abstract class AxesWalker extends PredicatedNodeTest
   static final boolean DEBUG_WAITING = false;
 
   /** If true, diagnostic messages about the tree traversal will be posted.  */
-  static final boolean DEBUG_TRAVERSAL = false;
+  static final boolean DEBUG_TRAVERSAL = true;
 
   /** If true, diagnostic messages about the nodes that have 
    *  been 'located' will be posted.  */
@@ -1392,5 +1496,14 @@ public abstract class AxesWalker extends PredicatedNodeTest
   /** The previous walker in the location step chain, or null.
    *  @serial   */
   AxesWalker m_prevWalker;
-    
+ 
+  protected Location m_currentLoc;
+  
+  protected Location m_prevLocReturned;
+  
+  /*verso se il walker nel suo asse puo' contenere SOLO punti e range
+   falso se il walker ritorna anche nodi */
+  protected boolean m_returnOnlyRange = false;
+  
+  
 }

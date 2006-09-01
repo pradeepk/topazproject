@@ -280,4 +280,15 @@ public class TextImpl extends Child implements Text
 	  return m_doc.m_chars.isWhitespace(m_start,m_length);
   }
   
+  /**
+   * Return an empty Nodelist because text nodes have not children.
+   */
+  public org.w3c.dom.NodeList getChildNodes()
+  {
+    NodeListImpl nl = new NodeListImpl();
+    
+    return nl;
+    
+  }
+
 }
