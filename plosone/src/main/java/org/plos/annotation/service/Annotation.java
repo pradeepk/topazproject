@@ -234,7 +234,7 @@ public class Annotation extends BaseAnnotation {
     this.annotationLazyLoader = annotationLazyLoader;
   }
 
-  protected String getOriginalBody() throws ApplicationException {
+  protected String getOriginalBodyContent() throws ApplicationException {
     return annotationLazyLoader.getBody();
   }
 

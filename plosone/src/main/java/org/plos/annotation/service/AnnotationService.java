@@ -3,15 +3,12 @@
  */
 package org.plos.annotation.service;
 
-import com.opensymphony.xwork.ActionContext;
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.MapConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.util.FileUtils;
 import org.springframework.beans.factory.annotation.Required;
 import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.ws.annotation.AnnotationClientFactory;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.Annotations;
@@ -184,13 +181,14 @@ public class AnnotationService extends BaseConfigurableService {
   public Annotation getAnnotation(final String annotationId) throws ApplicationException {
     try {
       final AnnotationInfo annotation = annotationService.getAnnotationInfo(annotationId);
-      return Converter.convert(annotation, new AnnotationLazyLoader(annotation.getBody()) {
-        public AnnotationVisibility fetchAnnotationVisibility() throws ApplicationException {
-  //        String[] perms = PermissionsWebService.list(uri, principal);
-
-          return AnnotationVisibility.PUBLIC;
-        }
-      });
+      return Converter.convert(annotation, lazyLoaderFactory);
+//      return Converter.convert(annotation, new AnnotationLazyLoader(annotation.getBody()) {
+//        public AnnotationVisibility fetchAnnotationVisibility() throws ApplicationException {
+//  //        String[] perms = PermissionsWebService.list(uri, principal);
+//
+//          return AnnotationVisibility.PUBLIC;
+//        }
+//      });
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
@@ -206,7 +204,7 @@ public class AnnotationService extends BaseConfigurableService {
   public Reply getReply(final String replyId) throws NoSuchIdException, ApplicationException {
     try {
       final ReplyInfo reply = replyService.getReplyInfo(replyId);
-      return Converter.convert(reply, lazyLoaderFactory.create(reply.getBody()));
+      return Converter.convert(reply, lazyLoaderFactory);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }

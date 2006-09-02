@@ -28,19 +28,19 @@ public class Converter {
   public static Annotation[] convert(final AnnotationInfo[] annotations, final AnnotationLazyLoaderFactory lazyFactory) throws ApplicationException {
     final List<Annotation> plosoneAnnotations = new ArrayList<Annotation>();
     for (final AnnotationInfo annotation : annotations) {
-      plosoneAnnotations.add(convert(annotation, lazyFactory.create(annotation.getBody())));
+      plosoneAnnotations.add(convert(annotation, lazyFactory));
     }
     return plosoneAnnotations.toArray(new Annotation[plosoneAnnotations.size()]);
   }
 
   /**
    * @param annotation annotation
-   * @param annotationLazyLoader annotationLazyLoader
+   * @param annotationLazyFactory annotationLazyFactory
    * @return the Annotation
    * @throws ApplicationException
    */
-  public static Annotation convert(final AnnotationInfo annotation, final AnnotationLazyLoader annotationLazyLoader) throws ApplicationException {
-    return new Annotation(annotation, annotationLazyLoader);
+  public static Annotation convert(final AnnotationInfo annotation, final AnnotationLazyLoaderFactory annotationLazyFactory) throws ApplicationException {
+    return new Annotation(annotation, annotationLazyFactory.create(annotation.getBody()));
   }
 
   /**
@@ -52,18 +52,18 @@ public class Converter {
   public static Reply[] convert(final ReplyInfo[] replies, final AnnotationLazyLoaderFactory lazyLoaderFactory) throws ApplicationException {
     final List<Reply> plosoneReplies = new ArrayList<Reply>();
     for (final ReplyInfo reply : replies) {
-      plosoneReplies.add(convert(reply, lazyLoaderFactory.create(reply.getBody())));
+      plosoneReplies.add(convert(reply, lazyLoaderFactory));
     }
     return plosoneReplies.toArray(new Reply[plosoneReplies.size()]);
   }
 
   /**
    * @param reply reply
-   * @param annotationLazyLoader annotationLazyLoader
+   * @param annotationLazyFactory annotationLazyFactory
    * @return the reply for the web layer
    * @throws ApplicationException
    */
-  public static Reply convert(final ReplyInfo reply, final AnnotationLazyLoader annotationLazyLoader) throws ApplicationException {
-    return new Reply(reply, annotationLazyLoader);
+  public static Reply convert(final ReplyInfo reply, final AnnotationLazyLoaderFactory annotationLazyFactory) throws ApplicationException {
+    return new Reply(reply, annotationLazyFactory.create(reply.getBody()));
   }
 }

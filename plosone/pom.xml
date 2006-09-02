@@ -51,6 +51,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-permissions-client-impl</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    
+    <dependency>
       <groupId>aopalliance</groupId>
       <artifactId>aopalliance</artifactId>
       <version>1.0</version>

@@ -9,7 +9,15 @@
  */
 package org.plos.annotation.service;
 
+/**
+ * Factory to return instances of lazy loaders as required by annotations and replies
+ */
 public class AnnotationLazyLoaderFactory {
+
+  /**
+   * @param bodyUrl bodyUrl
+   * @return an instance of a lazy loader
+   */
   public AnnotationLazyLoader create(final String bodyUrl) {
     return new AnnotationLazyLoader(bodyUrl);
   }

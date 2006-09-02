@@ -188,7 +188,7 @@ public class Reply extends BaseAnnotation {
     reply.setType(type);
   }
 
-  protected String getOriginalBody() throws ApplicationException {
+  protected String getOriginalBodyContent() throws ApplicationException {
     return annotationLazyLoader.getBody();
   }
 }

@@ -14,13 +14,19 @@ import org.plos.util.FileUtils;
 import java.io.IOException;
 
 /**
+ * This is a worker class that would have/or be supplied the logic to retrieve functionality to fetch the values when requested for.
  * Fetch extra annotation properties on demand/lazily.
+ * This will also cache the values already fetched.
  */
 public class AnnotationLazyLoader {
   private String bodyContent;
   private AnnotationVisibility annotationVisibility = AnnotationVisibility.UNKNOWN;
   private final String bodyUrl;
 
+  /**
+   * 
+   * @param bodyUrl
+   */
   public AnnotationLazyLoader(final String bodyUrl) {
     this.bodyUrl = bodyUrl;
   }
@@ -39,6 +45,11 @@ public class AnnotationLazyLoader {
     return annotationVisibility;
   }
 
+  /**
+   * This method would be overridden or provided a command pattern to execute and return the result from the execution
+   * @return
+   * @throws ApplicationException
+   */
   public AnnotationVisibility fetchAnnotationVisibility() throws ApplicationException {
     return null;
   }

@@ -13,8 +13,8 @@ import com.opensymphony.util.TextUtils;
 
 /**
  * Base class for Annotation and reply.
- * For now it does not being together all the common attributes as I still prefer delegation as of now.
- * Further uses of these classes on the web layer should clarify the requirements and drive any change
+ * For now it does not bring together all the common attributes as I still prefer delegation for now.
+ * Further uses of these classes on the web layer should clarify the requirements and drive any changes
  * if required.
  */
 public abstract class BaseAnnotation {
@@ -23,10 +23,10 @@ public abstract class BaseAnnotation {
    * @throws ApplicationException
    */
   public String getBody() throws ApplicationException {
-    return escapeText(getOriginalBody());
+    return escapeText(getOriginalBodyContent());
   }
 
-  protected abstract String getOriginalBody() throws ApplicationException;
+  protected abstract String getOriginalBodyContent() throws ApplicationException;
 
   /**
    * Escape text so as to avoid any java scripting maliciousness when rendering it on a web page

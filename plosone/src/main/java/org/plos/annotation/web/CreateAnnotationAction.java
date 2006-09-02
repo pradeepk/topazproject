@@ -19,7 +19,7 @@ import org.plos.util.ProfanityCheckingService;
 import java.util.List;
 
 /**
- * Actions for working with annotations.
+ * Action to create an annotation. It also does profanity validation on the user content.
  */
 public class CreateAnnotationAction extends AnnotationActionSupport {
   private String target;
@@ -28,11 +28,14 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   private String body;
   private String mimeType = "text/plain";
   private String annotationId;
-
   private ProfanityCheckingService profanityCheckingService;
 
   public static final Log log = LogFactory.getLog(CreateAnnotationAction.class);
 
+  /**
+   * {@inheritDoc}
+   * Also does some profanity check for title and body before creating the annotation.
+   */
   public String execute() throws Exception {
     try {
       final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(title);
@@ -143,10 +146,17 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
     return body;
   }
 
+  /**
+   * @return the mime type
+   */
   public String getMimeType() {
     return mimeType;
   }
 
+  /**
+   * Set the profanityCheckingService
+   * @param profanityCheckingService profanityCheckingService
+   */
   public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {
     this.profanityCheckingService = profanityCheckingService;
   }
