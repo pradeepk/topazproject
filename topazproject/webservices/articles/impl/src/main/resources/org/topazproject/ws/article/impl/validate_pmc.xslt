@@ -13,10 +13,10 @@
   <xsl:output method="xml" omit-xml-declaration="yes"/>
 
   <!-- Main entry point for validation. This invokes the individual checks. -->
-  <xsl:template name="validate-pmc">
-    <xsl:param name="pmc"/>
-    <xsl:param name="doi"/>
-    <xsl:param name="entries"/>
+  <xsl:template name="validate-pmc" as="empty-sequence()">
+    <xsl:param name="pmc"     as="element(article)"/>
+    <xsl:param name="doi"     as="xs:string"/>
+    <xsl:param name="entries" as="element(ZipEntry)*"/>
 
     <xsl:call-template name="validate-zip">
       <xsl:with-param name="entries" select="$entries"/>
@@ -31,8 +31,8 @@
 
   <!-- validate the structure of the zip.
      -->
-  <xsl:template name="validate-zip">
-    <xsl:param name="entries"/>
+  <xsl:template name="validate-zip" as="empty-sequence()">
+    <xsl:param name="entries" as="element(ZipEntry)*"/>
 
     <xsl:if test="not($entries[@name = 'pmc.xml'])">
       <xsl:message>No 'pmc.xml' found in zip file</xsl:message>
@@ -46,13 +46,13 @@
      -   * if the URL is relative, make sure the thing it points to is part of the ingest
      -     (i.e. in the zip)
      -->
-  <xsl:template name="validate-links">
-    <xsl:param name="pmc"/>
-    <xsl:param name="doi"/>
-    <xsl:param name="entries"/>
+  <xsl:template name="validate-links" as="empty-sequence()">
+    <xsl:param name="pmc"     as="element(article)"/>
+    <xsl:param name="doi"     as="xs:string"/>
+    <xsl:param name="entries" as="element(ZipEntry)*"/>
 
     <xsl:for-each select="$pmc//@xlink:href">
-      <xsl:variable name="dec-uri" select="my:urldecode(.)"/>
+      <xsl:variable name="dec-uri" as="xs:string" select="my:urldecode(.)"/>
       <xsl:choose>
         <xsl:when test="my:uri-is-absolute($dec-uri)">
           <xsl:if test="starts-with($dec-uri, concat('info:doi/', $doi))">
@@ -82,10 +82,10 @@
   <!-- check that an object for the given uri exists in the zip. The uri must be of the
      - form info:doi/<doi>
      -->
-  <xsl:template name="check-presence">
-    <xsl:param name="uri"/>
-    <xsl:param name="entries"/>
-    <xsl:variable name="doi" select="substring-after($uri, '/')"/>
+  <xsl:template name="check-presence" as="empty-sequence()">
+    <xsl:param name="uri"     as="xs:string"/>
+    <xsl:param name="entries" as="element(ZipEntry)*"/>
+    <xsl:variable name="doi" as="xs:string" select="substring-after($uri, '/')"/>
 
     <xsl:if test="not($entries[my:urldecode(my:root(my:basename(@name))) = $doi])">
       <xsl:message>No entry found in zip file for doi <xsl:value-of select="$doi"/></xsl:message>
