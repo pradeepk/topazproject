@@ -71,7 +71,7 @@
 
   <xsl:template name="main-dc" xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <dc:identifier><xsl:value-of select="concat('info:doi:', $doi)"/></dc:identifier>
+    <dc:identifier><xsl:value-of select="concat('info:doi/', $doi)"/></dc:identifier>
     <dc:title><xsl:value-of select="$meta/title-group/article-title"/></dc:title>
     <dc:type>http://purl.org/dc/dcmitype/Text</dc:type>
     <dc:format>text/xml</dc:format>
@@ -141,7 +141,7 @@
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <xsl:variable name="sdoi" select="my:get-doi(@name)"/>
 
-    <dc:identifier><xsl:value-of select="concat('info:doi:', $sdoi)"/></dc:identifier>
+    <dc:identifier><xsl:value-of select="concat('info:doi/', $sdoi)"/></dc:identifier>
     <xsl:if test="$meta/pub-date">
         <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
     </xsl:if>
