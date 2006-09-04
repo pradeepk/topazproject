@@ -403,6 +403,9 @@ public class Ingester {
    */
   private static class URLResolver implements URIResolver {
     public Source resolve(String href, String base) {
+      if (href.length() == 0)
+        return null;  // URL doesn't handle this case properly, so let default resolver handle it
+
       try {
         URL url = new URL(new URL(base), href);
         return new StreamSource(url.toString());
