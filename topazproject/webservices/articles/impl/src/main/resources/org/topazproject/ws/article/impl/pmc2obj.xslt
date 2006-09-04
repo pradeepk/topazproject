@@ -12,6 +12,8 @@
     - article description.
     -->
 
+  <xsl:include href="validate_pmc.xslt"/>
+
   <xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
 
   <xsl:param name="is_update"       select="false()"/>
@@ -21,7 +23,18 @@
   <xsl:variable name="doi"          select="$meta/article-id[@pub-id-type = 'doi']"/>
   <xsl:variable name="file-entries" select="/ZipInfo/ZipEntry[not(@isDirectory)]"/>
 
-  <!-- top-level template - generates the ObjectList -->
+  <!-- top-level template - do some checks, and then run the production templates -->
+  <xsl:template match="/">
+    <xsl:call-template name="validate-pmc">
+      <xsl:with-param name="pmc"     select="$article"/>
+      <xsl:with-param name="doi"     select="$doi"/>
+      <xsl:with-param name="entries" select="$file-entries"/>
+    </xsl:call-template>
+
+    <xsl:apply-templates/>
+  </xsl:template>
+
+  <!-- generate the ObjectList -->
   <xsl:template match="/ZipInfo">
     <ObjectList logMessage="Ingest of article '{$meta/title-group/article-title}'"
                 articleId="{$doi}">

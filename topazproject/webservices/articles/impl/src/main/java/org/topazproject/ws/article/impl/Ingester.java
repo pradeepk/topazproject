@@ -15,6 +15,7 @@ import java.io.IOException;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.lang.ref.SoftReference;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -57,6 +58,7 @@ import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.ws.article.DuplicateIdException;
 import org.topazproject.ws.article.IngestException;
 
+import net.sf.saxon.Controller;
 import net.sf.saxon.TransformerFactoryImpl;
 
 /** 
@@ -107,6 +109,7 @@ public class Ingester {
     this.pep      = pep;
 
     tFactory = new TransformerFactoryImpl();
+    tFactory.setURIResolver(new URLResolver());
   }
 
   /** 
@@ -217,9 +220,27 @@ public class Ingester {
     t.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
     t.setURIResolver(new ZipURIResolver(zip));
 
+    /* Note: it would be preferable (and correct according to latest JAXP specs) to use
+     * t.setErrorListener(), but Saxon does not forward <xls:message>'s to the error listener.
+     * Hence we need to use Saxon's API's in order to get at those messages.
+     */
+    StringWriter msgs = new StringWriter();
+    ((Controller) t).makeMessageEmitter();
+    ((Controller) t).getMessageEmitter().setWriter(msgs);
+
     Source    inp = new StreamSource(new StringReader(zipInfo), "zip:/");
     DOMResult res = new DOMResult();
-    t.transform(inp, res);
+
+    try {
+      t.transform(inp, res);
+    } catch (TransformerException te) {
+      if (msgs.getBuffer().length() > 0)
+        throw new TransformerException(msgs.toString(), te);
+      else
+        throw te;
+    }
+    if (msgs.getBuffer().length() > 0)
+      throw new TransformerException(msgs.toString());
 
     return (Document) res.getNode();
   }
@@ -371,6 +392,25 @@ public class Ingester {
     } catch (TransformerException te) {
       log.error("Error converting dom to string", te);
       return "";
+    }
+  }
+
+  /**
+   * Saxon's default resolver uses URI.resolve() to resolve the relative URI's. However, that
+   * doesn't understand 'jar' URL's and treats them as opaque (because of the "jar:file:"
+   * prefix). That in turn prevents us from using relative URI's for things like xsl:include
+   * and xsl:import . Hence this class here, which just uses URL to do the resolution.
+   */
+  private static class URLResolver implements URIResolver {
+    public Source resolve(String href, String base) {
+      try {
+        URL url = new URL(new URL(base), href);
+        return new StreamSource(url.toString());
+      } catch (MalformedURLException mue) {
+        log.warn("Failed to resolve '" + href + "' relative to '" + base + "' - falling back to " +
+                 "default URIResolver", mue);
+        return null;
+      }
     }
   }
 
