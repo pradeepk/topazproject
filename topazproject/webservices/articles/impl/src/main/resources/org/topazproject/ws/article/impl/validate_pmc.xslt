@@ -27,6 +27,12 @@
       <xsl:with-param name="doi" select="$doi"/>
       <xsl:with-param name="entries" select="$entries"/>
     </xsl:call-template>
+
+    <xsl:call-template name="validate-entries">
+      <xsl:with-param name="pmc" select="$pmc"/>
+      <xsl:with-param name="doi" select="$doi"/>
+      <xsl:with-param name="entries" select="$entries"/>
+    </xsl:call-template>
   </xsl:template>
 
   <!-- validate the structure of the zip.
@@ -92,6 +98,23 @@
     </xsl:if>
   </xsl:template>
 
+  <!-- Check that all entries in the zip are referenced (no orphans).
+     -->
+  <xsl:template name="validate-entries" as="empty-sequence()">
+    <xsl:param name="pmc"     as="element(article)"/>
+    <xsl:param name="doi"     as="xs:string"/>
+    <xsl:param name="entries" as="element(ZipEntry)*"/>
+
+    <xsl:variable name="refs" as="xs:string*" select="my:hrefs-to-doi($pmc//@xlink:href, $doi)"/>
+
+    <xsl:for-each select="$entries[@name != 'pmc.xml']">
+      <xsl:variable name="edoi" as="xs:string" select="my:urldecode(my:root(my:basename(@name)))"/>
+      <xsl:if test="$edoi != $doi and not($edoi = $refs)">
+        <xsl:message>Found unreferenced entry in zip file: '<xsl:value-of select="@name"/>'</xsl:message>
+      </xsl:if>
+    </xsl:for-each>
+  </xsl:template>
+
 
   <!-- Helper funtions -->
 
@@ -123,5 +146,17 @@
   <xsl:function name="my:root" as="xs:string">
     <xsl:param name="fname" as="xs:string"/>
     <xsl:value-of select="replace($fname, '\.[^.]*$', '')"/>
+  </xsl:function>
+
+  <!-- remove any extension from the filename -->
+  <xsl:function name="my:hrefs-to-doi" as="xs:string*">
+    <xsl:param name="hrefs" as="xs:string*"/>
+    <xsl:param name="base"  as="xs:string"/>
+    <xsl:for-each select="$hrefs">
+      <xsl:value-of
+        select="if (starts-with(., 'doi:')) then substring-after(., ':')
+                else if (starts-with(., 'info:doi/')) then substring-after(., '/')
+                else my:resolve-relative-doi($base, .)"/>
+    </xsl:for-each>
   </xsl:function>
 </xsl:stylesheet>
