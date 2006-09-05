@@ -69,6 +69,7 @@
   </xsl:template>
 
   <xsl:template name="main-dc" xmlns:dc="http://purl.org/dc/elements/1.1/"
+                xmlns:dc_terms="http://purl.org/dc/terms/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <dc:identifier><xsl:value-of select="concat('info:doi/', $doi)"/></dc:identifier>
     <dc:title><xsl:value-of select="$meta/title-group/article-title"/></dc:title>
@@ -77,6 +78,14 @@
     <dc:language>en</dc:language>
     <xsl:if test="$meta/pub-date">
       <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
+      <dc_terms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc_terms:issued>
+      <dc_terms:available rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc_terms:available>
+    </xsl:if>
+    <xsl:if test="$meta/history/date[@date-type = 'received']">
+      <dc_terms:dateSubmitted rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date($meta/history/date[@date-type = 'received'])"/></dc_terms:dateSubmitted>
+    </xsl:if>
+    <xsl:if test="$meta/history/date[@date-type = 'accepted']">
+      <dc_terms:dateAccepted rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date($meta/history/date[@date-type = 'accepted'])"/></dc_terms:dateAccepted>
     </xsl:if>
     <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
       <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
@@ -349,7 +358,7 @@
      - or Jan 1st in the case of winter (to get the year right); missing fields are defaulted
      - from the current time -->
   <xsl:function name="my:format-date" as="xs:string">
-    <xsl:param name="date" as="element(pub-date)"/>
+    <xsl:param name="date" as="element()"/>
 
     <xsl:value-of select="concat(
       if ($date/year) then $date/year else year-from-date(current-date()),
