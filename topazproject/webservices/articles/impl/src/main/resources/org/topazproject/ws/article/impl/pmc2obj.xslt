@@ -18,18 +18,15 @@
 
   <xsl:param name="is_update"       select="false()"/>
 
-  <xsl:variable name="article"      select="document('pmc.xml', .)/article"/>
+  <xsl:variable name="file-entries" select="/ZipInfo/ZipEntry[not(@isDirectory)]"/>
+  <xsl:variable name="pmc-entry"    select="$file-entries[my:basename(@name) = 'pmc.xml']"/>
+  <xsl:variable name="article"      select="document($pmc-entry/@name, .)/article"/>
   <xsl:variable name="meta"         select="$article/front/article-meta"/>
   <xsl:variable name="doi"          select="$meta/article-id[@pub-id-type = 'doi']"/>
-  <xsl:variable name="file-entries" select="/ZipInfo/ZipEntry[not(@isDirectory)]"/>
 
   <!-- top-level template - do some checks, and then run the production templates -->
   <xsl:template match="/">
-    <xsl:call-template name="validate-pmc">
-      <xsl:with-param name="pmc"     select="$article"/>
-      <xsl:with-param name="doi"     select="$doi"/>
-      <xsl:with-param name="entries" select="$file-entries"/>
-    </xsl:call-template>
+    <xsl:call-template name="validate-pmc"/>
 
     <xsl:apply-templates/>
   </xsl:template>
@@ -40,7 +37,7 @@
                 articleId="{$doi}">
       <xsl:call-template name="main-entry"/>
       <xsl:for-each-group select="$file-entries[my:is-secondary(@name)]"
-                          group-by="my:get-doi(@name)">
+                          group-by="my:fname-to-doi(@name)">
         <xsl:apply-templates select="." mode="sec"/>
       </xsl:for-each-group>
     </ObjectList>
@@ -77,7 +74,7 @@
     <dc:format>text/xml</dc:format>
     <dc:language>en</dc:language>
     <xsl:if test="$meta/pub-date">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
+      <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
     </xsl:if>
     <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
       <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
@@ -85,7 +82,8 @@
     <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'contributor']">
       <dc:contributor><xsl:value-of select="my:format-name(.)"/></dc:contributor>
     </xsl:for-each>
-    <xsl:for-each select="$meta/article-categories/subj-group[@subj-group-type = 'Discipline']/subject">
+    <xsl:for-each
+        select="$meta/article-categories/subj-group[@subj-group-type = 'Discipline']/subject">
       <dc:subject><xsl:value-of select="."/></dc:subject>
     </xsl:for-each>
     <xsl:if test="$meta/abstract">
@@ -102,7 +100,8 @@
   <xsl:template name="main-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <rdf:type rdf:resource="http://rdf.topazproject.org/RDF/Article"/>
-    <xsl:for-each select="distinct-values(my:get-doi($file-entries[my:is-secondary(@name)]/@name))">
+    <xsl:for-each
+        select="distinct-values(my:fname-to-doi($file-entries[my:is-secondary(@name)]/@name))">
       <topaz:hasMember rdf:resource="{my:pid-to-uri(my:doi-to-pid(.))}"/>
     </xsl:for-each>
     <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
@@ -114,7 +113,7 @@
 
   <!-- templates for all secondary entries -->
   <xsl:template match="ZipEntry" mode="sec">
-    <xsl:variable name="sdoi" select="my:get-doi(@name)"/>
+    <xsl:variable name="sdoi" select="my:fname-to-doi(@name)"/>
 
     <Object pid="{my:doi-to-pid($sdoi)}" cModel="PlosArticleSecObj">
       <DC xmlns:dc="http://purl.org/dc/elements/1.1/">
@@ -139,11 +138,11 @@
 
   <xsl:template name="sec-dc" xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <xsl:variable name="sdoi" select="my:get-doi(@name)"/>
+    <xsl:variable name="sdoi" select="my:fname-to-doi(@name)"/>
 
     <dc:identifier><xsl:value-of select="concat('info:doi/', $sdoi)"/></dc:identifier>
     <xsl:if test="$meta/pub-date">
-        <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
+      <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
     </xsl:if>
     <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
       <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
@@ -163,7 +162,7 @@
   </xsl:template>
 
   <xsl:template name="sec-ds">
-    <xsl:variable name="sdoi" select="my:get-doi(@name)"/>
+    <xsl:variable name="sdoi" select="my:fname-to-doi(@name)"/>
     <xsl:apply-templates select="current-group()" mode="ds"/>
   </xsl:template>
 
@@ -192,11 +191,17 @@
     <xsl:copy-of select="for $t in tokenize($fname, '\.') return my:urldecode($t)"/>
   </xsl:function>
 
+  <!-- remove any directories from the filename -->
+  <xsl:function name="my:basename" as="xs:string">
+    <xsl:param name="path" as="xs:string"/>
+    <xsl:value-of select="replace($path, '.*/', '')"/>
+  </xsl:function>
+
   <!-- Get DOI from filename -->
-  <xsl:function name="my:get-doi" as="xs:string*">
+  <xsl:function name="my:fname-to-doi" as="xs:string*">
     <xsl:param name="name" as="xs:string*"/>
     <xsl:for-each select="$name">
-      <xsl:value-of select="my:parse-filename(.)[1]"/>
+      <xsl:value-of select="my:parse-filename(my:basename(.))[1]"/>
     </xsl:for-each>
   </xsl:function>
 
@@ -223,7 +228,7 @@
   <!-- determines if the filename is that of a secondary object or not -->
   <xsl:function name="my:is-main" as="xs:boolean">
     <xsl:param name="fname" as="xs:string"/>
-    <xsl:value-of select="$fname = 'pmc.xml' or my:get-doi($fname) = $doi"/>
+    <xsl:value-of select="$fname = $pmc-entry/@name or my:fname-to-doi($fname) = $doi"/>
   </xsl:function>
 
   <xsl:function name="my:is-secondary" as="xs:boolean">
