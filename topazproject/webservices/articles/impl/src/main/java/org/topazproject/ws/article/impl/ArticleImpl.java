@@ -60,7 +60,7 @@ public class ArticleImpl implements Article {
           // ensure it's an article
        "  <${subj}> <rdf:type> <topaz:Article> and (" +
           // find all related objects       find the article itself
-       "  <${subj}> <topaz:hasMember> $doi or $doi <tucana:is> <${subj}> );").
+       "  <${subj}> <dc_terms:hasPart> $doi or $doi <tucana:is> <${subj}> );").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private final URI        fedoraServer;
@@ -119,8 +119,8 @@ public class ArticleImpl implements Article {
     String old_subj = "<" + pid2URI(doi2PID(oldDoi)) + ">";
     String new_subj = "<" + pid2URI(doi2PID(newDoi)) + ">";
 
-    itql.doUpdate("insert " + old_subj + " <topaz:supersededBy> " + new_subj +
-                            new_subj + " <topaz:supersedes> " + old_subj +
+    itql.doUpdate("insert " + old_subj + " <dc_terms:isReplacedBy> " + new_subj +
+                            new_subj + " <dc_terms:replaces> " + old_subj +
                             " into " + MODEL + ";");
   }
 

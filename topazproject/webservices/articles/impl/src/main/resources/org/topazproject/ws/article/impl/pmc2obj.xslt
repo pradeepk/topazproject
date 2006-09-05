@@ -50,7 +50,8 @@
         <xsl:call-template name="main-dc"/>
       </DC>
       <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:dc_terms="http://purl.org/dc/terms/">
         <xsl:call-template name="main-rdf"/>
       </RELS-EXT>
       <xsl:call-template name="main-ds"/>
@@ -58,7 +59,8 @@
 
     <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
              xmlns:topaz="http://rdf.topazproject.org/RDF/"
-             xmlns:dc="http://purl.org/dc/elements/1.1/">
+             xmlns:dc="http://purl.org/dc/elements/1.1/"
+             xmlns:dc_terms="http://purl.org/dc/terms/">
       <rdf:Description rdf:about="{my:pid-to-uri(my:doi-to-pid($doi))}">
         <xsl:call-template name="main-dc"/>
         <xsl:call-template name="main-rdf"/>
@@ -97,12 +99,12 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template name="main-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/"
+  <xsl:template name="main-rdf" xmlns:dc_terms="http://purl.org/dc/terms/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <rdf:type rdf:resource="http://rdf.topazproject.org/RDF/Article"/>
     <xsl:for-each
         select="distinct-values(my:fname-to-doi($file-entries[my:is-secondary(@name)]/@name))">
-      <topaz:hasMember rdf:resource="{my:pid-to-uri(my:doi-to-pid(.))}"/>
+      <dc_terms:hasPart rdf:resource="{my:pid-to-uri(my:doi-to-pid(.))}"/>
     </xsl:for-each>
     <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
   </xsl:template>
@@ -120,7 +122,8 @@
         <xsl:call-template name="sec-dc"/>
       </DC>
       <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:dc_terms="http://purl.org/dc/terms/">
         <xsl:call-template name="sec-rdf"/>
       </RELS-EXT>
       <xsl:call-template name="sec-ds"/>
@@ -128,7 +131,8 @@
 
     <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
              xmlns:topaz="http://rdf.topazproject.org/RDF/"
-             xmlns:dc="http://purl.org/dc/elements/1.1/">
+             xmlns:dc="http://purl.org/dc/elements/1.1/"
+             xmlns:dc_terms="http://purl.org/dc/terms/">
       <rdf:Description rdf:about="{my:pid-to-uri(my:doi-to-pid($sdoi))}">
         <xsl:call-template name="sec-dc"/>
         <xsl:call-template name="sec-rdf"/>
@@ -155,9 +159,9 @@
     </xsl:if>
   </xsl:template>
 
-  <xsl:template name="sec-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/"
+  <xsl:template name="sec-rdf" xmlns:dc_terms="http://purl.org/dc/terms/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-      <topaz:isMemberOf rdf:resource="{my:pid-to-uri(my:doi-to-pid($doi))}"/>
+      <dc_terms:isPartOf rdf:resource="{my:pid-to-uri(my:doi-to-pid($doi))}"/>
       <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
   </xsl:template>
 
