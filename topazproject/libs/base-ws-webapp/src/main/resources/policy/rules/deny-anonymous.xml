@@ -21,7 +21,8 @@
         <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:itql">
           <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
           <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
-            select $s from &lt;?&gt; where $s &lt;tucana:is&gt; &lt;?&gt;;
+            select $s from &lt;?&gt; where $s &lt;tucana:is&gt; &lt;?&gt; and
+                                           $s &lt;rdf:type&gt; &lt;foaf:OnlineAccount&gt;;
           </AttributeValue>
           <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
             <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
