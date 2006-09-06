@@ -36,7 +36,9 @@ import com.sun.xacml.cond.EvaluationResult;
 import com.sun.xacml.finder.AttributeFinderModule;
 
 /**
- * An AttributeFinderModule that can lookup attributes from ServletEndpointContext.
+ * An AttributeFinderModule that can lookup attributes from ServletEndpointContext. The look-up
+ * order is getUserPrincipal() (only matches subject-id) followed by http-session attributes
+ * followed by servlet-context attributes. The first match is returned.
  *
  * @author Pradeep Krishnan
  */
@@ -45,24 +47,17 @@ public class ServletEndpointContextAttributeFinderModule extends AttributeFinder
   public static final URI SUBJECT_CATEGORY_DEFAULT_URI =
     URI.create(AttributeDesignator.SUBJECT_CATEGORY_DEFAULT);
 
-  // HttpSession Subject Category
-  public static final URI SUBJECT_CATEGORY_HTTPSESSION_URI =
-    URI.create(HttpSession.class.getName());
-
-  // ServletContext Subject Category
-  public static final URI  SUBJECT_CATEGORY_SERVLETCONTEXT_URI =
-    URI.create(ServletContext.class.getName());
-  public static final URI  SUBJECT_ID_URI =
+  // STandard subject-id from spec
+  public static final URI SUBJECT_ID_URI =
     URI.create("urn:oasis:names:tc:xacml:1.0:subject:subject-id");
-  private static final Map resolvers                = new HashMap();
+
+  // The list of resolvers to try
+  private static final Resolver[] resolvers =
+    { new DefaultResolver(), new HttpSessionResolver(), new ServletContextResolver() };
+
+  // The set of attr designators supported by this finder
   private static final Set supportedDesignatorTypes =
     Collections.singleton(new Integer(AttributeDesignator.SUBJECT_TARGET));
-
-  {
-    resolvers.put(SUBJECT_CATEGORY_DEFAULT_URI, new DefaultResolver());
-    resolvers.put(SUBJECT_CATEGORY_HTTPSESSION_URI, new HttpSessionResolver());
-    resolvers.put(SUBJECT_CATEGORY_SERVLETCONTEXT_URI, new ServletContextResolver());
-  }
 
   /**
    * Supports attribute designators.
@@ -82,7 +77,7 @@ public class ServletEndpointContextAttributeFinderModule extends AttributeFinder
     return supportedDesignatorTypes;
   }
 
-  /**
+  /*
    * @see com.sun.xacml.finder.AttributeFinderModule#findAttribute
    */
   public EvaluationResult findAttribute(URI type, URI id, URI issuer, URI category,
@@ -91,14 +86,8 @@ public class ServletEndpointContextAttributeFinderModule extends AttributeFinder
     if (issuer != null)
       return new EvaluationResult(BagAttribute.createEmptyBag(type));
 
-    // null category is to be treated as default
-    if (category == null)
-      category = SUBJECT_CATEGORY_DEFAULT_URI;
-
-    // See if we have a resolver
-    Resolver resolver = (Resolver) resolvers.get(category);
-
-    if (resolver == null)
+    // we only handle default category. (null treated as default)
+    if ((category != null) && !category.equals(SUBJECT_CATEGORY_DEFAULT_URI))
       return new EvaluationResult(BagAttribute.createEmptyBag(type));
 
     // Get the JAX-RPC context.
@@ -123,15 +112,20 @@ public class ServletEndpointContextAttributeFinderModule extends AttributeFinder
     ServletEndpointContext epc =
       ((ServletEndpointContextAttribute) bag.iterator().next()).getValue();
 
-    AttributeValue         value;
+    AttributeValue         value = null;
 
-    try {
-      // Now resolve a value for the id.
-      value = resolver.resolve(epc, type, id);
-    } catch (Exception e) {
-      // Abort the policy evaluation. For a deny-biased PEP, this will result in an
-      // access-denied.
-      return Util.processingError(e.getMessage(), type, id);
+    for (int i = 0; i < resolvers.length; i++) {
+      try {
+        // Now resolve a value for the id.
+        value = resolvers[i].resolve(epc, type, id);
+      } catch (Exception e) {
+        // Abort the policy evaluation. For a deny-biased PEP, this will result in an
+        // access-denied.
+        return Util.processingError(e.getMessage(), type, id);
+      }
+
+      if ((value != null) && (!value.isBag() || !((BagAttribute) value).isEmpty()))
+        break;
     }
 
     // Return an empty bag if a value could not be resolved.
@@ -186,7 +180,7 @@ public class ServletEndpointContextAttributeFinderModule extends AttributeFinder
   }
 
   /**
-   * Default subject category resolver. Currently resolves SUBJECT_ID to a User Principal.
+   * Default resolver. Currently resolves SUBJECT_ID to a User Principal.
    */
   private static class DefaultResolver implements Resolver {
     public AttributeValue resolve(ServletEndpointContext context, URI type, URI id)
