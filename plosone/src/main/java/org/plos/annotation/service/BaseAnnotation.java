@@ -28,6 +28,8 @@ public abstract class BaseAnnotation {
 
   protected abstract String getOriginalBodyContent() throws ApplicationException;
 
+  public abstract boolean getVisibility() throws ApplicationException;
+
   /**
    * Escape text so as to avoid any java scripting maliciousness when rendering it on a web page
    * @param text text

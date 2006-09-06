@@ -17,13 +17,11 @@ import org.topazproject.ws.annotation.ReplyInfo;
  * - Fetch the body content eagerly.
  * - a separation from any topaz changes
  */
-public class Reply extends BaseAnnotation {
+public abstract class Reply extends BaseAnnotation {
   private final ReplyInfo reply;
-  private final AnnotationLazyLoader annotationLazyLoader;
 
-  public Reply(final ReplyInfo reply, final AnnotationLazyLoader annotationLazyLoader) {
+  public Reply(final ReplyInfo reply) {
     this.reply = reply;
-    this.annotationLazyLoader = annotationLazyLoader;
   }
 
   /**
@@ -186,9 +184,5 @@ public class Reply extends BaseAnnotation {
    */
   public void setType(final String type) {
     reply.setType(type);
-  }
-
-  protected String getOriginalBodyContent() throws ApplicationException {
-    return annotationLazyLoader.getBody();
   }
 }

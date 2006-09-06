@@ -17,13 +17,8 @@ import org.topazproject.ws.annotation.AnnotationInfo;
  * - Fetch the body content eagerly.
  * - a separation from any topaz changes
  */
-public class Annotation extends BaseAnnotation {
+public abstract class Annotation extends BaseAnnotation {
   private final AnnotationInfo annotation;
-  private AnnotationLazyLoader annotationLazyLoader;
-
-  public AnnotationLazyLoader getLoadedAdditionalAnnotationProperties() {
-    return annotationLazyLoader;
-  }
 
   /**
    * Get the target(probably a uri) that it annotates
@@ -229,16 +224,7 @@ public class Annotation extends BaseAnnotation {
     annotation.setType(type);
   }
 
-  public Annotation(final AnnotationInfo annotation, final AnnotationLazyLoader annotationLazyLoader) {
+  public Annotation(final AnnotationInfo annotation) {
     this.annotation = annotation;
-    this.annotationLazyLoader = annotationLazyLoader;
-  }
-
-  protected String getOriginalBodyContent() throws ApplicationException {
-    return annotationLazyLoader.getBody();
-  }
-
-  protected AnnotationVisibility getVisibility() throws ApplicationException {
-    return annotationLazyLoader.fetchAnnotationVisibility();
   }
 }

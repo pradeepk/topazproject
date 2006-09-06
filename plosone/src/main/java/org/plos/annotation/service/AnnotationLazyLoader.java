@@ -12,6 +12,9 @@ package org.plos.annotation.service;
 import org.plos.util.FileUtils;
 
 import java.io.IOException;
+import java.rmi.RemoteException;
+import java.util.Arrays;
+import java.util.List;
 
 /**
  * This is a worker class that would have/or be supplied the logic to retrieve functionality to fetch the values when requested for.
@@ -20,15 +23,23 @@ import java.io.IOException;
  */
 public class AnnotationLazyLoader {
   private String bodyContent;
-  private AnnotationVisibility annotationVisibility = AnnotationVisibility.UNKNOWN;
   private final String bodyUrl;
+  private static final String DELETE_GRANT = "delete";
+
+  private static enum AnnotationVisibility {PUBLIC, PRIVATE, UNKNOWN}
+
+  private AnnotationVisibility annotationVisibility = AnnotationVisibility.UNKNOWN;
+
+  private PermissionWebService permissionWebService;
+  private ResourcePropsForAuth resourcePropsForAuth;
 
   /**
-   * 
-   * @param bodyUrl
+   * @param bodyUrl bodyUrl
+   * @param resourcePropsForAuth resourcePropsForAuth
    */
-  public AnnotationLazyLoader(final String bodyUrl) {
+  public AnnotationLazyLoader(final String bodyUrl, final ResourcePropsForAuth resourcePropsForAuth) {
     this.bodyUrl = bodyUrl;
+    this.permissionWebService = resourcePropsForAuth.getPermissionWebService();
   }
 
   public String getBody() throws ApplicationException {
@@ -38,20 +49,32 @@ public class AnnotationLazyLoader {
     return bodyContent;
   }
 
-  public AnnotationVisibility getVisibility() throws ApplicationException {
+  public boolean isPublicVisible() throws ApplicationException, RemoteException {
     if (AnnotationVisibility.UNKNOWN == annotationVisibility) {
       annotationVisibility = fetchAnnotationVisibility();
     }
-    return annotationVisibility;
+
+    return AnnotationVisibility.PUBLIC == annotationVisibility;
   }
 
   /**
    * This method would be overridden or provided a command pattern to execute and return the result from the execution
-   * @return
+   * @return whether the visibility of the annotation is public or private
    * @throws ApplicationException
+   * @throws java.rmi.RemoteException
    */
-  public AnnotationVisibility fetchAnnotationVisibility() throws ApplicationException {
-    return null;
+  protected AnnotationVisibility fetchAnnotationVisibility() throws ApplicationException, RemoteException {
+    final String[] grants = permissionWebService.listGrants(resourcePropsForAuth.getAnnotationUrl(), resourcePropsForAuth.getPrincipal());
+    final List<String> grantsList = Arrays.asList(grants);
+
+    if (grantsList.contains(DELETE_GRANT)) {
+      return AnnotationVisibility.PRIVATE;
+    }
+    return AnnotationVisibility.PUBLIC;
+  }
+
+  public void setResourcePropsForAuth(final ResourcePropsForAuth resourcePropsForAuth) {
+    this.resourcePropsForAuth = resourcePropsForAuth;
   }
 
   protected static String getBodyContent(final String bodyUrl) throws ApplicationException {
@@ -64,6 +87,3 @@ public class AnnotationLazyLoader {
 
 }
 
-enum AnnotationVisibility {
-  PUBLIC, PRIVATE, UNKNOWN
-}

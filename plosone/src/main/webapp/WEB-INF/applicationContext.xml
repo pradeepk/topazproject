@@ -29,43 +29,69 @@
     <property name="servicePort" value="http://localhost:9080/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort"/>
   </bean>
 
+  <bean id="defaultEncodingCharset" class="java.lang.String">
+    <constructor-arg value="UTF-8"/>
+  </bean>
+
+  <bean id="applicationId" class="java.lang.String">
+    <constructor-arg value="topaz-plosone"/>
+  </bean>
+
   <bean id="auth-method" class="java.lang.String">
     <constructor-arg value="CAS"/>
   </bean>
 
-  <!--<bean id="annotationService" class="org.plos.annotation.service.AnnotationService" init-method="init" scope="session">-->
-    <!--<property name="annotationWebService" ref="annotationWebService"/>-->
-    <!--<property name="permissionWebServiceConfiguration" ref="permissionWebService"/>-->
-  <!--</bean>-->
+  <bean id="userContext" class="org.plos.annotation.web.UserContext"/>
 
-<!--
-  <bean id="permissionWebService" class="org.plos.annotation.service.PermissionWebService" init-method="init" scope="session">
-    <property name="permissionServiceConfiguration">
+  <bean id="permissionWebService" class="org.plos.annotation.service.PermissionWebService">
+    <property name="userContext" ref="userContext"/>
+    <property name="configurationMap">
       <map>
         <entry key="uri" value="http://localhost:9080/ws-permissions-webapp-0.5-SNAPSHOT/services/PermissionsServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
   </bean>
--->
 
-  <bean id="annotationService" class="org.plos.annotation.service.AnnotationService" init-method="init" scope="session">
-    <property name="applicationId" value="topaz-plosone"/>
-    <property name="defaultAnnotationType" value="http://www.w3.org/2000/10/annotationType#Annotation"/>
-    <property name="defaultReplyType" value="http://www.w3.org/2001/12/replyType#Comment"/>
-    <property name="encodingCharset" value="UTF-8"/>
-    <property name="annotationServiceConfiguration">
-      <map>
-        <entry key="uri" value="http://localhost:9080/ws-annotation-webapp-0.5-SNAPSHOT/services/AnnotationServicePort"/>
-        <entry key="auth-method" value-ref="auth-method"/>
-      </map>
-    </property>
-    <property name="replyServiceConfiguration">
+  <bean id="lazyLoaderFactory" class="org.plos.annotation.service.AnnotationLazyLoaderFactory">
+    <property name="permissionWebService" ref="permissionWebService"/>
+  </bean>
+
+  <bean id="annotationConverter" class="org.plos.annotation.service.AnnotationConverter" scope="session">
+    <property name="lazyLoaderFactory" ref="lazyLoaderFactory"/>
+  </bean>
+
+  <bean id="replyTopazService" class="org.plos.annotation.service.ReplyWebService" init-method="init" scope="session">
+    <property name="userContext" ref="userContext"/>
+    <property name="applicationId" ref="applicationId"/>
+    <property name="encodingCharset" ref="defaultEncodingCharset"/>
+    <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
+    <property name="configurationMap">
       <map>
         <entry key="uri" value="http://localhost:9080/ws-annotation-webapp-0.5-SNAPSHOT/services/ReplyServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
+  </bean>
+
+  <bean id="annotationTopazService" class="org.plos.annotation.service.AnnotationWebService" init-method="init" scope="session">
+    <property name="userContext" ref="userContext"/>
+    <property name="applicationId" ref="applicationId"/>
+    <property name="encodingCharset" ref="defaultEncodingCharset"/>
+    <property name="defaultType" value="http://www.w3.org/2000/10/annotationType#Annotation"/>
+    <property name="configurationMap">
+      <map>
+        <entry key="uri" value="http://localhost:9080/ws-annotation-webapp-0.5-SNAPSHOT/services/AnnotationServicePort"/>
+        <entry key="auth-method" value-ref="auth-method"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="annotationService" class="org.plos.annotation.service.AnnotationService" scope="session">
+    <property name="userContext" ref="userContext"/>
+    <property name="converter" ref="annotationConverter"/>
+    <property name="annotationWebService" ref="annotationTopazService"/>
+    <property name="replyWebService" ref="replyTopazService"/>
   </bean>
 
   <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService">

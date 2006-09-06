@@ -9,21 +9,22 @@
  */
 package org.plos.annotation.service;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
+import org.plos.annotation.web.UserContext;
+import org.topazproject.authentication.ProtectedService;
+import org.topazproject.authentication.ProtectedServiceFactory;
 
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
 
-import com.opensymphony.xwork.ActionContext;
-
 /**
  * Base service class to be subclassed by any services which have common configuration requirements.
  */
 public abstract class BaseConfigurableService {
+  private Configuration configuration;
+  private UserContext userContext;
 
   /**
    * @param configuration configuration
@@ -38,10 +39,16 @@ public abstract class BaseConfigurableService {
   /**
    * @return session variables in a map
    */
+  public Map getSessionMap() {
+    return userContext.getSessionMap();
+  }
 
-  protected Map getSessionMap() {
-    //TODO: get rid of the dependency on ActionContext
-    return ActionContext.getContext().getSession();
+  /**
+   * Set the user's context which can be used to obtain user's session values/attributes
+   * @param userContext userContext
+   */
+  public void setUserContext(final UserContext userContext) {
+    this.userContext = userContext;
   }
 
   /**
@@ -52,4 +59,20 @@ public abstract class BaseConfigurableService {
   protected MapConfiguration createMapConfiguration(final Map configMap) {
     return new MapConfiguration(configMap);
   }
+
+  /**
+   * @return the configuration info
+   */
+  public Configuration getConfiguration() {
+    return this.configuration;
+  }
+
+  /**
+   * Set the initial configuration properties
+   * @param configMap configMap
+   */
+  public void setConfigurationMap(final Map configMap) {
+    configuration = createMapConfiguration(configMap);
+  }
+
 }

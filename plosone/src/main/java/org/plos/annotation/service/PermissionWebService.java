@@ -9,34 +9,35 @@
  */
 package org.plos.annotation.service;
 
-import org.apache.commons.configuration.MapConfiguration;
 import org.topazproject.authentication.ProtectedService;
+import org.topazproject.ws.permissions.Permissions;
+import org.topazproject.ws.permissions.PermissionsClientFactory;
 
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.util.Map;
+import java.rmi.RemoteException;
 
 /**
  * Wrapper on the topaz permission web service.
  */
 public class PermissionWebService extends BaseConfigurableService {
-  private MapConfiguration permissionConfiguration;
+  private Permissions permissionsService;
 
-  public void init() throws IOException, URISyntaxException {
-    final ProtectedService permissionProtectedService = createProtectedService(this.permissionConfiguration);
-//    Permissions service = PermissionsClientFactory.create(permissionProtectedService);
+  public void init() throws IOException, URISyntaxException, ServiceException {
+    final ProtectedService permissionProtectedService = createProtectedService(getConfiguration());
+    permissionsService = PermissionsClientFactory.create(permissionProtectedService);
   }
 
   /**
-   * Set the permission service configuration.
-   * @param configMap configMap
-   * @throws java.net.MalformedURLException
-     * @throws javax.xml.rpc.ServiceException
-     */
-  public void setPermissionServiceConfiguration(final Map configMap) throws MalformedURLException, ServiceException {
-    permissionConfiguration = new MapConfiguration(configMap);
+   * @see org.topazproject.ws.permissions.Permissions#listGrants(String, String)
+   *
+   * @param resource resource
+   * @param principal principal
+   * @return a list of grants
+   * @throws java.rmi.RemoteException
+   */
+  public String[] listGrants(String resource, String principal) throws RemoteException {
+    return permissionsService.listGrants(resource, principal);
   }
-
 }

@@ -3,47 +3,30 @@
  */
 package org.plos.annotation.service;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.util.FileUtils;
-import org.springframework.beans.factory.annotation.Required;
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.ws.annotation.AnnotationClientFactory;
 import org.topazproject.ws.annotation.AnnotationInfo;
-import org.topazproject.ws.annotation.Annotations;
 import org.topazproject.ws.annotation.NoSuchIdException;
-import org.topazproject.ws.annotation.Replies;
-import org.topazproject.ws.annotation.RepliesClientFactory;
 import org.topazproject.ws.annotation.ReplyInfo;
 
-import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.rmi.RemoteException;
-import java.util.Map;
 
 /**
- * Provides the Create/Read/Delete annotation operations.
+ * Used for both annotation and reply services.
+ * Provides the Create/Read/Delete annotation operations .
  */
 public class AnnotationService extends BaseConfigurableService {
-  private Annotations annotationService;
-  private Replies replyService;
-  private String applicationId;
-  private String defaultAnnotationType;
-  private String defaultReplyType;
+  private AnnotationWebService annotationWebService;
+  private ReplyWebService replyWebService;
 
-  private String encodingCharset = "UTF-8";
   private static final Log log = LogFactory.getLog(AnnotationService.class);
-  private boolean isAnonymous;
-  private Configuration annotationConfiguration;
-  private Configuration replyConfiguration;
-  private AnnotationLazyLoaderFactory lazyLoaderFactory = new AnnotationLazyLoaderFactory();
+  private AnnotationConverter converter;
 
   /**
-   * @see org.topazproject.ws.annotation.Annotations#createAnnotation(String, String, String, String, String, boolean, String, String)
+   * Create an annotation.
    * @param target target that an annotation is being created for
    * @param context context
    * @param title title
@@ -54,8 +37,7 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public String createAnnotation(final String target, final String context, final String title, final String mimeType, final String body) throws ApplicationException {
     try {
-      final String contentType = mimeType + ";charset=" + encodingCharset;
-      return annotationService.createAnnotation(applicationId, defaultAnnotationType, target, context, null, false, title, contentType, body.getBytes(encodingCharset));
+      return annotationWebService.createAnnotation(mimeType, target, context, title, body);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     } catch (UnsupportedEncodingException e) {
@@ -64,7 +46,7 @@ public class AnnotationService extends BaseConfigurableService {
   }
 
   /**
-   * @see org.topazproject.ws.annotation.Replies#createReply(String, String, String, String, boolean, String, String, byte[])
+   * Create a reply
    * @param root root
    * @param inReplyTo inReplyTo
    * @param title title
@@ -75,8 +57,7 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public String createReply(final String root, final String inReplyTo, final String title, final String mimeType, final String body) throws ApplicationException {
     try {
-      final String contentType = mimeType + ";charset=" + encodingCharset;
-      return replyService.createReply(applicationId, defaultReplyType, root, inReplyTo, isAnonymous, title, contentType, body.getBytes(encodingCharset));
+      return replyWebService.createReply(mimeType, root, inReplyTo, title, body, this);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     } catch (UnsupportedEncodingException e) {
@@ -85,63 +66,65 @@ public class AnnotationService extends BaseConfigurableService {
   }
 
   /**
-   * @see org.topazproject.ws.annotation.Annotations#deleteAnnotation(String, boolean)
    * @param annotationId annotationId
    * @param deletePreceding deletePreceding
    * @throws ApplicationException
    */
   public void deleteAnnotation(final String annotationId, final boolean deletePreceding) throws ApplicationException {
     try {
-      annotationService.deleteAnnotation(annotationId, deletePreceding);
+      annotationWebService.deleteAnnotation(annotationId, deletePreceding);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
   }
 
   /**
-   * @see org.topazproject.ws.annotation.Replies#deleteReplies(String, String)
+   * delete replies with a given root and base reply
    * @param root root
    * @param inReplyTo inReplyTo
    * @throws ApplicationException
    */
   public void deleteReply(final String root, final String inReplyTo) throws ApplicationException {
     try {
-      replyService.deleteReplies(root, inReplyTo);
+      replyWebService.deleteReplies(root, inReplyTo);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
   }
 
   /**
-   * @see org.topazproject.ws.annotation.Replies#deleteReplies(String)
+   * delete reply with id
    * @param replyId replyId of the reply
    * @throws ApplicationException
    */
   public void deleteReply(final String replyId) throws ApplicationException {
     try {
-      replyService.deleteReplies(replyId);
+      replyWebService.deleteReplies(replyId);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
   }
 
   /**
-   * @see org.topazproject.ws.annotation.Annotations#listAnnotations(String, String, String)
    * @param target target of the annotation
    * @throws ApplicationException
    * @return a list of annotations
    */
   public Annotation[] listAnnotations(final String target) throws ApplicationException {
     try {
-      final AnnotationInfo[] annotations = annotationService.listAnnotations(applicationId, target, defaultAnnotationType);
-      return Converter.convert(annotations, lazyLoaderFactory);
+      AnnotationInfo[] annotations = annotationWebService.listAnnotations(target);
+      return converter.convert(annotations);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
   }
 
+  public void setConverter(final AnnotationConverter converter) {
+    this.converter = converter;
+  }
+
   /**
-   * @see org.topazproject.ws.annotation.Replies#listReplies(String, String)
+   * List replies.
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed
    * @throws ApplicationException
@@ -149,15 +132,15 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public Reply[] listReplies(final String root, final String inReplyTo) throws ApplicationException {
     try {
-      final ReplyInfo[] replies = replyService.listReplies(root, inReplyTo);
-      return Converter.convert(replies, lazyLoaderFactory);
+      final ReplyInfo[] replies = replyWebService.listReplies(root, inReplyTo);
+      return converter.convert(replies);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
   }
 
   /**
-   * @see org.topazproject.ws.annotation.Replies#listAllReplies(String, String)
+   * Get a list of all replies
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed
    * @throws ApplicationException
@@ -165,37 +148,29 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public Reply[] listAllReplies(final String root, final String inReplyTo) throws ApplicationException {
     try {
-      final ReplyInfo[] replies = replyService.listAllReplies(root, inReplyTo);
-      return Converter.convert(replies, lazyLoaderFactory);
+      final ReplyInfo[] replies = replyWebService.listAllReplies(root, inReplyTo);
+      return converter.convert(replies);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
   }
 
   /**
-   * @see org.topazproject.ws.annotation.Annotations#getAnnotationInfo(String)
    * @param annotationId annotationId
    * @throws ApplicationException
    * @return Annotation
    */
   public Annotation getAnnotation(final String annotationId) throws ApplicationException {
     try {
-      final AnnotationInfo annotation = annotationService.getAnnotationInfo(annotationId);
-      return Converter.convert(annotation, lazyLoaderFactory);
-//      return Converter.convert(annotation, new AnnotationLazyLoader(annotation.getBody()) {
-//        public AnnotationVisibility fetchAnnotationVisibility() throws ApplicationException {
-//  //        String[] perms = PermissionsWebService.list(uri, principal);
-//
-//          return AnnotationVisibility.PUBLIC;
-//        }
-//      });
+      final AnnotationInfo annotation = annotationWebService.getAnnotation(annotationId);
+      return converter.convert(annotation);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
   }
 
   /**
-   * @see org.topazproject.ws.annotation.Replies#getReplyInfo(String)
+   * Get reply
    * @param replyId replyId
    * @return the reply object
    * @throws NoSuchIdException
@@ -203,73 +178,19 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public Reply getReply(final String replyId) throws NoSuchIdException, ApplicationException {
     try {
-      final ReplyInfo reply = replyService.getReplyInfo(replyId);
-      return Converter.convert(reply, lazyLoaderFactory);
+      final ReplyInfo reply = replyWebService.getReplyInfo(replyId);
+      return converter.convert(reply);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
   }
 
-  /**
-   * Set the id of the application
-   * @param applicationId applicationId
-   */
-  @Required
-  public void setApplicationId(final String applicationId) {
-    this.applicationId = applicationId;
+  public void setAnnotationWebService(final AnnotationWebService annotationWebService) {
+    this.annotationWebService = annotationWebService;
   }
 
-  /**
-   * Set the default annotation type.
-   * @param defaultAnnotationType defaultAnnotationType
-   * @see org.topazproject.ws.annotation.Annotations
-   */
-  public void setDefaultAnnotationType(final String defaultAnnotationType) {
-    this.defaultAnnotationType = defaultAnnotationType;
-  }
-
-  /**
-   * Set the default annotation type.
-   * @param defaultReplyType defaultReplyType
-   * @see org.topazproject.ws.annotation.Replies
-   */
-  public void setDefaultReplyType(final String defaultReplyType) {
-    this.defaultReplyType = defaultReplyType;
-  }
-
-  /**
-   * Initialize the annotation service.
-   * @throws ServiceException
-   * @throws URISyntaxException 
-   * @throws IOException 
-   */
-  public void init() throws ServiceException, IOException, URISyntaxException {
-    annotationService = createAnnotationService();
-    replyService = createReplyService();
-  }
-
-  private Annotations createAnnotationService() throws IOException, URISyntaxException, ServiceException {
-    final ProtectedService annProtectedService = createProtectedService(this.annotationConfiguration);
-    return AnnotationClientFactory.create(annProtectedService);
-  }
-
-  private Replies createReplyService() throws IOException, URISyntaxException, ServiceException {
-    final ProtectedService replyProtectedService = createProtectedService(this.replyConfiguration);
-    return RepliesClientFactory.create(replyProtectedService);
-  }
-
-  public void setAnnotationServiceConfiguration(final Map configMap) {
-    annotationConfiguration = createMapConfiguration(configMap);
-  }
-
-  /**
-   * Set the reply service configuration.
-   * @param configMap configMap
-   * @throws MalformedURLException
-   * @throws ServiceException
-   */
-  public void setReplyServiceConfiguration(final Map configMap) throws MalformedURLException, ServiceException {
-    replyConfiguration = createMapConfiguration(configMap);
+  public void setReplyWebService(final ReplyWebService replyWebService) {
+    this.replyWebService = replyWebService;
   }
 
   /**
@@ -284,20 +205,5 @@ public class AnnotationService extends BaseConfigurableService {
     } catch (IOException e) {
       throw new ApplicationException(e);
     }
-  }
-
-  /**
-   * @param encodingCharset charset for encoding the data to be persisting in
-   */
-  public void setEncodingCharset(final String encodingCharset) {
-    this.encodingCharset = encodingCharset;
-  }
-
-  /**
-   * Set whether the user isAnonymous.
-   * @param isAnonymous true if user isAnonymous
-   */
-  public void setAnonymous(final boolean isAnonymous) {
-    this.isAnonymous = isAnonymous;
   }
 }
