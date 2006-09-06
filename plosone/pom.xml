@@ -244,6 +244,7 @@
             </systemProperty>
           </systemProperties>
           <scanIntervalSeconds>5</scanIntervalSeconds>
+	  <webDefaultXml>src/main/resources/webdefault.xml</webDefaultXml>
         </configuration>
       </plugin>
 
