@@ -1435,7 +1435,7 @@ public abstract class AxesWalker extends PredicatedNodeTest
   static final boolean DEBUG_WAITING = false;
 
   /** If true, diagnostic messages about the tree traversal will be posted.  */
-  static final boolean DEBUG_TRAVERSAL = true;
+  static final boolean DEBUG_TRAVERSAL = false;
 
   /** If true, diagnostic messages about the nodes that have 
    *  been 'located' will be posted.  */
