@@ -10,6 +10,9 @@
 package org.plos.annotation.service;
 
 import org.plos.util.FileUtils;
+import org.plos.service.PermissionServiceGetter;
+import org.plos.ApplicationException;
+import org.plos.permission.service.PermissionWebService;
 
 import java.io.IOException;
 import java.rmi.RemoteException;
@@ -25,21 +28,21 @@ public class AnnotationLazyLoader {
   private String bodyContent;
   private final String bodyUrl;
   private static final String DELETE_GRANT = "delete";
+  private String resourceId;
+  private PermissionServiceGetter permissionServiceGetter;
 
   private static enum AnnotationVisibility {PUBLIC, PRIVATE, UNKNOWN}
-
   private AnnotationVisibility annotationVisibility = AnnotationVisibility.UNKNOWN;
-
-  private PermissionWebService permissionWebService;
-  private ResourcePropsForAuth resourcePropsForAuth;
 
   /**
    * @param bodyUrl bodyUrl
-   * @param resourcePropsForAuth resourcePropsForAuth
+   * @param resourceId resourceId
+   * @param permissionServiceGetter permissionServiceGetter
    */
-  public AnnotationLazyLoader(final String bodyUrl, final ResourcePropsForAuth resourcePropsForAuth) {
+  public AnnotationLazyLoader(final String bodyUrl, final String resourceId, final PermissionServiceGetter permissionServiceGetter) {
     this.bodyUrl = bodyUrl;
-    this.permissionWebService = resourcePropsForAuth.getPermissionWebService();
+    this.resourceId = resourceId;
+    this.permissionServiceGetter = permissionServiceGetter;
   }
 
   public String getBody() throws ApplicationException {
@@ -50,9 +53,7 @@ public class AnnotationLazyLoader {
   }
 
   public boolean isPublicVisible() throws ApplicationException, RemoteException {
-    if (AnnotationVisibility.UNKNOWN == annotationVisibility) {
-      annotationVisibility = fetchAnnotationVisibility();
-    }
+    annotationVisibility = fetchAnnotationVisibility();
 
     return AnnotationVisibility.PUBLIC == annotationVisibility;
   }
@@ -64,7 +65,7 @@ public class AnnotationLazyLoader {
    * @throws java.rmi.RemoteException
    */
   protected AnnotationVisibility fetchAnnotationVisibility() throws ApplicationException, RemoteException {
-    final String[] grants = permissionWebService.listGrants(resourcePropsForAuth.getAnnotationUrl(), resourcePropsForAuth.getPrincipal());
+    final String[] grants = getPermissionWebService().listGrants(resourceId);
     final List<String> grantsList = Arrays.asList(grants);
 
     if (grantsList.contains(DELETE_GRANT)) {
@@ -73,8 +74,8 @@ public class AnnotationLazyLoader {
     return AnnotationVisibility.PUBLIC;
   }
 
-  public void setResourcePropsForAuth(final ResourcePropsForAuth resourcePropsForAuth) {
-    this.resourcePropsForAuth = resourcePropsForAuth;
+  private PermissionWebService getPermissionWebService() {
+    return permissionServiceGetter.getPermissionWebService();
   }
 
   protected static String getBodyContent(final String bodyUrl) throws ApplicationException {

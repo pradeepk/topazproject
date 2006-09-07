@@ -10,6 +10,7 @@
 package org.plos.annotation.service;
 
 import com.opensymphony.util.TextUtils;
+import org.plos.ApplicationException;
 
 /**
  * Base class for Annotation and reply.
@@ -20,7 +21,7 @@ import com.opensymphony.util.TextUtils;
 public abstract class BaseAnnotation {
   /**
    * @return the escaped body.
-   * @throws ApplicationException
+   * @throws org.plos.ApplicationException
    */
   public String getBody() throws ApplicationException {
     return escapeText(getOriginalBodyContent());

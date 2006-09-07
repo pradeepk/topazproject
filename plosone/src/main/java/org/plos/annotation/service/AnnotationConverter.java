@@ -11,22 +11,22 @@ package org.plos.annotation.service;
 
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.ReplyInfo;
+import org.plos.ApplicationException;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
-import java.rmi.RemoteException;
 
 /**
  * A kind of utility class to convert types between topaz and plosone types fro Annotations and Replies
  */
 public class AnnotationConverter {
   private AnnotationLazyLoaderFactory lazyLoaderFactory;
-  private String currentPrincipal;
 
   /**
    * @param annotations an array of annotations
    * @return an array of Annotation objects as required by the web layer
-   * @throws ApplicationException
+   * @throws org.plos.ApplicationException
    */
   public Annotation[] convert(final AnnotationInfo[] annotations) throws ApplicationException {
     final List<Annotation> plosoneAnnotations = new ArrayList<Annotation>();
@@ -42,7 +42,7 @@ public class AnnotationConverter {
    * @throws ApplicationException
    */
   public Annotation convert(final AnnotationInfo annotation) throws ApplicationException {
-    final AnnotationLazyLoader lazyLoader = lazyLoaderFactory.create(annotation.getBody(), annotation.getId(), currentPrincipal);
+    final AnnotationLazyLoader lazyLoader = lazyLoaderFactory.create(annotation);
 
     return new Annotation(annotation) {
       protected String getOriginalBodyContent() throws ApplicationException {
@@ -63,7 +63,7 @@ public class AnnotationConverter {
   /**
    * @param replies an array of Replies
    * @return an array of Reply objects as required by the web layer
-   * @throws ApplicationException
+   * @throws org.plos.ApplicationException
    */
   public Reply[] convert(final ReplyInfo[] replies) throws ApplicationException {
     final List<Reply> plosoneReplies = new ArrayList<Reply>();
@@ -79,7 +79,7 @@ public class AnnotationConverter {
    * @throws ApplicationException
    */
   public Reply convert(final ReplyInfo reply) throws ApplicationException {
-    final AnnotationLazyLoader lazyLoader = lazyLoaderFactory.create(reply.getBody(), reply.getId(), currentPrincipal);
+    final AnnotationLazyLoader lazyLoader = lazyLoaderFactory.create(reply);
 
     return new Reply(reply) {
       protected String getOriginalBodyContent() throws ApplicationException {
@@ -102,13 +102,5 @@ public class AnnotationConverter {
    */
   public void setLazyLoaderFactory(final AnnotationLazyLoaderFactory lazyLoaderFactory) {
     this.lazyLoaderFactory = lazyLoaderFactory;
-  }
-
-  /**
-   * Set the current principal
-   * @param currentPrincipal currentPrincipal
-   */
-  public void setCurrentPrincipal(final String currentPrincipal) {
-    this.currentPrincipal = currentPrincipal;
   }
 }

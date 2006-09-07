@@ -6,6 +6,8 @@ package org.plos.annotation.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.util.FileUtils;
+import org.plos.service.BaseConfigurableService;
+import org.plos.ApplicationException;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.NoSuchIdException;
 import org.topazproject.ws.annotation.ReplyInfo;
@@ -157,7 +159,7 @@ public class AnnotationService extends BaseConfigurableService {
 
   /**
    * @param annotationId annotationId
-   * @throws ApplicationException
+   * @throws org.plos.ApplicationException
    * @return Annotation
    */
   public Annotation getAnnotation(final String annotationId) throws ApplicationException {

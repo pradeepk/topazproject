@@ -42,9 +42,9 @@
     <constructor-arg value="TEST"/>
   </bean>
 
-  <bean id="userContext" class="org.plos.annotation.web.UserContext"/>
+  <bean id="userContext" class="org.plos.web.UserContext"/>
 
-  <bean id="permissionWebService" class="org.plos.annotation.service.PermissionWebService">
+  <bean id="permissionWebService" class="org.plos.permission.service.PermissionWebService">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
@@ -54,8 +54,12 @@
     </property>
   </bean>
 
-  <bean id="lazyLoaderFactory" class="org.plos.annotation.service.AnnotationLazyLoaderFactory">
+  <bean id="permissionServiceGetter" class="org.plos.service.PermissionServiceGetter">
     <property name="permissionWebService" ref="permissionWebService"/>
+  </bean>
+
+  <bean id="lazyLoaderFactory" class="org.plos.annotation.service.AnnotationLazyLoaderFactory">
+    <property name="permissionServiceGetter" ref="permissionServiceGetter"/>
   </bean>
 
   <bean id="annotationConverter" class="org.plos.annotation.service.AnnotationConverter">

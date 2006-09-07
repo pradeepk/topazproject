@@ -7,11 +7,11 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.annotation.service;
+package org.plos.service;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
-import org.plos.annotation.web.UserContext;
+import org.plos.web.UserContext;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 
@@ -49,6 +49,13 @@ public abstract class BaseConfigurableService {
    */
   public void setUserContext(final UserContext userContext) {
     this.userContext = userContext;
+  }
+
+  /**
+   * @return get user context
+   */
+  public UserContext getUserContext() {
+    return userContext;
   }
 
   /**

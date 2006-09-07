@@ -13,7 +13,7 @@ import com.opensymphony.util.TextUtils;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.annotation.service.ApplicationException;
+import org.plos.ApplicationException;
 
 /**
  * TODO: See if action chaining can help as the htmlEncoding is needing both for title and body. So we could have a FetchAction and a HtmlEncodeAction.

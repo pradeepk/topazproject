@@ -12,7 +12,7 @@ package org.plos.annotation.web;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.annotation.service.ApplicationException;
+import org.plos.ApplicationException;
 import org.plos.util.FileUtils;
 import org.plos.util.ProfanityCheckingService;
 

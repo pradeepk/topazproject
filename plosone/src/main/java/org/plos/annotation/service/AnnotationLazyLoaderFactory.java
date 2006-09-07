@@ -9,25 +9,35 @@
  */
 package org.plos.annotation.service;
 
+import org.topazproject.ws.annotation.AnnotationInfo;
+import org.topazproject.ws.annotation.ReplyInfo;
+import org.plos.service.PermissionServiceGetter;
+
 /**
  * Factory to return instances of lazy loaders as required by annotations and replies
  */
 public class AnnotationLazyLoaderFactory {
-  private PermissionWebService permissionWebService;
+  private PermissionServiceGetter permissionServiceGetter;
 
   /**
-   * Create an instance of the AnnotationLazyLoader as requied for each annotation
-   * @param bodyUrl bodyUrl
-   * @param annotationUrl annotationUrl
-   * @param principal principal
+   * Create an instance of the AnnotationLazyLoader as required for each annotation
+   * @param annotation annotation
    * @return an instance of a lazy loader
    */
-  public AnnotationLazyLoader create(final String bodyUrl, final String annotationUrl, final String principal) {
-    final ResourcePropsForAuth resourcePropsForAuth = new ResourcePropsForAuth(annotationUrl, principal, permissionWebService);
-    return new AnnotationLazyLoader(bodyUrl, resourcePropsForAuth);
+  public AnnotationLazyLoader create(final AnnotationInfo annotation) {
+    return new AnnotationLazyLoader(annotation.getBody(), annotation.getId(), permissionServiceGetter);
   }
 
-  public void setPermissionWebService(final PermissionWebService permissionWebService) {
-    this.permissionWebService = permissionWebService;
+  /**
+   * Create an instance of the AnnotationLazyLoader as required for each reply
+   * @param reply reply
+   * @return an instance of a lazy loader
+   */
+  public AnnotationLazyLoader create(final ReplyInfo reply) {
+    return new AnnotationLazyLoader(reply.getBody(), reply.getId(), permissionServiceGetter);
+  }
+
+  public void setPermissionServiceGetter(final PermissionServiceGetter permissionServiceGetter) {
+    this.permissionServiceGetter = permissionServiceGetter;
   }
 }

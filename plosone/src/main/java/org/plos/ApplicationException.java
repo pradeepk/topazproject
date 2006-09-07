@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  */
-package org.plos.annotation.service;
+package org.plos;
 
 /**
  * Generic application level exception

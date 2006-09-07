@@ -10,13 +10,15 @@
 package org.plos.annotation.web;
 
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork.ActionContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.annotation.service.ApplicationException;
+import org.plos.ApplicationException;
 import org.plos.util.FileUtils;
 import org.plos.util.ProfanityCheckingService;
 
 import java.util.List;
+import java.util.Map;
 
 /**
  * Action to create an annotation. It also does profanity validation on the user content.
@@ -37,6 +39,8 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    * Also does some profanity check for title and body before creating the annotation.
    */
   public String execute() throws Exception {
+    final Map sessionMap = ActionContext.getContext().getSession();
+
     try {
       final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(title);
       final List<String> profanityValidationMessagesInBody = profanityCheckingService.validate(body);

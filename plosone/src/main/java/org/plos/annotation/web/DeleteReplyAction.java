@@ -11,7 +11,7 @@ package org.plos.annotation.web;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.annotation.service.ApplicationException;
+import org.plos.ApplicationException;
 
 /**
  * Action class to delete a given reply.
