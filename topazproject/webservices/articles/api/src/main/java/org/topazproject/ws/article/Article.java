@@ -83,19 +83,19 @@ public interface Article {
   /**
    * Get list of articles for a given set of categories or authors bracked by specified
    * times. List is returned as an XML string of the following format:
-   * <pre>
-   *   <articles>
-   *     <article>
-   *       <doi>...</doi>
-   *       <title>...</title>
-   *       <description>...</description>
-   *       <date>YYY-MM-DD</date>
-   *       <authors>
-   *         <author>...</author>
+   * <pre&gt;
+   *   &lt;articles&gt;
+   *     &lt;article&gt;
+   *       &lt;doi&gt;...&lt;/doi&gt;
+   *       &lt;title&gt;...&lt;/title&gt;
+   *       &lt;description&gt;...&lt;/description&gt;
+   *       &lt;date&gt;YYY-MM-DD&lt;/date&gt;
+   *       &lt;authors&gt;
+   *         &lt;author&gt;...&lt;/author&gt;
    *         ...
-   *       </authors>
-   *       <categories>
-   *         <category>...</category>
+   *       &lt;/authors&gt;
+   *       &lt;categories&gt;
+   *         &lt;category&gt;...&lt;/category&gt;
    *         ...
    * </pre>
    *
