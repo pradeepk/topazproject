@@ -196,8 +196,8 @@ public class XPointerAPI {
             }
         }
         
-        if(retLocation.getLength()==0)
-            throw new TransformerException("Subresource Error: empty location-set");
+        //if(retLocation.getLength()==0)
+        //    throw new TransformerException("Subresource Error: empty location-set");
         
         return retLocation;
     }

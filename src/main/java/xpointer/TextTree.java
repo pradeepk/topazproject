@@ -149,7 +149,10 @@ public class TextTree {
                         tnf = new TextNodeFragment();
                         tnf.setNode(node);
                         tnf.setStartIndex(rootRange.getStartOffset());
-                        tnf.setEndIndex(node.getNodeValue().length());
+                        if (rootRange.getEndContainer().equals(node))
+                          tnf.setEndIndex(rootRange.getEndOffset());
+                        else
+                          tnf.setEndIndex(node.getNodeValue().length());
                         result.addElement(tnf);
                     }
                 }
@@ -406,153 +409,21 @@ public class TextTree {
     }
     
     /**
-     * Returns the points (collapsed ranges) found after a certain 
-     * amount of characters starting from a given point.
-     * It is called when this tree has a node as root.
+     * Returns the first text node in the tree.
+     * If the rooto of the tree is a range, the returned node may not be completely contained in
+     * the range. 
      */
-    private Range []retrieveRangeAfterForNode(TextPoint textPoint,int numcar)
+    public Node getFirst()
     {
-        Vector retval = new Vector();
-        NodeList nodiTesto = getTextNodes();
+        TextNodeFragment [] nodiTesto = getTextNodeFragments();
         
-        if(textPoint.getTextTree()!=this)
+        if(nodiTesto.length>0)
         {
-            throw new RuntimeException("The TextPoint doesn't belong to this TextTree.");
+            return nodiTesto[0].getNode();
         }
-        
-        int counter = 0;
-        int position = 0;
-        Node container = textPoint.getContainer();
-        
-        /*looks for the position of textPoint in the list*/
-        for(int i=0;i<nodiTesto.getLength();i++)
-        {
-            if(nodiTesto.item(i)==textPoint.getContainer())
-            {
-                position = i;
-                break;
-            }
-        }
-        
-        
-        int currentIndex = textPoint.getIndex();
-        
-        retval.addElement(createCollapsedRange(container,currentIndex));
-        currentIndex++;    
-        
-        while(counter<numcar)
-        {
-            /*the end of a text node is found*/
-            if(currentIndex>container.getNodeValue().length())
-            {
-               position++;
-               container = nodiTesto.item(position);
-               retval.addElement(createCollapsedRange(container,0));
-               currentIndex  = 1;
-            }
-            
-            retval.addElement(createCollapsedRange(container,currentIndex));
-            
-            currentIndex++;
-            counter++;
-        }
-        
-        Range [] result = new Range[retval.size()];
-        
-        for(int i=0;i<result.length;i++)
-        {
-            result[i] = (Range) retval.elementAt(i);
-        }
-        
-        return result;
+        else 
+            return null;
     }
     
-    /**
-     * Returns the points (collapsed ranges) found after a certain 
-     * amount of characters starting from a given point.
-     * It is called when this tree has a range as root.
-     */
-    private Range []retrieveRangeAfterForRange(TextPoint textPoint,int numcar)
-    {
-        TextNodeFragment [] listaFrammenti = getTextNodeFragments();
-        Vector retval = new Vector();
-        
-        int position = 0;
-        int counter = 0;
-        
-        for(int i=0;i<listaFrammenti.length;i++)
-        {
-            if(listaFrammenti[i].getNode()==textPoint.getContainer())
-            {
-                position = i;
-                break;
-            }
-        }
-        
-        int currentIndex = textPoint.getIndex();
-        TextNodeFragment container = listaFrammenti[position];
-        
-        retval.addElement(createCollapsedRange(container.getNode(),currentIndex));
-        currentIndex++;    
-        
-        while(counter<numcar)
-        {
-            /*the end of a text node fragment is found*/
-            if(currentIndex>container.getEndIndex())
-            {
-               position++;
-               container = listaFrammenti[position];
-               retval.addElement(createCollapsedRange(container.getNode(),0));
-               currentIndex  = 1;
-            }
-            
-            retval.addElement(createCollapsedRange(container.getNode(),currentIndex));
-            
-            currentIndex++;
-            counter++;
-        }
-        
-        Range [] result = new Range[retval.size()];
-        
-        for(int i=0;i<result.length;i++)
-        {
-            result[i] = (Range) retval.elementAt(i);
-        }
-        
-        return result;
-    }
     
-    /**
-     * Creates a collapsed range.
-     * @param node the container node
-     * @param index the offset
-     * @return the collapsed range created
-     */
-    private Range createCollapsedRange(Node node,int index)
-    {
-        DocumentRange docRange = (DocumentRange) node.getOwnerDocument();
-        
-        Range range = docRange.createRange();
-        range.setStart(node,index);
-        range.setEnd(node,index);
-        
-        return range;
-    }
-    
-    /**
-     * Returns the points (collapsed ranges) found after a certain 
-     * amount of characters starting from a given point.
-     * For example, a word of five characters returns six points.
-     * It is useful when string-range is called with an empty string.
-     * @param textPoint the starting text point 
-     * @param numcar the number of examined characters
-     * @return an array of points (collapsed ranges) 
-     */
-    public Range[] retrieveRangeAfter(TextPoint textPoint,int numcar)
-    {
-        if(rootNode!=null)
-            return retrieveRangeAfterForNode(textPoint,numcar);
-        else
-            return retrieveRangeAfterForRange(textPoint,numcar);
-    }
 }

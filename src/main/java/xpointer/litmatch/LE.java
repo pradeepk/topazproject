@@ -65,7 +65,7 @@ public class LE {
         int searchIndex = 0;
         Vector matches = new Vector();
         
-        while( (index=input.indexOf(match,searchIndex))!=-1)
+        while( (index=indexOf(input, searchIndex))!=-1)
         {
             LEMatch leMatch = new LEMatch(index,index+match.length());
             matches.addElement(leMatch);
@@ -80,5 +80,12 @@ public class LE {
         return retval;
     }
     
+    private int indexOf(String input, int searchIndex) {
+      
+      if (match.equals("")) 
+        return (searchIndex < input.length()) ? searchIndex : -1;
+      
+      return input.indexOf(match, searchIndex);
+    }
   
 }

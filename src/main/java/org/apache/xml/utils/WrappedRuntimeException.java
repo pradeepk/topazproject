@@ -64,10 +64,6 @@ package org.apache.xml.utils;
 public class WrappedRuntimeException extends RuntimeException
 {
 
-  /** Primary checked exception.
-   *  @serial          */
-  private Exception m_exception;
-
   /**
    * Construct a WrappedRuntimeException from a
    * checked exception.
@@ -77,9 +73,8 @@ public class WrappedRuntimeException extends RuntimeException
   public WrappedRuntimeException(Exception e)
   {
 
-    super(e.getMessage());
+    super(e);
 
-    m_exception = e;
   }
 
   /**
@@ -92,9 +87,8 @@ public class WrappedRuntimeException extends RuntimeException
   public WrappedRuntimeException(String msg, Exception e)
   {
 
-    super(msg);
+    super(msg, e);
 
-    m_exception = e;
   }
   
   /**
@@ -104,6 +98,6 @@ public class WrappedRuntimeException extends RuntimeException
    */
   public Exception getException()
   {
-    return m_exception;
+    return (Exception)getCause();
   }
 }

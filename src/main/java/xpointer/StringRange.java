@@ -49,11 +49,11 @@ public class StringRange {
 
     /*contiene i nodi testo del frammento individuato dal parametro della string-range()*/
     /** contains the text nodes of the document fragment selected by the first parameter of string-range()*/
-    private TextTree textTree;
+    private TextTree textTree = null;
     
     /*contiene i nodi testo dell'intero documento*/
     /** contains text nodes of the entire document*/
-    private TextTree entireTextTree;
+    private TextTree entireTextTree = null;
     
     private TextNodeFragment nodeFragment = null;
     
@@ -172,8 +172,18 @@ public class StringRange {
                 }
             }
         }
+
+        if (param.equals("")) {
+          // special case: match beyond end as per spec
+          int last = nodiTesto.length - 1;
+          if (last >= 0) {
+            TextPoint tempPoint = new TextPoint(entireTextTree); //il problema è qui
+            tempPoint.setContainer(nodiTesto[last].getNode());
+            tempPoint.setIndex(nodiTesto[last].getEndIndex());
+            totalMatch.addElement(tempPoint);
+          }
+        }
        
-        
         return totalMatch;
     }
     
@@ -189,10 +199,6 @@ public class StringRange {
      */
     public Range[] getStringRange(String match,int offset,int length) throws TransformerException
     {
-        //if(match.equals(""))
-        //{
-        //   return emptyString(match,offset,length);
-        //}
         
         /*perchè la string-range comincia a contare da uno*/
         offset -= 1;
@@ -205,8 +211,6 @@ public class StringRange {
             throw new TransformerException("Fourth parameter is negative");
         
         Vector pl = getMatchPoint(match);
-        
-        
         
         int startChars,endChars; //numero di caratteri prima del punto iniziale e finale
         TextPoint textPoint,startPoint,endPoint;
@@ -229,13 +233,20 @@ public class StringRange {
             }
             
             /*se il punto iniziale è prima dell'inizio del documento oppure dopo la fine,si ha errore*/
-            if(startPoint==null)
-                throw new TransformerException("Subresource Error");
-            
-            /*se il punto finale è oltre la fine del documento, tronco il range in modo
-             che la fine del range coincida con quella del documento*/
-            if(endPoint==null)
-            {
+            if ((startPoint==null) && (endPoint == null)) {
+              // skip locations that lie entirely outside the document
+              continue;
+            }
+
+            if (startPoint == null) {
+                // truncate start to start of doc
+                startPoint = new TextPoint(entireTextTree);
+                startPoint.setContainer(entireTextTree.getFirst());
+                startPoint.setIndex(0);
+            }
+              
+            if (endPoint==null) {
+                // truncate end to end of doc
                 endPoint = new TextPoint(entireTextTree);
                 endPoint.setContainer(entireTextTree.getLast());
                 endPoint.setIndex(entireTextTree.getLast().getNodeValue().length());
@@ -269,13 +280,6 @@ public class StringRange {
      */
     public Range[] getStringRange(String match) throws TransformerException
     {
-        if(match.equals("") && nodeFragment!=null)
-            return emptyString();
-        
-        /*La stringa vuota corrisponde a fare match sull'intero contenuto del documento*/
-        if(match.equals(""))
-            return emptyString(textTree.toString());
-        
         return getStringRange(match,1,match.length());
     }
     
@@ -310,8 +314,6 @@ public class StringRange {
     {
         int len;
         
-        //if(match.equals(""))
-        //    match = entireTextTree.toString();
         
         if(offset<=0)
             len = java.lang.Math.abs(offset) + match.length() + 1;
@@ -380,77 +382,7 @@ public class StringRange {
         return retval;
     }
      
-      
   
-    /**
-     * An empty string is defined to match before each character of the string-value and after the final
-     * character.
-     * The corresponding ranges are returned.
-     *
-     * @param match the string-value
-     * @param offset position of the first character to be in the resulting range
-     * @param length the number of characters in the resulting range
-     * @return an array of ranges 
-     */
-    private Range []emptyString(String match) throws javax.xml.transform.TransformerException
-    {
-        Vector pl = getMatchPoint(match);
-        Vector result = new Vector();
-        
-        for(int i=0;i<pl.size();i++)
-        {
-            TextPoint textPoint = (TextPoint) pl.elementAt(i);
-            
-            Range [] temp = entireTextTree.retrieveRangeAfter(textPoint,match.length());
-            
-            for(int j=0;j<temp.length;j++)
-                result.addElement(temp[j]);
-        }
-        
-         Range []retval = new Range[result.size()];
-         
-         for(int i=0;i<result.size();i++)
-         {
-             retval[i] = (Range) result.elementAt(i);
-         }
-         
-         return retval;
-    }
-    
-    /**
-     * When string-range is invoked with an empty string and the location is 
-     * not an element node, a particular treatment is needed.
-     * Points before each character point and after the last one are returned.
-     *
-     */
-    private Range []emptyString() throws javax.xml.transform.TransformerException
-    {
-        DocumentRange docRange = (DocumentRange) nodeFragment.getNode().getOwnerDocument();
-        Node node = nodeFragment.getNode();
-        
-        if(node.getNodeType()==Node.ATTRIBUTE_NODE)
-            node = node.getFirstChild();
-        
-        Vector result = new Vector();
-        
-        String value = node.getNodeValue();
-        
-        for(int i=nodeFragment.getStartIndex();i<=nodeFragment.getEndIndex();i++)
-        {
-            Range range = docRange.createRange();
-            range.setStart(node,i);
-            range.setEnd(node,i);
-            result.addElement(range);
-        }
-        
-        Range [] retval = new Range[result.size()];
-        
-        for(int i=0;i<retval.length;i++)
-            retval[i] = (Range) result.elementAt(i);
-        
-        return retval;
-    }
-    
     /**
      * Returns true if the node type need to be handled
      * in a different mode from element nodes
