@@ -9,6 +9,7 @@
  */
 package org.topazproject.ws.article;
 
+import java.util.Date;
 import java.rmi.RemoteException;
 import javax.activation.DataHandler;
 
@@ -78,4 +79,37 @@ public interface Article {
    * @throws RemoteException if some other error occured
    */
   public String getObjectURL(String doi, String rep) throws NoSuchIdException, RemoteException;
+
+  /**
+   * Get list of articles for a given set of categories or authors bracked by specified
+   * times. List is returned as an XML string of the following format:
+   * <pre>
+   *   <articles>
+   *     <article>
+   *       <doi>...</doi>
+   *       <title>...</title>
+   *       <description>...</description>
+   *       <date>YYY-MM-DD</date>
+   *       <authors>
+   *         <author>...</author>
+   *         ...
+   *       </authors>
+   *       <categories>
+   *         <category>...</category>
+   *         ...
+   * </pre>
+   *
+   * @param startDate is the date to start searching from. If empty, start from begining of time.
+   *        Can be iso8601 formatted or string representation of Date object.
+   * @param endDate is the date to search until. If empty, search until prsent date
+   * @param categories is list of categories to search for articles within (all categories if empty)
+   * @param authors is list of authors to search for articles within (all authors if empty)
+   * @param ascending controls the sort order (by date). If used for RSS feeds, decending would
+   *        be appropriate. For archive display, ascending would be appropriate.
+   * @return the xml for the specified feed
+   * @throws RemoteException if there was a problem talking to the alerts service
+   */
+  public String getArticles(String startDate, String endDate,
+                            String[] categories, String[] authors,
+                            boolean ascending) throws RemoteException;
 }

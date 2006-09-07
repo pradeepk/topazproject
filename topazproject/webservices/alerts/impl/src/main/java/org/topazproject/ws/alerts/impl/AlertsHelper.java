@@ -39,6 +39,9 @@ import org.apache.commons.mail.EmailException;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 
+import org.topazproject.feed.ArticleFeed;
+import org.topazproject.feed.ArticleFeedData;
+
 /**
  * Collection of helpers we use in AlertsImpl.
  *
@@ -128,7 +131,7 @@ abstract class AlertsHelper {
    *
    */
   static Email getEmail(Collection articles) throws AlertsGenerationException, EmailException {
-    String xml = buildXml(articles);
+    String xml = ArticleFeed.buildXml(articles);
     try {
       ByteArrayOutputStream os = new ByteArrayOutputStream(250);
       transformer.transform(new StreamSource(new StringReader(xml)), new StreamResult(os));
@@ -152,52 +155,5 @@ abstract class AlertsHelper {
     email.setHostName(SMTP_HOSTNAME);
     email.setSmtpPort(SMTP_PORT);
     email.send();
-  }
-  
-  /**
-   * Build an XML string from a collection of ArticleData records.
-   *
-   * @param articles A collection of articles
-   */
-  static String buildXml(Collection articles) {
-    String articlesXml = "";
-    for (Iterator articleIt = articles.iterator(); articleIt.hasNext(); ) {
-      AlertsImpl.ArticleData article = (AlertsImpl.ArticleData)articleIt.next();
-
-      StringBuffer authorsSb = new StringBuffer();
-      if (article.authors != null && article.authors.size() > 0) {
-        for (Iterator authorsIt = article.authors.iterator(); authorsIt.hasNext(); ) {
-          authorsSb.append("      <author>");
-          authorsSb.append(authorsIt.next());
-          authorsSb.append("</author>\n");
-        }
-        authorsSb.insert(0, "<authors>\n");
-        authorsSb.append("    </authors>");
-      }
-
-      StringBuffer categoriesSb = new StringBuffer();
-      if (article.categories != null && article.categories.size() > 0) {
-        for (Iterator categoriesIt = article.categories.iterator(); categoriesIt.hasNext(); ) {
-          categoriesSb.append("      <category>");
-          categoriesSb.append(categoriesIt.next());
-          categoriesSb.append("</category>\n");
-        }
-        categoriesSb.insert(0, "<categories>\n");
-        categoriesSb.append("    </categories>");
-      }
-
-      Map values = new HashMap();
-      values.put("doi", article.doi);
-      values.put("title", article.title);
-      values.put("description", article.description);
-      values.put("date", article.date);
-      values.put("authors", authorsSb.toString());
-      values.put("categories", categoriesSb.toString());
-      articlesXml += ItqlHelper.bindValues(XML_ARTICLE_TAG, values);
-    }
-
-    Map values = new HashMap();
-    values.put("articles", articlesXml);
-    return ItqlHelper.bindValues(XML_RESPONSE, values);
   }
 }

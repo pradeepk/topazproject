@@ -11,10 +11,13 @@
 package org.topazproject.ws.alerts.impl;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.MalformedURLException;
+import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import javax.xml.rpc.ServiceException;
+import java.util.Date;
 import java.util.Iterator;
 import java.util.Collection;
 import java.util.HashMap;
@@ -25,6 +28,7 @@ import java.util.LinkedHashMap;
 import java.util.TreeSet;
 import java.util.Calendar;
 import java.util.NoSuchElementException;
+import java.text.ParseException;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
@@ -44,6 +48,8 @@ import org.topazproject.mulgara.itql.Answer.QueryAnswer;
 import org.topazproject.fedora.client.APIMStubFactory;
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.ws.alerts.Alerts;
+
+import org.topazproject.feed.ArticleFeed;
 
 /** 
  * This provides the implementation of the alerts service.
@@ -139,22 +145,6 @@ public class AlertsImpl implements Alerts {
   }
   
   /**
-   * Class to stash article data in while reading from Kowari.
-   */
-  static class ArticleData {
-    String doi;
-    String title;
-    String description;
-    String date;
-    List   authors;
-    List   categories;
-
-    public String toString() {
-      return "ArticleData[" + this.doi + ":" + this.date + "]";
-    }
-  }
-
-  /**
    * Class to stash user data while reading from Kowari.
    */
   static class UserData {
@@ -206,57 +196,27 @@ public class AlertsImpl implements Alerts {
   }
   
   // See Alerts.java interface
-  public String getFeed(String startDate, String endDate, String[] categories, String[] authors)
-      throws RemoteException {
-    // Build up a list of categories or authors to append to the query string
-    LinkedList params = new LinkedList();
-    
-    if (categories != null && categories.length > 0) {
-      for (int i = 0; i < categories.length; i++)
-        params.add("$doi <dc:subject> '" + ItqlHelper.escapeLiteral(categories[i]) + "' ");
-    } else if (authors != null && authors.length > 0) {
-      for (int i = 0; i < authors.length; i++)
-        params.add("$doi <dc:creator> '" + ItqlHelper.escapeLiteral(authors[i]) + "' ");
-    }
-
-    StringBuffer args = new StringBuffer();
-    if (params.size() > 0) {
-      args.append(" and (");
-      for (Iterator i = params.iterator(); i.hasNext(); ) {
-        args.append(i.next());
-        if (i.hasNext())
-          args.append(" or ");
-      }
-      args.append(")");
-    }
-
-    // TODO: Search by date (requires modification to ingestion to support datatypes)
-
-    Map values = new HashMap();
-    values.put("ARTICLES", AlertsImpl.MODEL_ARTICLES);
-    values.put("args", args.toString());
-    String query = ItqlHelper.bindValues(AlertsImpl.FEED_ITQL, values);
-
-    return AlertsHelper.buildXml(this.getArticles(startDate, endDate, query));
-  }
-
-  // See Alerts.java interface
   public void startUser(String userId) throws RemoteException {
-    this.startUser(userId, Calendar.getInstance());
+    checkAccess(pep.START_USER, userId);
+    this.startUser(userId, Calendar.getInstance().getTime().toString());
   }
 
   // See Alerts.java interface
-  public void startUser(String userId, Calendar date) throws RemoteException {
+  public void startUser(String userId, String date) throws RemoteException {
+    checkAccess(pep.START_USER, userId);
+    Calendar cal = Calendar.getInstance();
+    cal.setTime(ArticleFeed.parseDateParam(date));
     Map values = new HashMap();
     values.put("ALERTS", AlertsImpl.MODEL_ALERTS);
     values.put("userId", userId);
-    values.put("stamp", AlertsHelper.getTimestamp(date));
+    values.put("stamp", AlertsHelper.getTimestamp(cal));
     String query = ItqlHelper.bindValues(AlertsImpl.CREATE_USER_ITQL, values);
     this.itql.doUpdate(query);
   }
   
   // See Alerts.java interface
   public void clearUser(String userId) throws RemoteException {
+    checkAccess(pep.CLEAR_USER, userId);
     Map values = new HashMap();
     values.put("ALERTS", AlertsImpl.MODEL_ALERTS);
     values.put("userId", userId);
@@ -265,10 +225,14 @@ public class AlertsImpl implements Alerts {
   }
   
   // See Alerts.java interface
-  public boolean sendAlerts(Calendar endDate, int count) {
+  public boolean sendAlerts(String endDate, int count) {
+    checkAccess(pep.SEND_ALERTS, "");
     int cnt = 0;
     try {
-      for (AlertMessages msgsIt = new AlertMessages(endDate); msgsIt.hasNext() && count-- > 0; ) {
+      Calendar end = Calendar.getInstance();
+      end.setTime(ArticleFeed.parseDateParam(endDate));
+      
+      for (AlertMessages msgsIt = new AlertMessages(end); msgsIt.hasNext() && count-- > 0; ) {
         Email msg = (Email)msgsIt.next();
         AlertsHelper.sendEmail(msg);
         cnt++;
@@ -294,9 +258,10 @@ public class AlertsImpl implements Alerts {
 
   // See Alerts.java interface
   public boolean sendAllAlerts() {
+    checkAccess(pep.SEND_ALERTS, "");
     Calendar c = Calendar.getInstance();
     AlertsHelper.rollCalendar(c, -1);
-    return this.sendAlerts(c, 0);
+    return this.sendAlerts(c.getTime().toString(), 0);
   }
   
   /**
@@ -417,8 +382,8 @@ public class AlertsImpl implements Alerts {
       Object[] row = (Object[])rowIt.next();
 
       UserData user = new UserData();
-      user.userId = row[1].toString();
-      user.stamp = row[0].toString();
+      user.userId = trimQuotes(row[1].toString());
+      user.stamp = trimQuotes(row[0].toString());
       
       QueryAnswer subAnswer = (QueryAnswer)row[2]; // from sub-query
       Object[] subRow = (Object[])subAnswer.getRows().get(0);
@@ -430,6 +395,13 @@ public class AlertsImpl implements Alerts {
     }
 
     return users.values();
+  }
+
+  private static String trimQuotes(String value) {
+    if (value.startsWith("\"") && value.endsWith("\""))
+      return value.substring(1, value.length() - 1);
+    else
+      return value;
   }
 
   /**
@@ -499,94 +471,47 @@ public class AlertsImpl implements Alerts {
     if (log.isDebugEnabled())
       log.debug("getArticles between " + startDate + " and " + endDate + " via: " + query);
 
-    LinkedHashMap articles = new LinkedHashMap();
-    try {
-      String xmlResult = this.itql.doQuery(query);
-      StringAnswer result = new StringAnswer(xmlResult);
-      QueryAnswer answer = (QueryAnswer)result.getAnswers().get(0);
-    
-      for (Iterator rowIt = answer.getRows().iterator(); rowIt.hasNext(); ) {
-        String[] row = (String[])rowIt.next();
+    Date start = ArticleFeed.parseDateParam(startDate);
+    Date end = ArticleFeed.parseDateParam(endDate);
 
-        // TODO: Remove this check once we retrofit Kowari/Fedora to search on date
-        String date = row[3];
-        if (!AlertsHelper.isDateInRange(date, startDate, endDate))
-          continue;
-        
-        ArticleData article = new ArticleData();
-        article.doi         = row[0];
-        article.title       = row[1];
-        article.description = row[2];
-        article.date        = row[3];
-        articles.put(article.doi, article);
+    try {
+      StringAnswer articlesAnswer = new StringAnswer(itql.doQuery(query));
+      Map articles = ArticleFeed.getArticlesSummary(start, end, articlesAnswer);
+
+      for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
+        String doi = (String)it.next();
+        try {
+          checkAccess(pep.READ_META_DATA, doi);
+        } catch (SecurityException se) {
+          articles.remove(doi);
+          if (log.isDebugEnabled())
+            log.debug(doi, se);
+        }
       }
 
-      this.getDetails(articles);
+      String detailsQuery = ArticleFeed.getDetailsQuery(articles.values());
+      StringAnswer detailsAnswer = new StringAnswer(itql.doQuery(detailsQuery));
+      ArticleFeed.addArticlesDetails(articles, detailsAnswer);
+
+      return articles.values();
     } catch (AnswerException ae) {
       throw new RemoteException("Error querying RDF", ae);
     }
-        
-    return articles.values();
+  }
+  
+  protected void checkAccess(String action, String doi) {
+    pep.checkAccess(action, URI.create(pid2URI(doi2PID(doi))));
+  }
+  
+  protected static String doi2PID(String doi) {
+    try {
+      return "doi:" + URLEncoder.encode(doi, "UTF-8");
+    } catch (UnsupportedEncodingException uee) {
+      throw new RuntimeException(uee);          // shouldn't happen
+    }
   }
 
-  /**
-   * Given a list of articles, lookup their authors and categories.
-   *
-   * @param articles Map of articles to work with
-   */
-  protected void getDetails(Map articles) throws AnswerException, RemoteException {
-    StringBuffer queryBuffer = new StringBuffer();
-
-    // Build up set of queries
-    for (Iterator i = articles.values().iterator(); i.hasNext(); ) {
-      ArticleData article = (ArticleData)i.next();
-      if (article == null)
-        continue; // should never happen
-      Map values = new HashMap();
-      values.put("ARTICLES", AlertsImpl.MODEL_ARTICLES);
-      values.put("doi", article.doi);
-      queryBuffer.append(ItqlHelper.bindValues(AlertsImpl.FIND_SUBJECTS_ITQL, values));
-      queryBuffer.append(ItqlHelper.bindValues(AlertsImpl.FIND_AUTHORS_ITQL, values));
-    }
-    
-    String results = this.itql.doQuery(queryBuffer.toString());
-    List answers = (new StringAnswer(results)).getAnswers();
-    
-    if (log.isDebugEnabled()) {
-      log.debug("Categories/Authors queries: " + queryBuffer.toString());
-      log.debug("Categories/Authors XML Results: " + results);
-    }
-
-    for (Iterator answersIt = answers.iterator(); answersIt.hasNext(); ) {
-      Object ans = answersIt.next();
-      if (ans instanceof String) {
-        // This is Ronald trying to be helpful. It isn't something we're interested in!
-        continue;
-      }
-      
-      QueryAnswer answer = (QueryAnswer)ans;
-      List rows = answer.getRows();
-      
-      // If the query returned nothing, just move on
-      if (rows.size() == 0)
-        continue;
-
-      // Column name represents type of query we did -- for categories or authors
-      String column = answer.getVariables()[1];
-      String doi = ((String[])rows.get(0))[0];
-      ArticleData article = (ArticleData)articles.get(doi);
-      if (article == null) {
-        // We should never get this - means something changed underneath us
-        log.warn("Didn't find article " + doi + " on " + column + " query");
-        continue;
-      }
-
-      // Get the list of values we want
-      List values = new LinkedList();
-      for (Iterator rowIt = rows.iterator(); rowIt.hasNext(); )
-        values.add(((String[])rowIt.next())[1]);
-      if (column.equals("subject")) article.categories = values;
-      else if (column.equals("author")) article.authors = values;
-    }
+  protected static String pid2URI(String pid) {
+    return "info:fedora/" + pid;
   }
 }

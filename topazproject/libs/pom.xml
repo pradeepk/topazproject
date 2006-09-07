@@ -38,5 +38,6 @@
     <module>fedora-client</module>
     <module>base-ws-webapp</module>
     <module>jdk2log4j-proxy</module>
+    <module>topaz-common</module>
   </modules>
 </project>

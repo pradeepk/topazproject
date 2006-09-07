@@ -105,11 +105,10 @@
       <version>0.5-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
-    <!-- Get IOUtil -->
     <dependency>
-      <groupId>spice</groupId>
-      <artifactId>spice-salt</artifactId>
-      <version>1.0</version>
+      <groupId>commons-io</groupId>
+      <artifactId>commons-io</artifactId>
+      <version>1.2</version>
       <scope>test</scope>
     </dependency>
     <!-- mailserver junit extension: http://quintanasoft.com/dumbster/ -->

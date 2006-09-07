@@ -11,6 +11,7 @@
 package org.topazproject.ws.alerts;
 
 import java.util.Calendar;
+import java.util.Date;
 import java.net.URI;
 import java.rmi.RemoteException;
 import javax.servlet.http.HttpSession;
@@ -85,25 +86,7 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
   // delegate them to the impl instance, converting parameters, return values, and exceptions
   // where necessary.
 
-  /**
-   * @see org.topazproject.ws.alerts.Alerts#getFeed
-   */
-  public String getFeed(String startDate, String endDate, String categories[], String authors[])
-      throws RemoteException {
-    try {
-      synchronized (impl) {
-        return impl.getFeed(startDate, endDate, categories, authors);
-      }
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
-    }
-  }
-
-  public boolean sendAlerts(Calendar endDate, int count) {
+  public boolean sendAlerts(String endDate, int count) {
     return impl.sendAlerts(endDate, count);
   }
 
@@ -111,7 +94,7 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
     return impl.sendAllAlerts();
   }
 
-  public void startUser(String userId, Calendar date) throws RemoteException {
+  public void startUser(String userId, String date) throws RemoteException {
     impl.startUser(userId, date);
   }
 
@@ -120,7 +103,15 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
   }
   
   public void clearUser(String userId) throws RemoteException {
-    impl.clearUser(userId);
+    try {
+      impl.clearUser(userId);
+    } catch (RuntimeException re) {
+      log.warn("", re);
+      throw re;
+    } catch (Error e) {
+      log.error("", e);
+      throw e;
+    }
   }
 
   

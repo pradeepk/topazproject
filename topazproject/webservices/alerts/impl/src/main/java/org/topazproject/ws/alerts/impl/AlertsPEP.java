@@ -26,19 +26,30 @@ import com.sun.xacml.UnknownIdentifierException;
  */
 public abstract class AlertsPEP extends AbstractSimplePEP {
   // Note: these operations must be referenced in the policy/Alerts.xml policy file
-  /** The action that represents the create-a-foo operation in XACML policies. */
-  public static final String CREATE_ALERT = "alerts:createAlert";
-  /** The action that represents the delete-a-foo operation in XACML policies. */
-  public static final String DELETE_ALERT = "alerts:deleteAlert";
+  /** The action that represents starting alerts for a user. */
+  public static final String START_USER = "alerts:startUser";
 
+  /** The action that represents clearing/stopping alerts for a user. */
+  public static final String CLEAR_USER = "alerts:clearUser";
+
+  /** The action that represents sending alerts. */
+  public static final String SEND_ALERTS = "alerts:sendAlerts";
+
+  /** The action that represents reading meta data for a specific article. */
+  public static final String READ_META_DATA = "alerts:readMetaData";
+  
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
-                                                           CREATE_ALERT,
-                                                           DELETE_ALERT,
+                                                           START_USER,
+                                                           CLEAR_USER,
+                                                           SEND_ALERTS,
+                                                           READ_META_DATA,
                                                          };
 
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
+                                                           null,
+                                                           null,
                                                            null,
                                                            null,
                                                          };

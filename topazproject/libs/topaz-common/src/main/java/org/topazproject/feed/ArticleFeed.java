@@ -1,0 +1,348 @@
+/* $HeadURL::                                                                                     $
+ * $Id$
+ *
+ * Copyright (c) 2006 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
+package org.topazproject.feed;
+
+import java.util.Date;
+import java.util.List;
+import java.util.Collection;
+import java.util.Iterator;
+import java.util.LinkedList;
+import java.util.LinkedHashMap;
+import java.util.HashMap;
+import java.util.Map;
+import java.text.ParseException;
+import java.rmi.RemoteException;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.ConfigurationException;
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
+
+import org.topazproject.configuration.ConfigurationStore;
+
+import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.mulgara.itql.StringAnswer;
+import org.topazproject.mulgara.itql.Answer.QueryAnswer;
+
+/**
+ * Utility class for generating XML feeds that return a list of articles.
+ *
+ * @author Eric Brown
+ */
+public class ArticleFeed {
+  private static final Log    log            = LogFactory.getLog(ArticleFeed.class);
+  
+  private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
+  private static final String MODEL_ARTICLES = "<" + CONF.getString("topaz.models.articles") + ">";
+  
+  private static final String FEED_ITQL =
+    "select $doi $title $description $date from ${ARTICLES} where " +
+    " $doi <dc:title> $title and " +
+    " $doi <dc:description> $description and " +
+    " $doi <dc:date> $date " +
+    " ${args} " +
+    " order by $date ${sort};";
+  private static final String FIND_SUBJECTS_ITQL =
+    "select '${doi}' $subject from ${ARTICLES} where " +
+    " <${doi}> <dc:subject> $subject " +
+    "order by $subject;";
+  private static final String FIND_AUTHORS_ITQL =
+    "select '${doi}' $author from ${ARTICLES} where " +
+    " <${doi}> <dc:creator> $author " +
+    " order by $author;";
+  
+  private static final String XML_RESPONSE =
+    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<articles>\n${articles}</articles>\n";
+  private static final String XML_ARTICLE_TAG =
+    "  <article>\n" +
+    "    <doi>${doi}</doi>\n" +
+    "    <title>${title}</title>\n" +
+    "    <description>${description}</description>\n" +
+    "    <date>${date}</date>\n" +
+    "    ${authors}\n" +
+    "    ${categories}\n" +
+    "  </article>\n";
+
+  /**
+   * Compute the iTQL to find a set of articles based on date, category and author criteria.
+   *
+   * @param startDate is the date to start searching from. If empty, start from begining of time
+   * @param endDate is the date to search until. If empty, search until prsent date
+   * @param categories is list of categories to search for articles within (all categories if empty)
+   * @param authors is list of authors to search for articles within (all authors if empty)
+   * @param ascending indicates how sorting should be done (by date)
+   * @return the iTQL needed to issue against kowari.
+   */
+  public static String getQuery(Date startDate, Date endDate,
+                                String[] categories, String[] authors, boolean ascending) {
+    LinkedList params = new LinkedList();
+    
+    if (categories != null && categories.length > 0) {
+      for (int i = 0; i < categories.length; i++)
+        params.add("$doi <dc:subject> '" + ItqlHelper.escapeLiteral(categories[i]) + "' ");
+    } else if (authors != null && authors.length > 0) {
+      for (int i = 0; i < authors.length; i++)
+        params.add("$doi <dc:creator> '" + ItqlHelper.escapeLiteral(authors[i]) + "' ");
+    }
+
+    StringBuffer args = new StringBuffer();
+    if (params.size() > 0) {
+      args.append(" and (");
+      for (Iterator i = params.iterator(); i.hasNext(); ) {
+        args.append(i.next());
+        if (i.hasNext())
+          args.append(" or ");
+      }
+      args.append(")");
+    }
+
+    // TODO: Search by date (requires modification to ingestion to support datatypes)
+
+    Map values = new HashMap();
+    values.put("ARTICLES", MODEL_ARTICLES);
+    values.put("args", args.toString());
+    values.put("sort", ascending ? "asc" : "desc");
+    return ItqlHelper.bindValues(FEED_ITQL, values);
+  }
+
+  /**
+   * Given an answer from Kowari, build the initial set of articles that were returned.
+   *
+   * Dates are needed only because query is currently somewhat crippled. So we do additional
+   * filtering here.
+   *
+   * @param startDate is the date to start searching from. If empty, start from begining of time
+   * @param endDate is the date to search until. If empty, search until prsent date
+   * @param articlesAnswer is the response received from kowari.
+   * @return a map of doi to L{ArticleFeedData} for each article received
+   */
+  public static Map getArticlesSummary(Date startDate, Date endDate, StringAnswer articlesAnswer) {
+    LinkedHashMap articles = new LinkedHashMap();
+    QueryAnswer answer = (QueryAnswer)articlesAnswer.getAnswers().get(0);
+    
+    for (Iterator rowIt = answer.getRows().iterator(); rowIt.hasNext(); ) {
+      String[] row = (String[])rowIt.next();
+      Date date = null;
+
+      // TODO: Remove this check once we retrofit Kowari/Fedora to search on date
+      try {
+        date = parseDate(row[3]);
+        if (!isDateInRange(date, startDate, endDate))
+          continue;
+      } catch (ParseException pe) {
+        log.warn("Ignoring bad date: " + row[3], pe);
+        // XXX: Should we show the message or not?
+        continue; // Don't show article
+      }
+        
+      ArticleFeedData article = new ArticleFeedData();
+      article.doi         = row[0];
+      article.title       = row[1];
+      article.description = row[2];
+      article.date        = date;
+      articles.put(article.doi, article);
+    }
+
+    return articles;
+  }
+
+  /**
+   * Given a set of articles, return the queries necessary to get their details
+   * (categories and authors).
+   *
+   * @param articles is the list to query.
+   * @return the queries (all in one string) that need to be issued to kowari.
+   */
+  public static String getDetailsQuery(Collection articles) {
+    StringBuffer queryBuffer = new StringBuffer();
+
+    // Build up set of queries
+    for (Iterator i = articles.iterator(); i.hasNext(); ) {
+      ArticleFeedData article = (ArticleFeedData)i.next();
+      if (article == null)
+        continue; // should never happen
+      Map values = new HashMap();
+      values.put("ARTICLES", MODEL_ARTICLES);
+      values.put("doi", article.doi);
+      queryBuffer.append(ItqlHelper.bindValues(FIND_SUBJECTS_ITQL, values));
+      queryBuffer.append(ItqlHelper.bindValues(FIND_AUTHORS_ITQL, values));
+    }
+
+    return queryBuffer.toString();
+  }
+
+  /**
+   * Given a collection of articles and a response from kowari, add to the articles' meta-data.
+   *
+   * @param articles is the collection of articles to take more meta-data
+   * @param detailsAnswer is the response from kowari.
+   */
+  public static void addArticlesDetails(Map articles, StringAnswer detailsAnswer) {
+    List answers = detailsAnswer.getAnswers();
+    
+    for (Iterator answersIt = answers.iterator(); answersIt.hasNext(); ) {
+      Object ans = answersIt.next();
+      if (ans instanceof String) {
+        // This is Ronald trying to be helpful. It isn't something we're interested in!
+        continue;
+      }
+      
+      QueryAnswer answer = (QueryAnswer)ans;
+      List rows = answer.getRows();
+      
+      // If the query returned nothing, just move on
+      if (rows.size() == 0)
+        continue;
+
+      // Column name represents type of query we did -- for categories or authors
+      String column = answer.getVariables()[1];
+      String doi = ((String[])rows.get(0))[0];
+      ArticleFeedData article = (ArticleFeedData)articles.get(doi);
+      if (article == null) {
+        // We should never get this - means something changed underneath us
+        log.warn("Didn't find article " + doi + " on " + column + " query");
+        continue;
+      }
+
+      // Get the list of values we want
+      List values = new LinkedList();
+      for (Iterator rowIt = rows.iterator(); rowIt.hasNext(); )
+        values.add(((String[])rowIt.next())[1]);
+      if (column.equals("subject")) article.categories = values;
+      else if (column.equals("author")) article.authors = values;
+    }
+  }
+
+  /**
+   * Given a collection of articles, return the appropriate feed (as XML).
+   *
+   * @param articles is the articles to generate the feed for.
+   * @return the XML feed as a string.
+   */
+  public static String buildXml(Collection articles) {
+    String articlesXml = "";
+    for (Iterator articleIt = articles.iterator(); articleIt.hasNext(); ) {
+      ArticleFeedData article = (ArticleFeedData)articleIt.next();
+
+      StringBuffer authorsSb = new StringBuffer();
+      if (article.authors != null && article.authors.size() > 0) {
+        for (Iterator authorsIt = article.authors.iterator(); authorsIt.hasNext(); ) {
+          authorsSb.append("      <author>");
+          authorsSb.append(authorsIt.next());
+          authorsSb.append("</author>\n");
+        }
+        authorsSb.insert(0, "<authors>\n");
+        authorsSb.append("    </authors>");
+      }
+
+      StringBuffer categoriesSb = new StringBuffer();
+      if (article.categories != null && article.categories.size() > 0) {
+        for (Iterator categoriesIt = article.categories.iterator(); categoriesIt.hasNext(); ) {
+          categoriesSb.append("      <category>");
+          categoriesSb.append(categoriesIt.next());
+          categoriesSb.append("</category>\n");
+        }
+        categoriesSb.insert(0, "<categories>\n");
+        categoriesSb.append("    </categories>");
+      }
+
+      Map values = new HashMap();
+      values.put("doi", article.doi);
+      values.put("title", article.title);
+      values.put("description", article.description);
+      values.put("date", formatDate(article.date));
+      values.put("authors", authorsSb.toString());
+      values.put("categories", categoriesSb.toString());
+      articlesXml += ItqlHelper.bindValues(XML_ARTICLE_TAG, values);
+    }
+
+    Map values = new HashMap();
+    values.put("articles", articlesXml);
+    return ItqlHelper.bindValues(XML_RESPONSE, values);
+  }
+
+  /**
+   * Determine if a date is between two other dates.
+   *
+   * @param date is the date to test
+   * @param startDate is the date to start searching from. If empty, start from begining of time
+   * @param endDate is the date to search until. If empty, search until prsent date
+   * @return true if the date is between startDate and endDate inclusive.
+   */
+  static boolean isDateInRange(Date date, Date startDate, Date endDate) {
+    if (date == null)
+      return true;
+    if (startDate != null && date.before(startDate))
+      return false;
+    if (endDate != null && date.after(endDate))
+      return false;
+    return true;
+  }
+
+  /**
+   * Parse a kowari date into a java Date object.
+   *
+   * @param ios8601date is the date string to parse.
+   * @throw ParseException if there is a problem parsing the string
+   * @return a java Date object.
+   */
+  public static Date parseDate(String iso8601date) throws ParseException {
+    // Obvious formats:
+    final String[] defaultFormats = new String [] {
+      "yyyy-MM-dd", "y-M-d", "y-M-d'T'H:m:s", "y-M-d'T'H:m:s.S",
+      "y-M-d'T'H:m:s.Sz", "y-M-d'T'H:m:sz" };
+
+    // TODO: Replace with fedora.server.utilities.DateUtility some how?
+    // XXX: Deal with ' ' instead of 'T'
+    // XXX: Deal with timezone in iso8601 format (not java's idea)
+    
+    return DateUtils.parseDate(iso8601date, defaultFormats);
+  }
+
+  /**
+   * Format a date object to a string to insert into the feed's XML.
+   *
+   * If the date object is null, return an empty string.
+   *
+   * @param date is the date object to format
+   * @return a string representation
+   */
+  public static String formatDate(Date date) {
+    if (date == null)
+      return "";
+//    return DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(date); // XXX: Use in future?
+    return DateFormatUtils.ISO_DATE_FORMAT.format(date);
+  }
+  
+  /**
+   * Convert a date pased in as a string to a Date object. Support both string representations
+   * of the Date object and iso8601 formatted dates.
+   *
+   * @param date the string to convert to a Date object
+   * @return a date object (or null if date is null)
+   * @throws RemoteException if unable to parse date
+   */
+  public static Date parseDateParam(String date) throws RemoteException {
+    if (date == null)
+      return null;
+    try {
+      return new Date(date);
+    } catch (IllegalArgumentException iae) {
+      try {
+        return ArticleFeed.parseDate(date);
+      } catch (ParseException pe) {
+        throw new RemoteException("Unable to parse date parameter (as Date-string or iso8601): " +
+                                  date, pe);
+      }
+    }
+  }
+}

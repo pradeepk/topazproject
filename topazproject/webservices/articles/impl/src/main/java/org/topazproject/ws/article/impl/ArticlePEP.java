@@ -36,16 +36,21 @@ public abstract class ArticlePEP extends AbstractSimplePEP {
   /** The action that represents a get-object-url operation in XACML policies. */
   public static final String GET_OBJECT_URL = "articles:getObjectURL";
 
+  /** The action that represents checking if we can access a specific article. */
+  public static final String READ_META_DATA = "articles:readMetaData";
+
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
                                                            INGEST_ARTICLE,
                                                            DELETE_ARTICLE,
                                                            SET_ARTICLE_STATE,
                                                            GET_OBJECT_URL,
+                                                           READ_META_DATA,
                                                          };
 
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
+                                                           null,
                                                            null,
                                                            null,
                                                            null,

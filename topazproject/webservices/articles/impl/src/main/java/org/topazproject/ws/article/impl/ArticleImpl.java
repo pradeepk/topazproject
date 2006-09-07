@@ -17,6 +17,9 @@ import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.Date;
+import java.util.Map;
+import java.util.Iterator;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
@@ -39,6 +42,8 @@ import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.DuplicateIdException;
 import org.topazproject.ws.article.IngestException;
 import org.topazproject.ws.article.NoSuchIdException;
+
+import org.topazproject.feed.ArticleFeed;
 
 /** 
  * The default implementation of the article manager.
@@ -177,6 +182,38 @@ public class ArticleImpl implements Article {
     return fedoraServer.resolve(path).toString();
   }
 
+  public String getArticles(String startDate, String endDate,
+                            String[] categories, String[] authors,
+                            boolean ascending) throws RemoteException {
+    Date start = ArticleFeed.parseDateParam(startDate);
+    Date end = ArticleFeed.parseDateParam(endDate);
+    
+    try {
+      String articlesQuery = ArticleFeed.getQuery(start, end, categories, authors, false);
+      StringAnswer articlesAnswer = new StringAnswer(itql.doQuery(articlesQuery));
+      Map articles = ArticleFeed.getArticlesSummary(start, end, articlesAnswer);
+
+      for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
+        String doi = (String)it.next();
+        try {
+          checkAccess(pep.READ_META_DATA, doi);
+        } catch (SecurityException se) {
+          articles.remove(doi);
+          if (log.isDebugEnabled())
+            log.debug(doi, se);
+        }
+      }
+
+      String detailsQuery = ArticleFeed.getDetailsQuery(articles.values());
+      StringAnswer detailsAnswer = new StringAnswer(itql.doQuery(detailsQuery));
+      ArticleFeed.addArticlesDetails(articles, detailsAnswer);
+
+      return ArticleFeed.buildXml(articles.values());
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error querying RDF", ae);
+    }
+  }
+  
   protected static String state2Str(int state) {
     switch (state) {
       case ST_ACTIVE:

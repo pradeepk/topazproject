@@ -23,7 +23,7 @@ import javax.xml.rpc.ServiceException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.codehaus.spice.salt.io.IOUtil;
+import org.apache.commons.io.IOUtils;
 
 import junit.framework.TestCase;
 
@@ -59,7 +59,7 @@ public class AlertsServiceTest extends TestCase {
   private Preferences prefService;
   private UserAccounts userService;
   private String userId;
-  
+
   private static final Log log = LogFactory.getLog(AlertsServiceTest.class);
   
   protected static final String ALERTS_SVC_URL =
@@ -156,21 +156,12 @@ public class AlertsServiceTest extends TestCase {
    * Do all/most tests in one place to avoid running setUp tearDown multiple times.
    * They just take a long time to run.
    */
-  public void testFeeds() throws RemoteException, IOException {
+  public void testAlerts() throws Exception {
     boolean success = true;
     
     success &= this.tstEmail0();
     success &= this.tstEmail1();
     success &= this.tstEmail2();
-
-    // Test the xml for the RSS feeds
-    success &= this.tstEntireFeed();
-    success &= this.tstBiotechnology();
-    success &= this.tstStartDate();
-    success &= this.tstMultiCategory();
-    success &= this.tstDateRange();
-    success &= this.tstAuthors();
-    success &= this.tstNoResults();
 
     // We do it this way because if something underneath changes, it is possible that
     // there is a good reason all these tests fail. Thus, we'd like them still all to
@@ -178,45 +169,12 @@ public class AlertsServiceTest extends TestCase {
     assertTrue(success);
   }
   
-  private boolean tstEntireFeed() throws RemoteException, IOException {
-    // Get all the articles we have
-    return this.testFeed(null, null, null, null, "entirefeed.xml");
-  }
-
-  private boolean tstBiotechnology() throws RemoteException, IOException {
-    String[] categories = new String[] { "Biotechnology" };
-    return this.testFeed(null, null, categories, null, "biotechfeed.xml");
-  }
-
-  private boolean tstStartDate() throws RemoteException, IOException {
-    return this.testFeed("2004-08-31", null, null, null, "start08-31.xml");
-  }
-
-  private boolean tstMultiCategory() throws RemoteException, IOException {
-    String[] categories = new String[] { "Biotechnology", "Microbiology" };
-    return this.testFeed(null, null, categories, null, "multicategory.xml");
-  }
-
-  private boolean tstDateRange() throws RemoteException, IOException {
-    return this.testFeed("2004-08-24", "2004-08-31", null, null, "daterange8-24_31.xml");
-  }
-
-  private boolean tstAuthors() throws RemoteException, IOException {
-    String[] authors = new String[] { "Richard J Roberts" };
-    return this.testFeed(null, null, null, authors, "author_roberts.xml");
-  }
-
-  private boolean tstNoResults() throws RemoteException, IOException {
-    String [] categories = new String[] { "Bogus Categories" };
-    return this.testFeed(null, null, categories, null, "noresults.xml");
-  }
-
   private boolean tstEmail0() throws RemoteException, IOException {
     Calendar c = Calendar.getInstance();
     
     this.service.clearUser(userId);
     c.set(2004, 2, 10);
-    this.service.startUser(userId, c);
+    this.service.startUser(userId, c.getTime().toString());
 
     c.set(2004, 3, 17);
     return this.testEmail(c, "tst0", 0, 0);
@@ -227,7 +185,7 @@ public class AlertsServiceTest extends TestCase {
     
     this.service.clearUser(userId);
     c.set(2004, 2, 10);
-    this.service.startUser(userId, c);
+    this.service.startUser(userId, c.getTime().toString());
 
     c.set(2004, 8, 26);
     return this.testEmail(c, "tst1", 1, 1);
@@ -238,7 +196,7 @@ public class AlertsServiceTest extends TestCase {
     
     this.service.clearUser(userId);
     c.set(2004, 2, 10);
-    this.service.startUser(userId, c);
+    this.service.startUser(userId, c.getTime().toString());
 
     c.set(2004, 10, 13);
     return this.testEmail(c, "tst2", 1, 2);
@@ -248,7 +206,7 @@ public class AlertsServiceTest extends TestCase {
                             int expectedMsgs, int expectedArticles) throws RemoteException {
     SimpleSmtpServer server = startSmtpServer(2525);
 
-    boolean success = this.service.sendAlerts(alertCal, 10);
+    boolean success = this.service.sendAlerts(alertCal.getTime().toString(), 10);
     assertTrue(success);
 
     server.stop();
@@ -286,42 +244,6 @@ public class AlertsServiceTest extends TestCase {
     return success;
   }
 
-  private boolean testFeed(String startDate, String endDate, String[] categories, String[] authors,
-                           String resourceName) throws RemoteException, IOException {
-    log.info("Running test: " + resourceName);
-    
-    String testResult = this.service.getFeed(startDate, endDate, categories, authors);
-
-    // Write result in case we need it (UTF-8 issues to get expected result initally)
-    //writeResult(testResult, "/tmp/" + resourceName);
-
-    // Read the result we expect from a resource
-    String desiredResult =
-      IOUtil.toString(getClass().getResourceAsStream("/" + resourceName), "UTF-8");
-    
-    String comment = resourceName + " did not match search from " + startDate +
-      " to " + endDate + " on categories (";
-    if (categories != null)
-      for (int i = 0; i < categories.length; i++)
-        comment += categories[i] + " ";
-    comment += ") or authors (";
-    if (authors != null)
-      for (int i = 0; i < authors.length; i++)
-        comment += authors[i];
-    comment += ")";
-    
-    if (!testResult.trim().equals(desiredResult.trim())) {
-      log.warn("Comparison failed on " + resourceName);
-      writeResult(testResult, "/tmp/" + resourceName);
-    }
-
-    boolean success = desiredResult.trim().equals(testResult.trim());
-    if (!success)
-      log.warn(comment);
-
-    return success;
-  }
-
   /**
    * Fix SimpleSmtpServer dead-lock.
    *
@@ -355,7 +277,7 @@ public class AlertsServiceTest extends TestCase {
   private static void writeResult(String result, String fileName) {
     try {
       FileWriter fw = new FileWriter(fileName);
-      IOUtil.copy(result.getBytes("UTF-8"), fw);
+      IOUtils.write(result.getBytes("UTF-8"), fw);
       fw.close();
     } catch (IOException ie) {
       log.warn("Unable to write " + fileName, ie);
