@@ -23,7 +23,7 @@ import java.net.MalformedURLException;
 
 public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpringContextTests {
   private FetchArticleService fetchArticleService;
-  private ArticleWebService articleService;
+  private ArticleWebService articleWebService;
   private FetchArticleAction fetchArticleAction;
   private CreateAnnotationAction createAnnotationAction;
   private DeleteAnnotationAction deleteAnnotationAction;
@@ -48,12 +48,12 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
     return new String[]{"testApplicationContext.xml"};
   }
 
-  protected ArticleWebService getArticleService() throws MalformedURLException, ServiceException {
-    return articleService;
+  protected ArticleWebService getArticleWebService() throws MalformedURLException, ServiceException {
+    return articleWebService;
   }
 
-  public void setArticleService(final ArticleWebService articleService) {
-    this.articleService = articleService;
+  public void setArticleWebService(final ArticleWebService articleWebService) {
+    this.articleWebService = articleWebService;
   }
 
   public FetchArticleService getFetchArticleService() throws MalformedURLException, ServiceException {

@@ -37,7 +37,7 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
 //    final String resourceDOI = "10.1371/journal.pbio.0020317";
 
     try {
-      getArticleService().delete(resourceDOI, true);
+      getArticleWebService().delete(resourceDOI, true);
     } catch (NoSuchIdException nsie) {
       // ignore - this just means there wasn't any stale stuff left
     }
@@ -46,7 +46,7 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     if (null == article) {
       article = new File(resourceToIngest).toURL();
     }
-    String doi = getArticleService().ingest(new DataHandler(article));
+    String doi = getArticleWebService().ingest(new DataHandler(article));
     assertEquals(doi, resourceDOI);
 
     final FetchArticleAction fetchArticleAction = getFetchArticleAction();
@@ -73,27 +73,27 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
 
   private void doIngestTest(String resourceDOI, String resourceToIngest) throws Exception {
     try {
-      getArticleService().delete(resourceDOI, true);
+      getArticleWebService().delete(resourceDOI, true);
     } catch (NoSuchIdException nsie) {
       // ignore - this just means there wasn't any stale stuff left
     }
 
     final URL article = getClass().getResource(resourceToIngest);
-    String doi = getArticleService().ingest(new DataHandler(article));
+    String doi = getArticleWebService().ingest(new DataHandler(article));
     assertEquals(doi, resourceDOI);
 
-    assertNotNull(getArticleService().getObjectURL(doi, "XML"));
+    assertNotNull(getArticleWebService().getObjectURL(doi, "XML"));
 
     try {
-      doi = getArticleService().ingest(new DataHandler(article));
+      doi = getArticleWebService().ingest(new DataHandler(article));
       fail("Failed to get expected duplicate-id exception");
     } catch (DuplicateIdException die) {
     }
 
-    getArticleService().delete(doi, true);
+    getArticleWebService().delete(doi, true);
 
     try {
-      getArticleService().delete(doi, true);
+      getArticleWebService().delete(doi, true);
       fail("Failed to get NoSuchIdException");
     } catch (NoSuchIdException nsie) {
     }

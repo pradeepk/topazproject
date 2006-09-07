@@ -16,7 +16,7 @@
     <!-- Note: remember to prefix the filename with a "/" -->
     <property name="xslTemplate" value="src/main/resources/viewnlm-v2.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
-    <property name="articleService" ref="articleService"/>
+    <property name="articleService" ref="articleWebService"/>
     <property name="useTranslet" value="true"/>
   </bean>
 
@@ -25,8 +25,9 @@
            value="org.apache.xalan.xsltc.trax.TransformerFactoryImpl"/>
   </util:map>
 
-  <!-- TODO: Update the service port url's automatically using maven build process itself-->
-  <bean id="articleService" class="org.plos.article.service.ArticleWebService">
+  <!-- TODO: Update the servicePort url's automatically using maven build process itself-->
+  <!-- TODO: Make the article web service configuration in the same pattern as permission or annotationWebService -->
+  <bean id="articleWebService" class="org.plos.article.service.ArticleWebService">
     <property name="servicePort" value="http://localhost:9080/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort"/>
   </bean>
 
