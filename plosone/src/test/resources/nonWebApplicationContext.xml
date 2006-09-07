@@ -25,8 +25,8 @@
            value="org.apache.xalan.xsltc.trax.TransformerFactoryImpl"/>
   </util:map>
 
-  <!-- TODO: Update the url automatically using maven build process itself-->
-  <bean id="articleService" class="org.plos.article.service.ArticleService">
+  <!-- TODO: Update the service port url's automatically using maven build process itself-->
+  <bean id="articleService" class="org.plos.article.service.ArticleWebService">
     <property name="servicePort" value="http://localhost:9080/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort"/>
   </bean>
 

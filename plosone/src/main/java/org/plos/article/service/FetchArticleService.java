@@ -40,7 +40,7 @@ import java.util.HashMap;
  * Fetch article service
  */
 public class FetchArticleService {
-  private ArticleService articleService;
+  private ArticleWebService articleService;
   private File xslTemplate;
   private String articleRep;
   private Templates translet;
@@ -96,7 +96,7 @@ public class FetchArticleService {
    * Set articleService
    * @param articleService articleService
    */
-  public void setArticleService(final ArticleService articleService) {
+  public void setArticleService(final ArticleWebService articleService) {
     this.articleService = articleService;
   }
 

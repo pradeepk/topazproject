@@ -13,7 +13,7 @@ import org.plos.annotation.web.CreateReplyAction;
 import org.plos.annotation.web.BodyFetchAction;
 import org.plos.annotation.web.GetAnnotationAction;
 import org.plos.annotation.web.GetReplyAction;
-import org.plos.article.service.ArticleService;
+import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.web.FetchArticleAction;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
@@ -23,7 +23,7 @@ import java.net.MalformedURLException;
 
 public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpringContextTests {
   private FetchArticleService fetchArticleService;
-  private ArticleService articleService;
+  private ArticleWebService articleService;
   private FetchArticleAction fetchArticleAction;
   private CreateAnnotationAction createAnnotationAction;
   private DeleteAnnotationAction deleteAnnotationAction;
@@ -48,11 +48,11 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
     return new String[]{"testApplicationContext.xml"};
   }
 
-  protected ArticleService getArticleService() throws MalformedURLException, ServiceException {
+  protected ArticleWebService getArticleService() throws MalformedURLException, ServiceException {
     return articleService;
   }
 
-  public void setArticleService(final ArticleService articleService) {
+  public void setArticleService(final ArticleWebService articleService) {
     this.articleService = articleService;
   }
 
