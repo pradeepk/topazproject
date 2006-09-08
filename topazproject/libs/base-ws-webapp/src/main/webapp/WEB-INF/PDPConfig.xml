@@ -26,8 +26,8 @@
         <string>policy/rules/permit-admin.xml</string>
         <string>policy/rules/permit-all.xml</string>
         <string>policy/rules/permit-bootstrap.xml</string>
-        <string>policy/sets/standard-set.xml</string>
-        <string>policy/sets/test-set.xml</string>
+        <string>policy/rules/permitted-anonymous-operations.xml</string>
+        <string>policy/rules/permitted-user-operations.xml</string>
       </list>
     </policyFinderModule>
   </pdp>
@@ -53,9 +53,9 @@
         <string>policy/rules/permit-grants.xml</string>
         <string>policy/rules/permit-admin.xml</string>
         <string>policy/rules/permit-all.xml</string>
-        <string>policy/sets/standard-set.xml</string>
         <string>policy/rules/permit-bootstrap.xml</string>
-        <string>policy/sets/test-set.xml</string>
+        <string>policy/rules/permitted-anonymous-operations.xml</string>
+        <string>policy/rules/permitted-user-operations.xml</string>
       </list>
     </policyFinderModule>
   </pdp>

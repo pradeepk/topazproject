@@ -22,6 +22,12 @@
   
   <PolicyIdReference>permit-self</PolicyIdReference>
 
+  <PolicyIdReference>permitted-anonymous-operations</PolicyIdReference>
+
   <PolicyIdReference>permit-bootstrap</PolicyIdReference>
+
+  <PolicyIdReference>deny-anonymous</PolicyIdReference>
+  
+  <PolicyIdReference>permitted-user-operations</PolicyIdReference>
   
 </PolicySet>

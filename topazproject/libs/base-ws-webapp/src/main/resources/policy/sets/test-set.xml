@@ -9,7 +9,7 @@
   </Description>
 
   <Target>
-      <AnyTarget/>
+    <AnyTarget/>
   </Target>
 
   <PolicyIdReference>permit-admin</PolicyIdReference>
@@ -22,8 +22,12 @@
 
   <PolicyIdReference>permit-self</PolicyIdReference>
 
+  <PolicyIdReference>permitted-anonymous-operations</PolicyIdReference>
+ 
+  <PolicyIdReference>permitted-user-operations</PolicyIdReference>
+
   <PolicyIdReference>permit-bootstrap</PolicyIdReference>
-  
+
   <PolicyIdReference>permit-all</PolicyIdReference>
 
 </PolicySet>
