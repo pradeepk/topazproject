@@ -55,13 +55,7 @@
     </property>
   </bean>
 
-  <bean id="permissionServiceGetter" class="org.plos.service.PermissionServiceGetter">
-    <property name="permissionWebService" ref="permissionWebService"/>
-  </bean>
-
-  <bean id="lazyLoaderFactory" class="org.plos.annotation.service.AnnotationLazyLoaderFactory">
-    <property name="permissionServiceGetter" ref="permissionServiceGetter"/>
-  </bean>
+  <bean id="lazyLoaderFactory" class="org.plos.annotation.service.AnnotationLazyLoaderFactory"/>
 
   <bean id="annotationConverter" class="org.plos.annotation.service.AnnotationConverter">
     <property name="lazyLoaderFactory" ref="lazyLoaderFactory"/>
@@ -98,6 +92,7 @@
     <property name="converter" ref="annotationConverter"/>
     <property name="annotationWebService" ref="annotationWebService"/>
     <property name="replyWebService" ref="replyWebService"/>
+    <property name="permissionWebService" ref="permissionWebService"/>
   </bean>
 
   <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService">

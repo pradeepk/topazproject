@@ -8,6 +8,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.util.FileUtils;
 import org.plos.service.BaseConfigurableService;
 import org.plos.ApplicationException;
+import org.plos.permission.service.PermissionWebService;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.NoSuchIdException;
 import org.topazproject.ws.annotation.ReplyInfo;
@@ -26,6 +27,7 @@ public class AnnotationService extends BaseConfigurableService {
 
   private static final Log log = LogFactory.getLog(AnnotationService.class);
   private AnnotationConverter converter;
+  private PermissionWebService permissionWebService;
 
   /**
    * Create an annotation.
@@ -207,5 +209,39 @@ public class AnnotationService extends BaseConfigurableService {
     } catch (IOException e) {
       throw new ApplicationException(e);
     }
+  }
+
+  /**
+   * Set the annotation as public.
+   * @param annotationDoi annotationDoi
+   * @throws ApplicationException
+   */
+  public void setAnnotationPublic(final String annotationDoi) throws ApplicationException {
+    final String[] everyone = new String[]{AnnotationPermission.ALL_PRINCIPALS};
+    try {
+      permissionWebService.grant(
+              annotationDoi,
+              new String[]{
+                      AnnotationPermission.Annotation.GET_INFO}, everyone);
+
+      permissionWebService.revoke(
+              annotationDoi,
+              new String[]{
+                      AnnotationPermission.Annotation.DELETE,
+                      AnnotationPermission.Annotation.SUPERSEDE});
+
+      annotationWebService.setPublic(annotationDoi);
+
+    } catch (final RemoteException e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
+   * Set the PermissionWebService
+   * @param permissionWebService permissionWebService
+   */
+  public void setPermissionWebService(final PermissionWebService permissionWebService) {
+    this.permissionWebService = permissionWebService;
   }
 }

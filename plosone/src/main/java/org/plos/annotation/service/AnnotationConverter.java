@@ -9,11 +9,10 @@
  */
 package org.plos.annotation.service;
 
+import org.plos.ApplicationException;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.ReplyInfo;
-import org.plos.ApplicationException;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -48,14 +47,6 @@ public class AnnotationConverter {
       protected String getOriginalBodyContent() throws ApplicationException {
         return lazyLoader.getBody();
       }
-
-      public boolean getVisibility() throws ApplicationException {
-        try {
-          return lazyLoader.isPublicVisible();
-        } catch (RemoteException e) {
-          throw new ApplicationException(e);
-        }
-      }
     };
 
   }
@@ -86,13 +77,6 @@ public class AnnotationConverter {
         return lazyLoader.getBody();
       }
 
-      public boolean getVisibility() throws ApplicationException {
-        try {
-          return lazyLoader.isPublicVisible();
-        } catch (RemoteException e) {
-          throw new ApplicationException(e);
-        }
-      }
     };
   }
 

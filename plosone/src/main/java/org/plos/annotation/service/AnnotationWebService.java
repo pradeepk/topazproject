@@ -78,4 +78,12 @@ public class AnnotationWebService extends BaseAnnotationService {
     return annotationService.getAnnotationInfo(annotationId);
   }
 
+  /**
+   * Set the annotation as public.
+   * @param annotationDoi annotationDoi
+   * @throws RemoteException
+   */
+  public void setPublic(final String annotationDoi) throws RemoteException {
+    annotationService.setAnnotationState(annotationDoi, Annotation.PUBLIC_MASK);
+  }
 }

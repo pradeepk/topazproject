@@ -19,6 +19,9 @@ import org.plos.ApplicationException;
  * if required.
  */
 public abstract class BaseAnnotation {
+  /** An integer constant to indicate a unique value for the  */
+  public static final int PUBLIC_MASK = 0x001;
+
   /**
    * @return the escaped body.
    * @throws org.plos.ApplicationException
@@ -27,9 +30,11 @@ public abstract class BaseAnnotation {
     return escapeText(getOriginalBodyContent());
   }
 
+  /**
+   * @return the original content of the annotation body
+   * @throws ApplicationException
+   */
   protected abstract String getOriginalBodyContent() throws ApplicationException;
-
-  public abstract boolean getVisibility() throws ApplicationException;
 
   /**
    * Escape text so as to avoid any java scripting maliciousness when rendering it on a web page
@@ -40,4 +45,11 @@ public abstract class BaseAnnotation {
     return TextUtils.htmlEncode(text);
   }
 
+  /**
+   * @param state state
+   * @return true if the annotation/reply is public, false if private
+   */
+  protected boolean checkIfPublic(final int state) {
+    return (state & PUBLIC_MASK) == 1;
+  }
 }

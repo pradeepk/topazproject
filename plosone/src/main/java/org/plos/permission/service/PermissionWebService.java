@@ -66,4 +66,63 @@ public class PermissionWebService extends BaseConfigurableService {
   public void setCurrentPrincipal(final String currentPrincipal) {
     this.currentPrincipal = currentPrincipal;
   }
+
+  /**
+   * Grants permissions.
+   * @see org.topazproject.ws.permissions.Permissions#grant(String, String[], String[])
+   * @param resource resource
+   * @param permissions permissions
+   * @param principals principals
+   * @throws RemoteException
+   */
+  public void grant(String resource, String[] permissions, String[] principals)
+          throws RemoteException
+  {
+    permissionsService.grant(resource, permissions, principals);
+  }
+
+  /**
+   * Grant a permission to the currentPrincipal
+   * @param resource resource
+   * @param permissions permissions
+   * @throws java.rmi.RemoteException
+   */
+  public void grant(final String resource, final String[] permissions) throws RemoteException {
+    grant(resource, permissions, currentPrincipal);
+  }
+
+  private void grant(final String resource, final String[] permissions, final String principal)
+          throws RemoteException
+  {
+    grant(resource, permissions, new String[]{principal});
+  }
+
+  /**
+   * Revoke permissions.
+   * @param resource resource
+   * @param permissions permissions
+   * @param principals principals
+   * @throws RemoteException
+   */
+  public void revoke(String resource, String[] permissions, String[] principals)
+              throws RemoteException
+  {
+    permissionsService.revoke(resource, permissions, principals);
+  }
+
+  /**
+   * Revoke permission for the currentPrincipal
+   * @param resource resource
+   * @param permissions permissions
+   * @throws RemoteException
+   */
+  public void revoke(final String resource, final String[] permissions) throws RemoteException {
+    revoke(resource, permissions, currentPrincipal);
+  }
+
+  private void revoke(final String resource, final String[] permissions, final String principal)
+          throws RemoteException
+  {
+    revoke(resource, permissions, new String[]{principal});
+  }
 }
