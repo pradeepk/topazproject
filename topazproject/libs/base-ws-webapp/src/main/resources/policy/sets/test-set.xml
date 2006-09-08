@@ -12,6 +12,8 @@
     <AnyTarget/>
   </Target>
 
+  <PolicyIdReference>deny-disabled</PolicyIdReference>
+
   <PolicyIdReference>permit-admin</PolicyIdReference>
 
   <PolicyIdReference>deny-revokes</PolicyIdReference>

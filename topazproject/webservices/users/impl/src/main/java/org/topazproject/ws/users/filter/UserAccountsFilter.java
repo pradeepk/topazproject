@@ -58,6 +58,11 @@ public class UserAccountsFilter implements Filter {
   public static String USER_KEY = "org.topazproject.user-id";
 
   /**
+   * The session attribute key used to store the user-account-state in HttpSession.
+   */
+  public static String STATE_KEY = "org.topazproject.account-state";
+
+  /**
    * The session attribute key used to store the authenticated-user-id in HttpSession.
    */
   public static String AUTH_KEY = "org.topazproject.auth-id";
@@ -123,21 +128,23 @@ public class UserAccountsFilter implements Filter {
 
     String authId = getAuthenticatedUser(request);
 
-    user = lookupUser(authId, session);
+    int[] state = new int[1];
+    user = lookupUser(authId, session, state);
 
     // xxx: move to lookup
     if (user == null)
       user = "anonymous:user/" + ((authId == null) ? "" : URLEncoder.encode(authId));
 
     session.setAttribute(USER_KEY, user);
+    session.setAttribute(STATE_KEY, new Integer(state[0]));
     session.setAttribute(AUTH_KEY, authId);
 
     // prevent further lookups in this session
     session.setAttribute(MAP_STATUS, "mapped");
 
     if (log.isDebugEnabled())
-      log.debug("Changed user to '" + user + "' from '" + authId + "' and cached in session-id: "
-                + session.getId());
+      log.debug("Changed user to '" + user + "' from '" + authId + "' with state '" + state[0] +
+                "' and cached in session-id: " + session.getId());
 
     return user;
   }
@@ -195,15 +202,22 @@ public class UserAccountsFilter implements Filter {
    *
    * @param authId the authenticated-id
    * @param session the http session
+   * @param state   an array of at least 1 element; on output the 0'th element will
+   *                contain the state of the user account, or unchanged if user 
+   *                account was found
    *
    * @return the topaz-user-id
    *
    * @throws ServletException if the lookup fails
    */
-  protected String lookupUser(String authId, HttpSession session)
+  protected String lookupUser(String authId, HttpSession session, int[] state)
                        throws ServletException {
     try {
-      return getUserAccountLookupImpl(session).lookUpUserByAuthIdNoAC(authId);
+      UserAccountLookup ual = getUserAccountLookupImpl(session);
+      String user = ual.lookUpUserByAuthIdNoAC(authId);
+      if (user != null)
+        state[0] = ual.getStateNoAC(user);
+      return user;
     } catch (Exception e) {
       log.warn("Failed to look-up topaz-user-id for '" + authId + "'", e);
       throw new ServletException("Failed to look-up topaz-user-id for '" + authId + "'", e);

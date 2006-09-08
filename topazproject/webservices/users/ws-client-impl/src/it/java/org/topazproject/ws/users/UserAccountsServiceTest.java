@@ -173,6 +173,34 @@ public class UserAccountsServiceTest extends TestCase {
     service.deleteUser(user2Id);
   }
 
+  public void testUserAccountState() throws RemoteException, IOException {
+    userId = service.createUser("musterAuth");
+    int state = service.getState(userId);
+    assertEquals("state mismatch,", 0, state);
+
+    service.setState(userId, 42);
+    state = service.getState(userId);
+    assertEquals("state mismatch,", 42, state);
+
+    boolean gotE = false;
+    try {
+      service.setState("foo:bar", 42);
+    } catch (NoSuchIdException nsie) {
+      gotE = true;
+    }
+    assertTrue("Failed to get expected NoSuchIdException", gotE);
+
+    gotE = false;
+    try {
+      service.getState("foo:bar");
+    } catch (NoSuchIdException nsie) {
+      gotE = true;
+    }
+    assertTrue("Failed to get expected NoSuchIdException", gotE);
+
+    service.deleteUser(userId);
+  }
+
   private void checkAuthIds(String userId, String[] got, String[] exp) {
     assertNotNull("got null auth-ids for '" + userId + "'", got);
     assertEquals("Number of auth-ids mismatch;", exp.length, got.length);

@@ -25,6 +25,11 @@ import java.rmi.RemoteException;
  * @author Ronald Tschalär
  */
 public interface UserAccounts {
+  /** the state indicating the user account is active: {@value} */
+  public static final int ACNT_ACTIVE    = 0;
+  /** the state indicating the user account is suspened: {@value} */
+  public static final int ACNT_SUSPENDED = 1;
+
   /** 
    * Create a new user account and associate a single authentication id with it.
    * 
@@ -44,6 +49,31 @@ public interface UserAccounts {
    * @throws RemoteException if some other error occured
    */
   public void deleteUser(String userId) throws NoSuchIdException, RemoteException;
+
+  /** 
+   * Set the state of a user's account. Note that while constants for two states have been
+   * pre-defined, applications may (re)define both the number and the semantics of the states;
+   * i.e.  no semantics are attached to the state values, except that a new account is assigned
+   * state 0. However, all applications (including things like XACML policies) must agree on the
+   * valid states and their semantics.
+   * 
+   * @param userId  the user's internal id
+   * @param state   the new state to put the account in
+   * @throws NoSuchIdException if the user account does not exist
+   * @throws RemoteException if some other error occured
+   */
+  public void setState(String userId, int state) throws NoSuchIdException, RemoteException;
+
+  /** 
+   * Get the state of a user's account.
+   * 
+   * @param userId  the user's internal id
+   * @return the current state of account
+   * @throws NoSuchIdException if the user account does not exist
+   * @throws RemoteException if some other error occured
+   * @see #setState
+   */
+  public int getState(String userId) throws NoSuchIdException, RemoteException;
 
   /** 
    * Get the list of currently known authentication id's for the specified user account.

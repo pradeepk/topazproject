@@ -20,6 +20,7 @@
         <string>policy/rules/deny-revokes.xml</string>
         <string>policy/rules/deny-anonymous.xml</string>
         <string>policy/rules/deny-all.xml</string>
+        <string>policy/rules/deny-disabled.xml</string>
         <string>policy/rules/permit-creator.xml</string>
         <string>policy/rules/permit-self.xml</string>
         <string>policy/rules/permit-grants.xml</string>
@@ -48,6 +49,7 @@
         <string>policy/rules/deny-revokes.xml</string>
         <string>policy/rules/deny-anonymous.xml</string>
         <string>policy/rules/deny-all.xml</string>
+        <string>policy/rules/deny-disabled.xml</string>
         <string>policy/rules/permit-creator.xml</string>
         <string>policy/rules/permit-self.xml</string>
         <string>policy/rules/permit-grants.xml</string>

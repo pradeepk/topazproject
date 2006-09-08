@@ -35,6 +35,12 @@ public abstract class UserAccountsPEP extends AbstractSimplePEP {
   /** The action that represents a delete user account operation in XACML policies. */
   public static final String DELETE_USER = "userAccounts:deleteUser";
 
+  /** The action that represents a get-state operation in XACML policies. */
+  public static final String GET_STATE = "userAccounts:getState";
+
+  /** The action that represents a set-state operation in XACML policies. */
+  public static final String SET_STATE = "userAccounts:setState";
+
   /** The action that represents a get-authentication-ids operation in XACML policies. */
   public static final String GET_AUTH_IDS = "userAccounts:getAuthIds";
 
@@ -48,6 +54,8 @@ public abstract class UserAccountsPEP extends AbstractSimplePEP {
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
                                                            CREATE_USER,
                                                            DELETE_USER,
+                                                           GET_STATE,
+                                                           SET_STATE,
                                                            GET_AUTH_IDS,
                                                            SET_AUTH_IDS,
                                                            LOOKUP_USER,
@@ -55,6 +63,8 @@ public abstract class UserAccountsPEP extends AbstractSimplePEP {
 
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
+                                                           null,
+                                                           null,
                                                            null,
                                                            null,
                                                            null,

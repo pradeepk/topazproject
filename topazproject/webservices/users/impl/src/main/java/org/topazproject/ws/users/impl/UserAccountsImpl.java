@@ -60,7 +60,8 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
 
   private static final String ITQL_CREATE_ACCT =
       ("insert <${userId}> <rdf:type> <foaf:OnlineAccount> " +
-              "<${userId}> <topaz:hasAuthId> '${authId}' into ${MODEL};").
+              "<${userId}> <topaz:hasAuthId> '${authId}'" +
+              "<${userId}> <topaz:accountState> '0'^^<xsd:int> into ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_DELETE_ACCT =
@@ -76,6 +77,17 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   private static final String ITQL_TEST_USERID =
       ("select $userId from ${MODEL} where " +
        "  $userId <rdf:type> <foaf:OnlineAccount> and $userId <tucana:is> <${userId}>;").
+      replaceAll("\\Q${MODEL}", MODEL);
+
+  private static final String ITQL_GET_STATE =
+      ("select $state from ${MODEL} where " +
+       " <${userId}> <rdf:type> <foaf:OnlineAccount> and <${userId}> <topaz:accountState> $state;").
+      replaceAll("\\Q${MODEL}", MODEL);
+
+  private static final String ITQL_CLEAR_STATE =
+      ("delete select <${userId}> <topaz:accountState> $o from ${MODEL} where " +
+       "  <${userId}> <rdf:type> <foaf:OnlineAccount> and <${userId}> <topaz:accountState> $o " +
+       " from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_GET_AUTH_IDS =
@@ -238,6 +250,85 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
         throw new NoSuchIdException(userId);
 
       itql.doUpdate(ITQL_DELETE_ACCT.replaceAll("\\Q${userId}", userId));
+
+      itql.commitTxn(txn);
+      txn = null;
+    } finally {
+      if (txn != null)
+        itql.rollbackTxn(txn);
+    }
+  }
+
+  public int getState(String userId) throws NoSuchIdException, RemoteException {
+    if (userId == null)
+      throw new NullPointerException("userId may not be null");
+
+    pep.checkUserAccess(pep.GET_STATE, userId);
+
+    return getStateNoAC(userId);
+  }
+
+  public int getStateNoAC(String userId) throws NoSuchIdException, RemoteException {
+    if (userId == null)
+      throw new NullPointerException("userId may not be null");
+
+    if (log.isDebugEnabled())
+      log.debug("Getting the account state for '" + userId + "'");
+
+    try {
+      StringAnswer ans =
+          new StringAnswer(itql.doQuery(ITQL_GET_STATE.replaceAll("\\Q${userId}", userId)));
+      List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+      if (rows.size() == 0) {
+        if (!userExists(userId))
+          throw new NoSuchIdException(userId);
+
+        log.error("No state found for user '" + userId + "' - resetting to 0");
+        setState(userId, 0);
+        return 0;
+      }
+
+      int state = Integer.parseInt(((String[]) rows.get(0))[0]);
+
+      if (log.isDebugEnabled())
+        log.debug("The account state for '" + userId + "' is " + state);
+
+      return state;
+
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error getting state for user '" + userId + "'", ae);
+    } catch (NumberFormatException nfe) {
+      log.error("Invalid state found for user '" + userId + "' - resetting to 0");
+      setState(userId, 0);
+      return 0;
+    }
+  }
+
+  public void setState(String userId, int state) throws NoSuchIdException, RemoteException {
+    if (userId == null)
+      throw new NullPointerException("userId may not be null");
+
+    pep.checkUserAccess(pep.SET_STATE, userId);
+
+    if (log.isDebugEnabled())
+      log.debug("Setting state for '" + userId + "' to " + state);
+
+    String txn = "set-state " + userId;
+    try {
+      itql.beginTxn(txn);
+
+      if (!userExists(userId))
+        throw new NoSuchIdException(userId);
+
+      StringBuffer cmd = new StringBuffer(100);
+
+      cmd.append(ITQL_CLEAR_STATE.replaceAll("\\Q${userId}", userId));
+
+      cmd.append("insert <").append(userId).append("> <topaz:accountState> '").
+                 append(state).append("'^^<xsd:int> ");
+      cmd.append(" into ").append(MODEL).append(";");
+
+      itql.doUpdate(cmd.toString());
 
       itql.commitTxn(txn);
       txn = null;

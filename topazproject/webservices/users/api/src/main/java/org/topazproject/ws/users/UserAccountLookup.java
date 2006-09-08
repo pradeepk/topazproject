@@ -31,4 +31,15 @@ public interface UserAccountLookup {
    * @throws RemoteException if some lookup error occured
    */
   public String lookUpUserByAuthIdNoAC(String authId) throws RemoteException;
+
+  /** 
+   * Get the state of a user's account. This is identical to {@link UserAccounts#getState
+   * UserAccounts.getState} except that it bypasses all access-controls.
+   * 
+   * @param userId  the user's internal id
+   * @return the current state of account
+   * @throws NoSuchIdException if the user account does not exist
+   * @throws RemoteException if some other error occured
+   */
+  public int getStateNoAC(String userId) throws NoSuchIdException, RemoteException;
 }

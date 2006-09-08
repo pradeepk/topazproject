@@ -115,6 +115,46 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
   }
 
   /**
+   * @see org.topazproject.ws.users.UserAccounts#getState
+   */
+  public int getState(String userId) throws RemoteException, NoSuchIdException {
+    try {
+      synchronized (impl) {
+        return impl.getState(userId);
+      }
+    } catch (NoSuchIdException nsie) {
+      log.debug("", nsie);
+      throw nsie;
+    } catch (RuntimeException re) {
+      log.warn("", re);
+      throw re;
+    } catch (Error e) {
+      log.error("", e);
+      throw e;
+    }
+  }
+
+  /**
+   * @see org.topazproject.ws.users.UserAccounts#setState
+   */
+  public void setState(String userId, int state) throws RemoteException, NoSuchIdException {
+    try {
+      synchronized (impl) {
+        impl.setState(userId, state);
+      }
+    } catch (NoSuchIdException nsie) {
+      log.debug("", nsie);
+      throw nsie;
+    } catch (RuntimeException re) {
+      log.warn("", re);
+      throw re;
+    } catch (Error e) {
+      log.error("", e);
+      throw e;
+    }
+  }
+
+  /**
    * @see org.topazproject.ws.users.UserAccounts#getAuthenticationIds
    */
   public String[] getAuthenticationIds(String userId) throws RemoteException, NoSuchIdException {
