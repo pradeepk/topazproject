@@ -61,21 +61,21 @@ public class RatingsImpl implements Ratings {
       ("delete select $s $p $o from ${MODEL} where $s $p $o and " +
            // individual ratings
        "   (<${userId}> <topaz:hasRatings> $y and " +
-       "      $y <topaz:applicationId> ${appId} and $y <topaz:object> ${object} and " +
+       "      $y <dc_terms:mediator> ${appId} and $y <topaz:object> ${object} and " +
        "      $y <topaz:rating> $s or " +
            // the statements with the ratings node as subject
        "    <${userId}> <topaz:hasRatings> $s and " +
-       "      $s <topaz:applicationId> ${appId} and $s <topaz:object> ${object} or " +
+       "      $s <dc_terms:mediator> ${appId} and $s <topaz:object> ${object} or " +
            // the statement with the ratings node as object
        "    $s <tucana:is> <${userId}> and $p <tucana:is> <topaz:hasRatings> and " +
-       "      $o <topaz:applicationId> ${appId} and $o <topaz:object> ${object} )" +
+       "      $o <dc_terms:mediator> ${appId} and $o <topaz:object> ${object} )" +
        " from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_GET_RATINGS =
       ("select $cat $rtg ${object} ${appId} from ${MODEL} where " +
        "<${userId}> <topaz:hasRatings> $ratings and " +
-       "$ratings <topaz:applicationId> ${appId} and $ratings <topaz:object> ${object} and " +
+       "$ratings <dc_terms:mediator> ${appId} and $ratings <topaz:object> ${object} and " +
        "$ratings <topaz:rating> $r and $r <topaz:category> $cat and $r <topaz:value> $rtg;").
       replaceAll("\\Q${MODEL}", MODEL);
 
@@ -88,18 +88,18 @@ public class RatingsImpl implements Ratings {
       ("delete select $s $p $o from ${MODEL} where $s $p $o and " +
            // individual ratings
        "   (<${object}> <topaz:hasRatingStats> $y and " +
-       "      $y <topaz:applicationId> '${appId}' and $y <topaz:ratingStats> $s or " +
+       "      $y <dc_terms:mediator> '${appId}' and $y <topaz:ratingStats> $s or " +
            // the statements with the ratings node as subject
-       "    <${object}> <topaz:hasRatingStats> $s and $s <topaz:applicationId> '${appId}' or " +
+       "    <${object}> <topaz:hasRatingStats> $s and $s <dc_terms:mediator> '${appId}' or " +
            // the statement with the ratings node as object
        "    $s <tucana:is> <${object}> and $p <tucana:is> <topaz:hasRatingStats> and " +
-       "      $o <topaz:applicationId> '${appId}' )" +
+       "      $o <dc_terms:mediator> '${appId}' )" +
        " from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_GET_STATS =
       ("select $cat $N $sum_x $sum_x2 from ${MODEL} where " +
-       "<${object}> <topaz:hasRatingStats> $stats and $stats <topaz:applicationId> ${appId} and " +
+       "<${object}> <topaz:hasRatingStats> $stats and $stats <dc_terms:mediator> ${appId} and " +
        "$stats <topaz:ratingStats> $s and $s <topaz:category> $cat and $s <topaz:numRatings> $N " +
        "and $s <topaz:sumX> $sum_x and $s <topaz:sumX2> $sum_x2;").
       replaceAll("\\Q${MODEL}", MODEL);
@@ -313,7 +313,7 @@ public class RatingsImpl implements Ratings {
 
         addReference(cmd, userId, "topaz:hasRatings", ratingsId);
         addReference(cmd, ratingsId, "topaz:object", object);
-        addLiteralVal(cmd, ratingsId, "topaz:applicationId", appId);
+        addLiteralVal(cmd, ratingsId, "dc_terms:mediator", appId);
 
         for (int idx = 0; idx < ratings.length; idx++) {
           if (ratings[idx] == null)
@@ -426,7 +426,7 @@ public class RatingsImpl implements Ratings {
     cmd.append("insert ");
 
     addReference(cmd, object, "topaz:hasRatingStats", statsId);
-    addLiteralVal(cmd, statsId, "topaz:applicationId", appId);
+    addLiteralVal(cmd, statsId, "dc_terms:mediator", appId);
 
     int idx = 0;
     for (Iterator iter = current.iterator(); iter.hasNext(); ) {

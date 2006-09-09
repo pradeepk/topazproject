@@ -41,7 +41,7 @@ import org.topazproject.ws.pap.UserPreference;
  * 
  * <p>Preferences are stored as follows: for each app-id there exists a node with
  * "&lt;user-id&gt; &lt;topaz:hasPreferences&gt; &lt;pref-id&gt;" and
- * "&lt;pref-id&gt; &lt;topaz:applicationId&gt; &lt;app-id&gt;". Then, for each preference
+ * "&lt;pref-id&gt; &lt;dc_terms:mediator&gt; &lt;app-id&gt;". Then, for each preference
  * associated with the app-id there's a node with predicates describing the name and values
  * as follows: "&lt;pref-id&gt; &lt;topaz:preference&gt; &lt;p-node&gt;" and
  * "&lt;p-node&gt; &lt;topaz:prefName&gt; '-name-'" and one or more
@@ -72,18 +72,18 @@ public class PreferencesImpl implements Preferences {
       ("delete select $s $p $o from ${MODEL} where $s $p $o and " +
            // individual preferences
        "   (<${userId}> <topaz:hasPreferences> $y and " +
-       "    $y <topaz:applicationId> ${appId} and $y <topaz:preference> $s or " +
+       "    $y <dc_terms:mediator> ${appId} and $y <topaz:preference> $s or " +
            // the statements with the preferences node as subject
-       "    <${userId}> <topaz:hasPreferences> $s and $s <topaz:applicationId> ${appId} or " +
+       "    <${userId}> <topaz:hasPreferences> $s and $s <dc_terms:mediator> ${appId} or " +
            // the statement with the preferences node as object
        "    $s <tucana:is> <${userId}> and $p <tucana:is> <topaz:hasPreferences> and " +
-       "      $o <topaz:applicationId> ${appId} )" +
+       "      $o <dc_terms:mediator> ${appId} )" +
        " from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_GET_PREFS =
       ("select $p $o from ${MODEL} where " +
-       "<${userId}> <topaz:hasPreferences> $prefs and $prefs <topaz:applicationId> ${appId} and " +
+       "<${userId}> <topaz:hasPreferences> $prefs and $prefs <dc_terms:mediator> ${appId} and " +
        "$prefs <topaz:preference> $pr and $pr <topaz:prefName> $p and $pr <topaz:prefValue> $o;").
       replaceAll("\\Q${MODEL}", MODEL);
 
@@ -245,7 +245,7 @@ public class PreferencesImpl implements Preferences {
         cmd.append("insert ");
 
         addReference(cmd, userId, "topaz:hasPreferences", prefId);
-        addLiteralVal(cmd, prefId, "topaz:applicationId", appId);
+        addLiteralVal(cmd, prefId, "dc_terms:mediator", appId);
 
         for (int idx = 0; idx < prefs.length; idx++) {
           String[] values = prefs[idx].getValues();
