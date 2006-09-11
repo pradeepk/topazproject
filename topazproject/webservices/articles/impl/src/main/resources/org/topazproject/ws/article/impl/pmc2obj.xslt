@@ -73,7 +73,7 @@
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
     <dc:identifier><xsl:value-of select="concat('info:doi/', $doi)"/></dc:identifier>
     <dc:title><xsl:value-of select="$meta/title-group/article-title"/></dc:title>
-    <dc:type>http://purl.org/dc/dcmitype/Text</dc:type>
+    <dc:type rdf:resource="http://purl.org/dc/dcmitype/Text"/>
     <dc:format>text/xml</dc:format>
     <dc:language>en</dc:language>
     <xsl:if test="$meta/pub-date">
