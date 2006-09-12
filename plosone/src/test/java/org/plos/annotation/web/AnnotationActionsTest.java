@@ -338,6 +338,19 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final List<String> revokesList = Arrays.asList(permissionWebService.listRevokes(annotationId, currentUser));
     assertTrue(revokesList.contains(AnnotationPermission.Annotation.DELETE));
     assertTrue(revokesList.contains(AnnotationPermission.Annotation.SUPERSEDE));
+
+    //Cleanup - Reset the permissions so that these annotations can be deleted by other unit tests
+    permissionWebService.cancelRevokes(
+            annotationId,
+            new String[] {AnnotationPermission.Annotation.DELETE, AnnotationPermission.Annotation.SUPERSEDE},
+            new String[] {currentUser}
+    );
+    
+    permissionWebService.cancelGrants(
+            annotationId,
+            new String[] {AnnotationPermission.Annotation.GET_INFO},
+            new String[] {AnnotationPermission.ALL_PRINCIPALS}
+    );
   }
 
   private Annotation retrieveAnnotation(final String annotationId) throws Exception {

@@ -105,13 +105,15 @@
     </property>
   </bean>
 
-  <!--<aop:config>-->
-    <!--<aop:aspect ref="helloFromSpringAOP">-->
-      <!--<aop:pointcut id="setMethod" expression="execution(* set*(..))"/>-->
-      <!--<aop:after-returning pointcut-ref="setMethod" method="sayHello"/>-->
-     <!--</aop:aspect>-->
-  <!--</aop:config>-->
+<!--
+  <aop:config>
+    <aop:aspect ref="helloFromSpringAOP">
+      <aop:pointcut id="setMethod" expression="execution(* set*(..))"/>
+      <aop:after-returning pointcut-ref="setMethod" method="sayHello"/>
+     </aop:aspect>
+  </aop:config>
 
-  <!--<bean id="helloFromSpringAOP" class="org.plos.BeforeLogAspect"/>-->
-  
+  <bean id="helloFromSpringAOP" class="org.plos.BeforeLogAspect"/>
+-->
+
 </beans>
