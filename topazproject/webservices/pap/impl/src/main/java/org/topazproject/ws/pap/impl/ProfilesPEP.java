@@ -66,7 +66,7 @@ public abstract class ProfilesPEP extends AbstractSimplePEP {
   /** The action that represents a get-publications operation in XACML policies: {@value}. */
   public static final String GET_PUBLICATIONS = "profiles:getPublications";
 
-  /** The action that represents a set-profile operation in XACML policies. */
+  /** The action that represents a set-profile operation in XACML policies: {@value}. */
   public static final String SET_PROFILE = "profiles:setProfile";
 
   /** The list of all supported actions */
