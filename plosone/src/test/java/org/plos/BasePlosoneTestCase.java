@@ -16,6 +16,7 @@ import org.plos.annotation.web.GetReplyAction;
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.web.FetchArticleAction;
+import org.plos.permission.service.PermissionWebService;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 import javax.xml.rpc.ServiceException;
@@ -24,6 +25,7 @@ import java.net.MalformedURLException;
 public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpringContextTests {
   private FetchArticleService fetchArticleService;
   private ArticleWebService articleWebService;
+  private PermissionWebService permissionWebService;
   private FetchArticleAction fetchArticleAction;
   private CreateAnnotationAction createAnnotationAction;
   private DeleteAnnotationAction deleteAnnotationAction;
@@ -36,16 +38,16 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private GetAnnotationAction getAnnotationAction;
   private GetReplyAction getReplyAction;
 
-  public BasePlosoneTestCase() {
-    super();
-  }
-
-  public BasePlosoneTestCase(final String testName) {
-    super(testName);
-  }
-
   protected String[] getConfigLocations() {
     return new String[]{"testApplicationContext.xml"};
+  }
+
+  protected PermissionWebService getPermissionWebService() {
+    return permissionWebService;
+  }
+
+  public void setPermissionWebService(final PermissionWebService permissionWebService) {
+    this.permissionWebService = permissionWebService;
   }
 
   protected ArticleWebService getArticleWebService() throws MalformedURLException, ServiceException {

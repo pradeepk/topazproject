@@ -13,15 +13,21 @@ import com.opensymphony.xwork.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
+import org.plos.permission.service.PermissionWebService;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.Reply;
+import org.plos.annotation.service.AnnotationService;
+import org.plos.annotation.service.AnnotationPermission;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Arrays;
+import java.util.List;
 
 public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static final String target = "http://here.is/viru";
   private final String body = "spmething that I always wanted to say about everything and more about nothing\n";
+  final String ANON_PRINCIPAL = "anonymous:user/";
 //  private final String target = "doi:10.1371/annotation/21";
 
   private static final Log log = LogFactory.getLog(AnnotationActionsTest.class);
@@ -98,10 +104,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     log.debug("annotation created with id:" + annotationId);
     assertNotNull(annotationId);
 
-    final GetAnnotationAction getAnnotationAction = getGetAnnotationAction();
-    getAnnotationAction.setAnnotationId(annotationId);
-    assertEquals(Action.SUCCESS, getAnnotationAction.execute());
-    final Annotation savedAnnotation = getAnnotationAction.getAnnotation();
+    final Annotation savedAnnotation = retrieveAnnotation(annotationId);
     assertEquals(target, savedAnnotation.getAnnotates());
     assertEquals(title, savedAnnotation.getTitle());
     assertEquals(context, savedAnnotation.getContext());
@@ -264,10 +267,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(Action.SUCCESS, createAnnotationAction.execute());
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
-    final GetAnnotationAction getAnnotationAction = getGetAnnotationAction();
-    getAnnotationAction.setAnnotationId(annotationId1);
-    assertEquals(Action.SUCCESS, getAnnotationAction.execute());
-    final Annotation savedAnnotation = getAnnotationAction.getAnnotation();
+    final Annotation savedAnnotation = retrieveAnnotation(annotationId1);
     assertNotNull(savedAnnotation);
     assertEquals(declawedTitle, savedAnnotation.getTitle());
 
@@ -287,9 +287,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     final Reply savedReply = getAnnotationService().getReply(id);
     assertEquals(declawedBody, savedReply.getBody());
-
   }
-
 
   public void testGetReplyShouldDeclawTheTitleContentDueToSecurityImplications() throws Exception {
     final String body = "something that I think";
@@ -307,8 +305,48 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final Reply savedReply = getAnnotationAction.getReply();
     assertNotNull(savedReply);
     assertEquals(declawedTitle, savedReply.getTitle());
-
   }
+
+  public void testPublicAnnotationShouldHaveTheRightGrantsAndRevokations() throws Exception {
+    final String title = "Annotation1";
+    final String context = "foo:bar##xpointer(id(\"TestForPublicState\")/p[2])";
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    final String annotationId = createAnnotationAction.getAnnotationId();
+    log.debug("annotation created with id:" + annotationId);
+    assertNotNull(annotationId);
+
+    final Annotation savedAnnotation = retrieveAnnotation(annotationId);
+    assertEquals(target, savedAnnotation.getAnnotates());
+    assertEquals(title, savedAnnotation.getTitle());
+    assertEquals(context, savedAnnotation.getContext());
+    assertEquals(body, savedAnnotation.getBody());
+    assertFalse(savedAnnotation.isPublic());
+
+    final AnnotationService annotationService = getAnnotationService();
+    final PermissionWebService permissionWebService = getPermissionWebService();
+    annotationService.setAnnotationPublic(annotationId);
+
+    final Annotation annotation = retrieveAnnotation(annotationId);
+    assertTrue(annotation.isPublic());
+
+    final List<String> grantsList = Arrays.asList(permissionWebService.listGrants(annotationId, AnnotationPermission.ALL_PRINCIPALS));
+    assertTrue(grantsList.contains(AnnotationPermission.Annotation.GET_INFO));
+
+    final String currentUser = ANON_PRINCIPAL;
+
+    final List<String> revokesList = Arrays.asList(permissionWebService.listRevokes(annotationId, currentUser));
+    assertTrue(revokesList.contains(AnnotationPermission.Annotation.DELETE));
+    assertTrue(revokesList.contains(AnnotationPermission.Annotation.SUPERSEDE));
+  }
+
+  private Annotation retrieveAnnotation(final String annotationId) throws Exception {
+    final GetAnnotationAction getAnnotationAction = getGetAnnotationAction();
+    getAnnotationAction.setAnnotationId(annotationId);
+    assertEquals(Action.SUCCESS, getAnnotationAction.execute());
+    return getAnnotationAction.getAnnotation();
+  }
+
   private DeleteAnnotationAction getDeleteAnnotationAction(final String annotationId) {
     final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction();
     deleteAnnotationAction.setAnnotationId(annotationId);
@@ -334,9 +372,5 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     createAnnotationAction.setMimeType(mimeType);
     createAnnotationAction.setBody(body);
     return createAnnotationAction;
-  }
-
-  public AnnotationActionsTest(final String testName) {
-    super(testName);
   }
 }

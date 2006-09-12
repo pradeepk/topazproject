@@ -10,6 +10,8 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
 
+  <!--<aop:aspectj-autoproxy/>-->
+
   <!--Plosone developer beans here -->
   <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" init-method="init">
     <property name="articleRep" value="XML"/>
@@ -45,7 +47,7 @@
 
   <bean id="userContext" class="org.plos.web.UserContext"/>
 
-  <bean id="permissionWebService" class="org.plos.permission.service.PermissionWebService">
+  <bean id="permissionWebService" class="org.plos.permission.service.PermissionWebService" init-method="init">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
@@ -103,4 +105,13 @@
     </property>
   </bean>
 
+  <!--<aop:config>-->
+    <!--<aop:aspect ref="helloFromSpringAOP">-->
+      <!--<aop:pointcut id="setMethod" expression="execution(* set*(..))"/>-->
+      <!--<aop:after-returning pointcut-ref="setMethod" method="sayHello"/>-->
+     <!--</aop:aspect>-->
+  <!--</aop:config>-->
+
+  <!--<bean id="helloFromSpringAOP" class="org.plos.BeforeLogAspect"/>-->
+  
 </beans>

@@ -48,7 +48,7 @@ public class PermissionWebService extends BaseConfigurableService {
    * @return a list of grants
    * @throws java.rmi.RemoteException
    */
-  private String[] listGrants(final String resource, final String principal) throws RemoteException {
+  public String[] listGrants(final String resource, final String principal) throws RemoteException {
     return permissionsService.listGrants(resource, principal);
   }
 
@@ -124,5 +124,42 @@ public class PermissionWebService extends BaseConfigurableService {
           throws RemoteException
   {
     revoke(resource, permissions, new String[]{principal});
+  }
+
+  /**
+   * Cancel grants.
+   * @param resource resource
+   * @param grants grants
+   * @param principals principals
+   * @throws RemoteException
+   * @see org.topazproject.ws.permissions.Permissions#cancelGrants(String, String[], String[])
+   */
+  public void cancelGrants(final String resource, final String[] grants, final String[] principals) throws RemoteException {
+    permissionsService.cancelGrants(resource, grants, principals);
+  }
+
+  /**
+   * Cancel revokations
+   * @param resource resource
+   * @param grants grants
+   * @param principals principals
+   * @throws RemoteException
+   * @see org.topazproject.ws.permissions.Permissions#cancelRevokes(String, String[], String[])
+   */
+  public void cancelRevokes(final String resource, final String[] grants, final String[] principals) throws RemoteException {
+    permissionsService.cancelRevokes(resource, grants, principals);
+  }
+
+  /**
+   * List revokes.
+   * @param resource resource
+   * @param principal principal
+   * @return a list of revokations for this principal
+   * @throws RemoteException
+   * @see org.topazproject.ws.permissions.Permissions#listRevokes(String, String)
+   */
+
+  public String[] listRevokes(final String resource, final String principal) throws RemoteException {
+    return permissionsService.listRevokes(resource, principal);
   }
 }
