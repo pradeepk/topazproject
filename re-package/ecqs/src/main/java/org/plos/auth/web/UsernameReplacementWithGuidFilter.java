@@ -32,37 +32,37 @@ import java.sql.SQLException;
 /**
  * Replaces the Username with the user's GUID so that the username is the GUID for any responses to clients.
   <filter>
-	<filter-name>GUID accessor</filter-name>
-	<filter-class>org.plos.auth.web.UsernameReplacementFilter</filter-class>
-	<init-param>
-	  <param-name>jdbcDriver</param-name>
-	  <param-value>org.postgresql.Driver</param-value>
-	</init-param>
-	<init-param>
-	  <param-name>jdbcUrl</param-name>
-	  <param-value>jdbc:postgresql://localhost/postgres</param-value>
-	</init-param>
-	<init-param>
-	  <param-name>usernameToGuidSql</param-name>
-	  <param-value>select id from plos_user where loginname=?</param-value>
-	</init-param>
-	<init-param>
-	  <param-name>guidToUsernameSql</param-name>
-	  <param-value>select loginname from plos_user where id=?</param-value>
-	</init-param>
-	<init-param>
-	  <param-name>adminUser</param-name>
-	  <param-value>postgres</param-value>
-	</init-param>
-	<init-param>
-	  <param-name>adminPassword</param-name>
-	  <param-value>postgres</param-value>
-	</init-param>
+    <filter-name>UsernameReplacementWithGuidFilter</filter-name>
+    <filter-class>org.plos.auth.web.UsernameReplacementWithGuidFilter</filter-class>
+    <init-param>
+      <param-name>jdbcDriver</param-name>
+      <param-value>org.postgresql.Driver</param-value>
+    </init-param>
+    <init-param>
+      <param-name>jdbcUrl</param-name>
+      <param-value>jdbc:postgresql://localhost/postgres</param-value>
+    </init-param>
+    <init-param>
+      <param-name>usernameToGuidSql</param-name>
+      <param-value>select id from plos_user where loginname=?</param-value>
+    </init-param>
+    <init-param>
+      <param-name>guidToUsernameSql</param-name>
+      <param-value>select loginname from plos_user where id=?</param-value>
+    </init-param>
+    <init-param>
+      <param-name>adminUser</param-name>
+      <param-value>postgres</param-value>
+    </init-param>
+    <init-param>
+      <param-name>adminPassword</param-name>
+      <param-value>postgres</param-value>
+    </init-param>
   </filter>
 
   <filter-mapping >
-	<filter-name>GUID accessor</filter-name>
-	<url-pattern>/*</url-pattern>
+    <filter-name>UsernameReplacementWithGuidFilter</filter-name>
+    <url-pattern>/login</url-pattern>
   </filter-mapping>
 */
 public class UsernameReplacementWithGuidFilter implements Filter {
