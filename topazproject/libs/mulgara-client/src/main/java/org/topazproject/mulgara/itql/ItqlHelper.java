@@ -489,6 +489,13 @@ public class ItqlHelper {
   /**
    * Does input valdation for uri parameters. Only absolute (non-relative) URIs are valid.
    *
+   * In usage, it essentailly asserts that a URI string is a valid URI and throws a
+   * subclass of RuntimeException if not. If part of a webservice, this exception is
+   * typically passed back to the caller.
+   *
+   * As a helpful side-effect, this function also returns the uri as a proper java.net.URI
+   * that can be used for further processing.
+   *
    * @param uri the uri string to validate
    * @param name the name of this uri for use in error messages
    *
