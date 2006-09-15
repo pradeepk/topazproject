@@ -12,6 +12,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plosone.PlosOneUser;
+import org.plos.web.UserContext;
 
 /**
  * Action class to test out single sign on and token passing
@@ -25,6 +26,7 @@ public class RegistrationAction extends ActionSupport {
   private String signOnId;
 
   private String ticket;
+  private UserContext userContext;
 
   /**
    * A default implementation that does nothing and returns "success" with the user's CAS identity.
@@ -32,7 +34,7 @@ public class RegistrationAction extends ActionSupport {
    * @return {@link #SUCCESS}
    */
   public String execute() throws Exception {
-    Map sessionMap = ActionContext.getContext().getSession();
+    final Map sessionMap = userContext.getSessionMap();
     this.signOnId = (String) sessionMap.get(CASFilter.CAS_FILTER_USER);
     CASReceipt receipt = (CASReceipt) sessionMap.get(CASFilter.CAS_FILTER_RECEIPT);
     this.ticket = receipt.getPgtIou();
@@ -41,6 +43,18 @@ public class RegistrationAction extends ActionSupport {
     newUser.setDisplayName("testuser");
     newUser.create(this.signOnId, this.ticket);
     return SUCCESS;
+  }
+
+  private ActionContext getUserContext() {
+    return ActionContext.getContext();
+  }
+
+  /**
+   * Set the user context
+   * @param userContext userContext
+   */
+  public void setUserContext(final UserContext userContext) {
+    this.userContext = userContext;
   }
 
   /**
