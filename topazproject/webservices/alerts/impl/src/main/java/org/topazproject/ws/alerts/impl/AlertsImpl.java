@@ -30,6 +30,9 @@ import java.util.Calendar;
 import java.util.NoSuchElementException;
 import java.text.ParseException;
 
+import org.jrdf.graph.Literal;
+import org.jrdf.graph.URIReference;
+
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
@@ -382,8 +385,8 @@ public class AlertsImpl implements Alerts {
       Object[] row = (Object[])rowIt.next();
 
       UserData user = new UserData();
-      user.userId = trimQuotes(row[1].toString());
-      user.stamp = trimQuotes(row[0].toString());
+      user.userId = ((URIReference)row[1]).getURI().toString();
+      user.stamp = ((Literal)row[0]).getLexicalForm();
       
       QueryAnswer subAnswer = (QueryAnswer)row[2]; // from sub-query
       Object[] subRow = (Object[])subAnswer.getRows().get(0);
@@ -397,12 +400,6 @@ public class AlertsImpl implements Alerts {
     return users.values();
   }
 
-  private static String trimQuotes(String value) {
-    if (value.startsWith("\"") && value.endsWith("\""))
-      return value.substring(1, value.length() - 1);
-    else
-      return value;
-  }
 
   /**
    * Get timestamp user last received update. (Unused?)
