@@ -45,26 +45,26 @@ public class JournalServiceTest extends TestCase {
     boolean gotExc = false;
     try {
       String info = service.getJournalInfo("blah");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchJournalIdException nsjie) {
       gotExc = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotExc);
+    assertTrue("Failed to get expected NoSuchJournalIdException", gotExc);
 
     gotExc = false;
     try {
       service.setJournalInfo("blah", "");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchJournalIdException nsjie) {
       gotExc = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotExc);
+    assertTrue("Failed to get expected NoSuchJournalIdException", gotExc);
 
     gotExc = false;
     try {
       service.deleteJournal("blah");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchJournalIdException nsjie) {
       gotExc = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotExc);
+    assertTrue("Failed to get expected NoSuchJournalIdException", gotExc);
 
     service.createJournal("j1");
 
@@ -83,10 +83,10 @@ public class JournalServiceTest extends TestCase {
     gotExc = false;
     try {
       service.deleteJournal("j1");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchJournalIdException nsjie) {
       gotExc = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotExc);
+    assertTrue("Failed to get expected NoSuchJournalIdException", gotExc);
   }
 
   private void basicIssueTest() throws RemoteException {
@@ -99,26 +99,26 @@ public class JournalServiceTest extends TestCase {
     boolean gotExc = false;
     try {
       String info = service.getIssueInfo(jid, "blah");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchJournalIdException nsjie) {
       gotExc = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotExc);
+    assertTrue("Failed to get expected NoSuchJournalIdException", gotExc);
 
     gotExc = false;
     try {
       service.setIssueInfo(jid, "blah", "");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchJournalIdException nsjie) {
       gotExc = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotExc);
+    assertTrue("Failed to get expected NoSuchJournalIdException", gotExc);
 
     gotExc = false;
     try {
       service.deleteIssue(jid, "blah");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchJournalIdException nsjie) {
       gotExc = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotExc);
+    assertTrue("Failed to get expected NoSuchJournalIdException", gotExc);
 
     service.createIssue(jid, "i1");
 
@@ -137,10 +137,10 @@ public class JournalServiceTest extends TestCase {
     gotExc = false;
     try {
       service.deleteIssue(jid, "i1");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchJournalIdException nsjie) {
       gotExc = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotExc);
+    assertTrue("Failed to get expected NoSuchJournalIdException", gotExc);
 
     service.deleteJournal(jid);
   }

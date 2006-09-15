@@ -24,10 +24,10 @@ public class JournalServicePortSoapBindingImpl implements Journal {
   /**
    * @see org.topazproject.ws.admin.Journal#createJournal
    */
-  public void createJournal(String id) throws DuplicateIdException, RemoteException {
+  public void createJournal(String id) throws DuplicateJournalIdException, RemoteException {
     synchronized (journals) {
       if (journals.containsKey(id))
-        throw new DuplicateIdException(id);
+        throw new DuplicateJournalIdException(id);
 
       journals.put(id, new JournalInfo());
     }
@@ -36,10 +36,10 @@ public class JournalServicePortSoapBindingImpl implements Journal {
   /** 
    * @see org.topazproject.ws.admin.Journal#deleteJournal
    */
-  public void deleteJournal(String id) throws NoSuchIdException, RemoteException {
+  public void deleteJournal(String id) throws NoSuchJournalIdException, RemoteException {
     synchronized (journals) {
       if (journals.remove(id) == null)
-        throw new NoSuchIdException(id);
+        throw new NoSuchJournalIdException(id);
     }
   }
 
@@ -47,11 +47,11 @@ public class JournalServicePortSoapBindingImpl implements Journal {
    * @see org.topazproject.ws.admin.Journal#setJournalInfo
    */
   public void setJournalInfo(String id, String journalDef)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchJournalIdException, RemoteException {
     synchronized (journals) {
       JournalInfo ji = (JournalInfo) journals.get(id);
       if (ji == null)
-        throw new NoSuchIdException(id);
+        throw new NoSuchJournalIdException(id);
 
       ji.info = journalDef;
     }
@@ -60,11 +60,11 @@ public class JournalServicePortSoapBindingImpl implements Journal {
   /**
    * @see org.topazproject.ws.admin.Journal#getJournalInfo
    */
-  public String getJournalInfo(String id) throws NoSuchIdException, RemoteException {
+  public String getJournalInfo(String id) throws NoSuchJournalIdException, RemoteException {
     synchronized (journals) {
       JournalInfo ji = (JournalInfo) journals.get(id);
       if (ji == null)
-        throw new NoSuchIdException(id);
+        throw new NoSuchJournalIdException(id);
 
       return ji.info;
     }
@@ -83,14 +83,14 @@ public class JournalServicePortSoapBindingImpl implements Journal {
    * @see org.topazproject.ws.admin.Journal#createIssue
    */
   public void createIssue(String journalId, String issueNum)
-      throws DuplicateIdException, NoSuchIdException, RemoteException {
+      throws DuplicateJournalIdException, NoSuchJournalIdException, RemoteException {
     synchronized (journals) {
       JournalInfo ji = (JournalInfo) journals.get(journalId);
       if (ji == null)
-        throw new NoSuchIdException(journalId);
+        throw new NoSuchJournalIdException(journalId);
 
       if (ji.issues.containsKey(issueNum))
-        throw new DuplicateIdException(issueNum);
+        throw new DuplicateJournalIdException(issueNum);
 
       ji.issues.put(issueNum, new IssueInfo());
     }
@@ -100,14 +100,14 @@ public class JournalServicePortSoapBindingImpl implements Journal {
    * @see org.topazproject.ws.admin.Journal#deleteIssue
    */
   public void deleteIssue(String journalId, String issueNum)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchJournalIdException, RemoteException {
     synchronized (journals) {
       JournalInfo ji = (JournalInfo) journals.get(journalId);
       if (ji == null)
-        throw new NoSuchIdException(journalId);
+        throw new NoSuchJournalIdException(journalId);
 
       if (ji.issues.remove(issueNum) == null)
-        throw new NoSuchIdException(issueNum);
+        throw new NoSuchJournalIdException(issueNum);
     }
   }
 
@@ -115,15 +115,15 @@ public class JournalServicePortSoapBindingImpl implements Journal {
    * @see org.topazproject.ws.admin.Journal#setIssueInfo
    */
   public void setIssueInfo(String journalId, String issueNum, String issueDef)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchJournalIdException, RemoteException {
     synchronized (journals) {
       JournalInfo ji = (JournalInfo) journals.get(journalId);
       if (ji == null)
-        throw new NoSuchIdException(journalId);
+        throw new NoSuchJournalIdException(journalId);
 
       IssueInfo ii = (IssueInfo) ji.issues.get(issueNum);
       if (ii == null)
-        throw new NoSuchIdException(issueNum);
+        throw new NoSuchJournalIdException(issueNum);
 
       ii.info = issueDef;
     }
@@ -133,15 +133,15 @@ public class JournalServicePortSoapBindingImpl implements Journal {
    * @see org.topazproject.ws.admin.Journal#getIssueInfo
    */
   public String getIssueInfo(String journalId, String issueNum)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchJournalIdException, RemoteException {
     synchronized (journals) {
       JournalInfo ji = (JournalInfo) journals.get(journalId);
       if (ji == null)
-        throw new NoSuchIdException(journalId);
+        throw new NoSuchJournalIdException(journalId);
 
       IssueInfo ii = (IssueInfo) ji.issues.get(issueNum);
       if (ii == null)
-        throw new NoSuchIdException(issueNum);
+        throw new NoSuchJournalIdException(issueNum);
 
       return ii.info;
     }
@@ -150,11 +150,11 @@ public class JournalServicePortSoapBindingImpl implements Journal {
   /**
    * @see org.topazproject.ws.admin.Journal#listIssues
    */
-  public String[] listIssues(String journalId) throws NoSuchIdException, RemoteException {
+  public String[] listIssues(String journalId) throws NoSuchJournalIdException, RemoteException {
     synchronized (journals) {
       JournalInfo ji = (JournalInfo) journals.get(journalId);
       if (ji == null)
-        throw new NoSuchIdException(journalId);
+        throw new NoSuchJournalIdException(journalId);
 
       return (String[]) ji.issues.keySet().toArray(new String[0]);
     }

@@ -1,4 +1,4 @@
-/* $HeadURL::                                                                            $
+/* $HeadURL::                                                                                     $
  * $Id$
  *
  * Copyright (c) 2006 by Topaz, Inc.
@@ -9,12 +9,15 @@
  */
 package org.topazproject.ws.admin;
 
+// TODO: Subclass NoSuchIdException -- Doing so at the moment breaks journal-admin integraiton-tests
+//import org.topazproject.common.NoSuchIdException;
+
 /** 
  * Signifies that the requested object does not exist. 
  * 
  * @author Ronald Tschalär
  */
-public class NoSuchIdException extends Exception {
+public class NoSuchJournalIdException extends Exception {
   private final String id;
 
   /** 
@@ -22,7 +25,7 @@ public class NoSuchIdException extends Exception {
    * 
    * @param id  the (non-existant) id
    */
-  public NoSuchIdException(String id) {
+  public NoSuchJournalIdException(String id) {
     this.id = id;
   }
 

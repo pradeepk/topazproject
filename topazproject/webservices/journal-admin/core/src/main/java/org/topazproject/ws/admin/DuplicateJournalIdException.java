@@ -1,4 +1,4 @@
-/* $HeadURL::                                                                            $
+/* $HeadURL::                                                                                     $
  * $Id$
  *
  * Copyright (c) 2006 by Topaz, Inc.
@@ -9,12 +9,15 @@
  */
 package org.topazproject.ws.admin;
 
+// TODO: Subclass DuplicateIdException -- At the moment breaks journal-admin integraiton-tests
+//import org.topazproject.common.DuplicateIdException;
+
 /** 
  * Signifies that an object with the requested id already exists.
  * 
  * @author Ronald Tschalär
  */
-public class DuplicateIdException extends Exception {
+public class DuplicateJournalIdException extends Exception {
   private final String id;
 
   /** 
@@ -22,7 +25,7 @@ public class DuplicateIdException extends Exception {
    * 
    * @param id  the (duplicate) id
    */
-  public DuplicateIdException(String id) {
+  public DuplicateJournalIdException(String id) {
     this.id = id;
   }
 
