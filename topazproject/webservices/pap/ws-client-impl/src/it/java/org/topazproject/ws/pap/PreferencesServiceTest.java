@@ -22,6 +22,7 @@ import junit.framework.TestCase;
 
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsClientFactory;
+import org.topazproject.ws.users.NoSuchUserIdException;
 
 /**
  * Simple tests for the preferences service.
@@ -52,13 +53,13 @@ public class PreferencesServiceTest extends TestCase {
   protected void tearDown() throws RemoteException {
     try {
       service.setPreferences(null, userId, null);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsuie) {
       // looks like it was clean
     }
 
     try {
       userService.deleteUser(userId);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsuie) {
       // looks like it was clean
     }
   }
@@ -66,14 +67,14 @@ public class PreferencesServiceTest extends TestCase {
   public void testBasicPreferences() throws RemoteException, IOException {
     UserPreference[] prefs, got, exp, exp2;
 
-    // test NoSuchIdException
+    // test NoSuchUserIdException
     boolean gotE = false;
     try {
       service.setPreferences("testApp1", "muster42", null);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsuie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     // test null prefs
     service.setPreferences("testApp1", userId, null);

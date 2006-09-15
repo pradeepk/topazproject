@@ -28,7 +28,7 @@ import com.sun.xacml.attr.AnyURIAttribute;
 import com.sun.xacml.attr.BagAttribute;
 import com.sun.xacml.ctx.Attribute;
 
-import org.topazproject.ws.pap.NoSuchIdException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 
 /**
  * The XACML PEP for profiles.
@@ -98,20 +98,20 @@ public abstract class ProfilesPEP extends AbstractSimplePEP {
    * 
    * @param action one of the actions defined above
    * @param userId the profile owner's internal id
-   * @throws NoSuchIdException if the userId is not a valid URL
+   * @throws NoSuchUserIdException if the userId is not a valid URL
    * @throws SecurityException if access is denied
    */
   protected void checkUserAccess(String action, String userId)
-      throws NoSuchIdException, SecurityException {
+      throws NoSuchUserIdException, SecurityException {
     URI userURI;
     try {
       userURI = new URI(userId);
       if (!userURI.isAbsolute())
-        throw new NoSuchIdException(userId);
+        throw new NoSuchUserIdException(userId);
     } catch (URISyntaxException use) {
-      NoSuchIdException nsie = new NoSuchIdException(userId);
-      nsie.initCause(use);
-      throw nsie;
+      NoSuchUserIdException nsuie = new NoSuchUserIdException(userId);
+      nsuie.initCause(use);
+      throw nsuie;
     }
 
     checkAccess(action, userURI);

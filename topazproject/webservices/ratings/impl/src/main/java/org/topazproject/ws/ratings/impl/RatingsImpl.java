@@ -35,7 +35,7 @@ import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
-import org.topazproject.ws.ratings.NoSuchIdException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.ratings.ObjectRating;
 import org.topazproject.ws.ratings.ObjectRatingStats;
 import org.topazproject.ws.ratings.Ratings;
@@ -172,7 +172,7 @@ public class RatingsImpl implements Ratings {
   }
 
   public ObjectRating[] getRatings(String appId, String userId, String object)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
     if (object == null)
@@ -193,7 +193,7 @@ public class RatingsImpl implements Ratings {
   }
 
   private Object getRatingsInternal(String appId, String userId, String object, boolean wantMap)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchUserIdException, RemoteException {
     StringAnswer ans;
     try {
       String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
@@ -210,7 +210,7 @@ public class RatingsImpl implements Ratings {
 
     List user = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
     if (user.size() == 0)
-      throw new NoSuchIdException(userId);
+      throw new NoSuchUserIdException(userId);
 
     List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(1)).getRows();
     if (rows.size() == 0)
@@ -277,7 +277,7 @@ public class RatingsImpl implements Ratings {
   }
 
   public void setRatings(String appId, String userId, String object, ObjectRating[] ratings)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 

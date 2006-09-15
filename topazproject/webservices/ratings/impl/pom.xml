@@ -67,5 +67,11 @@
       <artifactId>xacml-extensions</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
+    <dependency> <!-- org.topazproject.ws.users.NoSuchUserIdException -->
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-users-api</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 </project>

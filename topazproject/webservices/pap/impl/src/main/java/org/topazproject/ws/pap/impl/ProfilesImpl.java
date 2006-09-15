@@ -36,7 +36,7 @@ import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import org.topazproject.ws.pap.NoSuchIdException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.pap.Profiles;
 import org.topazproject.ws.pap.UserProfile;
 
@@ -162,7 +162,7 @@ public class ProfilesImpl implements Profiles {
          pep);
   }
 
-  public UserProfile getProfile(String userId) throws NoSuchIdException, RemoteException {
+  public UserProfile getProfile(String userId) throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -199,7 +199,7 @@ public class ProfilesImpl implements Profiles {
     return prof;
   }
 
-  private boolean checkAccess(String owner, String perm) throws NoSuchIdException {
+  private boolean checkAccess(String owner, String perm) throws NoSuchUserIdException {
     try {
       pep.checkUserAccess(perm, owner);
       return true;
@@ -211,7 +211,7 @@ public class ProfilesImpl implements Profiles {
   }
 
   public void setProfile(String userId, UserProfile profile)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -243,10 +243,10 @@ public class ProfilesImpl implements Profiles {
    *
    * @param userId the user's internal id
    * @return the profile id, or null if this user doesn't have one (doesn't exist)
-   * @throws NoSuchIdException if the user does not exist
+   * @throws NoSuchUserIdException if the user does not exist
    * @throws RemoteException if an error occurred talking to the db
    */
-  protected String getProfileId(String userId) throws NoSuchIdException, RemoteException {
+  protected String getProfileId(String userId) throws NoSuchUserIdException, RemoteException {
     try {
       /* Implementation note:
        * Instead of doing two queries we could also use a subquery:
@@ -265,7 +265,7 @@ public class ProfilesImpl implements Profiles {
 
       List user = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       if (user.size() == 0)
-        throw new NoSuchIdException(userId);
+        throw new NoSuchUserIdException(userId);
 
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(1)).getRows();
       return rows.size() == 0 ? null : ((String[]) rows.get(0))[0];
@@ -337,10 +337,10 @@ public class ProfilesImpl implements Profiles {
    *
    * @param userId  the user's id
    * @return the user's profile, or null
-   * @throws NoSuchIdException if the user does not exist
+   * @throws NoSuchUserIdException if the user does not exist
    * @throws RemoteException if an error occurred retrieving the profile
    */
-  protected UserProfile getRawProfile(String userId) throws NoSuchIdException, RemoteException {
+  protected UserProfile getRawProfile(String userId) throws NoSuchUserIdException, RemoteException {
     StringAnswer ans;
     try {
       String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
@@ -352,7 +352,7 @@ public class ProfilesImpl implements Profiles {
 
     List user = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
     if (user.size() == 0)
-      throw new NoSuchIdException(userId);
+      throw new NoSuchUserIdException(userId);
 
     List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(1)).getRows();
     if (rows.size() == 0)

@@ -11,6 +11,7 @@
 package org.topazproject.ws.pap;
 
 import java.rmi.RemoteException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 
 /** 
  * This defines the profiles service. It allows a single profile to be associated with each user.
@@ -24,19 +25,19 @@ public interface Profiles {
    * 
    * @param userId  the user's internal id
    * @return the user's profile, or null if the user does not have a profile
-   * @throws NoSuchIdException if the user does not exist
+   * @throws NoSuchUserIdException if the user does not exist
    * @throws RemoteException if some other error occured
    */
-  public UserProfile getProfile(String userId) throws NoSuchIdException, RemoteException;
+  public UserProfile getProfile(String userId) throws NoSuchUserIdException, RemoteException;
 
   /** 
    * Set a user's profile. This completely replaces the current profile (if any) with the given one.
    * 
    * @param userId  the user's internal id
    * @param profile the user's new profile; may be null in which case the profile is erased
-   * @throws NoSuchIdException if the user does not exist
+   * @throws NoSuchUserIdException if the user does not exist
    * @throws RemoteException if some other error occured
    */
   public void setProfile(String userId, UserProfile profile)
-      throws NoSuchIdException, RemoteException;
+      throws NoSuchUserIdException, RemoteException;
 }

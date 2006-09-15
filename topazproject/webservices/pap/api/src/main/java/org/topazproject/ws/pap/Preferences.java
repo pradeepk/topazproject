@@ -11,6 +11,7 @@
 package org.topazproject.ws.pap;
 
 import java.rmi.RemoteException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 
 /** 
  * This defines the preferences service. Preferences are stored as a list of name/values pairs.
@@ -27,11 +28,11 @@ public interface Preferences {
    * @param userId the user's internal id
    * @return the user's preferences, or null if none exist for this user. Note that the order of the
    *         entries will be arbitrary.
-   * @throws NoSuchIdException the user does not exist
+   * @throws NoSuchUserIdException the user does not exist
    * @throws RemoteException if some error occured accessing the preferences
    */
   public UserPreference[] getPreferences(String appId, String userId)
-      throws NoSuchIdException, RemoteException;
+      throws NoSuchUserIdException, RemoteException;
 
   /** 
    * Set a user's preferences. This completely overrides any previous settings.
@@ -41,9 +42,9 @@ public interface Preferences {
    * @param userId the user's internal id
    * @param prefs  the user's preferences; may be null in which case all settings are erased. Note
    *               that the order will not be preserved.
-   * @throws NoSuchIdException the user does not exist
+   * @throws NoSuchUserIdException the user does not exist
    * @throws RemoteException if some error occured accessing the preferences
    */
   public void setPreferences(String appId, String userId, UserPreference[] prefs)
-      throws NoSuchIdException, RemoteException;
+      throws NoSuchUserIdException, RemoteException;
 }

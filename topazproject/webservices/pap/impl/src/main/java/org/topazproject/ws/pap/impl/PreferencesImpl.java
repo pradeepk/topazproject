@@ -32,7 +32,7 @@ import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import org.topazproject.ws.pap.NoSuchIdException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.pap.Preferences;
 import org.topazproject.ws.pap.UserPreference;
 
@@ -161,7 +161,7 @@ public class PreferencesImpl implements Preferences {
   }
 
   public UserPreference[] getPreferences(String appId, String userId)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -183,7 +183,7 @@ public class PreferencesImpl implements Preferences {
 
     List user = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
     if (user.size() == 0)
-      throw new NoSuchIdException(userId);
+      throw new NoSuchUserIdException(userId);
 
     List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(1)).getRows();
     if (rows.size() == 0)
@@ -214,7 +214,7 @@ public class PreferencesImpl implements Preferences {
   }
 
   public void setPreferences(String appId, String userId, UserPreference[] prefs)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -231,7 +231,7 @@ public class PreferencesImpl implements Preferences {
       itql.beginTxn(txn);
 
       if (!userExists(userId))
-        throw new NoSuchIdException(userId);
+        throw new NoSuchUserIdException(userId);
 
       String prefId = getPrefsId(userId, appId);
 

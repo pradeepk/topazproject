@@ -27,7 +27,7 @@ import org.apache.commons.io.IOUtils;
 
 import junit.framework.TestCase;
 
-import org.topazproject.ws.article.NoSuchIdException;
+import org.topazproject.common.NoSuchIdException;
 
 import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.ArticleClientFactory;
@@ -144,7 +144,6 @@ public class AlertsServiceTest extends TestCase {
     try {
       articleService.delete(doi, true);
       log.info("deleted article " + doi);
-//    } catch (NoSuchIdException nsie) {
     } catch (Exception nsie) {
       // so what
       //log.debug(nsie);

@@ -26,6 +26,7 @@ import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.pap.impl.PreferencesImpl;
 import org.topazproject.ws.pap.impl.PreferencesPEP;
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.xacml.Util;
 
 /** 
@@ -77,14 +78,14 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
    * @see org.topazproject.ws.pap.Preferences#setPreferences
    */
   public void setPreferences(String appId, String userId, UserPreference[] prefs)
-      throws RemoteException, NoSuchIdException {
+      throws RemoteException, NoSuchUserIdException {
     try {
       synchronized (impl) {
         impl.setPreferences(appId, userId, prefs);
       }
-    } catch (NoSuchIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
+    } catch (NoSuchUserIdException nsuie) {
+      log.debug("", nsuie);
+      throw nsuie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -98,14 +99,14 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
    * @see org.topazproject.ws.pap.Preferences#getPreferences
    */
   public UserPreference[] getPreferences(String appId, String userId)
-      throws RemoteException, NoSuchIdException {
+      throws RemoteException, NoSuchUserIdException {
     try {
       synchronized (impl) {
         return impl.getPreferences(appId, userId);
       }
-    } catch (NoSuchIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
+    } catch (NoSuchUserIdException nsuie) {
+      log.debug("", nsuie);
+      throw nsuie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;

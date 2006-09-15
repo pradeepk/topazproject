@@ -26,6 +26,7 @@ import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.pap.impl.ProfilesImpl;
 import org.topazproject.ws.pap.impl.ProfilesPEP;
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.xacml.Util;
 
 /** 
@@ -80,14 +81,14 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
   /**
    * @see org.topazproject.ws.pap.Profiles#getProfile
    */
-  public UserProfile getProfile(String userId) throws RemoteException, NoSuchIdException {
+  public UserProfile getProfile(String userId) throws RemoteException, NoSuchUserIdException {
     try {
       synchronized (impl) {
         return impl.getProfile(userId);
       }
-    } catch (NoSuchIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
+    } catch (NoSuchUserIdException nsuie) {
+      log.debug("", nsuie);
+      throw nsuie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -101,14 +102,14 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
    * @see org.topazproject.ws.pap.Profiles#setProfile
    */
   public void setProfile(String userId, UserProfile profile)
-      throws RemoteException, NoSuchIdException {
+      throws RemoteException, NoSuchUserIdException {
     try {
       synchronized (impl) {
         impl.setProfile(userId, profile);
       }
-    } catch (NoSuchIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
+    } catch (NoSuchUserIdException nsuie) {
+      log.debug("", nsuie);
+      throw nsuie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;

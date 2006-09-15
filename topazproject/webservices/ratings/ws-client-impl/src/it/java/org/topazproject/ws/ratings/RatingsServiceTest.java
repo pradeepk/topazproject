@@ -27,6 +27,7 @@ import junit.framework.TestCase;
 
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsClientFactory;
+import org.topazproject.ws.users.NoSuchUserIdException;
 
 /**
  *
@@ -59,53 +60,53 @@ public class RatingsServiceTest extends TestCase {
 
       try {
         service.setRatings(null, userId[idx], null, null);
-      } catch (NoSuchIdException nsie) {
+      } catch (NoSuchUserIdException nsuie) {
         // looks like it was clean
       }
 
       try {
         userService.deleteUser(userId[idx]);
-      } catch (NoSuchIdException nsie) {
+      } catch (NoSuchUserIdException nsuie) {
         // looks like it was clean
       }
     }
   }
 
   /**
-   * Test NoSuchIdException.
+   * Test NoSuchUserIdException.
    */
   public void testNSIE() throws RemoteException, IOException {
     boolean gotE = false;
     try {
       service.setRatings("testApp1", "muster42", "foo:bar", null);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsuie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     gotE = false;
     try {
       service.getRatings("testApp1", "muster42", "foo:bar");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsuie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     gotE = false;
     try {
       service.setRatings("testApp1", "foo:muster42", "foo:bar", null);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsuie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     gotE = false;
     try {
       service.getRatings("testApp1", "foo:muster42", "foo:bar");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsuie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
   }
 
   public void testBasicRatings() throws RemoteException, IOException {

@@ -27,6 +27,7 @@ import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.ratings.impl.RatingsImpl;
 import org.topazproject.ws.ratings.impl.RatingsPEP;
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.xacml.Util;
 
 /** 
@@ -78,14 +79,14 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
    * @see org.topazproject.ws.pap.Ratings#setRatings
    */
   public void setRatings(String appId, String userId, String object, ObjectRating[] ratings)
-      throws RemoteException, NoSuchIdException {
+      throws RemoteException, NoSuchUserIdException {
     try {
       synchronized (impl) {
         impl.setRatings(appId, userId, object, ratings);
       }
-    } catch (NoSuchIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
+    } catch (NoSuchUserIdException nsuie) {
+      log.debug("", nsuie);
+      throw nsuie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -99,14 +100,14 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
    * @see org.topazproject.ws.pap.Ratings#getRatings
    */
   public ObjectRating[] getRatings(String appId, String userId, String object)
-      throws RemoteException, NoSuchIdException {
+      throws RemoteException, NoSuchUserIdException {
     try {
       synchronized (impl) {
         return impl.getRatings(appId, userId, object);
       }
-    } catch (NoSuchIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
+    } catch (NoSuchUserIdException nsuie) {
+      log.debug("", nsuie);
+      throw nsuie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;

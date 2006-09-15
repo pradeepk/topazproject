@@ -16,7 +16,7 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.topazproject.ws.ratings.NoSuchIdException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.xacml.AbstractSimplePEP;
 import org.topazproject.xacml.Util;
 
@@ -71,7 +71,7 @@ public abstract class RatingsPEP extends AbstractSimplePEP {
    * @param object the object for which to get the ratings
    */
   protected void checkUserAccess(String action, String userId, String object)
-      throws NoSuchIdException, SecurityException {
+      throws NoSuchUserIdException, SecurityException {
     Set resourceAttrs = new HashSet();
 
     resourceAttrs.add(
@@ -91,25 +91,25 @@ public abstract class RatingsPEP extends AbstractSimplePEP {
   protected void checkObjectAccess(String action, String object) throws SecurityException {
     try {
       checkAccess(action, toURI(object));
-    } catch (NoSuchIdException nsie) {
-      IllegalArgumentException iae = new IllegalArgumentException(nsie.getId());
-      iae.initCause(nsie);
+    } catch (NoSuchUserIdException nsuie) {
+      IllegalArgumentException iae = new IllegalArgumentException(nsuie.getId());
+      iae.initCause(nsuie);
       throw iae;
     }
   }
 
-  private static URI toURI(String uri) throws NoSuchIdException {
+  private static URI toURI(String uri) throws NoSuchUserIdException {
     try {
       URI res = new URI(uri);
 
       if (!res.isAbsolute())
-        throw new NoSuchIdException(uri);
+        throw new NoSuchUserIdException(uri);
 
       return res;
     } catch (URISyntaxException use) {
-      NoSuchIdException nsie = new NoSuchIdException(uri);
-      nsie.initCause(use);
-      throw nsie;
+      NoSuchUserIdException nsuie = new NoSuchUserIdException(uri);
+      nsuie.initCause(use);
+      throw nsuie;
     }
   }
 }

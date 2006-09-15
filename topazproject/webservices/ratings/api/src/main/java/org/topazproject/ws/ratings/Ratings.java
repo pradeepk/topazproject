@@ -11,6 +11,7 @@
 package org.topazproject.ws.ratings;
 
 import java.rmi.RemoteException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 
 /** 
  * This defines the ratings service. Any object can be rated, and no restrictions on the ratings
@@ -31,11 +32,11 @@ public interface Ratings {
    * @param object the URI of the rated object
    * @return the user's ratings, or null if none exist for this user. Note that the order of the
    *         entries will be arbitrary.
-   * @throws NoSuchIdException the user does not exist
+   * @throws NoSuchUserIdException the user does not exist
    * @throws RemoteException if some error occured accessing the ratings
    */
   public ObjectRating[] getRatings(String appId, String userId, String object)
-      throws NoSuchIdException, RemoteException;
+      throws NoSuchUserIdException, RemoteException;
 
   /** 
    * Set a user's ratings. This completely overrides any previous ratings by this user for this
@@ -48,11 +49,11 @@ public interface Ratings {
    *                which causes all ratings for the given user for all objects to be erased.
    * @param ratings the user's ratings for the object; may be null in which case all ratings are
    *                erased. Note that the order will not be preserved.
-   * @throws NoSuchIdException the user does not exist
+   * @throws NoSuchUserIdException the user does not exist
    * @throws RemoteException if some error occured accessing the ratings
    */
   public void setRatings(String appId, String userId, String object, ObjectRating[] ratings)
-      throws NoSuchIdException, RemoteException;
+      throws NoSuchUserIdException, RemoteException;
 
   /** 
    * Get a rating stats for the specified object.

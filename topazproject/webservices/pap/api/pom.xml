@@ -18,11 +18,24 @@
     </license>
   </licenses>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-users-api</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>topaz-common</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 
   <build>
     <plugins>
       <plugin>
-        <groupId>org.codehaus.mojo</groupId>
+<!--        <groupId>org.codehaus.mojo</groupId> -->
+        <groupId>org.topazproject.patch.plugin</groupId>
         <artifactId>axistools-maven-plugin</artifactId>
         <version>1.0</version>
         <executions>
@@ -41,6 +54,10 @@
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.pap.Profiles</classOfPortType>
+              <classpath>
+                <classes>${user.home}/.m2/repository/org/topazproject/topaz-common/0.5-SNAPSHOT/topaz-common-0.5-SNAPSHOT.jar</classes>
+                <classes>${user.home}/.m2/repository/org/topazproject/ws/ws-users-api/0.5-SNAPSHOT/ws-users-api-0.5-SNAPSHOT.jar</classes>
+              </classpath>
             </configuration>
           </execution>
           <execution>
@@ -59,6 +76,10 @@
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.pap.Preferences</classOfPortType>
+              <classpath>
+                <classes>${user.home}/.m2/repository/org/topazproject/topaz-common/0.5-SNAPSHOT/topaz-common-0.5-SNAPSHOT.jar</classes>
+                <classes>${user.home}/.m2/repository/org/topazproject/ws/ws-users-api/0.5-SNAPSHOT/ws-users-api-0.5-SNAPSHOT.jar</classes>
+              </classpath>
             </configuration>
           </execution>
         </executions>

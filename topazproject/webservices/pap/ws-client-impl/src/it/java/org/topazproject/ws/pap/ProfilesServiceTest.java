@@ -22,6 +22,7 @@ import org.topazproject.ws.permissions.Permissions;
 import org.topazproject.ws.permissions.PermissionsClientFactory;
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsClientFactory;
+import org.topazproject.ws.users.NoSuchUserIdException;
 
 /**
  * Simple tests for the profiles service.
@@ -59,7 +60,7 @@ public class ProfilesServiceTest extends TestCase {
   protected void tearDown() throws RemoteException {
     try {
       service.setProfile(userId, null);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       // looks like it was clean
     }
 
@@ -74,14 +75,14 @@ public class ProfilesServiceTest extends TestCase {
 
       try {
         userService.deleteUser(guestIds[idx]);
-      } catch (NoSuchIdException nsie) {
+      } catch (NoSuchUserIdException nsie) {
         // looks like it was clean
       }
     }
 
     try {
       userService.deleteUser(userId);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       // looks like it was clean
     }
   }
@@ -91,18 +92,18 @@ public class ProfilesServiceTest extends TestCase {
     boolean gotE = false;
     try {
       service.setProfile("id:muster42", null);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsuie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     gotE = false;
     try {
       service.getProfile("id:muster42");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     // test empty profile
     UserProfile prof = service.getProfile(userId);
