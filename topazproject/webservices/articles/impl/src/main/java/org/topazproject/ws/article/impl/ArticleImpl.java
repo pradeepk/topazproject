@@ -39,9 +39,9 @@ import org.topazproject.fedora.client.Uploader;
 import org.topazproject.fedora.client.FedoraAPIM;
 
 import org.topazproject.ws.article.Article;
-import org.topazproject.ws.article.DuplicateIdException;
+import org.topazproject.ws.article.DuplicateArticleIdException;
 import org.topazproject.ws.article.IngestException;
-import org.topazproject.ws.article.NoSuchIdException;
+import org.topazproject.ws.article.NoSuchArticleIdException;
 
 import org.topazproject.feed.ArticleFeed;
 
@@ -113,12 +113,12 @@ public class ArticleImpl implements Article {
   }
 
 
-  public String ingest(DataHandler zip) throws DuplicateIdException, IngestException {
+  public String ingest(DataHandler zip) throws DuplicateArticleIdException, IngestException {
     return ingester.ingest(new Zip.DataSourceZip(zip.getDataSource()));
   }
 
   public void markSuperseded(String oldDoi, String newDoi)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchArticleIdException, RemoteException {
     checkAccess(pep.INGEST_ARTICLE, newDoi);
 
     String old_subj = "<" + pid2URI(doi2PID(oldDoi)) + ">";
@@ -129,17 +129,17 @@ public class ArticleImpl implements Article {
                             " into " + MODEL + ";");
   }
 
-  public void setState(String doi, int state) throws NoSuchIdException, RemoteException {
+  public void setState(String doi, int state) throws NoSuchArticleIdException, RemoteException {
     checkAccess(pep.SET_ARTICLE_STATE, doi);
 
     try {
       apim.modifyObject(doi2PID(doi), state2Str(state), null, "Changed state");
     } catch (RemoteException re) {
-      FedoraUtil.detectNoSuchIdException(re, doi);
+      FedoraUtil.detectNoSuchArticleIdException(re, doi);
     }
   }
 
-  public void delete(String doi, boolean purge) throws NoSuchIdException, RemoteException {
+  public void delete(String doi, boolean purge) throws NoSuchArticleIdException, RemoteException {
     checkAccess(pep.DELETE_ARTICLE, doi);
 
     String txn = purge ? "delete " + doi : null;
@@ -175,7 +175,8 @@ public class ArticleImpl implements Article {
     }
   }
 
-  public String getObjectURL(String doi, String rep) throws NoSuchIdException, RemoteException {
+  public String getObjectURL(String doi, String rep)
+      throws NoSuchArticleIdException, RemoteException {
     checkAccess(pep.GET_OBJECT_URL, doi);
 
     String path = "/fedora/get/" + doi2PID(doi) + "/" + rep;
@@ -226,7 +227,7 @@ public class ArticleImpl implements Article {
   }
 
   protected String[] findAllObjects(String doi)
-      throws NoSuchIdException, RemoteException, AnswerException {
+      throws NoSuchArticleIdException, RemoteException, AnswerException {
     String subj = pid2URI(doi2PID(doi));
     ItqlHelper.validateUri(subj, "doi");
 
@@ -234,7 +235,7 @@ public class ArticleImpl implements Article {
         new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_FIND_OBJS, "subj", subj)));
     List dois = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
     if (dois.size() == 0)
-      throw new NoSuchIdException(doi);
+      throw new NoSuchArticleIdException(doi);
 
     String[] res = new String[dois.size()];
     for (int idx = 0; idx < res.length; idx++)

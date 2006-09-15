@@ -14,8 +14,8 @@ import java.rmi.RemoteException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.ws.article.DuplicateIdException;
-import org.topazproject.ws.article.NoSuchIdException;
+import org.topazproject.ws.article.DuplicateArticleIdException;
+import org.topazproject.ws.article.NoSuchArticleIdException;
 
 /** 
  * Some utilities for dealing with Fedora.
@@ -33,20 +33,21 @@ class FedoraUtil {
 
   /** 
    * See if the given exception indicates that the fedora object does not exist, and if so generate
-   * a NoSuchIdException; otherwise just rethrow the original exception. This method never
+   * a NoSuchArticleIdException; otherwise just rethrow the original exception. This method never
    * returns normally.
    * 
    * @param re  the RemoteException to analyze
-   * @param id  the id to put in the NoSuchIdException
-   * @throws NoSuchIdException if <var>re</var> indicates that the fedora object doesn't exist
+   * @param id  the id to put in the NoSuchArticleIdException
+   * @throws NoSuchArticleIdException if <var>re</var> indicates that the fedora object doesn't
+   *         exist
    * @throws RemoteException for all other exceptions; this is just <var>re</var>
    */
-  public static void detectNoSuchIdException(RemoteException re, String id)
-      throws NoSuchIdException, RemoteException {
+  public static void detectNoSuchArticleIdException(RemoteException re, String id)
+      throws NoSuchArticleIdException, RemoteException {
     if (re.getMessage().startsWith("fedora.server.errors.ObjectNotInLowlevelStorageException")) {
       if (log.isDebugEnabled())
         log.debug("tried to modify non-existing object", re);
-      throw new NoSuchIdException(id);
+      throw new NoSuchArticleIdException(id);
     }
 
     throw re;
@@ -54,20 +55,21 @@ class FedoraUtil {
 
   /** 
    * See if the given exception indicates that the fedora object already exists, and if so generate
-   * a DuplicateIdException; otherwise just rethrow the original exception. This method never
+   * a DuplicateArticleIdException; otherwise just rethrow the original exception. This method never
    * returns normally.
    * 
    * @param re  the RemoteException to analyze
-   * @param id  the id to put in the DuplicateIdException
-   * @throws DuplicateIdException if <var>re</var> indicates that the fedora object already exists
+   * @param id  the id to put in the DuplicateArticleIdException
+   * @throws DuplicateArticleIdException if <var>re</var> indicates that the fedora object already
+   *         exists
    * @throws RemoteException for all other exceptions; this is just <var>re</var>
    */
-  public static void detectDuplicateIdException(RemoteException re, String id)
-      throws DuplicateIdException, RemoteException {
+  public static void detectDuplicateArticleIdException(RemoteException re, String id)
+      throws DuplicateArticleIdException, RemoteException {
     if (re.getMessage().startsWith("fedora.server.errors.ObjectExistsException")) {
       if (log.isDebugEnabled())
         log.debug("tried to create duplicate object", re);
-      throw new DuplicateIdException(id);
+      throw new DuplicateArticleIdException(id);
     }
 
     throw re;

@@ -42,7 +42,7 @@ public class UserAccountsServiceTest extends TestCase {
     try {
       if (userId != null)
         service.deleteUser(userId);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       // looks like it was clean
     }
   }
@@ -51,52 +51,52 @@ public class UserAccountsServiceTest extends TestCase {
     boolean gotE = false;
     try {
       service.deleteUser("id:muster");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     gotE = false;
     try {
       service.setAuthenticationIds("id:muster", null);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     gotE = false;
     try {
       service.getAuthenticationIds("id:muster");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
   }
 
   public void testInvalidUser() throws RemoteException, IOException {
     boolean gotE = false;
     try {
       service.deleteUser("muster");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     gotE = false;
     try {
       service.setAuthenticationIds("muster", null);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     gotE = false;
     try {
       service.getAuthenticationIds("muster");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
   }
 
   public void testNullUser() throws RemoteException, IOException {
@@ -185,18 +185,18 @@ public class UserAccountsServiceTest extends TestCase {
     boolean gotE = false;
     try {
       service.setState("foo:bar", 42);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     gotE = false;
     try {
       service.getState("foo:bar");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     service.deleteUser(userId);
   }

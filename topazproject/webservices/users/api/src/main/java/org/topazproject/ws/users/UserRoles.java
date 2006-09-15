@@ -27,7 +27,7 @@ public interface UserRoles {
    *                be preserved.
    * @throws RemoteException if some other error occured
    */
-  public void setRoles(String userId, String[] roles) throws NoSuchIdException, RemoteException;
+  public void setRoles(String userId, String[] roles) throws NoSuchUserIdException, RemoteException;
 
   /** 
    * Get the list of currently assigned security roles for the specified user.
@@ -35,8 +35,8 @@ public interface UserRoles {
    * @param userId  the user's id
    * @return the list of roles; this may be null. Note that the order of the entries will be
    *         arbitrary.
-   * @throws NoSuchIdException if the user does not exist
+   * @throws NoSuchUserIdException if the user does not exist
    * @throws RemoteException if some other error occured
    */
-  public String[] getRoles(String userId) throws NoSuchIdException, RemoteException;
+  public String[] getRoles(String userId) throws NoSuchUserIdException, RemoteException;
 }

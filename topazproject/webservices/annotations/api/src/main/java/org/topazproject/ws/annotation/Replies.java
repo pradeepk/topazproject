@@ -61,13 +61,13 @@ public interface Replies {
    *
    * @return Returns a unique identifier for the newly created reply
    *
-   * @throws NoSuchIdException when the <code>root</code> is not a valid annotation  or when the
-   *         <code>inReplyTo</code> is not a valid annotation or reply.
+   * @throws NoSuchAnnotationIdException when the <code>root</code> is not a valid annotation
+   *         or when the <code>inReplyTo</code> is not a valid annotation or reply.
    * @throws RemoteException when some other error occurs
    */
   public String createReply(String mediator, String type, String root, String inReplyTo,
                             boolean anonymize, String title, String body)
-                     throws NoSuchIdException, RemoteException;
+                     throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Creates a reply for an annotation. A new reply body URL is created from the supplied content.
@@ -87,13 +87,13 @@ public interface Replies {
    *
    * @return Returns a unique identifier for the newly created reply
    *
-   * @throws NoSuchIdException when the <code>root</code> is not a valid annotation  or when the
-   *         <code>inReplyTo</code> is not a valid annotation or reply.
+   * @throws NoSuchAnnotationIdException when the <code>root</code> is not a valid annotation
+   *         or when the <code>inReplyTo</code> is not a valid annotation or reply.
    * @throws RemoteException when some other error occurs
    */
   public String createReply(String mediator, String type, String root, String inReplyTo,
                             boolean anonymize, String title, String contentType, byte[] content)
-                     throws NoSuchIdException, RemoteException;
+                     throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Deletes all replies and their descendants for a resource.
@@ -102,22 +102,22 @@ public interface Replies {
    * @param inReplyTo the resource whose replies are to be deleted. could be the root annotation or
    *        any other reply as part of the thread.
    *
-   * @throws NoSuchIdException if <code>inReplyTo</code> is not a valid reply in the discussion
-   *         thread specified by <code>root</code>
+   * @throws NoSuchAnnotationIdException if <code>inReplyTo</code> is not a valid reply in the
+   *         discussion thread specified by <code>root</code>
    * @throws RemoteException if some other error occured
    */
   public void deleteReplies(String root, String inReplyTo)
-                     throws NoSuchIdException, RemoteException;
+                     throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Deletes a reply and its descendants.
    *
    * @param id the reply to be deleted
    *
-   * @throws NoSuchIdException if <code>id</code> is not a valid reply
+   * @throws NoSuchAnnotationIdException if <code>id</code> is not a valid reply
    * @throws RemoteException if some other error occured
    */
-  public void deleteReplies(String id) throws NoSuchIdException, RemoteException;
+  public void deleteReplies(String id) throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Gets reply details.
@@ -126,10 +126,10 @@ public interface Replies {
    *
    * @return Returns the reply information.
    *
-   * @throws NoSuchIdException if the reply does not exist
+   * @throws NoSuchAnnotationIdException if the reply does not exist
    * @throws RemoteException if some other error occured
    */
-  public ReplyInfo getReplyInfo(String id) throws NoSuchIdException, RemoteException;
+  public ReplyInfo getReplyInfo(String id) throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * List the replies of a specific resource.
@@ -139,12 +139,12 @@ public interface Replies {
    *
    * @return an array of replies or an empty list
    *
-   * @throws NoSuchIdException if <code>inReplyTo</code> is not a valid reply in the discussion
-   *         thread specified by <code>root</code>
+   * @throws NoSuchAnnotationIdException if <code>inReplyTo</code> is not a valid reply in the
+   *         discussion thread specified by <code>root</code>
    * @throws RemoteException if some other error occured
    */
   public ReplyInfo[] listReplies(String root, String inReplyTo)
-                          throws NoSuchIdException, RemoteException;
+                          throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * List all replies that can be traced back to a resource.
@@ -154,12 +154,12 @@ public interface Replies {
    *
    * @return an array of all descendant replies or an empty list
    *
-   * @throws NoSuchIdException if <code>inReplyTo</code> is not a valid reply in the discussion
-   *         thread specified by <code>root</code>
+   * @throws NoSuchAnnotationIdException if <code>inReplyTo</code> is not a valid reply in the
+   *         discussion thread specified by <code>root</code>
    * @throws RemoteException if an error occured
    */
   public ReplyInfo[] listAllReplies(String root, String inReplyTo)
-                             throws NoSuchIdException, RemoteException;
+                             throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Get the thread of replies for a resource.
@@ -174,12 +174,12 @@ public interface Replies {
    * @return Returns the sub tree of a discussion with the root node being the resource
    *         <code>inReplyTo</code>
    *
-   * @throws NoSuchIdException if <code>inReplyTo</code> is not a valid reply in the discussion
-   *         thread specified by <code>root</code>
+   * @throws NoSuchAnnotationIdException if <code>inReplyTo</code> is not a valid reply in the
+   *         discussion thread specified by <code>root</code>
    * @throws RemoteException if some other error occured
    */
   public ReplyThread getReplyThread(String root, String inReplyTo)
-                             throws NoSuchIdException, RemoteException;
+                             throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Sets the administrative state of a reply. (eg. flagged for review)
@@ -187,10 +187,11 @@ public interface Replies {
    * @param id the reply id
    * @param state the new state or 0 to take the reply out of an administrator state
    *
-   * @throws NoSuchIdException if the reply does not exist
+   * @throws NoSuchAnnotationIdException if the reply does not exist
    * @throws RemoteException if some other error occured
    */
-  public void setReplyState(String id, int state) throws NoSuchIdException, RemoteException;
+  public void setReplyState(String id, int state)
+      throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * List the set of replies in a specific administrative state.

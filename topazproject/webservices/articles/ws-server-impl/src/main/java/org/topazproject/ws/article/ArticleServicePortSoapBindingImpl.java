@@ -89,12 +89,12 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
    * @see org.topazproject.ws.article.Article#ingest
    */
   public String ingest(DataHandler zip)
-      throws RemoteException, DuplicateIdException, IngestException {
+      throws RemoteException, DuplicateArticleIdException, IngestException {
     try {
       return impl.ingest(zip);
-    } catch (DuplicateIdException die) {
-      log.info("", die);
-      throw die;
+    } catch (DuplicateArticleIdException daie) {
+      log.info("", daie);
+      throw daie;
     } catch (IngestException ie) {
       log.info("", ie);
       throw ie;
@@ -111,12 +111,12 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
    * @see org.topazproject.ws.article.Article#markSuperseded
    */
   public void markSuperseded(String oldDoi, String newDoi)
-      throws RemoteException, NoSuchIdException {
+      throws RemoteException, NoSuchArticleIdException {
     try {
       impl.markSuperseded(oldDoi, newDoi);
-    } catch (NoSuchIdException nsie) {
-      log.info("", nsie);
-      throw nsie;
+    } catch (NoSuchArticleIdException nsaie) {
+      log.info("", nsaie);
+      throw nsaie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -129,12 +129,12 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   /**
    * @see org.topazproject.ws.article.Article#delete
    */
-  public void delete(String doi, boolean purge) throws RemoteException, NoSuchIdException {
+  public void delete(String doi, boolean purge) throws RemoteException, NoSuchArticleIdException {
     try {
       impl.delete(doi, purge);
-    } catch (NoSuchIdException nsie) {
-      log.info("", nsie);
-      throw nsie;
+    } catch (NoSuchArticleIdException nsaie) {
+      log.info("", nsaie);
+      throw nsaie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -147,12 +147,12 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   /**
    * @see org.topazproject.ws.article.Article#setState
    */
-  public void setState(String doi, int state) throws RemoteException, NoSuchIdException {
+  public void setState(String doi, int state) throws RemoteException, NoSuchArticleIdException {
     try {
       impl.setState(doi, state);
-    } catch (NoSuchIdException nsie) {
-      log.info("", nsie);
-      throw nsie;
+    } catch (NoSuchArticleIdException nsaie) {
+      log.info("", nsaie);
+      throw nsaie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;
@@ -165,12 +165,13 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   /**
    * @see org.topazproject.ws.article.Article#getObjectURL
    */
-  public String getObjectURL(String doi, String rep) throws RemoteException, NoSuchIdException {
+  public String getObjectURL(String doi, String rep)
+      throws RemoteException, NoSuchArticleIdException {
     try {
       return impl.getObjectURL(doi, rep);
-    } catch (NoSuchIdException nsie) {
-      log.info("", nsie);
-      throw nsie;
+    } catch (NoSuchArticleIdException nsaie) {
+      log.info("", nsaie);
+      throw nsaie;
     } catch (RuntimeException re) {
       log.warn("", re);
       throw re;

@@ -75,8 +75,8 @@ public class FeedTest extends TestCase {
     try {
       service.delete(doi, true);
       log.info("deleted article " + doi);
-//    } catch (NoSuchIdException nsie) {
-    } catch (Exception nsie) {
+//    } catch (NoSuchArticleIdException nsaie) {
+    } catch (Exception nsaie) {
       // so what
       //log.debug(nsie);
     }

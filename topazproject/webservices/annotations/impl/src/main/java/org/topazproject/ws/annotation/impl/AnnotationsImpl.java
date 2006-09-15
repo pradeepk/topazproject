@@ -42,7 +42,7 @@ import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.Annotations;
-import org.topazproject.ws.annotation.NoSuchIdException;
+import org.topazproject.ws.annotation.NoSuchAnnotationIdException;
 
 /**
  * The implementation of the annotation service.
@@ -168,7 +168,7 @@ public class AnnotationsImpl implements Annotations {
    */
   public String createAnnotation(String mediator, String type, String annotates, String context,
                                  String supersedes, boolean anonymize, String title, String body)
-                          throws NoSuchIdException, RemoteException {
+                          throws NoSuchAnnotationIdException, RemoteException {
     itql.validateUri(body, "body");
 
     return createAnnotation(mediator, type, annotates, context, supersedes, anonymize, title, body,
@@ -181,7 +181,7 @@ public class AnnotationsImpl implements Annotations {
   public String createAnnotation(String mediator, String type, String annotates, String context,
                                  String supersedes, boolean anonymize, String title,
                                  String contentType, byte[] content)
-                          throws NoSuchIdException, RemoteException {
+                          throws NoSuchAnnotationIdException, RemoteException {
     if (contentType == null)
       throw new NullPointerException("'contentType' cannot be null");
 
@@ -195,7 +195,7 @@ public class AnnotationsImpl implements Annotations {
   private String createAnnotation(String mediator, String type, String annotates, String context,
                                   String supersedes, boolean anonymize, String title, String body,
                                   String contentType, byte[] content)
-                           throws NoSuchIdException, RemoteException {
+                           throws NoSuchAnnotationIdException, RemoteException {
     if (context == null)
       context = annotates;
     else
@@ -263,7 +263,7 @@ public class AnnotationsImpl implements Annotations {
    * @see org.topazproject.ws.annotation.Annotations#deleteAnnotation
    */
   public void deleteAnnotation(String id, boolean deletePreceding)
-                        throws NoSuchIdException, RemoteException {
+                        throws NoSuchAnnotationIdException, RemoteException {
     URI thisUri = itql.validateUri(id, "annotation-id");
     pep.checkAccess(pep.DELETE_ANNOTATION, thisUri);
     checkId(thisUri);
@@ -310,7 +310,8 @@ public class AnnotationsImpl implements Annotations {
   /*
    * @see org.topazproject.ws.annotation.Annotations#getAnnotationInfo
    */
-  public AnnotationInfo getAnnotationInfo(String id) throws NoSuchIdException, RemoteException {
+  public AnnotationInfo getAnnotationInfo(String id)
+      throws NoSuchAnnotationIdException, RemoteException {
     pep.checkAccess(pep.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
 
     try {
@@ -320,7 +321,7 @@ public class AnnotationsImpl implements Annotations {
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
-        throw new NoSuchIdException(id);
+        throw new NoSuchAnnotationIdException(id);
 
       return buildAnnotationInfo(id, rows);
     } catch (AnswerException e) {
@@ -370,7 +371,7 @@ public class AnnotationsImpl implements Annotations {
    * @see org.topazproject.ws.annotation.Annotations#getLatestAnnotations
    */
   public AnnotationInfo[] getLatestAnnotations(String id)
-                                        throws NoSuchIdException, RemoteException {
+                                        throws NoSuchAnnotationIdException, RemoteException {
     URI thisUri = itql.validateUri(id, "annotation-id");
     pep.checkAccess(pep.GET_ANNOTATION_INFO, thisUri);
 
@@ -382,7 +383,7 @@ public class AnnotationsImpl implements Annotations {
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
-        throw new NoSuchIdException(id);
+        throw new NoSuchAnnotationIdException(id);
 
       return checkAccess(thisUri, buildAnnotationInfoList(rows));
     } catch (AnswerException e) {
@@ -394,7 +395,7 @@ public class AnnotationsImpl implements Annotations {
    * @see org.topazproject.ws.annotation.Annotations#getPrecedingAnnotations
    */
   public AnnotationInfo[] getPrecedingAnnotations(String id)
-                                           throws NoSuchIdException, RemoteException {
+                                           throws NoSuchAnnotationIdException, RemoteException {
     URI thisUri = itql.validateUri(id, "annotation-id");
     pep.checkAccess(pep.GET_ANNOTATION_INFO, thisUri);
     checkId(thisUri);
@@ -416,7 +417,7 @@ public class AnnotationsImpl implements Annotations {
    * @see org.topazproject.ws.annotation.Annotations#setAnnotationState
    */
   public void setAnnotationState(String id, int state)
-                          throws RemoteException, NoSuchIdException {
+                          throws RemoteException, NoSuchAnnotationIdException {
     URI thisUri = itql.validateUri(id, "annotation-id");
     pep.checkAccess(pep.SET_ANNOTATION_STATE, thisUri);
     checkId(thisUri);
@@ -467,7 +468,7 @@ public class AnnotationsImpl implements Annotations {
     }
   }
 
-  private void checkId(URI uri) throws RemoteException, NoSuchIdException {
+  private void checkId(URI uri) throws RemoteException, NoSuchAnnotationIdException {
     String id = uri.toString();
 
     try {
@@ -476,7 +477,7 @@ public class AnnotationsImpl implements Annotations {
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
-        throw new NoSuchIdException(id);
+        throw new NoSuchAnnotationIdException(id);
     } catch (AnswerException e) {
       throw new RemoteException("Error querying RDF", e);
     }

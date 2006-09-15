@@ -76,12 +76,12 @@ public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLi
   /**
    * @see org.topazproject.ws.users.UserRoles#getRoles
    */
-  public String[] getRoles(String userId) throws RemoteException, NoSuchIdException {
+  public String[] getRoles(String userId) throws RemoteException, NoSuchUserIdException {
     try {
       synchronized (impl) {
         return impl.getRoles(userId);
       }
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       log.debug("", nsie);
       throw nsie;
     } catch (RuntimeException re) {
@@ -96,12 +96,13 @@ public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLi
   /**
    * @see org.topazproject.ws.users.UserRoles#setRoles
    */
-  public void setRoles(String userId, String[] authIds) throws RemoteException, NoSuchIdException {
+  public void setRoles(String userId, String[] authIds)
+      throws RemoteException, NoSuchUserIdException {
     try {
       synchronized (impl) {
         impl.setRoles(userId, authIds);
       }
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       log.debug("", nsie);
       throw nsie;
     } catch (RuntimeException re) {

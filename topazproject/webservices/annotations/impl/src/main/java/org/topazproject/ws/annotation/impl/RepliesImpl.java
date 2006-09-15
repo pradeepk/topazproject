@@ -40,7 +40,7 @@ import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import org.topazproject.ws.annotation.NoSuchIdException;
+import org.topazproject.ws.annotation.NoSuchAnnotationIdException;
 import org.topazproject.ws.annotation.Replies;
 import org.topazproject.ws.annotation.ReplyInfo;
 import org.topazproject.ws.annotation.ReplyThread;
@@ -167,7 +167,7 @@ public class RepliesImpl implements Replies {
    */
   public String createReply(String mediator, String type, String root, String inReplyTo,
                             boolean anonymize, String title, String body)
-                     throws NoSuchIdException, RemoteException {
+                     throws NoSuchAnnotationIdException, RemoteException {
     itql.validateUri(body, "body");
 
     return createReply(mediator, type, root, inReplyTo, anonymize, title, body, null, null);
@@ -178,7 +178,7 @@ public class RepliesImpl implements Replies {
    */
   public String createReply(String mediator, String type, String root, String inReplyTo,
                             boolean anonymize, String title, String contentType, byte[] content)
-                     throws NoSuchIdException, RemoteException {
+                     throws NoSuchAnnotationIdException, RemoteException {
     if (contentType == null)
       throw new NullPointerException("'contentType' cannot be null");
 
@@ -190,7 +190,7 @@ public class RepliesImpl implements Replies {
 
   private String createReply(String mediator, String type, String root, String inReplyTo,
                              boolean anonymize, String title, String body, String contentType,
-                             byte[] content) throws NoSuchIdException, RemoteException {
+                             byte[] content) throws NoSuchAnnotationIdException, RemoteException {
     if (type == null)
       type = "http://www.w3.org/2001/12/replyType#Comment";
     else
@@ -251,7 +251,7 @@ public class RepliesImpl implements Replies {
    * @see org.topazproject.ws.annotation.Replies#deleteReplies
    */
   public void deleteReplies(String root, String inReplyTo)
-                     throws NoSuchIdException, RemoteException {
+                     throws NoSuchAnnotationIdException, RemoteException {
     checkInReplyTo(itql.validateUri(root, "root"), itql.validateUri(inReplyTo, "inReplyTo"));
 
     String txn   = "delete replies to " + inReplyTo;
@@ -264,7 +264,7 @@ public class RepliesImpl implements Replies {
   /*
    * @see org.topazproject.ws.annotation.Replies#deleteReplies
    */
-  public void deleteReplies(String id) throws NoSuchIdException, RemoteException {
+  public void deleteReplies(String id) throws NoSuchAnnotationIdException, RemoteException {
     pep.checkAccess(pep.DELETE_REPLY, checkId(itql.validateUri(id, "id")));
 
     String txn   = "delete " + id;
@@ -330,7 +330,7 @@ public class RepliesImpl implements Replies {
   /*
    * @see org.topazproject.ws.annotation.Replies#getReplyInfo
    */
-  public ReplyInfo getReplyInfo(String id) throws NoSuchIdException, RemoteException {
+  public ReplyInfo getReplyInfo(String id) throws NoSuchAnnotationIdException, RemoteException {
     pep.checkAccess(pep.GET_REPLY_INFO, itql.validateUri(id, "id"));
 
     try {
@@ -340,7 +340,7 @@ public class RepliesImpl implements Replies {
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
-        throw new NoSuchIdException(id);
+        throw new NoSuchAnnotationIdException(id);
 
       return buildReplyInfo(id, rows);
     } catch (AnswerException e) {
@@ -352,7 +352,7 @@ public class RepliesImpl implements Replies {
    * @see org.topazproject.ws.annotation.Replies#listReplies
    */
   public ReplyInfo[] listReplies(String root, String inReplyTo)
-                          throws NoSuchIdException, RemoteException {
+                          throws NoSuchAnnotationIdException, RemoteException {
     pep.checkAccess(pep.LIST_REPLIES,
                     checkInReplyTo(itql.validateUri(root, "root"),
                                    itql.validateUri(inReplyTo, "inReplyTo")));
@@ -375,7 +375,7 @@ public class RepliesImpl implements Replies {
    * @see org.topazproject.ws.annotation.Replies#listAllReplies
    */
   public ReplyInfo[] listAllReplies(String root, String inReplyTo)
-                             throws NoSuchIdException, RemoteException {
+                             throws NoSuchAnnotationIdException, RemoteException {
     pep.checkAccess(pep.LIST_ALL_REPLIES,
                     checkInReplyTo(itql.validateUri(root, "root"),
                                    itql.validateUri(inReplyTo, "inReplyTo")));
@@ -398,7 +398,7 @@ public class RepliesImpl implements Replies {
    * @see org.topazproject.ws.annotation.Replies#createReply
    */
   public ReplyThread getReplyThread(String rootId, String inReplyTo)
-                             throws NoSuchIdException, RemoteException {
+                             throws NoSuchAnnotationIdException, RemoteException {
     ReplyInfo[] replies = listAllReplies(rootId, inReplyTo);
 
     HashMap     map = new HashMap(replies.length * 2);
@@ -450,7 +450,8 @@ public class RepliesImpl implements Replies {
   /*
    * @see org.topazproject.ws.annotation.Replies#setAnnotationState
    */
-  public void setReplyState(String id, int state) throws RemoteException, NoSuchIdException {
+  public void setReplyState(String id, int state)
+      throws RemoteException, NoSuchAnnotationIdException {
     URI thisUri = itql.validateUri(id, "id");
     pep.checkAccess(pep.SET_REPLY_STATE, thisUri);
     checkId(thisUri);
@@ -501,14 +502,14 @@ public class RepliesImpl implements Replies {
     }
   }
 
-  private URI checkId(URI id) throws RemoteException, NoSuchIdException {
+  private URI checkId(URI id) throws RemoteException, NoSuchAnnotationIdException {
     try {
       String query = ITQL_CHECK_ID.replaceAll("\\Q${id}", id.toString());
       Answer ans  = new Answer(itql.doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
-        throw new NoSuchIdException(id.toString());
+        throw new NoSuchAnnotationIdException(id.toString());
 
       return id;
     } catch (AnswerException e) {
@@ -516,7 +517,8 @@ public class RepliesImpl implements Replies {
     }
   }
 
-  private URI checkInReplyTo(URI root, URI inReplyTo) throws RemoteException, NoSuchIdException {
+  private URI checkInReplyTo(URI root, URI inReplyTo)
+      throws RemoteException, NoSuchAnnotationIdException {
     if (inReplyTo.equals(root))
       return inReplyTo;
 
@@ -529,7 +531,7 @@ public class RepliesImpl implements Replies {
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
-        throw new NoSuchIdException(inReplyTo.toString());
+        throw new NoSuchAnnotationIdException(inReplyTo.toString());
 
       return inReplyTo;
     } catch (AnswerException e) {

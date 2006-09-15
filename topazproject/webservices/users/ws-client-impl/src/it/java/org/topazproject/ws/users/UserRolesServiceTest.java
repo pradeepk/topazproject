@@ -48,13 +48,13 @@ public class UserRolesServiceTest extends TestCase {
     try {
       if (userId != null)
         service.setRoles(userId, null);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       // looks like it was clean
     }
 
     try {
       userService.deleteUser(userId);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       // looks like it was clean
     }
   }
@@ -63,36 +63,36 @@ public class UserRolesServiceTest extends TestCase {
     boolean gotE = false;
     try {
       service.getRoles("id:muster");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     gotE = false;
     try {
       service.setRoles("id:muster", null);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
   }
 
   public void testInvalidUser() throws RemoteException, IOException {
     boolean gotE = false;
     try {
       service.getRoles("muster");
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
 
     gotE = false;
     try {
       service.setRoles("muster", null);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchIdException", gotE);
+    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
   }
 
   public void testNullUser() throws RemoteException, IOException {

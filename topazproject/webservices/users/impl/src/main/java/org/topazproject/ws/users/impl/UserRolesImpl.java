@@ -31,7 +31,7 @@ import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import org.topazproject.ws.users.NoSuchIdException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.users.UserRoles;
 
 /** 
@@ -140,7 +140,7 @@ public class UserRolesImpl implements UserRoles {
     this(new UnProtectedService(mulgaraUri.toString()), pep);
   }
 
-  public String[] getRoles(String userId) throws NoSuchIdException, RemoteException {
+  public String[] getRoles(String userId) throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -156,7 +156,7 @@ public class UserRolesImpl implements UserRoles {
 
       List user = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       if (user.size() == 0)
-        throw new NoSuchIdException(userId);
+        throw new NoSuchUserIdException(userId);
 
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(1)).getRows();
       if (rows.size() == 0) {
@@ -179,7 +179,7 @@ public class UserRolesImpl implements UserRoles {
   }
 
   public void setRoles(String userId, String[] roles)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -193,7 +193,7 @@ public class UserRolesImpl implements UserRoles {
       itql.beginTxn(txn);
 
       if (!userExists(userId))
-        throw new NoSuchIdException(userId);
+        throw new NoSuchUserIdException(userId);
 
       StringBuffer cmd = new StringBuffer(100);
 

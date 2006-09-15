@@ -38,8 +38,8 @@ public interface UserAccountLookup {
    * 
    * @param userId  the user's internal id
    * @return the current state of account
-   * @throws NoSuchIdException if the user account does not exist
+   * @throws NoSuchUserIdException if the user account does not exist
    * @throws RemoteException if some other error occured
    */
-  public int getStateNoAC(String userId) throws NoSuchIdException, RemoteException;
+  public int getStateNoAC(String userId) throws NoSuchUserIdException, RemoteException;
 }

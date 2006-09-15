@@ -1,4 +1,4 @@
-/* $HeadURL::                                                                            $
+/* $HeadURL::                                                                                     $
  * $Id$
  *
  * Copyright (c) 2006 by Topaz, Inc.
@@ -7,12 +7,13 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.ws.article;
+
+package org.topazproject.common;
 
 /** 
  * Signifies that the requested object does not exist. 
  * 
- * @author Ronald Tschalär
+ * @author Eric Brown
  */
 public class NoSuchIdException extends Exception {
   private final String id;

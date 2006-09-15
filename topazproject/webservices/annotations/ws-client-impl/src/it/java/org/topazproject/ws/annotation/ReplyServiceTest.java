@@ -68,9 +68,9 @@ public class ReplyServiceTest extends TestCase {
    * Tears downthe test.
    *
    * @throws RemoteException indicates an error
-   * @throws NoSuchIdException should not happen
+   * @throws NoSuchAnnotationIdException should not happen
    */
-  protected void tearDown() throws RemoteException, NoSuchIdException {
+  protected void tearDown() throws RemoteException, NoSuchAnnotationIdException {
     service.deleteReplies(root, root);
   }
 
@@ -82,7 +82,7 @@ public class ReplyServiceTest extends TestCase {
 
     try {
       service.deleteReplies(root, root);
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchAnnotationIdException e) {
       noSuchId = true;
     }
 
@@ -99,7 +99,7 @@ public class ReplyServiceTest extends TestCase {
 
     try {
       reply = service.createReply(mediator, type, root, root, false, title, body);
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchAnnotationIdException e) {
       noSuchId = true;
     }
 
@@ -115,7 +115,7 @@ public class ReplyServiceTest extends TestCase {
       assertEquals(info.getMediator(), mediator);
       assertTrue(info.getCreator() != null);
       assertEquals(info.getState(), 0);
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchAnnotationIdException e) {
       noSuchId = true;
     }
 
@@ -123,7 +123,7 @@ public class ReplyServiceTest extends TestCase {
 
     try {
       service.deleteReplies(reply);
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchAnnotationIdException e) {
       noSuchId = true;
     }
 
@@ -140,7 +140,7 @@ public class ReplyServiceTest extends TestCase {
 
     try {
       reply = service.createReply(mediator, type, root, root, true, title, body);
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchAnnotationIdException e) {
       noSuchId = true;
     }
 
@@ -155,7 +155,7 @@ public class ReplyServiceTest extends TestCase {
       assertEquals(info.getTitle(), title);
       assertEquals(info.getCreator(), null);
       assertEquals(info.getState(), 0);
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchAnnotationIdException e) {
       noSuchId = true;
     }
 
@@ -163,7 +163,7 @@ public class ReplyServiceTest extends TestCase {
 
     try {
       service.deleteReplies(reply);
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchAnnotationIdException e) {
       noSuchId = true;
     }
 
@@ -178,7 +178,7 @@ public class ReplyServiceTest extends TestCase {
     try {
       String id = service.createReply(mediator, type, root, "foo:nonExistent", false, title, body);
       service.deleteReplies(id);
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchAnnotationIdException e) {
       noSuchId = true;
     }
 
@@ -197,7 +197,7 @@ public class ReplyServiceTest extends TestCase {
       reply =
         service.createReply(mediator, type, root, root, false, title, "text/plain;charset=utf-8",
                             toBytes(content, "UTF-8"));
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchAnnotationIdException e) {
       noSuchId = true;
     }
 
@@ -213,7 +213,7 @@ public class ReplyServiceTest extends TestCase {
       assertEquals(info.getMediator(), mediator);
       assertTrue(info.getCreator() != null);
       assertEquals(info.getState(), 0);
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchAnnotationIdException e) {
       noSuchId = true;
     }
 
@@ -221,7 +221,7 @@ public class ReplyServiceTest extends TestCase {
 
     try {
       service.deleteReplies(reply);
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchAnnotationIdException e) {
       noSuchId = true;
     }
 
@@ -231,7 +231,7 @@ public class ReplyServiceTest extends TestCase {
   /*
    *
    */
-  public void testThreads() throws RemoteException, NoSuchIdException {
+  public void testThreads() throws RemoteException, NoSuchAnnotationIdException {
     //threadTest(1, 1);
     //threadTest(1, 2);
     //threadTest(2, 1);
@@ -240,7 +240,8 @@ public class ReplyServiceTest extends TestCase {
     //threadTest(4, 4);
   }
 
-  private void threadTest(int levels, int children) throws RemoteException, NoSuchIdException {
+  private void threadTest(int levels, int children)
+      throws RemoteException, NoSuchAnnotationIdException {
     createThread(root, levels, children);
 
     ReplyThread thread = service.getReplyThread(root, root);
@@ -256,7 +257,7 @@ public class ReplyServiceTest extends TestCase {
   }
 
   private void createThread(String inReplyTo, int levels, int children)
-                     throws NoSuchIdException, RemoteException {
+                     throws NoSuchAnnotationIdException, RemoteException {
     if (levels <= 0)
       return;
 

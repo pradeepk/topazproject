@@ -23,6 +23,8 @@ import javax.xml.rpc.ServiceException;
 import org.apache.commons.io.IOUtils;
 import junit.framework.TestCase;
 
+import org.topazproject.common.NoSuchIdException;
+
 /**
  *
  */
@@ -45,8 +47,8 @@ public class ArticleServiceTest extends TestCase {
   private void basicArticleTest() throws Exception {
     try {
       service.delete("10.1371/journal.pbio.0020294", true);
-    } catch (NoSuchIdException nsie) {
-      assertEquals("Mismatched id in exception, ", "10.1371/journal.pbio.0020294", nsie.getId());
+    } catch (NoSuchArticleIdException nsaie) {
+      assertEquals("Mismatched id in exception, ", "10.1371/journal.pbio.0020294", nsaie.getId());
       // ignore - this just means there wasn't any stale stuff left
     }
 
@@ -57,8 +59,8 @@ public class ArticleServiceTest extends TestCase {
     boolean gotE = false;
     try {
       doi = service.ingest(new DataHandler(article));
-    } catch (DuplicateIdException die) {
-      assertEquals("Mismatched id in exception, ", doi, die.getId());
+    } catch (DuplicateArticleIdException daie) {
+      assertEquals("Mismatched id in exception, ", doi, daie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected duplicate-id exception", gotE);
@@ -73,6 +75,16 @@ public class ArticleServiceTest extends TestCase {
 
     service.delete(doi, true);
 
+    gotE = false;
+    try {
+      service.delete(doi, true);
+    } catch (NoSuchArticleIdException nsaie) {
+      assertEquals("Mismatched id in exception, ", doi, nsaie.getId());
+      gotE = true;
+    }
+    assertTrue("Failed to get expected no-such-id exception", gotE);
+
+    // Try again, but this time test NoSuchIdException (from org.topazproject.common)
     gotE = false;
     try {
       service.delete(doi, true);

@@ -56,12 +56,12 @@ public interface Annotations {
    *
    * @return Returns a unique identifier for the newly created annotation
    *
-   * @throws NoSuchIdException if <code>supersedes</code> is not a valid annotation id
+   * @throws NoSuchAnnotationIdException if <code>supersedes</code> is not a valid annotation id
    * @throws RemoteException if some other error occured
    */
   public String createAnnotation(String mediator, String type, String annotates, String context,
                                  String supersedes, boolean anonymize, String title, String body)
-                          throws NoSuchIdException, RemoteException;
+                          throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Creates a new annotation. A new resource URL is created for the annotation body from the
@@ -84,13 +84,13 @@ public interface Annotations {
    *
    * @return Returns a unique identifier for the newly created annotation
    *
-   * @throws NoSuchIdException if <code>supersedes</code> is not a valid annotation id
+   * @throws NoSuchAnnotationIdException if <code>supersedes</code> is not a valid annotation id
    * @throws RemoteException if some other error occured
    */
   public String createAnnotation(String mediator, String type, String annotates, String context,
                                  String supersedes, boolean anonymize, String title,
                                  String contentType, byte[] content)
-                          throws NoSuchIdException, RemoteException;
+                          throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Deletes an annotation. Deletes all triples for which this annotation is the subject.
@@ -100,11 +100,11 @@ public interface Annotations {
    * @param id the id of the annotation to remove
    * @param deletePreceding whether to delete all annotations that are supersed by this annotation.
    *
-   * @throws NoSuchIdException if the annotation does not exist
+   * @throws NoSuchAnnotationIdException if the annotation does not exist
    * @throws RemoteException if some other error occured
    */
   public void deleteAnnotation(String id, boolean deletePreceding)
-                        throws NoSuchIdException, RemoteException;
+                        throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Retrieve the annotation meta-data. Note that there may be other annotations that supersede
@@ -114,10 +114,11 @@ public interface Annotations {
    *
    * @return Returns the annotation meta data as an xml document.
    *
-   * @throws NoSuchIdException if the annotation does not exist
+   * @throws NoSuchAnnotationIdException if the annotation does not exist
    * @throws RemoteException if some other error occured
    */
-  public AnnotationInfo getAnnotationInfo(String id) throws NoSuchIdException, RemoteException;
+  public AnnotationInfo getAnnotationInfo(String id)
+      throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Gets the latest version(s) of this annotation. The latest version(s) are the ones that are not
@@ -127,11 +128,11 @@ public interface Annotations {
    *
    * @return an array of annotation ids or metadata; the array will atleast contain one element
    *
-   * @throws NoSuchIdException if the annotation does not exist
+   * @throws NoSuchAnnotationIdException if the annotation does not exist
    * @throws RemoteException if an error occured
    */
   public AnnotationInfo[] getLatestAnnotations(String id)
-                                        throws NoSuchIdException, RemoteException;
+                                        throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Gets the set of annotations of the given type on a resource. Matching annotations are further
@@ -159,11 +160,11 @@ public interface Annotations {
    * @return an array of annotation ids or metadata; if this annotation does not supersede any
    *         other annotation, then an empty array is returned
    *
-   * @throws NoSuchIdException if the annotation does not exist
+   * @throws NoSuchAnnotationIdException if the annotation does not exist
    * @throws RemoteException if an error occured
    */
   public AnnotationInfo[] getPrecedingAnnotations(String id)
-                                           throws NoSuchIdException, RemoteException;
+                                           throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Sets the administrative state of an annotation. (eg. flagged for review)
@@ -171,11 +172,11 @@ public interface Annotations {
    * @param id the annotation id
    * @param state the new state or 0 to take the annotation out of an administrator state
    *
-   * @throws NoSuchIdException if the annotation does not exist
+   * @throws NoSuchAnnotationIdException if the annotation does not exist
    * @throws RemoteException if some other error occured
    */
   public void setAnnotationState(String id, int state)
-                          throws NoSuchIdException, RemoteException;
+                          throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * List the set of annotations in a specific administrative state.

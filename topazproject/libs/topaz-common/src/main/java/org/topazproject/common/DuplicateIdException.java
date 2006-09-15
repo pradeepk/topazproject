@@ -1,4 +1,4 @@
-/* $HeadURL::                                                                            $
+/* $HeadURL::                                                                                     $
  * $Id$
  *
  * Copyright (c) 2006 by Topaz, Inc.
@@ -8,14 +8,14 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.ws.users;
+package org.topazproject.common;
 
 /** 
- * Signifies that the requested object does not exist. 
+ * Signifies that the an object with the requested id already exists.
  * 
- * @author Ronald Tschalär
+ * @author Eric Brown
  */
-public class NoSuchIdException extends Exception {
+public class DuplicateIdException extends Exception {
   private final String id;
 
   /** 
@@ -23,7 +23,7 @@ public class NoSuchIdException extends Exception {
    * 
    * @param id  the (non-existant) id
    */
-  public NoSuchIdException(String id) {
+  public DuplicateIdException(String id) {
     this.id = id;
   }
 

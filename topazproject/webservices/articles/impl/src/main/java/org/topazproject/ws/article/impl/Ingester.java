@@ -55,7 +55,7 @@ import org.xml.sax.helpers.XMLReaderFactory;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.fedora.client.Uploader;
 import org.topazproject.fedora.client.FedoraAPIM;
-import org.topazproject.ws.article.DuplicateIdException;
+import org.topazproject.ws.article.DuplicateArticleIdException;
 import org.topazproject.ws.article.IngestException;
 
 import net.sf.saxon.Controller;
@@ -117,11 +117,11 @@ public class Ingester {
    * 
    * @param zip  the zip archive containing the article and it's related objects
    * @return the DOI of the new article
-   * @throws DuplicateIdException if an article or other object already exists with any of the
-   *                              DOI's specified in the zip
+   * @throws DuplicateArticleIdException if an article or other object already exists with any
+   *                              of the DOI's specified in the zip
    * @throws IngestException if there's any other problem ingesting the article
    */
-  public String ingest(Zip zip) throws DuplicateIdException, IngestException {
+  public String ingest(Zip zip) throws DuplicateArticleIdException, IngestException {
     try {
       // get zip info
       String zipInfo = Zip2Xml.describeZip(zip);
@@ -283,7 +283,7 @@ public class Ingester {
    * @param objInfo the document describing the objects and their datastreams to create
    */
   private void fedoraIngest(Zip zip, Document objInfo)
-      throws DuplicateIdException, TransformerException, IOException, RemoteException {
+      throws DuplicateArticleIdException, TransformerException, IOException, RemoteException {
     // set up the transformer to generate the foxml docs
     Transformer t = tFactory.newTransformer(new StreamSource(findFoxmlGenerator()));
     t.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
@@ -320,8 +320,8 @@ public class Ingester {
       }
 
       // rethrow the original exception
-      if (e instanceof DuplicateIdException)
-        throw (DuplicateIdException) e;
+      if (e instanceof DuplicateArticleIdException)
+        throw (DuplicateArticleIdException) e;
       if (e instanceof TransformerException)
         throw (TransformerException) e;
       if (e instanceof IOException)
@@ -334,7 +334,7 @@ public class Ingester {
 
   private void fedoraIngestOneObj(Element obj, Transformer t, Zip zip, String logMsg,
                                   boolean[] objCreated)
-      throws DuplicateIdException, TransformerException, IOException, RemoteException {
+      throws DuplicateArticleIdException, TransformerException, IOException, RemoteException {
     // create the foxml doc
     StringWriter sw = new StringWriter(200);
     t.transform(new DOMSource(obj), new StreamResult(sw));
@@ -353,14 +353,14 @@ public class Ingester {
   }
 
   private void fedoraCreateObject(String pid, String foxml, String logMsg)
-      throws DuplicateIdException, IOException, RemoteException {
+      throws DuplicateArticleIdException, IOException, RemoteException {
     if (log.isDebugEnabled())
       log.debug("Ingesting fedora object '" + pid + "'; foxml = " + foxml);
 
     try {
       apim.ingest(foxml.getBytes("UTF-8"), "foxml1.0", logMsg);
     } catch (RemoteException re) {
-      FedoraUtil.detectDuplicateIdException(re, ArticleImpl.pid2DOI(pid));
+      FedoraUtil.detectDuplicateArticleIdException(re, ArticleImpl.pid2DOI(pid));
     }
   }
 

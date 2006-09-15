@@ -81,8 +81,8 @@ public class AnnotationServiceTest extends TestCase {
 
       for (int i = 0; i < ids.length; i++)
         service.deleteAnnotation(ids[i], true);
-    } catch (NoSuchIdException nsie) {
-      fail("Unexpected NoSuchIdException");
+    } catch (NoSuchAnnotationIdException nsaie) {
+      fail("Unexpected NoSuchAnnotationIdException");
     }
 
     annotations = service.listAnnotations(mediator, subject, null);
@@ -93,23 +93,23 @@ public class AnnotationServiceTest extends TestCase {
 
     try {
       AnnotationInfo info = service.getAnnotationInfo(annotation);
-    } catch (NoSuchIdException nsie) {
-      assertEquals(nsie.getId(), annotation);
+    } catch (NoSuchAnnotationIdException nsaie) {
+      assertEquals(nsaie.getId(), annotation);
       gotExc = true;
     }
 
-    assertTrue("Failed to get expected NoSuchIdException", gotExc);
+    assertTrue("Failed to get expected NoSuchAnnotationIdException", gotExc);
 
     gotExc = false;
 
     try {
       service.deleteAnnotation(annotation, false);
-    } catch (NoSuchIdException nsie) {
-      assertEquals(nsie.getId(), annotation);
+    } catch (NoSuchAnnotationIdException nsaie) {
+      assertEquals(nsaie.getId(), annotation);
       gotExc = true;
     }
 
-    assertTrue("Failed to get expected NoSuchIdException", gotExc);
+    assertTrue("Failed to get expected NoSuchAnnotationIdException", gotExc);
 
     gotExc = false;
 
@@ -239,12 +239,12 @@ public class AnnotationServiceTest extends TestCase {
 
     try {
       service.deleteAnnotation(annotation, true);
-    } catch (NoSuchIdException nsie) {
-      assertEquals(nsie.getId(), annotation);
+    } catch (NoSuchAnnotationIdException nsaie) {
+      assertEquals(nsaie.getId(), annotation);
       gotExc = true;
     }
 
-    assertTrue("Failed to get expected NoSuchIdException", gotExc);
+    assertTrue("Failed to get expected NoSuchAnnotationIdException", gotExc);
 
     annotations = service.listAnnotations(mediator, subject, null);
     assertTrue("Expected zero annotations, got " + annotations.length, annotations.length == 0);

@@ -21,7 +21,7 @@ import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;
 
-import org.topazproject.ws.users.NoSuchIdException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 
 /**
  * The XACML PEP for the user accounts manager.
@@ -84,16 +84,16 @@ public abstract class UserAccountsPEP extends AbstractSimplePEP {
    * @param userId the user's internal account id
    */
   protected void checkUserAccess(String action, String userId)
-      throws SecurityException, NoSuchIdException {
+      throws SecurityException, NoSuchUserIdException {
     URI userURI;
     try {
       userURI = new URI(userId);
       if (!userURI.isAbsolute())
-        throw new NoSuchIdException(userId);
+        throw new NoSuchUserIdException(userId);
     } catch (URISyntaxException use) {
-      NoSuchIdException nsie = new NoSuchIdException(userId);
-      nsie.initCause(use);
-      throw nsie;
+      NoSuchUserIdException nsuie = new NoSuchUserIdException(userId);
+      nsuie.initCause(use);
+      throw nsuie;
     }
 
     checkAccess(action, userURI);

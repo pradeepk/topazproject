@@ -45,10 +45,10 @@ public interface UserAccounts {
    * will not do that.
    * 
    * @param userId  the user's internal id
-   * @throws NoSuchIdException if the user account does not exist
+   * @throws NoSuchUserIdException if the user account does not exist
    * @throws RemoteException if some other error occured
    */
-  public void deleteUser(String userId) throws NoSuchIdException, RemoteException;
+  public void deleteUser(String userId) throws NoSuchUserIdException, RemoteException;
 
   /** 
    * Set the state of a user's account. Note that while constants for two states have been
@@ -59,21 +59,21 @@ public interface UserAccounts {
    * 
    * @param userId  the user's internal id
    * @param state   the new state to put the account in
-   * @throws NoSuchIdException if the user account does not exist
+   * @throws NoSuchUserIdException if the user account does not exist
    * @throws RemoteException if some other error occured
    */
-  public void setState(String userId, int state) throws NoSuchIdException, RemoteException;
+  public void setState(String userId, int state) throws NoSuchUserIdException, RemoteException;
 
   /** 
    * Get the state of a user's account.
    * 
    * @param userId  the user's internal id
    * @return the current state of account
-   * @throws NoSuchIdException if the user account does not exist
+   * @throws NoSuchUserIdException if the user account does not exist
    * @throws RemoteException if some other error occured
    * @see #setState
    */
-  public int getState(String userId) throws NoSuchIdException, RemoteException;
+  public int getState(String userId) throws NoSuchUserIdException, RemoteException;
 
   /** 
    * Get the list of currently known authentication id's for the specified user account.
@@ -81,10 +81,10 @@ public interface UserAccounts {
    * @param userId  the user account's id
    * @return the list of authentication id's; this may be empty. Note that the order of the entries
    *         will be arbitrary.
-   * @throws NoSuchIdException if the user account does not exist
+   * @throws NoSuchUserIdException if the user account does not exist
    * @throws RemoteException if some other error occured
    */
-  public String[] getAuthenticationIds(String userId) throws NoSuchIdException, RemoteException;
+  public String[] getAuthenticationIds(String userId) throws NoSuchUserIdException, RemoteException;
 
   /** 
    * Set the list of currently known authentication id's for the specified user account. The list
@@ -93,11 +93,11 @@ public interface UserAccounts {
    * @param userId  the user account's id
    * @param authId  the list of authentication id's; this may be empty. Note that the order will not
    *                be preserved.
-   * @throws NoSuchIdException if the user account does not exist
+   * @throws NoSuchUserIdException if the user account does not exist
    * @throws RemoteException if some other error occured
    */
   public void setAuthenticationIds(String userId, String[] authIds)
-      throws NoSuchIdException, RemoteException;
+      throws NoSuchUserIdException, RemoteException;
 
   /** 
    * Look up a user-id given an authentication id.

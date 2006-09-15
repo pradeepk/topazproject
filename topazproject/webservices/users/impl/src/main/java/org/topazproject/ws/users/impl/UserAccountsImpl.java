@@ -34,7 +34,7 @@ import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import org.topazproject.ws.users.NoSuchIdException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountLookup;
 
@@ -202,7 +202,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   public String createUser(String authId) throws RemoteException {
     try {
       pep.checkUserAccess(pep.CREATE_USER, baseURI + ACCOUNT_PID_NS);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       throw new Error("Impossible...", nsie);   // can't happen
     }
 
@@ -233,7 +233,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     }
   }
 
-  public void deleteUser(String userId) throws NoSuchIdException, RemoteException {
+  public void deleteUser(String userId) throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -247,7 +247,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       itql.beginTxn(txn);
 
       if (!userExists(userId))
-        throw new NoSuchIdException(userId);
+        throw new NoSuchUserIdException(userId);
 
       itql.doUpdate(ITQL_DELETE_ACCT.replaceAll("\\Q${userId}", userId));
 
@@ -259,7 +259,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     }
   }
 
-  public int getState(String userId) throws NoSuchIdException, RemoteException {
+  public int getState(String userId) throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -268,7 +268,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     return getStateNoAC(userId);
   }
 
-  public int getStateNoAC(String userId) throws NoSuchIdException, RemoteException {
+  public int getStateNoAC(String userId) throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -281,7 +281,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       if (rows.size() == 0) {
         if (!userExists(userId))
-          throw new NoSuchIdException(userId);
+          throw new NoSuchUserIdException(userId);
 
         log.error("No state found for user '" + userId + "' - resetting to 0");
         setState(userId, 0);
@@ -304,7 +304,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     }
   }
 
-  public void setState(String userId, int state) throws NoSuchIdException, RemoteException {
+  public void setState(String userId, int state) throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -318,7 +318,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       itql.beginTxn(txn);
 
       if (!userExists(userId))
-        throw new NoSuchIdException(userId);
+        throw new NoSuchUserIdException(userId);
 
       StringBuffer cmd = new StringBuffer(100);
 
@@ -338,7 +338,8 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     }
   }
 
-  public String[] getAuthenticationIds(String userId) throws NoSuchIdException, RemoteException {
+  public String[] getAuthenticationIds(String userId)
+      throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -352,7 +353,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
           new StringAnswer(itql.doQuery(ITQL_GET_AUTH_IDS.replaceAll("\\Q${userId}", userId)));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       if (rows.size() == 0 && !userExists(userId))
-        throw new NoSuchIdException(userId);
+        throw new NoSuchUserIdException(userId);
 
       String[] ids = new String[rows.size()];
       for (int idx = 0; idx < ids.length; idx++)
@@ -365,7 +366,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   }
 
   public void setAuthenticationIds(String userId, String[] authIds)
-      throws NoSuchIdException, RemoteException {
+      throws NoSuchUserIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -379,7 +380,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       itql.beginTxn(txn);
 
       if (!userExists(userId))
-        throw new NoSuchIdException(userId);
+        throw new NoSuchUserIdException(userId);
 
       StringBuffer cmd = new StringBuffer(100);
 
@@ -408,7 +409,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   public String lookUpUserByAuthId(String authId) throws RemoteException {
     try {
       pep.checkUserAccess(pep.CREATE_USER, baseURI + ACCOUNT_PID_NS);
-    } catch (NoSuchIdException nsie) {
+    } catch (NoSuchUserIdException nsie) {
       throw new Error("Impossible...", nsie);   // can't happen
     }
 

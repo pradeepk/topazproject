@@ -21,7 +21,7 @@ import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;
 
-import org.topazproject.ws.users.NoSuchIdException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 
 /**
  * The XACML PEP for the user roles manager.
@@ -59,14 +59,14 @@ public abstract class UserRolesPEP extends AbstractSimplePEP {
    * @param userId the user's internal id
    */
   protected void checkUserAccess(String action, String userId)
-      throws SecurityException, NoSuchIdException {
+      throws SecurityException, NoSuchUserIdException {
     URI userURI;
     try {
       userURI = new URI(userId);
       if (!userURI.isAbsolute())
-        throw new NoSuchIdException(userId);
+        throw new NoSuchUserIdException(userId);
     } catch (URISyntaxException use) {
-      NoSuchIdException nsie = new NoSuchIdException(userId);
+      NoSuchUserIdException nsie = new NoSuchUserIdException(userId);
       nsie.initCause(use);
       throw nsie;
     }
