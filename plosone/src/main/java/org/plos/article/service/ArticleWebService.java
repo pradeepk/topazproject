@@ -11,9 +11,9 @@ package org.plos.article.service;
 
 import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.ArticleServiceLocator;
-import org.topazproject.ws.article.DuplicateIdException;
+import org.topazproject.common.DuplicateIdException;
 import org.topazproject.ws.article.IngestException;
-import org.topazproject.ws.article.NoSuchIdException;
+import org.topazproject.common.NoSuchIdException;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;

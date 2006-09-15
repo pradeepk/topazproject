@@ -12,8 +12,8 @@
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
-import org.topazproject.ws.article.DuplicateIdException;
-import org.topazproject.ws.article.NoSuchIdException;
+import org.topazproject.common.DuplicateIdException;
+import org.topazproject.common.NoSuchIdException;
 
 import javax.activation.DataHandler;
 import java.io.File;

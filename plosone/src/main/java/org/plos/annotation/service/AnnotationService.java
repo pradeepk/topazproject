@@ -10,7 +10,7 @@ import org.plos.service.BaseConfigurableService;
 import org.plos.ApplicationException;
 import org.plos.permission.service.PermissionWebService;
 import org.topazproject.ws.annotation.AnnotationInfo;
-import org.topazproject.ws.annotation.NoSuchIdException;
+import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.annotation.ReplyInfo;
 
 import java.io.IOException;

@@ -9,7 +9,7 @@ import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.article.service.FetchArticleService;
-import org.topazproject.ws.article.NoSuchIdException;
+import org.topazproject.common.NoSuchIdException;
 
 import javax.xml.transform.TransformerException;
 import java.util.ArrayList;

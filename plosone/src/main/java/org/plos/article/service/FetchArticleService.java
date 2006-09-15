@@ -6,7 +6,7 @@ package org.plos.article.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.util.FileUtils;
-import org.topazproject.ws.article.NoSuchIdException;
+import org.topazproject.common.NoSuchIdException;
 import org.w3c.dom.Document;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
@@ -66,7 +66,7 @@ public class FetchArticleService {
    * @throws java.net.MalformedURLException
    * @throws java.io.FileNotFoundException
    * @throws java.rmi.RemoteException
-   * @throws org.topazproject.ws.article.NoSuchIdException
+   * @throws org.topazproject.common.NoSuchIdException
    * @throws javax.xml.parsers.ParserConfigurationException
    * @throws org.xml.sax.SAXException
    * @throws java.net.URISyntaxException
