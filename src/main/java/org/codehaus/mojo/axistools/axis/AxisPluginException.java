@@ -18,7 +18,7 @@ package org.codehaus.mojo.axistools.axis;
 
 /**
  * @author: jesse
- * @version: $Id:$
+ * @version: $Id$
  */
 public class AxisPluginException extends Exception
 {

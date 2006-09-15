@@ -170,6 +170,11 @@ public class DefaultJava2WSDLPlugin
     private ArrayList extraClasses;
 
     /**
+     * @parameter expression="${classpath}"
+     */
+    private ArrayList classpath;
+    
+    /**
      * @parameter expression="${importSchema}"
      */
     private String importSchema;
@@ -402,8 +407,17 @@ public class DefaultJava2WSDLPlugin
             argsList.add( importSchema );
         }
 
+        String classes = classesDirectory.getAbsolutePath();
+        if ( classpath != null && classpath.size() > 0 )
+        {
+            for ( Iterator i = classpath.iterator(); i.hasNext(); )
+            {
+                classes += ":" + (String) i.next();
+            }
+        }
+
         argsList.add( "--classpath" );
-        argsList.add( classesDirectory.getAbsolutePath() );
+        argsList.add( classes );
 
         if ( classOfPortType != null )
         {
@@ -551,6 +565,11 @@ public class DefaultJava2WSDLPlugin
     public void setExtraClasses( ArrayList extraClasses )
     {
         this.extraClasses = extraClasses;
+    }
+
+    public void setClasspath( ArrayList classpath )
+    {
+        this.classpath = classpath;
     }
 
     public void setImportSchema( String importSchema )

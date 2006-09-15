@@ -30,7 +30,7 @@ import java.util.List;
  * for the Axis Plugins
  *
  * @author: jesse
- * @version: $Id:$
+ * @version: $Id$
  */
 public abstract class AbstractAxisPlugin
 {

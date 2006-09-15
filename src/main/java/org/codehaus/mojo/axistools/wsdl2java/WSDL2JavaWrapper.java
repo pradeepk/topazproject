@@ -27,7 +27,7 @@ import java.util.List;
 
 /**
  * @author: jesse
- * @version: $Id:$
+ * @version: $Id$
  */
 public class WSDL2JavaWrapper
     extends WSDL2Java

@@ -68,6 +68,8 @@ public interface Java2WSDLPlugin
 
     void setExtraClasses( ArrayList extraClasses );
 
+    void setClasspath( ArrayList classpath );
+
     void setImportSchema( String importSchema );
 
     void execute() throws AxisPluginException;

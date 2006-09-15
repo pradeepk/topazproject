@@ -175,6 +175,11 @@ public class Java2WSDLMojo
     private ArrayList extraClasses;
 
     /**
+     * @parameter expression="${classpath}"
+     */
+    private ArrayList classpath;
+
+    /**
      * @parameter expression="${importSchema}"
      */
     private String importSchema;
@@ -203,6 +208,7 @@ public class Java2WSDLMojo
         plugin.setClassOfPortType( classOfPortType );
         plugin.setExcludes( excludes );
         plugin.setExtraClasses( extraClasses );
+        plugin.setClasspath( classpath );
         plugin.setFilename( filename );
         plugin.setImplClass( implClass );
         plugin.setImportSchema( importSchema );
