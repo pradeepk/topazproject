@@ -192,7 +192,7 @@ public class ArticleImpl implements Article {
     try {
       String articlesQuery = ArticleFeed.getQuery(start, end, categories, authors, false);
       StringAnswer articlesAnswer = new StringAnswer(itql.doQuery(articlesQuery));
-      Map articles = ArticleFeed.getArticlesSummary(start, end, articlesAnswer);
+      Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
 
       for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
         String doi = (String)it.next();

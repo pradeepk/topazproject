@@ -43,12 +43,13 @@ public class ArticleFeed {
   
   private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
   private static final String MODEL_ARTICLES = "<" + CONF.getString("topaz.models.articles") + ">";
+  private static final String MODEL_XSD      = "<" + CONF.getString("topaz.models.xsd") + ">";
   
   private static final String FEED_ITQL =
     "select $doi $title $description $date from ${ARTICLES} where " +
     " $doi <dc:title> $title and " +
     " $doi <dc:description> $description and " +
-    " $doi <dc:date> $date " +
+    " $doi <dc_terms:available> $date " +
     " ${args} " +
     " order by $date ${sort};";
   private static final String FIND_SUBJECTS_ITQL =
@@ -105,7 +106,12 @@ public class ArticleFeed {
       args.append(")");
     }
 
-    // TODO: Search by date (requires modification to ingestion to support datatypes)
+    if (startDate != null)
+      args.append(" and $date <tucana:after> '" + formatDate(incDay(startDate, -1)) +
+                  "' in " + MODEL_XSD);
+    if (endDate != null)
+      args.append(" and $date <tucana:before> '" + formatDate(incDay(endDate, 1)) +
+                  "' in " + MODEL_XSD);
 
     Map values = new HashMap();
     values.put("ARTICLES", MODEL_ARTICLES);
@@ -120,12 +126,10 @@ public class ArticleFeed {
    * Dates are needed only because query is currently somewhat crippled. So we do additional
    * filtering here.
    *
-   * @param startDate is the date to start searching from. If empty, start from begining of time
-   * @param endDate is the date to search until. If empty, search until prsent date
    * @param articlesAnswer is the response received from kowari.
    * @return a map of doi to L{ArticleFeedData} for each article received
    */
-  public static Map getArticlesSummary(Date startDate, Date endDate, StringAnswer articlesAnswer) {
+  public static Map getArticlesSummary(StringAnswer articlesAnswer) {
     LinkedHashMap articles = new LinkedHashMap();
     QueryAnswer answer = (QueryAnswer)articlesAnswer.getAnswers().get(0);
     
@@ -133,11 +137,8 @@ public class ArticleFeed {
       String[] row = (String[])rowIt.next();
       Date date = null;
 
-      // TODO: Remove this check once we retrofit Kowari/Fedora to search on date
       try {
         date = parseDate(row[3]);
-        if (!isDateInRange(date, startDate, endDate))
-          continue;
       } catch (ParseException pe) {
         log.warn("Ignoring bad date: " + row[3], pe);
         // XXX: Should we show the message or not?
@@ -271,24 +272,6 @@ public class ArticleFeed {
   }
 
   /**
-   * Determine if a date is between two other dates.
-   *
-   * @param date is the date to test
-   * @param startDate is the date to start searching from. If empty, start from begining of time
-   * @param endDate is the date to search until. If empty, search until prsent date
-   * @return true if the date is between startDate and endDate inclusive.
-   */
-  static boolean isDateInRange(Date date, Date startDate, Date endDate) {
-    if (date == null)
-      return true;
-    if (startDate != null && date.before(startDate))
-      return false;
-    if (endDate != null && date.after(endDate))
-      return false;
-    return true;
-  }
-
-  /**
    * Parse a kowari date into a java Date object.
    *
    * @param ios8601date is the date string to parse.
@@ -321,6 +304,13 @@ public class ArticleFeed {
       return "";
 //    return DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(date); // XXX: Use in future?
     return DateFormatUtils.ISO_DATE_FORMAT.format(date);
+  }
+  
+  /**
+   * Roll a Date instance days forward or backward.
+   */
+  static Date incDay(Date d, int count) {
+    return new Date(d.getTime() + count * 1000 * 24 * 3600);
   }
   
   /**

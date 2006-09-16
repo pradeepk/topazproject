@@ -97,13 +97,6 @@ public class AlertsImpl implements Alerts {
     "  $timestamp  <tucana:before>     '${stamp}'^^<xsd:date> in ${XSD} " +
     " order by $user " +
     " limit ${limit};";
-  private static final String GET_USERS_CATEGORIES_ITQL = // Not Used? (combined w/FEED_ITQL below)
-    "select $user $cat from ${PREFS} where " +
-    " <${userId}> <topaz:hasPreferences> $pref and " +
-    " $user       <topaz:hasPreferences> $pref and " +
-    " $pref       <topaz:preference>     $prefn and " +
-    " $prefn      <topaz:prefName>       'alertsCategories' and " +
-    " $prefn      <topaz:prefValue>      $cat;";
   private static final String GET_USERS_FEED_ITQL =
     "select $doi $title $description $date from ${ARTICLES} where " +
     "  <${userId}> <topaz:hasPreferences> $pref  in ${PREFS} and " +
@@ -112,31 +105,16 @@ public class AlertsImpl implements Alerts {
     "  $prefn      <topaz:prefValue>      $cat   in ${PREFS} and " +
     " $doi <dc:title>       $title and " +
     " $doi <dc:description> $description and " +
-    " $doi <dc:date>        $date and " +
-    " $doi <dc:subject>     $cat;";
+    " $doi <dc_terms:available> $date and " +
+    " $doi <dc:subject>     $cat and " +
+    " $date <tucana:before> '${endDate}' in ${XSD} and " +
+    " $date <tucana:after>  '${startDate}' in ${XSD};";
   private static final String CLEAN_USER_ITQL =
     "delete select $user $pred $date from ${ALERTS} where $user $pred $date and " +
     " <${userId}> $pred $date from ${ALERTS};";
   private static final String CREATE_USER_ITQL =
     "insert <${userId}> <alerts:timestamp> '${stamp}'^^<xsd:date> into ${ALERTS};";
 
-  // RSS (and email alerts) Queries
-  private static final String FEED_ITQL =
-    "select $doi $title $description $date from ${ARTICLES} where " +
-    " $doi <dc:title> $title and " +
-    " $doi <dc:description> $description and " +
-    " $doi <dc:date> $date " +
-    " ${args} " +
-    " order by $date desc;";
-  private static final String FIND_SUBJECTS_ITQL =
-    "select '${doi}' $subject from ${ARTICLES} where " +
-    " <${doi}> <dc:subject> $subject " +
-    "order by $subject;";
-  private static final String FIND_AUTHORS_ITQL =
-    "select '${doi}' $author from ${ARTICLES} where " +
-    " <${doi}> <dc:creator> $author " +
-    " order by $author;";
-  
   private final AlertsPEP   pep;
   private final ItqlHelper  itql;
   private final FedoraAPIM  apim;
@@ -448,10 +426,13 @@ public class AlertsImpl implements Alerts {
     HashMap values = new HashMap();
     values.put("ARTICLES", MODEL_ARTICLES);
     values.put("PREFS", MODEL_PREFS);
+    values.put("XSD", MODEL_XSD);
     values.put("userId", user.userId);
+    values.put("endDate", endDate);
+    values.put("startDate", user.stamp);
     // TODO: Bracket by user.stamp and endDate once articles have date properly typed
     String query = ItqlHelper.bindValues(AlertsImpl.GET_USERS_FEED_ITQL, values);
-    return this.getArticles(user.stamp, endDate, query);
+    return this.getArticles(query);
   }
 
   /**
@@ -463,17 +444,11 @@ public class AlertsImpl implements Alerts {
    * @param endDate is the date to search until. If empty, search until prsent date
    * @param query is the iTQL query that returns the articles we're interested in.
    */
-  protected Collection getArticles(String startDate, String endDate, String query)
+  protected Collection getArticles(String query)
       throws RemoteException {
-    if (log.isDebugEnabled())
-      log.debug("getArticles between " + startDate + " and " + endDate + " via: " + query);
-
-    Date start = ArticleFeed.parseDateParam(startDate);
-    Date end = ArticleFeed.parseDateParam(endDate);
-
     try {
       StringAnswer articlesAnswer = new StringAnswer(itql.doQuery(query));
-      Map articles = ArticleFeed.getArticlesSummary(start, end, articlesAnswer);
+      Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
 
       for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
         String doi = (String)it.next();
