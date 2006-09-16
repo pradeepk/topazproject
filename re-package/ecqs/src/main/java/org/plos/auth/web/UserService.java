@@ -9,6 +9,7 @@
  */
 package org.plos.auth.web;
 
+import javax.servlet.ServletContext;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.PreparedStatement;
@@ -18,17 +19,47 @@ import java.util.Properties;
 
 /**
  * Used to fetch the various properties, like guid, for a given user.
+ * TODO: This could be managed by a ServletContextListener if required, so that 
+ * both the UsernameReplacementWithGuidFilter and GetEmailAddress could use the same instance
  */
 public class UserService {
-  public PreparedStatement usernameToGuidPreparedStatement;
+  private PreparedStatement usernameToGuidPreparedStatement;
   private PreparedStatement guidToUsernamePreparedStatement;
 
+  /**
+   * Initialize the UserService with the required params
+   * @param jdbcDriver jdbcDriver
+   * @param jdbcUrl jdbcUrl
+   * @param usernameToGuidSql usernameToGuidSql
+   * @param guidToUsernameSql guidToUsernameSql
+   * @param adminUser adminUser
+   * @param adminPassword adminPassword
+   * @throws ClassNotFoundException
+   * @throws SQLException
+   */
   public UserService(final String jdbcDriver, final String jdbcUrl, final String usernameToGuidSql, final String guidToUsernameSql, final String adminUser, final String adminPassword) throws ClassNotFoundException, SQLException {
     registerDriver(jdbcDriver);
     final Properties connectionProperties = getConnectionProperties(adminUser, adminPassword);
     final Connection dbConnection = getDBConnection(jdbcUrl, connectionProperties);
     usernameToGuidPreparedStatement = dbConnection.prepareStatement(usernameToGuidSql);
     guidToUsernamePreparedStatement = dbConnection.prepareStatement(guidToUsernameSql);
+  }
+
+  /**
+   * Provide the constructor the ServletContext and let it initialize itself off of it.
+   * @param config ServletContext
+   * @throws SQLException
+   * @throws ClassNotFoundException
+   */
+  public UserService(final ServletContext config) throws SQLException, ClassNotFoundException {
+    this(
+        config.getInitParameter("jdbcDriver"),
+        config.getInitParameter("jdbcUrl"),
+        config.getInitParameter("usernameToGuidSql"),
+        config.getInitParameter("guidToUsernameSql"),
+        config.getInitParameter("adminUser"),
+        config.getInitParameter("adminPassword")
+    );
   }
 
   /**
@@ -47,7 +78,7 @@ public class UserService {
    * @return the guid for the guid
    * @throws SQLException
    */
-  public String getUsername(final String guid) throws SQLException {
+  public String getEmailAddress(final String guid) throws SQLException {
     return getDbValue(guidToUsernamePreparedStatement, guid);
   }
 

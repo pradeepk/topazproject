@@ -28,7 +28,7 @@ public class UserServiceTest extends TestCase {
     final String guid = userService.getGuid(testUsername);
 //    guid = userService.getGuid("susie@home.com");
     assertNotNull(guid);
-    final String username = userService.getUsername(guid);
+    final String username = userService.getEmailAddress(guid);
     assertNotNull(username);
     assertEquals(testUsername, username);
 

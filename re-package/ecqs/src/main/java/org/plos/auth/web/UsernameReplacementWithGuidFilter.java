@@ -19,51 +19,81 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletRequestWrapper;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
-import javax.servlet.http.HttpServletRequestWrapper;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.util.Enumeration;
 import java.sql.SQLException;
+import java.util.Enumeration;
 
 /**
  * Replaces the Username with the user's GUID so that the username is the GUID for any responses to clients.
+ * File to change when hosting
+ * D:\java\topaz-install\esup-cas-quick-start-2.0.6-1\jakarta-tomcat-5.0.28\webapps\cas\WEB-INF\web.xml
+
+  <context-param>
+    <param-name>jdbcDriver</param-name>
+    <param-value>org.postgresql.Driver</param-value>
+  </context-param>
+  <context-param>
+    <param-name>jdbcUrl</param-name>
+    <param-value>jdbc:postgresql://localhost/postgres</param-value>
+  </context-param>
+  <context-param>
+    <param-name>usernameToGuidSql</param-name>
+    <param-value>select id from plos_user where loginname=?</param-value>
+  </context-param>
+  <context-param>
+    <param-name>guidToUsernameSql</param-name>
+    <param-value>select loginname from plos_user where id=?</param-value>
+  </context-param>
+  <context-param>
+    <param-name>adminUser</param-name>
+    <param-value>postgres</param-value>
+  </context-param>
+  <context-param>
+    <param-name>adminPassword</param-name>
+    <param-value>postgres</param-value>
+  </context-param>
+
   <filter>
     <filter-name>UsernameReplacementWithGuidFilter</filter-name>
     <filter-class>org.plos.auth.web.UsernameReplacementWithGuidFilter</filter-class>
-    <init-param>
-      <param-name>jdbcDriver</param-name>
-      <param-value>org.postgresql.Driver</param-value>
-    </init-param>
-    <init-param>
-      <param-name>jdbcUrl</param-name>
-      <param-value>jdbc:postgresql://localhost/postgres</param-value>
-    </init-param>
-    <init-param>
-      <param-name>usernameToGuidSql</param-name>
-      <param-value>select id from plos_user where loginname=?</param-value>
-    </init-param>
-    <init-param>
-      <param-name>guidToUsernameSql</param-name>
-      <param-value>select loginname from plos_user where id=?</param-value>
-    </init-param>
-    <init-param>
-      <param-name>adminUser</param-name>
-      <param-value>postgres</param-value>
-    </init-param>
-    <init-param>
-      <param-name>adminPassword</param-name>
-      <param-value>postgres</param-value>
-    </init-param>
   </filter>
 
   <filter-mapping >
     <filter-name>UsernameReplacementWithGuidFilter</filter-name>
     <url-pattern>/login</url-pattern>
   </filter-mapping>
+
+
+ Tips for using a authentication handler
+ Edit the file "genericHandler.xml" located at:
+ D:\java\topaz-install\esup-cas-quick-start-2.0.6-1\esup-casgeneric-2.0.6-1\webpages\WEB-INF
+
+ Possible entry in it maybe:
+  <authentication empty_password_accepted="on" debug="on">
+    <handler>
+   <!-- fails as it assumes a md5 hashing algorithm, so we would need to have out own handler inplementation  -->
+      <classname>
+        org.esupportail.cas.server.handlers.database.SearchDatabaseHandler
+      </classname>
+  	<config>
+        <table>plos_user</table>
+        <login_column>id</login_column>
+        <password_column>password</password_column>
+        <bind_username>postgres</bind_username>
+        <bind_password>postgres</bind_password>
+        <server>
+          <jdbc_driver>org.postgresql.Driver</jdbc_driver>
+          <jdbc_url>jdbc:postgresql://localhost/postgres</jdbc_url>
+        </server>
+      </config>
+    </handler>
+  </authentication>
 */
 public class UsernameReplacementWithGuidFilter implements Filter {
   private static final Log log = LogFactory.getLog(UsernameReplacementWithGuidFilter.class);
@@ -72,14 +102,7 @@ public class UsernameReplacementWithGuidFilter implements Filter {
 
   public void init(final FilterConfig filterConfig) throws ServletException {
     try {
-      userService = new UserService(
-              filterConfig.getInitParameter("jdbcDriver"),
-              filterConfig.getInitParameter("jdbcUrl"),
-              filterConfig.getInitParameter("usernameToGuidSql"),
-              filterConfig.getInitParameter("guidToUsernameSql"),
-              filterConfig.getInitParameter("adminUser"),
-              filterConfig.getInitParameter("adminPassword")
-      );
+      userService = new UserService(filterConfig.getServletContext());
     } catch (final Exception e) {
       throw new ServletException(e);
     }
