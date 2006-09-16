@@ -83,11 +83,16 @@ public class UserService {
   }
 
   private String getDbValue(final PreparedStatement preparedStatement, final String whereClauseParam) throws SQLException {
-    preparedStatement.setString(1, whereClauseParam);
-    final ResultSet resultSet = preparedStatement.executeQuery();
-    resultSet.next();
-    final String returnValue = resultSet.getString(1);
-    resultSet.close();
+    final String returnValue;
+
+    synchronized (preparedStatement) {
+      preparedStatement.setString(1, whereClauseParam);
+      final ResultSet resultSet = preparedStatement.executeQuery();
+      resultSet.next();
+      returnValue = resultSet.getString(1);
+      resultSet.close();
+    }
+    
     return returnValue;
   }
 
