@@ -4,19 +4,25 @@
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
-  <artifactId>topazproject</artifactId>
+  <artifactId>webservices</artifactId>
   <version>0.5-SNAPSHOT</version>
   <packaging>pom</packaging>
-  <name>All Topaz Project stuff</name>
+  <name>All Topaz Webservices</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
-    <artifactId>the-whole-shebang</artifactId>
+    <artifactId>topazproject</artifactId>
     <version>0.5-SNAPSHOT</version>
   </parent>
 
   <modules>
-    <module>libs</module>
-    <module>webservices</module>
+    <module>users</module>
+    <module>journal-admin</module>
+    <module>annotations</module>
+    <module>articles</module>
+    <module>pap</module>
+    <module>permissions</module>
+    <module>alerts</module>
+    <module>ratings</module>
   </modules>
 </project>
