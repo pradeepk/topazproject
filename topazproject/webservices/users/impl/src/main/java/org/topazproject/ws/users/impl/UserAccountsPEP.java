@@ -91,9 +91,7 @@ public abstract class UserAccountsPEP extends AbstractSimplePEP {
       if (!userURI.isAbsolute())
         throw new NoSuchUserIdException(userId);
     } catch (URISyntaxException use) {
-      NoSuchUserIdException nsuie = new NoSuchUserIdException(userId);
-      nsuie.initCause(use);
-      throw nsuie;
+      throw (NoSuchUserIdException) new NoSuchUserIdException(userId).initCause(use);
     }
 
     checkAccess(action, userURI);

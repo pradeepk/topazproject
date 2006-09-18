@@ -92,9 +92,7 @@ public abstract class RatingsPEP extends AbstractSimplePEP {
     try {
       checkAccess(action, toURI(object));
     } catch (NoSuchUserIdException nsuie) {
-      IllegalArgumentException iae = new IllegalArgumentException(nsuie.getId());
-      iae.initCause(nsuie);
-      throw iae;
+      throw (IllegalArgumentException) new IllegalArgumentException(nsuie.getId()).initCause(nsuie);
     }
   }
 

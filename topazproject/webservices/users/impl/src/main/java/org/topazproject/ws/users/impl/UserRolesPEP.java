@@ -66,9 +66,7 @@ public abstract class UserRolesPEP extends AbstractSimplePEP {
       if (!userURI.isAbsolute())
         throw new NoSuchUserIdException(userId);
     } catch (URISyntaxException use) {
-      NoSuchUserIdException nsie = new NoSuchUserIdException(userId);
-      nsie.initCause(use);
-      throw nsie;
+      throw (NoSuchUserIdException) new NoSuchUserIdException(userId).initCause(use);
     }
 
     checkAccess(action, userURI);
