@@ -38,5 +38,11 @@
     </plugins>
   </build>
 
+  <distributionManagement>
+    <repository>
+      <id>topaz</id>
+      <url>http://gandalf.topazproject.org/maven2/</url>
+    </repository>
+  </distributionManagement>
 
 </project>
