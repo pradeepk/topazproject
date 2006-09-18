@@ -26,7 +26,6 @@ import javax.servlet.http.HttpSession;
 import java.io.CharArrayWriter;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 import java.util.Enumeration;
 
 /**
@@ -49,6 +48,10 @@ import java.util.Enumeration;
   <context-param>
     <param-name>guidToUsernameSql</param-name>
     <param-value>select loginname from plos_user where id=?</param-value>
+  </context-param>
+  <context-param>
+    <param-name>connectionValidationQuery</param-name>
+    <param-value>select 1</param-value>
   </context-param>
   <context-param>
     <param-name>adminUser</param-name>
@@ -161,7 +164,7 @@ public class UsernameReplacementWithGuidFilter implements Filter {
     private String getUserGuid(final String username) {
       try {
         return userService.getGuid(username);
-      } catch (final SQLException e) {
+      } catch (final DatabaseException e) {
         log.debug("No account found for userId:" + usernameParameter, e);
         return null;
       }

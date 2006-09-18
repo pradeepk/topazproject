@@ -16,7 +16,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.PrintWriter;
-import java.sql.SQLException;
 
 /**
  * Returns the email address given a user's GUID
@@ -47,6 +46,10 @@ import java.sql.SQLException;
    <param-name>adminPassword</param-name>
    <param-value>postgres</param-value>
  </context-param>
+ <context-param>
+   <param-name>connectionValidationQuery</param-name>
+   <param-value>select 1</param-value>
+ </context-param>
 
  <servlet>
    <servlet-name>Email</servlet-name>
@@ -69,7 +72,7 @@ public class GetEmailAddress extends HttpServlet {
     final PrintWriter writer = response.getWriter();
     try {
       writer.write(userService.getEmailAddress(request.getParameter("guid")));
-    } catch (SQLException e) {
+    } catch (DatabaseException e) {
       throw new ServletException(e);
     }
   }
