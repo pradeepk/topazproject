@@ -39,5 +39,6 @@
     <module>base-ws-webapp</module>
     <module>jdk2log4j-proxy</module>
     <module>topaz-common</module>
+    <module>dom-ranges-helper</module>
   </modules>
 </project>
