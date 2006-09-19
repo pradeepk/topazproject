@@ -33,35 +33,6 @@ import java.util.Enumeration;
  * File to change when hosting
  * D:\java\topaz-install\esup-cas-quick-start-2.0.6-1\jakarta-tomcat-5.0.28\webapps\cas\WEB-INF\web.xml
 
-  <context-param>
-    <param-name>jdbcDriver</param-name>
-    <param-value>org.postgresql.Driver</param-value>
-  </context-param>
-  <context-param>
-    <param-name>jdbcUrl</param-name>
-    <param-value>jdbc:postgresql://localhost/postgres</param-value>
-  </context-param>
-  <context-param>
-    <param-name>usernameToGuidSql</param-name>
-    <param-value>select id from plos_user where loginname=?</param-value>
-  </context-param>
-  <context-param>
-    <param-name>guidToUsernameSql</param-name>
-    <param-value>select loginname from plos_user where id=?</param-value>
-  </context-param>
-  <context-param>
-    <param-name>connectionValidationQuery</param-name>
-    <param-value>select 1</param-value>
-  </context-param>
-  <context-param>
-    <param-name>adminUser</param-name>
-    <param-value>postgres</param-value>
-  </context-param>
-  <context-param>
-    <param-name>adminPassword</param-name>
-    <param-value>postgres</param-value>
-  </context-param>
-
   <filter>
     <filter-name>UsernameReplacementWithGuidFilter</filter-name>
     <filter-class>org.plos.auth.web.UsernameReplacementWithGuidFilter</filter-class>
@@ -105,7 +76,7 @@ public class UsernameReplacementWithGuidFilter implements Filter {
 
   public void init(final FilterConfig filterConfig) throws ServletException {
     try {
-      userService = new UserService(filterConfig.getServletContext());
+      userService = (UserService) filterConfig.getServletContext().getAttribute(AuthConstants.USER_SERVICE);
     } catch (final Exception e) {
       throw new ServletException(e);
     }

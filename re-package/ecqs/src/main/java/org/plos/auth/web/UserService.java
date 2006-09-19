@@ -9,12 +9,10 @@
  */
 package org.plos.auth.web;
 
-import javax.servlet.ServletContext;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
-import java.util.Properties;
 
 /**
  * Used to fetch the various properties, like guid, for a given user.
@@ -25,24 +23,6 @@ public class UserService {
   private final DatabaseContext context;
   private final String usernameToGuidSql;
   private final String guidToUsernameSql;
-
-  /**
-   * Provide the constructor the ServletContext and let it initialize itself off of it.
-   * @param config ServletContext
-   * @throws ClassNotFoundException ClassNotFoundException
-   * @throws DatabaseException DatabaseException
-   */
-  public UserService(final ServletContext config) throws ClassNotFoundException, DatabaseException {
-    final Properties dbProperties = new Properties();
-    dbProperties.setProperty("url", config.getInitParameter("jdbcUrl"));
-    dbProperties.setProperty("user", config.getInitParameter("adminUser"));
-    dbProperties.setProperty("password", config.getInitParameter("adminPassword"));
-    final String connectionValidationQuery = config.getInitParameter("connectionValidationQuery");
-
-    usernameToGuidSql = config.getInitParameter("usernameToGuidSql");
-    guidToUsernameSql = config.getInitParameter("guidToUsernameSql");
-    context = new DatabaseContext(config.getInitParameter("jdbcDriver"), dbProperties, 2, 10, connectionValidationQuery);
-  }
 
   public UserService(final DatabaseContext context, final String usernameToGuidSql, final String guidToUsernameSql) {
     this.usernameToGuidSql = usernameToGuidSql;

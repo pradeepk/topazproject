@@ -21,35 +21,6 @@ import java.io.PrintWriter;
  * Returns the email address given a user's GUID
  * File to change when hosting
  * D:\java\topaz-install\esup-cas-quick-start-2.0.6-1\jakarta-tomcat-5.0.28\webapps\cas\WEB-INF\web.xml
- * 
- <context-param>
-   <param-name>jdbcDriver</param-name>
-   <param-value>org.postgresql.Driver</param-value>
- </context-param>
- <context-param>
-   <param-name>jdbcUrl</param-name>
-   <param-value>jdbc:postgresql://localhost/postgres</param-value>
- </context-param>
- <context-param>
-   <param-name>usernameToGuidSql</param-name>
-   <param-value>select id from plos_user where loginname=?</param-value>
- </context-param>
- <context-param>
-   <param-name>guidToUsernameSql</param-name>
-   <param-value>select loginname from plos_user where id=?</param-value>
- </context-param>
- <context-param>
-   <param-name>adminUser</param-name>
-   <param-value>postgres</param-value>
- </context-param>
- <context-param>
-   <param-name>adminPassword</param-name>
-   <param-value>postgres</param-value>
- </context-param>
- <context-param>
-   <param-name>connectionValidationQuery</param-name>
-   <param-value>select 1</param-value>
- </context-param>
 
  <servlet>
    <servlet-name>Email</servlet-name>
@@ -79,7 +50,7 @@ public class GetEmailAddress extends HttpServlet {
 
   public void init(final ServletConfig servletConfig) throws ServletException {
     try {
-      userService = new UserService(servletConfig.getServletContext());
+      userService = (UserService) getServletContext().getAttribute(AuthConstants.USER_SERVICE);
     } catch (final Exception ex) {
       throw new ServletException(ex);
     }
