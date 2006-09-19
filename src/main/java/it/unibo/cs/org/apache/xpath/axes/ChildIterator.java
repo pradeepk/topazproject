@@ -197,7 +197,7 @@ public class ChildIterator extends LocPathIterator
     }
   }
   
-  public xpointer.Location nextLocation()
+  public it.unibo.cs.xpointer.Location nextLocation()
   {
       return null;
   }

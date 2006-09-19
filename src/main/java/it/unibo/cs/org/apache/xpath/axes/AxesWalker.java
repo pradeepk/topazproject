@@ -80,7 +80,7 @@ import org.w3c.dom.traversal.TreeWalker;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.DOMException;
 
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 import org.w3c.dom.ranges.Range;
 
 /**
@@ -1354,7 +1354,7 @@ public abstract class AxesWalker extends PredicatedNodeTest
       Location next = null;
       Node temp;
       Location prev = null;
-      xpointer.TaxDomHelper extDomHelper = new xpointer.TaxDomHelper(m_lpi.getDOMHelper());
+      it.unibo.cs.xpointer.TaxDomHelper extDomHelper = new it.unibo.cs.xpointer.TaxDomHelper(m_lpi.getDOMHelper());
   
   do{    
       while(true)
@@ -1399,13 +1399,13 @@ public abstract class AxesWalker extends PredicatedNodeTest
    */
   public Location getNextLocation() 
   {
-      xpointer.Location loc = new xpointer.Location();
+      it.unibo.cs.xpointer.Location loc = new it.unibo.cs.xpointer.Location();
       Node node = getNextNode();
       
       if(node==null)
           return null;
       
-      loc.setType(xpointer.Location.NODE);
+      loc.setType(it.unibo.cs.xpointer.Location.NODE);
       loc.setLocation(node);
       
       if(m_currentLoc!=null && m_currentLoc.getType()==Location.RANGE)

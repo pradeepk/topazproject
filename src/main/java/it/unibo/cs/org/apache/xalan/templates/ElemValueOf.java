@@ -73,7 +73,7 @@ import it.unibo.cs.org.apache.xalan.transformer.ResultTreeHandler;
 import javax.xml.transform.TransformerException;
 import it.unibo.cs.org.apache.xalan.stree.SaxEventDispatch;
 
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 
 /**
  * <meta name="usage" content="advanced"/>
@@ -324,7 +324,7 @@ public class ElemValueOf extends ElemTemplateElement
   }
 
   public void execute(
-          TransformerImpl transformer, xpointer.Location sourceLocation, QName mode)
+          TransformerImpl transformer, it.unibo.cs.xpointer.Location sourceLocation, QName mode)
             throws TransformerException
   {
       if(sourceLocation.getType()==Location.NODE)

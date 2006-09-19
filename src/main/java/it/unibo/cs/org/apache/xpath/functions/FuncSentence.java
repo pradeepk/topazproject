@@ -9,13 +9,13 @@ package it.unibo.cs.org.apache.xpath.functions;
 import it.unibo.cs.org.apache.xpath.XPathContext;
 import it.unibo.cs.org.apache.xpath.objects.*;
 import java.util.Vector;
-import xpointer.custom.Sentence;
+import it.unibo.cs.xpointer.custom.Sentence;
 import org.w3c.dom.*;
 import org.w3c.dom.ranges.*;
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 import it.unibo.cs.org.apache.xpath.LocationSet;
 import org.w3c.dom.traversal.NodeIterator;
-import xpointer.LocationIterator;
+import it.unibo.cs.xpointer.LocationIterator;
 
 /**
  *

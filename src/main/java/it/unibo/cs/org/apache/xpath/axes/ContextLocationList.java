@@ -6,7 +6,7 @@
 
 package it.unibo.cs.org.apache.xpath.axes;
 
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 /**
  *
  * @author  tax

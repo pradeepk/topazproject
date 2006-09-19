@@ -62,7 +62,7 @@ import it.unibo.cs.org.apache.xpath.XPathContext;
 
 import org.w3c.dom.Node;
 
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 
 /**
  * Walker for the 'parent' axes.

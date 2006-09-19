@@ -314,7 +314,7 @@ public class XPathAPI
     return xpath.execute(new XPathContext(), contextNode, prefixResolver);
   }
   
-  public static XObject eval(Node contextNode, String str,xpointer.Location here,xpointer.Location origin) throws TransformerException
+  public static XObject eval(Node contextNode, String str,it.unibo.cs.xpointer.Location here,it.unibo.cs.xpointer.Location origin) throws TransformerException
   {
      XPathContext xpathSupport = new XPathContext();
      Node namespaceNode = contextNode;
@@ -334,7 +334,7 @@ public class XPathAPI
   }
   
   public static XObject eval(
-          Node contextNode, String str, PrefixResolver prefixResolver,xpointer.Location here,xpointer.Location origin)
+          Node contextNode, String str, PrefixResolver prefixResolver,it.unibo.cs.xpointer.Location here,it.unibo.cs.xpointer.Location origin)
             throws TransformerException
   {
        XPath xpath = new XPath(str, null, prefixResolver, XPath.SELECT, null);

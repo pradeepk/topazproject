@@ -79,7 +79,7 @@ import it.unibo.cs.org.apache.xalan.stree.SaxEventDispatch;
 import javax.xml.transform.SourceLocator;
 import javax.xml.transform.TransformerException;
 
-import xpointer.*;
+import it.unibo.cs.xpointer.*;
 import org.w3c.dom.ranges.*;
 import it.unibo.cs.org.apache.xpath.LocationSet;
 import it.unibo.cs.org.apache.xpath.objects.XLocationSet;

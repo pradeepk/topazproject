@@ -75,7 +75,7 @@ import org.w3c.dom.traversal.NodeIterator;
 import org.w3c.dom.traversal.NodeFilter;
 
 import it.unibo.cs.org.apache.xpath.objects.XLocationSet;
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 import it.unibo.cs.org.apache.xpath.LocationSet;
 import it.unibo.cs.org.apache.xpath.functions.FuncStartPoint;
 import it.unibo.cs.org.apache.xpath.functions.FuncEndPoint;
@@ -333,7 +333,7 @@ public class FilterExprWalker extends AxesWalker
   transient private Node m_peek = null;
   
   //added by Tax
-  transient private xpointer.LocationIterator m_locationSet;
+  transient private it.unibo.cs.xpointer.LocationIterator m_locationSet;
 
   /**
    * Tell what's the maximum level this axes can descend to (which is actually

@@ -50,7 +50,7 @@ public class FuncHere extends Function {
     {
         XLocationSet retval = new XLocationSet();
         LocationSet locset = retval.mutableLocationSet();
-        xpointer.Location here = xctxt.getHere();
+        it.unibo.cs.xpointer.Location here = xctxt.getHere();
         
         if(here==null)
             throw new TransformerException("Error: here not specified");

@@ -244,7 +244,7 @@ public class ElemTextLiteral extends ElemTemplateElement
   }
   
   public void execute(
-          TransformerImpl transformer, xpointer.Location sourceLocation, QName mode)
+          TransformerImpl transformer, it.unibo.cs.xpointer.Location sourceLocation, QName mode)
             throws TransformerException
   {
     try

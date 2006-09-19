@@ -799,9 +799,9 @@ public class Compiler extends OpMap
     switch (testType)
     {
     case OpCodes.NODETYPE_RANGE:    
-        return xpointer.ExtNodeFilter.SHOW_RANGE;
+        return it.unibo.cs.xpointer.ExtNodeFilter.SHOW_RANGE;
     case OpCodes.NODETYPE_POINT:
-        return xpointer.ExtNodeFilter.SHOW_POINT;
+        return it.unibo.cs.xpointer.ExtNodeFilter.SHOW_POINT;
     case OpCodes.NODETYPE_COMMENT :
       return NodeFilter.SHOW_COMMENT;
     case OpCodes.NODETYPE_TEXT :

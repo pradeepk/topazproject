@@ -60,7 +60,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeFilter;
 
 import it.unibo.cs.org.apache.xpath.patterns.NodeTestFilter;
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 
 /**
  * <meta name="usage" content="advanced"/>
@@ -243,16 +243,16 @@ public class ChildWalkerMultiStep extends AxesWalker
    * MultiStep walkers are created when there are only child steps an no function at all;
    * so it can be assumed that only locations of type node will be returned.
    */
-  public xpointer.Location getNextLocation()
+  public it.unibo.cs.xpointer.Location getNextLocation()
   {
       Node node = getNextNode();
       
-      xpointer.Location loc = null;
+      it.unibo.cs.xpointer.Location loc = null;
       
       if(node!=null)
       {
-          loc = new xpointer.Location();
-          loc.setType(xpointer.Location.NODE);
+          loc = new it.unibo.cs.xpointer.Location();
+          loc.setType(it.unibo.cs.xpointer.Location.NODE);
           loc.setLocation(node);
       }
       

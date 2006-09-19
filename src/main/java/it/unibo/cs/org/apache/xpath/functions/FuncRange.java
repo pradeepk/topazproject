@@ -40,7 +40,7 @@ import it.unibo.cs.org.apache.xpath.XPathContext;
 import org.w3c.dom.traversal.NodeIterator;
 import it.unibo.cs.org.apache.xpath.LocationSet;
 import org.w3c.dom.Node;
-import xpointer.*;
+import it.unibo.cs.xpointer.*;
 
 /**
  *

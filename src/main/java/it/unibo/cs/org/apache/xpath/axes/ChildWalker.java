@@ -151,15 +151,15 @@ public class ChildWalker extends AxesWalker
    * almeno nella mia interpretazioni,poi bisogna vedere quella di Fabio
    * Se la locazione contesto e' un range o un punto,allora non contiene nulla.
    */
-/*  public xpointer.Location getNextLocation()
+/*  public it.unibo.cs.xpointer.Location getNextLocation()
   {
-      xpointer.Location loc = new xpointer.Location();
+      it.unibo.cs.xpointer.Location loc = new it.unibo.cs.xpointer.Location();
       Node node = getNextNode();
       
       if(node==null)
           return null;
       
-      loc.setType(xpointer.Location.NODE);
+      loc.setType(it.unibo.cs.xpointer.Location.NODE);
       loc.setLocation(node);
       
       if(getPrevWalker().m_returnOnlyRange)

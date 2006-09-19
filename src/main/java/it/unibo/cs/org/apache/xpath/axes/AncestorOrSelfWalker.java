@@ -123,21 +123,21 @@ public class AncestorOrSelfWalker extends AncestorWalker
    * ed il punto stesso.
    * Per primo va restituito il punto,poi i nodi
   */
-  public xpointer.Location getNextLocation()
+  public it.unibo.cs.xpointer.Location getNextLocation()
   {
-    if(m_pointReturned==false && m_currentLoc!=null && m_currentLoc.getType()==xpointer.Location.RANGE)
+    if(m_pointReturned==false && m_currentLoc!=null && m_currentLoc.getType()==it.unibo.cs.xpointer.Location.RANGE)
     {
         m_pointReturned = true;
         return m_currentLoc;
     }
     
-    xpointer.Location loc = null;
+    it.unibo.cs.xpointer.Location loc = null;
     Node node = super.getNextNode();
     
     if(node!=null)
     {
-        loc = new xpointer.Location();
-        loc.setType(xpointer.Location.NODE);
+        loc = new it.unibo.cs.xpointer.Location();
+        loc.setType(it.unibo.cs.xpointer.Location.NODE);
         loc.setLocation(node);
     }
     

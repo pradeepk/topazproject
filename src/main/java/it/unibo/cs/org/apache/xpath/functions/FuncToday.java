@@ -35,7 +35,7 @@
 package it.unibo.cs.org.apache.xpath.functions;
 
 import it.unibo.cs.org.apache.xpath.XPathContext;
-import xpointer.custom.Today;
+import it.unibo.cs.xpointer.custom.Today;
 import it.unibo.cs.org.apache.xpath.objects.*;
 
 

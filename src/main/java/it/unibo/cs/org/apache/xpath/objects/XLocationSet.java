@@ -34,8 +34,8 @@
 package it.unibo.cs.org.apache.xpath.objects;
 
 import it.unibo.cs.org.apache.xpath.LocationSet;
-import xpointer.Location;
-import xpointer.LocationIterator;
+import it.unibo.cs.xpointer.Location;
+import it.unibo.cs.xpointer.LocationIterator;
 import it.unibo.cs.org.apache.xml.utils.StringVector;
 import org.w3c.dom.ranges.Range;
 import org.w3c.dom.*;

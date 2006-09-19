@@ -163,7 +163,7 @@ import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 
 /**
  * <meta name="usage" content="advanced"/>
@@ -2270,7 +2270,7 @@ public class TransformerImpl extends Transformer
   }
 
   public void executeChildTemplates(
-          ElemTemplateElement elem, xpointer.Location sourceLocation, QName mode, boolean shouldAddAttrs)
+          ElemTemplateElement elem, it.unibo.cs.xpointer.Location sourceLocation, QName mode, boolean shouldAddAttrs)
             throws TransformerException
   {
       // Does this element have any children?

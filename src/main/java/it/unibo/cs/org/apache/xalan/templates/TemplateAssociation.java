@@ -6,7 +6,7 @@
 
 package it.unibo.cs.org.apache.xalan.templates;
 
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 import org.w3c.dom.ranges.Range;
 
 /**

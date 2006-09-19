@@ -8,11 +8,11 @@ package it.unibo.cs.org.apache.xpath.functions;
 
 import org.w3c.dom.*;
 import org.w3c.dom.ranges.*;
-import xpointer.custom.Word;
+import it.unibo.cs.xpointer.custom.Word;
 import it.unibo.cs.org.apache.xpath.*;
 import it.unibo.cs.org.apache.xpath.objects.*;
 import org.w3c.dom.traversal.NodeIterator;
-import xpointer.*;
+import it.unibo.cs.xpointer.*;
 import it.unibo.cs.org.apache.xpath.LocationSet;
 
 /**

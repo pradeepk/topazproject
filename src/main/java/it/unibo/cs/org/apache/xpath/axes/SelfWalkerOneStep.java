@@ -59,7 +59,7 @@ package it.unibo.cs.org.apache.xpath.axes;
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeFilter;
 
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 
 /**
  * <meta name="usage" content="advanced"/>
@@ -116,9 +116,9 @@ public class SelfWalkerOneStep extends AxesWalker
           org.w3c.dom.ranges.Range range = (org.w3c.dom.ranges.Range) m_currentLoc.getLocation();
           
           if(range.getStartContainer()==range.getEndContainer() && range.getStartOffset()==range.getEndOffset())
-              pattern = xpointer.ExtNodeFilter.SHOW_POINT;
+              pattern = it.unibo.cs.xpointer.ExtNodeFilter.SHOW_POINT;
           else
-              pattern = xpointer.ExtNodeFilter.SHOW_RANGE;
+              pattern = it.unibo.cs.xpointer.ExtNodeFilter.SHOW_RANGE;
           
        
          return (pattern==m_whatToShow)?m_currentLoc:null;
@@ -143,9 +143,9 @@ public class SelfWalkerOneStep extends AxesWalker
           org.w3c.dom.ranges.Range range = (org.w3c.dom.ranges.Range) m_currentLoc.getLocation();
           
           if(range.getStartContainer()==range.getEndContainer() && range.getStartOffset()==range.getEndOffset())
-              pattern = xpointer.ExtNodeFilter.SHOW_POINT;
+              pattern = it.unibo.cs.xpointer.ExtNodeFilter.SHOW_POINT;
           else
-              pattern = xpointer.ExtNodeFilter.SHOW_RANGE;
+              pattern = it.unibo.cs.xpointer.ExtNodeFilter.SHOW_RANGE;
           
           m_isDone = true;    
           return (pattern==m_whatToShow)?m_currentLoc:null;

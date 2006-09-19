@@ -67,8 +67,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeIterator;
 
 import it.unibo.cs.org.apache.xpath.objects.XLocationSet;
-import xpointer.Location;
-import xpointer.LocationIterator;
+import it.unibo.cs.xpointer.Location;
+import it.unibo.cs.xpointer.LocationIterator;
 import org.w3c.dom.ranges.Range;
 import it.unibo.cs.org.apache.xalan.stree.Parent;
 import it.unibo.cs.org.apache.xalan.templates.ElemTemplateElement;

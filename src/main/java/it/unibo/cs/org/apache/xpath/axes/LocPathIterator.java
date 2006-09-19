@@ -89,7 +89,7 @@ import it.unibo.cs.org.apache.xpath.objects.XLocationSet;
 import it.unibo.cs.org.apache.xpath.axes.AxesWalker;
 import it.unibo.cs.org.apache.xpath.VariableStack;
 
-import xpointer.*;
+import it.unibo.cs.xpointer.*;
 import it.unibo.cs.org.apache.xpath.compiler.FunctionTable;
 
 /**

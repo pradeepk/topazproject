@@ -12,7 +12,7 @@ import it.unibo.cs.org.apache.xml.utils.PrefixResolver;
 import org.w3c.dom.Node;
 import org.w3c.dom.traversal.NodeFilter;
 
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 import it.unibo.cs.org.apache.xpath.functions.*;
 
 public abstract class PredicatedNodeTest extends NodeTest implements SubContextList
@@ -386,9 +386,9 @@ public abstract class PredicatedNodeTest extends NodeTest implements SubContextL
      /*gestione dei test point() e range()*/
      //if(range.getStartContainer()==range.getEndContainer() && range.getStartOffset()==range.getEndOffset())
      if(m_lpi.m_isPoint)
-        pattern = xpointer.ExtNodeFilter.SHOW_POINT;
+        pattern = it.unibo.cs.xpointer.ExtNodeFilter.SHOW_POINT;
      else
-        pattern = xpointer.ExtNodeFilter.SHOW_RANGE;
+        pattern = it.unibo.cs.xpointer.ExtNodeFilter.SHOW_RANGE;
           
     locationTestPassed = (pattern==m_whatToShow) ; 
     

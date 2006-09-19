@@ -117,16 +117,16 @@ public class DescendantOrSelfWalker extends DescendantWalker
   /** True if the self (root, context node) has been returned. */
   transient boolean m_processedSelf;
   
-  public xpointer.Location getNextLocation()
+  public it.unibo.cs.xpointer.Location getNextLocation()
   {
-      if(m_currentLoc==null || m_currentLoc.getType()==xpointer.Location.NODE)
+      if(m_currentLoc==null || m_currentLoc.getType()==it.unibo.cs.xpointer.Location.NODE)
       {
-          xpointer.Location loc = null;
+          it.unibo.cs.xpointer.Location loc = null;
           Node node = getNextNode();
           if(node!=null)
           {
-              loc = new xpointer.Location();
-              loc.setType(xpointer.Location.NODE);
+              loc = new it.unibo.cs.xpointer.Location();
+              loc.setType(it.unibo.cs.xpointer.Location.NODE);
               loc.setLocation(node);
           }
           return loc;

@@ -68,7 +68,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NamedNodeMap;
 import org.w3c.dom.DOMException;
 import org.w3c.dom.traversal.NodeFilter;
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 
 /**
  * <meta name="usage" content="advanced"/>

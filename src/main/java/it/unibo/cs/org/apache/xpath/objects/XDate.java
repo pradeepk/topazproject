@@ -33,7 +33,7 @@
 
 package it.unibo.cs.org.apache.xpath.objects;
 
-import xpointer.custom.Date;
+import it.unibo.cs.xpointer.custom.Date;
 import java.util.Calendar;
 
 /**

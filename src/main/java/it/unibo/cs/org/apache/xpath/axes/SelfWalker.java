@@ -62,7 +62,7 @@ import it.unibo.cs.org.apache.xpath.XPathContext;
 
 import org.w3c.dom.Node;
 
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 
 /**
  * Walker for the 'self' axes.
@@ -166,9 +166,9 @@ public class SelfWalker extends AxesWalker
           org.w3c.dom.ranges.Range range = (org.w3c.dom.ranges.Range) m_currentLoc.getLocation();
           
           if(range.getStartContainer()==range.getEndContainer() && range.getStartOffset()==range.getEndOffset())
-              pattern = xpointer.ExtNodeFilter.SHOW_POINT;
+              pattern = it.unibo.cs.xpointer.ExtNodeFilter.SHOW_POINT;
           else
-              pattern = xpointer.ExtNodeFilter.SHOW_RANGE;
+              pattern = it.unibo.cs.xpointer.ExtNodeFilter.SHOW_RANGE;
           
           m_isDone = true;    
           return (pattern==m_whatToShow)?m_currentLoc:null;

@@ -156,9 +156,9 @@ public class XObject extends Expression implements Serializable
       result = new XNodeSet((NodeIterator) val);
     }
     //added by Tax
-    else if (val instanceof xpointer.Location)
+    else if (val instanceof it.unibo.cs.xpointer.Location)
     {   
-        result = new XLocationSet((xpointer.Location)val);
+        result = new XLocationSet((it.unibo.cs.xpointer.Location)val);
     }
     else
     {

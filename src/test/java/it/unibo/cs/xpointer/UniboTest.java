@@ -20,10 +20,7 @@ import org.xml.sax.SAXParseException;
 
 import junit.framework.TestCase;
 
-import xpointer.Location;
-import xpointer.XPointerAPI;
-
-import xpointer.datatype.LocationList;
+import it.unibo.cs.xpointer.datatype.LocationList;
 
 /**
  * Standard tests defined at <code>http://www.cs.unibo.it/projects/xslt%2B%2B/XPointerTest.html</code>

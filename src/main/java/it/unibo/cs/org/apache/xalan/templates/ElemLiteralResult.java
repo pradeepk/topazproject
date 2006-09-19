@@ -663,7 +663,7 @@ public class ElemLiteralResult extends ElemUse
   }
   
    public void execute(
-          TransformerImpl transformer, xpointer.Location sourceLocation, QName mode)
+          TransformerImpl transformer, it.unibo.cs.xpointer.Location sourceLocation, QName mode)
             throws TransformerException
   {
       execute(transformer,(Node)null,mode);

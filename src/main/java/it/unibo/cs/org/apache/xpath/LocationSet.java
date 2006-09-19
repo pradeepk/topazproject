@@ -34,8 +34,8 @@
 package it.unibo.cs.org.apache.xpath;
 
 import java.util.Vector;
-import xpointer.Location;
-import xpointer.LocationIterator;
+import it.unibo.cs.xpointer.Location;
+import it.unibo.cs.xpointer.LocationIterator;
 import it.unibo.cs.org.apache.xpath.axes.ContextLocationList;
 
 /**

@@ -35,7 +35,7 @@ package it.unibo.cs.org.apache.xpath.functions;
 
 import it.unibo.cs.org.apache.xpath.XPathContext;
 import it.unibo.cs.org.apache.xpath.objects.XObject;
-import xpointer.*;
+import it.unibo.cs.xpointer.*;
 import it.unibo.cs.org.apache.xpath.objects.XLocationSet;
 import it.unibo.cs.org.apache.xpath.LocationSet;
 import it.unibo.cs.org.apache.xpath.objects.XNodeSet;

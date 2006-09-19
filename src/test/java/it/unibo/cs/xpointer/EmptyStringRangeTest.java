@@ -20,10 +20,7 @@ import org.xml.sax.SAXParseException;
 
 import junit.framework.TestCase;
 
-import xpointer.Location;
-import xpointer.XPointerAPI;
-
-import xpointer.datatype.LocationList;
+import it.unibo.cs.xpointer.datatype.LocationList;
 
 /**
  * Tests for string-range function with empty string.

@@ -78,7 +78,7 @@ import it.unibo.cs.org.apache.xpath.patterns.StepPattern;
 import it.unibo.cs.org.apache.xpath.patterns.UnionPattern;
 import it.unibo.cs.org.apache.xpath.patterns.FunctionPattern;
 
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 import org.w3c.dom.ranges.*;
 import it.unibo.cs.org.apache.xpath.functions.*;
 import it.unibo.cs.org.apache.xpath.objects.XString;

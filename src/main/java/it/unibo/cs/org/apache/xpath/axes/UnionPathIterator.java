@@ -75,9 +75,9 @@ import it.unibo.cs.org.apache.xpath.objects.XLocationSet;
 import it.unibo.cs.org.apache.xpath.objects.XObject;
 import it.unibo.cs.org.apache.xpath.compiler.Compiler;
 import it.unibo.cs.org.apache.xml.utils.ObjectPool;
-import xpointer.Location;
-import xpointer.LocationIterator;
-import xpointer.TaxDomHelper;
+import it.unibo.cs.xpointer.Location;
+import it.unibo.cs.xpointer.LocationIterator;
+import it.unibo.cs.xpointer.TaxDomHelper;
 import it.unibo.cs.org.apache.xpath.compiler.FunctionTable;
 
 /**

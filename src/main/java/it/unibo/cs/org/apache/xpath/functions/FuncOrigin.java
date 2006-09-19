@@ -51,7 +51,7 @@ public class FuncOrigin extends Function {
         XLocationSet retval = new XLocationSet();
         LocationSet locset = retval.mutableLocationSet();
         
-        xpointer.Location origin = xctxt.getOrigin();
+        it.unibo.cs.xpointer.Location origin = xctxt.getOrigin();
         
         if(origin==null)
             throw new TransformerException("Error: oring not specified");

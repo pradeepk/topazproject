@@ -166,7 +166,7 @@ public class ElemTemplateElement extends UnImplNode
 
   
   public void execute(
-          TransformerImpl transformer, xpointer.Location sourceLocation, QName mode)
+          TransformerImpl transformer, it.unibo.cs.xpointer.Location sourceLocation, QName mode)
             throws TransformerException
   {
       throw new RuntimeException("Not supported method.");
@@ -1249,5 +1249,5 @@ public class ElemTemplateElement extends UnImplNode
     return (null != sroot) ? sroot.canStripWhiteSpace() : false;
   }
 
-  public xpointer.Location m_lastMatchedLocation;
+  public it.unibo.cs.xpointer.Location m_lastMatchedLocation;
 }

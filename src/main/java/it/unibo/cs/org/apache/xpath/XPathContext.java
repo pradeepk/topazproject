@@ -104,7 +104,7 @@ import javax.xml.transform.SourceLocator;
 import javax.xml.transform.Source;
 import javax.xml.transform.ErrorListener;
 
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 import org.w3c.dom.ranges.Range;
 
 /**
@@ -785,28 +785,28 @@ public class XPathContext implements ExpressionContext
   /** Getter for property here.
    * @return Value of property here.
    */
-  public xpointer.Location getHere() {
+  public it.unibo.cs.xpointer.Location getHere() {
       return here;
   }  
    
   /** Setter for property here.
    * @param here New value of property here.
    */
-  public void setHere(xpointer.Location here) {
+  public void setHere(it.unibo.cs.xpointer.Location here) {
       this.here = here;
   }
   
   /** Getter for property origin.
    * @return Value of property origin.
    */
-  public xpointer.Location getOrigin() {
+  public it.unibo.cs.xpointer.Location getOrigin() {
       return origin;
   }
   
   /** Setter for property origin.
    * @param origin New value of property origin.
    */
-  public void setOrigin(xpointer.Location origin) {
+  public void setOrigin(it.unibo.cs.xpointer.Location origin) {
       this.origin = origin;
   }
   

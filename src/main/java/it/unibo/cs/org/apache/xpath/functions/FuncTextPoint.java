@@ -6,15 +6,15 @@
 
 package it.unibo.cs.org.apache.xpath.functions;
 
-import xpointer.custom.TextPoint;
+import it.unibo.cs.xpointer.custom.TextPoint;
 import it.unibo.cs.org.apache.xpath.LocationSet;
 import it.unibo.cs.org.apache.xpath.objects.*;
 import it.unibo.cs.org.apache.xpath.XPathContext;
 import org.w3c.dom.ranges.Range;
 import org.w3c.dom.traversal.NodeIterator;
 import org.w3c.dom.*;
-import xpointer.Location;
-import xpointer.LocationIterator;
+import it.unibo.cs.xpointer.Location;
+import it.unibo.cs.xpointer.LocationIterator;
 
 
 /**

@@ -64,7 +64,7 @@ import it.unibo.cs.org.apache.xpath.XPathContext;
 import it.unibo.cs.org.apache.xpath.DOMHelper;
 
 import org.w3c.dom.Node;
-import xpointer.Location;
+import it.unibo.cs.xpointer.Location;
 
 /**
  * Walker for the 'ancestor' axes.
@@ -205,16 +205,16 @@ public class AncestorWalker extends ReverseAxesWalker
   /*
    * Vengono ritornati solo nodi
    */
-  public xpointer.Location getNextLocation()
+  public it.unibo.cs.xpointer.Location getNextLocation()
   {
-      xpointer.Location loc = null;
+      it.unibo.cs.xpointer.Location loc = null;
       Node node = getNextNode();
       
       if(node!=null)
       {
-          loc = new xpointer.Location();
+          loc = new it.unibo.cs.xpointer.Location();
           loc.setLocation(node);
-          loc.setType(xpointer.Location.NODE);
+          loc.setType(it.unibo.cs.xpointer.Location.NODE);
       }
       
       return loc;
