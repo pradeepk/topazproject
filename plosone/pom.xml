@@ -45,6 +45,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>topaz-common</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-annotation-client-impl</artifactId>
       <version>0.5-SNAPSHOT</version>
@@ -149,12 +155,6 @@
       <groupId>org.apache.bcel</groupId>
       <artifactId>bcel</artifactId>
       <version>5.2</version>
-    </dependency>
-
-    <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>xalan</artifactId>
-      <version>2.7.0</version>
     </dependency>
 
   </dependencies>

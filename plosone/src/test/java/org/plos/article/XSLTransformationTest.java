@@ -62,7 +62,8 @@ public class XSLTransformationTest extends BasePlosoneTestCase {
   private Transformer getXSLTransformer(final String xslStyleSheet) throws TransformerConfigurationException, URISyntaxException {
     // 1. Instantiate a TransformerFactory.
     final String KEY = "javax.xml.transform.TransformerFactory";
-    final String VALUE = "org.apache.xalan.xsltc.trax.TransformerFactoryImpl";
+//    final String VALUE = "org.apache.xalan.xsltc.trax.TransformerFactoryImpl";
+    final String VALUE = "com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl";
     final Properties props = System.getProperties();
     props.put(KEY, VALUE);
     System.setProperties(props);
@@ -72,8 +73,7 @@ public class XSLTransformationTest extends BasePlosoneTestCase {
 // 2. Use the TransformerFactory to process the stylesheet Source and generate a Transformer.
 //    final URL resource = getClass().getResource(filename);
 //    return new File(resource.toURI());
-    final String file = xslStyleSheet;
-    return tFactory.newTransformer(new StreamSource(file));
+    return tFactory.newTransformer(new StreamSource(xslStyleSheet));
   }
 
 }
