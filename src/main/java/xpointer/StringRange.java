@@ -37,7 +37,7 @@ import org.w3c.dom.*;
 import org.w3c.dom.ranges.*;
 import java.util.Vector;
 import xpointer.litmatch.*;
-import org.apache.xpath.XPathAPI;
+import it.unibo.cs.org.apache.xpath.XPathAPI;
 import javax.xml.transform.TransformerException;
 
 /**

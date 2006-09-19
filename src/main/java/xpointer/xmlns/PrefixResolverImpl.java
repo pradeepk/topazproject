@@ -38,7 +38,7 @@ import java.util.Hashtable;
 /**
  * 
  */
-public class PrefixResolverImpl implements org.apache.xml.utils.PrefixResolver {
+public class PrefixResolverImpl implements it.unibo.cs.org.apache.xml.utils.PrefixResolver {
 
     private Hashtable table = new Hashtable();
     

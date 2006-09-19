@@ -42,7 +42,7 @@ import org.w3c.dom.ranges.*;
 import org.w3c.dom.*;
 import javax.xml.parsers.*;
 import javax.xml.transform.*;
-import org.apache.xml.utils.UnImplNode;
+import it.unibo.cs.org.apache.xml.utils.UnImplNode;
 import javax.xml.transform.dom.*;
 
 public class XPRange {

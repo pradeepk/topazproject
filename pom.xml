@@ -31,7 +31,7 @@
           <source>1.4</source>
           <target>1.4</target>
           <excludes>
-            <exclude>org/apache/xalan/xsltc/**/*.java</exclude>
+            <exclude>it/unibo/cs/org/apache/xalan/xsltc/**/*.java</exclude>
           </excludes>
         </configuration>
       </plugin>

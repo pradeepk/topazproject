@@ -33,9 +33,9 @@
 
 package xpointer;
 
-import org.apache.xpath.objects.*;
+import it.unibo.cs.org.apache.xpath.objects.*;
 import org.w3c.dom.traversal.*;
-import org.apache.xpath.*;
+import it.unibo.cs.org.apache.xpath.*;
 import xpointer.datatype.*;
 import org.w3c.dom.*;
 import org.w3c.dom.ranges.*;

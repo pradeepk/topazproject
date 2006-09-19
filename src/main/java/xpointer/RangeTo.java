@@ -83,7 +83,7 @@ public class RangeTo {
         range.setStart(startPoint.getStartContainer(),startPoint.getStartOffset());
         range.setEnd(endPoint.getEndContainer(),endPoint.getEndOffset());
         
-        TaxDomHelper taxDomHelper = new TaxDomHelper(new org.apache.xpath.DOMHelper());
+        TaxDomHelper taxDomHelper = new TaxDomHelper(new it.unibo.cs.org.apache.xpath.DOMHelper());
         Location startLoc = new Location();
         startLoc.setType(Location.RANGE);
         startLoc.setLocation(startPoint);

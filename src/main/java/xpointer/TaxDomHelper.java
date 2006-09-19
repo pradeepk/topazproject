@@ -33,7 +33,7 @@
 
 package xpointer;
 
-import org.apache.xpath.DOMHelper;
+import it.unibo.cs.org.apache.xpath.DOMHelper;
 import org.w3c.dom.Node;
 import org.w3c.dom.ranges.Range;
 import xpointer.XPRange;
