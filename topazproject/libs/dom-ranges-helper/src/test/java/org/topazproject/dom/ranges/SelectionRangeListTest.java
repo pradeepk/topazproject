@@ -33,10 +33,9 @@ import org.xml.sax.SAXParseException;
 
 import junit.framework.TestCase;
 
-import xpointer.Location;
-import xpointer.XPointerAPI;
-
-import xpointer.datatype.LocationList;
+import it.unibo.cs.xpointer.Location;
+import it.unibo.cs.xpointer.XPointerAPI;
+import it.unibo.cs.xpointer.datatype.LocationList;
 
 /**
  * Tests the SelectionRangeList algorithm.
@@ -270,7 +269,7 @@ public class SelectionRangeListTest extends TestCase {
 
     doit(expressions, userData, regions, surrounds);
   }
-  
+
   /**
    * Tests skipping of comment nodes of a fully selected range.
    */
@@ -286,7 +285,7 @@ public class SelectionRangeListTest extends TestCase {
 
     doit(expressions, userData, regions, surrounds);
   }
-  
+
   /**
    * Tests skipping of comment nodes of a fully selected range.
    */

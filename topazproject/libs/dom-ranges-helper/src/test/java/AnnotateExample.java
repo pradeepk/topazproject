@@ -21,10 +21,9 @@ import org.w3c.dom.Node;
 import org.w3c.dom.ranges.DocumentRange;
 import org.w3c.dom.ranges.Range;
 
-import xpointer.Location;
-import xpointer.XPointerAPI;
-
-import xpointer.datatype.LocationList;
+import it.unibo.cs.xpointer.Location;
+import it.unibo.cs.xpointer.XPointerAPI;
+import it.unibo.cs.xpointer.datatype.LocationList;
 
 /**
  * A sample implementation for creating an annotated document.
@@ -69,7 +68,7 @@ public class AnnotateExample {
       }
     }
 
-    // Step 2: get a list of 'surroundable' ranges. 
+    // Step 2: get a list of 'surroundable' ranges.
     int       length = srl.size();
 
     Range[][] ranges = new Range[length][0];

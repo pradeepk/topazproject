@@ -84,7 +84,7 @@ public class SelectionRangeList {
 
     // now both 'selectionRange' and 'newSelectionRange' start at the same point
     if (selectionRange.endsAfter(newSelectionRange)) {
-      // 'shared' is the 'newSelectionRange'. copy userDatas and insert before 'selectionRange' 
+      // 'shared' is the 'newSelectionRange'. copy userDatas and insert before 'selectionRange'
       newSelectionRange.addAllUserData(selectionRange.getUserDataList());
       selectionRanges.add(i++, newSelectionRange);
 
