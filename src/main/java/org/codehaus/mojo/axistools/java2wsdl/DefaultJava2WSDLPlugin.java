@@ -412,7 +412,7 @@ public class DefaultJava2WSDLPlugin
         {
             for ( Iterator i = classpath.iterator(); i.hasNext(); )
             {
-                classes += ":" + (String) i.next();
+                classes += System.getProperty("path.separator") + (String) i.next();
             }
         }
 
