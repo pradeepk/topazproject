@@ -1,4 +1,14 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $HeadURL::                                                                                      $
+  $Id$
+
+  Copyright (c) 2006 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Educational Community License version 1.0
+  http://opensource.org/licenses/ecl1.php
+-->
 <project>
   <modelVersion>4.0.0</modelVersion>
   <artifactId>${pom.parent.artifactId}-api</artifactId>
@@ -55,8 +65,8 @@
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.pap.Profiles</classOfPortType>
               <classpath>
-                <classes>${user.home}/.m2/repository/org/topazproject/topaz-common/0.5-SNAPSHOT/topaz-common-0.5-SNAPSHOT.jar</classes>
-                <classes>${user.home}/.m2/repository/org/topazproject/ws/ws-users-api/0.5-SNAPSHOT/ws-users-api-0.5-SNAPSHOT.jar</classes>
+                <classes>${settings.localRepository}/org/topazproject/topaz-common/0.5-SNAPSHOT/topaz-common-0.5-SNAPSHOT.jar</classes>
+                <classes>${settings.localRepository}/org/topazproject/ws/ws-users-api/0.5-SNAPSHOT/ws-users-api-0.5-SNAPSHOT.jar</classes>
               </classpath>
             </configuration>
           </execution>
@@ -77,8 +87,8 @@
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.pap.Preferences</classOfPortType>
               <classpath>
-                <classes>${user.home}/.m2/repository/org/topazproject/topaz-common/0.5-SNAPSHOT/topaz-common-0.5-SNAPSHOT.jar</classes>
-                <classes>${user.home}/.m2/repository/org/topazproject/ws/ws-users-api/0.5-SNAPSHOT/ws-users-api-0.5-SNAPSHOT.jar</classes>
+                <classes>${settings.localRepository}/org/topazproject/topaz-common/0.5-SNAPSHOT/topaz-common-0.5-SNAPSHOT.jar</classes>
+                <classes>${settings.localRepository}/org/topazproject/ws/ws-users-api/0.5-SNAPSHOT/ws-users-api-0.5-SNAPSHOT.jar</classes>
               </classpath>
             </configuration>
           </execution>
