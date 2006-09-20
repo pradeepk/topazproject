@@ -44,6 +44,8 @@ public class AnnotationService extends BaseConfigurableService {
       return annotationWebService.createAnnotation(mimeType, target, context, title, body);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
+      throw new ApplicationException(e);
     } catch (UnsupportedEncodingException e) {
       throw new ApplicationException(e);
     }
@@ -64,6 +66,8 @@ public class AnnotationService extends BaseConfigurableService {
       return replyWebService.createReply(mimeType, root, inReplyTo, title, body, this);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
+      throw new ApplicationException(e);
     } catch (UnsupportedEncodingException e) {
       throw new ApplicationException(e);
     }
@@ -79,6 +83,8 @@ public class AnnotationService extends BaseConfigurableService {
       annotationWebService.deleteAnnotation(annotationId, deletePreceding);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
+      throw new ApplicationException(e);
     }
   }
 
@@ -93,6 +99,8 @@ public class AnnotationService extends BaseConfigurableService {
       replyWebService.deleteReplies(root, inReplyTo);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
+      throw new ApplicationException(e);
     }
   }
 
@@ -105,6 +113,8 @@ public class AnnotationService extends BaseConfigurableService {
     try {
       replyWebService.deleteReplies(replyId);
     } catch (RemoteException e) {
+      throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
       throw new ApplicationException(e);
     }
   }
@@ -140,6 +150,8 @@ public class AnnotationService extends BaseConfigurableService {
       return converter.convert(replies);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
+      throw new ApplicationException(e);
     }
   }
 
@@ -156,6 +168,8 @@ public class AnnotationService extends BaseConfigurableService {
       return converter.convert(replies);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
+      throw new ApplicationException(e);
     }
   }
 
@@ -169,6 +183,8 @@ public class AnnotationService extends BaseConfigurableService {
       final AnnotationInfo annotation = annotationWebService.getAnnotation(annotationId);
       return converter.convert(annotation);
     } catch (RemoteException e) {
+      throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
       throw new ApplicationException(e);
     }
   }
@@ -233,6 +249,8 @@ public class AnnotationService extends BaseConfigurableService {
       annotationWebService.setPublic(annotationDoi);
 
     } catch (final RemoteException e) {
+      throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
       throw new ApplicationException(e);
     }
   }

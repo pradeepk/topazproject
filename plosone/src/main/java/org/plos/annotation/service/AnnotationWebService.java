@@ -13,6 +13,7 @@ import org.topazproject.authentication.ProtectedService;
 import org.topazproject.ws.annotation.AnnotationClientFactory;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.Annotations;
+import org.topazproject.ws.annotation.NoSuchAnnotationIdException;
 
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
@@ -42,7 +43,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws UnsupportedEncodingException
    * @throws java.rmi.RemoteException
    */
-  public String createAnnotation(final String mimeType, final String target, final String context, final String title, final String body) throws RemoteException, UnsupportedEncodingException {
+  public String createAnnotation(final String mimeType, final String target, final String context, final String title, final String body) throws RemoteException, NoSuchAnnotationIdException, UnsupportedEncodingException {
     final String contentType = getContentType(mimeType);
     return annotationService.createAnnotation(getApplicationId(), getDefaultType(), target, context, null, false, title, contentType, body.getBytes(getEncodingCharset()));
   }
@@ -54,7 +55,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws java.rmi.RemoteException
    * @see org.topazproject.ws.annotation.Annotations#deleteAnnotation(String, boolean)
    */
-  public void deleteAnnotation(final String annotationId, final boolean deletePreceding) throws RemoteException {
+  public void deleteAnnotation(final String annotationId, final boolean deletePreceding) throws RemoteException, NoSuchAnnotationIdException {
       annotationService.deleteAnnotation(annotationId, deletePreceding);
   }
 
@@ -74,7 +75,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @return an annotation
    * @throws RemoteException
    */
-  public AnnotationInfo getAnnotation(final String annotationId) throws RemoteException {
+  public AnnotationInfo getAnnotation(final String annotationId) throws RemoteException, NoSuchAnnotationIdException {
     return annotationService.getAnnotationInfo(annotationId);
   }
 
@@ -83,7 +84,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @param annotationDoi annotationDoi
    * @throws RemoteException
    */
-  public void setPublic(final String annotationDoi) throws RemoteException {
+  public void setPublic(final String annotationDoi) throws RemoteException, NoSuchAnnotationIdException {
     annotationService.setAnnotationState(annotationDoi, Annotation.PUBLIC_MASK);
   }
 }
