@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- EXACT COPY OF NON-JMX-APPLICATION-CONTEXT.XML AS WEB CONTEXT IS NOT SUPPORTED IN UNIT TESTS -->
+<beans default-autowire="autodetect"
+       xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:util="http://www.springframework.org/schema/util"
+       xmlns:aop="http://www.springframework.org/schema/aop"
+       xsi:schemaLocation="
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop.xsd">
+
+  <!--<aop:aspectj-autoproxy/>-->
+
+  <!--Plosone developer beans here -->
+  <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" init-method="init">
+    <property name="articleRep" value="XML"/>
+    <!-- Note: remember to prefix the filename with a "/" -->
+    <property name="xslTemplate" value="src/main/resources/viewnlm-v2.xsl"/>
+    <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
+    <property name="articleService" ref="articleWebService"/>
+    <property name="useTranslet" value="true"/>
+  </bean>
+
+  <util:map id="xmlFactoryProperties">
+    <entry key="javax.xml.transform.TransformerFactory"
+           value="com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl"/>
+  </util:map>
+
+  <!-- TODO: Update the servicePort url's automatically using maven build process itself-->
+  <!-- TODO: Make the article web service configuration in the same pattern as permission or annotationWebService -->
+  <bean id="articleWebService" class="org.plos.article.service.ArticleWebService">
+    <property name="servicePort" value="http://localhost:9080/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort"/>
+  </bean>
+
+  <bean id="defaultEncodingCharset" class="java.lang.String">
+    <constructor-arg value="UTF-8"/>
+  </bean>
+
+  <bean id="applicationId" class="java.lang.String">
+    <constructor-arg value="topaz-plosone"/>
+  </bean>
+
+  <bean id="auth-method" class="java.lang.String">
+    <constructor-arg value="TEST"/>
+  </bean>
+
+  <bean id="userContext" class="org.plos.web.UserContext"/>
+
+  <bean id="permissionWebService" class="org.plos.permission.service.PermissionWebService" init-method="init">
+    <property name="userContext" ref="userContext"/>
+    <property name="configurationMap">
+      <map>
+        <entry key="uri" value="http://localhost:9080/ws-permissions-webapp-0.5-SNAPSHOT/services/PermissionsServicePort"/>
+        <entry key="auth-method" value-ref="auth-method"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="lazyLoaderFactory" class="org.plos.annotation.service.AnnotationLazyLoaderFactory"/>
+
+  <bean id="annotationConverter" class="org.plos.annotation.service.AnnotationConverter">
+    <property name="lazyLoaderFactory" ref="lazyLoaderFactory"/>
+  </bean>
+
+  <bean id="replyWebService" class="org.plos.annotation.service.ReplyWebService" init-method="init">
+    <property name="userContext" ref="userContext"/>
+    <property name="applicationId" ref="applicationId"/>
+    <property name="encodingCharset" ref="defaultEncodingCharset"/>
+    <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
+    <property name="configurationMap">
+      <map>
+        <entry key="uri" value="http://localhost:9080/ws-annotation-webapp-0.5-SNAPSHOT/services/ReplyServicePort"/>
+        <entry key="auth-method" value-ref="auth-method"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="annotationWebService" class="org.plos.annotation.service.AnnotationWebService" init-method="init">
+    <property name="userContext" ref="userContext"/>
+    <property name="applicationId" ref="applicationId"/>
+    <property name="encodingCharset" ref="defaultEncodingCharset"/>
+    <property name="defaultType" value="http://www.w3.org/2000/10/annotationType#Annotation"/>
+    <property name="configurationMap">
+      <map>
+        <entry key="uri" value="http://localhost:9080/ws-annotation-webapp-0.5-SNAPSHOT/services/AnnotationServicePort"/>
+        <entry key="auth-method" value-ref="auth-method"/>
+      </map>
+    </property>
+  </bean>
+
+  <bean id="annotationService" class="org.plos.annotation.service.AnnotationService">
+    <property name="userContext" ref="userContext"/>
+    <property name="converter" ref="annotationConverter"/>
+    <property name="annotationWebService" ref="annotationWebService"/>
+    <property name="replyWebService" ref="replyWebService"/>
+    <property name="permissionWebService" ref="permissionWebService"/>
+  </bean>
+
+  <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService">
+    <property name="profaneWords">
+      <list>
+        <value>bush</value>
+      </list>
+    </property>
+  </bean>
+
+<!--
+  <aop:config>
+    <aop:aspect ref="helloFromSpringAOP">
+      <aop:pointcut id="setMethod" expression="execution(* set*(..))"/>
+      <aop:after-returning pointcut-ref="setMethod" method="sayHello"/>
+     </aop:aspect>
+  </aop:config>
+
+  <bean id="helloFromSpringAOP" class="org.plos.BeforeLogAspect"/>
+-->
+
+</beans>
