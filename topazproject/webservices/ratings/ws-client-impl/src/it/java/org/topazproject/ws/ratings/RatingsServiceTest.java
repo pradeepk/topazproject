@@ -109,7 +109,7 @@ public class RatingsServiceTest extends TestCase {
     assertTrue("Failed to get expected NoSuchUserIdException", gotE);
   }
 
-  public void testBasicRatings() throws RemoteException, IOException {
+  public void testBasicRatings() throws RemoteException, NoSuchUserIdException, IOException {
     ObjectRating[] ratings, got, r2, exp;
 
     // test null ratings
@@ -255,7 +255,7 @@ public class RatingsServiceTest extends TestCase {
     service.setRatings(null, userId[0], "foo:ji", null);
   }
 
-  public void testRatingStats() throws RemoteException, IOException {
+  public void testRatingStats() throws RemoteException, NoSuchUserIdException, IOException {
     ObjectRatingStats[] got, exp;
     ObjectRating[]      ratings;
 

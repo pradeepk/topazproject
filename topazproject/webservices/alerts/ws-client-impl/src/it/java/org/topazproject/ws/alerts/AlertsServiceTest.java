@@ -31,7 +31,11 @@ import org.topazproject.common.NoSuchIdException;
 
 import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.ArticleClientFactory;
+import org.topazproject.ws.article.DuplicateArticleIdException;
+import org.topazproject.ws.article.IngestException;
+import org.topazproject.ws.article.NoSuchArticleIdException;
 
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsClientFactory;
 import org.topazproject.ws.pap.UserPreference;
@@ -81,7 +85,9 @@ public class AlertsServiceTest extends TestCase {
     super(testName);
   }
 
-  protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
+  protected void setUp()
+      throws MalformedURLException, ServiceException, RemoteException, NoSuchUserIdException,
+             DuplicateArticleIdException, IngestException, NoSuchArticleIdException {
     log.info("setUp");
     
     // Create alerts service
@@ -114,7 +120,7 @@ public class AlertsServiceTest extends TestCase {
     log.info("Created alerts preferences");
   }
 
-  protected void tearDown() throws RemoteException {
+  protected void tearDown() throws RemoteException, NoSuchArticleIdException {
     log.info("tearDown");
     
     // Delete the articles we created
@@ -132,7 +138,9 @@ public class AlertsServiceTest extends TestCase {
     // TODO: Do I need to delete preferences?
   }
 
-  protected void ingestArticle(String doi, String resource) throws RemoteException {
+  protected void ingestArticle(String doi, String resource)
+      throws RemoteException, DuplicateArticleIdException, IngestException,
+             NoSuchArticleIdException {
     log.info("ingesting article " + doi + " : " + resource);
     deleteArticle(doi);
     URL article = getClass().getResource(resource);
@@ -140,7 +148,7 @@ public class AlertsServiceTest extends TestCase {
     log.info("ingested article " + doi);
   }
 
-  protected void deleteArticle(String doi) throws RemoteException {
+  protected void deleteArticle(String doi) throws RemoteException, NoSuchArticleIdException {
     try {
       articleService.delete(doi, true);
       log.info("deleted article " + doi);

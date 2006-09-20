@@ -99,7 +99,7 @@ public class UserAccountsServiceTest extends TestCase {
     assertTrue("Failed to get expected NoSuchUserIdException", gotE);
   }
 
-  public void testNullUser() throws RemoteException, IOException {
+  public void testNullUser() throws RemoteException, NoSuchUserIdException, IOException {
     boolean gotE = false;
     try {
       service.deleteUser(null);
@@ -125,7 +125,7 @@ public class UserAccountsServiceTest extends TestCase {
     assertTrue("Failed to get expected RemoteException", gotE);
   }
 
-  public void testBasicUserAccounts() throws RemoteException, IOException {
+  public void testBasicUserAccounts() throws RemoteException, NoSuchUserIdException, IOException {
     userId = service.createUser("musterAuth");
     service.deleteUser(userId);
 
@@ -173,7 +173,7 @@ public class UserAccountsServiceTest extends TestCase {
     service.deleteUser(user2Id);
   }
 
-  public void testUserAccountState() throws RemoteException, IOException {
+  public void testUserAccountState() throws RemoteException, NoSuchUserIdException, IOException {
     userId = service.createUser("musterAuth");
     int state = service.getState(userId);
     assertEquals("state mismatch,", 0, state);

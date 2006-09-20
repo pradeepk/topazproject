@@ -64,7 +64,7 @@ public class PreferencesServiceTest extends TestCase {
     }
   }
 
-  public void testBasicPreferences() throws RemoteException, IOException {
+  public void testBasicPreferences() throws RemoteException, NoSuchUserIdException, IOException {
     UserPreference[] prefs, got, exp, exp2;
 
     // test NoSuchUserIdException

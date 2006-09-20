@@ -95,7 +95,7 @@ public class UserRolesServiceTest extends TestCase {
     assertTrue("Failed to get expected NoSuchUserIdException", gotE);
   }
 
-  public void testNullUser() throws RemoteException, IOException {
+  public void testNullUser() throws RemoteException, NoSuchUserIdException, IOException {
     boolean gotE = false;
     try {
       service.getRoles(null);
@@ -113,7 +113,7 @@ public class UserRolesServiceTest extends TestCase {
     assertTrue("Failed to get expected RemoteException", gotE);
   }
 
-  public void testBasicUserRoles() throws RemoteException, IOException {
+  public void testBasicUserRoles() throws RemoteException, NoSuchUserIdException, IOException {
     String[] got = service.getRoles(userId);
     assertNull("got non-null roles", got);
 

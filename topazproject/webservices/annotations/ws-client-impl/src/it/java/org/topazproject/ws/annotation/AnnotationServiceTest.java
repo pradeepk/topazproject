@@ -59,11 +59,11 @@ public class AnnotationServiceTest extends TestCase {
    *
    * @throws RemoteException on an error from the service
    */
-  public void testAll() throws RemoteException {
+  public void testAll() throws RemoteException, NoSuchAnnotationIdException {
     basicAnnotationTest();
   }
 
-  private void basicAnnotationTest() throws RemoteException {
+  private void basicAnnotationTest() throws RemoteException, NoSuchAnnotationIdException {
     String           subject     = "foo:bar";
     String           context     = "foo:bar##xpointer(id(\"Main\")/p[2])";
     String           hackContext = "$user/$annotates/$s/$created/\\'\"\'";

@@ -87,7 +87,7 @@ public class ProfilesServiceTest extends TestCase {
     }
   }
 
-  public void testBasicProfiles() throws RemoteException, IOException {
+  public void testBasicProfiles() throws RemoteException, NoSuchUserIdException, IOException {
     // test non-existent user
     boolean gotE = false;
     try {

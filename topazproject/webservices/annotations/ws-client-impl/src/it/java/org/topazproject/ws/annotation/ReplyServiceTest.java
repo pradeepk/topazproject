@@ -271,7 +271,7 @@ public class ReplyServiceTest extends TestCase {
   }
 
   private void assertThread(ReplyThread inReplyTo, int levels, int children)
-                     throws RemoteException {
+                     throws RemoteException, NoSuchAnnotationIdException {
     if (levels <= 0)
       return;
 

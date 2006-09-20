@@ -45,7 +45,9 @@ public class FeedTest extends TestCase {
     super(testName);
   }
 
-  protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
+  protected void setUp()
+      throws MalformedURLException, ServiceException, RemoteException, DuplicateArticleIdException,
+             IngestException {
     log.info("setUp");
     
     // Create articles service
@@ -63,7 +65,8 @@ public class FeedTest extends TestCase {
       deleteArticle(TEST_ARTICLES[i][0]);
   }
 
-  protected void ingestArticle(String doi, String resource) throws RemoteException {
+  protected void ingestArticle(String doi, String resource)
+      throws RemoteException, DuplicateArticleIdException, IngestException {
     log.info("ingesting article " + doi + " : " + resource);
     deleteArticle(doi);
     URL article = getClass().getResource(resource);
