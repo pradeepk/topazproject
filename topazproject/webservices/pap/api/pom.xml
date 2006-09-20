@@ -47,7 +47,7 @@
 <!--        <groupId>org.codehaus.mojo</groupId> -->
         <groupId>org.topazproject.patch.plugin</groupId>
         <artifactId>axistools-maven-plugin</artifactId>
-        <version>1.0</version>
+        <version>1.1-SNAPSHOT</version>
         <executions>
           <execution>
             <id>generate-wsdl-prof</id>
