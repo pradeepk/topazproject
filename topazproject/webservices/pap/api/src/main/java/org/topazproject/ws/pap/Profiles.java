@@ -10,6 +10,7 @@
 
 package org.topazproject.ws.pap;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import org.topazproject.ws.users.NoSuchUserIdException;
 
@@ -18,7 +19,7 @@ import org.topazproject.ws.users.NoSuchUserIdException;
  * 
  * @author Ronald Tschalär
  */
-public interface Profiles {
+public interface Profiles extends Remote {
   /** 
    * Get a user's profile. Note that all fields in the profile are subject to access-control checks,
    * and any field to which the user calling this service does not have access will be null'd out.

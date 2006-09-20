@@ -9,6 +9,7 @@
  */
 package org.topazproject.ws.annotation;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
@@ -16,7 +17,7 @@ import java.rmi.RemoteException;
  *
  * @author Pradeep Krishnan
  */
-public interface Annotations {
+public interface Annotations extends Remote {
   /**
    * Creates a new annotation.
    *

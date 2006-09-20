@@ -10,6 +10,7 @@
 
 package org.topazproject.ws.users;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /** 
@@ -18,7 +19,7 @@ import java.rmi.RemoteException;
  * 
  * @author Ronald Tschalär
  */
-public interface UserRoles {
+public interface UserRoles extends Remote {
   /** 
    * Set the list of currently assigned security roles for the specified user.
    * 

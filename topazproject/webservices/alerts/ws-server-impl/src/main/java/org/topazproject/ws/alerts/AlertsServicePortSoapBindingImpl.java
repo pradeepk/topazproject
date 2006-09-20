@@ -86,11 +86,11 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
   // delegate them to the impl instance, converting parameters, return values, and exceptions
   // where necessary.
 
-  public boolean sendAlerts(String endDate, int count) {
+  public boolean sendAlerts(String endDate, int count) throws RemoteException {
     return impl.sendAlerts(endDate, count);
   }
 
-  public boolean sendAllAlerts() {
+  public boolean sendAllAlerts() throws RemoteException {
     return impl.sendAllAlerts();
   }
 
@@ -101,7 +101,7 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
   public void startUser(String userId) throws RemoteException {
     impl.startUser(userId);
   }
-  
+
   public void clearUser(String userId) throws RemoteException {
     try {
       impl.clearUser(userId);
@@ -114,7 +114,7 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
     }
   }
 
-  
+
   private static class WSAlertsPEP extends AlertsPEP {
     static {
       init(WSAlertsPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);

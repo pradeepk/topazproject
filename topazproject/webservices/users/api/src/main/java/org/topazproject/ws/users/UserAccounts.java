@@ -10,6 +10,7 @@
 
 package org.topazproject.ws.users;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /** 
@@ -24,7 +25,7 @@ import java.rmi.RemoteException;
  *
  * @author Ronald Tschalär
  */
-public interface UserAccounts {
+public interface UserAccounts extends Remote {
   /** the state indicating the user account is active: {@value} */
   public static final int ACNT_ACTIVE    = 0;
   /** the state indicating the user account is suspened: {@value} */

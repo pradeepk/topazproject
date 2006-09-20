@@ -9,6 +9,7 @@
  */
 package org.topazproject.ws.permissions;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /**
@@ -16,7 +17,7 @@ import java.rmi.RemoteException;
  *
  * @author Pradeep Krishnan
  */
-public interface Permissions {
+public interface Permissions extends Remote {
   /**
    * Grants permissions. Adds these to a grants list. A permit biased PEP may allow access to any
    * request if a match is found in the grants list. Similarly a deny biased PEP may deny access

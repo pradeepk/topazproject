@@ -10,6 +10,7 @@
 package org.topazproject.ws.article;
 
 import java.util.Date;
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import javax.activation.DataHandler;
 
@@ -18,7 +19,7 @@ import javax.activation.DataHandler;
  * 
  * @author Ronald Tschalär
  */
-public interface Article {
+public interface Article extends Remote {
   /** Article state of "Active" */
   public static final int ST_ACTIVE   = 0;
   /** Article state of "Disabled" */

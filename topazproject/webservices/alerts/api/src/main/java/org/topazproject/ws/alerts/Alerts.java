@@ -10,9 +10,8 @@
 
 package org.topazproject.ws.alerts;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
-import java.util.Calendar;
-import java.util.Date;
 
 /** 
  * This defines the alerts service. It provides the ability to get RSS feeds based on
@@ -21,7 +20,7 @@ import java.util.Date;
  * 
  * @author Eric Brown
  */
-public interface Alerts {
+public interface Alerts extends Remote {
   /**
    * Send up to count alerts up to the date specified.
    *
@@ -32,7 +31,7 @@ public interface Alerts {
    * @return true if successful
    * @throws RemoteException if there was a problem talking to the alerts service
    */
-  public boolean sendAlerts(String endDate, int count);
+  public boolean sendAlerts(String endDate, int count) throws RemoteException;
 
   /**
    * Send all the alerts as of yesterday.
@@ -40,7 +39,7 @@ public interface Alerts {
    * @return true if successful
    * @throws RemoteException if there was a problem talking to the alerts service
    */
-  public boolean sendAllAlerts();
+  public boolean sendAllAlerts() throws RemoteException;
 
   /**
    * Clean up if a user is removed.

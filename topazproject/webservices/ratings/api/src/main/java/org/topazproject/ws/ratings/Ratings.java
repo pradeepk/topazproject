@@ -10,6 +10,7 @@
 
 package org.topazproject.ws.ratings;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import org.topazproject.ws.users.NoSuchUserIdException;
 
@@ -23,7 +24,7 @@ import org.topazproject.ws.users.NoSuchUserIdException;
  * 
  * @author Ronald Tschalär
  */
-public interface Ratings {
+public interface Ratings extends Remote {
   /** 
    * Get a user's ratings for the specified object.
    * 

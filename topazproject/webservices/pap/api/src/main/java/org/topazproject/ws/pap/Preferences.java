@@ -10,6 +10,7 @@
 
 package org.topazproject.ws.pap;
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 import org.topazproject.ws.users.NoSuchUserIdException;
 
@@ -20,7 +21,7 @@ import org.topazproject.ws.users.NoSuchUserIdException;
  * 
  * @author Ronald Tschalär
  */
-public interface Preferences {
+public interface Preferences extends Remote {
   /** 
    * Get a user's preferences.
    * 
