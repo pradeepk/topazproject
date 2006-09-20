@@ -15,8 +15,8 @@ import java.rmi.RemoteException;
 /** 
  * This defines the interface by which a user account can be looked up, without any access-controls
  * on the operation. It is meant for use by authentication services which need to translate an
- * external authentication token to the internal user id. This class' raison-d'être for is to
- * prevent poultry problems in such services.
+ * external authentication token to the internal user id. This class' raison-d'être is to prevent
+ * poultry problems in such services.
  * 
  * @author Ronald Tschalär
  */
