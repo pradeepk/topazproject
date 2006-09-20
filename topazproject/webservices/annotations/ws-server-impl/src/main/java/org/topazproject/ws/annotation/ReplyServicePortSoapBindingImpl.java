@@ -33,6 +33,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 
+import org.topazproject.common.ExceptionUtils;
+
 import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.fedora.client.APIMStubFactory;
@@ -134,20 +136,9 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
                      throws RemoteException, NoSuchAnnotationIdException {
     try {
       return impl.createReply(mediator, type, root, inReplyTo, anonymize, title, body);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).createReply(null, null, null, null, false, null, null);
+      return null;      // not reached
     }
   }
 
@@ -160,20 +151,9 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
     try {
       return impl.createReply(mediator, type, root, inReplyTo, anonymize, title, contentType,
                               content);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).createReply(null, null, null, null, false, null, null, null);
+      return null;      // not reached
     }
   }
 
@@ -184,20 +164,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
                      throws NoSuchAnnotationIdException, RemoteException {
     try {
       impl.deleteReplies(root, inReplyTo);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).deleteReplies(null, null);
     }
   }
 
@@ -207,20 +175,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
   public void deleteReplies(String id) throws NoSuchAnnotationIdException, RemoteException {
     try {
       impl.deleteReplies(id);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).deleteReplies(null);
     }
   }
 
@@ -230,20 +186,9 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
   public ReplyInfo getReplyInfo(String id) throws NoSuchAnnotationIdException, RemoteException {
     try {
       return impl.getReplyInfo(id);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getReplyInfo(null);
+      return null;      // not reached
     }
   }
 
@@ -254,20 +199,9 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
                           throws NoSuchAnnotationIdException, RemoteException {
     try {
       return impl.listReplies(root, inReplyTo);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).listReplies(null, null);
+      return null;      // not reached
     }
   }
 
@@ -278,20 +212,9 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
                              throws NoSuchAnnotationIdException, RemoteException {
     try {
       return impl.listAllReplies(root, inReplyTo);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).listAllReplies(null, null);
+      return null;      // not reached
     }
   }
 
@@ -302,20 +225,9 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
                              throws NoSuchAnnotationIdException, RemoteException {
     try {
       return impl.getReplyThread(root, inReplyTo);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getReplyThread(null, null);
+      return null;      // not reached
     }
   }
 
@@ -326,20 +238,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
       throws NoSuchAnnotationIdException, RemoteException {
     try {
       impl.setReplyState(id, state);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).setReplyState(null, 0);
     }
   }
 
@@ -350,15 +250,9 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
                        throws RemoteException {
     try {
       return impl.listReplies(mediator, state);
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).listReplies(null, 0);
+      return null;      // not reached
     }
   }
 
@@ -428,6 +322,10 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
 
   private static Uploader createFedoraUploader(ProtectedService uploaderSvc) {
     return new Uploader(uploaderSvc);
+  }
+
+  private static Replies newExceptionHandler(Throwable t) {
+    return ((Replies) ExceptionUtils.newExceptionHandler(Replies.class, t, log));
   }
 
   private static class WSRepliesPEP extends RepliesPEP {

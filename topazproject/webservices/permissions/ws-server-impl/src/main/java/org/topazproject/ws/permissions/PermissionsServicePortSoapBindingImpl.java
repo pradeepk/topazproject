@@ -27,6 +27,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 
+import org.topazproject.common.ExceptionUtils;
+
 import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.ws.permissions.impl.PermissionsImpl;
@@ -99,15 +101,8 @@ public class PermissionsServicePortSoapBindingImpl implements Permissions, Servi
       synchronized (impl) {
         impl.grant(resource, permissions, principals);
       }
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).grant(null, null, null);
     }
   }
 
@@ -120,15 +115,8 @@ public class PermissionsServicePortSoapBindingImpl implements Permissions, Servi
       synchronized (impl) {
         impl.revoke(resource, permissions, principals);
       }
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).revoke(null, null, null);
     }
   }
 
@@ -141,15 +129,8 @@ public class PermissionsServicePortSoapBindingImpl implements Permissions, Servi
       synchronized (impl) {
         impl.cancelGrants(resource, permissions, principals);
       }
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).cancelGrants(null, null, null);
     }
   }
 
@@ -162,15 +143,8 @@ public class PermissionsServicePortSoapBindingImpl implements Permissions, Servi
       synchronized (impl) {
         impl.cancelRevokes(resource, permissions, principals);
       }
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).cancelRevokes(null, null, null);
     }
   }
 
@@ -183,15 +157,9 @@ public class PermissionsServicePortSoapBindingImpl implements Permissions, Servi
       synchronized (impl) {
         return impl.listGrants(resource, principal);
       }
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).listGrants(null, null);
+      return null;      // not reached
     }
   }
 
@@ -204,16 +172,14 @@ public class PermissionsServicePortSoapBindingImpl implements Permissions, Servi
       synchronized (impl) {
         return impl.listRevokes(resource, principal);
       }
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).listRevokes(null, null);
+      return null;      // not reached
     }
+  }
+
+  private static Permissions newExceptionHandler(Throwable t) {
+    return ((Permissions) ExceptionUtils.newExceptionHandler(Permissions.class, t, log));
   }
 
   private static class WSPermissionsPEP extends PermissionsPEP {

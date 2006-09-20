@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.common.ExceptionUtils;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.ratings.impl.RatingsImpl;
 import org.topazproject.ws.ratings.impl.RatingsPEP;
@@ -84,15 +85,8 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
       synchronized (impl) {
         impl.setRatings(appId, userId, object, ratings);
       }
-    } catch (NoSuchUserIdException nsuie) {
-      log.debug("", nsuie);
-      throw nsuie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).setRatings(null, null, null, null);
     }
   }
 
@@ -105,15 +99,9 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
       synchronized (impl) {
         return impl.getRatings(appId, userId, object);
       }
-    } catch (NoSuchUserIdException nsuie) {
-      log.debug("", nsuie);
-      throw nsuie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getRatings(null, null, null);
+      return null;      // not reached
     }
   }
 
@@ -125,18 +113,15 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
       synchronized (impl) {
         return impl.getRatingStats(appId, object);
       }
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getRatingStats(null, null);
+      return null;      // not reached
     }
   }
 
-  // The method delegations go here. You need to implement all methods from Ratings and
-  // delegate them to the impl instance, converting parameters, return values, and exceptions
-  // where necessary.
+  private static Ratings newExceptionHandler(Throwable t) {
+    return ((Ratings) ExceptionUtils.newExceptionHandler(Ratings.class, t, log));
+  }
 
   private static class WSRatingsPEP extends RatingsPEP {
     static {

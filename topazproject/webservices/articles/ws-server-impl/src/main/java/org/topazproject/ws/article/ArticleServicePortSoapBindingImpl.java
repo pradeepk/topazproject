@@ -25,6 +25,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.common.ExceptionUtils;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.article.impl.ArticleImpl;
 import org.topazproject.ws.article.impl.ArticlePEP;
@@ -92,18 +93,9 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
       throws RemoteException, DuplicateArticleIdException, IngestException {
     try {
       return impl.ingest(zip);
-    } catch (DuplicateArticleIdException daie) {
-      log.info("", daie);
-      throw daie;
-    } catch (IngestException ie) {
-      log.info("", ie);
-      throw ie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).ingest(null);
+      return null;      // not reached
     }
   }
 
@@ -114,15 +106,8 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
       throws RemoteException, NoSuchArticleIdException {
     try {
       impl.markSuperseded(oldDoi, newDoi);
-    } catch (NoSuchArticleIdException nsaie) {
-      log.info("", nsaie);
-      throw nsaie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).markSuperseded(null, null);
     }
   }
 
@@ -132,15 +117,8 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   public void delete(String doi, boolean purge) throws RemoteException, NoSuchArticleIdException {
     try {
       impl.delete(doi, purge);
-    } catch (NoSuchArticleIdException nsaie) {
-      log.info("", nsaie);
-      throw nsaie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).delete(null, false);
     }
   }
 
@@ -150,15 +128,8 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   public void setState(String doi, int state) throws RemoteException, NoSuchArticleIdException {
     try {
       impl.setState(doi, state);
-    } catch (NoSuchArticleIdException nsaie) {
-      log.info("", nsaie);
-      throw nsaie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).setState(null, 0);
     }
   }
 
@@ -169,15 +140,9 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
       throws RemoteException, NoSuchArticleIdException {
     try {
       return impl.getObjectURL(doi, rep);
-    } catch (NoSuchArticleIdException nsaie) {
-      log.info("", nsaie);
-      throw nsaie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getObjectURL(null, null);
+      return null;      // not reached
     }
   }
 
@@ -189,15 +154,16 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
                             boolean ascending) throws RemoteException {
     try {
       return impl.getArticles(startDate, endDate, categories, authors, ascending);
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getArticles(null, null, null, null, false);
+      return null;      // not reached
     }
   }
-  
+
+  private static Article newExceptionHandler(Throwable t) {
+    return ((Article) ExceptionUtils.newExceptionHandler(Article.class, t, log));
+  }
+
   private static class WSArticlePEP extends ArticlePEP {
     static {
       init(WSArticlePEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);

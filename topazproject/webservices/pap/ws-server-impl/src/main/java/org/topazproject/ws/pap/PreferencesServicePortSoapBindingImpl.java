@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.common.ExceptionUtils;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.pap.impl.PreferencesImpl;
 import org.topazproject.ws.pap.impl.PreferencesPEP;
@@ -83,15 +84,8 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
       synchronized (impl) {
         impl.setPreferences(appId, userId, prefs);
       }
-    } catch (NoSuchUserIdException nsuie) {
-      log.debug("", nsuie);
-      throw nsuie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).setPreferences(null, null, null);
     }
   }
 
@@ -104,16 +98,14 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
       synchronized (impl) {
         return impl.getPreferences(appId, userId);
       }
-    } catch (NoSuchUserIdException nsuie) {
-      log.debug("", nsuie);
-      throw nsuie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getPreferences(null, null);
+      return null;      // not reached
     }
+  }
+
+  private static Preferences newExceptionHandler(Throwable t) {
+    return ((Preferences) ExceptionUtils.newExceptionHandler(Preferences.class, t, log));
   }
 
   private static class WSPreferencesPEP extends PreferencesPEP {

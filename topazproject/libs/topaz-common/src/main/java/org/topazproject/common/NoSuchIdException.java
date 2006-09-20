@@ -24,6 +24,17 @@ public class NoSuchIdException extends Exception {
    * @param id  the (non-existant) id
    */
   public NoSuchIdException(String id) {
+    this(id, "id = '" + id + "'");
+  }
+
+  /** 
+   * Create a new exception instance. 
+   * 
+   * @param id      the (non-existant) id
+   * @param message the exception message
+   */
+  public NoSuchIdException(String id, String message) {
+    super(message);
     this.id = id;
   }
 
@@ -32,5 +43,14 @@ public class NoSuchIdException extends Exception {
    */
   public String getId() {
     return id;
+  }
+
+  /** 
+   * This is just to get JAX-RPC to include the message in the fault.
+   *
+   * @return the message, or null
+   */
+  public String getMessage() {
+    return super.getMessage();
   }
 }

@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.common.ExceptionUtils;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.users.impl.UserRolesImpl;
 import org.topazproject.ws.users.impl.UserRolesPEP;
@@ -81,15 +82,9 @@ public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLi
       synchronized (impl) {
         return impl.getRoles(userId);
       }
-    } catch (NoSuchUserIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getRoles(null);
+      return null;      // not reached
     }
   }
 
@@ -102,16 +97,13 @@ public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLi
       synchronized (impl) {
         impl.setRoles(userId, authIds);
       }
-    } catch (NoSuchUserIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).setRoles(null, null);
     }
+  }
+
+  private static UserRoles newExceptionHandler(Throwable t) {
+    return ((UserRoles) ExceptionUtils.newExceptionHandler(UserRoles.class, t, log));
   }
 
   private static class WSUserRolesPEP extends UserRolesPEP {

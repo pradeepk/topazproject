@@ -19,11 +19,21 @@ import org.topazproject.common.NoSuchIdException;
  */
 public class NoSuchUserIdException extends NoSuchIdException {
   /** 
-   * Create a new exception instance. 
+   * Create a new exception instance with a default exception message. 
    * 
    * @param id  the (non-existant) id
    */
   public NoSuchUserIdException(String id) {
     super(id);
+  }
+
+  /** 
+   * Create a new exception instance. 
+   * 
+   * @param id      the (non-existant) id
+   * @param message the exception message
+   */
+  public NoSuchUserIdException(String id, String message) {
+    super(id, message);
   }
 }

@@ -21,16 +21,36 @@ public class DuplicateIdException extends Exception {
   /** 
    * Create a new exception instance. 
    * 
-   * @param id  the (non-existant) id
+   * @param id  the (duplicate) id
    */
   public DuplicateIdException(String id) {
+    this(id, "id = '" + id + "'");
+  }
+
+  /** 
+   * Create a new exception instance. 
+   * 
+   * @param id      the (duplicate) id
+   * @param message the exception message
+   */
+  public DuplicateIdException(String id, String message) {
+    super(message);
     this.id = id;
   }
 
   /** 
-   * @return the (non-existant) id
+   * @return the (duplicate) id
    */
   public String getId() {
     return id;
+  }
+
+  /** 
+   * This is just to get JAX-RPC to include the message in the fault.
+   *
+   * @return the message, or null
+   */
+  public String getMessage() {
+    return super.getMessage();
   }
 }

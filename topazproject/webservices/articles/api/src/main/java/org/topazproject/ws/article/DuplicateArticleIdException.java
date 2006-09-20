@@ -18,7 +18,22 @@ import org.topazproject.common.DuplicateIdException;
  * @version $Id$
  */
 public class DuplicateArticleIdException extends DuplicateIdException {
+  /** 
+   * Create a new exception instance with a default exception message. 
+   * 
+   * @param id      the (duplicate) id
+   */
   public DuplicateArticleIdException(String id) {
     super(id);
+  }
+
+  /** 
+   * Create a new exception instance. 
+   * 
+   * @param id      the (duplicate) id
+   * @param message the exception message
+   */
+  public DuplicateArticleIdException(String id, String message) {
+    super(id, message);
   }
 }

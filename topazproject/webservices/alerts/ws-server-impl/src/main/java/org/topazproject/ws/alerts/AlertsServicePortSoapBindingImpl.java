@@ -26,6 +26,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.common.ExceptionUtils;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.alerts.impl.AlertsImpl;
 import org.topazproject.ws.alerts.impl.AlertsPEP;
@@ -87,33 +88,50 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
   // where necessary.
 
   public boolean sendAlerts(String endDate, int count) throws RemoteException {
-    return impl.sendAlerts(endDate, count);
+    try {
+      return impl.sendAlerts(endDate, count);
+    } catch (Throwable t) {
+      newExceptionHandler(t).sendAlerts(null, 0);
+      return false;     // not reached
+    }
   }
 
   public boolean sendAllAlerts() throws RemoteException {
-    return impl.sendAllAlerts();
+    try {
+      return impl.sendAllAlerts();
+    } catch (Throwable t) {
+      newExceptionHandler(t).sendAllAlerts();
+      return false;     // not reached
+    }
   }
 
   public void startUser(String userId, String date) throws RemoteException {
-    impl.startUser(userId, date);
+    try {
+      impl.startUser(userId, date);
+    } catch (Throwable t) {
+      newExceptionHandler(t).startUser(null, null);
+    }
   }
 
   public void startUser(String userId) throws RemoteException {
-    impl.startUser(userId);
+    try {
+      impl.startUser(userId);
+    } catch (Throwable t) {
+      newExceptionHandler(t).startUser(null);
+    }
   }
 
   public void clearUser(String userId) throws RemoteException {
     try {
       impl.clearUser(userId);
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).clearUser(null);
     }
   }
 
+  private static Alerts newExceptionHandler(Throwable t) {
+    return ((Alerts) ExceptionUtils.newExceptionHandler(Alerts.class, t, log));
+  }
 
   private static class WSAlertsPEP extends AlertsPEP {
     static {

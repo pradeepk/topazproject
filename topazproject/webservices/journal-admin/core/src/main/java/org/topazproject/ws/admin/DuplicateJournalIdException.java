@@ -21,11 +21,22 @@ public class DuplicateJournalIdException extends Exception {
   private final String id;
 
   /** 
-   * Create a new exception instance. 
+   * Create a new exception instance with a default exception message. 
    * 
    * @param id  the (duplicate) id
    */
   public DuplicateJournalIdException(String id) {
+    this.id = id;
+  }
+
+  /** 
+   * Create a new exception instance. 
+   * 
+   * @param id      the (duplicate) id
+   * @param message the exception message
+   */
+  public DuplicateJournalIdException(String id, String message) {
+    super(message);
     this.id = id;
   }
 

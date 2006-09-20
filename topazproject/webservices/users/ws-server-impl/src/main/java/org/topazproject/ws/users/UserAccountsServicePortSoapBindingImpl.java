@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.common.ExceptionUtils;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.users.impl.UserAccountsImpl;
 import org.topazproject.ws.users.impl.UserAccountsPEP;
@@ -85,12 +86,9 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
       synchronized (impl) {
         return impl.createUser(authId);
       }
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).createUser(null);
+      return null;      // not reached
     }
   }
 
@@ -102,15 +100,8 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
       synchronized (impl) {
         impl.deleteUser(userId);
       }
-    } catch (NoSuchUserIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).deleteUser(null);
     }
   }
 
@@ -122,15 +113,9 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
       synchronized (impl) {
         return impl.getState(userId);
       }
-    } catch (NoSuchUserIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getState(null);
+      return 0;         // not reached
     }
   }
 
@@ -142,15 +127,8 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
       synchronized (impl) {
         impl.setState(userId, state);
       }
-    } catch (NoSuchUserIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).setState(null, 0);
     }
   }
 
@@ -163,15 +141,9 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
       synchronized (impl) {
         return impl.getAuthenticationIds(userId);
       }
-    } catch (NoSuchUserIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getAuthenticationIds(null);
+      return null;      // not reached
     }
   }
 
@@ -184,15 +156,8 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
       synchronized (impl) {
         impl.setAuthenticationIds(userId, authIds);
       }
-    } catch (NoSuchUserIdException nsie) {
-      log.debug("", nsie);
-      throw nsie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).setAuthenticationIds(null, null);
     }
   }
 
@@ -204,13 +169,14 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
       synchronized (impl) {
         return impl.lookUpUserByAuthId(authId);
       }
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).lookUpUserByAuthId(null);
+      return null;      // not reached
     }
+  }
+
+  private static UserAccounts newExceptionHandler(Throwable t) {
+    return ((UserAccounts) ExceptionUtils.newExceptionHandler(UserAccounts.class, t, log));
   }
 
   private static class WSUserAccountsPEP extends UserAccountsPEP {

@@ -17,7 +17,22 @@ import org.topazproject.common.NoSuchIdException;
  * @author Ronald Tschalär
  */
 public class NoSuchAnnotationIdException extends NoSuchIdException {
+  /** 
+   * Create a new exception instance with a default exception message. 
+   * 
+   * @param id      the (non-existant) id
+   */
   public NoSuchAnnotationIdException(String id) {
     super(id);
+  }
+
+  /** 
+   * Create a new exception instance. 
+   * 
+   * @param id      the (non-existant) id
+   * @param message the exception message
+   */
+  public NoSuchAnnotationIdException(String id, String message) {
+    super(id, message);
   }
 }

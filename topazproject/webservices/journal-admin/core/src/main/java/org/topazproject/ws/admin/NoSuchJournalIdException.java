@@ -21,11 +21,22 @@ public class NoSuchJournalIdException extends Exception {
   private final String id;
 
   /** 
-   * Create a new exception instance. 
+   * Create a new exception instance with a default exception message. 
    * 
    * @param id  the (non-existant) id
    */
   public NoSuchJournalIdException(String id) {
+    this.id = id;
+  }
+
+  /** 
+   * Create a new exception instance. 
+   * 
+   * @param id      the (non-existant) id
+   * @param message the exception message
+   */
+  public NoSuchJournalIdException(String id, String message) {
+    super(message);
     this.id = id;
   }
 

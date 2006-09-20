@@ -23,6 +23,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
+import org.topazproject.common.ExceptionUtils;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.pap.impl.ProfilesImpl;
 import org.topazproject.ws.pap.impl.ProfilesPEP;
@@ -86,15 +87,9 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
       synchronized (impl) {
         return impl.getProfile(userId);
       }
-    } catch (NoSuchUserIdException nsuie) {
-      log.debug("", nsuie);
-      throw nsuie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getProfile(null);
+      return null;      // not reached
     }
   }
 
@@ -107,16 +102,13 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
       synchronized (impl) {
         impl.setProfile(userId, profile);
       }
-    } catch (NoSuchUserIdException nsuie) {
-      log.debug("", nsuie);
-      throw nsuie;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).setProfile(null, null);
     }
+  }
+
+  private static Profiles newExceptionHandler(Throwable t) {
+    return ((Profiles) ExceptionUtils.newExceptionHandler(Profiles.class, t, log));
   }
 
   private static class WSProfilesPEP extends ProfilesPEP {

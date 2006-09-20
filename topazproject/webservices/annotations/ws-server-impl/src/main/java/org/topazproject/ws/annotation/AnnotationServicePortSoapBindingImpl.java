@@ -33,6 +33,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 
+import org.topazproject.common.ExceptionUtils;
+
 import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.fedora.client.APIMStubFactory;
@@ -135,20 +137,9 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
     try {
       return impl.createAnnotation(mediator, type, annotates, context, supersedes, anonymize,
                                    title, body);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).createAnnotation(null, null, null, null, null, false, null, null);
+      return null;      // not reached
     }
   }
 
@@ -162,20 +153,10 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
     try {
       return impl.createAnnotation(mediator, type, annotates, context, supersedes, anonymize,
                                    title, contentType, content);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).createAnnotation(null, null, null, null, null, false, null, null,
+                                              null);
+      return null;      // not reached
     }
   }
 
@@ -186,20 +167,8 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
                         throws NoSuchAnnotationIdException, RemoteException {
     try {
       impl.deleteAnnotation(id, deletePreceding);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).deleteAnnotation(null, false);
     }
   }
 
@@ -210,20 +179,9 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
       throws NoSuchAnnotationIdException, RemoteException {
     try {
       return impl.getAnnotationInfo(id);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getAnnotationInfo(null);
+      return null;      // not reached
     }
   }
 
@@ -234,20 +192,9 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
                                         throws NoSuchAnnotationIdException, RemoteException {
     try {
       return impl.getLatestAnnotations(id);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getLatestAnnotations(null);
+      return null;      // not reached
     }
   }
 
@@ -258,20 +205,9 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
                                            throws NoSuchAnnotationIdException, RemoteException {
     try {
       return impl.getPrecedingAnnotations(id);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).getPrecedingAnnotations(null);
+      return null;      // not reached
     }
   }
 
@@ -282,15 +218,9 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
                                    throws RemoteException {
     try {
       return impl.listAnnotations(mediator, on, type);
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).listAnnotations(null, null, null);
+      return null;      // not reached
     }
   }
 
@@ -301,20 +231,8 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
                           throws NoSuchAnnotationIdException, RemoteException {
     try {
       impl.setAnnotationState(id, state);
-    } catch (NoSuchAnnotationIdException e) {
-      if (log.isDebugEnabled())
-        log.debug("", e);
-
-      throw e;
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).setAnnotationState(null, 0);
     }
   }
 
@@ -325,15 +243,9 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
                            throws RemoteException {
     try {
       return impl.listAnnotations(mediator, state);
-    } catch (RemoteException e) {
-      log.info("", e);
-      throw e;
-    } catch (RuntimeException re) {
-      log.warn("", re);
-      throw re;
-    } catch (Error e) {
-      log.error("", e);
-      throw e;
+    } catch (Throwable t) {
+      newExceptionHandler(t).listAnnotations(null, 0);
+      return null;      // not reached
     }
   }
 
@@ -403,6 +315,10 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
 
   private static Uploader createFedoraUploader(ProtectedService uploaderSvc) {
     return new Uploader(uploaderSvc);
+  }
+
+  private static Annotations newExceptionHandler(Throwable t) {
+    return ((Annotations) ExceptionUtils.newExceptionHandler(Annotations.class, t, log));
   }
 
   private static class WSAnnotationsPEP extends AnnotationsPEP {
