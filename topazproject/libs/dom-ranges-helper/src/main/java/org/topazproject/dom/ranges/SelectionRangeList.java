@@ -12,6 +12,12 @@ package org.topazproject.dom.ranges;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+import org.w3c.dom.ranges.DocumentRange;
+import org.w3c.dom.ranges.Range;
+
 /**
  * Maintains a document ordered non overlapping list of ranges. See {@link #insert insert} for how
  * the non-overlapping constraint is enforced.
@@ -51,6 +57,41 @@ public class SelectionRangeList {
    */
   public void insert(SelectionRange selectionRange) {
     insertAtOrAfter(0, selectionRange);
+  }
+
+  /**
+   * Surround all regions in this list with the newly created elements with the given name and with
+   * the given id attribute name. Id attrivute values will be auto generated and will start with 1
+   * and increase in document order.
+   * 
+   * <p>
+   * Note that for partially selected ranges, each surroundable range will have the same id
+   * attribute. ie. the id will alway be 1 + the index of the SelectionRange obtained via {@link
+   * #get(int) get}.
+   * </p>
+   *
+   * @param nsUri namespace uri for the element node
+   * @param elemQName name to assign to each surrounding element
+   * @param idAttrQName the id attribute of each surrounding element
+   */
+  public void surroundContents(String nsUri, String elemQName, String idAttrQName) {
+    int               length = size();
+
+    RangePointsList[] ranges = new RangePointsList[length];
+
+    for (int i = 0; i < length; i++)
+      ranges[i] = new RangePointsList(get(i).getSurroundableRanges());
+
+    // Now modify the document
+    for (int i = length - 1; i >= 0; i--) {
+      for (int j = ranges[i].length() - 1; j >= 0; j--) {
+        Range   range = ranges[i].get(j).toRange();
+        Element rNode =
+          range.getStartContainer().getOwnerDocument().createElementNS(nsUri, elemQName);
+        rNode.setAttributeNS(nsUri, idAttrQName, "" + (i + 1));
+        range.surroundContents(rNode);
+      }
+    }
   }
 
   private void insertAtOrAfter(int i, SelectionRange newSelectionRange) {
@@ -101,6 +142,47 @@ public class SelectionRangeList {
         // at this point 'newSelectionRange' is after 'selectionRange' and so repeat the whole process
         insertAtOrAfter(i + 1, newSelectionRange);
       }
+    }
+  }
+
+  private static class RangePoints {
+    private Node start;
+    private Node end;
+    private int  oStart;
+    private int  oEnd;
+
+    public RangePoints(Range range) {
+      start    = range.getStartContainer();
+      oStart   = range.getStartOffset();
+      end      = range.getEndContainer();
+      oEnd     = range.getEndOffset();
+    }
+
+    public Range toRange() {
+      Range range = ((DocumentRange) start.getOwnerDocument()).createRange();
+      range.setStart(start, oStart);
+      range.setEnd(end, oEnd);
+
+      return range;
+    }
+  }
+
+  private static class RangePointsList {
+    RangePoints[] rps;
+
+    public RangePointsList(Range[] ranges) {
+      rps = new RangePoints[ranges.length];
+
+      for (int i = 0; i < ranges.length; i++)
+        rps[i] = new RangePoints(ranges[i]);
+    }
+
+    public int length() {
+      return rps.length;
+    }
+
+    public RangePoints get(int i) {
+      return rps[i];
     }
   }
 }

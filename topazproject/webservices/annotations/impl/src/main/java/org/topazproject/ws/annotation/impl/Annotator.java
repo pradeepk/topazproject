@@ -244,24 +244,6 @@ public class Annotator {
         insert(new SelectionRange(range, annotation));
     }
 
-    public void surroundContents(String nsUri, String elemQName, String idAttrQName) {
-      int               length = size();
-
-      RangePointsList[] ranges = new RangePointsList[length];
-
-      for (int i = 0; i < length; i++)
-        ranges[i] = new RangePointsList(get(i).getSurroundableRanges());
-
-      // Now modify the document
-      for (int i = length - 1; i >= 0; i--) {
-        for (int j = ranges[i].length() - 1; j >= 0; j--) {
-          Range range = ranges[i].get(j).toRange(document);
-          Element rNode = document.createElementNS(nsUri, elemQName);
-          rNode.setAttributeNS(nsUri, idAttrQName, "" + (i + 1));
-          range.surroundContents(rNode);
-        }
-      }
-    }
 
     public Element createElement(String nsUri, String elemQName, String annotationsQName,
                                  String idAttrQName) {
@@ -289,44 +271,4 @@ public class Annotator {
     }
   }
 
-  private static class RangePoints {
-    private Node start;
-    private Node end;
-    private int  oStart;
-    private int  oEnd;
-
-    public RangePoints(Range range) {
-      start    = range.getStartContainer();
-      oStart   = range.getStartOffset();
-      end      = range.getEndContainer();
-      oEnd     = range.getEndOffset();
-    }
-
-    public Range toRange(Document document) {
-      Range range = ((DocumentRange) document).createRange();
-      range.setStart(start, oStart);
-      range.setEnd(end, oEnd);
-
-      return range;
-    }
-  }
-
-  private static class RangePointsList {
-    RangePoints[] rps;
-
-    public RangePointsList(Range[] ranges) {
-      rps = new RangePoints[ranges.length];
-
-      for (int i = 0; i < ranges.length; i++)
-        rps[i] = new RangePoints(ranges[i]);
-    }
-
-    public int length() {
-      return rps.length;
-    }
-
-    public RangePoints get(int i) {
-      return rps[i];
-    }
-  }
 }

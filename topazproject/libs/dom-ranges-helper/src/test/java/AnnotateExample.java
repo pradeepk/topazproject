@@ -8,6 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 import java.net.URI;
+import java.net.URLDecoder;
 import java.net.URISyntaxException;
 
 import javax.xml.transform.TransformerException;
@@ -42,12 +43,14 @@ public class AnnotateExample {
    */
   public static void annotate(Document document, AnnotationInfo[] annotations)
                        throws URISyntaxException, TransformerException {
+    String NS = "http://topazproject.org/aml";
+
     // Step 1: build non overlapping ranges
     SelectionRangeList srl = new SelectionRangeList();
 
     for (int i = 0; i < annotations.length; i++) {
       URI          context    = new URI(annotations[i].getContext());
-      String       expression = context.getFragment();
+      String       expression = URLDecoder.decode(context.getFragment());
       LocationList list       = XPointerAPI.evalFullptr(document, expression);
       int          length     = list.getLength();
 
@@ -68,30 +71,29 @@ public class AnnotateExample {
       }
     }
 
-    // Step 2: get a list of 'surroundable' ranges.
-    int       length = srl.size();
+    // Step 2: surround each range
+    srl.surroundContents(NS, "aml:annotated", "aml:id");
 
-    Range[][] ranges = new Range[length][0];
+    // Step 3: create an index describing each element that we inserted
+    Element index = document.createElementNS(NS, "aml:regions");
 
-    for (int i = 0; i < length; i++)
-      ranges[i] = srl.get(i).getSurroundableRanges();
+    document.getDocumentElement().appendChild(index);
 
-    // Step 3: surround each surroundable region with annotation markers
+    int length = srl.size();
+
     for (int i = 0; i < length; i++) {
+      Element rNode = document.createElementNS(NS, "aml:region");
+      index.appendChild(rNode);
+
       AnnotationInfo[] a =
         (AnnotationInfo[]) srl.get(i).getUserDataList().toArray(new AnnotationInfo[0]);
 
-      for (int j = 0; j < ranges[i].length; j++) {
-        Element rNode = document.createElementNS("http://topaz.org/aml", "aml:annotated");
-        ranges[i][j].surroundContents(rNode);
+      for (int k = 0; k < a.length; k++) {
+        Element meta = document.createElementNS("http://topaz.org/aml", "aml:annotation");
+        meta.setAttributeNS("http://purl.org/dc/elements/1.1/", "dc:creator", a[k].getCreator());
 
-        for (int k = 0; k < a.length; k++) {
-          Element meta = document.createElementNS("http://topaz.org/aml", "aml:annotation");
-          meta.setAttributeNS("http://purl.org/dc/elements/1.1/", "dc:creator", a[k].getCreator());
-
-          // and similarly for other meta info
-          rNode.appendChild(meta);
-        }
+        // and similarly for other meta info
+        rNode.appendChild(meta);
       }
     }
   }
