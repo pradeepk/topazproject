@@ -19,10 +19,12 @@
   <xsl:param name="is_update"       select="false()"/>
 
   <xsl:variable name="file-entries" select="/ZipInfo/ZipEntry[not(@isDirectory)]"/>
-  <xsl:variable name="pmc-entry"    select="$file-entries[my:basename(@name) = 'pmc.xml']"/>
+  <xsl:variable name="pmc-entry"    select="my:find-pmc-xml()"/>
   <xsl:variable name="article"      select="document($pmc-entry/@name, .)/article"/>
   <xsl:variable name="meta"         select="$article/front/article-meta"/>
   <xsl:variable name="doi"          select="$meta/article-id[@pub-id-type = 'doi']"/>
+  <xsl:variable name="zip-fmt"
+      select="if (my:basename($pmc-entry/@name) = 'pmc.xml') then 'TPZ' else 'AP'"/>
 
   <!-- top-level template - do some checks, and then run the production templates -->
   <xsl:template match="/">
@@ -198,10 +200,23 @@
 
   <!-- Helper funtions -->
 
+  <!-- Try to figure out which entry is the xml article -->
+  <xsl:function name="my:find-pmc-xml" as="element(ZipEntry)">
+    <xsl:copy-of select="
+      if ($file-entries[my:basename(@name) = 'pmc.xml']) then
+        $file-entries[my:basename(@name) = 'pmc.xml'][1]
+      else if ($file-entries[matches(my:basename(@name), '[a-z]+\.\d+\.xml')]) then
+        $file-entries[matches(my:basename(@name), '[a-z]+\.\d+\.xml')][1]
+      else
+        error((), 'No article xml file found in zip file')
+      "/>
+  </xsl:function>
+
   <!-- Parse Filename into doi, ext -->
   <xsl:function name="my:parse-filename" as="xs:string+">
     <xsl:param name="fname" as="xs:string"/>
-    <xsl:copy-of select="for $t in tokenize($fname, '\.') return my:urldecode($t)"/>
+    <xsl:copy-of select="(my:urldecode(replace($fname, '(.*)\..*', '$1')),
+                          my:urldecode(replace($fname, '.*\.', '')))"/>
   </xsl:function>
 
   <!-- remove any directories from the filename -->
@@ -214,7 +229,23 @@
   <xsl:function name="my:fname-to-doi" as="xs:string*">
     <xsl:param name="name" as="xs:string*"/>
     <xsl:for-each select="$name">
-      <xsl:value-of select="my:parse-filename(my:basename(.))[1]"/>
+      <xsl:variable name="froot" select="my:get-root(my:basename(.))"/>
+      <xsl:value-of select="
+        if ($zip-fmt = 'TPZ') then
+          $froot
+        else if ($zip-fmt = 'AP') then
+          concat($doi, substring($froot, string-length(my:get-root($pmc-entry/@name)) + 1))
+        else
+          error((), concat('internal error: unknown format ', $zip-fmt, ' in fct fname-to-doi'))
+        "/>
+    </xsl:for-each>
+  </xsl:function>
+
+  <!-- Get root of filename -->
+  <xsl:function name="my:get-root" as="xs:string*">
+    <xsl:param name="name" as="xs:string*"/>
+    <xsl:for-each select="$name">
+      <xsl:value-of select="my:parse-filename(.)[1]"/>
     </xsl:for-each>
   </xsl:function>
 
