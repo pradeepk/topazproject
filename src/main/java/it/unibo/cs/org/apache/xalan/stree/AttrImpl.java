@@ -63,6 +63,7 @@ import org.w3c.dom.Element;
 import org.xml.sax.Attributes;
 
 import org.w3c.dom.DOMException;
+import org.w3c.dom.TypeInfo;
 
 import org.xml.sax.ContentHandler;
 
@@ -338,4 +339,17 @@ public class AttrImpl extends Child implements Attr
        
        return nli;
    }
+
+  /*
+   * DOM 3 Attr
+   */
+  public boolean isId()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+  
+  public TypeInfo getSchemaTypeInfo()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
 }

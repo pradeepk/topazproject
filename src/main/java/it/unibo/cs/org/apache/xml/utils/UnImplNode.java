@@ -1126,4 +1126,169 @@ public class UnImplNode implements Node, Element, NodeList, Document
 
     return null;
   }
+  
+  /*
+   * DOM 3 Node methods
+   */
+  public String getBaseURI()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public short compareDocumentPosition(Node other)
+          throws DOMException
+  {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "not implemented");
+  }
+
+  public String getTextContent()
+            throws DOMException 
+  {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "not implemented");
+  }
+  
+  public void setTextContent(String textContent)
+          throws DOMException
+  {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "not implemented");
+  }
+
+  public boolean isSameNode(Node other)
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public String lookupPrefix(String namespaceURI)
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public boolean isDefaultNamespace(String namespaceURI)
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public String lookupNamespaceURI(String prefix)
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public boolean isEqualNode(Node arg)  
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public Object getFeature(String feature, String version)
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public Object setUserData(String key, 
+                              Object data, 
+                              UserDataHandler handler)
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public Object getUserData(String key)
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  /*
+   * DOM 3 Element methods
+   */
+  public TypeInfo getSchemaTypeInfo()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public void setIdAttribute(String name, boolean isId) throws DOMException
+  {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "not implemented");
+  }
+  
+  public void setIdAttributeNS(String namespaceURI, String name, boolean isId) throws DOMException
+  {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "not implemented");
+  }
+  
+  public void setIdAttributeNode(Attr idAttr, boolean isId) throws DOMException
+  {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "not implemented");
+  }
+  
+  /*
+   * DOM 3 Element methods
+   */
+  
+  public String getInputEncoding()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+  
+  public String getXmlEncoding()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public boolean getXmlStandalone()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+  
+  public void setXmlStandalone(boolean xmlStandalone) throws DOMException
+  {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "not implemented");
+  }
+  
+  public String getXmlVersion()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public void setXmlVersion(String xmlVersion) throws DOMException
+  {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "not implemented");
+  }
+
+  public boolean getStrictErrorChecking()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public void setStrictErrorChecking(boolean strictErrorChecking)
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public String getDocumentURI()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public void setDocumentURI(String documentURI)
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public Node adoptNode(Node source) throws DOMException
+  {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "not implemented");
+  }
+
+  public DOMConfiguration getDomConfig()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public void normalizeDocument()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public Node renameNode(Node n, String namespaceURI, String qualifiedName) throws DOMException
+  {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "not implemented");
+  }
 }

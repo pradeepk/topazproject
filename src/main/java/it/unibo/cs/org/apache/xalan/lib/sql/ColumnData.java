@@ -327,4 +327,23 @@ public class ColumnData extends StreamableNode implements Text
 
     return false;
   }
+
+  /*
+   * DOM 3 Text
+   */
+  public boolean isElementContentWhitespace()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public String getWholeText()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public Text replaceWholeText(String content) throws DOMException
+  {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "not implemented");
+  }
+
 }

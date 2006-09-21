@@ -58,6 +58,7 @@ package it.unibo.cs.org.apache.xalan.stree;
 
 import org.w3c.dom.Node;
 import org.w3c.dom.Text;
+import org.w3c.dom.DOMException;
 
 import org.xml.sax.ContentHandler;
 import javax.xml.transform.TransformerException;
@@ -289,6 +290,24 @@ public class TextImpl extends Child implements Text
     
     return nl;
     
+  }
+
+  /*
+   * DOM 3 Text
+   */
+  public boolean isElementContentWhitespace()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public String getWholeText()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+
+  public Text replaceWholeText(String content) throws DOMException
+  {
+    throw new DOMException(DOMException.NOT_SUPPORTED_ERR, "not implemented");
   }
 
 }

@@ -61,6 +61,7 @@ import org.w3c.dom.Node;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.DOMException;
+import org.w3c.dom.TypeInfo;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -510,5 +511,18 @@ public class ColumnAttribute extends StreamableNode implements Attr
   public short getNodeType()
   {
     return Node.ATTRIBUTE_NODE;
+  }
+
+  /*
+   * DOM 3 Attr
+   */
+  public boolean isId()
+  {
+    throw new UnsupportedOperationException("not implemented");  
+  }
+  
+  public TypeInfo getSchemaTypeInfo()
+  {
+    throw new UnsupportedOperationException("not implemented");  
   }
 }
