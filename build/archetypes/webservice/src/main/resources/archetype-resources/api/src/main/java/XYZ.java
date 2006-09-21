@@ -13,6 +13,7 @@
 
 package ${package};
 
+import java.rmi.Remote;
 import java.rmi.RemoteException;
 
 /** 
@@ -20,5 +21,5 @@ import java.rmi.RemoteException;
  * 
  * @author foo
  */
-public interface ${Svc} {
+public interface ${Svc} extends Remote {
 }
