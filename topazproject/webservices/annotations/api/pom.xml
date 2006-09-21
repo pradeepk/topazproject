@@ -23,6 +23,11 @@
   
   <dependencies>
     <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+      <version>1.0.2</version>
+    </dependency>
+    <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>topaz-common</artifactId>
       <version>0.5-SNAPSHOT</version>

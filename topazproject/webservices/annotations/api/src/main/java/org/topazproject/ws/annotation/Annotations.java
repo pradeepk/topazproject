@@ -12,6 +12,8 @@ package org.topazproject.ws.annotation;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 
+import javax.activation.DataHandler;
+
 /**
  * Annotation related operations.
  *
@@ -119,7 +121,7 @@ public interface Annotations extends Remote {
    * @throws RemoteException if some other error occured
    */
   public AnnotationInfo getAnnotationInfo(String id)
-      throws NoSuchAnnotationIdException, RemoteException;
+                                   throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * Gets the latest version(s) of this annotation. The latest version(s) are the ones that are not
@@ -192,4 +194,117 @@ public interface Annotations extends Remote {
    */
   public String[] listAnnotations(String mediator, int state)
                            throws RemoteException;
+
+  /**
+   * Gets the annotated content for a resource.
+   * 
+   * <p>
+   * This is useful since xpointer libraries are not widely available. It makes use of the
+   * unibo-xpointer and dom-ranges-helper library.
+   * </p>
+   * 
+   * <p>
+   * For java clients direct use of these libraries on the client side is recommended since that
+   * will give more flexibility in the markup and also avoids the double serialization of the
+   * annotated resource.
+   * </p>
+   * 
+   * <p>
+   * Also note that there is no filtering done on annotation state. So the application may have to
+   * remove unwanted annotations from the markup.
+   * </p>
+   * 
+   * <p>
+   * Also note that this method does not need additional access control permissions. The user must
+   * have permissions to execute a {@link
+   * listAnnotations(java.lang.String,java.lang.String,java.lang.String) listAnnotations} on the
+   * resource for this call to succeed.
+   * </p>
+   * 
+   * <p>
+   * The content body is marked up with additional tags as in this example:
+   * <pre>
+   *  &lt;?xml version=&quot;1.0&quot;?&gt;
+   *  &lt;doc xmlns:aml=&quot;http://topazproject.org/aml/&quot;&gt;
+   *    &lt;chapter&gt;
+   *      &lt;title&gt;Chapter I&lt;/title&gt;
+   *      &lt;para&gt;&lt;aml:annotated aml:id=&quot;1&quot;&gt;Hello &lt;/aml:annotated&gt;&lt;aml:annotated aml:id=&quot;2&quot;&gt;world&lt;/aml:annotated&gt;&lt;aml:annotated aml:id=&quot;3&quot;&gt;, &lt;/aml:annotated&gt;&lt;aml:annotated aml:id=&quot;4&quot;&gt;indeed&lt;/aml:annotated&gt;&lt;aml:annotated aml:id=&quot;5&quot;&gt;, &lt;/aml:annotated&gt;&lt;em&gt;&lt;aml:annotated aml:id=&quot;5&quot;&gt;wonderful&lt;/aml:annotated&gt;&lt;/em&gt; world&lt;/para&gt;
+   *    &lt;/chapter&gt;
+   *    &lt;aml:regions&gt;
+   *      &lt;aml:region aml:id=&quot;1&quot;&gt;
+   *        &lt;aml:annotation aml:id=&quot;doi:10.1371/annotation/83&quot;/&gt;
+   *      &lt;/aml:region&gt;
+   *      &lt;aml:region aml:id=&quot;2&quot;&gt;
+   *        &lt;aml:annotation aml:id=&quot;doi:10.1371/annotation/83&quot;/&gt;
+   *        &lt;aml:annotation aml:id=&quot;doi:10.1371/annotation/85&quot;/&gt;
+   *      &lt;/aml:region&gt;
+   *      &lt;aml:region aml:id=&quot;3&quot;&gt;
+   *        &lt;aml:annotation aml:id=&quot;doi:10.1371/annotation/85&quot;/&gt;
+   *      &lt;/aml:region&gt;
+   *      &lt;aml:region aml:id=&quot;4&quot;&gt;
+   *        &lt;aml:annotation aml:id=&quot;doi:10.1371/annotation/85&quot;/&gt;
+   *        &lt;aml:annotation aml:id=&quot;doi:10.1371/annotation/84&quot;/&gt;
+   *      &lt;/aml:region&gt;
+   *      &lt;aml:region aml:id=&quot;5&quot;&gt;
+   *        &lt;aml:annotation aml:id=&quot;doi:10.1371/annotation/84&quot;/&gt;
+   *      &lt;/aml:region&gt;
+   *    &lt;/aml:regions&gt;
+   *    &lt;aml:annotations xmlns:a=&quot;http://www.w3.org/2000/10/annotation-ns#&quot; xmlns:d=&quot;http://purl.org/dc/elements/1.1/&quot; xmlns:dt=&quot;http://purl.org/dc/terms/&quot; xmlns:r=&quot;http://www.w3.org/1999/02/22-rdf-syntax-ns#&quot; xmlns:topaz=&quot;http://rdf.topazproject.org/RDF/&quot;&gt;
+   *      &lt;aml:annotation aml:id=&quot;doi:10.1371/annotation/83&quot;&gt;
+   *        &lt;r:type r:resource=&quot;http://www.w3.org/2000/10/annotationType#Annotation&quot;/&gt;
+   *        &lt;a:annotates r:resource=&quot;foo:bar&quot;/&gt;
+   *        &lt;a:context&gt;foo:bar#xpointer(string-range(/,'Hello+world'))&lt;/a:context&gt;
+   *        &lt;d:creator r:resource=&quot;anonymous:user/&quot;/&gt;
+   *        &lt;a:created&gt;2006-09-21T02:11:31Z&lt;/a:created&gt;
+   *        &lt;a:body r:resource=&quot;http://gandalf.topazproject.org&quot;/&gt;
+   *        &lt;d:title&gt;Title&lt;/d:title&gt;
+   *        &lt;dt:mediator&gt;integration-test&lt;/dt:mediator&gt;
+   *        &lt;topaz:state&gt;0&lt;/topaz:state&gt;
+   *      &lt;/aml:annotation&gt;
+   *      &lt;aml:annotation aml:id=&quot;doi:10.1371/annotation/84&quot;&gt;
+   *        &lt;r:type r:resource=&quot;http://www.w3.org/2000/10/annotationType#Annotation&quot;/&gt;
+   *        &lt;a:annotates r:resource=&quot;foo:bar&quot;/&gt;
+   *        &lt;a:context&gt;foo:bar#xpointer(string-range(/,'indeed,+wonderful'))&lt;/a:context&gt;
+   *        &lt;d:creator r:resource=&quot;anonymous:user/&quot;/&gt;
+   *        &lt;a:created&gt;2006-09-21T02:11:32Z&lt;/a:created&gt;
+   *        &lt;a:body r:resource=&quot;http://gandalf.topazproject.org&quot;/&gt;
+   *        &lt;d:title&gt;Title&lt;/d:title&gt;
+   *        &lt;dt:mediator&gt;integration-test&lt;/dt:mediator&gt;
+   *        &lt;topaz:state&gt;0&lt;/topaz:state&gt;
+   *      &lt;/aml:annotation&gt;
+   *      &lt;aml:annotation aml:id=&quot;doi:10.1371/annotation/85&quot;&gt;
+   *        &lt;r:type r:resource=&quot;http://www.w3.org/2000/10/annotationType#Annotation&quot;/&gt;
+   *        &lt;a:annotates r:resource=&quot;foo:bar&quot;/&gt;
+   *        &lt;a:context&gt;foo:bar#xpointer(string-range(/,'world,+indeed'))&lt;/a:context&gt;
+   *        &lt;d:creator r:resource=&quot;anonymous:user/&quot;/&gt;
+   *        &lt;a:created&gt;2006-09-21T02:11:32Z&lt;/a:created&gt;
+   *        &lt;a:body r:resource=&quot;http://gandalf.topazproject.org&quot;/&gt;
+   *        &lt;d:title&gt;Title&lt;/d:title&gt;
+   *        &lt;dt:mediator&gt;integration-test&lt;/dt:mediator&gt;
+   *        &lt;topaz:state&gt;0&lt;/topaz:state&gt;
+   *      &lt;/aml:annotation&gt;
+   *    &lt;/aml:annotations&gt;
+   *  &lt;/doc&gt;
+   * </pre>
+   * Note that in the above example, region[5] appears twice in the annotated document. This is how
+   * partially selected nodes will be marked up.
+   * </p>
+   *
+   * @param resource the resource for which annotations are to be looked-up
+   * @param resourceURL the URL to use to access the resource content or <code>null</code> if same
+   *        as <code>resource</code> or <code>content</code> is specified.
+   * @param content the content body corresponding to the resource or <code>null</code>. If
+   *        <code>null</code>, then the <code>resourceURL</code> or <code>resource</code> will be
+   *        used to fetch the content.
+   * @param mediator if present only those annotations that match this mediator are returned
+   * @param type the annotation type to use in filtering the annotations or <code>null</code>  to
+   *        include all
+   *
+   * @return the resource content body with annotatations.
+   *
+   * @throws RemoteException if an error occured
+   */
+  public DataHandler getAnnotatedContent(String resource, String resourceURL, DataHandler content,
+                                         String mediator, String type)
+                                  throws RemoteException;
 }

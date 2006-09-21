@@ -10,13 +10,19 @@
 package org.topazproject.ws.annotation;
 
 import java.io.BufferedReader;
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 
 import java.rmi.RemoteException;
+
+import javax.activation.DataHandler;
+import javax.activation.DataSource;
 
 import javax.xml.rpc.ServiceException;
 
@@ -44,6 +50,7 @@ public class AnnotationServiceTest extends TestCase {
    *
    * @throws ServiceException indicates an error in setting up the client stub
    * @throws RemoteException indicates an error in setting up the client stub
+   * @throws Error DOCUMENT ME!
    */
   protected void setUp() throws ServiceException, RemoteException {
     try {
@@ -54,16 +61,10 @@ public class AnnotationServiceTest extends TestCase {
     }
   }
 
-  /**
-   * Runs all tests
+  /*
    *
-   * @throws RemoteException on an error from the service
    */
-  public void testAll() throws RemoteException, NoSuchAnnotationIdException {
-    basicAnnotationTest();
-  }
-
-  private void basicAnnotationTest() throws RemoteException, NoSuchAnnotationIdException {
+  public void testBasic() throws RemoteException, NoSuchAnnotationIdException {
     String           subject     = "foo:bar";
     String           context     = "foo:bar##xpointer(id(\"Main\")/p[2])";
     String           hackContext = "$user/$annotates/$s/$created/\\'\"\'";
@@ -248,5 +249,80 @@ public class AnnotationServiceTest extends TestCase {
 
     annotations = service.listAnnotations(mediator, subject, null);
     assertTrue("Expected zero annotations, got " + annotations.length, annotations.length == 0);
+  }
+
+  /*
+   *
+   */
+  public void testAnnotatedContent() throws RemoteException, NoSuchAnnotationIdException {
+    final String testXml =
+      "<!DOCTYPE doc [<!ELEMENT testid (testid)*>"
+      + " <!ATTLIST testid id ID #REQUIRED > ] > <doc> <chapter> <title>Chapter I</title> "
+      + " <para>Hello world, indeed, <em>wonderful</em> world</para></chapter></doc>";
+
+    final String subject     = "foo:bar";
+    String       context1    = "foo:bar#xpointer(string-range(/,'Hello+world'))";
+    String       context2    = "foo:bar#xpointer(string-range(/,'indeed,+wonderful'))";
+    String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
+    String       bodyUrl     = "http://gandalf.topazproject.org";
+    String       title       = "Title";
+    String       mediator    = "integration-test";
+    AnnotationInfo[] annotations = service.listAnnotations(mediator, subject, null);
+    String[]     ids         = service.listAnnotations(mediator, 0);
+
+    try {
+      for (int i = 0; i < annotations.length; i++)
+        service.deleteAnnotation(annotations[i].getId(), true);
+
+      for (int i = 0; i < ids.length; i++)
+        service.deleteAnnotation(ids[i], true);
+    } catch (NoSuchAnnotationIdException nsaie) {
+      fail("Unexpected NoSuchAnnotationIdException");
+    }
+
+    service.createAnnotation(mediator, null, subject, context1, null, false, title, bodyUrl);
+    service.createAnnotation(mediator, null, subject, context2, null, false, title, bodyUrl);
+    service.createAnnotation(mediator, null, subject, context3, null, false, title, bodyUrl);
+
+    annotations = service.listAnnotations(mediator, subject, null);
+
+    DataHandler content =
+      new DataHandler(new DataSource() {
+          public String getContentType() {
+            return "text/xml";
+          }
+
+          public InputStream getInputStream() throws IOException {
+            return new ByteArrayInputStream(testXml.getBytes("UTF-8"));
+          }
+
+          public String getName() {
+            return subject;
+          }
+
+          public OutputStream getOutputStream() throws IOException {
+            return null;
+          }
+        });
+
+    content = service.getAnnotatedContent(subject, null, content, mediator, null);
+
+    try {
+      BufferedReader r = new BufferedReader(new InputStreamReader(content.getInputStream()));
+      String         s;
+
+      while ((s = r.readLine()) != null)
+        System.out.println(s);
+    } catch (Exception e) {
+      e.printStackTrace();
+    }
+    // xxx: may be do a parse and eval an xpath to verify
+
+    try {
+      for (int i = 0; i < annotations.length; i++)
+        service.deleteAnnotation(annotations[i].getId(), true);
+    } catch (NoSuchAnnotationIdException nsaie) {
+      fail("Unexpected NoSuchAnnotationIdException");
+    }
   }
 }

@@ -9,8 +9,10 @@
  */
 package org.topazproject.ws.annotation.impl;
 
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 
 import java.rmi.RemoteException;
 
@@ -23,6 +25,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.activation.DataHandler;
+import javax.activation.URLDataSource;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -311,7 +316,7 @@ public class AnnotationsImpl implements Annotations {
    * @see org.topazproject.ws.annotation.Annotations#getAnnotationInfo
    */
   public AnnotationInfo getAnnotationInfo(String id)
-      throws NoSuchAnnotationIdException, RemoteException {
+                                   throws NoSuchAnnotationIdException, RemoteException {
     pep.checkAccess(pep.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
 
     try {
@@ -466,6 +471,30 @@ public class AnnotationsImpl implements Annotations {
     } catch (AnswerException e) {
       throw new RemoteException("Error querying RDF", e);
     }
+  }
+
+  /*
+   * @see org.topazproject.ws.annotation.Annotations#getAnnotatedContent
+   */
+  public DataHandler getAnnotatedContent(String resource, String resourceURL, DataHandler content,
+                                         String mediator, String type)
+                                  throws RemoteException {
+    try {
+      if (resourceURL == null)
+        resourceURL = resource;
+
+      if (content == null)
+        content = new DataHandler(new URLDataSource(new URL(resourceURL)));
+    } catch (MalformedURLException e) {
+      throw new RemoteException(resourceURL + " must be a URL.", e);
+    }
+
+    AnnotationInfo[] annotations = listAnnotations(mediator, resource, type);
+
+    if (annotations.length == 0)
+      return content;
+
+    return Annotator.annotate(content, annotations);
   }
 
   private void checkId(URI uri) throws RemoteException, NoSuchAnnotationIdException {

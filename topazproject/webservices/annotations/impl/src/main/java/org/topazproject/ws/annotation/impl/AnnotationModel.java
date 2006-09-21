@@ -26,6 +26,10 @@ import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.topazproject.ws.annotation.AnnotationInfo;
 
+import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.Node;
+
 /**
  * Annotation meta-data.
  *
@@ -55,6 +59,22 @@ public class AnnotationModel extends AnnotationInfo {
   static final URI topaz_state     = topaz.resolve("state");
 
   /**
+   * Append the xmlns attributes used by annotation meta data to an element. Useful for declaring
+   * this in a container node so as to reduce verbosity in the child nodes.
+   *
+   * @param element A container element to which NS attributes have to be appended.
+   */
+  public static void appendNSAttr(Element element) {
+    String xmlns = "http://www.w3.org/2000/xmlns/";
+
+    element.setAttributeNS(xmlns, "xmlns:r", r.toString());
+    element.setAttributeNS(xmlns, "xmlns:a", a.toString());
+    element.setAttributeNS(xmlns, "xmlns:d", d.toString());
+    element.setAttributeNS(xmlns, "xmlns:dt", dt.toString());
+    element.setAttributeNS(xmlns, "xmlns:topaz", topaz.toString());
+  }
+
+  /**
    * Creates a new AnnotationModel object.
    *
    * @param id the annotation id;
@@ -73,6 +93,83 @@ public class AnnotationModel extends AnnotationInfo {
     setTitle((String) map.get(d_title));
     setMediator((String) map.get(dt_mediator));
     setState(Integer.parseInt((String) map.get(topaz_state)));
+  }
+
+  /**
+   * Append annotation meta data to a parent node.
+   *
+   * @param parent the annotation node
+   * @param annotation the annotation to append
+   */
+  public static void appendToNode(Node parent, AnnotationInfo annotation) {
+    String   rNs     = r.toString();
+    String   aNs     = a.toString();
+    String   dNs     = d.toString();
+    String   dtNs    = dt.toString();
+    String   topazNs = topaz.toString();
+
+    Document document = parent.getOwnerDocument();
+    Element  node;
+
+    node = document.createElementNS(rNs, "r:type");
+    node.setAttributeNS(rNs, "r:resource", annotation.getType());
+    parent.appendChild(node);
+
+    node = document.createElementNS(aNs, "a:annotates");
+    node.setAttributeNS(rNs, "r:resource", annotation.getAnnotates());
+    parent.appendChild(node);
+
+    node = document.createElementNS(aNs, "a:context");
+    node.appendChild(document.createTextNode(annotation.getContext()));
+    parent.appendChild(node);
+
+    node = document.createElementNS(dNs, "d:creator");
+    node.setAttributeNS(rNs, "r:resource", annotation.getCreator());
+    parent.appendChild(node);
+
+    node = document.createElementNS(aNs, "a:created");
+    node.appendChild(document.createTextNode(annotation.getCreated()));
+    parent.appendChild(node);
+
+    node = document.createElementNS(aNs, "a:body");
+    node.setAttributeNS(rNs, "r:resource", annotation.getBody());
+    parent.appendChild(node);
+
+    String supersedes = annotation.getSupersedes();
+
+    if (supersedes != null) {
+      node = document.createElementNS(dtNs, "dt:replaces");
+      node.setAttributeNS(rNs, "r:resource", supersedes);
+      parent.appendChild(node);
+    }
+
+    String supersededBy = annotation.getSupersededBy();
+
+    if (supersededBy != null) {
+      node = document.createElementNS(dtNs, "dt:isReplacedBy");
+      node.setAttributeNS(rNs, "r:resource", supersededBy);
+      parent.appendChild(node);
+    }
+
+    String title = annotation.getTitle();
+
+    if (title != null) {
+      node = document.createElementNS(dNs, "d:title");
+      node.appendChild(document.createTextNode(title));
+      parent.appendChild(node);
+    }
+
+    String mediator = annotation.getMediator();
+
+    if (mediator != null) {
+      node = document.createElementNS(dtNs, "dt:mediator");
+      node.appendChild(document.createTextNode(mediator));
+      parent.appendChild(node);
+    }
+
+    node = document.createElementNS(topazNs, "topaz:state");
+    node.appendChild(document.createTextNode("" + annotation.getState()));
+    parent.appendChild(node);
   }
 
   /**

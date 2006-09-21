@@ -20,6 +20,8 @@ import java.rmi.RemoteException;
 
 import java.security.Principal;
 
+import javax.activation.DataHandler;
+
 import javax.servlet.http.HttpSession;
 
 import javax.xml.rpc.ServiceException;
@@ -176,7 +178,7 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
    * @see org.topazproject.ws.annotation.Annotations#getAnnotationInfo
    */
   public AnnotationInfo getAnnotationInfo(String id)
-      throws NoSuchAnnotationIdException, RemoteException {
+                                   throws NoSuchAnnotationIdException, RemoteException {
     try {
       return impl.getAnnotationInfo(id);
     } catch (Throwable t) {
@@ -245,6 +247,20 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
       return impl.listAnnotations(mediator, state);
     } catch (Throwable t) {
       newExceptionHandler(t).listAnnotations(null, 0);
+      return null;      // not reached
+    }
+  }
+
+  /*
+   * @see org.topazproject.ws.annotation.Annotations#getAnnotatedContent
+   */
+  public DataHandler getAnnotatedContent(String resource, String resourceURL, DataHandler content,
+                                         String mediator, String type)
+                                  throws RemoteException {
+    try {
+      return impl.getAnnotatedContent(resource, resourceURL, content, mediator, type);
+    } catch (Throwable t) {
+      newExceptionHandler(t).getAnnotatedContent(null, null, null, null, null);
       return null;      // not reached
     }
   }

@@ -42,6 +42,16 @@
       <artifactId>xacml-extensions</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>it.unibo.cs</groupId>
+      <artifactId>unibo-xpointer</artifactId>
+      <version>1.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>dom-ranges-helper</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
 </project>
