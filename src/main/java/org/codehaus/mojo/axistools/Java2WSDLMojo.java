@@ -16,6 +16,7 @@ package org.codehaus.mojo.axistools;
  * limitations under the License.
  */
 
+import org.apache.maven.model.Dependency;
 import org.apache.maven.plugin.AbstractMojo;
 import org.apache.maven.plugin.MojoExecutionException;
 import org.apache.maven.plugin.MojoFailureException;
@@ -26,6 +27,7 @@ import org.codehaus.mojo.axistools.java2wsdl.DefaultJava2WSDLPlugin;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 /**
  * A Plugin for generating stubs for WSDL files using Axis WSDL2Java.
@@ -40,6 +42,18 @@ public class Java2WSDLMojo
     extends AbstractMojo
 {
 
+    /**
+     * Parameter for project dependencies. Can not configure this in the pom file.
+     * @parameter expression="${project.dependencies}"
+     * @readonly
+     */
+    private ArrayList dependencies;
+    
+    /**
+     * Parameter for local repository. Usually no need to configure in the pom file.
+     * @parameter expression="${settings.localRepository}"
+     */
+    private String localRepository;
 
     /**
      * the directory the compile objects will be located for java2wsdl to source from
@@ -201,6 +215,7 @@ public class Java2WSDLMojo
     {
         DefaultJava2WSDLPlugin plugin = new DefaultJava2WSDLPlugin();
 
+        setClasspath();
 
         plugin.setAll( all );
         plugin.setBindingName( bindingName );
@@ -244,4 +259,30 @@ public class Java2WSDLMojo
 
     }
 
+    private void setClasspath() {
+        
+        File repository = new File(localRepository);
+        if (classpath == null)
+            classpath = new ArrayList();
+        
+        Iterator it = dependencies.iterator();
+        String repl = "\\" + File.separatorChar;
+        while (it.hasNext()) {
+            Dependency deps = (Dependency)it.next();
+            if ("compile".equals(deps.getScope()) || "provided".equals(deps.getScope())) {
+              String path = deps.getGroupId().replaceAll("\\.", repl) + File.separatorChar +
+                          deps.getArtifactId() + File.separatorChar +
+                          deps.getVersion() + File.separatorChar +
+                          deps.getArtifactId() + '-' + 
+                          deps.getVersion() + '.' + deps.getType();
+ 
+              File f = new File(repository, path);
+              classpath.add(f.getAbsolutePath());
+              getLog().debug("Added " + f + " to classpath");
+            }
+        }
+
+    }
+    
+    
 }
