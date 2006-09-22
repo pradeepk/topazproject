@@ -6,8 +6,15 @@
     doctype-system="http://java.sun.com/j2ee/dtds/web-app_2.3.dtd"
     doctype-public="-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"/>
 
-<!-- This is not used in the automated build process, but one way to get the final 
+<!-- 
+	This is not used in the automated build process, but can be used to get the final web.xml 
+	by applying this xslt to the one available in the esup quick start's tomcat-patch.
+	You might have to take out the doctype from the initial web.xml for the xslt transformation 
+	to work.	
+	
+	java -cp "D:\java\xalan-j_2_7_0\xalan.jar" org.apache.xalan.xslt.Process -XSL web-xml-convert.xslt -IN web.xml -OUT new-web.xml
  -->
+ 
   <xsl:template match="context-param[last()]">
     <xsl:call-template name="copy"/>
     <xsl:call-template name="add-context-params"/>
