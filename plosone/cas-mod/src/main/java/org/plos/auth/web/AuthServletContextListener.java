@@ -11,6 +11,7 @@ package org.plos.auth.web;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.auth.AuthConstants;
 import org.plos.auth.db.DatabaseException;
 import org.plos.auth.db.DatabaseContext;
 import org.plos.auth.service.UserService;
@@ -94,7 +95,7 @@ public class AuthServletContextListener implements ServletContextListener {
                                           context.getInitParameter("usernameToGuidSql"),
                                           context.getInitParameter("guidToUsernameSql"));
 
-    context.setAttribute("userService", userService);
+    context.setAttribute(AuthConstants.USER_SERVICE, userService);
   }
 
   public void contextDestroyed(final ServletContextEvent event) {

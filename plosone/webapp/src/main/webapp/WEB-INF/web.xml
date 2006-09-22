@@ -37,7 +37,7 @@
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.proxyCallbackUrl</param-name>
-      <param-value>https://localhost:8443/plosone/CasProxyServlet</param-value>
+      <param-value>https://localhost:8443/plosone-webapp/CasProxyServlet</param-value>
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.wrapRequest</param-name>

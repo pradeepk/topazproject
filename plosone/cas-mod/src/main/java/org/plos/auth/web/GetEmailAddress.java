@@ -54,7 +54,7 @@ public class GetEmailAddress extends HttpServlet {
 
   public void init(final ServletConfig servletConfig) throws ServletException {
     try {
-      userService = (UserService) getServletContext().getAttribute(AuthConstants.USER_SERVICE);
+      userService = (UserService) (servletConfig.getServletContext().getAttribute(AuthConstants.USER_SERVICE));
     } catch (final Exception ex) {
       throw new ServletException(ex);
     }

@@ -1,0 +1,25 @@
+Task: 
+	To be able to deploy cas-mod these things are needed or get effected:
+	
+	Project: 
+		ant-tasks:
+			ecqs.build.xml - to overwrite build-esup-cas-server.xml and the jar files (dependencies + cas-mod)
+			ecqs.mojos.xml - to define the dependency and cas-mod jar
+			
+		ecqs:
+			build-esup-cas-server.xml - this copies the jar files (copied over to the custom directory) with no filtering
+			web.xml - this includes the deployment descriptor additions needed for cas-mod servlet, filters and context-params
+				
+		delete the earlier keytool created certificate and import a new one
+		
+		
+Task: 
+	To change the database you will need to look into the following:
+	
+	Project: 
+		ant-tasks:
+			ecqs.mojos.xml - update the DATABASE_DRIVER jar here
+
+		ecqs:
+			web.xml - update the context-params for jdbcDriver and jdbcUrl
+	

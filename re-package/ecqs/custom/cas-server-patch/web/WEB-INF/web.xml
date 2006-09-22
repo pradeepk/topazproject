@@ -79,6 +79,7 @@
     </context-param>
 
     <!--Context params for initializing the data source and user service-->
+    <!-- begin cas-mod  -->
     <context-param>
       <param-name>jdbcDriver</param-name>
       <param-value>org.postgresql.Driver</param-value>
@@ -115,8 +116,8 @@
       <param-name>adminPassword</param-name>
       <param-value>postgres</param-value>
     </context-param>
-  
-<!-- 
+    <!-- end cas-mod  -->
+      
     <!--Filter class and mapping for username replacement with guid filter-->
     <filter>
       <filter-name>UsernameReplacementWithGuidFilter</filter-name>
@@ -126,19 +127,16 @@
       <filter-name>UsernameReplacementWithGuidFilter</filter-name>
       <url-pattern>/login</url-pattern>
     </filter-mapping>
- -->  
  
     <!-- Sets up ticket caches -->
     <listener>
       <listener-class>edu.yale.its.tp.cas.servlet.CacheInit</listener-class>
     </listener>
     
-<!-- 
 		<!-- initialize the DatabaseContext and UserService -->
     <listener>
       <listener-class>org.plos.auth.web.AuthServletContextListener</listener-class>
     </listener>
--->
 
   <!-- Servlets -->
     <!-- Login -->
@@ -178,12 +176,10 @@
     </servlet>
 		
 		<!-- get email address for a given guid -->
-<!-- 
     <servlet>
       <servlet-name>Email</servlet-name>
       <servlet-class>org.plos.auth.web.GetEmailAddress</servlet-class>
     </servlet>
- -->		  
 
     <!-- Servlet mappings to local URLs -->
     <servlet-mapping>
@@ -210,11 +206,11 @@
       <servlet-name>ProxyValidate</servlet-name>
       <url-pattern>/proxyValidate</url-pattern>
     </servlet-mapping>
-<!-- 
+
     <servlet-mapping>
       <servlet-name>Email</servlet-name>
       <url-pattern>/email</url-pattern>
     </servlet-mapping>
- -->      
+
 
 </web-app>
