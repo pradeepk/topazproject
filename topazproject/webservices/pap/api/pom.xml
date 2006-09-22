@@ -64,10 +64,6 @@
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.pap.Profiles</classOfPortType>
-              <classpath>
-                <classes>${settings.localRepository}/org/topazproject/topaz-common/0.5-SNAPSHOT/topaz-common-0.5-SNAPSHOT.jar</classes>
-                <classes>${settings.localRepository}/org/topazproject/ws/ws-users-api/0.5-SNAPSHOT/ws-users-api-0.5-SNAPSHOT.jar</classes>
-              </classpath>
             </configuration>
           </execution>
           <execution>
@@ -86,10 +82,6 @@
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.pap.Preferences</classOfPortType>
-              <classpath>
-                <classes>${settings.localRepository}/org/topazproject/topaz-common/0.5-SNAPSHOT/topaz-common-0.5-SNAPSHOT.jar</classes>
-                <classes>${settings.localRepository}/org/topazproject/ws/ws-users-api/0.5-SNAPSHOT/ws-users-api-0.5-SNAPSHOT.jar</classes>
-              </classpath>
             </configuration>
           </execution>
         </executions>
