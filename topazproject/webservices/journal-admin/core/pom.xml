@@ -56,9 +56,6 @@
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.admin.Journal</classOfPortType>
               <outputDirectory>${project.build.directory}/classes</outputDirectory>
-              <classpath>
-                <classes>${settings.localRepository}/org/topazproject/topaz-common/0.5-SNAPSHOT/topaz-common-0.5-SNAPSHOT.jar</classes>
-              </classpath>
             </configuration>
           </execution>
         </executions>
