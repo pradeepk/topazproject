@@ -74,6 +74,7 @@
 
   <bean id="plosPasswordDigestService" class="org.plos.util.impl.PlosPasswordDigestService">
     <property name="algorithm" value="SHA-256"/>
+    <property name="encodingCharset" ref="defaultEncodingCharset"/>
   </bean>
 
   <bean id="registrationMessagingService" class="org.plos.service.impl.PlosRegistrationMessagingService"/>
@@ -130,4 +131,9 @@
     </property>
   </bean>
 <!--  END - Transaction injection for annotated transaction classes-->
+
+  <bean id="defaultEncodingCharset" class="java.lang.String">
+    <constructor-arg value="UTF-8"/>
+  </bean>
+
 </beans>

@@ -22,6 +22,9 @@ public class PlosPasswordDigestService implements PasswordDigestService {
   private final String ERROR_MESSAGE = "Password digesting failed";
 
   private static final Log log = LogFactory.getLog(PlosPasswordDigestService.class);
+  private String encodingCharset;
+  private static final String BYTE_SEPARATOR = "-";
+
 
   /**
    * Set the algorithm.
@@ -32,7 +35,7 @@ public class PlosPasswordDigestService implements PasswordDigestService {
   }
 
   /**
-   * @see PasswordDigestService#getDigestPassword(String)
+   * {@inheritDoc}
    */
   public String getDigestPassword(final String password) {
     final String randomSalt = createRandomSalt();
@@ -40,14 +43,18 @@ public class PlosPasswordDigestService implements PasswordDigestService {
     return getDigestPassword(password, randomSalt);
   }
 
+
   /**
-   * @see PasswordDigestService#getDigestPassword(String, String)
+   * Return a digest of the password also known as hashing. Use the salt as provided to make the deduction of the original password more time consuming.
+   * @param password password
+   * @param salt salt
+   * @return digest password
    */
-  public String getDigestPassword(final String password, final String salt) {
+  private String getDigestPassword(final String password, final String salt) {
     try {
       final MessageDigest md = MessageDigest.getInstance(algorithm);
-      final byte[] bytes = md.digest((password + salt).getBytes());
-      return getString(bytes) + salt;
+      final byte[] bytes = md.digest((salt + password).getBytes(encodingCharset));
+      return getString(salt.getBytes(encodingCharset)) + BYTE_SEPARATOR + getString(bytes);
     }
     catch (final Exception ex) {
       log.error(ERROR_MESSAGE, ex);
@@ -56,34 +63,26 @@ public class PlosPasswordDigestService implements PasswordDigestService {
   }
 
   /**
-   * @see PasswordDigestService#verifyPassword(String, String)
+   * {@inheritDoc}
    */
-  public boolean verifyPassword(final String password, final String printableDigestPassword) {
-    final String digestPassword = new String(getBytes(printableDigestPassword));
-    final int saltSuffixIndex = digestPassword.length() - getSaltLength();
-    final String salt = getSalt(digestPassword, saltSuffixIndex);
-    final String newDigestPassword = getDigestPassword(password, salt);
+  public boolean verifyPassword(final String passwordToVerify, final String savedPassword) {
+    final String digestPassword = new String(getBytes(savedPassword));
+    final String newPasswordDigest = getDigestPassword(passwordToVerify, getSalt(digestPassword));
 
-    return printableDigestPassword.equals(newDigestPassword);
+    return savedPassword.equals(newPasswordDigest);
   }
 
-  /**
-   * Extract the salt from the input
-   * @param digestPassword digestPassword
-   * @param saltSuffixIndex saltSuffixIndex
-   * @return the salt
-   */
-  private String getSalt(final String digestPassword, final int saltSuffixIndex) {
-    return digestPassword.substring(saltSuffixIndex, digestPassword.length());
+  private String getSalt(final String digestPassword) {
+    return digestPassword.substring(0, getSaltLength());
   }
 
   private String createRandomSalt() {
     final RandomDataImpl random = new RandomDataImpl();
     final StringBuilder sb = new StringBuilder();
 
-    for (int length = 0; length < getSaltLength(); length++ ) {
-      //todo Problem area
-      final char ch = (char)(random.nextInt(0, 16));
+    final int saltLength = getSaltLength();
+    for (int length = 0; length < saltLength; length++ ) {
+      final char ch = (char)(random.nextInt(0, 256));
       sb.append(ch);
     }
 
@@ -100,21 +99,33 @@ public class PlosPasswordDigestService implements PasswordDigestService {
     for (int i = 0; i < bytes.length; i++) {
       final byte b = bytes[i];
       final int intByte = (int) (0x00FF & b);
-      sb.append(Integer.toHexString(intByte));
+      sb.append(getPaddedHexString(intByte));
       if (i + 1 < bytes.length) {
-        sb.append("-");
+        sb.append(BYTE_SEPARATOR);
       }
     }
     return sb.toString();
   }
 
   /**
-   * @param str source string delimited with hex characters that are "-" delimited
+   * Ensures that the hex string returned is of length 2.
+   */
+  private static String getPaddedHexString(final int intByte) {
+    String hexString = Integer.toHexString(intByte);
+    if (hexString.length() == 1) {
+      hexString = "0" + hexString;
+    }
+    assert hexString.length() == 2;
+    return hexString;
+  }
+
+  /**
+   * @param printableDigestPassword source string delimited with hex characters that are BYTE_SEPARATOR delimited
    * @return A binary sequence of characters converted from the input hex string.
    */
-  private static byte[] getBytes(final String str) {
+  private static byte[] getBytes(final String printableDigestPassword) {
     final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    final StringTokenizer st = new StringTokenizer(str, "-", false);
+    final StringTokenizer st = new StringTokenizer(printableDigestPassword, BYTE_SEPARATOR, false);
     while (st.hasMoreTokens()) {
       final int i = Integer.parseInt(st.nextToken(), 16);
       bos.write((byte) i);
@@ -122,10 +133,19 @@ public class PlosPasswordDigestService implements PasswordDigestService {
     return bos.toByteArray();
   }
 
-  //TODO: Add the salt back into the game when i get some time.
+  /**
+   * Keeping the salt length hard coded for now, thinking that it might be better for security than
+   * if plainly visible in the spring configuration
+   */
   private int getSaltLength() {
-//    return 6;
-    return 0;
+    return 6;
   }
 
+  /**
+   * Set the encoding charset for the password
+   * @param encodingCharset encodingCharset
+   */
+  public void setEncodingCharset(final String encodingCharset) {
+    this.encodingCharset = encodingCharset;
+  }
 }
