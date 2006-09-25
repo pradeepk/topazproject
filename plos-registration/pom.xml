@@ -17,7 +17,7 @@
   </parent>
 
   <modules>
-    <module>webapp</module>
     <module>password-service</module>
+    <module>webapp</module>
   </modules>
 </project>

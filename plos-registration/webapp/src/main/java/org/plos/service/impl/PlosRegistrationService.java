@@ -8,7 +8,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.registration.User;
 import org.plos.registration.UserImpl;
-import org.plos.util.PasswordDigestService;
 import org.plos.util.TokenGenerator;
 import org.plos.util.TemplateMailer;
 import org.plos.service.RegistrationService;
@@ -20,6 +19,8 @@ import org.plos.service.UserAlreadyVerifiedException;
 import org.plos.service.NoUserFoundWithGivenLoginNameException;
 import org.plos.service.PasswordInvalidException;
 import org.plos.service.UserNotVerifiedException;
+import org.plos.service.password.PasswordDigestService;
+import org.plos.service.password.PasswordServiceException;
 
 import java.util.Map;
 import java.util.HashMap;
@@ -34,7 +35,7 @@ public class PlosRegistrationService implements RegistrationService {
   private TemplateMailer mailer;
   private static final Log log = LogFactory.getLog(PlosPersistenceService.class);
 
-  public User createUser(final String loginName, final String password) throws UserAlreadyExistsException {
+  public User createUser(final String loginName, final String password) throws UserAlreadyExistsException, PasswordServiceException {
     if (null == getUserWithLoginName(loginName)) {
       final User user = new UserImpl(
                               loginName,
@@ -128,7 +129,7 @@ public class PlosRegistrationService implements RegistrationService {
   /**
    * @see PlosRegistrationService#changePassword(String, String, String)
    */
-  public void changePassword(final String loginName, final String oldPassword, final String newPassword) throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException, UserNotVerifiedException {
+  public void changePassword(final String loginName, final String oldPassword, final String newPassword) throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException, UserNotVerifiedException, PasswordServiceException {
     final User user = findExistingUser(loginName);
 
     if (user.isVerified()) {
@@ -156,7 +157,7 @@ public class PlosRegistrationService implements RegistrationService {
   /**
    * @see RegistrationService#resetPassword(String, String, String)
    */
-  public void resetPassword(final String loginName, final String resetPasswordToken, final String newPassword) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException {
+  public void resetPassword(final String loginName, final String resetPasswordToken, final String newPassword) throws NoUserFoundWithGivenLoginNameException, VerificationTokenInvalidException, PasswordServiceException {
     final User user = getUserWithResetPasswordToken(loginName, resetPasswordToken);
 
     user.setPassword(passwordDigestService.getDigestPassword(newPassword));

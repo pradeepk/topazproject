@@ -72,7 +72,7 @@
     </property>
   </bean>
 
-  <bean id="plosPasswordDigestService" class="org.plos.util.impl.PlosPasswordDigestService">
+  <bean id="plosPasswordDigestService" class="org.plos.service.password.PasswordDigestService">
     <property name="algorithm" value="SHA-256"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
   </bean>

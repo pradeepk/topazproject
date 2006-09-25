@@ -5,7 +5,7 @@
 package org.plos;
 
 import org.plos.service.RegistrationService;
-import org.plos.util.PasswordDigestService;
+import org.plos.service.password.PasswordDigestService;
 import org.plos.web.ChangePasswordAction;
 import org.plos.web.ConfirmationAction;
 import org.plos.web.ForgotPasswordAction;
