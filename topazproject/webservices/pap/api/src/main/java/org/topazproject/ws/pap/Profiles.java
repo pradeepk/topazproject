@@ -20,6 +20,44 @@ import org.topazproject.ws.users.NoSuchUserIdException;
  * @author Ronald Tschalär
  */
 public interface Profiles extends Remote {
+  /**
+   * Permissions associated with the profiles service.
+   */
+  public static interface Permissions {
+    /** The action that represents a get-display-name operation in XACML policies: {@value}. */
+    public static final String GET_DISP_NAME = "profiles:getDisplayName";
+
+    /** The action that represents a get-real-name operation in XACML policies: {@value}. */
+    public static final String GET_REAL_NAME = "profiles:getRealName";
+
+    /** The action that represents a get-title operation in XACML policies: {@value}. */
+    public static final String GET_TITLE = "profiles:getTitle";
+
+    /** The action that represents a get-gender operation in XACML policies: {@value}. */
+    public static final String GET_GENDER = "profiles:getGender";
+
+    /** The action that represents a get-email operation in XACML policies: {@value}. */
+    public static final String GET_EMAIL = "profiles:getEmail";
+
+    /** The action that represents a get-home-page operation in XACML policies: {@value}. */
+    public static final String GET_HOME_PAGE = "profiles:getHomePage";
+
+    /** The action that represents a get-weblog operation in XACML policies: {@value}. */
+    public static final String GET_WEBLOG = "profiles:getWeblog";
+
+    /** The action that represents a get-biography operation in XACML policies: {@value}. */
+    public static final String GET_BIOGRAPHY = "profiles:getBiography";
+
+    /** The action that represents a get-interests operation in XACML policies: {@value}. */
+    public static final String GET_INTERESTS = "profiles:getInterests";
+
+    /** The action that represents a get-publications operation in XACML policies: {@value}. */
+    public static final String GET_PUBLICATIONS = "profiles:getPublications";
+
+    /** The action that represents a set-profile operation in XACML policies: {@value}. */
+    public static final String SET_PROFILE = "profiles:setProfile";
+  }
+
   /** 
    * Get a user's profile. Note that all fields in the profile are subject to access-control checks,
    * and any field to which the user calling this service does not have access will be null'd out.

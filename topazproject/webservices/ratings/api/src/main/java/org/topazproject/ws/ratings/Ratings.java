@@ -25,6 +25,18 @@ import org.topazproject.ws.users.NoSuchUserIdException;
  * @author Ronald Tschalär
  */
 public interface Ratings extends Remote {
+  /**
+   * Permissions associated with the ratings service.
+   */
+  public static interface Permissions {
+    /** The action that represents the set-ratings operation in XACML policies. */
+    public static final String SET_RATINGS = "ratings:setRatings";
+    /** The action that represents the get-ratings operation in XACML policies. */
+    public static final String GET_RATINGS = "ratings:getRatings";
+    /** The action that represents the get-stats operation in XACML policies. */
+    public static final String GET_STATS = "ratings:getStats";
+  }
+
   /** 
    * Get a user's ratings for the specified object.
    * 

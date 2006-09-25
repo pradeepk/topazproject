@@ -12,6 +12,8 @@ package org.topazproject.ws.article.impl;
 import java.io.IOException;
 import java.util.Set;
 
+import org.topazproject.ws.article.Article;
+
 import org.topazproject.xacml.AbstractSimplePEP;
 
 import com.sun.xacml.ParsingException;
@@ -23,22 +25,7 @@ import com.sun.xacml.UnknownIdentifierException;
  *
  * @author Ronald Tschalär
  */
-public abstract class ArticlePEP extends AbstractSimplePEP {
-  /** The action that represents an ingest operation in XACML policies. */
-  public static final String INGEST_ARTICLE = "articles:ingestArticle";
-
-  /** The action that represents a delete operation in XACML policies. */
-  public static final String DELETE_ARTICLE = "articles:deleteArticle";
-
-  /** The action that represents a set-state operation in XACML policies. */
-  public static final String SET_ARTICLE_STATE = "articles:setArticleState";
-
-  /** The action that represents a get-object-url operation in XACML policies. */
-  public static final String GET_OBJECT_URL = "articles:getObjectURL";
-
-  /** The action that represents checking if we can access a specific article. */
-  public static final String READ_META_DATA = "articles:readMetaData";
-
+public abstract class ArticlePEP extends AbstractSimplePEP implements Article.Permissions {
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
                                                            INGEST_ARTICLE,

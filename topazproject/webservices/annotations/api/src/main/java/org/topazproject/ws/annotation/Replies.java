@@ -36,6 +36,47 @@ import java.rmi.RemoteException;
  */
 public interface Replies extends Remote {
   /**
+   * Permissions associated with Reply related operations.
+   */
+  public static interface Permissions {
+    /**
+     * The action that represents a createReply operation in XACML policies.
+     */
+    public static final String CREATE_REPLY = "replies:createReply";
+
+    /**
+     * The action that represents a deleteReply operation in XACML policies.
+     */
+    public static final String DELETE_REPLY = "replies:deleteReply";
+
+    /**
+     * The action that represents a getReply operation in XACML policies.
+     */
+    public static final String GET_REPLY_INFO = "replies:getReplyInfo";
+
+    /**
+     * The action that represents a listReplies operation in XACML policies.
+     */
+    public static final String LIST_REPLIES = "replies:listReplies";
+
+    /**
+     * The action that represents a listAllReplies operation in XACML policies.
+     */
+    public static final String LIST_ALL_REPLIES = "replies:listAllReplies";
+
+    /**
+     * The action that represents a listReplies operation in XACML policies. Note that this
+     * permission is checked against the base uri of annotations.
+     */
+    public static final String LIST_REPLIES_IN_STATE = "replies:listRepliesInState";
+
+    /**
+     * The action that represents a setReplyState operation in XACML policies.
+     */
+    public static final String SET_REPLY_STATE = "replies:setReplyState";
+  }
+
+  /**
    * Creates a reply for an annotation.
    *
    * @param mediator an entity that mediates access to the created reply. Can be used by an
@@ -62,8 +103,8 @@ public interface Replies extends Remote {
    *
    * @return Returns a unique identifier for the newly created reply
    *
-   * @throws NoSuchAnnotationIdException when the <code>root</code> is not a valid annotation
-   *         or when the <code>inReplyTo</code> is not a valid annotation or reply.
+   * @throws NoSuchAnnotationIdException when the <code>root</code> is not a valid annotation or
+   *         when the <code>inReplyTo</code> is not a valid annotation or reply.
    * @throws RemoteException when some other error occurs
    */
   public String createReply(String mediator, String type, String root, String inReplyTo,
@@ -88,8 +129,8 @@ public interface Replies extends Remote {
    *
    * @return Returns a unique identifier for the newly created reply
    *
-   * @throws NoSuchAnnotationIdException when the <code>root</code> is not a valid annotation
-   *         or when the <code>inReplyTo</code> is not a valid annotation or reply.
+   * @throws NoSuchAnnotationIdException when the <code>root</code> is not a valid annotation or
+   *         when the <code>inReplyTo</code> is not a valid annotation or reply.
    * @throws RemoteException when some other error occurs
    */
   public String createReply(String mediator, String type, String root, String inReplyTo,
@@ -192,7 +233,7 @@ public interface Replies extends Remote {
    * @throws RemoteException if some other error occured
    */
   public void setReplyState(String id, int state)
-      throws NoSuchAnnotationIdException, RemoteException;
+                     throws NoSuchAnnotationIdException, RemoteException;
 
   /**
    * List the set of replies in a specific administrative state.

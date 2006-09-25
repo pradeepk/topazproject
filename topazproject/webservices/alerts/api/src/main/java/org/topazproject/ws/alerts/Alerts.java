@@ -22,6 +22,22 @@ import java.rmi.RemoteException;
  */
 public interface Alerts extends Remote {
   /**
+   * Permissions associated with Alerts service operations.
+   */
+  public static interface Permissions {
+    /** The action that represents starting alerts for a user. */
+    public static final String START_USER = "alerts:startUser";
+
+    /** The action that represents clearing/stopping alerts for a user. */
+    public static final String CLEAR_USER = "alerts:clearUser";
+
+    /** The action that represents sending alerts. */
+    public static final String SEND_ALERTS = "alerts:sendAlerts";
+
+    /** The action that represents reading meta data for a specific article. */
+    public static final String READ_META_DATA = "alerts:readMetaData";
+  }
+  /**
    * Send up to count alerts up to the date specified.
    *
    * This is primarily for testing.

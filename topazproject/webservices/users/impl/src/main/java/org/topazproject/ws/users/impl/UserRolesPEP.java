@@ -22,19 +22,14 @@ import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;
 
 import org.topazproject.ws.users.NoSuchUserIdException;
+import org.topazproject.ws.users.UserRoles;
 
 /**
  * The XACML PEP for the user roles manager.
  *
  * @author Ronald Tschalär
  */
-public abstract class UserRolesPEP extends AbstractSimplePEP {
-  /** The action that represents a get-roles operation in XACML policies. */
-  public static final String GET_ROLES = "userRoles:getRoles";
-
-  /** The action that represents a set-roles operation in XACML policies. */
-  public static final String SET_ROLES = "userRoles:setRoles";
-
+public abstract class UserRolesPEP extends AbstractSimplePEP implements UserRoles.Permissions {
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
                                                            GET_ROLES,

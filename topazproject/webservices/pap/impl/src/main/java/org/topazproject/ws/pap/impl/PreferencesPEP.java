@@ -15,6 +15,8 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.Set;
 
+import org.topazproject.ws.pap.Preferences;
+
 import org.topazproject.xacml.AbstractSimplePEP;
 
 import com.sun.xacml.ParsingException;
@@ -28,13 +30,7 @@ import org.topazproject.ws.users.NoSuchUserIdException;
  *
  * @author Ronald Tschalär
  */
-public abstract class PreferencesPEP extends AbstractSimplePEP {
-  /** The action that represents a write operation in XACML policies. */
-  public static final String SET_PREFERENCES = "preferences:setPreferences";
-
-  /** The action that represents a read operation in XACML policies. */
-  public static final String GET_PREFERENCES = "preferences:getPreferences";
-
+public abstract class PreferencesPEP extends AbstractSimplePEP implements Preferences.Permissions {
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
                                                            SET_PREFERENCES,

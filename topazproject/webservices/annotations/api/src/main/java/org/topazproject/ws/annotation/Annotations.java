@@ -21,6 +21,48 @@ import javax.activation.DataHandler;
  */
 public interface Annotations extends Remote {
   /**
+   * Permissions associted with annotation related operations.
+   */
+  public static interface Permissions {
+    /**
+     * The action that represents a createAnnotation operation in XACML policies.
+     */
+    public static final String CREATE_ANNOTATION = "annotations:createAnnotation";
+
+    /**
+     * The action that represents a deleteAnnotation operation in XACML policies.
+     */
+    public static final String DELETE_ANNOTATION = "annotations:deleteAnnotation";
+
+    /**
+     * The action that represents a getAnnotation operation in XACML policies.
+     */
+    public static final String GET_ANNOTATION_INFO = "annotations:getAnnotationInfo";
+
+    /**
+     * The action that represents a supersede operation in XACML policies.
+     */
+    public static final String SUPERSEDE = "annotations:supersede";
+
+    /**
+     * The action that represents a listAnnotations operation in XACML policies. Note that this
+     * permission is checked against the a:annotates resource.
+     */
+    public static final String LIST_ANNOTATIONS = "annotations:listAnnotations";
+
+    /**
+     * The action that represents a listAnnotations operation in XACML policies. Note that this
+     * permission is checked against the base uri of annotations.
+     */
+    public static final String LIST_ANNOTATIONS_IN_STATE = "annotations:listAnnotationsInState";
+
+    /**
+     * The action that represents a listAnnotations operation in XACML policies.
+     */
+    public static final String SET_ANNOTATION_STATE = "annotations:setAnnotationState";
+  }
+
+  /**
    * Creates a new annotation.
    *
    * @param mediator an entity that mediates access to the created annotation. Can be used by an

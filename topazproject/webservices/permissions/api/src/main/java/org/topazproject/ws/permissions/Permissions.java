@@ -19,6 +19,41 @@ import java.rmi.RemoteException;
  */
 public interface Permissions extends Remote {
   /**
+   * Permissions associated with permissions service.
+   */
+  public static interface ServicePermissions {
+    /**
+     * The action that represents a permission grant operation in XACML policies.
+     */
+    public static final String GRANT = "permissions:grant";
+
+    /**
+     * The action that represents a permission revoke operation in XACML policies.
+     */
+    public static final String REVOKE = "permissions:revoke";
+
+    /**
+     * The action that represents canceling a permission grant operation in XACML policies.
+     */
+    public static final String CANCEL_GRANTS = "permissions:cancelGrants";
+
+    /**
+     * The action that represents cancelling a permission revoke operation in XACML policies.
+     */
+    public static final String CANCEL_REVOKES = "permissions:cancelRevokes";
+
+    /**
+     * The action that represents a list permission grants operation in XACML policies.
+     */
+    public static final String LIST_GRANTS = "permissions:listGrants";
+
+    /**
+     * The action that represents a list permission revokes operation in XACML policies.
+     */
+    public static final String LIST_REVOKES = "permissions:listRevokes";
+  }
+
+  /**
    * Grants permissions. Adds these to a grants list. A permit biased PEP may allow access to any
    * request if a match is found in the grants list. Similarly a deny biased PEP may deny access
    * to any request if no matching permissions are found in the grants list.

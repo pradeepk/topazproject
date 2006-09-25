@@ -22,34 +22,14 @@ import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;
 
 import org.topazproject.ws.users.NoSuchUserIdException;
+import org.topazproject.ws.users.UserAccounts;
 
 /**
  * The XACML PEP for the user accounts manager.
  *
  * @author Ronald Tschalär
  */
-public abstract class UserAccountsPEP extends AbstractSimplePEP {
-  /** The action that represents a user account creation operation in XACML policies. */
-  public static final String CREATE_USER = "userAccounts:createUser";
-
-  /** The action that represents a delete user account operation in XACML policies. */
-  public static final String DELETE_USER = "userAccounts:deleteUser";
-
-  /** The action that represents a get-state operation in XACML policies. */
-  public static final String GET_STATE = "userAccounts:getState";
-
-  /** The action that represents a set-state operation in XACML policies. */
-  public static final String SET_STATE = "userAccounts:setState";
-
-  /** The action that represents a get-authentication-ids operation in XACML policies. */
-  public static final String GET_AUTH_IDS = "userAccounts:getAuthIds";
-
-  /** The action that represents a set-authentication-ids operation in XACML policies. */
-  public static final String SET_AUTH_IDS = "userAccounts:setAuthIds";
-
-  /** The action that represents a look-up-user operation in XACML policies. */
-  public static final String LOOKUP_USER = "userAccounts:lookUpUser";
-
+public abstract class UserAccountsPEP extends AbstractSimplePEP implements UserAccounts.Permissions {
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
                                                            CREATE_USER,

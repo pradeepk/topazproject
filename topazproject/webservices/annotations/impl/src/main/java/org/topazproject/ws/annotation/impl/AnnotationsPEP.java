@@ -13,6 +13,8 @@ import java.io.IOException;
 
 import java.util.Set;
 
+import org.topazproject.ws.annotation.Annotations;
+
 import org.topazproject.xacml.AbstractSimplePEP;
 import org.topazproject.xacml.Util;
 
@@ -25,44 +27,7 @@ import com.sun.xacml.UnknownIdentifierException;
  *
  * @author Pradeep Krishnan
  */
-public class AnnotationsPEP extends AbstractSimplePEP {
-  /**
-   * The action that represents a createAnnotation operation in XACML policies.
-   */
-  public static final String CREATE_ANNOTATION = "annotations:createAnnotation";
-
-  /**
-   * The action that represents a deleteAnnotation operation in XACML policies.
-   */
-  public static final String DELETE_ANNOTATION = "annotations:deleteAnnotation";
-
-  /**
-   * The action that represents a getAnnotation operation in XACML policies.
-   */
-  public static final String GET_ANNOTATION_INFO = "annotations:getAnnotationInfo";
-
-  /**
-   * The action that represents a supersede operation in XACML policies.
-   */
-  public static final String SUPERSEDE = "annotations:supersede";
-
-  /**
-   * The action that represents a listAnnotations operation in XACML policies.
-   * Note that this permission is checked against the a:annotates resource.
-   */
-  public static final String LIST_ANNOTATIONS = "annotations:listAnnotations";
-
-  /**
-   * The action that represents a listAnnotations operation in XACML policies.
-   * Note that this permission is checked against the base uri of annotations.
-   */
-  public static final String LIST_ANNOTATIONS_IN_STATE = "annotations:listAnnotationsInState";
-
-  /**
-   * The action that represents a listAnnotations operation in XACML policies.
-   */
-  public static final String SET_ANNOTATION_STATE = "annotations:setAnnotationState";
-
+public class AnnotationsPEP extends AbstractSimplePEP implements Annotations.Permissions {
   /**
    * The list of all supported actions
    */

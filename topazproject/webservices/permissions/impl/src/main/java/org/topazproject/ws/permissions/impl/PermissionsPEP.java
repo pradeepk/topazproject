@@ -13,6 +13,8 @@ import java.io.IOException;
 
 import java.util.Set;
 
+import org.topazproject.ws.permissions.Permissions;
+
 import org.topazproject.xacml.AbstractSimplePEP;
 
 import com.sun.xacml.PDP;
@@ -24,37 +26,8 @@ import com.sun.xacml.UnknownIdentifierException;
  *
  * @author Pradeep Krishnan
  */
-public abstract class PermissionsPEP extends AbstractSimplePEP {
-  /**
-   * The action that represents a permission grant operation in XACML policies.
-   */
-  public static final String GRANT = "permissions:grant";
-
-  /**
-   * The action that represents a permission revoke operation in XACML policies.
-   */
-  public static final String REVOKE = "permissions:revoke";
-
-  /**
-   * The action that represents canceling a permission grant operation in XACML policies.
-   */
-  public static final String CANCEL_GRANTS = "permissions:cancelGrants";
-
-  /**
-   * The action that represents cancelling a permission revoke operation in XACML policies.
-   */
-  public static final String CANCEL_REVOKES = "permissions:cancelRevokes";
-
-  /**
-   * The action that represents a list permission grants operation in XACML policies.
-   */
-  public static final String LIST_GRANTS = "permissions:listGrants";
-
-  /**
-   * The action that represents a list permission revokes operation in XACML policies.
-   */
-  public static final String LIST_REVOKES = "permissions:listRevokes";
-
+public abstract class PermissionsPEP extends AbstractSimplePEP
+  implements Permissions.ServicePermissions {
   /**
    * The list of all supported actions
    */

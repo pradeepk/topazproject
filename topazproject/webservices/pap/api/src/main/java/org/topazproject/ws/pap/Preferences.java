@@ -22,6 +22,17 @@ import org.topazproject.ws.users.NoSuchUserIdException;
  * @author Ronald Tschalär
  */
 public interface Preferences extends Remote {
+  /**
+   * Permissions associated with the preferences service.
+   */
+  public static interface Permissions {
+    /** The action that represents a write operation in XACML policies. */
+    public static final String SET_PREFERENCES = "preferences:setPreferences";
+
+    /** The action that represents a read operation in XACML policies. */
+    public static final String GET_PREFERENCES = "preferences:getPreferences";
+  }
+
   /** 
    * Get a user's preferences.
    * 

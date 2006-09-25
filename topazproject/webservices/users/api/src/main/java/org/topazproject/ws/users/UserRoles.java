@@ -20,6 +20,17 @@ import java.rmi.RemoteException;
  * @author Ronald Tschalär
  */
 public interface UserRoles extends Remote {
+  /**
+   * Permissions associated with user-roles service.
+   */
+  public static interface Permissions {
+    /** The action that represents a get-roles operation in XACML policies. */
+    public static final String GET_ROLES = "userRoles:getRoles";
+
+    /** The action that represents a set-roles operation in XACML policies. */
+    public static final String SET_ROLES = "userRoles:setRoles";
+  }
+
   /** 
    * Set the list of currently assigned security roles for the specified user.
    * 

@@ -13,6 +13,8 @@ import java.io.IOException;
 
 import java.util.Set;
 
+import org.topazproject.ws.annotation.Replies;
+
 import org.topazproject.xacml.AbstractSimplePEP;
 import org.topazproject.xacml.Util;
 
@@ -25,43 +27,7 @@ import com.sun.xacml.UnknownIdentifierException;
  *
  * @author Pradeep Krishnan
  */
-public class RepliesPEP extends AbstractSimplePEP {
-  /**
-   * The action that represents a createReply operation in XACML policies.
-   */
-  public static final String CREATE_REPLY = "replies:createReply";
-
-  /**
-   * The action that represents a deleteReply operation in XACML policies.
-   */
-  public static final String DELETE_REPLY = "replies:deleteReply";
-
-  /**
-   * The action that represents a getReply operation in XACML policies.
-   */
-  public static final String GET_REPLY_INFO = "replies:getReplyInfo";
-
-  /**
-   * The action that represents a listReplies operation in XACML policies.
-   */
-  public static final String LIST_REPLIES = "replies:listReplies";
-
-  /**
-   * The action that represents a listAllReplies operation in XACML policies.
-   */
-  public static final String LIST_ALL_REPLIES = "replies:listAllReplies";
-
-  /**
-   * The action that represents a listReplies operation in XACML policies. Note that this
-   * permission is checked against the base uri of annotations.
-   */
-  public static final String LIST_REPLIES_IN_STATE = "replies:listRepliesInState";
-
-  /**
-   * The action that represents a setReplyState operation in XACML policies.
-   */
-  public static final String SET_REPLY_STATE = "replies:setReplyState";
-
+public class RepliesPEP extends AbstractSimplePEP implements Replies.Permissions {
   /**
    * The list of all supported actions
    */

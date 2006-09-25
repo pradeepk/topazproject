@@ -16,6 +16,7 @@ import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.topazproject.ws.ratings.Ratings;
 import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.xacml.AbstractSimplePEP;
 import org.topazproject.xacml.Util;
@@ -31,15 +32,7 @@ import com.sun.xacml.ctx.Attribute;
  *
  * @author Ronald Tschalär
  */
-public abstract class RatingsPEP extends AbstractSimplePEP {
-  // Note: these operations must be referenced in the policy/Ratings.xml policy file
-  /** The action that represents the set-ratings operation in XACML policies. */
-  public static final String SET_RATINGS = "ratings:setRatings";
-  /** The action that represents the get-ratings operation in XACML policies. */
-  public static final String GET_RATINGS = "ratings:getRatings";
-  /** The action that represents the get-stats operation in XACML policies. */
-  public static final String GET_STATS = "ratings:getStats";
-
+public abstract class RatingsPEP extends AbstractSimplePEP implements Ratings.Permissions {
   /** The id of the attribute containing the URI of the object: {@value} */
   public static final URI OBJ_ID =
       URI.create("urn:topazproject:names:tc:xacml:1.0:resource:object-uri");

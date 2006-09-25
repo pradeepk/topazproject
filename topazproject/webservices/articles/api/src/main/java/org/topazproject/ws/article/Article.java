@@ -20,6 +20,26 @@ import javax.activation.DataHandler;
  * @author Ronald Tschalär
  */
 public interface Article extends Remote {
+  /**
+   * Permissions associated with Article storage and retrieval.
+   */
+  public static interface Permissions {
+    /** The action that represents an ingest operation in XACML policies. */
+    public static final String INGEST_ARTICLE = "articles:ingestArticle";
+
+    /** The action that represents a delete operation in XACML policies. */
+    public static final String DELETE_ARTICLE = "articles:deleteArticle";
+
+    /** The action that represents a set-state operation in XACML policies. */
+    public static final String SET_ARTICLE_STATE = "articles:setArticleState";
+
+    /** The action that represents a get-object-url operation in XACML policies. */
+    public static final String GET_OBJECT_URL = "articles:getObjectURL";
+
+    /** The action that represents checking if we can access a specific article. */
+    public static final String READ_META_DATA = "articles:readMetaData";
+  }
+  
   /** Article state of "Active" */
   public static final int ST_ACTIVE   = 0;
   /** Article state of "Disabled" */
