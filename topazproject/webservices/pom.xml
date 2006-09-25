@@ -20,8 +20,8 @@
     <module>journal-admin</module>
     <module>annotations</module>
     <module>articles</module>
-    <module>pap</module>
     <module>permissions</module>
+    <module>pap</module>
     <module>alerts</module>
     <module>ratings</module>
   </modules>
