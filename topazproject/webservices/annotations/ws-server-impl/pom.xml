@@ -57,11 +57,6 @@
       <artifactId>conf-helper</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>topaz-common</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
   </dependencies>
 
   <build>

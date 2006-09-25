@@ -28,8 +28,8 @@
       <version>1.0.2</version>
     </dependency>
     <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>topaz-common</artifactId>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-common-api</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>

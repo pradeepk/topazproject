@@ -36,9 +36,7 @@
     <module>xacml-extensions</module>
     <module>resource-indexer</module>
     <module>fedora-client</module>
-    <module>base-ws-webapp</module>
     <module>jdk2log4j-proxy</module>
-    <module>topaz-common</module>
     <module>dom-ranges-helper</module>
   </modules>
 </project>
