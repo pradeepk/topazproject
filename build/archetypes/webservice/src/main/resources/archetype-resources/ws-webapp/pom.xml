@@ -46,7 +46,7 @@
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>base-ws-webapp</artifactId>
+      <artifactId>ws-common-webapp</artifactId>
       <version>0.5-SNAPSHOT</version>
       <type>war</type>
     </dependency>
