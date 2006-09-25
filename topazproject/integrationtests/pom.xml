@@ -72,11 +72,6 @@
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
-      <artifactId>xacml-extensions</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
       <artifactId>resource-indexer</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>

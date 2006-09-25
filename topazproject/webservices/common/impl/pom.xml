@@ -1,14 +1,13 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>xacml-extensions</artifactId>
+  <artifactId>${pom.parent.artifactId}-impl</artifactId>
   <packaging>jar</packaging>
-  <version>0.5-SNAPSHOT</version>
-  <name>XACML extensions</name>
+  <name>Shared Topaz impl code</name>
 
   <parent>
-    <groupId>org.topazproject</groupId>
-    <artifactId>topazproject-libs</artifactId>
+    <groupId>org.topazproject.ws</groupId>
+    <artifactId>ws-common</artifactId>
     <version>0.5-SNAPSHOT</version>
   </parent>
 

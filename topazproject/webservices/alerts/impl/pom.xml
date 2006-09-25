@@ -63,8 +63,8 @@
       <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>xacml-extensions</artifactId>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-common-impl</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
