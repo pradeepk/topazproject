@@ -24,6 +24,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.plos</groupId>
+      <artifactId>plos-registration-password-service</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
       <version>8.1-407.jdbc3</version>

@@ -1,0 +1,20 @@
+<?xml version="1.0"?>
+
+<authentication debug="on">
+  <handler>
+    <classname>org.plos.auth.handler.PlosAuthDatabaseHandler</classname>
+    <config>
+      <table>${esup-casgeneric.auth.plos.table}</table>
+      <login_column>${esup-casgeneric.auth.plos.login-column}</login_column>
+      <password_column>${esup-casgeneric.auth.plos.password-column}</password_column>
+      <bind_username>${esup-casgeneric.auth.plos.bind-username}</bind_username>
+      <bind_password>${esup-casgeneric.auth.plos.bind-password}</bind_password>
+			<encryption>${esup-casgeneric.auth.plos.encryption}</encryption>
+			<encoding_charset>${esup-casgeneric.auth.plos.encoding-charset}</encoding_charset>
+      <server>
+        <jdbc_driver>${esup-casgeneric.auth.plos.jdbc-driver}</jdbc_driver>
+        <jdbc_url>${esup-casgeneric.auth.plos.jdbc-url}</jdbc_url>
+      </server>
+    </config>
+  </handler>
+</authentication>

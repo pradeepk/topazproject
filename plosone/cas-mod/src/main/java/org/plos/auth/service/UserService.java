@@ -19,8 +19,6 @@ import java.sql.SQLException;
 
 /**
  * Used to fetch the various properties, like guid, for a given user.
- * TODO: This could be managed by a ServletContextListener if required, so that 
- * both the UsernameReplacementWithGuidFilter and GetEmailAddress could use the same instance
  */
 public class UserService {
   private final DatabaseContext context;

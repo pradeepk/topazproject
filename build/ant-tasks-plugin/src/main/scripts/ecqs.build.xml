@@ -55,6 +55,7 @@
     />
 
 		<copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${CAS_MOD}"/>
+		<copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${PASSWORD_MOD}"/>
 		<copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${DATABASE_DRIVER}"/>
 		<copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_LOGGING}"/>
 		<copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_DBCP}"/>

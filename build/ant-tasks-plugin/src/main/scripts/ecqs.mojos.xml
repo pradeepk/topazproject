@@ -62,6 +62,13 @@
         </parameter>
 
         <parameter>
+          <name>PASSWORD_MOD</name>
+          <property>PASSWORD_MOD</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/org/plos/plos-registration-password-service/0.5-SNAPSHOT/plos-registration-password-service-0.5-SNAPSHOT.jar</defaultValue>
+        </parameter>
+
+        <parameter>
           <name>DATABASE_DRIVER</name>
           <property>DATABASE_DRIVER</property>
           <required>true</required>
