@@ -68,20 +68,17 @@
     <finalName>ecqs</finalName>
 
     <plugins>
-
       <plugin>
         <groupId>org.topazproject.plugins</groupId>
         <artifactId>ant-tasks</artifactId>
 
         <executions>
-
           <execution>
             <phase>package</phase>
             <goals>
               <goal>ecqs-package</goal>
             </goals>
           </execution>
-
         </executions>
       </plugin>
 

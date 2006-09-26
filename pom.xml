@@ -124,6 +124,7 @@
     <module>build/archetypes/webservice</module>
     <module>topazproject</module>
     <module>plosone</module>
+    <module>plos-registration</module>
     <module>re-package</module>
   </modules>
 
