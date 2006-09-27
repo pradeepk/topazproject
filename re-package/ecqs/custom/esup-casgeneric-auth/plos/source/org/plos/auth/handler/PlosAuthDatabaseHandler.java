@@ -11,21 +11,17 @@ package org.plos.auth.handler;
 
 import org.dom4j.Element;
 import org.esupportail.cas.server.util.BasicHandler;
-import org.esupportail.cas.server.util.MisconfiguredHandlerException;
+import org.plos.auth.db.DatabaseContext;
+import org.plos.auth.db.DatabaseException;
 import org.plos.service.password.PasswordDigestService;
-
-import java.sql.Connection;
-import java.sql.DriverManager;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 
 /**
  * Plos user authentication handler that verifies that the user with a given userid/adminPassword exists
  * in the database
  */
 public class PlosAuthDatabaseHandler extends BasicHandler {
-  private PreparedStatement preparedStatement;
   private PasswordDigestService passwordService;
+  private String passwordSqlQuery;
 
   /**
 	 * Analyse the XML configuration to set netId and adminPassword attributes (constructor).
@@ -51,7 +47,7 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
 
   private void init() throws Exception {
     passwordService = getPasswordService();
-    initDb();
+    passwordSqlQuery = getSqlQuery();
   }
 
   private PasswordDigestService getPasswordService() throws Exception {
@@ -61,46 +57,6 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
     passwordDigestService.setAlgorithm(encryption);
     passwordDigestService.setEncodingCharset(encodingCharset);
     return passwordDigestService;
-  }
-
-  private void initDb() throws Exception {
-    // get the configuration parameters
-    final String adminUser = getConfigSubElementContent("bind_username");
-    final String adminPassword = getConfigSubElementContent("bind_password");
-    final Element serverElement = getConfigSubElement("server");
-    final String jdbcDriver = getElementContent(serverElement, "jdbc_driver");
-    final String jdbcUrl = getElementContent(serverElement, "jdbc_url");
-    try {
-      Class.forName(jdbcDriver);
-    } catch (final ClassNotFoundException ex) {
-      throw new Exception("Unable to load the db driver:" + jdbcDriver, ex);
-    }
-
-    final Connection connection = DriverManager.getConnection(jdbcUrl, adminUser, adminPassword);
-    preparedStatement = connection.prepareStatement(getSqlQuery());
-  }
-
-  private Element getConfigSubElement(final String elementName) {
-    return getConfigElement().element(elementName);
-  }
-
-  private String getElementContent(final Element configElement, final String elementName)
-                    throws Exception
-  {
-    final Element element = configElement.element(elementName);
-    String str;
-    if (null == element) {
-      str = "";
-    } else {
-      str = element.getTextTrim();
-    }
-    if (str.length() == 0) {
-      traceThrow(new MisconfiguredHandlerException(
-          "A non empty nested '" + elementName + "' element is needed to configure the '"
-          + getClass().getName() + "' handler."
-          ));
-    }
-    return str;
   }
 
   /**
@@ -118,15 +74,9 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
 		trace("Checking user's password...");
 
     try {
-      final String savedDigestPassword;
-
-      synchronized(preparedStatement) {
-        preparedStatement.setString(1, userLogin);
-        final ResultSet resultSet = preparedStatement.executeQuery();
-        resultSet.next();
-        savedDigestPassword = resultSet.getString(1);
-        resultSet.close();
-      }
+      final DatabaseContext databaseContext = getDatabaseContext();
+      final String savedDigestPassword
+              = databaseContext.getSingleStringValueFromDb(passwordSqlQuery, userLogin);
 
       final boolean verified = passwordService.verifyPassword(userPassword, savedDigestPassword);
 
@@ -143,6 +93,10 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
       traceEnd();
     }
 	}
+
+  private DatabaseContext getDatabaseContext() throws DatabaseException {
+    return DatabaseContext.getInstance();
+  }
 
   /**
    * Read the SQL query from the configuration (deduces it from other parameters).

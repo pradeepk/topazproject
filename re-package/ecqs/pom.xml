@@ -17,6 +17,12 @@
 
   <dependencies>
     <dependency>
+      <groupId>org.plosone</groupId>
+      <artifactId>plosone-cas-mod</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.esup-portail</groupId>
       <artifactId>esup-cas-quick-start</artifactId>
       <version>2.0.6-1</version>
