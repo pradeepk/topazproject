@@ -104,7 +104,7 @@ public class DenyBiasedPEP {
     try {
       ctx = new BasicEvaluationCtx(request, attrFinder, true);
     } catch (ParsingException e) {
-      throw new SecurityException(e);
+      throw (SecurityException) new SecurityException("").initCause(e);
     }
 
     ResponseCtx response = pdp.evaluate(ctx);
