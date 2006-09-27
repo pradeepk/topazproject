@@ -75,7 +75,7 @@
 
   <package name="annotation-secure" extends="default" namespace="/annotation/secure">
     <action name="createAnnotation">
-      <result type="freemarker">/WEB-INF/pages/annotation/createAnnotation.ftl</result>
+      <result>/WEB-INF/pages/annotation/createAnnotation.ftl</result>
     </action>
 
     <action name="createAnnotationSubmit" class="org.plos.annotation.web.CreateAnnotationAction">
@@ -102,16 +102,16 @@
 
   <package name="user-secure" extends="default" namespace="/user/secure">
     <action name="newUser">
-      <result type="freemarker">/WEB-INF/pages/user/newUser.ftl</result>
+      <result>/WEB-INF/pages/user/newUser.ftl</result>
     </action>
 
     <action name="createNewUser" class="org.plos.user.action.CreateUserAction">
-      <result name="success" type="freemarker">/WEB-INF/pages/user/newUserCreated.ftl</result>
+      <result name="success">/WEB-INF/pages/user/newUserCreated.ftl</result>
       <result name="input">/WEB-INF/pages/user/newUser.ftl</result>
     </action>
 
     <action name="displayUser" class="org.plos.user.action.DisplayUserAction">
-      <result name="success" type="freemarker">/WEB-INF/pages/user/displayUser.ftl</result>
+      <result name="success">/WEB-INF/pages/user/displayUser.ftl</result>
     </action>
   </package>
 

@@ -64,7 +64,7 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
    * @return loginName
    */
   @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid email address")
-  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName", message="Email address not specified")
+  @RequiredStringValidator(message="Email address not specified")
   public String getLoginName() {
     return loginName;
   }
@@ -80,7 +80,7 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
   /**
    * @return the reset password token
    */
-  @RequiredStringValidator(type= ValidatorType.FIELD, fieldName="resetPasswordToken", message="Verification token missing")
+  @RequiredStringValidator(message="Verification token missing")
   public String getResetPasswordToken() {
     return resetPasswordToken;
   }
@@ -96,7 +96,7 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
   /**
    * @return password1
    */
-  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="password1", message="You must enter a password")
+  @RequiredStringValidator(message="You must enter a password")
   @FieldExpressionValidator(fieldName="password2", expression = "password1==password2", message="Passwords must match")
   public String getPassword1() {
     return password1;

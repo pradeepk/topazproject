@@ -63,8 +63,8 @@ public class ChangePasswordAction extends ActionSupport {
   /**
    * @return loginName
    */
-  @EmailValidator(type= ValidatorType.SIMPLE, fieldName= "loginName", message="You must enter a valid email")
-  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName= "loginName", message="You must enter an email address")
+  @EmailValidator(message="You must enter a valid email")
+  @RequiredStringValidator(message="You must enter an email address")
   public String getLoginName() {
     return loginName;
   }
@@ -80,7 +80,7 @@ public class ChangePasswordAction extends ActionSupport {
   /**
    * @return oldPassword
    */
-  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName= "oldPassword", message="You must enter your earlier password")
+  @RequiredStringValidator(message="You must enter your earlier password")
   public String getOldPassword() {
     return oldPassword;
   }
@@ -96,9 +96,9 @@ public class ChangePasswordAction extends ActionSupport {
   /**
    * @return newPassword1 newPassword1
    */
-  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName= "newPassword1", message="You must enter a new password")
+  @RequiredStringValidator(message="You must enter a new password")
   @FieldExpressionValidator(fieldName= "newPassword1", expression= "newPassword1" +"=="+ "newPassword2", message="New passwords must match")
-  @StringLengthFieldValidator(fieldName= "newPassword1", maxLength="256", message="Password must be less than 256")
+  @StringLengthFieldValidator(maxLength="256", message="Password must be less than 256")
   public String getNewPassword1() {
     return newPassword1;
   }

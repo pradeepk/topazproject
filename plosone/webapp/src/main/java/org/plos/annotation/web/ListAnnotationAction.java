@@ -35,7 +35,6 @@ public class ListAnnotationAction extends AnnotationActionSupport {
   }
 
   /**
-   * TODO: return the wrapped annotations so that the title can be htmlEncoded and hence any dangerous scripting can be declawed. See if ActionChaining can help here. 
    * @return a list of annotations
    */
   public Annotation[] getAnnotations() {

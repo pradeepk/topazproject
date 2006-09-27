@@ -65,7 +65,7 @@ public class ForgotPasswordAction extends ActionSupport {
    * @return loginName
    */
   @EmailValidator(type=ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid email address")
-  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName", message="Email address is required")
+  @RequiredStringValidator(message="Email address is required")
   public String getLoginName() {
     return loginName;
   }

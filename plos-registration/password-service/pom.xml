@@ -3,9 +3,9 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.plos</groupId>
+  <groupId>${pom.parent.groupId}</groupId>
   <artifactId>${pom.parent.artifactId}-password-service</artifactId>
-  <version>0.5-SNAPSHOT</version>
+  <version>${pom.parent.version}</version>
   <packaging>jar</packaging>
   <name>Plos Registration Password Service</name>
 
@@ -21,7 +21,6 @@
       <groupId>commons-math</groupId>
       <artifactId>commons-math</artifactId>
       <version>1.1</version>
-      <type>jar</type>
     </dependency>
 
     <dependency>
@@ -35,7 +34,6 @@
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.9</version>
-      <type>jar</type>
     </dependency>
 
   </dependencies>

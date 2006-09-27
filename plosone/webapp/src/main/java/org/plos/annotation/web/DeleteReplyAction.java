@@ -23,6 +23,11 @@ public class DeleteReplyAction extends AnnotationActionSupport {
 
   private static final Log log = LogFactory.getLog(DeleteReplyAction.class);
 
+  /**
+   * Delete a reply given a reply id
+   * @return operation return code
+   * @throws Exception Exception
+   */
   public String deleteReplyWithId() throws Exception {
     try {
       getAnnotationService().deleteReply(id);
@@ -34,6 +39,11 @@ public class DeleteReplyAction extends AnnotationActionSupport {
     return SUCCESS;
   }
 
+  /**
+   * Delete a reply given a root and inReplyTo
+   * @return operation return code
+   * @throws Exception Exception
+   */
   public String deleteReplyWithRootAndReplyTo() throws Exception {
     try {
       getAnnotationService().deleteReply(root, inReplyTo);

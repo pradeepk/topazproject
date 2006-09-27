@@ -70,7 +70,7 @@ public class ConfirmationAction extends ActionSupport {
   /**
    * @return emailVerificationToken
    */
-  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="emailVerificationToken", message="Verification token missing")
+  @RequiredStringValidator(message="Verification token missing")
   public String getEmailVerificationToken() {
     return emailVerificationToken;
   }
@@ -87,7 +87,7 @@ public class ConfirmationAction extends ActionSupport {
    * @return loginName
    */
   @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid email address")
-  @RequiredStringValidator(type=ValidatorType.FIELD, fieldName="loginName", message="Email address not specified")
+  @RequiredStringValidator(message="Email address not specified")
   public String getLoginName() {
     return loginName;
   }

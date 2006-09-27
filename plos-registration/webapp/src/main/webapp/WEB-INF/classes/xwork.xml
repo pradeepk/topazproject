@@ -1,68 +1,79 @@
 <!DOCTYPE xwork PUBLIC "-//OpenSymphony Group//XWork 1.1.1//EN" "http://www.opensymphony.com/xwork/xwork-1.1.1.dtd">
-
+<!--
+  - Copyright (c) 2006 by Topaz, Inc.
+  - http://topazproject.org
+  -
+  - Licensed under the Educational Community License version 1.0
+  - http://opensource.org/licenses/ecl1.php
+  -->
 <xwork>
     <include file="webwork-default.xml"/>
 
     <package name="default" extends="webwork-default">
+      <result-types>
+        <result-type name="freemarker"
+          class="com.opensymphony.webwork.views.freemarker.FreemarkerResult" default="true" />
+      </result-types>
 
-        <default-action-ref name="home" />
+      <interceptors>
+        <interceptor-stack name="plosRegistrationStack">
+          <interceptor-ref name="timer" />
+          <!--<interceptor-ref name="logger"/>-->
+          <interceptor-ref name="defaultStack" />
+        </interceptor-stack>
+      </interceptors>
+      <default-interceptor-ref name="plosRegistrationStack" />
 
-        <action name="home" class="org.plos.web.ForwardAction">
-            <result type="freemarker">/WEB-INF/pages/home.ftl</result>
-        </action>
+      <default-action-ref name="home" />
 
-      <action name="registerPart1" class="org.plos.web.ForwardAction">
-          <result name="success" type="freemarker">/WEB-INF/pages/registration/registerPart1.ftl</result>
+      <action name="home">
+          <result>/WEB-INF/pages/home.ftl</result>
       </action>
 
-      <action name="registerSubmit" class="org.plos.web.RegisterAction" method="execute">
-        <interceptor-ref name="validationWorkflowStack"/>
-        <interceptor-ref name="timer"/>
-        <result name="input" type="freemarker">/WEB-INF/pages/registration/registerPart1.ftl</result>
-        <result name="error" type="freemarker">/WEB-INF/pages/registration/registerPart1.ftl</result>
-        <result name="success" type="freemarker">/WEB-INF/pages/registration/registration-success.ftl</result>
+      <action name="registerPart1">
+          <result name="success">/WEB-INF/pages/registration/registerPart1.ftl</result>
+      </action>
+
+      <action name="registerSubmit" class="org.plos.web.RegisterAction">
+        <result name="input">/WEB-INF/pages/registration/registerPart1.ftl</result>
+        <result name="error">/WEB-INF/pages/registration/registerPart1.ftl</result>
+        <result name="success">/WEB-INF/pages/registration/registration-success.ftl</result>
       </action>
 
       <action name="emailVerification" class="org.plos.web.ConfirmationAction">
-        <result name="error" type="freemarker">/WEB-INF/pages/registration/error.ftl</result>
-        <result name="success" type="freemarker">/WEB-INF/pages/registration/confirmation.ftl</result>
+        <result name="error">/WEB-INF/pages/registration/error.ftl</result>
+        <result name="success">/WEB-INF/pages/registration/confirmation.ftl</result>
       </action>
 
-      <action name="forgotPassword" class="org.plos.web.ForwardAction">
-        <result type="freemarker">/WEB-INF/pages/registration/forgot-password.ftl</result>
+      <action name="forgotPassword">
+        <result>/WEB-INF/pages/registration/forgot-password.ftl</result>
       </action>
 
       <action name="forgotPasswordSubmit" class="org.plos.web.ForgotPasswordAction">
-        <interceptor-ref name="validationWorkflowStack"/>
-        <interceptor-ref name="timer"/>
-        <result name="input" type="freemarker">/WEB-INF/pages/registration/forgot-password.ftl</result>
-        <result name="error" type="freemarker">/WEB-INF/pages/registration/forgot-password.ftl</result>
-        <result name="success" type="freemarker">/WEB-INF/pages/registration/forgot-password-success.ftl</result>
+        <result name="input">/WEB-INF/pages/registration/forgot-password.ftl</result>
+        <result name="error">/WEB-INF/pages/registration/forgot-password.ftl</result>
+        <result name="success">/WEB-INF/pages/registration/forgot-password-success.ftl</result>
       </action>
 
       <action name="forgotPasswordChangePasswordShow" class="org.plos.web.ForgotPasswordChangePasswordAction" method="validateRequest">
-        <interceptor-ref name="validationWorkflowStack"/>
-        <interceptor-ref name="timer"/>
-        <result name="error" type="freemarker">/WEB-INF/pages/registration/error.ftl</result>
-        <result name="success" type="freemarker">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
+        <result name="error">/WEB-INF/pages/registration/error.ftl</result>
+        <result name="success">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
       </action>
 
-      <action name="forgotPasswordChangePasswordSubmit" class="org.plos.web.ForgotPasswordChangePasswordAction" method="execute">
-        <interceptor-ref name="validationWorkflowStack"/>
-        <interceptor-ref name="timer"/>
-        <result name="input" type="freemarker">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
-        <result name="error" type="freemarker">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
-        <result name="success" type="freemarker">/WEB-INF/pages/registration/change-password-success.ftl</result>
+      <action name="forgotPasswordChangePasswordSubmit" class="org.plos.web.ForgotPasswordChangePasswordAction">
+        <result name="input">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
+        <result name="error">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
+        <result name="success">/WEB-INF/pages/registration/change-password-success.ftl</result>
       </action>
 
-      <action name="changePassword" class="org.plos.web.ForwardAction">
-        <result type="freemarker">/WEB-INF/pages/registration/change-password.ftl</result>
+      <action name="changePassword">
+        <result>/WEB-INF/pages/registration/change-password.ftl</result>
       </action>
 
       <action name="changePasswordSubmit" class="org.plos.web.ChangePasswordAction">
-        <result name="input" type="freemarker">/WEB-INF/pages/registration/change-password.ftl</result>
-        <result name="error" type="freemarker">/WEB-INF/pages/registration/change-password.ftl</result>
-        <result name="success" type="freemarker">/WEB-INF/pages/registration/change-password-success.ftl</result>
+        <result name="input">/WEB-INF/pages/registration/change-password.ftl</result>
+        <result name="error">/WEB-INF/pages/registration/change-password.ftl</result>
+        <result name="success">/WEB-INF/pages/registration/change-password-success.ftl</result>
       </action>
 
     </package>

@@ -39,8 +39,6 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    * Also does some profanity check for title and body before creating the annotation.
    */
   public String execute() throws Exception {
-    final Map sessionMap = ActionContext.getContext().getSession();
-
     try {
       final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(title);
       final List<String> profanityValidationMessagesInBody = profanityCheckingService.validate(body);

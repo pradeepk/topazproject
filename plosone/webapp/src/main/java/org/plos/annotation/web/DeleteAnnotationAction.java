@@ -8,6 +8,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 
+/**
+ * Action to delete an annotation
+ */
 public class DeleteAnnotationAction extends AnnotationActionSupport {
   private String annotationId;
   private boolean deletePreceding;

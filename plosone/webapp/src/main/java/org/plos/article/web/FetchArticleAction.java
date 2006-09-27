@@ -86,7 +86,7 @@ public class FetchArticleAction extends ActionSupport {
   /**
    * @return articleDOI
    */
-  @RequiredStringValidator(type = ValidatorType.FIELD, fieldName = "articleDOI", message = "Article DOI is required.")
+  @RequiredStringValidator(message = "Article DOI is required.")
   public String getArticleDOI() {
     return articleDOI;
   }
