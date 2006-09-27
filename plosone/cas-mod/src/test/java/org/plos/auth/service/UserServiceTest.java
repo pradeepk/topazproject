@@ -10,13 +10,11 @@
 package org.plos.auth.service;
 
 import junit.framework.TestCase;
-
-import java.util.Properties;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.auth.db.DatabaseContext;
-import org.plos.auth.service.UserService;
+
+import java.util.Properties;
 
 public class UserServiceTest extends TestCase {
   private static final Log log = LogFactory.getLog(UserServiceTest.class);
@@ -26,7 +24,7 @@ public class UserServiceTest extends TestCase {
     dbProperties.setProperty("user", "postgres");
     dbProperties.setProperty("password", "postgres");
 
-    final DatabaseContext context = new DatabaseContext("org.postgresql.Driver", dbProperties, 2, 10, "select 1");
+    final DatabaseContext context = DatabaseContext.createDatabaseContext("org.postgresql.Driver", dbProperties, 2, 10, "select 1");
 
     final UserService userService
             = new UserService(context, 

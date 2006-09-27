@@ -3,10 +3,10 @@
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
-  <groupId>org.plosone</groupId>
+  <groupId>${pom.parent.groupId}</groupId>
   <artifactId>${pom.parent.artifactId}-webapp</artifactId>
   <packaging>war</packaging>
-  <version>0.5-SNAPSHOT</version>
+  <version>${pom.parent.version}</version>
   <name>PLoS ONE Web Application</name>
 
   <parent>

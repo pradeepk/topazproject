@@ -16,14 +16,17 @@ import org.apache.commons.dbcp.PoolingDataSource;
 import org.apache.commons.pool.KeyedObjectPoolFactory;
 import org.apache.commons.pool.impl.GenericKeyedObjectPoolFactory;
 import org.apache.commons.pool.impl.GenericObjectPool;
+import org.apache.commons.logging.LogFactory;
+import org.apache.commons.logging.Log;
 
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
+import java.sql.ResultSet;
 import java.util.Properties;
 
 /**
- * Provides a database connection pool including prepared statement connection pooling.
+ * Provides a database connection pool, including prepared statement connection pooling.
  * Initializes DBCP environment and provides access for creating JDBC connections
  * and prepared Statements.
  *
@@ -32,11 +35,9 @@ import java.util.Properties;
 public class DatabaseContext {
   private PoolingDataSource dataSource;
   private GenericObjectPool connectionPool;
-  private String jdbcDriver;
-  private int initialSize;
-  private int maxActive;
-  private Properties dbProperties;
-  private String validationQuery;
+  private static DatabaseContext databaseContext;
+
+  private static final Log log = LogFactory.getLog(DatabaseContext.class);
 
   /**
    * Construct a db context
@@ -47,16 +48,7 @@ public class DatabaseContext {
    * @param validationQuery to validate that the connection is still valid
    * @throws DatabaseException DatabaseException
    */
-  public DatabaseContext(final String jdbcDriver, final Properties dbProperties, final int initialSize, final int maxActive, final String validationQuery) throws DatabaseException {
-    this.dbProperties = dbProperties;
-    this.jdbcDriver = jdbcDriver;
-    this.maxActive = maxActive;
-    this.initialSize = initialSize;
-    this.validationQuery = validationQuery;
-    init();
-  }
-
-  private void init() throws DatabaseException {
+  private DatabaseContext(final String jdbcDriver, final Properties dbProperties, final int initialSize, final int maxActive, final String validationQuery) throws DatabaseException {
     try {
       Class.forName(jdbcDriver);
     } catch (final ClassNotFoundException e) {
@@ -74,7 +66,7 @@ public class DatabaseContext {
     connectionPool.setMaxActive(maxActive);
     connectionPool.setWhenExhaustedAction(GenericObjectPool.WHEN_EXHAUSTED_BLOCK);
     connectionPool.getMaxActive();
-    
+
     final KeyedObjectPoolFactory stmtPool = new GenericKeyedObjectPoolFactory(null);
 
     /* During instantiation, the PoolableConnectionFactory class registers itself to the
@@ -133,6 +125,71 @@ public class DatabaseContext {
         throw new DatabaseException("Unable to shutdown Database context");
       }
     }
+  }
+
+  /**
+   * Convenience method that returns a single string as a result
+   * @param sqlQuery sqlQuery
+   * @param whereClauseParam1 whereClauseParam1
+   * @return a string value
+   * @throws DatabaseException DatabaseException
+   * @throws SQLException SQLException
+   */
+  public String getSingleStringValueFromDb(final String sqlQuery, final String whereClauseParam1) throws DatabaseException, SQLException {
+    String returnValue = null;
+
+    Connection connection = null;
+    PreparedStatement preparedStatement = null;
+
+    try {
+      connection = getConnection();
+      preparedStatement = getPreparedStatement(connection, sqlQuery);
+      preparedStatement.setString(1, whereClauseParam1);
+      final ResultSet resultSet = preparedStatement.executeQuery();
+      resultSet.next();
+      returnValue = resultSet.getString(1);
+      resultSet.close();
+    } finally {
+        if (preparedStatement != null) {
+          preparedStatement.close();
+        }
+        if (connection != null) {
+          connection.close();
+        }
+    }
+
+    return returnValue;
+  }
+
+  /**
+   * This method is not thread safe during construction time as it will be called by the
+   * servlet container listener during application startup.
+   *
+   * @param jdbcDriver jdbcDriver
+   * @param dbProperties dbProperties
+   * @param initialSize initialSize
+   * @param maxActive maxActive
+   * @param validationQuery validationQuery
+   * @return the instance of DatabaseContext
+   * @throws DatabaseException DatabaseException
+   */
+  public static DatabaseContext createDatabaseContext(final String jdbcDriver, final Properties dbProperties, final int initialSize, final int maxActive, final String validationQuery) throws DatabaseException {
+    databaseContext = new DatabaseContext(jdbcDriver, dbProperties, initialSize, maxActive, validationQuery);
+    log.debug("DatabaseContext constructed");
+    return databaseContext;
+  }
+
+  /**
+   * @return the singleton instance of the DatabaseContext
+   * @throws DatabaseException DatabaseException
+   */
+  public static DatabaseContext getInstance() throws DatabaseException {
+    if (null == databaseContext) {
+      final String message = "Database context not initialized yet. Please call the createDatabaseContext method first";
+      log.debug(message);
+      throw new DatabaseException(message);
+    }
+    return databaseContext;
   }
 
 }

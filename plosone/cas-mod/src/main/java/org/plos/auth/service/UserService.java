@@ -12,9 +12,6 @@ package org.plos.auth.service;
 import org.plos.auth.db.DatabaseException;
 import org.plos.auth.db.DatabaseContext;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
 import java.sql.SQLException;
 
 /**
@@ -39,7 +36,7 @@ public class UserService {
    */
   public String getGuid(final String loginname) throws DatabaseException {
     try {
-      return getDbValue(usernameToGuidSql, loginname);
+      return context.getSingleStringValueFromDb(usernameToGuidSql, loginname);
     } catch (SQLException e) {
       throw new DatabaseException("Unable to get loginame from db", e);
     }
@@ -53,35 +50,9 @@ public class UserService {
    */
   public String getEmailAddress(final String guid) throws DatabaseException {
     try {
-      return getDbValue(guidToUsernameSql, guid);
+      return context.getSingleStringValueFromDb(guidToUsernameSql, guid);
     } catch (SQLException e) {
       throw new DatabaseException("Unable to get email address from db", e);
     }
-  }
-
-  private String getDbValue(final String sqlQuery, final String whereClauseParam) throws DatabaseException, SQLException {
-    String returnValue = null;
-
-    Connection connection = null;
-    PreparedStatement preparedStatement = null;
-
-    try {
-      connection = context.getConnection();
-      preparedStatement = context.getPreparedStatement(connection, sqlQuery);
-      preparedStatement.setString(1, whereClauseParam);
-      final ResultSet resultSet = preparedStatement.executeQuery();
-      resultSet.next();
-      returnValue = resultSet.getString(1);
-      resultSet.close();
-    } finally {
-        if (preparedStatement != null) {
-          preparedStatement.close();
-        }
-        if (connection != null) {
-          connection.close();
-        }
-    }
-
-    return returnValue;
   }
 }

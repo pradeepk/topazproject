@@ -80,7 +80,7 @@ public class AuthServletContextListener implements ServletContextListener {
     dbProperties.setProperty("password", context.getInitParameter("adminPassword"));
 
     try {
-      dbContext = new DatabaseContext(
+      dbContext = DatabaseContext.createDatabaseContext(
               context.getInitParameter("jdbcDriver"),
               dbProperties,
               Integer.parseInt(context.getInitParameter("initialSize")),
