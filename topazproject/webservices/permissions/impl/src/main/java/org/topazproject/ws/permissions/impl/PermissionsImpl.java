@@ -59,6 +59,10 @@ public class PermissionsImpl implements Permissions {
   //
   private static final String GRANTS_MODEL  = "<" + CONF.getString("topaz.models.grants") + ">";
   private static final String REVOKES_MODEL = "<" + CONF.getString("topaz.models.revokes") + ">";
+  private static final String GRANTS_MODEL_TYPE =
+      "<" + CONF.getString("topaz.models.grants[@type]", "http://tucana.org/tucana#Model") + ">";
+  private static final String REVOKES_MODEL_TYPE =
+      "<" + CONF.getString("topaz.models.revokes[@type]", "http://tucana.org/tucana#Model") + ">";
 
   //
   private static final String ITQL_LIST =
@@ -86,8 +90,8 @@ public class PermissionsImpl implements Permissions {
 
     // clear all since we want un-aliased uris always
     itql.getAliases().clear();
-    itql.doUpdate("create " + GRANTS_MODEL + ";");
-    itql.doUpdate("create " + REVOKES_MODEL + ";");
+    itql.doUpdate("create " + GRANTS_MODEL  + " " + GRANTS_MODEL_TYPE  + ";");
+    itql.doUpdate("create " + REVOKES_MODEL + " " + REVOKES_MODEL_TYPE + ";");
   }
 
   /**

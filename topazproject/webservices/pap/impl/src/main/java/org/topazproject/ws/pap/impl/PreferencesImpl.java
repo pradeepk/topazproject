@@ -55,8 +55,10 @@ public class PreferencesImpl implements Preferences {
   private static final String FOAF_URI       = "http://xmlns.com/foaf/0.1/";
 
   private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
-  
+
   private static final String MODEL          = "<" + CONF.getString("topaz.models.preferences") + ">";
+  private static final String MODEL_TYPE     =
+    "<" + CONF.getString("topaz.models.preferences[@type]", "http://tucana.org/tucana#Model") + ">";
   private static final String USER_MODEL     = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String PREFS_PATH_PFX = "preferences";
 
@@ -115,7 +117,7 @@ public class PreferencesImpl implements Preferences {
     this.pep  = pep;
 
     itql.getAliases().putAll(aliases);
-    itql.doUpdate("create " + MODEL + ";");
+    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
 
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
     conf = conf.subset("topaz");

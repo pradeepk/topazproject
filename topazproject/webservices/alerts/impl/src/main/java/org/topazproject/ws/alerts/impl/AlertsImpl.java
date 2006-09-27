@@ -70,6 +70,8 @@ public class AlertsImpl implements Alerts {
   private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
   
   private static final String MODEL_ALERTS   = "<" + CONF.getString("topaz.models.alerts") + ">";
+  private static final String ALERTS_TYPE    =
+      "<" + CONF.getString("topaz.models.alerts[@type]", "http://tucana.org/tucana#Model") + ">";
   private static final String MODEL_ARTICLES = "<" + CONF.getString("topaz.models.articles") + ">";
   private static final String MODEL_PREFS    = "<" + CONF.getString("topaz.models.preferences") + ">";
   private static final String MODEL_XSD      = "<" + CONF.getString("topaz.models.xsd") + ">";
@@ -170,12 +172,12 @@ public class AlertsImpl implements Alerts {
   private void init() throws ItqlInterpreterException, RemoteException {
     this.itql.getAliases().putAll(this.aliases);
     this.itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";");
-    this.itql.doUpdate("create " + MODEL_ALERTS + ";");
-    
+    this.itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";");
+
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
     conf = conf.subset("topaz");
   }
-  
+
   // See Alerts.java interface
   public void startUser(String userId) throws RemoteException {
     checkAccess(pep.START_USER, userId);

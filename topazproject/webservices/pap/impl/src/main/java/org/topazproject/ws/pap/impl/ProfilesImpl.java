@@ -58,6 +58,8 @@ public class ProfilesImpl implements Profiles {
   private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
 
   private static final String MODEL          = "<" + CONF.getString("topaz.models.profiles") + ">";
+  private static final String MODEL_TYPE     =
+      "<" + CONF.getString("topaz.models.profiles[@type]", "http://tucana.org/tucana#Model") + ">";
   private static final String USER_MODEL     = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String IDS_NS         = "topaz.ids";
   private static final String PROF_PATH_PFX  = "profile";
@@ -123,7 +125,7 @@ public class ProfilesImpl implements Profiles {
 
     itql = new ItqlHelper(mulgaraSvc);
     itql.getAliases().putAll(aliases);
-    itql.doUpdate("create " + MODEL + ";");
+    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
 
     apim = APIMStubFactory.create(fedoraSvc);
 
