@@ -25,29 +25,9 @@
       <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.0.4</version>
-    </dependency>
-    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
       <version>2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>fedora-client</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>mulgara-client</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>auth-helper</artifactId>
-      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>

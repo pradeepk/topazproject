@@ -23,6 +23,7 @@ import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.attr.AnyURIAttribute;
 import com.sun.xacml.ctx.Attribute;
 import com.sun.xacml.ctx.RequestCtx;
+import com.sun.xacml.finder.AttributeFinder;
 
 /**
  * A superclass for simple XACML PEP's.
@@ -92,14 +93,11 @@ public abstract class AbstractSimplePEP extends DenyBiasedPEP {
   /**
    * Creates a new PEP object.
    *
-   * @param context The JAX-RPC end point context to which this PEP is associated with.
-   * @throws IOException when a PDP could configuration file could not be accessed
-   * @throws ParsingException on an error in parsing a PDP configuration
-   * @throws UnknownIdentifierException when an unknown identifier was found in PDP configuration
+   * @param  pdp The pdp to use for evaluating requests
+   * @param  pdp The subject attributes 
    */
-  protected AbstractSimplePEP(PDP pdp, Set subjAttrs)
-      throws IOException, ParsingException, UnknownIdentifierException {
-    setPDP(pdp);
+  protected AbstractSimplePEP(PDP pdp, Set subjAttrs) {
+    super(pdp);
     subjectAttrs = subjAttrs;
   }
 

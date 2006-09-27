@@ -21,6 +21,14 @@
     <version>0.5-SNAPSHOT</version>
   </parent>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-common-api</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
+
   <licenses>
     <license>
       <name>Educational Community License version 1.0</name>

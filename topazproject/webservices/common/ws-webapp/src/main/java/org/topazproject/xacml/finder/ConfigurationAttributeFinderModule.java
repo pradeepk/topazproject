@@ -28,7 +28,7 @@ import org.apache.commons.configuration.Configuration;
 import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.xacml.Util;
-import org.topazproject.xacml.attr.ServletEndpointContextAttribute;
+import org.topazproject.xacml.ws.ServletEndpointContextAttribute;
 
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.ParsingException;

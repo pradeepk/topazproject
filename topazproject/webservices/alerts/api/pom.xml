@@ -23,6 +23,14 @@
     <artifactId>ws-alerts</artifactId>
     <version>0.5-SNAPSHOT</version>
   </parent>
+  
+  <dependencies>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-common-api</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+  </dependencies>
 
   <licenses>
     <license>

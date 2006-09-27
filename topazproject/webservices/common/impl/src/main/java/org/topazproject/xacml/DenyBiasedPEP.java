@@ -11,28 +11,33 @@ package org.topazproject.xacml;
 
 import java.io.ByteArrayOutputStream;
 
+import java.net.URI;
+
 import java.security.Principal;
 
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import javax.xml.rpc.server.ServletEndpointContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.xacml.attr.ServletEndpointContextAttribute;
-
+import com.sun.xacml.BasicEvaluationCtx;
+import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.Obligation;
 import com.sun.xacml.PDP;
+import com.sun.xacml.ParsingException;
 import com.sun.xacml.attr.AttributeValue;
+import com.sun.xacml.attr.BagAttribute;
+import com.sun.xacml.attr.StringAttribute;
+import com.sun.xacml.cond.EvaluationResult;
 import com.sun.xacml.ctx.Attribute;
 import com.sun.xacml.ctx.RequestCtx;
 import com.sun.xacml.ctx.ResponseCtx;
 import com.sun.xacml.ctx.Result;
 import com.sun.xacml.ctx.Status;
 import com.sun.xacml.ctx.Subject;
+import com.sun.xacml.finder.AttributeFinder;
 
 /**
  * A base class for Deny-Biased-PEP implementations.
@@ -40,8 +45,10 @@ import com.sun.xacml.ctx.Subject;
  * @author Pradeep Krishnan
  */
 public class DenyBiasedPEP {
-  private static final Log log = LogFactory.getLog(DenyBiasedPEP.class);
+  private static final Log log           = LogFactory.getLog(DenyBiasedPEP.class);
   private PDP              pdp;
+  private AttributeFinder  attrFinder;
+  private URI              STR_ATTR_TYPE = URI.create(StringAttribute.identifier);
 
   /**
    * Constructs a DenyBiasedPEP with the given PDP.
@@ -49,32 +56,20 @@ public class DenyBiasedPEP {
    * @param pdp The PDP to evaluate requests against
    */
   public DenyBiasedPEP(PDP pdp) {
-    this.pdp = pdp;
+    this(pdp,
+         (pdp instanceof PDPFactory.TopazPDP) ? ((PDPFactory.TopazPDP) pdp).getAttributeFinder()
+         : null);
   }
 
   /**
-   * Constructs a DenyBiasedPEP.
-   */
-  public DenyBiasedPEP() {
-    this(null);
-  }
-
-  /**
-   * Returns the PDP used for request evaluations.
+   * Constructs a DenyBiasedPEP with the given PDP.
    *
-   * @return the pdp
+   * @param pdp The PDP to evaluate requests against
+   * @param attrFinder the attribute finder used by the PDP
    */
-  public PDP getPDP() {
-    return pdp;
-  }
-
-  /**
-   * Sets the PDP used for request evaluations.
-   *
-   * @param pdp the PDP
-   */
-  public void setPDP(PDP pdp) {
-    this.pdp = pdp;
+  public DenyBiasedPEP(PDP pdp, AttributeFinder attrFinder) {
+    this.pdp          = pdp;
+    this.attrFinder   = attrFinder;
   }
 
   /**
@@ -104,7 +99,15 @@ public class DenyBiasedPEP {
    * @throws SecurityException to indicate evaluation results other than an explicit PERMIT.
    */
   public Set evaluate(RequestCtx request, Set knownObligations) {
-    ResponseCtx response = pdp.evaluate(request);
+    EvaluationCtx ctx;
+
+    try {
+      ctx = new BasicEvaluationCtx(request, attrFinder, true);
+    } catch (ParsingException e) {
+      throw new SecurityException(e);
+    }
+
+    ResponseCtx response = pdp.evaluate(ctx);
     Set         results  = response.getResults();
     Decision    decision = new Decision(knownObligations);
 
@@ -123,7 +126,7 @@ public class DenyBiasedPEP {
         if (!o.getId().toString().equals("log"))
           decision.analyze(o);
         else if (log.isInfoEnabled())
-          log.info(getLogMsg(o, result.getResource(), request));
+          log.info(getLogMsg(o, result.getResource(), ctx));
       }
     }
 
@@ -140,26 +143,19 @@ public class DenyBiasedPEP {
    * Logs a 'log' obligation. Helpful in identifying the policy that effected the decision.
    * 
    * <p>
-   * Ideally would have liked to see this obligation supply the values to be logged. It is possible
-   * to supply attribute ids as values and we do the lookup here. However that would require we
-   * build our own EvaluationCtx and that requires us to have access to the same attribute finder
-   * that PDP uses. It is all possible. But requires bit more plumbing.
-   * </p>
-   * 
-   * <p>
-   * So currently all it does is to look for the action and user from the request and logs them
-   * along with the resource from the result and the policy-id supplied by the obligation.
+   * Currently all it does is to look for the action and user from the request and logs them along
+   * with the resource from the result and the policy-id supplied by the obligation.
    * </p>
    *
    * @param logObligation the logObligation that contains the policy that is firing this
    * @param resource the resource associated with the result
-   * @param request the eval request
+   * @param ctx the eval context
    *
    * @return Returns a log message
    */
-  protected String getLogMsg(Obligation logObligation, String resource, RequestCtx request) {
-    String   user   = getUser(request);
-    String   action = getAction(request);
+  protected String getLogMsg(Obligation logObligation, String resource, EvaluationCtx ctx) {
+    String   user   = getUser(ctx);
+    String   action = getAction(ctx);
     String   policy = null;
 
     Iterator it = logObligation.getAssignments().iterator();
@@ -177,45 +173,32 @@ public class DenyBiasedPEP {
     return "'" + policy + effects + user + "' to do '" + action + "' on '" + resource + "'";
   }
 
-  private String getAction(RequestCtx request) {
-    Iterator it = request.getAction().iterator();
+  private String getAction(EvaluationCtx ctx) {
+    EvaluationResult result = ctx.getActionAttribute(STR_ATTR_TYPE, Util.ACTION_ID, null);
 
-    if (!it.hasNext())
-      return null;
+    if (result.indeterminate())
+      return "[undefined action]";
 
-    // xxx: return the firts action for now
-    Attribute attr = (Attribute) it.next();
+    BagAttribute bag = (BagAttribute) result.getAttributeValue();
 
-    return attr.getValue().encode();
+    if (bag.isEmpty())
+      return "[undefined action]";
+
+    return ((StringAttribute) bag.iterator().next()).getValue();
   }
 
-  private String getUser(RequestCtx request) {
-    Iterator it = request.getSubjects().iterator();
+  private String getUser(EvaluationCtx ctx) {
+    EvaluationResult result = ctx.getSubjectAttribute(STR_ATTR_TYPE, Util.SUBJECT_ID, null, null);
 
-    if (!it.hasNext())
-      return null;
+    if (result.indeterminate())
+      return "[undefined user]";
 
-    // xxx: get the first subject only for now
-    Subject subject = (Subject) it.next();
+    BagAttribute bag = (BagAttribute) result.getAttributeValue();
 
-    it = subject.getAttributes().iterator();
+    if (bag.isEmpty())
+      return "[undefined user]";
 
-    if (!it.hasNext())
-      return null;
-
-    // xxx: get the first attr only for now
-    Attribute      attr = (Attribute) it.next();
-
-    AttributeValue value = attr.getValue();
-
-    if (value instanceof ServletEndpointContextAttribute) {
-      ServletEndpointContext ctx       = ((ServletEndpointContextAttribute) value).getValue();
-      Principal              principal = ctx.getUserPrincipal();
-
-      return (principal == null) ? null : principal.getName();
-    }
-
-    return value.encode();
+    return ((StringAttribute) bag.iterator().next()).getValue();
   }
 
   /**

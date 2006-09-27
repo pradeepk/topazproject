@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>${pom.parent.artifactId}-impl</artifactId>
   <packaging>jar</packaging>
-  <name>Shared Topaz impl code</name>
+  <name>Shared Topaz Implementation code</name>
 
   <parent>
     <groupId>org.topazproject.ws</groupId>
@@ -13,21 +13,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>axis</groupId>
-      <artifactId>axis</artifactId>
-      <version>1.2.1</version>
-    </dependency>
-    <dependency>
-      <groupId>axis</groupId>
-      <artifactId>axis-jaxrpc</artifactId>
-      <version>1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>axis</groupId>
-      <artifactId>axis-saaj</artifactId>
-      <version>1.2.1</version>
-    </dependency>
-    <dependency>
       <groupId>xacml</groupId>
       <artifactId>sunxacml</artifactId>
       <version>1.2</version>
@@ -36,6 +21,7 @@
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.3</version>
+      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
@@ -50,6 +36,11 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>mulgara-client</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>fedora-client</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>

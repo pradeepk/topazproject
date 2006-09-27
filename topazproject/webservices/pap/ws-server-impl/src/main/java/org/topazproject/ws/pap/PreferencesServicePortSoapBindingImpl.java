@@ -28,7 +28,7 @@ import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.pap.impl.PreferencesImpl;
 import org.topazproject.ws.pap.impl.PreferencesPEP;
 import org.topazproject.ws.users.NoSuchUserIdException;
-import org.topazproject.xacml.Util;
+import org.topazproject.xacml.ws.WSXacmlUtil;
 
 /** 
  * Implements the server-side of the preferences webservice. This is really just a wrapper around
@@ -114,7 +114,8 @@ public class PreferencesServicePortSoapBindingImpl implements Preferences, Servi
     }
 
     public WSPreferencesPEP(ServletEndpointContext context) throws Exception {
-      super(Util.lookupPDP(context, "topaz.preferences.pdpName"), Util.createSubjAttrs(context));
+      super(WSXacmlUtil.lookupPDP(context, "topaz.preferences.pdpName"),
+            WSXacmlUtil.createSubjAttrs(context));
     }
   }
 }

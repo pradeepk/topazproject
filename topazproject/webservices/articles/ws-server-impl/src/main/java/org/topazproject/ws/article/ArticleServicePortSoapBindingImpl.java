@@ -29,7 +29,7 @@ import org.topazproject.common.ExceptionUtils;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.article.impl.ArticleImpl;
 import org.topazproject.ws.article.impl.ArticlePEP;
-import org.topazproject.xacml.Util;
+import org.topazproject.xacml.ws.WSXacmlUtil;
 
 public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecycle {
   private static final Log log = LogFactory.getLog(ArticleServicePortSoapBindingImpl.class);
@@ -170,7 +170,8 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
     }
 
     public WSArticlePEP(ServletEndpointContext context) throws Exception {
-      super(Util.lookupPDP(context, "topaz.articles.pdpName"), Util.createSubjAttrs(context));
+      super(WSXacmlUtil.lookupPDP(context, "topaz.articles.pdpName"), 
+            WSXacmlUtil.createSubjAttrs(context));
     }
   }
 }

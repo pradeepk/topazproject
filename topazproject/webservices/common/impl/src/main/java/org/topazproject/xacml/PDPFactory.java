@@ -22,8 +22,10 @@ import java.util.Map;
 import javax.servlet.ServletContext;
 
 import com.sun.xacml.PDP;
+import com.sun.xacml.PDPConfig;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
+import com.sun.xacml.finder.AttributeFinder;
 
 /**
  * A factory class for creating PDPs configured in a config file. PDPs can be configured with the
@@ -105,13 +107,13 @@ public class PDPFactory {
   public PDP getDefaultPDP() throws UnknownIdentifierException {
     synchronized (this) {
       if (defaultPDP == null)
-        defaultPDP = new PDP(store.getDefaultPDPConfig());
+        defaultPDP = new TopazPDP(store.getDefaultPDPConfig());
 
       return defaultPDP;
     }
   }
 
-  /**
+ /**
    * Returns a PDP corresponding to the named configuration.
    *
    * @param name Configuration name
@@ -126,7 +128,7 @@ public class PDPFactory {
       PDP pdp = (PDP) pdpMap.get(name);
 
       if (pdp == null) {
-        pdp = new PDP(store.getPDPConfig(name));
+        pdp = new TopazPDP(store.getPDPConfig(name));
         pdpMap.put(name, pdp);
       }
 
@@ -220,4 +222,18 @@ public class PDPFactory {
                                     + " must be made available as a system property OR "
                                     + DEFAULT_PDP_CONFIG + " must exist.");
   }
+
+  public static class TopazPDP extends PDP {
+    private AttributeFinder attrFinder;
+
+    public TopazPDP(PDPConfig config) {
+      super(config);
+      attrFinder = config.getAttributeFinder();
+    }
+
+    public AttributeFinder getAttributeFinder() {
+      return attrFinder;
+    }
+  }
+
 }

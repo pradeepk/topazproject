@@ -34,7 +34,7 @@ import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.permissions.impl.PermissionsImpl;
 import org.topazproject.ws.permissions.impl.PermissionsPEP;
 
-import org.topazproject.xacml.Util;
+import org.topazproject.xacml.ws.WSXacmlUtil;
 
 /**
  * Implements the permissions webservice.
@@ -189,7 +189,8 @@ public class PermissionsServicePortSoapBindingImpl implements Permissions, Servi
 
     public WSPermissionsPEP(ServletEndpointContext context)
                      throws Exception {
-      super(Util.lookupPDP(context, "topaz.permissions.pdpName"), Util.createSubjAttrs(context));
+      super(WSXacmlUtil.lookupPDP(context, "topaz.permissions.pdpName"),
+            WSXacmlUtil.createSubjAttrs(context));
     }
   }
 }

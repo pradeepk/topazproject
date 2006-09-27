@@ -48,7 +48,7 @@ import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.ws.annotation.impl.AnnotationsImpl;
 import org.topazproject.ws.annotation.impl.AnnotationsPEP;
 
-import org.topazproject.xacml.Util;
+import org.topazproject.xacml.ws.WSXacmlUtil;
 
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
@@ -141,7 +141,8 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
                                    title, body);
     } catch (Throwable t) {
       newExceptionHandler(t).createAnnotation(null, null, null, null, null, false, null, null);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -156,9 +157,9 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
       return impl.createAnnotation(mediator, type, annotates, context, supersedes, anonymize,
                                    title, contentType, content);
     } catch (Throwable t) {
-      newExceptionHandler(t).createAnnotation(null, null, null, null, null, false, null, null,
-                                              null);
-      return null;      // not reached
+      newExceptionHandler(t).createAnnotation(null, null, null, null, null, false, null, null, null);
+
+      return null; // not reached
     }
   }
 
@@ -183,7 +184,8 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
       return impl.getAnnotationInfo(id);
     } catch (Throwable t) {
       newExceptionHandler(t).getAnnotationInfo(null);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -196,7 +198,8 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
       return impl.getLatestAnnotations(id);
     } catch (Throwable t) {
       newExceptionHandler(t).getLatestAnnotations(null);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -209,7 +212,8 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
       return impl.getPrecedingAnnotations(id);
     } catch (Throwable t) {
       newExceptionHandler(t).getPrecedingAnnotations(null);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -222,7 +226,8 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
       return impl.listAnnotations(mediator, on, type);
     } catch (Throwable t) {
       newExceptionHandler(t).listAnnotations(null, null, null);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -247,7 +252,8 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
       return impl.listAnnotations(mediator, state);
     } catch (Throwable t) {
       newExceptionHandler(t).listAnnotations(null, 0);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -261,7 +267,8 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
       return impl.getAnnotatedContent(resource, resourceURL, content, mediator, type);
     } catch (Throwable t) {
       newExceptionHandler(t).getAnnotatedContent(null, null, null, null, null);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -344,7 +351,8 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
 
     public WSAnnotationsPEP(ServletEndpointContext context)
                      throws IOException, ParsingException, UnknownIdentifierException {
-      super(Util.lookupPDP(context, "topaz.annotations.pdpName"), Util.createSubjAttrs(context));
+      super(WSXacmlUtil.lookupPDP(context, "topaz.annotations.pdpName"),
+            WSXacmlUtil.createSubjAttrs(context));
     }
   }
 }

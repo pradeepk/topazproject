@@ -27,7 +27,7 @@ import org.topazproject.common.ExceptionUtils;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.users.impl.UserAccountsImpl;
 import org.topazproject.ws.users.impl.UserAccountsPEP;
-import org.topazproject.xacml.Util;
+import org.topazproject.xacml.ws.WSXacmlUtil;
 
 /** 
  * Implements the server-side of the user-accounts webservice. This is really just a wrapper around
@@ -185,7 +185,8 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
     }
 
     public WSUserAccountsPEP(ServletEndpointContext context) throws Exception {
-      super(Util.lookupPDP(context, "topaz.user-accounts.pdpName"), Util.createSubjAttrs(context));
+      super(WSXacmlUtil.lookupPDP(context, "topaz.user-accounts.pdpName"),
+            WSXacmlUtil.createSubjAttrs(context));
     }
   }
 }

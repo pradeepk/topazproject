@@ -8,7 +8,7 @@
     <attributeFinderModule
       class="org.topazproject.xacml.finder.ConfigurationAttributeFinderModule"/>
     <attributeFinderModule
-      class="org.topazproject.xacml.finder.ServletEndpointContextAttributeFinderModule"/>
+      class="org.topazproject.xacml.ws.ServletEndpointContextAttributeFinderModule"/>
     <policyFinderModule class="org.topazproject.xacml.finder.ResourcePolicyModule"
       name="standard-policy-finder">
       <list>
@@ -37,7 +37,7 @@
     <attributeFinderModule
       class="org.topazproject.xacml.finder.ConfigurationAttributeFinderModule"/>
     <attributeFinderModule
-      class="org.topazproject.xacml.finder.ServletEndpointContextAttributeFinderModule"/>
+      class="org.topazproject.xacml.ws.ServletEndpointContextAttributeFinderModule"/>
     <policyFinderModule class="org.topazproject.xacml.finder.ResourcePolicyModule"
       name="test-policy-finder">
       <list>

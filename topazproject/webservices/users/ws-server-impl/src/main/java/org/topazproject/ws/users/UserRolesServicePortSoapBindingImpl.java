@@ -27,7 +27,7 @@ import org.topazproject.common.ExceptionUtils;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.users.impl.UserRolesImpl;
 import org.topazproject.ws.users.impl.UserRolesPEP;
-import org.topazproject.xacml.Util;
+import org.topazproject.xacml.ws.WSXacmlUtil;
 
 /** 
  * Implements the server-side of the user-roles webservice. This is really just a wrapper around
@@ -112,7 +112,8 @@ public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLi
     }
 
     public WSUserRolesPEP(ServletEndpointContext context) throws Exception {
-      super(Util.lookupPDP(context, "topaz.user-roles.pdpName"), Util.createSubjAttrs(context));
+      super(WSXacmlUtil.lookupPDP(context, "topaz.user-roles.pdpName"),
+            WSXacmlUtil.createSubjAttrs(context));
     }
   }
 }

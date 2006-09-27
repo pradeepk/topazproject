@@ -28,7 +28,7 @@ import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.pap.impl.ProfilesImpl;
 import org.topazproject.ws.pap.impl.ProfilesPEP;
 import org.topazproject.ws.users.NoSuchUserIdException;
-import org.topazproject.xacml.Util;
+import org.topazproject.xacml.ws.WSXacmlUtil;
 
 /** 
  * Implements the server-side of the profiles webservice. This is really just a wrapper around
@@ -117,7 +117,8 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
     }
 
     public WSProfilesPEP(ServletEndpointContext context) throws Exception {
-      super(Util.lookupPDP(context, "topaz.profiles.pdpName"), Util.createSubjAttrs(context));
+      super(WSXacmlUtil.lookupPDP(context, "topaz.profiles.pdpName"),
+            WSXacmlUtil.createSubjAttrs(context));
     }
   }
 }

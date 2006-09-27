@@ -30,7 +30,7 @@ import org.topazproject.common.ExceptionUtils;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.alerts.impl.AlertsImpl;
 import org.topazproject.ws.alerts.impl.AlertsPEP;
-import org.topazproject.xacml.Util;
+import org.topazproject.xacml.ws.WSXacmlUtil;
 
 /** 
  * Implements the server-side of the alerts webservice. This is really just a wrapper around
@@ -139,7 +139,8 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
     }
 
     public WSAlertsPEP(ServletEndpointContext context) throws Exception {
-      super(Util.lookupPDP(context, "topaz.alerts.pdpName"), Util.createSubjAttrs(context));
+      super(WSXacmlUtil.lookupPDP(context, "topaz.alerts.pdpName"),
+            WSXacmlUtil.createSubjAttrs(context));
     }
   }
 }

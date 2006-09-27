@@ -29,7 +29,7 @@ import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.ws.ratings.impl.RatingsImpl;
 import org.topazproject.ws.ratings.impl.RatingsPEP;
 import org.topazproject.ws.users.NoSuchUserIdException;
-import org.topazproject.xacml.Util;
+import org.topazproject.xacml.ws.WSXacmlUtil;
 
 /** 
  * Implements the server-side of the ratings webservice. This is really just a wrapper around
@@ -129,7 +129,8 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
     }
 
     public WSRatingsPEP(ServletEndpointContext context) throws Exception {
-      super(Util.lookupPDP(context, "topaz.ratings.pdpName"), Util.createSubjAttrs(context));
+      super(WSXacmlUtil.lookupPDP(context, "topaz.ratings.pdpName"),
+          WSXacmlUtil.createSubjAttrs(context));
     }
   }
 }

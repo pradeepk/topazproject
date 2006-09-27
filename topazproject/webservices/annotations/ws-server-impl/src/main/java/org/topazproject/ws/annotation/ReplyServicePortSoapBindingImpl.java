@@ -46,7 +46,7 @@ import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.ws.annotation.impl.RepliesImpl;
 import org.topazproject.ws.annotation.impl.RepliesPEP;
 
-import org.topazproject.xacml.Util;
+import org.topazproject.xacml.ws.WSXacmlUtil;
 
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
@@ -138,7 +138,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
       return impl.createReply(mediator, type, root, inReplyTo, anonymize, title, body);
     } catch (Throwable t) {
       newExceptionHandler(t).createReply(null, null, null, null, false, null, null);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -153,7 +154,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
                               content);
     } catch (Throwable t) {
       newExceptionHandler(t).createReply(null, null, null, null, false, null, null, null);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -188,7 +190,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
       return impl.getReplyInfo(id);
     } catch (Throwable t) {
       newExceptionHandler(t).getReplyInfo(null);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -201,7 +204,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
       return impl.listReplies(root, inReplyTo);
     } catch (Throwable t) {
       newExceptionHandler(t).listReplies(null, null);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -214,7 +218,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
       return impl.listAllReplies(root, inReplyTo);
     } catch (Throwable t) {
       newExceptionHandler(t).listAllReplies(null, null);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -227,7 +232,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
       return impl.getReplyThread(root, inReplyTo);
     } catch (Throwable t) {
       newExceptionHandler(t).getReplyThread(null, null);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -235,7 +241,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
    * @see org.topazproject.ws.annotation.Reply#setReplyState
    */
   public void setReplyState(String id, int state)
-      throws NoSuchAnnotationIdException, RemoteException {
+                     throws NoSuchAnnotationIdException, RemoteException {
     try {
       impl.setReplyState(id, state);
     } catch (Throwable t) {
@@ -252,7 +258,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
       return impl.listReplies(mediator, state);
     } catch (Throwable t) {
       newExceptionHandler(t).listReplies(null, 0);
-      return null;      // not reached
+
+      return null; // not reached
     }
   }
 
@@ -335,7 +342,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
 
     public WSRepliesPEP(ServletEndpointContext context)
                  throws IOException, ParsingException, UnknownIdentifierException {
-      super(Util.lookupPDP(context, "topaz.replies.pdpName"), Util.createSubjAttrs(context));
+      super(WSXacmlUtil.lookupPDP(context, "topaz.replies.pdpName"),
+            WSXacmlUtil.createSubjAttrs(context));
     }
   }
 }

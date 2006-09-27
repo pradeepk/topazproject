@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.xacml.finder;
+package org.topazproject.xacml.ws;
 
 import java.net.URI;
 
@@ -24,7 +24,6 @@ import javax.servlet.http.HttpSession;
 import javax.xml.rpc.server.ServletEndpointContext;
 
 import org.topazproject.xacml.Util;
-import org.topazproject.xacml.attr.ServletEndpointContextAttribute;
 
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.ParsingException;
