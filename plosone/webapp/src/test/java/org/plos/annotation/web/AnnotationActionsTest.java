@@ -18,6 +18,7 @@ import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.Reply;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.AnnotationPermission;
+import org.topazproject.ws.annotation.Annotations;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -331,24 +332,24 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertTrue(annotation.isPublic());
 
     final List<String> grantsList = Arrays.asList(permissionWebService.listGrants(annotationId, AnnotationPermission.ALL_PRINCIPALS));
-    assertTrue(grantsList.contains(AnnotationPermission.Annotation.GET_INFO));
+    assertTrue(grantsList.contains(Annotations.Permissions.GET_ANNOTATION_INFO));
 
     final String currentUser = ANON_PRINCIPAL;
 
     final List<String> revokesList = Arrays.asList(permissionWebService.listRevokes(annotationId, currentUser));
-    assertTrue(revokesList.contains(AnnotationPermission.Annotation.DELETE));
-    assertTrue(revokesList.contains(AnnotationPermission.Annotation.SUPERSEDE));
+    assertTrue(revokesList.contains(Annotations.Permissions.DELETE_ANNOTATION));
+    assertTrue(revokesList.contains(Annotations.Permissions.SUPERSEDE));
 
     //Cleanup - Reset the permissions so that these annotations can be deleted by other unit tests
     permissionWebService.cancelRevokes(
             annotationId,
-            new String[] {AnnotationPermission.Annotation.DELETE, AnnotationPermission.Annotation.SUPERSEDE},
+            new String[] {Annotations.Permissions.DELETE_ANNOTATION, Annotations.Permissions.SUPERSEDE},
             new String[] {currentUser}
     );
     
     permissionWebService.cancelGrants(
             annotationId,
-            new String[] {AnnotationPermission.Annotation.GET_INFO},
+            new String[] {Annotations.Permissions.GET_ANNOTATION_INFO},
             new String[] {AnnotationPermission.ALL_PRINCIPALS}
     );
   }

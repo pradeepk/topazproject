@@ -12,6 +12,7 @@ import org.plos.permission.service.PermissionWebService;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.annotation.ReplyInfo;
+import org.topazproject.ws.annotation.Annotations;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -36,7 +37,7 @@ public class AnnotationService extends BaseConfigurableService {
    * @param title title
    * @param mimeType mimeType
    * @param body body
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    * @return unique identifier for the newly created annotation
    */
   public String createAnnotation(final String target, final String context, final String title, final String mimeType, final String body) throws ApplicationException {
@@ -58,7 +59,7 @@ public class AnnotationService extends BaseConfigurableService {
    * @param title title
    * @param mimeType mimeType
    * @param body body
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    * @return unique identifier for the newly created reply
    */
   public String createReply(final String root, final String inReplyTo, final String title, final String mimeType, final String body) throws ApplicationException {
@@ -76,7 +77,7 @@ public class AnnotationService extends BaseConfigurableService {
   /**
    * @param annotationId annotationId
    * @param deletePreceding deletePreceding
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public void deleteAnnotation(final String annotationId, final boolean deletePreceding) throws ApplicationException {
     try {
@@ -92,7 +93,7 @@ public class AnnotationService extends BaseConfigurableService {
    * delete replies with a given root and base reply
    * @param root root
    * @param inReplyTo inReplyTo
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public void deleteReply(final String root, final String inReplyTo) throws ApplicationException {
     try {
@@ -107,7 +108,7 @@ public class AnnotationService extends BaseConfigurableService {
   /**
    * delete reply with id
    * @param replyId replyId of the reply
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public void deleteReply(final String replyId) throws ApplicationException {
     try {
@@ -121,7 +122,7 @@ public class AnnotationService extends BaseConfigurableService {
 
   /**
    * @param target target of the annotation
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    * @return a list of annotations
    */
   public Annotation[] listAnnotations(final String target) throws ApplicationException {
@@ -141,7 +142,7 @@ public class AnnotationService extends BaseConfigurableService {
    * List replies.
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    * @return a list of replies
    */
   public Reply[] listReplies(final String root, final String inReplyTo) throws ApplicationException {
@@ -159,7 +160,7 @@ public class AnnotationService extends BaseConfigurableService {
    * Get a list of all replies
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    * @return a list of all replies
    */
   public Reply[] listAllReplies(final String root, final String inReplyTo) throws ApplicationException {
@@ -175,7 +176,7 @@ public class AnnotationService extends BaseConfigurableService {
 
   /**
    * @param annotationId annotationId
-   * @throws org.plos.ApplicationException
+   * @throws ApplicationException ApplicationException
    * @return Annotation
    */
   public Annotation getAnnotation(final String annotationId) throws ApplicationException {
@@ -193,8 +194,8 @@ public class AnnotationService extends BaseConfigurableService {
    * Get reply
    * @param replyId replyId
    * @return the reply object
-   * @throws NoSuchIdException
-   * @throws ApplicationException
+   * @throws NoSuchIdException NoSuchIdException
+   * @throws ApplicationException ApplicationException
    */
   public Reply getReply(final String replyId) throws NoSuchIdException, ApplicationException {
     try {
@@ -217,7 +218,7 @@ public class AnnotationService extends BaseConfigurableService {
    * Get the bodyUrl of the annotation.
    * @param bodyUrl bodyUrl
    * @return content of the annotation
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public String getBody(final String bodyUrl) throws ApplicationException {
     try {
@@ -230,7 +231,7 @@ public class AnnotationService extends BaseConfigurableService {
   /**
    * Set the annotation as public.
    * @param annotationDoi annotationDoi
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public void setAnnotationPublic(final String annotationDoi) throws ApplicationException {
     final String[] everyone = new String[]{AnnotationPermission.ALL_PRINCIPALS};
@@ -238,13 +239,13 @@ public class AnnotationService extends BaseConfigurableService {
       permissionWebService.grant(
               annotationDoi,
               new String[]{
-                      AnnotationPermission.Annotation.GET_INFO}, everyone);
+                      Annotations.Permissions.GET_ANNOTATION_INFO}, everyone);
 
       permissionWebService.revoke(
               annotationDoi,
               new String[]{
-                      AnnotationPermission.Annotation.DELETE,
-                      AnnotationPermission.Annotation.SUPERSEDE});
+                      Annotations.Permissions.DELETE_ANNOTATION,
+                      Annotations.Permissions.SUPERSEDE});
 
       annotationWebService.setPublic(annotationDoi);
 

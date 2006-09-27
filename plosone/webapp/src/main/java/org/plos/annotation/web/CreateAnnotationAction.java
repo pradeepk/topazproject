@@ -10,7 +10,6 @@
 package org.plos.annotation.web;
 
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork.ActionContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
@@ -18,7 +17,6 @@ import org.plos.util.FileUtils;
 import org.plos.util.ProfanityCheckingService;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * Action to create an annotation. It also does profanity validation on the user content.
