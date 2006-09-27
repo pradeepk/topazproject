@@ -31,4 +31,9 @@
   <bean id="deleteReplyAction" class="org.plos.annotation.web.DeleteReplyAction"/>
 
   <bean id="getReply" class="org.plos.annotation.web.GetReplyAction"/>
+  
+  <bean id="createUserAction" class="org.plos.user.action.CreateUserAction"/>
+
+  <bean id="displayUserAction" class="org.plos.user.action.DisplayUserAction"/>
+
 </beans>

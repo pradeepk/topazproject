@@ -4,6 +4,7 @@
 package org.plos;
 
 import org.plos.annotation.service.AnnotationService;
+
 import org.plos.annotation.web.CreateAnnotationAction;
 import org.plos.annotation.web.DeleteAnnotationAction;
 import org.plos.annotation.web.ListAnnotationAction;
@@ -13,10 +14,22 @@ import org.plos.annotation.web.CreateReplyAction;
 import org.plos.annotation.web.BodyFetchAction;
 import org.plos.annotation.web.GetAnnotationAction;
 import org.plos.annotation.web.GetReplyAction;
+
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
+
 import org.plos.article.web.FetchArticleAction;
+
 import org.plos.permission.service.PermissionWebService;
+
+import org.plos.user.action.CreateUserAction;
+import org.plos.user.action.DisplayUserAction;
+
+import org.plos.user.service.PreferencesWebService;
+import org.plos.user.service.ProfileWebService;
+import org.plos.user.service.UserService;
+import org.plos.user.service.UserWebService;
+
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 import javax.xml.rpc.ServiceException;
@@ -37,6 +50,15 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private BodyFetchAction bodyFetchAction;
   private GetAnnotationAction getAnnotationAction;
   private GetReplyAction getReplyAction;
+  
+  private CreateUserAction createUserAction;
+  private DisplayUserAction displayUserAction;
+  
+  private PreferencesWebService preferencesWebService;
+  private ProfileWebService profileWebService;
+  private UserService userService;
+  private UserWebService userWebService;
+  
 
   protected String[] getConfigLocations() {
     return new String[]{"testApplicationContext.xml"};
@@ -152,5 +174,103 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
 
   public void setGetReplyAction(final GetReplyAction getReplyAction) {
     this.getReplyAction = getReplyAction;
+  }
+
+  /**
+   * @return Returns the bodyFetchAction.
+   */
+  public BodyFetchAction getBodyFetchAction() {
+    return bodyFetchAction;
+  }
+
+  /**
+   * @param bodyFetchAction The bodyFetchAction to set.
+   */
+  public void setBodyFetchAction(BodyFetchAction bodyFetchAction) {
+    this.bodyFetchAction = bodyFetchAction;
+  }
+
+  /**
+   * @return Returns the createUserAction.
+   */
+  public CreateUserAction getCreateUserAction() {
+    return createUserAction;
+  }
+
+  /**
+   * @param createUserAction The createUserAction to set.
+   */
+  public void setCreateUserAction(CreateUserAction createUserAction) {
+    this.createUserAction = createUserAction;
+  }
+
+  /**
+   * @return Returns the displayUserAction.
+   */
+  public DisplayUserAction getDisplayUserAction() {
+    return displayUserAction;
+  }
+
+  /**
+   * @param displayUserAction The displayUserAction to set.
+   */
+  public void setDisplayUserAction(DisplayUserAction displayUserAction) {
+    this.displayUserAction = displayUserAction;
+  }
+
+  /**
+   * @return Returns the preferencesWebService.
+   */
+  public PreferencesWebService getPreferencesWebService() {
+    return preferencesWebService;
+  }
+
+  /**
+   * @param preferencesWebService The preferencesWebService to set.
+   */
+  public void setPreferencesWebService(PreferencesWebService preferencesWebService) {
+    this.preferencesWebService = preferencesWebService;
+  }
+
+  /**
+   * @return Returns the profileWebService.
+   */
+  public ProfileWebService getProfileWebService() {
+    return profileWebService;
+  }
+
+  /**
+   * @param profileWebService The profileWebService to set.
+   */
+  public void setProfileWebService(ProfileWebService profileWebService) {
+    this.profileWebService = profileWebService;
+  }
+
+  /**
+   * @return Returns the userService.
+   */
+  public UserService getUserService() {
+    return userService;
+  }
+
+  /**
+   * @param userService The userService to set.
+   */
+  public void setUserService(UserService userService) {
+    this.userService = userService;
+  }
+
+  /**
+   * @return Returns the userWebService.
+   */
+  public UserWebService getUserWebService() {
+    return userWebService;
+  }
+
+  /**
+   * @param userWebService The userWebService to set.
+   */
+  public void setUserWebService(UserWebService userWebService) {
+    this.userWebService = userWebService;
   }
 }
