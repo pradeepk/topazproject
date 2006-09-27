@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project>
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>${pom.parent.artifactId}-server</artifactId>
+  <packaging>jar</packaging>
+  <name>Shared Topaz Webservice Server code</name>
+
+  <parent>
+    <groupId>org.topazproject.ws</groupId>
+    <artifactId>ws-common</artifactId>
+    <version>0.5-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+    <dependency>
+      <groupId>${pom.parent.groupId}</groupId>
+      <artifactId>${pom.parent.artifactId}-impl</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis-jaxrpc</artifactId>
+      <version>1.2</version>
+    </dependency>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis-saaj</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+  </dependencies>
+
+</project>
