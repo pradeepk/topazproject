@@ -57,12 +57,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>topaz-common</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-annotation-api</artifactId>
       <version>0.5-SNAPSHOT</version>
