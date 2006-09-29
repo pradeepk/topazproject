@@ -48,26 +48,26 @@ public class TestPasswordDigestService extends TestCase {
     }
   }
 
-//  public void testHashingOfSameStringShouldGiveDifferentResult() throws InterruptedException, PasswordServiceException {
-//    final PasswordDigestService passwordDigestService = getPasswordDigestService();
-//
-//    final Random random = new Random();
-//
-//    for (int count = 0; count < 100; count++) {
-//      final StringBuilder sb = new StringBuilder();
-//      for (int length = 1; length < random.nextInt(20); length++) {
-//        final char ch = (char) (64 + random.nextInt(60));
-//        sb.append(ch);
-//      }
-//
-//      final String originalPassword = sb.toString();
-//      final String digestPassword1 = passwordDigestService.getDigestPassword(originalPassword);
-//      Thread.sleep(50);
-//      final String digestPassword2 = passwordDigestService.getDigestPassword(originalPassword);
-//      assertFalse(digestPassword1.equalsIgnoreCase(digestPassword2));
-//
-//    }
-//  }
+  public void testHashingOfSameStringShouldGiveDifferentResult() throws InterruptedException, PasswordServiceException {
+    final PasswordDigestService passwordDigestService = getPasswordDigestService();
+
+    final Random random = new Random();
+
+    for (int count = 0; count < 100; count++) {
+      final StringBuilder sb = new StringBuilder();
+      for (int length = 1; length < random.nextInt(20); length++) {
+        final char ch = (char) (64 + random.nextInt(60));
+        sb.append(ch);
+      }
+
+      final String originalPassword = sb.toString();
+      final String digestPassword1 = passwordDigestService.getDigestPassword(originalPassword);
+      Thread.sleep(40);
+      final String digestPassword2 = passwordDigestService.getDigestPassword(originalPassword);
+      assertFalse(digestPassword1.equalsIgnoreCase(digestPassword2));
+
+    }
+  }
 
   private PasswordDigestService getPasswordDigestService() {
     final PasswordDigestService passwordDigestService = new PasswordDigestService();

@@ -8,9 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.math.random.RandomDataImpl;
 
-import java.io.ByteArrayOutputStream;
 import java.security.MessageDigest;
-import java.util.StringTokenizer;
 
 /**
  * Password digest service. It should hash the password such that it should be
@@ -22,8 +20,6 @@ public class PasswordDigestService {
 
   private static final Log log = LogFactory.getLog(PasswordDigestService.class);
   private String encodingCharset;
-  private static final String BYTE_SEPARATOR = "-";
-
 
   /**
    * Set the algorithm.
@@ -40,9 +36,7 @@ public class PasswordDigestService {
    * @throws PasswordServiceException on failure
    */
   public String getDigestPassword(final String password) throws PasswordServiceException {
-    final String randomSalt = createRandomSalt();
-
-    return getDigestPassword(password, randomSalt);
+    return getDigestPassword(password, createRandomSalt());
   }
 
 
@@ -57,7 +51,7 @@ public class PasswordDigestService {
     try {
       final MessageDigest md = MessageDigest.getInstance(algorithm);
       final byte[] bytes = md.digest((salt + password).getBytes(encodingCharset));
-      return getString(salt.getBytes(encodingCharset)) + BYTE_SEPARATOR + getString(bytes);
+      return salt + getString(bytes);
     }
     catch (final Exception ex) {
       log.error(ERROR_MESSAGE, ex);
@@ -73,8 +67,8 @@ public class PasswordDigestService {
    * @throws PasswordServiceException on failure
    */
   public boolean verifyPassword(final String passwordToVerify, final String savedPassword) throws PasswordServiceException {
-    final String digestPassword = new String(getBytes(savedPassword));
-    final String newPasswordDigest = getDigestPassword(passwordToVerify, getSalt(digestPassword));
+    final String salt = getSalt(savedPassword);
+    final String newPasswordDigest = getDigestPassword(passwordToVerify, salt);
 
     return savedPassword.equals(newPasswordDigest);
   }
@@ -89,8 +83,7 @@ public class PasswordDigestService {
 
     final int saltLength = getSaltLength();
     for (int length = 0; length < saltLength; length++ ) {
-      final char ch = (char)(random.nextInt(0, 256));
-      sb.append(ch);
+      sb.append(random.nextHexString(1));
     }
 
     return sb.toString();
@@ -103,13 +96,9 @@ public class PasswordDigestService {
    */
   private static String getString(final byte[] bytes) {
     final StringBuilder sb = new StringBuilder();
-    for (int i = 0; i < bytes.length; i++) {
-      final byte b = bytes[i];
-      final int intByte = (int) (0x00FF & b);
+    for (final byte bite : bytes) {
+      final int intByte = (int) (0x00FF & bite);
       sb.append(getPaddedHexString(intByte));
-      if (i + 1 < bytes.length) {
-        sb.append(BYTE_SEPARATOR);
-      }
     }
     return sb.toString();
   }
@@ -124,22 +113,7 @@ public class PasswordDigestService {
     if (hexString.length() == 1) {
       hexString = "0" + hexString;
     }
-    assert hexString.length() == 2;
     return hexString;
-  }
-
-  /**
-   * @param printableDigestPassword source string delimited with hex characters that are BYTE_SEPARATOR delimited
-   * @return A binary sequence of characters converted from the input hex string.
-   */
-  private static byte[] getBytes(final String printableDigestPassword) {
-    final ByteArrayOutputStream bos = new ByteArrayOutputStream();
-    final StringTokenizer st = new StringTokenizer(printableDigestPassword, BYTE_SEPARATOR, false);
-    while (st.hasMoreTokens()) {
-      final int i = Integer.parseInt(st.nextToken(), 16);
-      bos.write((byte) i);
-    }
-    return bos.toByteArray();
   }
 
   /**

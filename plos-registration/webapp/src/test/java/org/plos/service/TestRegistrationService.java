@@ -25,8 +25,14 @@ public class TestRegistrationService extends BasePlosoneRegistrationTestCase {
   }
 
   public void testVerifyUser() throws Exception {
-    final User user = getRegistrationService().createUser("viru@home.com", "virender");
+    final String username = "viru@home.com";
+    final String password = "virender";
+    final User user = getRegistrationService().createUser(username, password);
     getRegistrationService().setVerified(user);
+    assertTrue(getPasswordDigestService()
+                .verifyPassword(
+                    password,
+                    getRegistrationService().getUserWithLoginName(username).getPassword()));
     assertTrue(user.isVerified());
     assertTrue(user.isActive());
   }
@@ -56,6 +62,9 @@ public class TestRegistrationService extends BasePlosoneRegistrationTestCase {
     final String email = "viru-verifying-for-password-digest@home.com";
     final String password = "virupasswd";
     final User saveUser = getRegistrationService().createUser(email, password);
+    assertTrue(getPasswordDigestService().verifyPassword(
+            password,
+            getRegistrationService().getUserWithLoginName(email).getPassword()));
     assertFalse(saveUser.getPassword().equalsIgnoreCase(password));
   }
 
