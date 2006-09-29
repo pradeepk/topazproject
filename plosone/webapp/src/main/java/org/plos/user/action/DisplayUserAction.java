@@ -36,7 +36,7 @@ public class DisplayUserAction extends UserActionSupport {
    */
   public String execute() throws Exception {
 
-    pou = getUserService().getUser(userId);
+    pou = getUserService().getUserByTopazId(userId);
     return SUCCESS;
   }
 

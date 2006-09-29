@@ -79,15 +79,15 @@ public class UserService extends BaseConfigurableService {
   /**
    * Gets the user specified by the Topaz userID passed in
    * 
-   * @param userId
+   * @param topazId
    *          Topaz User ID
-   * @return user associated with the userID
-   * @throws ApplicationException
+   * @return user associated with the topazId
+   * @throws ApplicationException ApplicationException
    */
-  public PlosOneUser getUser(final String userId) throws ApplicationException {
+  public PlosOneUser getUserByTopazId(final String topazId) throws ApplicationException {
     PlosOneUser pou = new PlosOneUser();
-    pou.setUserProfile(getProfile(userId));
-    UserPreference[] userPrefs = getPreferences(applicationId, userId);
+    pou.setUserProfile(getProfile(topazId));
+    UserPreference[] userPrefs = getPreferences(applicationId, topazId);
     pou.setUserPrefs(userPrefs);
     return pou;
   }
@@ -98,10 +98,10 @@ public class UserService extends BaseConfigurableService {
    * @param authId
    *          authentication ID
    * @return the user associated with the authID
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public PlosOneUser getUserByAuthId(final String authId) throws ApplicationException {
-    return getUser(lookUpUserByAuthId(authId));
+    return getUserByTopazId(lookUpUserByAuthId(authId));
   }
 
   /**
@@ -111,7 +111,7 @@ public class UserService extends BaseConfigurableService {
    *          Topaz User ID
    * @param state
    *          new state of the user
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public void setState(final String userId, int state) throws ApplicationException {
     try {
