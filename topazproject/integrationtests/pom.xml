@@ -348,6 +348,8 @@
                     <exclude name="**/samples/**"/>
                     <exclude name="**/*Test*"/>
                     <exclude name="**/target/**"/>
+                    <!-- This breaks javadoc generation from [687] - no idea why -->
+                    <exclude name="**/org/topazproject/xacml/**/*.java"/>
                   </fileset>
                   <regexpmapper from="^(.*)/src/main/(java|axis)/(.*)" to="src/main/java/\3"/>
                 </copy>
