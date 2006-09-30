@@ -25,14 +25,14 @@
     <dependency>
       <groupId>org.kowari</groupId>
       <artifactId>kowari-driver</artifactId>
-      <version>1.1.0-pre2</version>
+      <version>1.1.0-pre2-p2</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.kowari</groupId>
       <artifactId>kowari-local</artifactId>
-      <version>1.1.0-pre2</version>
+      <version>1.1.0-pre2-p2</version>
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
