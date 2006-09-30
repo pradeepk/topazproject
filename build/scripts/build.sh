@@ -31,6 +31,11 @@ MVN_REPOSITORY_TOPAZ=${MVN_REPOSITORY}/org/topazproject
 # Don't exit if we get a meaningless error
 set +e
 
+echo "pwd: "`pwd`
+echo "svn info and recent changes"
+svn info
+svn log -rHEAD:{`date "+%Y-%m-%d"`}
+
 echo "Removing potentially stale directory: ${MVN_REPOSITORY_TOPAZ}/{esup*,fedora*}"
 rm -rf ${MVN_REPOSITORY_TOPAZ}/{esup*,fedora*}
 
@@ -63,8 +68,8 @@ if [ ${N} -eq 0 ]; then
   N=$?
 
   echo "Creating documentation: cd integrationtests; mvn site-deploy"
-  rm -rf ${TOPAZ_INSTALL_DIR}/topazdocs
-  (cd topazproject/integrationtests; ${MVN} site-deploy)
+  #rm -rf ${TOPAZ_INSTALL_DIR}/topazdocs
+  (cd topazproject/integrationtests; ${MVN} site-deploy 2>&1 >target/build.out)
 fi
 
 echo "Stopping ecqs"
