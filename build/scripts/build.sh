@@ -69,7 +69,11 @@ if [ ${N} -eq 0 ]; then
 
   echo "Creating documentation: cd integrationtests; mvn site-deploy"
   #rm -rf ${TOPAZ_INSTALL_DIR}/topazdocs
-  (cd topazproject/integrationtests; ${MVN} site-deploy 2>&1 >target/build.out)
+  (cd topazproject/integrationtests; ${MVN} site-deploy --batch-mode 2>&1 >target/build.out)
+  if [ $? -ne 0 ]; then
+    echo "Site Build Failed"
+    cat target/build.out
+  fi
 fi
 
 echo "Stopping ecqs"
