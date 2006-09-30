@@ -346,8 +346,8 @@ public class PlosOneUser {
 
   /**
    * 
-   * @param city
-   *          The city to set.
+   * @param state
+   *          The state to set.
    */
   public void setState(String state) {
     userPrefs.put(PlosOneUser.STATE, new String[] { state });

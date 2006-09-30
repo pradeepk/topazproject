@@ -101,7 +101,8 @@ public class UserService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    */
   public PlosOneUser getUserByAuthId(final String authId) throws ApplicationException {
-    return getUserByTopazId(lookUpUserByAuthId(authId));
+    final String topazUserId = lookUpUserByAuthId(authId);
+    return topazUserId == null ? null : getUserByTopazId(topazUserId);
   }
 
   /**

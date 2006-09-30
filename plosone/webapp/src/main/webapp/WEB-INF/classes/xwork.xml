@@ -21,17 +21,34 @@
         <!--<interceptor-ref name="logger"/>-->
         <interceptor-ref name="defaultStack" />
       </interceptor-stack>
+
+      <interceptor name="ensureUserAccount" class="org.plos.user.EnsureUserAccountInterceptor"/>
+      
+      <interceptor-stack name="plosSecureStack" >
+        <interceptor-ref name="plosStack" />
+        <interceptor-ref name="ensureUserAccount" />
+      </interceptor-stack>
     </interceptors>
     <default-interceptor-ref name="plosStack" />
 
     <default-action-ref name="home" />
+
+    <global-results>
+      <result name="new-profile">
+        <param name="location">/WEB-INF/pages/user/newUser.ftl</param>
+      </result>
+      <result name="update-profile">
+        <param name="location">/WEB-INF/pages/user/displayUser.ftl</param>
+      </result>
+    </global-results>
 
     <action name="home">
       <result>/WEB-INF/pages/todo.ftl</result>
     </action>
 
     <action name="register" class="org.plosone.action.RegistrationAction">
-      <result name="success">/WEB-INF/pages/home.ftl</result>
+      <!--<result name="success">/WEB-INF/pages/home.ftl</result>-->
+      <result type="chain">home</result>
     </action>
   </package>
 
@@ -74,6 +91,7 @@
   </package>
 
   <package name="annotation-secure" extends="default" namespace="/annotation/secure">
+    <default-interceptor-ref name="plosSecureStack"/>
     <action name="createAnnotation">
       <result>/WEB-INF/pages/annotation/createAnnotation.ftl</result>
     </action>

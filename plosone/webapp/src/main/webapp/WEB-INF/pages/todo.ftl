@@ -3,7 +3,11 @@
         <title>Welcome to Plosone</title>
     </head>
     <body>
+
         <h1>Welcome to the Plosone webapp</h1>
+
+        Hello, ${signOnId}.<br/>  Ticket IOU => ${ticket}.
+        
         <legend>Messages</legend>
 
           <fieldset>
@@ -32,6 +36,11 @@
                       <@ww.param name="target" value="%{'http://here.is/viru'}"/>
                     </@ww.url>
                     <@ww.a href="%{listAnnotationURL}">List Annotations</@ww.a>
+                </p>
+
+                <p>
+                    <@ww.url id="createUserURL" namespace="/user/secure" action="newUser" />
+                    <@ww.a href="%{createUserURL}">Create User</@ww.a>
                 </p>
 
             </fieldset>

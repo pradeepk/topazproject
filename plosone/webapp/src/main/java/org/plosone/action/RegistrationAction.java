@@ -45,10 +45,6 @@ public class RegistrationAction extends ActionSupport {
     return SUCCESS;
   }
 
-  private ActionContext getUserContext() {
-    return ActionContext.getContext();
-  }
-
   /**
    * Set the user context
    * @param userContext userContext

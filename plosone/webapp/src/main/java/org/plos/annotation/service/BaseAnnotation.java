@@ -11,6 +11,7 @@ package org.plos.annotation.service;
 
 import com.opensymphony.util.TextUtils;
 import org.plos.ApplicationException;
+import org.apache.commons.lang.StringEscapeUtils;
 
 /**
  * Base class for Annotation and reply.
@@ -24,7 +25,7 @@ public abstract class BaseAnnotation {
 
   /**
    * @return the escaped body.
-   * @throws org.plos.ApplicationException
+   * @throws org.plos.ApplicationException ApplicationException
    */
   public String getBody() throws ApplicationException {
     return escapeText(getOriginalBodyContent());
@@ -32,7 +33,7 @@ public abstract class BaseAnnotation {
 
   /**
    * @return the original content of the annotation body
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   protected abstract String getOriginalBodyContent() throws ApplicationException;
 
@@ -42,7 +43,11 @@ public abstract class BaseAnnotation {
    * @return the escaped text
    */
   protected String escapeText(final String text) {
-    return TextUtils.htmlEncode(text);
+    //TODO: Validate that this works ok.
+    final String commonsEscaped = StringEscapeUtils.escapeHtml(text);
+    final String symphonyEscaped = TextUtils.htmlEncode(text);
+    assert(commonsEscaped.equals(symphonyEscaped));
+    return commonsEscaped;
   }
 
   /**
