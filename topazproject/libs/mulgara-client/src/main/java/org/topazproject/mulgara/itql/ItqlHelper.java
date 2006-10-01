@@ -301,7 +301,7 @@ public class ItqlHelper {
       String alias = (String) iter.next();
       String uri   = (String) aliases.get(alias);
       itql = itql.replaceAll("<" + alias + ":", "<" + uri)
-                 .replaceAll("\\^\\^" + alias + ":(\\S+)", "^^<" + uri + "$1>");
+                 .replaceAll("\\^\\^" + alias + ":([^\\s;]+)", "^^<" + uri + "$1>");
     }
 
     return itql;
