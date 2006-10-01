@@ -11,37 +11,19 @@ package org.topazproject.ws.annotation;
 
 import java.io.IOException;
 
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-
 import java.rmi.RemoteException;
-
-import java.security.Principal;
-
-import javax.servlet.http.HttpSession;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
-
 import org.topazproject.common.ExceptionUtils;
-
-import org.topazproject.configuration.ConfigurationStore;
-
-import org.topazproject.fedora.client.APIMStubFactory;
-import org.topazproject.fedora.client.FedoraAPIM;
-import org.topazproject.fedora.client.Uploader;
-
-import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.ws.ImplInvocationHandler;
+import org.topazproject.common.ws.WSTopazContext;
 
 import org.topazproject.ws.annotation.impl.RepliesImpl;
 import org.topazproject.ws.annotation.impl.RepliesPEP;
@@ -55,27 +37,10 @@ import com.sun.xacml.UnknownIdentifierException;
  * The implementation of the reply service.
  */
 public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycle {
-  private static Log log = LogFactory.getLog(ReplyServicePortSoapBindingImpl.class);
+  private static Log   log  = LogFactory.getLog(ReplyServicePortSoapBindingImpl.class);
 
-  //
-  private RepliesImpl   impl                 = null;
-  private Configuration itqlConfig;
-  private Configuration fedoraConfig;
-  private Configuration fedoraUploaderConfig;
-  private String        hostname;
-  private String        baseURI;
-
-  /**
-   * Creates a new ReplyServicePortSoapBindingImpl object.
-   */
-  public ReplyServicePortSoapBindingImpl() {
-    Configuration root = ConfigurationStore.getInstance().getConfiguration();
-    itqlConfig             = root.subset("topaz.services.itql");
-    fedoraConfig           = root.subset("topaz.services.fedora");
-    fedoraUploaderConfig   = root.subset("topaz.services.fedoraUploader");
-    hostname               = root.getString("topaz.server.hostname");
-    baseURI                = root.getString("topaz.objects.base-uri");
-  }
+  private TopazContext ctx  = new WSTopazContext(getClass().getName());
+  private Replies      impl = null;
 
   /*
    * @see javax.xml.rpc.server.ServiceLifecycle#init
@@ -85,37 +50,13 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
       log.trace("ServiceLifecycle#init");
 
     try {
-      ItqlHelper.validateUri(baseURI, "topaz.objects.base-uri");
-      ItqlHelper.validateUri(itqlConfig.getString("uri"), "topaz.services.itql.uri");
-      ItqlHelper.validateUri(fedoraConfig.getString("uri"), "topaz.services.fedora.uri");
-      ItqlHelper.validateUri(fedoraUploaderConfig.getString("uri"),
-                             "topaz.services.fedoraUploader.uri");
-    } catch (Throwable t) {
-      throw new ServiceException("invalid/missing configuration", t);
+      RepliesPEP pep = new WSRepliesPEP((ServletEndpointContext) context);
+
+      ctx.init(context);
+      impl = (Replies) ImplInvocationHandler.newProxy(new RepliesImpl(pep, ctx), ctx, log);
+    } catch (Exception e) {
+      throw new ServiceException("", e);
     }
-
-    RepliesPEP       pep = createPEP((ServletEndpointContext) context);
-
-    HttpSession      session = ((ServletEndpointContext) context).getHttpSession();
-
-    ProtectedService itqlSvc     = createService(itqlConfig, session, "itql");
-    ProtectedService fedoraSvc   = createService(fedoraConfig, session, "fedora");
-    ProtectedService uploaderSvc = createService(fedoraUploaderConfig, session, "fedora-uploader");
-
-    URI              itqlURI     = createServiceUri(itqlSvc.getServiceUri(), "itql");
-    URI              fedoraURI   = createServiceUri(fedoraSvc.getServiceUri(), "fedora");
-    URI              uploaderURI = createServiceUri(uploaderSvc.getServiceUri(), "fedora-uploader");
-
-    URI              fedoraServer = getRemoteFedoraURI(fedoraURI, hostname);
-
-    ItqlHelper       itql     = createItqlHelper(itqlSvc);
-    FedoraAPIM       apim     = createFedoraAPIM(fedoraSvc);
-    Uploader         uploader = createFedoraUploader(uploaderSvc);
-
-    Principal        principal = ((ServletEndpointContext) context).getUserPrincipal();
-    String           user      = (principal == null) ? null : principal.getName();
-
-    impl = new RepliesImpl(pep, itql, fedoraServer, apim, uploader, user, baseURI);
   }
 
   /*
@@ -125,7 +66,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#destroy");
 
-    impl = null; // release context
+    ctx.destroy();
+    impl = null;
   }
 
   /*
@@ -134,13 +76,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
   public String createReply(String mediator, String type, String root, String inReplyTo,
                             boolean anonymize, String title, String body)
                      throws RemoteException, NoSuchAnnotationIdException {
-    try {
-      return impl.createReply(mediator, type, root, inReplyTo, anonymize, title, body);
-    } catch (Throwable t) {
-      newExceptionHandler(t).createReply(null, null, null, null, false, null, null);
-
-      return null; // not reached
-    }
+    return impl.createReply(mediator, type, root, inReplyTo, anonymize, title, body);
   }
 
   /*
@@ -149,14 +85,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
   public String createReply(String mediator, String type, String root, String inReplyTo,
                             boolean anonymize, String title, String contentType, byte[] content)
                      throws RemoteException, NoSuchAnnotationIdException {
-    try {
-      return impl.createReply(mediator, type, root, inReplyTo, anonymize, title, contentType,
-                              content);
-    } catch (Throwable t) {
-      newExceptionHandler(t).createReply(null, null, null, null, false, null, null, null);
-
-      return null; // not reached
-    }
+    return impl.createReply(mediator, type, root, inReplyTo, anonymize, title, contentType, content);
   }
 
   /*
@@ -164,35 +93,21 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
    */
   public void deleteReplies(String root, String inReplyTo)
                      throws NoSuchAnnotationIdException, RemoteException {
-    try {
-      impl.deleteReplies(root, inReplyTo);
-    } catch (Throwable t) {
-      newExceptionHandler(t).deleteReplies(null, null);
-    }
+    impl.deleteReplies(root, inReplyTo);
   }
 
   /*
    * @see org.topazproject.ws.annotation.Reply#deleteReplies
    */
   public void deleteReplies(String id) throws NoSuchAnnotationIdException, RemoteException {
-    try {
-      impl.deleteReplies(id);
-    } catch (Throwable t) {
-      newExceptionHandler(t).deleteReplies(null);
-    }
+    impl.deleteReplies(id);
   }
 
   /*
    * @see org.topazproject.ws.annotation.Reply#getReplyInfo
    */
   public ReplyInfo getReplyInfo(String id) throws NoSuchAnnotationIdException, RemoteException {
-    try {
-      return impl.getReplyInfo(id);
-    } catch (Throwable t) {
-      newExceptionHandler(t).getReplyInfo(null);
-
-      return null; // not reached
-    }
+    return impl.getReplyInfo(id);
   }
 
   /*
@@ -200,13 +115,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
    */
   public ReplyInfo[] listReplies(String root, String inReplyTo)
                           throws NoSuchAnnotationIdException, RemoteException {
-    try {
-      return impl.listReplies(root, inReplyTo);
-    } catch (Throwable t) {
-      newExceptionHandler(t).listReplies(null, null);
-
-      return null; // not reached
-    }
+    return impl.listReplies(root, inReplyTo);
   }
 
   /*
@@ -214,13 +123,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
    */
   public ReplyInfo[] listAllReplies(String root, String inReplyTo)
                              throws NoSuchAnnotationIdException, RemoteException {
-    try {
-      return impl.listAllReplies(root, inReplyTo);
-    } catch (Throwable t) {
-      newExceptionHandler(t).listAllReplies(null, null);
-
-      return null; // not reached
-    }
+    return impl.listAllReplies(root, inReplyTo);
   }
 
   /*
@@ -228,13 +131,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
    */
   public ReplyThread getReplyThread(String root, String inReplyTo)
                              throws NoSuchAnnotationIdException, RemoteException {
-    try {
-      return impl.getReplyThread(root, inReplyTo);
-    } catch (Throwable t) {
-      newExceptionHandler(t).getReplyThread(null, null);
-
-      return null; // not reached
-    }
+    return impl.getReplyThread(root, inReplyTo);
   }
 
   /*
@@ -242,11 +139,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
    */
   public void setReplyState(String id, int state)
                      throws NoSuchAnnotationIdException, RemoteException {
-    try {
-      impl.setReplyState(id, state);
-    } catch (Throwable t) {
-      newExceptionHandler(t).setReplyState(null, 0);
-    }
+    impl.setReplyState(id, state);
   }
 
   /*
@@ -254,85 +147,7 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
    */
   public String[] listReplies(String mediator, int state)
                        throws RemoteException {
-    try {
-      return impl.listReplies(mediator, state);
-    } catch (Throwable t) {
-      newExceptionHandler(t).listReplies(null, 0);
-
-      return null; // not reached
-    }
-  }
-
-  private static ProtectedService createService(Configuration conf, HttpSession session, String name)
-                                         throws ServiceException {
-    try {
-      return ProtectedServiceFactory.createService(conf, session);
-    } catch (Exception e) {
-      throw new ServiceException("Failed to create a service URI for '" + name + "'", e);
-    }
-  }
-
-  private static RepliesPEP createPEP(ServletEndpointContext context)
-                               throws ServiceException {
-    try {
-      return new WSRepliesPEP(context);
-    } catch (IOException e) {
-      throw new ServiceException("Failed to create PEP", e);
-    } catch (ParsingException e) {
-      throw new ServiceException("Failed to create PEP", e);
-    } catch (UnknownIdentifierException e) {
-      throw new ServiceException("Failed to create PEP", e);
-    }
-  }
-
-  private static URI createServiceUri(String uri, String name) {
-    try {
-      URL u = new URL(uri);
-
-      return URI.create(u.toString());
-    } catch (MalformedURLException e) {
-      throw new Error("Misconfigured uri for service '" + name + "'", e);
-    }
-  }
-
-  private static ItqlHelper createItqlHelper(ProtectedService itqlSvc)
-                                      throws ServiceException {
-    try {
-      return new ItqlHelper(itqlSvc);
-    } catch (MalformedURLException e) {
-      throw new ServiceException("Misconfigured URL for itql service", e);
-    } catch (RemoteException e) {
-      throw new ServiceException("Failed to initialize itql service", e);
-    }
-  }
-
-  private static URI getRemoteFedoraURI(URI fedoraURI, String hostname) {
-    if (!fedoraURI.getHost().equals("localhost"))
-      return fedoraURI; // it's already remote
-
-    try {
-      return new URI(fedoraURI.getScheme(), null, hostname, fedoraURI.getPort(),
-                     fedoraURI.getPath(), null, null);
-    } catch (URISyntaxException use) {
-      throw new Error(use); // Can't happen
-    }
-  }
-
-  private static FedoraAPIM createFedoraAPIM(ProtectedService fedoraSvc)
-                                      throws ServiceException {
-    try {
-      return APIMStubFactory.create(fedoraSvc);
-    } catch (MalformedURLException e) {
-      throw new ServiceException("Failed to create fedora-API-M client stub", e);
-    }
-  }
-
-  private static Uploader createFedoraUploader(ProtectedService uploaderSvc) {
-    return new Uploader(uploaderSvc);
-  }
-
-  private static Replies newExceptionHandler(Throwable t) {
-    return ((Replies) ExceptionUtils.newExceptionHandler(Replies.class, t, log));
+    return impl.listReplies(mediator, state);
   }
 
   private static class WSRepliesPEP extends RepliesPEP {

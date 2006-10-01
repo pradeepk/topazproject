@@ -11,20 +11,16 @@
 package org.topazproject.ws.users;
 
 import java.rmi.RemoteException;
-import javax.servlet.http.HttpSession;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
-import org.topazproject.common.ExceptionUtils;
-import org.topazproject.configuration.ConfigurationStore;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.ws.WSTopazContext;
+import org.topazproject.common.ws.ImplInvocationHandler;
 import org.topazproject.ws.users.impl.UserRolesImpl;
 import org.topazproject.ws.users.impl.UserRolesPEP;
 import org.topazproject.xacml.ws.WSXacmlUtil;
@@ -38,7 +34,8 @@ import org.topazproject.xacml.ws.WSXacmlUtil;
 public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLifecycle {
   private static final Log log = LogFactory.getLog(UserRolesServicePortSoapBindingImpl.class);
 
-  private UserRolesImpl impl;
+  private UserRoles impl;
+  private TopazContext ctx = new WSTopazContext(getClass().getName());
 
   public void init(Object context) throws ServiceException {
     if (log.isTraceEnabled())
@@ -48,19 +45,15 @@ public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLi
       // get the pep
       final UserRolesPEP pep = new WSUserRolesPEP((ServletEndpointContext) context);
 
-      // get other config
-      Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-      conf = conf.subset("topaz");
 
-      if (!conf.containsKey("services.itql.uri"))
-        throw new ConfigurationException("missing key 'topaz.services.itql.uri'");
-
-      HttpSession      session   = ((ServletEndpointContext) context).getHttpSession();
-      Configuration    itqlConf  = conf.subset("services.itql");
-      ProtectedService itqlSvc   = ProtectedServiceFactory.createService(itqlConf, session);
+      // init topaz context
+      ctx.init(context);
 
       // create the impl
-      impl = new UserRolesImpl(itqlSvc, pep);
+      impl = new UserRolesImpl(pep, ctx);
+
+      // wrap in a proxy
+      impl = (UserRoles) ImplInvocationHandler.newProxy(impl, ctx, log);
     } catch (Exception e) {
       log.error("Failed to initialize UserRolesImpl.", e);
       throw new ServiceException(e);
@@ -71,6 +64,7 @@ public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLi
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#destroy");
 
+    ctx.destroy();
     impl = null;
   }
 
@@ -78,14 +72,7 @@ public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLi
    * @see org.topazproject.ws.users.UserRoles#getRoles
    */
   public String[] getRoles(String userId) throws RemoteException, NoSuchUserIdException {
-    try {
-      synchronized (impl) {
-        return impl.getRoles(userId);
-      }
-    } catch (Throwable t) {
-      newExceptionHandler(t).getRoles(null);
-      return null;      // not reached
-    }
+    return impl.getRoles(userId);
   }
 
   /**
@@ -93,17 +80,7 @@ public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLi
    */
   public void setRoles(String userId, String[] authIds)
       throws RemoteException, NoSuchUserIdException {
-    try {
-      synchronized (impl) {
-        impl.setRoles(userId, authIds);
-      }
-    } catch (Throwable t) {
-      newExceptionHandler(t).setRoles(null, null);
-    }
-  }
-
-  private static UserRoles newExceptionHandler(Throwable t) {
-    return ((UserRoles) ExceptionUtils.newExceptionHandler(UserRoles.class, t, log));
+    impl.setRoles(userId, authIds);
   }
 
   private static class WSUserRolesPEP extends UserRolesPEP {

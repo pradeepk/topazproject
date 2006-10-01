@@ -52,6 +52,7 @@ import org.xml.sax.SAXException;
 import org.xml.sax.XMLReader;
 import org.xml.sax.helpers.XMLReaderFactory;
 
+import org.topazproject.common.impl.TopazContext;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.fedora.client.Uploader;
 import org.topazproject.fedora.client.FedoraAPIM;
@@ -89,9 +90,7 @@ public class Ingester {
   private static final String MODEL        = "<" + CONF.getString("topaz.models.articles") + ">";
 
   private final TransformerFactory tFactory;
-  private final FedoraAPIM         apim;
-  private final Uploader           uploader;
-  private final ItqlHelper         itql;
+  private final TopazContext       ctx;
   private final ArticlePEP         pep;
 
   /** 
@@ -102,10 +101,8 @@ public class Ingester {
    * @param itql     the mulgara iTQL client
    * @param pep      the policy-enforcer to use for access-control
    */
-  public Ingester(FedoraAPIM apim, Uploader uploader, ItqlHelper itql, ArticlePEP pep) {
-    this.apim     = apim;
-    this.uploader = uploader;
-    this.itql     = itql;
+  public Ingester(ArticlePEP pep, TopazContext ctx) {
+    this.ctx     = ctx;
     this.pep      = pep;
 
     tFactory = new TransformerFactoryImpl();
@@ -147,6 +144,9 @@ public class Ingester {
                       URI.create(ArticleImpl.pid2URI(ArticleImpl.doi2PID(doi))));
 
       // add the stuff
+      ItqlHelper itql   = ctx.getItqlHelper();
+      FedoraAPIM apim   = ctx.getFedoraAPIM();
+      Uploader uploader = ctx.getFedoraUploader();
       String txn = "ingest " + doi;
       try {
         itql.beginTxn(txn);
@@ -154,8 +154,8 @@ public class Ingester {
         /* put the RDF into the triple-store before ingesting into Fedora, because it's much
          * harder to properly roll back Fedora if an error occurs there.
          */
-        mulgaraInsert(objInfo);
-        fedoraIngest(zip, objInfo);
+        mulgaraInsert(itql, objInfo);
+        fedoraIngest(apim, uploader, zip, objInfo);
 
         itql.commitTxn(txn);
         txn = null;
@@ -250,7 +250,7 @@ public class Ingester {
    * 
    * @param objInfo the document describing the RDF to insert
    */
-  private void mulgaraInsert(Document objInfo)
+  private void mulgaraInsert(ItqlHelper itql, Document objInfo)
       throws TransformerException, IOException, RemoteException {
     // set up the transformer to generate the triples
     Transformer t = tFactory.newTransformer(new StreamSource(findRDFXML2TriplesConverter()));
@@ -260,11 +260,11 @@ public class Ingester {
     NodeList objs = objList.getElementsByTagNameNS(RDFNS, RDF);
     for (int idx = 0; idx < objs.getLength(); idx++) {
       Element obj = (Element) objs.item(idx);
-      mulgaraInsertOneRDF(obj, t);
+      mulgaraInsertOneRDF(itql, obj, t);
     }
   }
 
-  private void mulgaraInsertOneRDF(Element obj, Transformer t)
+  private void mulgaraInsertOneRDF(ItqlHelper itql, Element obj, Transformer t)
       throws TransformerException, IOException, RemoteException {
     StringWriter sw = new StringWriter(500);
     sw.write("insert ");
@@ -282,7 +282,7 @@ public class Ingester {
    * @param zip     the zip archive containing the data for the objects to ingest
    * @param objInfo the document describing the objects and their datastreams to create
    */
-  private void fedoraIngest(Zip zip, Document objInfo)
+  private void fedoraIngest(FedoraAPIM apim, Uploader uploader, Zip zip, Document objInfo)
       throws DuplicateArticleIdException, TransformerException, IOException, RemoteException {
     // set up the transformer to generate the foxml docs
     Transformer t = tFactory.newTransformer(new StreamSource(findFoxmlGenerator()));
@@ -302,7 +302,7 @@ public class Ingester {
       for (idx = 0; idx < objs.getLength(); idx++) {
         Element obj = (Element) objs.item(idx);
         objCreated[0] = false;
-        fedoraIngestOneObj(obj, t, zip, logMsg, objCreated);
+        fedoraIngestOneObj(apim, uploader, obj, t, zip, logMsg, objCreated);
       }
     } catch (Exception e) {
       if (!objCreated[0])
@@ -332,8 +332,8 @@ public class Ingester {
     }
   }
 
-  private void fedoraIngestOneObj(Element obj, Transformer t, Zip zip, String logMsg,
-                                  boolean[] objCreated)
+  private void fedoraIngestOneObj(FedoraAPIM apim, Uploader uploader, Element obj, Transformer t, 
+                                  Zip zip, String logMsg, boolean[] objCreated)
       throws DuplicateArticleIdException, TransformerException, IOException, RemoteException {
     // create the foxml doc
     StringWriter sw = new StringWriter(200);
@@ -341,18 +341,18 @@ public class Ingester {
 
     // create the fedora object
     String pid = obj.getAttribute(O_PID_A);
-    fedoraCreateObject(pid, sw.toString(), logMsg);
+    fedoraCreateObject(apim, pid, sw.toString(), logMsg);
     objCreated[0] = true;
 
     // add all (non-DC/non-RDF) datastreams
     NodeList dss = obj.getElementsByTagName(DATASTREAM);
     for (int idx = 0; idx < dss.getLength(); idx++) {
       Element ds = (Element) dss.item(idx);
-      fedoraAddDatastream(pid, ds, zip, logMsg);
+      fedoraAddDatastream(apim, uploader, pid, ds, zip, logMsg);
     }
   }
 
-  private void fedoraCreateObject(String pid, String foxml, String logMsg)
+  private void fedoraCreateObject(FedoraAPIM apim, String pid, String foxml, String logMsg)
       throws DuplicateArticleIdException, IOException, RemoteException {
     if (log.isDebugEnabled())
       log.debug("Ingesting fedora object '" + pid + "'; foxml = " + foxml);
@@ -364,7 +364,8 @@ public class Ingester {
     }
   }
 
-  private void fedoraAddDatastream(String pid, Element ds, Zip zip, String logMsg)
+  private void fedoraAddDatastream(FedoraAPIM apim, Uploader uploader, String pid, Element ds, 
+                                   Zip zip, String logMsg)
       throws IOException, RemoteException {
     long[] size = new long[1];
     InputStream is = zip.getStream(ds.getAttribute(DS_FIL_A), size);

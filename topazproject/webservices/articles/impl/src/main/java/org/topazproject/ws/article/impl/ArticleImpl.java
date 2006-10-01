@@ -28,6 +28,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.impl.SimpleTopazContext;
 import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.mulgara.itql.AnswerException;
@@ -69,11 +71,22 @@ public class ArticleImpl implements Article {
       replaceAll("\\Q${MODEL}", MODEL);
 
   private final URI        fedoraServer;
-  private final FedoraAPIM apim;
-  private final Uploader   uploader;
   private final Ingester   ingester;
-  private final ItqlHelper itql;
   private final ArticlePEP pep;
+  private final TopazContext ctx;
+
+  /**
+   * Creates a new ArticleImpl object.
+   *
+   * @param pep The xacml pep
+   * @param ctx The topaz api context
+   */
+  public ArticleImpl(ArticlePEP pep, TopazContext ctx) {
+    this.pep      = pep;
+    this.ctx      = ctx;
+    this.ingester   = new Ingester(pep, ctx);
+    this.fedoraServer = ctx.getFedoraBaseUri();
+  }
 
   /** 
    * Create a new article manager instance. 
@@ -91,11 +104,13 @@ public class ArticleImpl implements Article {
     URI fedoraURI = new URI(fedoraSvc.getServiceUri());
     fedoraServer = getRemoteFedoraURI(fedoraURI, hostname);
 
-    uploader = new Uploader(uploadSvc);
-    apim = APIMStubFactory.create(fedoraSvc);
+    Uploader uploader = new Uploader(uploadSvc);
+    FedoraAPIM apim = APIMStubFactory.create(fedoraSvc);
 
-    itql     = new ItqlHelper(mulgaraSvc);
-    ingester = new Ingester(apim, uploader, itql, pep);
+    ItqlHelper itql     = new ItqlHelper(mulgaraSvc);
+
+    ctx = new SimpleTopazContext(itql, apim, uploader);
+    ingester = new Ingester(pep, ctx);
 
     this.pep = pep;
   }
@@ -124,7 +139,7 @@ public class ArticleImpl implements Article {
     String old_subj = "<" + pid2URI(doi2PID(oldDoi)) + ">";
     String new_subj = "<" + pid2URI(doi2PID(newDoi)) + ">";
 
-    itql.doUpdate("insert " + old_subj + " <dc_terms:isReplacedBy> " + new_subj +
+    ctx.getItqlHelper().doUpdate("insert " + old_subj + " <dc_terms:isReplacedBy> " + new_subj +
                             new_subj + " <dc_terms:replaces> " + old_subj +
                             " into " + MODEL + ";");
   }
@@ -133,7 +148,7 @@ public class ArticleImpl implements Article {
     checkAccess(pep.SET_ARTICLE_STATE, doi);
 
     try {
-      apim.modifyObject(doi2PID(doi), state2Str(state), null, "Changed state");
+      ctx.getFedoraAPIM().modifyObject(doi2PID(doi), state2Str(state), null, "Changed state");
     } catch (RemoteException re) {
       FedoraUtil.detectNoSuchArticleIdException(re, doi);
     }
@@ -142,6 +157,8 @@ public class ArticleImpl implements Article {
   public void delete(String doi, boolean purge) throws NoSuchArticleIdException, RemoteException {
     checkAccess(pep.DELETE_ARTICLE, doi);
 
+    ItqlHelper itql = ctx.getItqlHelper();
+    FedoraAPIM apim = ctx.getFedoraAPIM();
     String txn = purge ? "delete " + doi : null;
     try {
       if (txn != null)
@@ -188,7 +205,8 @@ public class ArticleImpl implements Article {
                             boolean ascending) throws RemoteException {
     Date start = ArticleFeed.parseDateParam(startDate);
     Date end = ArticleFeed.parseDateParam(endDate);
-    
+
+    ItqlHelper itql = ctx.getItqlHelper();
     try {
       String articlesQuery = ArticleFeed.getQuery(start, end, categories, authors, false);
       StringAnswer articlesAnswer = new StringAnswer(itql.doQuery(articlesQuery));
@@ -214,7 +232,7 @@ public class ArticleImpl implements Article {
       throw new RemoteException("Error querying RDF", ae);
     }
   }
-  
+
   protected static String state2Str(int state) {
     switch (state) {
       case ST_ACTIVE:
@@ -231,6 +249,7 @@ public class ArticleImpl implements Article {
     String subj = pid2URI(doi2PID(doi));
     ItqlHelper.validateUri(subj, "doi");
 
+    ItqlHelper itql = ctx.getItqlHelper();
     StringAnswer ans =
         new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_FIND_OBJS, "subj", subj)));
     List dois = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();

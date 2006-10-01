@@ -40,6 +40,9 @@ import org.apache.commons.logging.LogFactory;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.EmailException;
 
+import org.topazproject.common.impl.SimpleTopazContext;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.impl.TopazContextListener;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.mulgara.itql.ItqlHelper;
@@ -62,13 +65,13 @@ import org.topazproject.feed.ArticleFeed;
 public class AlertsImpl implements Alerts {
   private static final int    FETCH_SIZE     = 10; // TODO: Set to 100, test with 2
   private static final Log    log            = LogFactory.getLog(AlertsImpl.class);
-  
+
   private static final Map    aliases;
   private static final String ALERTS_URI     = ItqlHelper.TOPAZ_URI + "alerts/";
   private static final String XSD_URI        = "http://www.w3.org/2001/XMLSchema#";
 
   private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
-  
+
   private static final String MODEL_ALERTS   = "<" + CONF.getString("topaz.models.alerts") + ">";
   private static final String ALERTS_TYPE    =
       "<" + CONF.getString("topaz.models.alerts[@type]", "http://tucana.org/tucana#Model") + ">";
@@ -117,16 +120,15 @@ public class AlertsImpl implements Alerts {
   private static final String CREATE_USER_ITQL =
     "insert <${userId}> <alerts:timestamp> '${stamp}'^^<xsd:date> into ${ALERTS};";
 
-  private final AlertsPEP   pep;
-  private final ItqlHelper  itql;
-  private final FedoraAPIM  apim;
+  private final AlertsPEP    pep;
+  private final TopazContext ctx;
 
   static {
     aliases = ItqlHelper.getDefaultAliases();
     aliases.put("alerts", ALERTS_URI);
     aliases.put("xsd", XSD_URI);
   }
-  
+
   /**
    * Class to stash user data while reading from Kowari.
    */
@@ -136,6 +138,33 @@ public class AlertsImpl implements Alerts {
     String stamp;
   }
 
+  /**
+   * Create a new permission instance.
+   *
+   * @param pep the policy-enforcer to use for access-control
+   * @param ctx the topaz context
+   */
+  public AlertsImpl(AlertsPEP pep, TopazContext ctx) {
+    this.ctx   = ctx;
+    this.pep   = pep;
+
+    ctx.addListener(new TopazContextListener() {
+        public void handleCreated(TopazContext ctx, Object handle) {
+          if (handle instanceof ItqlHelper) {
+            ItqlHelper itql = (ItqlHelper) handle;
+
+            itql.getAliases().putAll(aliases);
+
+            try {
+              itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";");
+              itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";");
+            } catch (IOException e) {
+              log.warn("failed to create alerts models", e);
+            }
+          }
+        }
+      });
+  }
   /**
    * Create a new alerts service instance.
    *
@@ -148,9 +177,14 @@ public class AlertsImpl implements Alerts {
   public AlertsImpl(ProtectedService itqlService, ProtectedService fedoraService, AlertsPEP pep)
       throws IOException, ServiceException, ConfigurationException {
     this.pep = pep;
-    this.itql = new ItqlHelper(itqlService);
-    this.apim = APIMStubFactory.create(fedoraService);
-    this.init();
+
+    ItqlHelper itql = new ItqlHelper(itqlService);
+    itql.getAliases().putAll(this.aliases);
+    itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";");
+    itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";");
+
+    FedoraAPIM apim = APIMStubFactory.create(fedoraService);
+    ctx = new SimpleTopazContext(itql, apim, null);
   }
 
   /**
@@ -164,19 +198,14 @@ public class AlertsImpl implements Alerts {
   public AlertsImpl(URI mulgaraUri)
       throws MalformedURLException, ServiceException, RemoteException {
     this.pep = null; // means we are super-user
-    this.itql = new ItqlHelper(mulgaraUri);
-    this.apim = null;
-    this.init();
+
+    ItqlHelper itql = new ItqlHelper(mulgaraUri);
+    itql.getAliases().putAll(this.aliases);
+    itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";");
+    itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";");
+    ctx = new SimpleTopazContext(itql, null, null);
   }
 
-  private void init() throws ItqlInterpreterException, RemoteException {
-    this.itql.getAliases().putAll(this.aliases);
-    this.itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";");
-    this.itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";");
-
-    Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-    conf = conf.subset("topaz");
-  }
 
   // See Alerts.java interface
   public void startUser(String userId) throws RemoteException {
@@ -194,9 +223,9 @@ public class AlertsImpl implements Alerts {
     values.put("userId", userId);
     values.put("stamp", AlertsHelper.getTimestamp(cal));
     String query = ItqlHelper.bindValues(AlertsImpl.CREATE_USER_ITQL, values);
-    this.itql.doUpdate(query);
+    ctx.getItqlHelper().doUpdate(query);
   }
-  
+
   // See Alerts.java interface
   public void clearUser(String userId) throws RemoteException {
     checkAccess(pep.CLEAR_USER, userId);
@@ -204,9 +233,9 @@ public class AlertsImpl implements Alerts {
     values.put("ALERTS", AlertsImpl.MODEL_ALERTS);
     values.put("userId", userId);
     String query = ItqlHelper.bindValues(AlertsImpl.CLEAN_USER_ITQL, values);
-    this.itql.doUpdate(query);
+    ctx.getItqlHelper().doUpdate(query);
   }
-  
+
   // See Alerts.java interface
   public boolean sendAlerts(String endDate, int count) {
     checkAccess(pep.SEND_ALERTS, "");
@@ -214,7 +243,7 @@ public class AlertsImpl implements Alerts {
     try {
       Calendar end = Calendar.getInstance();
       end.setTime(ArticleFeed.parseDateParam(endDate));
-      
+
       for (AlertMessages msgsIt = new AlertMessages(end); msgsIt.hasNext() && count-- > 0; ) {
         Email msg = (Email)msgsIt.next();
         AlertsHelper.sendEmail(msg);
@@ -246,7 +275,7 @@ public class AlertsImpl implements Alerts {
     AlertsHelper.rollCalendar(c, -1);
     return this.sendAlerts(c.getTime().toString(), 0);
   }
-  
+
   /**
    * Iterator over alerts we need to send out.
    *
@@ -256,7 +285,7 @@ public class AlertsImpl implements Alerts {
   class AlertMessages { // implements Iterator {
     Iterator usersIt; // Iterator over UserData records. Is null if no more data.
     String   endDate; // endDate for alert messages (inclusive)
-    String   nextDay; 
+    String   nextDay;
     Email    message; // Current message
 
     /**
@@ -268,7 +297,7 @@ public class AlertsImpl implements Alerts {
       assert endDate != null;
       this.endDate = AlertsHelper.getTimestamp(endDate);
       this.nextDay = AlertsHelper.rollTimestamp(this.endDate, 1);
-      
+
       // Read first N records and set iterator
       Collection users = getNextUsers(this.endDate, FETCH_SIZE);
       if (users != null)
@@ -280,7 +309,7 @@ public class AlertsImpl implements Alerts {
       while (true) {
         if (this.usersIt == null)
           return false;
-        
+
         while (this.usersIt.hasNext()) {
           // Get user and update user's timestamp
           UserData user = (UserData)this.usersIt.next();
@@ -300,7 +329,7 @@ public class AlertsImpl implements Alerts {
           this.message.addHeader("X-Topaz-startDate", user.stamp);
           this.message.addHeader("X-Topaz-Articles", articles.toString());
           this.message.addHeader("X-Topaz-Categories", "N/A"); // iTQL hides these from us
-          
+
           if (log.isDebugEnabled())
             log.debug("hasNext user " + user.userId + " " + user.stamp + "-" + this.endDate +
                       " msg: " + articles.toString());
@@ -321,7 +350,7 @@ public class AlertsImpl implements Alerts {
         EmailException, AlertsGenerationException {
       if (this.message == null)
         this.hasNext(); // Fetch the next message (if there is one)
-      
+
       if (this.message == null)
         throw new NoSuchElementException("No more Alert messages");
 
@@ -334,7 +363,7 @@ public class AlertsImpl implements Alerts {
       throw new UnsupportedOperationException("Cannot manually remove messages");
     }
   }
-    
+
 
   /**
    * Get the next N users that have alerts from their timestamp until endDate (usually set
@@ -347,7 +376,7 @@ public class AlertsImpl implements Alerts {
   private Collection getNextUsers(String endDate, int count)
       throws RemoteException, AnswerException {
     LinkedHashMap users = new LinkedHashMap();
-    
+
     Map values = new HashMap();
     values.put("PREFS", MODEL_PREFS);
     values.put("ALERTS", MODEL_ALERTS);
@@ -356,7 +385,7 @@ public class AlertsImpl implements Alerts {
     values.put("stamp", endDate);
     // TODO: This query should include count(*) from ARTICLES delimited by dates
     String query = ItqlHelper.bindValues(AlertsImpl.GET_NEXT_USERS_ITQL, values);
-    String response = this.itql.doQuery(query);
+    String response = ctx.getItqlHelper().doQuery(query);
     Answer result = new Answer(response);
     QueryAnswer  answer = (QueryAnswer)result.getAnswers().get(0);
 
@@ -367,7 +396,7 @@ public class AlertsImpl implements Alerts {
       UserData user = new UserData();
       user.userId = ((URIReference)row[1]).getURI().toString();
       user.stamp = ((Literal)row[0]).getLexicalForm();
-      
+
       QueryAnswer subAnswer = (QueryAnswer)row[2]; // from sub-query
       Object[] subRow = (Object[])subAnswer.getRows().get(0);
       user.emailAddress = subRow[0].toString();
@@ -389,7 +418,7 @@ public class AlertsImpl implements Alerts {
     values.put("ALERTS", MODEL_ALERTS);
     values.put("userId", userId);
     String query = ItqlHelper.bindValues(AlertsImpl.GET_TIMESTAMP_ITQL, values);
-    StringAnswer result = new StringAnswer(this.itql.doQuery(query));
+    StringAnswer result = new StringAnswer(ctx.getItqlHelper().doQuery(query));
     QueryAnswer  answer = (QueryAnswer)result.getAnswers().get(0);
 
     // If user has no timestamp yet, then return today
@@ -410,10 +439,10 @@ public class AlertsImpl implements Alerts {
     values.put("userId", userId);
     values.put("stamp", stamp);
     String query = ItqlHelper.bindValues(AlertsImpl.UPDATE_TIMESTAMP_ITQL, values);
-    this.itql.doUpdate(query);
+    ctx.getItqlHelper().doUpdate(query);
   }
-  
-  
+
+
   /**
    * Get the xml for a feed for a specific user's alerts preferences.
    *
@@ -424,7 +453,7 @@ public class AlertsImpl implements Alerts {
   private Collection getUserArticles(UserData user, String endDate) throws RemoteException {
     if (endDate == null)
       endDate = AlertsHelper.getTimestamp(Calendar.getInstance()); // today
-    
+
     HashMap values = new HashMap();
     values.put("ARTICLES", MODEL_ARTICLES);
     values.put("PREFS", MODEL_PREFS);
@@ -449,7 +478,7 @@ public class AlertsImpl implements Alerts {
   protected Collection getArticles(String query)
       throws RemoteException {
     try {
-      StringAnswer articlesAnswer = new StringAnswer(itql.doQuery(query));
+      StringAnswer articlesAnswer = new StringAnswer(ctx.getItqlHelper().doQuery(query));
       Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
 
       for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
@@ -464,7 +493,7 @@ public class AlertsImpl implements Alerts {
       }
 
       String detailsQuery = ArticleFeed.getDetailsQuery(articles.values());
-      StringAnswer detailsAnswer = new StringAnswer(itql.doQuery(detailsQuery));
+      StringAnswer detailsAnswer = new StringAnswer(ctx.getItqlHelper().doQuery(detailsQuery));
       ArticleFeed.addArticlesDetails(articles, detailsAnswer);
 
       return articles.values();
@@ -472,11 +501,11 @@ public class AlertsImpl implements Alerts {
       throw new RemoteException("Error querying RDF", ae);
     }
   }
-  
+
   protected void checkAccess(String action, String doi) {
     pep.checkAccess(action, URI.create(pid2URI(doi2PID(doi))));
   }
-  
+
   protected static String doi2PID(String doi) {
     try {
       return "doi:" + URLEncoder.encode(doi, "UTF-8");

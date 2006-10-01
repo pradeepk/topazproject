@@ -28,6 +28,8 @@ import org.apache.axis.types.NonNegativeInteger;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.common.impl.TopazContext;
+
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedora.client.Uploader;
 
@@ -53,21 +55,17 @@ public class FedoraHelper {
     + "<foxml:datastreamVersion ID=\"BODY1.0\" MIMETYPE=\"${CONTENTTYPE}\" LABEL=\"${LABEL}\">"
     + "<foxml:contentLocation REF=\"${CONTENT}\" TYPE=\"URL\"/></foxml:datastreamVersion>"
     + "</foxml:datastream></foxml:digitalObject>";
-  private final URI           fedoraServer;
-  private final FedoraAPIM    apim;
-  private final Uploader      uploader;
+
+  //
+  private final TopazContext ctx;
 
   /**
    * Creates a new FedoraHelper object.
    *
-   * @param fedoraServer The fedora server uri
-   * @param apim Fedora API-M stub
-   * @param uploader Fedora uploader stub
+   * @param ctx the TopazContext
    */
-  public FedoraHelper(URI fedoraServer, FedoraAPIM apim, Uploader uploader) {
-    this.fedoraServer   = fedoraServer;
-    this.apim           = apim;
-    this.uploader       = uploader;
+  public FedoraHelper(TopazContext ctx) {
+    this.ctx = ctx;
   }
 
   /**
@@ -86,7 +84,7 @@ public class FedoraHelper {
   public String createBody(String contentType, byte[] content, String contentModel, String label)
                     throws RemoteException {
     try {
-      String ref = uploader.upload(content);
+      String ref = ctx.getFedoraUploader().upload(content);
 
       Map    values = new HashMap();
       values.put("CONTENTTYPE", contentType);
@@ -96,7 +94,7 @@ public class FedoraHelper {
 
       String foxml = ItqlHelper.bindValues(FOXML, values);
 
-      return pid2URI(apim.ingest(foxml.getBytes("UTF-8"), "foxml1.0", "created"));
+      return pid2URI(ctx.getFedoraAPIM().ingest(foxml.getBytes("UTF-8"), "foxml1.0", "created"));
     } catch (UnsupportedEncodingException e) {
       throw new Error(e);
     } catch (IOException e) {
@@ -131,7 +129,7 @@ public class FedoraHelper {
    *
    * @param uri the fedora URI
    *
-   * @return Returns the REST API-A URL for this URI 
+   * @return Returns the REST API-A URL for this URI
    */
   public String getBodyURL(String uri) {
     if (!uri.startsWith("info:fedora"))
@@ -139,7 +137,7 @@ public class FedoraHelper {
 
     String path = "/fedora/get/" + uri2PID(uri) + "/BODY";
 
-    return fedoraServer.resolve(path).toString();
+    return ctx.getFedoraBaseUri().resolve(path).toString();
   }
 
   /**
@@ -153,7 +151,7 @@ public class FedoraHelper {
    */
   public String getNextId(String pidNs) throws RemoteException {
     // xxx: cache a bunch of ids
-    return apim.getNextPID(new NonNegativeInteger("1"), pidNs)[0];
+    return ctx.getFedoraAPIM().getNextPID(new NonNegativeInteger("1"), pidNs)[0];
   }
 
   /**
@@ -163,6 +161,8 @@ public class FedoraHelper {
    */
   public void purgeObjects(String[] purgeList) {
     try {
+      FedoraAPIM apim = ctx.getFedoraAPIM();
+
       for (int i = 0; i < purgeList.length; i++) {
         if (log.isDebugEnabled())
           log.debug("purging " + purgeList[i]);

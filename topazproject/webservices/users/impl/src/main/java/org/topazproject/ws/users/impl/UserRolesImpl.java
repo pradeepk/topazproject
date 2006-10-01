@@ -30,6 +30,9 @@ import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.impl.TopazContextListener;
+import org.topazproject.common.impl.SimpleTopazContext;
 
 import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.users.UserRoles;
@@ -74,13 +77,39 @@ public class UserRolesImpl implements UserRoles {
        " from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
-  private final ItqlHelper      itql;
+  private final TopazContext    ctx;
   private final UserRolesPEP    pep;
   private final String          baseURI;
 
   static {
     aliases = ItqlHelper.getDefaultAliases();
     aliases.put("foaf", FOAF_URI);
+  }
+
+  /** 
+   * Create a new user accounts manager instance. 
+   *
+   * @param pep  the policy-enforcer to use for access-control
+   * @param ctx the topaz context
+   */
+  public UserRolesImpl(UserRolesPEP pep, TopazContext ctx) {
+    this.pep  = pep;
+    this.baseURI = ctx.getObjectBaseUri().toString();
+    this.ctx = ctx;
+
+    ctx.addListener(new TopazContextListener() {
+        public void handleCreated(TopazContext ctx, Object handle) {
+          if (handle instanceof ItqlHelper) {
+            ItqlHelper itql = (ItqlHelper) handle;
+            itql.getAliases().putAll(aliases);
+            try {
+              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+            }catch (IOException e) {
+              log.warn("failed to create model " + MODEL, e);
+            }
+          }
+        }
+      });
   }
 
   /** 
@@ -94,7 +123,7 @@ public class UserRolesImpl implements UserRoles {
   public UserRolesImpl(ItqlHelper itql, UserRolesPEP pep)
       throws IOException, ConfigurationException {
     this.pep  = pep;
-    this.itql = itql;
+    this.ctx = new SimpleTopazContext(itql, null, null);
 
     itql.getAliases().putAll(aliases);
     itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
@@ -151,6 +180,7 @@ public class UserRolesImpl implements UserRoles {
     if (log.isDebugEnabled())
       log.debug("Getting roles for '" + userId + "'");
 
+    ItqlHelper itql = ctx.getItqlHelper();
     try {
       String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
                    ITQL_GET_ROLES.replaceAll("\\Q${userId}", userId);
@@ -190,6 +220,7 @@ public class UserRolesImpl implements UserRoles {
     if (log.isDebugEnabled())
       log.debug("Setting roles for '" + userId + "': '" + StringUtils.join(roles, "', '") + "'");
 
+    ItqlHelper itql = ctx.getItqlHelper();
     String txn = "set-roles " + userId;
     try {
       itql.beginTxn(txn);
@@ -234,6 +265,7 @@ public class UserRolesImpl implements UserRoles {
    * @throws RemoteException if an error occurred talking to the db
    */
   protected boolean userExists(String userId) throws RemoteException {
+    ItqlHelper itql = ctx.getItqlHelper();
     try {
       StringAnswer ans =
           new StringAnswer(itql.doQuery(ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId)));

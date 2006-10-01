@@ -36,6 +36,9 @@ import org.apache.commons.logging.LogFactory;
 import org.jrdf.graph.Literal;
 import org.jrdf.graph.URIReference;
 
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.impl.TopazContextListener;
+
 import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.fedora.client.FedoraAPIM;
@@ -141,31 +144,27 @@ public class AnnotationsImpl implements Annotations {
   }
 
   private final AnnotationsPEP pep;
-  private final ItqlHelper     itql;
+  private final TopazContext   ctx;
   private final FedoraHelper   fedora;
-  private final String         user;
-  private final String         baseURI;
 
   /**
    * Creates a new AnnotationsImpl object.
    *
    * @param pep The xacml pep
-   * @param itql The itql service
-   * @param fedoraServer The fedora server uri
-   * @param apim Fedora API-M stub
-   * @param uploader Fedora uploader stub
-   * @param user The authenticated user
-   * @param baseURI The base uri for annotation ids
+   * @param ctx The topaz api context
    */
-  public AnnotationsImpl(AnnotationsPEP pep, ItqlHelper itql, URI fedoraServer, FedoraAPIM apim,
-                         Uploader uploader, String user, String baseURI) {
-    this.pep       = pep;
-    this.itql      = itql;
-    this.fedora    = new FedoraHelper(fedoraServer, apim, uploader);
-    this.user      = (user == null) ? "anonymous" : user;
-    this.baseURI   = baseURI;
+  public AnnotationsImpl(AnnotationsPEP pep, TopazContext ctx) {
+    this.pep      = pep;
+    this.ctx      = ctx;
+    this.fedora   = new FedoraHelper(ctx);
 
-    itql.setAliases(aliases);
+    ctx.addListener(new TopazContextListener() {
+        public void handleCreated(TopazContext ctx, Object handle) {
+          if (handle instanceof ItqlHelper) {
+            ((ItqlHelper) handle).setAliases(aliases);
+          }
+        }
+      });
   }
 
   /*
@@ -174,7 +173,7 @@ public class AnnotationsImpl implements Annotations {
   public String createAnnotation(String mediator, String type, String annotates, String context,
                                  String supersedes, boolean anonymize, String title, String body)
                           throws NoSuchAnnotationIdException, RemoteException {
-    itql.validateUri(body, "body");
+    ItqlHelper.validateUri(body, "body");
 
     return createAnnotation(mediator, type, annotates, context, supersedes, anonymize, title, body,
                             null, null);
@@ -204,17 +203,17 @@ public class AnnotationsImpl implements Annotations {
     if (context == null)
       context = annotates;
     else
-      context = itql.escapeLiteral(context);
+      context = ItqlHelper.escapeLiteral(context);
 
     if (type == null)
       type = "http://www.w3.org/2000/10/annotationType#Annotation";
     else
-      itql.validateUri(type, "type");
+      ItqlHelper.validateUri(type, "type");
 
-    pep.checkAccess(pep.CREATE_ANNOTATION, itql.validateUri(annotates, "annotates"));
+    pep.checkAccess(pep.CREATE_ANNOTATION, ItqlHelper.validateUri(annotates, "annotates"));
 
     if (supersedes != null) {
-      URI supersedesUri = itql.validateUri(supersedes, "supersedes");
+      URI supersedesUri = ItqlHelper.validateUri(supersedes, "supersedes");
       pep.checkAccess(pep.SUPERSEDE, supersedesUri);
       checkId(supersedesUri);
     }
@@ -231,13 +230,18 @@ public class AnnotationsImpl implements Annotations {
     String create = CREATE_ITQL;
     Map    values = new HashMap();
 
+    String user = ctx.getUserName();
+
+    if (user == null)
+      user = "anonymous";
+
     values.put("id", id);
     values.put("type", type);
     values.put("annotates", annotates);
     values.put("context", context);
     values.put("body", body);
     values.put("user", user);
-    values.put("created", itql.getUTCTime());
+    values.put("created", ItqlHelper.getUTCTime());
 
     values.put("creator", (anonymize ? "topaz:anonymousCreator" : "dc:creator"));
 
@@ -248,15 +252,15 @@ public class AnnotationsImpl implements Annotations {
 
     if (title != null) {
       create += INSERT_TITLE_ITQL;
-      values.put("title", itql.escapeLiteral(title));
+      values.put("title", ItqlHelper.escapeLiteral(title));
     }
 
     if (mediator != null) {
       create += INSERT_MEDIATOR_ITQL;
-      values.put("mediator", itql.escapeLiteral(mediator));
+      values.put("mediator", ItqlHelper.escapeLiteral(mediator));
     }
 
-    itql.doUpdate(itql.bindValues(create, values));
+    ctx.getItqlHelper().doUpdate(ItqlHelper.bindValues(create, values));
 
     if (log.isDebugEnabled())
       log.debug("created annotaion " + id + " for " + annotates + " annotated by " + body);
@@ -269,7 +273,7 @@ public class AnnotationsImpl implements Annotations {
    */
   public void deleteAnnotation(String id, boolean deletePreceding)
                         throws NoSuchAnnotationIdException, RemoteException {
-    URI thisUri = itql.validateUri(id, "annotation-id");
+    URI thisUri = ItqlHelper.validateUri(id, "annotation-id");
     pep.checkAccess(pep.DELETE_ANNOTATION, thisUri);
     checkId(thisUri);
 
@@ -284,6 +288,7 @@ public class AnnotationsImpl implements Annotations {
 
     String   txn = "delete " + id;
 
+    ItqlHelper itql = ctx.getItqlHelper();
     try {
       itql.beginTxn(txn);
       itql.doUpdate(del);
@@ -317,12 +322,12 @@ public class AnnotationsImpl implements Annotations {
    */
   public AnnotationInfo getAnnotationInfo(String id)
                                    throws NoSuchAnnotationIdException, RemoteException {
-    pep.checkAccess(pep.GET_ANNOTATION_INFO, itql.validateUri(id, "annotation-id"));
+    pep.checkAccess(pep.GET_ANNOTATION_INFO, ItqlHelper.validateUri(id, "annotation-id"));
 
     try {
       String query = GET_ITQL.replaceAll("\\Q${id}", id);
 
-      Answer ans  = new Answer(itql.doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
@@ -339,13 +344,13 @@ public class AnnotationsImpl implements Annotations {
    */
   public AnnotationInfo[] listAnnotations(String mediator, String annotates, String type)
                                    throws RemoteException {
-    pep.checkAccess(pep.LIST_ANNOTATIONS, itql.validateUri(annotates, "annotates"));
+    pep.checkAccess(pep.LIST_ANNOTATIONS, ItqlHelper.validateUri(annotates, "annotates"));
 
     try {
       if (type == null)
         type = "a:Annotation";
       else
-        itql.validateUri(type, "type");
+        ItqlHelper.validateUri(type, "type");
 
       Map values = new HashMap();
       values.put("annotates", annotates);
@@ -357,12 +362,12 @@ public class AnnotationsImpl implements Annotations {
         query = LIST_ITQL;
       else {
         query = LIST_BY_MEDIATOR_ITQL;
-        values.put("mediator", itql.escapeLiteral(mediator));
+        values.put("mediator", ItqlHelper.escapeLiteral(mediator));
       }
 
-      query = itql.bindValues(query, values);
+      query = ItqlHelper.bindValues(query, values);
 
-      Answer ans = new Answer(itql.doQuery(query));
+      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -377,13 +382,13 @@ public class AnnotationsImpl implements Annotations {
    */
   public AnnotationInfo[] getLatestAnnotations(String id)
                                         throws NoSuchAnnotationIdException, RemoteException {
-    URI thisUri = itql.validateUri(id, "annotation-id");
+    URI thisUri = ItqlHelper.validateUri(id, "annotation-id");
     pep.checkAccess(pep.GET_ANNOTATION_INFO, thisUri);
 
     try {
       String query = LATEST_ITQL.replaceAll("\\Q${id}", id);
 
-      Answer ans = new Answer(itql.doQuery(query));
+      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -401,14 +406,14 @@ public class AnnotationsImpl implements Annotations {
    */
   public AnnotationInfo[] getPrecedingAnnotations(String id)
                                            throws NoSuchAnnotationIdException, RemoteException {
-    URI thisUri = itql.validateUri(id, "annotation-id");
+    URI thisUri = ItqlHelper.validateUri(id, "annotation-id");
     pep.checkAccess(pep.GET_ANNOTATION_INFO, thisUri);
     checkId(thisUri);
 
     try {
       String query = PRECEDING_ITQL.replaceAll("\\Q${id}", id);
 
-      Answer ans = new Answer(itql.doQuery(query));
+      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -423,13 +428,13 @@ public class AnnotationsImpl implements Annotations {
    */
   public void setAnnotationState(String id, int state)
                           throws RemoteException, NoSuchAnnotationIdException {
-    URI thisUri = itql.validateUri(id, "annotation-id");
+    URI thisUri = ItqlHelper.validateUri(id, "annotation-id");
     pep.checkAccess(pep.SET_ANNOTATION_STATE, thisUri);
     checkId(thisUri);
 
     String set = SET_STATE_ITQL.replaceAll("\\Q${id}", id).replaceAll("\\Q${state}", "" + state);
 
-    itql.doUpdate(set);
+    ctx.getItqlHelper().doUpdate(set);
   }
 
   /*
@@ -437,21 +442,22 @@ public class AnnotationsImpl implements Annotations {
    */
   public String[] listAnnotations(String mediator, int state)
                            throws RemoteException {
-    pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, URI.create(baseURI + ANNOTATION_PID_NS));
+    pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE,
+                    URI.create(ctx.getObjectBaseUri() + ANNOTATION_PID_NS));
 
     try {
       String query =
         "select $a $o from " + MODEL + " where $a <r:type> <a:Annotation> and $a <topaz:state> $o";
 
       if (mediator != null)
-        query += (" and $a <dt:mediator> '" + itql.escapeLiteral(mediator) + "'");
+        query += (" and $a <dt:mediator> '" + ItqlHelper.escapeLiteral(mediator) + "'");
 
       if (state == 0)
         query += " and exclude($a <topaz:state> '0');";
       else
         query += (" and $a <topaz:state> '" + state + "';");
 
-      Answer    ans  = new Answer(itql.doQuery(query));
+      Answer    ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List      rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       int       c      = rows.size();
@@ -502,7 +508,7 @@ public class AnnotationsImpl implements Annotations {
 
     try {
       String query = CHECK_ID_ITQL.replaceAll("\\Q${id}", id);
-      Answer ans  = new Answer(itql.doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
@@ -581,7 +587,7 @@ public class AnnotationsImpl implements Annotations {
     query = query.replaceAll("\\Q${id}", id);
 
     try {
-      Answer ans  = new Answer(itql.doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       int    c    = rows.size();
@@ -606,7 +612,7 @@ public class AnnotationsImpl implements Annotations {
     try {
       String query = PRECEDING_ALL_ITQL.replaceAll("\\Q${id}", id);
 
-      Answer ans = new Answer(itql.doQuery(query));
+      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -617,6 +623,6 @@ public class AnnotationsImpl implements Annotations {
   }
 
   private String getNextId() throws RemoteException {
-    return baseURI + fedora.getNextId(ANNOTATION_PID_NS).replace(':', '/');
+    return ctx.getObjectBaseUri() + fedora.getNextId(ANNOTATION_PID_NS).replace(':', '/');
   }
 }

@@ -29,6 +29,9 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.PasswordProtectedService;
 import org.topazproject.authentication.UnProtectedService;
+import org.topazproject.common.impl.SimpleTopazContext;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.impl.TopazContextListener;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.fedora.client.APIMStubFactory;
 import org.topazproject.fedora.client.FedoraAPIM;
@@ -95,8 +98,7 @@ public class ProfilesImpl implements Profiles {
        "  $userId <rdf:type> <foaf:OnlineAccount> and $userId <tucana:is> <${userId}>;").
       replaceAll("\\Q${USER_MODEL}", USER_MODEL);
 
-  private final ItqlHelper  itql;
-  private final FedoraAPIM  apim;
+  private final TopazContext ctx;
   private final ProfilesPEP pep;
   private final String      baseURI;
 
@@ -109,6 +111,32 @@ public class ProfilesImpl implements Profiles {
     aliases.put("bio",  BIO_URI);
   }
 
+  /**
+   * Create a new profiles instance.
+   *
+   * @param pep the policy-enforcer to use for access-control
+   * @param ctx the topaz context
+   *
+   */
+  public ProfilesImpl(ProfilesPEP pep, TopazContext ctx) {
+    this.ctx   = ctx;
+    this.pep   = pep;
+    this.baseURI = ctx.getObjectBaseUri().toString();
+
+    ctx.addListener(new TopazContextListener() {
+        public void handleCreated(TopazContext ctx, Object handle) {
+          if (handle instanceof ItqlHelper) {
+            ItqlHelper itql = (ItqlHelper) handle;
+            itql.getAliases().putAll(aliases);
+            try {
+              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+            } catch (IOException e) {
+              log.warn("failed to create model " + MODEL, e);
+            }
+          }
+        }
+      });
+  }
   /** 
    * Create a new profiles manager instance. 
    *
@@ -123,11 +151,11 @@ public class ProfilesImpl implements Profiles {
       throws IOException, ServiceException, ConfigurationException {
     this.pep = pep;
 
-    itql = new ItqlHelper(mulgaraSvc);
+    ItqlHelper itql = new ItqlHelper(mulgaraSvc);
     itql.getAliases().putAll(aliases);
     itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
 
-    apim = APIMStubFactory.create(fedoraSvc);
+    FedoraAPIM apim = APIMStubFactory.create(fedoraSvc);
 
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
     conf = conf.subset("topaz");
@@ -142,6 +170,7 @@ public class ProfilesImpl implements Profiles {
       throw new ConfigurationException("key 'topaz.objects.base-uri' does not contain a valid URI",
                                        use);
     }
+    ctx = new SimpleTopazContext(itql, apim, null);
   }
 
   /** 
@@ -222,6 +251,7 @@ public class ProfilesImpl implements Profiles {
     if (log.isDebugEnabled())
       log.debug("Setting profile for '" + userId + "'");
 
+    ItqlHelper itql = ctx.getItqlHelper();
     String txn = "set-profile " + userId;
     try {
       itql.beginTxn(txn);
@@ -261,6 +291,7 @@ public class ProfilesImpl implements Profiles {
        * But the answer is harder to parse, and I'm not sure it gains anything over the two-query
        * solution in this case.
        */
+      ItqlHelper itql = ctx.getItqlHelper();
       String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
                    ITQL_GET_PROFID.replaceAll("\\Q${userId}", userId);
       StringAnswer ans = new StringAnswer(itql.doQuery(qry));
@@ -317,7 +348,7 @@ public class ProfilesImpl implements Profiles {
       cmd.append(" into ").append(MODEL).append(";");
     }
 
-    itql.doUpdate(cmd.toString());
+    ctx.getItqlHelper().doUpdate(cmd.toString());
   }
 
   private static final void addLiteralVal(StringBuffer buf, String subj, String pred, String lit) {
@@ -347,7 +378,7 @@ public class ProfilesImpl implements Profiles {
     try {
       String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
                    ITQL_GET_PROF.replaceAll("\\Q${userId}", userId);
-      ans = new StringAnswer(itql.doQuery(qry));
+      ans = new StringAnswer(ctx.getItqlHelper().doQuery(qry));
     } catch (AnswerException ae) {
       throw new RemoteException("Error getting profile-info for user '" + userId + "'", ae);
     }
@@ -402,7 +433,7 @@ public class ProfilesImpl implements Profiles {
    */
   protected synchronized String getNewProfId() throws RemoteException {
     if (newProfIdIdx >= newProfIds.length) {
-      newProfIds = apim.getNextPID(new NonNegativeInteger("20"), IDS_NS);
+      newProfIds = ctx.getFedoraAPIM().getNextPID(new NonNegativeInteger("20"), IDS_NS);
       newProfIdIdx = 0;
     }
 

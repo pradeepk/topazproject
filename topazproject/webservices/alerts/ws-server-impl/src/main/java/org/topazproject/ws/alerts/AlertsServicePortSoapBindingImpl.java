@@ -14,20 +14,16 @@ import java.util.Calendar;
 import java.util.Date;
 import java.net.URI;
 import java.rmi.RemoteException;
-import javax.servlet.http.HttpSession;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
-import org.topazproject.common.ExceptionUtils;
-import org.topazproject.configuration.ConfigurationStore;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.ws.ImplInvocationHandler;
+import org.topazproject.common.ws.WSTopazContext;
 import org.topazproject.ws.alerts.impl.AlertsImpl;
 import org.topazproject.ws.alerts.impl.AlertsPEP;
 import org.topazproject.xacml.ws.WSXacmlUtil;
@@ -41,7 +37,8 @@ import org.topazproject.xacml.ws.WSXacmlUtil;
 public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycle {
   private static final Log log = LogFactory.getLog(AlertsServicePortSoapBindingImpl.class);
 
-  private AlertsImpl impl;
+  private TopazContext ctx = new WSTopazContext(getClass().getName());
+  private Alerts impl;
 
   public void init(Object context) throws ServiceException {
     if (log.isTraceEnabled())
@@ -51,25 +48,11 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
       // get the pep
       AlertsPEP pep = new WSAlertsPEP((ServletEndpointContext) context);
 
-      // get other config
-      Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-      conf = conf.subset("topaz");
-
-      if (!conf.containsKey("services.fedora.uri"))
-        throw new ConfigurationException("missing key 'topaz.services.fedora.uri'");
-      if (!conf.containsKey("services.itql.uri"))
-        throw new ConfigurationException("missing key 'topaz.services.itql.uri'");
-
-      Configuration fedoraConf = conf.subset("services.fedora");
-      Configuration itqlConf   = conf.subset("services.itql");
-
-      HttpSession session = ((ServletEndpointContext) context).getHttpSession();
-
-      ProtectedService fedoraSvc = ProtectedServiceFactory.createService(fedoraConf, session);
-      ProtectedService itqlSvc   = ProtectedServiceFactory.createService(itqlConf, session);
+      ctx.init(context);
 
       // create the impl
-      impl = new AlertsImpl(itqlSvc, fedoraSvc, pep);
+      impl = new AlertsImpl(pep, ctx);
+      impl = (Alerts)ImplInvocationHandler.newProxy(impl, ctx, log);
     } catch (Exception e) {
       log.error("Failed to initialize AlertsImpl.", e);
       throw new ServiceException(e);
@@ -80,6 +63,7 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#destroy");
 
+    ctx.destroy();
     impl = null;
   }
 
@@ -88,49 +72,23 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
   // where necessary.
 
   public boolean sendAlerts(String endDate, int count) throws RemoteException {
-    try {
-      return impl.sendAlerts(endDate, count);
-    } catch (Throwable t) {
-      newExceptionHandler(t).sendAlerts(null, 0);
-      return false;     // not reached
-    }
+    return impl.sendAlerts(endDate, count);
   }
 
   public boolean sendAllAlerts() throws RemoteException {
-    try {
-      return impl.sendAllAlerts();
-    } catch (Throwable t) {
-      newExceptionHandler(t).sendAllAlerts();
-      return false;     // not reached
-    }
+    return impl.sendAllAlerts();
   }
 
   public void startUser(String userId, String date) throws RemoteException {
-    try {
-      impl.startUser(userId, date);
-    } catch (Throwable t) {
-      newExceptionHandler(t).startUser(null, null);
-    }
+    impl.startUser(userId, date);
   }
 
   public void startUser(String userId) throws RemoteException {
-    try {
-      impl.startUser(userId);
-    } catch (Throwable t) {
-      newExceptionHandler(t).startUser(null);
-    }
+    impl.startUser(userId);
   }
 
   public void clearUser(String userId) throws RemoteException {
-    try {
-      impl.clearUser(userId);
-    } catch (Throwable t) {
-      newExceptionHandler(t).clearUser(null);
-    }
-  }
-
-  private static Alerts newExceptionHandler(Throwable t) {
-    return ((Alerts) ExceptionUtils.newExceptionHandler(Alerts.class, t, log));
+    impl.clearUser(userId);
   }
 
   private static class WSAlertsPEP extends AlertsPEP {

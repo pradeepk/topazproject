@@ -27,6 +27,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
+import org.topazproject.common.impl.SimpleTopazContext;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.impl.TopazContextListener;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
@@ -94,13 +97,40 @@ public class PreferencesImpl implements Preferences {
        "  $userId <rdf:type> <foaf:OnlineAccount> and $userId <tucana:is> <${userId}>;").
       replaceAll("\\Q${USER_MODEL}", USER_MODEL);
 
-  private final ItqlHelper     itql;
+  private final TopazContext   ctx;
   private final PreferencesPEP pep;
   private final String         baseURI;
 
   static {
     aliases = ItqlHelper.getDefaultAliases();
     aliases.put("foaf", FOAF_URI);
+  }
+
+  /**
+   * Create a new preferences instance.
+   *
+   * @param pep the policy-enforcer to use for access-control
+   * @param ctx the topaz context
+   *
+   */
+  public PreferencesImpl(PreferencesPEP pep, TopazContext ctx) {
+    this.ctx   = ctx;
+    this.pep   = pep;
+    this.baseURI = ctx.getObjectBaseUri().toString();
+
+    ctx.addListener(new TopazContextListener() {
+        public void handleCreated(TopazContext ctx, Object handle) {
+          if (handle instanceof ItqlHelper) {
+            ItqlHelper itql = (ItqlHelper) handle;
+            itql.getAliases().putAll(aliases);
+            try {
+              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+            } catch (IOException e) {
+              log.warn("failed to create model " + MODEL, e);
+            }
+          }
+        }
+      });
   }
 
   /** 
@@ -113,7 +143,6 @@ public class PreferencesImpl implements Preferences {
    */
   public PreferencesImpl(ItqlHelper itql, PreferencesPEP pep)
       throws IOException, ConfigurationException {
-    this.itql = itql;
     this.pep  = pep;
 
     itql.getAliases().putAll(aliases);
@@ -132,6 +161,7 @@ public class PreferencesImpl implements Preferences {
       throw new ConfigurationException("key 'topaz.objects.base-uri' does not contain a valid URI",
                                        use);
     }
+    ctx = new SimpleTopazContext(itql, null, null);
   }
 
   /** 
@@ -172,6 +202,7 @@ public class PreferencesImpl implements Preferences {
     if (log.isDebugEnabled())
       log.debug("Getting preferences for '" + userId + "', app='" + appId + "'");
 
+    ItqlHelper itql = ctx.getItqlHelper();
     StringAnswer ans;
     try {
       String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
@@ -228,6 +259,7 @@ public class PreferencesImpl implements Preferences {
     if (log.isDebugEnabled())
       log.debug("Setting preferences for '" + userId + "', app='" + appId + "'");
 
+    ItqlHelper itql = ctx.getItqlHelper();
     String txn = "set-prefs " + userId;
     try {
       itql.beginTxn(txn);
@@ -297,6 +329,7 @@ public class PreferencesImpl implements Preferences {
    * @throws RemoteException if an error occurred talking to the db
    */
   protected boolean userExists(String userId) throws RemoteException {
+    ItqlHelper itql = ctx.getItqlHelper();
     try {
       StringAnswer ans =
           new StringAnswer(itql.doQuery(ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId)));

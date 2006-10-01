@@ -33,6 +33,9 @@ import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.impl.TopazContextListener;
+import org.topazproject.common.impl.SimpleTopazContext;
 
 import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.users.UserAccounts;
@@ -103,8 +106,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
        " from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
-  private final ItqlHelper      itql;
-  private final FedoraAPIM      apim;
+  private final TopazContext    ctx;
   private final UserAccountsPEP pep;
   private final String          baseURI;
 
@@ -124,13 +126,38 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
    * @throws IOException if an error occurred initializing the itql service
    */
   public UserAccountsImpl(ItqlHelper itql) throws IOException {
-    this.itql    = itql;
-    this.apim    = null;
     this.pep     = null;
     this.baseURI = null;
+    this.ctx = new SimpleTopazContext(itql, null, null);
 
     itql.getAliases().putAll(aliases);
     itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+  }
+
+  /** 
+   * Create a new user accounts manager instance. 
+   *
+   * @param pep  the policy-enforcer to use for access-control
+   * @param ctx the topaz context
+   */
+  public UserAccountsImpl(UserAccountsPEP pep, TopazContext ctx) {
+    this.pep  = pep;
+    this.baseURI = ctx.getObjectBaseUri().toString();
+    this.ctx = ctx;
+
+    ctx.addListener(new TopazContextListener() {
+        public void handleCreated(TopazContext ctx, Object handle) {
+          if (handle instanceof ItqlHelper) {
+            ItqlHelper itql = (ItqlHelper) handle;
+            itql.getAliases().putAll(aliases);
+            try {
+              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+            }catch (IOException e) {
+              log.warn("failed to create model " + MODEL, e);
+            }
+          }
+        }
+      });
   }
 
   /** 
@@ -145,8 +172,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   public UserAccountsImpl(ItqlHelper itql, FedoraAPIM apim, UserAccountsPEP pep)
       throws IOException, ConfigurationException {
     this.pep  = pep;
-    this.itql = itql;
-    this.apim = apim;
+    this.ctx = new SimpleTopazContext(itql, apim, null);
 
     itql.getAliases().putAll(aliases);
     itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
@@ -164,6 +190,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       throw new ConfigurationException("key 'topaz.objects.base-uri' does not contain a valid URI",
                                        use);
     }
+
   }
 
   /** 
@@ -208,6 +235,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       throw new Error("Impossible...", nsie);   // can't happen
     }
 
+    ItqlHelper itql = ctx.getItqlHelper();
     String txn = "create user";
     try {
       itql.beginTxn(txn);
@@ -244,6 +272,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     if (log.isDebugEnabled())
       log.debug("Deleting user '" + userId + "'");
 
+    ItqlHelper itql = ctx.getItqlHelper();
     String txn = "delete " + userId;
     try {
       itql.beginTxn(txn);
@@ -277,6 +306,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     if (log.isDebugEnabled())
       log.debug("Getting the account state for '" + userId + "'");
 
+    ItqlHelper itql = ctx.getItqlHelper();
     try {
       StringAnswer ans =
           new StringAnswer(itql.doQuery(ITQL_GET_STATE.replaceAll("\\Q${userId}", userId)));
@@ -315,6 +345,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     if (log.isDebugEnabled())
       log.debug("Setting state for '" + userId + "' to " + state);
 
+    ItqlHelper itql = ctx.getItqlHelper();
     String txn = "set-state " + userId;
     try {
       itql.beginTxn(txn);
@@ -350,6 +381,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     if (log.isDebugEnabled())
       log.debug("Getting auth-ids for '" + userId + "'");
 
+    ItqlHelper itql = ctx.getItqlHelper();
     try {
       StringAnswer ans =
           new StringAnswer(itql.doQuery(ITQL_GET_AUTH_IDS.replaceAll("\\Q${userId}", userId)));
@@ -377,6 +409,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     if (log.isDebugEnabled())
       log.debug("Setting auth-ids for '" + userId + "'");
 
+    ItqlHelper itql = ctx.getItqlHelper();
     String txn = "set-auth-ids " + userId;
     try {
       itql.beginTxn(txn);
@@ -425,6 +458,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     if (authId == null)
       return null;
 
+    ItqlHelper itql = ctx.getItqlHelper();
     try {
       StringAnswer ans =
           new StringAnswer(itql.doQuery(ITQL_GET_USERID.replaceAll("\\Q${authId}", authId)));
@@ -443,6 +477,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
    * @throws RemoteException if an error occurred talking to the db
    */
   protected boolean userExists(String userId) throws RemoteException {
+    ItqlHelper itql = ctx.getItqlHelper();
     try {
       StringAnswer ans =
           new StringAnswer(itql.doQuery(ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId)));
@@ -461,7 +496,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
    */
   protected synchronized String getNewAcctId() throws RemoteException {
     if (newAcctIdIdx >= newAcctIds.length) {
-      newAcctIds = apim.getNextPID(new NonNegativeInteger("20"), ACCOUNT_PID_NS);
+      newAcctIds = ctx.getFedoraAPIM().getNextPID(new NonNegativeInteger("20"), ACCOUNT_PID_NS);
       newAcctIdIdx = 0;
     }
 

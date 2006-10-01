@@ -31,6 +31,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.authentication.ProtectedService;
+import org.topazproject.common.impl.SimpleTopazContext;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.impl.TopazContextListener;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.mulgara.itql.StringAnswer;
@@ -107,12 +110,40 @@ public class RatingsImpl implements Ratings {
       replaceAll("\\Q${MODEL}", MODEL);
 
   private final RatingsPEP pep;
-  private final ItqlHelper itql;
+  private final TopazContext ctx;
   private final String     baseURI;
 
   static {
     aliases = ItqlHelper.getDefaultAliases();
     aliases.put("foaf", FOAF_URI);
+  }
+
+  /**
+   * Create a new ratings service instance.
+   *
+   * @param pep the policy-enforcer to use for access-control
+   * @param ctx the topaz context
+   */
+  public RatingsImpl(RatingsPEP pep, TopazContext ctx) {
+    this.ctx   = ctx;
+    this.pep   = pep;
+    this.baseURI = ctx.getObjectBaseUri().toString();
+
+    ctx.addListener(new TopazContextListener() {
+        public void handleCreated(TopazContext ctx, Object handle) {
+          if (handle instanceof ItqlHelper) {
+            ItqlHelper itql = (ItqlHelper) handle;
+
+            itql.getAliases().putAll(aliases);
+
+            try {
+              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+            } catch (IOException e) {
+              log.warn("failed to create model " + MODEL, e);
+            }
+          }
+        }
+      });
   }
 
   /** 
@@ -124,7 +155,6 @@ public class RatingsImpl implements Ratings {
    * @throws ConfigurationException if any required config is missing
    */
   public RatingsImpl(ItqlHelper itql, RatingsPEP pep) throws IOException, ConfigurationException {
-    this.itql = itql;
     this.pep  = pep;
 
     itql.getAliases().putAll(aliases);
@@ -143,6 +173,7 @@ public class RatingsImpl implements Ratings {
       throw new ConfigurationException("key 'topaz.objects.base-uri' does not contain a valid URI",
                                        use);
     }
+    ctx = new SimpleTopazContext(itql, null, null);
   }
 
   /**
@@ -205,7 +236,7 @@ public class RatingsImpl implements Ratings {
                                     replaceAll("\\Q${appId}",
                                                (appId != null) ? "'" + appId + "'" : "\\$appId");
 
-      ans = new StringAnswer(itql.doQuery(qry));
+      ans = new StringAnswer(ctx.getItqlHelper().doQuery(qry));
     } catch (AnswerException ae) {
       throw new RemoteException("Error getting ratings for object '" + userId + "'", ae);
     }
@@ -294,6 +325,7 @@ public class RatingsImpl implements Ratings {
       log.debug("Setting ratings for '" + object + "', app='" + appId + "', user='" + userId +
                 "': '" + join(ratings, "', '") + "'");
 
+    ItqlHelper itql = ctx.getItqlHelper();
     String txn = "set-ratings " + object;
     try {
       itql.beginTxn(txn);
@@ -450,7 +482,7 @@ public class RatingsImpl implements Ratings {
     if (idx == 0)
       cmd.setLength(clr_len);   // don't insert anything if no stats
 
-    itql.doUpdate(cmd.toString());
+    ctx.getItqlHelper().doUpdate(cmd.toString());
   }
 
   public ObjectRatingStats[] getRatingStats(String appId, String object) throws RemoteException {
@@ -506,7 +538,7 @@ public class RatingsImpl implements Ratings {
       String qry = ITQL_GET_STATS.replaceAll("\\Q${object}", object).
                                   replaceAll("\\Q${appId}",
                                              (appId != null) ? "'" + appId + "'" : "\\$appId");
-      ans = new StringAnswer(itql.doQuery(qry));
+      ans = new StringAnswer(ctx.getItqlHelper().doQuery(qry));
     } catch (AnswerException ae) {
       throw new RemoteException("Error getting ratings for object '" + object + "'", ae);
     }

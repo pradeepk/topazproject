@@ -10,23 +10,18 @@
 package org.topazproject.ws.article;
 
 import java.io.IOException;
-import java.net.URI;
 import java.rmi.RemoteException;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
-import javax.servlet.http.HttpSession;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
-import org.topazproject.common.ExceptionUtils;
-import org.topazproject.configuration.ConfigurationStore;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.ws.ImplInvocationHandler;
+import org.topazproject.common.ws.WSTopazContext;
 import org.topazproject.ws.article.impl.ArticleImpl;
 import org.topazproject.ws.article.impl.ArticlePEP;
 import org.topazproject.xacml.ws.WSXacmlUtil;
@@ -34,7 +29,8 @@ import org.topazproject.xacml.ws.WSXacmlUtil;
 public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecycle {
   private static final Log log = LogFactory.getLog(ArticleServicePortSoapBindingImpl.class);
 
-  private ArticleImpl impl;
+  private TopazContext ctx = new WSTopazContext(getClass().getName());
+  private Article impl;
 
   public void init(Object context) throws ServiceException {
     if (log.isTraceEnabled())
@@ -44,35 +40,11 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
       // get the pep
       ArticlePEP pep = new WSArticlePEP((ServletEndpointContext) context);
 
-      // get other config
-      Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-      conf = conf.subset("topaz");
-
-      if (!conf.containsKey("services.fedora.uri"))
-        throw new ConfigurationException("missing key 'topaz.services.fedora.uri'");
-      if (!conf.containsKey("services.fedoraUploader.uri"))
-        throw new ConfigurationException("missing key 'topaz.services.fedoraUploader.uri'");
-      if (!conf.containsKey("services.itql.uri"))
-        throw new ConfigurationException("missing key 'topaz.services.itql.uri'");
-      if (!conf.containsKey("server.hostname"))
-        throw new ConfigurationException("missing key 'topaz.server.hostname'");
-
-      Configuration fedoraConf = conf.subset("services.fedora");
-      Configuration uploadConf = conf.subset("services.fedoraUploader");
-      Configuration itqlConf   = conf.subset("services.itql");
-
-      // xxx: since this web service is running at application-scope no sessions
-      //HttpSession session = ((ServletEndpointContext) context).getHttpSession();
-      HttpSession session = null;
-
-      ProtectedService fedoraSvc = ProtectedServiceFactory.createService(fedoraConf, session);
-      ProtectedService uploadSvc = ProtectedServiceFactory.createService(uploadConf, session);
-      ProtectedService itqlSvc   = ProtectedServiceFactory.createService(itqlConf, session);
-
-      String hostname = conf.getString("server.hostname");
+      ctx.init(context);
 
       // create the impl
-      impl = new ArticleImpl(fedoraSvc, uploadSvc, itqlSvc, hostname, pep);
+      impl = new ArticleImpl(pep, ctx);
+      impl = (Article)ImplInvocationHandler.newProxy(impl, ctx, log);
     } catch (Exception e) {
       log.error("Failed to initialize ArticleImpl.", e);
       throw new ServiceException(e);
@@ -83,6 +55,7 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#destroy");
 
+    ctx.destroy();
     impl = null;
   }
 
@@ -91,12 +64,7 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
    */
   public String ingest(DataHandler zip)
       throws RemoteException, DuplicateArticleIdException, IngestException {
-    try {
-      return impl.ingest(zip);
-    } catch (Throwable t) {
-      newExceptionHandler(t).ingest(null);
-      return null;      // not reached
-    }
+    return impl.ingest(zip);
   }
 
   /**
@@ -104,33 +72,21 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
    */
   public void markSuperseded(String oldDoi, String newDoi)
       throws RemoteException, NoSuchArticleIdException {
-    try {
-      impl.markSuperseded(oldDoi, newDoi);
-    } catch (Throwable t) {
-      newExceptionHandler(t).markSuperseded(null, null);
-    }
+    impl.markSuperseded(oldDoi, newDoi);
   }
 
   /**
    * @see org.topazproject.ws.article.Article#delete
    */
   public void delete(String doi, boolean purge) throws RemoteException, NoSuchArticleIdException {
-    try {
-      impl.delete(doi, purge);
-    } catch (Throwable t) {
-      newExceptionHandler(t).delete(null, false);
-    }
+    impl.delete(doi, purge);
   }
 
   /**
    * @see org.topazproject.ws.article.Article#setState
    */
   public void setState(String doi, int state) throws RemoteException, NoSuchArticleIdException {
-    try {
-      impl.setState(doi, state);
-    } catch (Throwable t) {
-      newExceptionHandler(t).setState(null, 0);
-    }
+    impl.setState(doi, state);
   }
 
   /**
@@ -138,12 +94,7 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
    */
   public String getObjectURL(String doi, String rep)
       throws RemoteException, NoSuchArticleIdException {
-    try {
-      return impl.getObjectURL(doi, rep);
-    } catch (Throwable t) {
-      newExceptionHandler(t).getObjectURL(null, null);
-      return null;      // not reached
-    }
+    return impl.getObjectURL(doi, rep);
   }
 
   /**
@@ -152,16 +103,7 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   public String getArticles(String startDate, String endDate,
                             String[] categories, String[] authors,
                             boolean ascending) throws RemoteException {
-    try {
-      return impl.getArticles(startDate, endDate, categories, authors, ascending);
-    } catch (Throwable t) {
-      newExceptionHandler(t).getArticles(null, null, null, null, false);
-      return null;      // not reached
-    }
-  }
-
-  private static Article newExceptionHandler(Throwable t) {
-    return ((Article) ExceptionUtils.newExceptionHandler(Article.class, t, log));
+    return impl.getArticles(startDate, endDate, categories, authors, ascending);
   }
 
   private static class WSArticlePEP extends ArticlePEP {

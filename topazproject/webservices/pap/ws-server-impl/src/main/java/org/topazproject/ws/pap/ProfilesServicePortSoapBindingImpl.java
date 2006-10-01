@@ -11,20 +11,16 @@
 package org.topazproject.ws.pap;
 
 import java.rmi.RemoteException;
-import javax.servlet.http.HttpSession;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
-import org.topazproject.common.ExceptionUtils;
-import org.topazproject.configuration.ConfigurationStore;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.ws.ImplInvocationHandler;
+import org.topazproject.common.ws.WSTopazContext;
 import org.topazproject.ws.pap.impl.ProfilesImpl;
 import org.topazproject.ws.pap.impl.ProfilesPEP;
 import org.topazproject.ws.users.NoSuchUserIdException;
@@ -39,7 +35,8 @@ import org.topazproject.xacml.ws.WSXacmlUtil;
 public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLifecycle {
   private static final Log log = LogFactory.getLog(ProfilesServicePortSoapBindingImpl.class);
 
-  private ProfilesImpl impl;
+  private final TopazContext ctx = new WSTopazContext(getClass().getName());
+  private Profiles impl;
 
   public void init(Object context) throws ServiceException {
     if (log.isTraceEnabled())
@@ -49,23 +46,10 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
       // get the pep
       final ProfilesPEP pep = new WSProfilesPEP((ServletEndpointContext) context);
 
-      // get other config
-      Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-      conf = conf.subset("topaz");
-
-      if (!conf.containsKey("services.fedora.uri"))
-        throw new ConfigurationException("missing key 'topaz.services.fedora.uri'");
-      if (!conf.containsKey("services.itql.uri"))
-        throw new ConfigurationException("missing key 'topaz.services.itql.uri'");
-
-      HttpSession      session   = ((ServletEndpointContext) context).getHttpSession();
-      Configuration    itqlConf  = conf.subset("services.itql");
-      Configuration    fdraConf  = conf.subset("services.fedora");
-      ProtectedService itqlSvc   = ProtectedServiceFactory.createService(itqlConf, session);
-      ProtectedService fedoraSvc = ProtectedServiceFactory.createService(fdraConf, session);
-
+      ctx.init(context);
       // create the impl
-      impl = new ProfilesImpl(itqlSvc, fedoraSvc, pep);
+      impl = new ProfilesImpl(pep, ctx);
+      impl = (Profiles)ImplInvocationHandler.newProxy(impl, ctx, log);
     } catch (Exception e) {
       log.error("Failed to initialize ProfilesImpl.", e);
       throw new ServiceException(e);
@@ -76,6 +60,7 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#destroy");
 
+    ctx.destroy();
     impl = null;
   }
 
@@ -83,14 +68,7 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
    * @see org.topazproject.ws.pap.Profiles#getProfile
    */
   public UserProfile getProfile(String userId) throws RemoteException, NoSuchUserIdException {
-    try {
-      synchronized (impl) {
-        return impl.getProfile(userId);
-      }
-    } catch (Throwable t) {
-      newExceptionHandler(t).getProfile(null);
-      return null;      // not reached
-    }
+    return impl.getProfile(userId);
   }
 
   /**
@@ -98,17 +76,7 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
    */
   public void setProfile(String userId, UserProfile profile)
       throws RemoteException, NoSuchUserIdException {
-    try {
-      synchronized (impl) {
-        impl.setProfile(userId, profile);
-      }
-    } catch (Throwable t) {
-      newExceptionHandler(t).setProfile(null, null);
-    }
-  }
-
-  private static Profiles newExceptionHandler(Throwable t) {
-    return ((Profiles) ExceptionUtils.newExceptionHandler(Profiles.class, t, log));
+    impl.setProfile(userId, profile);
   }
 
   private static class WSProfilesPEP extends ProfilesPEP {

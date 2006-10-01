@@ -31,6 +31,9 @@ import org.apache.commons.logging.LogFactory;
 import org.jrdf.graph.Literal;
 import org.jrdf.graph.URIReference;
 
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.impl.TopazContextListener;
+
 import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.fedora.client.FedoraAPIM;
@@ -135,10 +138,8 @@ public class RepliesImpl implements Replies {
   }
 
   private final RepliesPEP   pep;
-  private final ItqlHelper   itql;
+  private final TopazContext ctx;
   private final FedoraHelper fedora;
-  private final String       user;
-  private final String       baseURI;
 
   /**
    * Creates a new RepliesImpl object.
@@ -151,15 +152,18 @@ public class RepliesImpl implements Replies {
    * @param user The authenticated user
    * @param user Base URI for generating reply ids
    */
-  public RepliesImpl(RepliesPEP pep, ItqlHelper itql, URI fedoraServer, FedoraAPIM apim,
-                     Uploader uploader, String user, String baseURI) {
-    this.pep       = pep;
-    this.itql      = itql;
-    this.fedora    = new FedoraHelper(fedoraServer, apim, uploader);
-    this.user      = (user == null) ? "anonymous" : user;
-    this.baseURI   = baseURI;
+  public RepliesImpl(RepliesPEP pep, TopazContext ctx) {
+    this.pep      = pep;
+    this.ctx      = ctx;
+    this.fedora   = new FedoraHelper(ctx);
 
-    itql.setAliases(aliases);
+    ctx.addListener(new TopazContextListener() {
+        public void handleCreated(TopazContext ctx, Object handle) {
+          if (handle instanceof ItqlHelper) {
+            ((ItqlHelper) handle).setAliases(aliases);
+          }
+        }
+      });
   }
 
   /*
@@ -168,7 +172,7 @@ public class RepliesImpl implements Replies {
   public String createReply(String mediator, String type, String root, String inReplyTo,
                             boolean anonymize, String title, String body)
                      throws NoSuchAnnotationIdException, RemoteException {
-    itql.validateUri(body, "body");
+    ItqlHelper.validateUri(body, "body");
 
     return createReply(mediator, type, root, inReplyTo, anonymize, title, body, null, null);
   }
@@ -194,10 +198,10 @@ public class RepliesImpl implements Replies {
     if (type == null)
       type = "http://www.w3.org/2001/12/replyType#Comment";
     else
-      itql.validateUri(type, "type");
+      ItqlHelper.validateUri(type, "type");
 
-    URI rootUri      = itql.validateUri(root, "root");
-    URI inReplyToUri = itql.validateUri(inReplyTo, "inReplyTo");
+    URI rootUri      = ItqlHelper.validateUri(root, "root");
+    URI inReplyToUri = ItqlHelper.validateUri(inReplyTo, "inReplyTo");
 
     checkInReplyTo(rootUri, inReplyToUri);
 
@@ -218,27 +222,31 @@ public class RepliesImpl implements Replies {
     String create = ITQL_CREATE;
     Map    values = new HashMap();
 
+    String user = ctx.getUserName();
+    if (user == null)
+      user = "anonymous";
+    
     values.put("id", id);
     values.put("type", type);
     values.put("root", root);
     values.put("inReplyTo", inReplyTo);
     values.put("body", body);
     values.put("user", user);
-    values.put("created", itql.getUTCTime());
+    values.put("created", ItqlHelper.getUTCTime());
 
     values.put("creator", (anonymize ? "topaz:anonymousCreator" : "dc:creator"));
 
     if (title != null) {
-      values.put("title", itql.escapeLiteral(title));
+      values.put("title", ItqlHelper.escapeLiteral(title));
       create += ITQL_INSERT_TITLE;
     }
 
     if (mediator != null) {
-      values.put("mediator", itql.escapeLiteral(mediator));
+      values.put("mediator", ItqlHelper.escapeLiteral(mediator));
       create += ITQL_INSERT_MEDIATOR;
     }
 
-    itql.doUpdate(itql.bindValues(create, values));
+    ctx.getItqlHelper().doUpdate(ItqlHelper.bindValues(create, values));
 
     if (log.isDebugEnabled())
       log.debug("created reply " + id + " for " + inReplyTo + " with root " + root + " with body "
@@ -252,7 +260,8 @@ public class RepliesImpl implements Replies {
    */
   public void deleteReplies(String root, String inReplyTo)
                      throws NoSuchAnnotationIdException, RemoteException {
-    checkInReplyTo(itql.validateUri(root, "root"), itql.validateUri(inReplyTo, "inReplyTo"));
+    checkInReplyTo(ItqlHelper.validateUri(root, "root"), 
+        ItqlHelper.validateUri(inReplyTo, "inReplyTo"));
 
     String txn   = "delete replies to " + inReplyTo;
     String query = ITQL_GET_DELETE_LIST_IN_REPLY_TO;
@@ -265,7 +274,7 @@ public class RepliesImpl implements Replies {
    * @see org.topazproject.ws.annotation.Replies#deleteReplies
    */
   public void deleteReplies(String id) throws NoSuchAnnotationIdException, RemoteException {
-    pep.checkAccess(pep.DELETE_REPLY, checkId(itql.validateUri(id, "id")));
+    pep.checkAccess(pep.DELETE_REPLY, checkId(ItqlHelper.validateUri(id, "id")));
 
     String txn   = "delete " + id;
     String query = ITQL_GET_DELETE_LIST_FOR_ID.replaceAll("\\Q${id}", id);
@@ -276,6 +285,7 @@ public class RepliesImpl implements Replies {
   private void doDelete(String txn, String query) throws RemoteException {
     String[] purgeList;
 
+    ItqlHelper itql = ctx.getItqlHelper();
     try {
       itql.beginTxn(txn);
 
@@ -331,12 +341,12 @@ public class RepliesImpl implements Replies {
    * @see org.topazproject.ws.annotation.Replies#getReplyInfo
    */
   public ReplyInfo getReplyInfo(String id) throws NoSuchAnnotationIdException, RemoteException {
-    pep.checkAccess(pep.GET_REPLY_INFO, itql.validateUri(id, "id"));
+    pep.checkAccess(pep.GET_REPLY_INFO, ItqlHelper.validateUri(id, "id"));
 
     try {
       String query = ITQL_GET.replaceAll("\\Q${id}", id);
 
-      Answer ans  = new Answer(itql.doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
@@ -354,14 +364,14 @@ public class RepliesImpl implements Replies {
   public ReplyInfo[] listReplies(String root, String inReplyTo)
                           throws NoSuchAnnotationIdException, RemoteException {
     pep.checkAccess(pep.LIST_REPLIES,
-                    checkInReplyTo(itql.validateUri(root, "root"),
-                                   itql.validateUri(inReplyTo, "inReplyTo")));
+                    checkInReplyTo(ItqlHelper.validateUri(root, "root"),
+                                   ItqlHelper.validateUri(inReplyTo, "inReplyTo")));
 
     try {
       String query =
         ITQL_LIST_REPLIES.replaceAll("\\Q${root}", root).replaceAll("\\Q${inReplyTo}", inReplyTo);
 
-      Answer ans = new Answer(itql.doQuery(query));
+      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -377,14 +387,14 @@ public class RepliesImpl implements Replies {
   public ReplyInfo[] listAllReplies(String root, String inReplyTo)
                              throws NoSuchAnnotationIdException, RemoteException {
     pep.checkAccess(pep.LIST_ALL_REPLIES,
-                    checkInReplyTo(itql.validateUri(root, "root"),
-                                   itql.validateUri(inReplyTo, "inReplyTo")));
+                    checkInReplyTo(ItqlHelper.validateUri(root, "root"),
+                                   ItqlHelper.validateUri(inReplyTo, "inReplyTo")));
 
     try {
       String query =
         ITQL_LIST_ALL_REPLIES.replaceAll("\\Q${root}", root).replaceAll("\\Q${inReplyTo}", inReplyTo);
 
-      Answer ans = new Answer(itql.doQuery(query));
+      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -452,13 +462,13 @@ public class RepliesImpl implements Replies {
    */
   public void setReplyState(String id, int state)
       throws RemoteException, NoSuchAnnotationIdException {
-    URI thisUri = itql.validateUri(id, "id");
+    URI thisUri = ItqlHelper.validateUri(id, "id");
     pep.checkAccess(pep.SET_REPLY_STATE, thisUri);
     checkId(thisUri);
 
     String set = SET_STATE_ITQL.replaceAll("\\Q${id}", id).replaceAll("\\Q${state}", "" + state);
 
-    itql.doUpdate(set);
+    ctx.getItqlHelper().doUpdate(set);
   }
 
   /*
@@ -466,21 +476,21 @@ public class RepliesImpl implements Replies {
    */
   public String[] listReplies(String mediator, int state)
                        throws RemoteException {
-    pep.checkAccess(pep.LIST_REPLIES_IN_STATE, URI.create(baseURI + REPLY_PID_NS));
+    pep.checkAccess(pep.LIST_REPLIES_IN_STATE, URI.create(ctx.getObjectBaseUri() + REPLY_PID_NS));
 
     try {
       String query =
         "select $a $o from " + MODEL + " where $a <r:type> <tr:Reply> and $a <topaz:state> $o";
 
       if (mediator != null)
-        query += (" and $a <dt:mediator> '" + itql.escapeLiteral(mediator) + "'");
+        query += (" and $a <dt:mediator> '" + ItqlHelper.escapeLiteral(mediator) + "'");
 
       if (state == 0)
         query += " and exclude($a <topaz:state> '0');";
       else
         query += (" and $a <topaz:state> '" + state + "';");
 
-      Answer    ans  = new Answer(itql.doQuery(query));
+      Answer    ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List      rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       int       c      = rows.size();
@@ -505,7 +515,7 @@ public class RepliesImpl implements Replies {
   private URI checkId(URI id) throws RemoteException, NoSuchAnnotationIdException {
     try {
       String query = ITQL_CHECK_ID.replaceAll("\\Q${id}", id.toString());
-      Answer ans  = new Answer(itql.doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
@@ -527,7 +537,7 @@ public class RepliesImpl implements Replies {
         ITQL_CHECK_IN_REPLY_TO.replaceAll("\\Q${root}", root.toString()).replaceAll("\\Q${inReplyTo}",
                                                                                     inReplyTo
                                                                                      .toString());
-      Answer ans  = new Answer(itql.doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
@@ -561,6 +571,6 @@ public class RepliesImpl implements Replies {
   }
 
   private String getNextId() throws RemoteException {
-    return baseURI + fedora.getNextId(REPLY_PID_NS).replace(':', '/');
+    return ctx.getObjectBaseUri() + fedora.getNextId(REPLY_PID_NS).replace(':', '/');
   }
 }

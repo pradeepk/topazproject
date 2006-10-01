@@ -24,19 +24,19 @@ import java.util.Map;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.UnProtectedService;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.impl.TopazContextListener;
 
 import org.topazproject.configuration.ConfigurationStore;
-import org.topazproject.ws.permissions.Permissions;
 
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.mulgara.itql.StringAnswer;
+
+import org.topazproject.ws.permissions.Permissions;
 
 /**
  * This provides the implementation of the permissions service.
@@ -60,70 +60,45 @@ public class PermissionsImpl implements Permissions {
   private static final String GRANTS_MODEL  = "<" + CONF.getString("topaz.models.grants") + ">";
   private static final String REVOKES_MODEL = "<" + CONF.getString("topaz.models.revokes") + ">";
   private static final String GRANTS_MODEL_TYPE =
-      "<" + CONF.getString("topaz.models.grants[@type]", "http://tucana.org/tucana#Model") + ">";
+    "<" + CONF.getString("topaz.models.grants[@type]", "http://tucana.org/tucana#Model") + ">";
   private static final String REVOKES_MODEL_TYPE =
-      "<" + CONF.getString("topaz.models.revokes[@type]", "http://tucana.org/tucana#Model") + ">";
+    "<" + CONF.getString("topaz.models.revokes[@type]", "http://tucana.org/tucana#Model") + ">";
 
   //
   private static final String ITQL_LIST =
     "select $p from ${MODEL} where <${resource}> $p <${principal}>;";
 
   //
-  private final ItqlHelper     itql;
+  private final TopazContext   ctx;
   private final PermissionsPEP pep;
-  private final String         user;
 
   /**
    * Create a new permission instance.
    *
-   * @param itql the mulgara itql-service
    * @param pep the policy-enforcer to use for access-control
-   * @param user the user that is performing the operations
-   *
-   * @throws IOException if an error occurred initializing the itql service
+   * @param ctx the topaz context
    */
-  public PermissionsImpl(ItqlHelper itql, PermissionsPEP pep, String user)
-                  throws IOException {
-    this.itql   = itql;
-    this.pep    = pep;
-    this.user   = user;
+  public PermissionsImpl(PermissionsPEP pep, TopazContext ctx) {
+    this.ctx   = ctx;
+    this.pep   = pep;
 
-    // clear all since we want un-aliased uris always
-    itql.getAliases().clear();
-    itql.doUpdate("create " + GRANTS_MODEL  + " " + GRANTS_MODEL_TYPE  + ";");
-    itql.doUpdate("create " + REVOKES_MODEL + " " + REVOKES_MODEL_TYPE + ";");
-  }
+    ctx.addListener(new TopazContextListener() {
+        public void handleCreated(TopazContext ctx, Object handle) {
+          if (handle instanceof ItqlHelper) {
+            ItqlHelper itql = (ItqlHelper) handle;
 
-  /**
-   * Create a new permissions instance.
-   *
-   * @param mulgaraSvc the mulgara web-service
-   * @param pep the policy-enforcer to use for access-control
-   * @param user the user that is performing the operations
-   *
-   * @throws IOException if an error occurred talking to the mulgara service
-   * @throws ServiceException if an error occurred locating the mulgara service
-   * @throws ConfigurationException if any required config is missing
-   */
-  public PermissionsImpl(ProtectedService mulgaraSvc, PermissionsPEP pep, String user)
-                  throws IOException, ServiceException, ConfigurationException {
-    this(new ItqlHelper(mulgaraSvc), pep, user);
-  }
+            // clear all since we want un-aliased uris always
+            itql.getAliases().clear();
 
-  /**
-   * Create a new permission accounts manager instance.
-   *
-   * @param mulgaraUri the uri of the mulgara server
-   * @param pep the policy-enforcer to use for access-control
-   * @param user the user that is performing the operations
-   *
-   * @throws IOException if an error occurred talking to the fedora service
-   * @throws ServiceException if an error occurred locating the fedora service
-   * @throws ConfigurationException DOCUMENT ME!
-   */
-  public PermissionsImpl(URI mulgaraUri, PermissionsPEP pep, String user)
-                  throws IOException, ServiceException, ConfigurationException {
-    this(new UnProtectedService(mulgaraUri.toString()), pep, user);
+            try {
+              itql.doUpdate("create " + GRANTS_MODEL + " " + GRANTS_MODEL_TYPE + ";");
+              itql.doUpdate("create " + REVOKES_MODEL + " " + REVOKES_MODEL_TYPE + ";");
+            } catch (IOException e) {
+              log.warn("failed to create grants and revokes models", e);
+            }
+          }
+        }
+      });
   }
 
   /*
@@ -177,6 +152,7 @@ public class PermissionsImpl implements Permissions {
   private void updateModel(String action, String model, String resource, String[] permissions,
                            String[] principals, boolean insert)
                     throws RemoteException {
+    String user = ctx.getUserName();
     permissions = validateUriList(permissions, "permissions", false);
 
     if ((principals == null) || (principals.length == 0))
@@ -184,7 +160,7 @@ public class PermissionsImpl implements Permissions {
     else
       principals = validateUriList(principals, "principals", true);
 
-    pep.checkAccess(action, itql.validateUri(resource, "resource"));
+    pep.checkAccess(action, ItqlHelper.validateUri(resource, "resource"));
 
     StringBuffer sb = new StringBuffer(512);
 
@@ -208,7 +184,7 @@ public class PermissionsImpl implements Permissions {
     if (insert)
       cmd += ("insert " + triples + " into " + model + ";");
 
-    itql.doUpdate(cmd);
+    ctx.getItqlHelper().doUpdate(cmd);
 
     if (log.isInfoEnabled()) {
       log.info(action + " succeeded for resource " + resource + "\npermissions:\n"
@@ -219,11 +195,11 @@ public class PermissionsImpl implements Permissions {
   private String[] listPermissions(String action, String model, String resource, String principal)
                             throws RemoteException {
     if (principal == null)
-      principal = user;
+      principal = ctx.getUserName();
     else
-      itql.validateUri(principal, "principal");
+      ItqlHelper.validateUri(principal, "principal");
 
-    pep.checkAccess(action, itql.validateUri(resource, "resource"));
+    pep.checkAccess(action, ItqlHelper.validateUri(resource, "resource"));
 
     try {
       HashMap map = new HashMap(3);
@@ -231,9 +207,9 @@ public class PermissionsImpl implements Permissions {
       map.put("principal", principal);
       map.put("MODEL", model);
 
-      String       query = itql.bindValues(ITQL_LIST, map);
+      String       query = ItqlHelper.bindValues(ITQL_LIST, map);
 
-      StringAnswer ans  = new StringAnswer(itql.doQuery(query));
+      StringAnswer ans  = new StringAnswer(ctx.getItqlHelper().doQuery(query));
       List         rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
 
       String[]     result = new String[rows.size()];
@@ -262,7 +238,7 @@ public class PermissionsImpl implements Permissions {
 
     for (int i = 0; i < list.length; i++) {
       if (list[i] != null)
-        itql.validateUri(list[i], name);
+        ItqlHelper.validateUri(list[i], name);
       else if (!nullOk)
         throw new NullPointerException(name + " can't be null");
     }

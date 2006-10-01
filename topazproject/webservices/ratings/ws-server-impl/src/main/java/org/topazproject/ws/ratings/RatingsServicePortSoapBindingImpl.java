@@ -12,20 +12,16 @@ package org.topazproject.ws.ratings;
 
 import java.net.URI;
 import java.rmi.RemoteException;
-import javax.servlet.http.HttpSession;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
-import org.topazproject.common.ExceptionUtils;
-import org.topazproject.configuration.ConfigurationStore;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.ws.ImplInvocationHandler;
+import org.topazproject.common.ws.WSTopazContext;
 import org.topazproject.ws.ratings.impl.RatingsImpl;
 import org.topazproject.ws.ratings.impl.RatingsPEP;
 import org.topazproject.ws.users.NoSuchUserIdException;
@@ -40,7 +36,8 @@ import org.topazproject.xacml.ws.WSXacmlUtil;
 public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecycle {
   private static final Log log = LogFactory.getLog(RatingsServicePortSoapBindingImpl.class);
 
-  private RatingsImpl impl;
+  private TopazContext ctx = new WSTopazContext(getClass().getName());
+  private Ratings impl;
 
   public void init(Object context) throws ServiceException {
     if (log.isTraceEnabled())
@@ -50,19 +47,11 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
       // get the pep
       RatingsPEP pep = new WSRatingsPEP((ServletEndpointContext) context);
 
-      // get other config
-      Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-      conf = conf.subset("topaz");
-
-      if (!conf.containsKey("services.itql.uri"))
-        throw new ConfigurationException("missing key 'topaz.services.itql.uri'");
-
-      Configuration    itqlConf = conf.subset("services.itql");
-      HttpSession      session  = ((ServletEndpointContext) context).getHttpSession();
-      ProtectedService itqlSvc  = ProtectedServiceFactory.createService(itqlConf, session);
+      ctx.init(context);
 
       // create the impl
-      impl = new RatingsImpl(itqlSvc, pep);
+      impl = new RatingsImpl(pep, ctx);
+      impl = (Ratings)ImplInvocationHandler.newProxy(impl, ctx, log);
     } catch (Exception e) {
       log.error("Failed to initialize RatingsImpl.", e);
       throw new ServiceException(e);
@@ -73,6 +62,7 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#destroy");
 
+    ctx.destroy();
     impl = null;
   }
 
@@ -81,13 +71,7 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
    */
   public void setRatings(String appId, String userId, String object, ObjectRating[] ratings)
       throws RemoteException, NoSuchUserIdException {
-    try {
-      synchronized (impl) {
-        impl.setRatings(appId, userId, object, ratings);
-      }
-    } catch (Throwable t) {
-      newExceptionHandler(t).setRatings(null, null, null, null);
-    }
+    impl.setRatings(appId, userId, object, ratings);
   }
 
   /**
@@ -95,32 +79,14 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
    */
   public ObjectRating[] getRatings(String appId, String userId, String object)
       throws RemoteException, NoSuchUserIdException {
-    try {
-      synchronized (impl) {
-        return impl.getRatings(appId, userId, object);
-      }
-    } catch (Throwable t) {
-      newExceptionHandler(t).getRatings(null, null, null);
-      return null;      // not reached
-    }
+    return impl.getRatings(appId, userId, object);
   }
 
   /**
    * @see org.topazproject.ws.pap.Ratings#getRatingStats
    */
   public ObjectRatingStats[] getRatingStats(String appId, String object) throws RemoteException {
-    try {
-      synchronized (impl) {
-        return impl.getRatingStats(appId, object);
-      }
-    } catch (Throwable t) {
-      newExceptionHandler(t).getRatingStats(null, null);
-      return null;      // not reached
-    }
-  }
-
-  private static Ratings newExceptionHandler(Throwable t) {
-    return ((Ratings) ExceptionUtils.newExceptionHandler(Ratings.class, t, log));
+    return impl.getRatingStats(appId, object);
   }
 
   private static class WSRatingsPEP extends RatingsPEP {
