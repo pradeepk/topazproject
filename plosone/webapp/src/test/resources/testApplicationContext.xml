@@ -10,27 +10,27 @@
   <import resource="nonWebApplicationContext.xml"/>
 
   <!-- creating all actions with the right injections -->
-  <bean id="fetchArticleAction" class="org.plos.article.web.FetchArticleAction">
+  <bean id="fetchArticleAction" class="org.plos.article.action.FetchArticleAction">
     <property name="fetchArticleService" ref="fetchArticleService"/>
   </bean>
 
-  <bean id="createAnnotation" class="org.plos.annotation.web.CreateAnnotationAction"/>
+  <bean id="createAnnotation" class="org.plos.annotation.action.CreateAnnotationAction"/>
 
-  <bean id="deleteAnnotation" class="org.plos.annotation.web.DeleteAnnotationAction"/>
+  <bean id="deleteAnnotation" class="org.plos.annotation.action.DeleteAnnotationAction"/>
 
-  <bean id="listAnnotation" class="org.plos.annotation.web.ListAnnotationAction"/>
+  <bean id="listAnnotation" class="org.plos.annotation.action.ListAnnotationAction"/>
 
-  <bean id="getAnnotation" class="org.plos.annotation.web.GetAnnotationAction"/>
+  <bean id="getAnnotation" class="org.plos.annotation.action.GetAnnotationAction"/>
 
-  <bean id="createReplyAction" class="org.plos.annotation.web.CreateReplyAction"/>
+  <bean id="createReplyAction" class="org.plos.annotation.action.CreateReplyAction"/>
 
-  <bean id="bodyFetchAction" class="org.plos.annotation.web.BodyFetchAction"/>
+  <bean id="bodyFetchAction" class="org.plos.annotation.action.BodyFetchAction"/>
 
-  <bean id="listReplyAction" class="org.plos.annotation.web.ListReplyAction"/>
+  <bean id="listReplyAction" class="org.plos.annotation.action.ListReplyAction"/>
 
-  <bean id="deleteReplyAction" class="org.plos.annotation.web.DeleteReplyAction"/>
+  <bean id="deleteReplyAction" class="org.plos.annotation.action.DeleteReplyAction"/>
 
-  <bean id="getReply" class="org.plos.annotation.web.GetReplyAction"/>
+  <bean id="getReply" class="org.plos.annotation.action.GetReplyAction"/>
   
   <bean id="createUserAction" class="org.plos.user.action.CreateUserAction"/>
 

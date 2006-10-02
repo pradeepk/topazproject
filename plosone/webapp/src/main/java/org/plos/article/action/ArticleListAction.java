@@ -1,14 +1,13 @@
 /* $HeadURL::                                                                            $
  * $Id$
  */
-package org.plos.article.web;
+package org.plos.article.action;
 
 import com.opensymphony.xwork.ActionSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import java.util.ArrayList;
-import java.util.List;
 
 /**
  * Fetch as list of available articles.

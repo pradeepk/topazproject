@@ -1,11 +1,10 @@
 /* $HeadURL::                                                                            $
  * $Id$
  */
-package org.plos.article.web;
+package org.plos.article.action;
 
 import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.article.service.FetchArticleService;

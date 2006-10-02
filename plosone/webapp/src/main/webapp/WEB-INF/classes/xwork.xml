@@ -53,39 +53,39 @@
   </package>
 
   <package name="article" extends="default" namespace="/article">
-    <action name="articleList" class="org.plos.article.web.ArticleListAction">
+    <action name="articleList" class="org.plos.article.action.ArticleListAction">
       <result name="success">/WEB-INF/pages/article/articleList.ftl</result>
     </action>
 
-    <action name="fetchArticle" class="org.plos.article.web.FetchArticleAction">
+    <action name="fetchArticle" class="org.plos.article.action.FetchArticleAction">
       <result name="error">/WEB-INF/pages/error.ftl</result>
       <result name="success">/WEB-INF/pages/article/displayArticle.ftl</result>
     </action>
   </package>
 
   <package name="annotation" extends="default" namespace="/annotation">
-    <action name="fetchBody" class="org.plos.annotation.web.BodyFetchAction">
+    <action name="fetchBody" class="org.plos.annotation.action.BodyFetchAction">
       <result name="success">/WEB-INF/pages/annotation/showCommentBody.ftl</result>
     </action>
 
-    <action name="listAnnotation" class="org.plos.annotation.web.ListAnnotationAction">
+    <action name="listAnnotation" class="org.plos.annotation.action.ListAnnotationAction">
       <result name="success">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
     </action>
 
-    <action name="getAnnotation" class="org.plos.annotation.web.GetAnnotationAction">
+    <action name="getAnnotation" class="org.plos.annotation.action.GetAnnotationAction">
       <result name="success">/WEB-INF/pages/annotation/viewAnnotationDetails.ftl</result>
     </action>
 
-    <action name="listReply" class="org.plos.annotation.web.ListReplyAction">
+    <action name="listReply" class="org.plos.annotation.action.ListReplyAction">
       <result name="success">/WEB-INF/pages/annotation/listReply.ftl</result>
     </action>
 
-    <action name="listAllReplies" class="org.plos.annotation.web.ListReplyAction"
+    <action name="listAllReplies" class="org.plos.annotation.action.ListReplyAction"
       method="listAllReplies">
       <result name="success">/WEB-INF/pages/annotation/listReply.ftl</result>
     </action>
 
-    <action name="getReply" class="org.plos.annotation.web.GetReplyAction">
+    <action name="getReply" class="org.plos.annotation.action.GetReplyAction">
       <result name="success">/WEB-INF/pages/annotation/viewReplyDetails.ftl</result>
     </action>
   </package>
@@ -96,23 +96,23 @@
       <result>/WEB-INF/pages/annotation/createAnnotation.ftl</result>
     </action>
 
-    <action name="createAnnotationSubmit" class="org.plos.annotation.web.CreateAnnotationAction">
+    <action name="createAnnotationSubmit" class="org.plos.annotation.action.CreateAnnotationAction">
       <result name="input">/WEB-INF/pages/annotation/createAnnotation.ftl</result>
       <result name="error">/WEB-INF/pages/annotation/createAnnotation.ftl</result>
       <result name="success" type="redirect">/home.action</result>
     </action>
 
-    <action name="deleteAnnotation" class="org.plos.annotation.web.DeleteAnnotationAction">
+    <action name="deleteAnnotation" class="org.plos.annotation.action.DeleteAnnotationAction">
       <result name="success" type="redirect">/home.action</result>
     </action>
 
-    <action name="createReplySubmit" class="org.plos.annotation.web.CreateReplyAction">
+    <action name="createReplySubmit" class="org.plos.annotation.action.CreateReplyAction">
       <result name="input">/WEB-INF/pages/annotation/createReply.ftl</result>
       <result name="error">/WEB-INF/pages/annotation/createReply.ftl</result>
       <result name="success" type="redirect">/home.action</result>
     </action>
 
-    <action name="deleteReply" class="org.plos.annotation.web.DeleteReplyAction">
+    <action name="deleteReply" class="org.plos.annotation.action.DeleteReplyAction">
       <result name="success" type="redirect">/home.action</result>
     </action>
 

@@ -5,20 +5,20 @@ package org.plos;
 
 import org.plos.annotation.service.AnnotationService;
 
-import org.plos.annotation.web.CreateAnnotationAction;
-import org.plos.annotation.web.DeleteAnnotationAction;
-import org.plos.annotation.web.ListAnnotationAction;
-import org.plos.annotation.web.ListReplyAction;
-import org.plos.annotation.web.DeleteReplyAction;
-import org.plos.annotation.web.CreateReplyAction;
-import org.plos.annotation.web.BodyFetchAction;
-import org.plos.annotation.web.GetAnnotationAction;
-import org.plos.annotation.web.GetReplyAction;
+import org.plos.annotation.action.CreateAnnotationAction;
+import org.plos.annotation.action.DeleteAnnotationAction;
+import org.plos.annotation.action.ListAnnotationAction;
+import org.plos.annotation.action.ListReplyAction;
+import org.plos.annotation.action.DeleteReplyAction;
+import org.plos.annotation.action.CreateReplyAction;
+import org.plos.annotation.action.BodyFetchAction;
+import org.plos.annotation.action.GetAnnotationAction;
+import org.plos.annotation.action.GetReplyAction;
 
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
 
-import org.plos.article.web.FetchArticleAction;
+import org.plos.article.action.FetchArticleAction;
 
 import org.plos.permission.service.PermissionWebService;
 

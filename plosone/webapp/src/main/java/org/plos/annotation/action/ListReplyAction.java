@@ -7,56 +7,44 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.annotation.web;
+package org.plos.annotation.action;
 
+import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import org.plos.annotation.service.Reply;
 
 /**
- * Action class to delete a given reply.
+ * Action class to get a list of replies to annotations.
  */
-public class DeleteReplyAction extends AnnotationActionSupport {
-  private String id;
+public class ListReplyAction extends AnnotationActionSupport {
   private String root;
   private String inReplyTo;
+  private Reply[] replies;
 
-  private static final Log log = LogFactory.getLog(DeleteReplyAction.class);
+  private static final Log log = LogFactory.getLog(ListReplyAction.class);
 
-  /**
-   * Delete a reply given a reply id
-   * @return operation return code
-   * @throws Exception Exception
-   */
-  public String deleteReplyWithId() throws Exception {
+  public String execute() throws Exception {
     try {
-      getAnnotationService().deleteReply(id);
+      replies = getAnnotationService().listReplies(root, inReplyTo);
     } catch (final ApplicationException e) {
       log.error(e, e);
-      addActionError("Reply deletion failed with error message: " + e.getMessage());
+      addActionError("Reply fetching failed with error message: " + e.getMessage());
       return ERROR;
     }
     return SUCCESS;
   }
 
-  /**
-   * Delete a reply given a root and inReplyTo
-   * @return operation return code
-   * @throws Exception Exception
-   */
-  public String deleteReplyWithRootAndReplyTo() throws Exception {
+  public String listAllReplies() throws Exception {
     try {
-      getAnnotationService().deleteReply(root, inReplyTo);
+      replies = getAnnotationService().listAllReplies(root, inReplyTo);
     } catch (final ApplicationException e) {
       log.error(e, e);
-      addActionError("Reply deletion failed with error message: " + e.getMessage());
+      addActionError("Reply fetching failed with error message: " + e.getMessage());
       return ERROR;
     }
     return SUCCESS;
-  }
-
-  public void setId(final String id) {
-    this.id = id;
   }
 
   public void setRoot(final String root) {
@@ -67,14 +55,16 @@ public class DeleteReplyAction extends AnnotationActionSupport {
     this.inReplyTo = inReplyTo;
   }
 
-  public String getId() {
-    return id;
+  public Reply[] getReplies() {
+    return replies;
   }
 
+  @RequiredStringValidator(message = "root is required")
   public String getRoot() {
     return root;
   }
 
+  @RequiredStringValidator(message = "InReplyTo is required")
   public String getInReplyTo() {
     return inReplyTo;
   }

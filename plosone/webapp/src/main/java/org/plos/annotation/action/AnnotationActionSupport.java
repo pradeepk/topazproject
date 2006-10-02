@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.annotation.web;
+package org.plos.annotation.action;
 
 import com.opensymphony.xwork.ActionSupport;
 import org.plos.annotation.service.AnnotationService;

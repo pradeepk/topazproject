@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.annotation.web;
+package org.plos.annotation.action;
 
 import junit.framework.TestCase;
 import org.plos.annotation.service.Annotation;

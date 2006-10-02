@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  */
-package org.plos.annotation.web;
+package org.plos.annotation.action;
 
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
