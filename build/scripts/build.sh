@@ -32,9 +32,10 @@ MVN_REPOSITORY_TOPAZ=${MVN_REPOSITORY}/org/topazproject
 set +e
 
 echo "pwd: "`pwd`
+echo "svnversion: "`svnversion`
 echo "svn info and recent changes"
 svn info
-svn log -rHEAD:{`date "+%Y-%m-%d"`}
+svn log -rBASE:{`date "+%Y-%m-%d"`}
 
 echo "Removing potentially stale directory: ${MVN_REPOSITORY_TOPAZ}/{esup*,fedora*}"
 rm -rf ${MVN_REPOSITORY_TOPAZ}/{esup*,fedora*}
@@ -68,11 +69,13 @@ if [ ${N} -eq 0 ]; then
   N=$?
 
   echo "Creating documentation: cd integrationtests; mvn site-deploy"
+  mkdir topazproject/integrationtests/target
+  RESULTS=`pwd`/topazproject/integrationtests/target/site.build.out.$$
   #rm -rf ${TOPAZ_INSTALL_DIR}/topazdocs
-  (cd topazproject/integrationtests; ${MVN} site-deploy --batch-mode 2>&1 >target/build.out)
+  (cd topazproject/integrationtests; ${MVN} site-deploy --batch-mode 2>&1 >$RESULTS)
   if [ $? -ne 0 ]; then
     echo "Site Build Failed"
-    cat target/build.out
+    cat $RESULTS
   fi
 fi
 
