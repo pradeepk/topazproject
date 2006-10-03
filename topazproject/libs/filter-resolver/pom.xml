@@ -26,35 +26,35 @@
       <groupId>org.kowari</groupId>
       <artifactId>kowari-driver</artifactId>
       <version>1.1.0-pre2-p2</version>
-      <type>jar</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.kowari</groupId>
       <artifactId>kowari-local</artifactId>
       <version>1.1.0-pre2-p2</version>
-      <type>jar</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>info.fedora</groupId>
       <artifactId>fedora-client</artifactId>
-      <version>2.1.0</version>
-      <type>jar</type>
+      <version>2.1.1</version>
     </dependency>
     <dependency>
       <groupId>org.trippi</groupId>
       <artifactId>trippi</artifactId>
       <version>1.0.0</version>
-      <type>jar</type>
       <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.openrdf</groupId>
       <artifactId>rio</artifactId>
       <version>1.0.4</version>
-      <type>jar</type>
       <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>commons-codec</groupId>
+      <artifactId>commons-codec</artifactId>
+      <version>1.3</version>
     </dependency>
   </dependencies>
 

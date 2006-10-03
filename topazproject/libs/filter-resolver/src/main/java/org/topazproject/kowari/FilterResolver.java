@@ -33,7 +33,6 @@ import org.kowari.query.ConstraintImpl;
 import org.kowari.query.QueryException;
 import org.kowari.query.TuplesException;
 import org.kowari.query.rdf.URIReferenceImpl;
-import org.kowari.resolver.spi.DummyXAResource;
 import org.kowari.resolver.spi.EmptyResolution;
 import org.kowari.resolver.spi.GlobalizeException;
 import org.kowari.resolver.spi.LocalizeException;
@@ -52,11 +51,11 @@ import org.kowari.store.tuples.Tuples;
  * The factory for {@link FilterResolver}s. The model URI used for this filter
  * is:
  * <pre>
- *   #&lt;modelURI-nofragment&gt;#filter:&lt;modelName&gt;
+ *   &lt;dbURI&gt;#filter:model=&lt;modelName&gt;;ds=&lt;datastream&gt;
  * </pre>
  * For example:
  * <pre>
- *   rmi://localhost:/fedora#filter:ri
+ *   rmi://localhost:/fedora#filter:model=ri;ds=RELS-EXT
  * </pre>
  * 
  * @author Ronald Tschalär
@@ -100,11 +99,10 @@ public class FilterResolver implements Resolver, ViewMarker {
   }
 
   /**
-   * @return a {@link DummyXAResource} with a 10 second transaction timeout
+   * @return the updater's XAResource
    */
-  public XAResource getXAResource()
-  {
-    return new DummyXAResource(10);     // seconds before transaction timeout
+  public XAResource getXAResource() {
+    return fedoraUpdater.getXAResource();
   }
 
   public void createModel(long model, URI modelType) throws ResolverException, LocalizeException {
@@ -115,11 +113,10 @@ public class FilterResolver implements Resolver, ViewMarker {
     // get system model type URI
     try {
       Node mtURI = resolverSession.globalize(sysModelType);
-      if (mtURI instanceof URIReference) {
-        modelType = ((URIReference) mtURI).getURI();
-      } else {
+      if (!(mtURI instanceof URIReference))
         throw new ResolverException("systemModelType '" + mtURI + "' not a URIRef ");
-      }
+
+      modelType = ((URIReference) mtURI).getURI();
     } catch (GlobalizeException ge) {
       throw new ResolverException("Failed to globalize SystemModel Type", ge);
     }
@@ -141,25 +138,14 @@ public class FilterResolver implements Resolver, ViewMarker {
     } catch (QueryException qe) {
       throw new ResolverException("Error creating model " + modelURI, qe);
     }
+
+    fedoraUpdater.updateModelMaps();
   }
 
   public void modifyModel(long model, Statements statements, boolean occurs)
     throws ResolverException {
-    if (logger.isDebugEnabled()) {
-      URI modelURI = toRealModelURI(model);
-      logger.debug("Modifying model '" + modelURI + "'");
-    }
-
-    /* Doesn't work (nested transaction)
-    try {
-      if (occurs)
-        sess.insert(modelURI, toSetOfTriples(statements));
-      else
-        sess.delete(modelURI, toSetOfTriples(statements));
-    } catch (QueryException qe) {
-      throw new ResolverException("Error modifying model " + modelURI, qe);
-    }
-    */
+    if (logger.isDebugEnabled())
+      logger.debug("Modifying model '" + toRealModelURI(model) + "'");
 
     try {
       systemResolver.modifyModel(lookupRealNode(model), statements, occurs);
@@ -167,22 +153,14 @@ public class FilterResolver implements Resolver, ViewMarker {
       throw new ResolverException("Failed to look up model", qe);
     }
 
-    fedoraUpdater.queueMod(statements, occurs, resolverSession);
+    fedoraUpdater.queueMod(toDatastream(model), statements, occurs, resolverSession);
   }
 
   public void removeModel(long model) throws ResolverException {
-    if (logger.isDebugEnabled()) {
-      URI modelURI = toRealModelURI(model);
-      logger.debug("Removing model '" + modelURI + "'");
-    }
+    if (logger.isDebugEnabled())
+      logger.debug("Removing model '" + toRealModelURI(model) + "'");
 
-    /* TODO: what are the semantics of this, really?
-    try {
-      sess.removeModel(modelURI);
-    } catch (QueryException qe) {
-      throw new ResolverException("Error removing model " + modelURI, qe);
-    }
-    */
+    fedoraUpdater.updateModelMaps();
   }
 
   public Resolution resolve(Constraint constraint) throws QueryException {
@@ -203,8 +181,9 @@ public class FilterResolver implements Resolver, ViewMarker {
     if (ans instanceof Resolution)
       return (Resolution) ans;
 
-    //FIXME
+    //FIXME?
     //return new TuplesWrapperResolution(ans);
+    logger.error("Unimplemented answer type '" + ans.getClass().getName() + "'");
     return new EmptyResolution(constraint, false);
   }
 
@@ -226,19 +205,15 @@ public class FilterResolver implements Resolver, ViewMarker {
       throw new QueryException("Failed to get model URI", re);
     }
 
-    URI resURI;
-    String modelName = modelURI.getRawFragment();
-    if (modelName.startsWith("filter:")) {
-      try {
-        resURI = dbURI.resolve('#' + modelName.substring(7));
-        long resId = resolverSession.lookup(new URIReferenceImpl(resURI, false));
-        res = new LocalNode(resId);
-      } catch (LocalizeException le) {
-        throw new QueryException("Couldn't localize model '" + model + "'", le);
-      }
-    } else {
-      resURI = modelURI;
-      res    = model;
+    URI resURI = null;
+    try {
+      resURI = dbURI.resolve('#' + parseFilterURI(modelURI)[0]);
+      long resId = resolverSession.lookup(new URIReferenceImpl(resURI, false));
+      res = new LocalNode(resId);
+    } catch (ResolverException re) {
+      throw new QueryException("Failed to parse model '" + modelURI + "'", re);
+    } catch (LocalizeException le) {
+      throw new QueryException("Couldn't localize model '" + resURI + "'", le);
     }
 
     // cache and return the result
@@ -247,6 +222,34 @@ public class FilterResolver implements Resolver, ViewMarker {
 
     modelTranslationCache.put(model, res);
     return res;
+  }
+
+  /** 
+   * Parse a filter uri, checking that it's properly formed, and return the parameters.
+   * 
+   * @param uri the filter uri; must be of the form 
+   *            &lt;dbURI&gt;#filter:model=&lt;modelName&gt;;ds=&lt;datastream&gt;
+   * @return the parameters: res[0] is the modelName, res[1] is the datastream
+   * @throws ResolverException if the uri is not properly formed
+   */
+  static String[] parseFilterURI(URI uri) throws ResolverException {
+    String modelName = uri.getRawFragment();
+    if (!modelName.startsWith("filter:"))
+      throw new ResolverException("Model-name '" + modelName + "' doesn't start with 'filter:'");
+
+    String[] params = modelName.substring(7).split(";");
+
+    if (!params[0].startsWith("model="))
+      throw new ResolverException("invalid model name encountered: '" + uri + "' - must be of " +
+                                  "the form <dbURI>#filter:model=<model>;ds=<datastream>");
+    params[0] = params[0].substring(6);
+
+    if (!params[1].startsWith("ds="))
+      throw new ResolverException("invalid model name encountered: '" + uri + "' - must be of" +
+                                  "the form <dbURI>#filter:model=<model>;ds=<datastream>");
+    params[1] = params[1].substring(3);
+
+    return params;
   }
 
   private URI toURI(long model) throws ResolverException {
@@ -268,16 +271,18 @@ public class FilterResolver implements Resolver, ViewMarker {
   }
 
   /**
-   * <code>rmi://localhost/fedora#filter:ri</code> -&gt; <code>rmi://localhost/fedora#ri</code>
+   * <code>rmi://localhost/fedora#filter:model=ri;ds=RELS-EXT</code> -&gt; <code>rmi://localhost/fedora#ri</code>
    */
   private URI toRealModelURI(long model) throws ResolverException {
-    URI uri = toURI(model);
+    String modelName = parseFilterURI(toURI(model))[0];
+    return dbURI.resolve('#' + modelName);
+  }
 
-    String modelName = uri.getRawFragment();
-    if (!modelName.startsWith("filter:"))
-      throw new ResolverException("Model-name '" + modelName + "' doesn't start with 'filter:'");
-
-    return dbURI.resolve('#' + modelName.substring(7));
+  /**
+   * <code>rmi://localhost/fedora#filter:model=ri;ds=RELS-EXT</code> -&gt; <code>RELS-EXT</code>
+   */
+  private String toDatastream(long model) throws ResolverException {
+    return parseFilterURI(toURI(model))[1];
   }
 
   private Set toSetOfTriples(final Statements stmts) {

@@ -10,6 +10,7 @@
 package org.topazproject.kowari;
 
 import java.net.URI;
+import java.util.Properties;
 
 import org.kowari.resolver.spi.InitializerException;
 import org.kowari.resolver.spi.Resolver;
@@ -28,6 +29,9 @@ import org.kowari.server.local.LocalSessionFactory;
  * @author Ronald Tschalär
  */
 public class FilterResolverFactory implements ResolverFactory {
+  /** the resource under which the configuration is to be stored: {@value} */
+  public static final String CONFIG_RSRC = "/conf/topaz-config.properties";
+
   private final URI           dbURI;
   private final long          sysModelType;
   private final FedoraUpdater fedoraUpdater;
@@ -72,11 +76,23 @@ public class FilterResolverFactory implements ResolverFactory {
     // remember the system-model type
     sysModelType = resolverFactoryInitializer.getSystemModelType();
 
-    // Set up the fedora updater. TODO: get the server, auth, and model from a config
+    // Set up the fedora updater.
     try {
+      Properties config = new Properties();
+      config.load(getClass().getResourceAsStream(CONFIG_RSRC));
+
+      Class filterClass = Class.forName(config.getProperty("topaz.fr.updateFilter.class"), true,
+                                        Thread.currentThread().getContextClassLoader());
+      UpdateFilter filter = (UpdateFilter) filterClass.newInstance();
+
       fedoraUpdater =
-        new FedoraUpdater(URI.create("http://localhost:8080/fedora"), "fedoraAdmin", "fedoraAdmin",
-                          URI.create("rmi://localhost/fedora#ri"), sessFactory);
+        new FedoraUpdater(new URI(config.getProperty("topaz.fr.fedora.url")),
+                          config.getProperty("topaz.fr.fedora.user"),
+                          config.getProperty("topaz.fr.fedora.pass"),
+                          new URI(config.getProperty("topaz.fr.kowari.dbUrl")),
+                          sessFactory,
+                          Long.parseLong(config.getProperty("topaz.fr.updateInterval")),
+                          filter);
     } catch (Exception e) {
       throw new InitializerException("Error creating fedora-updater", e);
     }
@@ -86,7 +102,7 @@ public class FilterResolverFactory implements ResolverFactory {
    * Close the session factory.
    */
   public void close() throws ResolverFactoryException {
-    // TODO: do we want to stop/close the updater?
+    fedoraUpdater.close();
   }
 
   /**
