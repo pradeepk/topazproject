@@ -33,6 +33,14 @@
       <version>3.8.1</version>
       <scope>test</scope>
     </dependency>
+
+    <!-- Pull in xacml library when building javadocs (or they fail) -->
+    <dependency>
+      <groupId>xacml</groupId>
+      <artifactId>sunxacml</artifactId>
+      <version>1.2</version>
+      <scope>provided</scope>
+    </dependency>
     
     <!-- topazproject/libs -->
     <dependency>
