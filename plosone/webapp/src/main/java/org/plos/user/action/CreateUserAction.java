@@ -19,7 +19,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import static org.plos.user.Constants.Length;
 import static org.plos.user.Constants.PLOS_ONE_USER_KEY;
-import static org.plos.user.Constants.SINGLE_SIGNON_USER_KEY;
 import org.plos.user.PlosOneUser;
 
 import java.util.Map;
@@ -46,9 +45,9 @@ public class CreateUserAction extends UserActionSupport {
    * @return status code for webwork
    */
   public String execute() throws Exception {
-    final Map<String, Object> sessionMap = getUserService().getUserContext().getSessionMap();
+    final Map<String, Object> sessionMap = getSessionMap();
     if (sessionMap != null) {
-      authId = (String) sessionMap.get(SINGLE_SIGNON_USER_KEY);
+      authId = getUserId(sessionMap);
     }
 
     topazId = getUserService().lookUpUserByAuthId(authId);

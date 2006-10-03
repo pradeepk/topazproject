@@ -6,7 +6,7 @@
     <p>
       <fieldset>
           <legend>Create a User</legend>
-          <@ww.form name="createNewUserForm" action="createNewUser" namespace="/user/secure" method="post">
+          <@ww.form name="createNewUserForm" action="createNewUser" namespace="/user/create" method="post">
             <@ww.textfield name="username" label="Display name" required="true"/>
             <@ww.textfield name="email" label="Email" required="true" readonly="true"/>
             <@ww.textfield name="realName" label="Full name" />

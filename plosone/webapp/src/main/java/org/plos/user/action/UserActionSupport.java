@@ -13,6 +13,9 @@ package org.plos.user.action;
 import com.opensymphony.xwork.ActionSupport;
 
 import org.plos.user.service.UserService;
+import org.plos.user.Constants;
+
+import java.util.Map;
 
 /**
  * Base class for user actions in order to have a userService object accessible
@@ -38,4 +41,11 @@ public class UserActionSupport extends ActionSupport {
     this.userService = userService;
   }
 
+  protected String getUserId(final Map<String, Object> sessionMap) {
+    return (String) sessionMap.get(Constants.SINGLE_SIGNON_USER_KEY);
+  }
+
+  protected Map<String, Object> getSessionMap() {
+    return userService.getUserContext().getSessionMap();
+  }
 }

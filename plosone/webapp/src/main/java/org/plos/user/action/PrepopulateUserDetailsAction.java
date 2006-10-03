@@ -14,7 +14,6 @@ import org.apache.commons.logging.LogFactory;
 import static org.plos.user.Constants.PLOS_ONE_USER_KEY;
 import static org.plos.user.Constants.ReturnCode.NEW_PROFILE;
 import static org.plos.user.Constants.ReturnCode.UPDATE_PROFILE;
-import static org.plos.user.Constants.SINGLE_SIGNON_USER_KEY;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
 
@@ -36,13 +35,12 @@ public class PrepopulateUserDetailsAction extends UserActionSupport {
    * @return return code for webwork
    */
   public String execute() throws Exception {
-    final Map<String, Object> sessionMap = getUserService().getUserContext().getSessionMap();
-    final String userId = (String) sessionMap.get(SINGLE_SIGNON_USER_KEY);
-
+    final Map<String, Object> sessionMap = getSessionMap();
     final PlosOneUser plosOneUser = (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
 
     if (null == plosOneUser) {
       final String emailAddressUrl = getEmailAddressUrl();
+      final String userId = getUserId(sessionMap);
       email = FileUtils.getTextFromUrl(emailAddressUrl + userId);
       return NEW_PROFILE;
     } else {
