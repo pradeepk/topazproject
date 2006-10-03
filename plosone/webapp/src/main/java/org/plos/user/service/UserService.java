@@ -39,6 +39,8 @@ public class UserService extends BaseConfigurableService {
 
   private String applicationId;
 
+  private String emailAddressUrl;
+
   private static final Log log = LogFactory.getLog(UserService.class);
 
   /**
@@ -346,5 +348,20 @@ public class UserService extends BaseConfigurableService {
    */
   public void setApplicationId(String appId) {
     this.applicationId = appId;
+  }
+
+  /**
+   * @return the url from which the email address of the given guid can be fetched
+   */
+  public String getEmailAddressUrl() {
+    return emailAddressUrl;
+  }
+
+  /**
+   * @param emailAddressUrl
+   *          The url from which the email address of the given guid can be fetched
+   */
+  public void setEmailAddressUrl(final String emailAddressUrl) {
+    this.emailAddressUrl = emailAddressUrl;
   }
 }

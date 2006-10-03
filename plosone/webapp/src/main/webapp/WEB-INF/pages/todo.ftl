@@ -6,8 +6,6 @@
 
         <h1>Welcome to the Plosone webapp</h1>
 
-        Hello, ${signOnId}.<br/>  Ticket IOU => ${ticket}.
-        
         <legend>Messages</legend>
 
           <fieldset>

@@ -11,21 +11,18 @@
 
 package org.plos.user.action;
 
-import java.util.Map;
-
-import com.opensymphony.xwork.ActionContext;
 import com.opensymphony.xwork.validator.annotations.EmailValidator;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.StringLengthFieldValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
-
-import edu.yale.its.tp.cas.client.filter.CASFilter;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
+import static org.plos.user.Constants.Length;
+import static org.plos.user.Constants.PLOS_ONE_USER_KEY;
+import static org.plos.user.Constants.SINGLE_SIGNON_USER_KEY;
 import org.plos.user.PlosOneUser;
-import org.plos.user.service.UserService;
+
+import java.util.Map;
 
 /**
  * Creates a new user in Topaz and sets come Profile properties.  User must be logged in via CAS.
@@ -35,7 +32,7 @@ import org.plos.user.service.UserService;
  */
 public class CreateUserAction extends UserActionSupport {
 
-  private String username, email, realName, internalId;
+  private String username, email, realName, topazId;
 
   private String authId;
 
@@ -49,26 +46,28 @@ public class CreateUserAction extends UserActionSupport {
    * @return status code for webwork
    */
   public String execute() throws Exception {
-    Map sessionMap = ActionContext.getContext().getSession();
+    final Map<String, Object> sessionMap = getUserService().getUserContext().getSessionMap();
     if (sessionMap != null) {
-      authId = (String) sessionMap.get(CASFilter.CAS_FILTER_USER);
+      authId = (String) sessionMap.get(SINGLE_SIGNON_USER_KEY);
     }
 
-    internalId = getUserService().lookUpUserByAuthId(authId);
-    if (internalId == null) {
-      internalId = getUserService().createUser(authId);
+    topazId = getUserService().lookUpUserByAuthId(authId);
+    if (topazId == null) {
+      topazId = getUserService().createUser(authId);
     }
     if (log.isDebugEnabled()) {
-      log.debug("Topaz ID: " + internalId + " with authID: " + authId);
+      log.debug("Topaz ID: " + topazId + " with authID: " + authId);
     }
 
-    PlosOneUser newUser = new PlosOneUser(authId);
-    newUser.setUserId(internalId);
+    final PlosOneUser newUser = new PlosOneUser(authId);
+    newUser.setUserId(topazId);
     newUser.setEmail(this.email);
     newUser.setDisplayName(this.username);
     newUser.setRealName(this.realName);
 
     getUserService().setProfile(newUser);
+
+    sessionMap.put(PLOS_ONE_USER_KEY, newUser);
 
     return SUCCESS;
   }
@@ -80,10 +79,10 @@ public class CreateUserAction extends UserActionSupport {
    */
   @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "email", 
                   message = "You must enter a valid email")
-  @RequiredStringValidator(type = ValidatorType.FIELD, fieldName = "email", 
+  @RequiredStringValidator(type = ValidatorType.FIELD, fieldName = "email",
                            message = "You must enter an email address")
-  @StringLengthFieldValidator(fieldName = "email", maxLength = "256", 
-                              message = "Email must be less than 256")
+  @StringLengthFieldValidator(fieldName = "email", maxLength = Length.EMAIL,
+                              message = "Email must be less than " + Length.EMAIL)
   public String getEmail() {
     return email;
   }
@@ -116,8 +115,8 @@ public class CreateUserAction extends UserActionSupport {
    */
   @RequiredStringValidator(type = ValidatorType.FIELD, fieldName = "username", 
                            message = "You must enter a username")
-  @StringLengthFieldValidator(fieldName = "username", minLength = "4", maxLength = "18", 
-                              message = "Username must be between 4 andn 18 characters")
+  @StringLengthFieldValidator(fieldName = "username", minLength = Length.DISPLAY_NAME_MIN, maxLength = Length.DISPLAY_NAME_MAX,
+                              message = "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters")
   public String getUsername() {
     return username;
   }
@@ -131,18 +130,18 @@ public class CreateUserAction extends UserActionSupport {
   }
 
   /**
-   * @return Returns the internalId.
+   * @return Returns the topazId.
    */
   public String getInternalId() {
-    return internalId;
+    return topazId;
   }
 
   /**
    * @param internalId
-   *          The internalId to set.
+   *          The topazId to set.
    */
   public void setInternalId(String internalId) {
-    this.internalId = internalId;
+    this.topazId = internalId;
   }
 
   /**

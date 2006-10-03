@@ -16,16 +16,11 @@
     </result-types>
 
     <interceptors>
+      <interceptor name="ensureUserAccount" class="org.plos.user.EnsureUserAccountInterceptor"/>
       <interceptor-stack name="plosStack">
         <interceptor-ref name="timer" />
         <!--<interceptor-ref name="logger"/>-->
         <interceptor-ref name="defaultStack" />
-      </interceptor-stack>
-
-      <interceptor name="ensureUserAccount" class="org.plos.user.EnsureUserAccountInterceptor"/>
-      
-      <interceptor-stack name="plosSecureStack" >
-        <interceptor-ref name="plosStack" />
         <interceptor-ref name="ensureUserAccount" />
       </interceptor-stack>
     </interceptors>
@@ -34,12 +29,8 @@
     <default-action-ref name="home" />
 
     <global-results>
-      <result name="new-profile">
-        <param name="location">/WEB-INF/pages/user/newUser.ftl</param>
-      </result>
-      <result name="update-profile">
-        <param name="location">/WEB-INF/pages/user/displayUser.ftl</param>
-      </result>
+      <result name="new-profile" type="redirect">/user/secure/prePopulateNewUser.action</result>
+      <result name="update-profile" type="redirect">/user/secure/prePopulateNewUser.action</result>
     </global-results>
 
     <action name="home">
@@ -91,7 +82,6 @@
   </package>
 
   <package name="annotation-secure" extends="default" namespace="/annotation/secure">
-    <default-interceptor-ref name="plosSecureStack"/>
     <action name="createAnnotation">
       <result>/WEB-INF/pages/annotation/createAnnotation.ftl</result>
     </action>
@@ -121,6 +111,11 @@
   <package name="user-secure" extends="default" namespace="/user/secure">
     <action name="newUser">
       <result>/WEB-INF/pages/user/newUser.ftl</result>
+    </action>
+
+    <action name="prePopulateNewUser" class="org.plos.user.action.PrepopulateUserDetailsAction">
+      <result name="new-profile">/WEB-INF/pages/user/newUser.ftl</result>
+      <result name="update-profile">/WEB-INF/pages/user/newUser.ftl</result>
     </action>
 
     <action name="createNewUser" class="org.plos.user.action.CreateUserAction">

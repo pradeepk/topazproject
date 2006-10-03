@@ -8,16 +8,16 @@
  * http://opensource.org/licenses/ecl1.php
  */package org.plos.user;
 
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map.Entry;
-import java.util.Set;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.topazproject.ws.pap.UserPreference;
 import org.topazproject.ws.pap.UserProfile;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
+import java.util.Set;
 
 /**
  * Class to roll up access for a user into a PLoS ONE appplication specific object.
@@ -38,7 +38,7 @@ public class PlosOneUser {
 
   private UserProfile userProfile;
 
-  private HashMap<String, String[]> userPrefs;
+  private Map<String, String[]> userPrefs;
 
   // Constants for application specific User Preferences
   private static final String CITY = "CITY";
@@ -63,8 +63,7 @@ public class PlosOneUser {
    *          authentication ID of new user
    */
   public PlosOneUser(String authId) {
-    userProfile = new UserProfile();
-    userPrefs = new HashMap<String, String[]>();
+    this();
     this.authId = authId;
   }
 

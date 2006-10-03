@@ -1,6 +1,6 @@
 <html>
   <head>
-    <title>Create a new user</title>
+    <title>User details</title>
   </head>
   <body>
  		Username: ${pou.displayName} <br/>

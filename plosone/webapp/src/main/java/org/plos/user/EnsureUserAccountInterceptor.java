@@ -9,77 +9,65 @@
  */
 package org.plos.user;
 
-import com.opensymphony.xwork.ActionContext;
 import com.opensymphony.xwork.ActionInvocation;
 import com.opensymphony.xwork.interceptor.Interceptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.ApplicationException;
+import static org.plos.user.Constants.PLOS_ONE_USER_KEY;
+import static org.plos.user.Constants.ReturnCode;
+import static org.plos.user.Constants.SINGLE_SIGNON_USER_KEY;
 import org.plos.user.service.UserService;
 import org.springframework.util.StringUtils;
 
 import java.util.Map;
-
-import edu.yale.its.tp.cas.client.filter.CASFilter;
 
 /**
  * Ensures that the user has a profile if the user does something which requires membership
  * Get the user object for the logged in user or redirect the user to set up his profile.
  */
 public class EnsureUserAccountInterceptor implements Interceptor {
-  //TODO: move this to spring context or xwork static-params example  file:///D:/java/webwork-2.2.4/docs/wikidocs/Static%20Parameters%20Interceptor.html
-  //TODO: Look at page 232 of the webwork pdf for more info
-  //ComponentManager cm = (ComponentManager) ServletActionContext.getRequest().getAttribute("DefaultComponentManager");
-  //cm.initializeObject(interceptor);
-  //Object interceptor;
-  private static final String USER_ID = CASFilter.CAS_FILTER_USER;
-
-  //TODO: move this to spring context or xwork static-params
-  private static final String PLOS_USER = "plosUser";
-  private static final String NEW_PROFILE = "new-profile";
-  private static final String UPDATE_PROFILE = "update-profile";
-
   private UserService userService;
   private static final Log log = LogFactory.getLog(EnsureUserAccountInterceptor.class);
 
   public String intercept(final ActionInvocation actionInvocation) throws Exception {
     final Map<String, Object> sessionMap = getUserSessionMap();
-    final String userId = (String) sessionMap.get(USER_ID);
+    final String userId = (String) sessionMap.get(SINGLE_SIGNON_USER_KEY);
 
     if (null == userId) {
-      final String errorMessage = "User not logged in yet. How is the user getting here??";
-      log.warn(errorMessage);
-      throw new ApplicationException(errorMessage);
+      return actionInvocation.invoke();
     }
 
-    log.debug("UserId(guid)=" + userId);
-    final PlosOneUser plosUser = (PlosOneUser) sessionMap.get(PLOS_USER);
+    PlosOneUser plosUser = (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
     if (null != plosUser) {
       log.warn("A valid PlosOneUser exists, can a call to this interceptor be avoided in this case");
-      return actionInvocation.invoke();
+      return getReturnCodeDependingOnDisplayName(plosUser, actionInvocation);
     } else {
       final UserService userService = getUserService();
-      log.debug("userService.getApplicationId()=" + userService.getApplicationId());
-      final PlosOneUser plosOneUser = userService.getUserByAuthId(userId);
+      plosUser = userService.getUserByAuthId(userId);
 
-      if (null == plosOneUser) {
+      if (null == plosUser) {
         //forward to new profile creation page
-        return NEW_PROFILE;
+        return ReturnCode.NEW_PROFILE;
       } else {
-        sessionMap.put(PLOS_USER, plosOneUser);
-        if (StringUtils.hasText(plosOneUser.getDisplayName())) {
-          //forward the user to the page he was going to
-          return actionInvocation.invoke();
-        } else {// profile has partial details as the user might have been ported from old application
-          //forward to update profile page with a new display name
-          return UPDATE_PROFILE;
-        }
+        sessionMap.put(PLOS_ONE_USER_KEY, plosUser);
+
+        return getReturnCodeDependingOnDisplayName(plosUser, actionInvocation);
       }
     }
   }
 
-  private Map getUserSessionMap() {
-    return ActionContext.getContext().getSession();
+  private String getReturnCodeDependingOnDisplayName(final PlosOneUser plosOneUser, final ActionInvocation actionInvocation) throws Exception {
+    if (StringUtils.hasText(plosOneUser.getDisplayName())) {
+      //forward the user to the page he was initially going to
+      return actionInvocation.invoke();
+    } else {
+      // profile has partial details as the user might have been ported from old application
+      return ReturnCode.UPDATE_PROFILE; //forward to update profile page
+    }
+  }
+
+  private Map<String, Object> getUserSessionMap() {
+    return userService.getUserContext().getSessionMap();
   }
 
   private UserService getUserService() {
