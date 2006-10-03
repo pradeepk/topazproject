@@ -128,7 +128,7 @@ public class UserAccountsFilter implements Filter {
 
     String authId = getAuthenticatedUser(request);
 
-    int[] state = new int[1];
+    int[]  state = new int[1];
     user = lookupUser(authId, session, state);
 
     // xxx: move to lookup
@@ -143,8 +143,8 @@ public class UserAccountsFilter implements Filter {
     session.setAttribute(MAP_STATUS, "mapped");
 
     if (log.isDebugEnabled())
-      log.debug("Changed user to '" + user + "' from '" + authId + "' with state '" + state[0] +
-                "' and cached in session-id: " + session.getId());
+      log.debug("Changed user to '" + user + "' from '" + authId + "' with state '" + state[0]
+                + "' and cached in session-id: " + session.getId());
 
     return user;
   }
@@ -202,9 +202,8 @@ public class UserAccountsFilter implements Filter {
    *
    * @param authId the authenticated-id
    * @param session the http session
-   * @param state   an array of at least 1 element; on output the 0'th element will
-   *                contain the state of the user account, or unchanged if user 
-   *                account was found
+   * @param state an array of at least 1 element; on output the 0'th element will contain the state
+   *        of the user account, or unchanged if user  account was found
    *
    * @return the topaz-user-id
    *
@@ -213,10 +212,12 @@ public class UserAccountsFilter implements Filter {
   protected String lookupUser(String authId, HttpSession session, int[] state)
                        throws ServletException {
     try {
-      UserAccountLookup ual = getUserAccountLookupImpl(session);
-      String user = ual.lookUpUserByAuthIdNoAC(authId);
+      UserAccountLookup ual  = getUserAccountLookupImpl(session);
+      String            user = ual.lookUpUserByAuthIdNoAC(authId);
+
       if (user != null)
         state[0] = ual.getStateNoAC(user);
+
       return user;
     } catch (Exception e) {
       log.warn("Failed to look-up topaz-user-id for '" + authId + "'", e);
