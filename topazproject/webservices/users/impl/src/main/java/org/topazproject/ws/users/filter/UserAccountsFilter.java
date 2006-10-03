@@ -78,10 +78,16 @@ public class UserAccountsFilter implements Filter {
    */
   protected static String ITQL_CONF_KEY = "topaz.services.itql";
 
+  // xxx: fix me
+  private String defaultAuthRegistryHack;
+
   /*
    * @see javax.servlet.Filter#init
    */
   public void init(FilterConfig config) {
+    Configuration conf = ConfigurationStore.getInstance().getConfiguration();
+    defaultAuthRegistryHack =
+      "[" + conf.getString("topaz.authentication.default-registry", "") + "]";
   }
 
   /*
@@ -192,6 +198,10 @@ public class UserAccountsFilter implements Filter {
       if (p != null)
         authId = p.getName();
     }
+
+    // xxx: hack to prepend a default registry value
+    if (authId != null)
+      authId = defaultAuthRegistryHack + authId;
 
     return authId;
   }
