@@ -25,16 +25,16 @@
       -->
     </authentication>
     <models>
-      <ri type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=ri;ds=rdf-ri</ri>
+      <ri type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=ri</ri>
       <articles type="${topaz.models.ri[@type]}">${topaz.models.ri}</articles>
       <annotations type="${topaz.models.ri[@type]}">${topaz.models.ri}</annotations>
-      <users type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=users;ds=rdf-users</users>
-      <grants type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=grants;ds=rdf-grants</grants>
-      <revokes type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=revokes;ds=rdf-revokes</revokes>
-      <preferences type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=preferences;ds=rdf-preferences</preferences>
-      <profiles type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=profiles;ds=rdf-profiles</profiles>
-      <ratings type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=ratings;ds=rdf-ratings</ratings>
-      <alerts type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=alerts;ds=rdf-alerts</alerts>
+      <users type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=users</users>
+      <grants type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=grants</grants>
+      <revokes type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=revokes</revokes>
+      <preferences type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=preferences</preferences>
+      <profiles type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=profiles</profiles>
+      <ratings type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=ratings</ratings>
+      <alerts type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=alerts</alerts>
       <xsd type="http://tucana.org/tucana#XMLSchemaModel">rmi://localhost/fedora#xsd</xsd>
     </models>
     <services>

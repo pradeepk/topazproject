@@ -224,20 +224,6 @@
           <defaultValue>${settings.localRepository}/org/topazproject/filter-resolver/0.5-SNAPSHOT/filter-resolver-0.5-SNAPSHOT.jar</defaultValue>
         </parameter>
 
-        <parameter>
-          <name>FEDORA_CLIENT</name>
-          <property>FEDORA_CLIENT</property>
-          <required>true</required>
-          <defaultValue>${settings.localRepository}/info/fedora/fedora-client/2.1.1/fedora-client-2.1.1.jar</defaultValue>
-        </parameter>
-
-        <parameter>
-          <name>COMMONS_CODEC</name>
-          <property>COMMONS_CODEC</property>
-          <required>true</required>
-          <defaultValue>${settings.localRepository}/commons-codec/commons-codec/1.3/commons-codec-1.3.jar</defaultValue>
-        </parameter>
-
       </parameters>
 
     </mojo>
