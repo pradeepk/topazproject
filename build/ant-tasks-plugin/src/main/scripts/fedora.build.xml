@@ -272,6 +272,17 @@
     <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
       file="${RESOURCE_INDEXER}"/>
     
+    <!-- copy/enable filter-resolver -->
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
+      file="${FILTER_RESOLVER}"/>
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
+      file="${FEDORA_CLIENT}"/>
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
+      file="${COMMONS_CODEC}"/>
+
+    <jar destfile="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib/driver-1.1.0.jar" update="true"
+         basedir="filter-resolver" includes="**" filesonly="true"/>
+    
     <!-- jar everything up and overwrite the package target created by maven -->
     <jar destfile="${DEST_DIR}.jar" basedir="${DEST_DIR}"/>
   </target>

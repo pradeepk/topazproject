@@ -193,7 +193,7 @@
                        If the serialization format is text-based, this is the character 
                        encoding that should be used.</comment>
     <param name="pidNamespace" value="PLoS"/>
-    <param name="retainPIDs" value="demo test PLoS doi fedora-bdef             fedora-bmech       tutorial"/>
+    <param name="retainPIDs" value="demo test PLoS doi uri fedora-bdef             fedora-bmech       tutorial"/>
     <param name="storagePool" value="localMySQLPool" mysqlvalue="localMySQLPool" oraclevalue="localOracle9iPool" mckoivalue="localMcKoiPool"/>
     <param name="storageCharacterEncoding" value="UTF-8"/>
     <param name="defaultExportFormat" value="foxml1.0"/>
