@@ -9,8 +9,11 @@
  */
 package org.topazproject.kowari;
 
+import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.util.Properties;
+
+import org.apache.log4j.Logger;
 
 import org.kowari.resolver.spi.InitializerException;
 import org.kowari.resolver.spi.Resolver;
@@ -18,10 +21,6 @@ import org.kowari.resolver.spi.ResolverFactory;
 import org.kowari.resolver.spi.ResolverFactoryException;
 import org.kowari.resolver.spi.ResolverFactoryInitializer;
 import org.kowari.resolver.spi.ResolverSession;
-import org.kowari.server.NonRemoteSessionException;
-import org.kowari.server.driver.SessionFactoryFinder;
-import org.kowari.server.driver.SessionFactoryFinderException;
-import org.kowari.server.local.LocalSessionFactory;
 
 /** 
  * The factory for {@link FilterResolver}s.
@@ -32,9 +31,11 @@ public class FilterResolverFactory implements ResolverFactory {
   /** the resource under which the configuration is to be stored: {@value} */
   public static final String CONFIG_RSRC = "/conf/topaz-config.properties";
 
+  private static final Logger logger = Logger.getLogger(FilterResolverFactory.class);
+
   private final URI           dbURI;
   private final long          sysModelType;
-  private final FedoraUpdater fedoraUpdater;
+  private final FilterHandler handler;
 
   /** 
    * Create a new filter-resolver-factory instance. 
@@ -60,41 +61,31 @@ public class FilterResolverFactory implements ResolverFactory {
     // Claim the filter model type
     resolverFactoryInitializer.addModelType(FilterResolver.MODEL_TYPE, this);
 
-    // set up the session factory
+    // remember the database uri
     dbURI = resolverFactoryInitializer.getDatabaseURI();
-
-    LocalSessionFactory sessFactory;
-    try {
-      sessFactory = (LocalSessionFactory) SessionFactoryFinder.newSessionFactory(dbURI, false);
-      //sessFactory.setDirectory(resolverFactoryInitializer.getDirectory());
-    } catch (SessionFactoryFinderException sffe) {
-      throw new InitializerException("Error creating session factory", sffe);
-    } catch (NonRemoteSessionException nrse) {
-      throw new InitializerException("Error creating session factory", nrse);
-    }
 
     // remember the system-model type
     sysModelType = resolverFactoryInitializer.getSystemModelType();
 
-    // Set up the fedora updater.
+    // Set up the filter handler
     try {
       Properties config = new Properties();
       config.load(getClass().getResourceAsStream(CONFIG_RSRC));
 
-      Class filterClass = Class.forName(config.getProperty("topaz.fr.updateFilter.class"), true,
-                                        Thread.currentThread().getContextClassLoader());
-      UpdateFilter filter = (UpdateFilter) filterClass.newInstance();
+      String handlerClsName = config.getProperty("topaz.fr.filterHandler.class");
+      if (handlerClsName != null) {
+        Class handlerClass = Class.forName(handlerClsName, true,
+                                           Thread.currentThread().getContextClassLoader());
+        Constructor c = handlerClass.getConstructor(new Class[] { Properties.class, URI.class });
+        handler = (FilterHandler) c.newInstance(new Object[] { config, dbURI });
 
-      fedoraUpdater =
-        new FedoraUpdater(new URI(config.getProperty("topaz.fr.fedora.url")),
-                          config.getProperty("topaz.fr.fedora.user"),
-                          config.getProperty("topaz.fr.fedora.pass"),
-                          new URI(config.getProperty("topaz.fr.kowari.dbUrl")),
-                          sessFactory,
-                          Long.parseLong(config.getProperty("topaz.fr.updateInterval")),
-                          filter);
+        logger.info("Handler '" + handlerClsName + "' configured");
+      } else {
+        logger.info("No handler configured");
+        handler = null;
+      }
     } catch (Exception e) {
-      throw new InitializerException("Error creating fedora-updater", e);
+      throw new InitializerException("Error creating handler instance", e);
     }
   }
 
@@ -102,7 +93,8 @@ public class FilterResolverFactory implements ResolverFactory {
    * Close the session factory.
    */
   public void close() throws ResolverFactoryException {
-    fedoraUpdater.close();
+    if (handler != null)
+      handler.close();
   }
 
   /**
@@ -117,7 +109,7 @@ public class FilterResolverFactory implements ResolverFactory {
   public Resolver newResolver(boolean canWrite, ResolverSession resolverSession,
                               Resolver systemResolver)
                               throws ResolverFactoryException {
-    return new FilterResolver(dbURI, sysModelType, systemResolver, resolverSession, fedoraUpdater);
+    return new FilterResolver(dbURI, sysModelType, systemResolver, resolverSession, handler);
   }
 }
 

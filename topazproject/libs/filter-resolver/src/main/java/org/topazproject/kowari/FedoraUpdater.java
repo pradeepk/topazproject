@@ -20,6 +20,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Properties;
 import java.util.Set;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
@@ -35,12 +36,13 @@ import org.jrdf.graph.mem.GraphImpl;
 import org.kowari.query.Answer;
 import org.kowari.query.QueryException;
 import org.kowari.query.TuplesException;
-import org.kowari.server.SessionFactory;
-import org.kowari.server.JRDFSession;
 import org.kowari.resolver.spi.GlobalizeException;
 import org.kowari.resolver.spi.ResolverException;
 import org.kowari.resolver.spi.ResolverSession;
 import org.kowari.resolver.spi.Statements;
+import org.kowari.server.SessionFactory;
+import org.kowari.server.JRDFSession;
+import org.kowari.server.driver.SessionFactoryFinder;
 import org.openrdf.rio.RdfDocumentWriter;
 import org.openrdf.rio.rdfxml.RdfXmlWriter;
 import org.openrdf.model.Resource;
@@ -59,9 +61,25 @@ import fedora.server.management.FedoraAPIM;
  * a worker periodically processes the queue and updates the affected datastreams of the affected
  * objects.
  * 
+ * Configuration properties:
+ * <dl>
+ *   <dt>topaz.fr.fedoraUpdater.fedora.url</dt>
+ *   <dd>the URL of the fedora server (required).</dd>
+ *   <dt>topaz.fr.fedoraUpdater.fedora.user</dt>
+ *   <dd>the username with which to authenticate to fedora (optional).</dd>
+ *   <dt>topaz.fr.fedoraUpdater.fedora.pass</dt>
+ *   <dd>the password with which to authenticate to fedora (optional).</dd>
+ *   <dt>topaz.fr.fedoraUpdater.updateFilter.class</dt>
+ *   <dd>the fully qualified name of the filter class to use (optional). If not set, defaults
+ *       to <var>org.topazproject.kowari.DefaultUpdateFilter</var>.</dd>
+ *   <dt>topaz.fr.fedoraUpdater.updateInterval</dt>
+ *   <dd>how often, in milliseconds, to write the queued statements to fedora (required).</dd>
+ * </dl>
+    
+ *
  * @author Ronald Tschalär
  */
-class FedoraUpdater {
+class FedoraUpdater extends AbstractFilterHandler {
   private static final Logger logger = Logger.getLogger(FedoraUpdater.class);
 
   private static final URIReference RDF_TYPE;
@@ -95,6 +113,26 @@ class FedoraUpdater {
 
   /** 
    * Create a new udpater instance.
+   *
+   * @param config the configuration to use
+   * @param dbURI  the database uri
+   */
+  public FedoraUpdater(Properties config, URI dbURI) throws Exception {
+    this(new URI(config.getProperty("topaz.fr.fedoraUpdater.fedora.url")),
+         config.getProperty("topaz.fr.fedoraUpdater.fedora.user"),
+         config.getProperty("topaz.fr.fedoraUpdater.fedora.pass"),
+         dbURI,
+         SessionFactoryFinder.newSessionFactory(dbURI, false),
+         Long.parseLong(config.getProperty("topaz.fr.fedoraUpdater.updateInterval")),
+         config.containsKey("topaz.fr.fedoraUpdater.updateFilter.class") ?
+             (UpdateFilter) Class.forName(config.getProperty("topaz.fr.fedoraUpdater.updateFilter.class"),
+                                          true, Thread.currentThread().getContextClassLoader()).
+                            newInstance() :
+             null);
+  }
+
+  /** 
+   * Create a new udpater instance.
    * 
    * @param serverURL    the URL of the fedora server's API-A/API-M webservice
    * @param username     the username with which to authenticate to fedora
@@ -111,8 +149,8 @@ class FedoraUpdater {
    * @throws IllegalAccessException if thrown trying to create an instance of
    *                                <var>updateFilter</var>
    */
-  public FedoraUpdater(URI serverURL, String username, String password, URI modelBase,
-                       SessionFactory sessFactory, long updInternal, UpdateFilter updateFilter)
+  private FedoraUpdater(URI serverURL, String username, String password, URI modelBase,
+                        SessionFactory sessFactory, long updInternal, UpdateFilter updateFilter)
       throws IOException, ServiceException, InstantiationException, IllegalAccessException {
     this.sessFactory = sessFactory;
     this.modelBase   = modelBase;
@@ -140,8 +178,35 @@ class FedoraUpdater {
   /**
    * Signal to the updater that a model has been created or deleted.
    */
-  public void updateModelMaps() {
+  private void updateModelMaps() {
     updateMaps = true;
+  }
+
+  public void modelCreated(URI filterModel, URI realModel) throws ResolverException {
+    getDS(filterModel); // check there's a proper ds attribute
+    updateModelMaps();
+  }
+
+  public void modelRemoved(URI filterModel, URI realModel) {
+    updateModelMaps();
+  }
+
+  public void modelModified(URI filterModel, URI realModel, Statements stmts, boolean occurs,
+                            ResolverSession resolverSession) throws ResolverException {
+    queueMod(getDS(filterModel), stmts, occurs, resolverSession);
+  }
+
+  private String getDS(URI uri) throws ResolverException {
+    String modelName = uri.getRawFragment();
+
+    String[] params = modelName.substring(modelName.indexOf(':') + 1).split(";");
+    for (int idx = 0; idx < params.length; idx++) {
+      if (params[idx].startsWith("ds="))
+        return params[idx].substring(3);
+    }
+
+    throw new ResolverException("invalid model name encountered: '" + uri + "' - must be of " +
+                                "the form <dbURI>#filter:model=<model>;ds=<datastream>");
   }
 
   /**
@@ -152,8 +217,8 @@ class FedoraUpdater {
    * @param occurs          whether the statements represent inserts (true) or deletes (false)
    * @param resolverSession the resolver session
    */
-  public void queueMod(String ds, Statements statements, boolean occurs,
-                       ResolverSession resolverSession)
+  private void queueMod(String ds, Statements statements, boolean occurs,
+                        ResolverSession resolverSession)
       throws ResolverException {
     synchronized (txQueue) {
       Set queue = (Set) txQueue.get(currentTxId);
@@ -262,10 +327,9 @@ class FedoraUpdater {
     ans.beforeFirst();
     while (ans.next()) {
       URIReference m = (URIReference) ans.getObject(0);
-      String[] params = FilterResolver.parseFilterURI(m.getURI());
 
-      String model = params[0];
-      String ds    = params[1];
+      String model = FilterResolver.getModelName(m.getURI());
+      String ds    = getDS(m.getURI());
 
       Set models = (Set) dsMM.get(ds);
       if (models == null)
@@ -438,19 +502,13 @@ class FedoraUpdater {
    * This represents the updater as a resource. It is used to ensure we only do updates on
    * stuff that's been committed in order to prevent spurious Fedora object creations.
    */
-  private class UpdaterXAResource implements XAResource {
-    private int txTimeout = 10;
-
+  private class UpdaterXAResource extends DummyXAResource {
     public void start(Xid xid, int flags) {
       currentTxId = xid;
     }
 
     public void end(Xid xid, int flags) {
       currentTxId = null;
-    }
-
-    public int prepare(Xid xid) {
-      return XA_OK;
     }
 
     public void commit(Xid xid, boolean onePhase) {
@@ -470,26 +528,6 @@ class FedoraUpdater {
       synchronized (txQueue) {
         txQueue.remove(xid);
       }
-    }
-
-    public int getTransactionTimeout() {
-      return txTimeout;
-    }
-
-    public boolean setTransactionTimeout(int transactionTimeout) {
-      txTimeout = transactionTimeout;
-      return true;
-    }
-
-    public Xid[] recover(int flag) {
-      return new Xid[0];
-    }
-
-    public void forget(Xid xid) {
-    }
-
-    public boolean isSameRM(XAResource xaResource) {
-      return xaResource == this;
     }
   }
 
