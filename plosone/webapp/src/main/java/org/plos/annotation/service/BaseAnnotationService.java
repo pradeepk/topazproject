@@ -9,13 +9,13 @@
  */
 package org.plos.annotation.service;
 
-import org.springframework.beans.factory.annotation.Required;
 import org.plos.service.BaseConfigurableService;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * Base class for Annotaion and Reply web service wrappers
  */
-public class BaseAnnotationService extends BaseConfigurableService {
+public abstract class BaseAnnotationService extends BaseConfigurableService {
   private String defaultType;
   private String encodingCharset = "UTF-8";
   private String applicationId;

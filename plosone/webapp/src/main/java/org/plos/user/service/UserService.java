@@ -64,13 +64,13 @@ public class UserService extends BaseConfigurableService {
    * Deletes the given user from Topaz. Currently, does not remove the entries in the system
    * associated with the ID. May not want to make this visible as this can affect other applications
    * 
-   * @param userId
+   * @param topazUserId
    *          the Topaz User ID
    * @throws ApplicationException
    */
-  private void deleteUser(final String userId) throws ApplicationException {
+  private void deleteUser(final String topazUserId) throws ApplicationException {
     try {
-      userWebService.deleteUser(userId);
+      userWebService.deleteUser(topazUserId);
     } catch (NoSuchIdException ne) {
       throw new ApplicationException(ne);
     } catch (RemoteException re) {
@@ -81,15 +81,15 @@ public class UserService extends BaseConfigurableService {
   /**
    * Gets the user specified by the Topaz userID passed in
    * 
-   * @param topazId
+   * @param topazUserId
    *          Topaz User ID
-   * @return user associated with the topazId
+   * @return user associated with the topazUserId
    * @throws ApplicationException ApplicationException
    */
-  public PlosOneUser getUserByTopazId(final String topazId) throws ApplicationException {
+  public PlosOneUser getUserByTopazId(final String topazUserId) throws ApplicationException {
     PlosOneUser pou = new PlosOneUser();
-    pou.setUserProfile(getProfile(topazId));
-    UserPreference[] userPrefs = getPreferences(applicationId, topazId);
+    pou.setUserProfile(getProfile(topazUserId));
+    UserPreference[] userPrefs = getPreferences(applicationId, topazUserId);
     pou.setUserPrefs(userPrefs);
     return pou;
   }
@@ -181,14 +181,14 @@ public class UserService extends BaseConfigurableService {
   /**
    * Retrieves the profile for the given Topaz User ID
    * 
-   * @param userId
+   * @param topazUserId
    *          Topaz userID
    * @return user profile of Topaz user
    * @throws ApplicationException
    */
-  public UserProfile getProfile(final String userId) throws ApplicationException {
+  public UserProfile getProfile(final String topazUserId) throws ApplicationException {
     try {
-      return profileWebService.getProfile(userId);
+      return profileWebService.getProfile(topazUserId);
     } catch (NoSuchIdException ne) {
       throw new ApplicationException(ne);
     } catch (RemoteException re) {
@@ -215,16 +215,16 @@ public class UserService extends BaseConfigurableService {
   /**
    * Write the specified user profile and associates it with the specified user ID
    * 
-   * @param userId
+   * @param topazUserId
    *          Topaz User ID
    * @param profile
    *          profile to be written
    * @throws ApplicationException
    */
-  protected void setProfile(final String userId, final UserProfile profile)
+  protected void setProfile(final String topazUserId, final UserProfile profile)
       throws ApplicationException {
     try {
-      profileWebService.setProfile(userId, profile);
+      profileWebService.setProfile(topazUserId, profile);
     } catch (NoSuchIdException ne) {
       throw new ApplicationException(ne);
     } catch (RemoteException re) {
@@ -237,15 +237,15 @@ public class UserService extends BaseConfigurableService {
    * 
    * @param appId
    *          application ID
-   * @param userId
+   * @param topazUserId
    *          Topaz User ID
    * @return array of user preferences
    * @throws ApplicationException
    */
-  public UserPreference[] getPreferences(final String appId, final String userId)
+  public UserPreference[] getPreferences(final String appId, final String topazUserId)
       throws ApplicationException {
     try {
-      return preferencesWebService.getPreferences(appId, userId);
+      return preferencesWebService.getPreferences(appId, topazUserId);
     } catch (NoSuchIdException ne) {
       throw new ApplicationException(ne);
     } catch (RemoteException re) {
@@ -273,16 +273,16 @@ public class UserService extends BaseConfigurableService {
    * 
    * @param appId
    *          application ID
-   * @param userId
+   * @param topazUserId
    *          Topaz User ID
    * @param prefs
    *          User preferences to write
    * @throws ApplicationException
    */
-  protected void setPreferences(final String appId, final String userId, UserPreference[] prefs)
+  protected void setPreferences(final String appId, final String topazUserId, UserPreference[] prefs)
       throws ApplicationException {
     try {
-      preferencesWebService.setPreferences(appId, userId, prefs);
+      preferencesWebService.setPreferences(appId, topazUserId, prefs);
     } catch (NoSuchIdException ne) {
       throw new ApplicationException(ne);
     } catch (RemoteException re) {

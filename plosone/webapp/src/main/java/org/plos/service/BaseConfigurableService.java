@@ -12,9 +12,11 @@ package org.plos.service;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
 import org.plos.web.UserContext;
+import org.plos.user.Constants;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 
+import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
@@ -22,18 +24,28 @@ import java.util.Map;
 /**
  * Base service class to be subclassed by any services which have common configuration requirements.
  */
-public abstract class BaseConfigurableService {
+public class BaseConfigurableService {
   private Configuration configuration;
   private UserContext userContext;
+  private boolean initCalledInsideUserThread;
 
   /**
    * @param configuration configuration
    * @return an instance of protected service
-   * @throws IOException
-   * @throws URISyntaxException
+   * @throws IOException IOException
+   * @throws URISyntaxException URISyntaxException
    */
   protected ProtectedService createProtectedService(final Configuration configuration) throws IOException, URISyntaxException {
-    return ProtectedServiceFactory.createService(configuration, getSessionMap());
+    final Map sessionMap = getSessionMap();
+    String memberUser = null;
+    if (null != sessionMap) {
+      memberUser = (String) sessionMap.get(Constants.SINGLE_SIGNON_USER_KEY);
+    }
+    if ((null == sessionMap) || (null == memberUser)) {
+      configuration.setProperty(Constants.AUTH_METHOD_KEY, Constants.ANONYMOUS_USER_AUTHENTICATION);
+    }
+
+    return ProtectedServiceFactory.createService(configuration, sessionMap);
   }
 
   /**
@@ -82,4 +94,27 @@ public abstract class BaseConfigurableService {
     configuration = createMapConfiguration(configMap);
   }
 
+  /**
+   * A subclass may want to provide it's own init method
+   * @throws java.io.IOException IOException
+   * @throws javax.xml.rpc.ServiceException ServiceException
+   * @throws java.net.URISyntaxException URISyntaxException
+   */
+  protected void init() throws IOException, URISyntaxException, ServiceException {
+  }
+
+  protected void ensureInitGetsCalledWithUsersSessionAttributes() {
+    if (!initCalledInsideUserThread) {
+      try {
+        init();
+      } catch (final Exception e) {
+        throw new RuntimeException("Init failed for this service:" + getClass().getName() + "");
+      }
+      initCalledInsideUserThread = true;
+    }
+  }
+
+  protected ProtectedService getProtectedService() throws IOException, URISyntaxException {
+    return createProtectedService(this.configuration);
+  }
 }

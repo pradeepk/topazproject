@@ -114,7 +114,9 @@ public class CreateUserAction extends UserActionSupport {
    */
   @RequiredStringValidator(type = ValidatorType.FIELD, fieldName = "username", 
                            message = "You must enter a username")
-  @StringLengthFieldValidator(fieldName = "username", minLength = Length.DISPLAY_NAME_MIN, maxLength = Length.DISPLAY_NAME_MAX,
+  @StringLengthFieldValidator(fieldName = "username",
+                              minLength = Length.DISPLAY_NAME_MIN,
+                              maxLength = Length.DISPLAY_NAME_MAX,
                               message = "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters")
   public String getUsername() {
     return username;

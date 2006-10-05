@@ -49,25 +49,25 @@ public class ProfileWebService extends BaseConfigurableService {
   /**
    * Retrieves UserProfile for a given Topaz UserId
    * 
-   * @param userId Topaz User ID
+   * @param topazUserId Topaz User ID
    * @return profile of given user
    * @throws NoSuchIdException
    * @throws RemoteException
    */
-  public UserProfile getProfile(final String userId) throws NoSuchIdException, RemoteException {
-    return profileService.getProfile(userId);
+  public UserProfile getProfile(final String topazUserId) throws NoSuchIdException, RemoteException {
+    return profileService.getProfile(topazUserId);
   }
 
   /**
    * Store UserProfile for a given Topaz UserID
    * 
-   * @param userId Topaz User ID
+   * @param topazUserId Topaz User ID
    * @param profile Profile to store
    * @throws NoSuchIdException
    * @throws RemoteException
    */
-  public void setProfile(final String userId, final UserProfile profile) throws NoSuchIdException,
+  public void setProfile(final String topazUserId, final UserProfile profile) throws NoSuchIdException,
       RemoteException {
-    profileService.setProfile(userId, profile);
+    profileService.setProfile(topazUserId, profile);
   }
 }

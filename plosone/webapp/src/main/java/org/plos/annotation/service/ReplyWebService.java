@@ -28,7 +28,7 @@ public class ReplyWebService extends BaseAnnotationService {
   private Replies replyService;
 
   public void init() throws IOException, URISyntaxException, ServiceException {
-    final ProtectedService protectedService = createProtectedService(getConfiguration());
+    final ProtectedService protectedService = getProtectedService();
     replyService = RepliesClientFactory.create(protectedService);
   }
 

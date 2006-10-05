@@ -17,6 +17,10 @@ import edu.yale.its.tp.cas.client.filter.CASFilter;
 public interface Constants {
   String PLOS_ONE_USER_KEY = "PLOS_ONE_USER";
   String SINGLE_SIGNON_USER_KEY = CASFilter.CAS_FILTER_USER;
+  String SINGLE_SIGNON_RECEIPT = CASFilter.CAS_FILTER_RECEIPT;
+  /** Authentication method used for anonymous user, otherwise it is normally CAS */
+  String ANONYMOUS_USER_AUTHENTICATION = "ANONYMOUS_USER_AUTHENTICATION";
+  String AUTH_METHOD_KEY = "auth-method";
 
   /**
    * Defines the length of various fields used by Webwork Annotations

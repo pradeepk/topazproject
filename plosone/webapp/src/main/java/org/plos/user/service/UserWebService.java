@@ -56,7 +56,7 @@ public class UserWebService extends BaseConfigurableService {
    *           if some other error occured
    */
   public String createUser(final String authId) throws RemoteException {
-    return userService.createUser(authId);
+    return userService.createUser(transformForPlosoneApp(authId));
   }
 
   /**
@@ -122,7 +122,11 @@ public class UserWebService extends BaseConfigurableService {
    * @throws RemoteException
    */
   public String lookUpUserByAuthId(final String authId) throws RemoteException {
-    return userService.lookUpUserByAuthId(authId);
+    return userService.lookUpUserByAuthId(transformForPlosoneApp(authId));
+  }
+
+  private String transformForPlosoneApp(final String authId) {
+    return "[local]" + authId;
   }
 
   /**

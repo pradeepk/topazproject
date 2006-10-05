@@ -28,7 +28,7 @@ public class AnnotationWebService extends BaseAnnotationService {
   private Annotations annotationService;
 
   public void init() throws IOException, URISyntaxException, ServiceException {
-    final ProtectedService protectedService = createProtectedService(getConfiguration());
+    final ProtectedService protectedService = getProtectedService();
     annotationService = AnnotationClientFactory.create(protectedService);
   }
 
@@ -44,6 +44,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws java.rmi.RemoteException
    */
   public String createAnnotation(final String mimeType, final String target, final String context, final String title, final String body) throws RemoteException, NoSuchAnnotationIdException, UnsupportedEncodingException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     final String contentType = getContentType(mimeType);
     return annotationService.createAnnotation(getApplicationId(), getDefaultType(), target, context, null, false, title, contentType, body.getBytes(getEncodingCharset()));
   }
@@ -56,7 +57,8 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @see org.topazproject.ws.annotation.Annotations#deleteAnnotation(String, boolean)
    */
   public void deleteAnnotation(final String annotationId, final boolean deletePreceding) throws RemoteException, NoSuchAnnotationIdException {
-      annotationService.deleteAnnotation(annotationId, deletePreceding);
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    annotationService.deleteAnnotation(annotationId, deletePreceding);
   }
 
   /**
@@ -66,7 +68,8 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws java.rmi.RemoteException
    */
   public AnnotationInfo[] listAnnotations(final String target) throws RemoteException {
-      return annotationService.listAnnotations(getApplicationId(), target, getDefaultType());
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    return annotationService.listAnnotations(getApplicationId(), target, getDefaultType());
   }
 
   /**
@@ -76,6 +79,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws RemoteException
    */
   public AnnotationInfo getAnnotation(final String annotationId) throws RemoteException, NoSuchAnnotationIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     return annotationService.getAnnotationInfo(annotationId);
   }
 
@@ -85,6 +89,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws RemoteException
    */
   public void setPublic(final String annotationDoi) throws RemoteException, NoSuchAnnotationIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     annotationService.setAnnotationState(annotationDoi, Annotation.PUBLIC_MASK);
   }
 }
