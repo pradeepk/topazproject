@@ -79,7 +79,8 @@ public class PasswordDigestService {
 
   private String createRandomSalt() {
     final RandomDataImpl random = new RandomDataImpl();
-    return random.nextHexString(getSaltLength());
+    final int saltLength = getSaltLength();
+    return saltLength == 0 ? "" : random.nextHexString(saltLength);
   }
 
   /**

@@ -9,14 +9,11 @@ import org.plos.registration.User;
 
 import java.sql.Timestamp;
 
-/**
- *
- */
 public class TestRegistrationService extends BasePlosoneRegistrationTestCase {
 
   public void testCreateNewUserWithExpectedValues() throws Exception {
-    final String loginName = "dave@home.com";
-    final User user = getRegistrationService().createUser(loginName, "david");
+    final String loginName = "fedoraAdmin";
+    final User user = getRegistrationService().createUser(loginName, "fedoraAdmin");
     assertNotNull(user.getId());
     assertEquals(user.getLoginName(), loginName);
     assertNotNull(user.getPassword());
