@@ -18,6 +18,7 @@ import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
 
 import java.util.Map;
+import java.io.IOException;
 
 /**
  * Prepopulate the user profile data as available
@@ -41,7 +42,13 @@ public class PrepopulateUserDetailsAction extends UserActionSupport {
     if (null == plosOneUser) {
       final String emailAddressUrl = getEmailAddressUrl();
       final String userId = getUserId(sessionMap);
-      email = FileUtils.getTextFromUrl(emailAddressUrl + userId);
+      final String url = emailAddressUrl + userId;
+      try {
+        email = FileUtils.getTextFromUrl(url);
+      } catch (final IOException e) {
+        log.error("Failed to fetch the email address using the url:" + url);
+      }
+
       return NEW_PROFILE;
     } else {
       email = plosOneUser.getEmail();
