@@ -6,12 +6,10 @@
 
   <display-name>PLoS ONE</display-name>
 
-<!--
   <filter>
     <filter-name>Member Session</filter-name>
     <filter-class>org.plos.web.CreateSessionOnLoginFilter</filter-class>
   </filter>
--->
 
 <!--
   <filter>
@@ -52,13 +50,6 @@
 
 <!--
   <filter-mapping >
-    <filter-name>Member Session</filter-name>
-    <url-pattern>/annotation/secure/*</url-pattern>
-  </filter-mapping>
--->
-
-<!--
-  <filter-mapping >
     <filter-name>DebuggingFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
@@ -66,8 +57,13 @@
 
   <filter-mapping >
     <filter-name>CAS Filter</filter-name>
-    <url-pattern>/*</url-pattern>
-    <!--<url-pattern>/annotation/secure/*</url-pattern>-->
+    <!--<url-pattern>/*</url-pattern>-->
+    <url-pattern>/annotation/secure/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping >
+    <filter-name>Member Session</filter-name>
+    <url-pattern>/annotation/secure/*</url-pattern>
   </filter-mapping>
 
   <filter-mapping>
@@ -82,7 +78,7 @@
 
   <!-- to hook in the scope management system that provides scopes like session, request for Servlet 2.4 and Spring 2.0 above  -->
   <listener>
-    <listener-class>org.springframework.web.context.scope.RequestContextListener</listener-class>
+    <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
   </listener>
 
   <!--
