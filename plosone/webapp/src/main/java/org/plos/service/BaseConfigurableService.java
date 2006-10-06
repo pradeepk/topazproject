@@ -11,6 +11,8 @@ package org.plos.service;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plos.web.UserContext;
 import org.plos.user.Constants;
 import org.topazproject.authentication.ProtectedService;
@@ -29,6 +31,8 @@ public class BaseConfigurableService {
   private Configuration configuration;
   private UserContext userContext;
   private boolean initCalledInsideUserThread;
+
+  private static final Log log = LogFactory.getLog(BaseConfigurableService.class);
 
   /**
    * @param configuration configuration
@@ -114,7 +118,8 @@ public class BaseConfigurableService {
       try {
         init();
       } catch (final Exception e) {
-        throw new RuntimeException("Init failed for this service:" + getClass().getName() + "");
+        log.error("Init failed for service:" + getClass().getName(), e);
+        throw new RuntimeException("Init failed for service:" + getClass().getName(), e);
       }
       initCalledInsideUserThread = true;
     }
