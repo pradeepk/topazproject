@@ -28,8 +28,8 @@ import java.util.Enumeration;
 /**
  * Create a new session when the user logs in using CAS or other authentication mechanisms
  */
-public class CreateSessionOnLoginFilter implements Filter {
-  private static final Log log = LogFactory.getLog(CreateSessionOnLoginFilter.class);
+public class InitializeSessionOnLoginFilter implements Filter {
+  private static final Log log = LogFactory.getLog(InitializeSessionOnLoginFilter.class);
   private final String MEMBER_SESSION_RESET_FLAG = "MemberSessionCreatedFlag";
 
   public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain filterChain) throws IOException, ServletException {

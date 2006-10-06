@@ -8,7 +8,7 @@
 
   <filter>
     <filter-name>Member Session</filter-name>
-    <filter-class>org.plos.web.CreateSessionOnLoginFilter</filter-class>
+    <filter-class>org.plos.web.InitializeSessionOnLoginFilter</filter-class>
   </filter>
 
 <!--
