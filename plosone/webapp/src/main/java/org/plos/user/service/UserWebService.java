@@ -17,10 +17,13 @@ import java.rmi.RemoteException;
 import javax.xml.rpc.ServiceException;
 
 import org.plos.service.BaseConfigurableService;
+import org.plos.user.Constants;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsClientFactory;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * Wrapper around Topaz User Accounts web service
@@ -34,6 +37,7 @@ public class UserWebService extends BaseConfigurableService {
 
   private String applicationId;
 
+  private static final Log log = LogFactory.getLog(UserWebService.class);
   /**
    * Creates web service
    * 
@@ -42,7 +46,7 @@ public class UserWebService extends BaseConfigurableService {
    * @throws ServiceException
    */
   public void init() throws IOException, URISyntaxException, ServiceException {
-    final ProtectedService protectedService = createProtectedService(getConfiguration());
+    final ProtectedService protectedService = getProtectedService();
     userService = UserAccountsClientFactory.create(protectedService);
   }
 
@@ -56,61 +60,68 @@ public class UserWebService extends BaseConfigurableService {
    *           if some other error occured
    */
   public String createUser(final String authId) throws RemoteException {
-    return userService.createUser(transformForPlosoneApp(authId));
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    final String transformedAuthId = transformForPlosoneApp(authId);
+    log.debug("lookUpUserByAuthId:" + transformedAuthId);
+    return userService.createUser(transformedAuthId);
   }
 
   /**
    * Deletes given user ID from system. Does not delete any resources with the user, only the user
    * itself.
    * 
-   * @param userId
+   * @param topazUserId
    *          Topaz User ID to delete
    * @throws NoSuchIdException
    * @throws RemoteException
    */
-  public void deleteUser(final String userId) throws NoSuchIdException, RemoteException {
-    userService.deleteUser(userId);
+  public void deleteUser(final String topazUserId) throws NoSuchIdException, RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    userService.deleteUser(topazUserId);
   }
 
   /**
    * Sets the state of a given user account
    * 
-   * @param userId
+   * @param topazUserId
    *          Topaz User ID
    * @param state
    *          new state of user
    * @throws NoSuchIdException
    * @throws RemoteException
    */
-  public void setState(final String userId, int state) throws NoSuchIdException, RemoteException {
-    userService.setState(userId, state);
+  public void setState(final String topazUserId, int state) throws NoSuchIdException, RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    userService.setState(topazUserId, state);
   }
 
   /**
    * Gets the current state of the user
    * 
-   * @param userId
+   * @param topazUserId
    *          Topaz User ID to set
    * @return current state of user
    * @throws NoSuchIdException
    * @throws RemoteException
    */
-  public int getState(final String userId) throws NoSuchIdException, RemoteException {
-    return userService.getState(userId);
+  public int getState(final String topazUserId) throws NoSuchIdException, RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    return userService.getState(topazUserId);
   }
 
   /**
    * Gets the authentication IDs for a given Topaz user ID
    * 
-   * @param userId
+   * @param topazUserId
    *          Topaz user ID
    * @return array of authentication ids
    * @throws NoSuchIdException
    * @throws RemoteException
    */
-  public String[] getAuthenticationIds(final String userId) throws NoSuchIdException,
+  public String[] getAuthenticationIds(final String topazUserId) throws NoSuchIdException,
       RemoteException {
-    return userService.getAuthenticationIds(userId);
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    return userService.getAuthenticationIds(topazUserId);
   }
 
   /**
@@ -122,11 +133,14 @@ public class UserWebService extends BaseConfigurableService {
    * @throws RemoteException
    */
   public String lookUpUserByAuthId(final String authId) throws RemoteException {
-    return userService.lookUpUserByAuthId(transformForPlosoneApp(authId));
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    final String transformedAuthId = transformForPlosoneApp(authId);
+    log.debug("lookUpUserByAuthId:" + transformedAuthId);
+    return userService.lookUpUserByAuthId(transformedAuthId);
   }
 
   private String transformForPlosoneApp(final String authId) {
-    return "[local]" + authId;
+    return Constants.APPLICATION_REGISTRY_IDENTIFIER + authId;
   }
 
   /**

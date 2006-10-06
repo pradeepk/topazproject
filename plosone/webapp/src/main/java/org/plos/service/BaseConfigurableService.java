@@ -20,6 +20,7 @@ import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Base service class to be subclassed by any services which have common configuration requirements.
@@ -35,17 +36,22 @@ public class BaseConfigurableService {
    * @throws IOException IOException
    * @throws URISyntaxException URISyntaxException
    */
-  protected ProtectedService createProtectedService(final Configuration configuration) throws IOException, URISyntaxException {
+  protected ProtectedService createProtectedService(Configuration configuration) throws IOException, URISyntaxException {
     final Map sessionMap = getSessionMap();
     String memberUser = null;
     if (null != sessionMap) {
       memberUser = (String) sessionMap.get(Constants.SINGLE_SIGNON_USER_KEY);
     }
     if ((null == sessionMap) || (null == memberUser)) {
+      configuration = new MapConfiguration(cloneConfigMap(configuration));
       configuration.setProperty(Constants.AUTH_METHOD_KEY, Constants.ANONYMOUS_USER_AUTHENTICATION);
     }
 
     return ProtectedServiceFactory.createService(configuration, sessionMap);
+  }
+
+  private Map<String, String> cloneConfigMap(final Configuration configuration) {
+    return new HashMap<String, String>(((MapConfiguration)configuration).getMap());
   }
 
   /**

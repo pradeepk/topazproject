@@ -21,6 +21,8 @@ public interface Constants {
   /** Authentication method used for anonymous user, otherwise it is normally CAS */
   String ANONYMOUS_USER_AUTHENTICATION = "ANONYMOUS_USER_AUTHENTICATION";
   String AUTH_METHOD_KEY = "auth-method";
+  String APPLICATION_REGISTRY_IDENTIFIER = "[local]";
+  String ROOT_PACKAGE = "org.plos";
 
   /**
    * Defines the length of various fields used by Webwork Annotations

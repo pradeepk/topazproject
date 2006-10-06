@@ -42,7 +42,7 @@ public class ProfileWebService extends BaseConfigurableService {
    * @throws ServiceException
    */
   public void init() throws IOException, URISyntaxException, ServiceException {
-    final ProtectedService protectedService = createProtectedService(getConfiguration());
+    final ProtectedService protectedService = getProtectedService();
     profileService = ProfilesClientFactory.create(protectedService);
   }
 
@@ -55,6 +55,7 @@ public class ProfileWebService extends BaseConfigurableService {
    * @throws RemoteException
    */
   public UserProfile getProfile(final String topazUserId) throws NoSuchIdException, RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     return profileService.getProfile(topazUserId);
   }
 
@@ -68,6 +69,7 @@ public class ProfileWebService extends BaseConfigurableService {
    */
   public void setProfile(final String topazUserId, final UserProfile profile) throws NoSuchIdException,
       RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     profileService.setProfile(topazUserId, profile);
   }
 }

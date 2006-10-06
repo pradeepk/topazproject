@@ -33,7 +33,6 @@ import org.topazproject.ws.pap.UserPreference;
 public class PreferencesWebService extends BaseConfigurableService {
   private Preferences preferencesService;
 
-  
   /**
    * Creates a preferences web service
    * 
@@ -42,7 +41,7 @@ public class PreferencesWebService extends BaseConfigurableService {
    * @throws ServiceException
    */
   public void init() throws IOException, URISyntaxException, ServiceException {
-    final ProtectedService protectedService = createProtectedService(getConfiguration());
+    final ProtectedService protectedService = getProtectedService();
     preferencesService = PreferencesClientFactory.create(protectedService);
   }
 
@@ -50,14 +49,15 @@ public class PreferencesWebService extends BaseConfigurableService {
    * Retrieve user preferences for given Topaz user ID.
    * 
    * @param appId Application ID
-   * @param userId Topaz user ID
+   * @param topazUserId Topaz user ID
    * @return array of UserPreferences
    * @throws NoSuchIdException
    * @throws RemoteException
    */
-  public UserPreference[] getPreferences(final String appId, final String userId)
+  public UserPreference[] getPreferences(final String appId, final String topazUserId)
       throws NoSuchIdException, RemoteException {
-    return preferencesService.getPreferences(appId, userId);
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    return preferencesService.getPreferences(appId, topazUserId);
   }
 
   
@@ -65,13 +65,14 @@ public class PreferencesWebService extends BaseConfigurableService {
    * Write user preferences to Topaz store
    * 
    * @param appId application ID
-   * @param userId Topaz user ID
+   * @param topazUserId Topaz user ID
    * @param prefs array of User Preferences to set
    * @throws NoSuchIdException
    * @throws RemoteException
    */
-  public void setPreferences(final String appId, final String userId, UserPreference[] prefs)
+  public void setPreferences(final String appId, final String topazUserId, UserPreference[] prefs)
       throws NoSuchIdException, RemoteException {
-    preferencesService.setPreferences(appId, userId, prefs);
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    preferencesService.setPreferences(appId, topazUserId, prefs);
   }
 }
