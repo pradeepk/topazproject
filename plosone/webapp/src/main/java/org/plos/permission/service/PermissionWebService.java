@@ -27,7 +27,7 @@ public class PermissionWebService extends BaseConfigurableService {
   private String currentPrincipal;
 
   public void init() throws IOException, URISyntaxException, ServiceException {
-    final ProtectedService permissionProtectedService = createProtectedService(getConfiguration());
+    final ProtectedService permissionProtectedService = getProtectedService();
     permissionsService = PermissionsClientFactory.create(permissionProtectedService);
   }
 
@@ -49,6 +49,7 @@ public class PermissionWebService extends BaseConfigurableService {
    * @throws java.rmi.RemoteException
    */
   public String[] listGrants(final String resource, final String principal) throws RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     return permissionsService.listGrants(resource, principal);
   }
 
@@ -78,6 +79,7 @@ public class PermissionWebService extends BaseConfigurableService {
   public void grant(String resource, String[] permissions, String[] principals)
           throws RemoteException
   {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     permissionsService.grant(resource, permissions, principals);
   }
 
@@ -107,6 +109,7 @@ public class PermissionWebService extends BaseConfigurableService {
   public void revoke(String resource, String[] permissions, String[] principals)
               throws RemoteException
   {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     permissionsService.revoke(resource, permissions, principals);
   }
 
@@ -135,6 +138,7 @@ public class PermissionWebService extends BaseConfigurableService {
    * @see org.topazproject.ws.permissions.Permissions#cancelGrants(String, String[], String[])
    */
   public void cancelGrants(final String resource, final String[] grants, final String[] principals) throws RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     permissionsService.cancelGrants(resource, grants, principals);
   }
 
@@ -147,6 +151,7 @@ public class PermissionWebService extends BaseConfigurableService {
    * @see org.topazproject.ws.permissions.Permissions#cancelRevokes(String, String[], String[])
    */
   public void cancelRevokes(final String resource, final String[] grants, final String[] principals) throws RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     permissionsService.cancelRevokes(resource, grants, principals);
   }
 
@@ -160,6 +165,7 @@ public class PermissionWebService extends BaseConfigurableService {
    */
 
   public String[] listRevokes(final String resource, final String principal) throws RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     return permissionsService.listRevokes(resource, principal);
   }
 }

@@ -53,7 +53,6 @@
   <bean id="userContext" class="org.plos.web.UserContext" scope="session"/>
 
   <bean id="permissionWebService" class="org.plos.permission.service.PermissionWebService" scope="session">
-    <aop:scoped-proxy/>
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
@@ -69,7 +68,7 @@
     <property name="lazyLoaderFactory" ref="lazyLoaderFactory"/>
   </bean>
 
-  <bean id="replyWebService" class="org.plos.annotation.service.ReplyWebService" init-method="init" scope="session">
+  <bean id="replyWebService" class="org.plos.annotation.service.ReplyWebService" scope="session">
     <property name="userContext" ref="userContext"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
@@ -82,7 +81,7 @@
     </property>
   </bean>
 
-  <bean id="annotationWebService" class="org.plos.annotation.service.AnnotationWebService" init-method="init" scope="session">
+  <bean id="annotationWebService" class="org.plos.annotation.service.AnnotationWebService" scope="session">
     <property name="userContext" ref="userContext"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
@@ -103,7 +102,7 @@
     <property name="permissionWebService" ref="permissionWebService"/>
   </bean>
 
-  <bean id="userWebService" class="org.plos.user.service.UserWebService" init-method="init" scope="session">
+  <bean id="userWebService" class="org.plos.user.service.UserWebService" scope="session">
     <property name="userContext" ref="userContext"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="configurationMap">
@@ -114,7 +113,7 @@
     </property>
   </bean>
 
-  <bean id="preferencesWebService" class="org.plos.user.service.PreferencesWebService" init-method="init" scope="session">
+  <bean id="preferencesWebService" class="org.plos.user.service.PreferencesWebService" scope="session">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
@@ -124,7 +123,7 @@
     </property>
   </bean>
   
-  <bean id="profileWebService" class="org.plos.user.service.ProfileWebService" init-method="init" scope="session">
+  <bean id="profileWebService" class="org.plos.user.service.ProfileWebService" scope="session">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>

@@ -47,7 +47,7 @@
 
   <bean id="userContext" class="org.plos.web.UserContext"/>
 
-  <bean id="permissionWebService" class="org.plos.permission.service.PermissionWebService" init-method="init">
+  <bean id="permissionWebService" class="org.plos.permission.service.PermissionWebService">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
@@ -63,7 +63,7 @@
     <property name="lazyLoaderFactory" ref="lazyLoaderFactory"/>
   </bean>
 
-  <bean id="replyWebService" class="org.plos.annotation.service.ReplyWebService" init-method="init">
+  <bean id="replyWebService" class="org.plos.annotation.service.ReplyWebService">
     <property name="userContext" ref="userContext"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
@@ -76,7 +76,7 @@
     </property>
   </bean>
 
-  <bean id="annotationWebService" class="org.plos.annotation.service.AnnotationWebService" init-method="init">
+  <bean id="annotationWebService" class="org.plos.annotation.service.AnnotationWebService">
     <property name="userContext" ref="userContext"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
@@ -96,7 +96,7 @@
     <property name="replyWebService" ref="replyWebService"/>
     <property name="permissionWebService" ref="permissionWebService"/>
   </bean>
- <bean id="userWebService" class="org.plos.user.service.UserWebService" init-method="init" >
+ <bean id="userWebService" class="org.plos.user.service.UserWebService">
     <property name="userContext" ref="userContext"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="configurationMap">
@@ -107,7 +107,7 @@
     </property>
   </bean>
 
-  <bean id="preferencesWebService" class="org.plos.user.service.PreferencesWebService" init-method="init">
+  <bean id="preferencesWebService" class="org.plos.user.service.PreferencesWebService">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
@@ -117,7 +117,7 @@
     </property>
   </bean>
   
-  <bean id="profileWebService" class="org.plos.user.service.ProfileWebService" init-method="init" >
+  <bean id="profileWebService" class="org.plos.user.service.ProfileWebService" >
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>

@@ -47,6 +47,7 @@ public class ReplyWebService extends BaseAnnotationService {
    */
   public String createReply(final String mimeType, final String root, final String inReplyTo, final String title, final String body, final AnnotationService annotationService) throws RemoteException, NoSuchAnnotationIdException, UnsupportedEncodingException {
     final String contentType = getContentType(mimeType);
+    ensureInitGetsCalledWithUsersSessionAttributes();
     return replyService.createReply(getApplicationId(), getDefaultType(), root, inReplyTo, isAnonymous(), title, contentType, body.getBytes(getEncodingCharset()));
   }
 
@@ -56,6 +57,7 @@ public class ReplyWebService extends BaseAnnotationService {
    * @see org.topazproject.ws.annotation.Replies#deleteReplies(String)
    */
   public void deleteReplies(final String replyId) throws RemoteException, NoSuchAnnotationIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     replyService.deleteReplies(replyId);
   }
 
@@ -66,6 +68,7 @@ public class ReplyWebService extends BaseAnnotationService {
    * @see org.topazproject.ws.annotation.Replies#deleteReplies(String, String)
    */
   public void deleteReplies(final String root, final String inReplyTo) throws RemoteException, NoSuchAnnotationIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     replyService.deleteReplies(root, inReplyTo);
   }
 
@@ -76,6 +79,7 @@ public class ReplyWebService extends BaseAnnotationService {
    * @see org.topazproject.ws.annotation.Replies#getReplyInfo(String)
    */
   public ReplyInfo getReplyInfo(final String replyId) throws RemoteException, NoSuchAnnotationIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     return replyService.getReplyInfo(replyId);
   }
 
@@ -87,6 +91,7 @@ public class ReplyWebService extends BaseAnnotationService {
    * @see org.topazproject.ws.annotation.Replies#listReplies(String, String)
    */
   public ReplyInfo[] listReplies(final String root, final String inReplyTo) throws RemoteException, NoSuchAnnotationIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     return replyService.listReplies(root, inReplyTo);
   }
 
@@ -98,6 +103,7 @@ public class ReplyWebService extends BaseAnnotationService {
    * @see org.topazproject.ws.annotation.Replies#listAllReplies(String, String)
    */
   public ReplyInfo[] listAllReplies(final String root, final String inReplyTo) throws RemoteException, NoSuchAnnotationIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     return replyService.listAllReplies(root, inReplyTo);
   }
 }
