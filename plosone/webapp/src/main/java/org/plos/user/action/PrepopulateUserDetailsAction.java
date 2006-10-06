@@ -46,7 +46,7 @@ public class PrepopulateUserDetailsAction extends UserActionSupport {
       try {
         email = FileUtils.getTextFromUrl(url);
       } catch (final IOException e) {
-        log.error("Failed to fetch the email address using the url:" + url);
+        log.error("Failed to fetch the email address using the url:" + url, e);
       }
 
       return NEW_PROFILE;
