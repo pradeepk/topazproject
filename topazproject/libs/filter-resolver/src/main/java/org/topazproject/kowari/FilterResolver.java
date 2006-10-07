@@ -30,9 +30,19 @@ import org.jrdf.graph.Triple;
 import org.jrdf.graph.URIReference;
 
 import org.kowari.query.Constraint;
+import org.kowari.query.ConstraintElement;
 import org.kowari.query.ConstraintImpl;
+import org.kowari.query.ConstraintIs;
+import org.kowari.query.ConstraintNegation;
+import org.kowari.query.ConstraintNotOccurs;
+import org.kowari.query.ConstraintOccurs;
+import org.kowari.query.ConstraintOccursLessThan;
+import org.kowari.query.ConstraintOccursMoreThan;
 import org.kowari.query.QueryException;
+import org.kowari.query.SingleTransitiveConstraint;
+import org.kowari.query.TransitiveConstraint;
 import org.kowari.query.TuplesException;
+import org.kowari.query.WalkConstraint;
 import org.kowari.query.rdf.URIReferenceImpl;
 import org.kowari.resolver.spi.EmptyResolution;
 import org.kowari.resolver.spi.GlobalizeException;
@@ -175,18 +185,7 @@ public class FilterResolver implements Resolver, ViewMarker {
   }
 
   public Resolution resolve(Constraint constraint) throws QueryException {
-    LocalNode modelNode = (LocalNode) constraint.getElement(3);
-    LocalNode realNode  = lookupRealNode(modelNode);
-
-    if (logger.isDebugEnabled()) {
-      logger.debug("Resolving model '" + realNode + "'");
-      logger.debug("constraint: subj='" + constraint.getElement(0) + "'");
-      logger.debug("constraint: pred='" + constraint.getElement(1) + "'");
-      logger.debug("constraint:  obj='" + constraint.getElement(2) + "'");
-    }
-
-    constraint = new ConstraintImpl(constraint.getElement(0), constraint.getElement(1),
-                                    constraint.getElement(2), realNode);
+    constraint = translateModel(constraint);
 
     Tuples ans = ((SessionView) sess).resolve(constraint);
     if (ans instanceof Resolution)
@@ -197,6 +196,83 @@ public class FilterResolver implements Resolver, ViewMarker {
     logger.error("Unimplemented answer type '" + ans.getClass().getName() + "'");
     return new EmptyResolution(constraint, false);
   }
+
+  /**
+   * Translate the model (element 4) of the constraint to the underlying model.
+   *
+   * According to tests, the only classes we ever see here are ConstraintImpl and
+   * ConstraintNegation. However, to be safe, we handle all known implementations of
+   * Constraint here.
+   */
+  private Constraint translateModel(Constraint constraint) throws QueryException {
+    if (logger.isDebugEnabled())
+      logger.debug("translating constraint class '" + constraint.getClass().getName() + "'");
+
+    // handle the non-leaf constraints first
+
+    if (constraint instanceof WalkConstraint) {
+      WalkConstraint wc = (WalkConstraint) constraint;
+      return new WalkConstraint(translateModel(wc.getAnchoredConstraint()),
+                                translateModel(wc.getUnanchoredConstraint()));
+    }
+
+    if (constraint instanceof TransitiveConstraint) {
+      TransitiveConstraint tc = (TransitiveConstraint) constraint;
+      return new TransitiveConstraint(translateModel(tc.getAnchoredConstraint()),
+                                      translateModel(tc.getUnanchoredConstraint()));
+    }
+
+    if (constraint instanceof SingleTransitiveConstraint) {
+      SingleTransitiveConstraint stc = (SingleTransitiveConstraint) constraint;
+      return new SingleTransitiveConstraint(translateModel(stc.getTransConstraint()));
+    }
+
+    // is leaf constraint, so get elements and translate model
+
+    ConstraintElement subj = constraint.getElement(0);
+    ConstraintElement pred = constraint.getElement(1);
+    ConstraintElement obj  = constraint.getElement(2);
+
+    LocalNode model = (LocalNode) constraint.getElement(3);
+    model = lookupRealNode(model);
+
+    if (logger.isDebugEnabled()) {
+      logger.debug("Resolved model '" + model + "'");
+      logger.debug("constraint: subj='" + constraint.getElement(0) + "'");
+      logger.debug("constraint: pred='" + constraint.getElement(1) + "'");
+      logger.debug("constraint:  obj='" + constraint.getElement(2) + "'");
+    }
+
+    // handle each constraint type
+
+    if (constraint instanceof ConstraintImpl)
+      return new ConstraintImpl(subj, pred, obj, model);
+
+    if (constraint instanceof ConstraintIs)
+      return new ConstraintIs(subj, obj, model);
+
+    if (constraint instanceof ConstraintNegation) {
+      ConstraintNegation cn = (ConstraintNegation) constraint;
+      Constraint inner;
+      if (cn.isInnerConstraintIs())
+        inner = new ConstraintIs(subj, obj, model);
+      else
+        inner = new ConstraintImpl(subj, pred, obj, model);
+      return new ConstraintNegation(inner);
+    }
+
+    if (constraint instanceof ConstraintOccurs)
+      return new ConstraintOccurs(subj, obj, model);
+    if (constraint instanceof ConstraintNotOccurs)
+      return new ConstraintNotOccurs(subj, obj, model);
+    if (constraint instanceof ConstraintOccursLessThan)
+      return new ConstraintOccursLessThan(subj, obj, model);
+    if (constraint instanceof ConstraintOccursMoreThan)
+      return new ConstraintOccursMoreThan(subj, obj, model);
+
+    throw new QueryException("Unknown constraint class '" + constraint.getClass().getName() + "'");
+  }
+
 
   private long lookupRealNode(long model) throws QueryException {
     return lookupRealNode(new LocalNode(model)).getValue();
