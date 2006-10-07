@@ -447,13 +447,13 @@ public class AnnotationsImpl implements Annotations {
 
     try {
       String query =
-        "select $a $o from " + MODEL + " where $a <r:type> <a:Annotation> and $a <topaz:state> $o";
+        "select $a from " + MODEL + " where $a <r:type> <a:Annotation>";
 
       if (mediator != null)
         query += (" and $a <dt:mediator> '" + ItqlHelper.escapeLiteral(mediator) + "'");
 
       if (state == 0)
-        query += " and exclude($a <topaz:state> '0');";
+        query += " and exclude($a $p '0') and $p <tucana:is> <topaz:state>;";
       else
         query += (" and $a <topaz:state> '" + state + "';");
 
@@ -465,10 +465,6 @@ public class AnnotationsImpl implements Annotations {
 
       for (int i = 0; i < c; i++) {
         Object[] cols = (Object[]) rows.get(i);
-
-        // xxx: work around an exclude bug in ITQL
-        if ((state == 0) && AnnotationModel.getColumnValue(cols[1]).toString().equals("0"))
-          continue;
 
         result.add(AnnotationModel.getColumnValue(cols[0]).toString());
       }
