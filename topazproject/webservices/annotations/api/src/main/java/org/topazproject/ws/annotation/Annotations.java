@@ -21,7 +21,7 @@ import javax.activation.DataHandler;
  */
 public interface Annotations extends Remote {
   /**
-   * Permissions associted with annotation related operations.
+   * Permissions associated with annotation related operations.
    */
   public static interface Permissions {
     /**
@@ -102,7 +102,7 @@ public interface Annotations extends Remote {
    * @return Returns a unique identifier for the newly created annotation
    *
    * @throws NoSuchAnnotationIdException if <code>supersedes</code> is not a valid annotation id
-   * @throws RemoteException if some other error occured
+   * @throws RemoteException if some other error occurred
    */
   public String createAnnotation(String mediator, String type, String annotates, String context,
                                  String supersedes, boolean anonymize, String title, String body)
@@ -124,13 +124,13 @@ public interface Annotations extends Remote {
    *        eg. <code>text/html;charset=utf-8</code>, <code>text/plain;charset=iso-8859-1</code>,
    *        <code>text/plain</code> etc.
    * @param content the annotation body content in the character encoding specified. If no
-   *        character encoding is specified the interpretation will be left upto the client that
+   *        character encoding is specified the interpretation will be left up to the client that
    *        later retrieves the annotation body.
    *
    * @return Returns a unique identifier for the newly created annotation
    *
    * @throws NoSuchAnnotationIdException if <code>supersedes</code> is not a valid annotation id
-   * @throws RemoteException if some other error occured
+   * @throws RemoteException if some other error occurred
    */
   public String createAnnotation(String mediator, String type, String annotates, String context,
                                  String supersedes, boolean anonymize, String title,
@@ -143,10 +143,10 @@ public interface Annotations extends Remote {
    * annotations to this are deleted.
    *
    * @param id the id of the annotation to remove
-   * @param deletePreceding whether to delete all annotations that are supersed by this annotation.
+   * @param deletePreceding whether to delete all annotations that are superseded by this annotation.
    *
    * @throws NoSuchAnnotationIdException if the annotation does not exist
-   * @throws RemoteException if some other error occured
+   * @throws RemoteException if some other error occurred
    */
   public void deleteAnnotation(String id, boolean deletePreceding)
                         throws NoSuchAnnotationIdException, RemoteException;
@@ -160,7 +160,7 @@ public interface Annotations extends Remote {
    * @return Returns the annotation meta data as an xml document.
    *
    * @throws NoSuchAnnotationIdException if the annotation does not exist
-   * @throws RemoteException if some other error occured
+   * @throws RemoteException if some other error occurred
    */
   public AnnotationInfo getAnnotationInfo(String id)
                                    throws NoSuchAnnotationIdException, RemoteException;
@@ -171,10 +171,10 @@ public interface Annotations extends Remote {
    *
    * @param id the annotation id.
    *
-   * @return an array of annotation ids or metadata; the array will atleast contain one element
+   * @return an array of annotation ids or metadata; the array will at least contain one element
    *
    * @throws NoSuchAnnotationIdException if the annotation does not exist
-   * @throws RemoteException if an error occured
+   * @throws RemoteException if an error occurred
    */
   public AnnotationInfo[] getLatestAnnotations(String id)
                                         throws NoSuchAnnotationIdException, RemoteException;
@@ -192,7 +192,7 @@ public interface Annotations extends Remote {
    * @return an array of annotation ids or metadata for matching annotations; if no annotations
    *         have been defined, an empty array is returned
    *
-   * @throws RemoteException if an error occured
+   * @throws RemoteException if an error occurred
    */
   public AnnotationInfo[] listAnnotations(String mediator, String annotates, String type)
                                    throws RemoteException;
@@ -206,7 +206,7 @@ public interface Annotations extends Remote {
    *         other annotation, then an empty array is returned
    *
    * @throws NoSuchAnnotationIdException if the annotation does not exist
-   * @throws RemoteException if an error occured
+   * @throws RemoteException if an error occurred
    */
   public AnnotationInfo[] getPrecedingAnnotations(String id)
                                            throws NoSuchAnnotationIdException, RemoteException;
@@ -218,7 +218,7 @@ public interface Annotations extends Remote {
    * @param state the new state or 0 to take the annotation out of an administrator state
    *
    * @throws NoSuchAnnotationIdException if the annotation does not exist
-   * @throws RemoteException if some other error occured
+   * @throws RemoteException if some other error occurred
    */
   public void setAnnotationState(String id, int state)
                           throws NoSuchAnnotationIdException, RemoteException;
@@ -228,11 +228,11 @@ public interface Annotations extends Remote {
    *
    * @param mediator if present only those annotations that match this mediator are returned
    * @param state the state to filter the list of annotations by or 0 to return annotations in any
-   *        administartive state
+   *        administrative state
    *
    * @return an array of id's; if no matching annotations are found, an empty array is returned
    *
-   * @throws RemoteException if some error occured
+   * @throws RemoteException if some error occurred
    */
   public String[] listAnnotations(String mediator, int state)
                            throws RemoteException;
@@ -342,9 +342,9 @@ public interface Annotations extends Remote {
    * @param type the annotation type to use in filtering the annotations or <code>null</code>  to
    *        include all
    *
-   * @return the resource content body with annotatations.
+   * @return the resource content body with annotations.
    *
-   * @throws RemoteException if an error occured
+   * @throws RemoteException if an error occurred
    */
   public DataHandler getAnnotatedContent(String resource, String resourceURL, DataHandler content,
                                          String mediator, String type)
