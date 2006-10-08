@@ -482,7 +482,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     }
   }
 
-  public void setAuthenticationIds(ItqlHelper itql, String userId, String[] authIds)
+  private void setAuthenticationIds(ItqlHelper itql, String userId, String[] authIds)
       throws RemoteException {
     StringBuffer cmd = new StringBuffer(100);
 
