@@ -70,7 +70,7 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
   /**
    * @see org.topazproject.ws.users.UserAccounts#createUser
    */
-  public String createUser(String authId) throws RemoteException {
+  public String createUser(String authId) throws DuplicateAuthIdException, RemoteException {
     return impl.createUser(authId);
   }
 
@@ -107,7 +107,7 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
    * @see org.topazproject.ws.users.UserAccounts#setAuthenticationIds
    */
   public void setAuthenticationIds(String userId, String[] authIds)
-      throws RemoteException, NoSuchUserIdException {
+      throws RemoteException, DuplicateAuthIdException, NoSuchUserIdException {
     impl.setAuthenticationIds(userId, authIds);
   }
 

@@ -47,11 +47,12 @@ public class UserAccountsServiceTest extends TestCase {
     }
   }
 
-  public void testNonExistentUser() throws RemoteException, IOException {
+  public void testNonExistentUser() throws DuplicateAuthIdException, RemoteException, IOException {
     boolean gotE = false;
     try {
       service.deleteUser("id:muster");
     } catch (NoSuchUserIdException nsie) {
+      assertEquals("no-such-user mismatch", "id:muster", nsie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected NoSuchUserIdException", gotE);
@@ -60,6 +61,7 @@ public class UserAccountsServiceTest extends TestCase {
     try {
       service.setAuthenticationIds("id:muster", null);
     } catch (NoSuchUserIdException nsie) {
+      assertEquals("no-such-user mismatch", "id:muster", nsie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected NoSuchUserIdException", gotE);
@@ -68,16 +70,65 @@ public class UserAccountsServiceTest extends TestCase {
     try {
       service.getAuthenticationIds("id:muster");
     } catch (NoSuchUserIdException nsie) {
+      assertEquals("no-such-user mismatch", "id:muster", nsie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected NoSuchUserIdException", gotE);
   }
 
-  public void testInvalidUser() throws RemoteException, IOException {
+  public void testDupAuthId()
+      throws NoSuchUserIdException, DuplicateAuthIdException, RemoteException, IOException {
+    String aid  = "id:muster42";
+    String aid2 = "id:muster43";
+
+    String uid  = service.createUser(aid);
+    String uid2 = service.createUser(aid2);
+
+    boolean gotE = false;
+    try {
+      service.createUser(aid);
+    } catch (DuplicateAuthIdException daie) {
+      assertEquals("dup-auth-id mismatch", aid, daie.getId());
+      gotE = true;
+    }
+    assertTrue("Failed to get expected DuplicateAuthIdException", gotE);
+
+    service.setAuthenticationIds(uid, new String[] { aid });
+
+    gotE = false;
+    try {
+      service.setAuthenticationIds(uid2, new String[] { aid });
+    } catch (DuplicateAuthIdException daie) {
+      assertEquals("dup-auth-id mismatch", aid, daie.getId());
+      gotE = true;
+    }
+    assertTrue("Failed to get expected DuplicateAuthIdException", gotE);
+
+    String[] authIds = service.getAuthenticationIds(uid2);
+    checkAuthIds(uid2, authIds, new String[] { aid2 });
+
+    gotE = false;
+    try {
+      service.setAuthenticationIds(uid2, new String[] { "id:blah", aid, "id:foo" });
+    } catch (DuplicateAuthIdException daie) {
+      assertEquals("dup-auth-id mismatch", aid, daie.getId());
+      gotE = true;
+    }
+    assertTrue("Failed to get expected DuplicateAuthIdException", gotE);
+
+    authIds = service.getAuthenticationIds(uid2);
+    checkAuthIds(uid2, authIds, new String[] { aid2 });
+
+    service.deleteUser(uid);
+    service.deleteUser(uid2);
+  }
+
+  public void testInvalidUser() throws DuplicateAuthIdException, RemoteException, IOException {
     boolean gotE = false;
     try {
       service.deleteUser("muster");
     } catch (NoSuchUserIdException nsie) {
+      assertEquals("no-such-user mismatch", "muster", nsie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected NoSuchUserIdException", gotE);
@@ -86,6 +137,7 @@ public class UserAccountsServiceTest extends TestCase {
     try {
       service.setAuthenticationIds("muster", null);
     } catch (NoSuchUserIdException nsie) {
+      assertEquals("no-such-user mismatch", "muster", nsie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected NoSuchUserIdException", gotE);
@@ -94,12 +146,14 @@ public class UserAccountsServiceTest extends TestCase {
     try {
       service.getAuthenticationIds("muster");
     } catch (NoSuchUserIdException nsie) {
+      assertEquals("no-such-user mismatch", "muster", nsie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected NoSuchUserIdException", gotE);
   }
 
-  public void testNullUser() throws RemoteException, NoSuchUserIdException, IOException {
+  public void testNullUser()
+      throws RemoteException, NoSuchUserIdException, DuplicateAuthIdException, IOException {
     boolean gotE = false;
     try {
       service.deleteUser(null);
@@ -125,7 +179,8 @@ public class UserAccountsServiceTest extends TestCase {
     assertTrue("Failed to get expected RemoteException", gotE);
   }
 
-  public void testBasicUserAccounts() throws RemoteException, NoSuchUserIdException, IOException {
+  public void testBasicUserAccounts()
+      throws RemoteException, NoSuchUserIdException, DuplicateAuthIdException, IOException {
     userId = service.createUser("musterAuth");
     service.deleteUser(userId);
 
@@ -173,7 +228,8 @@ public class UserAccountsServiceTest extends TestCase {
     service.deleteUser(user2Id);
   }
 
-  public void testUserAccountState() throws RemoteException, NoSuchUserIdException, IOException {
+  public void testUserAccountState()
+      throws RemoteException, NoSuchUserIdException, DuplicateAuthIdException, IOException {
     userId = service.createUser("musterAuth");
     int state = service.getState(userId);
     assertEquals("state mismatch,", 0, state);
@@ -186,6 +242,7 @@ public class UserAccountsServiceTest extends TestCase {
     try {
       service.setState("foo:bar", 42);
     } catch (NoSuchUserIdException nsie) {
+      assertEquals("no-such-user mismatch", "foo:bar", nsie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected NoSuchUserIdException", gotE);
@@ -194,6 +251,7 @@ public class UserAccountsServiceTest extends TestCase {
     try {
       service.getState("foo:bar");
     } catch (NoSuchUserIdException nsie) {
+      assertEquals("no-such-user mismatch", "foo:bar", nsie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected NoSuchUserIdException", gotE);

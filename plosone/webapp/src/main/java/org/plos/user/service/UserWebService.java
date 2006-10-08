@@ -20,6 +20,7 @@ import org.plos.service.BaseConfigurableService;
 import org.plos.user.Constants;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.common.NoSuchIdException;
+import org.topazproject.ws.users.DuplicateAuthIdException;
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsClientFactory;
 import org.apache.commons.logging.Log;
@@ -59,7 +60,7 @@ public class UserWebService extends BaseConfigurableService {
    * @throws RemoteException
    *           if some other error occured
    */
-  public String createUser(final String authId) throws RemoteException {
+  public String createUser(final String authId) throws DuplicateAuthIdException, RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     final String transformedAuthId = transformForPlosoneApp(authId);
     log.debug("lookUpUserByAuthId:" + transformedAuthId);

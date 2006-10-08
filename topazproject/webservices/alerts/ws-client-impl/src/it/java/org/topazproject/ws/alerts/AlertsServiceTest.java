@@ -35,12 +35,13 @@ import org.topazproject.ws.article.DuplicateArticleIdException;
 import org.topazproject.ws.article.IngestException;
 import org.topazproject.ws.article.NoSuchArticleIdException;
 
+import org.topazproject.ws.pap.Preferences;
+import org.topazproject.ws.pap.PreferencesClientFactory;
+import org.topazproject.ws.pap.UserPreference;
+import org.topazproject.ws.users.DuplicateAuthIdException;
 import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsClientFactory;
-import org.topazproject.ws.pap.UserPreference;
-import org.topazproject.ws.pap.Preferences;
-import org.topazproject.ws.pap.PreferencesClientFactory;
 
 import com.dumbster.smtp.SimpleSmtpServer;
 import com.dumbster.smtp.SmtpMessage;
@@ -87,7 +88,8 @@ public class AlertsServiceTest extends TestCase {
 
   protected void setUp()
       throws MalformedURLException, ServiceException, RemoteException, NoSuchUserIdException,
-             DuplicateArticleIdException, IngestException, NoSuchArticleIdException {
+             DuplicateAuthIdException, DuplicateArticleIdException, IngestException,
+             NoSuchArticleIdException {
     log.info("setUp");
     
     // Create alerts service

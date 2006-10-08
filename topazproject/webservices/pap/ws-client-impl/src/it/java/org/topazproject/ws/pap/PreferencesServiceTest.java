@@ -20,9 +20,10 @@ import javax.xml.rpc.ServiceException;
 
 import junit.framework.TestCase;
 
+import org.topazproject.ws.users.DuplicateAuthIdException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsClientFactory;
-import org.topazproject.ws.users.NoSuchUserIdException;
 
 /**
  * Simple tests for the preferences service.
@@ -38,7 +39,8 @@ public class PreferencesServiceTest extends TestCase {
     super(testName);
   }
 
-  protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
+  protected void setUp()
+      throws MalformedURLException, ServiceException, DuplicateAuthIdException, RemoteException {
     String uri =
         "http://localhost:9997/ws-pap-webapp-0.5-SNAPSHOT/services/PreferencesServicePort";
     service = PreferencesClientFactory.create(uri);

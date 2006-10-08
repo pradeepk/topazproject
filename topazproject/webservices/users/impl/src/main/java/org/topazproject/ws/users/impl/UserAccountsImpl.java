@@ -37,6 +37,7 @@ import org.topazproject.common.impl.TopazContext;
 import org.topazproject.common.impl.TopazContextListener;
 import org.topazproject.common.impl.SimpleTopazContext;
 
+import org.topazproject.ws.users.DuplicateAuthIdException;
 import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountLookup;
@@ -104,6 +105,19 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       ("delete select <${userId}> <topaz:hasAuthId> $o from ${MODEL} where " +
        "  <${userId}> <topaz:hasAuthId> $o " +
        " from ${MODEL};").
+      replaceAll("\\Q${MODEL}", MODEL);
+
+  private static final String ITQL_FIND_DUP_AUTHIDS_PRE =
+      ("select $authId count(" +
+       "    select $userId from ${MODEL} " +
+       "    where $userId <rdf:type> <foaf:OnlineAccount> and $userId <topaz:hasAuthId> $authId " +
+       "  ) " +
+       "  from ${MODEL} " +
+       "  where (").
+      replaceAll("\\Q${MODEL}", MODEL);
+
+  private static final String ITQL_FIND_DUP_AUTHIDS_POST =
+      ("  ) having $k0 <http://tucana.org/tucana#occursMoreThan> '1.0'^^<http://www.w3.org/2001/XMLSchema#double>;").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private final TopazContext    ctx;
@@ -228,7 +242,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
          pep);
   }
 
-  public String createUser(String authId) throws RemoteException {
+  public String createUser(String authId) throws DuplicateAuthIdException, RemoteException {
     try {
       pep.checkUserAccess(pep.CREATE_USER, baseURI + ACCOUNT_PID_NS);
     } catch (NoSuchUserIdException nsie) {
@@ -241,7 +255,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       itql.beginTxn(txn);
 
       String userId = getNewAcctId();
-      while (userExists(userId)) {
+      while (userExists(itql, userId)) {
         // this shouldn't really happen...
         log.warn("Generated duplicate id '" + userId + "' - trying again...");
         userId = getNewAcctId();
@@ -251,7 +265,25 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
                                      replaceAll("\\Q${authId}", authId));
 
       itql.commitTxn(txn);
-      txn = null;
+
+      /* This checking for the dup-auth-id in a separate tx is ugly, but since threre's
+       * no way to create a unique constraint and no equivalent of select-for-update, this
+       * is the best we can do.
+       */
+      itql.beginTxn(txn);
+
+      if (findDupAuthId(itql, new String[] { authId }) != null) {
+        try {
+          itql.doUpdate(ITQL_DELETE_ACCT.replaceAll("\\Q${userId}", userId));
+          itql.commitTxn(txn);
+          txn = null;
+        } catch (RemoteException re) {
+          // we're SOL
+          log.error("Failed to delete new user account with duplicate id! userId='" + userId +
+                    "', authId='" + authId + "'");
+        }
+        throw new DuplicateAuthIdException(authId);
+      }
 
       if (log.isDebugEnabled())
         log.debug("Created user '" + userId + "'");
@@ -277,7 +309,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     try {
       itql.beginTxn(txn);
 
-      if (!userExists(userId))
+      if (!userExists(itql, userId))
         throw new NoSuchUserIdException(userId);
 
       itql.doUpdate(ITQL_DELETE_ACCT.replaceAll("\\Q${userId}", userId));
@@ -312,7 +344,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
           new StringAnswer(itql.doQuery(ITQL_GET_STATE.replaceAll("\\Q${userId}", userId)));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       if (rows.size() == 0) {
-        if (!userExists(userId))
+        if (!userExists(itql, userId))
           throw new NoSuchUserIdException(userId);
 
         log.error("No state found for user '" + userId + "' - resetting to 0");
@@ -350,7 +382,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     try {
       itql.beginTxn(txn);
 
-      if (!userExists(userId))
+      if (!userExists(itql, userId))
         throw new NoSuchUserIdException(userId);
 
       StringBuffer cmd = new StringBuffer(100);
@@ -381,12 +413,16 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     if (log.isDebugEnabled())
       log.debug("Getting auth-ids for '" + userId + "'");
 
-    ItqlHelper itql = ctx.getItqlHelper();
+    return getAuthenticationIds(ctx.getItqlHelper(), userId);
+  }
+
+  private String[] getAuthenticationIds(ItqlHelper itql, String userId)
+      throws NoSuchUserIdException, RemoteException {
     try {
       StringAnswer ans =
           new StringAnswer(itql.doQuery(ITQL_GET_AUTH_IDS.replaceAll("\\Q${userId}", userId)));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
-      if (rows.size() == 0 && !userExists(userId))
+      if (rows.size() == 0 && !userExists(itql, userId))
         throw new NoSuchUserIdException(userId);
 
       String[] ids = new String[rows.size()];
@@ -400,7 +436,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   }
 
   public void setAuthenticationIds(String userId, String[] authIds)
-      throws NoSuchUserIdException, RemoteException {
+      throws NoSuchUserIdException, DuplicateAuthIdException, RemoteException {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
@@ -414,31 +450,55 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     try {
       itql.beginTxn(txn);
 
-      if (!userExists(userId))
-        throw new NoSuchUserIdException(userId);
+      String[] oldIds = getAuthenticationIds(itql, userId);
 
-      StringBuffer cmd = new StringBuffer(100);
-
-      cmd.append(ITQL_CLEAR_AUTH_IDS.replaceAll("\\Q${userId}", userId));
-
-      if (authIds != null && authIds.length > 0) {
-        cmd.append("insert ");
-        for (int idx = 0; idx < authIds.length; idx++) {
-          if (authIds[idx] != null)
-            cmd.append("<").append(userId).append("> <topaz:hasAuthId> '").
-                append(authIds[idx]).append("' ");
-        }
-        cmd.append(" into ").append(MODEL).append(";");
-      }
-
-      itql.doUpdate(cmd.toString());
+      setAuthenticationIds(itql, userId, authIds);
 
       itql.commitTxn(txn);
-      txn = null;
+
+      /* This checking for dup-auth-ids in a separate tx is ugly, but since threre's no
+       * way to create a unique constraint and no equivalent of select-for-update, this
+       * is the best we can do.
+       */
+      itql.beginTxn(txn);
+
+      String dupId = findDupAuthId(itql, authIds);
+      if (dupId != null) {
+        try {
+          setAuthenticationIds(itql, userId, oldIds);
+          itql.commitTxn(txn);
+          txn = null;
+        } catch (RemoteException re) {
+          // we're SOL
+          log.error("Failed to reset auth-ids on user account with duplicate ids! userId='" +
+                    userId + "'");
+        }
+        throw new DuplicateAuthIdException(dupId);
+      }
+
     } finally {
       if (txn != null)
         itql.rollbackTxn(txn);
     }
+  }
+
+  public void setAuthenticationIds(ItqlHelper itql, String userId, String[] authIds)
+      throws RemoteException {
+    StringBuffer cmd = new StringBuffer(100);
+
+    cmd.append(ITQL_CLEAR_AUTH_IDS.replaceAll("\\Q${userId}", userId));
+
+    if (authIds != null && authIds.length > 0) {
+      cmd.append("insert ");
+      for (int idx = 0; idx < authIds.length; idx++) {
+        if (authIds[idx] != null)
+          cmd.append("<").append(userId).append("> <topaz:hasAuthId> '").
+              append(authIds[idx]).append("' ");
+      }
+      cmd.append(" into ").append(MODEL).append(";");
+    }
+
+    itql.doUpdate(cmd.toString());
   }
 
   public String lookUpUserByAuthId(String authId) throws RemoteException {
@@ -476,8 +536,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
    * @return true if the user has an account
    * @throws RemoteException if an error occurred talking to the db
    */
-  protected boolean userExists(String userId) throws RemoteException {
-    ItqlHelper itql = ctx.getItqlHelper();
+  protected boolean userExists(ItqlHelper itql, String userId) throws RemoteException {
     try {
       StringAnswer ans =
           new StringAnswer(itql.doQuery(ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId)));
@@ -485,6 +544,35 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       return rows.size() > 0;
     } catch (AnswerException ae) {
       throw new RemoteException("Error testing if user '" + userId + "' exists", ae);
+    }
+  }
+
+  /** 
+   * Look for duplicate authentication ids in the database. 
+   * 
+   * @param itql    the current ItqlHelper instance
+   * @param authIds the list of ids to check
+   * @return the first duplicate id, or null if none were found
+   * @throws RemoteException if an error occurred talking to the database
+   */
+  protected String findDupAuthId(ItqlHelper itql, String[] authIds) throws RemoteException {
+    if (authIds == null || authIds.length == 0)
+      return null;
+
+    StringBuffer qry = new StringBuffer(ITQL_FIND_DUP_AUTHIDS_PRE.length() + authIds.length * 30 +
+                                        ITQL_FIND_DUP_AUTHIDS_POST.length());
+    qry.append(ITQL_FIND_DUP_AUTHIDS_PRE);
+    for (int idx = 0; idx < authIds.length; idx++)
+      qry.append("$authId <tucana:is> '").append(authIds[idx]).append("' or ");
+    qry.setLength(qry.length() - 4);
+    qry.append(ITQL_FIND_DUP_AUTHIDS_POST);
+
+    try {
+      StringAnswer ans = new StringAnswer(itql.doQuery(qry.toString()));
+      List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+      return rows.size() > 0 ? ((String[]) rows.get(0))[0] : null;
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error searching for duplicate auth-ids", ae);
     }
   }
 

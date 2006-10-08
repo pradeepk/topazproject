@@ -20,9 +20,10 @@ import junit.framework.TestCase;
 
 import org.topazproject.ws.permissions.Permissions;
 import org.topazproject.ws.permissions.PermissionsClientFactory;
+import org.topazproject.ws.users.DuplicateAuthIdException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsClientFactory;
-import org.topazproject.ws.users.NoSuchUserIdException;
 
 /**
  * Simple tests for the profiles service.
@@ -40,11 +41,12 @@ public class ProfilesServiceTest extends TestCase {
     super(testName);
   }
 
-  protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
+  protected void setUp()
+      throws MalformedURLException, ServiceException, DuplicateAuthIdException, RemoteException {
     String uri =
         "http://localhost:9997/ws-pap-webapp-0.5-SNAPSHOT/services/ProfilesServicePort";
     service = ProfilesClientFactory.create(uri);
-    
+
     uri = "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort";
     userService = UserAccountsClientFactory.create(uri);
 

@@ -25,9 +25,10 @@ import javax.xml.rpc.ServiceException;
 
 import junit.framework.TestCase;
 
+import org.topazproject.ws.users.DuplicateAuthIdException;
+import org.topazproject.ws.users.NoSuchUserIdException;
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsClientFactory;
-import org.topazproject.ws.users.NoSuchUserIdException;
 
 /**
  *
@@ -41,7 +42,8 @@ public class RatingsServiceTest extends TestCase {
     super(testName);
   }
 
-  protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
+  protected void setUp()
+      throws MalformedURLException, ServiceException, DuplicateAuthIdException, RemoteException {
     String uri =
         "http://localhost:9997/ws-ratings-webapp-0.5-SNAPSHOT/services/RatingsServicePort";
     service = RatingsClientFactory.create(uri);
@@ -255,7 +257,8 @@ public class RatingsServiceTest extends TestCase {
     service.setRatings(null, userId[0], "foo:ji", null);
   }
 
-  public void testRatingStats() throws RemoteException, NoSuchUserIdException, IOException {
+  public void testRatingStats()
+      throws RemoteException, NoSuchUserIdException, DuplicateAuthIdException, IOException {
     ObjectRatingStats[] got, exp;
     ObjectRating[]      ratings;
 

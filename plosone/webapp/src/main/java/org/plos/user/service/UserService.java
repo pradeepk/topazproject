@@ -18,6 +18,7 @@ import org.plos.ApplicationException;
 import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
 
+import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.pap.UserPreference;
 import org.topazproject.ws.pap.UserProfile;
@@ -55,6 +56,8 @@ public class UserService extends BaseConfigurableService {
   public String createUser(final String authId) throws ApplicationException {
     try {
       return userWebService.createUser(authId);
+    } catch (DuplicateIdException e) {
+      throw new ApplicationException(e);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }

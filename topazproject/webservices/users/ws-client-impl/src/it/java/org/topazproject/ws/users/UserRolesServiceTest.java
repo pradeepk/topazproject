@@ -33,7 +33,8 @@ public class UserRolesServiceTest extends TestCase {
     super(testName);
   }
 
-  protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
+  protected void setUp()
+      throws MalformedURLException, ServiceException, DuplicateAuthIdException, RemoteException {
     String uri =
       "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserRolesServicePort";
     service = UserRolesClientFactory.create(uri);
@@ -113,7 +114,8 @@ public class UserRolesServiceTest extends TestCase {
     assertTrue("Failed to get expected RemoteException", gotE);
   }
 
-  public void testBasicUserRoles() throws RemoteException, NoSuchUserIdException, IOException {
+  public void testBasicUserRoles()
+      throws RemoteException, NoSuchUserIdException, DuplicateAuthIdException, IOException {
     String[] got = service.getRoles(userId);
     assertNull("got non-null roles", got);
 

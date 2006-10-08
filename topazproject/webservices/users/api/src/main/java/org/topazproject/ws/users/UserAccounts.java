@@ -51,7 +51,7 @@ public interface UserAccounts extends Remote {
     /** The action that represents a look-up-user operation in XACML policies. */
     public static final String LOOKUP_USER = "userAccounts:lookUpUser";
   }
- 
+
   /** the state indicating the user account is active: {@value} */
   public static final int ACNT_ACTIVE    = 0;
   /** the state indicating the user account is suspened: {@value} */
@@ -62,9 +62,10 @@ public interface UserAccounts extends Remote {
    * 
    * @param authId  the user's authentication id
    * @return the user's internal id
+   * @throws DuplicateAuthIdException if the <var>authId</var> is already in use
    * @throws RemoteException if some other error occured
    */
-  public String createUser(String authId) throws RemoteException;
+  public String createUser(String authId) throws DuplicateAuthIdException, RemoteException;
 
   /** 
    * Delete a user's account. Note that the application should ensure that all other information
@@ -118,13 +119,14 @@ public interface UserAccounts extends Remote {
    * may be empty, which will probably have the effect of disabling logins to the account.
    * 
    * @param userId  the user account's id
-   * @param authId  the list of authentication id's; this may be empty. Note that the order will not
+   * @param authIds the list of authentication id's; this may be empty. Note that the order will not
    *                be preserved.
    * @throws NoSuchUserIdException if the user account does not exist
+   * @throws DuplicateAuthIdException if any of the <var>authIds</var> are already in use
    * @throws RemoteException if some other error occured
    */
   public void setAuthenticationIds(String userId, String[] authIds)
-      throws NoSuchUserIdException, RemoteException;
+      throws NoSuchUserIdException, DuplicateAuthIdException, RemoteException;
 
   /** 
    * Look up a user-id given an authentication id.
