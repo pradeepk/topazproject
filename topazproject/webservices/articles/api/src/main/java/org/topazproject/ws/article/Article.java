@@ -39,7 +39,7 @@ public interface Article extends Remote {
     /** The action that represents checking if we can access a specific article. */
     public static final String READ_META_DATA = "articles:readMetaData";
   }
-  
+
   /** Article state of "Active" */
   public static final int ST_ACTIVE   = 0;
   /** Article state of "Disabled" */
@@ -105,7 +105,7 @@ public interface Article extends Remote {
   /**
    * Get list of articles for a given set of categories or authors bracked by specified
    * times. List is returned as an XML string of the following format:
-   * <pre&gt;
+   * <pre>
    *   &lt;articles&gt;
    *     &lt;article&gt;
    *       &lt;doi&gt;...&lt;/doi&gt;
