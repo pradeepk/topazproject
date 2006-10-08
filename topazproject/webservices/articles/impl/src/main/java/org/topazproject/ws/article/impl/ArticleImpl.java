@@ -43,6 +43,7 @@ import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.DuplicateArticleIdException;
 import org.topazproject.ws.article.IngestException;
+import org.topazproject.ws.article.NoSuchObjectIdException;
 import org.topazproject.ws.article.NoSuchArticleIdException;
 
 import org.topazproject.feed.ArticleFeed;
@@ -193,7 +194,7 @@ public class ArticleImpl implements Article {
   }
 
   public String getObjectURL(String doi, String rep)
-      throws NoSuchArticleIdException, RemoteException {
+      throws NoSuchObjectIdException, RemoteException {
     checkAccess(pep.GET_OBJECT_URL, doi);
 
     String path = "/fedora/get/" + doi2PID(doi) + "/" + rep;

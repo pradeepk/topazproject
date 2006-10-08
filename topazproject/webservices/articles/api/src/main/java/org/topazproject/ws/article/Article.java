@@ -7,6 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
+
 package org.topazproject.ws.article;
 
 import java.util.Date;
@@ -85,22 +86,24 @@ public interface Article extends Remote {
    * @param purge   if true, erase all traces; otherwise only the contents are deleted, leaving a
    *                "tombstone". Note that it may not be possible to find and therefore erase
    *                all traces from the ingest.
-   * @throws NoSuchArticleIdException if the article or version does not exist
+   * @throws NoSuchArticleIdException if the article does not exist
    * @throws RemoteException if some other error occured
    */
   public void delete(String doi, boolean purge) throws NoSuchArticleIdException, RemoteException;
 
   /** 
-   * Get the URL from which the objects contents can retrieved via GET.
+   * Get the URL from which the object's contents can retrieved via GET. Note that this method may
+   * return a URL even when object or the representation don't exist, in which case the URL may
+   * return a 404 response.
    * 
-   * @param doi     the DOI of the article (e.g. "10.1371/journal.pbio.003811")
-   * @param rep     the desired representation of the article
-   * @return the URL, or null if this object doesn't exist in the desired version
-   * @throws NoSuchArticleIdException if the article or version does not exist
+   * @param doi     the DOI of the object (e.g. "10.1371/journal.pbio.003811")
+   * @param rep     the desired representation of the object
+   * @return the URL, or null if the desired representation does not exist
+   * @throws NoSuchObjectIdException if the article does not exist
    * @throws RemoteException if some other error occured
    */
   public String getObjectURL(String doi, String rep)
-      throws NoSuchArticleIdException, RemoteException;
+      throws NoSuchObjectIdException, RemoteException;
 
   /**
    * Get list of articles for a given set of categories or authors bracked by specified

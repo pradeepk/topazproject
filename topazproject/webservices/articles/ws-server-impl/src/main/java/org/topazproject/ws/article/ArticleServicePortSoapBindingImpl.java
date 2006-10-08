@@ -93,7 +93,7 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
    * @see org.topazproject.ws.article.Article#getObjectURL
    */
   public String getObjectURL(String doi, String rep)
-      throws RemoteException, NoSuchArticleIdException {
+      throws RemoteException, NoSuchObjectIdException {
     return impl.getObjectURL(doi, rep);
   }
 
