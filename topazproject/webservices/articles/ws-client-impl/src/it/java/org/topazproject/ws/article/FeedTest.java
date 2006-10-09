@@ -11,9 +11,6 @@ package org.topazproject.ws.article;
 
 import java.io.IOException;
 import java.io.FileWriter;
-import java.util.Iterator;
-import java.util.Calendar;
-import java.util.StringTokenizer;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -28,12 +25,12 @@ import junit.framework.TestCase;
 
 public class FeedTest extends TestCase {
   private Article service;
-  
+
   private static final Log log = LogFactory.getLog(FeedTest.class);
-  
+
   protected static final String ARTICLES_SVC_URL =
     "http://localhost:9997/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort";
-  
+
   protected static final String[][] TEST_ARTICLES = {
     { "10.1371/journal.pbio.0020294", "/pbio.0020294.zip" },
     { "10.1371/journal.pbio.0020042", "/pbio.0020042.zip" },
@@ -49,7 +46,7 @@ public class FeedTest extends TestCase {
       throws MalformedURLException, ServiceException, RemoteException, DuplicateArticleIdException,
              IngestException {
     log.info("setUp");
-    
+
     // Create articles service
     service = ArticleClientFactory.create(ARTICLES_SVC_URL);
     log.info("ingesting article(s)");
@@ -59,7 +56,7 @@ public class FeedTest extends TestCase {
 
   protected void tearDown() throws RemoteException {
     log.info("tearDown");
-    
+
     // Delete the articles we created
     for (int i = 0; i < TEST_ARTICLES.length; i++)
       deleteArticle(TEST_ARTICLES[i][0]);
@@ -92,7 +89,7 @@ public class FeedTest extends TestCase {
    */
   public void testFeeds() throws Exception {
     boolean success = true;
-    
+
     // Test the xml for the RSS feeds
     success &= this.tstEntireFeed();
     success &= this.tstBiotechnology();
@@ -107,7 +104,7 @@ public class FeedTest extends TestCase {
     // run so that their test files can be copied over the expected files.
     assertTrue(success);
   }
-  
+
   private boolean tstEntireFeed() throws RemoteException, IOException {
     // Get all the articles we have
     return this.testFeed(null, null, null, null, "entirefeed.xml");
@@ -144,7 +141,7 @@ public class FeedTest extends TestCase {
   private boolean testFeed(String startDate, String endDate, String[] categories, String[] authors,
                            String resourceName) throws RemoteException, IOException {
     log.info("Running test: " + resourceName);
-    
+
     String testResult = service.getArticles(startDate, endDate, categories, authors, false);
 
     // Write result in case we need it (UTF-8 issues to get expected result initally)
@@ -153,7 +150,7 @@ public class FeedTest extends TestCase {
     // Read the result we expect from a resource
     String desiredResult =
       IOUtils.toString(getClass().getResourceAsStream("/" + resourceName), "UTF-8");
-    
+
     String comment = resourceName + " did not match search from " + startDate +
       " to " + endDate + " on categories (";
     if (categories != null)
@@ -164,7 +161,7 @@ public class FeedTest extends TestCase {
       for (int i = 0; i < authors.length; i++)
         comment += authors[i];
     comment += ")";
-    
+
     if (!testResult.trim().equals(desiredResult.trim())) {
       log.warn("Comparison failed on " + resourceName);
       writeResult(testResult, "/tmp/" + resourceName);
