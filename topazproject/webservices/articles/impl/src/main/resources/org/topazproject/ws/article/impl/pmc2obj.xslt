@@ -19,7 +19,7 @@
   <xsl:param name="is_update"       select="false()"/>
 
   <xsl:variable name="file-entries" select="/ZipInfo/ZipEntry[not(@isDirectory)]"/>
-  <xsl:variable name="pmc-entry"    select="my:find-pmc-xml()"/>
+  <xsl:variable name="pmc-entry"    select="my:find-pmc-xml(/ZipInfo)"/>
   <xsl:variable name="article"      select="document($pmc-entry/@name, .)/article"/>
   <xsl:variable name="meta"         select="$article/front/article-meta"/>
   <xsl:variable name="doi"          select="$meta/article-id[@pub-id-type = 'doi']"/>
@@ -209,9 +209,16 @@
 
   <!-- Try to figure out which entry is the xml article -->
   <xsl:function name="my:find-pmc-xml" as="element(ZipEntry)">
+    <xsl:param name="zip-info"/>
+    <xsl:variable name="base-zip-name" as="xs:string?"
+              select="if ($zip-info/@name) then my:get-root(my:basename($zip-info/@name)) else ()"/>
+
     <xsl:copy-of select="
       if ($file-entries[my:basename(@name) = 'pmc.xml']) then
         $file-entries[my:basename(@name) = 'pmc.xml'][1]
+      else if ($base-zip-name and
+               $file-entries[my:basename(@name) = concat($base-zip-name, '.xml')]) then
+        $file-entries[my:basename(@name) = concat($base-zip-name, '.xml')][1]
       else if ($file-entries[matches(my:basename(@name), '[a-z]+\.\d+\.xml')]) then
         $file-entries[matches(my:basename(@name), '[a-z]+\.\d+\.xml')][1]
       else

@@ -20,6 +20,8 @@ import org.apache.commons.codec.binary.Base64;
  * follows:
  * <pre>
  *   &lt;!ELEMENT ZipInfo (ZipEntry*) &gt;
+ *   &lt;!ATTLIST ZipInfo
+ *       name           CDATA          #IMPLIED &gt;
  *   
  *   &lt;!ELEMENT ZipEntry (Comment?, Extra?) &gt;
  *   &lt;!ATTLIST ZipEntry
@@ -37,7 +39,7 @@ import org.apache.commons.codec.binary.Base64;
  * &lt;pre&gt;
  * &lt;?xml version="1.0" encoding="UTF-8"?&gt;
  * &lt;!DOCTYPE ZipInfo SYSTEM "zip.dtd"&gt;
- * &lt;ZipInfo&gt;
+ * &lt;ZipInfo name="foo.zip"&gt;
  *   &lt;ZipEntry name="README.txt"/&gt;
  *   &lt;ZipEntry name="src" isDirectory="true"&gt;
  *     &lt;Extra&gt;iFkCB8w@w9==&lt;/Extra&gt;
@@ -65,7 +67,10 @@ public class Zip2Xml {
   public static String describeZip(Zip zip) throws IOException {
     StringBuffer res = new StringBuffer(500);
     res.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
-    res.append("<ZipInfo>\n");
+    res.append("<ZipInfo");
+    if (zip.getName() != null)
+      res.append(" name=\"").append(zip.getName()).append("\"");
+    res.append(">\n");
 
     Enumeration entries = zip.getEntries();
     while (entries.hasMoreElements()) {

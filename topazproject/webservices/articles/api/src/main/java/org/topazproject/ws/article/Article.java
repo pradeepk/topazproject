@@ -54,7 +54,8 @@ public interface Article extends Remote {
   /** 
    * Add a new article.
    * 
-   * @param zip    a zip archive containing the pmc.xml and associated objects
+   * @param zip    a zip archive containing the article and associated objects; if possible, the
+   *               DataHandler should contain the name of the zip too.
    * @return the DOI of the new article
    * @throws DuplicateArticleIdException if the article already exists (as determined by its DOI)
    * @throws IngestException if there's a problem ingesting the archive

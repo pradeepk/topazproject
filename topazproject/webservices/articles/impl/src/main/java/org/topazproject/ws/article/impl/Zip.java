@@ -25,6 +25,13 @@ import javax.activation.DataSource;
  */
 public interface Zip {
   /** 
+   * Get the name of the archive. 
+   * 
+   * @return the name of the archive, or null if unknown.
+   */
+  public String getName();
+
+  /** 
    * Get a list of all the entries in the archive. 
    * 
    * @return an Enumeration of {@link java.util.zip.ZipEntry ZipEntry} that enumerates all the
@@ -58,6 +65,10 @@ public interface Zip {
      */
     public FileZip(String zipFile) throws IOException {
       zf = new ZipFile(zipFile);
+    }
+
+    public String getName() {
+      return zf.getName();
     }
 
     public Enumeration getEntries() {
@@ -134,14 +145,21 @@ public interface Zip {
    */
   public static class MemoryZip extends StreamZip {
     private final ByteArrayInputStream zs;
+    private final String               name;
 
     /** 
      * Create a new instance. 
      * 
      * @param zipBytes the zip archive as an array of bytes
+     * @param name the name of the archive, or null if unknown
      */
-    public MemoryZip(byte[] zipBytes) {
+    public MemoryZip(byte[] zipBytes, String name) {
       zs = new ByteArrayInputStream(zipBytes);
+      this.name = name;
+    }
+
+    public String getName() {
+      return name;
     }
 
     protected InputStream getStream() {
@@ -166,6 +184,10 @@ public interface Zip {
      */
     public DataSourceZip(DataSource zipSource) {
       zs = zipSource;
+    }
+
+    public String getName() {
+      return zs.getName();
     }
 
     protected InputStream getStream() throws IOException {

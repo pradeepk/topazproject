@@ -5,6 +5,8 @@
   -->
 
 <!ELEMENT ZipInfo (ZipEntry*) >
+<!ATTLIST ZipInfo
+    name           CDATA          #IMPLIED >
 
 <!ELEMENT ZipEntry (Comment?, Extra?) >
 <!ATTLIST ZipEntry
@@ -21,7 +23,7 @@
 <!-- Example:
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE ZipInfo SYSTEM "zip.dtd">
-<ZipInfo>
+<ZipInfo name="foo.zip">
   <ZipEntry name="README.txt"/>
   <ZipEntry name="src" isDirectory="true">
     <Extra>iFkCB8w@w9==</Extra>
