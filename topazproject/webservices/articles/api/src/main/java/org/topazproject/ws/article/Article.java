@@ -10,7 +10,6 @@
 
 package org.topazproject.ws.article;
 
-import java.util.Date;
 import java.rmi.Remote;
 import java.rmi.RemoteException;
 import javax.activation.DataHandler;
@@ -36,6 +35,12 @@ public interface Article extends Remote {
 
     /** The action that represents a get-object-url operation in XACML policies. */
     public static final String GET_OBJECT_URL = "articles:getObjectURL";
+
+    /** The action that represents a set-representation operation in XACML policies. */
+    public static final String SET_REPRESENTATION = "articles:setRepresentation";
+
+    /** The action that represents a list-representations operation in XACML policies. */
+    public static final String LIST_REPRESENTATIONS = "articles:listRepresentations";
 
     /** The action that represents checking if we can access a specific article. */
     public static final String READ_META_DATA = "articles:readMetaData";
@@ -103,6 +108,34 @@ public interface Article extends Remote {
    * @throws RemoteException if some other error occured
    */
   public String getObjectURL(String doi, String rep)
+      throws NoSuchObjectIdException, RemoteException;
+
+  /** 
+   * Create or update a representation of an object. The object itself must exist; if the specified
+   * representation does not exist, it is created, otherwise the current one is replaced.
+   * 
+   * @param doi      the DOI of the object
+   * @param rep      the name of this representation
+   * @param content  the actual content that makes up this representation; if this contains a
+   *                 content-type then that will be used; otherwise the content-type will be
+   *                 set to <var>application/octet-stream</var>; may be null, in which case
+   *                 the representation is removed.
+   * @throws NoSuchObjectException if the object does not exist
+   * @throws RemoteException if some other error occured
+   * @throws NullPointerException if any of the parameters are null
+   */
+  public void setRepresentation(String doi, String rep, DataHandler content)
+      throws NoSuchObjectIdException, RemoteException;
+
+  /** 
+   * List all the represenations of the given object.
+   * 
+   * @param doi the DOI of the object
+   * @return the infos for the represenations; this list will always contain at least one entry.
+   * @throws NoSuchObjectException if the object does not exist
+   * @throws RemoteException if some other error occured
+   */
+  public RepresentationInfo[] listRepresentations(String doi)
       throws NoSuchObjectIdException, RemoteException;
 
   /**

@@ -9,15 +9,19 @@
  */
 package org.topazproject.ws.article;
 
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.rmi.RemoteException;
 import java.util.Arrays;
+import java.util.Comparator;
 import java.util.zip.ZipInputStream;
 import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.io.IOUtils;
@@ -40,11 +44,7 @@ public class ArticleServiceTest extends TestCase {
     service = ArticleClientFactory.create(uri);
   }
 
-  public void testAll() throws Exception {
-    basicArticleTest();
-  }
-
-  private void basicArticleTest() throws Exception {
+  public void testBasicArticle() throws Exception {
     try {
       service.delete("10.1371/journal.pbio.0020294", true);
     } catch (NoSuchArticleIdException nsaie) {
@@ -95,6 +95,143 @@ public class ArticleServiceTest extends TestCase {
     assertTrue("Failed to get expected no-such-id exception", gotE);
   }
 
+  public void testRepresentations() throws Exception {
+    // some NoSuchObjectIdException tests
+    boolean gotE = false;
+    try {
+      service.listRepresentations("blah/foo");
+    } catch (NoSuchObjectIdException nsoie) {
+      assertEquals("Mismatched id in exception, ", "blah/foo", nsoie.getId());
+      gotE = true;
+    }
+    assertTrue("Failed to get expected no-such-object-id exception", gotE);
+
+    gotE = false;
+    try {
+      service.setRepresentation("blah/foo", "bar",
+                                new DataHandler(new StringDataSource("Some random text")));
+    } catch (NoSuchObjectIdException nsoie) {
+      assertEquals("Mismatched id in exception, ", "blah/foo", nsoie.getId());
+      gotE = true;
+    }
+    assertTrue("Failed to get expected no-such-object-id exception", gotE);
+
+    // ingest article and test listRepresentations()
+    URL article = getClass().getResource("/test_article.zip");
+    String doi = service.ingest(new DataHandler(article));
+    assertEquals("Wrong doi returned,", "10.1371/journal.pbio.0020294", doi);
+
+    RepresentationInfo[] ri = service.listRepresentations(doi);
+    assertEquals("wrong number of rep-infos", 3, ri.length);
+
+    sort(ri);
+
+    assertEquals("ri-name mismatch", "HTML", ri[0].getName());
+    assertEquals("ri-cont-type mismatch", "text/html", ri[0].getContentType());
+    assertEquals("ri-size mismatch", 51284L, ri[0].getSize());
+
+    assertEquals("ri-name mismatch", "PDF", ri[1].getName());
+    assertEquals("ri-cont-type mismatch", "application/pdf", ri[1].getContentType());
+    assertEquals("ri-size mismatch", 81173L, ri[1].getSize());
+
+    assertEquals("ri-name mismatch", "XML", ri[2].getName());
+    assertEquals("ri-cont-type mismatch", "text/xml", ri[2].getContentType());
+    assertEquals("ri-size mismatch", 65680L, ri[2].getSize());
+
+    // create a new Representation
+    service.setRepresentation(doi, "TXT",
+                              new DataHandler(new StringDataSource("The plain text")));
+
+    ri = service.listRepresentations(doi);
+    assertEquals("wrong number of rep-infos", 4, ri.length);
+
+    sort(ri);
+
+    assertEquals("ri-name mismatch", "HTML", ri[0].getName());
+    assertEquals("ri-cont-type mismatch", "text/html", ri[0].getContentType());
+    assertEquals("ri-size mismatch", 51284L, ri[0].getSize());
+
+    assertEquals("ri-name mismatch", "PDF", ri[1].getName());
+    assertEquals("ri-cont-type mismatch", "application/pdf", ri[1].getContentType());
+    assertEquals("ri-size mismatch", 81173L, ri[1].getSize());
+
+    assertEquals("ri-name mismatch", "TXT", ri[2].getName());
+    assertEquals("ri-cont-type mismatch", "text/plain", ri[2].getContentType());
+    assertEquals("ri-size mismatch", 14L, ri[2].getSize());
+
+    assertEquals("ri-name mismatch", "XML", ri[3].getName());
+    assertEquals("ri-cont-type mismatch", "text/xml", ri[3].getContentType());
+    assertEquals("ri-size mismatch", 65680L, ri[3].getSize());
+
+    // update a Representation
+    service.setRepresentation(doi, "TXT",
+                          new DataHandler(new StringDataSource("The corrected text", "text/foo")));
+
+    ri = service.listRepresentations(doi);
+    assertEquals("wrong number of rep-infos", 4, ri.length);
+
+    sort(ri);
+
+    assertEquals("ri-name mismatch", "HTML", ri[0].getName());
+    assertEquals("ri-cont-type mismatch", "text/html", ri[0].getContentType());
+    assertEquals("ri-size mismatch", 51284L, ri[0].getSize());
+
+    assertEquals("ri-name mismatch", "PDF", ri[1].getName());
+    assertEquals("ri-cont-type mismatch", "application/pdf", ri[1].getContentType());
+    assertEquals("ri-size mismatch", 81173L, ri[1].getSize());
+
+    assertEquals("ri-name mismatch", "TXT", ri[2].getName());
+    assertEquals("ri-cont-type mismatch", "text/foo", ri[2].getContentType());
+    assertEquals("ri-size mismatch", 18L, ri[2].getSize());
+
+    assertEquals("ri-name mismatch", "XML", ri[3].getName());
+    assertEquals("ri-cont-type mismatch", "text/xml", ri[3].getContentType());
+    assertEquals("ri-size mismatch", 65680L, ri[3].getSize());
+
+    // remove a Representation
+    service.setRepresentation(doi, "TXT", null);
+
+    ri = service.listRepresentations(doi);
+    assertEquals("wrong number of rep-infos", 3, ri.length);
+
+    sort(ri);
+
+    assertEquals("ri-name mismatch", "HTML", ri[0].getName());
+    assertEquals("ri-cont-type mismatch", "text/html", ri[0].getContentType());
+    assertEquals("ri-size mismatch", 51284L, ri[0].getSize());
+
+    assertEquals("ri-name mismatch", "PDF", ri[1].getName());
+    assertEquals("ri-cont-type mismatch", "application/pdf", ri[1].getContentType());
+    assertEquals("ri-size mismatch", 81173L, ri[1].getSize());
+
+    assertEquals("ri-name mismatch", "XML", ri[2].getName());
+    assertEquals("ri-cont-type mismatch", "text/xml", ri[2].getContentType());
+    assertEquals("ri-size mismatch", 65680L, ri[2].getSize());
+
+    // remove a non-existent Representation
+    service.setRepresentation(doi, "TXT", null);
+
+    ri = service.listRepresentations(doi);
+    assertEquals("wrong number of rep-infos", 3, ri.length);
+
+    sort(ri);
+
+    assertEquals("ri-name mismatch", "HTML", ri[0].getName());
+    assertEquals("ri-cont-type mismatch", "text/html", ri[0].getContentType());
+    assertEquals("ri-size mismatch", 51284L, ri[0].getSize());
+
+    assertEquals("ri-name mismatch", "PDF", ri[1].getName());
+    assertEquals("ri-cont-type mismatch", "application/pdf", ri[1].getContentType());
+    assertEquals("ri-size mismatch", 81173L, ri[1].getSize());
+
+    assertEquals("ri-name mismatch", "XML", ri[2].getName());
+    assertEquals("ri-cont-type mismatch", "text/xml", ri[2].getContentType());
+    assertEquals("ri-size mismatch", 65680L, ri[2].getSize());
+
+    // clean up
+    service.delete(doi, true);
+  }
+
   private static byte[] loadURL(URL url) throws IOException {
     URLConnection con = url.openConnection();
     con.connect();
@@ -105,5 +242,43 @@ public class ArticleServiceTest extends TestCase {
     is.close();
 
     return res;
+  }
+
+  private static void sort(RepresentationInfo[] ri) {
+    Arrays.sort(ri, new Comparator() {
+      public int compare(Object o1, Object o2) {
+        return ((RepresentationInfo) o1).getName().compareTo(((RepresentationInfo) o2).getName());
+      }
+    });
+  }
+
+  private static class StringDataSource implements DataSource {
+    private final String src;
+    private final String ct;
+
+    public StringDataSource(String content) {
+      this(content, "text/plain");
+    }
+
+    public StringDataSource(String content, String contType) {
+      src = content;
+      ct  = contType;
+    }
+
+    public InputStream getInputStream() throws IOException {
+      return new ByteArrayInputStream(src.getBytes("UTF-8"));
+    }
+
+    public OutputStream getOutputStream() throws IOException {
+      throw new IOException("Not supported");
+    }
+
+    public String getContentType() {
+      return ct;
+    }
+
+    public String getName() {
+      return "string";
+    }
   }
 }

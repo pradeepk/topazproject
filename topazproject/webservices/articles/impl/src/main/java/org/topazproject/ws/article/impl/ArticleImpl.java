@@ -9,6 +9,8 @@
  */
 package org.topazproject.ws.article.impl;
 
+import java.io.FilterInputStream;
+import java.io.InputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
@@ -16,10 +18,12 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.rmi.RemoteException;
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.Map;
+import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
@@ -45,6 +49,7 @@ import org.topazproject.ws.article.DuplicateArticleIdException;
 import org.topazproject.ws.article.IngestException;
 import org.topazproject.ws.article.NoSuchObjectIdException;
 import org.topazproject.ws.article.NoSuchArticleIdException;
+import org.topazproject.ws.article.RepresentationInfo;
 
 import org.topazproject.feed.ArticleFeed;
 
@@ -63,12 +68,32 @@ public class ArticleImpl implements Article {
        "  $s <tucana:is> <${subj}> from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
+  private static final String ITQL_DELETE_REP =
+      ("delete select $s $p $o from ${MODEL} where $s $p $o and $s <tucana:is> <${subj}> and (" +
+       "    $p <tucana:is> <topaz:hasRepresentation> and $o <tucana:is> '${rep}' or " +
+       "    $p <tucana:is> <topaz:${rep}-objectSize> or " +
+       "    $p <tucana:is> <topaz:${rep}-contentType> " +
+       "  ) from ${MODEL};").
+      replaceAll("\\Q${MODEL}", MODEL);
+
+  private static final String ITQL_CREATE_REP =
+      ("insert " +
+       "    <${subj}> <topaz:hasRepresentation> '${rep}' " +
+       "    <${subj}> <topaz:${rep}-objectSize> '${size}'^^<http://www.w3.org/2001/XMLSchema#int>" +
+       "    <${subj}> <topaz:${rep}-contentType> '${type}' " +
+       "  into ${MODEL};").
+      replaceAll("\\Q${MODEL}", MODEL);
+
   private static final String ITQL_FIND_OBJS =
       ("select $doi from ${MODEL} where " +
           // ensure it's an article
        "  <${subj}> <rdf:type> <topaz:Article> and (" +
           // find all related objects       find the article itself
        "  <${subj}> <dc_terms:hasPart> $doi or $doi <tucana:is> <${subj}> );").
+      replaceAll("\\Q${MODEL}", MODEL);
+
+  private static final String ITQL_GET_OBJ_INFO =
+      ("select $p $o from ${MODEL} where <${subj}> $p $o;").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private final URI        fedoraServer;
@@ -135,7 +160,7 @@ public class ArticleImpl implements Article {
 
   public void markSuperseded(String oldDoi, String newDoi)
       throws NoSuchArticleIdException, RemoteException {
-    checkAccess(pep.INGEST_ARTICLE, newDoi);
+    checkAccess(pep.INGEST_ARTICLE, newDoi);    // FIXME: should pass both doi's
 
     String old_subj = "<" + pid2URI(doi2PID(oldDoi)) + ">";
     String new_subj = "<" + pid2URI(doi2PID(newDoi)) + ">";
@@ -260,6 +285,206 @@ public class ArticleImpl implements Article {
     String[] res = new String[dois.size()];
     for (int idx = 0; idx < res.length; idx++)
       res[idx] = uri2PID(((String[]) dois.get(idx))[0]);
+
+    return res;
+  }
+
+  public void setRepresentation(String doi, String rep, DataHandler content)
+      throws NoSuchObjectIdException, RemoteException {
+    if (doi == null)
+      throw new NullPointerException("doi may not be null");
+    if (rep == null)
+      throw new NullPointerException("representation may not be null");
+
+    checkAccess(pep.SET_REPRESENTATION, doi);   // FIXME: should pass 'rep' too
+
+    String subj = pid2URI(doi2PID(doi));
+    ItqlHelper.validateUri(subj, "doi");
+
+    ItqlHelper itql = ctx.getItqlHelper();
+    FedoraAPIM apim = ctx.getFedoraAPIM();
+    String txn = "set-rep " + doi + "|" + rep;
+    try {
+      itql.beginTxn(txn);
+
+      if (log.isDebugEnabled())
+        log.debug("setting representation '" + rep + "' for '" + doi + "'");
+
+      itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_REP, "subj", subj, "rep", rep));
+
+      if (content != null) {
+        String ct = content.getContentType();
+        if (ct == null)
+          ct = "application/octet-stream";
+
+        ByteCounterInputStream bcis = new ByteCounterInputStream(content.getInputStream());
+        String reLoc = ctx.getFedoraUploader().upload(bcis);
+        try {
+          apim.modifyDatastreamByReference(doi2PID(doi), rep, null, null, false, ct, null, reLoc,
+                                           "A", "Updated datastream", false);
+        } catch (RemoteException re) {
+          if (!isNoSuchDatastream(re))
+            throw re;
+
+          if (log.isDebugEnabled())
+            log.debug("representation '" + rep + "' for '" + doi + "' doesn't exist yet - " +
+                      "creating it", re);
+          apim.addDatastream(doi2PID(doi), rep, new String[0], "Represention", false, ct, null,
+                             reLoc, "M", "A", "New representation");
+        }
+
+        Map map = new HashMap();
+        map.put("subj", subj);
+        map.put("rep", rep);
+        map.put("size", Long.toString(bcis.getLength()));
+        map.put("type", ct);
+        itql.doUpdate(ItqlHelper.bindValues(ITQL_CREATE_REP, map));
+      } else {
+        try {
+          apim.purgeDatastream(doi2PID(doi), rep, null, "Purged datastream", false);
+        } catch (RemoteException re) {
+          if (!isNoSuchDatastream(re))
+            throw re;
+
+          if (log.isDebugEnabled())
+            log.debug("representation '" + rep + "' for '" + doi + "' doesn't exist", re);
+        }
+      }
+
+      itql.commitTxn(txn);
+      txn = null;
+    } catch (RemoteException re) {
+      if (isNoSuchObject(re))
+        throw (NoSuchObjectIdException) new NoSuchObjectIdException(doi).initCause(re);
+      else
+        throw re;
+    } catch (IOException ioe) {
+      throw new RemoteException("Error uploading representation", ioe);
+    } finally {
+      if (txn != null)
+        itql.rollbackTxn(txn);
+    }
+  }
+
+  private static boolean isNoSuchObject(RemoteException re) {
+    // Ugh! What a hack...
+    String msg = re.getMessage();
+    return (msg != null &&
+            msg.startsWith("fedora.server.errors.ObjectNotInLowlevelStorageException:"));
+  }
+
+  private static boolean isNoSuchDatastream(RemoteException re) {
+    // Ugh! What a hack...
+    String msg = re.getMessage();
+
+    // Fedora 2.1.0: return (msg != null && msg.startsWith("java.lang.NullPointerException:"));
+
+    // Fedora 2.1.1:
+    return (msg != null && msg.equals("java.lang.Exception: Uncaught exception from Fedora Server"));
+  }
+
+  private static class ByteCounterInputStream extends FilterInputStream {
+    private long cnt = 0;
+    private long cntMark = 0;
+
+    public ByteCounterInputStream(InputStream is) {
+      super(is);
+    }
+
+    public int read() throws IOException {
+      int d = in.read();
+      if (d >= 0)
+        cnt++;
+      return d;
+    }
+
+    public int read(byte[] b) throws IOException {
+      int d = in.read(b);
+      if (d >= 0)
+        cnt += d;
+      return d;
+    }
+
+    public int read(byte[] b, int off, int len) throws IOException {
+      int d = in.read(b, off, len);
+      if (d >= 0)
+        cnt += d;
+      return d;
+    }
+
+    public long skip(long n) throws IOException {
+      long d = in.skip(n);
+      cnt += d;
+      return d;
+    }
+
+    public void mark(int readlimit) {
+      in.mark(readlimit);
+      cntMark = cnt;
+    }
+
+    public void reset() throws IOException {
+      in.reset();
+      cnt = cntMark;
+    }
+
+    public long getLength() {
+      return cnt;
+    }
+  }
+
+  public RepresentationInfo[] listRepresentations(String doi)
+      throws NoSuchObjectIdException, RemoteException {
+    if (doi == null)
+      throw new NullPointerException("doi may not be null");
+
+    checkAccess(pep.LIST_REPRESENTATIONS, doi);
+
+    String subj = pid2URI(doi2PID(doi));
+    ItqlHelper.validateUri(subj, "doi");
+
+    ItqlHelper itql = ctx.getItqlHelper();
+    List info;
+    try {
+      StringAnswer ans =
+          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_GET_OBJ_INFO, "subj", subj)));
+      info = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error querying RDF", ae);
+    }
+
+    if (info.size() == 0)
+      throw new NoSuchObjectIdException(doi);
+
+    List reps = new ArrayList();
+    for (int idx = 0; idx < info.size(); idx++) {
+      String[] i = (String[]) info.get(idx);
+      if (i[0].equals(ItqlHelper.TOPAZ_URI + "hasRepresentation"))
+        reps.add(i[1]);
+    }
+
+    RepresentationInfo[] res = new RepresentationInfo[reps.size()];
+    for (int idx = 0; idx < reps.size(); idx++) {
+      res[idx] = new RepresentationInfo();
+      res[idx].setName((String) reps.get(idx));
+      res[idx].setSize(-1);
+    }
+
+    for (int idx = 0; idx < info.size(); idx++) {
+      String[] i = (String[]) info.get(idx);
+
+      if (i[0].endsWith("-objectSize")) {
+        int idx2 = reps.indexOf(i[0].substring(ItqlHelper.TOPAZ_URI.length(), i[0].length() - 11));
+        if (idx2 >= 0)
+          res[idx2].setSize(Integer.parseInt(i[1]));
+      }
+
+      if (i[0].endsWith("-contentType")) {
+        int idx2 = reps.indexOf(i[0].substring(ItqlHelper.TOPAZ_URI.length(), i[0].length() - 12));
+        if (idx2 >= 0)
+          res[idx2].setContentType(i[1]);
+      }
+    }
 
     return res;
   }

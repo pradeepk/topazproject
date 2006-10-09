@@ -32,11 +32,15 @@ public abstract class ArticlePEP extends AbstractSimplePEP implements Article.Pe
                                                            DELETE_ARTICLE,
                                                            SET_ARTICLE_STATE,
                                                            GET_OBJECT_URL,
+                                                           SET_REPRESENTATION,
+                                                           LIST_REPRESENTATIONS,
                                                            READ_META_DATA,
                                                          };
 
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
+                                                           null,
+                                                           null,
                                                            null,
                                                            null,
                                                            null,

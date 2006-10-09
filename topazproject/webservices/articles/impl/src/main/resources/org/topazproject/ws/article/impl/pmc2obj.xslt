@@ -184,9 +184,16 @@
   <!-- common templates for all datastream definitions -->
   <xsl:template match="ZipEntry" mode="ds-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-    <xsl:element name="topaz:{my:ext-to-ds-id(my:get-ext(@name))}-objectSize">
+    <xsl:variable name="ext" select="my:get-ext(@name)"/>
+    <xsl:variable name="rep-name" select="my:ext-to-ds-id($ext)"/>
+
+    <topaz:hasRepresentation><xsl:value-of select="$rep-name"/></topaz:hasRepresentation>
+    <xsl:element name="topaz:{$rep-name}-objectSize">
       <xsl:attribute name="rdf:datatype">http://www.w3.org/2001/XMLSchema#int</xsl:attribute>
       <xsl:value-of select="@size"/>
+    </xsl:element>
+    <xsl:element name="topaz:{$rep-name}-contentType">
+      <xsl:value-of select="my:ext-to-mime($ext)"/>
     </xsl:element>
   </xsl:template>
 

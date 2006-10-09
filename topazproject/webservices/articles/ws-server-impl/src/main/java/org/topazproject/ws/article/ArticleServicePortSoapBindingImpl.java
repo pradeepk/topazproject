@@ -9,7 +9,6 @@
  */
 package org.topazproject.ws.article;
 
-import java.io.IOException;
 import java.rmi.RemoteException;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
@@ -95,6 +94,22 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   public String getObjectURL(String doi, String rep)
       throws RemoteException, NoSuchObjectIdException {
     return impl.getObjectURL(doi, rep);
+  }
+
+  /**
+   * @see org.topazproject.ws.article.Article#setRepresentation
+   */
+  public void setRepresentation(String doi, String rep, DataHandler content)
+      throws NoSuchObjectIdException, RemoteException {
+    impl.setRepresentation(doi, rep, content);
+  }
+
+  /**
+   * @see org.topazproject.ws.article.Article#listRepresentations
+   */
+  public RepresentationInfo[] listRepresentations(String doi)
+      throws NoSuchObjectIdException, RemoteException {
+    return impl.listRepresentations(doi);
   }
 
   /**
