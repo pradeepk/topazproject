@@ -88,8 +88,10 @@ public class ArticleImpl implements Article {
       ("select $doi from ${MODEL} where " +
           // ensure it's an article
        "  <${subj}> <rdf:type> <topaz:Article> and (" +
-          // find all related objects       find the article itself
-       "  <${subj}> <dc_terms:hasPart> $doi or $doi <tucana:is> <${subj}> );").
+          // find all related objects
+       "  <${subj}> <dc_terms:hasPart> $doi or <${subj}> <topaz:hasCategory> $doi " +
+          // find the article itself
+       "  or $doi <tucana:is> <${subj}> );").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_GET_OBJ_INFO =

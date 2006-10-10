@@ -38,10 +38,16 @@
     <ObjectList logMessage="Ingest of article '{$meta/title-group/article-title}'"
                 articleId="{$doi}">
       <xsl:call-template name="main-entry"/>
+
       <xsl:for-each-group select="$file-entries[my:is-secondary(@name)]"
                           group-by="my:fname-to-doi(@name)">
         <xsl:apply-templates select="." mode="sec"/>
       </xsl:for-each-group>
+
+      <xsl:for-each 
+          select="$meta/article-categories/subj-group[@subj-group-type = 'Discipline']/subject">
+        <xsl:call-template name="cat-aux"/>
+      </xsl:for-each>
     </ObjectList>
   </xsl:template>
 
@@ -111,17 +117,59 @@
   </xsl:template>
 
   <xsl:template name="main-rdf" xmlns:dc_terms="http://purl.org/dc/terms/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <rdf:type rdf:resource="http://rdf.topazproject.org/RDF/Article"/>
+
     <xsl:for-each
         select="distinct-values(my:fname-to-doi($file-entries[my:is-secondary(@name)]/@name))">
       <dc_terms:hasPart rdf:resource="{my:pid-to-uri(my:doi-to-pid(.))}"/>
     </xsl:for-each>
+
     <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
+
+    <xsl:for-each 
+        select="$meta/article-categories/subj-group[@subj-group-type = 'Discipline']/subject">
+      <topaz:hasCategory
+        rdf:resource="{my:pid-to-uri(my:doi-to-pid(my:doi-to-aux($doi, 'category', position())))}"/>
+    </xsl:for-each>
   </xsl:template>
 
   <xsl:template name="main-ds">
     <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds"/>
+  </xsl:template>
+
+  <xsl:template name="cat-aux">
+    <xsl:variable name="cat-pid" as="xs:string"
+        select="my:doi-to-pid(my:doi-to-aux($doi, 'category', position()))"/>
+
+    <Object pid="{$cat-pid}" cModel="PlosCategory">
+      <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:dc_terms="http://purl.org/dc/terms/">
+        <xsl:call-template name="cat-aux-rdf"/>
+      </RELS-EXT>
+    </Object>
+
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+             xmlns:topaz="http://rdf.topazproject.org/RDF/"
+             xmlns:dc="http://purl.org/dc/elements/1.1/"
+             xmlns:dc_terms="http://purl.org/dc/terms/">
+      <rdf:Description rdf:about="{my:pid-to-uri($cat-pid)}">
+        <xsl:call-template name="cat-aux-rdf"/>
+      </rdf:Description>
+    </rdf:RDF>
+  </xsl:template>
+
+  <xsl:template name="cat-aux-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/">
+    <xsl:variable name="main-cat" as="xs:string"
+        select="if (contains(., '/')) then substring-before(., '/') else ."/>
+    <xsl:variable name="sub-cat" as="xs:string" select="substring-after(., '/')"/>
+
+    <topaz:mainCategory><xsl:value-of select="$main-cat"/></topaz:mainCategory>
+    <xsl:if test="$sub-cat">
+      <topaz:subCategory><xsl:value-of select="$sub-cat"/></topaz:subCategory>
+    </xsl:if>
   </xsl:template>
 
   <!-- templates for all secondary entries -->
@@ -281,6 +329,14 @@
   <xsl:function name="my:pid-to-uri" as="xs:string">
     <xsl:param name="pid" as="xs:string"/>
     <xsl:value-of select="concat('info:fedora/', $pid)"/>
+  </xsl:function>
+
+  <!-- article-DOI to auxiliary-DOI mapping -->
+  <xsl:function name="my:doi-to-aux" as="xs:string">
+    <xsl:param name="doi"  as="xs:string"/>
+    <xsl:param name="type" as="xs:string"/>
+    <xsl:param name="cnt"  as="xs:integer"/>
+    <xsl:value-of select="concat($doi, '/', $type, '/', $cnt)"/>
   </xsl:function>
 
   <!-- determines if the filename is that of a secondary object or not -->
