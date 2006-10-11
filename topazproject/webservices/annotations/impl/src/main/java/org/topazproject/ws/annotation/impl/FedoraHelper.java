@@ -87,10 +87,10 @@ public class FedoraHelper {
       String ref = ctx.getFedoraUploader().upload(content);
 
       Map    values = new HashMap();
-      values.put("CONTENTTYPE", contentType);
-      values.put("CONTENT", ref);
-      values.put("CONTENTMODEL", contentModel);
-      values.put("LABEL", label);
+      values.put("CONTENTTYPE", xmlAttrEscape(contentType));
+      values.put("CONTENT", xmlAttrEscape(ref));
+      values.put("CONTENTMODEL", xmlAttrEscape(contentModel));
+      values.put("LABEL", xmlAttrEscape(label));
 
       String foxml = ItqlHelper.bindValues(FOXML, values);
 
@@ -100,6 +100,13 @@ public class FedoraHelper {
     } catch (IOException e) {
       throw new RemoteException("Upload failed", e);
     }
+  }
+
+  private static final String xmlAttrEscape(String val) {
+    /* AttValue ::= '"' ([^<&"] | Reference)* '"'
+     *              |  "'" ([^<&'] | Reference)* "'"
+     */
+    return val.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;").replaceAll("'", "&apos;");
   }
 
   /**
