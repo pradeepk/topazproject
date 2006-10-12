@@ -13,6 +13,7 @@
     <result-types>
       <result-type name="freemarker"
         class="com.opensymphony.webwork.views.freemarker.FreemarkerResult" default="true" />
+      <result-type name="ajaxJSON" class="com.opensymphony.webwork.result.AjaxJSONResult" />
     </result-types>
 
     <interceptors>
