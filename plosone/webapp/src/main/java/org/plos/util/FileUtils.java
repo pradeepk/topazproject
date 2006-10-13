@@ -17,6 +17,7 @@ import java.io.BufferedReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.io.InputStream;
 import java.net.URL;
 
 /**
@@ -42,7 +43,7 @@ public class FileUtils {
    * Create a local text copy of the url.
    * @param url url
    * @param targetFilename targetFilename
-   * @throws IOException
+   * @throws IOException IOException
    */
   public static void createLocalCopyOfTextFile(final String url, final String targetFilename) throws IOException {
     final FileWriter fileWriter = new FileWriter(targetFilename);
@@ -54,7 +55,7 @@ public class FileUtils {
    * Serialize a node to a given file.
    * @param doc node of an xml doc
    * @param outputFileName outputFileName
-   * @throws IOException
+   * @throws IOException IOException
    */
   public static void serializeNode(final Document doc, final String outputFileName) throws IOException {
     final XMLSerializer serializer = new XMLSerializer();
@@ -75,14 +76,17 @@ public class FileUtils {
    * Gets all the text content from the given url. It is expected that the url will have all content as a text type.
    * @param url url
    * @return the whole content from the url
-   * @throws IOException
+   * @throws IOException IOException
    */
   public static String getTextFromUrl(final String url) throws IOException {
-    final StringBuilder sb = new StringBuilder();
-
     // Read all the text returned by the server
-    final BufferedReader in = new BufferedReader(new InputStreamReader(new URL(url).openStream()));
+    return getTextFromCharStream(new URL(url).openStream());
+  }
 
+  public static String getTextFromCharStream(final InputStream inputStream) throws IOException {
+    final BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+
+    final StringBuilder sb = new StringBuilder();
     final char[] cbuf = new char[1024];
     int numRead;
     while (((numRead = in.read(cbuf)) >= 0)) {

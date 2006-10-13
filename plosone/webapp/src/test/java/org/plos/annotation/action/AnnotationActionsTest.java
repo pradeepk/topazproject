@@ -13,16 +13,16 @@ import com.opensymphony.xwork.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
-import org.plos.permission.service.PermissionWebService;
 import org.plos.annotation.service.Annotation;
-import org.plos.annotation.service.Reply;
-import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.AnnotationPermission;
+import org.plos.annotation.service.AnnotationService;
+import org.plos.annotation.service.Reply;
+import org.plos.permission.service.PermissionWebService;
 import org.topazproject.ws.annotation.Annotations;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 
 public class AnnotationActionsTest extends BasePlosoneTestCase {
@@ -52,7 +52,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(Action.SUCCESS, listAnnotationAction.execute());
 
     for (final Annotation annotation : listAnnotationAction.getAnnotations()) {
-      DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId());
+      DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), false);
       assertEquals(Action.SUCCESS, deleteAnnotationAction.execute());
     }
   }
@@ -65,12 +65,12 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   }
 
   public void testDeleteAnnotations() throws Exception {
-    DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId);
+    DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, false);
     assertEquals(Action.SUCCESS, deleteAnnotationAction.execute());
     log.debug("annotation deleted with id:" + annotationId);
     assertEquals(0, deleteAnnotationAction.getActionErrors().size());
 
-    deleteAnnotationAction = getDeleteAnnotationAction(annotationId);
+    deleteAnnotationAction = getDeleteAnnotationAction(annotationId, false);
     assertEquals(Action.ERROR, deleteAnnotationAction.execute());
     assertEquals(1, deleteAnnotationAction.getActionErrors().size());
   }
@@ -98,8 +98,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
   public void createAnnotation() throws Exception {
     final String title = "Annotation1";
-    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
+    final String context = createAnnotationAction.getTargetContext();
     final boolean visibility = true;
     createAnnotationAction.setPublic(visibility);
     assertEquals(Action.SUCCESS, createAnnotationAction.execute());
@@ -120,8 +120,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
   public void testCreatePrivateAnnotation() throws Exception {
     final String title = "AnnotationPrivate";
-    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, "text/plain", body);
+    final String context = createAnnotationAction.getTargetContext();
     final boolean visibility = false;
     createAnnotationAction.setPublic(visibility);
     assertEquals(Action.SUCCESS, createAnnotationAction.execute());
@@ -234,8 +234,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   public void testCreateAnnotationShouldFailDueToProfanityInBody() throws Exception {
     final String body = "something that I always wanted to say " + PROFANE_WORD;
     final String title = "Annotation1";
-    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, "text/plain", body);
     assertEquals(Action.ERROR, createAnnotationAction.execute());
     assertTrue(createAnnotationAction.hasErrors());
   }
@@ -243,8 +242,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   public void testCreateAnnotationShouldFailDueToProfanityInTitle() throws Exception {
     final String body = "something that I always wanted to say";
     final String title = "Annotation " + PROFANE_WORD;
-    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, "text/plain", body);
     assertEquals(Action.ERROR, createAnnotationAction.execute());
     assertTrue(createAnnotationAction.hasErrors());
   }
@@ -272,9 +270,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 //    final String declawedBody = "something that I always dollardivdollardocument.write('Booooom');office.cancellunch('tuesday')dollar/divdollar";
 
     final String title = "Annotation1";
-    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
 
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, "text/plain", body);
     assertEquals(Action.SUCCESS, createAnnotationAction.execute());
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
@@ -288,9 +285,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     final String title = "Annotation1 <&>";
     final String declawedTitle = "Annotation1 &lt;&amp;&gt;";
-    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
 
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, "text/plain", body);
     assertEquals(Action.SUCCESS, createAnnotationAction.execute());
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
@@ -336,8 +332,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
   public void testPublicAnnotationShouldHaveTheRightGrantsAndRevokations() throws Exception {
     final String title = "Annotation1";
-    final String context = "foo:bar##xpointer(id(\"TestForPublicState\")/p[2])";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, "text/plain", body);
+    final String context = createAnnotationAction.getTargetContext();
     assertEquals(Action.SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);
@@ -380,6 +376,67 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     );
   }
 
+  public void testAnnotatedContent() throws Exception {
+//    final String testXml =
+//      "<!DOCTYPE doc [<!ELEMENT testid (testid)*>"
+//      + " <!ATTLIST testid id ID #REQUIRED > ] > <doc> <chapter> <title>Chapter I</title> "
+//      + " <para>Hello world, indeed, <em>wonderful</em> world</para></chapter></doc>";
+
+    String target = "http://localhost:9080/existingArticle/test.xml";
+
+    final String startPath1    = "/para";
+    final String startPath2    = "/title";
+    final String startPath3    = "/";
+    final String endPath1    = "/para";
+    final String endPath2    = "/title";
+    final String endPath3    = "/";
+    final String context1Body = "My annotation content 1";
+    final String context2Body = "My annotation content 2";
+    final String context3Body = "My annotation content 3";
+    final String title       = "Title";
+
+//    final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
+//    listAnnotationAction.setTarget(target);
+//    listAnnotationAction.execute();
+//    Annotation[] annotations = listAnnotationAction.getAnnotations();
+//
+//    for (final Annotation annotation : annotations) {
+//      final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
+//      deleteAnnotationAction.execute();
+//    }
+
+    class AnnotationCreator {
+      public void execute(final String target, final String startPath, final String endPath, final String title, final String body) throws Exception {
+        final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
+        createAnnotationAction.setStartPath(startPath);
+        createAnnotationAction.setEndPath(endPath);
+        assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+      }
+    }
+
+    new AnnotationCreator().execute(target, startPath1, endPath1, title, context1Body);
+    new AnnotationCreator().execute(target, startPath2, endPath2, title, context2Body);
+    new AnnotationCreator().execute(target, startPath3, endPath3, title, context3Body);
+
+    final ListAnnotationAction listAnnotationAction1 = getListAnnotationAction();
+    listAnnotationAction1.setTarget(target);
+    listAnnotationAction1.execute();
+
+    final Annotation[] annotations2 = listAnnotationAction1.getAnnotations();
+
+    final String content = getAnnotationService().getAnnotatedContent(target);
+    log.debug("Annotated content = " + content);
+
+    assertTrue(content.contains(context1Body));
+    assertTrue(content.contains(context2Body));
+    assertTrue(content.contains(context3Body));
+
+    for (final Annotation annotation : annotations2) {
+      final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
+      deleteAnnotationAction.execute();
+    }
+  }
+
   private Annotation retrieveAnnotation(final String annotationId) throws Exception {
     final GetAnnotationAction getAnnotationAction = getGetAnnotationAction();
     getAnnotationAction.setAnnotationId(annotationId);
@@ -387,10 +444,10 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     return getAnnotationAction.getAnnotation();
   }
 
-  private DeleteAnnotationAction getDeleteAnnotationAction(final String annotationId) {
+  private DeleteAnnotationAction getDeleteAnnotationAction(final String annotationId, final boolean deletePreceding) {
     final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction();
     deleteAnnotationAction.setAnnotationId(annotationId);
-    deleteAnnotationAction.setDeletePreceding(false);
+    deleteAnnotationAction.setDeletePreceding(deletePreceding);
     return deleteAnnotationAction;
   }
 
@@ -404,14 +461,18 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     return createReplyAction;
   }
 
-  private CreateAnnotationAction getCreateAnnotationAction(final String target, final String title, final String context, final String mimeType, final String body) {
+  private CreateAnnotationAction getCreateAnnotationAction(final String target, final String title, final String body) {
+    return getCreateAnnotationAction(target, title, "text/plain", body);
+  }
+
+  private CreateAnnotationAction getCreateAnnotationAction(final String target, final String title, final String mimeType, final String body) {
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction();
     createAnnotationAction.setTitle(title);
     createAnnotationAction.setTarget(target);
-    createAnnotationAction.setStartPath("id(\"x20060728a\")/p[1]");
-    createAnnotationAction.setStartOffset(288);
-    createAnnotationAction.setEndPath("id(\"x20060801a\")/h3[1]");
-    createAnnotationAction.setEndOffset(39);
+    createAnnotationAction.setStartPath("/");
+    createAnnotationAction.setStartOffset(0);
+    createAnnotationAction.setEndPath("/");
+    createAnnotationAction.setEndOffset(2);
     createAnnotationAction.setMimeType(mimeType);
     createAnnotationAction.setBody(body);
     return createAnnotationAction;

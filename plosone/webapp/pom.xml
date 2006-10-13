@@ -24,6 +24,22 @@
     </dependency>
 
     <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-common-impl</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>it.unibo.cs</groupId>
+      <artifactId>unibo-xpointer</artifactId>
+      <version>1.2-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>dom-ranges-helper</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
       <version>6.0.1</version>
@@ -48,37 +64,37 @@
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-articles-client-impl</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.parent.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-users-client-impl</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.parent.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-pap-client-impl</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.parent.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-annotation-api</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.parent.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-annotation-client-impl</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.parent.version}</version>
     </dependency>
 
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-permissions-client-impl</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.parent.version}</version>
     </dependency>
 
     <dependency>
@@ -184,7 +200,6 @@
 
    </dependencies>
 
-    
   <!--
     <modules>
     <module>../topazproject/webservices/articles/ws-client-impl</module>
@@ -193,23 +208,6 @@
   -->
 
   <build>
-    <!--
-      <testResources>
-      <testResource>
-      <directory>/src/main/resources</directory>
-      <includes>
-      <include>**</include>
-      </includes>
-      </testResource>
-      <testResource>
-      <directory>/src/test/resources</directory>
-      <includes>
-      <include>**</include>
-      </includes>
-      </testResource>
-      </testResources>
-    -->
-
     <finalName>plosone</finalName>
     <plugins>
       <plugin>

@@ -9,12 +9,12 @@
  */
 package org.plos.annotation.service;
 
+import org.apache.commons.lang.StringUtils;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.ws.annotation.AnnotationClientFactory;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.Annotations;
 import org.topazproject.ws.annotation.NoSuchAnnotationIdException;
-import org.apache.commons.lang.StringUtils;
 
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;

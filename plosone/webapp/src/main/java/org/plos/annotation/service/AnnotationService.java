@@ -5,18 +5,21 @@ package org.plos.annotation.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.util.FileUtils;
-import org.plos.service.BaseConfigurableService;
 import org.plos.ApplicationException;
 import org.plos.permission.service.PermissionWebService;
-import org.topazproject.ws.annotation.AnnotationInfo;
+import org.plos.service.BaseConfigurableService;
+import org.plos.util.FileUtils;
 import org.topazproject.common.NoSuchIdException;
-import org.topazproject.ws.annotation.ReplyInfo;
+import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.Annotations;
+import org.topazproject.ws.annotation.ReplyInfo;
 
+import javax.activation.DataHandler;
+import javax.activation.URLDataSource;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
+import java.net.URL;
 
 /**
  * Used for both annotation and reply services.
@@ -268,5 +271,26 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public void setPermissionWebService(final PermissionWebService permissionWebService) {
     this.permissionWebService = permissionWebService;
+  }
+
+  /**
+   * Return the annotated content
+   * @param target target
+   * @return the annotated content
+   * @throws ApplicationException ApplicationException
+   */
+  public String getAnnotatedContent(final String target) throws ApplicationException {
+    try {
+      DataHandler content = new DataHandler(new URLDataSource(new URL(target)));
+      final AnnotationInfo[] annotations = annotationWebService.listAnnotations(target);
+
+      if (annotations.length != 0) {
+        content = Annotator.annotate(content, annotations);
+      }
+
+      return FileUtils.getTextFromCharStream(content.getInputStream());
+    } catch (final IOException ex) {
+      throw new ApplicationException(ex);
+    }
   }
 }
