@@ -118,7 +118,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     AnnotationActionsTest.annotationId = annotationId;
   }
 
-  public void createPrivateAnnotation() throws Exception {
+  public void testCreatePrivateAnnotation() throws Exception {
     final String title = "AnnotationPrivate";
     final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
