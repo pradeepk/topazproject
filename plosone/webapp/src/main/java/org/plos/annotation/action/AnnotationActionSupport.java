@@ -27,7 +27,7 @@ public abstract class AnnotationActionSupport extends ActionSupport {
   }
 
   /**
-   * Note: The visibility of this method is private so that the JSON serializer does not get into
+   * Note: The visibility of this method is default so that the JSON serializer does not get into
    * an infinite circular loop when trying to serialize the action. 
    * @return the AnnotationService
    */
