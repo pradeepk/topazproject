@@ -27,9 +27,11 @@ public class UserActionSupport extends ActionSupport {
   private UserService userService;
 
   /**
+   * Note: The visibility of this method is private so that the JSON serializer does not get into
+   * an infinite circular loop when trying to serialize the action.
    * @return Returns the userService.
    */
-  public UserService getUserService() {
+  UserService getUserService() {
     return userService;
   }
 

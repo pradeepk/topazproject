@@ -1,5 +1,5 @@
 /* $HeadURL::                                                                            $
- * $Id$
+ * $Id:AnnotationActionsTest.java 722 2006-10-02 16:42:45Z viru $
  *
  * Copyright (c) 2006 by Topaz, Inc.
  * http://topazproject.org
@@ -100,6 +100,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String title = "Annotation1";
     final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    final boolean visibility = true;
+    createAnnotationAction.setPublic(visibility);
     assertEquals(Action.SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);
@@ -110,6 +112,30 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(title, savedAnnotation.getTitle());
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getBody());
+    assertEquals(body, savedAnnotation.getBody());
+    assertEquals(visibility, savedAnnotation.isPublic());
+
+    AnnotationActionsTest.annotationId = annotationId;
+  }
+
+  public void createPrivateAnnotation() throws Exception {
+    final String title = "AnnotationPrivate";
+    final String context = "foo:bar##xpointer(id(\"Main\")/p[2])";
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, context, "text/plain", body);
+    final boolean visibility = false;
+    createAnnotationAction.setPublic(visibility);
+    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    final String annotationId = createAnnotationAction.getAnnotationId();
+    log.debug("annotation created with id:" + annotationId);
+    assertNotNull(annotationId);
+
+    final Annotation savedAnnotation = retrieveAnnotation(annotationId);
+    assertEquals(target, savedAnnotation.getAnnotates());
+    assertEquals(title, savedAnnotation.getTitle());
+    assertEquals(context, savedAnnotation.getContext());
+    assertEquals(body, savedAnnotation.getBody());
+    assertEquals(body, savedAnnotation.getBody());
+    assertEquals(visibility, savedAnnotation.isPublic());
 
     AnnotationActionsTest.annotationId = annotationId;
   }
@@ -382,7 +408,10 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction();
     createAnnotationAction.setTitle(title);
     createAnnotationAction.setTarget(target);
-    createAnnotationAction.setTargetContext(context);
+    createAnnotationAction.setStartPath("id(\"x20060728a\")/p[1]");
+    createAnnotationAction.setStartOffset(288);
+    createAnnotationAction.setEndPath("id(\"x20060801a\")/h3[1]");
+    createAnnotationAction.setEndOffset(39);
     createAnnotationAction.setMimeType(mimeType);
     createAnnotationAction.setBody(body);
     return createAnnotationAction;

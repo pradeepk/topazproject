@@ -1,5 +1,5 @@
 /* $HeadURL::                                                                            $
- * $Id$
+ * $Id:AnnotationActionSupport.java 722 2006-10-02 16:42:45Z viru $
  *
  * Copyright (c) 2006 by Topaz, Inc.
  * http://topazproject.org
@@ -27,9 +27,11 @@ public abstract class AnnotationActionSupport extends ActionSupport {
   }
 
   /**
+   * Note: The visibility of this method is private so that the JSON serializer does not get into
+   * an infinite circular loop when trying to serialize the action. 
    * @return the AnnotationService
    */
-  public final AnnotationService getAnnotationService() {
+  final AnnotationService getAnnotationService() {
     return annotationService;
   }
 }

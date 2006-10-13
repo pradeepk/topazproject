@@ -14,6 +14,7 @@ import org.topazproject.ws.annotation.AnnotationClientFactory;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.Annotations;
 import org.topazproject.ws.annotation.NoSuchAnnotationIdException;
+import org.apache.commons.lang.StringUtils;
 
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
@@ -37,23 +38,29 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @param mimeType mimeType
    * @param target target
    * @param context context
+   * @param olderAnnotation olderAnnotation that the new one will supersede
    * @param title title
    * @param body body
-   * @return a new annotation
-   * @throws UnsupportedEncodingException
-   * @throws java.rmi.RemoteException
+   * @return a the new annotation id
+   * @throws java.io.UnsupportedEncodingException UnsupportedEncodingException
+   * @throws java.rmi.RemoteException RemoteException
+   * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
    */
-  public String createAnnotation(final String mimeType, final String target, final String context, final String title, final String body) throws RemoteException, NoSuchAnnotationIdException, UnsupportedEncodingException {
+  public String createAnnotation(final String mimeType, final String target, final String context, final String olderAnnotation, final String title, final String body) throws RemoteException, NoSuchAnnotationIdException, UnsupportedEncodingException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     final String contentType = getContentType(mimeType);
-    return annotationService.createAnnotation(getApplicationId(), getDefaultType(), target, context, null, false, title, contentType, body.getBytes(getEncodingCharset()));
+    //Ensure that it is null if the olderAnnotation is empty
+    final String earlierAnotation = StringUtils.isEmpty(olderAnnotation) ? null : olderAnnotation;
+
+    return annotationService.createAnnotation(getApplicationId(), getDefaultType(), target, context, earlierAnotation, false, title, contentType, body.getBytes(getEncodingCharset()));
   }
 
   /**
    * Delete an annotation
    * @param annotationId annotationId
    * @param deletePreceding deletePreceding
-   * @throws java.rmi.RemoteException
+   * @throws java.rmi.RemoteException RemoteException
+   * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
    * @see org.topazproject.ws.annotation.Annotations#deleteAnnotation(String, boolean)
    */
   public void deleteAnnotation(final String annotationId, final boolean deletePreceding) throws RemoteException, NoSuchAnnotationIdException {
@@ -65,7 +72,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @see org.topazproject.ws.annotation.Annotations#listAnnotations(String, String, String)
    * @param target target
    * @return a list of annotations
-   * @throws java.rmi.RemoteException
+   * @throws java.rmi.RemoteException RemoteException
    */
   public AnnotationInfo[] listAnnotations(final String target) throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
@@ -76,7 +83,8 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @see org.topazproject.ws.annotation.Annotations#getAnnotationInfo(String)
    * @param annotationId annotationId
    * @return an annotation
-   * @throws RemoteException
+   * @throws RemoteException RemoteException
+   * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
    */
   public AnnotationInfo getAnnotation(final String annotationId) throws RemoteException, NoSuchAnnotationIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
@@ -86,7 +94,8 @@ public class AnnotationWebService extends BaseAnnotationService {
   /**
    * Set the annotation as public.
    * @param annotationDoi annotationDoi
-   * @throws RemoteException
+   * @throws RemoteException RemoteException
+   * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
    */
   public void setPublic(final String annotationDoi) throws RemoteException, NoSuchAnnotationIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();

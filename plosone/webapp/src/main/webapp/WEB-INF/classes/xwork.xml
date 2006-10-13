@@ -100,9 +100,9 @@
     </action>
 
     <action name="createAnnotationSubmit" class="org.plos.annotation.action.CreateAnnotationAction">
-      <result name="input">/WEB-INF/pages/annotation/createAnnotation.ftl</result>
-      <result name="error">/WEB-INF/pages/annotation/createAnnotation.ftl</result>
-      <result name="success" type="redirect">/home.action</result>
+      <result name="input" type="ajaxJSON"/>
+      <result name="error" type="ajaxJSON"/>
+      <result name="success" type="ajaxJSON"/>
     </action>
 
     <action name="deleteAnnotation" class="org.plos.annotation.action.DeleteAnnotationAction">

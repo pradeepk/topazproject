@@ -230,7 +230,7 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * @return true if the Annotation is public, false otherwise
-   * @throws org.plos.ApplicationException
+   * @throws org.plos.ApplicationException ApplicationException
    */
   public boolean isPublic() throws ApplicationException {
     return checkIfPublic(annotation.getState());

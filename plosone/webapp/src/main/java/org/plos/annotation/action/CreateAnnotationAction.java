@@ -1,5 +1,5 @@
 /* $HeadURL::                                                                            $
- * $Id$
+ * $Id:CreateAnnotationAction.java 722 2006-10-02 16:42:45Z viru $
  *
  * Copyright (c) 2006 by Topaz, Inc.
  * http://topazproject.org
@@ -23,13 +23,18 @@ import java.util.List;
  */
 public class CreateAnnotationAction extends AnnotationActionSupport {
   private String target;
-  private String targetContext;
   private String title;
   private String body;
   private String mimeType = "text/plain";
   private String annotationId;
-  private ProfanityCheckingService profanityCheckingService;
+  private boolean isPublic = false;
+  private String startPath;
+  private int startOffset;
+  private String endPath;
+  private int endOffset;
+  private String olderAnnotation;
 
+  private ProfanityCheckingService profanityCheckingService;
   public static final Log log = LogFactory.getLog(CreateAnnotationAction.class);
 
   /**
@@ -42,7 +47,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
       final List<String> profanityValidationMessagesInBody = profanityCheckingService.validate(body);
 
       if (profanityValidationMessagesInBody.isEmpty() && profanityValidationMessagesInTitle.isEmpty()) {
-        annotationId = getAnnotationService().createAnnotation(target, targetContext, title, mimeType, body);
+        annotationId = getAnnotationService().createAnnotation(target, getTargetContext(), olderAnnotation, title, mimeType, body, isPublic);
       } else {
         addMessages(profanityValidationMessagesInBody, "profanity check", "body");
         addMessages(profanityValidationMessagesInTitle, "profanity check", "title");
@@ -73,14 +78,6 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    */
   public void setTarget(final String target) {
     this.target = target;
-  }
-
-  /**
-   * Set the context of the annotation
-   * @param targetContext targetContext
-   */
-  public void setTargetContext(final String targetContext) {
-    this.targetContext = targetContext;
   }
 
   /**
@@ -124,11 +121,13 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   }
 
   /**
+   * Returning an xpointer of the following form:
+   * start-point(string-range(id("x20060728a")/p[1],"",288,1))/range-to(end-point(string-range(id("x20060801a")/h3[1],"",39,1)))
    * @return the context for the annotation
    */
-  @RequiredStringValidator(message="You must specify the context for this annotation")
   public String getTargetContext() {
-    return targetContext;
+    return target + "#xpointer(start-point(string-range(" + startPath + ",\"\"," + startOffset + ",1))" +
+            "/range-to(end-point(string-range(" + endPath + ",\"\"," + endOffset + ",1))))";
   }
 
   /**
@@ -159,5 +158,67 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    */
   public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {
     this.profanityCheckingService = profanityCheckingService;
+  }
+
+  /** @param isPublic set the visibility of annotation */
+  public void setPublic(final boolean isPublic) {
+    this.isPublic = isPublic;
+  }
+
+  /** @return whether the annotation is public */
+  public boolean isPublic() {
+    return isPublic;
+  }
+
+  /** @return the end point offset */
+  public int getEndOffset() {
+    return endOffset;
+  }
+
+  /** @param endOffset set the end point offset */
+  public void setEndOffset(final int endOffset) {
+    this.endOffset = endOffset;
+  }
+
+  /** @return return the end point path */
+  @RequiredStringValidator(message="You must specify a value")
+  public String getEndPath() {
+    return endPath;
+  }
+
+  /** @param endPath set the end point path */
+  public void setEndPath(final String endPath) {
+    this.endPath = endPath;
+  }
+
+  /** @return the start point offset */
+  public int getStartOffset() {
+    return startOffset;
+  }
+
+  /** @param startOffset set the start point offset */
+  public void setStartOffset(final int startOffset) {
+    this.startOffset = startOffset;
+  }
+
+  /** @return the start point path */
+  @RequiredStringValidator(message="You must specify a value")
+  public String getStartPath() {
+    return startPath;
+  }
+
+  /** @param startPath set start point path */
+  public void setStartPath(final String startPath) {
+    this.startPath = startPath;
+  }
+
+  /** @return the older annotation that it supersedes */
+  public String getOlderAnnotation() {
+    return olderAnnotation;
+  }
+
+  /** @param olderAnnotation the older annotation that it supersedes */
+  public void setOlderAnnotation(String olderAnnotation) {
+    this.olderAnnotation = olderAnnotation;
   }
 }

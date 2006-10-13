@@ -65,8 +65,9 @@ public class AjaxJSONResult implements Result {
     // Write JSON to response.
     try {
       response.setContentLength(json.length());
-//      response.setContentType("text/xml");
-      response.setContentType("application/json");
+      //Note: The content type is text so that it can be rendered directly on the browser.
+      response.setContentType("text/html");
+//      response.setContentType("application/json");
       PrintWriter out = response.getWriter();
       out.print(json);
     } catch (IOException ioe) {

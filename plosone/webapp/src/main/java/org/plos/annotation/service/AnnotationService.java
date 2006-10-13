@@ -34,15 +34,21 @@ public class AnnotationService extends BaseConfigurableService {
    * Create an annotation.
    * @param target target that an annotation is being created for
    * @param context context
+   * @param olderAnnotation olderAnnotation that the new one will supersede
    * @param title title
    * @param mimeType mimeType
    * @param body body
-   * @throws ApplicationException ApplicationException
+   * @param isPublic isPublic
+   * @throws org.plos.ApplicationException ApplicationException
    * @return unique identifier for the newly created annotation
    */
-  public String createAnnotation(final String target, final String context, final String title, final String mimeType, final String body) throws ApplicationException {
+  public String createAnnotation(final String target, final String context, final String olderAnnotation, final String title, final String mimeType, final String body, final boolean isPublic) throws ApplicationException {
     try {
-      return annotationWebService.createAnnotation(mimeType, target, context, title, body);
+      final String annotationId = annotationWebService.createAnnotation(mimeType, target, context, olderAnnotation, title, body);
+      if (isPublic) {
+        setAnnotationPublic(annotationId);
+      }
+      return annotationId;
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     } catch (NoSuchIdException e) {
