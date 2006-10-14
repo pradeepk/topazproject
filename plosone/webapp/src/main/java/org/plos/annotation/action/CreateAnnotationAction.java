@@ -16,6 +16,8 @@ import org.plos.ApplicationException;
 import org.plos.util.FileUtils;
 import org.plos.util.ProfanityCheckingService;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.List;
 
 /**
@@ -126,8 +128,17 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    * @return the context for the annotation
    */
   public String getTargetContext() {
-    return target + "#xpointer(start-point(string-range(" + startPath + ",\"\"," + startOffset + ",1))" +
+    String targetContext = target + "#xpointer(start-point(string-range(" + startPath + ",\"\"," + startOffset + ",1))" +
             "/range-to(end-point(string-range(" + endPath + ",\"\"," + endOffset + ",1))))";
+//    final String s = StringEscapeUtils.escapeHtml(targetContext);
+    try {
+      targetContext = target + "#xpointer" + URLEncoder.encode("(start-point(string-range(" + startPath + ",\"\"," + startOffset + ",1))" +
+            "/range-to(end-point(string-range(" + endPath + ",\"\"," + endOffset + ",1))))", "UTF-8");
+    } catch (UnsupportedEncodingException e) {
+      e.printStackTrace();
+      log.debug(e);
+    }
+    return targetContext;
   }
 
   /**

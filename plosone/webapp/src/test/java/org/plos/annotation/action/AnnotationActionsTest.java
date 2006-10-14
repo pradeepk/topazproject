@@ -12,6 +12,7 @@
 import com.opensymphony.xwork.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.plos.BasePlosoneTestCase;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.AnnotationPermission;
@@ -24,6 +25,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.net.URLEncoder;
+import java.io.UnsupportedEncodingException;
 
 public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static final String target = "http://here.is/viru";
@@ -376,6 +379,14 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     );
   }
 
+  public void testStringEscaping() throws UnsupportedEncodingException {
+    final String text = "http://localhost:9080/existingArticle/test.xml#xpointer(start-point(string-range(/para,\"\",0,1))/range-to(end-point(string-range(/para,\"\",2,1))))";
+    final String encodedUrl = URLEncoder.encode(text, "UTF-8");
+    log.debug(encodedUrl);
+    final String escapedText = StringEscapeUtils.escapeHtml(text);
+    log.debug(escapedText);
+  }
+
   public void testAnnotatedContent() throws Exception {
 //    final String testXml =
 //      "<!DOCTYPE doc [<!ELEMENT testid (testid)*>"
@@ -384,32 +395,33 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     String target = "http://localhost:9080/existingArticle/test.xml";
 
-    final String startPath1    = "/para";
-    final String startPath2    = "/title";
+    final String startPath1    = "/doc/chapter/para";
+    final String startPath2    = "/doc/chapter/title";
     final String startPath3    = "/";
-    final String endPath1    = "/para";
-    final String endPath2    = "/title";
+    final String endPath1    = "/doc/chapter/para";
+    final String endPath2    = "/doc/chapter/title";
     final String endPath3    = "/";
     final String context1Body = "My annotation content 1";
     final String context2Body = "My annotation content 2";
     final String context3Body = "My annotation content 3";
     final String title       = "Title";
 
-//    final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
-//    listAnnotationAction.setTarget(target);
-//    listAnnotationAction.execute();
-//    Annotation[] annotations = listAnnotationAction.getAnnotations();
-//
-//    for (final Annotation annotation : annotations) {
-//      final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
-//      deleteAnnotationAction.execute();
-//    }
+    final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
+    listAnnotationAction.setTarget(target);
+    listAnnotationAction.execute();
+    Annotation[] annotations = listAnnotationAction.getAnnotations();
+
+    for (final Annotation annotation : annotations) {
+      final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
+      deleteAnnotationAction.execute();
+    }
 
     class AnnotationCreator {
       public void execute(final String target, final String startPath, final String endPath, final String title, final String body) throws Exception {
         final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
         createAnnotationAction.setStartPath(startPath);
         createAnnotationAction.setEndPath(endPath);
+        log.debug("context = " + createAnnotationAction.getTargetContext());
         assertEquals(Action.SUCCESS, createAnnotationAction.execute());
       }
     }
@@ -472,7 +484,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     createAnnotationAction.setStartPath("/");
     createAnnotationAction.setStartOffset(0);
     createAnnotationAction.setEndPath("/");
-    createAnnotationAction.setEndOffset(2);
+    createAnnotationAction.setEndOffset(0);
     createAnnotationAction.setMimeType(mimeType);
     createAnnotationAction.setBody(body);
     return createAnnotationAction;
