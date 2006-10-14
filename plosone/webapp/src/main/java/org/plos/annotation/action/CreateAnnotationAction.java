@@ -124,21 +124,19 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
 
   /**
    * Returning an xpointer of the following form:
-   * start-point(string-range(id("x20060728a")/p[1],"",288,1))/range-to(end-point(string-range(id("x20060801a")/h3[1],"",39,1)))
+   * 1) start-point(string-range(id("x20060728a")/p[1],'',288,1))/range-to(end-point(string-range(id("x20060801a")/h3[1],'',39,1)))
+   * 2) (later) string-range(/article[1]/body[1]/sec[1]/p[2],"",194,344)
    * @return the context for the annotation
+   * @throws org.plos.ApplicationException ApplicationException
    */
-  public String getTargetContext() {
-    String targetContext = target + "#xpointer(start-point(string-range(" + startPath + ",\"\"," + startOffset + ",1))" +
-            "/range-to(end-point(string-range(" + endPath + ",\"\"," + endOffset + ",1))))";
-//    final String s = StringEscapeUtils.escapeHtml(targetContext);
+  public String getTargetContext() throws ApplicationException {
     try {
-      targetContext = target + "#xpointer" + URLEncoder.encode("(start-point(string-range(" + startPath + ",\"\"," + startOffset + ",1))" +
-            "/range-to(end-point(string-range(" + endPath + ",\"\"," + endOffset + ",1))))", "UTF-8");
-    } catch (UnsupportedEncodingException e) {
-      e.printStackTrace();
-      log.debug(e);
+      return target + "#xpointer" + URLEncoder.encode("(start-point(string-range(" + startPath + ",''," + startOffset + ",1))" +
+              "/range-to(end-point(string-range(" + endPath + ",''," + endOffset + ",1))))", "UTF-8");
+    } catch (final UnsupportedEncodingException e) {
+      log.error(e);
+      throw new ApplicationException(e);
     }
-    return targetContext;
   }
 
   /**

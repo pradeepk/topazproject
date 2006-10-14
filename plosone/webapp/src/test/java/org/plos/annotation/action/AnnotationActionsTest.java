@@ -10,9 +10,9 @@
  package org.plos.annotation.action;
 
 import com.opensymphony.xwork.Action;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.plos.BasePlosoneTestCase;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.AnnotationPermission;
@@ -21,12 +21,12 @@ import org.plos.annotation.service.Reply;
 import org.plos.permission.service.PermissionWebService;
 import org.topazproject.ws.annotation.Annotations;
 
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
-import java.net.URLEncoder;
-import java.io.UnsupportedEncodingException;
 
 public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static final String target = "http://here.is/viru";
@@ -484,9 +484,71 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     createAnnotationAction.setStartPath("/");
     createAnnotationAction.setStartOffset(0);
     createAnnotationAction.setEndPath("/");
-    createAnnotationAction.setEndOffset(0);
+    createAnnotationAction.setEndOffset(2);
     createAnnotationAction.setMimeType(mimeType);
     createAnnotationAction.setBody(body);
     return createAnnotationAction;
+  }
+
+  public void testAnnotatedContent2() throws Exception {
+    final String testXml =
+      "<!DOCTYPE doc [<!ELEMENT testid (testid)*>"
+      + " <!ATTLIST testid id ID #REQUIRED > ] > <doc> <chapter> <title>Chapter I</title> "
+      + " <para>Hello world, indeed, <em>wonderful</em> world</para></chapter></doc>";
+
+    final String subject     = "http://localhost:9080/existingArticle/test.xml";
+    String       context1    = "foo:bar#xpointer(string-range(/,'Hello+world'))";
+    String       context2    = "foo:bar#xpointer(string-range(/,'indeed,+wonderful'))";
+    String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
+    String       bodyUrl     = "http://gandalf.topazproject.org";
+    String       title       = "Title";
+    String       mediator    = "integration-test";
+    AnnotationService service = getAnnotationService();
+    Annotation[] annotations = service.listAnnotations(subject);
+
+    for (Annotation annotation : annotations)
+      service.deleteAnnotation(annotation.getId(), true);
+
+    service.createAnnotation(subject, context1, null, title, "text/plain", "body", false);
+    service.createAnnotation(subject, context2, null, title, "text/plain", "body", false);
+    service.createAnnotation(subject, context3, null, title, "text/plain", "body", false);
+
+    String content = service.getAnnotatedContent(subject);
+    log.debug(content);
+
+    annotations = service.listAnnotations(subject);
+    for (Annotation annotation1 : annotations)
+      service.deleteAnnotation(annotation1.getId(), true);
+  }
+
+  public void testAnnotatedContent3() throws Exception {
+    final String testXml =
+      "<!DOCTYPE doc [<!ELEMENT testid (testid)*>"
+      + " <!ATTLIST testid id ID #REQUIRED > ] > <doc> <chapter> <title>Chapter I</title> "
+      + " <para>Hello world, indeed, <em>wonderful</em> world</para></chapter></doc>";
+
+    final String subject     = "http://localhost:9080/existingArticle/test.xml";
+    String       context1    = "foo:bar#xpointer(string-range(/,'Hello+world'))";
+    String       context2    = "foo:bar#xpointer(string-range(/doc/chapter/title,'',0,5))";
+    String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
+    String       bodyUrl     = "http://gandalf.topazproject.org";
+    String       title       = "Title";
+    String       mediator    = "integration-test";
+    AnnotationService service = getAnnotationService();
+    Annotation[] annotations = service.listAnnotations(subject);
+
+    for (Annotation annotation : annotations)
+      service.deleteAnnotation(annotation.getId(), true);
+
+    service.createAnnotation(subject, context1, null, title, "text/plain", "body", false);
+    service.createAnnotation(subject, context2, null, title, "text/plain", "body", false);
+    service.createAnnotation(subject, context3, null, title, "text/plain", "body", false);
+
+    String content = service.getAnnotatedContent(subject);
+    log.debug(content);
+
+    annotations = service.listAnnotations(subject);
+    for (Annotation annotation1 : annotations)
+      service.deleteAnnotation(annotation1.getId(), true);
   }
 }
