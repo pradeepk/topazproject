@@ -9,9 +9,8 @@
  */
 package org.plos.annotation.service;
 
-import com.opensymphony.util.TextUtils;
-import org.plos.ApplicationException;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.plos.ApplicationException;
 
 /**
  * Base class for Annotation and reply.
@@ -43,11 +42,8 @@ public abstract class BaseAnnotation {
    * @return the escaped text
    */
   protected String escapeText(final String text) {
-    //TODO: Validate that this works ok.
-    final String commonsEscaped = StringEscapeUtils.escapeHtml(text);
-    final String symphonyEscaped = TextUtils.htmlEncode(text);
-    assert(commonsEscaped.equals(symphonyEscaped));
-    return commonsEscaped;
+//    final String symphonyEscaped = TextUtils.htmlEncode(text);
+    return StringEscapeUtils.escapeHtml(text);
   }
 
   /**
