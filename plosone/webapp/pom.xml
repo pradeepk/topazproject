@@ -22,12 +22,6 @@
       <artifactId>webwork-json-mod</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
-
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-common-impl</artifactId>
-      <version>${pom.parent.version}</version>
-    </dependency>
     <dependency>
       <groupId>it.unibo.cs</groupId>
       <artifactId>unibo-xpointer</artifactId>
