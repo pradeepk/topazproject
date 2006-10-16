@@ -249,7 +249,7 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("Wrong doi returned,", "10.1371/journal.pbio.0020294", doi);
 
     ObjectInfo[] oi = service.listSecondaryObjects(doi);
-    assertEquals("wrong number of object-infos", 6, oi.length);
+    assertEquals("wrong number of object-infos", 8, oi.length);
 
     assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g001", oi[0].getDoi());
     assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g002", oi[1].getDoi());
@@ -257,6 +257,8 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g004", oi[3].getDoi());
     assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g005", oi[4].getDoi());
     assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g006", oi[5].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.sv001", oi[6].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.sv002", oi[7].getDoi());
 
     assertEquals("label mismatch", "Figure 1", oi[0].getTitle());
     assertEquals("label mismatch", "Figure 2", oi[1].getTitle());
@@ -264,6 +266,8 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("label mismatch", "Figure 4", oi[3].getTitle());
     assertEquals("label mismatch", "Figure 5", oi[4].getTitle());
     assertEquals("label mismatch", "Figure 6", oi[5].getTitle());
+    assertEquals("label mismatch", "Video S1", oi[6].getTitle());
+    assertEquals("label mismatch", "Video S2", oi[7].getTitle());
 
     assertNotNull("missing description", oi[0].getDescription());
     assertNotNull("missing description", oi[1].getDescription());
@@ -271,6 +275,8 @@ public class ArticleServiceTest extends TestCase {
     assertNotNull("missing description", oi[3].getDescription());
     assertNotNull("missing description", oi[4].getDescription());
     assertNotNull("missing description", oi[5].getDescription());
+    assertNotNull("missing description", oi[6].getDescription());
+    assertNotNull("missing description", oi[7].getDescription());
 
     assertEquals("wrong number of rep-infos", 2, oi[0].getRepresentations().length);
     assertEquals("wrong number of rep-infos", 1, oi[1].getRepresentations().length);
@@ -278,6 +284,8 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("wrong number of rep-infos", 1, oi[3].getRepresentations().length);
     assertEquals("wrong number of rep-infos", 1, oi[4].getRepresentations().length);
     assertEquals("wrong number of rep-infos", 1, oi[5].getRepresentations().length);
+    assertEquals("wrong number of rep-infos", 1, oi[6].getRepresentations().length);
+    assertEquals("wrong number of rep-infos", 1, oi[7].getRepresentations().length);
 
     sort(oi[0].getRepresentations());
 
@@ -315,6 +323,16 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-name mismatch", "TIF", ri.getName());
     assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
     assertEquals("ri-size mismatch", 101566L, ri.getSize());
+
+    ri = oi[6].getRepresentations()[0];
+    assertEquals("ri-name mismatch", "MOV", ri.getName());
+    assertEquals("ri-cont-type mismatch", "video/quicktime", ri.getContentType());
+    assertEquals("ri-size mismatch", 0L, ri.getSize());
+
+    ri = oi[7].getRepresentations()[0];
+    assertEquals("ri-name mismatch", "MOV", ri.getName());
+    assertEquals("ri-cont-type mismatch", "video/quicktime", ri.getContentType());
+    assertEquals("ri-size mismatch", 0L, ri.getSize());
 
     // clean up
     service.delete(doi, true);

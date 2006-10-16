@@ -104,7 +104,7 @@ public class ArticleImpl implements Article {
       ("select $prev $cur subquery(select $p $o from ${MODEL} where $cur $p $o) " +
        "  from ${MODEL} where " +
        "  <${art}> <rdf:type> <topaz:Article> and " +
-       "  walk(<${art}> <topaz:nextGraphic> $cur and $prev <topaz:nextGraphic> $cur);").
+       "  walk(<${art}> <topaz:nextObject> $cur and $prev <topaz:nextObject> $cur);").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_TEST_ARTICLE =
