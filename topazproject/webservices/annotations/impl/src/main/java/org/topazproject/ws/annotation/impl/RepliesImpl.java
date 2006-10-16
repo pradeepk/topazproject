@@ -145,12 +145,7 @@ public class RepliesImpl implements Replies {
    * Creates a new RepliesImpl object.
    *
    * @param pep The xacml pep
-   * @param itql The itql service
-   * @param fedoraServer The fedora server uri
-   * @param apim Fedora API-M stub
-   * @param uploader Fedora uploader stub
-   * @param user The authenticated user
-   * @param user Base URI for generating reply ids
+   * @param ctx The topaz context
    */
   public RepliesImpl(RepliesPEP pep, TopazContext ctx) {
     this.pep      = pep;
@@ -223,9 +218,10 @@ public class RepliesImpl implements Replies {
     Map    values = new HashMap();
 
     String user = ctx.getUserName();
+
     if (user == null)
       user = "anonymous";
-    
+
     values.put("id", id);
     values.put("type", type);
     values.put("root", root);
@@ -260,8 +256,8 @@ public class RepliesImpl implements Replies {
    */
   public void deleteReplies(String root, String inReplyTo)
                      throws NoSuchAnnotationIdException, RemoteException {
-    checkInReplyTo(ItqlHelper.validateUri(root, "root"), 
-        ItqlHelper.validateUri(inReplyTo, "inReplyTo"));
+    checkInReplyTo(ItqlHelper.validateUri(root, "root"),
+                   ItqlHelper.validateUri(inReplyTo, "inReplyTo"));
 
     String txn   = "delete replies to " + inReplyTo;
     String query = ITQL_GET_DELETE_LIST_IN_REPLY_TO;
@@ -283,9 +279,10 @@ public class RepliesImpl implements Replies {
   }
 
   private void doDelete(String txn, String query) throws RemoteException {
-    String[] purgeList;
+    String[]   purgeList;
 
     ItqlHelper itql = ctx.getItqlHelper();
+
     try {
       itql.beginTxn(txn);
 
@@ -461,7 +458,7 @@ public class RepliesImpl implements Replies {
    * @see org.topazproject.ws.annotation.Replies#setAnnotationState
    */
   public void setReplyState(String id, int state)
-      throws RemoteException, NoSuchAnnotationIdException {
+                     throws RemoteException, NoSuchAnnotationIdException {
     URI thisUri = ItqlHelper.validateUri(id, "id");
     pep.checkAccess(pep.SET_REPLY_STATE, thisUri);
     checkId(thisUri);
@@ -479,8 +476,7 @@ public class RepliesImpl implements Replies {
     pep.checkAccess(pep.LIST_REPLIES_IN_STATE, URI.create(ctx.getObjectBaseUri() + REPLY_PID_NS));
 
     try {
-      String query =
-        "select $a from " + MODEL + " where $a <r:type> <tr:Reply>";
+      String query = "select $a from " + MODEL + " where $a <r:type> <tr:Reply>";
 
       if (mediator != null)
         query += (" and $a <dt:mediator> '" + ItqlHelper.escapeLiteral(mediator) + "'");
@@ -524,7 +520,7 @@ public class RepliesImpl implements Replies {
   }
 
   private URI checkInReplyTo(URI root, URI inReplyTo)
-      throws RemoteException, NoSuchAnnotationIdException {
+                      throws RemoteException, NoSuchAnnotationIdException {
     if (inReplyTo.equals(root))
       return inReplyTo;
 

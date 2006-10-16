@@ -282,13 +282,14 @@ public class AnnotationsImpl implements Annotations {
     for (int i = 0; i < preceding.length; i++)
       pep.checkAccess(pep.DELETE_ANNOTATION, URI.create(preceding[i]));
 
-    String[] purgeList = getFedoraObjects(id, deletePreceding);
+    String[]   purgeList = getFedoraObjects(id, deletePreceding);
 
-    String   del = DELETE_ITQL.replaceAll("\\Q${id}", id);
+    String     del = DELETE_ITQL.replaceAll("\\Q${id}", id);
 
-    String   txn = "delete " + id;
+    String     txn = "delete " + id;
 
     ItqlHelper itql = ctx.getItqlHelper();
+
     try {
       itql.beginTxn(txn);
       itql.doUpdate(del);
@@ -446,8 +447,7 @@ public class AnnotationsImpl implements Annotations {
                     URI.create(ctx.getObjectBaseUri() + ANNOTATION_PID_NS));
 
     try {
-      String query =
-        "select $a from " + MODEL + " where $a <r:type> <a:Annotation>";
+      String query = "select $a from " + MODEL + " where $a <r:type> <a:Annotation>";
 
       if (mediator != null)
         query += (" and $a <dt:mediator> '" + ItqlHelper.escapeLiteral(mediator) + "'");
