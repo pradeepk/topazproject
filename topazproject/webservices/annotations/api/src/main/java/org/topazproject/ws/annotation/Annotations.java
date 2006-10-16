@@ -143,7 +143,8 @@ public interface Annotations extends Remote {
    * annotations to this are deleted.
    *
    * @param id the id of the annotation to remove
-   * @param deletePreceding whether to delete all annotations that are superseded by this annotation.
+   * @param deletePreceding whether to delete all annotations that are superseded by this
+   *        annotation.
    *
    * @throws NoSuchAnnotationIdException if the annotation does not exist
    * @throws RemoteException if some other error occurred
@@ -171,7 +172,7 @@ public interface Annotations extends Remote {
    *
    * @param id the annotation id.
    *
-   * @return an array of annotation ids or metadata; the array will at least contain one element
+   * @return an array of annotation metadata; the array will at least contain one element
    *
    * @throws NoSuchAnnotationIdException if the annotation does not exist
    * @throws RemoteException if an error occurred
@@ -189,8 +190,8 @@ public interface Annotations extends Remote {
    * @param type the annotation type to use in filtering the annotations or <code>null</code>  to
    *        include all
    *
-   * @return an array of annotation ids or metadata for matching annotations; if no annotations
-   *         have been defined, an empty array is returned
+   * @return an array of annotation metadata for matching annotations; if no annotations have been
+   *         defined, an empty array is returned
    *
    * @throws RemoteException if an error occurred
    */
@@ -202,8 +203,8 @@ public interface Annotations extends Remote {
    *
    * @param id the annotation id
    *
-   * @return an array of annotation ids or metadata; if this annotation does not supersede any
-   *         other annotation, then an empty array is returned
+   * @return an array of annotation metadata; if this annotation does not supersede any other
+   *         annotation, then an empty array is returned
    *
    * @throws NoSuchAnnotationIdException if the annotation does not exist
    * @throws RemoteException if an error occurred
