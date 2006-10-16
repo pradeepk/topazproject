@@ -39,8 +39,8 @@ import com.sun.xacml.UnknownIdentifierException;
  * The implementation of the annotation service.
  */
 public class AnnotationServicePortSoapBindingImpl implements Annotations, ServiceLifecycle {
-  private static Log   log = LogFactory.getLog(AnnotationServicePortSoapBindingImpl.class);
-  private TopazContext ctx = new WSTopazContext(getClass().getName());
+  private static Log   log  = LogFactory.getLog(AnnotationServicePortSoapBindingImpl.class);
+  private TopazContext ctx  = new WSTopazContext(getClass().getName());
   private Annotations  impl = null;
 
   /*
@@ -51,7 +51,7 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
       log.trace("ServiceLifecycle#init");
 
     try {
-      AnnotationsPEP pep = new WSAnnotationsPEP((ServletEndpointContext)context);
+      AnnotationsPEP pep = new WSAnnotationsPEP((ServletEndpointContext) context);
       ctx.init(context);
       impl = (Annotations) ImplInvocationHandler.newProxy(new AnnotationsImpl(pep, ctx), ctx, log);
     } catch (Exception e) {
