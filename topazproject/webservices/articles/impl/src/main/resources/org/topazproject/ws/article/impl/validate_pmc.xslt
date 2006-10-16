@@ -104,7 +104,7 @@
     <xsl:variable name="refs" as="xs:string*"
         select="my:hrefs-to-doi($article//@xlink:href, $doi)"/>
 
-    <xsl:for-each select="$file-entries[. != $pmc-entry]">
+    <xsl:for-each select="$file-entries[not(. is $pmc-entry)]">
       <xsl:variable name="edoi" as="xs:string" select="my:fname-to-doi(@name)"/>
       <xsl:if test="$edoi != $doi and not($edoi = $refs)">
         <xsl:message>Found unreferenced entry in zip file: '<xsl:value-of select="@name"/>'</xsl:message>
@@ -118,7 +118,7 @@
   <!-- Check if the URI is absolute -->
   <xsl:function name="my:uri-is-absolute" as="xs:boolean">
     <xsl:param name="uri" as="xs:string"/>
-    <xsl:copy-of select="matches($uri, '^[^:/?#]+:')"/>
+    <xsl:sequence select="matches($uri, '^[^:/?#]+:')"/>
   </xsl:function>
 
   <!-- Attempt to resolve a relative DOI to a full URI. The rules for this are not
@@ -141,7 +141,7 @@
       <xsl:value-of
         select="if (starts-with(., 'doi:')) then substring-after(., ':')
                 else if (starts-with(., 'info:doi/')) then substring-after(., '/')
-                else my:resolve-relative-doi($base, .)"/>
+                else substring-after(my:resolve-relative-doi($base, .), '/')"/>
     </xsl:for-each>
   </xsl:function>
 </xsl:stylesheet>

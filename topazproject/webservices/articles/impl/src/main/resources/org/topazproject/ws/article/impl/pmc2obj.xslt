@@ -1,6 +1,7 @@
 <xsl:stylesheet version="2.0"
     xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
     xmlns:xs="http://www.w3.org/2001/XMLSchema"
+    xmlns:xlink="http://www.w3.org/1999/xlink"
     xmlns:my="my:ingest.pmc#"
     exclude-result-prefixes="my">
 
@@ -8,23 +9,33 @@
     - Convert a ZipInfo (zip.dtd) to an ObjectList (fedora.dtd). This contains the main 
     - object generation logic for ingest.
     -
-    - This converter handles zip's according to TOPAZ's specs using PMC 2.0 for the main
-    - article description.
+    - This converter handles zip's according to TOPAZ's specs and zip's from AP, both of
+    - which use PMC 2.0 for the main article description.
     -->
 
   <xsl:include href="validate_pmc.xslt"/>
 
   <xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
 
-  <xsl:param name="is_update"       select="false()"/>
+  <xsl:param name="is_update"       select="false()" as="xs:boolean"/>
 
-  <xsl:variable name="file-entries" select="/ZipInfo/ZipEntry[not(@isDirectory)]"/>
-  <xsl:variable name="pmc-entry"    select="my:find-pmc-xml(/ZipInfo)"/>
-  <xsl:variable name="article"      select="document($pmc-entry/@name, .)/article"/>
-  <xsl:variable name="meta"         select="$article/front/article-meta"/>
-  <xsl:variable name="doi"          select="$meta/article-id[@pub-id-type = 'doi']"/>
+  <xsl:variable name="file-entries" select="/ZipInfo/ZipEntry[not(@isDirectory)]"
+      as="element(ZipEntry)*"/>
+  <xsl:variable name="pmc-entry"    select="my:find-pmc-xml(/ZipInfo)"
+      as="element(ZipEntry)"/>
+  <xsl:variable name="article"      select="document($pmc-entry/@name, .)/article"
+      as="element(article)"/>
+  <xsl:variable name="meta"         select="$article/front/article-meta"
+      as="element(article-meta)"/>
+  <xsl:variable name="doi"          select="$meta/article-id[@pub-id-type = 'doi']"
+      as="xs:string"/>
   <xsl:variable name="zip-fmt"
-      select="if (my:basename($pmc-entry/@name) = 'pmc.xml') then 'TPZ' else 'AP'"/>
+      select="if (my:basename($pmc-entry/@name) = 'pmc.xml') then 'TPZ' else 'AP'"
+      as="xs:string"/>
+
+  <xsl:variable name="sec-dois"
+      select="distinct-values(my:fname-to-doi($file-entries[my:is-secondary(@name)]/@name))"
+      as="xs:string*"/>
 
   <!-- top-level template - do some checks, and then run the production templates -->
   <xsl:template match="/">
@@ -52,15 +63,21 @@
   </xsl:template>
 
   <!-- templates for the main (pmc) entry -->
+
+  <!-- generate the object and rdf for the article -->
   <xsl:template name="main-entry">
+    <xsl:variable name="rdf" as="element()*">
+      <xsl:call-template name="main-rdf"/>
+    </xsl:variable>
+
     <Object pid="{my:doi-to-pid($doi)}" cModel="PlosArticle">
       <DC xmlns:dc="http://purl.org/dc/elements/1.1/">
-        <xsl:call-template name="main-dc"/>
+        <xsl:sequence select="my:filter-dc($rdf, true())"/>
       </DC>
       <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:dc_terms="http://purl.org/dc/terms/">
-        <xsl:call-template name="main-rdf"/>
+        <xsl:sequence select="my:filter-dt(my:filter-dc($rdf, false()))"/>
       </RELS-EXT>
       <xsl:call-template name="main-ds"/>
     </Object>
@@ -69,16 +86,19 @@
              xmlns:topaz="http://rdf.topazproject.org/RDF/"
              xmlns:dc="http://purl.org/dc/elements/1.1/"
              xmlns:dc_terms="http://purl.org/dc/terms/">
-      <rdf:Description rdf:about="{my:pid-to-uri(my:doi-to-pid($doi))}">
-        <xsl:call-template name="main-dc"/>
-        <xsl:call-template name="main-rdf"/>
+      <rdf:Description rdf:about="{my:doi-to-uri($doi)}">
+        <xsl:sequence select="$rdf"/>
       </rdf:Description>
     </rdf:RDF>
   </xsl:template>
 
-  <xsl:template name="main-dc" xmlns:dc="http://purl.org/dc/elements/1.1/"
+  <!-- generate the rdf statements for the article -->
+  <xsl:template name="main-rdf" xmlns:dc="http://purl.org/dc/elements/1.1/"
                 xmlns:dc_terms="http://purl.org/dc/terms/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:topaz="http://rdf.topazproject.org/RDF/">
+    <rdf:type rdf:resource="http://rdf.topazproject.org/RDF/Article"/>
+
     <dc:identifier><xsl:value-of select="concat('info:doi/', $doi)"/></dc:identifier>
     <dc:title><xsl:value-of select="$meta/title-group/article-title"/></dc:title>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/Text"/>
@@ -106,7 +126,7 @@
       <dc:subject><xsl:value-of select="."/></dc:subject>
     </xsl:for-each>
     <xsl:if test="$meta/abstract">
-      <dc:description><xsl:value-of select="normalize-space(my:select-abstract($meta/abstract))"/></dc:description>
+      <dc:description rdf:parseType="Literal"><xsl:copy-of select="my:select-abstract($meta/abstract)/node()"/></dc:description>
     </xsl:if>
     <xsl:if test="$article/front/journal-meta/publisher">
       <dc:publisher><xsl:value-of select="$article/front/journal-meta/publisher/publisher-name"/></dc:publisher>
@@ -114,40 +134,42 @@
     <xsl:if test="$meta/copyright-statement">
       <dc:rights><xsl:value-of select="normalize-space($meta/copyright-statement)"/></dc:rights>
     </xsl:if>
-  </xsl:template>
 
-  <xsl:template name="main-rdf" xmlns:dc_terms="http://purl.org/dc/terms/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-                xmlns:topaz="http://rdf.topazproject.org/RDF/">
-    <rdf:type rdf:resource="http://rdf.topazproject.org/RDF/Article"/>
-
-    <xsl:for-each
-        select="distinct-values(my:fname-to-doi($file-entries[my:is-secondary(@name)]/@name))">
-      <dc_terms:hasPart rdf:resource="{my:pid-to-uri(my:doi-to-pid(.))}"/>
+    <xsl:for-each select="$sec-dois">
+      <dc_terms:hasPart rdf:resource="{my:doi-to-uri(.)}"/>
     </xsl:for-each>
-
-    <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
 
     <xsl:for-each 
         select="$meta/article-categories/subj-group[@subj-group-type = 'Discipline']/subject">
       <topaz:hasCategory
-        rdf:resource="{my:pid-to-uri(my:doi-to-pid(my:doi-to-aux($doi, 'category', position())))}"/>
+        rdf:resource="{my:doi-to-uri(my:doi-to-aux($doi, 'category', position()))}"/>
     </xsl:for-each>
+
+    <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
   </xsl:template>
 
+  <!-- generate the object's datastream definitions for the article -->
   <xsl:template name="main-ds">
     <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds"/>
   </xsl:template>
 
+  <!-- generate the auxiliary object definitions (objects not directly present in the pmc) -->
   <xsl:template name="cat-aux">
+    <xsl:variable name="rdf" as="element()*">
+      <xsl:call-template name="cat-aux-rdf"/>
+    </xsl:variable>
+
     <xsl:variable name="cat-pid" as="xs:string"
         select="my:doi-to-pid(my:doi-to-aux($doi, 'category', position()))"/>
 
     <Object pid="{$cat-pid}" cModel="PlosCategory">
+      <DC xmlns:dc="http://purl.org/dc/elements/1.1/">
+        <xsl:sequence select="my:filter-dc($rdf, true())"/>
+      </DC>
       <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:dc_terms="http://purl.org/dc/terms/">
-        <xsl:call-template name="cat-aux-rdf"/>
+        <xsl:sequence select="my:filter-dt(my:filter-dc($rdf, false()))"/>
       </RELS-EXT>
     </Object>
 
@@ -156,11 +178,12 @@
              xmlns:dc="http://purl.org/dc/elements/1.1/"
              xmlns:dc_terms="http://purl.org/dc/terms/">
       <rdf:Description rdf:about="{my:pid-to-uri($cat-pid)}">
-        <xsl:call-template name="cat-aux-rdf"/>
+        <xsl:sequence select="$rdf"/>
       </rdf:Description>
     </rdf:RDF>
   </xsl:template>
 
+  <!-- generate the rdf statements for an auxiliary object -->
   <xsl:template name="cat-aux-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <xsl:variable name="main-cat" as="xs:string"
         select="if (contains(., '/')) then substring-before(., '/') else ."/>
@@ -173,17 +196,23 @@
   </xsl:template>
 
   <!-- templates for all secondary entries -->
+
+  <!-- generate the object and rdf for a secondary object -->
   <xsl:template match="ZipEntry" mode="sec">
     <xsl:variable name="sdoi" select="my:fname-to-doi(@name)"/>
+    <xsl:variable name="rdf" as="element()*">
+      <xsl:call-template name="sec-rdf"/>
+    </xsl:variable>
+
 
     <Object pid="{my:doi-to-pid($sdoi)}" cModel="PlosArticleSecObj">
       <DC xmlns:dc="http://purl.org/dc/elements/1.1/">
-        <xsl:call-template name="sec-dc"/>
+        <xsl:sequence select="my:filter-dc($rdf, true())"/>
       </DC>
       <RELS-EXT xmlns:topaz="http://rdf.topazproject.org/RDF/"
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:dc_terms="http://purl.org/dc/terms/">
-        <xsl:call-template name="sec-rdf"/>
+        <xsl:sequence select="my:filter-dt(my:filter-dc($rdf, false()))"/>
       </RELS-EXT>
       <xsl:call-template name="sec-ds"/>
     </Object>
@@ -192,15 +221,17 @@
              xmlns:topaz="http://rdf.topazproject.org/RDF/"
              xmlns:dc="http://purl.org/dc/elements/1.1/"
              xmlns:dc_terms="http://purl.org/dc/terms/">
-      <rdf:Description rdf:about="{my:pid-to-uri(my:doi-to-pid($sdoi))}">
-        <xsl:call-template name="sec-dc"/>
-        <xsl:call-template name="sec-rdf"/>
+      <rdf:Description rdf:about="{my:doi-to-uri($sdoi)}">
+        <xsl:sequence select="$rdf"/>
       </rdf:Description>
     </rdf:RDF>
   </xsl:template>
 
-  <xsl:template name="sec-dc" xmlns:dc="http://purl.org/dc/elements/1.1/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+  <!-- generate the rdf statements for the secondary object -->
+  <xsl:template name="sec-rdf" xmlns:dc="http://purl.org/dc/elements/1.1/"
+                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:dc_terms="http://purl.org/dc/terms/"
+                xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <xsl:variable name="sdoi" select="my:fname-to-doi(@name)"/>
 
     <dc:identifier><xsl:value-of select="concat('info:doi/', $sdoi)"/></dc:identifier>
@@ -216,16 +247,21 @@
     <xsl:if test="$meta/copyright-statement">
       <dc:rights><xsl:value-of select="normalize-space($meta/copyright-statement)"/></dc:rights>
     </xsl:if>
+
+    <xsl:variable name="dc-types" as="xs:anyURI*"
+        select="distinct-values(
+                      for $n in current-group() return my:ext-to-dctype(my:get-ext($n/@name)))"/>
+    <xsl:for-each select="$dc-types">
+      <dc:type rdf:resource="{.}"/>
+    </xsl:for-each>
+
+    <dc_terms:isPartOf rdf:resource="{my:doi-to-uri($doi)}"/>
+
+    <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
   </xsl:template>
 
-  <xsl:template name="sec-rdf" xmlns:dc_terms="http://purl.org/dc/terms/"
-                xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-      <dc_terms:isPartOf rdf:resource="{my:pid-to-uri(my:doi-to-pid($doi))}"/>
-      <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
-  </xsl:template>
-
+  <!-- generate the object's datastream definitions for the secondary object -->
   <xsl:template name="sec-ds">
-    <xsl:variable name="sdoi" select="my:fname-to-doi(@name)"/>
     <xsl:apply-templates select="current-group()" mode="ds"/>
   </xsl:template>
 
@@ -261,7 +297,7 @@
     <xsl:variable name="base-zip-name" as="xs:string?"
               select="if ($zip-info/@name) then my:get-root(my:basename($zip-info/@name)) else ()"/>
 
-    <xsl:copy-of select="
+    <xsl:sequence select="
       if ($file-entries[my:basename(@name) = 'pmc.xml']) then
         $file-entries[my:basename(@name) = 'pmc.xml'][1]
       else if ($base-zip-name and
@@ -277,8 +313,8 @@
   <!-- Parse Filename into doi, ext -->
   <xsl:function name="my:parse-filename" as="xs:string+">
     <xsl:param name="fname" as="xs:string"/>
-    <xsl:copy-of select="(my:urldecode(replace($fname, '(.*)\..*', '$1')),
-                          my:urldecode(replace($fname, '.*\.', '')))"/>
+    <xsl:sequence select="(my:urldecode(replace($fname, '(.*)\..*', '$1')),
+                           my:urldecode(replace($fname, '.*\.', '')))"/>
   </xsl:function>
 
   <!-- remove any directories from the filename -->
@@ -329,6 +365,30 @@
   <xsl:function name="my:pid-to-uri" as="xs:string">
     <xsl:param name="pid" as="xs:string"/>
     <xsl:value-of select="concat('info:fedora/', $pid)"/>
+  </xsl:function>
+
+  <!-- DOI to URI mapping -->
+  <xsl:function name="my:doi-to-uri" as="xs:string">
+    <xsl:param name="doi" as="xs:string"/>
+    <xsl:value-of select="my:pid-to-uri(my:doi-to-pid($doi))"/>
+  </xsl:function>
+
+  <!-- Fedora-PID to DOI mapping -->
+  <xsl:function name="my:pid-to-doi" as="xs:string">
+    <xsl:param name="pid" as="xs:string"/>
+    <xsl:value-of select="my:urldecode(substring($pid, 5))"/>
+  </xsl:function>
+
+  <!-- URI to Fedora-PID mapping -->
+  <xsl:function name="my:uri-to-pid" as="xs:string">
+    <xsl:param name="uri" as="xs:string"/>
+    <xsl:value-of select="substring($uri, 13)"/>
+  </xsl:function>
+
+  <!-- URI to DOI mapping -->
+  <xsl:function name="my:uri-to-doi" as="xs:string">
+    <xsl:param name="uri" as="xs:string"/>
+    <xsl:value-of select="my:pid-to-doi(my:uri-to-pid($uri))"/>
   </xsl:function>
 
   <!-- article-DOI to auxiliary-DOI mapping -->
@@ -414,6 +474,43 @@
     <xsl:value-of select="if ($v &gt; 9) then $v - 7 else $v"/>
   </xsl:function>
 
+  <!-- separate out dublic-core from non-dublin-core -->
+  <xsl:function name="my:filter-dc" as="element()*">
+    <xsl:param name="rdf"    as="element()*"/>
+    <xsl:param name="inc-dc" as="xs:boolean"/>
+
+    <xsl:for-each select="$rdf">
+      <xsl:if test="(self::dc:* or self::oai_dc:*) and $inc-dc or
+                    not(self::dc:* or self::oai_dc:*) and not($inc-dc)"
+          xmlns:dc="http://purl.org/dc/elements/1.1/"
+          xmlns:oai_dc="http://www.openarchives.org/OAI/2.0/oai_dc/">
+        <xsl:sequence select="."/>
+      </xsl:if>
+    </xsl:for-each>
+  </xsl:function>
+
+  <!-- remove xsd:date datatype attributes for fedora unsupported datatypes -->
+  <xsl:function name="my:filter-dt" as="element()*">
+    <xsl:param name="rdf" as="element()*"/>
+
+    <xsl:for-each select="$rdf" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+      <xsl:choose>
+        <xsl:when test="@rdf:datatype and
+                          @rdf:datatype != 'http://www.w3.org/2001/XMLSchema#int' and
+                          @rdf:datatype != 'http://www.w3.org/2001/XMLSchema#long' and
+                          @rdf:datatype != 'http://www.w3.org/2001/XMLSchema#float' and
+                          @rdf:datatype != 'http://www.w3.org/2001/XMLSchema#double'">
+          <xsl:copy>
+            <xsl:sequence select="not(@rdf:datatype)"/>
+          </xsl:copy>
+        </xsl:when>
+        <xsl:otherwise>
+          <xsl:sequence select="."/>
+        </xsl:otherwise>
+      </xsl:choose>
+    </xsl:for-each>
+  </xsl:function>
+
   <!-- pmc structured name to simple string (for dc:creator etc) -->
   <xsl:function name="my:format-name" as="xs:string">
     <xsl:param name="contrib" as="element(contrib)"/>
@@ -448,7 +545,7 @@
         return $date[@pub-type = $t]
       )[1]"/>
 
-    <xsl:copy-of select="
+    <xsl:sequence select="
       if ($pref-date) then $pref-date
       else if ($date[not(@pub-type)]) then $date[not(@pub-type)]
       else $date[1]
@@ -497,7 +594,7 @@
         return $abstracts[@abstract-type = $t]
       )[1]"/>
 
-    <xsl:copy-of select="
+    <xsl:sequence select="
       if ($pref-abstract) then $pref-abstract
       else if ($abstracts[not(@abstract-type)]) then $abstracts[not(@abstract-type)]
       else $abstracts[1]
@@ -534,23 +631,47 @@
       else if ($e = 'png') then 'image/png'
       else if ($e = 'gif') then 'image/gif'
       else if ($e = 'tif' or $e = 'tiff') then 'image/tiff'
-      else if ($e = 'jpg' or $e = 'jpeg') then 'image/jpeg'
+      else if ($e = 'jpg' or $e = 'jpeg' or $e = 'jpe') then 'image/jpeg'
+      else if ($e = 'bmp') then 'image/bmp'
+      else if ($e = 'xpm') then 'image/x-xpixmap'
+      else if ($e = 'pnm') then 'image/x-portable-anymap'
+      else if ($e = 'ief') then 'image/ief'
+      else if ($e = 'ras') then 'image/x-cmu-raster'
       else if ($e = 'doc') then 'application/msword'
       else if ($e = 'xls') then 'application/vnd.ms-excel'
       else if ($e = 'ppt') then 'application/vnd.ms-powerpoint'
       else if ($e = 'ppt') then 'application/vnd.ms-powerpoint'
       else if ($e = 'mpg' or $e = 'mpeg') then 'video/mpeg'
+      else if ($e = 'mp4' or $e = 'mpg4') then 'video/mp4'
       else if ($e = 'mov' or $e = 'qt') then 'video/quicktime'
       else if ($e = 'avi') then 'video/x-msvideo'
+      else if ($e = 'wmv') then 'video/x-ms-wmv'
+      else if ($e = 'asf' or $e = 'asx') then 'video/x-ms-asf'
+      else if ($e = 'divx') then 'video/x-divx'
       else if ($e = 'wav') then 'audio/x-wav'
       else if ($e = 'au' or $e = 'snd') then 'audio/basic'
       else if ($e = 'mp2' or $e = 'mp3') then 'audio/mpeg'
       else if ($e = 'ram' or $e = 'rm') then 'audio/x-pn-realaudio'
       else if ($e = 'ra') then 'audio/x-realaudio'
       else if ($e = 'aif' or $e = 'aiff') then 'audio/x-aiff'
-      else if ($e = 'mid' or $e = 'midi') then 'audio/midi'
+      else if ($e = 'mid' or $e = 'midi' or $e = 'rmi') then 'audio/midi'
+      else if ($e = 'wma') then 'audio/x-ms-wma'
       else 'application/octet-stream'
       "/>
   </xsl:function>
 
+  <!-- Filename extension to dublin-core type mapping -->
+  <xsl:function name="my:ext-to-dctype" as="xs:anyURI?">
+    <xsl:param name="ext" as="xs:string"/>
+    <xsl:variable name="mime-type"  as="xs:string" select="my:ext-to-mime($ext)"/>
+    <xsl:variable name="media-type" as="xs:string" select="substring-before($mime-type, '/')"/>
+    <xsl:sequence select="
+      if      ($media-type = 'image') then xs:anyURI('http://purl.org/dc/dcmitype/StillImage')
+      else if ($media-type = 'video') then xs:anyURI('http://purl.org/dc/dcmitype/MovingImage')
+      else if ($media-type = 'audio') then xs:anyURI('http://purl.org/dc/dcmitype/Sound')
+      else if ($media-type = 'text')  then xs:anyURI('http://purl.org/dc/dcmitype/Text')
+      else if ($mime-type = 'application/vnd.ms-excel') then xs:anyURI('http://purl.org/dc/dcmitype/Dataset')
+      else ()
+      "/>
+  </xsl:function>
 </xsl:stylesheet>
