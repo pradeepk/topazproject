@@ -36,6 +36,8 @@
   <xsl:variable name="sec-dois"
       select="distinct-values(my:fname-to-doi($file-entries[my:is-secondary(@name)]/@name))"
       as="xs:string*"/>
+  <xsl:variable name="sec-obj-refs" select="for $doi in $sec-dois return my:links-for-doi($doi)[1]"
+      as="element()*"/>
 
   <!-- top-level template - do some checks, and then run the production templates -->
   <xsl:template match="/">
@@ -144,6 +146,10 @@
       <topaz:hasCategory
         rdf:resource="{my:doi-to-uri(my:doi-to-aux($doi, 'category', position()))}"/>
     </xsl:for-each>
+
+    <xsl:if test="$sec-obj-refs">
+      <topaz:nextObject rdf:resource="{my:doi-to-uri(my:link-to-doi($sec-obj-refs[1]/@xlink:href))}"/>
+    </xsl:if>
 
     <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
   </xsl:template>
@@ -257,6 +263,24 @@
 
     <dc_terms:isPartOf rdf:resource="{my:doi-to-uri($doi)}"/>
 
+    <xsl:variable name="idx" as="xs:integer?"
+        select="index-of(my:link-to-doi($sec-obj-refs/@xlink:href), my:fname-to-doi(./@name))"/>
+    <xsl:variable name="next" as="xs:string?" select="$sec-obj-refs[$idx + 1]/@xlink:href"/>
+    <xsl:if test="$next">
+      <topaz:nextObject rdf:resource="{my:doi-to-uri(my:link-to-doi($next))}"/>
+    </xsl:if>
+
+    <xsl:variable name="title-obj" as="element()?"
+        select="$sec-obj-refs[$idx]/(self::supplementary-material | parent::fig | parent::table-wrap)[1]"/>
+    <xsl:if test="$title-obj">
+      <xsl:if test="$title-obj/label">
+        <dc:title><xsl:value-of select="$title-obj/label"/></dc:title>
+      </xsl:if>
+      <xsl:if test="$title-obj/caption">
+        <dc:description rdf:parseType="Literal"><xsl:copy-of select="$title-obj/caption/node()"/></dc:description>
+      </xsl:if>
+    </xsl:if>
+
     <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
   </xsl:template>
 
@@ -335,6 +359,26 @@
           concat($doi, substring($froot, string-length(my:get-root($pmc-entry/@name)) + 1))
         else
           error((), concat('internal error: unknown format ', $zip-fmt, ' in fct fname-to-doi'))
+        "/>
+    </xsl:for-each>
+  </xsl:function>
+
+  <!-- Get DOI for link -->
+  <xsl:function name="my:link-to-doi" as="xs:string*">
+    <xsl:param name="name" as="xs:string*"/>
+    <xsl:for-each select="$name">
+      <xsl:value-of select="
+        if ($zip-fmt = 'TPZ') then
+          if (starts-with(., 'info:doi/')) then
+            substring(., 10)
+          else if (starts-with(., 'doi:')) then
+            substring(., 5)
+          else
+            error((), concat('error: unknown link uri ', ., ' in fct link-to-doi'))
+        else if ($zip-fmt = 'AP') then
+          my:fname-to-doi(.)
+        else
+          error((), concat('internal error: unknown format ', $zip-fmt, ' in fct link-to-doi'))
         "/>
     </xsl:for-each>
   </xsl:function>
@@ -673,5 +717,12 @@
       else if ($mime-type = 'application/vnd.ms-excel') then xs:anyURI('http://purl.org/dc/dcmitype/Dataset')
       else ()
       "/>
+  </xsl:function>
+
+  <!-- Filename extension to mime-type mapping; defaults to application/octet-stream if extension
+     - is not recognized -->
+  <xsl:function name="my:links-for-doi" as="element()*">
+    <xsl:param    name="doi" as="xs:string"/>
+    <xsl:sequence select="$article/body//*[my:link-to-doi(@xlink:href) = $doi]"/>
   </xsl:function>
 </xsl:stylesheet>

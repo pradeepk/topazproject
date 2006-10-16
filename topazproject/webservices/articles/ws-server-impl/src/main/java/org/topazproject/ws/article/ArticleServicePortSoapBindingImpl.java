@@ -121,6 +121,14 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
     return impl.getArticles(startDate, endDate, categories, authors, ascending);
   }
 
+  /**
+   * @see org.topazproject.ws.article.Article#listSecondaryObjects
+   */
+  public ObjectInfo[] listSecondaryObjects(String doi)
+      throws NoSuchArticleIdException, RemoteException {
+    return impl.listSecondaryObjects(doi);
+  }
+
   private static class WSArticlePEP extends ArticlePEP {
     static {
       init(WSArticlePEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);

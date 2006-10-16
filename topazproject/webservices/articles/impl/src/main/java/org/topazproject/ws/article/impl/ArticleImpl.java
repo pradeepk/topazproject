@@ -38,6 +38,7 @@ import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.StringAnswer;
+import org.topazproject.mulgara.itql.AnswerSet;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.topazproject.fedora.client.APIMStubFactory;
@@ -49,6 +50,7 @@ import org.topazproject.ws.article.DuplicateArticleIdException;
 import org.topazproject.ws.article.IngestException;
 import org.topazproject.ws.article.NoSuchObjectIdException;
 import org.topazproject.ws.article.NoSuchArticleIdException;
+import org.topazproject.ws.article.ObjectInfo;
 import org.topazproject.ws.article.RepresentationInfo;
 
 import org.topazproject.feed.ArticleFeed;
@@ -96,6 +98,18 @@ public class ArticleImpl implements Article {
 
   private static final String ITQL_GET_OBJ_INFO =
       ("select $p $o from ${MODEL} where <${subj}> $p $o;").
+      replaceAll("\\Q${MODEL}", MODEL);
+
+  private static final String ITQL_LIST_SEC_OBJS =
+      ("select $prev $cur subquery(select $p $o from ${MODEL} where $cur $p $o) " +
+       "  from ${MODEL} where " +
+       "  <${art}> <rdf:type> <topaz:Article> and " +
+       "  walk(<${art}> <topaz:nextGraphic> $cur and $prev <topaz:nextGraphic> $cur);").
+      replaceAll("\\Q${MODEL}", MODEL);
+
+  private static final String ITQL_TEST_ARTICLE =
+      ("select $id from ${MODEL} where " +
+       "  $id <rdf:type> <topaz:Article> and $id <tucana:is> <${art}>;").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private final URI        fedoraServer;
@@ -261,6 +275,58 @@ public class ArticleImpl implements Article {
     }
   }
 
+  public ObjectInfo[] listSecondaryObjects(String doi)
+      throws NoSuchArticleIdException, RemoteException {
+    if (doi == null)
+      throw new NullPointerException("doi may not be null");
+
+    checkAccess(pep.LIST_SEC_OBJECTS, doi);
+
+    String art = pid2URI(doi2PID(doi));
+    ItqlHelper.validateUri(art, "doi");
+
+    ItqlHelper itql = ctx.getItqlHelper();
+    try {
+      AnswerSet ans =
+          new AnswerSet(itql.doQuery(ItqlHelper.bindValues(ITQL_LIST_SEC_OBJS, "art", art)));
+      ans.next();
+      AnswerSet.QueryAnswerSet rows = ans.getQueryResults();
+
+      if (!rows.next() && !articleExists(itql, art))
+        throw new NoSuchArticleIdException(doi);
+      rows.beforeFirst();
+
+      Map loc = new HashMap();
+      while (rows.next()) {
+        ObjectInfo info = new ObjectInfo();
+        info.setDoi(pid2DOI(uri2PID(rows.getString("cur"))));
+
+        loc.put(pid2DOI(uri2PID(rows.getString("prev"))), info);
+
+        AnswerSet.QueryAnswerSet sqa = rows.getSubQueryResults(2);
+        info.setRepresentations(parseRepresenations(sqa));
+
+        sqa.beforeFirst();
+        while (sqa.next()) {
+          String pred = sqa.getString("p");
+          if (pred.equals(ItqlHelper.DC_URI + "title"))
+            info.setTitle(sqa.getString("o"));
+          if (pred.equals(ItqlHelper.DC_URI + "description"))
+            info.setDescription(sqa.getString("o"));
+        }
+      }
+
+      List infos = new ArrayList();
+      for (ObjectInfo info = (ObjectInfo) loc.get(doi); info != null;
+           info = (ObjectInfo) loc.get(info.getDoi()))
+        infos.add(info);
+
+      return (ObjectInfo[]) infos.toArray(new ObjectInfo[infos.size()]);
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error querying RDF", ae);
+    }
+  }
+
   protected static String state2Str(int state) {
     switch (state) {
       case ST_ACTIVE:
@@ -289,6 +355,24 @@ public class ArticleImpl implements Article {
       res[idx] = uri2PID(((String[]) dois.get(idx))[0]);
 
     return res;
+  }
+
+  /**
+   * Check if the given article exists.
+   *
+   * @param art the article's uri
+   * @return true if the article exists
+   * @throws RemoteException if an error occurred talking to the db
+   */
+  protected boolean articleExists(ItqlHelper itql, String art) throws RemoteException {
+    try {
+      StringAnswer ans =
+          new StringAnswer(itql.doQuery(ITQL_TEST_ARTICLE.replaceAll("\\Q${art}", art)));
+      List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+      return rows.size() > 0;
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error testing if article '" + art + "' exists", ae);
+    }
   }
 
   public void setRepresentation(String doi, String rep, DataHandler content)
@@ -446,23 +530,32 @@ public class ArticleImpl implements Article {
     ItqlHelper.validateUri(subj, "doi");
 
     ItqlHelper itql = ctx.getItqlHelper();
-    List info;
     try {
-      StringAnswer ans =
-          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_GET_OBJ_INFO, "subj", subj)));
-      info = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+      AnswerSet ans =
+          new AnswerSet(itql.doQuery(ItqlHelper.bindValues(ITQL_GET_OBJ_INFO, "subj", subj)));
+      ans.next();
+      AnswerSet.QueryAnswerSet info = ans.getQueryResults();
+
+      if (!info.next())
+        throw new NoSuchObjectIdException(doi);
+      info.beforeFirst();
+
+      return parseRepresenations(info);
     } catch (AnswerException ae) {
       throw new RemoteException("Error querying RDF", ae);
     }
+  }
 
-    if (info.size() == 0)
-      throw new NoSuchObjectIdException(doi);
+  private RepresentationInfo[] parseRepresenations(AnswerSet.QueryAnswerSet info)
+      throws AnswerException {
+    int predCol = info.indexOf("p");
+    int objCol  = info.indexOf("o");
 
     List reps = new ArrayList();
-    for (int idx = 0; idx < info.size(); idx++) {
-      String[] i = (String[]) info.get(idx);
-      if (i[0].equals(ItqlHelper.TOPAZ_URI + "hasRepresentation"))
-        reps.add(i[1]);
+    while (info.next()) {
+      String pred = info.getString(predCol);
+      if (pred.equals(ItqlHelper.TOPAZ_URI + "hasRepresentation"))
+        reps.add(info.getString(objCol));
     }
 
     RepresentationInfo[] res = new RepresentationInfo[reps.size()];
@@ -472,19 +565,20 @@ public class ArticleImpl implements Article {
       res[idx].setSize(-1);
     }
 
-    for (int idx = 0; idx < info.size(); idx++) {
-      String[] i = (String[]) info.get(idx);
+    info.beforeFirst();
+    while (info.next()) {
+      String pred = info.getString(predCol);
 
-      if (i[0].endsWith("-objectSize")) {
-        int idx2 = reps.indexOf(i[0].substring(ItqlHelper.TOPAZ_URI.length(), i[0].length() - 11));
-        if (idx2 >= 0)
-          res[idx2].setSize(Integer.parseInt(i[1]));
+      if (pred.endsWith("-objectSize")) {
+        int idx = reps.indexOf(pred.substring(ItqlHelper.TOPAZ_URI.length(), pred.length() - 11));
+        if (idx >= 0)
+          res[idx].setSize(Integer.parseInt(info.getString(objCol)));
       }
 
-      if (i[0].endsWith("-contentType")) {
-        int idx2 = reps.indexOf(i[0].substring(ItqlHelper.TOPAZ_URI.length(), i[0].length() - 12));
-        if (idx2 >= 0)
-          res[idx2].setContentType(i[1]);
+      if (pred.endsWith("-contentType")) {
+        int idx = reps.indexOf(pred.substring(ItqlHelper.TOPAZ_URI.length(), pred.length() - 12));
+        if (idx >= 0)
+          res[idx].setContentType(info.getString(objCol));
       }
     }
 

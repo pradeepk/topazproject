@@ -232,6 +232,94 @@ public class ArticleServiceTest extends TestCase {
     service.delete(doi, true);
   }
 
+  public void testSecondaryObjects() throws Exception {
+    // some NoSuchArticleIdException tests
+    boolean gotE = false;
+    try {
+      service.listSecondaryObjects("blah/foo");
+    } catch (NoSuchArticleIdException nsaie) {
+      assertEquals("Mismatched id in exception, ", "blah/foo", nsaie.getId());
+      gotE = true;
+    }
+    assertTrue("Failed to get expected no-such-object-id exception", gotE);
+
+    // ingest article and test listRepresentations()
+    URL article = getClass().getResource("/test_article.zip");
+    String doi = service.ingest(new DataHandler(article));
+    assertEquals("Wrong doi returned,", "10.1371/journal.pbio.0020294", doi);
+
+    ObjectInfo[] oi = service.listSecondaryObjects(doi);
+    assertEquals("wrong number of object-infos", 6, oi.length);
+
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g001", oi[0].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g002", oi[1].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g003", oi[2].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g004", oi[3].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g005", oi[4].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g006", oi[5].getDoi());
+
+    assertEquals("label mismatch", "Figure 1", oi[0].getTitle());
+    assertEquals("label mismatch", "Figure 2", oi[1].getTitle());
+    assertEquals("label mismatch", "Figure 3", oi[2].getTitle());
+    assertEquals("label mismatch", "Figure 4", oi[3].getTitle());
+    assertEquals("label mismatch", "Figure 5", oi[4].getTitle());
+    assertEquals("label mismatch", "Figure 6", oi[5].getTitle());
+
+    assertNotNull("missing description", oi[0].getDescription());
+    assertNotNull("missing description", oi[1].getDescription());
+    assertNotNull("missing description", oi[2].getDescription());
+    assertNotNull("missing description", oi[3].getDescription());
+    assertNotNull("missing description", oi[4].getDescription());
+    assertNotNull("missing description", oi[5].getDescription());
+
+    assertEquals("wrong number of rep-infos", 2, oi[0].getRepresentations().length);
+    assertEquals("wrong number of rep-infos", 1, oi[1].getRepresentations().length);
+    assertEquals("wrong number of rep-infos", 1, oi[2].getRepresentations().length);
+    assertEquals("wrong number of rep-infos", 1, oi[3].getRepresentations().length);
+    assertEquals("wrong number of rep-infos", 1, oi[4].getRepresentations().length);
+    assertEquals("wrong number of rep-infos", 1, oi[5].getRepresentations().length);
+
+    sort(oi[0].getRepresentations());
+
+    RepresentationInfo ri = oi[0].getRepresentations()[0];
+    assertEquals("ri-name mismatch", "PNG", ri.getName());
+    assertEquals("ri-cont-type mismatch", "image/png", ri.getContentType());
+    assertEquals("ri-size mismatch", 52422L, ri.getSize());
+
+    ri = oi[0].getRepresentations()[1];
+    assertEquals("ri-name mismatch", "TIF", ri.getName());
+    assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
+    assertEquals("ri-size mismatch", 120432L, ri.getSize());
+
+    ri = oi[1].getRepresentations()[0];
+    assertEquals("ri-name mismatch", "TIF", ri.getName());
+    assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
+    assertEquals("ri-size mismatch", 375480L, ri.getSize());
+
+    ri = oi[2].getRepresentations()[0];
+    assertEquals("ri-name mismatch", "TIF", ri.getName());
+    assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
+    assertEquals("ri-size mismatch", 170324L, ri.getSize());
+
+    ri = oi[3].getRepresentations()[0];
+    assertEquals("ri-name mismatch", "TIF", ri.getName());
+    assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
+    assertEquals("ri-size mismatch", 458812L, ri.getSize());
+
+    ri = oi[4].getRepresentations()[0];
+    assertEquals("ri-name mismatch", "TIF", ri.getName());
+    assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
+    assertEquals("ri-size mismatch", 164130L, ri.getSize());
+
+    ri = oi[5].getRepresentations()[0];
+    assertEquals("ri-name mismatch", "TIF", ri.getName());
+    assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
+    assertEquals("ri-size mismatch", 101566L, ri.getSize());
+
+    // clean up
+    service.delete(doi, true);
+  }
+
   private static byte[] loadURL(URL url) throws IOException {
     URLConnection con = url.openConnection();
     con.connect();

@@ -44,6 +44,9 @@ public interface Article extends Remote {
 
     /** The action that represents checking if we can access a specific article. */
     public static final String READ_META_DATA = "articles:readMetaData";
+
+    /** The action that represents a list-secondary-objects operation in XACML policies. */
+    public static final String LIST_SEC_OBJECTS = "articles:listSecondaryObjects";
   }
 
   /** Article state of "Active" */
@@ -172,4 +175,16 @@ public interface Article extends Remote {
   public String getArticles(String startDate, String endDate,
                             String[] categories, String[] authors,
                             boolean ascending) throws RemoteException;
+
+  /** 
+   * Get the list of secondary objects for the specified article. 
+   * 
+   * @param doi the doi of the article
+   * @return the (possibly empty) list of secondary objects; these will be in the same order
+   *         as they (first) appear in the article.
+   * @throws NoSuchArticleIdException if the article does not exist
+   * @throws RemoteException if some other error occured
+   */
+  public ObjectInfo[] listSecondaryObjects(String doi)
+      throws NoSuchArticleIdException, RemoteException;
 }
