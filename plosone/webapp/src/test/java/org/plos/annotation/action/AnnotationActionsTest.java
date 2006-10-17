@@ -10,7 +10,6 @@
  package org.plos.annotation.action;
 
 import com.opensymphony.xwork.Action;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
@@ -21,8 +20,6 @@ import org.plos.annotation.service.Reply;
 import org.plos.permission.service.PermissionWebService;
 import org.topazproject.ws.annotation.Annotations;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -379,15 +376,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     );
   }
 
-  public void testStringEscaping() throws UnsupportedEncodingException {
-    final String text = "http://localhost:9080/existingArticle/test.xml#xpointer(start-point(string-range(/para,\"\",0,1))/range-to(end-point(string-range(/para,\"\",2,1))))";
-    final String encodedUrl = URLEncoder.encode(text, "UTF-8");
-    log.debug(encodedUrl);
-    final String escapedText = StringEscapeUtils.escapeHtml(text);
-    log.debug(escapedText);
-  }
-
-  public void testAnnotatedContent() throws Exception {
+  public void testAnnotatedContentSpanningNodes() throws Exception {
 //    final String testXml =
 //      "<!DOCTYPE doc [<!ELEMENT testid (testid)*>"
 //      + " <!ATTLIST testid id ID #REQUIRED > ] > <doc> <chapter> <title>Chapter I</title> "
@@ -395,15 +384,9 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     String target = "http://localhost:9080/existingArticle/test.xml";
 
-    final String startPath1    = "/doc/chapter/para";
-    final String startPath2    = "/doc/chapter/title";
-    final String startPath3    = "/";
+    final String startPath1    = "/doc/chapter/title";
     final String endPath1    = "/doc/chapter/para";
-    final String endPath2    = "/doc/chapter/title";
-    final String endPath3    = "/";
     final String context1Body = "My annotation content 1";
-    final String context2Body = "My annotation content 2";
-    final String context3Body = "My annotation content 3";
     final String title       = "Title";
 
     final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
@@ -420,15 +403,15 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       public void execute(final String target, final String startPath, final String endPath, final String title, final String body) throws Exception {
         final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
         createAnnotationAction.setStartPath(startPath);
+        createAnnotationAction.setStartOffset(3);
         createAnnotationAction.setEndPath(endPath);
+        createAnnotationAction.setEndOffset(9);
         log.debug("context = " + createAnnotationAction.getTargetContext());
         assertEquals(Action.SUCCESS, createAnnotationAction.execute());
       }
     }
 
     new AnnotationCreator().execute(target, startPath1, endPath1, title, context1Body);
-    new AnnotationCreator().execute(target, startPath2, endPath2, title, context2Body);
-    new AnnotationCreator().execute(target, startPath3, endPath3, title, context3Body);
 
     final ListAnnotationAction listAnnotationAction1 = getListAnnotationAction();
     listAnnotationAction1.setTarget(target);
@@ -436,12 +419,79 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     final Annotation[] annotations2 = listAnnotationAction1.getAnnotations();
 
-    final String content = getAnnotationService().getAnnotatedContent(target);
+    final String content = getFetchArticleService().getAnnotatedContent(target);
     log.debug("Annotated content = " + content);
 
     assertTrue(content.contains(context1Body));
-    assertTrue(content.contains(context2Body));
-    assertTrue(content.contains(context3Body));
+
+    for (final Annotation annotation : annotations2) {
+      final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
+      deleteAnnotationAction.execute();
+    }
+  }
+
+  public void testAnnotatedContentInTheSameNode() throws Exception {
+//    final String testXml =
+//      "<!DOCTYPE doc [<!ELEMENT testid (testid)*>"
+//      + " <!ATTLIST testid id ID #REQUIRED > ] > <doc> <chapter> <title>Chapter I</title> "
+//      + " <para>Hello world, indeed, <em>wonderful</em> world</para></chapter></doc>";
+
+//    String target = "http://localhost:9080/existingArticle/test.xml";
+//    String target = "http://localhost:8080/plosone-webapp/article/fetchArticle.action?articleDOI=10.1371%2Fjournal.pone.0000008";
+    final String target = getArticleWebService().getObjectURL("10.1371/journal.pone.0000008", "XML");
+    log.debug("target =" + target);
+    
+    final String startPath1    = "/article[1]/body[1]/sec[2]/sec[1]/p[4]";
+    final int startOffset1 = 1;
+    final String endPath1    = startPath1;
+    final int endOffset1 = 20;
+    final String context1Body = "Content for the first annotation1";
+
+    final String startPath2    = "/article[1]/body[1]/sec[2]/sec[2]/p[1]";
+    final int startOffset2 = 1;
+    final String endPath2    = startPath2;
+    final int endOffset2 = 60;
+    final String context2Body = "Content for the second annotation1";
+
+    final String title       = "Title";
+
+    final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
+    listAnnotationAction.setTarget(target);
+    listAnnotationAction.execute();
+    Annotation[] annotations = listAnnotationAction.getAnnotations();
+
+    for (final Annotation annotation : annotations) {
+      final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
+      deleteAnnotationAction.execute();
+    }
+
+    class AnnotationCreator {
+      public void execute(final String target, final String startPath, final int startOffset, final String endPath, final int endOffset, final String title, final String body) throws Exception {
+        final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
+        createAnnotationAction.setStartPath(startPath);
+        createAnnotationAction.setStartOffset(startOffset);
+        createAnnotationAction.setEndPath(endPath);
+        createAnnotationAction.setEndOffset(endOffset);
+
+        log.debug("context = " + createAnnotationAction.getTargetContext());
+        assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+      }
+    }
+
+    new AnnotationCreator().execute(target, startPath1, startOffset1, endPath1, endOffset1, title, context1Body);
+    new AnnotationCreator().execute(target, startPath2, startOffset2, endPath2, endOffset2, title, context2Body);
+
+    final ListAnnotationAction listAnnotationAction1 = getListAnnotationAction();
+    listAnnotationAction1.setTarget(target);
+    listAnnotationAction1.execute();
+
+    final Annotation[] annotations2 = listAnnotationAction1.getAnnotations();
+
+    final String content = getFetchArticleService().getAnnotatedContent(target);
+    log.debug("Annotated content = " + content);
+
+    //As the body is not inlined by the current annotator.
+    assertTrue(content.contains(target));
 
     for (final Annotation annotation : annotations2) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
@@ -482,7 +532,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     createAnnotationAction.setTitle(title);
     createAnnotationAction.setTarget(target);
     createAnnotationAction.setStartPath("/");
-    createAnnotationAction.setStartOffset(0);
+    createAnnotationAction.setStartOffset(1);
     createAnnotationAction.setEndPath("/");
     createAnnotationAction.setEndOffset(2);
     createAnnotationAction.setMimeType(mimeType);
@@ -490,7 +540,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     return createAnnotationAction;
   }
 
-  public void testAnnotatedContent2() throws Exception {
+  public void testAnnotatedContentWithSimpleStringRange() throws Exception {
     final String testXml =
       "<!DOCTYPE doc [<!ELEMENT testid (testid)*>"
       + " <!ATTLIST testid id ID #REQUIRED > ] > <doc> <chapter> <title>Chapter I</title> "
@@ -500,9 +550,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     String       context1    = "foo:bar#xpointer(string-range(/,'Hello+world'))";
     String       context2    = "foo:bar#xpointer(string-range(/,'indeed,+wonderful'))";
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
-    String       bodyUrl     = "http://gandalf.topazproject.org";
     String       title       = "Title";
-    String       mediator    = "integration-test";
     AnnotationService service = getAnnotationService();
     Annotation[] annotations = service.listAnnotations(subject);
 
@@ -513,7 +561,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     service.createAnnotation(subject, context2, null, title, "text/plain", "body", false);
     service.createAnnotation(subject, context3, null, title, "text/plain", "body", false);
 
-    String content = service.getAnnotatedContent(subject);
+    String content = getFetchArticleService().getAnnotatedContent(subject);
     log.debug(content);
 
     annotations = service.listAnnotations(subject);
@@ -521,7 +569,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       service.deleteAnnotation(annotation1.getId(), true);
   }
 
-  public void testAnnotatedContent3() throws Exception {
+  public void testAnnotatedContentWithSimpleStringRangeLocAndLength() throws Exception {
     final String testXml =
       "<!DOCTYPE doc [<!ELEMENT testid (testid)*>"
       + " <!ATTLIST testid id ID #REQUIRED > ] > <doc> <chapter> <title>Chapter I</title> "
@@ -529,22 +577,21 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     final String subject     = "http://localhost:9080/existingArticle/test.xml";
     String       context1    = "foo:bar#xpointer(string-range(/,'Hello+world'))";
-    String       context2    = "foo:bar#xpointer(string-range(/doc/chapter/title,'',0,5))";
+    String       context2    = "foo:bar#xpointer(string-range(/doc/chapter/title,'',0,5)[1])";
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
-    String       bodyUrl     = "http://gandalf.topazproject.org";
     String       title       = "Title";
-    String       mediator    = "integration-test";
     AnnotationService service = getAnnotationService();
     Annotation[] annotations = service.listAnnotations(subject);
 
-    for (Annotation annotation : annotations)
+    for (Annotation annotation : annotations) {
       service.deleteAnnotation(annotation.getId(), true);
+    }
 
     service.createAnnotation(subject, context1, null, title, "text/plain", "body", false);
     service.createAnnotation(subject, context2, null, title, "text/plain", "body", false);
     service.createAnnotation(subject, context3, null, title, "text/plain", "body", false);
 
-    String content = service.getAnnotatedContent(subject);
+    String content = getFetchArticleService().getAnnotatedContent(subject);
     log.debug(content);
 
     annotations = service.listAnnotations(subject);

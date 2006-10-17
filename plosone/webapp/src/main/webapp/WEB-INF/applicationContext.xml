@@ -23,6 +23,7 @@
     <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleWebService"/>
+    <property name="annotationWebService" ref="annotationWebService"/>
     <property name="useTranslet" value="true"/>
   </bean>
 
@@ -32,9 +33,14 @@
   </util:map>
 
   <!-- TODO: Update the servicePort url's automatically using maven build process itself-->
-  <!-- TODO: Make the article web service configuration in the same pattern as permission or annotationWebService -->
   <bean id="articleWebService" class="org.plos.article.service.ArticleWebService" scope="session">
-    <property name="servicePort" value="http://localhost:9080/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort"/>
+    <property name="userContext" ref="userContext"/>
+    <property name="configurationMap">
+      <map>
+        <entry key="uri" value="http://localhost:9080/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort"/>
+        <entry key="auth-method" value-ref="auth-method"/>
+      </map>
+    </property>
   </bean>
 
   <bean id="defaultEncodingCharset" class="java.lang.String">

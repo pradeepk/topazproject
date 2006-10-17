@@ -1,5 +1,5 @@
 /* $HeadURL::                                                                            $
- * $Id$
+ * $Id:ArticleListAction.java 722 2006-10-02 16:42:45Z viru $
  */
 package org.plos.article.action;
 
@@ -29,6 +29,7 @@ public class ArticleListAction extends ActionSupport {
     list.add("10.1371/journal.pbio.0020042");
     list.add("10.1371/journal.pbio.0020382");
     list.add("10.1371/journal.pbio.0020317");
+    list.add("10.1371/journal.pone.0000008");
     return list;
   }
 

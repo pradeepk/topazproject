@@ -5,13 +5,18 @@ package org.plos.article.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.ApplicationException;
+import org.plos.annotation.service.AnnotationWebService;
+import org.plos.annotation.service.Annotator;
 import org.plos.util.FileUtils;
 import org.topazproject.common.NoSuchIdException;
+import org.topazproject.ws.annotation.AnnotationInfo;
 import org.w3c.dom.Document;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
+import javax.activation.DataHandler;
+import javax.activation.URLDataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
@@ -29,12 +34,12 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.Writer;
-import java.net.MalformedURLException;
+import java.io.InputStream;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Fetch article service
@@ -49,6 +54,7 @@ public class FetchArticleService {
 
   private static final Log log = LogFactory.getLog(FetchArticleService.class);
   private Map<String, InputSource> entityResolvers = new HashMap<String, InputSource>();
+  private AnnotationWebService annotationWebService;
 
   public void init() {
     // Set the TransformerFactory system property.
@@ -61,28 +67,27 @@ public class FetchArticleService {
    * Get the DOI transformed as HTML.
    * @param articleDOI articleDOI
    * @param writer writer
-   * @throws IOException
-   * @throws TransformerException
-   * @throws java.net.MalformedURLException
-   * @throws java.io.FileNotFoundException
-   * @throws java.rmi.RemoteException
-   * @throws org.topazproject.common.NoSuchIdException
-   * @throws javax.xml.parsers.ParserConfigurationException
-   * @throws org.xml.sax.SAXException
-   * @throws java.net.URISyntaxException
+   * @throws org.plos.ApplicationException ApplicationException
+   * @throws java.rmi.RemoteException RemoteException
+   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
    */
-  public void getDOIAsHTML(final String articleDOI, final Writer writer) throws TransformerException, NoSuchIdException, IOException, RemoteException, MalformedURLException, FileNotFoundException, ParserConfigurationException, SAXException, URISyntaxException {
+  public void getDOIAsHTML(final String articleDOI, final Writer writer) throws ApplicationException, RemoteException, NoSuchIdException {
     final String objectURL = articleService.getObjectURL(articleDOI, articleRep);
 
     transform(objectURL, writer);
   }
 
-  private void transform(final String objectURL, final Writer writer) throws TransformerException, ParserConfigurationException, SAXException, IOException, URISyntaxException {
-    final Transformer transformer = getTransformer();
+  private void transform(final String objectURL, final Writer writer) throws ApplicationException {
+    try {
+      final Transformer transformer = getTransformer();
 
-    transformer.transform(
-                          getDOMSource(objectURL),
-                          new StreamResult(writer));
+      transformer.transform(getDOMSource(objectURL),
+                            new StreamResult(writer));
+    } catch (Exception e) {
+      log.error("Transformation of article failed", e);
+      throw new ApplicationException("Transformation of article failed", e);
+    }
+
   }
 
   private Transformer getTransformer() throws FileNotFoundException, TransformerException {
@@ -106,7 +111,7 @@ public class FetchArticleService {
   /**
    * Get an XSL transformer.
    * @return Transformer
-   * @throws TransformerConfigurationException
+   * @throws TransformerConfigurationException TransformerConfigurationException
    */
   private Transformer getXSLTransformer() throws TransformerException {
     if (null == tFactory || null == source) {
@@ -122,8 +127,8 @@ public class FetchArticleService {
   /**
    * Get a translet - a compiled stylesheet.
    * @return translet
-   * @throws TransformerException
-   * @throws FileNotFoundException
+   * @throws TransformerException TransformerException
+   * @throws FileNotFoundException FileNotFoundException
    */
   public Transformer getTranslet() throws TransformerException, FileNotFoundException {
     if (null == translet) {
@@ -144,7 +149,7 @@ public class FetchArticleService {
 
   /** Set the XSL Template to be used for transformation
    * @param xslTemplate xslTemplate
-   * @throws java.net.URISyntaxException
+   * @throws java.net.URISyntaxException URISyntaxException
    */
   public void setXslTemplate(final String xslTemplate) throws URISyntaxException {
     File file = getAsFile(xslTemplate);
@@ -157,7 +162,7 @@ public class FetchArticleService {
 
   /**
    * @param filenameOrURL filenameOrURL
-   * @throws URISyntaxException
+   * @throws URISyntaxException URISyntaxException
    * @return the local or remote file or url as a java.io.File
    */
   public File getAsFile(final String filenameOrURL) throws URISyntaxException {
@@ -190,12 +195,13 @@ public class FetchArticleService {
    * Get the xmlFile as a DOMSource.
    * @param xmlFile xmlFile
    * @return an instance of DOMSource
-   * @throws ParserConfigurationException
-   * @throws SAXException
-   * @throws IOException
-   * @throws URISyntaxException
+   * @throws ParserConfigurationException ParserConfigurationException
+   * @throws SAXException SAXException
+   * @throws IOException IOException
+   * @throws URISyntaxException URISyntaxException
+   * @throws org.plos.ApplicationException ApplicationException
    */
-  public Source getDOMSource(final String xmlFile) throws ParserConfigurationException, SAXException, IOException, URISyntaxException {
+  public Source getDOMSource(final String xmlFile) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException {
     // Create a builder factory
     final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setNamespaceAware(true);
@@ -203,16 +209,16 @@ public class FetchArticleService {
 
     // Create the builder and parse the file
     final DocumentBuilder builder = factory.newDocumentBuilder();
-    builder.setEntityResolver(new EntityResolver() {
-      public InputSource resolveEntity(final String publicId, final String systemId) throws SAXException, IOException {
-        return getInputSource(systemId);
-      }
-
-    });
+//    builder.setEntityResolver(new EntityResolver() {
+//      public InputSource resolveEntity(final String publicId, final String systemId) throws SAXException, IOException {
+//        return getInputSource(systemId);
+//      }
+//
+//    });
 
     Document doc;
     if (FileUtils.isHttpURL(xmlFile)) {
-      doc = builder.parse(xmlFile);
+      doc = builder.parse(getAnnotatedContentAsInputStream(xmlFile));
     } else {
       try {
         doc = builder.parse(getAsFile(xmlFile));
@@ -254,4 +260,38 @@ public class FetchArticleService {
     }
   }
 
+  /**
+   * Return the annotated content
+   * @param target target
+   * @return the annotated content
+   * @throws java.io.IOException IOException
+   */
+  public String getAnnotatedContent(final String target) throws IOException {
+    return FileUtils.getTextFromCharStream(getAnnotatedContentAsInputStream(target));
+  }
+
+  /**
+   * Return the annotated content
+   * @param target target
+   * @return the annotated content
+   * @throws java.io.IOException IOException
+   */
+  public InputStream getAnnotatedContentAsInputStream(final String target) throws IOException {
+    DataHandler content = new DataHandler(new URLDataSource(new URL(target)));
+    final AnnotationInfo[] annotations = annotationWebService.listAnnotations(target);
+
+    if (annotations.length != 0) {
+      content = Annotator.annotate(content, annotations);
+    }
+
+    return content.getInputStream();
+  }
+
+  public AnnotationWebService getAnnotationWebService() {
+    return annotationWebService;
+  }
+
+  public void setAnnotationWebService(final AnnotationWebService annotationWebService) {
+    this.annotationWebService = annotationWebService;
+  }
 }

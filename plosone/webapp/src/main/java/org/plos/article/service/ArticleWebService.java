@@ -9,15 +9,20 @@
  */
 package org.plos.article.service;
 
-import org.topazproject.ws.article.Article;
-import org.topazproject.ws.article.ArticleServiceLocator;
+import org.plos.service.BaseConfigurableService;
+import org.topazproject.authentication.ProtectedService;
 import org.topazproject.common.DuplicateIdException;
-import org.topazproject.ws.article.IngestException;
 import org.topazproject.common.NoSuchIdException;
+import org.topazproject.ws.article.Article;
+import org.topazproject.ws.article.ArticleClientFactory;
+import org.topazproject.ws.article.ArticleServiceLocator;
+import org.topazproject.ws.article.IngestException;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
+import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.RemoteException;
 
@@ -26,8 +31,13 @@ import java.rmi.RemoteException;
  * Article vs the service facet of it.
  * This provides a way to access the "Article" service.
  */
-public class ArticleWebService {
+public class ArticleWebService extends BaseConfigurableService {
   private Article delegateService;
+
+  public void init() throws IOException, URISyntaxException, ServiceException {
+    final ProtectedService permissionProtectedService = getProtectedService();
+    delegateService = ArticleClientFactory.create(permissionProtectedService);
+  }
 
   /**
    * Ingest an an article.
@@ -39,6 +49,7 @@ public class ArticleWebService {
    */
   public String ingest(final DataHandler dataHandler)
           throws RemoteException, IngestException, DuplicateIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     return delegateService.ingest(dataHandler);
   }
 
@@ -51,6 +62,7 @@ public class ArticleWebService {
    */
   public void markSuperseded(final String oldDoi, final String newDoi)
           throws RemoteException, NoSuchIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     delegateService.markSuperseded(oldDoi, newDoi);
   }
 
@@ -64,6 +76,7 @@ public class ArticleWebService {
    */
   public String getObjectURL(final String doi, final String rep)
           throws RemoteException, NoSuchIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     return delegateService.getObjectURL(doi, rep);
   }
 
@@ -76,6 +89,7 @@ public class ArticleWebService {
    */
   public void delete(final String doi, final boolean purge)
           throws RemoteException, NoSuchIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     delegateService.delete(doi, purge);
   }
 
@@ -88,6 +102,7 @@ public class ArticleWebService {
    */
   public void setState(final String doi, final int state)
           throws RemoteException, NoSuchIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     delegateService.setState(doi, state);
   }
 
@@ -99,6 +114,7 @@ public class ArticleWebService {
    */
   public void setServicePort(final String serviceUrl)
           throws ServiceException, MalformedURLException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     delegateService = new ArticleServiceLocator()
             .getArticleServicePort(new URL(serviceUrl));
   }

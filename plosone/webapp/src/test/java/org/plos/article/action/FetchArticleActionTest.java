@@ -1,5 +1,5 @@
 /* $HeadURL::                                                                            $
- * $Id$
+ * $Id:FetchArticleActionTest.java 722 2006-10-02 16:42:45Z viru $
  *
  * Copyright (c) 2006 by Topaz, Inc.
  * http://topazproject.org
@@ -9,9 +9,11 @@
  */
  package org.plos.article.action;
 
+import com.opensymphony.xwork.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
+import org.plos.annotation.action.BodyFetchAction;
 import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
 
@@ -27,8 +29,11 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
 //    final String resourceToIngest = BASE_TEST_PATH  + "test_article.zip";
 //    final String resourceDOI = "10.1371/journal.pbio.0020294";
 
-    final String resourceToIngest = BASE_TEST_PATH  + "pbio.0020042.zip";
-    final String resourceDOI = "10.1371/journal.pbio.0020042";
+//    final String resourceToIngest = BASE_TEST_PATH  + "pbio.0020042.zip";
+//    final String resourceDOI = "10.1371/journal.pbio.0020042";
+
+    final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
+    final String resourceDOI = "10.1371/journal.pone.0000008";
 
 //    final String resourceToIngest = BASE_TEST_PATH  + "pbio.0020382.zip";
 //    final String resourceDOI = "10.1371/journal.pbio.0020382";
@@ -62,10 +67,21 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     assertNotNull(transformedArticle);
   }
 
+  public void testFetchArticleReturnsLinkifiedText() throws Exception {
+    final BodyFetchAction bodyFetchAction = getBodyFetchAction();
+    bodyFetchAction.setBodyUrl("http://localhost:9080/existingArticle/test.xml");
+    assertEquals(Action.SUCCESS, bodyFetchAction.execute());
+    final String articleBody = bodyFetchAction.getBody();
+    log.debug(articleBody);
+    assertTrue(articleBody.contains("href=\""));
+  }
+
   public void testShouldInjestArticle() throws Exception {
 //    doIngestTest("10.1371/journal.pbio.0020294", BASE_TEST_PATH  + "test_article.zip");
 
     doIngestTest("10.1371/journal.pbio.0020042", BASE_TEST_PATH  + "pbio.0020042.zip");
+//    doIngestTest("10.1371/journal.pone.0000008", BASE_TEST_PATH  + "pone.0000008.zip");
+    
 //    doIngestTest("10.1371/journal.pbio.0020294", BASE_TEST_PATH  + "pbio.0020294.zip");
 //    doIngestTest("10.1371/journal.pbio.0020317", BASE_TEST_PATH  + "pbio.0020317.zip");
 //    doIngestTest("10.1371/journal.pbio.0020382", BASE_TEST_PATH  + "pbio.0020382.zip");
@@ -78,7 +94,11 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
       // ignore - this just means there wasn't any stale stuff left
     }
 
-    final URL article = getClass().getResource(resourceToIngest);
+    URL article = getClass().getResource(resourceToIngest);
+    if (null == article) {
+      article = new File(resourceToIngest).toURL();
+    }
+
     String doi = getArticleWebService().ingest(new DataHandler(article));
     assertEquals(doi, resourceDOI);
 
