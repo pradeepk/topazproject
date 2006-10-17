@@ -441,13 +441,15 @@ public class AnnotationsImpl implements Annotations {
   /*
    * @see org.topazproject.ws.annotation.Annotations#listAnnotations
    */
-  public String[] listAnnotations(String mediator, int state)
-                           throws RemoteException {
+  public AnnotationInfo[] listAnnotations(String mediator, int state)
+                                   throws RemoteException {
     pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE,
                     URI.create(ctx.getObjectBaseUri() + ANNOTATION_PID_NS));
 
     try {
-      String query = "select $a from " + MODEL + " where $a <r:type> <a:Annotation>";
+      String query =
+        "select $a subquery(select $ap $ao from " + MODEL + " where $a $ap $ao) from " + MODEL
+        + " where $a <r:type> <a:Annotation>";
 
       if (mediator != null)
         query += (" and $a <dt:mediator> '" + ItqlHelper.escapeLiteral(mediator) + "'");
@@ -457,19 +459,10 @@ public class AnnotationsImpl implements Annotations {
       else
         query += (" and $a <topaz:state> '" + state + "';");
 
-      Answer    ans  = new Answer(ctx.getItqlHelper().doQuery(query));
-      List      rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
+      List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
-      int       c      = rows.size();
-      ArrayList result = new ArrayList(c);
-
-      for (int i = 0; i < c; i++) {
-        Object[] cols = (Object[]) rows.get(i);
-
-        result.add(AnnotationModel.getColumnValue(cols[0]).toString());
-      }
-
-      return (String[]) result.toArray(new String[0]);
+      return buildAnnotationInfoList(rows);
     } catch (AnswerException e) {
       throw new RemoteException("Error querying RDF", e);
     }

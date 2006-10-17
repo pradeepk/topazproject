@@ -142,8 +142,8 @@ public class AnnotationServicePortSoapBindingImpl implements Annotations, Servic
   /*
    * @see org.topazproject.ws.annotation.Annotations#listAnnotations
    */
-  public String[] listAnnotations(String mediator, int state)
-                           throws RemoteException {
+  public AnnotationInfo[] listAnnotations(String mediator, int state)
+                                   throws RemoteException {
     return impl.listAnnotations(mediator, state);
   }
 

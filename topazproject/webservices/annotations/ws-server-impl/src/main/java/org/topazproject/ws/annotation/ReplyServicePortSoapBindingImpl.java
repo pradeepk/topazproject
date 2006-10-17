@@ -37,7 +37,7 @@ import com.sun.xacml.UnknownIdentifierException;
  * The implementation of the reply service.
  */
 public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycle {
-  private static Log   log = LogFactory.getLog(ReplyServicePortSoapBindingImpl.class);
+  private static Log   log  = LogFactory.getLog(ReplyServicePortSoapBindingImpl.class);
   private TopazContext ctx  = new WSTopazContext(getClass().getName());
   private Replies      impl = null;
 
@@ -144,8 +144,8 @@ public class ReplyServicePortSoapBindingImpl implements Replies, ServiceLifecycl
   /*
    * @see org.topazproject.ws.annotation.Reply#listReplies
    */
-  public String[] listReplies(String mediator, int state)
-                       throws RemoteException {
+  public ReplyInfo[] listReplies(String mediator, int state)
+                          throws RemoteException {
     return impl.listReplies(mediator, state);
   }
 

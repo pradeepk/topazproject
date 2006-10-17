@@ -242,10 +242,10 @@ public interface Replies extends Remote {
    * @param state the state to filter the list of replies by or 0 to return replies in any
    *        administartive state
    *
-   * @return an array of id's; if no matching replies are found, an empty array is returned
+   * @return an array of replies; if no matching replies are found, an empty array is returned
    *
    * @throws RemoteException if some error occured
    */
-  public String[] listReplies(String mediator, int state)
-                       throws RemoteException;
+  public ReplyInfo[] listReplies(String mediator, int state)
+                          throws RemoteException;
 }

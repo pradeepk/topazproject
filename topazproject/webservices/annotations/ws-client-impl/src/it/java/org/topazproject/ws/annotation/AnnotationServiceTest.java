@@ -74,14 +74,15 @@ public class AnnotationServiceTest extends TestCase {
     String           title       = "Title";
     String           mediator    = "integration-test";
     AnnotationInfo[] annotations = service.listAnnotations(mediator, subject, null);
-    String[]         ids         = service.listAnnotations(mediator, 0);
 
     try {
       for (int i = 0; i < annotations.length; i++)
         service.deleteAnnotation(annotations[i].getId(), true);
 
-      for (int i = 0; i < ids.length; i++)
-        service.deleteAnnotation(ids[i], true);
+      annotations = service.listAnnotations(mediator, 0);
+
+      for (int i = 0; i < annotations.length; i++)
+        service.deleteAnnotation(annotations[i].getId(), true);
     } catch (NoSuchAnnotationIdException nsaie) {
       fail("Unexpected NoSuchAnnotationIdException");
     }
@@ -211,20 +212,20 @@ public class AnnotationServiceTest extends TestCase {
 
     service.setAnnotationState(annotation, 42);
 
-    ids = service.listAnnotations(mediator, 42);
-    assertTrue("Expected one annotation, got " + ids.length, ids.length == 1);
-    assertEquals("Expected annotation-id '" + annotation + "', got '" + ids[0] + "'", ids[0],
-                 annotation);
+    annotations = service.listAnnotations(mediator, 42);
+    assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
+    assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0].getId()
+                 + "'", annotations[0].getId(), annotation);
 
-    info = service.getAnnotationInfo(ids[0]);
+    info = annotations[0];
     assertEquals(info.getState(), 42);
 
-    ids = service.listAnnotations(mediator, 0);
-    assertTrue("Expected one annotation, got " + ids.length, ids.length == 1);
-    assertEquals("Expected annotation-id '" + annotation + "', got '" + ids[0] + "'", ids[0],
-                 annotation);
+    annotations = service.listAnnotations(mediator, 0);
+    assertTrue("Expected one annotation, got " + annotations.length, annotations.length == 1);
+    assertEquals("Expected annotation-id '" + annotation + "', got '" + annotations[0].getId()
+                 + "'", annotations[0].getId(), annotation);
 
-    info = service.getAnnotationInfo(ids[0]);
+    info = annotations[0];
     assertEquals(info.getState(), 42);
 
     service.deleteAnnotation(annotation, false);
@@ -268,14 +269,15 @@ public class AnnotationServiceTest extends TestCase {
     String       title       = "Title";
     String       mediator    = "integration-test";
     AnnotationInfo[] annotations = service.listAnnotations(mediator, subject, null);
-    String[]     ids         = service.listAnnotations(mediator, 0);
 
     try {
       for (int i = 0; i < annotations.length; i++)
         service.deleteAnnotation(annotations[i].getId(), true);
 
-      for (int i = 0; i < ids.length; i++)
-        service.deleteAnnotation(ids[i], true);
+      annotations = service.listAnnotations(mediator, 0);
+
+      for (int i = 0; i < annotations.length; i++)
+        service.deleteAnnotation(annotations[i].getId(), true);
     } catch (NoSuchAnnotationIdException nsaie) {
       fail("Unexpected NoSuchAnnotationIdException");
     }
@@ -316,8 +318,8 @@ public class AnnotationServiceTest extends TestCase {
     } catch (Exception e) {
       e.printStackTrace();
     }
-    // xxx: may be do a parse and eval an xpath to verify
 
+    // xxx: may be do a parse and eval an xpath to verify
     try {
       for (int i = 0; i < annotations.length; i++)
         service.deleteAnnotation(annotations[i].getId(), true);

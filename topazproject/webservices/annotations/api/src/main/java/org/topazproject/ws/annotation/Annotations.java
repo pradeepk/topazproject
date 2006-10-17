@@ -231,12 +231,13 @@ public interface Annotations extends Remote {
    * @param state the state to filter the list of annotations by or 0 to return annotations in any
    *        administrative state
    *
-   * @return an array of id's; if no matching annotations are found, an empty array is returned
+   * @return an array of annotation metadata; if no matching annotations are found, an empty array
+   *         is returned
    *
    * @throws RemoteException if some error occurred
    */
-  public String[] listAnnotations(String mediator, int state)
-                           throws RemoteException;
+  public AnnotationInfo[] listAnnotations(String mediator, int state)
+                                   throws RemoteException;
 
   /**
    * Gets the annotated content for a resource.
