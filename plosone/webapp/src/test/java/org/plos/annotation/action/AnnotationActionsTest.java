@@ -492,11 +492,6 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     //As the body is not inlined by the current annotator.
     assertTrue(content.contains(target));
-
-    for (final Annotation annotation : annotations2) {
-      final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
-      deleteAnnotationAction.execute();
-    }
   }
 
   private Annotation retrieveAnnotation(final String annotationId) throws Exception {
