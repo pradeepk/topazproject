@@ -13,6 +13,7 @@ import java.io.IOException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
@@ -45,7 +46,6 @@ public class CASProtectedService implements ProtectedService {
    *
    * @throws IOException when there is an error in contacting CAS server.
    * @throws URISyntaxException If the service uri is invalid
-   * @deprecated Instead use {@link CASProtectedService#CASProtectedService(String, sessionMap)}
    */
   public CASProtectedService(String uri, HttpSession session)
                       throws IOException, URISyntaxException {
@@ -58,7 +58,8 @@ public class CASProtectedService implements ProtectedService {
    * service has set up a ProxyTicketReceptor.
    *
    * @param uri the service uri
-   * @param sessionMap the map containing the CASReceipt and any other info corresponding to an authenticated user or null
+   * @param sessionMap the map containing the CASReceipt and any other info corresponding to an
+   *        authenticated user or null
    *
    * @throws IOException when there is an error in contacting CAS server.
    * @throws URISyntaxException If the service uri is invalid
@@ -115,7 +116,7 @@ public class CASProtectedService implements ProtectedService {
   public String getPassword() {
     return null;
   }
-  
+
   /*
    * @see org,topazproject.authentication.ProtectedService#hasRenewableCredentials
    */
@@ -186,9 +187,8 @@ public class CASProtectedService implements ProtectedService {
   private static CASReceipt getCASReceipt(HttpSession session) {
     return (session == null) ? null : (CASReceipt) session.getAttribute(CASFilter.CAS_FILTER_RECEIPT);
   }
-  
+
   private static CASReceipt getCASReceipt(final Map sessionMap) {
     return (sessionMap == null) ? null : (CASReceipt) sessionMap.get(CASFilter.CAS_FILTER_RECEIPT);
   }
-
 }
