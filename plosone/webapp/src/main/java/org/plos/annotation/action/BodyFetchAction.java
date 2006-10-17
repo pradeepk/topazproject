@@ -1,5 +1,5 @@
 /* $HeadURL::                                                                            $
- * $Id$
+ * $Id:BodyFetchAction.java 722 2006-10-02 16:42:45Z viru $
  *
  * Copyright (c) 2006 by Topaz, Inc.
  * http://topazproject.org
@@ -9,15 +9,16 @@
  */
 package org.plos.annotation.action;
 
-import com.opensymphony.util.TextUtils;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
+import com.opensymphony.util.TextUtils;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 
 /**
- * TODO: See if action chaining can help as the htmlEncoding is needing both for title and body. So we could have a FetchAction and a HtmlEncodeAction.
- * Get the content/text/body of the annotation or reply. Useful when we want to change the content before presenting it to the web layer.
+ * Get the content/text/body of the annotation or reply.
+ * Useful when we want to change the content before presenting it to the web layer.
  */
 public class BodyFetchAction extends AnnotationActionSupport {
   private String body;
@@ -29,7 +30,8 @@ public class BodyFetchAction extends AnnotationActionSupport {
     try {
       final String bodyContent = getAnnotationService().getBody(bodyURL);
       //htmlEncoded so that any dangerous scripting is rendered safely to viewers of the annotation.
-      body =  TextUtils.htmlEncode(bodyContent);
+      final String linkedContent = StringEscapeUtils.escapeHtml(bodyContent);
+      body = TextUtils.hyperlink(linkedContent);
     } catch (final ApplicationException e) {
       log.error(e, e);
       addActionError("Getting the annotation body failed with error message: " + e.getMessage());
