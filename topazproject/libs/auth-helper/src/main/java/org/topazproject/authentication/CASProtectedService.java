@@ -84,7 +84,12 @@ public class CASProtectedService implements ProtectedService {
                       throws IOException, URISyntaxException {
     this.receipt       = receipt;
     this.originalUri   = new URI(uri);
-    buildServiceUri();
+
+    // If no authenticated user, assume an unprotected service
+    if (receipt == null)
+      modifiedUri = uri;
+    else
+      buildServiceUri();
   }
 
   /*
@@ -121,7 +126,8 @@ public class CASProtectedService implements ProtectedService {
    * @see org,topazproject.authentication.ProtectedService#hasRenewableCredentials
    */
   public boolean hasRenewableCredentials() {
-    return true;
+    // If no authenticated user, credentials are not renewable
+    return receipt != null;
   }
 
   /*
@@ -129,7 +135,7 @@ public class CASProtectedService implements ProtectedService {
    */
   public boolean renew() {
     try {
-      return buildServiceUri();
+      return (receipt == null) ? false : buildServiceUri();
     } catch (IOException e) {
       log.warn("Failed to acquire CAS proxy ticket for " + originalUri, e);
 
@@ -138,11 +144,7 @@ public class CASProtectedService implements ProtectedService {
   }
 
   private boolean buildServiceUri() throws IOException {
-    String pt = getCASTicket();
-
-    if (pt == null)
-      throw new IOException("Failed to get a CAS proxy-ticket.");
-
+    String pt    = getCASTicket();
     URI    uri   = originalUri;
     String query = uri.getQuery();
 
@@ -168,10 +170,6 @@ public class CASProtectedService implements ProtectedService {
   }
 
   private String getCASTicket() throws IOException {
-    // If no authenticated user, assume an unprotected service
-    if (receipt == null)
-      return null;
-
     // get the PGT-IOU from the CAS receipt. (contained in the validate response from CAS server) 
     String pgtIou = receipt.getPgtIou();
 
