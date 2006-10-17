@@ -131,12 +131,27 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    */
   public String getTargetContext() throws ApplicationException {
     try {
-      return target + "#xpointer" + URLEncoder.encode("(start-point(string-range(" + startPath + ",''," + startOffset + ",1))" +
-              "/range-to(end-point(string-range(" + endPath + ",''," + endOffset + ",1))))", "UTF-8");
+      final String context;
+      if (startPath.equals(endPath)) {
+        context = createStringRangeFragment(startPath, startOffset, endOffset - startOffset);
+      } else {
+        context = "start-point(" + createStringRangeFragment(startPath, startOffset) + ")" +
+              "/range-to(end-point(" + createStringRangeFragment(endPath, endOffset) + "))";
+      }
+      log.debug("xpointer fragment =" + context);
+      return target + "#xpointer(" + URLEncoder.encode(context, "UTF-8") + ")";
     } catch (final UnsupportedEncodingException e) {
       log.error(e);
       throw new ApplicationException(e);
     }
+  }
+
+  private static String createStringRangeFragment(final String path, final int offset, final int length) {
+    return "string-range(" + path + ",''," + offset + ", " + length + ")[1]";
+  }
+
+  private static String createStringRangeFragment(final String path, final int offset) {
+    return "string-range(" + path + ",''," + offset + ", 1)[1]";
   }
 
   /**
