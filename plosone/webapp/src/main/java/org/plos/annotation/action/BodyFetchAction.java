@@ -30,8 +30,8 @@ public class BodyFetchAction extends AnnotationActionSupport {
     try {
       final String bodyContent = getAnnotationService().getBody(bodyURL);
       //htmlEncoded so that any dangerous scripting is rendered safely to viewers of the annotation.
-      final String linkedContent = StringEscapeUtils.escapeHtml(bodyContent);
-      body = TextUtils.hyperlink(linkedContent);
+      final String text = StringEscapeUtils.escapeHtml(bodyContent);
+      body = hyperlink(text);
     } catch (final ApplicationException e) {
       log.error(e, e);
       addActionError("Getting the annotation body failed with error message: " + e.getMessage());
@@ -39,6 +39,17 @@ public class BodyFetchAction extends AnnotationActionSupport {
     }
 
     return SUCCESS;
+  }
+
+  /**
+   * Linkify any possible web links excepting email addresses
+   * @param text text
+   * @return hyperlinked text
+   */
+  private static String hyperlink(final String text) {
+    final String notNullText = (null == text)?""
+                                             : text;
+    return TextUtils.linkURL(notNullText);
   }
 
   public String getBody() {
