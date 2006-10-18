@@ -17,8 +17,8 @@ import static org.plos.user.Constants.ReturnCode.UPDATE_PROFILE;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
 
-import java.util.Map;
 import java.io.IOException;
+import java.util.Map;
 
 /**
  * Prepopulate the user profile data as available

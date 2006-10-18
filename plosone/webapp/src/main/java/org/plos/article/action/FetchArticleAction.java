@@ -3,10 +3,10 @@
  */
 package org.plos.article.action;
 
-import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.action.BaseActionSupport;
 import org.plos.article.service.FetchArticleService;
 import org.topazproject.common.NoSuchIdException;
 
@@ -18,7 +18,7 @@ import java.util.ArrayList;
 /**
  * Fetch article action. 
  */
-public class FetchArticleAction extends ActionSupport {
+public class FetchArticleAction extends BaseActionSupport {
   private String articleDOI;
   private static final int INITIAL_TRANSFORMED_FILE_SIZE = 100000;
 

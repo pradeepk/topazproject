@@ -3,16 +3,16 @@
  */
 package org.plos.article.action;
 
-import com.opensymphony.xwork.ActionSupport;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.action.BaseActionSupport;
 
 import java.util.ArrayList;
 
 /**
  * Fetch as list of available articles.
  */
-public class ArticleListAction extends ActionSupport {
+public class ArticleListAction extends BaseActionSupport {
   private ArrayList<String> messages = new ArrayList<String>();
   private static final Log log = LogFactory.getLog(ArticleListAction.class);
 

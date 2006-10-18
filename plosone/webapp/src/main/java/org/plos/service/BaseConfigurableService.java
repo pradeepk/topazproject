@@ -13,16 +13,16 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.MapConfiguration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.web.UserContext;
 import org.plos.user.Constants;
+import org.plos.web.UserContext;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Base service class to be subclassed by any services which have common configuration requirements.

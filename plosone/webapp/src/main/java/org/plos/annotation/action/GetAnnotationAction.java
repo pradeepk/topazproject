@@ -1,5 +1,5 @@
 /* $HeadURL::                                                                            $
- * $Id$
+ * $Id:GetAnnotationAction.java 722 2006-10-02 16:42:45Z viru $
  *
  * Copyright (c) 2006 by Topaz, Inc.
  * http://topazproject.org
@@ -12,8 +12,8 @@ package org.plos.annotation.action;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.annotation.service.Annotation;
 import org.plos.ApplicationException;
+import org.plos.annotation.service.Annotation;
 
 /**
  * Used to fetch an annotation given an id.

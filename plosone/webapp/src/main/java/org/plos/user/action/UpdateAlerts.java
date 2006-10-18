@@ -10,13 +10,7 @@
 
 package org.plos.user.action;
 
-import java.util.Map;
-
 import org.plos.user.PlosOneUser;
-
-import com.opensymphony.xwork.ActionContext;
-
-import edu.yale.its.tp.cas.client.filter.CASFilter;
 
 /**
  * @author stevec

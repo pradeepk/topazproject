@@ -1,8 +1,8 @@
 package org.plos;
 
-import java.util.Hashtable;
-
 import org.plos.exception.UserException;
+
+import java.util.Hashtable;
 
 /**
  * Place holder for User object

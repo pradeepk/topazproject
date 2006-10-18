@@ -13,7 +13,6 @@ package org.plos.user.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.user.PlosOneUser;
 
 /**

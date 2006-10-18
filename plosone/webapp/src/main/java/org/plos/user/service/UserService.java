@@ -9,19 +9,17 @@
  */
 package org.plos.user.service;
 
-import java.rmi.RemoteException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.ApplicationException;
 import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
-
 import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.pap.UserPreference;
 import org.topazproject.ws.pap.UserProfile;
+
+import java.rmi.RemoteException;
 
 /**
  * Class to roll up web services that a user needs in PLoS ONE. Rest of application should generally

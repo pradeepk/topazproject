@@ -10,19 +10,17 @@
 
 package org.plos.user.service;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.rmi.RemoteException;
-
-import javax.xml.rpc.ServiceException;
-
 import org.plos.service.BaseConfigurableService;
-
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.pap.Profiles;
 import org.topazproject.ws.pap.ProfilesClientFactory;
 import org.topazproject.ws.pap.UserProfile;
+
+import javax.xml.rpc.ServiceException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 
 /**
  * Wrapper class for Topaz profile web service

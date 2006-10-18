@@ -9,8 +9,8 @@
  */
 package org.plos.annotation.service;
 
-import org.topazproject.ws.annotation.ReplyInfo;
 import org.plos.ApplicationException;
+import org.topazproject.ws.annotation.ReplyInfo;
 
 /**
  * Plosone wrapper around the ReplyInfo from topaz service. It provides

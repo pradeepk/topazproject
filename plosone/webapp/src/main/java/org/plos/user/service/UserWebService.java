@@ -10,12 +10,8 @@
 
 package org.plos.user.service;
 
-import java.io.IOException;
-import java.net.URISyntaxException;
-import java.rmi.RemoteException;
-
-import javax.xml.rpc.ServiceException;
-
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plos.service.BaseConfigurableService;
 import org.plos.user.Constants;
 import org.topazproject.authentication.ProtectedService;
@@ -23,8 +19,11 @@ import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.users.DuplicateAuthIdException;
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsClientFactory;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
+
+import javax.xml.rpc.ServiceException;
+import java.io.IOException;
+import java.net.URISyntaxException;
+import java.rmi.RemoteException;
 
 /**
  * Wrapper around Topaz User Accounts web service

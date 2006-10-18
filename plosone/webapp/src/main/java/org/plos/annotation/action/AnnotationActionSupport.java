@@ -9,13 +9,13 @@
  */
 package org.plos.annotation.action;
 
-import com.opensymphony.xwork.ActionSupport;
+import org.plos.action.BaseActionSupport;
 import org.plos.annotation.service.AnnotationService;
 
 /**
  * To be subclassed by Action classes for Annotations and Replyies that can use common stuff among them
  */
-public abstract class AnnotationActionSupport extends ActionSupport {
+public abstract class AnnotationActionSupport extends BaseActionSupport {
   private AnnotationService annotationService;
 
   /**

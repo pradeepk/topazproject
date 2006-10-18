@@ -10,10 +10,9 @@
 
 package org.plos.user.action;
 
-import com.opensymphony.xwork.ActionSupport;
-
-import org.plos.user.service.UserService;
+import org.plos.action.BaseActionSupport;
 import org.plos.user.Constants;
+import org.plos.user.service.UserService;
 
 import java.util.Map;
 
@@ -23,7 +22,7 @@ import java.util.Map;
  * @author Stephen Cheng
  * 
  */
-public class UserActionSupport extends ActionSupport {
+public class UserActionSupport extends BaseActionSupport {
   private UserService userService;
 
   /**

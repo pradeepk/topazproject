@@ -9,8 +9,8 @@
  */
 package org.plos.annotation.service;
 
-import org.topazproject.ws.annotation.AnnotationInfo;
 import org.plos.ApplicationException;
+import org.topazproject.ws.annotation.AnnotationInfo;
 
 /**
  * Plosone wrapper around the AnnotationsInfo from topaz service. It provides

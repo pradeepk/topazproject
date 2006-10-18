@@ -9,10 +9,10 @@
  */
 package org.plos.permission.service;
 
+import org.plos.service.BaseConfigurableService;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.ws.permissions.Permissions;
 import org.topazproject.ws.permissions.PermissionsClientFactory;
-import org.plos.service.BaseConfigurableService;
 
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;

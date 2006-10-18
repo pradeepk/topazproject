@@ -9,8 +9,8 @@
  */
 package org.plos.annotation.action;
 
-import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.util.TextUtils;
+import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
