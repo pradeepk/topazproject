@@ -69,11 +69,13 @@
   formatUri    CDATA          #IMPLIED
  ">
 
-<!ELEMENT Datastream EMPTY >
+<!ELEMENT Datastream ANY >
 <!ATTLIST Datastream
-    filename  CDATA  #REQUIRED
+    contLoc  CDATA  #IMPLIED
     %dsattrs; >
-
+<!-- Either a contLoc attribute OR a content must be provided, but not both. contLoc
+     is a URI, interpreted relative to the zip (input doc).
+  -->
 
 <!-- Example:
 <?xml version="1.0" encoding="UTF-8"?>

@@ -15,10 +15,9 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.BitSet;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -27,6 +26,8 @@ import java.util.Map;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
+import org.apache.commons.codec.DecoderException;
+import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -112,10 +113,47 @@ public class ArticleImpl implements Article {
        "  $id <rdf:type> <topaz:Article> and $id <tucana:is> <${art}>;").
       replaceAll("\\Q${MODEL}", MODEL);
 
+  private static final BitSet DOI_PID_CHARS;
+  private static final BitSet DOI_URI_CHARS;
+
   private final URI        fedoraServer;
   private final Ingester   ingester;
   private final ArticlePEP pep;
   private final TopazContext ctx;
+
+  static {
+    DOI_PID_CHARS = new BitSet(128);
+    for (int ch = '0'; ch <= '9'; ch++)  DOI_PID_CHARS.set(ch);
+    for (int ch = 'A'; ch <= 'Z'; ch++)  DOI_PID_CHARS.set(ch);
+    for (int ch = 'a'; ch <= 'z'; ch++)  DOI_PID_CHARS.set(ch);
+    DOI_PID_CHARS.set('-');
+    DOI_PID_CHARS.set('_');
+    DOI_PID_CHARS.set('.');
+    DOI_PID_CHARS.set('~');
+
+    DOI_URI_CHARS = new BitSet(128);
+    for (int ch = '0'; ch <= '9'; ch++)  DOI_URI_CHARS.set(ch);
+    for (int ch = 'A'; ch <= 'Z'; ch++)  DOI_URI_CHARS.set(ch);
+    for (int ch = 'a'; ch <= 'z'; ch++)  DOI_URI_CHARS.set(ch);
+    DOI_URI_CHARS.set('-');
+    DOI_URI_CHARS.set('_');
+    DOI_URI_CHARS.set('.');
+    DOI_URI_CHARS.set('!');
+    DOI_URI_CHARS.set('~');
+    DOI_URI_CHARS.set('*');
+    DOI_URI_CHARS.set('\'');
+    DOI_URI_CHARS.set('(');
+    DOI_URI_CHARS.set(')');
+    DOI_URI_CHARS.set(';');
+    DOI_URI_CHARS.set('/');
+    DOI_URI_CHARS.set(':');
+    DOI_URI_CHARS.set('@');
+    DOI_URI_CHARS.set('&');
+    DOI_URI_CHARS.set('=');
+    DOI_URI_CHARS.set('+');
+    DOI_URI_CHARS.set('$');
+    DOI_URI_CHARS.set(',');
+  }
 
   /**
    * Creates a new ArticleImpl object.
@@ -178,8 +216,8 @@ public class ArticleImpl implements Article {
       throws NoSuchArticleIdException, RemoteException {
     checkAccess(pep.INGEST_ARTICLE, newDoi);    // FIXME: should pass both doi's
 
-    String old_subj = "<" + pid2URI(doi2PID(oldDoi)) + ">";
-    String new_subj = "<" + pid2URI(doi2PID(newDoi)) + ">";
+    String old_subj = "<" + doi2URI(oldDoi) + ">";
+    String new_subj = "<" + doi2URI(newDoi) + ">";
 
     ctx.getItqlHelper().doUpdate("insert " + old_subj + " <dc_terms:isReplacedBy> " + new_subj +
                             new_subj + " <dc_terms:replaces> " + old_subj +
@@ -212,13 +250,13 @@ public class ArticleImpl implements Article {
 
       for (int idx = 0; idx < objList.length; idx++) {
         if (log.isDebugEnabled())
-          log.debug("deleting pid '" + objList[idx] + "'");
+          log.debug("deleting doi '" + objList[idx] + "'");
 
         if (purge) {
-          apim.purgeObject(objList[idx], "Purged object", false);
-          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_DOI, "subj", pid2URI(objList[idx])));
+          apim.purgeObject(doi2PID(objList[idx]), "Purged object", false);
+          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_DOI, "subj", doi2URI(objList[idx])));
         } else {
-          apim.modifyObject(objList[idx], "D", null, "Deleted object");
+          apim.modifyObject(doi2PID(objList[idx]), "D", null, "Deleted object");
         }
       }
 
@@ -282,7 +320,7 @@ public class ArticleImpl implements Article {
 
     checkAccess(pep.LIST_SEC_OBJECTS, doi);
 
-    String art = pid2URI(doi2PID(doi));
+    String art = doi2URI(doi);
     ItqlHelper.validateUri(art, "doi");
 
     ItqlHelper itql = ctx.getItqlHelper();
@@ -299,9 +337,9 @@ public class ArticleImpl implements Article {
       Map loc = new HashMap();
       while (rows.next()) {
         ObjectInfo info = new ObjectInfo();
-        info.setDoi(pid2DOI(uri2PID(rows.getString("cur"))));
+        info.setDoi(uri2DOI(rows.getString("cur")));
 
-        loc.put(pid2DOI(uri2PID(rows.getString("prev"))), info);
+        loc.put(uri2DOI(rows.getString("prev")), info);
 
         AnswerSet.QueryAnswerSet sqa = rows.getSubQueryResults(2);
         info.setRepresentations(parseRepresenations(sqa));
@@ -340,7 +378,7 @@ public class ArticleImpl implements Article {
 
   protected String[] findAllObjects(String doi)
       throws NoSuchArticleIdException, RemoteException, AnswerException {
-    String subj = pid2URI(doi2PID(doi));
+    String subj = doi2URI(doi);
     ItqlHelper.validateUri(subj, "doi");
 
     ItqlHelper itql = ctx.getItqlHelper();
@@ -352,7 +390,7 @@ public class ArticleImpl implements Article {
 
     String[] res = new String[dois.size()];
     for (int idx = 0; idx < res.length; idx++)
-      res[idx] = uri2PID(((String[]) dois.get(idx))[0]);
+      res[idx] = uri2DOI(((String[]) dois.get(idx))[0]);
 
     return res;
   }
@@ -384,7 +422,7 @@ public class ArticleImpl implements Article {
 
     checkAccess(pep.SET_REPRESENTATION, doi);   // FIXME: should pass 'rep' too
 
-    String subj = pid2URI(doi2PID(doi));
+    String subj = doi2URI(doi);
     ItqlHelper.validateUri(subj, "doi");
 
     ItqlHelper itql = ctx.getItqlHelper();
@@ -526,7 +564,7 @@ public class ArticleImpl implements Article {
 
     checkAccess(pep.LIST_REPRESENTATIONS, doi);
 
-    String subj = pid2URI(doi2PID(doi));
+    String subj = doi2URI(doi);
     ItqlHelper.validateUri(subj, "doi");
 
     ItqlHelper itql = ctx.getItqlHelper();
@@ -585,31 +623,41 @@ public class ArticleImpl implements Article {
     return res;
   }
 
-  protected void checkAccess(String action, String doi) {
-    pep.checkAccess(action, URI.create(pid2URI(doi2PID(doi))));
+  private void checkAccess(String action, String doi) {
+    pep.checkAccess(action, URI.create(doi2URI(doi)));
   }
 
-  protected static String doi2PID(String doi) {
+  static String doi2PID(String doi) {
+    return "doi:" + encode(doi, DOI_PID_CHARS);
+  }
+
+  static String pid2DOI(String pid) {
+    return decode(pid.substring(4));
+  }
+
+  static String doi2URI(String doi) {
+    return "info:doi/" + encode(doi, DOI_URI_CHARS);
+  }
+
+  static String uri2DOI(String uri) {
+    return decode(uri.substring(9));
+  }
+
+  static String encode(String str, BitSet allowed) {
     try {
-      return "doi:" + URLEncoder.encode(doi, "UTF-8");
+      return new String(URLCodec.encodeUrl(allowed, str.getBytes("UTF-8")), "ISO-8859-1");
     } catch (UnsupportedEncodingException uee) {
       throw new RuntimeException(uee);          // shouldn't happen
     }
   }
 
-  protected static String pid2DOI(String pid) {
+  static String decode(String str) {
     try {
-      return URLDecoder.decode(pid.substring(4), "UTF-8");
+      return new String(URLCodec.decodeUrl(str.getBytes("ISO-8859-1")), "UTF-8");
     } catch (UnsupportedEncodingException uee) {
       throw new RuntimeException(uee);          // shouldn't happen
+    } catch (DecoderException de) {
+      throw new RuntimeException(de);           // shouldn't happen
     }
-  }
-
-  protected static String pid2URI(String pid) {
-    return "info:fedora/" + pid;
-  }
-
-  protected static String uri2PID(String uri) {
-    return uri.substring(12);
   }
 }

@@ -10,6 +10,7 @@
 package org.topazproject.ws.article.impl;
 
 import java.io.ByteArrayInputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.StringReader;
@@ -17,7 +18,9 @@ import java.io.StringWriter;
 import java.lang.ref.SoftReference;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLConnection;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
@@ -37,6 +40,7 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -70,12 +74,14 @@ import net.sf.saxon.TransformerFactoryImpl;
 public class Ingester {
   private static final Log    log = LogFactory.getLog(Ingester.class);
 
+  private static final String OUT_LOC_P    = "output-loc";
+
   private static final String OL_LOG_A     = "logMessage";
   private static final String OL_AID_A     = "articleId";
   private static final String OBJECT       = "Object";
   private static final String O_PID_A      = "pid";
   private static final String DATASTREAM   = "Datastream";
-  private static final String DS_FIL_A     = "filename";
+  private static final String DS_CONTLOC_A = "contLoc";
   private static final String DS_ID_A      = "id";
   private static final String DS_ST_A      = "state";
   private static final String DS_CGRP_A    = "controlGroup";
@@ -119,6 +125,8 @@ public class Ingester {
    * @throws IngestException if there's any other problem ingesting the article
    */
   public String ingest(Zip zip) throws DuplicateArticleIdException, IngestException {
+    File tmpDir = createTempDir();
+
     try {
       // get zip info
       String zipInfo = Zip2Xml.describeZip(zip);
@@ -131,7 +139,7 @@ public class Ingester {
         log.debug("Using ingest handler '" + handler + "'");
 
       // use handler to convert zip to fedora-object and RDF descriptions
-      Document objInfo = zip2Obj(zip, zipInfo, handler);
+      Document objInfo = zip2Obj(zip, zipInfo, handler, tmpDir);
       if (log.isDebugEnabled())
         log.debug("Got object-info '" + dom2String(objInfo) + "'");
 
@@ -140,8 +148,7 @@ public class Ingester {
       String doi = objList.getAttribute(OL_AID_A);
 
       // do the access check, now that we have the doi
-      pep.checkAccess(pep.INGEST_ARTICLE,
-                      URI.create(ArticleImpl.pid2URI(ArticleImpl.doi2PID(doi))));
+      pep.checkAccess(pep.INGEST_ARTICLE, URI.create(ArticleImpl.doi2URI(doi)));
 
       // add the stuff
       ItqlHelper itql   = ctx.getItqlHelper();
@@ -169,8 +176,30 @@ public class Ingester {
       throw new IngestException("Error ingesting into fedora", re);
     } catch (IOException ioe) {
       throw new IngestException("Error talking to fedora", ioe);
+    } catch (URISyntaxException use) {
+      throw new IngestException("Zip format error", use);
     } catch (TransformerException te) {
       throw new IngestException("Zip format error", te);
+    } finally {
+      try {
+        FileUtils.deleteDirectory(tmpDir);
+      } catch (IOException ioe) {
+        log.warn("Failed to delete tmp-dir '" + tmpDir + "'", ioe);
+      }
+    }
+  }
+
+  private static final File createTempDir() throws IngestException {
+    try {
+      for (int idx = 0; idx < 10; idx++) {
+        File f = File.createTempFile("ingest_", ".d");
+        FileUtils.forceDelete(f);
+        if (f.mkdir())
+          return f;
+      }
+      throw new IngestException("Failed to create temporary directory - tried 10 times");
+    } catch (IOException ioe) {
+      throw new IngestException("Failed to create or delete temporary file", ioe);
     }
   }
 
@@ -212,13 +241,17 @@ public class Ingester {
    * @param zip     the zip archive containing the items to ingest
    * @param zipInfo the document describing the zip archive (adheres to zip.dtd)
    * @param handler the stylesheet to run on <var>zipInfo</var>; this is the main script
+   * @param tmpDir  the temporary directory to use for storing files
    * @return a document describing the fedora objects to create (must adhere to fedora.dtd)
    * @throws TransformerException if an error occurs during the processing
    */
-  private Document zip2Obj(Zip zip, String zipInfo, String handler) throws TransformerException {
+  private Document zip2Obj(Zip zip, String zipInfo, String handler, File tmpDir)
+      throws TransformerException {
     Transformer t = tFactory.newTransformer(new StreamSource(handler));
     t.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
     t.setURIResolver(new ZipURIResolver(zip));
+    ((Controller) t).setBaseOutputURI(tmpDir.toURI().toString());
+    t.setParameter(OUT_LOC_P, tmpDir.toURI().toString());
 
     /* Note: it would be preferable (and correct according to latest JAXP specs) to use
      * t.setErrorListener(), but Saxon does not forward <xls:message>'s to the error listener.
@@ -283,7 +316,8 @@ public class Ingester {
    * @param objInfo the document describing the objects and their datastreams to create
    */
   private void fedoraIngest(FedoraAPIM apim, Uploader uploader, Zip zip, Document objInfo)
-      throws DuplicateArticleIdException, TransformerException, IOException, RemoteException {
+      throws DuplicateArticleIdException, TransformerException, IOException, RemoteException,
+             URISyntaxException {
     // set up the transformer to generate the foxml docs
     Transformer t = tFactory.newTransformer(new StreamSource(findFoxmlGenerator()));
     t.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
@@ -324,6 +358,8 @@ public class Ingester {
         throw (DuplicateArticleIdException) e;
       if (e instanceof TransformerException)
         throw (TransformerException) e;
+      if (e instanceof URISyntaxException)
+        throw (URISyntaxException) e;
       if (e instanceof IOException)
         throw (IOException) e;
       if (e instanceof RuntimeException)
@@ -334,7 +370,8 @@ public class Ingester {
 
   private void fedoraIngestOneObj(FedoraAPIM apim, Uploader uploader, Element obj, Transformer t, 
                                   Zip zip, String logMsg, boolean[] objCreated)
-      throws DuplicateArticleIdException, TransformerException, IOException, RemoteException {
+      throws DuplicateArticleIdException, TransformerException, IOException, RemoteException,
+             URISyntaxException {
     // create the foxml doc
     StringWriter sw = new StringWriter(200);
     t.transform(new DOMSource(obj), new StreamResult(sw));
@@ -366,9 +403,9 @@ public class Ingester {
 
   private void fedoraAddDatastream(FedoraAPIM apim, Uploader uploader, String pid, Element ds, 
                                    Zip zip, String logMsg)
-      throws IOException, RemoteException {
+      throws IOException, RemoteException, URISyntaxException {
     long[] size = new long[1];
-    InputStream is = zip.getStream(ds.getAttribute(DS_FIL_A), size);
+    InputStream is = getContent(ds, zip, size);
     String reLoc = (size[0] >= 0) ? uploader.upload(is, size[0]) : uploader.upload(is);
 
     if (log.isDebugEnabled())
@@ -382,6 +419,33 @@ public class Ingester {
                        ds.getAttribute(DS_ST_A).length() > 0 ?
                           ds.getAttribute(DS_ST_A).substring(0, 1) : "A",
                        logMsg);
+  }
+
+  private InputStream getContent(Element ds, Zip zip, long[] size) throws IOException, URISyntaxException {
+    InputStream is;
+
+    if (ds.hasAttribute(DS_CONTLOC_A)) {
+      URI contLoc = URI.create("zip:/").resolve(new URI(ds.getAttribute(DS_CONTLOC_A)));
+      if (contLoc.getScheme().equals("zip")) {
+        is = zip.getStream(ds.getAttribute(DS_CONTLOC_A), size);
+      } else {
+        URLConnection con = contLoc.toURL().openConnection();
+
+        size[0] = con.getContentLength();
+        is      = con.getInputStream();
+      }
+    } else {
+      StringBuffer sb = new StringBuffer(500);
+      for (Node n = ds.getFirstChild(); n != null; n = n.getNextSibling())
+        sb.append(dom2String(n));
+
+      byte[] cont = sb.toString().getBytes("UTF-8");
+
+      size[0] = cont.length;
+      is      = new ByteArrayInputStream(cont);
+    }
+
+    return is;
   }
 
   private String dom2String(Node dom) {

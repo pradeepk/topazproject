@@ -45,54 +45,82 @@ public class ArticleServiceTest extends TestCase {
   }
 
   public void testBasicArticle() throws Exception {
-    try {
-      service.delete("10.1371/journal.pbio.0020294", true);
-    } catch (NoSuchArticleIdException nsaie) {
-      assertEquals("Mismatched id in exception, ", "10.1371/journal.pbio.0020294", nsaie.getId());
-      // ignore - this just means there wasn't any stale stuff left
-    }
+    // topaz format
+    basicArticleTest("/pbio.0020294.zip", "10.1371/journal.pbio.0020294", "pmc.xml");
+    // AP format
+    basicArticleTest("/pone.0000010.zip", "10.1371/journal.pone.0000010", "pone.0000010.xml");
+  }
 
-    URL article = getClass().getResource("/test_article.zip");
-    String doi = service.ingest(new DataHandler(article));
-    assertEquals("Wrong doi returned,", "10.1371/journal.pbio.0020294", doi);
-
-    boolean gotE = false;
-    try {
-      doi = service.ingest(new DataHandler(article));
-    } catch (DuplicateArticleIdException daie) {
-      assertEquals("Mismatched id in exception, ", doi, daie.getId());
-      gotE = true;
-    }
-    assertTrue("Failed to get expected duplicate-id exception", gotE);
-
-    ZipInputStream zis = new ZipInputStream(article.openStream());
-    while (!zis.getNextEntry().getName().equals("pmc.xml"))
-      ;
-    byte[] orig  = IOUtils.toByteArray(zis);
-    byte[] saved = IOUtils.toByteArray(new URL(service.getObjectURL(doi, "XML")).openStream());
-    assertTrue("Content mismatch: got '" + new String(saved, "UTF-8") + "'",
-               Arrays.equals(orig, saved));
-
-    service.delete(doi, true);
-
-    gotE = false;
+  private void basicArticleTest(String zip, String doi, String pmc) throws Exception {
     try {
       service.delete(doi, true);
     } catch (NoSuchArticleIdException nsaie) {
       assertEquals("Mismatched id in exception, ", doi, nsaie.getId());
-      gotE = true;
+      // ignore - this just means there wasn't any stale stuff left
     }
-    assertTrue("Failed to get expected no-such-id exception", gotE);
 
-    // Try again, but this time test NoSuchIdException (from org.topazproject.common)
-    gotE = false;
+    URL article = getClass().getResource(zip);
+    String retDoi = service.ingest(new DataHandler(article));
+    assertEquals("Wrong doi returned,", doi, retDoi);
+
+    Throwable gotE = null;
     try {
-      service.delete(doi, true);
-    } catch (NoSuchIdException nsie) {
-      assertEquals("Mismatched id in exception, ", doi, nsie.getId());
-      gotE = true;
+      retDoi = service.ingest(new DataHandler(article));
+    } catch (DuplicateArticleIdException daie) {
+      assertEquals("Mismatched id in exception, ", doi, daie.getId());
+      gotE = daie;
     }
-    assertTrue("Failed to get expected no-such-id exception", gotE);
+    assertNotNull("Failed to get expected duplicate-id exception", gotE);
+
+    /* TODO: this isn't true anymore, as ingest modifies the article.
+     * Is there a way we can get the modified article?
+    ZipInputStream zis = new ZipInputStream(article.openStream());
+    while (!zis.getNextEntry().getName().equals(pmc))
+      ;
+    byte[] orig  = IOUtils.toByteArray(zis);
+    byte[] saved = IOUtils.toByteArray(new URL(service.getObjectURL(retDoi, "XML")).openStream());
+    assertTrue("Content mismatch: got '" + new String(saved, "UTF-8") + "'",
+               Arrays.equals(orig, saved));
+    */
+
+    service.delete(retDoi, true);
+
+    gotE = null;
+    try {
+      service.delete(retDoi, true);
+    } catch (NoSuchArticleIdException nsaie) {
+      assertEquals("Mismatched id in exception, ", retDoi, nsaie.getId());
+      gotE = nsaie;
+    }
+    assertNotNull("Failed to get expected no-such-id exception", gotE);
+    assertTrue("exception is not a subclass of NoSuchIdException: " + gotE.getClass(),
+               gotE instanceof NoSuchIdException);
+  }
+
+  public void testIngestErrors() throws Exception {
+    ingestErrorTest("/test.tpz.missing.file.zip",    "No entry found in zip file for doi");
+    ingestErrorTest("/test.ap.missing.file.zip",     "No entry found in zip file for doi");
+    ingestErrorTest("/test.tpz.unrefd.file.zip",     "Found unreferenced entry in zip file");
+    ingestErrorTest("/test.ap.unrefd.file.zip",      "Found unreferenced entry in zip file");
+    ingestErrorTest("/test.tpz.missing.article.zip", "Couldn't find article entry in zip file");
+    ingestErrorTest("/test.ap.missing.article.zip",  "Couldn't find article entry in zip file");
+    ingestErrorTest("/test.ap.invalid.file.zip",     "does not have same prefix as article");
+  }
+
+  private void ingestErrorTest(String zip, String expMsg) throws Exception {
+    URL article = getClass().getResource(zip);
+
+    Throwable gotE = null;
+    String retDoi = null;
+    try {
+      retDoi = service.ingest(new DataHandler(article));
+      service.delete(retDoi, true);     // clean up in case of accidental success
+    } catch (IngestException ie) {
+      gotE = ie;
+    }
+    assertNotNull("Failed to get expected ingest exception", gotE);
+    assertTrue("Failed to get expected exception message - got '" + gotE.getMessage() + "'",
+               gotE.getMessage().indexOf(expMsg) >= 0);
   }
 
   public void testRepresentations() throws Exception {
@@ -117,7 +145,7 @@ public class ArticleServiceTest extends TestCase {
     assertTrue("Failed to get expected no-such-object-id exception", gotE);
 
     // ingest article and test listRepresentations()
-    URL article = getClass().getResource("/test_article.zip");
+    URL article = getClass().getResource("/pbio.0020294.zip");
     String doi = service.ingest(new DataHandler(article));
     assertEquals("Wrong doi returned,", "10.1371/journal.pbio.0020294", doi);
 
@@ -244,7 +272,7 @@ public class ArticleServiceTest extends TestCase {
     assertTrue("Failed to get expected no-such-object-id exception", gotE);
 
     // ingest article and test listRepresentations()
-    URL article = getClass().getResource("/test_article.zip");
+    URL article = getClass().getResource("/pbio.0020294.zip");
     String doi = service.ingest(new DataHandler(article));
     assertEquals("Wrong doi returned,", "10.1371/journal.pbio.0020294", doi);
 
