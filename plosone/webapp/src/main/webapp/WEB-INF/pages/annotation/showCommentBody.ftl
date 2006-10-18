@@ -4,7 +4,7 @@
   </head>
   <body>
     <p>
-     ${body}
+     ${comment}
     </p>
   </body>
 </html>

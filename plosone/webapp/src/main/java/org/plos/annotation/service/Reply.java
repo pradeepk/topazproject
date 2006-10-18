@@ -155,7 +155,7 @@ public abstract class Reply extends BaseAnnotation {
    *
    * @return title as String.
    */
-  public String getTitle() {
+  public String getCommentTitle() {
     return escapeText(reply.getTitle());
   }
 
@@ -164,7 +164,7 @@ public abstract class Reply extends BaseAnnotation {
    *
    * @param title the value to set.
    */
-  public void setTitle(final String title) {
+  public void setCommentTitle(final String title) {
     reply.setTitle(title);
   }
 
@@ -188,7 +188,7 @@ public abstract class Reply extends BaseAnnotation {
 
   /**
    * @return true if the Reply is public, false otherwise
-   * @throws org.plos.ApplicationException
+   * @throws org.plos.ApplicationException ApplicationException
    */
   public boolean isPublic() throws ApplicationException {
     return checkIfPublic(reply.getState());

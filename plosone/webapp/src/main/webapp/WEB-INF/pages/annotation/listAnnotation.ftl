@@ -14,7 +14,7 @@
           <@ww.a href="%{getAnnotationURL}">${annotation.id}</@ww.a> <br/>
 
           annotates   =${annotation.annotates}     <br/>
-          title       =${annotation.title}         <br/>
+          title       =${annotation.commentTitle}         <br/>
           creator     =${annotation.creator}       <br/>
 
           <@ww.url id="deleteAnnotationURL" action="deleteAnnotation" annotationId="${annotation.id}" namespace="/annotation/secure" />

@@ -23,10 +23,10 @@ public abstract class BaseAnnotation {
   public static final int PUBLIC_MASK = 0x001;
 
   /**
-   * @return the escaped body.
+   * @return the escaped comment.
    * @throws org.plos.ApplicationException ApplicationException
    */
-  public String getBody() throws ApplicationException {
+  public String getComment() throws ApplicationException {
     return escapeText(getOriginalBodyContent());
   }
 

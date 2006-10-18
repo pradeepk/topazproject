@@ -184,17 +184,17 @@ public abstract class Annotation extends BaseAnnotation {
   *
   * @return title as String.
   */
-  public String getTitle() {
+  public String getCommentTitle() {
     return escapeText(annotation.getTitle());
   }
 
   /**
-   * Set title.
+   * Set commentTitle.
    *
-   * @param title the value to set.
+   * @param commentTitle the value to set.
    */
-  public void setTitle(final String title) {
-    annotation.setTitle(title);
+  public void setCommentTitle(final String commentTitle) {
+    annotation.setTitle(commentTitle);
   }
 
   /**

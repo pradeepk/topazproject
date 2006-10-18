@@ -26,7 +26,7 @@ import java.util.Collection;
 import java.util.List;
 
 public class AnnotationActionsTest extends BasePlosoneTestCase {
-  private static final String target = "http://here.is/viru";
+  private static final String target = "http://here.is/viru2";
   private final String body = "spmething that I always wanted to say about everything and more about nothing\n";
   final String ANON_PRINCIPAL = "anonymous:user/";
 //  private final String target = "doi:10.1371/annotation/21";
@@ -109,10 +109,10 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     final Annotation savedAnnotation = retrieveAnnotation(annotationId);
     assertEquals(target, savedAnnotation.getAnnotates());
-    assertEquals(title, savedAnnotation.getTitle());
+    assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
-    assertEquals(body, savedAnnotation.getBody());
-    assertEquals(body, savedAnnotation.getBody());
+    assertEquals(body, savedAnnotation.getComment());
+    assertEquals(body, savedAnnotation.getComment());
     assertEquals(visibility, savedAnnotation.isPublic());
 
     AnnotationActionsTest.annotationId = annotationId;
@@ -131,10 +131,10 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     final Annotation savedAnnotation = retrieveAnnotation(annotationId);
     assertEquals(target, savedAnnotation.getAnnotates());
-    assertEquals(title, savedAnnotation.getTitle());
+    assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
-    assertEquals(body, savedAnnotation.getBody());
-    assertEquals(body, savedAnnotation.getBody());
+    assertEquals(body, savedAnnotation.getComment());
+    assertEquals(body, savedAnnotation.getComment());
     assertEquals(visibility, savedAnnotation.isPublic());
 
     AnnotationActionsTest.annotationId = annotationId;
@@ -154,8 +154,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final Reply savedReply = getAnnotationService().getReply(replyId);
     assertEquals(annotationId, savedReply.getRoot());
     assertEquals(annotationId, savedReply.getInReplyTo());
-    assertEquals(title, savedReply.getTitle());
-    assertEquals(body, savedReply.getBody());
+    assertEquals(title, savedReply.getCommentTitle());
+    assertEquals(body, savedReply.getComment());
 
     AnnotationActionsTest.replyId = replyId;
   }
@@ -177,9 +177,9 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       final Reply savedReply = getAnnotationService().getReply(replyId);
       assertEquals(annotationId, savedReply.getRoot());
       assertEquals(annotationId, savedReply.getInReplyTo());
-      assertEquals(title, savedReply.getTitle());
+      assertEquals(title, savedReply.getCommentTitle());
 
-      assertEquals(body, savedReply.getBody());
+      assertEquals(body, savedReply.getComment());
       AnnotationActionsTest.replyId = replyId;
     }
 
@@ -198,9 +198,9 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       final Reply savedReply = getAnnotationService().getReply(replyToReplyId);
       assertEquals(annotationId, savedReply.getRoot());
       assertEquals(replyId, savedReply.getInReplyTo());
-      assertEquals(title, savedReply.getTitle());
+      assertEquals(title, savedReply.getCommentTitle());
 
-      assertEquals(replyBody2, savedReply.getBody());
+      assertEquals(replyBody2, savedReply.getComment());
       AnnotationActionsTest.replyToReplyId = replyToReplyId;
     }
 
@@ -276,7 +276,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
     final Annotation savedAnnotation = getAnnotationService().getAnnotation(annotationId1);
-    assertEquals(declawedBody, savedAnnotation.getBody());
+    assertEquals(declawedBody, savedAnnotation.getComment());
 
   }
 
@@ -292,7 +292,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     final Annotation savedAnnotation = retrieveAnnotation(annotationId1);
     assertNotNull(savedAnnotation);
-    assertEquals(declawedTitle, savedAnnotation.getTitle());
+    assertEquals(declawedTitle, savedAnnotation.getCommentTitle());
 
   }
 
@@ -309,7 +309,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String id = createAnnotationAction.getReplyId();
 
     final Reply savedReply = getAnnotationService().getReply(id);
-    assertEquals(declawedBody, savedReply.getBody());
+    assertEquals(declawedBody, savedReply.getComment());
   }
 
   public void testGetReplyShouldDeclawTheTitleContentDueToSecurityImplications() throws Exception {
@@ -327,7 +327,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(Action.SUCCESS, getAnnotationAction.execute());
     final Reply savedReply = getAnnotationAction.getReply();
     assertNotNull(savedReply);
-    assertEquals(declawedTitle, savedReply.getTitle());
+    assertEquals(declawedTitle, savedReply.getCommentTitle());
   }
 
   public void testPublicAnnotationShouldHaveTheRightGrantsAndRevokations() throws Exception {
@@ -341,9 +341,9 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     final Annotation savedAnnotation = retrieveAnnotation(annotationId);
     assertEquals(target, savedAnnotation.getAnnotates());
-    assertEquals(title, savedAnnotation.getTitle());
+    assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
-    assertEquals(body, savedAnnotation.getBody());
+    assertEquals(body, savedAnnotation.getComment());
     assertFalse(savedAnnotation.isPublic());
 
     final AnnotationService annotationService = getAnnotationService();
@@ -524,14 +524,14 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
   private CreateAnnotationAction getCreateAnnotationAction(final String target, final String title, final String mimeType, final String body) {
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction();
-    createAnnotationAction.setTitle(title);
+    createAnnotationAction.setCommentTitle(title);
     createAnnotationAction.setTarget(target);
     createAnnotationAction.setStartPath("/");
     createAnnotationAction.setStartOffset(1);
     createAnnotationAction.setEndPath("/");
     createAnnotationAction.setEndOffset(2);
     createAnnotationAction.setMimeType(mimeType);
-    createAnnotationAction.setBody(body);
+    createAnnotationAction.setComment(body);
     return createAnnotationAction;
   }
 

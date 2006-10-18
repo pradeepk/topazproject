@@ -11,8 +11,8 @@
           id          =${reply.id}            <br/>
           root        =${reply.root}          <br/>
           inReplyTo   =${reply.inReplyTo}     <br/>
-          title       =${reply.title}         <br/>
-          body        =${reply.body}          <br/>
+          title       =${reply.commentTitle}         <br/>
+          body        =${reply.comment}          <br/>
           created     =${reply.created}       <br/>
           creator     =${reply.creator}       <br/>
           mediator    =${reply.mediator}      <br/>

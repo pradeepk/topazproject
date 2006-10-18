@@ -25,8 +25,8 @@ import java.util.List;
  */
 public class CreateAnnotationAction extends AnnotationActionSupport {
   private String target;
-  private String title;
-  private String body;
+  private String commentTitle;
+  private String comment;
   private String mimeType = "text/plain";
   private String annotationId;
   private boolean isPublic = false;
@@ -41,18 +41,18 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
 
   /**
    * {@inheritDoc}
-   * Also does some profanity check for title and body before creating the annotation.
+   * Also does some profanity check for commentTitle and comment before creating the annotation.
    */
   public String execute() throws Exception {
     try {
-      final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(title);
-      final List<String> profanityValidationMessagesInBody = profanityCheckingService.validate(body);
+      final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(commentTitle);
+      final List<String> profanityValidationMessagesInBody = profanityCheckingService.validate(comment);
 
       if (profanityValidationMessagesInBody.isEmpty() && profanityValidationMessagesInTitle.isEmpty()) {
-        annotationId = getAnnotationService().createAnnotation(target, getTargetContext(), olderAnnotation, title, mimeType, body, isPublic);
+        annotationId = getAnnotationService().createAnnotation(target, getTargetContext(), olderAnnotation, commentTitle, mimeType, comment, isPublic);
       } else {
-        addMessages(profanityValidationMessagesInBody, "profanity check", "body");
-        addMessages(profanityValidationMessagesInTitle, "profanity check", "title");
+        addMessages(profanityValidationMessagesInBody, "profanity check", "comment");
+        addMessages(profanityValidationMessagesInTitle, "profanity check", "commentTitle");
         return ERROR;
       }
     } catch (final ApplicationException e) {
@@ -83,19 +83,19 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   }
 
   /**
-   * Set the title of the annotation
-   * @param title title
+   * Set the commentTitle of the annotation
+   * @param commentTitle commentTitle
    */
-  public void setTitle(final String title) {
-    this.title = title;
+  public void setCommentTitle(final String commentTitle) {
+    this.commentTitle = commentTitle;
   }
 
   /**
-   * Set the body of the annotation
-   * @param body body
+   * Set the comment of the annotation
+   * @param comment comment
    */
-  public void setBody(final String body) {
-    this.body = body;
+  public void setComment(final String comment) {
+    this.comment = comment;
   }
 
   /**
@@ -155,18 +155,18 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   }
 
   /**
-   * @return the title
+   * @return the commentTitle
    */
-  public String getTitle() {
-    return title;
+  public String getCommentTitle() {
+    return commentTitle;
   }
 
   /**
    * @return the annotation content
    */
   @RequiredStringValidator(message="You must say something in your annotation")
-  public String getBody() {
-    return body;
+  public String getComment() {
+    return comment;
   }
 
   /**

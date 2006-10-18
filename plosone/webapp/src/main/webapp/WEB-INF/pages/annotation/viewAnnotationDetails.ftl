@@ -10,8 +10,8 @@
 
           id          =${annotation.id}            <br/>
           annotates   =${annotation.annotates}     <br/>
-          title       =${annotation.title}         <br/>
-          body        =${annotation.body}          <br/>
+          title       =${annotation.commentTitle}         <br/>
+          body        =${annotation.comment}          <br/>
           context     =${annotation.context}       <br/>
           created     =${annotation.created}       <br/>
           creator     =${annotation.creator}       <br/>
