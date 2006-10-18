@@ -254,9 +254,10 @@ public class FetchArticleService {
     if (null == entityResolver) {
 //      log.debug("Creating entity resolver for " + systemId);
       final String entityFilePath = "/jp-dtd-2.0/" + entityFilename;
-      final URL resourceURL = FetchArticleService.class.getResource(entityFilePath);
+      URL resourceURL = FetchArticleService.class.getResource(entityFilePath);
       if (null == resourceURL) {
         createLocalCopyOfEntity(entityUri, entityFilePath);
+        resourceURL = FetchArticleService.class.getResource(entityFilePath);
       }
 
       entityResolver = new InputSource(new BufferedReader(new InputStreamReader(resourceURL.openStream())));
