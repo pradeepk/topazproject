@@ -22,7 +22,7 @@
   </logger>
 
   <root>
-    <priority value ="error" />
+    <priority value="warn" />
     <appender-ref ref="console" />
     <appender-ref ref="rolling" />
   </root>
