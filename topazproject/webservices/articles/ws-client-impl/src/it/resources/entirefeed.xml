@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <articles>
   <article>
-    <doi>info:fedora/doi:10.1371%2Fjournal.pbio.0020382</doi>
+    <doi>info:doi/10.1371/journal.pbio.0020382</doi>
     <title>Correction: Nicotine's Defensive Function in Nature</title>
     <description><p xmlns:mml='http://www.w3.org/1998/Math/MathML'>July correction</p></description>
     <date>2004-10-12</date>
@@ -14,7 +14,7 @@
     </categories>
   </article>
   <article>
-    <doi>info:fedora/doi:10.1371%2Fjournal.pbio.0020317</doi>
+    <doi>info:doi/10.1371/journal.pbio.0020317</doi>
     <title>Submission of Microarray Data to Public Repositories</title>
     <description><p xmlns:mml='http://www.w3.org/1998/Math/MathML'>The Microarray Gene Expression Data Society believe that the time is right for journals to require that microarray data be deposited in public repositories, as a condition for publication</p></description>
     <date>2004-08-31</date>
@@ -44,7 +44,7 @@
     </categories>
   </article>
   <article>
-    <doi>info:fedora/doi:10.1371%2Fjournal.pbio.0020294</doi>
+    <doi>info:doi/10.1371/journal.pbio.0020294</doi>
     <title>Regulation of Muscle Fiber Type and Running Endurance by PPAR </title>
     <description><p xmlns:mml='http://www.w3.org/1998/Math/MathML'>Engineered expression of the peroxisome proliferator-activated receptor   in skeletal muscle increases type I muscle fibers allowing the modified mice to run twice the distance of wild-type littermates</p></description>
     <date>2004-08-24</date>
@@ -69,7 +69,7 @@
     </categories>
   </article>
   <article>
-    <doi>info:fedora/doi:10.1371%2Fjournal.pbio.0020042</doi>
+    <doi>info:doi/10.1371/journal.pbio.0020042</doi>
     <title>Identifying Protein Function—A Call for Community Action</title>
     <description><p xmlns:mml='http://www.w3.org/1998/Math/MathML'>Functional information is lacking for many of the hypothetical proteins encoded within sequenced genomes. Richard Roberts proposes that a community-based approach might offer an effecient way to fill the function gap</p></description>
     <date>2004-03-16</date>
