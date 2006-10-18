@@ -26,20 +26,15 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
   private String BASE_TEST_PATH = "src/test/resources/";
 
   public void testShouldReturnTransformedArticle() throws Exception {
-//    final String resourceToIngest = BASE_TEST_PATH  + "test_article.zip";
-//    final String resourceDOI = "10.1371/journal.pbio.0020294";
-
 //    final String resourceToIngest = BASE_TEST_PATH  + "pbio.0020042.zip";
 //    final String resourceDOI = "10.1371/journal.pbio.0020042";
 
-    final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
-    final String resourceDOI = "10.1371/journal.pone.0000008";
+//    final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
+//    String resourceDOI = "10.1371/journal.pone.0000008";
+//
+    final String resourceToIngest = BASE_TEST_PATH  + "pone.0000011.zip";
+    String resourceDOI = "10.1371/journal.pone.0000011";
 
-//    final String resourceToIngest = BASE_TEST_PATH  + "pbio.0020382.zip";
-//    final String resourceDOI = "10.1371/journal.pbio.0020382";
-
-//    final String resourceToIngest = BASE_TEST_PATH  + "pbio.0020317.zip";
-//    final String resourceDOI = "10.1371/journal.pbio.0020317";
 
     try {
       getArticleWebService().delete(resourceDOI, true);
@@ -53,6 +48,8 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     }
     String doi = getArticleWebService().ingest(new DataHandler(article));
     assertEquals(doi, resourceDOI);
+
+//    resourceDOI = "10.1371/journal.pone.0000011";
 
     final FetchArticleAction fetchArticleAction = getFetchArticleAction();
     fetchArticleAction.setArticleDOI(resourceDOI);
@@ -84,7 +81,6 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     
 //    doIngestTest("10.1371/journal.pbio.0020294", BASE_TEST_PATH  + "pbio.0020294.zip");
 //    doIngestTest("10.1371/journal.pbio.0020317", BASE_TEST_PATH  + "pbio.0020317.zip");
-//    doIngestTest("10.1371/journal.pbio.0020382", BASE_TEST_PATH  + "pbio.0020382.zip");
   }
 
   private void doIngestTest(String resourceDOI, String resourceToIngest) throws Exception {
