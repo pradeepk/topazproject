@@ -267,7 +267,6 @@ public class FetchArticleService {
   }
 
   private static void createLocalCopyOfEntity(final String systemId, final String location, final String entityFilename) throws IOException {
-    //TODO: This keeps creating the "journalpublishing.dtd" again and again. Need to not create it if already existing.
     if (FileUtils.isHttpURL(systemId)) {
       try {
         FileUtils.createLocalCopyOfTextFile(systemId, location + entityFilename);
