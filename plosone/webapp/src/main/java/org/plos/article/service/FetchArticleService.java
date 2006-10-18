@@ -256,7 +256,7 @@ public class FetchArticleService {
       final String entityFilePath = "/jp-dtd-2.0/" + entityFilename;
       URL resourceURL = FetchArticleService.class.getResource(entityFilePath);
       if (null == resourceURL) {
-        createLocalCopyOfEntity(entityUri, entityFilePath);
+        createLocalCopyOfEntity(entityUri, FetchArticleService.class.getResource("/").getPath(), entityFilePath);
         resourceURL = FetchArticleService.class.getResource(entityFilePath);
       }
 
@@ -266,11 +266,11 @@ public class FetchArticleService {
     return entityResolver;
   }
 
-  private static void createLocalCopyOfEntity(final String systemId, final String entityFilename) throws IOException {
+  private static void createLocalCopyOfEntity(final String systemId, final String location, final String entityFilename) throws IOException {
     //TODO: This keeps creating the "journalpublishing.dtd" again and again. Need to not create it if already existing.
     if (FileUtils.isHttpURL(systemId)) {
       try {
-        FileUtils.createLocalCopyOfTextFile(systemId, entityFilename);
+        FileUtils.createLocalCopyOfTextFile(systemId, location + entityFilename);
         log.debug("local entity created = " + entityFilename);
       } catch (IOException e) {
         log.error("Entity creation failed for " + entityFilename, e);
