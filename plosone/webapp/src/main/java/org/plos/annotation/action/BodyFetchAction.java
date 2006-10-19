@@ -9,12 +9,11 @@
  */
 package org.plos.annotation.action;
 
-import com.opensymphony.util.TextUtils;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import org.plos.util.TextUtils;
 
 /**
  * Get the content/text/body of the annotation or reply.
@@ -30,8 +29,7 @@ public class BodyFetchAction extends AnnotationActionSupport {
     try {
       final String bodyContent = getAnnotationService().getBody(bodyURL);
       //htmlEncoded so that any dangerous scripting is rendered safely to viewers of the annotation.
-      final String text = StringEscapeUtils.escapeHtml(bodyContent);
-      body = hyperlink(text);
+      body = TextUtils.escapeAndHyperlink(bodyContent);
     } catch (final ApplicationException e) {
       log.error(e, e);
       addActionError("Getting the annotation body failed with error message: " + e.getMessage());
@@ -39,17 +37,6 @@ public class BodyFetchAction extends AnnotationActionSupport {
     }
 
     return SUCCESS;
-  }
-
-  /**
-   * Linkify any possible web links excepting email addresses
-   * @param text text
-   * @return hyperlinked text
-   */
-  private static String hyperlink(final String text) {
-    final String notNullText = (null == text)?""
-                                             : text;
-    return TextUtils.linkURL(notNullText);
   }
 
   public String getBody() {

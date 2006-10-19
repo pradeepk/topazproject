@@ -9,8 +9,8 @@
  */
 package org.plos.annotation.service;
 
-import org.apache.commons.lang.StringEscapeUtils;
 import org.plos.ApplicationException;
+import org.plos.util.TextUtils;
 
 /**
  * Base class for Annotation and reply.
@@ -31,6 +31,14 @@ public abstract class BaseAnnotation {
   }
 
   /**
+   * @return the url linked and escaped comment.
+   * @throws org.plos.ApplicationException ApplicationException
+   */
+  public String getCommentWithUrlLinking() throws ApplicationException {
+    return TextUtils.hyperlink(getComment());
+  }
+
+  /**
    * @return the original content of the annotation body
    * @throws ApplicationException ApplicationException
    */
@@ -42,8 +50,7 @@ public abstract class BaseAnnotation {
    * @return the escaped text
    */
   protected String escapeText(final String text) {
-//    final String symphonyEscaped = TextUtils.htmlEncode(text);
-    return StringEscapeUtils.escapeHtml(text);
+    return TextUtils.escapeHtml(text);
   }
 
   /**
