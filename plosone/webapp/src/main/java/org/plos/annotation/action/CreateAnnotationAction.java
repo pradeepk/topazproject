@@ -124,19 +124,19 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
 
   /**
    * Returning an xpointer of the following form:
-   * 1) start-point(string-range(id("x20060728a")/p[1],'',288,1))/range-to(end-point(string-range(id("x20060801a")/h3[1],'',39,1)))
-   * 2) (later) string-range(/article[1]/body[1]/sec[1]/p[2],"",194,344)
+   * 1) string-range(/doc/chapter/title,'')[5]/range-to(string-range(/doc/chapter/para/em,'')[3])
+   * 2) string-range(/article[1]/body[1]/sec[1]/p[2],"",194,344)
    * @return the context for the annotation
    * @throws org.plos.ApplicationException ApplicationException
    */
   public String getTargetContext() throws ApplicationException {
     try {
-      final String context;
+      String context;
       if (startPath.equals(endPath)) {
         context = createStringRangeFragment(startPath, startOffset, endOffset - startOffset);
       } else {
-        context = "start-point(" + createStringRangeFragment(startPath, startOffset) + ")" +
-              "/range-to(end-point(" + createStringRangeFragment(endPath, endOffset) + "))";
+        context = createStringRangeFragment(startPath, startOffset) +
+              "/range-to(" + createStringRangeFragment(endPath, endOffset) + ")";
       }
       log.debug("xpointer fragment =" + context);
       return target + "#xpointer(" + URLEncoder.encode(context, "UTF-8") + ")";
@@ -147,11 +147,11 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   }
 
   private static String createStringRangeFragment(final String path, final int offset, final int length) {
-    return "string-range(" + path + ",''," + offset + ", " + length + ")[1]";
+    return "string-range(" + path + ", '', " + offset + ", " + length + ")[1]";
   }
 
   private static String createStringRangeFragment(final String path, final int offset) {
-    return "string-range(" + path + ",''," + offset + ", 1)[1]";
+    return "string-range(" + path + ", '')[" + offset + "]";
   }
 
   /**
