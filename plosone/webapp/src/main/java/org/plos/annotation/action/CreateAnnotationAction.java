@@ -12,6 +12,7 @@ package org.plos.annotation.action;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.StringUtils;
 import org.plos.ApplicationException;
 import org.plos.util.FileUtils;
 import org.plos.util.ProfanityCheckingService;
@@ -44,6 +45,8 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    * Also does some profanity check for commentTitle and comment before creating the annotation.
    */
   public String execute() throws Exception {
+    if (!checkIfValid()) return ERROR;
+
     try {
       final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(commentTitle);
       final List<String> profanityValidationMessagesInBody = profanityCheckingService.validate(comment);
@@ -72,6 +75,18 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
       }
       addFieldError(fieldName, "Annotation creation failed " + checkType + " with following messages: " + sb.toString().trim());
     }
+  }
+
+  /**
+   * Validation method
+   * @return if the validation succeeded
+   */
+  private boolean checkIfValid() {
+    if (isPublic && StringUtils.isEmpty(commentTitle)) {
+      addFieldError("commentTitle", "A title is required for a public comment.");
+      return false;
+    }
+    return true;
   }
 
   /**
