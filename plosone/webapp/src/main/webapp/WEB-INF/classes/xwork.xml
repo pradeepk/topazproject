@@ -77,7 +77,7 @@
     </action>
 
     <action name="getAnnotation" class="org.plos.annotation.action.GetAnnotationAction">
-      <result name="success">/WEB-INF/pages/annotation/viewAnnotationDetails.ftl</result>
+      <result name="success" type="ajaxJSON"/>
     </action>
 
     <action name="listReply" class="org.plos.annotation.action.ListReplyAction">
@@ -90,7 +90,7 @@
     </action>
 
     <action name="getReply" class="org.plos.annotation.action.GetReplyAction">
-      <result name="success">/WEB-INF/pages/annotation/viewReplyDetails.ftl</result>
+      <result name="success" type="ajaxJSON"/>
     </action>
   </package>
 
