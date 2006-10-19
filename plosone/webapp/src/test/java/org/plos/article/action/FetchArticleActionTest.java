@@ -13,13 +13,17 @@ import com.opensymphony.xwork.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
+import org.plos.ApplicationException;
 import org.plos.annotation.action.BodyFetchAction;
 import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
 
 import javax.activation.DataHandler;
+import javax.xml.rpc.ServiceException;
 import java.io.File;
 import java.net.URL;
+import java.net.MalformedURLException;
+import java.util.Collection;
 
 public class FetchArticleActionTest extends BasePlosoneTestCase {
   public static final Log log = LogFactory.getLog(FetchArticleActionTest.class);
@@ -81,6 +85,13 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     
 //    doIngestTest("10.1371/journal.pbio.0020294", BASE_TEST_PATH  + "pbio.0020294.zip");
 //    doIngestTest("10.1371/journal.pbio.0020317", BASE_TEST_PATH  + "pbio.0020317.zip");
+  }
+
+  public void testListArticles() throws MalformedURLException, ServiceException, ApplicationException {
+    Collection<String> articles = getFetchArticleService().getArticles(null, null);
+    for (final String article : articles) {
+      log.debug("article = " + article);
+    }
   }
 
   private void doIngestTest(String resourceDOI, String resourceToIngest) throws Exception {

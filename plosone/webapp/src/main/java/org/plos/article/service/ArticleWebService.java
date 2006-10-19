@@ -15,15 +15,12 @@ import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.ArticleClientFactory;
-import org.topazproject.ws.article.ArticleServiceLocator;
 import org.topazproject.ws.article.IngestException;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.rmi.RemoteException;
 
 /**
@@ -107,15 +104,14 @@ public class ArticleWebService extends BaseConfigurableService {
   }
 
   /**
-   * Set the article service to delegate to.
-   * @param serviceUrl serviceUrl
-   * @throws ServiceException
-   * @throws MalformedURLException
+   * Get a list of all articles
+   * @param startDate startDate
+   * @param endDate endDate
+   * @return list of article doi's
+   * @throws java.rmi.RemoteException RemoteException
    */
-  public void setServicePort(final String serviceUrl)
-          throws ServiceException, MalformedURLException {
+  public String getArticles(final String startDate, final String endDate) throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    delegateService = new ArticleServiceLocator()
-            .getArticleServicePort(new URL(serviceUrl));
+    return delegateService.getArticles(startDate, endDate, null, null, true);
   }
 }

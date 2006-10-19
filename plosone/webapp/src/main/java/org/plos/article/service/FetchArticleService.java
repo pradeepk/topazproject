@@ -3,6 +3,7 @@
  */
 package org.plos.article.service;
 
+import com.sun.org.apache.xpath.internal.XPathAPI;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -13,6 +14,8 @@ import org.plos.util.FileUtils;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.w3c.dom.Document;
+import org.w3c.dom.Element;
+import org.w3c.dom.NodeList;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
@@ -38,11 +41,15 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.StringReader;
 import java.io.Writer;
 import java.lang.ref.SoftReference;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.Properties;
@@ -311,6 +318,44 @@ public class FetchArticleService {
 
   public void setAnnotationWebService(final AnnotationWebService annotationWebService) {
     this.annotationWebService = annotationWebService;
+  }
+
+  /**
+   * Get a list of all articles
+   * @param startDate startDate
+   * @param endDate endDate
+   * @return list of article doi's
+   * @throws ApplicationException ApplicationException
+   */
+  public Collection<String> getArticles(final String startDate, final String endDate) throws ApplicationException {
+    final Collection<String> articles = new ArrayList<String>();
+
+    try {
+      final String articlesDoc = articleService.getArticles(startDate, endDate);
+
+      // Create a builder factory
+      final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+      factory.setValidating(false);
+
+      // Create the builder and parse the file
+      final Document articleDom = factory.newDocumentBuilder().parse(new InputSource(new StringReader(articlesDoc)));
+
+      // Get the matching elements
+      final NodeList nodelist = XPathAPI.selectNodeList(articleDom, "/articles/article/doi");
+
+      for (int i = 0; i < nodelist.getLength(); i++) {
+        final Element elem = (Element) nodelist.item(i);
+        final String doi = elem.getTextContent();
+        final String articleDoi = doi.substring("info:fedora/doi:".length());
+        final String decodedArticleDoi = URLDecoder.decode(articleDoi, "UTF-8");
+        articles.add(decodedArticleDoi);
+      }
+
+      return articles;
+    } catch (Exception e) {
+      throw new ApplicationException(e);
+    }
+
   }
 
   private static class CachedEntityResolver implements EntityResolver {
