@@ -15,6 +15,9 @@ import org.topazproject.ws.annotation.ReplyInfo;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
+import java.util.Collection;
 
 /**
  * A kind of utility class to convert types between topaz and plosone types fro Annotations and Replies
@@ -54,20 +57,38 @@ public class AnnotationConverter {
   /**
    * @param replies an array of Replies
    * @return an array of Reply objects as required by the web layer
-   * @throws org.plos.ApplicationException
+   * @throws org.plos.ApplicationException ApplicationException
    */
   public Reply[] convert(final ReplyInfo[] replies) throws ApplicationException {
-    final List<Reply> plosoneReplies = new ArrayList<Reply>();
-    for (final ReplyInfo reply : replies) {
-      plosoneReplies.add(convert(reply));
+    final Collection<Reply> plosoneReplies = new ArrayList<Reply>();
+    final Map<String, Reply> repliesMap = new HashMap<String, Reply>();
+
+    String annotationId = null;
+    if (replies.length > 0) {
+      annotationId = replies[0].getRoot();
     }
+
+    for (final ReplyInfo reply : replies) {
+      final String replyTo = reply.getInReplyTo();
+
+      final Reply convertedObj = convert(reply);
+      repliesMap.put(reply.getId(), convertedObj);
+
+      if (replyTo.equals(annotationId)) {
+        plosoneReplies.add(convertedObj);
+      } else {
+        final Reply savedReply = repliesMap.get(replyTo);
+        savedReply.addReply(convertedObj);
+      }
+    }
+
     return plosoneReplies.toArray(new Reply[plosoneReplies.size()]);
   }
 
   /**
    * @param reply reply
    * @return the reply for the web layer
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public Reply convert(final ReplyInfo reply) throws ApplicationException {
     final AnnotationLazyLoader lazyLoader = lazyLoaderFactory.create(reply);

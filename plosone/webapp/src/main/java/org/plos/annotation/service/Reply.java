@@ -12,6 +12,9 @@ package org.plos.annotation.service;
 import org.plos.ApplicationException;
 import org.topazproject.ws.annotation.ReplyInfo;
 
+import java.util.Collection;
+import java.util.ArrayList;
+
 /**
  * Plosone wrapper around the ReplyInfo from topaz service. It provides
  * - A way to escape title/body text when returning the result to the web layer
@@ -19,6 +22,7 @@ import org.topazproject.ws.annotation.ReplyInfo;
  */
 public abstract class Reply extends BaseAnnotation {
   private final ReplyInfo reply;
+  private Collection<Reply> replies = new ArrayList<Reply>();
 
   public Reply(final ReplyInfo reply) {
     this.reply = reply;
@@ -192,5 +196,20 @@ public abstract class Reply extends BaseAnnotation {
    */
   public boolean isPublic() throws ApplicationException {
     return checkIfPublic(reply.getState());
+  }
+
+  /**
+   * Add a (child) reply to this reply
+   * @param reply reply
+   */
+  public void addReply(final Reply reply) {
+    replies.add(reply);
+  }
+
+  /**
+   * @return the replies to this reply
+   */
+  public Reply[] getReplies() {
+    return replies.toArray(new Reply[replies.size()]);
   }
 }

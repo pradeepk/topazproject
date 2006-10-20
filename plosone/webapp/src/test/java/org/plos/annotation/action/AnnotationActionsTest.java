@@ -38,15 +38,15 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static String replyToReplyId;
 
   public void testSequencedTests() throws Exception {
-    deleteAllAnnotations();
-    deleteAllReplies();
-    createAnnotation();
-    createReply();
-    listAnnotations();
-    listReplies();
+    deleteAllAnnotations(target);
+    deleteAllReplies(target);
+    annotationId = createAnnotation(target);
+    createReply(annotationId);
+    listAnnotations(target);
+    listReplies(annotationId);
   }
 
-  public void deleteAllAnnotations() throws Exception {
+  public void deleteAllAnnotations(final String target) throws Exception {
     final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
     listAnnotationAction.setTarget(target);
     assertEquals(Action.SUCCESS, listAnnotationAction.execute());
@@ -57,7 +57,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     }
   }
 
-  public void deleteAllReplies() throws Exception {
+  public void deleteAllReplies(final String target) throws Exception {
     DeleteReplyAction deleteReplyAction = getDeleteReplyAction();
     deleteReplyAction.setRoot(target);
     deleteReplyAction.setInReplyTo(target);
@@ -89,14 +89,14 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(1, deleteReplyAction.getActionErrors().size());
   }
 
-  public void listAnnotations() throws Exception {
+  public void listAnnotations(final String target) throws Exception {
     final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
     listAnnotationAction.setTarget(target);
     assertEquals(Action.SUCCESS, listAnnotationAction.execute());
     assertEquals(1, listAnnotationAction.getAnnotations().length);
   }
 
-  public void createAnnotation() throws Exception {
+  public String createAnnotation(final String target) throws Exception {
     final String title = "Annotation1";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
     final String context = createAnnotationAction.getTargetContext();
@@ -115,7 +115,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(body, savedAnnotation.getComment());
     assertEquals(visibility, savedAnnotation.isPublic());
 
-    AnnotationActionsTest.annotationId = annotationId;
+    return annotationId;
   }
 
   public void testCreatePrivateAnnotation() throws Exception {
@@ -140,7 +140,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     AnnotationActionsTest.annotationId = annotationId;
   }
 
-  public void createReply() throws Exception {
+  public void createReply(final String annotationId) throws Exception {
     final String title = "Reply1";
     final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
     assertEquals(Action.SUCCESS, createReplyAction.execute());
@@ -164,7 +164,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   public void testCreateThreadedReplies() throws Exception {
     final String replyId;
     {
-      final String title = "Reply1";
+      final String title = "Reply1 to annotation ";
       final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
       assertEquals(Action.SUCCESS, createReplyAction.execute());
       replyId = createReplyAction.getReplyId();
@@ -184,7 +184,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     }
 
     {
-      final String title = "Reply to Reply1";
+      final String title = "Reply1 to Reply1";
       final String replyBody2 = "some text in response to the earlier teply";
       final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, replyId, title, "text/plain", replyBody2);
       assertEquals(Action.SUCCESS, createReplyAction.execute());
@@ -207,6 +207,29 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   }
 
   public void testListThreadedReplies() throws Exception {
+    final String title = "threadedTitle for Annotation";
+    final String threadedTitle = "Threaded reply test threadedTitle";
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, "text/plain", body);
+    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    final String annotationId = createAnnotationAction.getAnnotationId();
+
+    class CreateReply {
+      /** return replyId */
+      public String execute(final String annotationId, final String replyToId, final String title, final String body) throws Exception {
+        final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, replyToId, title, "text/plain", body);
+        assertEquals(Action.SUCCESS, createReplyAction.execute());
+        return createReplyAction.getReplyId();
+      }
+    }
+
+    final String replyA = new CreateReply().execute(annotationId, annotationId, threadedTitle, body);
+    final String replyAA = new CreateReply().execute(annotationId, replyA, threadedTitle, body);
+    final String replyAAA = new CreateReply().execute(annotationId, replyAA, threadedTitle, body);
+    final String replyAAB = new CreateReply().execute(annotationId, replyAA, threadedTitle, body);
+    final String replyB = new CreateReply().execute(annotationId, annotationId, threadedTitle, body);
+    final String replyBA = new CreateReply().execute(annotationId, replyB, threadedTitle, body);
+    final String replyBB = new CreateReply().execute(annotationId, replyB, threadedTitle, body);
+
     final ListReplyAction listReplyAction = getListReplyAction();
     listReplyAction.setRoot(annotationId);
     listReplyAction.setInReplyTo(annotationId);
@@ -215,15 +238,27 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final Reply[] replies = listReplyAction.getReplies();
 
     final Collection<String> list = new ArrayList<String>();
+    boolean codeRan = false;
     for (final Reply reply : replies) {
-      list.add(reply.getId());
+      final String testReplyId = reply.getId();
+      list.add(testReplyId);
+      if (testReplyId.equals(replyB)) {
+        codeRan = true;
+        assertEquals(2, reply.getReplies().length);
+      }
     }
 
-    assertTrue(list.contains(replyId));
-    assertTrue(list.contains(replyToReplyId));
+    assertTrue(codeRan);
+
+    assertEquals(2, replies.length);
+    assertTrue(list.contains(replyA));
+    assertFalse(list.contains(replyAA));
+    assertTrue(list.contains(replyB));
+
+    deleteAllReplies(annotationId);
   }
 
-  public void listReplies() throws Exception {
+  public void listReplies(final String annotationId) throws Exception {
     final ListReplyAction listReplyAction = getListReplyAction();
     listReplyAction.setRoot(annotationId);
     listReplyAction.setInReplyTo(annotationId);
@@ -400,7 +435,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     }
 
     class AnnotationCreator {
-      public void execute(final String target, final String startPath, final String endPath, final String title, final String body) throws Exception {
+      public String execute(final String target, final String startPath, final String endPath, final String title, final String body) throws Exception {
         final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
         createAnnotationAction.setStartPath(startPath);
         createAnnotationAction.setStartOffset(3);
@@ -408,10 +443,11 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
         createAnnotationAction.setEndOffset(9);
         log.debug("context = " + createAnnotationAction.getTargetContext());
         assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+        return createAnnotationAction.getAnnotationId();
       }
     }
 
-    new AnnotationCreator().execute(target, startPath1, endPath1, title, context1Body);
+    final String annotationId = new AnnotationCreator().execute(target, startPath1, endPath1, title, context1Body);
 
     final ListAnnotationAction listAnnotationAction1 = getListAnnotationAction();
     listAnnotationAction1.setTarget(target);
@@ -422,7 +458,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String content = getFetchArticleService().getAnnotatedContent(target);
     log.debug("Annotated content = " + content);
 
-    assertTrue(content.contains(context1Body));
+    assertTrue(content.contains(annotationId));
 
     for (final Annotation annotation : annotations2) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
