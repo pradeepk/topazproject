@@ -42,8 +42,8 @@ public abstract class BaseActionSupport extends ActionSupport {
   }
 
   /**
-   * Return the number fo field errors.
-   * @return number of field errors
+   * Return the number of fields with errors.
+   * @return number of fields with errors
    */
   public int getNumFieldErrors() {
     return getFieldErrors().size();
