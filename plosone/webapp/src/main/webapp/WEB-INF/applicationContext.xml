@@ -25,6 +25,7 @@
     <property name="articleService" ref="articleWebService"/>
     <property name="annotationWebService" ref="annotationWebService"/>
     <property name="useTranslet" value="true"/>
+    <property name="encodingCharset" ref="defaultEncodingCharset"/>
   </bean>
 
   <util:map id="xmlFactoryProperties">

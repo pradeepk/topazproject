@@ -64,6 +64,7 @@ public class FetchArticleService {
   private Templates translet;
   private boolean useTranslet = true;
   private Map<String, String> xmlFactoryProperty;
+  private String encodingCharset;
 
   private static final Log log = LogFactory.getLog(FetchArticleService.class);
   private Map<String, InputSource> entityResolvers = new HashMap<String, InputSource>();
@@ -260,6 +261,7 @@ public class FetchArticleService {
     InputSource entityResolver = null;
     if (null == entityResolver) {
 //      log.debug("Creating entity resolver for " + systemId);
+      //TODO: fix this constant value thingy
       final String entityFilePath = "/jp-dtd-2.0/" + entityFilename;
       URL resourceURL = FetchArticleService.class.getResource(entityFilePath);
       if (null == resourceURL) {
@@ -346,16 +348,28 @@ public class FetchArticleService {
       for (int i = 0; i < nodelist.getLength(); i++) {
         final Element elem = (Element) nodelist.item(i);
         final String doi = elem.getTextContent();
-        final String articleDoi = doi.substring("info:fedora/doi:".length());
-        final String decodedArticleDoi = URLDecoder.decode(articleDoi, "UTF-8");
-        articles.add(decodedArticleDoi);
+        final String DOI_PREFIX = "info:doi/";
+        if (doi.startsWith(DOI_PREFIX)) {
+          final String articleDoi = doi.substring(DOI_PREFIX.length());
+          final String decodedArticleDoi = URLDecoder.decode(articleDoi, encodingCharset);
+          articles.add(decodedArticleDoi);
+        } else {
+          articles.add("DOI_PREFIX:" + DOI_PREFIX + " not found. Instead found:" + doi);
+        }
       }
 
       return articles;
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
+  }
 
+  /**
+   * Set the encoding charset
+   * @param encodingCharset encodingCharset
+   */
+  public void setEncodingCharset(final String encodingCharset) {
+    this.encodingCharset = encodingCharset;
   }
 
   private static class CachedEntityResolver implements EntityResolver {
