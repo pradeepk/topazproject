@@ -41,4 +41,12 @@ public abstract class BaseActionSupport extends ActionSupport {
       return Collections.EMPTY_MAP;
   }
 
+  /**
+   * Return the number fo field errors.
+   * @return number of field errors
+   */
+  public int getNumFieldErrors() {
+    return getFieldErrors().size();
+  }
+
 }
