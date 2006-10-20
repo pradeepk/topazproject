@@ -12,6 +12,7 @@
           annotates   =${annotation.annotates}     <br/>
           title       =${annotation.commentTitle}         <br/>
           body        =${annotation.comment}          <br/>
+          bodyWithUrlLinking        =${annotation.commentWithUrlLinking}          <br/>
           context     =${annotation.context}       <br/>
           created     =${annotation.created}       <br/>
           creator     =${annotation.creator}       <br/>

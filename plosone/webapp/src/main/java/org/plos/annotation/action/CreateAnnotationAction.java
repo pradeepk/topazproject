@@ -35,7 +35,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   private int startOffset;
   private String endPath;
   private int endOffset;
-  private String olderAnnotation;
+  private String supercedes;
 
   private ProfanityCheckingService profanityCheckingService;
   public static final Log log = LogFactory.getLog(CreateAnnotationAction.class);
@@ -52,7 +52,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
       final List<String> profanityValidationMessagesInBody = profanityCheckingService.validate(comment);
 
       if (profanityValidationMessagesInBody.isEmpty() && profanityValidationMessagesInTitle.isEmpty()) {
-        annotationId = getAnnotationService().createAnnotation(target, getTargetContext(), olderAnnotation, commentTitle, mimeType, comment, isPublic);
+        annotationId = getAnnotationService().createAnnotation(target, getTargetContext(), supercedes, commentTitle, mimeType, comment, isPublic);
       } else {
         addMessages(profanityValidationMessagesInBody, "profanity check", "comment");
         addMessages(profanityValidationMessagesInTitle, "profanity check", "commentTitle");
@@ -252,12 +252,12 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   }
 
   /** @return the older annotation that it supersedes */
-  public String getOlderAnnotation() {
-    return olderAnnotation;
+  public String getSupercedes() {
+    return supercedes;
   }
 
-  /** @param olderAnnotation the older annotation that it supersedes */
-  public void setOlderAnnotation(String olderAnnotation) {
-    this.olderAnnotation = olderAnnotation;
+  /** @param supercedes the older annotation that it supersedes */
+  public void setSupercedes(final String supercedes) {
+    this.supercedes = supercedes;
   }
 }
