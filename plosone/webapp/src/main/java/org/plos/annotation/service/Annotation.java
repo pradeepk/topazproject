@@ -46,7 +46,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Set context.
-   *
    * @param context the value to set.
    */
   public void setContext(final String context) {
@@ -55,7 +54,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Get created.
-   *
    * @return created as String.
    */
   public String getCreated() {
@@ -64,7 +62,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Set created.
-   *
    * @param created the value to set.
    */
   public void setCreated(final String created) {
@@ -73,7 +70,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Get creator.
-   *
    * @return creator as String.
    */
   public String getCreator() {
@@ -82,7 +78,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Set creator.
-   *
    * @param creator the value to set.
    */
   public void setCreator(final String creator) {
@@ -91,7 +86,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Get id.
-   *
    * @return id as String.
    */
   public String getId() {
@@ -100,7 +94,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Set id.
-   *
    * @param id the value to set.
    */
   public void setId(final String id) {
@@ -109,7 +102,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Get mediator.
-   *
    * @return mediator as String.
    */
   public String getMediator() {
@@ -118,7 +110,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Set mediator.
-   *
    * @param mediator the value to set.
    */
   public void setMediator(final String mediator) {
@@ -127,7 +118,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Get state.
-   *
    * @return state as int.
    */
   public int getState() {
@@ -136,7 +126,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Set state.
-   *
    * @param state the value to set.
    */
   public void setState(final int state) {
@@ -145,7 +134,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Get supersededBy.
-   *
    * @return supersededBy as String.
    */
   public String getSupersededBy() {
@@ -154,7 +142,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Set supersededBy.
-   *
    * @param supersededBy the value to set.
    */
   public void setSupersededBy(final String supersededBy) {
@@ -163,7 +150,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Get supersedes.
-   *
    * @return supersedes as String.
    */
   public String getSupersedes() {
@@ -172,7 +158,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Set supersedes.
-   *
    * @param supersedes the value to set.
    */
   public void setSupersedes(final String supersedes) {
@@ -181,7 +166,6 @@ public abstract class Annotation extends BaseAnnotation {
 
  /**
   * Escaped text of title.
-  *
   * @return title as String.
   */
   public String getCommentTitle() {
@@ -190,7 +174,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Set commentTitle.
-   *
    * @param commentTitle the value to set.
    */
   public void setCommentTitle(final String commentTitle) {
@@ -198,17 +181,7 @@ public abstract class Annotation extends BaseAnnotation {
   }
 
   /**
-   * Getter for property 'annotation'.
-   *
-   * @return Value for property 'annotation'.
-   */
-  public AnnotationInfo getAnnotation() {
-    return annotation;
-  }
-
-  /**
    * Get annotation type.
-   *
    * @return annotation type as String.
    */
   public String getType() {
@@ -217,7 +190,6 @@ public abstract class Annotation extends BaseAnnotation {
 
   /**
    * Set annotation type.
-   *
    * @param type the value to set.
    */
   public void setType(final String type) {
