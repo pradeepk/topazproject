@@ -21,6 +21,7 @@ import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.rmi.RemoteException;
 
 /**
@@ -37,12 +38,12 @@ public class ArticleWebService extends BaseConfigurableService {
   }
 
   /**
-   * Ingest an an article.
+   * Ingest an article.
    * @param dataHandler dataHandler
    * @return the doi of the article ingested
-   * @throws RemoteException
-   * @throws IngestException
-   * @throws DuplicateIdException
+   * @throws RemoteException RemoteException
+   * @throws IngestException IngestException
+   * @throws DuplicateIdException DuplicateIdException
    */
   public String ingest(final DataHandler dataHandler)
           throws RemoteException, IngestException, DuplicateIdException {
@@ -51,11 +52,24 @@ public class ArticleWebService extends BaseConfigurableService {
   }
 
   /**
+   * Ingest an article.
+   * @param articleUrl articleUrl
+   * @return the doi of the article ingested
+   * @throws RemoteException RemoteException
+   * @throws IngestException IngestException
+   * @throws DuplicateIdException DuplicateIdException
+   */
+  public String ingest(final URL articleUrl)
+          throws RemoteException, IngestException, DuplicateIdException {
+    return ingest(new DataHandler(articleUrl));
+  }
+
+  /**
    * Mark an article as superseded by another article
    * @param oldDoi oldDoi
    * @param newDoi newDoi
-   * @throws RemoteException
-   * @throws NoSuchIdException
+   * @throws RemoteException RemoteException
+   * @throws NoSuchIdException NoSuchIdException
    */
   public void markSuperseded(final String oldDoi, final String newDoi)
           throws RemoteException, NoSuchIdException {
@@ -68,8 +82,8 @@ public class ArticleWebService extends BaseConfigurableService {
    * @param doi doi
    * @param rep rep
    * @return the URL, or null if this object doesn't exist in the desired version
-   * @throws RemoteException
-   * @throws NoSuchIdException
+   * @throws RemoteException RemoteException
+   * @throws NoSuchIdException NoSuchIdException
    */
   public String getObjectURL(final String doi, final String rep)
           throws RemoteException, NoSuchIdException {
@@ -81,8 +95,8 @@ public class ArticleWebService extends BaseConfigurableService {
    * Delete an article.
    * @param doi doi
    * @param purge purge
-   * @throws RemoteException
-   * @throws NoSuchIdException
+   * @throws RemoteException RemoteException
+   * @throws NoSuchIdException NoSuchIdException
    */
   public void delete(final String doi, final boolean purge)
           throws RemoteException, NoSuchIdException {
@@ -94,8 +108,8 @@ public class ArticleWebService extends BaseConfigurableService {
    * Change an articles state.
    * @param doi doi
    * @param state state
-   * @throws RemoteException
-   * @throws NoSuchIdException
+   * @throws RemoteException RemoteException
+   * @throws NoSuchIdException NoSuchIdException
    */
   public void setState(final String doi, final int state)
           throws RemoteException, NoSuchIdException {
