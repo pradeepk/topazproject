@@ -87,6 +87,17 @@ public class FilterResolverFactory implements ResolverFactory {
     } catch (Exception e) {
       throw new InitializerException("Error creating handler instance", e);
     }
+
+    // ensure we always close the handler so it can properly flush buffered data.
+    Runtime.getRuntime().addShutdownHook(new Thread() {
+      public void run() {
+        try {
+          FilterResolverFactory.this.close();
+        } catch (ResolverFactoryException rfe) {
+          logger.error("Exception while closing handler", rfe);
+        }
+      }
+    });
   }
 
   /**
