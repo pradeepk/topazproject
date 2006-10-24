@@ -426,9 +426,9 @@ public class Ingester {
     InputStream is;
 
     if (ds.hasAttribute(DS_CONTLOC_A)) {
-      URI contLoc = URI.create("zip:/").resolve(new URI(ds.getAttribute(DS_CONTLOC_A)));
-      if (contLoc.getScheme().equals("zip")) {
-        is = zip.getStream(ds.getAttribute(DS_CONTLOC_A), size);
+      URI contLoc = new URI(ds.getAttribute(DS_CONTLOC_A));
+      if (contLoc.getScheme() == null || contLoc.getScheme().equals("zip")) {
+        is = zip.getStream(contLoc.getSchemeSpecificPart(), size);
       } else {
         URLConnection con = contLoc.toURL().openConnection();
 

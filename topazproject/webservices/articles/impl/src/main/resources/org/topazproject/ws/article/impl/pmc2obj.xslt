@@ -175,12 +175,13 @@
   <xsl:template name="main-ds">
     <xsl:variable name="art-ext" as="xs:string" select="my:get-ext($article-entry/@name)"/>
     <xsl:variable name="loc"     as="xs:string"
-        select="concat($output-loc, my:basename($article-entry/@name))"/>
+        select="concat($output-loc, encode-for-uri(my:basename($article-entry/@name)))"/>
 
     <xsl:result-document href="{$loc}" method="xml" indent="yes"
         format="pmc-{$fixed-article/@dtd-version}">
       <xsl:sequence select="$fixed-article"/>
     </xsl:result-document>
+
     <Datastream contLoc="{$loc}" id="{my:ext-to-ds-id($art-ext)}"
                 controlGroup="{my:ext-to-ctrlgrp($art-ext)}" mimeType="{my:ext-to-mime($art-ext)}"/>
 
@@ -338,7 +339,7 @@
   <xsl:template match="ZipEntry" mode="ds">
     <xsl:variable name="ext" select="my:get-ext(@name)"/>
 
-    <Datastream contLoc="{@name}" id="{my:ext-to-ds-id($ext)}"
+    <Datastream contLoc="{encode-for-uri(@name)}" id="{my:ext-to-ds-id($ext)}"
                 controlGroup="{my:ext-to-ctrlgrp($ext)}" mimeType="{my:ext-to-mime($ext)}"/>
   </xsl:template>
 
