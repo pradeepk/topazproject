@@ -524,6 +524,8 @@ public class Ingester {
       try {
         URI uri = URI.create(base).resolve(href);
         InputStream is = zip.getStream(uri.getPath().substring(1), new long[1]);
+        if (is == null)         // hack to deal with broken AP zip's that contain absolute paths
+          is = zip.getStream(uri.getPath(), new long[1]);
 
         if (log.isDebugEnabled())
           log.debug("resolved: uri='" + uri + "', found=" + (is != null));
