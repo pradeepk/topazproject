@@ -53,7 +53,8 @@
   <xsl:variable name="fixed-article" select="my:fixup-article($orig-article)"
       as="element(article)"/>
 
-  <xsl:variable name="sec-obj-refs" select="for $doi in $sec-dois return my:links-for-doi($doi)[1]"
+  <xsl:variable name="sec-obj-refs"
+      select="(for $doi in $sec-dois return my:links-for-doi($doi)[1]) union ()"
       as="element()*"/>
 
   <!-- top-level template - do some checks, and then run the production templates -->
