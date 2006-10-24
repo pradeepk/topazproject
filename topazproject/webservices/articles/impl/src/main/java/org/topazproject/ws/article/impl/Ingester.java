@@ -113,6 +113,7 @@ public class Ingester {
 
     tFactory = new TransformerFactoryImpl();
     tFactory.setURIResolver(new URLResolver());
+    tFactory.setAttribute("http://saxon.sf.net/feature/version-warning", Boolean.FALSE);
   }
 
   /** 
