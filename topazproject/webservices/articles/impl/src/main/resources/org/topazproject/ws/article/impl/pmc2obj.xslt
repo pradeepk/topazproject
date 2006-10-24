@@ -176,12 +176,7 @@
     <xsl:variable name="art-ext" as="xs:string" select="my:get-ext($article-entry/@name)"/>
     <xsl:variable name="loc"     as="xs:string"
         select="concat($output-loc, my:basename($article-entry/@name))"/>
-    <!--
-    <Datastream id="{my:ext-to-ds-id($art-ext)}"
-                controlGroup="{my:ext-to-ctrlgrp($art-ext)}" mimeType="{my:ext-to-mime($art-ext)}">
-      <xsl:sequence select="$fixed-article"/>
-    </Datastream>
-    -->
+
     <xsl:result-document href="{$loc}" method="xml" indent="yes"
         format="pmc-{$fixed-article/@dtd-version}">
       <xsl:sequence select="$fixed-article"/>
