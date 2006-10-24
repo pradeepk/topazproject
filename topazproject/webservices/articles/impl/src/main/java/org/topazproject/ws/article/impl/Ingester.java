@@ -468,7 +468,7 @@ public class Ingester {
    * and xsl:import . Hence this class here, which just uses URL to do the resolution.
    */
   private static class URLResolver implements URIResolver {
-    public Source resolve(String href, String base) {
+    public Source resolve(String href, String base) throws TransformerException {
       if (href.length() == 0)
         return null;  // URL doesn't handle this case properly, so let default resolver handle it
 
@@ -486,7 +486,7 @@ public class Ingester {
   /**
    * This allows the stylesheets to access XML docs (such as pmc.xml) in the zip archive.
    */
-  private static class ZipURIResolver implements URIResolver {
+  private static class ZipURIResolver extends URLResolver {
     private static final String xmlReaderCName;
     private final Zip zip;
 
@@ -519,7 +519,7 @@ public class Ingester {
         log.debug("resolving: base='" + base + "', href='" + href + "'");
 
       if (!base.startsWith("zip:"))
-        return null;
+        return super.resolve(href, base);
 
       try {
         URI uri = URI.create(base).resolve(href);
