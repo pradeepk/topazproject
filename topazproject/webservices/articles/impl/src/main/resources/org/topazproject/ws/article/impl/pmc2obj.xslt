@@ -370,8 +370,10 @@
           concat('info:doi/', substring($href, 5))
         else
           $href
-      else
+      else if (starts-with(my:basename($href), my:get-root(my:basename($article-entry/@name)))) then
         my:doi-to-uri(my:fname-to-doi($href))
+      else
+        error((), concat('Found invalid link ''', $href, ''' in article'))
       "/>
   </xsl:function>
 
