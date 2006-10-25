@@ -38,7 +38,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:9080/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort"/>
+        <entry key="uri" value="http://localhost:8080/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -66,7 +66,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:9080/ws-permissions-webapp-0.5-SNAPSHOT/services/PermissionsServicePort"/>
+        <entry key="uri" value="http://localhost:8080/ws-permissions-webapp-0.5-SNAPSHOT/services/PermissionsServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -85,7 +85,7 @@
     <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:9080/ws-annotation-webapp-0.5-SNAPSHOT/services/ReplyServicePort"/>
+        <entry key="uri" value="http://localhost:8080/ws-annotation-webapp-0.5-SNAPSHOT/services/ReplyServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -98,7 +98,7 @@
     <property name="defaultType" value="http://www.w3.org/2000/10/annotationType#Annotation"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:9080/ws-annotation-webapp-0.5-SNAPSHOT/services/AnnotationServicePort"/>
+        <entry key="uri" value="http://localhost:8080/ws-annotation-webapp-0.5-SNAPSHOT/services/AnnotationServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -117,7 +117,7 @@
     <property name="applicationId" ref="applicationId"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:9080/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort"/>
+        <entry key="uri" value="http://localhost:8080/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -127,7 +127,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:9080/ws-pap-webapp-0.5-SNAPSHOT/services/PreferencesServicePort"/>
+        <entry key="uri" value="http://localhost:8080/ws-pap-webapp-0.5-SNAPSHOT/services/PreferencesServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -137,7 +137,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:9080/ws-pap-webapp-0.5-SNAPSHOT/services/ProfilesServicePort"/>
+        <entry key="uri" value="http://localhost:8080/ws-pap-webapp-0.5-SNAPSHOT/services/ProfilesServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>

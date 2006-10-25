@@ -268,7 +268,7 @@
               <keyPassword>secret</keyPassword>
             </connector>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
-              <port>8080</port>
+              <port>9080</port>
               <maxIdleTime>30000</maxIdleTime>
               <acceptors>10</acceptors>
             </connector>
