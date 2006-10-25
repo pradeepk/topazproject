@@ -13,6 +13,8 @@ import java.io.FilterInputStream;
 import java.io.InputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URL;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
@@ -54,6 +56,9 @@ import org.topazproject.ws.article.NoSuchArticleIdException;
 import org.topazproject.ws.article.ObjectInfo;
 import org.topazproject.ws.article.RepresentationInfo;
 
+import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
+import org.topazproject.fedoragsearch.service.FgsOperations;
+
 import org.topazproject.feed.ArticleFeed;
 
 /** 
@@ -65,6 +70,9 @@ public class ArticleImpl implements Article {
   private static final Log           log   = LogFactory.getLog(ArticleImpl.class);
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
   private static final String        MODEL = "<" + CONF.getString("topaz.models.articles") + ">";
+  
+  private static final String        FGS_URL   = CONF.getString("topaz.fedoragsearch.url");
+  private static final String        FGS_REPO  = CONF.getString("topaz.fedoragsearch.repository");
 
   private static final String ITQL_DELETE_DOI =
       ("delete select $s $p $o from ${MODEL} where $s $p $o and " +
@@ -120,6 +128,7 @@ public class ArticleImpl implements Article {
   private final Ingester   ingester;
   private final ArticlePEP pep;
   private final TopazContext ctx;
+  private final FgsOperations fgs;
 
   static {
     DOI_PID_CHARS = new BitSet(128);
@@ -161,10 +170,11 @@ public class ArticleImpl implements Article {
    * @param pep The xacml pep
    * @param ctx The topaz api context
    */
-  public ArticleImpl(ArticlePEP pep, TopazContext ctx) {
+  public ArticleImpl(ArticlePEP pep, TopazContext ctx) throws ServiceException {
     this.pep      = pep;
     this.ctx      = ctx;
-    this.ingester   = new Ingester(pep, ctx);
+    this.fgs      = getFgsOperations();
+    this.ingester = new Ingester(pep, ctx, fgs);
     this.fedoraServer = ctx.getFedoraBaseUri();
   }
 
@@ -183,6 +193,8 @@ public class ArticleImpl implements Article {
       throws URISyntaxException, IOException, ServiceException {
     URI fedoraURI = new URI(fedoraSvc.getServiceUri());
     fedoraServer = getRemoteFedoraURI(fedoraURI, hostname);
+    
+    this.fgs = getFgsOperations();
 
     Uploader uploader = new Uploader(uploadSvc);
     FedoraAPIM apim = APIMStubFactory.create(fedoraSvc);
@@ -190,11 +202,22 @@ public class ArticleImpl implements Article {
     ItqlHelper itql     = new ItqlHelper(mulgaraSvc);
 
     ctx = new SimpleTopazContext(itql, apim, uploader);
-    ingester = new Ingester(pep, ctx);
+    ingester = new Ingester(pep, ctx, fgs);
 
     this.pep = pep;
   }
 
+  private static FgsOperations getFgsOperations() throws ServiceException {
+    try {
+      FgsOperations ops = new FgsOperationsServiceLocator().getOperations(new URL(FGS_URL));
+      if (ops == null)
+        throw new ServiceException("Unable to create fedoragsearch service at " + FGS_URL);
+      return ops;
+    } catch (MalformedURLException mue) {
+      throw new ServiceException("Invalid fedoragsearch URL - " + FGS_URL, mue);
+    }
+  }
+  
   private static URI getRemoteFedoraURI(URI fedoraURI, String hostname) {
     if (!fedoraURI.getHost().equals("localhost"))
       return fedoraURI;         // it's already remote
@@ -237,6 +260,11 @@ public class ArticleImpl implements Article {
   public void delete(String doi, boolean purge) throws NoSuchArticleIdException, RemoteException {
     checkAccess(pep.DELETE_ARTICLE, doi);
 
+    // Remove article from full-text index first
+    String result = fgs.updateIndex("deletePid", doi2PID(doi), FGS_REPO, null, null, null);
+    if (log.isDebugEnabled())
+      log.debug("Removed " + doi2PID(doi) + " from full-text index:\n" + result);
+      
     ItqlHelper itql = ctx.getItqlHelper();
     FedoraAPIM apim = ctx.getFedoraAPIM();
     String txn = purge ? "delete " + doi : null;

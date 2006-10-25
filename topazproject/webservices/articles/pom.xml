@@ -10,9 +10,8 @@
 
   <parent>
     <groupId>org.topazproject</groupId>
-    <artifactId>topazproject</artifactId>
+    <artifactId>webservices</artifactId>
     <version>0.5-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <pluginRepositories>

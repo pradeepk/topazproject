@@ -85,6 +85,14 @@
         <property>org.quartz.jobStore.misfireThreshold = 5000</property>
       </config>
     </scheduler>
+
+    <fedoragsearch>
+      <url>http://localhost:9090/fedoragsearch/services/FgsOperations</url>
+      <repository>Topaz</repository>
+      <index>TopazIndex</index>
+      <indexDocXslt>topazFoxmlToLucene</indexDocXslt>
+      <resultPageXslt>copyXml</resultPageXslt>
+    </fedoragsearch>
     
   </topaz>
 </config>

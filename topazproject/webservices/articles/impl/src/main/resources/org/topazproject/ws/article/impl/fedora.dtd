@@ -16,6 +16,7 @@
     pid            CDATA          #REQUIRED
     cModel         CDATA          #IMPLIED
     label          CDATA          #IMPLIED
+    doIndex        CDATA          #IMPLIED
     state          (Active | Inactive | Deleted) "Active" >
 
 <!ELEMENT DC ANY >

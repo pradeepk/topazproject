@@ -63,6 +63,8 @@ import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.ws.article.DuplicateArticleIdException;
 import org.topazproject.ws.article.IngestException;
 
+import org.topazproject.fedoragsearch.service.FgsOperations;
+
 import net.sf.saxon.Controller;
 import net.sf.saxon.TransformerFactoryImpl;
 
@@ -80,6 +82,7 @@ public class Ingester {
   private static final String OL_AID_A     = "articleId";
   private static final String OBJECT       = "Object";
   private static final String O_PID_A      = "pid";
+  private static final String O_INDEX_A    = "doIndex";
   private static final String DATASTREAM   = "Datastream";
   private static final String DS_CONTLOC_A = "contLoc";
   private static final String DS_ID_A      = "id";
@@ -94,22 +97,24 @@ public class Ingester {
 
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
   private static final String MODEL        = "<" + CONF.getString("topaz.models.articles") + ">";
+  private static final String FGS_REPO     = CONF.getString("topaz.fedoragsearch.repository");
 
   private final TransformerFactory tFactory;
   private final TopazContext       ctx;
   private final ArticlePEP         pep;
+  private final FgsOperations      fgs;
 
   /** 
    * Create a new ingester pointing to the given fedora server.
    * 
-   * @param apim     the Fedora APIM client
-   * @param uploader the Fedora uploader client
-   * @param itql     the mulgara iTQL client
    * @param pep      the policy-enforcer to use for access-control
+   * @param ctx      the topaz context containing apim, uploader and itql
+   * @param fgs      the fedoragsearch client
    */
-  public Ingester(ArticlePEP pep, TopazContext ctx) {
-    this.ctx     = ctx;
-    this.pep      = pep;
+  public Ingester(ArticlePEP pep, TopazContext ctx, FgsOperations fgs) {
+    this.ctx = ctx;
+    this.pep = pep;
+    this.fgs = fgs;
 
     tFactory = new TransformerFactoryImpl();
     tFactory.setURIResolver(new URLResolver());
@@ -388,6 +393,11 @@ public class Ingester {
       Element ds = (Element) dss.item(idx);
       fedoraAddDatastream(apim, uploader, pid, ds, zip, logMsg);
     }
+
+    // index object with fedoragsearch (lucene)
+    String doIndex = obj.getAttribute(O_INDEX_A);
+    if (doIndex != null && doIndex.equals("true"))
+      fgsIndex(pid);
   }
 
   private void fedoraCreateObject(FedoraAPIM apim, String pid, String foxml, String logMsg)
@@ -449,6 +459,12 @@ public class Ingester {
     return is;
   }
 
+  private void fgsIndex(String pid) throws RemoteException {
+    String result = fgs.updateIndex("fromPid", pid, FGS_REPO, null, null, null);
+    if (log.isDebugEnabled())
+      log.debug("Indexed " + pid + ":\n" + result);
+  }
+  
   private String dom2String(Node dom) {
     try {
       StringWriter sw = new StringWriter(500);

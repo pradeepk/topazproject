@@ -90,7 +90,7 @@
       <xsl:call-template name="main-rdf"/>
     </xsl:variable>
 
-    <Object pid="{my:doi-to-pid($article-doi)}" cModel="PlosArticle">
+    <Object pid="{my:doi-to-pid($article-doi)}" cModel="PlosArticle" doIndex="true">
       <DC xmlns:dc="http://purl.org/dc/elements/1.1/">
         <xsl:sequence select="my:filter-dc($rdf, true())"/>
       </DC>
