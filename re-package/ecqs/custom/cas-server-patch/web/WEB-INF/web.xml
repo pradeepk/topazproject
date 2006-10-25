@@ -82,19 +82,19 @@
     <!-- begin cas-mod  -->
     <context-param>
       <param-name>jdbcDriver</param-name>
-      <param-value>org.postgresql.Driver</param-value>
+      <param-value>${esup-casgeneric.auth.plos.jdbc-driver}</param-value>
     </context-param>
     <context-param>
       <param-name>jdbcUrl</param-name>
-      <param-value>jdbc:postgresql://localhost/postgres</param-value>
+      <param-value>${esup-casgeneric.auth.plos.jdbc-url}</param-value>
     </context-param>
     <context-param>
       <param-name>usernameToGuidSql</param-name>
-      <param-value>select id from plos_user where loginname=?</param-value>
+      <param-value>select ${esup-casgeneric.auth.plos.login-column} from ${esup-casgeneric.auth.plos.table} where loginname=?</param-value>
     </context-param>
     <context-param>
       <param-name>guidToUsernameSql</param-name>
-      <param-value>select loginname from plos_user where id=?</param-value>
+      <param-value>select loginname from ${esup-casgeneric.auth.plos.table} where ${esup-casgeneric.auth.plos.login-column}=?</param-value>
     </context-param>
     <context-param>
       <param-name>connectionValidationQuery</param-name>
@@ -109,12 +109,12 @@
       <param-value>10</param-value>
     </context-param>
     <context-param>
-      <param-name>adminUser</param-name>
-      <param-value>postgres</param-value>
+      <param-name>dbUser</param-name>
+      <param-value>${esup-casgeneric.auth.plos.dbusername}</param-value>
     </context-param>
     <context-param>
-      <param-name>adminPassword</param-name>
-      <param-value>postgres</param-value>
+      <param-name>dbPassword</param-name>
+      <param-value>${esup-casgeneric.auth.plos.dbpassword}</param-value>
     </context-param>
     <!-- end cas-mod  -->
       

@@ -18,6 +18,26 @@ import org.plos.service.password.PasswordDigestService;
 /**
  * Plos user authentication handler that verifies that the user with a given userid/adminPassword exists
  * in the database
+ * 
+ * 
+ To use this authentication handler, edit the file "genericHandler.xml" located at:
+  re-package/ecqs/custom/esup-casgeneric-auth/plos/webpages/WEB-INF/genericHandler.xml
+
+with 
+
+<authentication debug="on">
+  <handler>
+    <classname>org.plos.auth.handler.PlosAuthDatabaseHandler</classname>
+    <config>
+      <table>${esup-casgeneric.auth.plos.table}</table>
+      <login_column>${esup-casgeneric.auth.plos.login-column}</login_column>
+      <password_column>${esup-casgeneric.auth.plos.password-column}</password_column>
+      <encryption>${esup-casgeneric.auth.plos.encryption}</encryption>
+      <encoding_charset>${esup-casgeneric.auth.plos.encoding-charset}</encoding_charset>
+    </config>
+  </handler>
+</authentication>
+
  */
 public class PlosAuthDatabaseHandler extends BasicHandler {
   private PasswordDigestService passwordService;

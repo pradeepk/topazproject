@@ -46,31 +46,6 @@ import java.util.Enumeration;
     <url-pattern>/login</url-pattern>
   </filter-mapping>
 
-
- Tips for using a authentication handler
- Edit the file "genericHandler.xml" located at:
- D:\java\topaz-install\esup-cas-quick-start-2.0.6-1\esup-casgeneric-2.0.6-1\webpages\WEB-INF
-
- Possible entry in it maybe:
-  <authentication empty_password_accepted="on" debug="on">
-    <handler>
-   <!-- fails as it assumes a md5 hashing algorithm, so we would need to have out own handler inplementation  -->
-      <classname>
-        org.esupportail.cas.server.handlers.database.SearchDatabaseHandler
-      </classname>
-  	<config>
-        <table>plos_user</table>
-        <login_column>id</login_column>
-        <password_column>password</password_column>
-        <bind_username>postgres</bind_username>
-        <bind_password>postgres</bind_password>
-        <server>
-          <jdbc_driver>org.postgresql.Driver</jdbc_driver>
-          <jdbc_url>jdbc:postgresql://localhost/postgres</jdbc_url>
-        </server>
-      </config>
-    </handler>
-  </authentication>
 */
 public class UsernameReplacementWithGuidFilter implements Filter {
   private static final Log log = LogFactory.getLog(UsernameReplacementWithGuidFilter.class);

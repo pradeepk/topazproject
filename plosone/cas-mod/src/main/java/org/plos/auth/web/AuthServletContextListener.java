@@ -76,8 +76,8 @@ public class AuthServletContextListener implements ServletContextListener {
 
     final Properties dbProperties = new Properties();
     dbProperties.setProperty("url", context.getInitParameter("jdbcUrl"));
-    dbProperties.setProperty("user", context.getInitParameter("adminUser"));
-    dbProperties.setProperty("password", context.getInitParameter("adminPassword"));
+    dbProperties.setProperty("user", context.getInitParameter("dbUser"));
+    dbProperties.setProperty("password", context.getInitParameter("dbPassword"));
 
     try {
       dbContext = DatabaseContext.createDatabaseContext(
