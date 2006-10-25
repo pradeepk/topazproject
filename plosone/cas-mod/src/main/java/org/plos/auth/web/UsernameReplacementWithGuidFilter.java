@@ -55,8 +55,9 @@ public class UsernameReplacementWithGuidFilter implements Filter {
   public void init(final FilterConfig filterConfig) throws ServletException {
     try {
       userService = (UserService) filterConfig.getServletContext().getAttribute(AuthConstants.USER_SERVICE);
-    } catch (final Exception e) {
-      throw new ServletException(e);
+    } catch (final Exception ex) {
+      log.error("UsernameReplacementWithGuidFilter init failed:", ex);
+      throw new ServletException(ex);
     }
   }
 
@@ -72,7 +73,7 @@ public class UsernameReplacementWithGuidFilter implements Filter {
 
       if (!((null == usernameParameter) || (usernameParameter.length() == 0))) {
         final String username = usernameParameter.toString();
-        httpRequest = new UsernameRequestWrapper(httpRequest, username, usernameParameter);
+        httpRequest = new UsernameRequestWrapper(httpRequest, username);
       }
 
       filterChain.doFilter(httpRequest, response);
@@ -93,12 +94,10 @@ public class UsernameReplacementWithGuidFilter implements Filter {
 
   private class UsernameRequestWrapper extends HttpServletRequestWrapper {
     private final String username;
-    private final String usernameParameter;
 
-    public UsernameRequestWrapper(final HttpServletRequest httpRequest, final String username, final String usernameParameter) {
+    public UsernameRequestWrapper(final HttpServletRequest httpRequest, final String username) {
       super(httpRequest);
       this.username = username;
-      this.usernameParameter = usernameParameter;
     }
 
     public String getParameter(final String parameterName) {
@@ -114,7 +113,7 @@ public class UsernameReplacementWithGuidFilter implements Filter {
       try {
         return userService.getGuid(username);
       } catch (final DatabaseException e) {
-        log.debug("No account found for userId:" + usernameParameter, e);
+        log.debug("No account found for userId:" + username, e);
         return null;
       }
     }
