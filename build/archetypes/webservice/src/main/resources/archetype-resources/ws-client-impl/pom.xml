@@ -130,8 +130,9 @@
           <!-- deploy for integration testing -->
           <!-- This just steals the configuration from our super-pom -->
           <plugin>
-            <groupId>org.codehaus.cargo</groupId>
+            <groupId>org.topazproject.patch.cargo</groupId>
             <artifactId>cargo-maven2-plugin</artifactId>
+            <version>0.2</version>
             <executions>
               <execution>
                 <id>jetty-start</id>

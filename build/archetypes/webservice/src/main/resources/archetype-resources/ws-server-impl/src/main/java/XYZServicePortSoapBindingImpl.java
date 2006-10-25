@@ -30,7 +30,7 @@ import org.topazproject.authentication.ProtectedServiceFactory;
 import org.topazproject.configuration.ConfigurationStore;
 import ${package}.impl.${Svc}Impl;
 import ${package}.impl.${Svc}PEP;
-import org.topazproject.xacml.Util;
+import org.topazproject.xacml.ws.WSXacmlUtil;
 
 /** 
  * Implements the server-side of the ${service} webservice. This is really just a wrapper around
@@ -93,7 +93,8 @@ public class ${Svc}ServicePortSoapBindingImpl implements ${Svc}, ServiceLifecycl
     }
 
     public WS${Svc}PEP(ServletEndpointContext context) throws Exception {
-      super(Util.lookupPDP(context, "topaz.${service}.pdpName"), Util.createSubjAttrs(context));
+      super(WSXacmlUtil.lookupPDP(context, "topaz.${service}.pdpName"),
+            WSXacmlUtil.createSubjAttrs(context));
     }
   }
 }
