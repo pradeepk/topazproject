@@ -53,7 +53,7 @@
             <phase>generate-sources</phase>
             <goals><goal>wsdl2java</goal></goals>
             <configuration>
-              <packageSpace>org.topazproject.fedoragsearch.operations.service</packageSpace>
+              <packageSpace>org.topazproject.fedoragsearch.service</packageSpace>
             </configuration>
           </execution>
 

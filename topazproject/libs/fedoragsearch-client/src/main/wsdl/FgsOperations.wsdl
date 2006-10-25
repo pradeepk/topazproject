@@ -97,7 +97,7 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    </wsdl:message>
 
-   <wsdl:portType name="Operations">
+   <wsdl:portType name="FgsOperations">
 
       <wsdl:operation name="updateIndex" parameterOrder="action value repositoryName indexName indexDocXslt resultPageXslt">
 
@@ -141,7 +141,7 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    </wsdl:portType>
 
-   <wsdl:binding name="FgsOperationsSoapBinding" type="impl:Operations">
+   <wsdl:binding name="FgsOperationsSoapBinding" type="impl:FgsOperations">
 
       <wsdlsoap:binding style="rpc" transport="http://schemas.xmlsoap.org/soap/http"/>
 
@@ -237,9 +237,9 @@ Built on Oct 05, 2005 (05:23:37 EDT)-->
 
    </wsdl:binding>
 
-   <wsdl:service name="OperationsService">
+   <wsdl:service name="FgsOperationsService">
 
-      <wsdl:port binding="impl:FgsOperationsSoapBinding" name="FgsOperations">
+      <wsdl:port binding="impl:FgsOperationsSoapBinding" name="Operations">
 
          <wsdlsoap:address location="http://defxws2006.cvt.dk/fedoragsearch/services/FgsOperations"/>
 
