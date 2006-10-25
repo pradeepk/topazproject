@@ -14,6 +14,10 @@
     <property name="fetchArticleService" ref="fetchArticleService"/>
   </bean>
 
+  <bean id="fetchObjectAction" class="org.plos.article.action.FetchObjectAction"/>
+
+  <bean id="secondaryObjectAction" class="org.plos.article.action.SecondaryObjectAction"/>
+
   <bean id="createAnnotation" class="org.plos.annotation.action.CreateAnnotationAction"/>
 
   <bean id="deleteAnnotation" class="org.plos.annotation.action.DeleteAnnotationAction"/>

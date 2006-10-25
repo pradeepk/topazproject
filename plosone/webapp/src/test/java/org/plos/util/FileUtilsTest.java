@@ -19,4 +19,12 @@ public class FileUtilsTest extends TestCase {
     assertFalse(FileUtils.isHttpURL("/java.sun.com/j2se/1.4.2/docs/api/javax/xml/transform/TransformerFactory.html"));
     assertFalse(FileUtils.isHttpURL("C:\\1.4.2\\docs\\api\\javax\\xml\\transform\\TransformerFactory.txt"));
   }
+
+  public void testMimeType() {
+    assertEquals("text/plain", FileUtils.getContentType("txt"));
+    assertEquals("text/xml", FileUtils.getContentType("xml"));
+    assertEquals("image/tiff", FileUtils.getContentType("tif"));
+    assertEquals("application/msword", FileUtils.getContentType("doc"));
+    assertEquals("application/pdf", FileUtils.getContentType("pdf"));
+  }
 }

@@ -12,6 +12,7 @@ package org.plos.util;
 
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
 import org.w3c.dom.Document;
+import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
 
 import java.io.BufferedReader;
 import java.io.FileWriter;
@@ -19,12 +20,20 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
+import java.util.Map;
+import java.util.HashMap;
 
 /**
  * Utility methods for working with files
  */
 public class FileUtils {
   public static final String NEW_LINE = System.getProperty("line.separator");
+  private static final ConfigurableMimeFileTypeMap mimetypesFileTypeMap = new ConfigurableMimeFileTypeMap();
+  private static final Map<String, String> customMimeTypes = new HashMap<String, String>();
+  static {
+    customMimeTypes.put("xml", "text/xml");
+    customMimeTypes.put("png-s", "image/png");
+  }
 
   /**
    * Return the filename from the given absolute path or url
@@ -83,6 +92,12 @@ public class FileUtils {
     return getTextFromCharStream(new URL(url).openStream());
   }
 
+  /**
+   * Return the text from a character stream
+   * @param inputStream inputStream
+   * @return character text
+   * @throws IOException IOException
+   */
   public static String getTextFromCharStream(final InputStream inputStream) throws IOException {
     final BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
 
@@ -95,5 +110,18 @@ public class FileUtils {
     in.close();
 
     return sb.toString();
+  }
+
+  /**
+   * Return the mime-type(content type) for a given file name
+   * @param filename filename
+   * @return the mime type
+   */
+  public static String getContentType(final String filename) {
+    final String customMimeType = customMimeTypes.get(filename.toLowerCase());
+    if (null != customMimeType) {
+      return customMimeType;
+    }
+    return mimetypesFileTypeMap.getContentType("a." + filename.toLowerCase());
   }
 }

@@ -13,6 +13,8 @@
     <result-types>
       <result-type name="freemarker"
         class="com.opensymphony.webwork.views.freemarker.FreemarkerResult" default="true" />
+      <result-type name="plosStream"
+                   class="org.plos.action.PlosStreamResult" />
       <result-type name="ajaxJSON" class="com.opensymphony.webwork.result.AjaxJSONResult" />
     </result-types>
 
@@ -21,7 +23,7 @@
 
       <interceptor-stack name="plosBaseStack">
         <interceptor-ref name="timer" />
-        <!--<interceptor-ref name="logger"/>-->
+        <interceptor-ref name="logger"/>
         <interceptor-ref name="defaultStack" />
       </interceptor-stack>
 
@@ -64,6 +66,15 @@
     <action name="fetchArticle" class="org.plos.article.action.FetchArticleAction">
       <result name="error">/WEB-INF/pages/error.ftl</result>
       <result name="success">/WEB-INF/pages/article/displayArticle.ftl</result>
+    </action>
+
+    <action name="fetchSecondaryObjects" class="org.plos.article.action.SecondaryObjectAction">
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+      <result name="success">/WEB-INF/pages/article/displayImages.ftl</result>
+    </action>
+
+    <action name="fetchObject" class="org.plos.article.action.FetchObjectAction">
+      <result name="success" type="plosStream"/>
     </action>
   </package>
 

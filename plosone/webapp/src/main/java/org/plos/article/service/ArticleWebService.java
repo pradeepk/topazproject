@@ -16,6 +16,10 @@ import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.ArticleClientFactory;
 import org.topazproject.ws.article.IngestException;
+import org.topazproject.ws.article.NoSuchArticleIdException;
+import org.topazproject.ws.article.NoSuchObjectIdException;
+import org.topazproject.ws.article.ObjectInfo;
+import org.topazproject.ws.article.RepresentationInfo;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
@@ -23,6 +27,8 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Wrapper around {@link org.topazproject.ws.article.Article} to reduce the confusion around
@@ -31,6 +37,9 @@ import java.rmi.RemoteException;
  */
 public class ArticleWebService extends BaseConfigurableService {
   private Article delegateService;
+  private String smallImageRep;
+  private String largeImageRep;
+  private String mediumImageRep;
 
   public void init() throws IOException, URISyntaxException, ServiceException {
     final ProtectedService permissionProtectedService = getProtectedService();
@@ -127,5 +136,65 @@ public class ArticleWebService extends BaseConfigurableService {
   public String getArticles(final String startDate, final String endDate) throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     return delegateService.getArticles(startDate, endDate, null, null, true);
+  }
+
+  /**
+   * List the representations of a doi
+   * @param doi doi
+   * @return the representations of a doi
+   * @throws org.topazproject.ws.article.NoSuchObjectIdException NoSuchObjectIdException
+   * @throws java.rmi.RemoteException RemoteException
+   */
+  public RepresentationInfo[] listRepresentations(final String doi) throws RemoteException, NoSuchObjectIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    return delegateService.listRepresentations(doi);
+  }
+
+  /**
+   * Return the list of secondary objects
+   * @param doi doi
+   * @return the secondary objects of a doi
+   * @throws java.rmi.RemoteException RemoteException
+   * @throws org.topazproject.ws.article.NoSuchArticleIdException NoSuchArticleIdException
+   */
+  public SecondaryObject[] listSecondaryObjects(final String doi) throws RemoteException, NoSuchArticleIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    return convert(delegateService.listSecondaryObjects(doi));
+  }
+
+  private SecondaryObject[] convert(final ObjectInfo[] objectInfos) {
+    final Collection<SecondaryObject> convertedObjectInfos = new ArrayList<SecondaryObject>(objectInfos.length);
+    for (final ObjectInfo objectInfo : objectInfos) {
+      convertedObjectInfos.add(convert(objectInfo));
+    }
+    return convertedObjectInfos.toArray(new SecondaryObject[convertedObjectInfos.size()]);
+  }
+
+  private SecondaryObject convert(final ObjectInfo objectInfo) {
+    return new SecondaryObject(objectInfo, smallImageRep, mediumImageRep, largeImageRep);
+  }
+
+  /**
+   * Set the small image representation
+   * @param smallImageRep smallImageRep
+   */
+  public void setSmallImageRep(final String smallImageRep) {
+    this.smallImageRep = smallImageRep;
+  }
+
+  /**
+   * Set the medium image representation
+   * @param mediumImageRep mediumImageRep
+   */
+  public void setMediumImageRep(final String mediumImageRep) {
+    this.mediumImageRep = mediumImageRep;
+  }
+
+  /**
+   * Set the large image representation
+   * @param largeImageRep largeImageRep
+   */
+  public void setLargeImageRep(final String largeImageRep) {
+    this.largeImageRep = largeImageRep;
   }
 }

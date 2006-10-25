@@ -38,6 +38,9 @@
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
+    <property name="smallImageRep" value="PNG-S"/>
+    <property name="mediumImageRep" value="PNG-M"/>
+    <property name="largeImageRep" value="PNG-L"/>
   </bean>
 
   <bean id="defaultEncodingCharset" class="java.lang.String">

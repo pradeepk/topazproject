@@ -19,6 +19,8 @@ import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
 
 import org.plos.article.action.FetchArticleAction;
+import org.plos.article.action.FetchObjectAction;
+import org.plos.article.action.SecondaryObjectAction;
 
 import org.plos.permission.service.PermissionWebService;
 
@@ -34,31 +36,33 @@ import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;
+import java.net.URL;
+import java.io.File;
 
 public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpringContextTests {
-  private FetchArticleService fetchArticleService;
-  private ArticleWebService articleWebService;
-  private PermissionWebService permissionWebService;
   private FetchArticleAction fetchArticleAction;
   private CreateAnnotationAction createAnnotationAction;
   private DeleteAnnotationAction deleteAnnotationAction;
   private ListAnnotationAction listAnnotationAction;
-  private AnnotationService annotationService;
   private ListReplyAction listReplyAction;
   private DeleteReplyAction deleteReplyAction;
   private CreateReplyAction createReplyAction;
   private BodyFetchAction bodyFetchAction;
   private GetAnnotationAction getAnnotationAction;
   private GetReplyAction getReplyAction;
-  
   private CreateUserAction createUserAction;
+  private FetchObjectAction fetchObjectAction;
+  private SecondaryObjectAction secondaryObjectAction;
+
   private DisplayUserAction displayUserAction;
-  
+  private FetchArticleService fetchArticleService;
+  private ArticleWebService articleWebService;
+  private PermissionWebService permissionWebService;
+  private AnnotationService annotationService;
   private PreferencesWebService preferencesWebService;
   private ProfileWebService profileWebService;
   private UserService userService;
   private UserWebService userWebService;
-  
 
   protected String[] getConfigLocations() {
     return new String[]{"testApplicationContext.xml"};
@@ -219,6 +223,34 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   }
 
   /**
+   * @return returns the fetchObjectAction
+   */
+  public FetchObjectAction getFetchObjectAction() {
+    return fetchObjectAction;
+  }
+
+  /**
+   * @param fetchObjectAction set the fetchObjectAction
+   */
+  public void setFetchDocumentAction(final FetchObjectAction fetchObjectAction) {
+    this.fetchObjectAction = fetchObjectAction;
+  }
+
+  /**
+   * @return the SecondaryObjectAction
+   */
+  public SecondaryObjectAction getSecondaryObjectAction() {
+    return secondaryObjectAction;
+  }
+
+  /**
+   * @param secondaryObjectAction secondaryObjectAction
+   */
+  public void setSecondaryObjectAction(final SecondaryObjectAction secondaryObjectAction) {
+    this.secondaryObjectAction = secondaryObjectAction;
+  }
+
+  /**
    * @return Returns the preferencesWebService.
    */
   public PreferencesWebService getPreferencesWebService() {
@@ -272,5 +304,13 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
    */
   public void setUserWebService(UserWebService userWebService) {
     this.userWebService = userWebService;
+  }
+
+  protected URL getAsUrl(final String resourceToIngest) throws MalformedURLException {
+    URL article = getClass().getResource(resourceToIngest);
+    if (null == article) {
+      article = new File(resourceToIngest).toURL();
+    }
+    return article;
   }
 }
