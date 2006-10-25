@@ -67,8 +67,12 @@ public class FeedTest extends TestCase {
     log.info("ingesting article " + doi + " : " + resource);
     deleteArticle(doi);
     URL article = getClass().getResource(resource);
-    assertEquals("Wrong doi returned,", doi, service.ingest(new DataHandler(article)));
-    log.info("ingested article " + doi);
+    try {
+      assertEquals("Wrong doi returned,", doi, service.ingest(new DataHandler(article)));
+      log.info("ingested article " + doi);
+    } catch (DuplicateArticleIdException daie) {
+      log.info("already ingested article " + doi);
+    }
   }
 
   protected void deleteArticle(String doi) throws RemoteException {
