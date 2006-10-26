@@ -10,12 +10,15 @@
 package org.topazproject.authentication;
 
 import java.io.IOException;
+
 import java.net.URISyntaxException;
+
 import java.util.Map;
 
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.configuration.Configuration;
+
 import org.topazproject.configuration.ConfigurationStore;
 
 /**
@@ -62,7 +65,7 @@ public class ProtectedServiceFactory {
     // Defaults to unprotected
     return new UnProtectedService(uri);
   }
-  
+
   /**
    * Creates a ProtectedService instance based on configuration.
    * 
