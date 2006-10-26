@@ -20,6 +20,9 @@ import javax.servlet.http.HttpSession;
 import javax.xml.rpc.server.ServletEndpointContext;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
+import org.apache.commons.pool.KeyedObjectPool;
+import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
@@ -45,7 +48,26 @@ public class ItqlQueryFunction extends DBQueryFunction {
   /**
    * The name of this function as it appears in XACML policies.
    */
-  public static String FUNCTION_NAME = FUNCTION_BASE + "itql";
+  public static String           FUNCTION_NAME = FUNCTION_BASE + "itql";
+  private static KeyedObjectPool pool;
+
+  static {
+    GenericKeyedObjectPool.Config poolConfig = new GenericKeyedObjectPool.Config();
+    poolConfig.maxActive                       = 20;
+    poolConfig.maxIdle                         = 20;
+    poolConfig.maxTotal                        = 20;
+    poolConfig.maxWait                         = 1000; // time to wait for handle if none available
+    poolConfig.minEvictableIdleTimeMillis      = 5 * 60 * 1000; // 5 min
+    poolConfig.minIdle                         = 0;
+    poolConfig.numTestsPerEvictionRun          = 5;
+    poolConfig.testOnBorrow                    = false;
+    poolConfig.testOnReturn                    = false;
+    poolConfig.testWhileIdle                   = true;
+    poolConfig.timeBetweenEvictionRunsMillis   = 5 * 60 * 1000; // 5 min
+    poolConfig.whenExhaustedAction             = GenericKeyedObjectPool.WHEN_EXHAUSTED_BLOCK;
+
+    pool = new GenericKeyedObjectPool(new ItqlHelperFactory(), poolConfig);
+  }
 
   /**
    * Creates an ItqlQueryFunction instance.
@@ -78,67 +100,20 @@ public class ItqlQueryFunction extends DBQueryFunction {
   public EvaluationResult executeQuery(EvaluationCtx context, String conf, String query,
                                        String[] bindings)
                                 throws QueryException {
-    ProtectedService service;
-
-    Configuration    configuration = ConfigurationStore.getInstance().getConfiguration();
-
-    if (configuration != null)
-      configuration = configuration.subset(conf);
-
-    if ((configuration == null) || (configuration.getString("uri") == null))
-      throw new QueryException("Can't find configuration " + conf);
-
-    // Get the JAX-RPC context.
-    EvaluationResult result =
-      context.getSubjectAttribute(ServletEndpointContextAttribute.TYPE,
-                                  ServletEndpointContextAttribute.ID, 
-                                  ServletEndpointContextAttribute.CATEGORY);
-
-    // Abort policy evaluation if there is a failure in look up.
-    if (result.indeterminate())
-      return result;
-
-    BagAttribute bag = (BagAttribute) result.getAttributeValue();
-
-    HttpSession  session;
-
-    if (bag.isEmpty()) {
-      // Servlet endpoint context attribute is not found. So no session.
-      session = null;
-    } else {
-      // Retrieve the JAX-RPC context.
-      ServletEndpointContext epc =
-        ((ServletEndpointContextAttribute) bag.iterator().next()).getValue();
-
-      session = epc.getHttpSession();
-    }
-
-    try {
-      service = ProtectedServiceFactory.createService(configuration, session);
-    } catch (Exception e) {
-      throw new QueryException("Unable to obtain an itql service configuration instance", e);
-    }
-
-    // Now execute the query against the ITQL service
-    return executeQuery(service, query, bindings);
-  }
-
-  private EvaluationResult executeQuery(ProtectedService service, String query, String[] bindings)
-                                 throws QueryException {
-    String     serviceUri = service.getServiceUri();
+    // Create the query
+    query = bindStatic(query, bindings);
 
     ItqlHelper itql;
 
     // Create an ItqlHelper
     try {
-      itql = new ItqlHelper(service);
+      itql = (ItqlHelper) pool.borrowObject(conf);
+    } catch (QueryException e) {
+      throw e;
     } catch (Exception e) {
-      throw new QueryException("Unable to initialize connector to ITQL interpreter bean service at "
-                               + serviceUri, e);
+      throw new QueryException("Unable to initialize connector to ITQL interpreter bean service "
+                               + conf, e);
     }
-
-    // Create the query
-    query = bindStatic(query, bindings);
 
     StringAnswer answer;
 
@@ -147,6 +122,11 @@ public class ItqlQueryFunction extends DBQueryFunction {
       answer = new StringAnswer(itql.doQuery(query));
     } catch (Exception e) {
       throw new QueryException("query '" + query + "' execution failed.", e);
+    } finally {
+      try {
+        pool.returnObject(conf, itql);
+      } catch (Throwable t) {
+      }
     }
 
     // Convert the results to a single column
@@ -158,7 +138,7 @@ public class ItqlQueryFunction extends DBQueryFunction {
       Object o = it.next();
 
       if (!(o instanceof StringAnswer.StringQueryAnswer))
-        continue; 
+        continue;
 
       StringAnswer.StringQueryAnswer result  = (StringAnswer.StringQueryAnswer) o;
       List                           rows    = result.getRows();
@@ -198,5 +178,43 @@ public class ItqlQueryFunction extends DBQueryFunction {
     s.append(parts[i]);
 
     return s.toString();
+  }
+
+  private static class ItqlHelperFactory extends BaseKeyedPoolableObjectFactory {
+    private Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
+
+    public Object makeObject(Object key) throws Exception {
+      Configuration subset = configuration.subset((String) key);
+
+      if ((subset == null) || (subset.getString("uri") == null))
+        throw new QueryException("Can't find configuration " + key);
+
+      ProtectedService service;
+
+      try {
+        service = ProtectedServiceFactory.createService(subset, (HttpSession) null);
+      } catch (Exception e) {
+        throw new QueryException("Unable to obtain an itql service configuration instance", e);
+      }
+
+      String     serviceUri = service.getServiceUri();
+
+      ItqlHelper itql;
+
+      // Create an ItqlHelper
+      try {
+        itql = new ItqlHelper(service);
+      } catch (Exception e) {
+        throw new QueryException("Unable to initialize connector to ITQL interpreter bean service at "
+                                 + serviceUri, e);
+      }
+
+      return itql;
+    }
+
+    public void destroyObject(Object key, Object obj) throws Exception {
+      ItqlHelper itql = (ItqlHelper) obj;
+      itql.close();
+    }
   }
 }

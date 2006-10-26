@@ -9,8 +9,9 @@
  */
 package org.topazproject.common.ws;
 
-import java.lang.ref.SoftReference;
 import java.io.IOException;
+
+import java.lang.ref.SoftReference;
 
 import java.net.MalformedURLException;
 import java.net.URI;
@@ -21,6 +22,7 @@ import java.rmi.RemoteException;
 import java.security.Principal;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 
@@ -31,6 +33,9 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServletEndpointContext;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.pool.BasePoolableObjectFactory;
+import org.apache.commons.pool.ObjectPool;
+import org.apache.commons.pool.impl.GenericObjectPool;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
@@ -53,12 +58,14 @@ import org.topazproject.mulgara.itql.ItqlHelper;
  * @author Pradeep Krishnan
  */
 public class WSTopazContext implements TopazContext {
-  private static final String        serverName;
-  private static final URI           objectBaseUri;
-  private static final URI           fedoraBaseUri;
-  private static final Configuration itqlConfig;
-  private static final Configuration apimConfig;
-  private static final Configuration upldConfig;
+  private static final String                   serverName;
+  private static final URI                      objectBaseUri;
+  private static final URI                      fedoraBaseUri;
+  private static final Configuration            itqlConfig;
+  private static final Configuration            apimConfig;
+  private static final Configuration            upldConfig;
+  private static final HashMap                  poolMap    = new HashMap();
+  private static final GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
 
   static {
     Configuration root = ConfigurationStore.getInstance().getConfiguration();
@@ -85,18 +92,33 @@ public class WSTopazContext implements TopazContext {
       }
     }
 
-    fedoraBaseUri = uri;
+    fedoraBaseUri   = uri;
+
+    // xxx: Get this from config
+    poolConfig.maxActive                        = 20;
+    poolConfig.maxIdle                          = 20;
+    poolConfig.maxWait                          = 1000; // time to block for handle if none available
+    poolConfig.minEvictableIdleTimeMillis       = 5 * 60 * 1000; // 5 min
+    poolConfig.minIdle                          = 0;
+    poolConfig.numTestsPerEvictionRun           = 5;
+    poolConfig.softMinEvictableIdleTimeMillis   = 5 * 60 * 1000; // 5 min
+    poolConfig.testOnBorrow                     = false;
+    poolConfig.testOnReturn                     = false;
+    poolConfig.testWhileIdle                    = true;
+    poolConfig.timeBetweenEvictionRunsMillis    = 5 * 60 * 1000; // 5 min
+    poolConfig.whenExhaustedAction              = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
   }
 
   private final String           sessionKey;
-  private List                   listeners = new ArrayList();
-  private boolean                active    = false;
-  private FedoraAPIM             apim      = null;
-  private Uploader               upld      = null;
-  private ItqlHelper             itql      = null;
-  private HandleCache            cache     = null;
-  private HttpSession            session   = null;
+  private List                   listeners   = new ArrayList();
+  private boolean                active      = false;
+  private FedoraAPIM             apim        = null;
+  private Uploader               upld        = null;
+  private ItqlHelperWrapper      itqlWrapper = null;
+  private HandleCache            cache       = null;
+  private HttpSession            session     = null;
   private ServletEndpointContext context;
+  private ObjectPool             itqlPool;
 
   /**
    * Creates a new WSTopazContext object.
@@ -105,6 +127,15 @@ public class WSTopazContext implements TopazContext {
    */
   public WSTopazContext(String sessionNs) {
     sessionKey = sessionNs + ".handle-cache";
+
+    synchronized (poolMap) {
+      itqlPool = (ObjectPool) poolMap.get(sessionNs + ".itql-pool");
+
+      if (itqlPool == null) {
+        itqlPool = new GenericObjectPool(new ItqlHelperFactory(), poolConfig);
+        poolMap.put(sessionNs + ".itql-pool", itqlPool);
+      }
+    }
   }
 
   /*
@@ -145,13 +176,18 @@ public class WSTopazContext implements TopazContext {
       upld = null;
     }
 
-    if (itql != null) {
-      cache.returnObject(itql);
-      itql = null;
+    if (itqlWrapper != null) {
+      try {
+        itqlPool.returnObject(itqlWrapper);
+      } catch (Exception e) {
+        // xxx: ignore this for now 
+      }
+
+      itqlWrapper = null;
     }
 
-    cache = null;
-    session = null;
+    cache     = null;
+    session   = null;
   }
 
   /*
@@ -222,29 +258,22 @@ public class WSTopazContext implements TopazContext {
    * @see org.topazproject.common.impl.TopazContext
    */
   public ItqlHelper getItqlHelper() throws RemoteException, IllegalStateException {
-    if (itql != null)
-      return itql;
+    if (itqlWrapper == null) {
+      try {
+        itqlWrapper = (ItqlHelperWrapper) itqlPool.borrowObject();
+      } catch (RemoteException e) {
+        throw e;
+      } catch (Exception e) {
+        throw new RemoteException("", e);
+      }
 
-    itql = (ItqlHelper) getHandle(ItqlHelper.class);
-
-    if (itql != null)
-      return itql;
-
-    try {
-      ProtectedService svc = ProtectedServiceFactory.createService(itqlConfig, session);
-      itql = new ItqlHelper(svc);
-      notifyHandleCreated(itql);
-    } catch (URISyntaxException e) {
-      throw new Error(e); // already tested; so shouldn't happend
-    } catch (MalformedURLException e) {
-      throw new Error(e);
-    } catch (ServiceException e) {
-      throw new RemoteException("", e);
-    } catch (IOException e) {
-      throw new RemoteException("", e);
+      if (itqlWrapper.isNewHandle()) {
+        notifyHandleCreated(itqlWrapper.ref());
+        itqlWrapper.setNewHandle(false);
+      }
     }
 
-    return itql;
+    return itqlWrapper.ref();
   }
 
   /*
@@ -343,6 +372,7 @@ public class WSTopazContext implements TopazContext {
 
     if (session == null)
       session = getHttpSession();
+
     cache = (HandleCache) session.getAttribute(sessionKey);
 
     if (cache != null)
@@ -365,8 +395,8 @@ public class WSTopazContext implements TopazContext {
    * </p>
    */
   private static class HandleCache {
-    private SoftReference refs[]  = new SoftReference[3];
-    int                   count = 0;
+    private SoftReference[] refs  = new SoftReference[3];
+    int                     count = 0;
 
     public synchronized Object borrowObject(Class clazz) {
       for (int i = count - 1; i >= 0; i--) {
@@ -385,12 +415,48 @@ public class WSTopazContext implements TopazContext {
 
     public synchronized void returnObject(Object borrowed) {
       if (count >= refs.length) {
-        SoftReference newRefs[] = new SoftReference[refs.length * 2];
+        SoftReference[] newRefs = new SoftReference[refs.length * 2];
         System.arraycopy(refs, 0, newRefs, 0, refs.length);
         refs = newRefs;
       }
 
       refs[count++] = new SoftReference(borrowed);
+    }
+  }
+
+  private static class ItqlHelperWrapper {
+    private ItqlHelper itql;
+    private boolean    newHandle = true;
+
+    public ItqlHelperWrapper(ItqlHelper itql) {
+      this.itql = itql;
+    }
+
+    public ItqlHelper ref() {
+      return itql;
+    }
+
+    public boolean isNewHandle() {
+      return newHandle;
+    }
+
+    public void setNewHandle(boolean newHandle) {
+      this.newHandle = newHandle;
+    }
+  }
+
+  private static class ItqlHelperFactory extends BasePoolableObjectFactory {
+    public Object makeObject() throws Exception {
+      //xxx: assume that we aren't using an auth scheme that requires HttpSession (eg. CAS)
+      ProtectedService svc = ProtectedServiceFactory.createService(itqlConfig, (HttpSession) null);
+
+      return new ItqlHelperWrapper(new ItqlHelper(svc));
+    }
+
+    public void destroyObject(Object obj) throws Exception {
+      ItqlHelperWrapper wrapper = (ItqlHelperWrapper) obj;
+      ItqlHelper        itql = wrapper.ref();
+      itql.close();
     }
   }
 }
