@@ -9,8 +9,9 @@
 
   <parent>
     <groupId>org.topazproject</groupId>
-    <artifactId>webservices</artifactId>
+    <artifactId>the-whole-shebang</artifactId>
     <version>0.5-SNAPSHOT</version>
+    <relativePath>../../../pom.xml</relativePath>
   </parent>
 
   <dependencies>
