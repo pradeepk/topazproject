@@ -118,6 +118,21 @@ public class AnnotationService extends BaseConfigurableService {
   }
 
   /**
+   * Delete the given annotation along with/without the one it supercedes
+   * @param annotationId annotationId
+   * @throws ApplicationException ApplicationException
+   */
+  public void deletePublicAnnotation(final String annotationId) throws ApplicationException {
+    try {
+      annotationWebService.deletePublicAnnotation(annotationId);
+    } catch (RemoteException e) {
+      throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
    * Delete replies with a given root and base reply
    * @param root root
    * @param inReplyTo inReplyTo

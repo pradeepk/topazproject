@@ -25,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.rmi.RemoteException;
 
 public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static final String target = "http://here.is/viru2";
@@ -37,11 +38,12 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static String replyId;
   private final String PROFANE_WORD = "BUSH";
   private static String replyToReplyId;
+  private String testXmlTarget = "file:webapp/src/test/resources/test.xml";
 
   public void testSequencedTests() throws Exception {
     deleteAllAnnotations(target);
     deleteAllReplies(target);
-    annotationId = createAnnotation(target);
+    annotationId = createAnnotation(target, false);
     createReply(annotationId);
     listAnnotations(target);
     listReplies(annotationId);
@@ -53,7 +55,9 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(Action.SUCCESS, listAnnotationAction.execute());
 
     for (final Annotation annotation : listAnnotationAction.getAnnotations()) {
-      DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), false);
+      final String annotationId1 = annotation.getId();
+      resetAnnotationPermissionsToDefault(annotationId1, ANON_PRINCIPAL);
+      DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId1, false);
       assertEquals(Action.SUCCESS, deleteAnnotationAction.execute());
     }
   }
@@ -65,15 +69,30 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(Action.SUCCESS, deleteReplyAction.deleteReplyWithRootAndReplyTo());
   }
 
-  public void testDeleteAnnotations() throws Exception {
+  public void testDeleteAnnotationsRemovesPrivateAnnotations() throws Exception {
+    String annotationId = createAnnotation(target, false);
     DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, false);
     assertEquals(Action.SUCCESS, deleteAnnotationAction.execute());
     log.debug("annotation deleted with id:" + annotationId);
     assertEquals(0, deleteAnnotationAction.getActionErrors().size());
 
-    deleteAnnotationAction = getDeleteAnnotationAction(annotationId, false);
-    assertEquals(Action.ERROR, deleteAnnotationAction.execute());
-    assertEquals(1, deleteAnnotationAction.getActionErrors().size());
+    final GetAnnotationAction getAnnotationAction1 = getGetAnnotationAction();
+    getAnnotationAction1.setAnnotationId(annotationId);
+    assertEquals(Action.ERROR, getAnnotationAction1.execute());
+  }
+
+  public void testDeleteAnnotationsMarksPublicAnnotationsAsDeleted() throws Exception {
+    String annotationId = createAnnotation(target, true);
+    DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, false);
+    assertEquals(Action.SUCCESS, deleteAnnotationAction.deletePublicAnnotation());
+    log.debug("annotation deleted with id:" + annotationId);
+    assertEquals(0, deleteAnnotationAction.getActionErrors().size());
+
+    final Annotation annotation = retrieveAnnotation(annotationId);
+    assertTrue(annotation.isDeleted());
+    assertTrue(annotation.isPublic());
+    
+    resetAnnotationPermissionsToDefault(annotationId, ANON_PRINCIPAL);
   }
 
   public void testDeleteRepliesWithId() throws Exception {
@@ -97,12 +116,11 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(1, listAnnotationAction.getAnnotations().length);
   }
 
-  public String createAnnotation(final String target) throws Exception {
+  public String createAnnotation(final String target, final boolean publicVisibility) throws Exception {
     final String title = "Annotation1";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
     final String context = createAnnotationAction.getTargetContext();
-    final boolean visibility = true;
-    createAnnotationAction.setPublic(visibility);
+    createAnnotationAction.setPublic(publicVisibility);
     assertEquals(Action.SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);
@@ -114,7 +132,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
     assertEquals(body, savedAnnotation.getComment());
-    assertEquals(visibility, savedAnnotation.isPublic());
+    assertEquals(publicVisibility, savedAnnotation.isPublic());
 
     return annotationId;
   }
@@ -398,14 +416,18 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final List<String> revokesList = Arrays.asList(permissionWebService.listRevokes(annotationId, currentUser));
     assertTrue(revokesList.contains(Annotations.Permissions.DELETE_ANNOTATION));
     assertTrue(revokesList.contains(Annotations.Permissions.SUPERSEDE));
+    resetAnnotationPermissionsToDefault(annotationId, currentUser);
+  }
 
+  private void resetAnnotationPermissionsToDefault(final String annotationId, final String currentUser) throws RemoteException {
+    final PermissionWebService permissionWebService = getPermissionWebService();
     //Cleanup - Reset the permissions so that these annotations can be deleted by other unit tests
     permissionWebService.cancelRevokes(
             annotationId,
             new String[] {Annotations.Permissions.DELETE_ANNOTATION, Annotations.Permissions.SUPERSEDE},
             new String[] {currentUser}
     );
-    
+
     permissionWebService.cancelGrants(
             annotationId,
             new String[] {Annotations.Permissions.GET_ANNOTATION_INFO},
@@ -419,7 +441,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 //      + " <!ATTLIST testid id ID #REQUIRED > ] > <doc> <chapter> <title>Chapter I</title> "
 //      + " <para>Hello world, indeed, <em>wonderful</em> world</para></chapter></doc>";
 
-    String target = "http://localhost:9080/existingArticle/test.xml";
+    String target = testXmlTarget;
 
     final String startPath1    = "/doc/chapter/title";
     final String endPath1    = "/doc/chapter/para";
@@ -586,7 +608,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       + " <!ATTLIST testid id ID #REQUIRED > ] > <doc> <chapter> <title>Chapter I</title> "
       + " <para>Hello world, indeed, <em>wonderful</em> world</para></chapter></doc>";
 
-    final String subject     = "http://localhost:9080/existingArticle/test.xml";
+    final String subject     = testXmlTarget;
     String       context1    = "foo:bar#xpointer(string-range(/,'Hello+world'))";
     String       context2    = "foo:bar#xpointer(string-range(/,'indeed,+wonderful'))";
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";
@@ -615,7 +637,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       + " <!ATTLIST testid id ID #REQUIRED > ] > <doc> <chapter> <title>Chapter I</title> "
       + " <para>Hello world, indeed, <em>wonderful</em> world</para></chapter></doc>";
 
-    final String subject     = "http://localhost:9080/existingArticle/test.xml";
+    final String subject     = testXmlTarget;
     String       context1    = "foo:bar#xpointer(string-range(/,'Hello+world'))";
     String       context2    = "foo:bar#xpointer(string-range(/doc/chapter/title,'',0,5)[1])";
     String       context3    = "foo:bar#xpointer(string-range(/,'world,+indeed'))";

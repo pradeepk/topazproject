@@ -1,5 +1,5 @@
 /* $HeadURL::                                                                            $
- * $Id$
+ * $Id:DeleteAnnotationAction.java 722 2006-10-02 16:42:45Z viru $
  */
 package org.plos.annotation.action;
 
@@ -31,6 +31,23 @@ public class DeleteAnnotationAction extends AnnotationActionSupport {
       return ERROR;
     }
     addActionMessage("Annotation deleted with id:" + annotationId);
+    return SUCCESS;
+  }
+
+  /**
+   * Delete public annotation.
+   * @return status
+   * @throws Exception Exception
+   */
+  public String deletePublicAnnotation() throws Exception {
+    try {
+      getAnnotationService().deletePublicAnnotation(annotationId);
+    } catch (final ApplicationException e) {
+      log.error(e, e);
+      addActionError("Annotation deletion failed with error message: " + e.getMessage());
+      return ERROR;
+    }
+    addActionMessage("Annotation marked as deleted with id:" + annotationId);
     return SUCCESS;
   }
 

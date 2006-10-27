@@ -72,13 +72,26 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
 
   /**
+   * Delete an annotation
+   * @param annotationId annotationId
+   * @throws java.rmi.RemoteException RemoteException
+   * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
+   * @see org.topazproject.ws.annotation.Annotations#deleteAnnotation(String, boolean)
+   */
+  public void deletePublicAnnotation(final String annotationId) throws RemoteException, NoSuchAnnotationIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    annotationService.setAnnotationState(annotationId, PUBLIC_MASK | DELETE_MASK);
+  }
+
+  /**
    * Delete the given flag
    * @param flagId flagId
    * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
    * @throws java.rmi.RemoteException RemoteException
    */
   public void deleteFlag(final String flagId) throws NoSuchAnnotationIdException, RemoteException {
-    setDeleted(flagId);
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    annotationService.setAnnotationState(flagId, DELETE_MASK);
   }
 
   /**
@@ -124,17 +137,6 @@ public class AnnotationWebService extends BaseAnnotationService {
   public void setFlagged(final String annotationId) throws NoSuchAnnotationIdException, RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     annotationService.setAnnotationState(annotationId, PUBLIC_MASK | FLAG_MASK);
-  }
-
-  /**
-   * Mark the annotation as deleted
-   * @param annotationId annotationId
-   * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
-   * @throws java.rmi.RemoteException RemoteException
-   */
-  private void setDeleted(final String annotationId) throws NoSuchAnnotationIdException, RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-    annotationService.setAnnotationState(annotationId, DELETE_MASK);
   }
 
 }
