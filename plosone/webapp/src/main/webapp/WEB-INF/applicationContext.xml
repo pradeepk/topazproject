@@ -165,4 +165,12 @@
     </property>
   </bean>
 
+  <bean id="plosOneFreemarkerManager" class="org.plos.webwork.PlosOneFreemarkerManager">
+    <constructor-arg index="0">
+      <ref bean="plosOneFreemarkerConfig" />
+    </constructor-arg>      
+  </bean>
+  
+  <bean id="plosOneFreemarkerConfig" class="org.plos.webwork.PlosOneFreemarkerConfig" />
+  
 </beans>

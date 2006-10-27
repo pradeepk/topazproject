@@ -12,9 +12,13 @@
   <package name="default" extends="webwork-default">
     <result-types>
       <result-type name="freemarker"
-        class="com.opensymphony.webwork.views.freemarker.FreemarkerResult" default="true" />
-      <result-type name="plosStream"
-                   class="org.plos.action.PlosStreamResult" />
+        class="com.opensymphony.webwork.views.freemarker.FreemarkerResult" default="true">
+      </result-type>
+      <result-type name="plosOneFreemarker"
+        class="org.plos.webwork.PlosOneFreemarkerResult">
+        <param name="location">/WEB-INF/pages/template.ftl</param>
+      </result-type>
+      <result-type name="plosStream" class="org.plos.action.PlosStreamResult" />
       <result-type name="ajaxJSON" class="com.opensymphony.webwork.result.AjaxJSONResult" />
     </result-types>
 
@@ -52,6 +56,12 @@
       <result>/WEB-INF/pages/todo.ftl</result>
     </action>
 
+	  <action name="testFreemarker">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/WEB-INF/pages/include.ftl</param>
+      </result>
+    </action>
+
     <action name="register" class="org.plosone.action.RegistrationAction">
       <!--<result name="success">/WEB-INF/pages/home.ftl</result>-->
       <result type="chain">home</result>
@@ -65,7 +75,7 @@
 
     <action name="fetchArticle" class="org.plos.article.action.FetchArticleAction">
       <result name="error">/WEB-INF/pages/error.ftl</result>
-      <result name="success">/WEB-INF/pages/article/displayArticle.ftl</result>
+      <result name="success">/templates/article.ftl</result>
     </action>
 
     <action name="fetchSecondaryObjects" class="org.plos.article.action.SecondaryObjectAction">
