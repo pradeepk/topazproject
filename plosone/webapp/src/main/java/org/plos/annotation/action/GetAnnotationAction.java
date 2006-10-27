@@ -1,5 +1,5 @@
 /* $HeadURL::                                                                            $
- * $Id:GetAnnotationAction.java 722 2006-10-02 16:42:45Z viru $
+ * $Id$
  *
  * Copyright (c) 2006 by Topaz, Inc.
  * http://topazproject.org
@@ -9,46 +9,16 @@
  */
 package org.plos.annotation.action;
 
-import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
-import org.plos.ApplicationException;
-import org.plos.annotation.service.Annotation;
-
 /**
- * Used to fetch an annotation given an id.
+ * Get annotation for a given id.
+ *
+ * We can't use BaseGetAnnotationAction directly as spring runs into this problem
+ * org.springframework.beans.factory.UnsatisfiedDependencyException: Error creating bean with
+ * name 'org.plos.annotation.action.AnnotationActionsTest': Unsatisfied dependency expressed through
+ * bean property 'getAnnotationAction': There are 2 beans of type
+ * [class org.plos.annotation.action.GetAnnotationAction] for autowire by type. There should have
+ * been exactly 1 to be able to autowire property 'getAnnotationAction' of bean 'org.plos.annotation.action.AnnotationActionsTest'.
+ * Consider using autowire by name instead.
  */
-public class GetAnnotationAction extends AnnotationActionSupport {
-  private String annotationId;
-  private Annotation annotation;
-
-  private static final Log log = LogFactory.getLog(GetAnnotationAction.class);
-
-  public String execute() throws Exception {
-    try {
-      annotation = getAnnotationService().getAnnotation(annotationId);
-    } catch (final ApplicationException e) {
-      log.error(e, e);
-      addActionError("Annotation fetching failed with error message: " + e.getMessage());
-      return ERROR;
-    }
-    return SUCCESS;
-  }
-
-  /**
-   * Set the annotationId for the annotation to fetch
-   * @param annotationId annotationId
-   */
-  public void setAnnotationId(final String annotationId) {
-    this.annotationId = annotationId;
-  }
-
-  @RequiredStringValidator(message = "Annotation Id is a required field")
-  public String getAnnotationId() {
-    return annotationId;
-  }
-
-  public Annotation getAnnotation() {
-    return annotation;
-  }
+public class GetAnnotationAction extends BaseGetAnnotationAction {
 }

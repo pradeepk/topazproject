@@ -22,8 +22,14 @@
           <@ww.url id="createReplyURL" action="createReplySubmit" root="${annotation.id}" inReplyTo="${annotation.id}" namespace="/annotation/secure"/>
           <@ww.a href="%{createReplyURL}">create reply</@ww.a> <br/>
 
+          <@ww.url id="createFlagURL" action="createFlagSubmit" target="${annotation.id}" namespace="/annotation/secure"/>
+          <@ww.a href="%{createFlagURL}">create flag</@ww.a> <br/>
+
           <@ww.url id="listReplyURL" action="listAllReplies" root="${annotation.id}" inReplyTo="${annotation.id}"/>
           <@ww.a href="%{listReplyURL}">list all replies</@ww.a> <br/>
+
+          <@ww.url id="listFlagURL" action="listAllFlags" target="${annotation.id}" />
+          <@ww.a href="%{listFlagURL}">list all flags</@ww.a> <br/>
 
     </fieldset>
 

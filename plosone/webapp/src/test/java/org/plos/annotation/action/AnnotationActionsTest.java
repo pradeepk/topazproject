@@ -16,6 +16,7 @@ import org.plos.BasePlosoneTestCase;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.AnnotationPermission;
 import org.plos.annotation.service.AnnotationService;
+import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.Reply;
 import org.plos.permission.service.PermissionWebService;
 import org.topazproject.ws.annotation.Annotations;
@@ -380,6 +381,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
     assertFalse(savedAnnotation.isPublic());
+    assertFalse(savedAnnotation.isFlagged());
 
     final AnnotationService annotationService = getAnnotationService();
     final PermissionWebService permissionWebService = getPermissionWebService();
@@ -537,6 +539,13 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     return getAnnotationAction.getAnnotation();
   }
 
+  private Flag retrieveFlag(final String flagId) throws Exception {
+    final GetFlagAction getFlagAction = getGetFlagAction();
+    getFlagAction.setFlagId(flagId);
+    assertEquals(Action.SUCCESS, getFlagAction.execute());
+    return getFlagAction.getFlag();
+  }
+
   private DeleteAnnotationAction getDeleteAnnotationAction(final String annotationId, final boolean deletePreceding) {
     final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction();
     deleteAnnotationAction.setAnnotationId(annotationId);
@@ -614,7 +623,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     AnnotationService service = getAnnotationService();
     Annotation[] annotations = service.listAnnotations(subject);
 
-    for (Annotation annotation : annotations) {
+    for (final Annotation annotation : annotations) {
       service.deleteAnnotation(annotation.getId(), true);
     }
 
@@ -626,7 +635,70 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     log.debug(content);
 
     annotations = service.listAnnotations(subject);
-    for (Annotation annotation1 : annotations)
-      service.deleteAnnotation(annotation1.getId(), true);
+    for (final Annotation annotation : annotations)
+      service.deleteAnnotation(annotation.getId(), true);
+  }
+
+  public void testFlagCreation() throws Exception {
+    final String title = "Annotation1";
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
+    createAnnotationAction.setPublic(true);
+    final String context = createAnnotationAction.getTargetContext();
+    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    final String annotationId = createAnnotationAction.getAnnotationId();
+    log.debug("annotation created with id:" + annotationId);
+    assertNotNull(annotationId);
+
+    final Annotation savedAnnotation = retrieveAnnotation(annotationId);
+    assertEquals(target, savedAnnotation.getAnnotates());
+    assertEquals(title, savedAnnotation.getCommentTitle());
+    assertEquals(context, savedAnnotation.getContext());
+    assertEquals(body, savedAnnotation.getComment());
+    assertTrue(savedAnnotation.isPublic());
+    assertFalse(savedAnnotation.isFlagged());
+    assertFalse(savedAnnotation.isDeleted());
+
+    final CreateFlagAction createFlagAction = getCreateFlagAction();
+    final String reasonCode = "spam";
+    createFlagAction.setReasonCode(reasonCode);
+    createFlagAction.setTarget(annotationId);
+    final String flagComment = "This a viagra selling spammer. " +
+            "We should do something about it. Maybe we should start giving away viagra for free.";
+    createFlagAction.setComment(flagComment);
+    assertEquals(Action.SUCCESS, createFlagAction.execute());
+    final String flagAnnotationId = createFlagAction.getAnnotationId();
+    log.debug("Flag comment created with id:" + flagAnnotationId);
+
+    final Annotation flaggedAnnotation = retrieveAnnotation(annotationId);
+    assertEquals(target, flaggedAnnotation.getAnnotates());
+    assertEquals(title, flaggedAnnotation.getCommentTitle());
+    assertEquals(context, flaggedAnnotation.getContext());
+    assertEquals(body, flaggedAnnotation.getComment());
+    assertTrue(flaggedAnnotation.isPublic());
+    assertTrue(flaggedAnnotation.isFlagged());
+    assertFalse(flaggedAnnotation.isDeleted());
+
+    final Flag flag = retrieveFlag(flagAnnotationId);
+    assertEquals(annotationId, flag.getAnnotates());
+    assertEquals(flagComment, flag.getComment());
+    assertEquals(reasonCode, flag.getReasonCode());
+    assertFalse(flag.isDeleted());
+
+    final DeleteFlagAction deleteFlagAction = getDeleteFlagAction();
+    deleteFlagAction.setFlagId(flagAnnotationId);
+    assertEquals(Action.SUCCESS, deleteFlagAction.execute());
+    log.debug("Flag comment DELETED with id:" + flagAnnotationId);
+
+    final Flag deletedFlag = retrieveFlag(flagAnnotationId);
+    assertEquals(annotationId, deletedFlag.getAnnotates());
+    assertEquals(reasonCode, deletedFlag.getReasonCode());
+    assertTrue(deletedFlag.isDeleted());
+
+    final Annotation flaggedAnnotationAfterFlagDeleted = retrieveAnnotation(annotationId);
+    assertEquals(target, flaggedAnnotationAfterFlagDeleted.getAnnotates());
+    assertTrue(flaggedAnnotationAfterFlagDeleted.isPublic());
+    assertTrue(flaggedAnnotationAfterFlagDeleted.isFlagged());
+    assertFalse(flaggedAnnotationAfterFlagDeleted.isDeleted());
+
   }
 }

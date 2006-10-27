@@ -40,4 +40,13 @@ public interface Constants {
     String NEW_PROFILE = "new-profile";
     String UPDATE_PROFILE = "update-profile";
   }
+
+  /**
+   * Masks used for denoting the state for annotations and replies
+   */
+  interface StateMask {
+    int PUBLIC = 0x001; //binary 0001
+    int FLAG = 0x002;   //binary 0010
+    int DELETE = 0x004; //binary 0100
+  }
 }

@@ -10,6 +10,9 @@
 package org.plos.annotation.service;
 
 import org.apache.commons.lang.StringUtils;
+import static org.plos.annotation.service.Annotation.FLAG_MASK;
+import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
+import static org.plos.annotation.service.Annotation.DELETE_MASK;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.ws.annotation.AnnotationClientFactory;
 import org.topazproject.ws.annotation.AnnotationInfo;
@@ -69,6 +72,16 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
 
   /**
+   * Delete the given flag
+   * @param flagId flagId
+   * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
+   * @throws java.rmi.RemoteException RemoteException
+   */
+  public void deleteFlag(final String flagId) throws NoSuchAnnotationIdException, RemoteException {
+    setDeleted(flagId);
+  }
+
+  /**
    * @see org.topazproject.ws.annotation.Annotations#listAnnotations(String, String, String)
    * @param target target
    * @return a list of annotations
@@ -99,6 +112,29 @@ public class AnnotationWebService extends BaseAnnotationService {
    */
   public void setPublic(final String annotationDoi) throws RemoteException, NoSuchAnnotationIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    annotationService.setAnnotationState(annotationDoi, Annotation.PUBLIC_MASK);
+    annotationService.setAnnotationState(annotationDoi, PUBLIC_MASK);
   }
+
+  /**
+   * Set the annotation as flagged
+   * @param annotationId annotationId
+   * @throws NoSuchAnnotationIdException NoSuchAnnotationIdException
+   * @throws RemoteException RemoteException
+   */
+  public void setFlagged(final String annotationId) throws NoSuchAnnotationIdException, RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    annotationService.setAnnotationState(annotationId, PUBLIC_MASK | FLAG_MASK);
+  }
+
+  /**
+   * Mark the annotation as deleted
+   * @param annotationId annotationId
+   * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
+   * @throws java.rmi.RemoteException RemoteException
+   */
+  private void setDeleted(final String annotationId) throws NoSuchAnnotationIdException, RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    annotationService.setAnnotationState(annotationId, DELETE_MASK);
+  }
+
 }

@@ -9,11 +9,10 @@
  */
 package org.plos.annotation.service;
 
-import org.plos.ApplicationException;
 import org.topazproject.ws.annotation.ReplyInfo;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Plosone wrapper around the ReplyInfo from topaz service. It provides
@@ -188,14 +187,6 @@ public abstract class Reply extends BaseAnnotation {
    */
   public void setType(final String type) {
     reply.setType(type);
-  }
-
-  /**
-   * @return true if the Reply is public, false otherwise
-   * @throws org.plos.ApplicationException ApplicationException
-   */
-  public boolean isPublic() throws ApplicationException {
-    return checkIfPublic(reply.getState());
   }
 
   /**

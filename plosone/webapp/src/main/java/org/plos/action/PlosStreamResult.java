@@ -39,7 +39,7 @@ public class PlosStreamResult extends StreamResult {
         HttpServletResponse oResponse = (HttpServletResponse) invocation.getInvocationContext().get(HTTP_RESPONSE);
 
         // Set the content type
-        oResponse.setContentType(getProperty("contentType", this.contentType, invocation));
+//        oResponse.setContentType(getProperty("contentType", this.contentType, invocation));
 
         // Set the content length
         if (this.contentLength != null) {
@@ -58,7 +58,7 @@ public class PlosStreamResult extends StreamResult {
 
         // Set the content-disposition
         if (this.contentDisposition != null) {
-            oResponse.addHeader("Content-disposition", getProperty("contentDisposition", this.contentDisposition, invocation));
+//            oResponse.addHeader("Content-disposition", getProperty("contentDisposition", this.contentDisposition, invocation));
         }
 
         // Get the outputstream

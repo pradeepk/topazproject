@@ -9,7 +9,6 @@
  */
 package org.plos.annotation.service;
 
-import org.plos.ApplicationException;
 import org.topazproject.ws.annotation.AnnotationInfo;
 
 /**
@@ -199,13 +198,4 @@ public abstract class Annotation extends BaseAnnotation {
   public Annotation(final AnnotationInfo annotation) {
     this.annotation = annotation;
   }
-
-  /**
-   * @return true if the Annotation is public, false otherwise
-   * @throws org.plos.ApplicationException ApplicationException
-   */
-  public boolean isPublic() throws ApplicationException {
-    return checkIfPublic(annotation.getState());
-  }
-
 }

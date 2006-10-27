@@ -9,6 +9,7 @@ import org.plos.ApplicationException;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.service.BaseConfigurableService;
 import org.plos.util.FileUtils;
+import org.plos.util.FlagUtil;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.Annotations;
@@ -81,6 +82,27 @@ public class AnnotationService extends BaseConfigurableService {
   }
 
   /**
+   * Create an flag.
+   * @param target target that a flag is being created for
+   * @param reasonCode reasonCode
+   * @param body body
+   * @param mimeType mimeType @throws org.plos.ApplicationException ApplicationException
+   * @return unique identifier for the newly created flag
+   * @throws org.plos.ApplicationException ApplicationException
+   */
+  public String createFlag(final String target, final String reasonCode, final String body, final String mimeType) throws ApplicationException {
+    try {
+      final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
+      final String annotationId = annotationWebService.createAnnotation(mimeType, target, null, null, null, flagBody);
+      setAnnotationAsFlagged(target);
+      return annotationId;
+    } catch (Exception e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
+   * Delete the given annotation along with/without the one it supercedes
    * @param annotationId annotationId
    * @param deletePreceding deletePreceding
    * @throws ApplicationException ApplicationException
@@ -96,7 +118,7 @@ public class AnnotationService extends BaseConfigurableService {
   }
 
   /**
-   * delete replies with a given root and base reply
+   * Delete replies with a given root and base reply
    * @param root root
    * @param inReplyTo inReplyTo
    * @throws ApplicationException ApplicationException
@@ -104,6 +126,21 @@ public class AnnotationService extends BaseConfigurableService {
   public void deleteReply(final String root, final String inReplyTo) throws ApplicationException {
     try {
       replyWebService.deleteReplies(root, inReplyTo);
+    } catch (RemoteException e) {
+      throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
+   * Delete the given flag
+   * @param flagId flagId
+   * @throws org.plos.ApplicationException ApplicationException
+   */
+  public void deleteFlag(final String flagId) throws ApplicationException {
+    try {
+      annotationWebService.deleteFlag(flagId);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     } catch (NoSuchIdException e) {
@@ -255,6 +292,19 @@ public class AnnotationService extends BaseConfigurableService {
 
       annotationWebService.setPublic(annotationDoi);
 
+    } catch (final Exception e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
+   * Set the annotation as flagged.
+   * @param annotationId annotationId
+   * @throws org.plos.ApplicationException ApplicationException
+   */
+  private void setAnnotationAsFlagged(final String annotationId) throws ApplicationException {
+    try {
+      annotationWebService.setFlagged(annotationId);
     } catch (final RemoteException e) {
       throw new ApplicationException(e);
     } catch (NoSuchIdException e) {

@@ -14,6 +14,9 @@ import org.plos.annotation.action.CreateReplyAction;
 import org.plos.annotation.action.BodyFetchAction;
 import org.plos.annotation.action.GetAnnotationAction;
 import org.plos.annotation.action.GetReplyAction;
+import org.plos.annotation.action.CreateFlagAction;
+import org.plos.annotation.action.GetFlagAction;
+import org.plos.annotation.action.DeleteFlagAction;
 
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
@@ -53,8 +56,10 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private CreateUserAction createUserAction;
   private FetchObjectAction fetchObjectAction;
   private SecondaryObjectAction secondaryObjectAction;
-
   private DisplayUserAction displayUserAction;
+  private CreateFlagAction createFlagAction;
+  private GetFlagAction getFlagAction;
+
   private FetchArticleService fetchArticleService;
   private ArticleWebService articleWebService;
   private PermissionWebService permissionWebService;
@@ -63,6 +68,7 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private ProfileWebService profileWebService;
   private UserService userService;
   private UserWebService userWebService;
+  private DeleteFlagAction deleteFlagAction;
 
   protected String[] getConfigLocations() {
     return new String[]{"testApplicationContext.xml"};
@@ -172,6 +178,14 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
     this.getAnnotationAction = getAnnotationAction;
   }
 
+  public GetFlagAction getGetFlagAction() {
+    return getFlagAction;
+  }
+
+  public void setGetFlagAction(final GetFlagAction getFlagAction) {
+    this.getFlagAction = getFlagAction;
+  }
+
   public GetReplyAction getGetReplyAction() {
     return getReplyAction;
   }
@@ -232,7 +246,7 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   /**
    * @param fetchObjectAction set the fetchObjectAction
    */
-  public void setFetchDocumentAction(final FetchObjectAction fetchObjectAction) {
+  public void setFetchObjectAction(final FetchObjectAction fetchObjectAction) {
     this.fetchObjectAction = fetchObjectAction;
   }
 
@@ -248,6 +262,20 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
    */
   public void setSecondaryObjectAction(final SecondaryObjectAction secondaryObjectAction) {
     this.secondaryObjectAction = secondaryObjectAction;
+  }
+
+  /**
+   * @return the CreateFlagAction
+   */
+  public CreateFlagAction getCreateFlagAction() {
+    return createFlagAction;
+  }
+
+  /**
+   * @param createFlagAction createFlagAction
+   */
+  public void setFlagAnnotationAction(final CreateFlagAction createFlagAction) {
+    this.createFlagAction = createFlagAction;
   }
 
   /**
@@ -312,5 +340,18 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
       article = new File(resourceToIngest).toURL();
     }
     return article;
+  }
+
+  /** @return the DeleteFlagAction */
+  public DeleteFlagAction getDeleteFlagAction() {
+    return deleteFlagAction;
+  }
+
+  /**
+   * Set the DeleteFlagAction
+   * @param deleteFlagAction deleteFlagAction
+   */
+  public void setDeleteFlagAction(final DeleteFlagAction deleteFlagAction) {
+    this.deleteFlagAction = deleteFlagAction;
   }
 }

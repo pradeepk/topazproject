@@ -135,11 +135,11 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
 //  }
 
   public void testShouldReturnTransformedArticle() throws Exception {
-//    final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
-//    String resourceDOI = "10.1371/journal.pone.0000008";
-//
-    final String resourceToIngest = BASE_TEST_PATH  + "pone.0000011.zip";
-    String resourceDOI = "10.1371/journal.pone.0000011";
+    final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
+    String resourceDOI = "10.1371/journal.pone.0000008";
+
+//    final String resourceToIngest = BASE_TEST_PATH  + "pone.0000011.zip";
+//    String resourceDOI = "10.1371/journal.pone.0000011";
 
     try {
       getArticleWebService().delete(resourceDOI, true);
@@ -177,13 +177,8 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
   }
 
   public void testShouldInjestArticle() throws Exception {
-//    doIngestTest("10.1371/journal.pbio.0020294", BASE_TEST_PATH  + "test_article.zip");
-
-    doIngestTest("10.1371/journal.pbio.0020042", BASE_TEST_PATH  + "pbio.0020042.zip");
-//    doIngestTest("10.1371/journal.pone.0000008", BASE_TEST_PATH  + "pone.0000008.zip");
-    
-//    doIngestTest("10.1371/journal.pbio.0020294", BASE_TEST_PATH  + "pbio.0020294.zip");
-//    doIngestTest("10.1371/journal.pbio.0020317", BASE_TEST_PATH  + "pbio.0020317.zip");
+    doIngestTest("10.1371/journal.pone.0000008", BASE_TEST_PATH  + "pone.0000008.zip");
+//    doIngestTest("10.1371/journal.pone.0000011", BASE_TEST_PATH  + "pone.0000011.zip");
   }
 
   public void testListArticles() throws MalformedURLException, ServiceException, ApplicationException {

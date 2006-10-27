@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans default-autowire="byName"
+<beans default-autowire="autodetect"
        xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:util="http://www.springframework.org/schema/util"
@@ -14,30 +14,36 @@
     <property name="fetchArticleService" ref="fetchArticleService"/>
   </bean>
 
-  <bean id="fetchObjectAction" class="org.plos.article.action.FetchObjectAction"/>
+  <bean class="org.plos.article.action.FetchObjectAction"/>
 
-  <bean id="secondaryObjectAction" class="org.plos.article.action.SecondaryObjectAction"/>
+  <bean class="org.plos.article.action.SecondaryObjectAction"/>
 
-  <bean id="createAnnotation" class="org.plos.annotation.action.CreateAnnotationAction"/>
+  <bean class="org.plos.annotation.action.CreateAnnotationAction"/>
 
-  <bean id="deleteAnnotation" class="org.plos.annotation.action.DeleteAnnotationAction"/>
+  <bean class="org.plos.annotation.action.DeleteAnnotationAction"/>
 
-  <bean id="listAnnotation" class="org.plos.annotation.action.ListAnnotationAction"/>
+  <bean class="org.plos.annotation.action.ListAnnotationAction"/>
 
-  <bean id="getAnnotation" class="org.plos.annotation.action.GetAnnotationAction"/>
+  <bean id="getAnnotationAction" class="org.plos.annotation.action.GetAnnotationAction" autowire="byName"/>
 
-  <bean id="createReplyAction" class="org.plos.annotation.action.CreateReplyAction"/>
+  <bean class="org.plos.annotation.action.CreateReplyAction"/>
 
-  <bean id="bodyFetchAction" class="org.plos.annotation.action.BodyFetchAction"/>
+  <bean class="org.plos.annotation.action.BodyFetchAction"/>
 
-  <bean id="listReplyAction" class="org.plos.annotation.action.ListReplyAction"/>
+  <bean class="org.plos.annotation.action.ListReplyAction"/>
 
-  <bean id="deleteReplyAction" class="org.plos.annotation.action.DeleteReplyAction"/>
+  <bean class="org.plos.annotation.action.DeleteReplyAction"/>
 
-  <bean id="getReply" class="org.plos.annotation.action.GetReplyAction"/>
+  <bean class="org.plos.annotation.action.GetReplyAction"/>
   
-  <bean id="createUserAction" class="org.plos.user.action.CreateUserAction"/>
+  <bean class="org.plos.user.action.CreateUserAction"/>
 
-  <bean id="displayUserAction" class="org.plos.user.action.DisplayUserAction"/>
+  <bean class="org.plos.user.action.DisplayUserAction"/>
+
+  <bean class="org.plos.annotation.action.CreateFlagAction" />
+
+  <bean class="org.plos.annotation.action.GetFlagAction" />
+
+  <bean class="org.plos.annotation.action.DeleteFlagAction" />
 
 </beans>

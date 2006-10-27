@@ -9,6 +9,7 @@
  */
 package org.plos.article.action;
 
+import com.opensymphony.xwork.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
@@ -17,14 +18,11 @@ import org.plos.article.service.SecondaryObject;
 import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.article.IngestException;
-import org.topazproject.ws.article.ObjectInfo;
 import org.topazproject.ws.article.RepresentationInfo;
 
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.rmi.RemoteException;
-
-import com.opensymphony.xwork.Action;
 
 public class FetchObjectTest extends BasePlosoneTestCase {
   private static final Log log = LogFactory.getLog(FetchObjectTest.class);

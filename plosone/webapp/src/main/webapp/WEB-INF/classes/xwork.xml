@@ -130,6 +130,20 @@
       <result name="success" type="redirect">/home.action</result>
     </action>
 
+    <action name="createFlag">
+      <result>/WEB-INF/pages/annotation/createFlag.ftl</result>
+    </action>
+
+    <action name="createFlagSubmit" class="org.plos.annotation.action.CreateFlagAction">
+      <result name="input" type="ajaxJSON"/>
+      <result name="error" type="ajaxJSON"/>
+      <result name="success" type="ajaxJSON"/>
+    </action>
+
+    <action name="deleteFlag" class="org.plos.annotation.action.DeleteFlagAction">
+      <result name="success" type="redirect">/home.action</result>
+    </action>
+
   </package>
 
   <package name="user-secure" extends="default" namespace="/user/secure">
