@@ -12,8 +12,6 @@ package org.plos.user.action;
 import com.opensymphony.xwork.Action;
 import org.plos.BasePlosoneTestCase;
 import org.plos.user.PlosOneUser;
-import org.plos.user.action.CreateUserAction;
-import org.plos.user.action.DisplayUserAction;
 
 
 public class UserActionsTest extends BasePlosoneTestCase {
@@ -23,21 +21,17 @@ public class UserActionsTest extends BasePlosoneTestCase {
   private static final String USERNAME= "TEST_USERNAME";
  
   public void testSequencedTests() throws Exception {
-    createAndRetrieveUser();
-  }
-
-  public void createAndRetrieveUser() throws Exception {
-    final CreateUserAction createUserAction = getCreateUserAction();
-    createUserAction.setEmail(TEST_EMAIL);
-    createUserAction.setRealName(REAL_NAME);
-    createUserAction.setAuthId(AUTH_ID);
-    createUserAction.setUsername(USERNAME);
-    assertEquals(Action.SUCCESS, createUserAction.execute());
-    assertNotNull(createUserAction.getInternalId());
-    final DisplayUserAction displayUserAction = getDisplayUserAction();
-    displayUserAction.setUserId(createUserAction.getInternalId());
-    assertEquals(Action.SUCCESS, displayUserAction.execute());
-    final PlosOneUser pou = displayUserAction.getPou();
+    final CreateUserAction createUserAction1 = getCreateUserAction();
+    createUserAction1.setEmail(TEST_EMAIL);
+    createUserAction1.setRealName(REAL_NAME);
+    createUserAction1.setAuthId(AUTH_ID);
+    createUserAction1.setUsername(USERNAME);
+    assertEquals(Action.SUCCESS, createUserAction1.execute());
+    assertNotNull(createUserAction1.getInternalId());
+    final DisplayUserAction displayUserAction1 = getDisplayUserAction();
+    displayUserAction1.setUserId(createUserAction1.getInternalId());
+    assertEquals(Action.SUCCESS, displayUserAction1.execute());
+    final PlosOneUser pou = displayUserAction1.getPou();
     assertEquals (TEST_EMAIL, pou.getEmail());
     assertEquals (REAL_NAME, pou.getRealName());
     assertEquals (USERNAME, pou.getDisplayName());

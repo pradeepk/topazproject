@@ -22,9 +22,9 @@ import java.util.Properties;
 public class XSLTransformationTest extends BasePlosoneTestCase {
   public static final Log log = LogFactory.getLog(XSLTransformationTest.class);
 
-  private String BASE_TEST_PATH = "src/test/resources/";
+  private String BASE_TEST_PATH = "webapp/src/test/resources/";
   private final String XML_SOURCE = BASE_TEST_PATH + "pbio.0000001-embedded-math-dtd.xml";
-  private final String XSL_SOURCE = "src/main/resources/viewnlm-v2.xsl";
+  private final String XSL_SOURCE = "webapp/src/main/resources/viewnlm-v2.xsl";
   private final String OUTPUT_FILENAME = "foo.html";
 
   public void testXSLTransformation() throws TransformerException, FileNotFoundException, URISyntaxException {
@@ -39,7 +39,7 @@ public class XSLTransformationTest extends BasePlosoneTestCase {
   }
 
   public void testXSLTransformationToBeEfficient() throws Exception {
-    final String XML_SOURCE = BASE_TEST_PATH + "pbio.0000021.xml";
+    final String XML_SOURCE = BASE_TEST_PATH + "pone.0000008.xml";
 //    final String XML_SOURCE = "pbio.0000001-embedded-math-dtd.xml";
     final Transformer transformer = getXSLTransformer(XSL_SOURCE);
 

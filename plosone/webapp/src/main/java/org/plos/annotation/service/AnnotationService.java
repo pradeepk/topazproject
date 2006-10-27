@@ -125,6 +125,7 @@ public class AnnotationService extends BaseConfigurableService {
   public void deletePublicAnnotation(final String annotationId) throws ApplicationException {
     try {
       annotationWebService.deletePublicAnnotation(annotationId);
+      //TODO: Set the access permissions for administrator only
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     } catch (NoSuchIdException e) {

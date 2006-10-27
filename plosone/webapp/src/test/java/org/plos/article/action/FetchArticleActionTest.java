@@ -27,6 +27,7 @@ import java.util.Collection;
 public class FetchArticleActionTest extends BasePlosoneTestCase {
   public static final Log log = LogFactory.getLog(FetchArticleActionTest.class);
   private String BASE_TEST_PATH = "webapp/src/test/resources/";
+  private String testXmlTarget = "file:webapp/src/test/resources/test.xml";
 
   public void testShouldReturnTransformedArticle() throws Exception {
     final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
@@ -63,7 +64,7 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
 
   public void testFetchArticleReturnsLinkifiedText() throws Exception {
     final BodyFetchAction bodyFetchAction = getBodyFetchAction();
-    bodyFetchAction.setBodyUrl("http://localhost:9080/existingArticle/test.xml");
+    bodyFetchAction.setBodyUrl(testXmlTarget);
     assertEquals(Action.SUCCESS, bodyFetchAction.execute());
     final String articleBody = bodyFetchAction.getBody();
     log.debug(articleBody);

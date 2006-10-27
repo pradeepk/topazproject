@@ -722,5 +722,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertTrue(flaggedAnnotationAfterFlagDeleted.isFlagged());
     assertFalse(flaggedAnnotationAfterFlagDeleted.isDeleted());
 
+
+
   }
 }

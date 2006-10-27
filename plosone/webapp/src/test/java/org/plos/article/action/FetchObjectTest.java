@@ -15,14 +15,10 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.SecondaryObject;
-import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
-import org.topazproject.ws.article.IngestException;
 import org.topazproject.ws.article.RepresentationInfo;
 
-import java.net.MalformedURLException;
 import java.net.URL;
-import java.rmi.RemoteException;
 
 public class FetchObjectTest extends BasePlosoneTestCase {
   private static final Log log = LogFactory.getLog(FetchObjectTest.class);
@@ -34,7 +30,7 @@ public class FetchObjectTest extends BasePlosoneTestCase {
     final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
     final String doi = "10.1371/journal.pone.0000008";
 
-    deleteAndIngestArticle(resourceToIngest, service, doi);
+    deleteAndIngestArticle(resourceToIngest, doi);
 
     final RepresentationInfo[] ri = service.listRepresentations(doi);
     assertEquals(2, ri.length);
@@ -42,7 +38,7 @@ public class FetchObjectTest extends BasePlosoneTestCase {
     final FetchObjectAction fetchObjectAction = getFetchObjectAction();
     fetchObjectAction.setDoi(doi);
     fetchObjectAction.setRepresentation("XML");
-    assertEquals("xml", fetchObjectAction.execute());
+    assertEquals(Action.SUCCESS, fetchObjectAction.execute());
 
     final SecondaryObject[] oi = service.listSecondaryObjects(doi);
     assertEquals(8, oi.length);
@@ -55,7 +51,7 @@ public class FetchObjectTest extends BasePlosoneTestCase {
     final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
     final String doi = "10.1371/journal.pone.0000008";
 
-//    deleteAndIngestArticle(resourceToIngest, service, doi);
+    deleteAndIngestArticle(resourceToIngest, doi);
 
     final SecondaryObjectAction secondaryObjectAction = getSecondaryObjectAction();
     secondaryObjectAction.setDoi(doi);
@@ -69,10 +65,16 @@ public class FetchObjectTest extends BasePlosoneTestCase {
     }
   }
 
-  private void deleteAndIngestArticle(final String resourceToIngest, final ArticleWebService service, final String doi) throws MalformedURLException, RemoteException, NoSuchIdException, IngestException, DuplicateIdException {
+  private void deleteAndIngestArticle(final String resourceToIngest, final String doi) throws Exception {
     final URL article = getAsUrl(resourceToIngest);
+    final ArticleWebService service = getArticleWebService();
 
-    service.delete(doi, true);
+    try {
+      service.delete(doi, true);
+    } catch(NoSuchIdException ex) {
+      //means that this article is not ingested yet, so delete would fail
+    }
+
     final String ingestedDoi = service.ingest(article);
     assertEquals(doi, ingestedDoi);
   }
