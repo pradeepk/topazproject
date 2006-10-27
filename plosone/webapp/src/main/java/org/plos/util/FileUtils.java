@@ -11,8 +11,8 @@
 package org.plos.util;
 
 import com.sun.org.apache.xml.internal.serialize.XMLSerializer;
-import org.w3c.dom.Document;
 import org.springframework.mail.javamail.ConfigurableMimeFileTypeMap;
+import org.w3c.dom.Document;
 
 import java.io.BufferedReader;
 import java.io.FileWriter;
@@ -20,19 +20,22 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Utility methods for working with files
  */
 public class FileUtils {
   public static final String NEW_LINE = System.getProperty("line.separator");
+  private static final Map<String, String> mimeTypeMap = new HashMap<String, String>();
   private static final ConfigurableMimeFileTypeMap mimetypesFileTypeMap = new ConfigurableMimeFileTypeMap();
+
+  //TODO: is this still required
   private static final Map<String, String> customMimeTypes = new HashMap<String, String>();
+
   static {
     customMimeTypes.put("xml", "text/xml");
-    customMimeTypes.put("png-s", "image/png");
   }
 
   /**
@@ -118,10 +121,44 @@ public class FileUtils {
    * @return the mime type
    */
   public static String getContentType(final String filename) {
+    //TODO: Is custom still required
     final String customMimeType = customMimeTypes.get(filename.toLowerCase());
     if (null != customMimeType) {
       return customMimeType;
     }
     return mimetypesFileTypeMap.getContentType("a." + filename.toLowerCase());
   }
+
+  //TODO: The final solution for content type to file extension mapping is still work in progress
+  static {
+    mimeTypeMap.put("application/pdf", "pdf");
+    mimeTypeMap.put("image/tiff", "tiff");
+    mimeTypeMap.put("image/png", "png");
+    mimeTypeMap.put("text/xml", "xml");
+    mimeTypeMap.put("text/html", "htm");
+  }
+
+  /**
+   * Return the first file extension that maps to a mimeType
+   * @param mimeType mimeType
+   * @return file extension
+   */
+  public static String getDefaultFileExtByMimeType(final String mimeType) {
+    final String extension = mimeTypeMap.get(mimeType);
+    return null == extension ? "" : extension;
+  }
 }
+
+//class PlosMimeTypeMap {
+//  private Resource mappingLocation = new ClassPathResource("mime.types", getClass());
+//
+//  public PlosMimeTypeMap() throws IOException {
+//    new BufferedReader(new InputStreamReader(mappingLocation.getInputStream(), "UTF-8"));
+//
+//    this.mappingLocation = mappingLocation;
+//  }
+//
+//  public Map<String, List<String>> getFileExtListByMimeType() {
+//    return null;
+//  }
+//}

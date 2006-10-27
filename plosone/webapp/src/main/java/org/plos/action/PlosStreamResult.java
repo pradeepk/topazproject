@@ -52,13 +52,13 @@ public class PlosStreamResult extends StreamResult {
               }
           }
           catch(NumberFormatException e) {
-            log.warn("failed to recongnize "+_contentLength+" as a number, contentLength header will not be set", e);
+            log.warn("failed to recognize "+_contentLength+" as a number, contentLength header will not be set", e);
           }
         }
 
         // Set the content-disposition
         if (this.contentDisposition != null) {
-//            oResponse.addHeader("Content-disposition", getProperty("contentDisposition", this.contentDisposition, invocation));
+            oResponse.addHeader("Content-disposition", getProperty("contentDisposition", this.contentDisposition, invocation));
         }
 
         // Get the outputstream

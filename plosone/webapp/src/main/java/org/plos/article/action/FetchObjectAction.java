@@ -17,6 +17,7 @@ import org.plos.util.FileUtils;
 
 import java.io.InputStream;
 import java.net.URL;
+import java.net.URLConnection;
 
 public class FetchObjectAction extends BaseActionSupport {
   private ArticleWebService articleWebService;
@@ -25,16 +26,24 @@ public class FetchObjectAction extends BaseActionSupport {
 
   private InputStream inputStream;
   private String contentDisposition;
-  private String contentType;
   private static final Log log = LogFactory.getLog(FetchObjectAction.class);
 
   public String execute() throws Exception {
     final String objectURL = articleWebService.getObjectURL(doi, representation);
-    inputStream = new URL(objectURL).openStream();
-    final String fileType = representation.toLowerCase();
-    contentType = FileUtils.getContentType(fileType);
-    contentDisposition = "filename=\"" + FileUtils.getFileName(doi) + "." + fileType + "\"";
+    final URLConnection urlConnection = new URL(objectURL).openConnection();
+    inputStream = urlConnection.getInputStream();
+    final String fileExt = getFileExtension(urlConnection);
+    contentDisposition = getContentDisposition(fileExt);
     return SUCCESS;
+  }
+
+  private String getContentDisposition(final String fileExt) {
+    return "filename=\"" + FileUtils.getFileName(doi) + "." + fileExt + "\"";
+  }
+
+  private String getFileExtension(final URLConnection urlConnection) {
+    final String contentType = urlConnection.getContentType();
+    return FileUtils.getDefaultFileExtByMimeType(contentType);
   }
 
   /**
@@ -71,9 +80,5 @@ public class FetchObjectAction extends BaseActionSupport {
    */
   public String getContentDisposition() {
     return contentDisposition;
-  }
-
-  public String getContentType() {
-    return contentType;
   }
 }
