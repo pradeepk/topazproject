@@ -58,12 +58,13 @@ public class UserWebService extends BaseConfigurableService {
    * @return the user's internal id
    * @throws RemoteException
    *           if some other error occured
+   * @throws DuplicateAuthIdException
+   *           if the authId already exists
    */
   public String createUser(final String authId) throws DuplicateAuthIdException, RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    final String transformedAuthId = transformForPlosoneApp(authId);
-    log.debug("lookUpUserByAuthId:" + transformedAuthId);
-    return userService.createUser(transformedAuthId);
+    log.debug("lookUpUserByAuthId:" + authId);
+    return userService.createUser(authId);
   }
 
   /**
@@ -134,13 +135,8 @@ public class UserWebService extends BaseConfigurableService {
    */
   public String lookUpUserByAuthId(final String authId) throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    final String transformedAuthId = transformForPlosoneApp(authId);
-    log.debug("lookUpUserByAuthId:" + transformedAuthId);
-    return userService.lookUpUserByAuthId(transformedAuthId);
-  }
-
-  private String transformForPlosoneApp(final String authId) {
-    return Constants.APPLICATION_REGISTRY_IDENTIFIER + authId;
+    log.debug("lookUpUserByAuthId:" + authId);
+    return userService.lookUpUserByAuthId(authId);
   }
 
   /**
