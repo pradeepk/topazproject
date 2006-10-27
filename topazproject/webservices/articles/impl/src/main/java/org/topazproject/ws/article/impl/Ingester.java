@@ -68,6 +68,8 @@ import org.topazproject.fedoragsearch.service.FgsOperations;
 import net.sf.saxon.Controller;
 import net.sf.saxon.TransformerFactoryImpl;
 
+import org.topazproject.common.impl.DoiUtil;
+
 /** 
  * The article ingestor.
  * 
@@ -154,7 +156,7 @@ public class Ingester {
       String doi = objList.getAttribute(OL_AID_A);
 
       // do the access check, now that we have the doi
-      pep.checkAccess(pep.INGEST_ARTICLE, URI.create(ArticleImpl.doi2URI(doi)));
+      pep.checkAccess(pep.INGEST_ARTICLE, URI.create(DoiUtil.doi2URI(doi)));
 
       // add the stuff
       ItqlHelper itql   = ctx.getItqlHelper();
@@ -408,7 +410,7 @@ public class Ingester {
     try {
       apim.ingest(foxml.getBytes("UTF-8"), "foxml1.0", logMsg);
     } catch (RemoteException re) {
-      FedoraUtil.detectDuplicateArticleIdException(re, ArticleImpl.pid2DOI(pid));
+      FedoraUtil.detectDuplicateArticleIdException(re, DoiUtil.pid2DOI(pid));
     }
   }
 

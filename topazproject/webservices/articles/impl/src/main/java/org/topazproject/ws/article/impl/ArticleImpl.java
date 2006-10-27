@@ -61,6 +61,8 @@ import org.topazproject.fedoragsearch.service.FgsOperations;
 
 import org.topazproject.feed.ArticleFeed;
 
+import org.topazproject.common.impl.DoiUtil;
+
 /** 
  * The default implementation of the article manager.
  * 
@@ -121,48 +123,11 @@ public class ArticleImpl implements Article {
        "  $id <rdf:type> <topaz:Article> and $id <tucana:is> <${art}>;").
       replaceAll("\\Q${MODEL}", MODEL);
 
-  private static final BitSet DOI_PID_CHARS;
-  private static final BitSet DOI_URI_CHARS;
-
   private final URI        fedoraServer;
   private final Ingester   ingester;
   private final ArticlePEP pep;
   private final TopazContext ctx;
   private final FgsOperations fgs;
-
-  static {
-    DOI_PID_CHARS = new BitSet(128);
-    for (int ch = '0'; ch <= '9'; ch++)  DOI_PID_CHARS.set(ch);
-    for (int ch = 'A'; ch <= 'Z'; ch++)  DOI_PID_CHARS.set(ch);
-    for (int ch = 'a'; ch <= 'z'; ch++)  DOI_PID_CHARS.set(ch);
-    DOI_PID_CHARS.set('-');
-    DOI_PID_CHARS.set('_');
-    DOI_PID_CHARS.set('.');
-    DOI_PID_CHARS.set('~');
-
-    DOI_URI_CHARS = new BitSet(128);
-    for (int ch = '0'; ch <= '9'; ch++)  DOI_URI_CHARS.set(ch);
-    for (int ch = 'A'; ch <= 'Z'; ch++)  DOI_URI_CHARS.set(ch);
-    for (int ch = 'a'; ch <= 'z'; ch++)  DOI_URI_CHARS.set(ch);
-    DOI_URI_CHARS.set('-');
-    DOI_URI_CHARS.set('_');
-    DOI_URI_CHARS.set('.');
-    DOI_URI_CHARS.set('!');
-    DOI_URI_CHARS.set('~');
-    DOI_URI_CHARS.set('*');
-    DOI_URI_CHARS.set('\'');
-    DOI_URI_CHARS.set('(');
-    DOI_URI_CHARS.set(')');
-    DOI_URI_CHARS.set(';');
-    DOI_URI_CHARS.set('/');
-    DOI_URI_CHARS.set(':');
-    DOI_URI_CHARS.set('@');
-    DOI_URI_CHARS.set('&');
-    DOI_URI_CHARS.set('=');
-    DOI_URI_CHARS.set('+');
-    DOI_URI_CHARS.set('$');
-    DOI_URI_CHARS.set(',');
-  }
 
   /**
    * Creates a new ArticleImpl object.
@@ -239,8 +204,8 @@ public class ArticleImpl implements Article {
       throws NoSuchArticleIdException, RemoteException {
     checkAccess(pep.INGEST_ARTICLE, newDoi);    // FIXME: should pass both doi's
 
-    String old_subj = "<" + doi2URI(oldDoi) + ">";
-    String new_subj = "<" + doi2URI(newDoi) + ">";
+    String old_subj = "<" + DoiUtil.doi2URI(oldDoi) + ">";
+    String new_subj = "<" + DoiUtil.doi2URI(newDoi) + ">";
 
     ctx.getItqlHelper().doUpdate("insert " + old_subj + " <dc_terms:isReplacedBy> " + new_subj +
                             new_subj + " <dc_terms:replaces> " + old_subj +
@@ -251,7 +216,8 @@ public class ArticleImpl implements Article {
     checkAccess(pep.SET_ARTICLE_STATE, doi);
 
     try {
-      ctx.getFedoraAPIM().modifyObject(doi2PID(doi), state2Str(state), null, "Changed state");
+      ctx.getFedoraAPIM().modifyObject(DoiUtil.doi2PID(doi), state2Str(state),
+                                       null, "Changed state");
     } catch (RemoteException re) {
       FedoraUtil.detectNoSuchArticleIdException(re, doi);
     }
@@ -260,11 +226,6 @@ public class ArticleImpl implements Article {
   public void delete(String doi, boolean purge) throws NoSuchArticleIdException, RemoteException {
     checkAccess(pep.DELETE_ARTICLE, doi);
 
-    // Remove article from full-text index first
-    String result = fgs.updateIndex("deletePid", doi2PID(doi), FGS_REPO, null, null, null);
-    if (log.isDebugEnabled())
-      log.debug("Removed " + doi2PID(doi) + " from full-text index:\n" + result);
-      
     ItqlHelper itql = ctx.getItqlHelper();
     FedoraAPIM apim = ctx.getFedoraAPIM();
     String txn = purge ? "delete " + doi : null;
@@ -281,11 +242,18 @@ public class ArticleImpl implements Article {
           log.debug("deleting doi '" + objList[idx] + "'");
 
         if (purge) {
-          apim.purgeObject(doi2PID(objList[idx]), "Purged object", false);
-          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_DOI, "subj", doi2URI(objList[idx])));
+          apim.purgeObject(DoiUtil.doi2PID(objList[idx]), "Purged object", false);
+          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_DOI, "subj",
+                                              DoiUtil.doi2URI(objList[idx])));
         } else {
-          apim.modifyObject(doi2PID(objList[idx]), "D", null, "Deleted object");
+          apim.modifyObject(DoiUtil.doi2PID(objList[idx]), "D", null, "Deleted object");
         }
+        
+        // Remove article from full-text index first
+        String pid = DoiUtil.doi2PID(objList[idx]);
+        String result = fgs.updateIndex("deletePid", pid, FGS_REPO, null, null, null);
+        if (log.isDebugEnabled())
+          log.debug("Removed " + pid + " from full-text index:\n" + result);
       }
 
       if (txn != null) {
@@ -304,7 +272,7 @@ public class ArticleImpl implements Article {
       throws NoSuchObjectIdException, RemoteException {
     checkAccess(pep.GET_OBJECT_URL, doi);
 
-    String path = "/fedora/get/" + doi2PID(doi) + "/" + rep;
+    String path = "/fedora/get/" + DoiUtil.doi2PID(doi) + "/" + rep;
     return fedoraServer.resolve(path).toString();
   }
 
@@ -348,7 +316,7 @@ public class ArticleImpl implements Article {
 
     checkAccess(pep.LIST_SEC_OBJECTS, doi);
 
-    String art = doi2URI(doi);
+    String art = DoiUtil.doi2URI(doi);
     ItqlHelper.validateUri(art, "doi");
 
     ItqlHelper itql = ctx.getItqlHelper();
@@ -365,9 +333,9 @@ public class ArticleImpl implements Article {
       Map loc = new HashMap();
       while (rows.next()) {
         ObjectInfo info = new ObjectInfo();
-        info.setDoi(uri2DOI(rows.getString("cur")));
+        info.setDoi(DoiUtil.uri2DOI(rows.getString("cur")));
 
-        loc.put(uri2DOI(rows.getString("prev")), info);
+        loc.put(DoiUtil.uri2DOI(rows.getString("prev")), info);
 
         AnswerSet.QueryAnswerSet sqa = rows.getSubQueryResults(2);
         info.setRepresentations(parseRepresenations(sqa));
@@ -406,7 +374,7 @@ public class ArticleImpl implements Article {
 
   protected String[] findAllObjects(String doi)
       throws NoSuchArticleIdException, RemoteException, AnswerException {
-    String subj = doi2URI(doi);
+    String subj = DoiUtil.doi2URI(doi);
     ItqlHelper.validateUri(subj, "doi");
 
     ItqlHelper itql = ctx.getItqlHelper();
@@ -418,7 +386,7 @@ public class ArticleImpl implements Article {
 
     String[] res = new String[dois.size()];
     for (int idx = 0; idx < res.length; idx++)
-      res[idx] = uri2DOI(((String[]) dois.get(idx))[0]);
+      res[idx] = DoiUtil.uri2DOI(((String[]) dois.get(idx))[0]);
 
     return res;
   }
@@ -450,7 +418,7 @@ public class ArticleImpl implements Article {
 
     checkAccess(pep.SET_REPRESENTATION, doi);   // FIXME: should pass 'rep' too
 
-    String subj = doi2URI(doi);
+    String subj = DoiUtil.doi2URI(doi);
     ItqlHelper.validateUri(subj, "doi");
 
     ItqlHelper itql = ctx.getItqlHelper();
@@ -472,8 +440,8 @@ public class ArticleImpl implements Article {
         ByteCounterInputStream bcis = new ByteCounterInputStream(content.getInputStream());
         String reLoc = ctx.getFedoraUploader().upload(bcis);
         try {
-          apim.modifyDatastreamByReference(doi2PID(doi), rep, null, null, false, ct, null, reLoc,
-                                           "A", "Updated datastream", false);
+          apim.modifyDatastreamByReference(DoiUtil.doi2PID(doi), rep, null, null, false, ct,
+                                           null, reLoc, "A", "Updated datastream", false);
         } catch (RemoteException re) {
           if (!isNoSuchDatastream(re))
             throw re;
@@ -481,8 +449,8 @@ public class ArticleImpl implements Article {
           if (log.isDebugEnabled())
             log.debug("representation '" + rep + "' for '" + doi + "' doesn't exist yet - " +
                       "creating it", re);
-          apim.addDatastream(doi2PID(doi), rep, new String[0], "Represention", false, ct, null,
-                             reLoc, "M", "A", "New representation");
+          apim.addDatastream(DoiUtil.doi2PID(doi), rep, new String[0], "Represention", false, ct,
+                             null, reLoc, "M", "A", "New representation");
         }
 
         Map map = new HashMap();
@@ -493,7 +461,7 @@ public class ArticleImpl implements Article {
         itql.doUpdate(ItqlHelper.bindValues(ITQL_CREATE_REP, map));
       } else {
         try {
-          apim.purgeDatastream(doi2PID(doi), rep, null, "Purged datastream", false);
+          apim.purgeDatastream(DoiUtil.doi2PID(doi), rep, null, "Purged datastream", false);
         } catch (RemoteException re) {
           if (!isNoSuchDatastream(re))
             throw re;
@@ -592,7 +560,7 @@ public class ArticleImpl implements Article {
 
     checkAccess(pep.LIST_REPRESENTATIONS, doi);
 
-    String subj = doi2URI(doi);
+    String subj = DoiUtil.doi2URI(doi);
     ItqlHelper.validateUri(subj, "doi");
 
     ItqlHelper itql = ctx.getItqlHelper();
@@ -652,40 +620,6 @@ public class ArticleImpl implements Article {
   }
 
   private void checkAccess(String action, String doi) {
-    pep.checkAccess(action, URI.create(doi2URI(doi)));
-  }
-
-  static String doi2PID(String doi) {
-    return "doi:" + encode(doi, DOI_PID_CHARS);
-  }
-
-  static String pid2DOI(String pid) {
-    return decode(pid.substring(4));
-  }
-
-  static String doi2URI(String doi) {
-    return "info:doi/" + encode(doi, DOI_URI_CHARS);
-  }
-
-  static String uri2DOI(String uri) {
-    return decode(uri.substring(9));
-  }
-
-  static String encode(String str, BitSet allowed) {
-    try {
-      return new String(URLCodec.encodeUrl(allowed, str.getBytes("UTF-8")), "ISO-8859-1");
-    } catch (UnsupportedEncodingException uee) {
-      throw new RuntimeException(uee);          // shouldn't happen
-    }
-  }
-
-  static String decode(String str) {
-    try {
-      return new String(URLCodec.decodeUrl(str.getBytes("ISO-8859-1")), "UTF-8");
-    } catch (UnsupportedEncodingException uee) {
-      throw new RuntimeException(uee);          // shouldn't happen
-    } catch (DecoderException de) {
-      throw new RuntimeException(de);           // shouldn't happen
-    }
+    pep.checkAccess(action, URI.create(DoiUtil.doi2URI(doi)));
   }
 }
