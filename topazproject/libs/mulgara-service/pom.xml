@@ -159,6 +159,8 @@
               <tasks>
                 <jar destfile="${project.build.directory}/${project.build.finalName}/WEB-INF/lib/kowari-driver-1.1.0-pre2-p2.jar"
                      basedir="src/main/patches/kowari-driver" update="true" />
+                <war destfile="${project.build.directory}/${project.build.finalName}.war"
+                     basedir="${project.build.directory}/${project.build.finalName}" update="true" />
               </tasks>
             </configuration>
             <goals>
