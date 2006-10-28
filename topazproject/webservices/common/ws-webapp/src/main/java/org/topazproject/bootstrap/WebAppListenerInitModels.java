@@ -52,13 +52,15 @@ public class WebAppListenerInitModels implements ServletContextListener {
   }
 
   private void initModels() {
+    ItqlHelper itql = null;
+
     try {
       Configuration    conf = ConfigurationStore.getInstance().getConfiguration();
 
       ProtectedService service =
         ProtectedServiceFactory.createService("topaz.services.itql-admin", null);
 
-      ItqlHelper itql = new ItqlHelper(service);
+      itql   = new ItqlHelper(service);
 
       conf = conf.subset("topaz.models");
 
@@ -81,6 +83,12 @@ public class WebAppListenerInitModels implements ServletContextListener {
       }
     } catch (Exception e) {
       log.warn("bootstrap of models failed", e);
+    } finally {
+      try {
+        if (itql != null)
+          itql.close();
+      } catch (Throwable t) {
+      }
     }
 
     log.info("Successfully created all configured ITQL Models.");
