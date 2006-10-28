@@ -50,7 +50,9 @@
 
   <target name="fedora-install" depends="exec-ext,keytool">
     <property name="FEDORA_JAR"
-      value="${localRepository}/${fedora-groupId}/${fedora-artifactId}/${fedora-version}/${fedora-artifactId}-${fedora-version}.jar"/> 
+      value="${localRepository}/${fedora-groupId}/${fedora-artifactId}/${fedora-version}/${fedora-artifactId}-${fedora-version}.jar"/>
+    <property name="MULGARA_WAR"
+      value="${localRepository}/${mulgara-service-groupId}/${mulgara-service-artifactId}/${mulgara-service-version}/${mulgara-service-artifactId}-${mulgara-service-version}.war"/>
 
     <property name="FEDORA_HOME"
       value="${FEDORA_INSTALL_DIR}/fedora-${fedora-version}"/>
@@ -98,6 +100,9 @@
           filtering="true" overwrite="true">
       <fileset dir="${FEDORA_HOME}/fedoragsearch-topaz"/>
     </move>
+    
+    <!-- Install mulgara-service -->
+    <unjar src="${MULGARA_WAR}" dest="${TOMCAT_HOME}/webapps/mulgara"/>
   </target>
 
   <!-- Runs fedora-install IF the INSTALL propery/config is set - used by fedora-start -->

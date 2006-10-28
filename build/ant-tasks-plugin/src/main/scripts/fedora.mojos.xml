@@ -71,6 +71,33 @@
         </parameter>
 
         <parameter>
+          <name>mulgara-service-groupId</name>
+          <property>mulgara-service-groupId</property>
+          <required>true</required>
+          <defaultValue>org/topazproject</defaultValue>
+          <type>java.lang.String</type>
+          <description>groupId for mulgara-service</description>
+        </parameter>
+
+        <parameter>
+          <name>mulgara-service-artifactId</name>
+          <property>mulgara-service-artifactId</property>
+          <required>true</required>
+          <defaultValue>mulgara-service</defaultValue>
+          <type>java.lang.String</type>
+          <description>ArtifactId of mulgara-service</description>
+        </parameter>
+
+        <parameter>
+          <name>mulgara-service-version</name>
+          <property>mulgara-service-version</property>
+          <required>true</required>
+          <defaultValue>0.5-SNAPSHOT</defaultValue>
+          <type>java.lang.String</type>
+          <description>version of mulgara-service</description>
+        </parameter>
+
+        <parameter>
           <name>ECQS_KEYSTORE</name>
           <property>ECQS_KEYSTORE</property>
           <required>true</required>
