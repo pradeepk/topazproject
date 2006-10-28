@@ -140,9 +140,9 @@
     -->
 
     <dependency>
-      <groupId>jta</groupId>
-      <artifactId>jta</artifactId>
-      <version>1.0.1b</version>
+      <groupId>geronimo-spec</groupId>
+      <artifactId>geronimo-spec-jta</artifactId>
+      <version>1.0.1B-rc4</version>
     </dependency>
   </dependencies>
 
