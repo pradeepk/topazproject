@@ -21,6 +21,7 @@
       <users type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=users</users>
       <grants type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=grants</grants>
       <revokes type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=revokes</revokes>
+      <pp type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=pp</pp>
       <preferences type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=preferences</preferences>
       <profiles type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=profiles</profiles>
       <ratings type="http://topazproject.org/models#filter">rmi://localhost/fedora#filter:model=ratings</ratings>

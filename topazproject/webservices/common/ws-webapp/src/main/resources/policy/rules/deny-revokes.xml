@@ -30,7 +30,7 @@
             &lt;http://rdf.topazproject.org/RDF/permissions#all&gt;)
             and ($s &lt;tucana:is&gt; &lt;?&gt; or 
             $s &lt;tucana:is&gt; &lt;http://rdf.topazproject.org/RDF/permissions#all&gt; or
-            $s &lt;topaz:implies&gt; &lt;?&gt; in &lt;?&gt;);
+            $s &lt;topaz:propagate-permissions-to&gt; &lt;?&gt; in &lt;?&gt;);
           </AttributeValue>
           <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
             <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -62,7 +62,7 @@
           </Apply>
           <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
             <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-              AttributeId="topaz.models.ri"/>   
+              AttributeId="topaz.models.pp"/>   
           </Apply>
         </Apply> 
       </Apply>
