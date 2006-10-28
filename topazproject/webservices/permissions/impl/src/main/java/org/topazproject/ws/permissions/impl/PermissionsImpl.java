@@ -65,8 +65,22 @@ public class PermissionsImpl implements Permissions {
     "<" + CONF.getString("topaz.models.revokes[@type]", "http://tucana.org/tucana#Model") + ">";
 
   //
-  private static final String ITQL_LIST =
+  private static final String  ITQL_LIST =
     "select $p from ${MODEL} where <${resource}> $p <${principal}>;";
+  private static final HashMap impliesMap = new HashMap();
+
+  static {
+    Configuration conf = CONF.subset("topaz.permissions.impliedPermissions");
+
+    List          permissions = conf.getList("permission[@uri]");
+    int           c           = permissions.size();
+
+    for (int i = 0; i < c; i++) {
+      List implies = conf.getList("permission(" + i + ").implies[@uri]");
+      impliesMap.put(permissions.get(i), implies.toArray(new String[0]));
+      log.info(permissions.get(i) + " implies " + implies);
+    }
+  }
 
   //
   private final TopazContext   ctx;
@@ -174,6 +188,16 @@ public class PermissionsImpl implements Permissions {
         sb.append("<").append(resource).append("> ");
         sb.append("<").append(permissions[j]).append("> ");
         sb.append("<").append(principal).append("> ");
+
+        String[] implies = (String[]) impliesMap.get(permissions[j]);
+
+        if (implies != null) {
+          for (int k = 0; k < implies.length; k++) {
+            sb.append("<").append(resource).append("> ");
+            sb.append("<").append(implies[k]).append("> ");
+            sb.append("<").append(principal).append("> ");
+          }
+        }
       }
     }
 
