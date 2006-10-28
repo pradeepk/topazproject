@@ -85,13 +85,15 @@
 
     <!-- Install fedoragsearch -->
     <property name="TOMCAT_HOME" value="${FEDORA_HOME}/server/${TOMCAT}"/>
-    <mkdir dir="${FEDORA_HOME}/data/lucene"/>
     <filter token="deployFile"
             value="${TOMCAT_HOME}/webapps/fedoragsearch/WEB-INF/classes/config/deploy.wsdd"/>
     <filter token="indexDir" value="${FEDORA_HOME}/data/lucene"/>
     <filter token="fedoraObjectDir" value="${FEDORA_HOME}/data/objects"/>
     <filter token="logDir" value="${FEDORA_HOME}/server/logs"/>
     <filter token="fedoragsearchPath" value="${TOMCAT_HOME}/webapps/fedoragsearch"/>
+    <mkdir  dir="${FEDORA_HOME}/data/lucene"/>
+    <move todir="${FEDORA_HOME}/data/lucene"
+          file="${FEDORA_HOME}/fedoragsearch-topaz/segments"/>
     <move todir="${TOMCAT_HOME}/webapps/fedoragsearch/WEB-INF/classes"
           filtering="true" overwrite="true">
       <fileset dir="${FEDORA_HOME}/fedoragsearch-topaz"/>
