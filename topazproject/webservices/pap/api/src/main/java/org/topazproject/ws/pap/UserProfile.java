@@ -12,8 +12,18 @@ package org.topazproject.ws.pap;
 
 /**
  * This defines a user's profile. It is modeled on <a href="http://xmlns.com/foaf/0.1/">foaf</a>
- * and <a href="http://vocab.org/bio/0.1/">bio</a>, and represents a subset of the
- * <var>foaf:Person</var> and <var>bio:*</var>.
+ * and <a href="http://vocab.org/bio/0.1/">bio</a>, consisting of a subset of the
+ * <var>foaf:Person</var> and <var>bio:*</var> plus a number topaz specific additions.
+ *
+ * <p>Schema's borrowed from:
+ * <dl>
+ *   <dt>foaf
+ *   <dd><a href="http://xmlns.com/foaf/0.1/">http://xmlns.com/foaf/0.1/</a></dd>
+ *   <dt>bio
+ *   <dd><a href="http://vocab.org/bio/0.1/">http://vocab.org/bio/0.1/</a></dd>
+ *   <dt>address
+ *   <dd><a href="http://rdfweb.org/topic/AddressVocab">http://rdfweb.org/topic/AddressVocab</a></dd>
+ * </dl>
  *
  * <p>This class is a bean.
  *
@@ -22,12 +32,28 @@ package org.topazproject.ws.pap;
 public class UserProfile {
   /** The name to use for display; stored in topaz:displayName; subPropertyOf foaf:nick */
   private String displayName;
-  /** Their real name, usually as &lt;first&gt;, &lt;last&gt;; stored in foaf:name */
+  /** Their real name, usually as &lt;first&gt; &lt;last&gt;; stored in foaf:name */
   private String realName;
+  /** Their given names; stored in foaf:givenname */
+  private String givenNames;
+  /** Their surnames; stored in foaf:surname */
+  private String surnames;
   /** The title by which they go; stored in foaf:title */
   private String title;
   /** 'male' or 'female'; stored in foaf:gender */
   private String gender;
+  /** Their organizational position type; stored in topaz:positionType. */
+  private String positionType;
+  /** Their organization name; stored in topaz:organizationName. */
+  private String organizationName;
+  /** Their organization type; stored in topaz:organizationType. */
+  private String organizationType;
+  /** postal address; stored in topaz:postalAddress */
+  private String postalAddress;
+  /** city; stored in addr:town */
+  private String city;
+  /** country; stored in addr:country */
+  private String country;
   /** email address; stored in foaf:mbox */
   private String email;
   /** url of their homepage; stored in foaf:homepage */
@@ -40,6 +66,12 @@ public class UserProfile {
   private String[] interests;
   /** url pointing to a webpage listing their publications; foaf:publications */
   private String publications;
+  /** text containing their biography; stored in topaz:bio */
+  private String biographyText;
+  /** text containing their interests; stored in topaz:interests */
+  private String interestsText;
+  /** text containing their research areas; stored in topaz:researchAreas */
+  private String researchAreasText;
 
   /**
    * Get the name to use for display on the site.
@@ -78,6 +110,42 @@ public class UserProfile {
   }
 
   /**
+   * Get the given names.
+   *
+   * @return the given names.
+   */
+  public String getGivenNames() {
+    return givenNames;
+  }
+
+  /**
+   * Set the given names.
+   *
+   * @param givenNames the given names.
+   */
+  public void setGivenNames(String givenNames) {
+    this.givenNames = givenNames;
+  }
+
+  /**
+   * Get the surnames.
+   *
+   * @return the surnames.
+   */
+  public String getSurnames() {
+    return surnames;
+  }
+
+  /**
+   * Set the surnames.
+   *
+   * @param surnames the surnames.
+   */
+  public void setSurnames(String surnames) {
+    this.surnames = surnames;
+  }
+
+  /**
    * Get the title (e.g. 'Mrs', 'Dr', etc).
    *
    * @return the title, or null
@@ -111,6 +179,114 @@ public class UserProfile {
    */
   public void setGender(String gender) {
     this.gender = gender;
+  }
+
+  /**
+   * Get the organizational position type.
+   *
+   * @return the position type.
+   */
+  public String getPositionType() {
+    return positionType;
+  }
+
+  /**
+   * Set the organizational position type.
+   *
+   * @param positionType the position type.
+   */
+  public void setPositionType(String positionType) {
+    this.positionType = positionType;
+  }
+
+  /**
+   * Get the organization name.
+   *
+   * @return the organization name.
+   */
+  public String getOrganizationName() {
+    return organizationName;
+  }
+
+  /**
+   * Set the organization name.
+   *
+   * @param organizationName the organization name.
+   */
+  public void setOrganizationName(String organizationName) {
+    this.organizationName = organizationName;
+  }
+
+  /**
+   * Get the organization type.
+   *
+   * @return the organization type.
+   */
+  public String getOrganizationType() {
+    return organizationType;
+  }
+
+  /**
+   * Set the organization type.
+   *
+   * @param organizationType the organization type.
+   */
+  public void setOrganizationType(String organizationType) {
+    this.organizationType = organizationType;
+  }
+
+  /**
+   * Get the postal address.
+   *
+   * @return the postal address.
+   */
+  public String getPostalAddress() {
+    return postalAddress;
+  }
+
+  /**
+   * Set the postal address.
+   *
+   * @param postalAddress the postal address.
+   */
+  public void setPostalAddress(String postalAddress) {
+    this.postalAddress = postalAddress;
+  }
+
+  /**
+   * Get the city.
+   *
+   * @return the city.
+   */
+  public String getCity() {
+    return city;
+  }
+
+  /**
+   * Set the city.
+   *
+   * @param city the city.
+   */
+  public void setCity(String city) {
+    this.city = city;
+  }
+
+  /**
+   * Get the country.
+   *
+   * @return the country.
+   */
+  public String getCountry() {
+    return country;
+  }
+
+  /**
+   * Set the country.
+   *
+   * @param country the country.
+   */
+  public void setCountry(String country) {
+    this.country = country;
   }
 
   /**
@@ -219,5 +395,59 @@ public class UserProfile {
    */
   public void setPublications(String publications) {
     this.publications = publications;
+  }
+
+  /**
+   * Get the text biography.
+   *
+   * @return the biographyText.
+   */
+  public String getBiographyText() {
+    return biographyText;
+  }
+
+  /**
+   * Set the text description of the biography.
+   *
+   * @param biographyText the text description of the biography.
+   */
+  public void setBiographyText(String biographyText) {
+    this.biographyText = biographyText;
+  }
+
+  /**
+   * Get the text description of the interests.
+   *
+   * @return the text description of the interests.
+   */
+  public String getInterestsText() {
+    return interestsText;
+  }
+
+  /**
+   * Set the text description of the interests.
+   *
+   * @param interestsText the text description of the interests.
+   */
+  public void setInterestsText(String interestsText) {
+    this.interestsText = interestsText;
+  }
+
+  /**
+   * Get the text description of the researchAreas.
+   *
+   * @return the text description of the research areas.
+   */
+  public String getResearchAreasText() {
+    return researchAreasText;
+  }
+
+  /**
+   * Set the text description of the researchAreas.
+   *
+   * @param researchAreasText the text description of the research areas.
+   */
+  public void setResearchAreasText(String researchAreasText) {
+    this.researchAreasText = researchAreasText;
   }
 }

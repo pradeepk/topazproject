@@ -57,6 +57,7 @@ public class ProfilesImpl implements Profiles {
 
   private static final String FOAF_URI       = "http://xmlns.com/foaf/0.1/";
   private static final String BIO_URI        = "http://purl.org/vocab/bio/0.1/";
+  private static final String ADDR_URI       = "http://wymiwyg.org/ontologies/foaf/postaddress#";
 
   private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
 
@@ -109,6 +110,7 @@ public class ProfilesImpl implements Profiles {
     aliases = ItqlHelper.getDefaultAliases();
     aliases.put("foaf", FOAF_URI);
     aliases.put("bio",  BIO_URI);
+    aliases.put("addr", ADDR_URI);
   }
 
   /**
@@ -210,22 +212,44 @@ public class ProfilesImpl implements Profiles {
       prof.setDisplayName(null);
     if (prof.getRealName() != null && !checkAccess(userId, pep.GET_REAL_NAME))
       prof.setRealName(null);
+    if (prof.getGivenNames() != null && !checkAccess(userId, pep.GET_GIVEN_NAMES))
+      prof.setGivenNames(null);
+    if (prof.getSurnames() != null && !checkAccess(userId, pep.GET_SURNAMES))
+      prof.setSurnames(null);
     if (prof.getTitle() != null && !checkAccess(userId, pep.GET_TITLE))
       prof.setTitle(null);
     if (prof.getGender() != null && !checkAccess(userId, pep.GET_GENDER))
       prof.setGender(null);
-    if (prof.getBiography() != null && !checkAccess(userId, pep.GET_BIOGRAPHY))
-      prof.setBiography(null);
+    if (prof.getPositionType() != null && !checkAccess(userId, pep.GET_POSITION_TYPE))
+      prof.setPositionType(null);
+    if (prof.getOrganizationName() != null && !checkAccess(userId, pep.GET_ORGANIZATION_NAME))
+      prof.setOrganizationName(null);
+    if (prof.getOrganizationType() != null && !checkAccess(userId, pep.GET_ORGANIZATION_TYPE))
+      prof.setOrganizationType(null);
+    if (prof.getPostalAddress() != null && !checkAccess(userId, pep.GET_POSTAL_ADDRESS))
+      prof.setPostalAddress(null);
+    if (prof.getCity() != null && !checkAccess(userId, pep.GET_CITY))
+      prof.setCity(null);
+    if (prof.getCountry() != null && !checkAccess(userId, pep.GET_COUNTRY))
+      prof.setCountry(null);
     if (prof.getEmail() != null && !checkAccess(userId, pep.GET_EMAIL))
       prof.setEmail(null);
     if (prof.getHomePage() != null && !checkAccess(userId, pep.GET_HOME_PAGE))
       prof.setHomePage(null);
     if (prof.getWeblog() != null && !checkAccess(userId, pep.GET_WEBLOG))
       prof.setWeblog(null);
-    if (prof.getPublications() != null && !checkAccess(userId, pep.GET_PUBLICATIONS))
-      prof.setPublications(null);
+    if (prof.getBiography() != null && !checkAccess(userId, pep.GET_BIOGRAPHY))
+      prof.setBiography(null);
     if (prof.getInterests() != null && !checkAccess(userId, pep.GET_INTERESTS))
       prof.setInterests(null);
+    if (prof.getPublications() != null && !checkAccess(userId, pep.GET_PUBLICATIONS))
+      prof.setPublications(null);
+    if (prof.getBiographyText() != null && !checkAccess(userId, pep.GET_BIOGRAPHY_TEXT))
+      prof.setBiographyText(null);
+    if (prof.getInterestsText() != null && !checkAccess(userId, pep.GET_INTERESTS_TEXT))
+      prof.setInterestsText(null);
+    if (prof.getResearchAreasText() != null && !checkAccess(userId, pep.GET_RESEARCH_AREAS_TEXT))
+      prof.setResearchAreasText(null);
 
     return prof;
   }
@@ -329,9 +353,17 @@ public class ProfilesImpl implements Profiles {
 
       addLiteralVal(cmd, profId, "topaz:displayName", profile.getDisplayName());
       addLiteralVal(cmd, profId, "foaf:name", profile.getRealName());
+      addLiteralVal(cmd, profId, "foaf:givenname", profile.getGivenNames());
+      addLiteralVal(cmd, profId, "foaf:surname", profile.getSurnames());
       addLiteralVal(cmd, profId, "foaf:title", profile.getTitle());
       addLiteralVal(cmd, profId, "foaf:gender", profile.getGender());
       addLiteralVal(cmd, profId, "bio:olb", profile.getBiography());
+      addLiteralVal(cmd, profId, "topaz:positionType", profile.getPositionType());
+      addLiteralVal(cmd, profId, "topaz:organizationName", profile.getOrganizationName());
+      addLiteralVal(cmd, profId, "topaz:organizationType", profile.getOrganizationType());
+      addLiteralVal(cmd, profId, "topaz:postalAddress", profile.getPostalAddress());
+      addLiteralVal(cmd, profId, "addr:town", profile.getCity());
+      addLiteralVal(cmd, profId, "addr:country", profile.getCountry());
 
       String email = profile.getEmail();
       if (email != null)
@@ -344,6 +376,10 @@ public class ProfilesImpl implements Profiles {
       String[] interests = profile.getInterests();
       for (int idx = 0; interests != null && idx < interests.length; idx++)
         addReference(cmd, profId, "foaf:interest", interests[idx]);
+
+      addLiteralVal(cmd, profId, "topaz:bio", profile.getBiographyText());
+      addLiteralVal(cmd, profId, "topaz:interests", profile.getInterestsText());
+      addLiteralVal(cmd, profId, "topaz:researchAreas", profile.getResearchAreasText());
 
       cmd.append(" into ").append(MODEL).append(";");
     }
@@ -401,22 +437,44 @@ public class ProfilesImpl implements Profiles {
         prof.setDisplayName(row[1]);
       else if (row[0].equals(FOAF_URI + "name"))
         prof.setRealName(row[1]);
+      else if (row[0].equals(FOAF_URI + "givenname"))
+        prof.setGivenNames(row[1]);
+      else if (row[0].equals(FOAF_URI + "surname"))
+        prof.setSurnames(row[1]);
       else if (row[0].equals(FOAF_URI + "title"))
         prof.setTitle(row[1]);
       else if (row[0].equals(FOAF_URI + "gender"))
         prof.setGender(row[1]);
-      else if (row[0].equals(BIO_URI + "olb"))
-        prof.setBiography(row[1]);
+      else if (row[0].equals(ItqlHelper.TOPAZ_URI + "positionType"))
+        prof.setPositionType(row[1]);
+      else if (row[0].equals(ItqlHelper.TOPAZ_URI + "organizationName"))
+        prof.setOrganizationName(row[1]);
+      else if (row[0].equals(ItqlHelper.TOPAZ_URI + "organizationType"))
+        prof.setOrganizationType(row[1]);
+      else if (row[0].equals(ItqlHelper.TOPAZ_URI + "postalAddress"))
+        prof.setPostalAddress(row[1]);
+      else if (row[0].equals(ADDR_URI + "town"))
+        prof.setCity(row[1]);
+      else if (row[0].equals(ADDR_URI + "country"))
+        prof.setCountry(row[1]);
       else if (row[0].equals(FOAF_URI + "mbox"))
         prof.setEmail(row[1].substring(7));
       else if (row[0].equals(FOAF_URI + "homepage"))
         prof.setHomePage(row[1]);
       else if (row[0].equals(FOAF_URI + "weblog"))
         prof.setWeblog(row[1]);
+      else if (row[0].equals(BIO_URI + "olb"))
+        prof.setBiography(row[1]);
       else if (row[0].equals(FOAF_URI + "publications"))
         prof.setPublications(row[1]);
       else if (row[0].equals(FOAF_URI + "interest"))
         interests.add(row[1]);
+      else if (row[0].equals(ItqlHelper.TOPAZ_URI + "bio"))
+        prof.setBiographyText(row[1]);
+      else if (row[0].equals(ItqlHelper.TOPAZ_URI + "interests"))
+        prof.setInterestsText(row[1]);
+      else if (row[0].equals(ItqlHelper.TOPAZ_URI + "researchAreas"))
+        prof.setResearchAreasText(row[1]);
     }
 
     if (interests.size() > 0)

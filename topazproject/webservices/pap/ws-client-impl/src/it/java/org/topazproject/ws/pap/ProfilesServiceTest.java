@@ -122,13 +122,31 @@ public class ProfilesServiceTest extends TestCase {
     assertEquals("Name mismatch", "Hans", prof.getDisplayName());
     assertEquals("Email mismatch", "hans@muster.eu", prof.getEmail());
     assertEquals("Homepage mismatch", "http://www.muster.eu/", prof.getHomePage());
+    assertNull("non-null given-name, got '" + prof.getGivenNames() + "'", prof.getGivenNames());
+    assertNull("non-null surname, got '" + prof.getSurnames() + "'", prof.getSurnames());
     assertNull("non-null real-name, got '" + prof.getRealName() + "'", prof.getRealName());
     assertNull("non-null title, got '" + prof.getTitle() + "'", prof.getTitle());
     assertNull("non-null gender, got '" + prof.getGender() + "'", prof.getGender());
+    assertNull("non-null position-type, got '" + prof.getPositionType() + "'",
+               prof.getPositionType());
+    assertNull("non-null organization-name, got '" + prof.getOrganizationName() + "'",
+               prof.getOrganizationName());
+    assertNull("non-null organization-type, got '" + prof.getOrganizationType() + "'",
+               prof.getOrganizationType());
+    assertNull("non-null postal-address, got '" + prof.getPostalAddress() + "'",
+               prof.getPostalAddress());
+    assertNull("non-null city, got '" + prof.getCity() + "'", prof.getCity());
+    assertNull("non-null country, got '" + prof.getCountry() + "'", prof.getCountry());
     assertNull("non-null weblog, got '" + prof.getWeblog() + "'", prof.getWeblog());
     assertNull("non-null pubs, got '" + prof.getPublications() + "'", prof.getPublications());
     assertNull("non-null biography, got '" + prof.getBiography() + "'", prof.getBiography());
     assertNull("non-null interests, got '" + prof.getInterests() + "'", prof.getInterests());
+    assertNull("non-null biography-text, got '" + prof.getBiographyText() + "'",
+               prof.getBiographyText());
+    assertNull("non-null interests-text, got '" + prof.getInterestsText() + "'",
+               prof.getInterestsText());
+    assertNull("non-null research-areas-text, got '" + prof.getResearchAreasText() + "'",
+               prof.getResearchAreasText());
 
     prof.setHomePage(null);
     prof.setEmail("hans.muster@sample.com");
@@ -142,8 +160,20 @@ public class ProfilesServiceTest extends TestCase {
     assertEquals("Weblog mismatch;", "http://muster.blogs.org", prof.getWeblog());
     assertNull("non-null homepage, got '" + prof.getHomePage() + "'", prof.getHomePage());
     assertNull("non-null real-name, got '" + prof.getRealName() + "'", prof.getRealName());
+    assertNull("non-null surname, got '" + prof.getSurnames() + "'", prof.getSurnames());
+    assertNull("non-null real-name, got '" + prof.getRealName() + "'", prof.getRealName());
     assertNull("non-null title, got '" + prof.getTitle() + "'", prof.getTitle());
     assertNull("non-null gender, got '" + prof.getGender() + "'", prof.getGender());
+    assertNull("non-null position-type, got '" + prof.getPositionType() + "'",
+               prof.getPositionType());
+    assertNull("non-null organization-name, got '" + prof.getOrganizationName() + "'",
+               prof.getOrganizationName());
+    assertNull("non-null organization-type, got '" + prof.getOrganizationType() + "'",
+               prof.getOrganizationType());
+    assertNull("non-null postal-address, got '" + prof.getPostalAddress() + "'",
+               prof.getPostalAddress());
+    assertNull("non-null city, got '" + prof.getCity() + "'", prof.getCity());
+    assertNull("non-null country, got '" + prof.getCountry() + "'", prof.getCountry());
     assertNull("non-null pubs, got '" + prof.getPublications() + "'", prof.getPublications());
     assertNull("non-null biography, got '" + prof.getBiography() + "'", prof.getBiography());
     String[] i = prof.getInterests();
@@ -151,13 +181,30 @@ public class ProfilesServiceTest extends TestCase {
     if (!(i[0].equals("http://i1.org/") && i[1].equals("http://i2.org/") ||
           i[1].equals("http://i1.org/") && i[0].equals("http://i2.org/")))
       fail("Interests mismatch; i0='" + i[0] + "', i1='" + i[1] + "'");
+    assertNull("non-null biography-text, got '" + prof.getBiographyText() + "'",
+               prof.getBiographyText());
+    assertNull("non-null interests-text, got '" + prof.getInterestsText() + "'",
+               prof.getInterestsText());
+    assertNull("non-null research-areas-text, got '" + prof.getResearchAreasText() + "'",
+               prof.getResearchAreasText());
 
     prof.setRealName("rn");
+    prof.setGivenNames("a b");
+    prof.setSurnames("c d");
     prof.setTitle("mr");
     prof.setGender("male");
+    prof.setPositionType("type1");
+    prof.setOrganizationName("acme");
+    prof.setOrganizationType("general");
+    prof.setPostalAddress("Easy St 42\nLightcity");
+    prof.setCity("Lightcity");
+    prof.setCountry("universe");
     prof.setBiography("http://bio/");
     prof.setPublications("http://pubs/");
     prof.setInterests(null);
+    prof.setBiographyText("I was born");
+    prof.setInterestsText("sex");
+    prof.setResearchAreasText("molusks");
     service.setProfile(userId, prof);
 
     prof = service.getProfile(userId);
@@ -166,10 +213,21 @@ public class ProfilesServiceTest extends TestCase {
     assertEquals("Weblog mismatch;", "http://muster.blogs.org", prof.getWeblog());
     assertEquals("Publications mismatch;", "http://pubs/", prof.getPublications());
     assertEquals("Real-name mismatch;", "rn", prof.getRealName());
+    assertEquals("Given-names mismatch;", "a b", prof.getGivenNames());
+    assertEquals("Surnames mismatch;", "c d", prof.getSurnames());
     assertEquals("Title mismatch;", "mr", prof.getTitle());
     assertEquals("Gender mismatch;", "male", prof.getGender());
+    assertEquals("Position-type mismatch;", "type1", prof.getPositionType());
+    assertEquals("Organization-name mismatch;", "acme", prof.getOrganizationName());
+    assertEquals("Organization-type mismatch;", "general", prof.getOrganizationType());
+    assertEquals("Postal-address mismatch;", "Easy St 42\nLightcity", prof.getPostalAddress());
+    assertEquals("City mismatch;", "Lightcity", prof.getCity());
+    assertEquals("Country mismatch;", "universe", prof.getCountry());
     assertEquals("Biography mismatch;", "http://bio/", prof.getBiography());
     assertNull("non-null interests, got '" + prof.getInterests() + "'", prof.getInterests());
+    assertEquals("Biography-text mismatch;", "I was born", prof.getBiographyText());
+    assertEquals("Interests-text mismatch;", "sex", prof.getInterestsText());
+    assertEquals("Research-areas-text mismatch;", "molusks", prof.getResearchAreasText());
 
     service.setProfile(userId, null);
     prof = service.getProfile(userId);

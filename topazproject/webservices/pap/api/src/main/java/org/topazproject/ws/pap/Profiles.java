@@ -30,11 +30,35 @@ public interface Profiles extends Remote {
     /** The action that represents a get-real-name operation in XACML policies: {@value}. */
     public static final String GET_REAL_NAME = "profiles:getRealName";
 
+    /** The action that represents a get-given-names operation in XACML policies: {@value}. */
+    public static final String GET_GIVEN_NAMES = "profiles:getGivenNames";
+
+    /** The action that represents a get-surnnames operation in XACML policies: {@value}. */
+    public static final String GET_SURNAMES = "profiles:getSurnames";
+
     /** The action that represents a get-title operation in XACML policies: {@value}. */
     public static final String GET_TITLE = "profiles:getTitle";
 
     /** The action that represents a get-gender operation in XACML policies: {@value}. */
     public static final String GET_GENDER = "profiles:getGender";
+
+    /** The action that represents a get-position-type operation in XACML policies: {@value}. */
+    public static final String GET_POSITION_TYPE = "profiles:getPositionType";
+
+    /** The action that represents a get-organization-name operation in XACML policies: {@value}. */
+    public static final String GET_ORGANIZATION_NAME = "profiles:getOrganizationName";
+
+    /** The action that represents a get-organization-type operation in XACML policies: {@value}. */
+    public static final String GET_ORGANIZATION_TYPE = "profiles:getOrganizationType";
+
+    /** The action that represents a get-postal-address operation in XACML policies: {@value}. */
+    public static final String GET_POSTAL_ADDRESS = "profiles:getPostalAddress";
+
+    /** The action that represents a get-country operation in XACML policies: {@value}. */
+    public static final String GET_COUNTRY = "profiles:getCountry";
+
+    /** The action that represents a get-city operation in XACML policies: {@value}. */
+    public static final String GET_CITY = "profiles:getCity";
 
     /** The action that represents a get-email operation in XACML policies: {@value}. */
     public static final String GET_EMAIL = "profiles:getEmail";
@@ -53,6 +77,15 @@ public interface Profiles extends Remote {
 
     /** The action that represents a get-publications operation in XACML policies: {@value}. */
     public static final String GET_PUBLICATIONS = "profiles:getPublications";
+
+    /** The action that represents a get-biography-text operation in XACML policies: {@value}. */
+    public static final String GET_BIOGRAPHY_TEXT = "profiles:getBiographyText";
+
+    /** The action that represents a get-interests-text operation in XACML policies: {@value}. */
+    public static final String GET_INTERESTS_TEXT = "profiles:getInterestsText";
+
+    /** The action that represents a get-research-areas-text op in XACML policies: {@value}. */
+    public static final String GET_RESEARCH_AREAS_TEXT = "profiles:getResearchAreasText";
 
     /** The action that represents a set-profile operation in XACML policies: {@value}. */
     public static final String SET_PROFILE = "profiles:setProfile";
