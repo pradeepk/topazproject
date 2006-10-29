@@ -61,12 +61,15 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   private static final String MODEL_TYPE     =
       "<" + CONF.getString("topaz.models.users[@type]", "http://tucana.org/tucana#Model") + ">";
   private static final String ACCOUNT_PID_NS = "account";
+  private static final String AUTH_PATH_PFX  = "authids";
 
   private static final Map    aliases;
 
   private static final String ITQL_CREATE_ACCT =
       ("insert <${userId}> <rdf:type> <foaf:OnlineAccount> " +
-              "<${userId}> <topaz:hasAuthId> '${authId}'" +
+              "<${userId}> <topaz:hasAuthId> <${auth}>" +
+              "<${auth}> <rdf:value> '${authId}'" +
+              "<${auth}> <topaz:realm> 'local'" +
               "<${userId}> <topaz:accountState> '0'^^<xsd:int> into ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
@@ -77,7 +80,8 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
 
   private static final String ITQL_GET_USERID =
       ("select $userId from ${MODEL} where " +
-       "  $userId <rdf:type> <foaf:OnlineAccount> and $userId <topaz:hasAuthId> '${authId}';").
+       "  $userId <rdf:type> <foaf:OnlineAccount> and $userId <topaz:hasAuthId> $auth and " +
+       "  $auth <rdf:value> '${authId}';").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_TEST_USERID =
@@ -98,19 +102,22 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
 
   private static final String ITQL_GET_AUTH_IDS =
       ("select $authId from ${MODEL} where " +
-       "  <${userId}> <rdf:type> <foaf:OnlineAccount> and <${userId}> <topaz:hasAuthId> $authId;").
+       "  <${userId}> <rdf:type> <foaf:OnlineAccount> and <${userId}> <topaz:hasAuthId> $auth " +
+       "  and $auth <rdf:value> $authId;").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_CLEAR_AUTH_IDS =
-      ("delete select <${userId}> <topaz:hasAuthId> $o from ${MODEL} where " +
-       "  <${userId}> <topaz:hasAuthId> $o " +
+      ("delete select $s $p $o from ${MODEL} where $s $p $o and " +
+       "  ($s <tucana:is> <${userId}> and $p <tucana:is> <topaz:hasAuthId> or " +
+       "   <${userId}> <topaz:hasAuthId> $s) " +
        " from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_FIND_DUP_AUTHIDS_PRE =
       ("select $authId count(" +
        "    select $userId from ${MODEL} " +
-       "    where $userId <rdf:type> <foaf:OnlineAccount> and $userId <topaz:hasAuthId> $authId " +
+       "    where $userId <rdf:type> <foaf:OnlineAccount> and $userId <topaz:hasAuthId> $auth " +
+       "          and $auth <rdf:value> $authId " +
        "  ) " +
        "  from ${MODEL} " +
        "  where (").
@@ -155,9 +162,9 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
    * @param ctx the topaz context
    */
   public UserAccountsImpl(UserAccountsPEP pep, TopazContext ctx) {
-    this.pep  = pep;
+    this.pep     = pep;
     this.baseURI = ctx.getObjectBaseUri().toString();
-    this.ctx = ctx;
+    this.ctx     = ctx;
 
     ctx.addListener(new TopazContextListener() {
         public void handleCreated(TopazContext ctx, Object handle) {
@@ -261,7 +268,10 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
         userId = getNewAcctId();
       }
 
+      String auth = getNewAuthId(userId, 0);
+
       itql.doUpdate(ITQL_CREATE_ACCT.replaceAll("\\Q${userId}", userId).
+                                     replaceAll("\\Q${auth}", auth).
                                      replaceAll("\\Q${authId}", authId));
 
       itql.commitTxn(txn);
@@ -491,9 +501,13 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     if (authIds != null && authIds.length > 0) {
       cmd.append("insert ");
       for (int idx = 0; idx < authIds.length; idx++) {
-        if (authIds[idx] != null)
-          cmd.append("<").append(userId).append("> <topaz:hasAuthId> '").
+        if (authIds[idx] != null) {
+          String auth = getNewAuthId(userId, idx);
+          cmd.append("<").append(userId).append("> <topaz:hasAuthId> <").
+              append(auth).append("> ");
+          cmd.append("<").append(auth).append("> <rdf:value> '").
               append(authIds[idx]).append("' ");
+        }
       }
       cmd.append(" into ").append(MODEL).append(";");
     }
@@ -589,5 +603,18 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     }
 
     return baseURI + newAcctIds[newAcctIdIdx++].replace(':', '/');
+  }
+
+  /** 
+   * Get an id (url) for a new auth node. 
+   * 
+   * @param userId the user's id
+   * @param idx    the index of the auth id
+   * @return the url
+   * @throws RemoteException if an error occurred getting the new id
+   */
+  protected synchronized String getNewAuthId(String userId, int idx) throws RemoteException {
+    int slash = userId.lastIndexOf('/');
+    return baseURI + AUTH_PATH_PFX + userId.substring(slash + 1) + "/" + idx;
   }
 }
