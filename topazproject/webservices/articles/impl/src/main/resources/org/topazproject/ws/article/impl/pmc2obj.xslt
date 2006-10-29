@@ -374,7 +374,7 @@
       else if (starts-with(my:basename($href), my:get-root(my:basename($article-entry/@name)))) then
         my:doi-to-uri(my:fname-to-doi($href))
       else
-        error((), concat('Found invalid link ''', $href, ''' in article'))
+        $href (: don't generate an error as the validation will later catch this :)
       "/>
   </xsl:function>
 
