@@ -661,7 +661,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       service.deleteAnnotation(annotation.getId(), true);
   }
 
-  public void testFlagCreation() throws Exception {
+  public void testFlagActions() throws Exception {
+    //Create an annotation
     final String title = "Annotation1";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
     createAnnotationAction.setPublic(true);
@@ -671,6 +672,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     log.debug("annotation created with id:" + annotationId);
     assertNotNull(annotationId);
 
+    //Retrieve an annotation
     final Annotation savedAnnotation = retrieveAnnotation(annotationId);
     assertEquals(target, savedAnnotation.getAnnotates());
     assertEquals(title, savedAnnotation.getCommentTitle());
@@ -680,6 +682,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertFalse(savedAnnotation.isFlagged());
     assertFalse(savedAnnotation.isDeleted());
 
+    //Create a flag
     final CreateFlagAction createFlagAction = getCreateFlagAction();
     final String reasonCode = "spam";
     createFlagAction.setReasonCode(reasonCode);
@@ -691,6 +694,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String flagAnnotationId = createFlagAction.getAnnotationId();
     log.debug("Flag comment created with id:" + flagAnnotationId);
 
+    //Retrieve a flagged annotation
     final Annotation flaggedAnnotation = retrieveAnnotation(annotationId);
     assertEquals(target, flaggedAnnotation.getAnnotates());
     assertEquals(title, flaggedAnnotation.getCommentTitle());
@@ -700,22 +704,26 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertTrue(flaggedAnnotation.isFlagged());
     assertFalse(flaggedAnnotation.isDeleted());
 
+    //Retrieve a flag
     final Flag flag = retrieveFlag(flagAnnotationId);
     assertEquals(annotationId, flag.getAnnotates());
     assertEquals(flagComment, flag.getComment());
     assertEquals(reasonCode, flag.getReasonCode());
     assertFalse(flag.isDeleted());
 
+    //Delete a flag
     final DeleteFlagAction deleteFlagAction = getDeleteFlagAction();
     deleteFlagAction.setFlagId(flagAnnotationId);
     assertEquals(Action.SUCCESS, deleteFlagAction.execute());
     log.debug("Flag comment DELETED with id:" + flagAnnotationId);
 
+    //Retrieve a flag
     final Flag deletedFlag = retrieveFlag(flagAnnotationId);
     assertEquals(annotationId, deletedFlag.getAnnotates());
     assertEquals(reasonCode, deletedFlag.getReasonCode());
     assertTrue(deletedFlag.isDeleted());
 
+    //Retrieve an annotation
     final Annotation flaggedAnnotationAfterFlagDeleted = retrieveAnnotation(annotationId);
     assertEquals(target, flaggedAnnotationAfterFlagDeleted.getAnnotates());
     assertTrue(flaggedAnnotationAfterFlagDeleted.isPublic());

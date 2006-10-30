@@ -12,7 +12,7 @@ package org.plos.web;
 import edu.yale.its.tp.cas.client.CASReceipt;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.user.Constants;
+import org.plos.Constants;
 
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;

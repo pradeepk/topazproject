@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.util;
+package org.plos.annotation;
 
 import org.plos.ApplicationException;
 import org.w3c.dom.Document;

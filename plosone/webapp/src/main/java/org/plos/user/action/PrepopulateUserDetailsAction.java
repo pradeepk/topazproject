@@ -11,9 +11,9 @@ package org.plos.user.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import static org.plos.user.Constants.PLOS_ONE_USER_KEY;
-import static org.plos.user.Constants.ReturnCode.NEW_PROFILE;
-import static org.plos.user.Constants.ReturnCode.UPDATE_PROFILE;
+import static org.plos.Constants.PLOS_ONE_USER_KEY;
+import static org.plos.Constants.ReturnCode.NEW_PROFILE;
+import static org.plos.Constants.ReturnCode.UPDATE_PROFILE;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
 

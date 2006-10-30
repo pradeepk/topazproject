@@ -13,7 +13,6 @@ package org.plos.user.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.service.BaseConfigurableService;
-import org.plos.user.Constants;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.users.DuplicateAuthIdException;

@@ -18,6 +18,7 @@ import com.opensymphony.xwork.mock.MockActionInvocation;
 import com.opensymphony.xwork.util.OgnlValueStack;
 import org.plos.ApplicationException;
 import org.plos.BasePlosoneTestCase;
+import org.plos.Constants;
 import org.plos.user.service.UserService;
 
 import java.util.HashMap;

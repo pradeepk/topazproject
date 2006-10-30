@@ -11,7 +11,7 @@
 package org.plos.user.action;
 
 import org.plos.action.BaseActionSupport;
-import org.plos.user.Constants;
+import org.plos.Constants;
 import org.plos.user.service.UserService;
 
 import java.util.Map;

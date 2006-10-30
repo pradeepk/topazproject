@@ -10,7 +10,7 @@
 package org.plos.annotation.service;
 
 import org.plos.ApplicationException;
-import org.plos.util.FlagUtil;
+import org.plos.annotation.FlagUtil;
 
 /**
  * Used to flag an Annotaion or a Reply.

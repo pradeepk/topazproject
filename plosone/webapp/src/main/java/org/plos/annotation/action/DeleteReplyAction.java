@@ -1,5 +1,5 @@
 /* $HeadURL::                                                                            $
- * $Id$
+ * $Id:DeleteReplyAction.java 722 2006-10-02 16:42:45Z viru $
  *
  * Copyright (c) 2006 by Topaz, Inc.
  * http://topazproject.org

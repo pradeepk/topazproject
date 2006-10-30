@@ -13,9 +13,9 @@ import com.opensymphony.xwork.ActionInvocation;
 import com.opensymphony.xwork.interceptor.Interceptor;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import static org.plos.user.Constants.PLOS_ONE_USER_KEY;
-import static org.plos.user.Constants.ReturnCode;
-import static org.plos.user.Constants.SINGLE_SIGNON_USER_KEY;
+import static org.plos.Constants.PLOS_ONE_USER_KEY;
+import static org.plos.Constants.ReturnCode;
+import static org.plos.Constants.SINGLE_SIGNON_USER_KEY;
 import org.plos.user.service.UserService;
 import org.springframework.util.StringUtils;
 

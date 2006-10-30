@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.user;
+package org.plos;
 
 import edu.yale.its.tp.cas.client.filter.CASFilter;
 

@@ -1,5 +1,5 @@
 /* $HeadURL::                                                                            $
- * $Id$
+ * $Id:ListAnnotationAction.java 722 2006-10-02 16:42:45Z viru $
  */
 package org.plos.annotation.action;
 

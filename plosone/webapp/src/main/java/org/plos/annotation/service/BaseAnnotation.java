@@ -10,7 +10,7 @@
 package org.plos.annotation.service;
 
 import org.plos.ApplicationException;
-import org.plos.user.Constants;
+import org.plos.Constants;
 import org.plos.util.TextUtils;
 
 /**
