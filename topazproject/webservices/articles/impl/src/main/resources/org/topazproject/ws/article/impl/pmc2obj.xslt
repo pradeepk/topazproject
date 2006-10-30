@@ -302,14 +302,18 @@
       <topaz:nextObject rdf:resource="{$next}"/>
     </xsl:if>
 
-    <xsl:variable name="title-obj" as="element()?"
-        select="$sec-obj-refs[$idx]/(self::supplementary-material | parent::fig | parent::table-wrap)[1]"/>
-    <xsl:if test="$title-obj">
-      <xsl:if test="$title-obj/label">
-        <dc:title><xsl:value-of select="$title-obj/label"/></dc:title>
+    <xsl:variable name="ctxt-obj" as="element()?"
+        select="$sec-obj-refs[$idx]/(self::supplementary-material | parent::fig |
+                                     parent::table-wrap | parent::disp-formula |
+                                     parent::simple-display | parent::block-display |
+                                     parent::just-base-display)[1]"/>
+    <xsl:if test="$ctxt-obj">
+      <topaz:contextElement><xsl:value-of select="local-name($ctxt-obj)"/></topaz:contextElement>
+      <xsl:if test="$ctxt-obj/label">
+        <dc:title><xsl:value-of select="$ctxt-obj/label"/></dc:title>
       </xsl:if>
-      <xsl:if test="$title-obj/caption">
-        <dc:description rdf:parseType="Literal"><xsl:copy-of select="$title-obj/caption/node()"/></dc:description>
+      <xsl:if test="$ctxt-obj/caption">
+        <dc:description rdf:parseType="Literal"><xsl:copy-of select="$ctxt-obj/caption/node()"/></dc:description>
       </xsl:if>
     </xsl:if>
 

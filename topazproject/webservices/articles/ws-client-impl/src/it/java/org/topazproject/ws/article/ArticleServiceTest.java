@@ -144,6 +144,7 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("wrong title", "Regulation of Muscle Fiber Type and Running Endurance by PPAR ",
                  oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
+    assertNull("unexpected context-element", oi.getContextElement());
 
     RepresentationInfo[] ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 3, ri.length);
@@ -168,6 +169,7 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("wrong doi", secDoi, oi.getDoi());
     assertEquals("wrong title", "Figure 1", oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
+    assertEquals("wrong context-element", "fig", oi.getContextElement());
 
     ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 2, ri.length);
@@ -188,6 +190,7 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("wrong doi", secDoi, oi.getDoi());
     assertEquals("wrong title", "Video S1", oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
+    assertEquals("wrong context-element", "supplementary-material", oi.getContextElement());
 
     ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 1, ri.length);
@@ -222,6 +225,7 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("wrong title", "Regulation of Muscle Fiber Type and Running Endurance by PPAR ",
                  oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
+    assertNull("unexpected context-element", oi.getContextElement());
 
     RepresentationInfo[] ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 3, ri.length);
@@ -383,6 +387,15 @@ public class ArticleServiceTest extends TestCase {
     assertNotNull("missing description", oi[5].getDescription());
     assertNotNull("missing description", oi[6].getDescription());
     assertNotNull("missing description", oi[7].getDescription());
+
+    assertEquals("wrong context-element", "fig", oi[0].getContextElement());
+    assertEquals("wrong context-element", "fig", oi[1].getContextElement());
+    assertEquals("wrong context-element", "fig", oi[2].getContextElement());
+    assertEquals("wrong context-element", "fig", oi[3].getContextElement());
+    assertEquals("wrong context-element", "fig", oi[4].getContextElement());
+    assertEquals("wrong context-element", "fig", oi[5].getContextElement());
+    assertEquals("wrong context-element", "supplementary-material", oi[6].getContextElement());
+    assertEquals("wrong context-element", "supplementary-material", oi[7].getContextElement());
 
     assertEquals("wrong number of rep-infos", 2, oi[0].getRepresentations().length);
     assertEquals("wrong number of rep-infos", 1, oi[1].getRepresentations().length);

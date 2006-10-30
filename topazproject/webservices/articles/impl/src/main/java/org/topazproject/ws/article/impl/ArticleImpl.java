@@ -589,6 +589,8 @@ public class ArticleImpl implements Article {
         oi.setTitle(info.getString("o"));
       else if (pred.equals(ItqlHelper.DC_URI + "description"))
         oi.setDescription(info.getString("o"));
+      else if (pred.equals(ItqlHelper.TOPAZ_URI + "contextElement"))
+        oi.setContextElement(info.getString("o"));
     }
 
     RepresentationInfo[] ri = new RepresentationInfo[reps.size()];

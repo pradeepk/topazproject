@@ -28,6 +28,8 @@ public class ObjectInfo {
   private String description;
   /** The list of representations of object. */
   private RepresentationInfo[] representations;
+  /** The the xml element in which this object is embedded (e.g. 'table-wrap', 'fig', etc). */
+  private String contextElement;
 
   /**
    * Get the doi.
@@ -99,5 +101,24 @@ public class ObjectInfo {
    */
   public void setRepresentations(RepresentationInfo[] representations) {
     this.representations = representations;
+  }
+
+  /**
+   * Get the context element. This denotes the xml element in the article in which this object
+   * appears, such as 'table-wrap', 'fig', etc.
+   *
+   * @return the context element, or if this is not a secondary object.
+   */
+  public String getContextElement() {
+    return contextElement;
+  }
+
+  /**
+   * Set the context element.
+   *
+   * @param contextElement the context element.
+   */
+  public void setContextElement(String contextElement) {
+    this.contextElement = contextElement;
   }
 }
