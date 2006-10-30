@@ -9,6 +9,8 @@
  */
 package org.plos.annotation.service;
 
+import static org.plos.annotation.service.BaseAnnotation.DELETE_MASK;
+import static org.plos.annotation.service.BaseAnnotation.FLAG_MASK;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.ws.annotation.NoSuchAnnotationIdException;
 import org.topazproject.ws.annotation.Replies;
@@ -41,8 +43,8 @@ public class ReplyWebService extends BaseAnnotationService {
    * @param body body
    * @param annotationService annotationService
    * @return a new reply
-   * @throws RemoteException
-   * @throws UnsupportedEncodingException
+   * @throws RemoteException RemoteException
+   * @throws UnsupportedEncodingException UnsupportedEncodingException
    * @see org.topazproject.ws.annotation.Replies#createReply(String,String,String,String,boolean,String,String,byte[])
    */
   public String createReply(final String mimeType, final String root, final String inReplyTo, final String title, final String body, final AnnotationService annotationService) throws RemoteException, NoSuchAnnotationIdException, UnsupportedEncodingException {
@@ -53,18 +55,19 @@ public class ReplyWebService extends BaseAnnotationService {
 
   /**
    * @param replyId replyId
-   * @throws java.rmi.RemoteException
+   * @throws java.rmi.RemoteException RemoteException
    * @see org.topazproject.ws.annotation.Replies#deleteReplies(String)
+   * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
    */
   public void deleteReplies(final String replyId) throws RemoteException, NoSuchAnnotationIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    replyService.deleteReplies(replyId);
+    replyService.setReplyState(replyId, DELETE_MASK);
   }
 
   /**
    * @param root root
    * @param inReplyTo inReplyTo
-   * @throws RemoteException
+   * @throws RemoteException RemoteException
    * @see org.topazproject.ws.annotation.Replies#deleteReplies(String, String)
    */
   public void deleteReplies(final String root, final String inReplyTo) throws RemoteException, NoSuchAnnotationIdException {
@@ -75,7 +78,7 @@ public class ReplyWebService extends BaseAnnotationService {
   /**
    * @param replyId replyId
    * @return a reply
-   * @throws java.rmi.RemoteException
+   * @throws java.rmi.RemoteException RemoteException
    * @see org.topazproject.ws.annotation.Replies#getReplyInfo(String)
    */
   public ReplyInfo getReplyInfo(final String replyId) throws RemoteException, NoSuchAnnotationIdException {
@@ -106,4 +109,28 @@ public class ReplyWebService extends BaseAnnotationService {
     ensureInitGetsCalledWithUsersSessionAttributes();
     return replyService.listAllReplies(root, inReplyTo);
   }
+
+  /**
+   * Unflag a reply
+   * @param replyId replyId
+   * @throws java.rmi.RemoteException RemoteException
+   * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
+   * @see org.topazproject.ws.annotation.Annotations#deleteAnnotation(String, boolean)
+   */
+  public void unflagReply(final String replyId) throws RemoteException, NoSuchAnnotationIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    replyService.setReplyState(replyId, 0);
+  }
+
+  /**
+   * Set the reply as flagged
+   * @param replyId replyId
+   * @throws NoSuchAnnotationIdException NoSuchAnnotationIdException
+   * @throws RemoteException RemoteException
+   */
+  public void setFlagged(final String replyId) throws NoSuchAnnotationIdException, RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    replyService.setReplyState(replyId, FLAG_MASK);
+  }
+
 }

@@ -38,7 +38,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   private String supercedes;
 
   private ProfanityCheckingService profanityCheckingService;
-  public static final Log log = LogFactory.getLog(CreateAnnotationAction.class);
+  private static final Log log = LogFactory.getLog(CreateAnnotationAction.class);
 
   /**
    * {@inheritDoc}

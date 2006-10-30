@@ -17,6 +17,7 @@ import org.plos.annotation.action.GetReplyAction;
 import org.plos.annotation.action.CreateFlagAction;
 import org.plos.annotation.action.GetFlagAction;
 import org.plos.annotation.action.DeleteFlagAction;
+import org.plos.annotation.action.UnflagAnnotationAction;
 
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
@@ -69,6 +70,7 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private UserService userService;
   private UserWebService userWebService;
   private DeleteFlagAction deleteFlagAction;
+  private UnflagAnnotationAction unflagAnnotationAction;
 
   protected String[] getConfigLocations() {
     return new String[]{"testApplicationContext.xml"};
@@ -353,5 +355,17 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
    */
   public void setDeleteFlagAction(final DeleteFlagAction deleteFlagAction) {
     this.deleteFlagAction = deleteFlagAction;
+  }
+
+  /**
+   * @return the unflagAnnotationAction
+   */
+  public UnflagAnnotationAction getUnflagAnnotationAction() {
+    return unflagAnnotationAction;
+  }
+
+  /** Set the unflagAnnotationAction */
+  public void setUnflagAnnotationAction(final UnflagAnnotationAction unflagAnnotationAction) {
+    this.unflagAnnotationAction = unflagAnnotationAction;
   }
 }

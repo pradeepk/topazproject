@@ -203,4 +203,9 @@ public abstract class Reply extends BaseAnnotation {
   public Reply[] getReplies() {
     return replies.toArray(new Reply[replies.size()]);
   }
+
+  /** see BaseAnnotation#isPublic */
+  public boolean isPublic() {
+    throw new UnsupportedOperationException("A reply is always public, so please don't call this");
+  }
 }

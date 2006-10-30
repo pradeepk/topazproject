@@ -9,6 +9,7 @@
  */
  package org.plos.annotation.action;
 
+import static com.opensymphony.xwork.Action.SUCCESS;
 import com.opensymphony.xwork.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -28,7 +29,7 @@ import java.util.List;
 import java.rmi.RemoteException;
 
 public class AnnotationActionsTest extends BasePlosoneTestCase {
-  private static final String target = "http://here.is/viru2";
+  private static final String target = "http://here.is/viru";
   private final String body = "spmething that I always wanted to say about everything and more about nothing\n";
   final String ANON_PRINCIPAL = "anonymous:user/";
 //  private final String target = "doi:10.1371/annotation/21";
@@ -43,7 +44,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   public void testSequencedTests() throws Exception {
     deleteAllAnnotations(target);
     deleteAllReplies(target);
-    annotationId = createAnnotation(target, false);
+    final String annotationId = createAnnotation(target, false);
     createReply(annotationId);
     listAnnotations(target);
     listReplies(annotationId);
@@ -52,13 +53,13 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   public void deleteAllAnnotations(final String target) throws Exception {
     final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
     listAnnotationAction.setTarget(target);
-    assertEquals(Action.SUCCESS, listAnnotationAction.execute());
+    assertEquals(SUCCESS, listAnnotationAction.execute());
 
     for (final Annotation annotation : listAnnotationAction.getAnnotations()) {
       final String annotationId1 = annotation.getId();
       resetAnnotationPermissionsToDefault(annotationId1, ANON_PRINCIPAL);
       DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId1, false);
-      assertEquals(Action.SUCCESS, deleteAnnotationAction.execute());
+      assertEquals(SUCCESS, deleteAnnotationAction.execute());
     }
   }
 
@@ -66,13 +67,13 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     DeleteReplyAction deleteReplyAction = getDeleteReplyAction();
     deleteReplyAction.setRoot(target);
     deleteReplyAction.setInReplyTo(target);
-    assertEquals(Action.SUCCESS, deleteReplyAction.deleteReplyWithRootAndReplyTo());
+    assertEquals(SUCCESS, deleteReplyAction.deleteReplyWithRootAndReplyTo());
   }
 
   public void testDeleteAnnotationsRemovesPrivateAnnotations() throws Exception {
     String annotationId = createAnnotation(target, false);
     DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, false);
-    assertEquals(Action.SUCCESS, deleteAnnotationAction.execute());
+    assertEquals(SUCCESS, deleteAnnotationAction.execute());
     log.debug("annotation deleted with id:" + annotationId);
     assertEquals(0, deleteAnnotationAction.getActionErrors().size());
 
@@ -84,8 +85,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   public void testDeleteAnnotationsMarksPublicAnnotationsAsDeleted() throws Exception {
     String annotationId = createAnnotation(target, true);
     DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, false);
-    assertEquals(Action.SUCCESS, deleteAnnotationAction.deletePublicAnnotation());
-    log.debug("annotation deleted with id:" + annotationId);
+    assertEquals(SUCCESS, deleteAnnotationAction.deletePublicAnnotation());
+    log.debug("annotation marked as deleted with id:" + annotationId);
     assertEquals(0, deleteAnnotationAction.getActionErrors().size());
 
     final Annotation annotation = retrieveAnnotation(annotationId);
@@ -96,23 +97,30 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   }
 
   public void testDeleteRepliesWithId() throws Exception {
+    final String annotationId = createAnnotation(target, true);
+
+    final String title = "Reply1";
+    final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, body);
+    assertEquals(SUCCESS, createReplyAction.execute());
+    final String replyId = createReplyAction.getReplyId();
+    log.debug("annotation created with id:" + replyId);
+    assertNotNull(replyId);
+
     DeleteReplyAction deleteReplyAction = getDeleteReplyAction();
     deleteReplyAction.setId(replyId);
-    assertEquals(Action.SUCCESS, deleteReplyAction.deleteReplyWithId());
+    assertEquals(SUCCESS, deleteReplyAction.deleteReplyWithId());
     log.debug("annotation deleted with id:" + replyId);
-    assertEquals(0, deleteReplyAction.getActionErrors().size());
 
-    deleteReplyAction = getDeleteReplyAction();
-    deleteReplyAction.setId(replyId);
-    assertEquals("Should throw an error when deleting a nonexisting reply id", Action.ERROR, deleteReplyAction.deleteReplyWithId());
+    final Reply reply = retrieveReply(replyId);
+    assertTrue(reply.isDeleted());
 
-    assertEquals(1, deleteReplyAction.getActionErrors().size());
+    resetAnnotationPermissionsToDefault(annotationId, ANON_PRINCIPAL);
   }
 
   public void listAnnotations(final String target) throws Exception {
     final ListAnnotationAction listAnnotationAction = getListAnnotationAction();
     listAnnotationAction.setTarget(target);
-    assertEquals(Action.SUCCESS, listAnnotationAction.execute());
+    assertEquals(SUCCESS, listAnnotationAction.execute());
     assertEquals(1, listAnnotationAction.getAnnotations().length);
   }
 
@@ -121,7 +129,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
     final String context = createAnnotationAction.getTargetContext();
     createAnnotationAction.setPublic(publicVisibility);
-    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);
     assertNotNull(annotationId);
@@ -131,7 +139,6 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(title, savedAnnotation.getCommentTitle());
     assertEquals(context, savedAnnotation.getContext());
     assertEquals(body, savedAnnotation.getComment());
-    assertEquals(body, savedAnnotation.getComment());
     assertEquals(publicVisibility, savedAnnotation.isPublic());
 
     return annotationId;
@@ -139,11 +146,11 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
   public void testCreatePrivateAnnotation() throws Exception {
     final String title = "AnnotationPrivate";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, "text/plain", body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
     final String context = createAnnotationAction.getTargetContext();
     final boolean visibility = false;
     createAnnotationAction.setPublic(visibility);
-    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);
     assertNotNull(annotationId);
@@ -162,14 +169,14 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   public void createReply(final String annotationId) throws Exception {
     final String title = "Reply1";
     final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
-    assertEquals(Action.SUCCESS, createReplyAction.execute());
+    assertEquals(SUCCESS, createReplyAction.execute());
     final String replyId = createReplyAction.getReplyId();
     log.debug("annotation created with id:" + replyId);
     assertNotNull(replyId);
 
     final GetReplyAction getReplyAction = getGetReplyAction();
     getReplyAction.setReplyId(replyId);
-    assertEquals(Action.SUCCESS, getReplyAction.execute());
+    assertEquals(SUCCESS, getReplyAction.execute());
     final Reply savedReply = getAnnotationService().getReply(replyId);
     assertEquals(annotationId, savedReply.getRoot());
     assertEquals(annotationId, savedReply.getInReplyTo());
@@ -185,14 +192,14 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     {
       final String title = "Reply1 to annotation ";
       final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
-      assertEquals(Action.SUCCESS, createReplyAction.execute());
+      assertEquals(SUCCESS, createReplyAction.execute());
       replyId = createReplyAction.getReplyId();
       log.debug("reply created with id:" + replyId);
       assertNotNull(replyId);
 
       final GetReplyAction getReplyAction = getGetReplyAction();
       getReplyAction.setReplyId(replyId);
-      assertEquals(Action.SUCCESS, getReplyAction.execute());
+      assertEquals(SUCCESS, getReplyAction.execute());
       final Reply savedReply = getAnnotationService().getReply(replyId);
       assertEquals(annotationId, savedReply.getRoot());
       assertEquals(annotationId, savedReply.getInReplyTo());
@@ -206,14 +213,14 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       final String title = "Reply1 to Reply1";
       final String replyBody2 = "some text in response to the earlier teply";
       final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, replyId, title, "text/plain", replyBody2);
-      assertEquals(Action.SUCCESS, createReplyAction.execute());
+      assertEquals(SUCCESS, createReplyAction.execute());
       final String replyToReplyId = createReplyAction.getReplyId();
       log.debug("reply created with id:" + replyToReplyId);
       assertNotNull(replyToReplyId);
 
       final GetReplyAction getReplyAction = getGetReplyAction();
       getReplyAction.setReplyId(replyToReplyId);
-      assertEquals(Action.SUCCESS, getReplyAction.execute());
+      assertEquals(SUCCESS, getReplyAction.execute());
       final Reply savedReply = getAnnotationService().getReply(replyToReplyId);
       assertEquals(annotationId, savedReply.getRoot());
       assertEquals(replyId, savedReply.getInReplyTo());
@@ -229,14 +236,14 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String title = "threadedTitle for Annotation";
     final String threadedTitle = "Threaded reply test threadedTitle";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, "text/plain", body);
-    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
 
     class CreateReply {
       /** return replyId */
       public String execute(final String annotationId, final String replyToId, final String title, final String body) throws Exception {
         final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, replyToId, title, "text/plain", body);
-        assertEquals(Action.SUCCESS, createReplyAction.execute());
+        assertEquals(SUCCESS, createReplyAction.execute());
         return createReplyAction.getReplyId();
       }
     }
@@ -252,7 +259,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final ListReplyAction listReplyAction = getListReplyAction();
     listReplyAction.setRoot(annotationId);
     listReplyAction.setInReplyTo(annotationId);
-    assertEquals(Action.SUCCESS, listReplyAction.listAllReplies());
+    assertEquals(SUCCESS, listReplyAction.listAllReplies());
 
     final Reply[] replies = listReplyAction.getReplies();
 
@@ -281,7 +288,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final ListReplyAction listReplyAction = getListReplyAction();
     listReplyAction.setRoot(annotationId);
     listReplyAction.setInReplyTo(annotationId);
-    assertEquals(Action.SUCCESS, listReplyAction.execute());
+    assertEquals(SUCCESS, listReplyAction.execute());
     assertEquals(1, listReplyAction.getReplies().length);
   }
 
@@ -326,7 +333,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String title = "Annotation1";
 
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, "text/plain", body);
-    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
     final Annotation savedAnnotation = getAnnotationService().getAnnotation(annotationId1);
@@ -341,7 +348,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String declawedTitle = "Annotation1 &lt;&amp;&gt;";
 
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, "text/plain", body);
-    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId1 = createAnnotationAction.getAnnotationId();
 
     final Annotation savedAnnotation = retrieveAnnotation(annotationId1);
@@ -358,8 +365,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     final String title = "Annotation1";
 
-    final CreateReplyAction createAnnotationAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
-    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    final CreateReplyAction createAnnotationAction = getCreateReplyAction(annotationId, annotationId, title, body);
+    assertEquals(SUCCESS, createAnnotationAction.execute());
     final String id = createAnnotationAction.getReplyId();
 
     final Reply savedReply = getAnnotationService().getReply(id);
@@ -372,13 +379,13 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String title = "reply <&>";
     final String declawedTitle = "reply &lt;&amp;&gt;";
 
-    final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, "text/plain", body);
-    assertEquals(Action.SUCCESS, createReplyAction.execute());
+    final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, title, body);
+    assertEquals(SUCCESS, createReplyAction.execute());
     final String replyId1 = createReplyAction.getReplyId();
 
     final GetReplyAction getAnnotationAction = getGetReplyAction();
     getAnnotationAction.setReplyId(replyId1);
-    assertEquals(Action.SUCCESS, getAnnotationAction.execute());
+    assertEquals(SUCCESS, getAnnotationAction.execute());
     final Reply savedReply = getAnnotationAction.getReply();
     assertNotNull(savedReply);
     assertEquals(declawedTitle, savedReply.getCommentTitle());
@@ -386,9 +393,9 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
   public void testPublicAnnotationShouldHaveTheRightGrantsAndRevokations() throws Exception {
     final String title = "Annotation1";
-    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, "text/plain", body);
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
     final String context = createAnnotationAction.getTargetContext();
-    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);
     assertNotNull(annotationId);
@@ -466,7 +473,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
         createAnnotationAction.setEndPath(endPath);
         createAnnotationAction.setEndOffset(9);
         log.debug("context = " + createAnnotationAction.getTargetContext());
-        assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+        assertEquals(SUCCESS, createAnnotationAction.execute());
         return createAnnotationAction.getAnnotationId();
       }
     }
@@ -534,7 +541,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
         createAnnotationAction.setEndOffset(endOffset);
 
         log.debug("context = " + createAnnotationAction.getTargetContext());
-        assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+        assertEquals(SUCCESS, createAnnotationAction.execute());
       }
     }
 
@@ -554,17 +561,24 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertTrue(content.contains(target));
   }
 
+  private Reply retrieveReply(final String replyId) throws Exception {
+    final GetReplyAction getReplyAction = getGetReplyAction();
+    getReplyAction.setReplyId(replyId);
+    assertEquals(SUCCESS, getReplyAction.execute());
+    return getReplyAction.getReply();
+  }
+
   private Annotation retrieveAnnotation(final String annotationId) throws Exception {
     final GetAnnotationAction getAnnotationAction = getGetAnnotationAction();
     getAnnotationAction.setAnnotationId(annotationId);
-    assertEquals(Action.SUCCESS, getAnnotationAction.execute());
+    assertEquals(SUCCESS, getAnnotationAction.execute());
     return getAnnotationAction.getAnnotation();
   }
 
   private Flag retrieveFlag(final String flagId) throws Exception {
     final GetFlagAction getFlagAction = getGetFlagAction();
     getFlagAction.setFlagId(flagId);
-    assertEquals(Action.SUCCESS, getFlagAction.execute());
+    assertEquals(SUCCESS, getFlagAction.execute());
     return getFlagAction.getFlag();
   }
 
@@ -573,6 +587,10 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     deleteAnnotationAction.setAnnotationId(annotationId);
     deleteAnnotationAction.setDeletePreceding(deletePreceding);
     return deleteAnnotationAction;
+  }
+
+  private CreateReplyAction getCreateReplyAction(final String root, final String inReplyTo, final String title, final String body) {
+    return getCreateReplyAction(root, inReplyTo, title, "text/plain", body);
   }
 
   private CreateReplyAction getCreateReplyAction(final String root, final String inReplyTo, final String title, final String mimeType, final String body) {
@@ -617,7 +635,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     Annotation[] annotations = service.listAnnotations(subject);
 
     for (Annotation annotation : annotations)
-      service.deleteAnnotation(annotation.getId(), true);
+      service.deletePrivateAnnotation(annotation.getId(), true);
 
     service.createAnnotation(subject, context1, null, title, "text/plain", "body", false);
     service.createAnnotation(subject, context2, null, title, "text/plain", "body", false);
@@ -628,7 +646,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     annotations = service.listAnnotations(subject);
     for (Annotation annotation1 : annotations)
-      service.deleteAnnotation(annotation1.getId(), true);
+      service.deletePrivateAnnotation(annotation1.getId(), true);
   }
 
   public void testAnnotatedContentWithSimpleStringRangeLocAndLength() throws Exception {
@@ -646,7 +664,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     Annotation[] annotations = service.listAnnotations(subject);
 
     for (final Annotation annotation : annotations) {
-      service.deleteAnnotation(annotation.getId(), true);
+      service.deletePrivateAnnotation(annotation.getId(), true);
     }
 
     service.createAnnotation(subject, context1, null, title, "text/plain", "body", false);
@@ -658,7 +676,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     annotations = service.listAnnotations(subject);
     for (final Annotation annotation : annotations)
-      service.deleteAnnotation(annotation.getId(), true);
+      service.deletePrivateAnnotation(annotation.getId(), true);
   }
 
   public void testFlagActions() throws Exception {
@@ -667,7 +685,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
     createAnnotationAction.setPublic(true);
     final String context = createAnnotationAction.getTargetContext();
-    assertEquals(Action.SUCCESS, createAnnotationAction.execute());
+    assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);
     assertNotNull(annotationId);
@@ -682,55 +700,140 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertFalse(savedAnnotation.isFlagged());
     assertFalse(savedAnnotation.isDeleted());
 
-    //Create a flag
-    final CreateFlagAction createFlagAction = getCreateFlagAction();
     final String reasonCode = "spam";
-    createFlagAction.setReasonCode(reasonCode);
-    createFlagAction.setTarget(annotationId);
     final String flagComment = "This a viagra selling spammer. " +
             "We should do something about it. Maybe we should start giving away viagra for free.";
-    createFlagAction.setComment(flagComment);
-    assertEquals(Action.SUCCESS, createFlagAction.execute());
-    final String flagAnnotationId = createFlagAction.getAnnotationId();
-    log.debug("Flag comment created with id:" + flagAnnotationId);
 
-    //Retrieve a flagged annotation
-    final Annotation flaggedAnnotation = retrieveAnnotation(annotationId);
-    assertEquals(target, flaggedAnnotation.getAnnotates());
-    assertEquals(title, flaggedAnnotation.getCommentTitle());
-    assertEquals(context, flaggedAnnotation.getContext());
-    assertEquals(body, flaggedAnnotation.getComment());
-    assertTrue(flaggedAnnotation.isPublic());
-    assertTrue(flaggedAnnotation.isFlagged());
-    assertFalse(flaggedAnnotation.isDeleted());
+    {
+      //Create a flag
+      final CreateFlagAction createFlagAction = getCreateFlagAction(reasonCode, annotationId, flagComment);
+      assertEquals(SUCCESS, createFlagAction.createAnnotationFlag());
+      final String flagAnnotationId = createFlagAction.getAnnotationId();
+      log.debug("Flag comment created with id:" + flagAnnotationId);
 
-    //Retrieve a flag
-    final Flag flag = retrieveFlag(flagAnnotationId);
-    assertEquals(annotationId, flag.getAnnotates());
-    assertEquals(flagComment, flag.getComment());
-    assertEquals(reasonCode, flag.getReasonCode());
-    assertFalse(flag.isDeleted());
+      //Retrieve a flagged annotation
+      final Annotation flaggedAnnotation = retrieveAnnotation(annotationId);
+      assertEquals(target, flaggedAnnotation.getAnnotates());
+      assertEquals(title, flaggedAnnotation.getCommentTitle());
+      assertEquals(context, flaggedAnnotation.getContext());
+      assertEquals(body, flaggedAnnotation.getComment());
+      assertTrue(flaggedAnnotation.isPublic());
+      assertTrue(flaggedAnnotation.isFlagged());
+      assertFalse(flaggedAnnotation.isDeleted());
 
-    //Delete a flag
-    final DeleteFlagAction deleteFlagAction = getDeleteFlagAction();
-    deleteFlagAction.setFlagId(flagAnnotationId);
-    assertEquals(Action.SUCCESS, deleteFlagAction.execute());
-    log.debug("Flag comment DELETED with id:" + flagAnnotationId);
+      //Retrieve a flag
+      final Flag flag = retrieveFlag(flagAnnotationId);
+      assertEquals(annotationId, flag.getAnnotates());
+      assertEquals(flagComment, flag.getComment());
+      assertEquals(reasonCode, flag.getReasonCode());
+      assertFalse(flag.isDeleted());
 
-    //Retrieve a flag
-    final Flag deletedFlag = retrieveFlag(flagAnnotationId);
-    assertEquals(annotationId, deletedFlag.getAnnotates());
-    assertEquals(reasonCode, deletedFlag.getReasonCode());
-    assertTrue(deletedFlag.isDeleted());
+      //Delete a flag
+      final DeleteFlagAction deleteFlagAction = getDeleteFlagAction();
+      deleteFlagAction.setFlagId(flagAnnotationId);
+      assertEquals(SUCCESS, deleteFlagAction.execute());
+      log.debug("Flag comment DELETED with id:" + flagAnnotationId);
 
-    //Retrieve an annotation
-    final Annotation flaggedAnnotationAfterFlagDeleted = retrieveAnnotation(annotationId);
-    assertEquals(target, flaggedAnnotationAfterFlagDeleted.getAnnotates());
-    assertTrue(flaggedAnnotationAfterFlagDeleted.isPublic());
-    assertTrue(flaggedAnnotationAfterFlagDeleted.isFlagged());
-    assertFalse(flaggedAnnotationAfterFlagDeleted.isDeleted());
+      //Retrieve a flag
+      final Flag deletedFlag = retrieveFlag(flagAnnotationId);
+      assertEquals(annotationId, deletedFlag.getAnnotates());
+      assertEquals(reasonCode, deletedFlag.getReasonCode());
+      assertTrue(deletedFlag.isDeleted());
 
+      //Retrieve an annotation
+      final Annotation flaggedAnnotationAfterFlagDeleted = retrieveAnnotation(annotationId);
+      assertEquals(target, flaggedAnnotationAfterFlagDeleted.getAnnotates());
+      assertTrue(flaggedAnnotationAfterFlagDeleted.isPublic());
+      assertTrue(flaggedAnnotationAfterFlagDeleted.isFlagged());
+      assertFalse(flaggedAnnotationAfterFlagDeleted.isDeleted());
 
+      //Unflag the annotation
+      final UnflagAnnotationAction unflagAnnotationAction = getUnflagAnnotationAction();
+      unflagAnnotationAction.setTargetId(annotationId);
+      assertEquals(SUCCESS, unflagAnnotationAction.unflagAnnotation());
 
+      //Retrieve an annotation
+      final Annotation flaggedAnnotationAfterFlagUnflagging = retrieveAnnotation(annotationId);
+      assertEquals(target, flaggedAnnotationAfterFlagUnflagging.getAnnotates());
+      assertTrue(flaggedAnnotationAfterFlagUnflagging.isPublic());
+      assertFalse(flaggedAnnotationAfterFlagUnflagging.isFlagged());
+      assertFalse(flaggedAnnotationAfterFlagUnflagging.isDeleted());
+      log.debug("Annotation with id:" + flagAnnotationId + " unflagged");
+    }
+
+    {
+      //Create a reply
+      final String replyTitle = "ReplyToBeFlagged";
+      final String replyComment = "some kind of reply to annotation";
+      final CreateReplyAction createReplyAction = getCreateReplyAction(annotationId, annotationId, replyTitle, replyComment);
+      assertEquals(SUCCESS, createReplyAction.execute());
+      final String replyId = createReplyAction.getReplyId();
+
+      //Retrieve a reply
+      final Reply reply = retrieveReply(replyId);
+      assertFalse(reply.isDeleted());
+      assertFalse(reply.isFlagged());
+
+      //Create a flag against a reply
+      final CreateFlagAction createReplyFlagAction = getCreateFlagAction(reasonCode, replyId, flagComment);
+      assertEquals(SUCCESS, createReplyFlagAction.createReplyFlag());
+      final String flagAnnotationId = createReplyFlagAction.getAnnotationId();
+      log.debug("Flag for reply created with id:" + flagAnnotationId);
+
+      //Retrieve a flagged reply
+      final Reply flaggedReply = retrieveReply(replyId);
+      assertEquals(annotationId, flaggedReply.getRoot());
+      assertEquals(replyTitle, flaggedReply.getCommentTitle());
+      assertEquals(replyComment, flaggedReply.getComment());
+      assertTrue(flaggedReply.isFlagged());
+      assertFalse(flaggedReply.isDeleted());
+
+      //Retrieve a flag
+      final Flag flag = retrieveFlag(flagAnnotationId);
+      assertEquals(replyId, flag.getAnnotates());
+      assertEquals(flagComment, flag.getComment());
+      assertEquals(reasonCode, flag.getReasonCode());
+      assertFalse(flag.isDeleted());
+
+      //Delete a flag
+      final DeleteFlagAction deleteFlagAction = getDeleteFlagAction();
+      deleteFlagAction.setFlagId(flagAnnotationId);
+      assertEquals(SUCCESS, deleteFlagAction.execute());
+      log.debug("Flag comment DELETED with id:" + flagAnnotationId);
+
+      //Retrieve a flag
+      final Flag deletedFlag = retrieveFlag(flagAnnotationId);
+      assertEquals(replyId, deletedFlag.getAnnotates());
+      assertEquals(reasonCode, deletedFlag.getReasonCode());
+      assertTrue(deletedFlag.isDeleted());
+
+      //Retrieve the previously flagged reply
+      final Reply flaggedReplyAfterFlagDeleted = retrieveReply(replyId);
+      assertEquals(annotationId, flaggedReplyAfterFlagDeleted.getRoot());
+      assertTrue(flaggedReplyAfterFlagDeleted.isFlagged());
+      assertFalse(flaggedReplyAfterFlagDeleted.isDeleted());
+
+      //Unflag the reply
+      final UnflagAnnotationAction unflagAnnotationAction = getUnflagAnnotationAction();
+      unflagAnnotationAction.setTargetId(replyId);
+      assertEquals(SUCCESS, unflagAnnotationAction.unflagReply());
+
+      //Retrieve an annotation
+      final Reply flaggedReplyAfterUnflagging = retrieveReply(replyId);
+      assertEquals(annotationId, flaggedReplyAfterUnflagging.getRoot());
+      assertFalse(flaggedReplyAfterUnflagging.isFlagged());
+      assertFalse(flaggedReplyAfterUnflagging.isDeleted());
+      log.debug("Reply with id:" + flagAnnotationId + " unflagged");
+
+    }
   }
+
+  private CreateFlagAction getCreateFlagAction(final String reasonCode, final String annotationId, final String flagComment) {
+    final CreateFlagAction createFlagAction = getCreateFlagAction();
+    createFlagAction.setReasonCode(reasonCode);
+    createFlagAction.setTarget(annotationId);
+    createFlagAction.setComment(flagComment);
+    return createFlagAction;
+  }
+
 }

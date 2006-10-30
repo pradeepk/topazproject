@@ -10,9 +10,9 @@
 package org.plos.annotation.service;
 
 import org.apache.commons.lang.StringUtils;
+import static org.plos.annotation.service.Annotation.DELETE_MASK;
 import static org.plos.annotation.service.Annotation.FLAG_MASK;
 import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
-import static org.plos.annotation.service.Annotation.DELETE_MASK;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.ws.annotation.AnnotationClientFactory;
 import org.topazproject.ws.annotation.AnnotationInfo;
@@ -59,6 +59,17 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
 
   /**
+   * Unflag an annotation
+   * @param annotationId annotationId
+   * @throws java.rmi.RemoteException RemoteException
+   * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
+   * @see org.topazproject.ws.annotation.Annotations#deleteAnnotation(String, boolean)
+   */
+  public void unflagAnnotation(final String annotationId) throws RemoteException, NoSuchAnnotationIdException {
+    setPublic(annotationId);
+  }
+
+  /**
    * Delete an annotation
    * @param annotationId annotationId
    * @param deletePreceding deletePreceding
@@ -66,7 +77,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
    * @see org.topazproject.ws.annotation.Annotations#deleteAnnotation(String, boolean)
    */
-  public void deleteAnnotation(final String annotationId, final boolean deletePreceding) throws RemoteException, NoSuchAnnotationIdException {
+  public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding) throws RemoteException, NoSuchAnnotationIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     annotationService.deleteAnnotation(annotationId, deletePreceding);
   }

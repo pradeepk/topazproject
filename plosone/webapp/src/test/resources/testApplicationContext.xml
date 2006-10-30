@@ -46,4 +46,6 @@
 
   <bean class="org.plos.annotation.action.DeleteFlagAction" />
 
+  <bean class="org.plos.annotation.action.UnflagAnnotationAction" />
+
 </beans>

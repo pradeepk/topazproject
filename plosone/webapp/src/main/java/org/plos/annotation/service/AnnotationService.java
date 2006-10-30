@@ -82,21 +82,57 @@ public class AnnotationService extends BaseConfigurableService {
   }
 
   /**
-   * Create an flag.
+   * Create a flag against an annotation or a reply
    * @param target target that a flag is being created for
    * @param reasonCode reasonCode
    * @param body body
    * @param mimeType mimeType @throws org.plos.ApplicationException ApplicationException
+   * @param isAnnotation true if annotation, false if reply
    * @return unique identifier for the newly created flag
    * @throws org.plos.ApplicationException ApplicationException
    */
-  public String createFlag(final String target, final String reasonCode, final String body, final String mimeType) throws ApplicationException {
+  public String createFlag(final String target, final String reasonCode, final String body, final String mimeType, final boolean isAnnotation) throws ApplicationException {
     try {
       final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
-      final String annotationId = annotationWebService.createAnnotation(mimeType, target, null, null, null, flagBody);
-      setAnnotationAsFlagged(target);
-      return annotationId;
+      final String flagId = annotationWebService.createAnnotation(mimeType, target, null, null, null, flagBody);
+
+      if (isAnnotation) {
+        annotationWebService.setFlagged(target);
+      } else {
+        replyWebService.setFlagged(target);
+      }
+      return flagId;
     } catch (Exception e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
+   * Unflag the given annotation
+   * @param annotationId annotationId
+   * @throws ApplicationException ApplicationException
+   */
+  public void unflagAnnotation(final String annotationId) throws ApplicationException {
+    try {
+      annotationWebService.unflagAnnotation(annotationId);
+    } catch (RemoteException e) {
+      throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
+   * Unflag the given reply
+   * @param replyId replyId
+   * @throws ApplicationException ApplicationException
+   */
+  public void unflagReply(final String replyId) throws ApplicationException {
+    try {
+      replyWebService.unflagReply(replyId);
+    } catch (RemoteException e) {
+      throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
       throw new ApplicationException(e);
     }
   }
@@ -107,9 +143,9 @@ public class AnnotationService extends BaseConfigurableService {
    * @param deletePreceding deletePreceding
    * @throws ApplicationException ApplicationException
    */
-  public void deleteAnnotation(final String annotationId, final boolean deletePreceding) throws ApplicationException {
+  public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding) throws ApplicationException {
     try {
-      annotationWebService.deleteAnnotation(annotationId, deletePreceding);
+      annotationWebService.deletePrivateAnnotation(annotationId, deletePreceding);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     } catch (NoSuchIdException e) {
@@ -309,21 +345,6 @@ public class AnnotationService extends BaseConfigurableService {
       annotationWebService.setPublic(annotationDoi);
 
     } catch (final Exception e) {
-      throw new ApplicationException(e);
-    }
-  }
-
-  /**
-   * Set the annotation as flagged.
-   * @param annotationId annotationId
-   * @throws org.plos.ApplicationException ApplicationException
-   */
-  private void setAnnotationAsFlagged(final String annotationId) throws ApplicationException {
-    try {
-      annotationWebService.setFlagged(annotationId);
-    } catch (final RemoteException e) {
-      throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
       throw new ApplicationException(e);
     }
   }

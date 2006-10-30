@@ -24,15 +24,27 @@ public class CreateFlagAction extends AnnotationActionSupport {
   private String annotationId;
   private String reasonCode;
 
-  public static final Log log = LogFactory.getLog(CreateAnnotationAction.class);
+  private static final Log log = LogFactory.getLog(CreateFlagAction.class);
 
   /**
    * {@inheritDoc}
-   * Create a flag for a given annotation or reply
+   * Create a flag for a given annotation
    */
-  public String execute() throws Exception {
+  public String createAnnotationFlag() throws Exception {
+    return createFlag(true);
+  }
+
+  /**
+   * {@inheritDoc}
+   * Create a flag for a given reply
+   */
+  public String createReplyFlag() throws Exception {
+    return createFlag(false);
+  }
+
+  private String createFlag(final boolean isAnnotation) {
     try {
-      annotationId = getAnnotationService().createFlag(target, reasonCode, comment, mimeType);
+      annotationId = getAnnotationService().createFlag(target, reasonCode, comment, mimeType, isAnnotation);
     } catch (final ApplicationException e) {
       log.error(e, e);
       addActionError("Flag creation failed with error message: " + e.getMessage());

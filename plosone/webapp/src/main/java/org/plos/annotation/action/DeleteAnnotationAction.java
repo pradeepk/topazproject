@@ -24,7 +24,7 @@ public class DeleteAnnotationAction extends AnnotationActionSupport {
    */
   public String execute() throws Exception {
     try {
-      getAnnotationService().deleteAnnotation(annotationId, deletePreceding);
+      getAnnotationService().deletePrivateAnnotation(annotationId, deletePreceding);
     } catch (final ApplicationException e) {
       log.error(e, e);
       addActionError("Annotation deletion failed with error message: " + e.getMessage());
