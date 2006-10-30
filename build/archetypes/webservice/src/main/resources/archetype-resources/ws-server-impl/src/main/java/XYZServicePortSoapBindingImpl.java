@@ -20,14 +20,13 @@ import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
-import org.topazproject.configuration.ConfigurationStore;
+import org.topazproject.common.impl.TopazContext;
+import org.topazproject.common.ws.ImplInvocationHandler;
+import org.topazproject.common.ws.WSTopazContext;
+
 import ${package}.impl.${Svc}Impl;
 import ${package}.impl.${Svc}PEP;
 import org.topazproject.xacml.ws.WSXacmlUtil;
@@ -41,7 +40,8 @@ import org.topazproject.xacml.ws.WSXacmlUtil;
 public class ${Svc}ServicePortSoapBindingImpl implements ${Svc}, ServiceLifecycle {
   private static final Log log = LogFactory.getLog(${Svc}ServicePortSoapBindingImpl.class);
 
-  private ${Svc}Impl impl;
+  private ${Svc} impl;
+  private TopazContext ctx  = new WSTopazContext(getClass().getName());
 
   public void init(Object context) throws ServiceException {
     if (log.isTraceEnabled())
@@ -51,25 +51,11 @@ public class ${Svc}ServicePortSoapBindingImpl implements ${Svc}, ServiceLifecycl
       // get the pep
       ${Svc}PEP pep = new WS${Svc}PEP((ServletEndpointContext) context);
 
-      // get other config
-      Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-      conf = conf.subset("topaz");
-
-      if (!conf.containsKey("services.fedora.uri"))
-        throw new ConfigurationException("missing key 'topaz.services.fedora.uri'");
-      if (!conf.containsKey("services.itql.uri"))
-        throw new ConfigurationException("missing key 'topaz.services.itql.uri'");
-
-      Configuration fedoraConf = conf.subset("services.fedora");
-      Configuration itqlConf   = conf.subset("services.itql");
-
-      HttpSession session = ((ServletEndpointContext) context).getHttpSession();
-
-      ProtectedService fedoraSvc = ProtectedServiceFactory.createService(fedoraConf, session);
-      ProtectedService itqlSvc   = ProtectedServiceFactory.createService(itqlConf, session);
+      // initialize api-call context
+      ctx.init(context);
 
       // create the impl
-      impl = new ${Svc}Impl(itqlSvc, fedoraSvc, pep);
+      impl = (${Svc}) ImplInvocationHandler.newProxy(new ${Svc}Impl(pep, ctx), ctx, log);
     } catch (Exception e) {
       log.error("Failed to initialize ${Svc}Impl.", e);
       throw new ServiceException(e);
@@ -80,6 +66,7 @@ public class ${Svc}ServicePortSoapBindingImpl implements ${Svc}, ServiceLifecycl
     if (log.isTraceEnabled())
       log.trace("ServiceLifecycle#destroy");
 
+    ctx.destroy();
     impl = null;
   }
 
