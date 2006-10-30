@@ -16,6 +16,7 @@ import org.plos.BasePlosoneTestCase;
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.SecondaryObject;
 import org.topazproject.common.NoSuchIdException;
+import org.topazproject.ws.article.ObjectInfo;
 import org.topazproject.ws.article.RepresentationInfo;
 
 import java.net.URL;
@@ -32,7 +33,8 @@ public class FetchObjectTest extends BasePlosoneTestCase {
 
     deleteAndIngestArticle(resourceToIngest, doi);
 
-    final RepresentationInfo[] ri = service.listRepresentations(doi);
+    final ObjectInfo oi = service.getObjectInfo(doi);
+    final RepresentationInfo[] ri = oi.getRepresentations();
     assertEquals(2, ri.length);
 
     final FetchObjectAction fetchObjectAction = getFetchObjectAction();
@@ -40,10 +42,10 @@ public class FetchObjectTest extends BasePlosoneTestCase {
     fetchObjectAction.setRepresentation("XML");
     assertEquals(Action.SUCCESS, fetchObjectAction.execute());
 
-    final SecondaryObject[] oi = service.listSecondaryObjects(doi);
-    assertEquals(8, oi.length);
+    final SecondaryObject[] so = service.listSecondaryObjects(doi);
+    assertEquals(8, so.length);
 
-    final RepresentationInfo[] riForG001 = service.listRepresentations(doi + ".g001");
+    final RepresentationInfo[] riForG001 = service.getObjectInfo(doi + ".g001").getRepresentations();
     assertEquals(1, riForG001.length);
   }
 

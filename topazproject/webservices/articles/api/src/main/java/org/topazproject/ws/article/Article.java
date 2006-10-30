@@ -39,14 +39,14 @@ public interface Article extends Remote {
     /** The action that represents a set-representation operation in XACML policies. */
     public static final String SET_REPRESENTATION = "articles:setRepresentation";
 
-    /** The action that represents a list-representations operation in XACML policies. */
-    public static final String LIST_REPRESENTATIONS = "articles:listRepresentations";
-
-    /** The action that represents checking if we can access a specific article. */
-    public static final String READ_META_DATA = "articles:readMetaData";
+    /** The action that represents a get-object-info operation in XACML policies. */
+    public static final String GET_OBJECT_INFO = "articles:getObjectInfo";
 
     /** The action that represents a list-secondary-objects operation in XACML policies. */
     public static final String LIST_SEC_OBJECTS = "articles:listSecondaryObjects";
+
+    /** The action that represents checking if we can access a specific article. */
+    public static final String READ_META_DATA = "articles:readMetaData";
   }
 
   /** Article state of "Active" */
@@ -133,15 +133,26 @@ public interface Article extends Remote {
       throws NoSuchObjectIdException, RemoteException;
 
   /** 
-   * List all the represenations of the given object.
+   * Get the info for a single object. This may be either an article or a secondary object. 
    * 
-   * @param doi the DOI of the object
-   * @return the infos for the represenations; this list will always contain at least one entry.
-   * @throws NoSuchObjectException if the object does not exist
+   * @param doi the doi of the object
+   * @return the object's info
+   * @throws NoSuchObjectIdException if the object does not exist
    * @throws RemoteException if some other error occured
    */
-  public RepresentationInfo[] listRepresentations(String doi)
-      throws NoSuchObjectIdException, RemoteException;
+  public ObjectInfo getObjectInfo(String doi) throws NoSuchObjectIdException, RemoteException;
+
+  /** 
+   * Get the list of secondary objects for the specified article. 
+   * 
+   * @param doi the doi of the article
+   * @return the (possibly empty) list of secondary objects; these will be in the same order
+   *         as they (first) appear in the article.
+   * @throws NoSuchArticleIdException if the article does not exist
+   * @throws RemoteException if some other error occured
+   */
+  public ObjectInfo[] listSecondaryObjects(String doi)
+      throws NoSuchArticleIdException, RemoteException;
 
   /**
    * Get list of articles for a given set of categories or authors bracked by specified
@@ -175,16 +186,4 @@ public interface Article extends Remote {
   public String getArticles(String startDate, String endDate,
                             String[] categories, String[] authors,
                             boolean ascending) throws RemoteException;
-
-  /** 
-   * Get the list of secondary objects for the specified article. 
-   * 
-   * @param doi the doi of the article
-   * @return the (possibly empty) list of secondary objects; these will be in the same order
-   *         as they (first) appear in the article.
-   * @throws NoSuchArticleIdException if the article does not exist
-   * @throws RemoteException if some other error occured
-   */
-  public ObjectInfo[] listSecondaryObjects(String doi)
-      throws NoSuchArticleIdException, RemoteException;
 }

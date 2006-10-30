@@ -11,7 +11,9 @@
 package org.topazproject.ws.article;
 
 /**
- * This hold the information returned about a secondary object of an article.
+ * This hold the information returned about an article related object. This may be either the
+ * article itself, in which case certain fields may not apply and will be null, or a secondary
+ * object.
  *
  * <p>This class is a bean.
  *

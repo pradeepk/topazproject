@@ -139,15 +139,15 @@ public class ArticleWebService extends BaseConfigurableService {
   }
 
   /**
-   * List the representations of a doi
+   * Get the object-info of a doi
    * @param doi doi
-   * @return the representations of a doi
+   * @return the object-info of a doi
    * @throws org.topazproject.ws.article.NoSuchObjectIdException NoSuchObjectIdException
    * @throws java.rmi.RemoteException RemoteException
    */
-  public RepresentationInfo[] listRepresentations(final String doi) throws RemoteException, NoSuchObjectIdException {
+  public ObjectInfo getObjectInfo(final String doi) throws RemoteException, NoSuchObjectIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return delegateService.listRepresentations(doi);
+    return delegateService.getObjectInfo(doi);
   }
 
   /**

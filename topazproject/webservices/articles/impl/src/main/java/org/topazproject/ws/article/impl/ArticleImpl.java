@@ -158,7 +158,7 @@ public class ArticleImpl implements Article {
       throws URISyntaxException, IOException, ServiceException {
     URI fedoraURI = new URI(fedoraSvc.getServiceUri());
     fedoraServer = getRemoteFedoraURI(fedoraURI, hostname);
-    
+
     this.fgs = getFgsOperations();
 
     Uploader uploader = new Uploader(uploadSvc);
@@ -182,7 +182,7 @@ public class ArticleImpl implements Article {
       throw new ServiceException("Invalid fedoragsearch URL - " + FGS_URL, mue);
     }
   }
-  
+
   private static URI getRemoteFedoraURI(URI fedoraURI, String hostname) {
     if (!fedoraURI.getHost().equals("localhost"))
       return fedoraURI;         // it's already remote
@@ -248,7 +248,7 @@ public class ArticleImpl implements Article {
         } else {
           apim.modifyObject(DoiUtil.doi2PID(objList[idx]), "D", null, "Deleted object");
         }
-        
+
         // Remove article from full-text index first
         String pid = DoiUtil.doi2PID(objList[idx]);
         String result = fgs.updateIndex("deletePid", pid, FGS_REPO, null, null, null);
@@ -338,16 +338,7 @@ public class ArticleImpl implements Article {
         loc.put(DoiUtil.uri2DOI(rows.getString("prev")), info);
 
         AnswerSet.QueryAnswerSet sqa = rows.getSubQueryResults(2);
-        info.setRepresentations(parseRepresenations(sqa));
-
-        sqa.beforeFirst();
-        while (sqa.next()) {
-          String pred = sqa.getString("p");
-          if (pred.equals(ItqlHelper.DC_URI + "title"))
-            info.setTitle(sqa.getString("o"));
-          if (pred.equals(ItqlHelper.DC_URI + "description"))
-            info.setDescription(sqa.getString("o"));
-        }
+        parseObjectInfo(sqa, info);
       }
 
       List infos = new ArrayList();
@@ -553,12 +544,11 @@ public class ArticleImpl implements Article {
     }
   }
 
-  public RepresentationInfo[] listRepresentations(String doi)
-      throws NoSuchObjectIdException, RemoteException {
+  public ObjectInfo getObjectInfo(String doi) throws NoSuchObjectIdException, RemoteException {
     if (doi == null)
       throw new NullPointerException("doi may not be null");
 
-    checkAccess(pep.LIST_REPRESENTATIONS, doi);
+    checkAccess(pep.GET_OBJECT_INFO, doi);
 
     String subj = DoiUtil.doi2URI(doi);
     ItqlHelper.validateUri(subj, "doi");
@@ -574,29 +564,38 @@ public class ArticleImpl implements Article {
         throw new NoSuchObjectIdException(doi);
       info.beforeFirst();
 
-      return parseRepresenations(info);
+      ObjectInfo res = new ObjectInfo();
+      res.setDoi(doi);
+      parseObjectInfo(info, res);
+
+      return res;
     } catch (AnswerException ae) {
       throw new RemoteException("Error querying RDF", ae);
     }
   }
 
-  private RepresentationInfo[] parseRepresenations(AnswerSet.QueryAnswerSet info)
+  private void parseObjectInfo(AnswerSet.QueryAnswerSet info, ObjectInfo oi)
       throws AnswerException {
     int predCol = info.indexOf("p");
     int objCol  = info.indexOf("o");
 
     List reps = new ArrayList();
+
     while (info.next()) {
       String pred = info.getString(predCol);
       if (pred.equals(ItqlHelper.TOPAZ_URI + "hasRepresentation"))
         reps.add(info.getString(objCol));
+      else if (pred.equals(ItqlHelper.DC_URI + "title"))
+        oi.setTitle(info.getString("o"));
+      else if (pred.equals(ItqlHelper.DC_URI + "description"))
+        oi.setDescription(info.getString("o"));
     }
 
-    RepresentationInfo[] res = new RepresentationInfo[reps.size()];
+    RepresentationInfo[] ri = new RepresentationInfo[reps.size()];
     for (int idx = 0; idx < reps.size(); idx++) {
-      res[idx] = new RepresentationInfo();
-      res[idx].setName((String) reps.get(idx));
-      res[idx].setSize(-1);
+      ri[idx] = new RepresentationInfo();
+      ri[idx].setName((String) reps.get(idx));
+      ri[idx].setSize(-1);
     }
 
     info.beforeFirst();
@@ -606,17 +605,17 @@ public class ArticleImpl implements Article {
       if (pred.endsWith("-objectSize")) {
         int idx = reps.indexOf(pred.substring(ItqlHelper.TOPAZ_URI.length(), pred.length() - 11));
         if (idx >= 0)
-          res[idx].setSize(Integer.parseInt(info.getString(objCol)));
+          ri[idx].setSize(Integer.parseInt(info.getString(objCol)));
       }
 
       if (pred.endsWith("-contentType")) {
         int idx = reps.indexOf(pred.substring(ItqlHelper.TOPAZ_URI.length(), pred.length() - 12));
         if (idx >= 0)
-          res[idx].setContentType(info.getString(objCol));
+          ri[idx].setContentType(info.getString(objCol));
       }
     }
 
-    return res;
+    oi.setRepresentations(ri);
   }
 
   private void checkAccess(String action, String doi) {

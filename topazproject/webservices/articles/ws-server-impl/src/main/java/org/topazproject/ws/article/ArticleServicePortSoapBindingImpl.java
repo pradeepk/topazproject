@@ -105,11 +105,18 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   }
 
   /**
-   * @see org.topazproject.ws.article.Article#listRepresentations
+   * @see org.topazproject.ws.article.Article#getObjectInfo
    */
-  public RepresentationInfo[] listRepresentations(String doi)
-      throws NoSuchObjectIdException, RemoteException {
-    return impl.listRepresentations(doi);
+  public ObjectInfo getObjectInfo(String doi) throws NoSuchObjectIdException, RemoteException {
+    return impl.getObjectInfo(doi);
+  }
+
+  /**
+   * @see org.topazproject.ws.article.Article#listSecondaryObjects
+   */
+  public ObjectInfo[] listSecondaryObjects(String doi)
+      throws NoSuchArticleIdException, RemoteException {
+    return impl.listSecondaryObjects(doi);
   }
 
   /**
@@ -119,14 +126,6 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
                             String[] categories, String[] authors,
                             boolean ascending) throws RemoteException {
     return impl.getArticles(startDate, endDate, categories, authors, ascending);
-  }
-
-  /**
-   * @see org.topazproject.ws.article.Article#listSecondaryObjects
-   */
-  public ObjectInfo[] listSecondaryObjects(String doi)
-      throws NoSuchArticleIdException, RemoteException {
-    return impl.listSecondaryObjects(doi);
   }
 
   private static class WSArticlePEP extends ArticlePEP {

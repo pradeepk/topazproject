@@ -33,9 +33,9 @@ public abstract class ArticlePEP extends AbstractSimplePEP implements Article.Pe
                                                            SET_ARTICLE_STATE,
                                                            GET_OBJECT_URL,
                                                            SET_REPRESENTATION,
-                                                           LIST_REPRESENTATIONS,
-                                                           READ_META_DATA,
+                                                           GET_OBJECT_INFO,
                                                            LIST_SEC_OBJECTS,
+                                                           READ_META_DATA,
                                                          };
 
   /** The list of all supported obligations */

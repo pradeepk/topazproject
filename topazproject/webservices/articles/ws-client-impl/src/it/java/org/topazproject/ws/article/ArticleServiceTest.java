@@ -123,18 +123,86 @@ public class ArticleServiceTest extends TestCase {
                gotE.getMessage().indexOf(expMsg) >= 0);
   }
 
-  public void testRepresentations() throws Exception {
+  public void testObjectInfo() throws Exception {
     // some NoSuchObjectIdException tests
     boolean gotE = false;
     try {
-      service.listRepresentations("blah/foo");
+      service.getObjectInfo("blah/foo");
     } catch (NoSuchObjectIdException nsoie) {
       assertEquals("Mismatched id in exception, ", "blah/foo", nsoie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected no-such-object-id exception", gotE);
 
-    gotE = false;
+    // ingest article and test getObjectInfo()
+    URL article = getClass().getResource("/pbio.0020294.zip");
+    String doi = service.ingest(new DataHandler(article));
+    assertEquals("Wrong doi returned,", "10.1371/journal.pbio.0020294", doi);
+
+    ObjectInfo oi = service.getObjectInfo(doi);
+    assertEquals("wrong doi", doi, oi.getDoi());
+    assertEquals("wrong title", "Regulation of Muscle Fiber Type and Running Endurance by PPAR ",
+                 oi.getTitle());
+    assertNotNull("missing description", oi.getDescription());
+
+    RepresentationInfo[] ri = oi.getRepresentations();
+    assertEquals("wrong number of rep-infos", 3, ri.length);
+
+    sort(ri);
+
+    assertEquals("ri-name mismatch", "HTML", ri[0].getName());
+    assertEquals("ri-cont-type mismatch", "text/html", ri[0].getContentType());
+    assertEquals("ri-size mismatch", 51284L, ri[0].getSize());
+
+    assertEquals("ri-name mismatch", "PDF", ri[1].getName());
+    assertEquals("ri-cont-type mismatch", "application/pdf", ri[1].getContentType());
+    assertEquals("ri-size mismatch", 81173L, ri[1].getSize());
+
+    assertEquals("ri-name mismatch", "XML", ri[2].getName());
+    assertEquals("ri-cont-type mismatch", "text/xml", ri[2].getContentType());
+    assertEquals("ri-size mismatch", 65680L, ri[2].getSize());
+
+    // test getObjectInfo on g001
+    String secDoi = doi + ".g001";
+    oi = service.getObjectInfo(secDoi);
+    assertEquals("wrong doi", secDoi, oi.getDoi());
+    assertEquals("wrong title", "Figure 1", oi.getTitle());
+    assertNotNull("missing description", oi.getDescription());
+
+    ri = oi.getRepresentations();
+    assertEquals("wrong number of rep-infos", 2, ri.length);
+
+    sort(ri);
+
+    assertEquals("ri-name mismatch", "PNG", ri[0].getName());
+    assertEquals("ri-cont-type mismatch", "image/png", ri[0].getContentType());
+    assertEquals("ri-size mismatch", 52422L, ri[0].getSize());
+
+    assertEquals("ri-name mismatch", "TIF", ri[1].getName());
+    assertEquals("ri-cont-type mismatch", "image/tiff", ri[1].getContentType());
+    assertEquals("ri-size mismatch", 120432L, ri[1].getSize());
+
+    // test getObjectInfo on sv001
+    secDoi = doi + ".sv001";
+    oi = service.getObjectInfo(secDoi);
+    assertEquals("wrong doi", secDoi, oi.getDoi());
+    assertEquals("wrong title", "Video S1", oi.getTitle());
+    assertNotNull("missing description", oi.getDescription());
+
+    ri = oi.getRepresentations();
+    assertEquals("wrong number of rep-infos", 1, ri.length);
+
+    assertEquals("ri-name mismatch", "MOV", ri[0].getName());
+    assertEquals("ri-cont-type mismatch", "video/quicktime", ri[0].getContentType());
+    assertEquals("ri-size mismatch", 0L, ri[0].getSize());
+
+    // clean up
+    service.delete(doi, true);
+  }
+
+  public void testRepresentations() throws Exception {
+    // some NoSuchObjectIdException tests
+    boolean gotE = false;
     try {
       service.setRepresentation("blah/foo", "bar",
                                 new DataHandler(new StringDataSource("Some random text")));
@@ -144,12 +212,18 @@ public class ArticleServiceTest extends TestCase {
     }
     assertTrue("Failed to get expected no-such-object-id exception", gotE);
 
-    // ingest article and test listRepresentations()
+    // ingest article and test getObjectInfo()
     URL article = getClass().getResource("/pbio.0020294.zip");
     String doi = service.ingest(new DataHandler(article));
     assertEquals("Wrong doi returned,", "10.1371/journal.pbio.0020294", doi);
 
-    RepresentationInfo[] ri = service.listRepresentations(doi);
+    ObjectInfo oi = service.getObjectInfo(doi);
+    assertEquals("wrong doi", doi, oi.getDoi());
+    assertEquals("wrong title", "Regulation of Muscle Fiber Type and Running Endurance by PPAR ",
+                 oi.getTitle());
+    assertNotNull("missing description", oi.getDescription());
+
+    RepresentationInfo[] ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 3, ri.length);
 
     sort(ri);
@@ -170,7 +244,8 @@ public class ArticleServiceTest extends TestCase {
     service.setRepresentation(doi, "TXT",
                               new DataHandler(new StringDataSource("The plain text")));
 
-    ri = service.listRepresentations(doi);
+    oi = service.getObjectInfo(doi);
+    ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 4, ri.length);
 
     sort(ri);
@@ -195,7 +270,8 @@ public class ArticleServiceTest extends TestCase {
     service.setRepresentation(doi, "TXT",
                           new DataHandler(new StringDataSource("The corrected text", "text/foo")));
 
-    ri = service.listRepresentations(doi);
+    oi = service.getObjectInfo(doi);
+    ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 4, ri.length);
 
     sort(ri);
@@ -219,7 +295,8 @@ public class ArticleServiceTest extends TestCase {
     // remove a Representation
     service.setRepresentation(doi, "TXT", null);
 
-    ri = service.listRepresentations(doi);
+    oi = service.getObjectInfo(doi);
+    ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 3, ri.length);
 
     sort(ri);
@@ -239,7 +316,8 @@ public class ArticleServiceTest extends TestCase {
     // remove a non-existent Representation
     service.setRepresentation(doi, "TXT", null);
 
-    ri = service.listRepresentations(doi);
+    oi = service.getObjectInfo(doi);
+    ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 3, ri.length);
 
     sort(ri);
