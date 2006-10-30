@@ -62,6 +62,7 @@ public abstract class ProfilesPEP extends AbstractSimplePEP implements Profiles.
                                                            GET_INTERESTS_TEXT,
                                                            GET_RESEARCH_AREAS_TEXT,
                                                            SET_PROFILE,
+                                                           FIND_USERS_BY_PROF,
                                                          };
 
   /** The list of all supported obligations */

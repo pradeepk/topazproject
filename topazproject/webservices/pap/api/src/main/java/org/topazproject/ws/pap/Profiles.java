@@ -89,6 +89,9 @@ public interface Profiles extends Remote {
 
     /** The action that represents a set-profile operation in XACML policies: {@value}. */
     public static final String SET_PROFILE = "profiles:setProfile";
+
+    /** The action that represents a find-users-by-profile operation in XACML policies: {@value}. */
+    public static final String FIND_USERS_BY_PROF = "profiles:findUsersByProfile";
   }
 
   /** 
@@ -112,4 +115,17 @@ public interface Profiles extends Remote {
    */
   public void setProfile(String userId, UserProfile profile)
       throws NoSuchUserIdException, RemoteException;
+
+  /** 
+   * Find a user by information from their profile. This is uses a query-by-example approach.
+   * 
+   * @param templates the templates to use for matching. For a template to match, all non-null
+   *                  fields in the template must match exactly, and all null fields are ignored.
+   *                  In boolean terms, the fields are AND'd and the templates are OR'd.
+   * @return the list user-ids of users whose profile matches one of the templates; this will be the
+   *         empty list if no matches are found. The list is filtered so that only those users are
+   *         returned for whom the current user has read-permission on all non-null template fields.
+   * @throws RemoteException if some error occured
+   */
+  public String[] findUsersByProfile(UserProfile[] templates) throws RemoteException;
 }

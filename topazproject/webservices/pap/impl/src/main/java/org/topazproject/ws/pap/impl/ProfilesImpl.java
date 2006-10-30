@@ -16,8 +16,10 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.axis.types.NonNegativeInteger;
@@ -35,6 +37,7 @@ import org.topazproject.common.impl.TopazContextListener;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.fedora.client.APIMStubFactory;
 import org.topazproject.fedora.client.FedoraAPIM;
+import org.topazproject.mulgara.itql.AnswerSet;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
@@ -67,7 +70,6 @@ public class ProfilesImpl implements Profiles {
   private static final String USER_MODEL     = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String IDS_NS         = "topaz.ids";
   private static final String PROF_PATH_PFX  = "profile";
-  private static final String PUBLIC_READ    = "";
 
   private static final Map    aliases;
 
@@ -98,6 +100,15 @@ public class ProfilesImpl implements Profiles {
       ("select $userId from ${USER_MODEL} where " +
        "  $userId <rdf:type> <foaf:OnlineAccount> and $userId <tucana:is> <${userId}>;").
       replaceAll("\\Q${USER_MODEL}", USER_MODEL);
+
+  private static final String ITQL_FIND_USER_BY_PROF_PRE =
+      ("select $userId $tmpl from ${MODEL} where " +
+       "$userId <rdf:type> <foaf:OnlineAccount> in ${USER_MODEL} and " +
+       "    $profId <rdf:type> <foaf:Person> and " +
+       "    $profId <foaf:holdsAccount> $userId and (").
+      replaceAll("\\Q${MODEL}", MODEL).replaceAll("\\Q${USER_MODEL}", USER_MODEL);
+
+  private static final String ITQL_FIND_USER_BY_PROF_POST = ") limit 100;";
 
   private final TopazContext ctx;
   private final ProfilesPEP pep;
@@ -292,6 +303,174 @@ public class ProfilesImpl implements Profiles {
       if (txn != null)
         itql.rollbackTxn(txn);
     }
+  }
+
+  public String[] findUsersByProfile(UserProfile[] templates) throws RemoteException {
+    pep.checkAccess(pep.FIND_USERS_BY_PROF, URI.create("dummy:dummy"));
+
+    if (templates == null || templates.length == 0)
+      return new String[0];
+
+    if (log.isDebugEnabled())
+      log.debug("find users by profile");
+
+    StringBuffer qry = new StringBuffer(ITQL_FIND_USER_BY_PROF_PRE.length() +
+                                        templates.length * 100 +
+                                        ITQL_FIND_USER_BY_PROF_POST.length());
+    qry.append(ITQL_FIND_USER_BY_PROF_PRE);
+
+    boolean haveTempl = false;
+    int     matchAll  = -1;
+    for (int idx = 0; idx < templates.length; idx++) {
+      if (templates[idx] == null)
+        continue;
+      haveTempl = true;
+
+      qry.append("(");
+      if (!templateToConstraints(templates[idx], idx, qry)) {
+        matchAll = idx;
+        break;
+      }
+      qry.append(") or ");
+    }
+
+    if (!haveTempl)
+      return new String[0];
+
+    if (matchAll >= 0) {
+      // deal with special case of empty template to avoid kowari bug and optimize this case
+      qry.setLength(ITQL_FIND_USER_BY_PROF_PRE.length());
+      qry.append("$tmpl <tucana:is> '").append(matchAll).append("'");
+    } else
+      // remove trailing ' or '
+      qry.setLength(qry.length() - 4);
+
+    qry.append(ITQL_FIND_USER_BY_PROF_POST);
+
+    try {
+      AnswerSet ans = new AnswerSet(ctx.getItqlHelper().doQuery(qry.toString()));
+      ans.next();
+      AnswerSet.QueryAnswerSet rows = ans.getQueryResults();
+
+      Set ids = new HashSet();
+
+      while (rows.next()) {
+        String userId = rows.getString("userId");
+        String tmpl   = rows.getString("tmpl");
+        if (matchAll >= 0 || checkQueryAccess(userId, templates[Integer.parseInt(tmpl)]))
+          ids.add(userId);
+      }
+
+      return (String[]) ids.toArray(new String[ids.size()]);
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error looking up users by profile", ae);
+    }
+  }
+
+  protected boolean templateToConstraints(UserProfile templ, int idx, StringBuffer sb) {
+    int startLen = sb.length();
+
+    addValConstraint(templ.getDisplayName(), "topaz:displayName", sb);
+    addValConstraint(templ.getRealName(), "foaf:name", sb);
+
+    addValConstraint(templ.getGivenNames(), "foaf:givenname", sb);
+    addValConstraint(templ.getSurnames(), "foaf:surname", sb);
+    addValConstraint(templ.getTitle(), "foaf:title", sb);
+    addValConstraint(templ.getGender(), "foaf:gender", sb);
+    addValConstraint(templ.getBiography(), "bio:olb", sb);
+    addValConstraint(templ.getPositionType(), "topaz:positionType", sb);
+    addValConstraint(templ.getOrganizationName(), "topaz:organizationName", sb);
+    addValConstraint(templ.getOrganizationType(), "topaz:organizationType", sb);
+    addValConstraint(templ.getPostalAddress(), "topaz:postalAddress", sb);
+    addValConstraint(templ.getCity(), "addr:town", sb);
+    addValConstraint(templ.getCountry(), "addr:country", sb);
+
+    String email = templ.getEmail();
+    if (email != null)
+      addRefConstraint("mailto:" + email, "foaf:mbox", sb);
+
+    addRefConstraint(templ.getHomePage(), "foaf:homepage", sb);
+    addRefConstraint(templ.getWeblog(), "foaf:weblog", sb);
+    addRefConstraint(templ.getPublications(), "foaf:publications", sb);
+
+    String[] interests = templ.getInterests();
+    for (int idx2 = 0; interests != null && idx2 < interests.length; idx2++)
+      addRefConstraint(interests[idx2], "foaf:interest", sb);
+
+    addValConstraint(templ.getBiographyText(), "topaz:bio", sb);
+    addValConstraint(templ.getInterestsText(), "topaz:interests", sb);
+    addValConstraint(templ.getResearchAreasText(), "topaz:researchAreas", sb);
+
+    int endLen = sb.length();
+
+    sb.append("$tmpl <tucana:is> '").append(idx).append("'");
+
+    return (endLen > startLen);
+  }
+
+  protected void addValConstraint(String field, String pred, StringBuffer sb) {
+    if (field != null)
+      sb.append("$profId <").append(pred).append("> '").
+         append(ItqlHelper.escapeLiteral(field)).append("' and ");
+  }
+
+  protected void addRefConstraint(String field, String pred, StringBuffer sb) {
+    if (field != null)
+      sb.append("$profId <").append(pred).append("> <").
+         append(ItqlHelper.validateUri(field, pred)).append("> and ");
+  }
+
+  protected boolean checkQueryAccess(String userId, UserProfile templ) {
+    try {
+      if (templ.getDisplayName() != null && !checkAccess(userId, pep.GET_DISP_NAME))
+        return false;
+      if (templ.getRealName() != null && !checkAccess(userId, pep.GET_REAL_NAME))
+        return false;
+      if (templ.getGivenNames() != null && !checkAccess(userId, pep.GET_GIVEN_NAMES))
+        return false;
+      if (templ.getSurnames() != null && !checkAccess(userId, pep.GET_SURNAMES))
+        return false;
+      if (templ.getTitle() != null && !checkAccess(userId, pep.GET_TITLE))
+        return false;
+      if (templ.getGender() != null && !checkAccess(userId, pep.GET_GENDER))
+        return false;
+      if (templ.getPositionType() != null && !checkAccess(userId, pep.GET_POSITION_TYPE))
+        return false;
+      if (templ.getOrganizationName() != null && !checkAccess(userId, pep.GET_ORGANIZATION_NAME))
+        return false;
+      if (templ.getOrganizationType() != null && !checkAccess(userId, pep.GET_ORGANIZATION_TYPE))
+        return false;
+      if (templ.getPostalAddress() != null && !checkAccess(userId, pep.GET_POSTAL_ADDRESS))
+        return false;
+      if (templ.getCity() != null && !checkAccess(userId, pep.GET_CITY))
+        return false;
+      if (templ.getCountry() != null && !checkAccess(userId, pep.GET_COUNTRY))
+        return false;
+      if (templ.getEmail() != null && !checkAccess(userId, pep.GET_EMAIL))
+        return false;
+      if (templ.getHomePage() != null && !checkAccess(userId, pep.GET_HOME_PAGE))
+        return false;
+      if (templ.getWeblog() != null && !checkAccess(userId, pep.GET_WEBLOG))
+        return false;
+      if (templ.getBiography() != null && !checkAccess(userId, pep.GET_BIOGRAPHY))
+        return false;
+      if (templ.getInterests() != null && !checkAccess(userId, pep.GET_INTERESTS))
+        return false;
+      if (templ.getPublications() != null && !checkAccess(userId, pep.GET_PUBLICATIONS))
+        return false;
+      if (templ.getBiographyText() != null && !checkAccess(userId, pep.GET_BIOGRAPHY_TEXT))
+        return false;
+      if (templ.getInterestsText() != null && !checkAccess(userId, pep.GET_INTERESTS_TEXT))
+        return false;
+      if (templ.getResearchAreasText() != null && !checkAccess(userId, pep.GET_RESEARCH_AREAS_TEXT))
+        return false;
+    } catch (NoSuchUserIdException nsuie) {
+      // can't happen
+      log.warn("Unexpected missing user after query", nsuie);
+      return false;
+    }
+
+    return true;
   }
 
   /**

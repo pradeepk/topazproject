@@ -79,6 +79,13 @@ public class ProfilesServicePortSoapBindingImpl implements Profiles, ServiceLife
     impl.setProfile(userId, profile);
   }
 
+  /**
+   * @see org.topazproject.ws.pap.Profiles#findUsersByProfile
+   */
+  public String[] findUsersByProfile(UserProfile[] templates) throws RemoteException {
+    return impl.findUsersByProfile(templates);
+  }
+
   private static class WSProfilesPEP extends ProfilesPEP {
     static {
       init(WSProfilesPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
