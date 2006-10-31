@@ -141,7 +141,8 @@ public class ArticleServiceTest extends TestCase {
 
     ObjectInfo oi = service.getObjectInfo(doi);
     assertEquals("wrong doi", doi, oi.getDoi());
-    assertEquals("wrong title", "Regulation of Muscle Fiber Type and Running Endurance by PPAR ",
+    assertEquals("wrong title",
+                 "Regulation of Muscle Fiber Type and Running Endurance by PPAR\u00A0",
                  oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
     assertNull("unexpected context-element", oi.getContextElement());
