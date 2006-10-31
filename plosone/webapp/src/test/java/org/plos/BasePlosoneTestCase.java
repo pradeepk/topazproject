@@ -3,45 +3,39 @@
 */
 package org.plos;
 
-import org.plos.annotation.service.AnnotationService;
-
-import org.plos.annotation.action.CreateAnnotationAction;
-import org.plos.annotation.action.DeleteAnnotationAction;
-import org.plos.annotation.action.ListAnnotationAction;
-import org.plos.annotation.action.ListReplyAction;
-import org.plos.annotation.action.DeleteReplyAction;
-import org.plos.annotation.action.CreateReplyAction;
 import org.plos.annotation.action.BodyFetchAction;
-import org.plos.annotation.action.GetAnnotationAction;
-import org.plos.annotation.action.GetReplyAction;
+import org.plos.annotation.action.CreateAnnotationAction;
 import org.plos.annotation.action.CreateFlagAction;
-import org.plos.annotation.action.GetFlagAction;
+import org.plos.annotation.action.CreateReplyAction;
+import org.plos.annotation.action.DeleteAnnotationAction;
 import org.plos.annotation.action.DeleteFlagAction;
+import org.plos.annotation.action.DeleteReplyAction;
+import org.plos.annotation.action.GetAnnotationAction;
+import org.plos.annotation.action.GetFlagAction;
+import org.plos.annotation.action.GetReplyAction;
+import org.plos.annotation.action.ListAnnotationAction;
+import org.plos.annotation.action.ListFlagAction;
+import org.plos.annotation.action.ListReplyAction;
 import org.plos.annotation.action.UnflagAnnotationAction;
-
-import org.plos.article.service.ArticleWebService;
-import org.plos.article.service.FetchArticleService;
-
+import org.plos.annotation.service.AnnotationService;
 import org.plos.article.action.FetchArticleAction;
 import org.plos.article.action.FetchObjectAction;
 import org.plos.article.action.SecondaryObjectAction;
-
+import org.plos.article.service.ArticleWebService;
+import org.plos.article.service.FetchArticleService;
 import org.plos.permission.service.PermissionWebService;
-
 import org.plos.user.action.CreateUserAction;
 import org.plos.user.action.DisplayUserAction;
-
 import org.plos.user.service.PreferencesWebService;
 import org.plos.user.service.ProfileWebService;
 import org.plos.user.service.UserService;
 import org.plos.user.service.UserWebService;
-
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 import javax.xml.rpc.ServiceException;
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.io.File;
 
 public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpringContextTests {
   private FetchArticleAction fetchArticleAction;
@@ -71,6 +65,7 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private UserWebService userWebService;
   private DeleteFlagAction deleteFlagAction;
   private UnflagAnnotationAction unflagAnnotationAction;
+  private ListFlagAction listFlagAction;
 
   protected String[] getConfigLocations() {
     return new String[]{"testApplicationContext.xml"};
@@ -367,5 +362,15 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   /** Set the unflagAnnotationAction */
   public void setUnflagAnnotationAction(final UnflagAnnotationAction unflagAnnotationAction) {
     this.unflagAnnotationAction = unflagAnnotationAction;
+  }
+
+  /** Get the listFlagAction */
+  public ListFlagAction getListFlagAction() {
+    return listFlagAction;
+  }
+
+  /** Set the listFlagAction */
+  public void setListFlagAction(final ListFlagAction listFlagAction) {
+    this.listFlagAction = listFlagAction;
   }
 }

@@ -18,6 +18,8 @@ import org.topazproject.ws.annotation.ReplyInfo;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Used for both annotation and reply services.
@@ -227,6 +229,22 @@ public class AnnotationService extends BaseConfigurableService {
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     }
+  }
+
+  /**
+   * @param target target of the annotation
+   * @throws ApplicationException ApplicationException
+   * @return a list of undeleted flags
+   */
+  public Flag[] listFlags(final String target) throws ApplicationException {
+    final Annotation[] annotations = listAnnotations(target);
+    final Collection<Flag> flagList = new ArrayList<Flag>(annotations.length);
+    for (final Annotation annotation : annotations) {
+      if (!annotation.isDeleted()) {
+        flagList.add(new Flag(annotation));
+      }
+    }
+    return flagList.toArray(new Flag[flagList.size()]);
   }
 
   public void setConverter(final AnnotationConverter converter) {

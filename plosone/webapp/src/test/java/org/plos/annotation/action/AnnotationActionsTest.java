@@ -9,8 +9,8 @@
  */
  package org.plos.annotation.action;
 
-import static com.opensymphony.xwork.Action.SUCCESS;
 import com.opensymphony.xwork.Action;
+import static com.opensymphony.xwork.Action.SUCCESS;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
@@ -22,11 +22,12 @@ import org.plos.annotation.service.Reply;
 import org.plos.permission.service.PermissionWebService;
 import org.topazproject.ws.annotation.Annotations;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
-import java.rmi.RemoteException;
 
 public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static final String target = "http://here.is/viru";
@@ -706,10 +707,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     {
       //Create a flag
-      final CreateFlagAction createFlagAction = getCreateFlagAction(reasonCode, annotationId, flagComment);
-      assertEquals(SUCCESS, createFlagAction.createAnnotationFlag());
-      final String flagAnnotationId = createFlagAction.getAnnotationId();
-      log.debug("Flag comment created with id:" + flagAnnotationId);
+      final String flagId = createFlag(reasonCode, annotationId, flagComment);
 
       //Retrieve a flagged annotation
       final Annotation flaggedAnnotation = retrieveAnnotation(annotationId);
@@ -722,7 +720,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       assertFalse(flaggedAnnotation.isDeleted());
 
       //Retrieve a flag
-      final Flag flag = retrieveFlag(flagAnnotationId);
+      final Flag flag = retrieveFlag(flagId);
       assertEquals(annotationId, flag.getAnnotates());
       assertEquals(flagComment, flag.getComment());
       assertEquals(reasonCode, flag.getReasonCode());
@@ -730,12 +728,12 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
       //Delete a flag
       final DeleteFlagAction deleteFlagAction = getDeleteFlagAction();
-      deleteFlagAction.setFlagId(flagAnnotationId);
+      deleteFlagAction.setFlagId(flagId);
       assertEquals(SUCCESS, deleteFlagAction.execute());
-      log.debug("Flag comment DELETED with id:" + flagAnnotationId);
+      log.debug("Flag comment DELETED with id:" + flagId);
 
       //Retrieve a flag
-      final Flag deletedFlag = retrieveFlag(flagAnnotationId);
+      final Flag deletedFlag = retrieveFlag(flagId);
       assertEquals(annotationId, deletedFlag.getAnnotates());
       assertEquals(reasonCode, deletedFlag.getReasonCode());
       assertTrue(deletedFlag.isDeleted());
@@ -758,7 +756,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       assertTrue(flaggedAnnotationAfterFlagUnflagging.isPublic());
       assertFalse(flaggedAnnotationAfterFlagUnflagging.isFlagged());
       assertFalse(flaggedAnnotationAfterFlagUnflagging.isDeleted());
-      log.debug("Annotation with id:" + flagAnnotationId + " unflagged");
+      log.debug("Annotation with id:" + flagId + " unflagged");
     }
 
     {
@@ -824,8 +822,64 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       assertFalse(flaggedReplyAfterUnflagging.isFlagged());
       assertFalse(flaggedReplyAfterUnflagging.isDeleted());
       log.debug("Reply with id:" + flagAnnotationId + " unflagged");
-
     }
+  }
+
+  public void testListFlags() throws Exception {
+    //cleanup
+    deleteAllAnnotations(target);
+
+    //Create an annotation
+    final String title = "Annotation1";
+    final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
+    createAnnotationAction.setPublic(true);
+    assertEquals(SUCCESS, createAnnotationAction.execute());
+    final String annotationId = createAnnotationAction.getAnnotationId();
+    log.debug("annotation created with id:" + annotationId);
+    assertNotNull(annotationId);
+
+    //Retrieve an annotation
+    final Annotation savedAnnotation = retrieveAnnotation(annotationId);
+    assertEquals(target, savedAnnotation.getAnnotates());
+
+    final String reasonCode = "spam";
+    final String flagComment = "This a resume dumping spammer.";
+
+    final List<String> flagsCreated = new ArrayList<String>();
+
+    //Create a few flags
+    for (int i = 0; i < 3; i++) {
+      final String flagId = createFlag(reasonCode, annotationId, flagComment);
+      flagsCreated.add(flagId);
+    }
+
+    ListFlagAction listFlagAction = getListFlagAction();
+    listFlagAction.setTarget(annotationId);
+    assertEquals(SUCCESS, listFlagAction.execute());
+    assertEquals(flagsCreated.size(), listFlagAction.getFlags().length);
+
+    for (final Iterator it = flagsCreated.iterator(); it.hasNext();) {
+      final String flagId = (String) it.next();
+      final DeleteFlagAction deleteFlagAction = getDeleteFlagAction();
+      deleteFlagAction.setFlagId(flagId);
+      assertEquals(SUCCESS, deleteFlagAction.execute());
+      it.remove();
+    }
+
+    listFlagAction = getListFlagAction();
+    listFlagAction.setTarget(annotationId);
+    assertEquals(SUCCESS, listFlagAction.execute());
+    assertEquals(flagsCreated.size(), listFlagAction.getFlags().length);
+
+    deleteAllAnnotations(annotationId);
+  }
+
+  private String createFlag(final String reasonCode, final String annotationId, final String flagComment) throws Exception {
+    final CreateFlagAction createFlagAction = getCreateFlagAction(reasonCode, annotationId, flagComment);
+    assertEquals(SUCCESS, createFlagAction.createAnnotationFlag());
+    final String flagId = createFlagAction.getAnnotationId();
+    log.debug("Flag comment created with id:" + flagId);
+    return flagId;
   }
 
   private CreateFlagAction getCreateFlagAction(final String reasonCode, final String annotationId, final String flagComment) {
@@ -835,5 +889,4 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     createFlagAction.setComment(flagComment);
     return createFlagAction;
   }
-
 }

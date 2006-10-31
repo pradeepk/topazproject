@@ -48,4 +48,6 @@
 
   <bean class="org.plos.annotation.action.UnflagAnnotationAction" />
 
+  <bean class="org.plos.annotation.action.ListFlagAction" />
+
 </beans>
