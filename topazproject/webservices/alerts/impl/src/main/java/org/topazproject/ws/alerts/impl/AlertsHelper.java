@@ -13,14 +13,9 @@ package org.topazproject.ws.alerts.impl;
 import java.io.StringReader;
 import java.io.ByteArrayOutputStream;
 import java.io.UnsupportedEncodingException;
-import java.io.IOException;
-import java.io.FileWriter;
 
 import java.util.Calendar;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.HashMap;
-import java.util.Map;
 import java.text.SimpleDateFormat;
 import java.text.ParseException;
 
@@ -37,10 +32,7 @@ import org.apache.commons.mail.Email;
 import org.apache.commons.mail.SimpleEmail;
 import org.apache.commons.mail.EmailException;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
-
 import org.topazproject.feed.ArticleFeed;
-import org.topazproject.feed.ArticleFeedData;
 
 /**
  * Collection of helpers we use in AlertsImpl.
@@ -51,23 +43,11 @@ abstract class AlertsHelper {
   private static final String TRANSFORM_RESOURCE = "/email.xsl";
   private static final String SMTP_HOSTNAME = "localhost"; // our smtp relay
   private static final int    SMTP_PORT = 2525;
-  
+
   private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
   private static final Log log = LogFactory.getLog(AlertsImpl.class);
-  
-  private static Transformer transformer;
 
-  private static final String XML_RESPONSE =
-    "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<articles>\n${articles}</articles>\n";
-  private static final String XML_ARTICLE_TAG =
-    "  <article>\n" +
-    "    <uri>${uri}</uri>\n" +
-    "    <title>${title}</title>\n" +
-    "    <description>${description}</description>\n" +
-    "    <date>${date}</date>\n" +
-    "    ${authors}\n" +
-    "    ${categories}\n" +
-    "  </article>\n";
+  private static Transformer transformer;
 
   static {
     try {
@@ -79,7 +59,7 @@ abstract class AlertsHelper {
       log.warn("Unable to create alerts XSL transformer", tce);
     }
   }
-  
+
   /**
    * Get YYYY-MM-DD formatted timestamp from Calendar instance.
    */
@@ -125,7 +105,7 @@ abstract class AlertsHelper {
       return false;
     return true;
   }
-  
+
   /**
    * Transform xml intended for RSS feed into the body of an email.
    *
