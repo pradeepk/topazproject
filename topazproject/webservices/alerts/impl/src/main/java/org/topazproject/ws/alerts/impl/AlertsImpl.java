@@ -103,15 +103,15 @@ public class AlertsImpl implements Alerts {
     " order by $user " +
     " limit ${limit};";
   private static final String GET_USERS_FEED_ITQL =
-    "select $doi $title $description $date from ${ARTICLES} where " +
+    "select $art $title $description $date from ${ARTICLES} where " +
     "  <${userId}> <topaz:hasPreferences> $pref  in ${PREFS} and " +
     "  $pref       <topaz:preference>     $prefn in ${PREFS} and " +
     "  $prefn      <topaz:prefName>       'alertsCategories' in ${PREFS} and " +
     "  $prefn      <topaz:prefValue>      $cat   in ${PREFS} and " +
-    " $doi <dc:title>       $title and " +
-    " $doi <dc:description> $description and " +
-    " $doi <dc_terms:available> $date and " +
-    " $doi <dc:subject>     $cat and " +
+    " $art <dc:title>       $title and " +
+    " $art <dc:description> $description and " +
+    " $art <dc_terms:available> $date and " +
+    " $art <dc:subject>     $cat and " +
     " $date <tucana:before> '${endDate}' in ${XSD} and " +
     " $date <tucana:after>  '${startDate}' in ${XSD};";
   private static final String CLEAN_USER_ITQL =
@@ -238,7 +238,7 @@ public class AlertsImpl implements Alerts {
 
   // See Alerts.java interface
   public boolean sendAlerts(String endDate, int count) {
-    checkAccess(pep.SEND_ALERTS, "");
+    checkAccess(pep.SEND_ALERTS, "dummy:dummy");
     int cnt = 0;
     try {
       Calendar end = Calendar.getInstance();
@@ -270,7 +270,7 @@ public class AlertsImpl implements Alerts {
 
   // See Alerts.java interface
   public boolean sendAllAlerts() {
-    checkAccess(pep.SEND_ALERTS, "");
+    checkAccess(pep.SEND_ALERTS, "dummy:dummy");
     Calendar c = Calendar.getInstance();
     AlertsHelper.rollCalendar(c, -1);
     return this.sendAlerts(c.getTime().toString(), 0);
@@ -469,7 +469,7 @@ public class AlertsImpl implements Alerts {
   /**
    * Get the articles associated with a feed given a query and dates.
    *
-   * The query must return $doi $title $description $date.
+   * The query must return $art $title $description $date.
    *
    * @param startDate is the date to start searching from. If empty, start from begining of time
    * @param endDate is the date to search until. If empty, search until prsent date
@@ -482,13 +482,13 @@ public class AlertsImpl implements Alerts {
       Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
 
       for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
-        String doi = (String)it.next();
+        String art = (String)it.next();
         try {
-          checkAccess(pep.READ_META_DATA, doi);
+          checkAccess(pep.READ_META_DATA, art);
         } catch (SecurityException se) {
-          articles.remove(doi);
+          articles.remove(art);
           if (log.isDebugEnabled())
-            log.debug(doi, se);
+            log.debug(art, se);
         }
       }
 
@@ -502,19 +502,7 @@ public class AlertsImpl implements Alerts {
     }
   }
 
-  protected void checkAccess(String action, String doi) {
-    pep.checkAccess(action, URI.create(pid2URI(doi2PID(doi))));
-  }
-
-  protected static String doi2PID(String doi) {
-    try {
-      return "doi:" + URLEncoder.encode(doi, "UTF-8");
-    } catch (UnsupportedEncodingException uee) {
-      throw new RuntimeException(uee);          // shouldn't happen
-    }
-  }
-
-  protected static String pid2URI(String pid) {
-    return "info:fedora/" + pid;
+  protected void checkAccess(String action, String uri) {
+    pep.checkAccess(action, URI.create(uri));
   }
 }

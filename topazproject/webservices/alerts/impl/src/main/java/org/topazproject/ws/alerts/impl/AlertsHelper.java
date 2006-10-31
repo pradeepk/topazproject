@@ -61,7 +61,7 @@ abstract class AlertsHelper {
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<articles>\n${articles}</articles>\n";
   private static final String XML_ARTICLE_TAG =
     "  <article>\n" +
-    "    <doi>${doi}</doi>\n" +
+    "    <uri>${uri}</uri>\n" +
     "    <title>${title}</title>\n" +
     "    <description>${description}</description>\n" +
     "    <date>${date}</date>\n" +

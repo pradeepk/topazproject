@@ -76,10 +76,10 @@ public class AlertsServiceTest extends TestCase {
   protected static final String USER_SVC_URL =
     "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort";
   protected static final String[][] TEST_ARTICLES = {
-    { "10.1371/journal.pbio.0020294", "/pbio.0020294.zip" },
-    { "10.1371/journal.pbio.0020042", "/pbio.0020042.zip" },
-    { "10.1371/journal.pbio.0020317", "/pbio.0020317.zip" },
-    { "10.1371/journal.pbio.0020382", "/pbio.0020382.zip" },
+    { "info:doi/10.1371/journal.pbio.0020294", "/pbio.0020294.zip" },
+    { "info:doi/10.1371/journal.pbio.0020042", "/pbio.0020042.zip" },
+    { "info:doi/10.1371/journal.pbio.0020317", "/pbio.0020317.zip" },
+    { "info:doi/10.1371/journal.pbio.0020382", "/pbio.0020382.zip" },
   };
 
   public AlertsServiceTest(String testName) {
@@ -140,20 +140,20 @@ public class AlertsServiceTest extends TestCase {
     // TODO: Do I need to delete preferences?
   }
 
-  protected void ingestArticle(String doi, String resource)
+  protected void ingestArticle(String uri, String resource)
       throws RemoteException, DuplicateArticleIdException, IngestException,
              NoSuchArticleIdException {
-    log.info("ingesting article " + doi + " : " + resource);
-    deleteArticle(doi);
+    log.info("ingesting article " + uri + " : " + resource);
+    deleteArticle(uri);
     URL article = getClass().getResource(resource);
-    assertEquals("Wrong doi returned,", doi, articleService.ingest(new DataHandler(article)));
-    log.info("ingested article " + doi);
+    assertEquals("Wrong uri returned,", uri, articleService.ingest(new DataHandler(article)));
+    log.info("ingested article " + uri);
   }
 
-  protected void deleteArticle(String doi) throws RemoteException, NoSuchArticleIdException {
+  protected void deleteArticle(String uri) throws RemoteException, NoSuchArticleIdException {
     try {
-      articleService.delete(doi, true);
-      log.info("deleted article " + doi);
+      articleService.delete(uri, true);
+      log.info("deleted article " + uri);
     } catch (Exception nsie) {
       // so what
       //log.debug(nsie);
