@@ -18,14 +18,14 @@ import java.util.Date;
  * @author Eric Brown
  */
 public class ArticleFeedData {
-  String   doi;
+  String   uri;
   String   title;
   String   description;
   Date     date;
   List     authors;
   List     categories;
-  
+
   public String toString() {
-    return "ArticleData[" + this.doi + ":" + this.date + "]";
+    return "ArticleData[" + this.uri + ":" + this.date + "]";
   }
 }

@@ -19,7 +19,7 @@ import java.util.ArrayList;
  * Fetch article action. 
  */
 public class FetchArticleAction extends BaseActionSupport {
-  private String articleDOI;
+  private String articleURI;
   private static final int INITIAL_TRANSFORMED_FILE_SIZE = 100000;
 
   private ArrayList<String> messages = new ArrayList<String>();
@@ -30,10 +30,10 @@ public class FetchArticleAction extends BaseActionSupport {
   public String execute() throws Exception {
     try {
       final StringWriter stringWriter = new StringWriter(INITIAL_TRANSFORMED_FILE_SIZE);
-      fetchArticleService.getDOIAsHTML(articleDOI, stringWriter);
+      fetchArticleService.getURIAsHTML(articleURI, stringWriter);
       setTransformedArticle(stringWriter.toString());
     } catch (NoSuchIdException e) {
-      messages.add("No article found for id: " + articleDOI);
+      messages.add("No article found for id: " + articleURI);
       log.warn(e, e);
       return ERROR;
     } catch (RemoteException e) {
@@ -68,19 +68,19 @@ public class FetchArticleAction extends BaseActionSupport {
   }
 
   /**
-   * @return articleDOI
+   * @return articleURI
    */
-  @RequiredStringValidator(message = "Article DOI is required.")
-  public String getArticleDOI() {
-    return articleDOI;
+  @RequiredStringValidator(message = "Article URI is required.")
+  public String getArticleURI() {
+    return articleURI;
   }
 
   /**
-   * Set articleDOI to fetch the article for.
-   * @param articleDOI articleDOI
+   * Set articleURI to fetch the article for.
+   * @param articleURI articleURI
    */
-  public void setArticleDOI(final String articleDOI) {
-    this.articleDOI = articleDOI;
+  public void setArticleURI(final String articleURI) {
+    this.articleURI = articleURI;
   }
 
   public ArrayList<String> getMessages() {

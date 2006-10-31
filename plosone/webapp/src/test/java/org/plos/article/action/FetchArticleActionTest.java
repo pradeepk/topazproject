@@ -31,25 +31,25 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
 
   public void testShouldReturnTransformedArticle() throws Exception {
     final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
-    String resourceDOI = "10.1371/journal.pone.0000008";
+    String resourceURI = "info:doi/10.1371/journal.pone.0000008";
 
 //    final String resourceToIngest = BASE_TEST_PATH  + "pone.0000011.zip";
-//    String resourceDOI = "10.1371/journal.pone.0000011";
+//    String resourceURI = "info:doi/10.1371/journal.pone.0000011";
 
     try {
-      getArticleWebService().delete(resourceDOI, true);
+      getArticleWebService().delete(resourceURI, true);
     } catch (NoSuchIdException nsie) {
       // ignore - this just means there wasn't any stale stuff left
     }
 
     final URL article = getAsUrl(resourceToIngest);
-    String doi = getArticleWebService().ingest(article);
-    assertEquals(doi, resourceDOI);
+    String uri = getArticleWebService().ingest(article);
+    assertEquals(uri, resourceURI);
 
-//    resourceDOI = "10.1371/journal.pone.0000011";
+//    resourceURI = "info:doi/10.1371/journal.pone.0000011";
 
     final FetchArticleAction fetchArticleAction = getFetchArticleAction();
-    fetchArticleAction.setArticleDOI(resourceDOI);
+    fetchArticleAction.setArticleURI(resourceURI);
 
     String transformedArticle = "";
     for (int i = 0; i < 3; i++) {
@@ -72,8 +72,8 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
   }
 
   public void testShouldInjestArticle() throws Exception {
-    doIngestTest("10.1371/journal.pone.0000008", BASE_TEST_PATH  + "pone.0000008.zip");
-//    doIngestTest("10.1371/journal.pone.0000011", BASE_TEST_PATH  + "pone.0000011.zip");
+    doIngestTest("info:doi/10.1371/journal.pone.0000008", BASE_TEST_PATH  + "pone.0000008.zip");
+//    doIngestTest("info:doi/10.1371/journal.pone.0000011", BASE_TEST_PATH  + "pone.0000011.zip");
   }
 
   public void testListArticles() throws MalformedURLException, ServiceException, ApplicationException {
@@ -83,30 +83,30 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     }
   }
 
-  private void doIngestTest(String resourceDOI, String resourceToIngest) throws Exception {
+  private void doIngestTest(String resourceURI, String resourceToIngest) throws Exception {
     try {
-      getArticleWebService().delete(resourceDOI, true);
+      getArticleWebService().delete(resourceURI, true);
     } catch (NoSuchIdException nsie) {
       // ignore - this just means there wasn't any stale stuff left
     }
 
     final URL article = getAsUrl(resourceToIngest);
 
-    String doi = getArticleWebService().ingest(article);
-    assertEquals(doi, resourceDOI);
+    String uri = getArticleWebService().ingest(article);
+    assertEquals(uri, resourceURI);
 
-    assertNotNull(getArticleWebService().getObjectURL(doi, "XML"));
+    assertNotNull(getArticleWebService().getObjectURL(uri, "XML"));
 
     try {
-      doi = getArticleWebService().ingest(new DataHandler(article));
+      uri = getArticleWebService().ingest(new DataHandler(article));
       fail("Failed to get expected duplicate-id exception");
     } catch (DuplicateIdException die) {
     }
 
-    getArticleWebService().delete(doi, true);
+    getArticleWebService().delete(uri, true);
 
     try {
-      getArticleWebService().delete(doi, true);
+      getArticleWebService().delete(uri, true);
       fail("Failed to get NoSuchIdException");
     } catch (NoSuchIdException nsie) {
     }

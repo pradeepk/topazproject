@@ -29,55 +29,55 @@ public class FetchObjectTest extends BasePlosoneTestCase {
     final ArticleWebService service = getArticleWebService();
 
     final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
-    final String doi = "10.1371/journal.pone.0000008";
+    final String uri = "info:doi/10.1371/journal.pone.0000008";
 
-    deleteAndIngestArticle(resourceToIngest, doi);
+    deleteAndIngestArticle(resourceToIngest, uri);
 
-    final ObjectInfo oi = service.getObjectInfo(doi);
+    final ObjectInfo oi = service.getObjectInfo(uri);
     final RepresentationInfo[] ri = oi.getRepresentations();
     assertEquals(2, ri.length);
 
     final FetchObjectAction fetchObjectAction = getFetchObjectAction();
-    fetchObjectAction.setDoi(doi);
+    fetchObjectAction.setUri(uri);
     fetchObjectAction.setRepresentation("XML");
     assertEquals(Action.SUCCESS, fetchObjectAction.execute());
 
-    final SecondaryObject[] so = service.listSecondaryObjects(doi);
+    final SecondaryObject[] so = service.listSecondaryObjects(uri);
     assertEquals(8, so.length);
 
-    final RepresentationInfo[] riForG001 = service.getObjectInfo(doi + ".g001").getRepresentations();
+    final RepresentationInfo[] riForG001 = service.getObjectInfo(uri + ".g001").getRepresentations();
     assertEquals(1, riForG001.length);
   }
 
   public void testSecondaryDocInfo() throws Exception {
     final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
-    final String doi = "10.1371/journal.pone.0000008";
+    final String uri = "info:doi/10.1371/journal.pone.0000008";
 
-    deleteAndIngestArticle(resourceToIngest, doi);
+    deleteAndIngestArticle(resourceToIngest, uri);
 
     final SecondaryObjectAction secondaryObjectAction = getSecondaryObjectAction();
-    secondaryObjectAction.setDoi(doi);
+    secondaryObjectAction.setUri(uri);
     assertEquals(Action.SUCCESS, secondaryObjectAction.execute());
 
     final SecondaryObject[] oi = secondaryObjectAction.getSecondaryObjects();
     assertEquals(8, oi.length);
 
     for (final SecondaryObject objectInfo : oi) {
-      assertNotNull(objectInfo.getDoi());
+      assertNotNull(objectInfo.getUri());
     }
   }
 
-  private void deleteAndIngestArticle(final String resourceToIngest, final String doi) throws Exception {
+  private void deleteAndIngestArticle(final String resourceToIngest, final String uri) throws Exception {
     final URL article = getAsUrl(resourceToIngest);
     final ArticleWebService service = getArticleWebService();
 
     try {
-      service.delete(doi, true);
+      service.delete(uri, true);
     } catch(NoSuchIdException ex) {
       //means that this article is not ingested yet, so delete would fail
     }
 
-    final String ingestedDoi = service.ingest(article);
-    assertEquals(doi, ingestedDoi);
+    final String ingestedUri = service.ingest(article);
+    assertEquals(uri, ingestedUri);
   }
 }

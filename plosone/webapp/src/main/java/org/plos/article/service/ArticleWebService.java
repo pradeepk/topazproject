@@ -49,7 +49,7 @@ public class ArticleWebService extends BaseConfigurableService {
   /**
    * Ingest an article.
    * @param dataHandler dataHandler
-   * @return the doi of the article ingested
+   * @return the uri of the article ingested
    * @throws RemoteException RemoteException
    * @throws IngestException IngestException
    * @throws DuplicateIdException DuplicateIdException
@@ -63,7 +63,7 @@ public class ArticleWebService extends BaseConfigurableService {
   /**
    * Ingest an article.
    * @param articleUrl articleUrl
-   * @return the doi of the article ingested
+   * @return the uri of the article ingested
    * @throws RemoteException RemoteException
    * @throws IngestException IngestException
    * @throws DuplicateIdException DuplicateIdException
@@ -75,62 +75,62 @@ public class ArticleWebService extends BaseConfigurableService {
 
   /**
    * Mark an article as superseded by another article
-   * @param oldDoi oldDoi
-   * @param newDoi newDoi
+   * @param oldUri oldUri
+   * @param newUri newUri
    * @throws RemoteException RemoteException
    * @throws NoSuchIdException NoSuchIdException
    */
-  public void markSuperseded(final String oldDoi, final String newDoi)
+  public void markSuperseded(final String oldUri, final String newUri)
           throws RemoteException, NoSuchIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    delegateService.markSuperseded(oldDoi, newDoi);
+    delegateService.markSuperseded(oldUri, newUri);
   }
 
   /**
    * Get the URL from which the objects contents can retrieved via GET.
-   * @param doi doi
+   * @param obj uri
    * @param rep rep
    * @return the URL, or null if this object doesn't exist in the desired version
    * @throws RemoteException RemoteException
    * @throws NoSuchIdException NoSuchIdException
    */
-  public String getObjectURL(final String doi, final String rep)
+  public String getObjectURL(final String obj, final String rep)
           throws RemoteException, NoSuchIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return delegateService.getObjectURL(doi, rep);
+    return delegateService.getObjectURL(obj, rep);
   }
 
   /**
    * Delete an article.
-   * @param doi doi
+   * @param article uri
    * @param purge purge
    * @throws RemoteException RemoteException
    * @throws NoSuchIdException NoSuchIdException
    */
-  public void delete(final String doi, final boolean purge)
+  public void delete(final String article, final boolean purge)
           throws RemoteException, NoSuchIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    delegateService.delete(doi, purge);
+    delegateService.delete(article, purge);
   }
 
   /**
    * Change an articles state.
-   * @param doi doi
+   * @param article uri
    * @param state state
    * @throws RemoteException RemoteException
    * @throws NoSuchIdException NoSuchIdException
    */
-  public void setState(final String doi, final int state)
+  public void setState(final String article, final int state)
           throws RemoteException, NoSuchIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    delegateService.setState(doi, state);
+    delegateService.setState(article, state);
   }
 
   /**
    * Get a list of all articles
    * @param startDate startDate
    * @param endDate endDate
-   * @return list of article doi's
+   * @return list of article uri's
    * @throws java.rmi.RemoteException RemoteException
    */
   public String getArticles(final String startDate, final String endDate) throws RemoteException {
@@ -139,27 +139,27 @@ public class ArticleWebService extends BaseConfigurableService {
   }
 
   /**
-   * Get the object-info of a doi
-   * @param doi doi
-   * @return the object-info of a doi
+   * Get the object-info of an object
+   * @param obj uri
+   * @return the object-info of the object
    * @throws org.topazproject.ws.article.NoSuchObjectIdException NoSuchObjectIdException
    * @throws java.rmi.RemoteException RemoteException
    */
-  public ObjectInfo getObjectInfo(final String doi) throws RemoteException, NoSuchObjectIdException {
+  public ObjectInfo getObjectInfo(final String obj) throws RemoteException, NoSuchObjectIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return delegateService.getObjectInfo(doi);
+    return delegateService.getObjectInfo(obj);
   }
 
   /**
    * Return the list of secondary objects
-   * @param doi doi
-   * @return the secondary objects of a doi
+   * @param article uri
+   * @return the secondary objects of the article
    * @throws java.rmi.RemoteException RemoteException
    * @throws org.topazproject.ws.article.NoSuchArticleIdException NoSuchArticleIdException
    */
-  public SecondaryObject[] listSecondaryObjects(final String doi) throws RemoteException, NoSuchArticleIdException {
+  public SecondaryObject[] listSecondaryObjects(final String article) throws RemoteException, NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return convert(delegateService.listSecondaryObjects(doi));
+    return convert(delegateService.listSecondaryObjects(article));
   }
 
   private SecondaryObject[] convert(final ObjectInfo[] objectInfos) {

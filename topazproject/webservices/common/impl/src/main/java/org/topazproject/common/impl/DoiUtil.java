@@ -15,14 +15,14 @@ import org.apache.commons.codec.DecoderException;
 import org.apache.commons.codec.net.URLCodec;
 
 /**
- * Utility functions for converting between DOIs, PIDs and URIs.
+ * Utility functions for converting between PID and URI representations of DOI's.
  *
  * @author Eric Brown and Ronald Tschalär (from ArticleImpl.java)
  */
 public class DoiUtil {
   private static final BitSet DOI_PID_CHARS;
   private static final BitSet DOI_URI_CHARS;
-  
+
   static {
     DOI_PID_CHARS = new BitSet(128);
     for (int ch = '0'; ch <= '9'; ch++)  DOI_PID_CHARS.set(ch);
@@ -63,7 +63,7 @@ public class DoiUtil {
    * @param doi is the topaz doi
    * @return a fedora pid
    */
-  public static String doi2PID(String doi) {
+  private static String doi2PID(String doi) {
     return "doi:" + encode(doi, DOI_PID_CHARS);
   }
 
@@ -73,7 +73,7 @@ public class DoiUtil {
    * @param pid is a fedora pid
    * @return a topaz doi
    */
-  public static String pid2DOI(String pid) {
+  private static String pid2DOI(String pid) {
     return decode(pid.substring(4));
   }
 
@@ -83,7 +83,7 @@ public class DoiUtil {
    * @param doi is the topaz doi
    * @return a properly formatted URI
    */
-  public static String doi2URI(String doi) {
+  private static String doi2URI(String doi) {
     return "info:doi/" + encode(doi, DOI_URI_CHARS);
   }
 
@@ -93,8 +93,32 @@ public class DoiUtil {
    * @param uri is the uri to convert
    * @return a topaz doi
    */
-  public static String uri2DOI(String uri) {
+  private static String uri2DOI(String uri) {
     return decode(uri.substring(9));
+  }
+
+  /**
+   * Convert a DOI's PID to a URI.
+   *
+   * @param pid is the PID to convert
+   * @return the URI
+   */
+  public static String pid2URI(String pid) {
+    if (!pid.startsWith("doi:"))
+      throw new IllegalArgumentException("Can only convert DOI-based PID's; pid='" + pid + "'");
+    return doi2URI(pid2DOI(pid));
+  }
+
+  /**
+   * Convert a DOI's URI to a PID.
+   *
+   * @param uri is the URI to convert
+   * @return the PID
+   */
+  public static String uri2PID(String uri) {
+    if (!uri.startsWith("info:doi/"))
+      throw new IllegalArgumentException("Can only convert DOI-based URI's; uri='" + uri + "'");
+    return doi2PID(uri2DOI(uri));
   }
 
   static String encode(String str, BitSet allowed) {

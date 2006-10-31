@@ -46,26 +46,26 @@ public class ArticleFeed {
   private static final String MODEL_XSD      = "<" + CONF.getString("topaz.models.xsd") + ">";
   
   private static final String FEED_ITQL =
-    "select $doi $title $description $date from ${ARTICLES} where " +
-    " $doi <dc:title> $title and " +
-    " $doi <dc:description> $description and " +
-    " $doi <dc_terms:available> $date " +
+    "select $obj $title $description $date from ${ARTICLES} where " +
+    " $obj <dc:title> $title and " +
+    " $obj <dc:description> $description and " +
+    " $obj <dc_terms:available> $date " +
     " ${args} " +
     " order by $date ${sort};";
   private static final String FIND_SUBJECTS_ITQL =
-    "select '${doi}' $subject from ${ARTICLES} where " +
-    " <${doi}> <dc:subject> $subject " +
+    "select '${obj}' $subject from ${ARTICLES} where " +
+    " <${obj}> <dc:subject> $subject " +
     "order by $subject;";
   private static final String FIND_AUTHORS_ITQL =
-    "select '${doi}' $author from ${ARTICLES} where " +
-    " <${doi}> <dc:creator> $author " +
+    "select '${obj}' $author from ${ARTICLES} where " +
+    " <${obj}> <dc:creator> $author " +
     " order by $author;";
   
   private static final String XML_RESPONSE =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<articles>\n${articles}</articles>\n";
   private static final String XML_ARTICLE_TAG =
     "  <article>\n" +
-    "    <doi>${doi}</doi>\n" +
+    "    <uri>${uri}</uri>\n" +
     "    <title>${title}</title>\n" +
     "    <description>${description}</description>\n" +
     "    <date>${date}</date>\n" +
@@ -89,10 +89,10 @@ public class ArticleFeed {
     
     if (categories != null && categories.length > 0) {
       for (int i = 0; i < categories.length; i++)
-        params.add("$doi <dc:subject> '" + ItqlHelper.escapeLiteral(categories[i]) + "' ");
+        params.add("$obj <dc:subject> '" + ItqlHelper.escapeLiteral(categories[i]) + "' ");
     } else if (authors != null && authors.length > 0) {
       for (int i = 0; i < authors.length; i++)
-        params.add("$doi <dc:creator> '" + ItqlHelper.escapeLiteral(authors[i]) + "' ");
+        params.add("$obj <dc:creator> '" + ItqlHelper.escapeLiteral(authors[i]) + "' ");
     }
 
     StringBuffer args = new StringBuffer();
@@ -127,7 +127,7 @@ public class ArticleFeed {
    * filtering here.
    *
    * @param articlesAnswer is the response received from kowari.
-   * @return a map of doi to L{ArticleFeedData} for each article received
+   * @return a map of uri to L{ArticleFeedData} for each article received
    */
   public static Map getArticlesSummary(StringAnswer articlesAnswer) {
     LinkedHashMap articles = new LinkedHashMap();
@@ -146,11 +146,11 @@ public class ArticleFeed {
       }
         
       ArticleFeedData article = new ArticleFeedData();
-      article.doi         = row[0];
+      article.uri         = row[0];
       article.title       = row[1];
       article.description = row[2];
       article.date        = date;
-      articles.put(article.doi, article);
+      articles.put(article.uri, article);
     }
 
     return articles;
@@ -173,7 +173,7 @@ public class ArticleFeed {
         continue; // should never happen
       Map values = new HashMap();
       values.put("ARTICLES", MODEL_ARTICLES);
-      values.put("doi", article.doi);
+      values.put("obj", article.uri);
       queryBuffer.append(ItqlHelper.bindValues(FIND_SUBJECTS_ITQL, values));
       queryBuffer.append(ItqlHelper.bindValues(FIND_AUTHORS_ITQL, values));
     }
@@ -206,11 +206,11 @@ public class ArticleFeed {
 
       // Column name represents type of query we did -- for categories or authors
       String column = answer.getVariables()[1];
-      String doi = ((String[])rows.get(0))[0];
-      ArticleFeedData article = (ArticleFeedData)articles.get(doi);
+      String uri = ((String[])rows.get(0))[0];
+      ArticleFeedData article = (ArticleFeedData)articles.get(uri);
       if (article == null) {
         // We should never get this - means something changed underneath us
-        log.warn("Didn't find article " + doi + " on " + column + " query");
+        log.warn("Didn't find article " + uri + " on " + column + " query");
         continue;
       }
 
@@ -257,7 +257,8 @@ public class ArticleFeed {
       }
 
       Map values = new HashMap();
-      values.put("doi", article.doi);
+      /* internationalize () */
+      values.put("uri", article.uri);
       values.put("title", article.title);
       values.put("description", article.description);
       values.put("date", formatDate(article.date));

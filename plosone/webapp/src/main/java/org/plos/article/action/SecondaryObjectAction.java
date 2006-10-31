@@ -16,17 +16,17 @@ import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.SecondaryObject;
 
 /**
- * Fetch the secondary objects for a given doi
+ * Fetch the secondary objects for a given uri
  */
 public class SecondaryObjectAction extends BaseActionSupport {
-  private String doi;
+  private String uri;
   private SecondaryObject[] secondaryObjects;
   private ArticleWebService articleWebService;
   private static final Log log = LogFactory.getLog(SecondaryObjectAction.class);
 
   public String execute() throws Exception {
     try {
-      secondaryObjects = articleWebService.listSecondaryObjects(doi);
+      secondaryObjects = articleWebService.listSecondaryObjects(uri);
     } catch (Exception ex) {
       log.warn(ex);
       return ERROR;
@@ -35,11 +35,11 @@ public class SecondaryObjectAction extends BaseActionSupport {
   }
 
   /**
-   * Set the doi
-   * @param doi doi
+   * Set the uri
+   * @param uri uri
    */
-  public void setDoi(final String doi) {
-    this.doi = doi;
+  public void setUri(final String uri) {
+    this.uri = uri;
   }
 
   /**

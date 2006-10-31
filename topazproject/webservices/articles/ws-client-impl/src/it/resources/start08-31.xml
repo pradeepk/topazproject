@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <articles>
   <article>
-    <doi>info:doi/10.1371/journal.pbio.0020382</doi>
+    <uri>info:doi/10.1371/journal.pbio.0020382</uri>
     <title>Correction: Nicotine's Defensive Function in Nature</title>
     <description><p xmlns:mml='http://www.w3.org/1998/Math/MathML'>July correction</p></description>
     <date>2004-10-12</date>
@@ -14,7 +14,7 @@
     </categories>
   </article>
   <article>
-    <doi>info:doi/10.1371/journal.pbio.0020317</doi>
+    <uri>info:doi/10.1371/journal.pbio.0020317</uri>
     <title>Submission of Microarray Data to Public Repositories</title>
     <description><p xmlns:mml='http://www.w3.org/1998/Math/MathML'>The Microarray Gene Expression Data Society believe that the time is right for journals to require that microarray data be deposited in public repositories, as a condition for publication</p></description>
     <date>2004-08-31</date>

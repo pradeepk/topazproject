@@ -67,7 +67,7 @@
   <!-- generate the ObjectList -->
   <xsl:template match="/ZipInfo">
     <ObjectList logMessage="Ingest of article '{$meta/title-group/article-title}'"
-                articleId="{$article-doi}">
+                articleId="{my:doi-to-uri($article-doi)}">
       <xsl:call-template name="main-entry"/>
 
       <xsl:for-each-group select="$file-entries[my:is-secondary(@name)]"

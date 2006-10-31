@@ -20,8 +20,8 @@ package org.topazproject.ws.article;
  * @author Ronald Tschalär
  */
 public class ObjectInfo {
-  /** The doi of the object. */
-  private String doi;
+  /** The uri of the object. */
+  private String uri;
   /** The object's title. */
   private String title;
   /** The description associated with the object. */
@@ -32,21 +32,21 @@ public class ObjectInfo {
   private String contextElement;
 
   /**
-   * Get the doi.
+   * Get the URI.
    *
-   * @return the doi.
+   * @return the URI.
    */
-  public String getDoi() {
-    return doi;
+  public String getUri() {
+    return uri;
   }
 
   /**
-   * Set the doi.
+   * Set the URI.
    *
-   * @param doi the doi.
+   * @param uri the URI.
    */
-  public void setDoi(String doi) {
-    this.doi = doi;
+  public void setUri(String uri) {
+    this.uri = uri;
   }
 
   /**

@@ -7,6 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
+
 package org.topazproject.ws.article;
 
 import java.io.ByteArrayInputStream;
@@ -46,28 +47,29 @@ public class ArticleServiceTest extends TestCase {
 
   public void testBasicArticle() throws Exception {
     // topaz format
-    basicArticleTest("/pbio.0020294.zip", "10.1371/journal.pbio.0020294", "pmc.xml");
+    basicArticleTest("/pbio.0020294.zip", "info:doi/10.1371/journal.pbio.0020294", "pmc.xml");
     // AP format
-    basicArticleTest("/pone.0000010.zip", "10.1371/journal.pone.0000010", "pone.0000010.xml");
+    basicArticleTest("/pone.0000010.zip", "info:doi/10.1371/journal.pone.0000010",
+                     "pone.0000010.xml");
   }
 
-  private void basicArticleTest(String zip, String doi, String pmc) throws Exception {
+  private void basicArticleTest(String zip, String uri, String pmc) throws Exception {
     try {
-      service.delete(doi, true);
+      service.delete(uri, true);
     } catch (NoSuchArticleIdException nsaie) {
-      assertEquals("Mismatched id in exception, ", doi, nsaie.getId());
+      assertEquals("Mismatched id in exception, ", uri, nsaie.getId());
       // ignore - this just means there wasn't any stale stuff left
     }
 
     URL article = getClass().getResource(zip);
-    String retDoi = service.ingest(new DataHandler(article));
-    assertEquals("Wrong doi returned,", doi, retDoi);
+    String retUri = service.ingest(new DataHandler(article));
+    assertEquals("Wrong uri returned,", uri, retUri);
 
     Throwable gotE = null;
     try {
-      retDoi = service.ingest(new DataHandler(article));
+      retUri = service.ingest(new DataHandler(article));
     } catch (DuplicateArticleIdException daie) {
-      assertEquals("Mismatched id in exception, ", doi, daie.getId());
+      assertEquals("Mismatched id in exception, ", uri, daie.getId());
       gotE = daie;
     }
     assertNotNull("Failed to get expected duplicate-id exception", gotE);
@@ -78,18 +80,18 @@ public class ArticleServiceTest extends TestCase {
     while (!zis.getNextEntry().getName().equals(pmc))
       ;
     byte[] orig  = IOUtils.toByteArray(zis);
-    byte[] saved = IOUtils.toByteArray(new URL(service.getObjectURL(retDoi, "XML")).openStream());
+    byte[] saved = IOUtils.toByteArray(new URL(service.getObjectURL(retUri, "XML")).openStream());
     assertTrue("Content mismatch: got '" + new String(saved, "UTF-8") + "'",
                Arrays.equals(orig, saved));
     */
 
-    service.delete(retDoi, true);
+    service.delete(retUri, true);
 
     gotE = null;
     try {
-      service.delete(retDoi, true);
+      service.delete(retUri, true);
     } catch (NoSuchArticleIdException nsaie) {
-      assertEquals("Mismatched id in exception, ", retDoi, nsaie.getId());
+      assertEquals("Mismatched id in exception, ", retUri, nsaie.getId());
       gotE = nsaie;
     }
     assertNotNull("Failed to get expected no-such-id exception", gotE);
@@ -111,10 +113,10 @@ public class ArticleServiceTest extends TestCase {
     URL article = getClass().getResource(zip);
 
     Throwable gotE = null;
-    String retDoi = null;
+    String retUri = null;
     try {
-      retDoi = service.ingest(new DataHandler(article));
-      service.delete(retDoi, true);     // clean up in case of accidental success
+      retUri = service.ingest(new DataHandler(article));
+      service.delete(retUri, true);     // clean up in case of accidental success
     } catch (IngestException ie) {
       gotE = ie;
     }
@@ -127,20 +129,20 @@ public class ArticleServiceTest extends TestCase {
     // some NoSuchObjectIdException tests
     boolean gotE = false;
     try {
-      service.getObjectInfo("blah/foo");
+      service.getObjectInfo("info:doi/blah/foo");
     } catch (NoSuchObjectIdException nsoie) {
-      assertEquals("Mismatched id in exception, ", "blah/foo", nsoie.getId());
+      assertEquals("Mismatched id in exception, ", "info:doi/blah/foo", nsoie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected no-such-object-id exception", gotE);
 
     // ingest article and test getObjectInfo()
     URL article = getClass().getResource("/pbio.0020294.zip");
-    String doi = service.ingest(new DataHandler(article));
-    assertEquals("Wrong doi returned,", "10.1371/journal.pbio.0020294", doi);
+    String uri = service.ingest(new DataHandler(article));
+    assertEquals("Wrong uri returned,", "info:doi/10.1371/journal.pbio.0020294", uri);
 
-    ObjectInfo oi = service.getObjectInfo(doi);
-    assertEquals("wrong doi", doi, oi.getDoi());
+    ObjectInfo oi = service.getObjectInfo(uri);
+    assertEquals("wrong uri", uri, oi.getUri());
     assertEquals("wrong title",
                  "Regulation of Muscle Fiber Type and Running Endurance by PPAR\u00A0",
                  oi.getTitle());
@@ -165,9 +167,9 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-size mismatch", 65680L, ri[2].getSize());
 
     // test getObjectInfo on g001
-    String secDoi = doi + ".g001";
-    oi = service.getObjectInfo(secDoi);
-    assertEquals("wrong doi", secDoi, oi.getDoi());
+    String secUri = uri + ".g001";
+    oi = service.getObjectInfo(secUri);
+    assertEquals("wrong uri", secUri, oi.getUri());
     assertEquals("wrong title", "Figure 1", oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
     assertEquals("wrong context-element", "fig", oi.getContextElement());
@@ -186,9 +188,9 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-size mismatch", 120432L, ri[1].getSize());
 
     // test getObjectInfo on sv001
-    secDoi = doi + ".sv001";
-    oi = service.getObjectInfo(secDoi);
-    assertEquals("wrong doi", secDoi, oi.getDoi());
+    secUri = uri + ".sv001";
+    oi = service.getObjectInfo(secUri);
+    assertEquals("wrong uri", secUri, oi.getUri());
     assertEquals("wrong title", "Video S1", oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
     assertEquals("wrong context-element", "supplementary-material", oi.getContextElement());
@@ -201,28 +203,28 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-size mismatch", 0L, ri[0].getSize());
 
     // clean up
-    service.delete(doi, true);
+    service.delete(uri, true);
   }
 
   public void testRepresentations() throws Exception {
     // some NoSuchObjectIdException tests
     boolean gotE = false;
     try {
-      service.setRepresentation("blah/foo", "bar",
+      service.setRepresentation("info:doi/blah/foo", "bar",
                                 new DataHandler(new StringDataSource("Some random text")));
     } catch (NoSuchObjectIdException nsoie) {
-      assertEquals("Mismatched id in exception, ", "blah/foo", nsoie.getId());
+      assertEquals("Mismatched id in exception, ", "info:doi/blah/foo", nsoie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected no-such-object-id exception", gotE);
 
     // ingest article and test getObjectInfo()
     URL article = getClass().getResource("/pbio.0020294.zip");
-    String doi = service.ingest(new DataHandler(article));
-    assertEquals("Wrong doi returned,", "10.1371/journal.pbio.0020294", doi);
+    String art = service.ingest(new DataHandler(article));
+    assertEquals("Wrong uri returned,", "info:doi/10.1371/journal.pbio.0020294", art);
 
-    ObjectInfo oi = service.getObjectInfo(doi);
-    assertEquals("wrong doi", doi, oi.getDoi());
+    ObjectInfo oi = service.getObjectInfo(art);
+    assertEquals("wrong uri", art, oi.getUri());
     assertEquals("wrong title", "Regulation of Muscle Fiber Type and Running Endurance by PPAR ",
                  oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
@@ -246,10 +248,10 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-size mismatch", 65680L, ri[2].getSize());
 
     // create a new Representation
-    service.setRepresentation(doi, "TXT",
+    service.setRepresentation(art, "TXT",
                               new DataHandler(new StringDataSource("The plain text")));
 
-    oi = service.getObjectInfo(doi);
+    oi = service.getObjectInfo(art);
     ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 4, ri.length);
 
@@ -272,10 +274,10 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-size mismatch", 65680L, ri[3].getSize());
 
     // update a Representation
-    service.setRepresentation(doi, "TXT",
+    service.setRepresentation(art, "TXT",
                           new DataHandler(new StringDataSource("The corrected text", "text/foo")));
 
-    oi = service.getObjectInfo(doi);
+    oi = service.getObjectInfo(art);
     ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 4, ri.length);
 
@@ -298,9 +300,9 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-size mismatch", 65680L, ri[3].getSize());
 
     // remove a Representation
-    service.setRepresentation(doi, "TXT", null);
+    service.setRepresentation(art, "TXT", null);
 
-    oi = service.getObjectInfo(doi);
+    oi = service.getObjectInfo(art);
     ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 3, ri.length);
 
@@ -319,9 +321,9 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-size mismatch", 65680L, ri[2].getSize());
 
     // remove a non-existent Representation
-    service.setRepresentation(doi, "TXT", null);
+    service.setRepresentation(art, "TXT", null);
 
-    oi = service.getObjectInfo(doi);
+    oi = service.getObjectInfo(art);
     ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 3, ri.length);
 
@@ -340,36 +342,36 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-size mismatch", 65680L, ri[2].getSize());
 
     // clean up
-    service.delete(doi, true);
+    service.delete(art, true);
   }
 
   public void testSecondaryObjects() throws Exception {
     // some NoSuchArticleIdException tests
     boolean gotE = false;
     try {
-      service.listSecondaryObjects("blah/foo");
+      service.listSecondaryObjects("info:doi/blah/foo");
     } catch (NoSuchArticleIdException nsaie) {
-      assertEquals("Mismatched id in exception, ", "blah/foo", nsaie.getId());
+      assertEquals("Mismatched id in exception, ", "info:doi/blah/foo", nsaie.getId());
       gotE = true;
     }
     assertTrue("Failed to get expected no-such-object-id exception", gotE);
 
     // ingest article and test listRepresentations()
     URL article = getClass().getResource("/pbio.0020294.zip");
-    String doi = service.ingest(new DataHandler(article));
-    assertEquals("Wrong doi returned,", "10.1371/journal.pbio.0020294", doi);
+    String art = service.ingest(new DataHandler(article));
+    assertEquals("Wrong uri returned,", "info:doi/10.1371/journal.pbio.0020294", art);
 
-    ObjectInfo[] oi = service.listSecondaryObjects(doi);
+    ObjectInfo[] oi = service.listSecondaryObjects(art);
     assertEquals("wrong number of object-infos", 8, oi.length);
 
-    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g001", oi[0].getDoi());
-    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g002", oi[1].getDoi());
-    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g003", oi[2].getDoi());
-    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g004", oi[3].getDoi());
-    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g005", oi[4].getDoi());
-    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g006", oi[5].getDoi());
-    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.sv001", oi[6].getDoi());
-    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.sv002", oi[7].getDoi());
+    assertEquals("uri mismatch", "info:doi/10.1371/journal.pbio.0020294.g001",  oi[0].getUri());
+    assertEquals("uri mismatch", "info:doi/10.1371/journal.pbio.0020294.g002",  oi[1].getUri());
+    assertEquals("uri mismatch", "info:doi/10.1371/journal.pbio.0020294.g003",  oi[2].getUri());
+    assertEquals("uri mismatch", "info:doi/10.1371/journal.pbio.0020294.g004",  oi[3].getUri());
+    assertEquals("uri mismatch", "info:doi/10.1371/journal.pbio.0020294.g005",  oi[4].getUri());
+    assertEquals("uri mismatch", "info:doi/10.1371/journal.pbio.0020294.g006",  oi[5].getUri());
+    assertEquals("uri mismatch", "info:doi/10.1371/journal.pbio.0020294.sv001", oi[6].getUri());
+    assertEquals("uri mismatch", "info:doi/10.1371/journal.pbio.0020294.sv002", oi[7].getUri());
 
     assertEquals("label mismatch", "Figure 1", oi[0].getTitle());
     assertEquals("label mismatch", "Figure 2", oi[1].getTitle());
@@ -455,7 +457,7 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-size mismatch", 0L, ri.getSize());
 
     // clean up
-    service.delete(doi, true);
+    service.delete(art, true);
   }
 
   private static byte[] loadURL(URL url) throws IOException {

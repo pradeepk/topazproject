@@ -32,10 +32,10 @@ public class SecondaryObject {
   }
 
   /**
-   * @see org.topazproject.ws.article.ObjectInfo#getDoi()
+   * @see org.topazproject.ws.article.ObjectInfo#getUri()
    */
-  public String getDoi() {
-    return objectInfo.getDoi();
+  public String getUri() {
+    return objectInfo.getUri();
   }
 
   /**

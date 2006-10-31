@@ -60,8 +60,8 @@ public interface Article extends Remote {
    * @param zip    a zip archive containing the article and associated objects. The content type
    *               should be <var>application/zip</var>. If possible this should contain the name
    *               of the zip too.
-   * @return the DOI of the new article
-   * @throws DuplicateArticleIdException if the article already exists (as determined by its DOI)
+   * @return the URI of the new article
+   * @throws DuplicateArticleIdException if the article already exists (as determined by its URI)
    * @throws IngestException if there's a problem ingesting the archive
    * @throws RemoteException if some other error occured
    */
@@ -71,55 +71,56 @@ public interface Article extends Remote {
   /** 
    * Marks an article as superseded by another article.
    * 
-   * @param oldDoi the doi of the article that has been superseded by <var>newDoi</var>
-   * @param newDoi the doi of the article that supersedes <var>oldDoi</var>
+   * @param oldArt the URI of the article that has been superseded by <var>newUri</var>
+   * @param newArt the URI of the article that supersedes <var>oldUri</var>
    * @throws NoSuchArticleIdException if the article does not exist
    * @throws RemoteException if some other error occured
    */
-  public void markSuperseded(String oldDoi, String newDoi)
+  public void markSuperseded(String oldArt, String newArt)
       throws NoSuchArticleIdException, RemoteException;
 
   /** 
    * Change an articles state.
    * 
-   * @param doi     the DOI of the article (e.g. "10.1371/journal.pbio.003811")
+   * @param article the URI of the article (e.g. "info:doi/10.1371/journal.pbio.003811")
    * @param state   the new state
    * @throws NoSuchArticleIdException if the article does not exist
    * @throws RemoteException if some other error occured
    */
-  public void setState(String doi, int state) throws NoSuchArticleIdException, RemoteException;
+  public void setState(String article, int state) throws NoSuchArticleIdException, RemoteException;
 
   /** 
    * Delete an article.
    * 
-   * @param doi     the DOI of the article (e.g. "10.1371/journal.pbio.003811")
+   * @param article the URI of the article (e.g. "info:doi/10.1371/journal.pbio.003811")
    * @param purge   if true, erase all traces; otherwise only the contents are deleted, leaving a
    *                "tombstone". Note that it may not be possible to find and therefore erase
    *                all traces from the ingest.
    * @throws NoSuchArticleIdException if the article does not exist
    * @throws RemoteException if some other error occured
    */
-  public void delete(String doi, boolean purge) throws NoSuchArticleIdException, RemoteException;
+  public void delete(String article, boolean purge)
+      throws NoSuchArticleIdException, RemoteException;
 
   /** 
    * Get the URL from which the object's contents can retrieved via GET. Note that this method may
    * return a URL even when object or the representation don't exist, in which case the URL may
    * return a 404 response.
    * 
-   * @param doi     the DOI of the object (e.g. "10.1371/journal.pbio.003811")
-   * @param rep     the desired representation of the object
+   * @param obj the URI of the object (e.g. "info:doi/10.1371/journal.pbio.003811")
+   * @param rep the desired representation of the object
    * @return the URL, or null if the desired representation does not exist
    * @throws NoSuchObjectIdException if the article does not exist
    * @throws RemoteException if some other error occured
    */
-  public String getObjectURL(String doi, String rep)
+  public String getObjectURL(String obj, String rep)
       throws NoSuchObjectIdException, RemoteException;
 
   /** 
    * Create or update a representation of an object. The object itself must exist; if the specified
    * representation does not exist, it is created, otherwise the current one is replaced.
    * 
-   * @param doi      the DOI of the object
+   * @param obj      the URI of the object
    * @param rep      the name of this representation
    * @param content  the actual content that makes up this representation; if this contains a
    *                 content-type then that will be used; otherwise the content-type will be
@@ -129,29 +130,29 @@ public interface Article extends Remote {
    * @throws RemoteException if some other error occured
    * @throws NullPointerException if any of the parameters are null
    */
-  public void setRepresentation(String doi, String rep, DataHandler content)
+  public void setRepresentation(String obj, String rep, DataHandler content)
       throws NoSuchObjectIdException, RemoteException;
 
   /** 
    * Get the info for a single object. This may be either an article or a secondary object. 
    * 
-   * @param doi the doi of the object
+   * @param obj the URI of the object
    * @return the object's info
    * @throws NoSuchObjectIdException if the object does not exist
    * @throws RemoteException if some other error occured
    */
-  public ObjectInfo getObjectInfo(String doi) throws NoSuchObjectIdException, RemoteException;
+  public ObjectInfo getObjectInfo(String obj) throws NoSuchObjectIdException, RemoteException;
 
   /** 
    * Get the list of secondary objects for the specified article. 
    * 
-   * @param doi the doi of the article
+   * @param article the URI of the article
    * @return the (possibly empty) list of secondary objects; these will be in the same order
    *         as they (first) appear in the article.
    * @throws NoSuchArticleIdException if the article does not exist
    * @throws RemoteException if some other error occured
    */
-  public ObjectInfo[] listSecondaryObjects(String doi)
+  public ObjectInfo[] listSecondaryObjects(String article)
       throws NoSuchArticleIdException, RemoteException;
 
   /**
@@ -160,7 +161,7 @@ public interface Article extends Remote {
    * <pre>
    *   &lt;articles&gt;
    *     &lt;article&gt;
-   *       &lt;doi&gt;...&lt;/doi&gt;
+   *       &lt;uri&gt;...&lt;/uri&gt;
    *       &lt;title&gt;...&lt;/title&gt;
    *       &lt;description&gt;...&lt;/description&gt;
    *       &lt;date&gt;YYY-MM-DD&lt;/date&gt;
@@ -173,13 +174,13 @@ public interface Article extends Remote {
    *         ...
    * </pre>
    *
-   * @param startDate is the date to start searching from. If empty, start from begining of time.
-   *        Can be iso8601 formatted or string representation of Date object.
-   * @param endDate is the date to search until. If empty, search until prsent date
+   * @param startDate  is the date to start searching from. If empty, start from begining of time.
+   *                   Can be iso8601 formatted or string representation of Date object.
+   * @param endDate    is the date to search until. If empty, search until prsent date
    * @param categories is list of categories to search for articles within (all categories if empty)
-   * @param authors is list of authors to search for articles within (all authors if empty)
-   * @param ascending controls the sort order (by date). If used for RSS feeds, decending would
-   *        be appropriate. For archive display, ascending would be appropriate.
+   * @param authors    is list of authors to search for articles within (all authors if empty)
+   * @param ascending  controls the sort order (by date). If used for RSS feeds, decending would
+   *                   be appropriate. For archive display, ascending would be appropriate.
    * @return the xml for the specified feed
    * @throws RemoteException if there was a problem talking to the alerts service
    */

@@ -11,7 +11,7 @@ import org.w3c.dom.Document;
 public class Article {
   private int version;
 
-  private String doi;
+  private String uri;
 
   private Document xmlDoc;
 
@@ -20,14 +20,14 @@ public class Article {
   }
 
   /**
-   * Retrieves the article identified by the <code>doi</code> param from the store
+   * Retrieves the article identified by the <code>uri</code> param from the store
    * 
-   * @param doi
+   * @param uri
    * @param signOnId
    * @param authToken
-   * @return <code>Article</code> given by <code>doi</code> param
+   * @return <code>Article</code> given by <code>uri</code> param
    */
-  public static Article getArticle(String doi, String signOnId, String authToken) {
+  public static Article getArticle(String uri, String signOnId, String authToken) {
     return new Article();
   }
 
@@ -43,18 +43,18 @@ public class Article {
   }
 
   /**
-   * @return Returns the doi.
+   * @return Returns the uri.
    */
-  public String getDoi() {
-    return doi;
+  public String getUri() {
+    return uri;
   }
 
   /**
-   * @param doi
-   *          The doi to set.
+   * @param uri
+   *          The uri to set.
    */
-  public void setDoi(String doi) {
-    this.doi = doi;
+  public void setUri(String uri) {
+    this.uri = uri;
   }
 
   /**

@@ -127,9 +127,9 @@ public class Ingester {
    * Ingest a new article. 
    * 
    * @param zip  the zip archive containing the article and it's related objects
-   * @return the DOI of the new article
+   * @return the URI of the new article
    * @throws DuplicateArticleIdException if an article or other object already exists with any
-   *                              of the DOI's specified in the zip
+   *                                     of the URI's specified in the zip
    * @throws IngestException if there's any other problem ingesting the article
    */
   public String ingest(Zip zip) throws DuplicateArticleIdException, IngestException {
@@ -153,16 +153,16 @@ public class Ingester {
 
       // get the article id
       Element objList = objInfo.getDocumentElement();
-      String doi = objList.getAttribute(OL_AID_A);
+      String uri = objList.getAttribute(OL_AID_A);
 
-      // do the access check, now that we have the doi
-      pep.checkAccess(pep.INGEST_ARTICLE, URI.create(DoiUtil.doi2URI(doi)));
+      // do the access check, now that we have the uri
+      pep.checkAccess(pep.INGEST_ARTICLE, URI.create(uri));
 
       // add the stuff
       ItqlHelper itql   = ctx.getItqlHelper();
       FedoraAPIM apim   = ctx.getFedoraAPIM();
       Uploader uploader = ctx.getFedoraUploader();
-      String txn = "ingest " + doi;
+      String txn = "ingest " + uri;
       try {
         itql.beginTxn(txn);
 
@@ -179,7 +179,7 @@ public class Ingester {
           itql.rollbackTxn(txn);
       }
 
-      return doi;
+      return uri;
     } catch (RemoteException re) {
       throw new IngestException("Error ingesting into fedora", re);
     } catch (IOException ioe) {
@@ -410,7 +410,7 @@ public class Ingester {
     try {
       apim.ingest(foxml.getBytes("UTF-8"), "foxml1.0", logMsg);
     } catch (RemoteException re) {
-      FedoraUtil.detectDuplicateArticleIdException(re, DoiUtil.pid2DOI(pid));
+      FedoraUtil.detectDuplicateArticleIdException(re, DoiUtil.pid2URI(pid));
     }
   }
 

@@ -72,11 +72,11 @@ public class ArticleImpl implements Article {
   private static final Log           log   = LogFactory.getLog(ArticleImpl.class);
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
   private static final String        MODEL = "<" + CONF.getString("topaz.models.articles") + ">";
-  
+
   private static final String        FGS_URL   = CONF.getString("topaz.fedoragsearch.url");
   private static final String        FGS_REPO  = CONF.getString("topaz.fedoragsearch.repository");
 
-  private static final String ITQL_DELETE_DOI =
+  private static final String ITQL_DELETE_OBJ =
       ("delete select $s $p $o from ${MODEL} where $s $p $o and " +
        "  $s <tucana:is> <${subj}> from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
@@ -98,13 +98,13 @@ public class ArticleImpl implements Article {
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_FIND_OBJS =
-      ("select $doi from ${MODEL} where " +
+      ("select $obj from ${MODEL} where " +
           // ensure it's an article
        "  <${subj}> <rdf:type> <topaz:Article> and (" +
           // find all related objects
-       "  <${subj}> <dc_terms:hasPart> $doi or <${subj}> <topaz:hasCategory> $doi " +
+       "  <${subj}> <dc_terms:hasPart> $obj or <${subj}> <topaz:hasCategory> $obj " +
           // find the article itself
-       "  or $doi <tucana:is> <${subj}> );").
+       "  or $obj <tucana:is> <${subj}> );").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_GET_OBJ_INFO =
@@ -200,57 +200,54 @@ public class ArticleImpl implements Article {
     return ingester.ingest(new Zip.DataSourceZip(zip.getDataSource()));
   }
 
-  public void markSuperseded(String oldDoi, String newDoi)
+  public void markSuperseded(String oldArt, String newArt)
       throws NoSuchArticleIdException, RemoteException {
-    checkAccess(pep.INGEST_ARTICLE, newDoi);    // FIXME: should pass both doi's
+    checkAccess(pep.INGEST_ARTICLE, newArt);    // FIXME: should pass both URI's
 
-    String old_subj = "<" + DoiUtil.doi2URI(oldDoi) + ">";
-    String new_subj = "<" + DoiUtil.doi2URI(newDoi) + ">";
-
-    ctx.getItqlHelper().doUpdate("insert " + old_subj + " <dc_terms:isReplacedBy> " + new_subj +
-                            new_subj + " <dc_terms:replaces> " + old_subj +
-                            " into " + MODEL + ";");
+    ctx.getItqlHelper().doUpdate("insert <" + oldArt + "> <dc_terms:isReplacedBy> <" + newArt +
+                                 "> <" + newArt + "> <dc_terms:replaces> <" + oldArt +
+                                 "> into " + MODEL + ";");
   }
 
-  public void setState(String doi, int state) throws NoSuchArticleIdException, RemoteException {
-    checkAccess(pep.SET_ARTICLE_STATE, doi);
+  public void setState(String article, int state) throws NoSuchArticleIdException, RemoteException {
+    checkAccess(pep.SET_ARTICLE_STATE, article);
 
     try {
-      ctx.getFedoraAPIM().modifyObject(DoiUtil.doi2PID(doi), state2Str(state),
+      ctx.getFedoraAPIM().modifyObject(DoiUtil.uri2PID(article), state2Str(state),
                                        null, "Changed state");
     } catch (RemoteException re) {
-      FedoraUtil.detectNoSuchArticleIdException(re, doi);
+      FedoraUtil.detectNoSuchArticleIdException(re, article);
     }
   }
 
-  public void delete(String doi, boolean purge) throws NoSuchArticleIdException, RemoteException {
-    checkAccess(pep.DELETE_ARTICLE, doi);
+  public void delete(String article, boolean purge)
+      throws NoSuchArticleIdException, RemoteException {
+    checkAccess(pep.DELETE_ARTICLE, article);
 
     ItqlHelper itql = ctx.getItqlHelper();
     FedoraAPIM apim = ctx.getFedoraAPIM();
-    String txn = purge ? "delete " + doi : null;
+    String txn = purge ? "delete " + article : null;
     try {
       if (txn != null)
         itql.beginTxn(txn);
 
-      String[] objList = findAllObjects(doi);
+      String[] objList = findAllObjects(article);
       if (log.isDebugEnabled())
-        log.debug("deleting all objects for doi '" + doi + "'");
+        log.debug("deleting all objects for uri '" + article + "'");
 
       for (int idx = 0; idx < objList.length; idx++) {
         if (log.isDebugEnabled())
-          log.debug("deleting doi '" + objList[idx] + "'");
+          log.debug("deleting uri '" + objList[idx] + "'");
 
         if (purge) {
-          apim.purgeObject(DoiUtil.doi2PID(objList[idx]), "Purged object", false);
-          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_DOI, "subj",
-                                              DoiUtil.doi2URI(objList[idx])));
+          apim.purgeObject(DoiUtil.uri2PID(objList[idx]), "Purged object", false);
+          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_OBJ, "subj", objList[idx]));
         } else {
-          apim.modifyObject(DoiUtil.doi2PID(objList[idx]), "D", null, "Deleted object");
+          apim.modifyObject(DoiUtil.uri2PID(objList[idx]), "D", null, "Deleted object");
         }
 
         // Remove article from full-text index first
-        String pid = DoiUtil.doi2PID(objList[idx]);
+        String pid = DoiUtil.uri2PID(objList[idx]);
         String result = fgs.updateIndex("deletePid", pid, FGS_REPO, null, null, null);
         if (log.isDebugEnabled())
           log.debug("Removed " + pid + " from full-text index:\n" + result);
@@ -268,11 +265,11 @@ public class ArticleImpl implements Article {
     }
   }
 
-  public String getObjectURL(String doi, String rep)
+  public String getObjectURL(String obj, String rep)
       throws NoSuchObjectIdException, RemoteException {
-    checkAccess(pep.GET_OBJECT_URL, doi);
+    checkAccess(pep.GET_OBJECT_URL, obj);
 
-    String path = "/fedora/get/" + DoiUtil.doi2PID(doi) + "/" + rep;
+    String path = "/fedora/get/" + DoiUtil.uri2PID(obj) + "/" + rep;
     return fedoraServer.resolve(path).toString();
   }
 
@@ -289,13 +286,13 @@ public class ArticleImpl implements Article {
       Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
 
       for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
-        String doi = (String)it.next();
+        String uri = (String) it.next();
         try {
-          checkAccess(pep.READ_META_DATA, doi);
+          checkAccess(pep.READ_META_DATA, uri);
         } catch (SecurityException se) {
-          articles.remove(doi);
+          articles.remove(uri);
           if (log.isDebugEnabled())
-            log.debug(doi, se);
+            log.debug(uri, se);
         }
       }
 
@@ -309,41 +306,40 @@ public class ArticleImpl implements Article {
     }
   }
 
-  public ObjectInfo[] listSecondaryObjects(String doi)
+  public ObjectInfo[] listSecondaryObjects(String article)
       throws NoSuchArticleIdException, RemoteException {
-    if (doi == null)
-      throw new NullPointerException("doi may not be null");
+    if (article == null)
+      throw new NullPointerException("article may not be null");
 
-    checkAccess(pep.LIST_SEC_OBJECTS, doi);
+    checkAccess(pep.LIST_SEC_OBJECTS, article);
 
-    String art = DoiUtil.doi2URI(doi);
-    ItqlHelper.validateUri(art, "doi");
+    ItqlHelper.validateUri(article, "article");
 
     ItqlHelper itql = ctx.getItqlHelper();
     try {
       AnswerSet ans =
-          new AnswerSet(itql.doQuery(ItqlHelper.bindValues(ITQL_LIST_SEC_OBJS, "art", art)));
+          new AnswerSet(itql.doQuery(ItqlHelper.bindValues(ITQL_LIST_SEC_OBJS, "art", article)));
       ans.next();
       AnswerSet.QueryAnswerSet rows = ans.getQueryResults();
 
-      if (!rows.next() && !articleExists(itql, art))
-        throw new NoSuchArticleIdException(doi);
+      if (!rows.next() && !articleExists(itql, article))
+        throw new NoSuchArticleIdException(article);
       rows.beforeFirst();
 
       Map loc = new HashMap();
       while (rows.next()) {
         ObjectInfo info = new ObjectInfo();
-        info.setDoi(DoiUtil.uri2DOI(rows.getString("cur")));
+        info.setUri(rows.getString("cur"));
 
-        loc.put(DoiUtil.uri2DOI(rows.getString("prev")), info);
+        loc.put(rows.getString("prev"), info);
 
         AnswerSet.QueryAnswerSet sqa = rows.getSubQueryResults(2);
         parseObjectInfo(sqa, info);
       }
 
       List infos = new ArrayList();
-      for (ObjectInfo info = (ObjectInfo) loc.get(doi); info != null;
-           info = (ObjectInfo) loc.get(info.getDoi()))
+      for (ObjectInfo info = (ObjectInfo) loc.get(article); info != null;
+           info = (ObjectInfo) loc.get(info.getUri()))
         infos.add(info);
 
       return (ObjectInfo[]) infos.toArray(new ObjectInfo[infos.size()]);
@@ -363,21 +359,20 @@ public class ArticleImpl implements Article {
     }
   }
 
-  protected String[] findAllObjects(String doi)
+  protected String[] findAllObjects(String subj)
       throws NoSuchArticleIdException, RemoteException, AnswerException {
-    String subj = DoiUtil.doi2URI(doi);
-    ItqlHelper.validateUri(subj, "doi");
+    ItqlHelper.validateUri(subj, "subject");
 
     ItqlHelper itql = ctx.getItqlHelper();
     StringAnswer ans =
         new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_FIND_OBJS, "subj", subj)));
-    List dois = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
-    if (dois.size() == 0)
-      throw new NoSuchArticleIdException(doi);
+    List uris = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+    if (uris.size() == 0)
+      throw new NoSuchArticleIdException(subj);
 
-    String[] res = new String[dois.size()];
+    String[] res = new String[uris.size()];
     for (int idx = 0; idx < res.length; idx++)
-      res[idx] = DoiUtil.uri2DOI(((String[]) dois.get(idx))[0]);
+      res[idx] = ((String[]) uris.get(idx))[0];
 
     return res;
   }
@@ -400,28 +395,27 @@ public class ArticleImpl implements Article {
     }
   }
 
-  public void setRepresentation(String doi, String rep, DataHandler content)
+  public void setRepresentation(String obj, String rep, DataHandler content)
       throws NoSuchObjectIdException, RemoteException {
-    if (doi == null)
-      throw new NullPointerException("doi may not be null");
+    if (obj == null)
+      throw new NullPointerException("obj may not be null");
     if (rep == null)
       throw new NullPointerException("representation may not be null");
 
-    checkAccess(pep.SET_REPRESENTATION, doi);   // FIXME: should pass 'rep' too
+    checkAccess(pep.SET_REPRESENTATION, obj);   // FIXME: should pass 'rep' too
 
-    String subj = DoiUtil.doi2URI(doi);
-    ItqlHelper.validateUri(subj, "doi");
+    ItqlHelper.validateUri(obj, "object");
 
     ItqlHelper itql = ctx.getItqlHelper();
     FedoraAPIM apim = ctx.getFedoraAPIM();
-    String txn = "set-rep " + doi + "|" + rep;
+    String txn = "set-rep " + obj + "|" + rep;
     try {
       itql.beginTxn(txn);
 
       if (log.isDebugEnabled())
-        log.debug("setting representation '" + rep + "' for '" + doi + "'");
+        log.debug("setting representation '" + rep + "' for '" + obj + "'");
 
-      itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_REP, "subj", subj, "rep", rep));
+      itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_REP, "subj", obj, "rep", rep));
 
       if (content != null) {
         String ct = content.getContentType();
@@ -431,34 +425,34 @@ public class ArticleImpl implements Article {
         ByteCounterInputStream bcis = new ByteCounterInputStream(content.getInputStream());
         String reLoc = ctx.getFedoraUploader().upload(bcis);
         try {
-          apim.modifyDatastreamByReference(DoiUtil.doi2PID(doi), rep, null, null, false, ct,
+          apim.modifyDatastreamByReference(DoiUtil.uri2PID(obj), rep, null, null, false, ct,
                                            null, reLoc, "A", "Updated datastream", false);
         } catch (RemoteException re) {
           if (!isNoSuchDatastream(re))
             throw re;
 
           if (log.isDebugEnabled())
-            log.debug("representation '" + rep + "' for '" + doi + "' doesn't exist yet - " +
+            log.debug("representation '" + rep + "' for '" + obj + "' doesn't exist yet - " +
                       "creating it", re);
-          apim.addDatastream(DoiUtil.doi2PID(doi), rep, new String[0], "Represention", false, ct,
+          apim.addDatastream(DoiUtil.uri2PID(obj), rep, new String[0], "Represention", false, ct,
                              null, reLoc, "M", "A", "New representation");
         }
 
         Map map = new HashMap();
-        map.put("subj", subj);
+        map.put("subj", obj);
         map.put("rep", rep);
         map.put("size", Long.toString(bcis.getLength()));
         map.put("type", ct);
         itql.doUpdate(ItqlHelper.bindValues(ITQL_CREATE_REP, map));
       } else {
         try {
-          apim.purgeDatastream(DoiUtil.doi2PID(doi), rep, null, "Purged datastream", false);
+          apim.purgeDatastream(DoiUtil.uri2PID(obj), rep, null, "Purged datastream", false);
         } catch (RemoteException re) {
           if (!isNoSuchDatastream(re))
             throw re;
 
           if (log.isDebugEnabled())
-            log.debug("representation '" + rep + "' for '" + doi + "' doesn't exist", re);
+            log.debug("representation '" + rep + "' for '" + obj + "' doesn't exist", re);
         }
       }
 
@@ -466,7 +460,7 @@ public class ArticleImpl implements Article {
       txn = null;
     } catch (RemoteException re) {
       if (isNoSuchObject(re))
-        throw (NoSuchObjectIdException) new NoSuchObjectIdException(doi).initCause(re);
+        throw (NoSuchObjectIdException) new NoSuchObjectIdException(obj).initCause(re);
       else
         throw re;
     } catch (IOException ioe) {
@@ -544,28 +538,27 @@ public class ArticleImpl implements Article {
     }
   }
 
-  public ObjectInfo getObjectInfo(String doi) throws NoSuchObjectIdException, RemoteException {
-    if (doi == null)
-      throw new NullPointerException("doi may not be null");
+  public ObjectInfo getObjectInfo(String obj) throws NoSuchObjectIdException, RemoteException {
+    if (obj == null)
+      throw new NullPointerException("obj may not be null");
 
-    checkAccess(pep.GET_OBJECT_INFO, doi);
+    checkAccess(pep.GET_OBJECT_INFO, obj);
 
-    String subj = DoiUtil.doi2URI(doi);
-    ItqlHelper.validateUri(subj, "doi");
+    ItqlHelper.validateUri(obj, "obj");
 
     ItqlHelper itql = ctx.getItqlHelper();
     try {
       AnswerSet ans =
-          new AnswerSet(itql.doQuery(ItqlHelper.bindValues(ITQL_GET_OBJ_INFO, "subj", subj)));
+          new AnswerSet(itql.doQuery(ItqlHelper.bindValues(ITQL_GET_OBJ_INFO, "subj", obj)));
       ans.next();
       AnswerSet.QueryAnswerSet info = ans.getQueryResults();
 
       if (!info.next())
-        throw new NoSuchObjectIdException(doi);
+        throw new NoSuchObjectIdException(obj);
       info.beforeFirst();
 
       ObjectInfo res = new ObjectInfo();
-      res.setDoi(doi);
+      res.setUri(obj);
       parseObjectInfo(info, res);
 
       return res;
@@ -620,7 +613,7 @@ public class ArticleImpl implements Article {
     oi.setRepresentations(ri);
   }
 
-  private void checkAccess(String action, String doi) {
-    pep.checkAccess(action, URI.create(DoiUtil.doi2URI(doi)));
+  private void checkAccess(String action, String uri) {
+    pep.checkAccess(action, URI.create(uri));
   }
 }

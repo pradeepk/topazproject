@@ -80,15 +80,15 @@ public class FetchArticleService {
   }
 
   /**
-   * Get the DOI transformed as HTML.
-   * @param articleDOI articleDOI
+   * Get the URI transformed as HTML.
+   * @param articleURI articleURI
    * @param writer writer
    * @throws org.plos.ApplicationException ApplicationException
    * @throws java.rmi.RemoteException RemoteException
    * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
    */
-  public void getDOIAsHTML(final String articleDOI, final Writer writer) throws ApplicationException, RemoteException, NoSuchIdException {
-    final String objectURL = articleService.getObjectURL(articleDOI, articleRep);
+  public void getURIAsHTML(final String articleURI, final Writer writer) throws ApplicationException, RemoteException, NoSuchIdException {
+    final String objectURL = articleService.getObjectURL(articleURI, articleRep);
 
     transform(objectURL, writer);
   }
@@ -326,7 +326,7 @@ public class FetchArticleService {
    * Get a list of all articles
    * @param startDate startDate
    * @param endDate endDate
-   * @return list of article doi's
+   * @return list of article uri's
    * @throws ApplicationException ApplicationException
    */
   public Collection<String> getArticles(final String startDate, final String endDate) throws ApplicationException {
@@ -343,18 +343,18 @@ public class FetchArticleService {
       final Document articleDom = factory.newDocumentBuilder().parse(new InputSource(new StringReader(articlesDoc)));
 
       // Get the matching elements
-      final NodeList nodelist = XPathAPI.selectNodeList(articleDom, "/articles/article/doi");
+      final NodeList nodelist = XPathAPI.selectNodeList(articleDom, "/articles/article/uri");
 
       for (int i = 0; i < nodelist.getLength(); i++) {
         final Element elem = (Element) nodelist.item(i);
-        final String doi = elem.getTextContent();
+        final String uri = elem.getTextContent();
         final String DOI_PREFIX = "info:doi/";
-        if (doi.startsWith(DOI_PREFIX)) {
-          final String articleDoi = doi.substring(DOI_PREFIX.length());
+        if (uri.startsWith(DOI_PREFIX)) {
+          final String articleDoi = uri.substring(DOI_PREFIX.length());
           final String decodedArticleDoi = URLDecoder.decode(articleDoi, encodingCharset);
           articles.add(decodedArticleDoi);
         } else {
-          articles.add("DOI_PREFIX:" + DOI_PREFIX + " not found. Instead found:" + doi);
+          articles.add("DOI_PREFIX:" + DOI_PREFIX + " not found. Instead found:" + uri);
         }
       }
 

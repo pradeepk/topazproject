@@ -21,7 +21,7 @@ import java.net.URLConnection;
 
 public class FetchObjectAction extends BaseActionSupport {
   private ArticleWebService articleWebService;
-  private String doi;
+  private String uri;
   private String representation;
 
   private InputStream inputStream;
@@ -29,7 +29,7 @@ public class FetchObjectAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(FetchObjectAction.class);
 
   public String execute() throws Exception {
-    final String objectURL = articleWebService.getObjectURL(doi, representation);
+    final String objectURL = articleWebService.getObjectURL(uri, representation);
     final URLConnection urlConnection = new URL(objectURL).openConnection();
     inputStream = urlConnection.getInputStream();
     final String fileExt = getFileExtension(urlConnection);
@@ -38,7 +38,7 @@ public class FetchObjectAction extends BaseActionSupport {
   }
 
   private String getContentDisposition(final String fileExt) {
-    return "filename=\"" + FileUtils.getFileName(doi) + "." + fileExt + "\"";
+    return "filename=\"" + FileUtils.getFileName(uri) + "." + fileExt + "\"";
   }
 
   private String getFileExtension(final URLConnection urlConnection) {
@@ -55,10 +55,10 @@ public class FetchObjectAction extends BaseActionSupport {
   }
 
   /**
-   * @param doi set doi
+   * @param uri set uri
    */
-  public void setDoi(final String doi) {
-    this.doi = doi;
+  public void setUri(final String uri) {
+    this.uri = uri;
   }
 
   /**

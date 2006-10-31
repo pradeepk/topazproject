@@ -505,8 +505,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 //      + " <para>Hello world, indeed, <em>wonderful</em> world</para></chapter></doc>";
 
 //    String target = "http://localhost:9080/existingArticle/test.xml";
-//    String target = "http://localhost:8080/plosone-webapp/article/fetchArticle.action?articleDOI=10.1371%2Fjournal.pone.0000008";
-    final String target = getArticleWebService().getObjectURL("10.1371/journal.pone.0000008", "XML");
+//    String target = "http://localhost:8080/plosone-webapp/article/fetchArticle.action?articleURI=info:doi/10.1371%2Fjournal.pone.0000008";
+    final String target = getArticleWebService().getObjectURL("info:doi/10.1371/journal.pone.0000008", "XML");
     log.debug("target =" + target);
     
     final String startPath1    = "/article[1]/body[1]/sec[2]/sec[1]/p[4]";

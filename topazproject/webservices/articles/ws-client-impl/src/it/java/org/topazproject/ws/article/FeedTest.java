@@ -32,10 +32,10 @@ public class FeedTest extends TestCase {
     "http://localhost:9997/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort";
 
   protected static final String[][] TEST_ARTICLES = {
-    { "10.1371/journal.pbio.0020294", "/pbio.0020294.zip" },
-    { "10.1371/journal.pbio.0020042", "/pbio.0020042.zip" },
-    { "10.1371/journal.pbio.0020317", "/pbio.0020317.zip" },
-    { "10.1371/journal.pbio.0020382", "/pbio.0020382.zip" },
+    { "info:doi/10.1371/journal.pbio.0020294", "/pbio.0020294.zip" },
+    { "info:doi/10.1371/journal.pbio.0020042", "/pbio.0020042.zip" },
+    { "info:doi/10.1371/journal.pbio.0020317", "/pbio.0020317.zip" },
+    { "info:doi/10.1371/journal.pbio.0020382", "/pbio.0020382.zip" },
   };
 
   public FeedTest(String testName) {
@@ -62,23 +62,23 @@ public class FeedTest extends TestCase {
       deleteArticle(TEST_ARTICLES[i][0]);
   }
 
-  protected void ingestArticle(String doi, String resource)
+  protected void ingestArticle(String uri, String resource)
       throws RemoteException, DuplicateArticleIdException, IngestException {
-    log.info("ingesting article " + doi + " : " + resource);
-    deleteArticle(doi);
+    log.info("ingesting article " + uri + " : " + resource);
+    deleteArticle(uri);
     URL article = getClass().getResource(resource);
     try {
-      assertEquals("Wrong doi returned,", doi, service.ingest(new DataHandler(article)));
-      log.info("ingested article " + doi);
+      assertEquals("Wrong uri returned,", uri, service.ingest(new DataHandler(article)));
+      log.info("ingested article " + uri);
     } catch (DuplicateArticleIdException daie) {
-      log.info("already ingested article " + doi);
+      log.info("already ingested article " + uri);
     }
   }
 
-  protected void deleteArticle(String doi) throws RemoteException {
+  protected void deleteArticle(String uri) throws RemoteException {
     try {
-      service.delete(doi, true);
-      log.info("deleted article " + doi);
+      service.delete(uri, true);
+      log.info("deleted article " + uri);
 //    } catch (NoSuchArticleIdException nsaie) {
     } catch (Exception nsaie) {
       // so what

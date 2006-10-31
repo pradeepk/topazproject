@@ -69,54 +69,55 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   /**
    * @see org.topazproject.ws.article.Article#markSuperseded
    */
-  public void markSuperseded(String oldDoi, String newDoi)
+  public void markSuperseded(String oldArt, String newArt)
       throws RemoteException, NoSuchArticleIdException {
-    impl.markSuperseded(oldDoi, newDoi);
+    impl.markSuperseded(oldArt, newArt);
   }
 
   /**
    * @see org.topazproject.ws.article.Article#delete
    */
-  public void delete(String doi, boolean purge) throws RemoteException, NoSuchArticleIdException {
-    impl.delete(doi, purge);
+  public void delete(String article, boolean purge)
+      throws RemoteException, NoSuchArticleIdException {
+    impl.delete(article, purge);
   }
 
   /**
    * @see org.topazproject.ws.article.Article#setState
    */
-  public void setState(String doi, int state) throws RemoteException, NoSuchArticleIdException {
-    impl.setState(doi, state);
+  public void setState(String article, int state) throws RemoteException, NoSuchArticleIdException {
+    impl.setState(article, state);
   }
 
   /**
    * @see org.topazproject.ws.article.Article#getObjectURL
    */
-  public String getObjectURL(String doi, String rep)
+  public String getObjectURL(String obj, String rep)
       throws RemoteException, NoSuchObjectIdException {
-    return impl.getObjectURL(doi, rep);
+    return impl.getObjectURL(obj, rep);
   }
 
   /**
    * @see org.topazproject.ws.article.Article#setRepresentation
    */
-  public void setRepresentation(String doi, String rep, DataHandler content)
+  public void setRepresentation(String obj, String rep, DataHandler content)
       throws NoSuchObjectIdException, RemoteException {
-    impl.setRepresentation(doi, rep, content);
+    impl.setRepresentation(obj, rep, content);
   }
 
   /**
    * @see org.topazproject.ws.article.Article#getObjectInfo
    */
-  public ObjectInfo getObjectInfo(String doi) throws NoSuchObjectIdException, RemoteException {
-    return impl.getObjectInfo(doi);
+  public ObjectInfo getObjectInfo(String obj) throws NoSuchObjectIdException, RemoteException {
+    return impl.getObjectInfo(obj);
   }
 
   /**
    * @see org.topazproject.ws.article.Article#listSecondaryObjects
    */
-  public ObjectInfo[] listSecondaryObjects(String doi)
+  public ObjectInfo[] listSecondaryObjects(String article)
       throws NoSuchArticleIdException, RemoteException {
-    return impl.listSecondaryObjects(doi);
+    return impl.listSecondaryObjects(article);
   }
 
   /**
