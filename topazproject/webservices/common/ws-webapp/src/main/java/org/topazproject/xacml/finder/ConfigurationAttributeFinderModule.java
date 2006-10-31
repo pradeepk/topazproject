@@ -73,7 +73,7 @@ public class ConfigurationAttributeFinderModule extends AttributeFinderModule {
                                         EvaluationCtx context, int designatorType) {
     try {
       Configuration  conf     = ConfigurationStore.getInstance().getConfiguration();
-      Object         property = conf.getProperty(id.toString());
+      Object         property = conf.getString(id.toString());
       AttributeValue value    = Util.toAttributeValue(type, property);
 
       if (value == null)
