@@ -192,7 +192,7 @@ public class ItqlHelper {
       AbstractReAuthStubFactory factory = new AbstractReAuthStubFactory() {
 
         public Object newStub(ProtectedService service) throws Exception {
-          return interpreter;
+          return createStub(service);
         }
 
         public Object rebuildStub(Object old, ProtectedService service, Throwable fault)
