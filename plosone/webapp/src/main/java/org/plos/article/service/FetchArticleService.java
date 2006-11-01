@@ -261,7 +261,7 @@ public class FetchArticleService {
     InputSource entityResolver = null;
     if (null == entityResolver) {
 //      log.debug("Creating entity resolver for " + systemId);
-      //TODO: fix this constant value thingy
+      //TODO: fix this constant value thingy and also fix for location under /xmlchars/
       final String entityFilePath = "/jp-dtd-2.0/" + entityFilename;
       URL resourceURL = FetchArticleService.class.getResource(entityFilePath);
       if (null == resourceURL) {
@@ -348,14 +348,8 @@ public class FetchArticleService {
       for (int i = 0; i < nodelist.getLength(); i++) {
         final Element elem = (Element) nodelist.item(i);
         final String uri = elem.getTextContent();
-        final String DOI_PREFIX = "info:doi/";
-        if (uri.startsWith(DOI_PREFIX)) {
-          final String articleDoi = uri.substring(DOI_PREFIX.length());
-          final String decodedArticleDoi = URLDecoder.decode(articleDoi, encodingCharset);
-          articles.add(decodedArticleDoi);
-        } else {
-          articles.add("DOI_PREFIX:" + DOI_PREFIX + " not found. Instead found:" + uri);
-        }
+        final String decodedArticleUri = URLDecoder.decode(uri, encodingCharset);
+        articles.add(decodedArticleUri);
       }
 
       return articles;
