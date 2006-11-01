@@ -11,11 +11,7 @@ package org.plos.user;
 
 import com.opensymphony.xwork.ActionContext;
 import com.opensymphony.xwork.ActionInvocation;
-import com.opensymphony.xwork.ActionProxy;
-import com.opensymphony.xwork.Result;
-import com.opensymphony.xwork.interceptor.PreResultListener;
 import com.opensymphony.xwork.mock.MockActionInvocation;
-import com.opensymphony.xwork.util.OgnlValueStack;
 import org.plos.ApplicationException;
 import org.plos.BasePlosoneTestCase;
 import org.plos.Constants;
@@ -31,8 +27,7 @@ public class EnsureUserAccountInterceptorTest extends BasePlosoneTestCase {
     final MockActionInvocation actionInvocation = new MockActionInvocation();
 
     final Map<String, Object> map = new HashMap<String, Object>();
-    map.put(Constants.PLOS_ONE_USER_KEY, "ASDASDASD12312313EDB");
-    map.put("plosUser", null);
+    map.put(Constants.SINGLE_SIGNON_USER_KEY, "ASDASDASD12312313EDB");
     ActionContext.getContext().setSession(map);
 
     interceptor.setUserService(getUserService());
@@ -43,22 +38,26 @@ public class EnsureUserAccountInterceptorTest extends BasePlosoneTestCase {
   }
 
   public void testShouldForwardToUpdateNewAccount() throws Exception {
-    final EnsureUserAccountInterceptor interceptor = new EnsureUserAccountInterceptor();
-    final MockActionInvocation actionInvocation = new MockActionInvocation();
-
-    final Map<String, Object> map = new HashMap<String, Object>();
     final String GUID = "ASDASDASD12312313EDB";
-    map.put(Constants.PLOS_ONE_USER_KEY, GUID);
+    final PlosOneUser plosOneUser = new PlosOneUser(GUID);
+    plosOneUser.setUserId("topazId");
+    plosOneUser.setEmail("viru@home.com");
+    plosOneUser.setDisplayName(null); //Display name is not set
+    plosOneUser.setRealName("virender");
 
-    ActionContext.getContext().setSession(map);
+    final EnsureUserAccountInterceptor interceptor = new EnsureUserAccountInterceptor() {
+      protected Map<String, Object> getUserSessionMap() {
+        final Map<String, Object> map = new HashMap<String, Object>();
+        map.put(Constants.SINGLE_SIGNON_USER_KEY, "SINGLE_SIGNON_KEY_ASDASDASD12312313EDB");
+        map.put(Constants.PLOS_ONE_USER_KEY, plosOneUser);
+        return map;
+      }
+    };
+
+    final MockActionInvocation actionInvocation = new MockActionInvocation();
 
     final UserService mockUserService = new UserService() {
       public PlosOneUser getUserByAuthId(final String guid) throws ApplicationException {
-        final PlosOneUser plosOneUser = new PlosOneUser(guid);
-        plosOneUser.setUserId("topazId");
-        plosOneUser.setEmail("viru@home.com");
-        plosOneUser.setDisplayName(null); //Display name is not set
-        plosOneUser.setRealName("virender");
         return plosOneUser;
       }
     };
@@ -71,37 +70,32 @@ public class EnsureUserAccountInterceptorTest extends BasePlosoneTestCase {
   }
 
   public void testShouldForwardToOriginalAction() throws Exception {
-    final EnsureUserAccountInterceptor interceptor = new EnsureUserAccountInterceptor();
+    final String GUID = "ASDASDASD12312313EDB";
+    final PlosOneUser plosOneUser = new PlosOneUser(GUID);
+    plosOneUser.setUserId("topazId");
+    plosOneUser.setEmail("viru@home.com");
+    plosOneUser.setDisplayName("Viru");  //Display name is already set
+    plosOneUser.setRealName("virender");
+
+    final EnsureUserAccountInterceptor interceptor = new EnsureUserAccountInterceptor() {
+      protected Map<String, Object> getUserSessionMap() {
+        final Map<String, Object> map = new HashMap<String, Object>();
+        map.put(Constants.SINGLE_SIGNON_USER_KEY, "SINGLE_SIGNON_KEY_ASDASDASD12312313EDB");
+        map.put(Constants.PLOS_ONE_USER_KEY, plosOneUser);
+        return map;
+      }
+    };
+
     final String actionCalledStatus = "actionCalled";
 
-    final ActionInvocation actionInvocation = new ActionInvocation() {
-      public Object getAction() {return null;}
-      public boolean isExecuted() {return false; }
-      public ActionContext getInvocationContext() {return null;}
-      public ActionProxy getProxy() {return null;}
-      public Result getResult() throws Exception {return null;}
-      public String getResultCode() {return null;}
-      public void setResultCode(String string) {}
-      public OgnlValueStack getStack() {return null;}
-      public void addPreResultListener(PreResultListener preResultListener) {}
+    final ActionInvocation actionInvocation = new MockActionInvocation() {
       public String invoke() throws Exception {
         return actionCalledStatus;
       }
-      public String invokeActionOnly() throws Exception {return null;}
     };
-
-    final Map<String, Object> map = new HashMap<String, Object>();
-    final String GUID = "ASDASDASD12312313EDB";
-    map.put(Constants.PLOS_ONE_USER_KEY, GUID);
-    ActionContext.getContext().setSession(map);
 
     final UserService mockUserService = new UserService() {
       public PlosOneUser getUserByAuthId(final String guid) throws ApplicationException {
-        final PlosOneUser plosOneUser = new PlosOneUser(guid);
-        plosOneUser.setUserId("topazId");
-        plosOneUser.setEmail("viru@home.com");
-        plosOneUser.setDisplayName("Viru");  //Display name is already set
-        plosOneUser.setRealName("virender");
         return plosOneUser;
       }
     };

@@ -66,7 +66,7 @@ public class EnsureUserAccountInterceptor implements Interceptor {
     }
   }
 
-  private Map<String, Object> getUserSessionMap() {
+  protected Map<String, Object> getUserSessionMap() {
     return userService.getUserContext().getSessionMap();
   }
 

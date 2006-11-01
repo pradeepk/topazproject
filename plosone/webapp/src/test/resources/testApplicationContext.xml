@@ -10,9 +10,7 @@
   <import resource="nonWebApplicationContext.xml"/>
 
   <!-- creating all actions with the right injections -->
-  <bean id="fetchArticleAction" class="org.plos.article.action.FetchArticleAction">
-    <property name="fetchArticleService" ref="fetchArticleService"/>
-  </bean>
+  <bean class="org.plos.article.action.FetchArticleAction" />
 
   <bean class="org.plos.article.action.FetchObjectAction"/>
 
@@ -24,7 +22,7 @@
 
   <bean class="org.plos.annotation.action.ListAnnotationAction"/>
 
-  <bean id="getAnnotationAction" class="org.plos.annotation.action.GetAnnotationAction" autowire="byName"/>
+  <bean class="org.plos.annotation.action.GetAnnotationAction" />
 
   <bean class="org.plos.annotation.action.CreateReplyAction"/>
 

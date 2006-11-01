@@ -21,17 +21,18 @@ public class UserActionsTest extends BasePlosoneTestCase {
   private static final String USERNAME= "TEST_USERNAME";
  
   public void testSequencedTests() throws Exception {
-    final CreateUserAction createUserAction1 = getCreateUserAction();
-    createUserAction1.setEmail(TEST_EMAIL);
-    createUserAction1.setRealName(REAL_NAME);
-    createUserAction1.setAuthId(AUTH_ID);
-    createUserAction1.setUsername(USERNAME);
-    assertEquals(Action.SUCCESS, createUserAction1.execute());
-    assertNotNull(createUserAction1.getInternalId());
-    final DisplayUserAction displayUserAction1 = getDisplayUserAction();
-    displayUserAction1.setUserId(createUserAction1.getInternalId());
-    assertEquals(Action.SUCCESS, displayUserAction1.execute());
-    final PlosOneUser pou = displayUserAction1.getPou();
+    final CreateUserAction createUserAction = getCreateUserAction();
+    createUserAction.setEmail(TEST_EMAIL);
+    createUserAction.setRealName(REAL_NAME);
+    createUserAction.setAuthId(AUTH_ID);
+    createUserAction.setUsername(USERNAME);
+    assertEquals(Action.SUCCESS, createUserAction.execute());
+    assertNotNull(createUserAction.getInternalId());
+    
+    final DisplayUserAction displayUserAction = getDisplayUserAction();
+    displayUserAction.setUserId(createUserAction.getInternalId());
+    assertEquals(Action.SUCCESS, displayUserAction.execute());
+    final PlosOneUser pou = displayUserAction.getPou();
     assertEquals (TEST_EMAIL, pou.getEmail());
     assertEquals (REAL_NAME, pou.getRealName());
     assertEquals (USERNAME, pou.getDisplayName());
