@@ -66,8 +66,9 @@ public class CreateUserAction extends UserActionSupport {
 
     getUserService().setProfile(newUser);
 
-    sessionMap.put(PLOS_ONE_USER_KEY, newUser);
-
+    if (sessionMap != null) {
+      sessionMap.put(PLOS_ONE_USER_KEY, newUser);
+    }
     return SUCCESS;
   }
 
