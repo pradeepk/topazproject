@@ -78,22 +78,26 @@ public class UserRolesServiceTest extends TestCase {
     assertTrue("Failed to get expected NoSuchUserIdException", gotE);
   }
 
-  public void testInvalidUser() throws RemoteException, IOException {
+  public void testInvalidUser() throws RemoteException, NoSuchUserIdException, IOException {
     boolean gotE = false;
     try {
       service.getRoles("muster");
-    } catch (NoSuchUserIdException nsie) {
+    } catch (RemoteException re) {
+      if (re.getMessage().indexOf("IllegalArgumentException") < 0)
+        throw re;
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
+    assertTrue("Failed to get expected IllegalArgumentException", gotE);
 
     gotE = false;
     try {
       service.setRoles("muster", null);
-    } catch (NoSuchUserIdException nsie) {
+    } catch (RemoteException re) {
+      if (re.getMessage().indexOf("IllegalArgumentException") < 0)
+        throw re;
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
+    assertTrue("Failed to get expected IllegalArgumentException", gotE);
   }
 
   public void testNullUser() throws RemoteException, NoSuchUserIdException, IOException {
@@ -101,6 +105,8 @@ public class UserRolesServiceTest extends TestCase {
     try {
       service.getRoles(null);
     } catch (RemoteException re) {
+      if (re.getMessage().indexOf("NullPointerException") < 0)
+        throw re;
       gotE = true;
     }
     assertTrue("Failed to get expected RemoteException", gotE);
@@ -109,6 +115,8 @@ public class UserRolesServiceTest extends TestCase {
     try {
       service.setRoles(null, null);
     } catch (RemoteException re) {
+      if (re.getMessage().indexOf("NullPointerException") < 0)
+        throw re;
       gotE = true;
     }
     assertTrue("Failed to get expected RemoteException", gotE);

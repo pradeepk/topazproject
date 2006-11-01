@@ -202,7 +202,9 @@ public class ArticleImpl implements Article {
 
   public void markSuperseded(String oldArt, String newArt)
       throws NoSuchArticleIdException, RemoteException {
-    checkAccess(pep.INGEST_ARTICLE, newArt);    // FIXME: should pass both URI's
+    // FIXME: should pass both URI's
+    pep.checkAccess(pep.INGEST_ARTICLE, ItqlHelper.validateUri(newArt, "newArt"));
+    ItqlHelper.validateUri(oldArt, "oldArt");
 
     ctx.getItqlHelper().doUpdate("insert <" + oldArt + "> <dc_terms:isReplacedBy> <" + newArt +
                                  "> <" + newArt + "> <dc_terms:replaces> <" + oldArt +
@@ -210,7 +212,7 @@ public class ArticleImpl implements Article {
   }
 
   public void setState(String article, int state) throws NoSuchArticleIdException, RemoteException {
-    checkAccess(pep.SET_ARTICLE_STATE, article);
+    pep.checkAccess(pep.SET_ARTICLE_STATE, ItqlHelper.validateUri(article, "article"));
 
     try {
       ctx.getFedoraAPIM().modifyObject(DoiUtil.uri2PID(article), state2Str(state),
@@ -222,7 +224,7 @@ public class ArticleImpl implements Article {
 
   public void delete(String article, boolean purge)
       throws NoSuchArticleIdException, RemoteException {
-    checkAccess(pep.DELETE_ARTICLE, article);
+    pep.checkAccess(pep.DELETE_ARTICLE, ItqlHelper.validateUri(article, "article"));
 
     ItqlHelper itql = ctx.getItqlHelper();
     FedoraAPIM apim = ctx.getFedoraAPIM();
@@ -267,7 +269,7 @@ public class ArticleImpl implements Article {
 
   public String getObjectURL(String obj, String rep)
       throws NoSuchObjectIdException, RemoteException {
-    checkAccess(pep.GET_OBJECT_URL, obj);
+    pep.checkAccess(pep.GET_OBJECT_URL, ItqlHelper.validateUri(obj, "object"));
 
     String path = "/fedora/get/" + DoiUtil.uri2PID(obj) + "/" + rep;
     return fedoraServer.resolve(path).toString();
@@ -288,7 +290,7 @@ public class ArticleImpl implements Article {
       for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
         String uri = (String) it.next();
         try {
-          checkAccess(pep.READ_META_DATA, uri);
+          pep.checkAccess(pep.READ_META_DATA, URI.create(uri));
         } catch (SecurityException se) {
           articles.remove(uri);
           if (log.isDebugEnabled())
@@ -308,12 +310,7 @@ public class ArticleImpl implements Article {
 
   public ObjectInfo[] listSecondaryObjects(String article)
       throws NoSuchArticleIdException, RemoteException {
-    if (article == null)
-      throw new NullPointerException("article may not be null");
-
-    checkAccess(pep.LIST_SEC_OBJECTS, article);
-
-    ItqlHelper.validateUri(article, "article");
+    pep.checkAccess(pep.LIST_SEC_OBJECTS, ItqlHelper.validateUri(article, "article"));
 
     ItqlHelper itql = ctx.getItqlHelper();
     try {
@@ -387,7 +384,7 @@ public class ArticleImpl implements Article {
   protected boolean articleExists(ItqlHelper itql, String art) throws RemoteException {
     try {
       StringAnswer ans =
-          new StringAnswer(itql.doQuery(ITQL_TEST_ARTICLE.replaceAll("\\Q${art}", art)));
+          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_TEST_ARTICLE, "art", art)));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       return rows.size() > 0;
     } catch (AnswerException ae) {
@@ -397,14 +394,11 @@ public class ArticleImpl implements Article {
 
   public void setRepresentation(String obj, String rep, DataHandler content)
       throws NoSuchObjectIdException, RemoteException {
-    if (obj == null)
-      throw new NullPointerException("obj may not be null");
+    // FIXME: should pass 'rep' too
+    pep.checkAccess(pep.SET_REPRESENTATION, ItqlHelper.validateUri(obj, "object"));
+
     if (rep == null)
       throw new NullPointerException("representation may not be null");
-
-    checkAccess(pep.SET_REPRESENTATION, obj);   // FIXME: should pass 'rep' too
-
-    ItqlHelper.validateUri(obj, "object");
 
     ItqlHelper itql = ctx.getItqlHelper();
     FedoraAPIM apim = ctx.getFedoraAPIM();
@@ -415,7 +409,8 @@ public class ArticleImpl implements Article {
       if (log.isDebugEnabled())
         log.debug("setting representation '" + rep + "' for '" + obj + "'");
 
-      itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_REP, "subj", obj, "rep", rep));
+      itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_REP, "subj", obj,
+                                          "rep", ItqlHelper.escapeLiteral(rep)));
 
       if (content != null) {
         String ct = content.getContentType();
@@ -440,9 +435,9 @@ public class ArticleImpl implements Article {
 
         Map map = new HashMap();
         map.put("subj", obj);
-        map.put("rep", rep);
+        map.put("rep", ItqlHelper.escapeLiteral(rep));
         map.put("size", Long.toString(bcis.getLength()));
-        map.put("type", ct);
+        map.put("type", ItqlHelper.escapeLiteral(ct));
         itql.doUpdate(ItqlHelper.bindValues(ITQL_CREATE_REP, map));
       } else {
         try {
@@ -539,12 +534,7 @@ public class ArticleImpl implements Article {
   }
 
   public ObjectInfo getObjectInfo(String obj) throws NoSuchObjectIdException, RemoteException {
-    if (obj == null)
-      throw new NullPointerException("obj may not be null");
-
-    checkAccess(pep.GET_OBJECT_INFO, obj);
-
-    ItqlHelper.validateUri(obj, "obj");
+    pep.checkAccess(pep.GET_OBJECT_INFO, ItqlHelper.validateUri(obj, "object"));
 
     ItqlHelper itql = ctx.getItqlHelper();
     try {
@@ -611,9 +601,5 @@ public class ArticleImpl implements Article {
     }
 
     oi.setRepresentations(ri);
-  }
-
-  private void checkAccess(String action, String uri) {
-    pep.checkAccess(action, URI.create(uri));
   }
 }

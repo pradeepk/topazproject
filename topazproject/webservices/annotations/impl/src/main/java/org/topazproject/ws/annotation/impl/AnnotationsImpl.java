@@ -202,8 +202,7 @@ public class AnnotationsImpl implements Annotations {
                            throws NoSuchAnnotationIdException, RemoteException {
     if (context == null)
       context = annotates;
-    else
-      context = ItqlHelper.escapeLiteral(context);
+    context = ItqlHelper.escapeLiteral(context);
 
     if (type == null)
       type = "http://www.w3.org/2000/10/annotationType#Annotation";
@@ -284,7 +283,7 @@ public class AnnotationsImpl implements Annotations {
 
     String[]   purgeList = getFedoraObjects(id, deletePreceding);
 
-    String     del = DELETE_ITQL.replaceAll("\\Q${id}", id);
+    String     del = ItqlHelper.bindValues(DELETE_ITQL, "id", id);
 
     String     txn = "delete " + id;
 
@@ -298,7 +297,7 @@ public class AnnotationsImpl implements Annotations {
         log.debug("deleted " + id);
 
       for (int i = 0; i < preceding.length; i++) {
-        del = DELETE_ITQL.replaceAll("\\Q${id}", preceding[i]);
+        del = ItqlHelper.bindValues(DELETE_ITQL, "id", preceding[i]);
         itql.doUpdate(del);
 
         if (log.isDebugEnabled())
@@ -326,7 +325,7 @@ public class AnnotationsImpl implements Annotations {
     pep.checkAccess(pep.GET_ANNOTATION_INFO, ItqlHelper.validateUri(id, "annotation-id"));
 
     try {
-      String query = GET_ITQL.replaceAll("\\Q${id}", id);
+      String query = ItqlHelper.bindValues(GET_ITQL, "id", id);
 
       Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
@@ -387,7 +386,7 @@ public class AnnotationsImpl implements Annotations {
     pep.checkAccess(pep.GET_ANNOTATION_INFO, thisUri);
 
     try {
-      String query = LATEST_ITQL.replaceAll("\\Q${id}", id);
+      String query = ItqlHelper.bindValues(LATEST_ITQL, "id", id);
 
       Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
 
@@ -412,7 +411,7 @@ public class AnnotationsImpl implements Annotations {
     checkId(thisUri);
 
     try {
-      String query = PRECEDING_ITQL.replaceAll("\\Q${id}", id);
+      String query = ItqlHelper.bindValues(PRECEDING_ITQL, "id", id);
 
       Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
 
@@ -433,7 +432,7 @@ public class AnnotationsImpl implements Annotations {
     pep.checkAccess(pep.SET_ANNOTATION_STATE, thisUri);
     checkId(thisUri);
 
-    String set = SET_STATE_ITQL.replaceAll("\\Q${id}", id).replaceAll("\\Q${state}", "" + state);
+    String set = ItqlHelper.bindValues(SET_STATE_ITQL, "id", id, "state", "" + state);
 
     ctx.getItqlHelper().doUpdate(set);
   }
@@ -496,7 +495,7 @@ public class AnnotationsImpl implements Annotations {
     String id = uri.toString();
 
     try {
-      String query = CHECK_ID_ITQL.replaceAll("\\Q${id}", id);
+      String query = ItqlHelper.bindValues(CHECK_ID_ITQL, "id", id);
       Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -573,7 +572,7 @@ public class AnnotationsImpl implements Annotations {
   private String[] getFedoraObjects(String id, boolean preceding)
                              throws RemoteException {
     String query = preceding ? FEDORA_LIST_ITQL : FEDORA_ID_ITQL;
-    query = query.replaceAll("\\Q${id}", id);
+    query = ItqlHelper.bindValues(query, "id", id);
 
     try {
       Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
@@ -599,7 +598,7 @@ public class AnnotationsImpl implements Annotations {
 
   private String[] getPrecedingAll(String id) throws RemoteException {
     try {
-      String query = PRECEDING_ALL_ITQL.replaceAll("\\Q${id}", id);
+      String query = ItqlHelper.bindValues(PRECEDING_ALL_ITQL, "id", id);
 
       Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
 

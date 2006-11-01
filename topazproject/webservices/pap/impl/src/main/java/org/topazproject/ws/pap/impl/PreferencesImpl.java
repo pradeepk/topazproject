@@ -11,8 +11,10 @@
 package org.topazproject.ws.pap.impl;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URLEncoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -194,10 +196,7 @@ public class PreferencesImpl implements Preferences {
 
   public UserPreference[] getPreferences(String appId, String userId)
       throws NoSuchUserIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
-
-    pep.checkUserAccess(pep.GET_PREFERENCES, userId);
+    pep.checkAccess(pep.GET_PREFERENCES, ItqlHelper.validateUri(userId, "userId"));
 
     if (log.isDebugEnabled())
       log.debug("Getting preferences for '" + userId + "', app='" + appId + "'");
@@ -205,10 +204,9 @@ public class PreferencesImpl implements Preferences {
     ItqlHelper itql = ctx.getItqlHelper();
     StringAnswer ans;
     try {
-      String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
-                   ITQL_GET_PREFS.replaceAll("\\Q${userId}", userId).
-                                  replaceAll("\\Q${appId}",
-                                             (appId != null) ? "'" + appId + "'" : "\\$appId");
+      String qry = ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId) +
+                   ItqlHelper.bindValues(ITQL_GET_PREFS, "userId", userId,
+                                         "appId", formatAppId(appId));
       ans = new StringAnswer(itql.doQuery(qry));
     } catch (AnswerException ae) {
       throw new RemoteException("Error getting preferences for user '" + userId + "'", ae);
@@ -248,10 +246,7 @@ public class PreferencesImpl implements Preferences {
 
   public void setPreferences(String appId, String userId, UserPreference[] prefs)
       throws NoSuchUserIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
-
-    pep.checkUserAccess(pep.SET_PREFERENCES, userId);
+    pep.checkAccess(pep.SET_PREFERENCES, ItqlHelper.validateUri(userId, "userId"));
 
     if (appId == null && prefs != null)
       throw new IllegalArgumentException("prefs must be null if app-id is null");
@@ -267,16 +262,15 @@ public class PreferencesImpl implements Preferences {
       if (!userExists(userId))
         throw new NoSuchUserIdException(userId);
 
-      String prefId = getPrefsId(userId, appId);
-
       StringBuffer cmd = new StringBuffer(100);
 
-      cmd.append(ITQL_CLEAR_PREFS.replaceAll("\\Q${userId}", userId).
-                                  replaceAll("\\Q${appId}",
-                                             (appId != null) ? "'" + appId + "'" : "\\$appId"));
+      cmd.append(
+          ItqlHelper.bindValues(ITQL_CLEAR_PREFS, "userId", userId, "appId", formatAppId(appId)));
 
       if (prefs != null && prefs.length > 0) {
         cmd.append("insert ");
+
+        String prefId = getPrefsId(userId, appId);
 
         addReference(cmd, userId, "topaz:hasPreferences", prefId);
         addLiteralVal(cmd, prefId, "dc_terms:mediator", appId);
@@ -311,7 +305,8 @@ public class PreferencesImpl implements Preferences {
     if (lit == null)
       return;
 
-    buf.append("<").append(subj).append("> <").append(pred).append("> '").append(lit).append("' ");
+    buf.append("<").append(subj).append("> <").append(pred).append("> '").
+        append(ItqlHelper.escapeLiteral(lit)).append("' ");
   }
 
   private static final void addReference(StringBuffer buf, String subj, String pred, String url) {
@@ -319,6 +314,10 @@ public class PreferencesImpl implements Preferences {
       return;
 
     buf.append("<").append(subj).append("> <").append(pred).append("> <").append(url).append("> ");
+  }
+
+  private static final String formatAppId(String appId) {
+    return (appId != null) ?  "'" + ItqlHelper.escapeLiteral(appId) + "'" : "$appId";
   }
 
   /**
@@ -331,8 +330,8 @@ public class PreferencesImpl implements Preferences {
   protected boolean userExists(String userId) throws RemoteException {
     ItqlHelper itql = ctx.getItqlHelper();
     try {
-      StringAnswer ans =
-          new StringAnswer(itql.doQuery(ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId)));
+      String qry = ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId);
+      StringAnswer ans = new StringAnswer(itql.doQuery(qry));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       return rows.size() > 0;
     } catch (AnswerException ae) {
@@ -350,6 +349,11 @@ public class PreferencesImpl implements Preferences {
    */
   protected String getPrefsId(String userId, String appId) {
     int slash = userId.lastIndexOf('/');
-    return baseURI + PREFS_PATH_PFX + userId.substring(slash + 1) + "/" + appId;
+    try {
+      return baseURI + PREFS_PATH_PFX + userId.substring(slash + 1) + "/" +
+             URLEncoder.encode(appId, "UTF-8");
+    } catch (UnsupportedEncodingException uue) {
+      throw new RuntimeException("Unexpected encoding problem", uue);   // can't really happen
+    }
   }
 }

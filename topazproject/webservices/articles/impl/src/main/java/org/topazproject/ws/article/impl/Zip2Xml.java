@@ -69,7 +69,7 @@ public class Zip2Xml {
     res.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n");
     res.append("<ZipInfo");
     if (zip.getName() != null)
-      res.append(" name=\"").append(zip.getName()).append("\"");
+      res.append(" name=\"").append(attrEscape(zip.getName())).append("\"");
     res.append(">\n");
 
     Enumeration entries = zip.getEntries();
@@ -89,7 +89,7 @@ public class Zip2Xml {
    * @param buf the buffer to place the description into
    */
   private static void entry2xml(ZipEntry ze, StringBuffer buf) {
-    buf.append("<ZipEntry name=\"").append(ze.getName()).append("\"");
+    buf.append("<ZipEntry name=\"").append(attrEscape(ze.getName())).append("\"");
 
     if (ze.isDirectory())
       buf.append(" isDirectory=\"true\"");
@@ -118,6 +118,10 @@ public class Zip2Xml {
 
   private static String xmlEscape(String str) {
     return str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll(">", "&gt;");
+  }
+
+  private static String attrEscape(String str) {
+    return str.replaceAll("&", "&amp;").replaceAll("<", "&lt;").replaceAll("\"", "&quot;");
   }
 
   private static String base64Encode(byte[] data) {

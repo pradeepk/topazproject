@@ -12,7 +12,6 @@ package org.topazproject.ws.ratings.impl;
 
 import java.io.IOException;
 import java.net.URI;
-import java.net.URISyntaxException;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -57,50 +56,20 @@ public abstract class RatingsPEP extends AbstractSimplePEP implements Ratings.Pe
   }
 
   /** 
-   * Check if the curent user may perform the requested action.
+   * Check if the user may perform the requested action on the given object.
    * 
    * @param action one of the actions defined above
    * @param userId the ratings owner's internal id
-   * @param object the object for which to get the ratings
+   * @param object the object for which to get/set the ratings; may be null
    */
-  protected void checkUserAccess(String action, String userId, String object)
-      throws NoSuchUserIdException, SecurityException {
+  protected void checkObjectAccess(String action, URI userId, URI object) throws SecurityException {
     Set resourceAttrs = new HashSet();
 
     resourceAttrs.add(
-        new Attribute(Util.RESOURCE_ID, null, null, new AnyURIAttribute(toURI(userId))));
+        new Attribute(Util.RESOURCE_ID, null, null, new AnyURIAttribute(userId)));
     if (object != null)
-      resourceAttrs.add(new Attribute(OBJ_ID, null, null, new AnyURIAttribute(toURI(object))));
+      resourceAttrs.add(new Attribute(OBJ_ID, null, null, new AnyURIAttribute(object)));
 
     checkAccess(action, resourceAttrs);
-  }
-
-  /** 
-   * Check if the curent user may perform the requested action.
-   * 
-   * @param action one of the actions defined above
-   * @param object the object for which to get the stats
-   */
-  protected void checkObjectAccess(String action, String object) throws SecurityException {
-    try {
-      checkAccess(action, toURI(object));
-    } catch (NoSuchUserIdException nsuie) {
-      throw (IllegalArgumentException) new IllegalArgumentException(nsuie.getId()).initCause(nsuie);
-    }
-  }
-
-  private static URI toURI(String uri) throws NoSuchUserIdException {
-    try {
-      URI res = new URI(uri);
-
-      if (!res.isAbsolute())
-        throw new NoSuchUserIdException(uri);
-
-      return res;
-    } catch (URISyntaxException use) {
-      NoSuchUserIdException nsuie = new NoSuchUserIdException(uri);
-      nsuie.initCause(use);
-      throw nsuie;
-    }
   }
 }

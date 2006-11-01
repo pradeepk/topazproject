@@ -72,27 +72,4 @@ public abstract class ProfilesPEP extends AbstractSimplePEP implements Profiles.
       throws IOException, ParsingException, UnknownIdentifierException {
     super(pdp, subjAttrs);
   }
-
-  /** 
-   * Check if the curent user may perform the requested action. Not used for read-access checks;
-   * see {@link @checkReadAccess checkReadAccess} for that instead.
-   * 
-   * @param action one of the actions defined above
-   * @param userId the profile owner's internal id
-   * @throws NoSuchUserIdException if the userId is not a valid URL
-   * @throws SecurityException if access is denied
-   */
-  protected void checkUserAccess(String action, String userId)
-      throws NoSuchUserIdException, SecurityException {
-    URI userURI;
-    try {
-      userURI = new URI(userId);
-      if (!userURI.isAbsolute())
-        throw new NoSuchUserIdException(userId);
-    } catch (URISyntaxException use) {
-      throw (NoSuchUserIdException) new NoSuchUserIdException(userId).initCause(use);
-    }
-
-    checkAccess(action, userURI);
-  }
 }

@@ -172,8 +172,16 @@ public class ItqlQueryFunction extends DBQueryFunction {
 
     int          i;
 
-    for (i = 0; i < bindings.length; i++)
-      s.append(parts[i]).append(bindings[i]);
+    for (i = 0; i < bindings.length; i++) {
+      s.append(parts[i]);
+
+      char bracket = s.charAt(s.length() - 1);
+      if (bracket == '<')
+        ItqlHelper.validateUri(bindings[i], "xacml query parameter " + i);
+      else if (bracket == '\'')
+        bindings[i] = ItqlHelper.escapeLiteral(bindings[i]);
+      s.append(bindings[i]);
+    }
 
     s.append(parts[i]);
 

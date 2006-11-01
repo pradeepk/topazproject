@@ -77,22 +77,26 @@ public class RatingsServiceTest extends TestCase {
   /**
    * Test NoSuchUserIdException.
    */
-  public void testNSIE() throws RemoteException, IOException {
+  public void testNSIE() throws RemoteException, NoSuchUserIdException, IOException {
     boolean gotE = false;
     try {
       service.setRatings("testApp1", "muster42", "foo:bar", null);
-    } catch (NoSuchUserIdException nsuie) {
+    } catch (RemoteException re) {
+      if (re.getMessage().indexOf("IllegalArgumentException") < 0)
+        throw re;
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
+    assertTrue("Failed to get expected IllegalArgumentException", gotE);
 
     gotE = false;
     try {
       service.getRatings("testApp1", "muster42", "foo:bar");
-    } catch (NoSuchUserIdException nsuie) {
+    } catch (RemoteException re) {
+      if (re.getMessage().indexOf("IllegalArgumentException") < 0)
+        throw re;
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
+    assertTrue("Failed to get expected IllegalArgumentException", gotE);
 
     gotE = false;
     try {

@@ -46,24 +46,4 @@ public abstract class UserRolesPEP extends AbstractSimplePEP implements UserRole
       throws IOException, ParsingException, UnknownIdentifierException {
     super(pdp, subjAttrs);
   }
-
-  /** 
-   * Check if the curent user may perform the requested action.
-   * 
-   * @param action one of the actions defined above
-   * @param userId the user's internal id
-   */
-  protected void checkUserAccess(String action, String userId)
-      throws SecurityException, NoSuchUserIdException {
-    URI userURI;
-    try {
-      userURI = new URI(userId);
-      if (!userURI.isAbsolute())
-        throw new NoSuchUserIdException(userId);
-    } catch (URISyntaxException use) {
-      throw (NoSuchUserIdException) new NoSuchUserIdException(userId).initCause(use);
-    }
-
-    checkAccess(action, userURI);
-  }
 }

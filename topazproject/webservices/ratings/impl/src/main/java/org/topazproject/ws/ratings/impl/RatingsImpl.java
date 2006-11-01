@@ -109,9 +109,9 @@ public class RatingsImpl implements Ratings {
        "and $s <topaz:sumX> $sum_x and $s <topaz:sumX2> $sum_x2;").
       replaceAll("\\Q${MODEL}", MODEL);
 
-  private final RatingsPEP pep;
+  private final RatingsPEP   pep;
   private final TopazContext ctx;
-  private final String     baseURI;
+  private final String       baseURI;
 
   static {
     aliases = ItqlHelper.getDefaultAliases();
@@ -206,12 +206,8 @@ public class RatingsImpl implements Ratings {
 
   public ObjectRating[] getRatings(String appId, String userId, String object)
       throws NoSuchUserIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
-    if (object == null)
-      throw new NullPointerException("object may not be null");
-
-    pep.checkUserAccess(pep.GET_RATINGS, userId, object);
+    pep.checkObjectAccess(pep.GET_RATINGS, ItqlHelper.validateUri(userId, "userId"),
+                          ItqlHelper.validateUri(object, "object"));
 
     if (log.isDebugEnabled())
       log.debug("Getting ratings for '" + object + "', app='" + appId + "', user='" + userId + "'");
@@ -229,12 +225,13 @@ public class RatingsImpl implements Ratings {
       throws NoSuchUserIdException, RemoteException {
     StringAnswer ans;
     try {
-      String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
-                   ITQL_GET_RATINGS.replaceAll("\\Q${userId}", userId).
-                                    replaceAll("\\Q${object}",
-                                               (object != null) ? "<" + object + ">" : "\\$obj").
-                                    replaceAll("\\Q${appId}",
-                                               (appId != null) ? "'" + appId + "'" : "\\$appId");
+      Map params = new HashMap();
+      params.put("userId", userId);
+      params.put("object", (object != null) ? "<" + object + ">" : "$obj");
+      params.put("appId", formatAppId(appId));
+
+      String qry = ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId) +
+                   ItqlHelper.bindValues(ITQL_GET_RATINGS, params);
 
       ans = new StringAnswer(ctx.getItqlHelper().doQuery(qry));
     } catch (AnswerException ae) {
@@ -314,7 +311,8 @@ public class RatingsImpl implements Ratings {
     if (userId == null)
       throw new NullPointerException("userId may not be null");
 
-    pep.checkUserAccess(pep.SET_RATINGS, userId, object);
+    pep.checkObjectAccess(pep.SET_RATINGS, ItqlHelper.validateUri(userId, "userId"),
+                          (object != null) ? ItqlHelper.validateUri(object, "object") : null);
 
     if (appId == null && ratings != null)
       throw new IllegalArgumentException("ratings must be null if app-id is null");
@@ -334,11 +332,12 @@ public class RatingsImpl implements Ratings {
 
       StringBuffer cmd = new StringBuffer(100);
 
-      cmd.append(ITQL_CLEAR_RATINGS.replaceAll("\\Q${userId}", userId).
-                                    replaceAll("\\Q${object}",
-                                               (object != null) ? "<" + object + ">" : "\\$object").
-                                    replaceAll("\\Q${appId}",
-                                               (appId != null) ? "'" + appId + "'" : "\\$appId"));
+      Map params = new HashMap();
+      params.put("userId", userId);
+      params.put("object", (object != null) ? "<" + object + ">" : "$object");
+      params.put("appId", formatAppId(appId));
+
+      cmd.append(ItqlHelper.bindValues(ITQL_CLEAR_RATINGS, params));
 
       if (ratings != null && ratings.length > 0) {
         String ratingsId = getRatingsId(userId, appId, object);
@@ -387,7 +386,8 @@ public class RatingsImpl implements Ratings {
     if (lit == null)
       return;
 
-    buf.append("<").append(subj).append("> <").append(pred).append("> '").append(lit).append("' ");
+    buf.append("<").append(subj).append("> <").append(pred).append("> '").
+        append(ItqlHelper.escapeLiteral(lit)).append("' ");
   }
 
   private static final void addReference(StringBuffer buf, String subj, String pred, String url) {
@@ -450,8 +450,8 @@ public class RatingsImpl implements Ratings {
     // save new stats
     StringBuffer cmd = new StringBuffer(100);
 
-    cmd.append(ITQL_CLEAR_STATS.replaceAll("\\Q${object}", object).
-                                replaceAll("\\Q${appId}", appId));
+    cmd.append(ItqlHelper.bindValues(ITQL_CLEAR_STATS, "object", object,
+                                     "appId", ItqlHelper.escapeLiteral(appId)));
 
     int clr_len = cmd.length();
 
@@ -486,10 +486,7 @@ public class RatingsImpl implements Ratings {
   }
 
   public ObjectRatingStats[] getRatingStats(String appId, String object) throws RemoteException {
-    if (object == null)
-      throw new NullPointerException("object may not be null");
-
-    pep.checkObjectAccess(pep.GET_STATS, object);
+    pep.checkAccess(pep.GET_STATS, ItqlHelper.validateUri(object, "object"));
 
     if (log.isDebugEnabled())
       log.debug("Getting stats for '" + object + "', app='" + appId + "'");
@@ -532,18 +529,21 @@ public class RatingsImpl implements Ratings {
     return stats;
   }
 
-  public List getRatingStatsInternal(String appId, String object) throws RemoteException {
+  private List getRatingStatsInternal(String appId, String object) throws RemoteException {
     StringAnswer ans;
     try {
-      String qry = ITQL_GET_STATS.replaceAll("\\Q${object}", object).
-                                  replaceAll("\\Q${appId}",
-                                             (appId != null) ? "'" + appId + "'" : "\\$appId");
+      String qry =
+          ItqlHelper.bindValues(ITQL_GET_STATS, "object", object, "appId", formatAppId(appId));
       ans = new StringAnswer(ctx.getItqlHelper().doQuery(qry));
     } catch (AnswerException ae) {
       throw new RemoteException("Error getting ratings for object '" + object + "'", ae);
     }
 
     return ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+  }
+
+  private static final String formatAppId(String appId) {
+    return (appId != null) ? "'" + ItqlHelper.escapeLiteral(appId) + "'" : "$appId";
   }
 
   /** 
@@ -557,7 +557,7 @@ public class RatingsImpl implements Ratings {
    */
   protected String getRatingsId(String userId, String appId, String object) {
     int slash = userId.lastIndexOf('/');
-    return baseURI + RATINGS_PATH_PFX + userId.substring(slash + 1) + "/" + appId + "/" +
+    return baseURI + RATINGS_PATH_PFX + userId.substring(slash + 1) + "/" + hash(appId) + "/" +
            hash(object);
   }
 
@@ -570,7 +570,7 @@ public class RatingsImpl implements Ratings {
    * @return the stats id
    */
   protected String getStatsId(String appId, String object) {
-    return baseURI + RATINGS_PATH_PFX + "/" + appId + "/" + hash(object);
+    return baseURI + RATINGS_PATH_PFX + "/" + hash(appId) + "/" + hash(object);
   }
 
   private static final String hash(String str) {

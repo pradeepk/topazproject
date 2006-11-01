@@ -207,8 +207,7 @@ public class ProfilesImpl implements Profiles {
   }
 
   public UserProfile getProfile(String userId) throws NoSuchUserIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
+    URI owner = ItqlHelper.validateUri(userId, "userId");
 
     if (log.isDebugEnabled())
       log.debug("Getting profile for '" + userId + "'");
@@ -219,55 +218,55 @@ public class ProfilesImpl implements Profiles {
       return null;
 
     // filter profile based on access-controls.
-    if (prof.getDisplayName() != null && !checkAccess(userId, pep.GET_DISP_NAME))
+    if (prof.getDisplayName() != null && !checkAccess(owner, pep.GET_DISP_NAME))
       prof.setDisplayName(null);
-    if (prof.getRealName() != null && !checkAccess(userId, pep.GET_REAL_NAME))
+    if (prof.getRealName() != null && !checkAccess(owner, pep.GET_REAL_NAME))
       prof.setRealName(null);
-    if (prof.getGivenNames() != null && !checkAccess(userId, pep.GET_GIVEN_NAMES))
+    if (prof.getGivenNames() != null && !checkAccess(owner, pep.GET_GIVEN_NAMES))
       prof.setGivenNames(null);
-    if (prof.getSurnames() != null && !checkAccess(userId, pep.GET_SURNAMES))
+    if (prof.getSurnames() != null && !checkAccess(owner, pep.GET_SURNAMES))
       prof.setSurnames(null);
-    if (prof.getTitle() != null && !checkAccess(userId, pep.GET_TITLE))
+    if (prof.getTitle() != null && !checkAccess(owner, pep.GET_TITLE))
       prof.setTitle(null);
-    if (prof.getGender() != null && !checkAccess(userId, pep.GET_GENDER))
+    if (prof.getGender() != null && !checkAccess(owner, pep.GET_GENDER))
       prof.setGender(null);
-    if (prof.getPositionType() != null && !checkAccess(userId, pep.GET_POSITION_TYPE))
+    if (prof.getPositionType() != null && !checkAccess(owner, pep.GET_POSITION_TYPE))
       prof.setPositionType(null);
-    if (prof.getOrganizationName() != null && !checkAccess(userId, pep.GET_ORGANIZATION_NAME))
+    if (prof.getOrganizationName() != null && !checkAccess(owner, pep.GET_ORGANIZATION_NAME))
       prof.setOrganizationName(null);
-    if (prof.getOrganizationType() != null && !checkAccess(userId, pep.GET_ORGANIZATION_TYPE))
+    if (prof.getOrganizationType() != null && !checkAccess(owner, pep.GET_ORGANIZATION_TYPE))
       prof.setOrganizationType(null);
-    if (prof.getPostalAddress() != null && !checkAccess(userId, pep.GET_POSTAL_ADDRESS))
+    if (prof.getPostalAddress() != null && !checkAccess(owner, pep.GET_POSTAL_ADDRESS))
       prof.setPostalAddress(null);
-    if (prof.getCity() != null && !checkAccess(userId, pep.GET_CITY))
+    if (prof.getCity() != null && !checkAccess(owner, pep.GET_CITY))
       prof.setCity(null);
-    if (prof.getCountry() != null && !checkAccess(userId, pep.GET_COUNTRY))
+    if (prof.getCountry() != null && !checkAccess(owner, pep.GET_COUNTRY))
       prof.setCountry(null);
-    if (prof.getEmail() != null && !checkAccess(userId, pep.GET_EMAIL))
+    if (prof.getEmail() != null && !checkAccess(owner, pep.GET_EMAIL))
       prof.setEmail(null);
-    if (prof.getHomePage() != null && !checkAccess(userId, pep.GET_HOME_PAGE))
+    if (prof.getHomePage() != null && !checkAccess(owner, pep.GET_HOME_PAGE))
       prof.setHomePage(null);
-    if (prof.getWeblog() != null && !checkAccess(userId, pep.GET_WEBLOG))
+    if (prof.getWeblog() != null && !checkAccess(owner, pep.GET_WEBLOG))
       prof.setWeblog(null);
-    if (prof.getBiography() != null && !checkAccess(userId, pep.GET_BIOGRAPHY))
+    if (prof.getBiography() != null && !checkAccess(owner, pep.GET_BIOGRAPHY))
       prof.setBiography(null);
-    if (prof.getInterests() != null && !checkAccess(userId, pep.GET_INTERESTS))
+    if (prof.getInterests() != null && !checkAccess(owner, pep.GET_INTERESTS))
       prof.setInterests(null);
-    if (prof.getPublications() != null && !checkAccess(userId, pep.GET_PUBLICATIONS))
+    if (prof.getPublications() != null && !checkAccess(owner, pep.GET_PUBLICATIONS))
       prof.setPublications(null);
-    if (prof.getBiographyText() != null && !checkAccess(userId, pep.GET_BIOGRAPHY_TEXT))
+    if (prof.getBiographyText() != null && !checkAccess(owner, pep.GET_BIOGRAPHY_TEXT))
       prof.setBiographyText(null);
-    if (prof.getInterestsText() != null && !checkAccess(userId, pep.GET_INTERESTS_TEXT))
+    if (prof.getInterestsText() != null && !checkAccess(owner, pep.GET_INTERESTS_TEXT))
       prof.setInterestsText(null);
-    if (prof.getResearchAreasText() != null && !checkAccess(userId, pep.GET_RESEARCH_AREAS_TEXT))
+    if (prof.getResearchAreasText() != null && !checkAccess(owner, pep.GET_RESEARCH_AREAS_TEXT))
       prof.setResearchAreasText(null);
 
     return prof;
   }
 
-  private boolean checkAccess(String owner, String perm) throws NoSuchUserIdException {
+  private boolean checkAccess(URI owner, String perm) {
     try {
-      pep.checkUserAccess(perm, owner);
+      pep.checkAccess(perm, owner);
       return true;
     } catch (SecurityException se) {
       if (log.isDebugEnabled())
@@ -278,10 +277,7 @@ public class ProfilesImpl implements Profiles {
 
   public void setProfile(String userId, UserProfile profile)
       throws NoSuchUserIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
-
-    pep.checkUserAccess(pep.SET_PROFILE, userId);
+    pep.checkAccess(pep.SET_PROFILE, ItqlHelper.validateUri(userId, "userId"));
 
     if (log.isDebugEnabled())
       log.debug("Setting profile for '" + userId + "'");
@@ -421,54 +417,50 @@ public class ProfilesImpl implements Profiles {
   }
 
   protected boolean checkQueryAccess(String userId, UserProfile templ) {
-    try {
-      if (templ.getDisplayName() != null && !checkAccess(userId, pep.GET_DISP_NAME))
-        return false;
-      if (templ.getRealName() != null && !checkAccess(userId, pep.GET_REAL_NAME))
-        return false;
-      if (templ.getGivenNames() != null && !checkAccess(userId, pep.GET_GIVEN_NAMES))
-        return false;
-      if (templ.getSurnames() != null && !checkAccess(userId, pep.GET_SURNAMES))
-        return false;
-      if (templ.getTitle() != null && !checkAccess(userId, pep.GET_TITLE))
-        return false;
-      if (templ.getGender() != null && !checkAccess(userId, pep.GET_GENDER))
-        return false;
-      if (templ.getPositionType() != null && !checkAccess(userId, pep.GET_POSITION_TYPE))
-        return false;
-      if (templ.getOrganizationName() != null && !checkAccess(userId, pep.GET_ORGANIZATION_NAME))
-        return false;
-      if (templ.getOrganizationType() != null && !checkAccess(userId, pep.GET_ORGANIZATION_TYPE))
-        return false;
-      if (templ.getPostalAddress() != null && !checkAccess(userId, pep.GET_POSTAL_ADDRESS))
-        return false;
-      if (templ.getCity() != null && !checkAccess(userId, pep.GET_CITY))
-        return false;
-      if (templ.getCountry() != null && !checkAccess(userId, pep.GET_COUNTRY))
-        return false;
-      if (templ.getEmail() != null && !checkAccess(userId, pep.GET_EMAIL))
-        return false;
-      if (templ.getHomePage() != null && !checkAccess(userId, pep.GET_HOME_PAGE))
-        return false;
-      if (templ.getWeblog() != null && !checkAccess(userId, pep.GET_WEBLOG))
-        return false;
-      if (templ.getBiography() != null && !checkAccess(userId, pep.GET_BIOGRAPHY))
-        return false;
-      if (templ.getInterests() != null && !checkAccess(userId, pep.GET_INTERESTS))
-        return false;
-      if (templ.getPublications() != null && !checkAccess(userId, pep.GET_PUBLICATIONS))
-        return false;
-      if (templ.getBiographyText() != null && !checkAccess(userId, pep.GET_BIOGRAPHY_TEXT))
-        return false;
-      if (templ.getInterestsText() != null && !checkAccess(userId, pep.GET_INTERESTS_TEXT))
-        return false;
-      if (templ.getResearchAreasText() != null && !checkAccess(userId, pep.GET_RESEARCH_AREAS_TEXT))
-        return false;
-    } catch (NoSuchUserIdException nsuie) {
-      // can't happen
-      log.warn("Unexpected missing user after query", nsuie);
+    URI owner = URI.create(userId);
+
+    if (templ.getDisplayName() != null && !checkAccess(owner, pep.GET_DISP_NAME))
       return false;
-    }
+    if (templ.getRealName() != null && !checkAccess(owner, pep.GET_REAL_NAME))
+      return false;
+    if (templ.getGivenNames() != null && !checkAccess(owner, pep.GET_GIVEN_NAMES))
+      return false;
+    if (templ.getSurnames() != null && !checkAccess(owner, pep.GET_SURNAMES))
+      return false;
+    if (templ.getTitle() != null && !checkAccess(owner, pep.GET_TITLE))
+      return false;
+    if (templ.getGender() != null && !checkAccess(owner, pep.GET_GENDER))
+      return false;
+    if (templ.getPositionType() != null && !checkAccess(owner, pep.GET_POSITION_TYPE))
+      return false;
+    if (templ.getOrganizationName() != null && !checkAccess(owner, pep.GET_ORGANIZATION_NAME))
+      return false;
+    if (templ.getOrganizationType() != null && !checkAccess(owner, pep.GET_ORGANIZATION_TYPE))
+      return false;
+    if (templ.getPostalAddress() != null && !checkAccess(owner, pep.GET_POSTAL_ADDRESS))
+      return false;
+    if (templ.getCity() != null && !checkAccess(owner, pep.GET_CITY))
+      return false;
+    if (templ.getCountry() != null && !checkAccess(owner, pep.GET_COUNTRY))
+      return false;
+    if (templ.getEmail() != null && !checkAccess(owner, pep.GET_EMAIL))
+      return false;
+    if (templ.getHomePage() != null && !checkAccess(owner, pep.GET_HOME_PAGE))
+      return false;
+    if (templ.getWeblog() != null && !checkAccess(owner, pep.GET_WEBLOG))
+      return false;
+    if (templ.getBiography() != null && !checkAccess(owner, pep.GET_BIOGRAPHY))
+      return false;
+    if (templ.getInterests() != null && !checkAccess(owner, pep.GET_INTERESTS))
+      return false;
+    if (templ.getPublications() != null && !checkAccess(owner, pep.GET_PUBLICATIONS))
+      return false;
+    if (templ.getBiographyText() != null && !checkAccess(owner, pep.GET_BIOGRAPHY_TEXT))
+      return false;
+    if (templ.getInterestsText() != null && !checkAccess(owner, pep.GET_INTERESTS_TEXT))
+      return false;
+    if (templ.getResearchAreasText() != null && !checkAccess(owner, pep.GET_RESEARCH_AREAS_TEXT))
+      return false;
 
     return true;
   }
@@ -495,8 +487,8 @@ public class ProfilesImpl implements Profiles {
        * solution in this case.
        */
       ItqlHelper itql = ctx.getItqlHelper();
-      String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
-                   ITQL_GET_PROFID.replaceAll("\\Q${userId}", userId);
+      String qry = ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId) +
+                   ItqlHelper.bindValues(ITQL_GET_PROFID, "userId", userId);
       StringAnswer ans = new StringAnswer(itql.doQuery(qry));
 
       List user = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
@@ -522,11 +514,10 @@ public class ProfilesImpl implements Profiles {
       throws RemoteException {
     StringBuffer cmd = new StringBuffer(500);
 
-    cmd.append(ITQL_CLEAR_PROF.replaceAll("\\Q${profId}", profId));
+    cmd.append(ItqlHelper.bindValues(ITQL_CLEAR_PROF, "profId", profId));
 
     if (profile != null) {
-      cmd.append(ITQL_CREATE_PROF.replaceAll("\\Q${profId}", profId).
-                                  replaceAll("\\Q${userId}", userId));
+      cmd.append(ItqlHelper.bindValues(ITQL_CREATE_PROF, "profId", profId, "userId", userId));
 
       cmd.append("insert ");
 
@@ -570,14 +561,16 @@ public class ProfilesImpl implements Profiles {
     if (lit == null)
       return;
 
-    buf.append("<").append(subj).append("> <").append(pred).append("> '").append(lit).append("' ");
+    buf.append("<").append(subj).append("> <").append(pred).append("> '").
+        append(ItqlHelper.escapeLiteral(lit)).append("' ");
   }
 
-  private static final void addReference(StringBuffer buf, String subj, String pred, String url) {
-    if (url == null)
+  private static final void addReference(StringBuffer buf, String subj, String pred, String uri) {
+    if (uri == null)
       return;
+    ItqlHelper.validateUri(uri, pred);
 
-    buf.append("<").append(subj).append("> <").append(pred).append("> <").append(url).append("> ");
+    buf.append("<").append(subj).append("> <").append(pred).append("> <").append(uri).append("> ");
   }
 
   /**
@@ -591,8 +584,8 @@ public class ProfilesImpl implements Profiles {
   protected UserProfile getRawProfile(String userId) throws NoSuchUserIdException, RemoteException {
     StringAnswer ans;
     try {
-      String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
-                   ITQL_GET_PROF.replaceAll("\\Q${userId}", userId);
+      String qry = ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId) +
+                   ItqlHelper.bindValues(ITQL_GET_PROF, "userId", userId);
       ans = new StringAnswer(ctx.getItqlHelper().doQuery(qry));
     } catch (AnswerException ae) {
       throw new RemoteException("Error getting profile-info for user '" + userId + "'", ae);

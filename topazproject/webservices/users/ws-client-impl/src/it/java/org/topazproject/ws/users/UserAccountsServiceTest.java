@@ -123,33 +123,37 @@ public class UserAccountsServiceTest extends TestCase {
     service.deleteUser(uid2);
   }
 
-  public void testInvalidUser() throws DuplicateAuthIdException, RemoteException, IOException {
+  public void testInvalidUser()
+      throws DuplicateAuthIdException, NoSuchUserIdException, RemoteException, IOException {
     boolean gotE = false;
     try {
       service.deleteUser("muster");
-    } catch (NoSuchUserIdException nsie) {
-      assertEquals("no-such-user mismatch", "muster", nsie.getId());
+    } catch (RemoteException re) {
+      if (re.getMessage().indexOf("IllegalArgumentException") < 0)
+        throw re;
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
+    assertTrue("Failed to get expected IllegalArgumentException", gotE);
 
     gotE = false;
     try {
       service.setAuthenticationIds("muster", null);
-    } catch (NoSuchUserIdException nsie) {
-      assertEquals("no-such-user mismatch", "muster", nsie.getId());
+    } catch (RemoteException re) {
+      if (re.getMessage().indexOf("IllegalArgumentException") < 0)
+        throw re;
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
+    assertTrue("Failed to get expected IllegalArgumentException", gotE);
 
     gotE = false;
     try {
       service.getAuthenticationIds("muster");
-    } catch (NoSuchUserIdException nsie) {
-      assertEquals("no-such-user mismatch", "muster", nsie.getId());
+    } catch (RemoteException re) {
+      if (re.getMessage().indexOf("IllegalArgumentException") < 0)
+        throw re;
       gotE = true;
     }
-    assertTrue("Failed to get expected NoSuchUserIdException", gotE);
+    assertTrue("Failed to get expected IllegalArgumentException", gotE);
   }
 
   public void testNullUser()

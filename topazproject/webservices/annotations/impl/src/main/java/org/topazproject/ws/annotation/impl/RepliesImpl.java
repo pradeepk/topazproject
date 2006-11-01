@@ -261,7 +261,7 @@ public class RepliesImpl implements Replies {
 
     String txn   = "delete replies to " + inReplyTo;
     String query = ITQL_GET_DELETE_LIST_IN_REPLY_TO;
-    query = query.replaceAll("\\Q${root}", root).replaceAll("\\Q${inReplyTo}", inReplyTo);
+    query = ItqlHelper.bindValues(query, "root", root, "inReplyTo", inReplyTo);
 
     doDelete(txn, query);
   }
@@ -273,7 +273,7 @@ public class RepliesImpl implements Replies {
     pep.checkAccess(pep.DELETE_REPLY, checkId(ItqlHelper.validateUri(id, "id")));
 
     String txn   = "delete " + id;
-    String query = ITQL_GET_DELETE_LIST_FOR_ID.replaceAll("\\Q${id}", id);
+    String query = ItqlHelper.bindValues(ITQL_GET_DELETE_LIST_FOR_ID, "id", id);
 
     doDelete(txn, query);
   }
@@ -310,7 +310,7 @@ public class RepliesImpl implements Replies {
         if (body.startsWith("info:fedora"))
           pids.add(fedora.uri2PID(body));
 
-        String del = ITQL_DELETE_ID.replaceAll("\\Q${id}", id.toString());
+        String del = ItqlHelper.bindValues(ITQL_DELETE_ID, "id", id.toString());
         itql.doUpdate(del);
       }
 
@@ -341,7 +341,7 @@ public class RepliesImpl implements Replies {
     pep.checkAccess(pep.GET_REPLY_INFO, ItqlHelper.validateUri(id, "id"));
 
     try {
-      String query = ITQL_GET.replaceAll("\\Q${id}", id);
+      String query = ItqlHelper.bindValues(ITQL_GET, "id", id);
 
       Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
@@ -365,8 +365,7 @@ public class RepliesImpl implements Replies {
                                    ItqlHelper.validateUri(inReplyTo, "inReplyTo")));
 
     try {
-      String query =
-        ITQL_LIST_REPLIES.replaceAll("\\Q${root}", root).replaceAll("\\Q${inReplyTo}", inReplyTo);
+      String query = ItqlHelper.bindValues(ITQL_LIST_REPLIES, "root", root, "inReplyTo", inReplyTo);
 
       Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
 
@@ -389,7 +388,7 @@ public class RepliesImpl implements Replies {
 
     try {
       String query =
-        ITQL_LIST_ALL_REPLIES.replaceAll("\\Q${root}", root).replaceAll("\\Q${inReplyTo}", inReplyTo);
+          ItqlHelper.bindValues(ITQL_LIST_ALL_REPLIES, "root", root, "inReplyTo", inReplyTo);
 
       Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
 
@@ -463,7 +462,7 @@ public class RepliesImpl implements Replies {
     pep.checkAccess(pep.SET_REPLY_STATE, thisUri);
     checkId(thisUri);
 
-    String set = SET_STATE_ITQL.replaceAll("\\Q${id}", id).replaceAll("\\Q${state}", "" + state);
+    String set = ItqlHelper.bindValues(SET_STATE_ITQL, "id", id, "state", "" + state);
 
     ctx.getItqlHelper().doUpdate(set);
   }
@@ -499,7 +498,7 @@ public class RepliesImpl implements Replies {
 
   private URI checkId(URI id) throws RemoteException, NoSuchAnnotationIdException {
     try {
-      String query = ITQL_CHECK_ID.replaceAll("\\Q${id}", id.toString());
+      String query = ItqlHelper.bindValues(ITQL_CHECK_ID, "id", id.toString());
       Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -518,10 +517,8 @@ public class RepliesImpl implements Replies {
       return inReplyTo;
 
     try {
-      String query =
-        ITQL_CHECK_IN_REPLY_TO.replaceAll("\\Q${root}", root.toString()).replaceAll("\\Q${inReplyTo}",
-                                                                                    inReplyTo
-                                                                                     .toString());
+      String query = ItqlHelper.bindValues(ITQL_CHECK_IN_REPLY_TO, "root", root.toString(),
+                                           "inReplyTo", inReplyTo.toString());
       Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 

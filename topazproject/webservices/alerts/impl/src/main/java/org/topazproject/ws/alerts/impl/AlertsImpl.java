@@ -209,13 +209,14 @@ public class AlertsImpl implements Alerts {
 
   // See Alerts.java interface
   public void startUser(String userId) throws RemoteException {
-    checkAccess(pep.START_USER, userId);
     this.startUser(userId, Calendar.getInstance().getTime().toString());
   }
 
   // See Alerts.java interface
   public void startUser(String userId, String date) throws RemoteException {
     checkAccess(pep.START_USER, userId);
+    ItqlHelper.validateUri(userId, "user-id");
+
     Calendar cal = Calendar.getInstance();
     cal.setTime(ArticleFeed.parseDateParam(date));
     Map values = new HashMap();
@@ -229,6 +230,8 @@ public class AlertsImpl implements Alerts {
   // See Alerts.java interface
   public void clearUser(String userId) throws RemoteException {
     checkAccess(pep.CLEAR_USER, userId);
+    ItqlHelper.validateUri(userId, "user-id");
+
     Map values = new HashMap();
     values.put("ALERTS", AlertsImpl.MODEL_ALERTS);
     values.put("userId", userId);

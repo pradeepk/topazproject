@@ -72,7 +72,7 @@ public class PreferencesServiceTest extends TestCase {
     // test NoSuchUserIdException
     boolean gotE = false;
     try {
-      service.setPreferences("testApp1", "muster42", null);
+      service.setPreferences("testApp1", "foo:muster42", null);
     } catch (NoSuchUserIdException nsuie) {
       gotE = true;
     }

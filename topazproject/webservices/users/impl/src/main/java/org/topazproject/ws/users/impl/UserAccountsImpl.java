@@ -14,6 +14,7 @@ import java.io.IOException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.xml.rpc.ServiceException;
@@ -250,11 +251,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   }
 
   public String createUser(String authId) throws DuplicateAuthIdException, RemoteException {
-    try {
-      pep.checkUserAccess(pep.CREATE_USER, baseURI + ACCOUNT_PID_NS);
-    } catch (NoSuchUserIdException nsie) {
-      throw new Error("Impossible...", nsie);   // can't happen
-    }
+    pep.checkAccess(pep.CREATE_USER, URI.create(baseURI + ACCOUNT_PID_NS));
 
     ItqlHelper itql = ctx.getItqlHelper();
     String txn = "create user";
@@ -270,9 +267,12 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
 
       String auth = getNewAuthId(userId, 0);
 
-      itql.doUpdate(ITQL_CREATE_ACCT.replaceAll("\\Q${userId}", userId).
-                                     replaceAll("\\Q${auth}", auth).
-                                     replaceAll("\\Q${authId}", authId));
+      Map params = new HashMap();
+      params.put("userId", userId);
+      params.put("auth", auth);
+      params.put("authId", ItqlHelper.escapeLiteral(authId));
+
+      itql.doUpdate(ItqlHelper.bindValues(ITQL_CREATE_ACCT, params));
 
       itql.commitTxn(txn);
 
@@ -284,7 +284,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
 
       if (findDupAuthId(itql, new String[] { authId }) != null) {
         try {
-          itql.doUpdate(ITQL_DELETE_ACCT.replaceAll("\\Q${userId}", userId));
+          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_ACCT, "userId", userId));
           itql.commitTxn(txn);
           txn = null;
         } catch (RemoteException re) {
@@ -306,10 +306,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   }
 
   public void deleteUser(String userId) throws NoSuchUserIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
-
-    pep.checkUserAccess(pep.DELETE_USER, userId);
+    pep.checkAccess(pep.DELETE_USER, ItqlHelper.validateUri(userId, "userId"));
 
     if (log.isDebugEnabled())
       log.debug("Deleting user '" + userId + "'");
@@ -322,7 +319,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       if (!userExists(itql, userId))
         throw new NoSuchUserIdException(userId);
 
-      itql.doUpdate(ITQL_DELETE_ACCT.replaceAll("\\Q${userId}", userId));
+      itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_ACCT, "userId", userId));
 
       itql.commitTxn(txn);
       txn = null;
@@ -333,32 +330,32 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   }
 
   public int getState(String userId) throws NoSuchUserIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
+    pep.checkAccess(pep.GET_STATE, ItqlHelper.validateUri(userId, "userId"));
 
-    pep.checkUserAccess(pep.GET_STATE, userId);
-
-    return getStateNoAC(userId);
+    return getStateInternal(userId);
   }
 
   public int getStateNoAC(String userId) throws NoSuchUserIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
+    ItqlHelper.validateUri(userId, "userId");
 
+    return getStateInternal(userId);
+  }
+
+  private int getStateInternal(String userId) throws NoSuchUserIdException, RemoteException {
     if (log.isDebugEnabled())
       log.debug("Getting the account state for '" + userId + "'");
 
     ItqlHelper itql = ctx.getItqlHelper();
     try {
       StringAnswer ans =
-          new StringAnswer(itql.doQuery(ITQL_GET_STATE.replaceAll("\\Q${userId}", userId)));
+          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_GET_STATE, "userId", userId)));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       if (rows.size() == 0) {
         if (!userExists(itql, userId))
           throw new NoSuchUserIdException(userId);
 
         log.error("No state found for user '" + userId + "' - resetting to 0");
-        setState(userId, 0);
+        setStateInternal(userId, 0);
         return 0;
       }
 
@@ -373,17 +370,18 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       throw new RemoteException("Error getting state for user '" + userId + "'", ae);
     } catch (NumberFormatException nfe) {
       log.error("Invalid state found for user '" + userId + "' - resetting to 0");
-      setState(userId, 0);
+      setStateInternal(userId, 0);
       return 0;
     }
   }
 
   public void setState(String userId, int state) throws NoSuchUserIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
+    pep.checkAccess(pep.SET_STATE, ItqlHelper.validateUri(userId, "userId"));
+    setStateInternal(userId, state);
+  }
 
-    pep.checkUserAccess(pep.SET_STATE, userId);
-
+  private void setStateInternal(String userId, int state)
+      throws NoSuchUserIdException, RemoteException {
     if (log.isDebugEnabled())
       log.debug("Setting state for '" + userId + "' to " + state);
 
@@ -397,7 +395,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
 
       StringBuffer cmd = new StringBuffer(100);
 
-      cmd.append(ITQL_CLEAR_STATE.replaceAll("\\Q${userId}", userId));
+      cmd.append(ItqlHelper.bindValues(ITQL_CLEAR_STATE, "userId", userId));
 
       cmd.append("insert <").append(userId).append("> <topaz:accountState> '").
                  append(state).append("'^^<xsd:int> ");
@@ -415,10 +413,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
 
   public String[] getAuthenticationIds(String userId)
       throws NoSuchUserIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
-
-    pep.checkUserAccess(pep.GET_AUTH_IDS, userId);
+    pep.checkAccess(pep.GET_AUTH_IDS, ItqlHelper.validateUri(userId, "userId"));
 
     if (log.isDebugEnabled())
       log.debug("Getting auth-ids for '" + userId + "'");
@@ -429,8 +424,8 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   private String[] getAuthenticationIds(ItqlHelper itql, String userId)
       throws NoSuchUserIdException, RemoteException {
     try {
-      StringAnswer ans =
-          new StringAnswer(itql.doQuery(ITQL_GET_AUTH_IDS.replaceAll("\\Q${userId}", userId)));
+      String qry = ItqlHelper.bindValues(ITQL_GET_AUTH_IDS, "userId", userId);
+      StringAnswer ans = new StringAnswer(itql.doQuery(qry));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       if (rows.size() == 0 && !userExists(itql, userId))
         throw new NoSuchUserIdException(userId);
@@ -447,10 +442,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
 
   public void setAuthenticationIds(String userId, String[] authIds)
       throws NoSuchUserIdException, DuplicateAuthIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
-
-    pep.checkUserAccess(pep.SET_AUTH_IDS, userId);
+    pep.checkAccess(pep.SET_AUTH_IDS, ItqlHelper.validateUri(userId, "userId"));
 
     if (log.isDebugEnabled())
       log.debug("Setting auth-ids for '" + userId + "'");
@@ -496,7 +488,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       throws RemoteException {
     StringBuffer cmd = new StringBuffer(100);
 
-    cmd.append(ITQL_CLEAR_AUTH_IDS.replaceAll("\\Q${userId}", userId));
+    cmd.append(ItqlHelper.bindValues(ITQL_CLEAR_AUTH_IDS, "userId", userId));
 
     if (authIds != null && authIds.length > 0) {
       cmd.append("insert ");
@@ -506,7 +498,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
           cmd.append("<").append(userId).append("> <topaz:hasAuthId> <").
               append(auth).append("> ");
           cmd.append("<").append(auth).append("> <rdf:value> '").
-              append(authIds[idx]).append("' ");
+              append(ItqlHelper.escapeLiteral(authIds[idx])).append("' ");
         }
       }
       cmd.append(" into ").append(MODEL).append(";");
@@ -516,11 +508,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   }
 
   public String lookUpUserByAuthId(String authId) throws RemoteException {
-    try {
-      pep.checkUserAccess(pep.CREATE_USER, baseURI + ACCOUNT_PID_NS);
-    } catch (NoSuchUserIdException nsie) {
-      throw new Error("Impossible...", nsie);   // can't happen
-    }
+    pep.checkAccess(pep.CREATE_USER, URI.create(baseURI + ACCOUNT_PID_NS));
 
     return lookUpUserByAuthIdNoAC(authId);
   }
@@ -534,8 +522,9 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
 
     ItqlHelper itql = ctx.getItqlHelper();
     try {
-      StringAnswer ans =
-          new StringAnswer(itql.doQuery(ITQL_GET_USERID.replaceAll("\\Q${authId}", authId)));
+      String qry =
+          ItqlHelper.bindValues(ITQL_GET_USERID, "authId", ItqlHelper.escapeLiteral(authId));
+      StringAnswer ans = new StringAnswer(itql.doQuery(qry));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       return (rows.size() > 0) ? ((String[]) rows.get(0))[0] : null;
     } catch (AnswerException ae) {
@@ -553,7 +542,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   protected boolean userExists(ItqlHelper itql, String userId) throws RemoteException {
     try {
       StringAnswer ans =
-          new StringAnswer(itql.doQuery(ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId)));
+          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId)));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       return rows.size() > 0;
     } catch (AnswerException ae) {
@@ -577,7 +566,8 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
                                         ITQL_FIND_DUP_AUTHIDS_POST.length());
     qry.append(ITQL_FIND_DUP_AUTHIDS_PRE);
     for (int idx = 0; idx < authIds.length; idx++)
-      qry.append("$authId <tucana:is> '").append(authIds[idx]).append("' or ");
+      qry.append("$authId <tucana:is> '").append(ItqlHelper.escapeLiteral(authIds[idx])).
+          append("' or ");
     qry.setLength(qry.length() - 4);
     qry.append(ITQL_FIND_DUP_AUTHIDS_POST);
 

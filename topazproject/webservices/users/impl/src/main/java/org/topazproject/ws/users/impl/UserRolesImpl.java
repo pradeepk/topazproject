@@ -172,18 +172,15 @@ public class UserRolesImpl implements UserRoles {
   }
 
   public String[] getRoles(String userId) throws NoSuchUserIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
-
-    pep.checkUserAccess(pep.GET_ROLES, userId);
+    pep.checkAccess(pep.GET_ROLES, ItqlHelper.validateUri(userId, "userId"));
 
     if (log.isDebugEnabled())
       log.debug("Getting roles for '" + userId + "'");
 
     ItqlHelper itql = ctx.getItqlHelper();
     try {
-      String qry = ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId) +
-                   ITQL_GET_ROLES.replaceAll("\\Q${userId}", userId);
+      String qry = ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId) +
+                   ItqlHelper.bindValues(ITQL_GET_ROLES, "userId", userId);
       StringAnswer ans = new StringAnswer(itql.doQuery(qry));
 
       List user = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
@@ -212,10 +209,7 @@ public class UserRolesImpl implements UserRoles {
 
   public void setRoles(String userId, String[] roles)
       throws NoSuchUserIdException, RemoteException {
-    if (userId == null)
-      throw new NullPointerException("userId may not be null");
-
-    pep.checkUserAccess(pep.SET_ROLES, userId);
+    pep.checkAccess(pep.SET_ROLES, ItqlHelper.validateUri(userId, "userId"));
 
     if (log.isDebugEnabled())
       log.debug("Setting roles for '" + userId + "': '" + StringUtils.join(roles, "', '") + "'");
@@ -230,7 +224,7 @@ public class UserRolesImpl implements UserRoles {
 
       StringBuffer cmd = new StringBuffer(100);
 
-      cmd.append(ITQL_CLEAR_ROLES.replaceAll("\\Q${userId}", userId));
+      cmd.append(ItqlHelper.bindValues(ITQL_CLEAR_ROLES, "userId", userId));
 
       if (roles != null && roles.length > 0) {
         String rolesId = getRolesId(userId);
@@ -241,7 +235,7 @@ public class UserRolesImpl implements UserRoles {
         for (int idx = 0; idx < roles.length; idx++) {
           if (roles[idx] != null)
             cmd.append("<").append(rolesId).append("> <topaz:role> '").
-                append(roles[idx]).append("' ");
+                append(ItqlHelper.escapeLiteral(roles[idx])).append("' ");
         }
 
         cmd.append(" into ").append(MODEL).append(";");
@@ -268,7 +262,7 @@ public class UserRolesImpl implements UserRoles {
     ItqlHelper itql = ctx.getItqlHelper();
     try {
       StringAnswer ans =
-          new StringAnswer(itql.doQuery(ITQL_TEST_USERID.replaceAll("\\Q${userId}", userId)));
+          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId)));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       return rows.size() > 0;
     } catch (AnswerException ae) {
