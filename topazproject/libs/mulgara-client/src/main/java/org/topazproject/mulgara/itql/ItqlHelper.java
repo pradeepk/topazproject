@@ -192,7 +192,7 @@ public class ItqlHelper {
       AbstractReAuthStubFactory factory = new AbstractReAuthStubFactory() {
 
         public Object newStub(ProtectedService service) throws Exception {
-          return createStub(service);
+          return initServer(createStub(service));
         }
 
         public Object rebuildStub(Object old, ProtectedService service, Throwable fault)
@@ -234,6 +234,28 @@ public class ItqlHelper {
   private void init() throws RemoteException {
     registerInstance(this);
     setAliases(defaultAliases);
+    initServer(interpreter);
+  }
+
+  private static ItqlInterpreterBean initServer(ItqlInterpreterBean interpreter)
+      throws RemoteException {
+    /* There is a bug in ItqlInterpreter where it starts off assuming the connection is not
+     * local. Combined with the fact that no rmi server is running this leads to it failing
+     * to connect to the db (only if local does it fall back to using direct connection if
+     * no rmi server is available). Therefore we first set the server-uri to a URI which
+     * forces ItqlInterpreter to local-mode.
+     *
+     * Now, this triggers another problem: if we start a transaction and do some operation,
+     * then the tx-begin (set autocommit off) will be done on the local:/// session, but the
+     * operation will then switch the db session to rmi://localhost/fedora (assuming that's
+     * the base for the model specified in the operation). This leads to various problems
+     * including a deadlock. Hence we immediately reset the server-uri here to the correct
+     * location.
+     */
+    interpreter.setServerURI("local:///");
+    interpreter.setServerURI("rmi://localhost/fedora");
+
+    return interpreter;
   }
 
   /** 
