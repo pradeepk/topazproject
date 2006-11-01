@@ -27,6 +27,8 @@ import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.Obligation;
 import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;
+import com.sun.xacml.attr.AnyURIAttribute;
+import com.sun.xacml.attr.AttributeDesignator;
 import com.sun.xacml.attr.AttributeValue;
 import com.sun.xacml.attr.BagAttribute;
 import com.sun.xacml.attr.StringAttribute;
@@ -45,10 +47,13 @@ import com.sun.xacml.finder.AttributeFinder;
  * @author Pradeep Krishnan
  */
 public class DenyBiasedPEP {
-  private static final Log log           = LogFactory.getLog(DenyBiasedPEP.class);
+  private static final Log log                      = LogFactory.getLog(DenyBiasedPEP.class);
+  private static final URI STR_ATTR_TYPE            = URI.create(StringAttribute.identifier);
+  private static final URI URI_ATTR_TYPE            = URI.create(AnyURIAttribute.identifier);
+  private static final URI SUBJECT_CATEGORY_DEFAULT =
+    URI.create(AttributeDesignator.SUBJECT_CATEGORY_DEFAULT);
   private PDP              pdp;
   private AttributeFinder  attrFinder;
-  private URI              STR_ATTR_TYPE = URI.create(StringAttribute.identifier);
 
   /**
    * Constructs a DenyBiasedPEP with the given PDP.
@@ -188,7 +193,8 @@ public class DenyBiasedPEP {
   }
 
   private String getUser(EvaluationCtx ctx) {
-    EvaluationResult result = ctx.getSubjectAttribute(STR_ATTR_TYPE, Util.SUBJECT_ID, null, null);
+    EvaluationResult result =
+      ctx.getSubjectAttribute(URI_ATTR_TYPE, Util.SUBJECT_ID, SUBJECT_CATEGORY_DEFAULT);
 
     if (result.indeterminate())
       return "[undefined user]";
@@ -198,7 +204,7 @@ public class DenyBiasedPEP {
     if (bag.isEmpty())
       return "[undefined user]";
 
-    return ((StringAttribute) bag.iterator().next()).getValue();
+    return ((AnyURIAttribute) bag.iterator().next()).getValue().toString();
   }
 
   /**
