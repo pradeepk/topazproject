@@ -136,11 +136,7 @@
     </exec>
   </target>
 
-  <condition property="if-spawned">
-    <istrue value="${SPAWN}"/>
-  </condition>
-  
-  <target name="fedora-if-spawned" if="if-spawned">
+  <target name="fedora-if-spawned" if="SPAWN">
     <echo>Spawned off fedora; sleeping a bit to give it time to really start...</echo>
     <sleep seconds="10"/>
     <echo>Sleep done.</echo>
