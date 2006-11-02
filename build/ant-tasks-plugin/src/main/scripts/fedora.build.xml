@@ -53,6 +53,8 @@
       value="${localRepository}/${fedora-groupId}/${fedora-artifactId}/${fedora-version}/${fedora-artifactId}-${fedora-version}.jar"/>
     <property name="MULGARA_WAR"
       value="${localRepository}/${mulgara-service-groupId}/${mulgara-service-artifactId}/${mulgara-service-version}/${mulgara-service-artifactId}-${mulgara-service-version}.war"/>
+    <property name="ACCESS_WAR"
+      value="${localRepository}/${access-service-groupId}/${access-service-artifactId}/${access-service-version}/${access-service-artifactId}-${access-service-version}.war"/>
 
     <property name="FEDORA_HOME"
       value="${FEDORA_INSTALL_DIR}/fedora-${fedora-version}"/>
@@ -103,6 +105,11 @@
     
     <!-- Install mulgara-service -->
     <unjar src="${MULGARA_WAR}" dest="${TOMCAT_HOME}/webapps/mulgara"/>
+    
+    <!-- Install access-service -->
+    <!-- Disabled deployment of access check service; pending seperation of mulgara from Fedora
+    <unjar src="${ACCESS_WAR}" dest="${TOMCAT_HOME}/webapps/access"/>
+    -->
   </target>
 
   <!-- Runs fedora-install IF the INSTALL propery/config is set - used by fedora-start -->
@@ -307,6 +314,25 @@
     <jar destfile="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib/driver-1.1.0.jar" update="true"
          basedir="filter-resolver" includes="**" filesonly="true"/>
 
+    <!-- copy authoriztion -->
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
+      file="${WS_ACCESS_CLIENT}"/>
+       
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
+      file="${WS_ACCESS_API}"/>
+       
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
+      file="${WS_COMMON_API}"/>
+       
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
+      file="${AUTH_HELPER}"/>
+       
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
+      file="${CONF_HELPER}"/>
+       
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
+      file="${FEDORA_SECURITY}"/>
+       
     <!-- jar everything up and overwrite the package target created by maven -->
     <jar destfile="${DEST_DIR}.jar" basedir="${DEST_DIR}"/>
   </target>

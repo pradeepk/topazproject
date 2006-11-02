@@ -98,6 +98,33 @@
         </parameter>
 
         <parameter>
+          <name>access-service-groupId</name>
+          <property>access-service-groupId</property>
+          <required>true</required>
+          <defaultValue>org/topazproject/ws</defaultValue>
+          <type>java.lang.String</type>
+          <description>groupId for access-service</description>
+        </parameter>
+
+        <parameter>
+          <name>access-service-artifactId</name>
+          <property>access-service-artifactId</property>
+          <required>true</required>
+          <defaultValue>ws-access-webapp</defaultValue>
+          <type>java.lang.String</type>
+          <description>ArtifactId of access-service</description>
+        </parameter>
+
+        <parameter>
+          <name>access-service-version</name>
+          <property>access-service-version</property>
+          <required>true</required>
+          <defaultValue>0.5-SNAPSHOT</defaultValue>
+          <type>java.lang.String</type>
+          <description>version of access-service</description>
+        </parameter>
+        
+        <parameter>
           <name>ECQS_KEYSTORE</name>
           <property>ECQS_KEYSTORE</property>
           <required>true</required>
@@ -258,6 +285,47 @@
           <defaultValue>${settings.localRepository}/org/topazproject/filter-resolver/0.5-SNAPSHOT/filter-resolver-0.5-SNAPSHOT.jar</defaultValue>
         </parameter>
 
+        <parameter>
+          <name>WS_ACCESS_CLIENT</name>
+          <property>WS_ACCESS_CLIENT</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/org/topazproject/ws/ws-access-client-impl/0.5-SNAPSHOT/ws-access-client-impl-0.5-SNAPSHOT.jar</defaultValue>
+        </parameter>
+        
+        <parameter>
+          <name>WS_ACCESS_API</name>
+          <property>WS_ACCESS_API</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/org/topazproject/ws/ws-access-api/0.5-SNAPSHOT/ws-access-api-0.5-SNAPSHOT.jar</defaultValue>
+        </parameter>
+        
+        <parameter>
+          <name>WS_COMMON_API</name>
+          <property>WS_COMMON_API</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/org/topazproject/ws/ws-common-api/0.5-SNAPSHOT/ws-common-api-0.5-SNAPSHOT.jar</defaultValue>
+        </parameter>
+        
+        <parameter>
+          <name>AUTH_HELPER</name>
+          <property>AUTH_HELPER</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/org/topazproject/auth-helper/0.5-SNAPSHOT/auth-helper-0.5-SNAPSHOT.jar</defaultValue>
+        </parameter>
+        
+        <parameter>
+          <name>CONF_HELPER</name>
+          <property>CONF_HELPER</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/org/topazproject/conf-helper/0.5-SNAPSHOT/conf-helper-0.5-SNAPSHOT.jar</defaultValue>
+        </parameter>
+        
+        <parameter>
+          <name>FEDORA_SECURITY</name>
+          <property>FEDORA_SECURITY</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/org/topazproject/fedora-security/0.5-SNAPSHOT/fedora-security-0.5-SNAPSHOT.jar</defaultValue>
+        </parameter>
       </parameters>
 
     </mojo>
