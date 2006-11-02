@@ -29,6 +29,10 @@
             </@ww.url>
             <@ww.a href="%{articleArticleRepPDF}">View PDF representation</@ww.a>
           </li>
+          <li>
+            <@ww.url id="annotationURL" includeContext="false" namespace="../annotation" action="listAnnotation" target="${article}"/>
+            <@ww.a href="%{annotationURL}">View Annotations for Article</@ww.a>
+          </li>
         </ul>
 
       </#list>
