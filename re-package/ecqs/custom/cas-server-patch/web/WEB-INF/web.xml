@@ -119,14 +119,14 @@
     <!-- end cas-mod  -->
       
     <!--Filter class and mapping for username replacement with guid filter-->
-<!--    <filter>
+    <filter>
       <filter-name>UsernameReplacementWithGuidFilter</filter-name>
       <filter-class>org.plos.auth.web.UsernameReplacementWithGuidFilter</filter-class>
     </filter>
     <filter-mapping>
       <filter-name>UsernameReplacementWithGuidFilter</filter-name>
       <url-pattern>/login</url-pattern>
-    </filter-mapping>-->
+    </filter-mapping>
  
     <!-- Sets up ticket caches -->
     <listener>
