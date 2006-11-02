@@ -41,7 +41,7 @@ public class TestChangePasswordAction extends BasePlosoneRegistrationTestCase {
   }
 
   public void testShouldFailToChangeUserPasswordIfOldPasswordIsWrong() throws Exception {
-    final String email = "verified-user-changing-their-wrong-oldPassword@home.com";
+    final String email = "testShouldFailToChangeUserPasswordIfOldPasswordIsWrong@home.com";
     final String oldPassword = "changethispassword";
 
     createUser(email, oldPassword);
@@ -57,7 +57,7 @@ public class TestChangePasswordAction extends BasePlosoneRegistrationTestCase {
   }
 
   public void testShouldFailToChangeUserPasswordIfUserNotFound() throws Exception {
-    final String email = "not-found-user-changing-their-wrong-oldPassword@home.com";
+    final String email = "testShouldFailToChangeUserPasswordIfUserNotFound@home.com";
     final String oldPassword = "changethispassword";
 
     final ChangePasswordAction changePasswordAction = getChangePasswordAction();

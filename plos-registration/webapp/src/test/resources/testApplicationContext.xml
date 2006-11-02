@@ -4,29 +4,20 @@
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
-http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
-http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util.xsd">
+        http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
+        http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
+        http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
   <import resource="nonWebApplicationContext.xml"/>
 
   <!-- creating all actions with the right injections -->
-  <bean id="registerAction" class="org.plos.web.RegisterAction" singleton="false">
-    <property name="registrationService" ref="registrationService"/>
-  </bean>
+  <bean class="org.plos.web.RegisterAction"/>
 
-  <bean id="confirmationAction" class="org.plos.web.ConfirmationAction" singleton="false">
-    <property name="registrationService" ref="registrationService"/>
-  </bean>
+  <bean class="org.plos.web.ConfirmationAction"/>
 
-  <bean id="forgotPasswordAction" class="org.plos.web.ForgotPasswordAction" singleton="false">
-    <property name="registrationService" ref="registrationService"/>
-  </bean>
+  <bean class="org.plos.web.ForgotPasswordAction"/>
 
-  <bean id="forgotPasswordChangePasswordAction" class="org.plos.web.ForgotPasswordChangePasswordAction" singleton="false">
-    <property name="registrationService" ref="registrationService"/>
-  </bean>
+  <bean class="org.plos.web.ForgotPasswordChangePasswordAction"/>
 
-  <bean id="changePasswordAction" class="org.plos.web.ChangePasswordAction" singleton="false">
-    <property name="registrationService" ref="registrationService"/>
-  </bean>
+  <bean class="org.plos.web.ChangePasswordAction" scope="prototype"/>
 
 </beans>
