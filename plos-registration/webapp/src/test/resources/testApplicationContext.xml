@@ -10,13 +10,13 @@
   <import resource="nonWebApplicationContext.xml"/>
 
   <!-- creating all actions with the right injections -->
-  <bean class="org.plos.web.RegisterAction"/>
+  <bean class="org.plos.web.RegisterAction" scope="prototype"/>
 
-  <bean class="org.plos.web.ConfirmationAction"/>
+  <bean class="org.plos.web.ConfirmationAction" scope="prototype"/>
 
-  <bean class="org.plos.web.ForgotPasswordAction"/>
+  <bean class="org.plos.web.ForgotPasswordAction" scope="prototype"/>
 
-  <bean class="org.plos.web.ForgotPasswordChangePasswordAction"/>
+  <bean class="org.plos.web.ForgotPasswordChangePasswordAction" scope="prototype"/>
 
   <bean class="org.plos.web.ChangePasswordAction" scope="prototype"/>
 

@@ -31,10 +31,9 @@ public class TestPasswordDigestService extends TestCase {
 
   public void testVerifyPassportService() throws PasswordServiceException {
     final PasswordDigestService passwordDigestService = getPasswordDigestService();
-    //Quick check of the password service with a value from the database copied over from expected
-    final String expected = "dbf86cea944e947c7d077797230ab98df4d0e6093b1ee871f93de4c3d2abcd7123d4d1";
+    //Quick check of the password service with a value from the database copied over
+    final String expected = "6584abbf44d354572af470f6de0d48c11d595968636b75b38006e5a60043b6641aeba7";
     final String password = "fedoraAdmin";
-    final String digest = passwordDigestService.getDigestPassword(password);
 //    assertTrue(passwordDigestService.verifyPassword(password, expected));
   }
 
