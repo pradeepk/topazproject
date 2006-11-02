@@ -25,5 +25,6 @@
     <module>pap</module>
     <module>alerts</module>
     <module>ratings</module>
+    <module>access</module>
   </modules>
 </project>
