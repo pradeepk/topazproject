@@ -132,10 +132,13 @@ public class FileUtils {
   //TODO: The final solution for content type to file extension mapping is still work in progress
   static {
     mimeTypeMap.put("application/pdf", "pdf");
-    mimeTypeMap.put("image/tiff", "tiff");
+    mimeTypeMap.put("image/tiff", "tif");
     mimeTypeMap.put("image/png", "png");
     mimeTypeMap.put("text/xml", "xml");
     mimeTypeMap.put("text/html", "htm");
+    mimeTypeMap.put("png-l", "png");
+    mimeTypeMap.put("png-m", "png");
+    mimeTypeMap.put("png-s", "png");
   }
 
   /**
@@ -144,7 +147,7 @@ public class FileUtils {
    * @return file extension
    */
   public static String getDefaultFileExtByMimeType(final String mimeType) {
-    final String extension = mimeTypeMap.get(mimeType);
+    final String extension = mimeTypeMap.get(mimeType.toLowerCase());
     return null == extension ? "" : extension;
   }
 }

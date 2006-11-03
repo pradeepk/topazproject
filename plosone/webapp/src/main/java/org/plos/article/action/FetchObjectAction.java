@@ -27,12 +27,14 @@ public class FetchObjectAction extends BaseActionSupport {
   private InputStream inputStream;
   private String contentDisposition;
   private static final Log log = LogFactory.getLog(FetchObjectAction.class);
+  private String contentType;
 
   public String execute() throws Exception {
     final String objectURL = articleWebService.getObjectURL(uri, representation);
     final URLConnection urlConnection = new URL(objectURL).openConnection();
     inputStream = urlConnection.getInputStream();
-    final String fileExt = getFileExtension(urlConnection);
+    contentType = urlConnection.getContentType();
+    final String fileExt = getFileExtension(contentType);
     contentDisposition = getContentDisposition(fileExt);
     return SUCCESS;
   }
@@ -41,8 +43,7 @@ public class FetchObjectAction extends BaseActionSupport {
     return "filename=\"" + FileUtils.getFileName(uri) + "." + fileExt + "\"";
   }
 
-  private String getFileExtension(final URLConnection urlConnection) {
-    final String contentType = urlConnection.getContentType();
+  private String getFileExtension(final String contentType) {
     return FileUtils.getDefaultFileExtByMimeType(contentType);
   }
 
@@ -80,5 +81,12 @@ public class FetchObjectAction extends BaseActionSupport {
    */
   public String getContentDisposition() {
     return contentDisposition;
+  }
+
+  /**
+   * @return Return the content type for the object
+   */
+  public String getContentType() {
+    return contentType;
   }
 }

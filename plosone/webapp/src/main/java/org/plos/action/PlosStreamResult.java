@@ -15,8 +15,8 @@ import com.opensymphony.xwork.ActionInvocation;
 import javax.servlet.http.HttpServletResponse;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.lang.reflect.Method;
 import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 
 public class PlosStreamResult extends StreamResult {
 
@@ -39,7 +39,7 @@ public class PlosStreamResult extends StreamResult {
         HttpServletResponse oResponse = (HttpServletResponse) invocation.getInvocationContext().get(HTTP_RESPONSE);
 
         // Set the content type
-//        oResponse.setContentType(getProperty("contentType", this.contentType, invocation));
+        oResponse.setContentType(getProperty("contentType", this.contentType, invocation));
 
         // Set the content length
         if (this.contentLength != null) {
