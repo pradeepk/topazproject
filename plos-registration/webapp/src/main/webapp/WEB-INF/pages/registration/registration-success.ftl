@@ -16,7 +16,7 @@
 
                 Please click the following link to verify your email address:
 
-                <@ww.url id="emailVerificationURL" action="emailVerification">
+                <@ww.url includeParams="none" id="emailVerificationURL" action="emailVerification">
                   <@ww.param name="loginName" value="user.loginName"/>
                   <@ww.param name="emailVerificationToken" value="user.emailVerificationToken"/>
                 </@ww.url>
