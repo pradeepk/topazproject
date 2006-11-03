@@ -23,7 +23,7 @@ import org.topazproject.authentication.reauth.AbstractReAuthStubFactory;
 /**
  * Factory class to generate Access web-service client stubs.
  *
- * @author foo
+ * @author Pradeep Krishnan
  */
 public class AccessClientFactory extends AbstractReAuthStubFactory {
   private static AccessClientFactory instance = new AccessClientFactory();
