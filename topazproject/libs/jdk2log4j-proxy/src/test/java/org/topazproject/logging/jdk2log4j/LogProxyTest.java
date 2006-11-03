@@ -70,25 +70,45 @@ public class LogProxyTest extends TestCase {
 
   public void testLazyGlobalLogger() {
     // Jdk's "global" logger (a special case for lazy programmers)
-    this.jdkLog.info("Global logger: " + Logger.global.getClass().getName() +
-                     ":" + Logger.global.getName());
-    this.jdkLog.info("Global logger parent: " + Logger.global.getParent());
-    /* Probably broken by Jdk 1.5_08 - bug 4994705 (worked in 1.5_06)
+    try {
+      Logger globalLogger = (Logger)Logger.class.getDeclaredField("global").get(null);
+      // It'd be nice if this displayed our ProxyLogger -- but broken -- see below
+      this.jdkLog.info("Logger.global logger: " + globalLogger.getClass().getName() +
+                       ":" + globalLogger.getName());
+      globalLogger.info("This should be logged... but is not");
+    } catch (Throwable e) {
+      // Perhaps Logger.global was finally removed
+      Logger.getLogger("global").info("Unable to get Logger.global? - probably okay" + e);
+    }
+
+    /* Broken by Jdk 1.5_08 - bug 4994705 (worked in 1.5_06)
      *
      * New behavior is such that Logger.global (a convenience to developers who are making
      * casual use of the Logging package), will use jdk logger regardless of any new
      * LogManager configured via java.util.logging.manager.
      *
      * This is only important if you or a package you're trying to get logging info for
-     * uses Logger.global instead of Logger.getLogger().
+     * uses Logger.global instead of Logger.getLogger(). Also note that according to bug
+     * 6413817 Logger.global is to be deprecated very soon now.
      *
      * See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4994705
+     * and http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=6413817
      *
      * assertEquals("'global' Logger object not a ProxyLogger",
      *              org.topazproject.logging.jdk2log4j.ProxyLogger.class.getName(),
      *              java.util.logging.Logger.global.getClass().getName());
      */
-    Logger.global.info("This should be logged... but is not");
+  }
+
+  public void testRealGlobalLogger() {
+    // This is the correct way to do things per 6413817 (see above)
+    Logger globalLogger = Logger.getLogger("global");
+    this.jdkLog.info("Logger.getLogger(\"global\") logger: " + globalLogger.getClass().getName() +
+                     ":" + globalLogger.getName());
+    globalLogger.info("Hello world! You should see this!");
+    assertEquals("'global' Logger object not a ProxyLogger",
+                 /*org.topazproject.logging.jdk2log4j*/ProxyLogger.class.getName(),
+                 globalLogger.getClass().getName());
   }
     
   public void testLogging() {
