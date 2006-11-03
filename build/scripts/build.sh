@@ -31,8 +31,12 @@ MVN_REPOSITORY_TOPAZ=${MVN_REPOSITORY}/org/topazproject
 # Don't exit if we get a meaningless error
 set +e
 
+SVNVERSION=`svnversion`
+MVNARGS=-Dsvnversion=${SVNVERSION}
+
+java -version
 echo "pwd: "`pwd`
-echo "svnversion: "`svnversion`
+echo "svnversion: $SVNVERSION"
 echo "svn info and recent changes"
 svn info
 svn log -rBASE:{`date "+%Y-%m-%d"`}
@@ -42,17 +46,17 @@ rm -rf ${MVN_REPOSITORY_TOPAZ}/{esup*,fedora*}
 
 # Build our ant-tasks first
 echo "Building ant-tasks-plugin first"
-(cd build/ant-tasks-plugin; ${MVN} install)
+(cd build/ant-tasks-plugin; ${MVN} ${MVNARGS} install)
 
 echo "Making sure ecqs is stopped: mvn ant-tasks:ecqs-stop"
-${MVN} ant-tasks:ecqs-stop   > /dev/null
+${MVN} ${MVNARGS} ant-tasks:ecqs-stop   > /dev/null
 echo "Making sure fedora is stopped: mvn ant-tasks:fedora-stop"
-${MVN} ant-tasks:fedora-stop > /dev/null 2>&1
+${MVN} ${MVNARGS} ant-tasks:fedora-stop > /dev/null 2>&1
 
 # Do a build, if it fails, just exit
 echo "Running our build: mvn clean install --batch-mode"
 set -e
-${MVN} clean install --batch-mode
+${MVN} ${MVNARGS} clean install --batch-mode
 N=$?
 
 echo "Removing potentially stale directory: ${TOPAZ_INSTALL_DIR}"
@@ -65,14 +69,14 @@ set +e
 # Run integration tests and generate documentation
 if [ ${N} -eq 0 ]; then
   echo "Running integration tests: mvn clean -Pit-startenv install --batch-mode"
-  (cd topazproject/integrationtests; ${MVN} -Pit-startenv clean install --batch-mode)
+  (cd topazproject/integrationtests; ${MVN} ${MVNARGS} -Pit-startenv clean install --batch-mode)
   N=$?
 
   echo "Creating documentation: cd integrationtests; mvn site-deploy"
-  mkdir topazproject/integrationtests/target
+  mkdir -p topazproject/integrationtests/target
   RESULTS=`pwd`/topazproject/integrationtests/target/site.build.out.$$
   #rm -rf ${TOPAZ_INSTALL_DIR}/topazdocs
-  (cd topazproject/integrationtests; ${MVN} site-deploy --batch-mode 2>&1 >$RESULTS)
+  (cd topazproject/integrationtests; ${MVN} ${MVNARGS} site-deploy --batch-mode 2>&1 >$RESULTS)
   if [ $? -ne 0 ]; then
     echo "Site Build Failed"
     cat $RESULTS
@@ -80,9 +84,9 @@ if [ ${N} -eq 0 ]; then
 fi
 
 echo "Stopping ecqs"
-${MVN} ant-tasks:ecqs-stop   > /dev/null
+${MVN} ${MVNARGS} ant-tasks:ecqs-stop   > /dev/null
 echo "Stopping fedora"
-${MVN} ant-tasks:fedora-stop > /dev/null 2>&1
+${MVN} ${MVNARGS} ant-tasks:fedora-stop > /dev/null 2>&1
 
 # Return build result
 exit ${N}
