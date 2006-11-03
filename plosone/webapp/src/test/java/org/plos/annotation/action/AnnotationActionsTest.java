@@ -19,6 +19,7 @@ import org.plos.annotation.service.AnnotationPermission;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.Reply;
+import org.plos.article.action.FetchArticleAction;
 import org.plos.permission.service.PermissionWebService;
 import org.topazproject.ws.annotation.Annotations;
 
@@ -37,9 +38,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
   private static final Log log = LogFactory.getLog(AnnotationActionsTest.class);
   private static String annotationId = "doi:somedefaultvalue";
-  private static String replyId;
   private final String PROFANE_WORD = "BUSH";
-  private static String replyToReplyId;
   private String testXmlTarget = "file:webapp/src/test/resources/test.xml";
 
   public void testSequencedTests() throws Exception {
@@ -183,8 +182,6 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertEquals(annotationId, savedReply.getInReplyTo());
     assertEquals(title, savedReply.getCommentTitle());
     assertEquals(body, savedReply.getComment());
-
-    AnnotationActionsTest.replyId = replyId;
   }
 
 
@@ -207,7 +204,6 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       assertEquals(title, savedReply.getCommentTitle());
 
       assertEquals(body, savedReply.getComment());
-      AnnotationActionsTest.replyId = replyId;
     }
 
     {
@@ -228,7 +224,6 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       assertEquals(title, savedReply.getCommentTitle());
 
       assertEquals(replyBody2, savedReply.getComment());
-      AnnotationActionsTest.replyToReplyId = replyToReplyId;
     }
 
   }
@@ -449,7 +444,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 //      + " <!ATTLIST testid id ID #REQUIRED > ] > <doc> <chapter> <title>Chapter I</title> "
 //      + " <para>Hello world, indeed, <em>wonderful</em> world</para></chapter></doc>";
 
-    String target = testXmlTarget;
+    final String target = testXmlTarget;
 
     final String startPath1    = "/doc/chapter/title";
     final String endPath1    = "/doc/chapter/para";
@@ -479,21 +474,17 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       }
     }
 
-    final String annotationId = new AnnotationCreator().execute(target, startPath1, endPath1, title, context1Body);
+    final Collection<String> annotationIdList = new ArrayList<String>();
+    annotationIdList.add(
+            new AnnotationCreator().execute(target, startPath1, endPath1, title, context1Body));
 
-    final ListAnnotationAction listAnnotationAction1 = getListAnnotationAction();
-    listAnnotationAction1.setTarget(target);
-    listAnnotationAction1.execute();
+    final String annotatedContent = getFetchArticleService().getAnnotatedContent(target, target);
+    for (final String annotationId : annotationIdList) {
+      assertTrue(annotatedContent.contains(annotationId));
+    }
 
-    final Annotation[] annotations2 = listAnnotationAction1.getAnnotations();
-
-    final String content = getFetchArticleService().getAnnotatedContent(target);
-    log.debug("Annotated content = " + content);
-
-    assertTrue(content.contains(annotationId));
-
-    for (final Annotation annotation : annotations2) {
-      final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
+    for (final String annotationId : annotationIdList) {
+      final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, true);
       deleteAnnotationAction.execute();
     }
   }
@@ -506,7 +497,8 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
 //    String target = "http://localhost:9080/existingArticle/test.xml";
 //    String target = "http://localhost:8080/plosone-webapp/article/fetchArticle.action?articleURI=info:doi/10.1371%2Fjournal.pone.0000008";
-    final String target = getArticleWebService().getObjectURL("info:doi/10.1371/journal.pone.0000008", "XML");
+//    final String target = getArticleWebService().getObjectURL("info:doi/10.1371/journal.pone.0000008", "XML");
+    final String target = "info:doi/10.1371/journal.pone.0000008";
     log.debug("target =" + target);
     
     final String startPath1    = "/article[1]/body[1]/sec[2]/sec[1]/p[4]";
@@ -534,7 +526,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     }
 
     class AnnotationCreator {
-      public void execute(final String target, final String startPath, final int startOffset, final String endPath, final int endOffset, final String title, final String body) throws Exception {
+      public String execute(final String target, final String startPath, final int startOffset, final String endPath, final int endOffset, final String title, final String body) throws Exception {
         final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
         createAnnotationAction.setStartPath(startPath);
         createAnnotationAction.setStartOffset(startOffset);
@@ -543,23 +535,38 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
         log.debug("context = " + createAnnotationAction.getTargetContext());
         assertEquals(SUCCESS, createAnnotationAction.execute());
+        return createAnnotationAction.getAnnotationId();
       }
     }
 
-    new AnnotationCreator().execute(target, startPath1, startOffset1, endPath1, endOffset1, title, context1Body);
-    new AnnotationCreator().execute(target, startPath2, startOffset2, endPath2, endOffset2, title, context2Body);
+    final Collection<String> annotationIdList = new ArrayList<String>();
+    annotationIdList.add(
+            new AnnotationCreator().execute(target, startPath1, startOffset1, endPath1, endOffset1, title, context1Body));
+    annotationIdList.add(
+            new AnnotationCreator().execute(target, startPath2, startOffset2, endPath2, endOffset2, title, context2Body));
 
-    final ListAnnotationAction listAnnotationAction1 = getListAnnotationAction();
-    listAnnotationAction1.setTarget(target);
-    listAnnotationAction1.execute();
+    final String annotatedContent = getFetchArticleService().getAnnotatedContent(target);
 
-    final Annotation[] annotations2 = listAnnotationAction1.getAnnotations();
+    for (final String annotationId : annotationIdList) {
+      assertTrue(annotatedContent.contains(annotationId));
+    }
 
-    final String content = getFetchArticleService().getAnnotatedContent(target);
-    log.debug("Annotated content = " + content);
+    for (final String annotationId : annotationIdList) {
+      final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, true);
+      deleteAnnotationAction.execute();
+    }
 
-    //As the body is not inlined by the current annotator.
-    assertTrue(content.contains(target));
+    if (false) { //to test if the xsl transformation worked fine and got any annotation in the output
+      final FetchArticleAction fetchArticleAction = getFetchArticleAction();
+      fetchArticleAction.setArticleURI(target);
+      assertEquals(SUCCESS, fetchArticleAction.execute());
+
+      final String transformedArticle = fetchArticleAction.getTransformedArticle();
+      log.debug("Annotated content = " + transformedArticle);
+
+      //As the body is not inlined by the current annotator.
+      assertTrue(transformedArticle.contains(target));
+    }
   }
 
   private Reply retrieveReply(final String replyId) throws Exception {
@@ -635,19 +642,27 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     AnnotationService service = getAnnotationService();
     Annotation[] annotations = service.listAnnotations(subject);
 
-    for (Annotation annotation : annotations)
+    for (final Annotation annotation : annotations) {
       service.deletePrivateAnnotation(annotation.getId(), true);
+    }
 
-    service.createAnnotation(subject, context1, null, title, "text/plain", "body", false);
-    service.createAnnotation(subject, context2, null, title, "text/plain", "body", false);
-    service.createAnnotation(subject, context3, null, title, "text/plain", "body", false);
+    final Collection<String> annotationIdList = new ArrayList<String>();
+    annotationIdList.add(
+      service.createAnnotation(subject, context1, null, title, "text/plain", "body", false));
+    annotationIdList.add(
+      service.createAnnotation(subject, context2, null, title, "text/plain", "body", false));
+    annotationIdList.add(
+      service.createAnnotation(subject, context3, null, title, "text/plain", "body", false));
 
-    String content = getFetchArticleService().getAnnotatedContent(subject);
-    log.debug(content);
+    String annotatedContent = getFetchArticleService().getAnnotatedContent(subject, subject);
+    for (final String annotationId : annotationIdList) {
+      assertTrue(annotatedContent.contains(annotationId));
+    }
 
-    annotations = service.listAnnotations(subject);
-    for (Annotation annotation1 : annotations)
-      service.deletePrivateAnnotation(annotation1.getId(), true);
+    for (final String annotationId : annotationIdList) {
+      final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, true);
+      deleteAnnotationAction.execute();
+    }
   }
 
   public void testAnnotatedContentWithSimpleStringRangeLocAndLength() throws Exception {
@@ -672,7 +687,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     service.createAnnotation(subject, context2, null, title, "text/plain", "body", false);
     service.createAnnotation(subject, context3, null, title, "text/plain", "body", false);
 
-    String content = getFetchArticleService().getAnnotatedContent(subject);
+    String content = getFetchArticleService().getAnnotatedContent(subject, subject);
     log.debug(content);
 
     annotations = service.listAnnotations(subject);

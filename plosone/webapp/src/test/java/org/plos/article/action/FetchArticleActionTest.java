@@ -46,8 +46,6 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     String uri = getArticleWebService().ingest(article);
     assertEquals(uri, resourceURI);
 
-//    resourceURI = "info:doi/10.1371/journal.pone.0000011";
-
     final FetchArticleAction fetchArticleAction = getFetchArticleAction();
     fetchArticleAction.setArticleURI(resourceURI);
 

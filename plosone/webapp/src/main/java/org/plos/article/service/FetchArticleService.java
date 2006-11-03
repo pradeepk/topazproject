@@ -88,22 +88,17 @@ public class FetchArticleService {
    * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
    */
   public void getURIAsHTML(final String articleURI, final Writer writer) throws ApplicationException, RemoteException, NoSuchIdException {
-    final String objectURL = articleService.getObjectURL(articleURI, articleRep);
-
-    transform(objectURL, writer);
-  }
-
-  private void transform(final String objectURL, final Writer writer) throws ApplicationException {
     try {
       final Transformer transformer = getTransformer();
 
-      transformer.transform(getDOMSource(objectURL),
+      final Source domSource = getAnnotatedContentAsDOMSource(articleURI);
+
+      transformer.transform(domSource,
                             new StreamResult(writer));
     } catch (Exception e) {
       log.error("Transformation of article failed", e);
       throw new ApplicationException("Transformation of article failed", e);
     }
-
   }
 
   private Transformer getTransformer() throws FileNotFoundException, TransformerException {
@@ -208,16 +203,67 @@ public class FetchArticleService {
   }
 
   /**
-   * Get the xmlFile as a DOMSource.
-   * @param xmlFile xmlFile
+   * Return the annotated content as a DOMSource for a given articleUri
+   * @param articleURI articleURI
    * @return an instance of DOMSource
    * @throws ParserConfigurationException ParserConfigurationException
    * @throws SAXException SAXException
    * @throws IOException IOException
    * @throws URISyntaxException URISyntaxException
    * @throws org.plos.ApplicationException ApplicationException
+   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
    */
-  public Source getDOMSource(final String xmlFile) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException {
+  public Source getAnnotatedContentAsDOMSource(final String articleURI) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException, NoSuchIdException {
+    final DocumentBuilder builder = getDocBuilder();
+
+    final Document doc = builder.parse(getAnnotatedContentAsInputStream(articleURI));
+
+    // Prepare the DOM source
+    return new DOMSource(doc);
+  }
+
+  /**
+   * Return the annotated content as text for a given articleUri
+   * @param articleURI articleURI
+   * @return an instance of DOMSource
+   * @throws ParserConfigurationException ParserConfigurationException
+   * @throws SAXException SAXException
+   * @throws IOException IOException
+   * @throws URISyntaxException URISyntaxException
+   * @throws org.plos.ApplicationException ApplicationException
+   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
+   */
+  public String getAnnotatedContent(final String articleURI) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException, NoSuchIdException {
+    final InputStream annotatedContentAsInputStream = getAnnotatedContentAsInputStream(articleURI);
+    return FileUtils.getTextFromCharStream(annotatedContentAsInputStream);
+  }
+
+  /**
+   * Get the xmlFileURL as a DOMSource.
+   * @param xmlFileURL xmlFileURL
+   * @return an instance of DOMSource
+   * @throws ParserConfigurationException ParserConfigurationException
+   * @throws SAXException SAXException
+   * @throws IOException IOException
+   * @throws URISyntaxException URISyntaxException
+   * @throws org.plos.ApplicationException ApplicationException
+   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
+   */
+  public Source getDOMSource(final String xmlFileURL) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException, NoSuchIdException {
+    final DocumentBuilder builder = getDocBuilder();
+
+    Document doc;
+    try {
+      doc = builder.parse(getAsFile(xmlFileURL));
+    } catch (Exception e) {
+      doc = builder.parse(xmlFileURL);
+    }
+
+    // Prepare the DOM source
+    return new DOMSource(doc);
+  }
+
+  private DocumentBuilder getDocBuilder() throws ParserConfigurationException {
     // Create a builder factory
     final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
     factory.setNamespaceAware(true);
@@ -231,20 +277,7 @@ public class FetchArticleService {
         return getInputSource(systemId);
       }
     });
-
-    Document doc;
-    if (FileUtils.isHttpURL(xmlFile)) {
-      doc = builder.parse(getAnnotatedContentAsInputStream(xmlFile));
-    } else {
-      try {
-        doc = builder.parse(getAsFile(xmlFile));
-      } catch (Exception e) {
-        doc = builder.parse(xmlFile);
-      }
-    }
-
-    // Prepare the DOM source
-    return new DOMSource(doc);
+    return builder;
   }
 
   private InputSource getInputSource(final String systemId) throws IOException {
@@ -289,24 +322,42 @@ public class FetchArticleService {
 
   /**
    * Return the annotated content
-   * @param target target
+   * @param infoUri infoUri against which the annotations are created
+   * @param contentUrl contentUrl
    * @return the annotated content
    * @throws java.io.IOException IOException
+   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
    */
-  public String getAnnotatedContent(final String target) throws IOException {
-    return FileUtils.getTextFromCharStream(getAnnotatedContentAsInputStream(target));
+  public String getAnnotatedContent(final String contentUrl, final String infoUri) throws IOException, NoSuchIdException {
+    return FileUtils.getTextFromCharStream(getAnnotatedContentAsInputStream(contentUrl, infoUri));
   }
 
   /**
    * Return the annotated content
-   * @param target target
+   * @param infoUri infoUri
+   * @return the annotated content
+   * @throws java.io.IOException IOException
+   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
+   */
+  private InputStream getAnnotatedContentAsInputStream(final String infoUri) throws IOException, NoSuchIdException {
+    final String contentUrl = articleService.getObjectURL(infoUri, articleRep);
+    return getAnnotatedContentAsInputStream(contentUrl, infoUri);
+  }
+
+  /**
+   * Return the annotated content as an InputStream. 
+   * @param infoUri infoUri against which the annotations are created
+   * @param contentUrl contentUrl
    * @return the annotated content
    * @throws java.io.IOException IOException
    */
-  public InputStream getAnnotatedContentAsInputStream(final String target) throws IOException {
-    DataHandler content = new DataHandler(new URLDataSource(new URL(target)));
-    final AnnotationInfo[] annotations = annotationWebService.listAnnotations(target);
+  private InputStream getAnnotatedContentAsInputStream(final String contentUrl, final String infoUri) throws IOException {
+    final AnnotationInfo[] annotations = annotationWebService.listAnnotations(infoUri);
+    return applyAnnotationsOnContent(contentUrl, annotations);
+  }
 
+  private InputStream applyAnnotationsOnContent(final String contentUrl, final AnnotationInfo[] annotations) throws IOException {
+    DataHandler content = new DataHandler(new URLDataSource(new URL(contentUrl)));
     if (annotations.length != 0) {
       content = Annotator.annotate(content, annotations);
     }
