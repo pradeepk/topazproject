@@ -509,13 +509,27 @@
 
       <!-- Load up our web-apps via cargo/jetty -->
       <plugin>
-        <groupId>org.codehaus.cargo</groupId>
+        <!-- <groupId>org.codehaus.cargo</groupId> -->
+        <groupId>org.topazproject.patch.cargo</groupId>
         <artifactId>cargo-maven2-plugin</artifactId>
+        <version>0.2</version>
         <configuration>
           <wait>false</wait>
           <container>
             <containerId>jetty4x</containerId>
             <type>embedded</type>
+            <dependencies>
+              <dependency>
+                <groupId>log4j</groupId>
+                <artifactId>log4j</artifactId>
+              </dependency>
+              <dependency>
+                <location>${user.home}/.m2/topaz/container-classes</location>
+              </dependency>
+              <dependency>
+                <location>${basedir}/src/it/container-classes</location>
+              </dependency>
+            </dependencies>
           </container>
           <configuration> 
             <home>${project.build.directory}/jetty</home>
