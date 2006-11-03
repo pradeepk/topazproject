@@ -60,13 +60,6 @@ public class LogProxyTest extends TestCase {
     assertEquals("Root logger not a ProxyLogger",
                  ProxyLogger.class.getName(), Logger.getLogger("").getClass().getName());
     
-    // Jdk's "global" logger (a special case for lazy programmers)
-    this.jdkLog.info("Global logger: " + Logger.global.getClass().getName() +
-                     ":" + Logger.global.getName());
-    assertEquals("'global' Logger object not a ProxyLogger",
-                 /*org.topazproject.logging.jdk2log4j.*/ProxyLogger.class.getName(),
-                 java.util.logging.Logger.global.getClass().getName());
-    
     // Anonymous logger is bogus and a bug IMO...
     Logger anonymous = Logger.getAnonymousLogger();
     this.jdkLog.info("Anonymous logger: " + anonymous.getClass().getName() +
@@ -75,6 +68,29 @@ public class LogProxyTest extends TestCase {
                  Logger.class.getName(), anonymous.getClass().getName());
   }
 
+  public void testLazyGlobalLogger() {
+    // Jdk's "global" logger (a special case for lazy programmers)
+    this.jdkLog.info("Global logger: " + Logger.global.getClass().getName() +
+                     ":" + Logger.global.getName());
+    this.jdkLog.info("Global logger parent: " + Logger.global.getParent());
+    /* Probably broken by Jdk 1.5_08 - bug 4994705 (worked in 1.5_06)
+     *
+     * New behavior is such that Logger.global (a convenience to developers who are making
+     * casual use of the Logging package), will use jdk logger regardless of any new
+     * LogManager configured via java.util.logging.manager.
+     *
+     * This is only important if you or a package you're trying to get logging info for
+     * uses Logger.global instead of Logger.getLogger().
+     *
+     * See http://bugs.sun.com/bugdatabase/view_bug.do?bug_id=4994705
+     *
+     * assertEquals("'global' Logger object not a ProxyLogger",
+     *              org.topazproject.logging.jdk2log4j.ProxyLogger.class.getName(),
+     *              java.util.logging.Logger.global.getClass().getName());
+     */
+    Logger.global.info("This should be logged... but is not");
+  }
+    
   public void testLogging() {
     class MyAppender extends AppenderSkeleton {
       public LoggingEvent currentEvent;
