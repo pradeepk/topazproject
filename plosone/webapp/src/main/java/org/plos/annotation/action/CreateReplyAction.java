@@ -25,9 +25,9 @@ public class CreateReplyAction extends AnnotationActionSupport {
   private String replyId;
   private String root;
   private String inReplyTo;
-  private String title;
+  private String commentTitle;
   private String mimeType = "text/plain";
-  private String body;
+  private String comment;
 
   private ProfanityCheckingService profanityCheckingService;
 
@@ -35,14 +35,14 @@ public class CreateReplyAction extends AnnotationActionSupport {
 
   public String execute() throws Exception {
     try {
-      final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(title);
-      final List<String> profanityValidationMessagesInBody = profanityCheckingService.validate(body);
+      final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(commentTitle);
+      final List<String> profanityValidationMessagesInBody = profanityCheckingService.validate(comment);
 
       if (profanityValidationMessagesInBody.isEmpty() && profanityValidationMessagesInTitle.isEmpty()) {
-        replyId = getAnnotationService().createReply(root, inReplyTo, title, mimeType, body);
+        replyId = getAnnotationService().createReply(root, inReplyTo, commentTitle, mimeType, comment);
       } else {
-        addMessages(profanityValidationMessagesInBody, "profanity check", "body");
-        addMessages(profanityValidationMessagesInTitle, "profanity check", "title");
+        addMessages(profanityValidationMessagesInBody, "profanity check", "comment");
+        addMessages(profanityValidationMessagesInTitle, "profanity check", "commentTitle");
         return ERROR;
       }
     } catch (final ApplicationException e) {
@@ -77,16 +77,16 @@ public class CreateReplyAction extends AnnotationActionSupport {
     this.inReplyTo = inReplyTo;
   }
 
-  public void setTitle(final String title) {
-    this.title = title;
+  public void setCommentTitle(final String commentTitle) {
+    this.commentTitle = commentTitle;
   }
 
   public void setMimeType(final String mimeType) {
     this.mimeType = mimeType;
   }
 
-  public void setBody(final String body) {
-    this.body = body;
+  public void setComment(final String comment) {
+    this.comment = comment;
   }
 
   @RequiredStringValidator(message = "The annotation id to which it applies is required")
@@ -99,13 +99,13 @@ public class CreateReplyAction extends AnnotationActionSupport {
     return inReplyTo;
   }
 
-  public String getTitle() {
-    return title;
+  public String getCommentTitle() {
+    return commentTitle;
   }
 
-  @RequiredStringValidator(message = "The comment/body is required")
-  public String getBody() {
-    return body;
+  @RequiredStringValidator(message = "The comment/comment is required")
+  public String getComment() {
+    return comment;
   }
 
   public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {

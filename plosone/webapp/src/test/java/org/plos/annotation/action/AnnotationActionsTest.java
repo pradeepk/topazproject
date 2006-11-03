@@ -605,9 +605,9 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final CreateReplyAction createReplyAction = getCreateReplyAction();
     createReplyAction.setRoot(root);
     createReplyAction.setInReplyTo(inReplyTo);
-    createReplyAction.setTitle(title);
+    createReplyAction.setCommentTitle(title);
     createReplyAction.setMimeType(mimeType);
-    createReplyAction.setBody(body);
+    createReplyAction.setComment(body);
     return createReplyAction;
   }
 
