@@ -201,6 +201,19 @@
       <version>0.5-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
+    <!-- access -->
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-access-client-impl</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-access-webapp</artifactId>
+      <type>war</type>
+      <version>0.5-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
   </dependencies>
 
   <properties>
