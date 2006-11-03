@@ -64,7 +64,8 @@ public class AnnotationsImpl implements Annotations {
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
   //
-  private static final String MODEL = "<" + CONF.getString("topaz.models.annotations") + ">";
+  private static final String MODEL    = "<" + CONF.getString("topaz.models.annotations") + ">";
+  private static final String PP_MODEL = "<" + CONF.getString("topaz.models.pp") + ">";
 
   //
   private static final String CREATE_ITQL =
@@ -81,6 +82,9 @@ public class AnnotationsImpl implements Annotations {
     ("insert <${id}> <d:title> '${title}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String INSERT_MEDIATOR_ITQL =
     ("insert <${id}> <dt:mediator> '${mediator}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
+  private static final String INSERT_IMPLIES_ITQL =
+    ("insert <${id}> <topaz:propagate-permissions-to> <${pid}> into          ${PP_MODEL};")
+     .replaceAll("\\Q${PP_MODEL}", PP_MODEL);
   private static final String DELETE_ITQL =
     ("insert select $a <dt:isReplacedBy> $c from ${MODEL}"
     + " where $a <dt:isReplacedBy> <${id}> and <${id}> <dt:isReplacedBy> $c into ${MODEL};"
@@ -202,6 +206,7 @@ public class AnnotationsImpl implements Annotations {
                            throws NoSuchAnnotationIdException, RemoteException {
     if (context == null)
       context = annotates;
+
     context = ItqlHelper.escapeLiteral(context);
 
     if (type == null)
@@ -217,22 +222,23 @@ public class AnnotationsImpl implements Annotations {
       checkId(supersedesUri);
     }
 
-    String id = getNextId();
+    String create = CREATE_ITQL;
+    Map    values = new HashMap();
+    String id     = getNextId();
+    String user   = ctx.getUserName();
+
+    if (user == null)
+      user = "anonymous";
 
     if (body == null) {
       body = fedora.createBody(contentType, content, "Annotation", "Annotation Body");
 
       if (log.isDebugEnabled())
         log.debug("created fedora object " + body + " for annotation " + id);
+
+      create += INSERT_IMPLIES_ITQL;
+      values.put("pid", fedora.uri2PID(body));
     }
-
-    String create = CREATE_ITQL;
-    Map    values = new HashMap();
-
-    String user = ctx.getUserName();
-
-    if (user == null)
-      user = "anonymous";
 
     values.put("id", id);
     values.put("type", type);

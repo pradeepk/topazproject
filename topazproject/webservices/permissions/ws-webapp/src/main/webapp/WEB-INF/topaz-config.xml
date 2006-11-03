@@ -10,6 +10,20 @@
   <topaz>
     <permissions>
       <pdpName>_default_</pdpName>
+      <impliedPermissions>
+        <permission uri="annotations:getAnnotationInfo">
+          <implies uri="urn:fedora:names:fedora:2.1:action:id-getDatastreamDissemination"/>
+        </permission>
+        <permission uri="annotations:getReplyInfo">
+          <implies uri="urn:fedora:names:fedora:2.1:action:id-getDatastreamDissemination"/>
+        </permission>
+        <permission uri="annotations:deleteAnnotation">
+          <implies uri="urn:fedora:names:fedora:2.1:action:purgeObject"/>
+        </permission>
+        <permission uri="annotations:deleteReply">
+          <implies uri="urn:fedora:names:fedora:2.1:action:purgeObject"/>
+        </permission>
+      </impliedPermissions>
     </permissions>
   </topaz>
 </config>

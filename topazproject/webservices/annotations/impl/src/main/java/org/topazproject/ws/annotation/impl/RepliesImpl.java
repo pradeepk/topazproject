@@ -62,7 +62,8 @@ public class RepliesImpl implements Replies {
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
   //
-  private static final String MODEL = "<" + CONF.getString("topaz.models.annotations") + ">";
+  private static final String MODEL    = "<" + CONF.getString("topaz.models.annotations") + ">";
+  private static final String PP_MODEL = "<" + CONF.getString("topaz.models.pp") + ">";
 
   //
   private static final String ITQL_CREATE =
@@ -78,6 +79,11 @@ public class RepliesImpl implements Replies {
   // 
   private static final String ITQL_INSERT_MEDIATOR =
     ("insert <${id}> <dt:mediator> '${mediator}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
+
+  // 
+  private static final String INSERT_IMPLIES_ITQL =
+    ("insert <${id}> <topaz:propagate-permissions-to> <${pid}>          into ${PP_MODEL};")
+     .replaceAll("\\Q${PP_MODEL}", PP_MODEL);
 
   //
   private static final String ITQL_CHECK_ID =
@@ -205,22 +211,23 @@ public class RepliesImpl implements Replies {
     if (!inReplyToUri.equals(rootUri))
       pep.checkAccess(pep.CREATE_REPLY, inReplyToUri);
 
-    String id = getNextId();
+    String id     = getNextId();
+    String create = ITQL_CREATE;
+    Map    values = new HashMap();
+    String user   = ctx.getUserName();
+
+    if (user == null)
+      user = "anonymous";
 
     if (body == null) {
       body = fedora.createBody(contentType, content, "Reply", "Reply Body");
 
       if (log.isDebugEnabled())
         log.debug("created fedora object " + body + " for reply " + id);
+
+      create += INSERT_IMPLIES_ITQL;
+      values.put("pid", fedora.uri2PID(body));
     }
-
-    String create = ITQL_CREATE;
-    Map    values = new HashMap();
-
-    String user = ctx.getUserName();
-
-    if (user == null)
-      user = "anonymous";
 
     values.put("id", id);
     values.put("type", type);
@@ -388,7 +395,7 @@ public class RepliesImpl implements Replies {
 
     try {
       String query =
-          ItqlHelper.bindValues(ITQL_LIST_ALL_REPLIES, "root", root, "inReplyTo", inReplyTo);
+        ItqlHelper.bindValues(ITQL_LIST_ALL_REPLIES, "root", root, "inReplyTo", inReplyTo);
 
       Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
 
@@ -517,8 +524,9 @@ public class RepliesImpl implements Replies {
       return inReplyTo;
 
     try {
-      String query = ItqlHelper.bindValues(ITQL_CHECK_IN_REPLY_TO, "root", root.toString(),
-                                           "inReplyTo", inReplyTo.toString());
+      String query =
+        ItqlHelper.bindValues(ITQL_CHECK_IN_REPLY_TO, "root", root.toString(), "inReplyTo",
+                              inReplyTo.toString());
       Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
