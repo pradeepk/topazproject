@@ -5095,13 +5095,32 @@ Make article meta data
 
 <xsl:template name="createAnnotationSpan">
 	<xsl:element name="span">
-		<xsl:attribute name="class">note</xsl:attribute>
+		<xsl:attribute name="class">note public</xsl:attribute>
+		<xsl:attribute name="title">User Annotation</xsl:attribute>
 		<xsl:attribute name="annotationId">
-		<xsl:variable name="regionId" select="@aml:id"/>
-		<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
-			<xsl:value-of select="@aml:id"/><xsl:text> </xsl:text>
-		 </xsl:for-each>
+			<xsl:variable name="regionId" select="@aml:id"/>
+			<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
+				<xsl:value-of select="@aml:id"/><xsl:text> </xsl:text>
+			 </xsl:for-each>
 		</xsl:attribute>
+		<xsl:element name="a">
+			<xsl:attribute name="href">#</xsl:attribute>
+			<xsl:attribute name="class">bug</xsl:attribute> 
+			<xsl:attribute name="id">
+				<xsl:variable name="regionId" select="@aml:id"/>
+				<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
+					<xsl:value-of select="@aml:id"/><xsl:text> </xsl:text>
+				 </xsl:for-each>
+			</xsl:attribute>
+			<xsl:attribute name="displayId">
+				<xsl:variable name="regionId" select="@aml:id"/>
+				<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
+					<xsl:value-of select="@aml:id"/><xsl:text> </xsl:text>
+				 </xsl:for-each>
+			</xsl:attribute>
+			<xsl:attribute name="title">Click to preview this annotation</xsl:attribute>
+			 [BUG]
+		</xsl:element>
 		<xsl:apply-templates/>
 	</xsl:element>
 </xsl:template>
