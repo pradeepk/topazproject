@@ -59,7 +59,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       final String annotationId1 = annotation.getId();
       resetAnnotationPermissionsToDefault(annotationId1, ANON_PRINCIPAL);
       DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId1, false);
-      assertEquals(SUCCESS, deleteAnnotationAction.execute());
+      assertEquals(SUCCESS, deleteAnnotationAction.deletePrivateAnnotation());
     }
   }
 
@@ -73,7 +73,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   public void testDeleteAnnotationsRemovesPrivateAnnotations() throws Exception {
     String annotationId = createAnnotation(target, false);
     DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, false);
-    assertEquals(SUCCESS, deleteAnnotationAction.execute());
+    assertEquals(SUCCESS, deleteAnnotationAction.deletePrivateAnnotation());
     log.debug("annotation deleted with id:" + annotationId);
     assertEquals(0, deleteAnnotationAction.getActionErrors().size());
 
@@ -252,30 +252,58 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String replyBA = new CreateReply().execute(annotationId, replyB, threadedTitle, body);
     final String replyBB = new CreateReply().execute(annotationId, replyB, threadedTitle, body);
 
-    final ListReplyAction listReplyAction = getListReplyAction();
-    listReplyAction.setRoot(annotationId);
-    listReplyAction.setInReplyTo(annotationId);
-    assertEquals(SUCCESS, listReplyAction.listAllReplies());
+    {//List the replies to the annotation
+      final ListReplyAction listReplyAction = getListReplyAction();
+      listReplyAction.setRoot(annotationId);
+      listReplyAction.setInReplyTo(annotationId);
+      assertEquals(SUCCESS, listReplyAction.listAllReplies());
 
-    final Reply[] replies = listReplyAction.getReplies();
+      final Reply[] replies = listReplyAction.getReplies();
 
-    final Collection<String> list = new ArrayList<String>();
-    boolean codeRan = false;
-    for (final Reply reply : replies) {
-      final String testReplyId = reply.getId();
-      list.add(testReplyId);
-      if (testReplyId.equals(replyB)) {
-        codeRan = true;
-        assertEquals(2, reply.getReplies().length);
+      final Collection<String> list = new ArrayList<String>();
+      boolean codeRan = false;
+      for (final Reply reply : replies) {
+        final String testReplyId = reply.getId();
+        list.add(testReplyId);
+        if (testReplyId.equals(replyB)) {
+          codeRan = true;
+          assertEquals(2, reply.getReplies().length);
+        }
       }
+
+      assertTrue(codeRan);
+
+      assertEquals(2, replies.length);
+      assertTrue(list.contains(replyA));
+      assertFalse(list.contains(replyAA));
+      assertTrue(list.contains(replyB));
     }
 
-    assertTrue(codeRan);
+    {//List the replies to the reply
+      final ListReplyAction listReplyAction = getListReplyAction();
+      listReplyAction.setRoot(annotationId);
+      listReplyAction.setInReplyTo(replyA);
+      assertEquals(SUCCESS, listReplyAction.listAllReplies());
+  
+      final Reply[] replies = listReplyAction.getReplies();
 
-    assertEquals(2, replies.length);
-    assertTrue(list.contains(replyA));
-    assertFalse(list.contains(replyAA));
-    assertTrue(list.contains(replyB));
+      final Collection<String> list = new ArrayList<String>();
+      boolean codeRan = false;
+      for (final Reply reply : replies) {
+        final String testReplyId = reply.getId();
+        list.add(testReplyId);
+        if (testReplyId.equals(replyAA)) {
+          codeRan = true;
+          assertEquals(2, reply.getReplies().length);
+        }
+      }
+
+      assertTrue(codeRan);
+
+      assertEquals(1, replies.length);
+      assertTrue(list.contains(replyAA));
+      assertFalse(list.contains(replyB));
+    }
 
     deleteAllReplies(annotationId);
   }
@@ -458,7 +486,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     for (final Annotation annotation : annotations) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
-      deleteAnnotationAction.execute();
+      deleteAnnotationAction.deletePrivateAnnotation();
     }
 
     class AnnotationCreator {
@@ -485,7 +513,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     for (final String annotationId : annotationIdList) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, true);
-      deleteAnnotationAction.execute();
+      deleteAnnotationAction.deletePrivateAnnotation();
     }
   }
 
@@ -522,7 +550,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     for (final Annotation annotation : annotations) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotation.getId(), true);
-      deleteAnnotationAction.execute();
+      deleteAnnotationAction.deletePrivateAnnotation();
     }
 
     class AnnotationCreator {
@@ -553,7 +581,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     for (final String annotationId : annotationIdList) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, true);
-      deleteAnnotationAction.execute();
+      deleteAnnotationAction.deletePrivateAnnotation();
     }
 
     if (false) { //to test if the xsl transformation worked fine and got any annotation in the output
@@ -661,7 +689,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
     for (final String annotationId : annotationIdList) {
       final DeleteAnnotationAction deleteAnnotationAction = getDeleteAnnotationAction(annotationId, true);
-      deleteAnnotationAction.execute();
+      deleteAnnotationAction.deletePrivateAnnotation();
     }
   }
 

@@ -14,10 +14,10 @@ import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.ReplyInfo;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.HashMap;
-import java.util.Collection;
 
 /**
  * A kind of utility class to convert types between topaz and plosone types fro Annotations and Replies
@@ -69,16 +69,29 @@ public class AnnotationConverter {
     }
 
     for (final ReplyInfo reply : replies) {
-      final String replyTo = reply.getInReplyTo();
-
       final Reply convertedObj = convert(reply);
       repliesMap.put(reply.getId(), convertedObj);
 
+      final String replyTo = reply.getInReplyTo();
+      //Setup the top level replies
       if (replyTo.equals(annotationId)) {
         plosoneReplies.add(convertedObj);
-      } else {
-        final Reply savedReply = repliesMap.get(replyTo);
-        savedReply.addReply(convertedObj);
+      }
+    }
+
+    //Thread the replies in a parent/child structure
+    for (final Map.Entry<String, Reply> entry : repliesMap.entrySet()) {
+      final Reply savedReply = entry.getValue();
+      final String inReplyToId = savedReply.getInReplyTo();
+
+      if (!inReplyToId.equals(annotationId)) {
+        final Reply inReplyTo = repliesMap.get(inReplyToId);
+        //If the replies are in reply to another reply then just add them to the top
+        if (null == inReplyTo) {
+          plosoneReplies.add(savedReply);
+        } else {
+          inReplyTo.addReply(savedReply);
+        }
       }
     }
 
