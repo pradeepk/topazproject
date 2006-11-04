@@ -45,7 +45,7 @@
         <password>fedoraAdmin</password>
       </fedoraUploader>
       <itql>
-        <uri>http://localhost:9090/mulgara/services/ItqlBeanService</uri>
+        <uri>http://localhost:9091/mulgara-service-0.5-SNAPSHOT/services/ItqlBeanService</uri>
         <auth-method>BASIC</auth-method>
         <userName>fedoraAdmin</userName>
         <password>fedoraAdmin</password>
