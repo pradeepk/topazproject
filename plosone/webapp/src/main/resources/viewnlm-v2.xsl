@@ -1,4 +1,4 @@
-<?xml version="1.0"?>
+<!--l<?xml version="1.0"?>-->
 <!-- ============================================================= -->
 <!--  MODULE:    HTML View of NLM Journal Article                  -->
 <!--  VERSION:   0.2                                               -->
@@ -76,6 +76,7 @@
 <!--             Titles:                                           -->
 <!--              46) Main article divisions                       -->
 <!--              47) First-level subdivisions and default         -->
+<!--              48) make-abstract-title                          -->
 <!--              48) make-abstract-title                          -->
 <!--             Unmoded data elements:                            -->
 <!--              49) Miscellaneous (epage, series, etc.)          -->
@@ -353,20 +354,21 @@
 <!--  1. TRANSFORM ELEMENT AND TOP-LEVEL SETTINGS                  -->
 <!-- ============================================================= -->
 
-<xsl:transform  version="1.0"
+<xsl:stylesheet version="1.0"
                 id="ViewNLM-v2-04.xsl"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"
                 xmlns:xlink="http://www.w3.org/1999/xlink"
                 xmlns:util="http://dtd.nlm.nih.gov/xsl/util"
                 xmlns:mml="http://www.w3.org/1998/Math/MathML"
-                exclude-result-prefixes="util xsl">
+				xmlns:xs="http://www.w3.org/2001/XMLSchema"
+				xmlns:aml="http://topazproject.org/aml/"
+                exclude-result-prefixes="util xsl ">
 
 <xsl:output method="html"
             indent="yes"
             encoding="UTF-8"
-            doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN"
-            doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"
-/>
+            doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
+            doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
 
 <xsl:strip-space elements="abstract ack address annotation app app-group
                            array article article-categories article-meta
@@ -434,22 +436,24 @@
 
 <xsl:template match="/">
 
-
   <xsl:call-template name="nl-1"/>
-  <html>
+<!--  <html>-->
 
     <!-- HTML header -->
-    <xsl:call-template name="nl-2"/>
+<!--    <xsl:call-template name="nl-2"/>
     <xsl:call-template name="make-html-header"/>
     <xsl:call-template name="nl-2"/>
 
-    <body bgcolor="#f8f8f8">
+    <body bgcolor="#f8f8f8">-->
+	
+	<div id="researchArticle" class="content">
+		<xsl:call-template name="makeXpathLocation"/>
+		<xsl:apply-templates/>
 
-    <xsl:apply-templates/>
+	</div>
+<!--    </body>-->
 
-    </body>
-
-  </html>
+<!--  </html>-->
 
 </xsl:template>
 
@@ -487,6 +491,11 @@
 -->
 
 <!-- initial context node is article -->
+<xsl:template name="make-section-id">
+    <xsl:attribute name="id">
+      <xsl:value-of select="concat('section',count(preceding-sibling::sec)+1)"/>
+    </xsl:attribute>
+</xsl:template>
 
 <xsl:template name="make-a-piece">
 
@@ -498,45 +507,49 @@
 
   <!-- front matter, in table -->
   <xsl:call-template name="nl-2"/>
-  <div id="{$which-piece}-front" class="fm">
+
+<!--  <div id="{$which-piece}-front" class="fm">-->
     <!-- class is repeated on contained table elements -->
     <xsl:call-template name="nl-1"/>
     <xsl:call-template name="make-front"/>
     <xsl:call-template name="nl-1"/>
-  </div>
+<!--  </div>-->
 
   <!-- body -->
   <xsl:call-template name="nl-2"/>
-  <div id="{$which-piece}-body" class="body">
+<!--  <div id="{$which-piece}-body" class="body">-->
     <xsl:call-template name="nl-1"/>
     <xsl:call-template name="make-body"/>
     <xsl:call-template name="nl-1"/>
-  </div>
+<!--  </div>-->
 
-  <xsl:call-template name="nl-2"/>
-  <div id="{$which-piece}-back" class="bm">
-    <!-- class is repeated on contained table elements -->
+    <div class="info metadata" xpathLocation="noSelect">
+   <xsl:call-template name="make-article-meta"/>
+   </div><xsl:text><!--end info metadata--></xsl:text>
+   
+   
+      <!-- class is repeated on contained table elements -->
     <xsl:call-template name="nl-1"/>
     <xsl:call-template name="make-back"/>
     <xsl:call-template name="nl-1"/>
-  </div>
-
-  <!-- figures and tables -->
-  <xsl:call-template name="nl-2"/>
+  
+  
+    <!-- figures and tables -->
+<!--  <xsl:call-template name="nl-2"/>
   <div id="{$which-piece}-figs-and-tables" class="bm">
     <xsl:call-template name="nl-1"/>
     <xsl:call-template name="make-figs-and-tables"/>
     <xsl:call-template name="nl-1"/>
-  </div>
+  </div>-->
 
   <!-- retrieval metadata, at end -->
-  <xsl:call-template name="nl-2"/>
-  <div id="{$which-piece}-end-metadata" class="fm">
+<!--  <xsl:call-template name="nl-2"/>
+  <div id="{$which-piece}-end-metadata" class="fm">-->
     <!-- class is repeated on contained table element -->
-    <xsl:call-template name="nl-1"/>
+<!--    <xsl:call-template name="nl-1"/>
     <xsl:call-template name="make-end-metadata"/>
     <xsl:call-template name="nl-1"/>
-  </div>
+  </div>-->
 
   <!-- sub-article or response: calls this very template -->
   <!-- change context node -->
@@ -614,6 +627,50 @@
 <!-- ============================================================= -->
 <!--  make-id, make-src, make-href, make-email                     -->
 <!-- ============================================================= -->
+<xsl:template name="makeXpathLocation">
+<!--    <xsl:param name="node" select="."/>-->
+	<xsl:variable name="xpathLocation">
+	  <xsl:call-template name="createXpath">
+			<xsl:with-param name="theNode" select="."/>
+	  </xsl:call-template>
+	</xsl:variable>
+	<xsl:attribute name="xpathLocation">
+		<xsl:value-of select="$xpathLocation"/>
+	</xsl:attribute>
+</xsl:template>
+
+<xsl:template name="createXpath">
+	<xsl:param name="theNode" select="."/>
+    <xsl:choose>
+		<xsl:when test="$theNode[1]">
+			<xsl:choose>
+				<xsl:when test="not($theNode[1]/..)">
+					<xsl:text>/</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:for-each select="$theNode[1]/ancestor-or-self::*">
+						<xsl:text/>/<xsl:value-of select="name()"/>
+						<xsl:text/>[<xsl:value-of select="count(preceding-sibling::*[name() = name(current())]) + 1"/>]<xsl:text/>
+					</xsl:for-each>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:when>
+        <xsl:when test="$theNode">
+			<xsl:choose>
+				<xsl:when test="not($theNode/..)">
+					<xsl:text>/</xsl:text>
+				</xsl:when>
+				<xsl:otherwise>
+					<xsl:for-each select="$theNode/ancestor-or-self::*">
+					  <xsl:text/>/<xsl:value-of select="name()"/>
+					  <xsl:text/>[<xsl:value-of select="count(preceding-sibling::*[name() = name(current())]) + 1"/>]<xsl:text/>
+					</xsl:for-each>
+				</xsl:otherwise>
+			</xsl:choose>
+		</xsl:when>
+	</xsl:choose>
+</xsl:template>
+
 
 <xsl:template name="make-id">
   <xsl:if test="@id">
@@ -706,6 +763,96 @@
 
 <!-- initial context node is article -->
 
+<xsl:template match="fig">
+	<xsl:variable name="figId"><xsl:value-of select="@id"/></xsl:variable>
+	<div class="figure">
+		<xsl:call-template name="makeXpathLocation" >
+		<xsl:with-param name="node" select="."/>
+		</xsl:call-template>
+		<a>
+			<xsl:attribute name="name"><xsl:value-of select="$figId"/></xsl:attribute>
+			<xsl:attribute name="id"><xsl:value-of select="$figId"/></xsl:attribute>
+		</a>
+		<a>
+			<xsl:attribute name="title">Click for larger image </xsl:attribute>
+			<xsl:attribute name="href">someHrefHere</xsl:attribute>
+			<xsl:element name="img">
+				<xsl:attribute name="border">1</xsl:attribute>
+				<xsl:attribute name="src"><xsl:value-of select="concat($figId,'-S.png')"/></xsl:attribute>
+				<xsl:attribute name="align">left</xsl:attribute>
+				<xsl:attribute name="alt">thumbnail</xsl:attribute>
+				<xsl:attribute name="class">thumbnail</xsl:attribute>
+			</xsl:element>
+		</a>
+		<h5>
+			<xsl:call-template name="makeXpathLocation"/>
+			<a href="somehrefhere">
+				<strong>
+					<span>
+						<xsl:call-template name="makeXpathLocation" >
+							<xsl:with-param name="node" select="."/>
+						</xsl:call-template>
+						<xsl:apply-templates select="label"/>
+					</span>
+				</strong>
+			</a>
+			<span>
+				<xsl:call-template name="makeXpathLocation" >
+					<xsl:with-param name="node" select="."/>
+				</xsl:call-template>
+				<xsl:apply-templates select="caption/title"/>
+			</span>
+		</h5>
+		<xsl:apply-templates select="caption/*[not(title)]"/>
+	</div>
+</xsl:template>
+
+<xsl:template match="table-wrap">
+	<xsl:variable name="tableId"><xsl:value-of select="@id"/></xsl:variable>
+	<div class="table">
+		<xsl:call-template name="makeXpathLocation" >
+		<xsl:with-param name="node" select="."/>
+		</xsl:call-template>
+		<a>
+			<xsl:attribute name="name"><xsl:value-of select="$tableId"/></xsl:attribute>
+			<xsl:attribute name="id"><xsl:value-of select="$tableId"/></xsl:attribute>
+		</a>
+		<a>
+			<xsl:attribute name="title">Click for larger image </xsl:attribute>
+			<xsl:attribute name="href">someHrefHere</xsl:attribute>
+			<xsl:element name="img">
+				<xsl:attribute name="border">1</xsl:attribute>
+				<xsl:attribute name="src"><xsl:value-of select="graphic/@xlink:href"/><!--<xsl:value-of select="concat($tableId,'-S.png')"/>--></xsl:attribute>
+				<xsl:attribute name="align">left</xsl:attribute>
+				<xsl:attribute name="alt">thumbnail</xsl:attribute>
+				<xsl:attribute name="class">thumbnail</xsl:attribute>
+			</xsl:element>
+		</a>
+		<h5>
+			<xsl:call-template name="makeXpathLocation"/>
+			<a href="somehrefhere">
+				<strong>
+					<span>
+						<xsl:call-template name="makeXpathLocation" >
+							<xsl:with-param name="node" select="."/>
+						</xsl:call-template>
+						<xsl:apply-templates select="label"/>
+					</span>
+				</strong>
+			</a>
+			<span>
+				<xsl:call-template name="makeXpathLocation" >
+					<xsl:with-param name="node" select="."/>
+				</xsl:call-template>
+				<xsl:apply-templates select="caption/title"/>
+			</span>
+		</h5>
+		<xsl:apply-templates select="caption/*[not(title)]"/>
+	</div>
+</xsl:template>
+
+
+
 <xsl:template name="make-figs-and-tables">
 
   <xsl:if test="body//fig[not(parent::fig-group)] | back//fig[not(parent::fig-group)]">
@@ -763,7 +910,7 @@
      using mode "put-at-end".
      So, in no-mode, we suppress them: -->
 
-<xsl:template match="fig | fig-group | table-wrap | table-wrap-group"/>
+<xsl:template match="fig-group | table-wrap-group"/>
 
 
 
@@ -842,82 +989,73 @@
 
 </xsl:template>
 
+<xsl:template name="fund-compete">
+	<xsl:for-each select="back/fn-group">
+		<p><strong>Funding:</strong> <xsl:apply-templates select="fn[@fn-type='financial-disclosure']/p"/></p>
+		<p><strong>Competing interests:</strong> <xsl:apply-templates select="fn[@fn-type='conflict']/p"/></p>
+	</xsl:for-each>
+</xsl:template>
 
-<!-- ============================================================= -->
-<!--  8. MAKE-FRONT                                                -->
-<!-- ============================================================= -->
+<!--
+Make article meta data
 
-<!-- initial context node is /article -->
+-->
+<xsl:template name="make-article-meta">
+    <xsl:for-each select="front/article-meta">
 
-<xsl:template name="make-front">
+	<p>
+	<strong>Academic Editor:</strong>
+		<xsl:for-each select="contrib-group/contrib[@contrib-type='editor']">
 
-  <xsl:call-template name="nl-1"/>
-
-  <!-- First Table: journal and article metadata -->
-  <table width="100%" class="fm">
-    <xsl:call-template name="nl-1"/>
-
-    <xsl:call-template name="table-setup-even"/>
-
-    <tr>
-      <xsl:call-template name="nl-1"/>
-
-
-      <!-- Cell 1: journal information -->
-      <!-- change context node to front/journal-meta -->
-      <xsl:for-each select="front/journal-meta">
-
-        <td valign="top">
-          <span class="gen"><xsl:text>Journal Information</xsl:text></span>
-          <br/>
-          <xsl:call-template name="nl-1"/>
-
-          <!-- journal id -->
-          <xsl:apply-templates select="journal-id[@journal-id-type]" mode="front"/>
-
-          <!-- abbreviated journal title -->
-          <xsl:apply-templates select="abbrev-journal-title" mode="front"/>
-
-          <!-- issn -->
-          <xsl:apply-templates select="issn" mode="front"/>
-
-          <!-- publisher -->
-          <xsl:apply-templates select="publisher" mode="front"/>
-
-          <!-- journal meta notes -->
-          <xsl:apply-templates select="notes" mode="front"/>
-
-        </td>
-        <xsl:call-template name="nl-1"/>
-
-      <!-- that's it for journal metadata: return to previous context -->
-      </xsl:for-each>
-
-
-      <!-- Cell 2: Article information -->
-      <!-- change context to front/article-meta -->
-
-      <xsl:for-each select="front/article-meta">
-        <td valign="top">
-          <span class="gen">
-            <xsl:text>Article Information</xsl:text>
-          </span>
-          <br/>
-          <xsl:call-template name="nl-1"/>
-
-          <!-- article-level linking -->
-          <xsl:apply-templates select="ext-link" mode="front"/>
-
-          <!-- supplementary material -->
-          <xsl:apply-templates select="supplementary-material" mode="front"/>
-
-          <!-- self-uri -->
-          <xsl:apply-templates select="self-uri" mode="front"/>
-
-          <!-- product information -->
-          <xsl:apply-templates select="product" mode="front"/>
-
-          <!-- copyright: show statement -or- year -->
+            <xsl:choose>
+              <xsl:when test="@xlink:href">
+                <a>
+                  <xsl:call-template name="make-href"/>
+                  <xsl:call-template name="make-id"/>
+                  <xsl:apply-templates select="name | collab" mode="front"/>
+                </a>
+              </xsl:when>
+              <xsl:otherwise>
+                  <xsl:call-template name="make-id"/>
+                  <xsl:apply-templates select="name | collab" mode="front"/>,
+              </xsl:otherwise>
+            </xsl:choose>
+            <!-- the name element handles any contrib/xref and contrib/degrees -->
+            <xsl:apply-templates select="*[not(self::name)
+                                       and not(self::collab)
+                                       and not(self::xref)
+                                       and not(self::degrees)]"
+                                 mode="front"/>
+			<xsl:variable name="matchto" select="xref/@rid"/>
+			<xsl:for-each select="aff|../following-sibling::aff[@id=$matchto]">
+				<xsl:apply-templates select="institution" mode="aff-outside-contrib"/><xsl:text>, </xsl:text>
+				 <xsl:apply-templates select="addr-line" mode="aff-outside-contrib"/>
+			 </xsl:for-each>
+		</xsl:for-each> <!-- end of contrib -->
+	</p>	
+	<p>
+		<strong>Received:</strong> 
+		<xsl:value-of select="history/date[@date-type='received']/day"/><xsl:text>/</xsl:text>
+		<xsl:value-of select="history/date[@date-type='received']/month"/><xsl:text>/</xsl:text>
+		<xsl:value-of select="history/date[@date-type='received']/year"/><xsl:text>; </xsl:text>
+		<strong>Accepted:</strong> 
+		<xsl:value-of select="history/date[@date-type='accepted']/day"/><xsl:text>/</xsl:text>
+		<xsl:value-of select="history/date[@date-type='accepted']/month"/><xsl:text>/</xsl:text>
+		<xsl:value-of select="history/date[@date-type='accepted']/year"/><xsl:text>; </xsl:text>
+		<strong>Published:</strong>
+		<xsl:if test="pub-date[@pub-type='epub']/day">
+			<xsl:value-of select="pub-date[@pub-type='epub']/day"/><xsl:text>/</xsl:text>		
+		</xsl:if>
+		<xsl:value-of select="pub-date[@pub-type='epub']/month"/><xsl:text>/</xsl:text>
+		<xsl:value-of select="pub-date[@pub-type='epub']/year"/>
+	</p>
+	<p>
+		<strong>DOI:</strong>
+		<xsl:value-of select="article-id[@pub-id-type='doi']"/>
+	 </p>
+	<p>
+		<strong>Copyright:</strong>
+	          <!-- copyright: show statement -or- year -->
           <!-- Most recent version of DTD recommends using the <permissions> wrapper
                for the copyright data. We handle both cases here. -->
           <xsl:choose>
@@ -934,71 +1072,77 @@
               </xsl:if>
             </xsl:otherwise>
           </xsl:choose>
-          <br/>
-
-          <!-- history/date -->
-          <!-- The history element contains one or more date elements -->
-          <xsl:apply-templates select="history/date" mode="front"/>
-
-          <!-- pub-date -->
-          <xsl:apply-templates select="pub-date" mode="front"/>
-
-          <!-- other publication data -->
-          <xsl:apply-templates select="volume
-                                     | issue
-                                     | elocation-id
-                                     | fpage
-                                     | lpage"
-                                mode="front"/>
-
-          <xsl:apply-templates select="article-id"/>
-
-          <!-- contract information -->
-          <xsl:if test="contract-num | contract-sponsor ">
-            <xsl:apply-templates select="contract-num" mode="front"/>
-            <xsl:apply-templates select="contract-sponsor" mode="front"/>
-          </xsl:if>
-
-        </td>
-        <xsl:call-template name="nl-1"/>
-
+	</p>
+	<p>
+		<xsl:apply-templates select="author-notes/corresp"/>
+	</p>
       <!-- that's it for article-meta; return to previous context -->
       </xsl:for-each>
+	<xsl:call-template name="fund-compete"/>
 
-    </tr>
-    <xsl:call-template name="nl-1"/>
+</xsl:template>
 
-    <!-- part-rule ending this table, separating it from the title-and-authors table -->
-    <tr><td colspan="2" valign="top"><hr class="part-rule"/></td></tr>
-    <xsl:call-template name="nl-1"/>
 
-  <!-- end of the first table -->
-  </table>
+<!-- ============================================================= -->
+<!--  8. MAKE-FRONT                                                -->
+<!-- ============================================================= -->
+
+<!-- initial context node is /article -->
+
+<xsl:template name="make-front">
+
   <xsl:call-template name="nl-1"/>
 
+  <!-- First Table: journal and article metadata -->
+<!--  <table width="100%" class="fm">
+    <xsl:call-template name="nl-1"/>
 
-  <!-- New Table: titles and author group -->
-  <!-- All data comes from front/article-meta -->
+    <xsl:call-template name="table-setup-even"/>
 
-  <table width="100%" class="fm">
+    <tr>
+      <xsl:call-template name="nl-1"/>-->
 
-    <xsl:call-template name="table-setup-l-wide"/>
 
-    <!-- change context to front/article-meta (again) -->
-    <xsl:for-each select="front/article-meta">
+      <!-- Cell 1: journal information -->
+      <!-- change context node to front/journal-meta -->
+<!--      <xsl:for-each select="front/journal-meta">
 
-      <tr>
-        <!-- table 2 row 2: article titles -->
-        <td colspan="2" valign="top">
-          <xsl:apply-templates select="title-group" mode="front"/>
-        </td>
-      </tr>
-      <xsl:call-template name="nl-1"/>
+        <td valign="top">
+          <span class="gen"><xsl:text>Journal Information</xsl:text></span>
+          <br/>
+          <xsl:call-template name="nl-1"/>-->
 
-      <!-- each contrib makes a row: name at left, details at right -->
-      <xsl:for-each select="contrib-group/contrib">
-        <tr>
-          <td valign="top" align="right">
+          <!-- journal id -->
+          <!--<xsl:apply-templates select="journal-id[@journal-id-type]" mode="front"/>-->
+
+          <!-- abbreviated journal title -->
+          <!--<xsl:apply-templates select="abbrev-journal-title" mode="front"/>-->
+
+          <!-- issn -->
+          <!--<xsl:apply-templates select="issn" mode="front"/>-->
+
+          <!-- publisher -->
+          <!--<xsl:apply-templates select="publisher" mode="front"/>-->
+
+          <!-- journal meta notes -->
+          <!--<xsl:apply-templates select="notes" mode="front"/>-->
+
+       <!-- </td>
+        <xsl:call-template name="nl-1"/>-->
+
+      <!-- that's it for journal metadata: return to previous context -->
+     <!-- </xsl:for-each>-->
+
+
+      <!-- Cell 2: Article information -->
+      <!-- change context to front/article-meta -->
+
+      <xsl:for-each select="front/article-meta">
+		<xsl:apply-templates select="title-group" mode="front"/>
+<!--		<xsl:variable name="matchto" select="author"/>-->
+		<p class="authors" xpathLocation="noSelect">
+  		<xsl:for-each select="contrib-group/contrib[@contrib-type='author']">
+
             <xsl:choose>
               <xsl:when test="@xlink:href">
                 <a>
@@ -1008,81 +1152,68 @@
                 </a>
               </xsl:when>
               <xsl:otherwise>
-                <span class="capture-id">
                   <xsl:call-template name="make-id"/>
-                  <xsl:apply-templates select="name | collab" mode="front"/>
-                </span>
+                  <xsl:apply-templates select="name | collab" mode="front"/>,
               </xsl:otherwise>
             </xsl:choose>
-          </td>
-          <td valign="top">
             <!-- the name element handles any contrib/xref and contrib/degrees -->
             <xsl:apply-templates select="*[not(self::name)
                                        and not(self::collab)
                                        and not(self::xref)
                                        and not(self::degrees)]"
-                                 mode="front"/>
-            <xsl:call-template name="nl-1"/>
-          </td>
-        </tr>
-        <xsl:call-template name="nl-1"/>
-      </xsl:for-each> <!-- end of contrib -->
-
+                                 mode="front"/>      
+		</xsl:for-each> <!-- end of contrib -->
+		</p>
+		<p class="affiliations" xpathLocation="noSelect">
       <!-- each aff that is NOT directly inside a contrib
            also makes a row: empty left, details at right -->
       <xsl:for-each select="aff | contrib-group/aff">
-        <tr>
-           <td/> <!-- empty cell -->
-           <td valign="top">
-             <xsl:apply-templates select="self::aff" mode="aff-outside-contrib"/>
-           </td>
-        </tr>
+			<xsl:element name="a">
+				<xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
+				<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
+			</xsl:element>
+			<xsl:apply-templates select="institution" mode="aff-outside-contrib"/><xsl:text>,</xsl:text> 
+			 <xsl:apply-templates select="addr-line" mode="aff-outside-contrib"/>
+
         <xsl:call-template name="nl-1"/>
       </xsl:for-each>
+      </p>
+
+ 
 
 
-      <!-- author notes -->
-      <xsl:if test="author-notes">
-        <tr>
-          <td/>
-          <td valign="top">
-            <xsl:apply-templates select="author-notes" mode="front"/>
-          </td>
-        </tr>
-        <xsl:call-template name="nl-1"/>
-      </xsl:if>
+  <!-- New Table: titles and author group -->
+  <!-- All data comes from front/article-meta -->
+
+
+
 
       <!-- abstract(s) -->
 
       <xsl:if test="abstract | trans-abstract">
 
-        <!-- rule separates title+authors from abstract(s) -->
-        <tr>
-          <td colspan="2" valign="top">
-            <hr class="section-rule"/>
-          </td>
-        </tr>
-        <xsl:call-template name="nl-1"/>
-
-        <xsl:for-each select="abstract | trans-abstract">
-
+          <xsl:for-each select="abstract | trans-abstract">
+<!--			<xsl:variable name="xpathLocation">
+				  <xsl:call-template name="str:xpath">
+					  <xsl:with-param name="node" select="."/>
+				  </xsl:call-template>
+			</xsl:variable>-->
+			<div class="info abstract">
+				<xsl:call-template name="makeXpathLocation"/>
+<!--				<xsl:attribute name="xpathLocation">
+					<xsl:value-of select="$xpathLocation"/>
+				</xsl:attribute>-->
           <!-- title in left column, content (paras, secs) in right -->
-          <tr>
-            <td valign="top">
-              <span class="tl-main-part">
+<!--         <h3>-->
                 <!-- if there's no title, create one -->
-                <xsl:call-template name="words-for-abstract-title"/>
-              </span>
-            </td>
-            <xsl:call-template name="nl-1"/>
-
-            <td valign="top">
+<!--                <xsl:call-template name="words-for-abstract-title"/>
+		</h3>-->
               <xsl:apply-templates select="*[not(self::title)]"/>
-            </td>
-            <xsl:call-template name="nl-1"/>
-          </tr>
-          <xsl:call-template name="nl-1"/>
 
+            <xsl:call-template name="nl-1"/>
+      
+          <xsl:call-template name="nl-1"/>
+		</div>
         </xsl:for-each> <!-- end of abstract or trans-abstract -->
 
       </xsl:if> <!-- end of dealing with abstracts -->
@@ -1090,7 +1221,6 @@
     <!-- end of the titles-and-authors context; return to previous context -->
     </xsl:for-each>
 
-  </table>
   <xsl:call-template name="nl-2"/>
 
 <!-- end of big front-matter pull -->
@@ -1107,7 +1237,7 @@
   <!-- change context node -->
   <xsl:for-each select="body">
     <xsl:call-template name="nl-1"/>
-    <hr class="part-rule"/>
+<!--    <hr class="part-rule"/>-->
     <xsl:call-template name="nl-1"/>
 
     <xsl:apply-templates/>
@@ -1124,25 +1254,31 @@
 
 <xsl:template name="make-back">
 
-  <xsl:call-template name="nl-1"/>
-  <hr class="part-rule"/>
-
   <!-- change context node to back -->
   <xsl:for-each select="back">
     <xsl:apply-templates select="title"/>
-
+<!--
     <xsl:if test="preceding-sibling::body//fn-group | .//fn-group">
       <span class="tl-main-part">Notes</span>
       <xsl:apply-templates select="preceding-sibling::body//fn-group | .//fn-group"/>
       <xsl:call-template name="nl-1"/>
-    </xsl:if>
+    </xsl:if>-->
 
-    <xsl:apply-templates select="*[not(self::title) and not(self::fn-group)]"/>
+	<xsl:apply-templates select="ack"/>
+	<xsl:call-template name="author-contrib"/>
+
+
+    <xsl:apply-templates select="*[not(self::title) and not(self::fn-group) and not(self::ack)]"/>
     <xsl:call-template name="nl-1"/>
   </xsl:for-each>
 
 </xsl:template>
 
+
+<xsl:template name="author-contrib">
+<h4>Author Contributions</h4>
+<xsl:apply-templates select="../front/article-meta/author-notes/fn[@fn-type='con']"/>
+</xsl:template>
 
 
 <!-- ============================================================= -->
@@ -1365,8 +1501,14 @@
 <!-- ============================================================= -->
 
 <xsl:template match="p">
+	
   <p>
-    <xsl:call-template name="make-id"/>
+<!--    <xsl:call-template name="make-id"/>-->
+
+
+	<xsl:call-template name="makeXpathLocation" >
+		<xsl:with-param name="node" select="."/>
+	</xsl:call-template>
     <xsl:apply-templates/>
   </p>
   <xsl:call-template name="nl-1"/>
@@ -1423,14 +1565,22 @@
      subsequent body/secs do put out a section-rule -->
 <xsl:template match="body/sec">
   <xsl:call-template name="nl-1"/>
-
+<!--
   <xsl:if test="position()>'1'">
     <hr class="section-rule"/>
     <xsl:call-template name="nl-1"/>
   </xsl:if>
-
+-->
   <div>
-    <xsl:call-template name="make-id"/>
+    <xsl:call-template name="make-section-id"/>
+	<xsl:call-template name="makeXpathLocation" >
+		<xsl:with-param name="node" select="."/>
+	</xsl:call-template>
+     <xsl:element name="a">
+		<xsl:attribute name="id"><xsl:value-of select="@id"></xsl:value-of></xsl:attribute>
+		<xsl:attribute name="name"><xsl:value-of select="@id"></xsl:value-of></xsl:attribute>
+     </xsl:element>
+
     <xsl:apply-templates/>
   </div>
   <xsl:call-template name="nl-1"/>
@@ -1438,10 +1588,10 @@
 
 <!-- no other level of sec puts out a rule -->
 <xsl:template match="sec">
-  <div>
+<!--  <div>-->
     <xsl:call-template name="make-id"/>
     <xsl:apply-templates/>
-  </div>
+<!--</div>-->
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
@@ -2517,23 +2667,25 @@
      HTML page, together with any other fn-group. -->
 
 <xsl:template match="title-group" mode="front">
-    <span class="tl-document">
-      <xsl:apply-templates select="article-title" mode="front"/>
-      <xsl:apply-templates select="subtitle" mode="front"/>
-      <xsl:apply-templates select="trans-title | alt-title" mode="front"/>
-    </span>
+	<xsl:apply-templates select="article-title" mode="front"/>
+    <xsl:apply-templates select="subtitle" mode="front"/>
+     <!-- <xsl:apply-templates select="trans-title | alt-title" mode="front"/>-->
 </xsl:template>
 
 <xsl:template match="article-title" mode="front">
-  <xsl:apply-templates/>
+    <h1>
+		<xsl:call-template name="makeXpathLocation"/>
+		<xsl:apply-templates/>
+	</h1>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
 <!-- subtitle runs in with title -->
 <xsl:template match="subtitle" mode="front">
-  <xsl:text>: </xsl:text>
-  <xsl:apply-templates/>
-  <xsl:call-template name="nl-1"/>
+  <h2>
+	  <xsl:call-template name="makeXpathLocation"/>
+	  <xsl:apply-templates/>
+  </h2>
 </xsl:template>
 
 <xsl:template match="trans-title" mode="front">
@@ -2865,9 +3017,9 @@
         </span>
       </xsl:when>
       <xsl:when test="parent::fn/@fn-type='con'">
-        <span class="gen">
+<!--        <span class="gen">
           <xsl:text>Contributed by footnote: </xsl:text>
-        </span>
+        </span>-->
       </xsl:when>
       <xsl:when test="parent::fn/@fn-type='cor'">
         <span class="gen">
@@ -2925,16 +3077,17 @@
   </xsl:if>
   <xsl:call-template name="nl-1"/>
 
-  <div class="capture-id">
+<!--  <div class="capture-id">-->
+	<div>
     <xsl:call-template name="make-id"/>
     <xsl:if test="not(title)">
-      <span class="tl-main-part">Acknowledgments</span>
+      <h3 xpathLocation="noSelect">Acknowledgments</h3>
       <xsl:call-template name="nl-1"/>
     </xsl:if>
 
     <xsl:apply-templates/>
-
-  </div>
+	</div>
+  <!--</div>-->
 
 </xsl:template>
 
@@ -2983,9 +3136,9 @@
 <!-- symbol or id is displayed by the first para within the fn     -->
 
 <xsl:template match="fn">
-  <div id="{@id}">
+<!---  <div id="{@id}">-->
     <xsl:apply-templates/>
-  </div>
+<!--  </div>-->
 </xsl:template>
 
 
@@ -3134,8 +3287,7 @@
 <!-- Displays the @rid, not the element content (if any) -->
 
 <xsl:template match="xref[@ref-type='fn']
-                  | xref[@ref-type='table-fn']
-                  | xref[@ref-type='bibr']">
+                  | xref[@ref-type='table-fn']">
   <span class="xref">
     <xsl:call-template name="make-id"/>
     <sup>
@@ -3150,6 +3302,35 @@
     </sup>
   </span>
 </xsl:template>
+
+<xsl:template match="xref[@ref-type='bibr']">
+<!--  <xsl:variable name="urlnumber" select="count(preceding::xref[@ref-type='bibr'])+1"/>-->
+
+
+ <!-- <span class="xref">
+    <xsl:call-template name="make-id"/>-->
+	<xsl:if test="preceding-sibling::node()[1]!=','">
+		<xsl:if test="local-name(preceding-sibling::node()[1])!='xref'">
+			<xsl:text>&#91;</xsl:text>
+		</xsl:if>
+	</xsl:if>
+<!--    <sup>-->
+      <!-- if immediately-preceding sibling was an xref, punctuate
+           (otherwise assume desired punctuation is in the source).-->
+      <xsl:if test="local-name(preceding-sibling::node()[1])='xref'">
+        <xsl:text>, </xsl:text>
+      </xsl:if>
+      <a href="#{@rid}"><xsl:value-of select="."/></a>
+<!--    </sup>-->
+	<xsl:if test="following-sibling::node()[1]!=','">
+		<xsl:if test="local-name(following-sibling::node()[1])!='xref'">
+			<xsl:text>&#93;</xsl:text>
+		</xsl:if>
+	</xsl:if>
+    
+<!--  </span>-->
+</xsl:template>
+
 
 <xsl:template match="text()[normalize-space(.)='-']">
   <xsl:choose>
@@ -3171,12 +3352,12 @@
      and typically part of a sentence,
      so -not- a superior number. -->
 <xsl:template match="xref[@ref-type='fig'] | xref[@ref-type='table']">
-  <span class="xref">
-    <xsl:call-template name="make-id"/>
-    <a target="xrefwindow" href="#{@rid}">
-      <xsl:value-of select="@rid"/>
+<!--  <span class="xref">
+    <xsl:call-template name="make-id"/>-->
+    <a href="#{@rid}">
+      <xsl:apply-templates/>
     </a>
-  </span>
+<!--  </span>-->
 </xsl:template>
 
 <!-- default: if none of the above ref-types -->
@@ -3225,6 +3406,23 @@
 
 </xsl:template>
 
+<xsl:template match="email">
+<!--
+  <xsl:choose>
+    <xsl:when test="@xlink:href">-->
+      <a>
+		  <xsl:attribute name="href">
+				mailto:<xsl:apply-templates/>
+		  </xsl:attribute>
+		<xsl:apply-templates/>
+      </a>
+<!--    </xsl:when>
+    <xsl:otherwise>
+      <xsl:apply-templates/>
+    </xsl:otherwise>
+  </xsl:choose>-->
+
+</xsl:template>
 
 <!-- xlink:href attribute makes a link -->
 
@@ -3251,16 +3449,26 @@
 
 <!-- main or top-level divisions -->
 
-<xsl:template match="abstract/title | body/sec/title
+<xsl:template match="abstract/title 
                    | back/title | app-group/title | app/title
                    | glossary/title | def-list/title | ack/title
-                   | ref-list/title | back/notes/title">
+                   | back/notes/title">
   <xsl:call-template name="nl-1"/>
   <span class="tl-main-part">
     <xsl:apply-templates/>
   </span>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
+
+<xsl:template match="body/sec/title">
+	<h3>
+	<xsl:call-template name="makeXpathLocation" >
+		<xsl:with-param name="node" select="."/>
+	</xsl:call-template>
+    <xsl:apply-templates/>
+    	</h3>
+</xsl:template>
+
 
 
 <!-- ============================================================= -->
@@ -3269,13 +3477,45 @@
 
 <!-- first-level divisions and default -->
 
-<xsl:template match="body/sec/sec/title | ack/sec/title | app/sec/title
+<xsl:template match="ack/sec/title | app/sec/title
                    | boxed-text/title | gloss-group/title | notes/sec/title">
   <xsl:call-template name="nl-1"/>
   <span class="tl-lowest-section"><xsl:apply-templates/></span>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
+
+<xsl:template match="body/sec/sec/title">
+  <xsl:call-template name="nl-1"/>
+  <h4>
+ 	<xsl:call-template name="makeXpathLocation" >
+		<xsl:with-param name="node" select="."/>
+	</xsl:call-template>
+	<xsl:apply-templates/>
+	</h4>
+  <xsl:call-template name="nl-1"/>
+</xsl:template>
+
+
+<xsl:template match="abstract/sec/title">
+  <xsl:call-template name="nl-1"/>
+  <h3>
+		<xsl:call-template name="makeXpathLocation"/>
+		<xsl:apply-templates/>
+	</h3>
+  <xsl:call-template name="nl-1"/>
+</xsl:template>
+
+<xsl:template match="ref-list/title">
+  <xsl:call-template name="nl-1"/>
+  <h3><xsl:apply-templates/></h3>
+  <xsl:call-template name="nl-1"/>
+</xsl:template>
+
+
+<xsl:template match="caption/title">
+	<xsl:apply-templates/>
+</xsl:template>
 
 <!-- default: any other titles found -->
 
@@ -3302,12 +3542,12 @@
 
     <!-- abstract with no title -->
     <xsl:when test="self::abstract">
-      <span class="gen"><xsl:text>Abstract</xsl:text></span>
+      <h3><xsl:text>Abstract</xsl:text></h3>
     </xsl:when>
 
     <!-- trans-abstract with no title -->
     <xsl:when test="self::trans-abstract">
-      <span class="gen"><xsl:text>Abstract, Translated</xsl:text></span>
+      <h3><xsl:text>Abstract, Translated</xsl:text></h3>
     </xsl:when>
     <!-- there is no logical otherwise -->
   </xsl:choose>
@@ -3536,36 +3776,57 @@
 <!-- ============================================================= -->
 
 <xsl:template match="ref-list">
-
+<div>
+<!--
   <xsl:if test="position()>1">
     <hr class="section-rule"/>
   </xsl:if>
-
+-->
   <xsl:choose>
     <xsl:when test="not(title)">
-      <span class="tl-main-part">References</span>
+      <h3>References</h3>
       <xsl:call-template name="nl-1"/>
     </xsl:when>
     <xsl:otherwise>
       <xsl:apply-templates select="title"/>
     </xsl:otherwise>
   </xsl:choose>
-
-  <table width="100%" class="bm">
-
-    <xsl:choose>
+  
+	<ol class="references" xpathLocation="noSelect">
+		<xsl:for-each select="ref">
+		<xsl:sort data-type="number" select="label"/>
+			<li xpathLocation="noSelect">
+				<a>
+					<xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
+					<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
+				</a> 
+					<span class="authors">
+						<xsl:for-each select="citation/person-group[@person-group-type='author']/name">
+							<xsl:apply-templates select="surname"/><xsl:text> </xsl:text><xsl:apply-templates select="given-names"/>
+							<xsl:if test="following-sibling::name"><xsl:text>, </xsl:text></xsl:if>
+						</xsl:for-each>
+					</span>
+						(<xsl:value-of select="citation/year"/>)
+					<xsl:apply-templates select="citation/article-title"/><xsl:text> </xsl:text>
+					<xsl:apply-templates select="citation/source"/><xsl:text> </xsl:text>
+					<xsl:apply-templates select="citation/volume"/><xsl:text>: </xsl:text>
+					<xsl:apply-templates select="citation/fpage"/>
+					<xsl:if test="citation/lpage">
+						<xsl:text>&#8211;</xsl:text>
+						<xsl:apply-templates select="citation/lpage"/><xsl:text>.</xsl:text>
+					</xsl:if>
+<!--    <xsl:choose>
       <xsl:when test="ref/label">
         <xsl:call-template name="table-setup-l-wide"/>
       </xsl:when>
       <xsl:otherwise>
         <xsl:call-template name="table-setup-l-narrow"/>
       </xsl:otherwise>
-    </xsl:choose>
-
-    <xsl:apply-templates/>
-
-  </table>
-  <xsl:call-template name="nl-1"/>
+    </xsl:choose>-->
+			</li>
+		</xsl:for-each>
+	</ol>
+  </div>
 </xsl:template>
 
 
@@ -4832,7 +5093,28 @@
 </xsl:template>
 
 
+<xsl:template name="createAnnotationSpan">
+	<xsl:element name="span">
+		<xsl:attribute name="class">note</xsl:attribute>
+		<xsl:attribute name="annotationId">
+		<xsl:variable name="regionId" select="@aml:id"/>
+		<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
+			<xsl:value-of select="@aml:id"/><xsl:text> </xsl:text>
+		 </xsl:for-each>
+		</xsl:attribute>
+		<xsl:apply-templates/>
+	</xsl:element>
+</xsl:template>
 
 
+<xsl:template match="aml:annotated">
+	<xsl:call-template name="createAnnotationSpan"/>
+</xsl:template>
 
-</xsl:transform>
+
+</xsl:stylesheet>
+<!-- Stylus Studio meta-information - (c) 2004-2006. Progress Software Corporation. All rights reserved.
+<metaInformation>
+<scenarios ><scenario default="yes" name="Scenario1" userelativepaths="yes" externalpreview="no" url="pone\pone.0000008.xml" htmlbaseurl="" outputurl="" processortype="internal" useresolver="yes" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" validateoutput="no" validator="internal" customvalidator=""/></scenarios><MapperMetaTag><MapperInfo srcSchemaPathIsRelative="yes" srcSchemaInterpretAsXML="no" destSchemaPath="" destSchemaRoot="" destSchemaPathIsRelative="yes" destSchemaInterpretAsXML="no"/><MapperBlockPosition></MapperBlockPosition><TemplateContext></TemplateContext><MapperFilter side="source"></MapperFilter></MapperMetaTag>
+</metaInformation>
+-->

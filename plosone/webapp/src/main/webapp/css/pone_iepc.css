@@ -1,0 +1,35 @@
+/*
+----------------------------------------------------------
+IE PC fixes
+----------------------------------------------------------
+*/
+/* the next two rules fake 'min-width' and correct bad banner positioning in IE/Win */
+/* the next rule uses invalid values, but it works in IE/Win, and that's what we need */
+* html ul, ol, dl, a.correction 	{ position: relative; } /* fixes disappearing background list ie bug */
+* html #container, * html #footer 	{
+	width: expression((document.body.clientWidth < 910) ?
+	'910px' : '80%');
+	\width: expression((document.documentElement.clientWidth < 910) ?
+	'910px' : '80%');
+	}
+* html #topBanner { 
+	width: expression((document.body.clientWidth < 944) ?
+	'944px' : '80%');
+	\width: expression((document.documentElement.clientWidth < 944) ?
+	'944px' : '80%');
+}
+* html #nav li a, *html #nav li a:visited { /*width:12em; w\idth:7.6em; /* hack for IE5.5 */ overflow: visible;}
+* html #nav li a:hover ul li a {
+	width:16em; w\idth:16em; /* hack for IE5.5 */
+}
+* html div#sectionNav {
+	position: absolute;
+	top: 100px; /* this just needs to be more than the 20px top of the position:fixed version */ 
+	width: 100%;
+}
+/* Fix IE. Hide from IE Mac \*/
+* html ul li a { height: 1%; }
+/* End */
+
+/* Fixes Line-height/Replaced Element Bug */
+* html span.note img			{ margin-top: .6em;}

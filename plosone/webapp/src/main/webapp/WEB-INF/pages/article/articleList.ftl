@@ -33,6 +33,12 @@
             <@ww.url id="annotationURL" includeContext="false" namespace="../annotation" action="listAnnotation" target="${article}"/>
             <@ww.a href="%{annotationURL}">View Annotations for Article</@ww.a>
           </li>
+          <li>
+            <@ww.url id="annotatedArticleURL" action="fetchAnnotatedArticle" articleURI="${article}"/>
+            <@ww.a href="%{annotatedArticleURL}">Get Annotated Article XML</@ww.a>
+          </li>
+
+
         </ul>
 
       </#list>

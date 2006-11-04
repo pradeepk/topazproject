@@ -40,6 +40,9 @@ public class PlosOneFreemarkerConfig {
   private String[] defaultCss;
   private String[] defaultJavaScript;
   private String defaultTitle;
+  
+  private String dirPrefix;
+  private String subdirPrefix;
 
   private static final String[] DEFAULT_CSS_FILES = {"/css/pone_iepc.css", "/css/pone_screen.css"};
   private static final String[] DEFAULT_JS_FILES = {"/javascript/all.js"};
@@ -53,8 +56,8 @@ public class PlosOneFreemarkerConfig {
   public PlosOneFreemarkerConfig() {
     ConfigurationStore myConfigStore = ConfigurationStore.getInstance();
     Configuration myConfig = myConfigStore.getConfiguration();
-    String dirPrefix = myConfig.getString("webapp-dir");
-    String subdirPrefix = myConfig.getString("webapp-subdir");
+    dirPrefix = myConfig.getString("webapp-dir");
+    subdirPrefix = myConfig.getString("webapp-subdir");
     
     String title = myConfig.getString("default.title");
     if (title != null) {
@@ -166,7 +169,38 @@ public class PlosOneFreemarkerConfig {
     }
   }
   
+  public String getContext() {
+    return dirPrefix + subdirPrefix;
+  }
   
+  /**
+   * @return Returns the dirPrefix.
+   */
+  public String getDirPrefix() {
+    return dirPrefix;
+  }
+
+  /**
+   * @param dirPrefix The dirPrefix to set.
+   */
+  public void setDirPrefix(String dirPrefix) {
+    this.dirPrefix = dirPrefix;
+  }
+
+  /**
+   * @return Returns the subdirPrefix.
+   */
+  public String getSubdirPrefix() {
+    return subdirPrefix;
+  }
+
+  /**
+   * @param subdirPrefix The subdirPrefix to set.
+   */
+  public void setSubdirPrefix(String subdirPrefix) {
+    this.subdirPrefix = subdirPrefix;
+  }
+
   /**
    * @return Returns the cssFiles.
    */

@@ -1,0 +1,159 @@
+/* 	-------------------------------------------------------------
+
+	Annotation Style Sheet : www.plosone.org
+	
+	CREATED ON 	: 08-26-2006
+	MODIFIED ON : 09-19-2006
+	
+	CREATED BY	: MARGARET SHEAR
+	MODIFIED BY	: MARGARET SHEAR
+
+   	------------------------------------------------------------- */	
+
+/* --- contains all annotation views, in order to set styles --- */
+.dialog			{ line-height: 1.4em; }
+/* dialog box styles */
+.dialog .hd		{ font-weight: bold; font-size: 1.2em; letter-spacing: -.03em; }
+.dialog .hd .c,
+.dialog .ft .c 	{ font-size:1px; /* ensure minimum height */ height:22px; }
+.dialog .ft .c 	{ height:22px; }
+.dialog .hd 	{ background:transparent url(../images/pone_dialog_tl.gif) no-repeat 0px 0px; margin-right:22px; /* space for right corner */ }
+.dialog .hd .c 	{  background:transparent url(../images/pone_dialog_tr.gif) no-repeat right 0px; margin-right:-22px; /* pull right corner back over "empty" space (from above margin) */ }
+.dialog .s		{ padding: 0 1.4em 1.4em 1.4em; }
+.dialog .bd 	{ background:transparent url(../images/pone_dialog_ml.gif) repeat-y 0px 0px; margin-right:6px; position: relative;}
+.dialog .bd .c 	{  background:transparent url(../images/pone_dialog_mr.gif) repeat-y right 0px; margin-right:-6px; }
+.dialog .ft 	{ background:transparent url(../images/pone_dialog_bl.gif) no-repeat 0px 0px; margin-right:22px; }
+.dialog .ft .c 	{ background:transparent url(../images/pone_dialog_br.gif) no-repeat right 0px; margin-right:-22px; }
+.dialog .tip 	{ background:transparent url(../images/pone_dialog_tip.gif) no-repeat 0px 0px; margin-left:22px; margin-top:-11px; width:43px; height:82px; }
+
+.dialog h5			{ margin: 0 0 10px 0; font-size: 1em; color: #333;}
+/* annotation post title */
+/* annotation post details */
+div.detail			{ font-size: .9em; color: #666; }
+div.detail strong	{ color: #444; /* strong wraps date and time for added emphasis and clarity */}
+.dialog h6			{ border: 2px solid #ccc; border-width: 2px 2px 0 2px; font-size: 1em; padding: 2px; margin: 0; background: #fff;}
+.dialog div.detail	{ padding: 5px; background-color: #fff; border: 2px solid #ccc; border-width: 1px 2px 2px 2px;}
+
+.dialog dl div.detail		{ border: none; background-color: transparent; padding: 0;}
+
+div.dialog div.close		{ top: -10px; }
+div.dialog .posting.pane	{ background: none; }
+
+div.comment div.comment
+			{ margin: 10px 0; padding-left: 20px; border-left: 4px solid #999; background-color: #eee;}
+div.comment .comment h6
+			{ background: transparent; color: #333; padding: 4px 0 0 0; }
+.dialog .detail strong
+			{ color: #555; }
+/* --- preview is preliminary comment view --- */
+.preview	{ width: 28em; }
+.annotate	{ width: 42em; }
+
+
+/* --- viewer is full pane view --- */
+.viewer		{ }
+.response fieldset
+			{ border: none; }
+.response fieldset .reply
+			{ display: block; margin: 10px 0; padding: 2px; border: 1px solid #ccc}
+.response .title { width: 30em; background-color: #eee; }
+.response .body { width: 46em; height: 12em; overflow: auto;}
+/* --- userinfo is for user information view --- */
+.userinfo	{ width: 16em; text-align: center; font-size: .9em; }
+.userinfo dl,
+.userinfo dd,
+.userinfo dt{ margin: 0; list-style-type: none; font-size: 1em;}
+.userinfo dd{ font-size: .9em; }
+
+/* --- pane contains viewing area --- */
+.pane			{ margin: 20px; overflow: auto; padding: 0 5px;  margin: 10px 0; position: relative; overflow: }
+.reading.pane 	{ height: 12em; }
+.dialog fieldset{ border: 0; margin: 0; padding: 0;}
+.dialog .text label,
+.dialog legend,
+.post legend	{ display: none; }
+	
+.dialog input,
+.post input	{ display: block; margin: 10px 0;}
+
+.dialog .title	{ width: 100%; }
+.dialog .response { width: 100%; height: 8em; overflow: auto; }
+.dialog .submit input { display: inline;}
+.dialog .submit label { display: inline;}
+.dialog fieldset div { width: 5em; height: 2em; margin-left: 15px;padding: 0; display: inline;}
+.dialog fieldset div label 	{ width: 5em; vertical-align: middle; height: 1.125em; display: inline;}
+.dialog fieldset input.radio 	{ width: 1em; vertical-align: middle; height: 1.125em; display: inline; margin-right: 4px;}
+.dialog fieldset input.btn { width: auto; margin: 0 0 0 10px; float: right;}
+.dialog .post.btn a:link,
+.dialog .post.btn a:visited	{ background-color: #3C9544; }
+.dialog .post.btn a:hover	{ background-color: #fff; border-color: #3C9544; color: #3C9544;}
+.dialog .post.btn.preview a	{ font-weight: normal; }
+
+/* --- multiple is the containing block for multiple annotations --- */
+.multiple				{ width: 50em; height: auto; }
+.multiple ol,
+.multiple dl 			{ margin: 0; padding: 0; list-style-type: none; }
+.multiple ol			{ height: 100%; border: 2px solid #ccc; border-width: 2px 2px 0 2px; background-color: #fff;}
+.multiple li			{ margin: 0 0 0 0; padding: 5px 0 5px 5px; border-bottom: 2px solid #ccc; cursor: pointer; background-color: #eee;}
+.multiple li.active		{ background-color: #FFF; color: #000}
+.multiple span.detail 	{ display: block; font-weight: normal;}
+.multiple .active dl	{ cursor: default; border-left: 1px solid #ccc;}
+.multiple .active dt 	{ background-color: #fff; width: 50%;}
+.multiple .active dd	{ background-color: #FFF; position: absolute; top: 0; right: 0; width: 50%;}
+
+.none 				{ display: none; }
+.annotate ol,
+.annotate li		{ list-style-type: none; margin: 0; padding: 0; width: 100%;}
+
+/* --- page view --- */
+#citation		{ height: 12em; overflow: auto; border: 2px solid #ccc; padding: 10px; }
+#citation cite 	{ display: block; font-style: normal;/*background: url(../images/pone_annotation_cite_bg.gif) no-repeat 5px;*/ }
+#annotation-box blockquote { margin: 0; }
+#annotation-box p { margin: 0; }
+
+div.author blockquote{ background: #FFF; }
+div.author hd	{ background-color: #069; }
+
+
+div.response h3	{ font-size: 1.2em; font-weight: bold; margin: .25em 0;}
+div.response	{ margin: 15px 0 0 15px; border: 2px solid #ccc; border-width: 2px 2px 0 0; position: relative;/*  background-color: #ccc; */}
+
+
+div.response div.response { border: none; margin-top: -2px; border-top: 2px solid #ccc; position: relative;}
+div.response blockquote	{ background: #F5F5F6 url(../images/pone_response_blockquote_bg.gif) repeat-x bottom; margin: 0; padding: 10px 20px; font-style: normal; border: 1px solid #ccc; border-width: 1px 0 1px 2px; position: relative; }
+div.response .hd { border-left: 2px solid #ccc; padding: 10px; background-color: #fff; position: relative; }
+div.response .response .hd	{ background: url(../images/pone_response_hd_bg.gif) repeat-x top; }
+div.response h5	 { margin: 0; }
+
+div.response .pane 					{ border: 2px solid #ccc; border-width: 0 0 2px 2px; padding: 20px; margin: 0; background-repeat: repeat-x; background-position: top; color: #fff;}
+div.response .pane legend 			{ display: none; }
+div.response .pane textarea 		{ width: 55%; height: 8em;}
+
+.posting.pane			{ background-color: #666; background-image: url(../images/pone_response_comment_bg.gif); }
+.flag.pane			{ background-color: #3C9544; background-image: url(../images/pone_response_flag_bg.gif); }
+.toolbar			{ background: url(../images/pone_toolbar_bg.gif) repeat-x 20px; padding: 10px; border: 1px solid #ccc; border-width: 0 0 2px 2px; margin: 0}
+.toolbar ul,
+.toolbar li			{ margin: 0; padding: 0; text-align: right;}
+.toolbar li			{ display: inline; margin: 0 10px; font-size: .9em; }
+
+div.original.response	{ margin: 0; border-top: none;}
+
+.posting.pane a.btn	{ color: #fff; text-transform: uppercase; }
+
+ol.radio			{ margin: 0; padding: 0; }
+ol.radio li			{ width: 10em; position: relative;height: 2em; list-style-type: none; margin: 0; list-style-type: none;}
+ol.radio input		{ position: absolute; left: 0; }
+ol.radio label		{ font-weight: bold; position: absolute; left: 3em; }
+
+/* annotation and discussion thread view page */
+dl.directory			{ padding: 2px; margin: 0; }
+.directory dt			{ margin: 10px 0 0 0; padding: 4px; border: 2px solid #ccc; border-width: 2px 2px 1px 2px; }
+.directory dd			{ background: url(../images/pone_response_blockquote_bg.gif) repeat-x 30px; padding: 0 4px; margin: 0; border: 2px solid #ccc; border-width: 0 2px 2px 2px;}
+.directory dd.replies	{ font-weight: bold; width: 8em; margin-top: -1.8em; margin-left: 88%; border: none; background: transparent;}
+
+.directory li,
+.directory ul			{ margin: 0; }
+
+.directory li			{ list-style-type: none; background: url(../images/pone_sectionnav_li_bg.gif) no-repeat 0 3px; padding-left: 16px;}
+
+img.pointer		{ margin: -5px 0 0 0; }

@@ -10,24 +10,28 @@
     </css>
     <javascript>
       <file>/javascript/js1.js</file>
-      <file>/javascript/js2.js</file>
-      <file>/js3.js</file>      
     </javascript>
   </default>
 
   <page>
-    <name>/WEB-INF/pages/include.ftl</name>
-    <title>Title Goes Here</title>
+    <name>/article/article_body.ftl</name>
     <css>
       <file>/css/pone_screen.css</file>
       <file>/css/pone_iepc.css</file>
     </css>
     <javascript>
-      <file>/javascript/js1.js</file>
-      <file>/javascript/js2.js</file>
-      <file>/js3.js</file>      
+      <file>/javascript/prototype.js</file>
+      <file>/javascript/config_article.js</file>
+      <file>/javascript/dojo/dojo.js</file>
+      <file>/javascript/topaz/topaz.js</file>      
+      <file>/javascript/topaz/annotation.js</file>      
+      <file>/javascript/topaz/formUtil.js</file>      
+      <file>/javascript/dojoRequire_article.js</file>
+      <file>/javascript/formSetup_article.js</file>   
+      <file>/javascript/init_article.js</file>   
     </javascript>
   </page>
+
   <page>
     <name>test2</name>
     <title>Title2 Goes Here</title>

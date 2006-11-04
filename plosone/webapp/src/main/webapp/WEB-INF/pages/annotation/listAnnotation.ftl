@@ -10,7 +10,7 @@
 
         <#list annotations as annotation>
           id          =
-          <@ww.url id="getAnnotationURL" action="getAnnotation" annotationId="${annotation.id}"/>
+          <@ww.url id="getAnnotationURL" includeParams="none" action="getAnnotation" annotationId="${annotation.id}"/>
           <@ww.a href="%{getAnnotationURL}">${annotation.id}</@ww.a> <br/>
 
           annotates   =${annotation.annotates}     <br/>

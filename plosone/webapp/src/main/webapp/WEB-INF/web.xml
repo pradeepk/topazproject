@@ -55,16 +55,16 @@
   </filter-mapping>
 -->
 
-  <filter-mapping>
+ <!--  <filter-mapping>
     <filter-name>CAS Filter</filter-name>
-<!--    <url-pattern>/*</url-pattern>-->
+    <url-pattern>/*</url-pattern>
     <url-pattern>/annotation/secure/*</url-pattern>
-  </filter-mapping>
+  </filter-mapping>-->
 
-  <filter-mapping >
+<!--  <filter-mapping>
     <filter-name>Member Session</filter-name>
     <url-pattern>/annotation/secure/*</url-pattern>
-  </filter-mapping>
+  </filter-mapping>-->
 
   <filter-mapping>
     <filter-name>webwork</filter-name>
@@ -112,7 +112,7 @@
     </init-param>
     <init-param>
       <param-name>ContentType</param-name>
-      <param-value>text/html</param-value>
+      <param-value>text/html; charset=utf-8</param-value>
     </init-param>
 
     <!-- FreeMarker settings: -->
