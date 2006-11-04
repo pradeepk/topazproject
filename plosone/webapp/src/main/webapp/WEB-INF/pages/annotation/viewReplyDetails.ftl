@@ -24,6 +24,8 @@
           <@ww.url id="listReplyURL" action="listAllReplies" root="${reply.root}" inReplyTo="${reply.id}"/>
           <@ww.a href="%{listReplyURL}">list all replies</@ww.a> <br/>
 
+          <@ww.url id="listFlagURL" action="listAllFlags" target="${reply.id}" />
+          <@ww.a href="%{listFlagURL}">list all flags</@ww.a> <br/>
     </fieldset>
 
   </body>

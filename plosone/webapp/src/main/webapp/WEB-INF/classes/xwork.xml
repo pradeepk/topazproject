@@ -125,6 +125,14 @@
     <action name="getReply" class="org.plos.annotation.action.GetReplyAction">
       <result name="success" type="ajaxJSON"/>
     </action>
+
+    <action name="listFlags" class="org.plos.annotation.action.ListFlagAction">
+      <result name="success">/WEB-INF/pages/annotation/listFlag.ftl</result>
+    </action>
+
+    <action name="getFlag" class="org.plos.annotation.action.GetFlagAction">
+      <result name="success" type="ajaxJSON"/>
+    </action>
   </package>
 
   <package name="annotation-secure" extends="default" namespace="/annotation/secure">
@@ -138,7 +146,11 @@
       <result name="success" type="ajaxJSON"/>
     </action>
 
-    <action name="deleteAnnotation" class="org.plos.annotation.action.DeleteAnnotationAction">
+    <action name="deletePrivateAnnotation" class="org.plos.annotation.action.DeleteAnnotationAction" method="deletePrivateAnnotation">
+      <result name="success" type="redirect">/home.action</result>
+    </action>
+
+    <action name="deletePublicAnnotation" class="org.plos.annotation.action.DeleteAnnotationAction" method="deletePublicAnnotation">
       <result name="success" type="redirect">/home.action</result>
     </action>
 
@@ -148,21 +160,36 @@
       <result name="success" type="redirect">/home.action</result>
     </action>
 
-    <action name="deleteReply" class="org.plos.annotation.action.DeleteReplyAction">
+    <action name="deleteReply" class="org.plos.annotation.action.DeleteReplyAction" method="deleteReplyWithId">
       <result name="success" type="redirect">/home.action</result>
     </action>
 
+    <!--TODO: not needed ?? -->
     <action name="createFlag">
       <result>/WEB-INF/pages/annotation/createFlag.ftl</result>
     </action>
 
-    <action name="createFlagSubmit" class="org.plos.annotation.action.CreateFlagAction">
+    <action name="createAnnotationFlagSubmit" class="org.plos.annotation.action.CreateFlagAction" method="createAnnotationFlag">
+      <result name="input" type="ajaxJSON"/>
+      <result name="error" type="ajaxJSON"/>
+      <result name="success" type="ajaxJSON"/>
+    </action>
+
+    <action name="createReplyFlagSubmit" class="org.plos.annotation.action.CreateFlagAction" method="createReplyFlag">
       <result name="input" type="ajaxJSON"/>
       <result name="error" type="ajaxJSON"/>
       <result name="success" type="ajaxJSON"/>
     </action>
 
     <action name="deleteFlag" class="org.plos.annotation.action.DeleteFlagAction">
+      <result name="success" type="redirect">/home.action</result>
+    </action>
+
+    <action name="unflagAnnotation" class="org.plos.annotation.action.UnflagAnnotationAction" method="unflagAnnotation">
+      <result name="success" type="redirect">/home.action</result>
+    </action>
+
+    <action name="unflagReply" class="org.plos.annotation.action.UnflagAnnotationAction" method="unflagReply">
       <result name="success" type="redirect">/home.action</result>
     </action>
 

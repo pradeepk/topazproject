@@ -3,11 +3,21 @@
     <title>Create an annotation</title>
   </head>
   <body>
+  <legend>Messages</legend>
+
+  <fieldset>
+    <p>
+      <#list actionMessages as message>
+      ${message} <br/>
+    </#list>
+    </p>
+  </fieldset>
+
     <p>
       <fieldset>
           <legend>Create an annotation</legend>
           <@ww.form name="createAnnotationForm" action="createAnnotationSubmit" method="get">
-            <@ww.textfield name="target" label="What does it annotate" value="%{'http://here.is/viru'}" required="true"/>
+            <@ww.textfield name="target" label="What does it annotate" required="true"/>
             <@ww.textfield name="startPath" label="Start path" value="%{'id(\"x20060728a\")/p[1]'}" required="true"/>
             <@ww.textfield name="startOffset" label="Start offset" value="%{'288'}" required="true"/>
             <@ww.textfield name="endPath" label="End path" value="%{'id(\"x20060801a\")/h3[1]'}" required="true"/>

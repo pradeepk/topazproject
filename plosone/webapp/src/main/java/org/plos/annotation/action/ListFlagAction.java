@@ -34,7 +34,7 @@ public class ListFlagAction extends AnnotationActionSupport {
       flags = getAnnotationService().listFlags(target);
     } catch (final ApplicationException e) {
       log.error(e, e);
-      addActionError("Annotation fetching failed with error message: " + e.getMessage());
+      addActionError("Flag fetch failed with error message: " + e.getMessage());
       return ERROR;
     }
     return SUCCESS;

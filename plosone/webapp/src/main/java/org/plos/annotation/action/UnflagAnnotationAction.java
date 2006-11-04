@@ -49,10 +49,10 @@ public class UnflagAnnotationAction extends AnnotationActionSupport {
       getAnnotationService().unflagReply(targetId);
     } catch (final ApplicationException e) {
       log.error(e, e);
-      addActionError("Annotation unflagging failed with error message: " + e.getMessage());
+      addActionError("Reply unflagging failed with error message: " + e.getMessage());
       return ERROR;
     }
-    addActionMessage("Annotation unflagged with id:" + targetId);
+    addActionMessage("Reply unflagged with id:" + targetId);
     return SUCCESS;
   }
 

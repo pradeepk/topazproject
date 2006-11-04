@@ -20,9 +20,9 @@ public class DeleteAnnotationAction extends AnnotationActionSupport {
   /**
    * Annotation deletion action.
    * @return status
-   * @throws Exception
+   * @throws Exception Exception
    */
-  public String execute() throws Exception {
+  public String deletePrivateAnnotation() throws Exception {
     try {
       getAnnotationService().deletePrivateAnnotation(annotationId, deletePreceding);
     } catch (final ApplicationException e) {

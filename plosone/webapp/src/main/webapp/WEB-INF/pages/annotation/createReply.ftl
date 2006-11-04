@@ -3,9 +3,19 @@
     <title>Create an annotation</title>
   </head>
   <body>
+    <legend>Messages</legend>
+
+    <fieldset>
+      <p>
+        <#list actionMessages as message>
+        ${message} <br/>
+      </#list>
+      </p>
+    </fieldset>
+
     <p>
       <fieldset>
-          <legend>Create an annotation</legend>
+          <legend>Create an reply</legend>
           <@ww.form name="createReplyForm" action="createReplySubmit">
             <@ww.textfield name="root" label="What is the root of this reply" required="true"/>
             <@ww.textfield name="inReplyTo" label="What is it in reply to" required="true"/>
