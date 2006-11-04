@@ -110,6 +110,14 @@
         <xsl:sequence select="$rdf"/>
       </rdf:Description>
     </rdf:RDF>
+
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+             xmlns:topaz="http://rdf.topazproject.org/RDF/"
+             model="pp">
+      <rdf:Description rdf:about="{my:doi-to-uri($article-doi)}">
+        <xsl:call-template name="pp-rdf"/>
+      </rdf:Description>
+    </rdf:RDF>
   </xsl:template>
 
   <!-- generate the rdf statements for the article -->
@@ -170,6 +178,14 @@
     </xsl:if>
 
     <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
+  </xsl:template>
+
+  <!-- generate the propagate-permissions rdf statements for the article -->
+  <xsl:template name="pp-rdf" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:topaz="http://rdf.topazproject.org/RDF/">
+    <xsl:for-each select="$sec-dois">
+      <topaz:propagate-permissions-to rdf:resource="{my:doi-to-uri(.)}"/>
+    </xsl:for-each>
   </xsl:template>
 
   <!-- generate the article object's datastream definitions -->
