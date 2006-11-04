@@ -95,10 +95,11 @@ public class Ingester {
   private static final String DS_ALTID_A   = "altIds";
   private static final String DS_FMT_A     = "formatUri";
   private static final String RDF          = "RDF";
+  private static final String DSCRPTN      = "Description";
   private static final String RDFNS        = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+  private static final String RDF_MDL_A    = "model";
 
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
-  private static final String MODEL        = "<" + CONF.getString("topaz.models.articles") + ">";
   private static final String FGS_REPO     = CONF.getString("topaz.fedoragsearch.repository");
 
   private final TransformerFactory tFactory;
@@ -181,9 +182,9 @@ public class Ingester {
 
       return uri;
     } catch (RemoteException re) {
-      throw new IngestException("Error ingesting into fedora", re);
+      throw new IngestException("Error ingesting into fedora or mulgara", re);
     } catch (IOException ioe) {
-      throw new IngestException("Error talking to fedora", ioe);
+      throw new IngestException("Error talking to fedora or mulgara", ioe);
     } catch (URISyntaxException use) {
       throw new IngestException("Zip format error", use);
     } catch (TransformerException te) {
@@ -292,7 +293,7 @@ public class Ingester {
    * @param objInfo the document describing the RDF to insert
    */
   private void mulgaraInsert(ItqlHelper itql, Document objInfo)
-      throws TransformerException, IOException, RemoteException {
+      throws IngestException, TransformerException, IOException, RemoteException {
     // set up the transformer to generate the triples
     Transformer t = tFactory.newTransformer(new StreamSource(findRDFXML2TriplesConverter()));
 
@@ -306,14 +307,27 @@ public class Ingester {
   }
 
   private void mulgaraInsertOneRDF(ItqlHelper itql, Element obj, Transformer t)
-      throws TransformerException, IOException, RemoteException {
+      throws IngestException, TransformerException, IOException, RemoteException {
+    // figure out the model
+    String m = "ri";
+    if (obj.hasAttribute(RDF_MDL_A)) {
+      m = obj.getAttribute(RDF_MDL_A);
+      obj.removeAttribute(RDF_MDL_A);
+    }
+
+    String model = CONF.getString("topaz.models." + m, null);
+    if (model == null)
+      throw new IngestException("Internal error: model '" + m + "' not found in configuration");
+
+    // create the iTQL insert statements
     StringWriter sw = new StringWriter(500);
     sw.write("insert ");
 
     t.transform(new DOMSource(obj), new StreamResult(sw));
 
-    sw.write(" into " + MODEL + ";");
+    sw.write(" into <" + model + ">;");
 
+    // insert
     itql.doUpdate(sw.toString());
   }
 

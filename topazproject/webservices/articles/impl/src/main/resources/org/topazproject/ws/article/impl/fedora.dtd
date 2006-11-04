@@ -48,7 +48,8 @@
 <!ELEMENT rdf:RDF ANY >
 <!ATTLIST rdf:RDF
     xmlns:rdf  CDATA  #FIXED "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    rdf:about  CDATA  #REQUIRED >
+    rdf:about  CDATA  #REQUIRED
+    model      (ri | articles | annotations | users | grants | revokes | pp | preferences | profiles | ratings | alerts | xsd | ANY) "ri" >
 <!-- This contains RDF/XML. Example:
 
        <!ATTLIST rdf:RDF
