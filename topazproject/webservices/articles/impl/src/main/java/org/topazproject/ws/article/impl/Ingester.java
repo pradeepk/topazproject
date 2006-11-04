@@ -324,11 +324,22 @@ public class Ingester {
     sw.write("insert ");
 
     t.transform(new DOMSource(obj), new StreamResult(sw));
+    if (!hasNonWS(sw.getBuffer(), 7))
+      return;
 
     sw.write(" into <" + model + ">;");
 
     // insert
     itql.doUpdate(sw.toString());
+  }
+
+  private static final boolean hasNonWS(CharSequence seq, int idx) {
+    for (; idx < seq.length(); idx++) {
+      if (!Character.isWhitespace(seq.charAt(idx)))
+        return true;
+    }
+
+    return false;
   }
 
   /** 
