@@ -19,6 +19,14 @@ import java.rmi.RemoteException;
  */
 public interface Permissions extends Remote {
   /**
+   * A URI to indicate all resources, permissions or subjects. eg. to grant all permissions to a
+   * principal on a resource, the permissions URI can be set to this URI. To grant a specific
+   * permission to all subjects on all resources, the resource and subject URIs can be set to this
+   * URI.
+   */
+  public static final String ALL = "http://rdf.topazproject.org/RDF/permissions#all";
+
+  /**
    * Permissions associated with permissions service.
    */
   public static interface ServicePermissions {
