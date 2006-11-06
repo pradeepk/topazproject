@@ -9,7 +9,7 @@
 					<h5><span class="commentPrivate">Add Your Annotation (For Private Viewing)</span><span class="commentPublic">Post Your Annotation (For Public Viewing)</span></h5>
 					<div class="posting pane">
 					<form name="createAnnotation" id="createAnnotation" method="post" action="">
-						<input type="hidden" name="target" value="info:doi/10.1371/journal.pone.0000008" />	<!-- article id from steve-->
+						<input type="hidden" name="target" value="${articleURI}" />	<!-- article id from steve-->
 						<input type="hidden" name="startPath" value="" />
 						<input type="hidden" name="startOffset" value="" />
 						<input type="hidden" name="endPath" value="" />
