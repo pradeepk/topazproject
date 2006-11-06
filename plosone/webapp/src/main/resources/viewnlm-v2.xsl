@@ -515,6 +515,14 @@
     <xsl:call-template name="nl-1"/>
 <!--  </div>-->
 
+
+	<xsl:text><!-- start : article information --></xsl:text>
+    <div class="articleinfo" xpathLocation="noSelect">
+	   <xsl:call-template name="make-article-meta"/>
+	</div>
+	<xsl:text><!-- end : article infomation --></xsl:text>
+
+
   <!-- body -->
   <xsl:call-template name="nl-2"/>
 <!--  <div id="{$which-piece}-body" class="body">-->
@@ -523,9 +531,6 @@
     <xsl:call-template name="nl-1"/>
 <!--  </div>-->
 
-    <div class="info metadata" xpathLocation="noSelect">
-   <xsl:call-template name="make-article-meta"/>
-   </div><xsl:text><!--end info metadata--></xsl:text>
    
    
       <!-- class is repeated on contained table elements -->
@@ -991,8 +996,8 @@
 
 <xsl:template name="fund-compete">
 	<xsl:for-each select="back/fn-group">
-		<p><strong>Funding:</strong> <xsl:apply-templates select="fn[@fn-type='financial-disclosure']/p"/></p>
-		<p><strong>Competing interests:</strong> <xsl:apply-templates select="fn[@fn-type='conflict']/p"/></p>
+		<p><strong>Funding:</strong><xsl:text> </xsl:text><xsl:apply-templates select="fn[@fn-type='financial-disclosure']/p"/></p>
+		<p><strong>Competing interests:</strong><xsl:text> </xsl:text> <xsl:apply-templates select="fn[@fn-type='conflict']/p"/></p>
 	</xsl:for-each>
 </xsl:template>
 
@@ -1001,48 +1006,48 @@ Make article meta data
 
 -->
 <xsl:template name="make-article-meta">
+	<xsl:call-template name="fund-compete"/>
     <xsl:for-each select="front/article-meta">
-
+		<p>
+		<strong>Academic Editor:</strong><xsl:text> </xsl:text>
+			<xsl:for-each select="contrib-group/contrib[@contrib-type='editor']">
+				<xsl:choose>
+				  <xsl:when test="@xlink:href">
+					<a>
+					  <xsl:call-template name="make-href"/>
+					  <xsl:call-template name="make-id"/>
+					  <xsl:call-template name="make-id"/>
+					  <xsl:apply-templates select="name | collab" mode="front"/>
+					</a>
+				  </xsl:when>
+				  <xsl:otherwise>
+					  <xsl:call-template name="make-id"/>
+					  <xsl:apply-templates select="name | collab" mode="front"/>,
+				  </xsl:otherwise>
+				</xsl:choose>
+				<!-- the name element handles any contrib/xref and contrib/degrees -->
+				<xsl:apply-templates select="*[not(self::name)
+										   and not(self::collab)
+										   and not(self::xref)
+										   and not(self::degrees)]"
+									 mode="front"/>
+				<xsl:variable name="matchto" select="xref/@rid"/>
+				<xsl:for-each select="aff|../following-sibling::aff[@id=$matchto]">
+					<xsl:apply-templates select="institution" mode="aff-outside-contrib"/><xsl:text>, </xsl:text>
+					<xsl:apply-templates select="addr-line" mode="aff-outside-contrib"/>
+				 </xsl:for-each>
+			</xsl:for-each> <!-- end of contrib -->
+		</p>	
 	<p>
-	<strong>Academic Editor:</strong>
-		<xsl:for-each select="contrib-group/contrib[@contrib-type='editor']">
-
-            <xsl:choose>
-              <xsl:when test="@xlink:href">
-                <a>
-                  <xsl:call-template name="make-href"/>
-                  <xsl:call-template name="make-id"/>
-                  <xsl:apply-templates select="name | collab" mode="front"/>
-                </a>
-              </xsl:when>
-              <xsl:otherwise>
-                  <xsl:call-template name="make-id"/>
-                  <xsl:apply-templates select="name | collab" mode="front"/>,
-              </xsl:otherwise>
-            </xsl:choose>
-            <!-- the name element handles any contrib/xref and contrib/degrees -->
-            <xsl:apply-templates select="*[not(self::name)
-                                       and not(self::collab)
-                                       and not(self::xref)
-                                       and not(self::degrees)]"
-                                 mode="front"/>
-			<xsl:variable name="matchto" select="xref/@rid"/>
-			<xsl:for-each select="aff|../following-sibling::aff[@id=$matchto]">
-				<xsl:apply-templates select="institution" mode="aff-outside-contrib"/><xsl:text>, </xsl:text>
-				 <xsl:apply-templates select="addr-line" mode="aff-outside-contrib"/>
-			 </xsl:for-each>
-		</xsl:for-each> <!-- end of contrib -->
-	</p>	
-	<p>
-		<strong>Received:</strong> 
+		<strong>Received:</strong> <xsl:text> </xsl:text>
 		<xsl:value-of select="history/date[@date-type='received']/day"/><xsl:text>/</xsl:text>
 		<xsl:value-of select="history/date[@date-type='received']/month"/><xsl:text>/</xsl:text>
 		<xsl:value-of select="history/date[@date-type='received']/year"/><xsl:text>; </xsl:text>
-		<strong>Accepted:</strong> 
+		<strong>Accepted:</strong> <xsl:text> </xsl:text>
 		<xsl:value-of select="history/date[@date-type='accepted']/day"/><xsl:text>/</xsl:text>
 		<xsl:value-of select="history/date[@date-type='accepted']/month"/><xsl:text>/</xsl:text>
 		<xsl:value-of select="history/date[@date-type='accepted']/year"/><xsl:text>; </xsl:text>
-		<strong>Published:</strong>
+		<strong>Published:</strong> <xsl:text> </xsl:text>
 		<xsl:if test="pub-date[@pub-type='epub']/day">
 			<xsl:value-of select="pub-date[@pub-type='epub']/day"/><xsl:text>/</xsl:text>		
 		</xsl:if>
@@ -1050,11 +1055,11 @@ Make article meta data
 		<xsl:value-of select="pub-date[@pub-type='epub']/year"/>
 	</p>
 	<p>
-		<strong>DOI:</strong>
+		<strong>DOI:</strong><xsl:text> </xsl:text>
 		<xsl:value-of select="article-id[@pub-id-type='doi']"/>
 	 </p>
 	<p>
-		<strong>Copyright:</strong>
+		<strong>Copyright:</strong><xsl:text> </xsl:text>
 	          <!-- copyright: show statement -or- year -->
           <!-- Most recent version of DTD recommends using the <permissions> wrapper
                for the copyright data. We handle both cases here. -->
@@ -1078,7 +1083,7 @@ Make article meta data
 	</p>
       <!-- that's it for article-meta; return to previous context -->
       </xsl:for-each>
-	<xsl:call-template name="fund-compete"/>
+
 
 </xsl:template>
 
@@ -1142,7 +1147,6 @@ Make article meta data
 <!--		<xsl:variable name="matchto" select="author"/>-->
 		<p class="authors" xpathLocation="noSelect">
   		<xsl:for-each select="contrib-group/contrib[@contrib-type='author']">
-
             <xsl:choose>
               <xsl:when test="@xlink:href">
                 <a>
@@ -1153,7 +1157,10 @@ Make article meta data
               </xsl:when>
               <xsl:otherwise>
                   <xsl:call-template name="make-id"/>
-                  <xsl:apply-templates select="name | collab" mode="front"/>,
+                  <xsl:apply-templates select="name | collab" mode="front"/>
+                  <xsl:if test="position() != last()">
+					  <xsl:text>, </xsl:text>
+                  </xsl:if>
               </xsl:otherwise>
             </xsl:choose>
             <!-- the name element handles any contrib/xref and contrib/degrees -->
@@ -1165,21 +1172,25 @@ Make article meta data
 		</xsl:for-each> <!-- end of contrib -->
 		</p>
 		<p class="affiliations" xpathLocation="noSelect">
-      <!-- each aff that is NOT directly inside a contrib
-           also makes a row: empty left, details at right -->
-      <xsl:for-each select="aff | contrib-group/aff">
-			<xsl:element name="a">
-				<xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
-				<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
-			</xsl:element>
-			<xsl:apply-templates select="institution" mode="aff-outside-contrib"/><xsl:text>,</xsl:text> 
-			 <xsl:apply-templates select="addr-line" mode="aff-outside-contrib"/>
 
-        <xsl:call-template name="nl-1"/>
-      </xsl:for-each>
+		  <!-- each aff that is NOT directly inside a contrib
+           also makes a row: empty left, details at right -->
+		<xsl:for-each select="aff">
+			<xsl:variable name="rid"><xsl:value-of select="@id"/></xsl:variable>
+			<xsl:if test="../contrib-group/contrib[@contrib-type='author']/xref[@ref-type='aff' and @rid=$rid]">
+				<xsl:element name="a">
+					<xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
+					<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
+				</xsl:element>
+				<xsl:apply-templates select="label"/><xsl:text> </xsl:text>
+				<xsl:apply-templates select="institution" mode="aff-outside-contrib"/><xsl:text>, </xsl:text>
+				<xsl:apply-templates select="addr-line" mode="aff-outside-contrib"/>
+				<xsl:text>, </xsl:text>
+			</xsl:if>
+		</xsl:for-each>
       </p>
 
- 
+
 
 
   <!-- New Table: titles and author group -->
@@ -1536,6 +1547,17 @@ Make article meta data
     <xsl:apply-templates/>
   </p>
 </xsl:template>
+
+
+<!--<xsl:template match="fn[@fn-type='financial-disclosure'] | fn[@fn-type='conflict']">
+	<xsl:apply-templates/>
+</xsl:template>-->
+
+<xsl:template match="fn[@fn-type='financial-disclosure']/p[1] | fn[@fn-type='conflict']/p[1]">
+    <xsl:apply-templates/>
+</xsl:template>
+
+
 
 <xsl:template match="speech/p[1]">
   <p>
@@ -5059,6 +5081,11 @@ Make article meta data
 </xsl:template>
 
 
+<xsl:template match="aff/label">
+	<strong><xsl:apply-templates/></strong>
+</xsl:template>
+
+
 <!-- ============================================================= -->
 <!--  57. "CITATION-TAG-ENDS"                                      -->
 <!-- ============================================================= -->
@@ -5110,15 +5137,13 @@ Make article meta data
 		
 		<!-- only add an annotation to the display list if this is the beginning of the annotation -->
 		<xsl:variable name="displayAnn">
-			<data>
-				<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
-					<xsl:variable name="annId" select="@aml:id"/>
-					<xsl:if test="count(../preceding-sibling::aml:region/aml:annotation[@aml:id=$annId]) = 0">
-						<xsl:text>,</xsl:text>
-						<xsl:value-of select="@aml:id"/>
-					</xsl:if>
-				</xsl:for-each>
-			</data>
+			<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
+				<xsl:variable name="annId" select="@aml:id"/>
+				<xsl:if test="count(../preceding-sibling::aml:region/aml:annotation[@aml:id=$annId]) = 0">
+					<xsl:text>,</xsl:text>
+					<xsl:value-of select="@aml:id"/>
+				</xsl:if>
+			</xsl:for-each>
 		</xsl:variable>
 		
 		<xsl:if test="not($displayAnn='')">
