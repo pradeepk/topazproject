@@ -17,10 +17,15 @@
   	var objList = ['bug1', 'bug2', 'bug3'];
   	for (var i=0; i<objList.length; i++) {
   		var bugObj = dojo.byId(objList[i]);
+  		
+  		topaz.commentDisplay.setTarget(bugObj);
+  		
 	  	dojo.event.connect(objList[i], 'onclick', function() {
+	  	  alert(objList[i]);
 	  		topaz.commentDisplay.showComment(bugObj);
 	  	});
   	}
+
   }
   
   dojo.addOnLoad(init);

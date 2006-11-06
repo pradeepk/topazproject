@@ -11,20 +11,11 @@
    	------------------------------------------------------------- */
 
 @import url(pone_annotation.css);
+@import url(pone_home.css);
 
-html {
-	margin: 0 0 1px 0;
-	min-height: 100%; /* set margin and height to eliminate the scroll bar page shift on mozilla and safari */
-	background: #FFF url(../images/pone_html_bg.gif) 0 0 repeat-x;
-}
-body {
-	font: 0.85em Verdana, Arial, Helvetica, sans-sif;
-  	color: #330;
-	margin: 0;
-	border-bottom: 6px solid #202020;
-	min-height: 100%;
+html 		{ margin: 0 0 1px 0; min-height: 100%; /* set margin and height to eliminate the scroll bar page shift on mozilla and safari */ background: #FFF url(../images/pone_html_bg.gif) 0 0 repeat-x; }
+body 		{ font: 0.85em Verdana, Arial, Helvetica, sans-sif; color: #330; margin: 0; border-bottom: 6px solid #202020; min-height: 100%; }
 
-}
 a:link		{ color: #069; text-decoration: underline; }
 a:visited 	{ color: #004B70; }
 a:hover		{ color: #008ED5;}
@@ -38,7 +29,6 @@ input		{ cursor: pointer; }
 img			{ border: 0; }
 label em { display: block; color: #F63; } /* em wraps all error messages within labels */
 strong		{ font-weight: bold; }
-p			{ }
 ul, ol, dl	{ margin: 20px; position: relative; }
 dt			{ font-weight: bold; }
 dd			{ margin: 0; }
@@ -55,7 +45,6 @@ h5			{ font-size: 1em; }
 h6			{ font-size: .9em; }
 input,
 textarea	{ font-family: Verdana, Arial, Helvetica, sans-serif; color: #555; font-size: 1em;}
-textarea	{ padding: 5px; }
 /* Global : Styles
 ----------------------------------------------------------
 */
@@ -123,14 +112,12 @@ a.collapse		{ background-image: url(../images/pone_tooltip_collapse.gif); } /* a
 a.flag			{ background-image: url(../images/pone_tooltip_flag.gif); }
 a.respond		{ background-image: url(../images/pone_tooltip_respond.gif); }
 
-div.btn	*		{ vertical-align: middle; padding: 4px; font-weight: bold; }
+div.btn	*			{ vertical-align: middle; padding: 4px; font-weight: bold; cursor: pointer;}
 div.btn	a:link,
-div.btn a:visited		{ color: #fefefe; text-decoration: none; text-transform: uppercase; font-size: .9em; }
-div.btn a:hover	{ background-color: #fff; color: #333; }
+div.btn a:visited	{ color: #fefefe; text-decoration: none; text-transform: uppercase; font-size: .9em; }
+div.btn a:hover		{ background-color: #fff; color: #333; }
 
-div.dialog div.close	{ top: 0; cursor: pointer; }
-
-div.close			{ position: absolute; color: #efefef; right: 5px; top: 10px; }
+div.close			{ position: absolute; color: #efefef; right: 10px; top: 10px; background: url(../images/pone_icon_close_flag.gif) no-repeat top right; }
 div.close a:hover	{ color: #333; background-color: #fff;}
 div.post			{ font-weight: bold; margin-left: 200px; margin-top: 5px;}
 div.post a			{ border: 1px solid #fff; }
@@ -150,14 +137,10 @@ div.post a			{ border: 1px solid #fff; }
 ----------------------------------------------------------
 
 */
-div#topBanner, div#bottomBanner
-					{ min-width: 942px; height: 70px; position: relative; }
+div#topBanner		{ min-width: 942px; /* need ie hack for min-width */ height: 70px; position: relative; }
 div#topBanner div 	{ padding-top: 4px; } /* sets top padding on all banner slots */
 #topBanner .left 	{ position: absolute; left: 0; float: none;} /* left banner slot */
 #topBanner .right 	{ position: absolute; right: 0; float: none;} /* right banner slot */
-
-div#bottomBanner 	{ clear: both; border: 1px solid #000; margin: 30px 0 0 0; } /* only appears on homepage */
-#bottomBanner img 	{ float: right; }
 
 /* Header : Elements
 
@@ -224,12 +207,13 @@ ul#nav li	{ float: left; position: relative; background-color: #ECEDED; list-sty
 #db fieldset input.button { float: left; position: relative; }
 
 /* User Dashboard Block */
-#user {	position: absolute; width: 24.5em; height: 6.1em; background: transparent url(../images/pone_user_bg.gif) no-repeat; top: 54px; right: 0; font-size: .75em; text-align: right; }
-#user div 	{ margin: 12px 18px; } /* contains elements and applies padding */
-#user p 	{ margin: 0; }
-#user ul 	{ margin: 0; padding: 0; position: absolute; bottom: 12px; right: 18px;}
-#user ul li { display: inline; margin-left: 6px; text-indent: 0; float: left;}
-#user a 	{ color: #330; }
+#user 		{ position: absolute; width: 24.5em; height: 6.1em; background: transparent url(../images/pone_user_bg.gif) no-repeat; top: 54px; right: 0; font-size: .75em; text-align: right; }
+#user div 	{ margin: 14px 18px; } /* contains elements and applies padding */
+#user p 	{ margin: 0 0 12px 0; }
+#user ul 	{ margin: 0; padding: 0; display: inline;}
+#user ul li { display: inline; margin-left: 6px; text-indent: 0;}
+#user a:link,
+#user a:visited 	{ color: #330; }
 #user a:hover
 			{ color: #069; }
 #user a.user{ background-image: url(../images/pone_user_user.gif); }
@@ -347,7 +331,6 @@ div.buttons a.email		{ list-style-image: url(../images/jour_sidenav_email.gif); 
 div.buttons a.print		{ list-style-image: url(../images/jour_sidenav_print.gif); list-style-position: inside;}
 div.buttons a.print:hover{ background-position: -120px 0; }
 
-div.tools h3			{ color: #333; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 1em; font-weight: bold; padding-top: 8px; margin: 0;}
 
 div.figure				{ border: 2px solid #069; padding: 10px; font-size: .85em;}
 div.figure img			{ margin: 0 10px 10px 0; }
@@ -355,10 +338,10 @@ div.figure img			{ margin: 0 10px 10px 0; }
 /* ------ Inline Annotation Styles ------- */
 span.note				{ border-bottom: 2px solid #6CF; }
 span.note img			{ margin-right: 2px; }
-span.private-self		{ border-color: #55E912; border-bottom-style: dotted; }
-span.private-self-active{ border-color: #55E912; border-bottom-style: dotted; background-color:#E1FFE1; color: #000; }
-span.public-self		{ border-color: #55E912; }
-span.public-self-active	{ border-color: #55E912; background-color:#E1FFE1; color: #000;}
+span.self-private		{ border-color: #55E912; border-bottom-style: dotted; }
+span.self-private-active{ border-color: #55E912; border-bottom-style: dotted; background-color:#E1FFE1; color: #000; }
+span.self-public		{ border-color: #55E912; }
+span.self-public-active	{ border-color: #55E912; background-color:#E1FFE1; color: #000;}
 
 span.public				{ }
 span.public-active		{ color: #000; background-color: #D2F7FF;}

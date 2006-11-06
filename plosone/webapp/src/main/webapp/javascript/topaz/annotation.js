@@ -695,17 +695,18 @@ topaz.annotation = {
   	var spanId    = annotationConfig.dialogMarker;
   	var noteImg   = djConfig.namespace + "/images/" + "pone_note_" + (annotationConfig.isAuthor ? "author" : "private") + "_active.gif";
   	var noteImgClass = annotationConfig.annotationImgMarker;
-  
+  	  
     if (rangeObj.range.pasteHTML) {
       var html = rangeObj.range.htmlText;
       rangeObj.range.pasteHTML('<span class="'     + noteClass +
           								     '" title="'  + noteTitle +
           							        '" id="'     + spanId + 
           							       '">' + 
-          							       '<img src="' + noteImg + 
-          							       '" title="'  + noteTitle + 
-          							       '" class="'  + noteImgClass +
-          							       '" />' +
+//          							       '<img src="' + noteImg + 
+//          							       '" title="'  + noteTitle + 
+//          							       '" class="'  + noteImgClass +
+//          							       '" />' +
+                               '<a href="#" id="bug" title="Click to preview this annotation"></a>' +
           							       html + '</span>');
     }
     else {
@@ -723,8 +724,13 @@ topaz.annotation = {
   	  newImg.title     = noteTitle;
   	  newImg.className = noteImgClass;
       
-      newSpan.appendChild(newImg);
+      //newSpan.appendChild(newImg);
       
+  	  var link = document.createElement("a");
+  	  link.className = 'bug';
+  	  link.title = 'Click to preview this annotation';
+  	  newSpan.appendChild(link);
+  	
       // populate the span with the content extracted from the range
       for (var i = 0; i < contents.childNodes.length; i++) {
         newSpan.appendChild(contents.childNodes[i].cloneNode(true));

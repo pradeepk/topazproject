@@ -8,7 +8,7 @@ var submitMsg    = document.getElementById('submitMsg');
 
 function initAnnotationForm() {	
 	commentTitle     = document.getElementById("commentTitle");
-	comments         = document.getElementById("comment");
+	comments         = document.getElementById("commentArea");
 	var privateFlag  = document.getElementById("privateFlag");
 	var publicFlag   = document.getElementById("publicFlag");
 	var btn_cancel    = document.getElementById("btn_cancel");
@@ -60,6 +60,8 @@ function initAnnotationForm() {
   });
 
 	dojo.event.connect(btn_cancel, "onclick", function() {
+  	//var btn = btn_cancel;
+  	//dlg.setCloseControl(btn);
 	  getArticle();
   });
 
@@ -72,7 +74,7 @@ function validateNewComment() {
   
   if (str < 0) {
      var bindArgs = {
-      url: djConfig.namespace + "/annotation/secure/createAnnotationSubmit.action",
+      url: namespace + "/annotation/secure/createAnnotationSubmit.action",
       method: "post",
       error: function(type, data, evt){
        //alert("An error occurred." + data.toSource());
@@ -130,7 +132,7 @@ function getArticle() {
   var targetUri = annotationForm.target.value;
   
   var bindArgs = {
-    url: djConfig.namespace + "/article/fetchBody.action?articleURI=" + targetUri,
+    url: namespace + "/article/fetchBody.action?articleURI=" + targetUri,
     method: "get",
     error: function(type, data, evt){
      //alert("ERROR:" + data.toSource());

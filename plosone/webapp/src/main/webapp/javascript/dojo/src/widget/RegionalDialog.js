@@ -36,6 +36,8 @@ dojo.declare(
 		// Boolean
 		//	if true, readjusts the dialog (and dialog background) when the user moves the scrollbar
 		followScroll: true,
+		
+		markerNode: null,
 
 		templatePath: dojo.uri.dojoUri("src/widget/templates/RegionalDialog.html"),
 
@@ -172,7 +174,8 @@ dojo.declare(
 		placeModalDialog: function() {
 			var scroll_offset = dojo.html.getScroll().offset;
 			var viewport_size = dojo.html.getViewport();
-			var dialog_marker = dojo.byId(djConfig.regionalDialogMarker);
+			//var dialog_marker = dojo.byId(djConfig.regionalDialogMarker);
+			var dialog_marker = this.markerNode;
 			
 			var curleft = curtop = 0;
 			if (dialog_marker.offsetParent) {
@@ -206,13 +209,13 @@ dojo.declare(
 			if((curtop - scrollY) < mbHeight) {
 				dTip.className = "tipu";
 				dTip.parentNode.style.paddingTop = "71px";
-				dTip.style.marginTop = "-" + mbHeight + "px";
-				y = curtop + 10;
+				dTip.style.marginTop = "-" + (mbHeight + 5) + "px";
+				y = curtop + 75;
 			}
 			else {
 				dTip.className = "tip";
 				dTip.parentNode.style.paddingTop = "auto";
-				dTip.style.marginTop = "-11px";
+				dTip.style.marginTop = "-5px";
 				y = curtop - mbHeight;
 			}
 
@@ -377,6 +380,12 @@ dojo.widget.defineWidget(
 			//	when specified node is clicked, show this dialog
 			// TODO: make this a parameter too
 			dojo.event.connect(node, "onclick", this, "show");
+		},
+		
+		setMarker: function(node) {
+		  // summary
+		  // when specified is clicked, pass along the marker object
+		  this.markerNode = node;
 		},
 		
 		_onTick: function(){
