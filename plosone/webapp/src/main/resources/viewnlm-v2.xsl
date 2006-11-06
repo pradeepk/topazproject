@@ -1714,10 +1714,10 @@ Make article meta data
 <xsl:template match="boxed-text">
 
   <xsl:call-template name="nl-1"/>
-
-  <table border="4"
-         cellpadding="10pt"
-         width="100%">
+  <xsl:element name="table">
+	  <xsl:attribute name="border">4</xsl:attribute>
+	  <xsl:attribute name="cellpadding">10pt</xsl:attribute>
+	  <xsl:attribute name="width">100%</xsl:attribute>
     <xsl:call-template name="make-id"/>
 
     <!-- the box is achieved by means of a table, and
@@ -1740,7 +1740,7 @@ Make article meta data
       </td>
     </tr>
 
-  </table>
+  </xsl:element>
 
 </xsl:template>
 
@@ -5094,35 +5094,50 @@ Make article meta data
 
 
 <xsl:template name="createAnnotationSpan">
+	<xsl:variable name="regionId" select="@aml:id"/>
 	<xsl:element name="span">
 		<xsl:attribute name="class">note public</xsl:attribute>
 		<xsl:attribute name="title">User Annotation</xsl:attribute>
 		<xsl:attribute name="annotationId">
-			<xsl:variable name="regionId" select="@aml:id"/>
 			<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
-				<xsl:value-of select="@aml:id"/><xsl:text> </xsl:text>
+				<xsl:value-of select="@aml:id"/>
+				<xsl:if test="(following-sibling::aml:annotation)">
+					<xsl:text>,</xsl:text>
+				</xsl:if>
 			 </xsl:for-each>
 		</xsl:attribute>
-		<xsl:element name="a">
-			<xsl:attribute name="href">#</xsl:attribute>
-			<xsl:attribute name="class">bug</xsl:attribute> 
-			<xsl:attribute name="id">
-				<xsl:variable name="regionId" select="@aml:id"/>
+
+		
+		<!-- only add an annotation to the display list if this is the beginning of the annotation -->
+		<xsl:variable name="displayAnn">
+			<data>
 				<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
-					<xsl:value-of select="@aml:id"/><xsl:text> </xsl:text>
-				 </xsl:for-each>
-			</xsl:attribute>
-			<xsl:attribute name="displayId">
-				<xsl:variable name="regionId" select="@aml:id"/>
-				<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
-					<xsl:value-of select="@aml:id"/><xsl:text> </xsl:text>
-				 </xsl:for-each>
-			</xsl:attribute>
-			<xsl:attribute name="title">Click to preview this annotation</xsl:attribute>
-			 [BUG]
-		</xsl:element>
+					<xsl:variable name="annId" select="@aml:id"/>
+					<xsl:if test="count(../preceding-sibling::aml:region/aml:annotation[@aml:id=$annId]) = 0">
+						<xsl:text>,</xsl:text>
+						<xsl:value-of select="@aml:id"/>
+					</xsl:if>
+				</xsl:for-each>
+			</data>
+		</xsl:variable>
+		
+		<xsl:if test="not($displayAnn='')">
+			<xsl:element name="a">
+				<xsl:attribute name="href">#</xsl:attribute>
+				<xsl:attribute name="class">bug</xsl:attribute> 
+				<xsl:attribute name="id">
+					<xsl:value-of select="concat('annAnchor',@aml:id)"/>
+				</xsl:attribute>
+				<xsl:attribute name="displayId">
+					<xsl:value-of select="substring($displayAnn,2)"/> <!-- get rid of first comma in list -->
+				</xsl:attribute>
+				<xsl:attribute name="title">Click to preview this annotation</xsl:attribute>
+				 [BUG]
+			</xsl:element>
+		</xsl:if>
 		<xsl:apply-templates/>
 	</xsl:element>
+	
 </xsl:template>
 
 
@@ -5132,8 +5147,3 @@ Make article meta data
 
 
 </xsl:stylesheet>
-<!-- Stylus Studio meta-information - (c) 2004-2006. Progress Software Corporation. All rights reserved.
-<metaInformation>
-<scenarios ><scenario default="yes" name="Scenario1" userelativepaths="yes" externalpreview="no" url="pone\pone.0000008.xml" htmlbaseurl="" outputurl="" processortype="internal" useresolver="yes" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" validateoutput="no" validator="internal" customvalidator=""/></scenarios><MapperMetaTag><MapperInfo srcSchemaPathIsRelative="yes" srcSchemaInterpretAsXML="no" destSchemaPath="" destSchemaRoot="" destSchemaPathIsRelative="yes" destSchemaInterpretAsXML="no"/><MapperBlockPosition></MapperBlockPosition><TemplateContext></TemplateContext><MapperFilter side="source"></MapperFilter></MapperMetaTag>
-</metaInformation>
--->
