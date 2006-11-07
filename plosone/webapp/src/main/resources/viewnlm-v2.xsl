@@ -5160,7 +5160,6 @@ Make article meta data
 				<xsl:attribute name="onmouseover">topaz.displayComment.mouseoverComment(this.parentNode);</xsl:attribute>
 				<xsl:attribute name="onmouseout">topaz.displayComment.mouseoutComment(this.parentNode);</xsl:attribute>
 				<xsl:attribute name="title">Click to preview this annotation</xsl:attribute>
-				 [BUG]
 			</xsl:element>
 		</xsl:if>
 		<xsl:apply-templates/>
