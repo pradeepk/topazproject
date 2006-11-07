@@ -71,12 +71,18 @@ public class FetchArticleService {
   private AnnotationWebService annotationWebService;
   private String firstEntLocation;
   private String firstEnt;
+  private DocumentBuilderFactory factory;
 
   public void init() {
     // Set the TransformerFactory system property.
     for (Map.Entry<String, String> entry : xmlFactoryProperty.entrySet()) {
       System.setProperty(entry.getKey(), entry.getValue());
     }
+
+    // Create a document builder factory and set the defaults
+    factory = DocumentBuilderFactory.newInstance();
+    factory.setNamespaceAware(true);
+    factory.setValidating(false);
   }
 
   /**
@@ -264,11 +270,6 @@ public class FetchArticleService {
   }
 
   private DocumentBuilder getDocBuilder() throws ParserConfigurationException {
-    // Create a builder factory
-    final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    factory.setNamespaceAware(true);
-    factory.setValidating(false);
-
     // Create the builder and parse the file
     final DocumentBuilder builder = factory.newDocumentBuilder();
 //    builder.setEntityResolver(new CachedEntityResolver());
@@ -388,10 +389,6 @@ public class FetchArticleService {
 
     try {
       final String articlesDoc = articleService.getArticles(startDate, endDate);
-
-      // Create a builder factory
-      final DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-      factory.setValidating(false);
 
       // Create the builder and parse the file
       final Document articleDom = factory.newDocumentBuilder().parse(new InputSource(new StringReader(articlesDoc)));
