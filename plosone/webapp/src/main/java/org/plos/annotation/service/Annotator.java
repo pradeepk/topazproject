@@ -27,7 +27,6 @@ import org.xml.sax.SAXException;
 import javax.activation.DataHandler;
 import javax.activation.FileDataSource;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Result;
 import javax.xml.transform.Source;
@@ -59,15 +58,15 @@ public class Annotator {
    *
    * @param content the source document
    * @param annotations the list of annotations to apply
-   *
+   * @param documentBuilder documentBuilder that provides it's own entity resolver
    * @return the annotated document
    *
    * @throws RemoteException on a failure
    */
-  public static DataHandler annotate(DataHandler content, AnnotationInfo[] annotations)
+  public static DataHandler annotate(DataHandler content, AnnotationInfo[] annotations, final DocumentBuilder documentBuilder)
                               throws RemoteException {
     try {
-      return serialize(annotate(parse(content), annotations));
+      return serialize(annotate(parse(content, documentBuilder), annotations));
     } catch (Exception e) {
       throw new RemoteException("", e);
     }
@@ -85,7 +84,7 @@ public class Annotator {
    * @throws TransformerException if at least one annotation context is an invalid xpointer
    *         expression
    */
-  public static Document annotate(Document document, AnnotationInfo[] annotations)
+  private static Document annotate(Document document, AnnotationInfo[] annotations)
                            throws URISyntaxException, TransformerException {
     LocationList[] lists = evaluate(document, annotations);
 
@@ -127,18 +126,15 @@ public class Annotator {
    * Parses the content into a DOM document.
    *
    * @param content the content to parse
-   *
+   * @param builder documentBuilder
    * @return the dom document
    *
    * @throws SAXException on an error in parse
    * @throws ParserConfigurationException if a suitable parser could not be found
    * @throws IOException on an error in reading the content
    */
-  public static Document parse(DataHandler content)
+  private static Document parse(final DataHandler content, final DocumentBuilder builder)
                         throws SAXException, ParserConfigurationException, IOException {
-    DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-    DocumentBuilder        builder = factory.newDocumentBuilder();
-
     return builder.parse(content.getInputStream());
   }
 
@@ -152,7 +148,7 @@ public class Annotator {
    * @throws TransformerException on an error in serialize
    * @throws IOException on an error in writing
    */
-  public static DataHandler serialize(Document document)
+  private static DataHandler serialize(Document document)
                                throws TransformerException, IOException {
     TransformerFactory xformFactory = TransformerFactory.newInstance();
     Transformer        idTransform = xformFactory.newTransformer();

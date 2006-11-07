@@ -327,8 +327,9 @@ public class FetchArticleService {
    * @return the annotated content
    * @throws java.io.IOException IOException
    * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
+   * @throws javax.xml.parsers.ParserConfigurationException ParserConfigurationException
    */
-  public String getAnnotatedContent(final String contentUrl, final String infoUri) throws IOException, NoSuchIdException {
+  public String getAnnotatedContent(final String contentUrl, final String infoUri) throws IOException, NoSuchIdException, ParserConfigurationException {
     return FileUtils.getTextFromCharStream(getAnnotatedContentAsInputStream(contentUrl, infoUri));
   }
 
@@ -338,8 +339,9 @@ public class FetchArticleService {
    * @return the annotated content
    * @throws java.io.IOException IOException
    * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
+   * @throws javax.xml.parsers.ParserConfigurationException ParserConfigurationException
    */
-  private InputStream getAnnotatedContentAsInputStream(final String infoUri) throws IOException, NoSuchIdException {
+  private InputStream getAnnotatedContentAsInputStream(final String infoUri) throws IOException, NoSuchIdException, ParserConfigurationException {
     final String contentUrl = articleService.getObjectURL(infoUri, articleRep);
     return getAnnotatedContentAsInputStream(contentUrl, infoUri);
   }
@@ -350,16 +352,17 @@ public class FetchArticleService {
    * @param contentUrl contentUrl
    * @return the annotated content
    * @throws java.io.IOException IOException
+   * @throws javax.xml.parsers.ParserConfigurationException ParserConfigurationException
    */
-  private InputStream getAnnotatedContentAsInputStream(final String contentUrl, final String infoUri) throws IOException {
+  private InputStream getAnnotatedContentAsInputStream(final String contentUrl, final String infoUri) throws IOException, ParserConfigurationException {
     final AnnotationInfo[] annotations = annotationWebService.listAnnotations(infoUri);
     return applyAnnotationsOnContent(contentUrl, annotations);
   }
 
-  private InputStream applyAnnotationsOnContent(final String contentUrl, final AnnotationInfo[] annotations) throws IOException {
+  private InputStream applyAnnotationsOnContent(final String contentUrl, final AnnotationInfo[] annotations) throws IOException, ParserConfigurationException {
     DataHandler content = new DataHandler(new URLDataSource(new URL(contentUrl)));
     if (annotations.length != 0) {
-      content = Annotator.annotate(content, annotations);
+      content = Annotator.annotate(content, annotations, getDocBuilder());
     }
 
     return content.getInputStream();
