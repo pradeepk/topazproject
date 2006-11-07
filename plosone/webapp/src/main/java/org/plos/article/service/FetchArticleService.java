@@ -220,7 +220,7 @@ public class FetchArticleService {
    * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
    */
   public Source getAnnotatedContentAsDOMSource(final String articleURI) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException, NoSuchIdException {
-    final DocumentBuilder builder = getDocBuilder();
+    final DocumentBuilder builder = createDocBuilder();
 
     final Document doc = builder.parse(getAnnotatedContentAsInputStream(articleURI));
 
@@ -256,7 +256,7 @@ public class FetchArticleService {
    * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
    */
   public Source getDOMSource(final String xmlFileURL) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException, NoSuchIdException {
-    final DocumentBuilder builder = getDocBuilder();
+    final DocumentBuilder builder = createDocBuilder();
 
     Document doc;
     try {
@@ -269,12 +269,16 @@ public class FetchArticleService {
     return new DOMSource(doc);
   }
 
-  private DocumentBuilder getDocBuilder() throws ParserConfigurationException {
+  private DocumentBuilder createDocBuilder() throws ParserConfigurationException {
     // Create the builder and parse the file
     final DocumentBuilder builder = factory.newDocumentBuilder();
 //    builder.setEntityResolver(new CachedEntityResolver());
     builder.setEntityResolver(new EntityResolver() {
       public InputSource resolveEntity(final String publicId, final String systemId) throws SAXException, IOException {
+        if (log.isDebugEnabled()) {
+          log.debug("publicId = " + publicId + "systemId = " + systemId);
+        }
+
         return getInputSource(systemId);
       }
     });
@@ -363,7 +367,7 @@ public class FetchArticleService {
   private InputStream applyAnnotationsOnContent(final String contentUrl, final AnnotationInfo[] annotations) throws IOException, ParserConfigurationException {
     DataHandler content = new DataHandler(new URLDataSource(new URL(contentUrl)));
     if (annotations.length != 0) {
-      content = Annotator.annotate(content, annotations, getDocBuilder());
+      content = Annotator.annotate(content, annotations, createDocBuilder());
     }
 
     return content.getInputStream();
