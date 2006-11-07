@@ -20,3 +20,10 @@ var annotationConfig = {
 var formConfig = {
 	commentMaxLen: 250
 };
+
+var commentConfig = {
+  sectionTitle: "viewCmtTitle",
+  sectionDetail: "viewCmtDetail",  
+  sectionComment: "viewComment",  
+  retrieveMsg: "retrieveMsg"  
+};  

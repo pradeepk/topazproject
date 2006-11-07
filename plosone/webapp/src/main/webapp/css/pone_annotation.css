@@ -53,7 +53,7 @@ div.comment .comment h6
 /* --- viewer is full pane view --- */
 .viewer		{ }
 .response fieldset
-			{ border: none; }
+					{ border: none; }
 .response fieldset .reply
 			{ display: block; margin: 10px 0; padding: 2px; border: 1px solid #ccc}
 .response .title { width: 30em; background-color: #eee; }
@@ -89,7 +89,7 @@ div.comment .comment h6
 .dialog .post.btn.preview a	{ font-weight: normal; }
 
 /* --- multiple is the containing block for multiple annotations --- */
-.multiple				{ width: 50%; height: auto; }
+.multiple				{ width: 60%; height: auto; }
 .multiple ol,
 .multiple dl 			{ margin: 0; padding: 0; list-style-type: none; width: 95%;}
 .multiple dt			{ cursor: pointer; background: url(../images/pone_response_blockquote_bg.gif) repeat-x top; width: 100%; border: 1px solid #ccc; border-width: 2px 1px 0 0; padding: 5px 0 0 5px; margin: 0;}

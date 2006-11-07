@@ -44,3 +44,42 @@
 	<div class="tip" id="dTip"></div>
 </div>
 
+<div class="dialog annotate">
+	<div class="hd">
+		<div class="c"></div>
+	</div>
+	<div class="bd">
+		<div class="c">
+			<div class="btn close" title="Click to close this dialog box">Cancel</div>
+			<div class="s">
+				<div class="comment">
+					<h5>Post Your Annotation (For Public Viewing)</h5>
+					<div class="posting pane">
+						<form>
+							<fieldset>
+							<legend>Compose your Annotation</legend>
+					
+								<label for="search"><span class="none">Enter your annotation title</span><!-- error message text <em>A title is required for all public annotations</em>--></label>
+								<input type="text" value="Enter your annotation title..." onfocus="if(this.value=='Enter your annotation title...')value='';" onblur="if(this.value=='')value='Enter your annotation title...';" class="title" alt="Enter your v title..." />
+							
+								<label for="search"><span class="none">Enter your annotation</span><!-- error message text <em>Please enter your annotation</em>--></label>
+								<textarea value="Enter your annotation..." onfocus="if(this.value=='Enter your annotation...')value='';" onblur="if(this.value=='')value='Enter your annotation...';" alt="Enter your annotation..." name="response">Enter your annotation...</textarea>
+								
+								<div><input type="radio" class="radio" title="Choose from one of the options" name="status" value="Private" /><label for="Private">Private</label></div>
+								<div><input type="radio" class="radio" title="Choose from one of the options" name="status" value="Public" checked /><label for="Public">Public</label></div>
+								<div class="post btn"><a href="#" title="Click to post your annotation publicly"><img src="/margaret/images/pone_icon_post.gif">Post</a></div>
+								
+							</fieldset>
+
+						</form>
+		
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+	<div class="ft">
+		<div class="c"></div>
+	</div>
+	<div class="tip" id="dTip"></div>
+</div>

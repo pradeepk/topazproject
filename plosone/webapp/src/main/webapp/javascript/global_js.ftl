@@ -6,7 +6,9 @@
 <script type="text/javascript" src="${freemarker_config.getContext()}/javascript/dojo/dojo.js"></script>
 <script type="text/javascript" src="${freemarker_config.getContext()}/javascript/topaz/topaz.js"></script>
 <script type="text/javascript" src="${freemarker_config.getContext()}/javascript/topaz/annotation.js"></script>
+<script type="text/javascript" src="${freemarker_config.getContext()}/javascript/topaz/displayComment.js"></script>
 <script type="text/javascript" src="${freemarker_config.getContext()}/javascript/topaz/formUtil.js"></script>
+<script type="text/javascript" src="${freemarker_config.getContext()}/javascript/topaz/domUtil.js"></script>
 <script type="text/javascript">
 	dojo.registerModulePath("topaz", "../topaz");
 	dojo.require("topaz.topaz");
@@ -19,7 +21,6 @@
 
 </script>
 <script type="text/javascript" src="${freemarker_config.getContext()}/javascript/formSetup_article.js"></script>
-<script type="text/javascript" src="${freemarker_config.getContext()}/javascript/displayComment.js"></script>
 <script type="text/javascript" src="${freemarker_config.getContext()}/javascript/init_article.js"></script>
 
 <!--

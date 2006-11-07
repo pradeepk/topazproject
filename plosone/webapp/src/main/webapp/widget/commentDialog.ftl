@@ -7,11 +7,10 @@
 		<div class="c">
 			<div class="s">
 				<div class="comment">
-					<h6><a href="#" class="discuss icon" title="View full annotation">How does one repeat this process?</a></h6>
-					<div class="detail">Posted by <a href="#" title="Annotation Author" class="user icon">margaretfun</a> on <strong>2006-10-06</strong> at <strong>13:54 GMT</strong></div>
-		
-					<p>How does one repeat this process, we have been trying to duplicate these results for the last two weeks our lab with no luck. Does anyone have some advice on how to repeat these results?</p>
-					<p>I would really appreciate any help. Maximum character count 250</p>
+					<h6 id="viewCmtTitle"></h6>
+					<div class="detail" id="viewCmtDetail"></div>
+					<p id="retrieveMsg"></p>
+					<p id="viewComment"></p>
 					<div class="detail"><a href="#" class="commentary icon" title="Click to view full thread and respond">View full commentary</a></div>
 				</div>	
 			</div>
@@ -20,6 +19,7 @@
 	<div class="ft">
 		<div class="c"></div>
 	</div>
+	<div class="tip" id="dTip"></div>
 </div>
 <!-- end : annotation preview view -->
 

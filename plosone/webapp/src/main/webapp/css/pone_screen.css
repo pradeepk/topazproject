@@ -117,8 +117,8 @@ div.btn	a:link,
 div.btn a:visited	{ color: #fefefe; text-decoration: none; text-transform: uppercase; font-size: .9em; }
 div.btn a:hover		{ background-color: #fff; color: #333; }
 
-div.close			{ position: absolute; color: #efefef; right: 10px; top: 10px; background: url(../images/pone_icon_close_flag.gif) no-repeat top right; }
-div.close a:hover	{ color: #333; background-color: #fff;}
+div.close			{ position: absolute; color: #efefef; right: 10px; top: 0; background: url(../images/pone_icon_close_flag.gif) no-repeat 100% 50%; }
+div.close:hover		{ color: #000; }
 div.post			{ font-weight: bold; margin-left: 200px; margin-top: 5px;}
 div.post a			{ border: 1px solid #fff; }
 .important 			{ font-weight: bold; }
@@ -336,23 +336,34 @@ div.figure				{ border: 2px solid #069; padding: 10px; font-size: .85em;}
 div.figure img			{ margin: 0 10px 10px 0; }
 
 /* ------ Inline Annotation Styles ------- */
-span.note				{ border-bottom: 2px solid #6CF; }
-span.note img			{ margin-right: 2px; }
-span.self-private		{ border-color: #55E912; border-bottom-style: dotted; }
-span.self-private-active{ border-color: #55E912; border-bottom-style: dotted; background-color:#E1FFE1; color: #000; }
-span.self-public		{ border-color: #55E912; }
-span.self-public-active	{ border-color: #55E912; background-color:#E1FFE1; color: #000;}
+span.active				{ color: #000; } /* apply to all spans during hover state on the bug */
 
-span.public				{ }
-span.public-active		{ color: #000; background-color: #D2F7FF;}
+a.bug,
+a:visited.bug			{ padding: 2px 7px 10px 7px; color: #fff; text-decoration: none; font-size: .85em; font-weight: bold; background-image: url(../images/pone_annotation_bug.gif); background-repeat: no-repeat; background-position: top left; position: relative; top: -8px;}
 
-span.author-private		{ border-color: #f39; border-bottom-style: dotted;}
+span.self-private a.bug,
+span.self-private a:visited.bug	{ background-color: #3C9544;}
+span.self-private a:hover.bug,
+span.self-private-active a.bug	{ background-color: #55E912;}
+span.self-private-active		{ background-color:#cfc; border-bottom: 1px solid #55E912;}
+
+span.public a.bug,
+span.public a:visited.bug	{ background-color: #069;}
+span.public a:hover.bug,
+span.public-active a.bug		{ background-color: #0BF;}
+span.public-active			{ background-color:#D2F7FF; border-bottom: 1px solid #0bf;}
+
+span.author-private		{ }
 span.author-private-active
-						{ border-color: #f39; border-bottom-style: dotted; background-color: #FFDAED; color: #000;}
-span.author				{ border-color: #f39;}
-span.author-active		{ border-color: #f39; background-color: #FFDAED;}
-span.multiple			{ border-bottom-width: 3px; border-bottom-style: double; }
-span.multiple-active	{ color: #000; background-color: #D2F7FF; border-bottom-width: 3px; border-bottom-style: double;}
+						{ background-color: #FFDAED; }
+
+span.author a.bug,
+span.author a:visited.bug	{ background-color: #B6491F;}
+span.author a:hover.bug,
+span.author-active a.bug	{ background-color: #f63;}
+span.author				{ }
+span.author-active		{ background-color: #FFD3C5; border-bottom: 1px solid #f63;}
+
 
 div.beta				{ text-align: center; font-size: .9em; font-style: italic; border: 1px dotted #0bf; border-width: 1px 0; color: #0bf; font-weight: bold;}
 
