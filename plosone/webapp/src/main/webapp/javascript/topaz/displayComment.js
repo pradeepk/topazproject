@@ -22,6 +22,8 @@ topaz.displayComment = {
     this.sectionDetail = dojo.byId(commentConfig.sectionDetail);
     this.sectionComment = dojo.byId(commentConfig.sectionComment);
     this.retrieveMsg = dojo.byId(commentConfig.retrieveMsg);
+    
+    this.processBugCount();
   },
   
   parseAttributeToList: function(attr) {
@@ -45,94 +47,10 @@ topaz.displayComment = {
     this.setTarget(obj);
     
 		popup.setMarker(this.target);
-    this.getComment(this.target);
+    getComment(this.target);
   },
     
-  getComment: function (obj) {
-    var targetDiv = dojo.widget.byId("CommentDialog");
-    var targetUri = topaz.domUtil.getDisplayId(this.target);
-    
-    alert("this.sectionTitle.nodeName = " + this.sectionTitle.nodeName + "\n" +
-          "this.sectionDetail.nodeName = " + this.sectionDetail.nodeName + "\n" +
-          "this.sectionDetail.nodeName = " + this.sectionDetail.nodeName + "\n" +
-          "this.retrieveMsg.nodeName = " + this.retrieveMsg.nodeName);
-    
-    var bindArgs = {
-      url: namespace + "/annotation/getAnnotation.action?annotationId=" + targetUri,
-      method: "get",
-      error: function(type, data, evt){
-       alert("ERROR:" + data.toSource());
-       var err = document.createTextNode("ERROR:" + data.toSource());
-       this.retrieveMsg.appendChild(err);
-       return false;
-      },
-      load: function(type, data, evt){
-       var jsonObj = dojo.json.evalJson(data);
-       
-       alert("jsonObj:\n" + jsonObj.toSource());
-       
-       if (jsonObj.actionErrors.list.length > 0) {
-         var errorMsg;
-         alert("jsonObj.actionErrors.list.length = " + jsonObj.actionErrors.list.length);
-         for (var i=0; i<jsonObj.actionErrors.list.length; i++) {
-           errorMsg = errorMsg + jsonObj.actionErrors.list[i] + "\n";
-         }
-         
-         alert("ERROR: " + errorMsg);
-         var err = document.createTextNode("ERROR:" + errorMsg);
-         this.retrieveMsg.appendChild(err);
-         
-         return false;
-       }
-       else if (jsonObj.numFieldErrors > 0) {
-         var fieldErrors;
-         alert("jsonObj.numFieldErrors = " + jsonObj.numFieldErrors);
-         for (var item in jsonObj.fieldErrors.map) {
-           fieldErrors = fieldErrors + item + ": " + jsonObj.fieldErrors.map[item] + "\n";
-         }
-         
-         alert("ERROR: " + fieldErrors);
-         var err = document.createTextNode("ERROR:" + fieldErrors);
-         this.retrieveMsg.appendChild(err);
-
-         return false;
-       }
-       else {
-         buildDisplayView(jsonObj);
-
-    	    popup.show();  		
-          
-          return true;
-       }
-      },
-      mimetype: "text/html"
-     };
-     dojo.io.bind(bindArgs);
-    
-  },
-  
-  mouseoverComment: function (obj) {
-   var classList = new Array();
-   classList = obj.className.split(" ");
-   
-   var classFound = false;
-
-   for (var i=0; i<classList.length; i++) {
-     if ((classList[i].match('public') || classList[i].match('private')) && !classFound) {
-       classList[i] = classList[i].concat("-active");
-       classFound = true;
-     }
-   }
-   
-   obj.className = classList.join(' ');
-  },
-
-  mouseoutComment: function (obj) {
-    obj.className = obj.className.replace(/\-active/, "");
-  }
-}
-
-function buildDisplayView(jsonObj){
+  buildDisplayView: function(jsonObj){
     var titleDocFrag = document.createDocumentFragment();
     
     // Insert title link text
@@ -140,7 +58,7 @@ function buildDisplayView(jsonObj){
     titleLink.href = "#"; 
     titleLink.className = "discuss icon";
     titleLink.title="View full annotation";
-    alert("jsonObj.annotation.commentTitle = " + jsonObj.annotation.commentTitle);
+    //alert("jsonObj.annotation.commentTitle = " + jsonObj.annotation.commentTitle);
     titleLink.appendChild(document.createTextNode(jsonObj.annotation.commentTitle));
     titleDocFrag.appendChild(titleLink);
     
@@ -184,5 +102,106 @@ function buildDisplayView(jsonObj){
 
     // Insert formatted comment
     topaz.displayComment.sectionComment.appendChild(document.createTextNode(jsonObj.annotation.commentWithUrlLinking));
-    alert("jsonObj.annotation.commentWithUrlLinking = " + jsonObj.annotation.commentWithUrlLinking);
+    //alert("jsonObj.annotation.commentWithUrlLinking = " + jsonObj.annotation.commentWithUrlLinking);
+  },
+  
+  mouseoverComment: function (obj) {
+   var classList = new Array();
+   classList = obj.className.split(" ");
+   
+   var classFound = false;
+
+   for (var i=0; i<classList.length; i++) {
+     if ((classList[i].match('public') || classList[i].match('private')) && !classFound) {
+       classList[i] = classList[i].concat("-active");
+       classFound = true;
+     }
+   }
+   
+   obj.className = classList.join(' ');
+  },
+
+  mouseoutComment: function (obj) {
+    obj.className = obj.className.replace(/\-active/, "");
+  },
+  
+  processBugCount: function () {
+    var bugList = document.getElementsByTagAndClassName(null, 'bug');
+    
+    for (var i=0; i<bugList.length; i++) {
+      var bugCount = topaz.domUtil.getDisplayId(bugList[i]);
+      
+      if (bugCount != null) {
+        var count = bugCount.split(',').length;
+        bugList[i].innerHTML = count;
+      }
+      else {
+        bugList[i].innerHTML = 0;
+      }
+    }
+  }
 }
+
+function getComment(obj) {
+    var targetDiv = dojo.widget.byId("CommentDialog");
+    var targetUri = topaz.domUtil.getDisplayId(topaz.displayComment.target);
+    
+    /*alert("this.sectionTitle.nodeName = " + this.sectionTitle.nodeName + "\n" +
+          "this.sectionDetail.nodeName = " + this.sectionDetail.nodeName + "\n" +
+          "this.sectionDetail.nodeName = " + this.sectionDetail.nodeName + "\n" +
+          "this.retrieveMsg.nodeName = " + this.retrieveMsg.nodeName);*/
+    
+    var bindArgs = {
+      url: namespace + "/annotation/getAnnotation.action?annotationId=" + targetUri,
+      method: "get",
+      error: function(type, data, evt){
+       //alert("ERROR:" + data.toSource());
+       var err = document.createTextNode("ERROR:" + data.toSource());
+       topaz.displayComment.retrieveMsg.appendChild(err);
+       return false;
+      },
+      load: function(type, data, evt){
+       var jsonObj = dojo.json.evalJson(data);
+       
+       //alert("jsonObj:\n" + jsonObj.toSource());
+       
+       if (jsonObj.actionErrors.list.length > 0) {
+         var errorMsg;
+         //alert("jsonObj.actionErrors.list.length = " + jsonObj.actionErrors.list.length);
+         for (var i=0; i<jsonObj.actionErrors.list.length; i++) {
+           errorMsg = errorMsg + jsonObj.actionErrors.list[i] + "\n";
+         }
+         
+         //alert("ERROR: " + errorMsg);
+         var err = document.createTextNode("ERROR:" + errorMsg);
+         topaz.displayComment.retrieveMsg.appendChild(err);
+         
+         return false;
+       }
+       else if (jsonObj.numFieldErrors > 0) {
+         var fieldErrors;
+         //alert("jsonObj.numFieldErrors = " + jsonObj.numFieldErrors);
+         for (var item in jsonObj.fieldErrors.map) {
+           fieldErrors = fieldErrors + item + ": " + jsonObj.fieldErrors.map[item] + "\n";
+         }
+         
+         //alert("ERROR: " + fieldErrors);
+         var err = document.createTextNode("ERROR:" + fieldErrors);
+         topaz.displayComment.retrieveMsg.appendChild(err);
+
+         return false;
+       }
+       else {
+         topaz.displayComment.buildDisplayView(jsonObj);
+         topaz.displayComment.mouseoverComment(topaz.displayComment.target.parentNode);
+  	     popup.show();  		
+        
+         return true;
+       }
+      },
+      mimetype: "text/html"
+     };
+     dojo.io.bind(bindArgs);
+    
+  }
+  

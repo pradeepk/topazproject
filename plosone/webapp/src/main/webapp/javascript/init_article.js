@@ -14,8 +14,14 @@
   	dlg = dojo.widget.byId("AnnotationDialog");
 
   	popup = dojo.widget.byId("CommentDialog");
-
+  	var popupClose = dojo.byId('btn_close');
+    popup.setCloseControl(popupClose);
     topaz.displayComment.init();
+    dojo.event.connect(popupClose, 'onclick', function() {
+        topaz.displayComment.mouseoutComment(topaz.displayComment.target.parentNode);
+      }
+    );
+    
   }
   
   dojo.addOnLoad(init);

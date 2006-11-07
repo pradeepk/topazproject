@@ -10,9 +10,14 @@ topaz.domUtil = new Object();
 
 topaz.domUtil = {
   getDisplayId: function(obj) {
-    var displayId = obj.attributes['displayId'].nodeValue;
-    alert(obj.nodeName + ".displayId = " + displayId);
-    return displayId;
+    if (obj.attributes['displayId'] != null) {
+      var displayId = obj.attributes['displayId'].nodeValue;
+      //alert(obj.nodeName + ".displayId = " + displayId);
+      return displayId;
+    }
+    else {
+      return null;
+    }
   },
   
   ISOtoJSDate: function (ISO_DT) {
@@ -24,7 +29,7 @@ topaz.domUtil = {
      newDate.setUTCMinutes(temp[5]);
      newDate.setUTCSeconds(temp[6]);
   
-    alert (newDate);
+    //alert (newDate);
     return newDate;
   }
   

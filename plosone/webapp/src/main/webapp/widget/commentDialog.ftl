@@ -5,6 +5,7 @@
 	</div>
 	<div class="bd">
 		<div class="c">
+			<div class="btn close" id="btn_close" title="Click to close this dialog box">Close</div>
 			<div class="s">
 				<div class="comment">
 					<h6 id="viewCmtTitle"></h6>
