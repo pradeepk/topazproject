@@ -6,7 +6,7 @@
   <groupId>org.plos</groupId>
   <artifactId>plos-registration</artifactId>
   <packaging>pom</packaging>
-  <version>${pom.parent.version}</version>
+  <version>0.5-SNAPSHOT</version>
   <name>Plos Registration</name>
 
   <parent>
