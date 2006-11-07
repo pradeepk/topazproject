@@ -11,12 +11,14 @@ package org.plos.annotation.action;
 
 import org.plos.action.BaseActionSupport;
 import org.plos.annotation.service.AnnotationService;
+import org.plos.user.service.UserService;
 
 /**
- * To be subclassed by Action classes for Annotations and Replyies that can use common stuff among them
+ * To be subclassed by Action classes for Annotations and Replies that can use common stuff among them
  */
 public abstract class AnnotationActionSupport extends BaseActionSupport {
   private AnnotationService annotationService;
+  private UserService userService;
 
   /**
    * Set the annotations service.
@@ -33,5 +35,20 @@ public abstract class AnnotationActionSupport extends BaseActionSupport {
    */
   final AnnotationService getAnnotationService() {
     return annotationService;
+  }
+
+  /**
+   * @return the user service
+   */
+  public UserService getUserService() {
+    return userService;
+  }
+
+  /**
+   * Set the user service
+   * @param userService userService
+   */
+  public void setUserService(final UserService userService) {
+    this.userService = userService;
   }
 }
