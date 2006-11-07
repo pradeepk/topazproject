@@ -54,6 +54,7 @@ public class ReplyWebService extends BaseAnnotationService {
   }
 
   /**
+   * Mark the reply as deleted.
    * @param replyId replyId
    * @throws java.rmi.RemoteException RemoteException
    * @see org.topazproject.ws.annotation.Replies#deleteReplies(String)
@@ -65,6 +66,7 @@ public class ReplyWebService extends BaseAnnotationService {
   }
 
   /**
+   * Delete the subtree and not just mark it as deleted.
    * @param root root
    * @param inReplyTo inReplyTo
    * @throws RemoteException RemoteException

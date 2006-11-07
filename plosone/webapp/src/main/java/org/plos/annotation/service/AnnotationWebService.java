@@ -70,7 +70,7 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
 
   /**
-   * Delete an annotation
+   * Delete an annotation subtree and not just mark it.
    * @param annotationId annotationId
    * @param deletePreceding deletePreceding
    * @throws java.rmi.RemoteException RemoteException
@@ -83,7 +83,7 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
 
   /**
-   * Delete an annotation
+   * Mark an annotation as deleted.
    * @param annotationId annotationId
    * @throws java.rmi.RemoteException RemoteException
    * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
@@ -95,7 +95,7 @@ public class AnnotationWebService extends BaseAnnotationService {
   }
 
   /**
-   * Delete the given flag
+   * Mark the given flag as deleted.
    * @param flagId flagId
    * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
    * @throws java.rmi.RemoteException RemoteException
