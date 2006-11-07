@@ -60,8 +60,8 @@ function initAnnotationForm() {
   });
 
 	dojo.event.connect(btn_cancel, "onclick", function() {
-  	//var btn = btn_cancel;
-  	//dlg.setCloseControl(btn);
+  	var btn = btn_cancel;
+  	dlg.setCloseControl(btn);
 	  getArticle();
   });
 
