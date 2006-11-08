@@ -54,7 +54,28 @@ public class Annotator {
   private static String    AML_NS = "http://topazproject.org/aml/";
 
   /**
-   * Creates an annotated document.
+   * Creates an annotated document as a DataHandler.
+   *
+   * @param content the source document
+   * @param annotations the list of annotations to apply
+   * @param documentBuilder documentBuilder that provides it's own entity resolver
+   * @return the annotated document as DataHandler
+   *
+   * @throws RemoteException on a failure
+   */
+  public static DataHandler annotate(DataHandler content, AnnotationInfo[] annotations, 
+                                    final DocumentBuilder documentBuilder)
+                              throws RemoteException {
+    try {
+      return serialize(annotate(parse(content, documentBuilder), annotations));
+    } catch (Exception e) {
+      throw new RemoteException("", e);
+    }
+  }
+  
+  
+  /**
+   * Creates an annotated document and returns it as Document.
    *
    * @param content the source document
    * @param annotations the list of annotations to apply
@@ -63,14 +84,16 @@ public class Annotator {
    *
    * @throws RemoteException on a failure
    */
-  public static DataHandler annotate(DataHandler content, AnnotationInfo[] annotations, final DocumentBuilder documentBuilder)
+  public static Document annotateAsDocument(DataHandler content, AnnotationInfo[] annotations, 
+                                            final DocumentBuilder documentBuilder)
                               throws RemoteException {
     try {
-      return serialize(annotate(parse(content, documentBuilder), annotations));
+      return annotate(parse(content, documentBuilder), annotations);
     } catch (Exception e) {
       throw new RemoteException("", e);
     }
   }
+  
 
   /**
    * Creates an annotated document.
@@ -106,7 +129,6 @@ public class Annotator {
       aRoot.appendChild(a);
       AnnotationModel.appendToNode(a, annotation);
     }
-
     return assembleResultDoc(document, rRoot, aRoot);
   }
 

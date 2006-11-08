@@ -11,6 +11,7 @@ import org.plos.ApplicationException;
 import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Annotator;
 import org.plos.util.FileUtils;
+import org.plos.util.TextUtils;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.w3c.dom.Document;
@@ -28,14 +29,12 @@ import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerConfigurationException;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -98,7 +97,7 @@ public class FetchArticleService {
       final Transformer transformer = getTransformer();
 
       final Source domSource = getAnnotatedContentAsDOMSource(articleURI);
-
+      
       transformer.transform(domSource,
                             new StreamResult(writer));
     } catch (Exception e) {
@@ -128,7 +127,7 @@ public class FetchArticleService {
   /**
    * Get an XSL transformer.
    * @return Transformer
-   * @throws TransformerConfigurationException TransformerConfigurationException
+   * @throws TransformerException TransformerException
    */
   private Transformer getXSLTransformer() throws TransformerException {
     if (null == tFactory || null == source) {
@@ -160,6 +159,11 @@ public class FetchArticleService {
     return translet.newTransformer();
   }
 
+  /**
+   * Sets the xmlFactoryProperty
+   * 
+   * @param xmlFactoryProperty Map of xmlFactory Properties
+   */
   public void setXmlFactoryProperty(final Map<String, String> xmlFactoryProperty) {
     this.xmlFactoryProperty = xmlFactoryProperty;
   }
@@ -220,28 +224,30 @@ public class FetchArticleService {
    * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
    */
   public Source getAnnotatedContentAsDOMSource(final String articleURI) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException, NoSuchIdException {
-    final DocumentBuilder builder = createDocBuilder();
+    //final DocumentBuilder builder = createDocBuilder();
 
-    final Document doc = builder.parse(getAnnotatedContentAsInputStream(articleURI));
+   // final Document doc = builder.parse(getAnnotatedContentAsInputStream(articleURI));
 
     // Prepare the DOM source
-    return new DOMSource(doc);
+    return new DOMSource(getAnnotatedContentAsDocument(articleURI));
   }
 
   /**
-   * Return the annotated content as text for a given articleUri
+   * Return the annotated content as a String
    * @param articleURI articleURI
-   * @return an instance of DOMSource
+   * @return an the annotated content as a String
    * @throws ParserConfigurationException ParserConfigurationException
    * @throws SAXException SAXException
    * @throws IOException IOException
    * @throws URISyntaxException URISyntaxException
    * @throws org.plos.ApplicationException ApplicationException
    * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
+   * @throws javax.xml.transform.TransformerException TransformerException
    */
-  public String getAnnotatedContent(final String articleURI) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException, NoSuchIdException {
-    final InputStream annotatedContentAsInputStream = getAnnotatedContentAsInputStream(articleURI);
-    return FileUtils.getTextFromCharStream(annotatedContentAsInputStream);
+  public String getAnnotatedContent(final String articleURI) throws ParserConfigurationException, 
+                                    SAXException, IOException, URISyntaxException, 
+                                    ApplicationException, NoSuchIdException,TransformerException{
+    return TextUtils.getAsXMLString(getAnnotatedContentAsDocument(articleURI));
   }
 
   /**
@@ -325,58 +331,50 @@ public class FetchArticleService {
     }
   }
 
-  /**
-   * Return the annotated content
-   * @param infoUri infoUri against which the annotations are created
-   * @param contentUrl contentUrl
-   * @return the annotated content
-   * @throws java.io.IOException IOException
-   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
-   * @throws javax.xml.parsers.ParserConfigurationException ParserConfigurationException
-   */
-  public String getAnnotatedContent(final String contentUrl, final String infoUri) throws IOException, NoSuchIdException, ParserConfigurationException {
-    return FileUtils.getTextFromCharStream(getAnnotatedContentAsInputStream(contentUrl, infoUri));
-  }
-
-  /**
-   * Return the annotated content
-   * @param infoUri infoUri
-   * @return the annotated content
-   * @throws java.io.IOException IOException
-   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
-   * @throws javax.xml.parsers.ParserConfigurationException ParserConfigurationException
-   */
-  private InputStream getAnnotatedContentAsInputStream(final String infoUri) throws IOException, NoSuchIdException, ParserConfigurationException {
+  private Document getAnnotatedContentAsDocument(final String infoUri) throws IOException, 
+                                        NoSuchIdException, ParserConfigurationException {
     final String contentUrl = articleService.getObjectURL(infoUri, articleRep);
-    return getAnnotatedContentAsInputStream(contentUrl, infoUri);
+    return getAnnotatedContentAsDocument(contentUrl, infoUri);
   }
-
-  /**
-   * Return the annotated content as an InputStream. 
-   * @param infoUri infoUri against which the annotations are created
-   * @param contentUrl contentUrl
-   * @return the annotated content
-   * @throws java.io.IOException IOException
-   * @throws javax.xml.parsers.ParserConfigurationException ParserConfigurationException
-   */
-  private InputStream getAnnotatedContentAsInputStream(final String contentUrl, final String infoUri) throws IOException, ParserConfigurationException {
+  
+  
+  private Document getAnnotatedContentAsDocument(final String contentUrl, final String infoUri)
+                                            throws IOException, ParserConfigurationException {
     final AnnotationInfo[] annotations = annotationWebService.listAnnotations(infoUri);
-    return applyAnnotationsOnContent(contentUrl, annotations);
+    return applyAnnotationsOnContentAsDocument (contentUrl, annotations);
   }
 
-  private InputStream applyAnnotationsOnContent(final String contentUrl, final AnnotationInfo[] annotations) throws IOException, ParserConfigurationException {
+  private Document applyAnnotationsOnContentAsDocument (final String contentUrl, 
+                                                        final AnnotationInfo[] annotations) 
+                                          throws IOException, ParserConfigurationException {
+    
     DataHandler content = new DataHandler(new URLDataSource(new URL(contentUrl)));
     if (annotations.length != 0) {
-      content = Annotator.annotate(content, annotations, createDocBuilder());
+      return Annotator.annotateAsDocument(content, annotations, createDocBuilder());
     }
-
-    return content.getInputStream();
+    try {
+      return createDocBuilder().parse(content.getInputStream());
+    } catch (Exception e){
+      log.error(e, e);
+    }
+    return null;
   }
-
+  
+ 
+  /**
+   * Getter for AnnotatationWebService
+   * 
+   * @return the annotationWebService
+   */
   public AnnotationWebService getAnnotationWebService() {
     return annotationWebService;
   }
 
+  /**
+   * Setter for annotationWebService
+   * 
+   * @param annotationWebService
+   */
   public void setAnnotationWebService(final AnnotationWebService annotationWebService) {
     this.annotationWebService = annotationWebService;
   }
@@ -420,7 +418,7 @@ public class FetchArticleService {
   public void setEncodingCharset(final String encodingCharset) {
     this.encodingCharset = encodingCharset;
   }
-
+/*
   private static class CachedEntityResolver implements EntityResolver {
     private static final URLRetriever retriever;
 
@@ -451,7 +449,7 @@ public class FetchArticleService {
 
       return is;
     }
-  }
+  }*/
 
   /**
    * Retrieve the content of a URL.

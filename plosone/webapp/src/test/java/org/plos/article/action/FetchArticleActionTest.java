@@ -26,8 +26,8 @@ import java.util.Collection;
 
 public class FetchArticleActionTest extends BasePlosoneTestCase {
   public static final Log log = LogFactory.getLog(FetchArticleActionTest.class);
-  private String BASE_TEST_PATH = "webapp/src/test/resources/";
-  private String testXmlTarget = "file:webapp/src/test/resources/test.xml";
+  private String BASE_TEST_PATH = "src/test/resources/";
+  private String testXmlTarget = "file:src/test/resources/test.xml";
 
   public void testShouldReturnTransformedArticle() throws Exception {
     final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";

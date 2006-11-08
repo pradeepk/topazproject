@@ -10,21 +10,20 @@
 package org.plos.annotation;
 
 import org.plos.ApplicationException;
+import org.plos.util.TextUtils;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
+
 import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Transformer;
-import javax.xml.transform.TransformerException;
-import javax.xml.transform.TransformerFactory;
-import javax.xml.transform.dom.DOMSource;
-import javax.xml.transform.stream.StreamResult;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.StringWriter;
+
+
 
 /**
  * Util functions to be used for Flag related tasks like created and extracting flag attributes.
@@ -89,15 +88,6 @@ public class FlagUtil {
     commentElement.setTextContent(commentText);
     rootElement.appendChild(commentElement);
 
-    return getAsXMLString(doc);
+    return TextUtils.getAsXMLString(doc);
   }
-
-  private static String getAsXMLString(final Document doc) throws TransformerException {
-    final Transformer tf = TransformerFactory.newInstance().newTransformer();
-//    tf.setOutputProperty("indent", "yes");
-    final StringWriter stringWriter = new StringWriter();
-    tf.transform(new DOMSource(doc), new StreamResult(stringWriter));
-    return stringWriter.toString();
-  }
-
 }

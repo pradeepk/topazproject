@@ -23,7 +23,7 @@ import java.net.URL;
 
 public class FetchObjectTest extends BasePlosoneTestCase {
   private static final Log log = LogFactory.getLog(FetchObjectTest.class);
-  private String BASE_TEST_PATH = "webapp/src/test/resources/";
+  private String BASE_TEST_PATH = "src/test/resources/";
 
   public void testArticleRepresentations() throws Exception {
     final ArticleWebService service = getArticleWebService();

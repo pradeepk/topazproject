@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
- package org.plos.annotation.action;
+package org.plos.annotation.action;
 
 import com.opensymphony.xwork.Action;
 import static com.opensymphony.xwork.Action.SUCCESS;
@@ -506,7 +506,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     annotationIdList.add(
             new AnnotationCreator().execute(target, startPath1, endPath1, title, context1Body));
 
-    final String annotatedContent = getFetchArticleService().getAnnotatedContent(target, target);
+    final String annotatedContent = getFetchArticleService().getAnnotatedContent(target);
     for (final String annotationId : annotationIdList) {
       assertTrue(annotatedContent.contains(annotationId));
     }
@@ -682,7 +682,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     annotationIdList.add(
       service.createAnnotation(subject, context3, null, title, "text/plain", "body", false));
 
-    String annotatedContent = getFetchArticleService().getAnnotatedContent(subject, subject);
+    String annotatedContent = getFetchArticleService().getAnnotatedContent(subject);
     for (final String annotationId : annotationIdList) {
       assertTrue(annotatedContent.contains(annotationId));
     }
@@ -715,7 +715,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     service.createAnnotation(subject, context2, null, title, "text/plain", "body", false);
     service.createAnnotation(subject, context3, null, title, "text/plain", "body", false);
 
-    String content = getFetchArticleService().getAnnotatedContent(subject, subject);
+    String content = getFetchArticleService().getAnnotatedContent(subject);
     log.debug(content);
 
     annotations = service.listAnnotations(subject);

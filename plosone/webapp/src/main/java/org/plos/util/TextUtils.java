@@ -9,7 +9,16 @@
  */
 package org.plos.util;
 
+import java.io.StringWriter;
+
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+
 import org.apache.commons.lang.StringEscapeUtils;
+import org.w3c.dom.Document;
 
 /**
  * Provides some useful text manipulation functions.
@@ -45,4 +54,22 @@ public class TextUtils {
   public static String escapeAndHyperlink(final String bodyContent) {
     return hyperlink(escapeHtml(bodyContent));
   }
+
+  
+  /**
+   * Transforms an org.w3c.dom.Document into a String
+   * 
+   * @param doc Document to transform
+   * @return String representation of doc
+   * @throws TransformerException
+   */
+  public static String getAsXMLString(final Document doc) throws TransformerException {
+    final Transformer tf = TransformerFactory.newInstance().newTransformer();
+//    tf.setOutputProperty("indent", "yes");
+    final StringWriter stringWriter = new StringWriter();
+    tf.transform(new DOMSource(doc), new StreamResult(stringWriter));
+    return stringWriter.toString();
+  }
+
+
 }

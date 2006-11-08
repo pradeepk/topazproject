@@ -49,6 +49,17 @@ public class FetchArticleAction extends BaseActionSupport {
     return SUCCESS;
   }
 
+  public String getAnnotatedArticle() {
+    try {
+      setTransformedArticle(fetchArticleService.getAnnotatedContent(articleURI));
+    } catch (Exception e) {
+      log.error ("Could not get article:" + articleURI, e);
+      return ERROR;
+    }
+    return SUCCESS;
+  }
+  
+  
   /**
    * @return transformed output
    */
