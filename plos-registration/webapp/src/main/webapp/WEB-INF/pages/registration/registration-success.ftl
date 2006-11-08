@@ -6,10 +6,10 @@
         <br/>
         <h3>Hello <@ww.property value="loginName1"/> : Please check your email account for further instructions to setup your account</h3>
 
-        <p>
+<!--        <p>
           Your password: <@ww.property value="password1"/>
         </p>
-
+-->
         <fieldset>
             <legend>Email body</legend>
             <p>
