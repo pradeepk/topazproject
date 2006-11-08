@@ -4,9 +4,15 @@
 <div id="sideNav">
 	<div class="links">
 		<ul>
-			<li><a href="#" class="xml" title="Download XML">XML (566 KB)</a></li>
-			<li><a href="#" class="pdf" title="Download Print Resolution PDF">PDF - Large (344 KB)</a></li>
-			<li><a href="#" class="pdf" title="Download Screen Resolution PDF">PDF - Small (222 KB)</a></li>
+	            <@ww.url id="articleArticleRepXML"  action="fetchObject" includeParams="none" uri="${articleURI}">
+        	          <@ww.param name="representation" value="%{'XML'}"/>
+	            </@ww.url>
+			<li><a href="${articleArticleRepXML}" class="xml" title="Download XML">XML</a></li>
+	            <@ww.url id="articleArticleRepPDF"  action="fetchObject" includeParams="none" uri="${articleURI}">
+	                  <@ww.param name="representation" value="%{'PDF'}"/>
+                   </@ww.url>
+							      
+			<li><a href="${articleArticleRepPDF}" class="pdf" title="Download PDF">PDF</a></li>
 			<li><a href="#" class="citation last" title="Download Citation">Citation</a></li>
 		</ul>
 	</div>
