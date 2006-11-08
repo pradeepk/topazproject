@@ -686,7 +686,7 @@ topaz.annotation = {
     
   insertHighlightSpan: function (rangeObj) {
   	var noteClass = annotationConfig.annotationMarker + " " + 
-          					(annotationConfig.isAuthor ? "author-" : "self-") +
+    //      					(annotationConfig.isAuthor ? "author-" : "self-") +
           					(annotationConfig.isPublic ? "public" : "private") +
           					"-active";
   	var noteTitle = (annotationConfig.isAuthor ? "Author" : annotationConfig.isPublic ? "User" : "My") + 
@@ -708,7 +708,7 @@ topaz.annotation = {
 //          							       '" title="'   + noteTitle + 
 //          							       '" class="'   + noteImgClass +
 //          							       '" />' +
-                               '<a href="#"" class="bug" displayId="" onclick="topaz.displayComment.show(this);" title="Click to preview this annotation"></a>' +
+                               '<a href="#"" class="bug" displayId=""  onclick="topaz.displayComment.show(this);" onmouseover="topaz.displayComment.mouseoverComment(this);" onmouseout="topaz.displayComment.mouseoutComment(this);" title="Click to preview this annotation">&nbsp;</a>' +
           							       html + '</span>');
     }
     else {
@@ -731,10 +731,15 @@ topaz.annotation = {
       
   	  var link = document.createElement("a");
   	  link.className = 'bug';
+  	  link.href = '#';
   	  link.title = 'Click to preview this annotation';
   	  link.displayId = "";
-  	  link.onclick = "topaz.displayComment.show(this);";
+  	  link.onclick = function() { topaz.displayComment.show(this); }
+  	  link.onmouseover = function() { topaz.displayComment.mouseoverComment(this); }
+  	  link.onmouseout = function() { topaz.displayComment.mouseoutComment(this); }
+  	  link.appendChild(document.createTextNode('1'));
   	  newSpan.appendChild(link);
+  	  //newSpan.innerHTML = '<a href="#"" class="bug" displayId=""  onclick="topaz.displayComment.show(this);" onmouseover="topaz.displayComment.mouseoverComment(this);" onmouseout="topaz.displayComment.mouseoutComment(this);" title="Click to preview this annotation">&nbsp;</a>';
   	
       // populate the span with the content extracted from the range
       for (var i = 0; i < contents.childNodes.length; i++) {

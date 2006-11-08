@@ -112,16 +112,23 @@ a.collapse		{ background-image: url(../images/pone_tooltip_collapse.gif); } /* a
 a.flag			{ background-image: url(../images/pone_tooltip_flag.gif); }
 a.respond		{ background-image: url(../images/pone_tooltip_respond.gif); }
 
-div.btn	*			{ vertical-align: middle; padding: 4px; font-weight: bold; cursor: pointer;}
-div.btn	a:link,
-div.btn a:visited	{ color: #fefefe; text-decoration: none; text-transform: uppercase; font-size: .9em; }
-div.btn a:hover		{ background-color: #fff; color: #333; }
 
-div.close			{ position: absolute; color: #efefef; right: 10px; top: 0; background: url(../images/pone_icon_close_flag.gif) no-repeat 100% 50%; }
-div.close:hover		{ color: #000; }
-div.post			{ font-weight: bold; margin-left: 200px; margin-top: 5px;}
-div.post a			{ border: 1px solid #fff; }
+/* styles for buttons for ajax submission forms */
+/* all buttons get class btn */
+div.btn				{ display: inline; margin: 0; text-transform: uppercase; font-size: .9em;}
+div.btn	*			{ vertical-align: middle; padding: 4px; font-weight: bold; cursor: pointer;}
+div.btn	a			{ text-decoration: none; padding-right: 20px;}
+/* for closing and canceling viewing windows */
+div.close a			{ color: #666; float: right; margin: 0; border-left: 2px solid #0bf; border-bottom: 2px solid #0bf; background: #fff url(../images/pone_icon_close_flag.gif) no-repeat 96% 50%; font-size: .9em;}
+div.close a:hover	{ background-color: #D2F7FF; }
+/* for posting and saving */
+div.post			{ font-weight: bold; margin-left: 40%; margin-top: 5px; }
+div.post a			{ color: #393; border: 2px solid #393; background: #fff url(../images/pone_icon_post.gif) no-repeat 96% 50%;}
+div.post a:hover	{ background-color: #55E912; color: #fff;}
 .important 			{ font-weight: bold; }
+
+div.preview div.close a { border-color: #666; margin-bottom: 5px;}
+div.preview div.close a:hover { background-color: #ddd; }
 
 /* Main Container: Main Menu : Elements
 
@@ -271,13 +278,13 @@ p.oa-banner		{ margin: 0; padding: 5px 0;font-size: .85em; border-bottom: 8px so
 p.authors		{ margin: 20px 0 0 0; font-weight: bold; font-size: 1em; }
 p.affiliations	{ font-size: .85em; margin: 0; }
 
-div.abstract	{ border: 1px solid #069; border-width: 2px 0; color: #069; margin: 10px 0; padding: 5px;}
-div.articleinfo			{ font-size: .9em; padding: 5px;  margin: 10px 0; background-color: #eee; border: 2px solid #ccc; }
+div.abstract	{ border: 1px solid #330; margin: 10px 0; padding: 10px;}
+div.articleinfo			{ font-size: .9em; padding: 10px;  margin: 10px 0; background-color: #eee; border: 2px solid #ccc; }
 div.articleinfo strong	{ letter-spacing: -.03em; }
 div.articleinfo p,
 div.abstract p	{ margin: 0 0 1em 0; }
 
-div.abstract h3	{ color: #069; background-image: none; font-size: 1em; margin: 0; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold;}
+div.abstract h3	{ background-image: none; font-size: 1em; margin: 0; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold;}
 
 
 
@@ -296,7 +303,7 @@ div.tools				{ background-position: bottom; background-repeat: no-repeat; paddin
 div.links				{ background-image: url(../images/pone_sidenav_bg.gif);}
 div.tools				{ background-image: url(../images/pone_tools_bg.gif);}
 
-div.commentview			{ padding: 5px; border: 3px solid #ccc; margin: 10px 0; background: url(../images/pone_toolbar_bg.gif) repeat-x top;}
+div.commentview			{ padding: 5px; border: 3px solid #999; margin: 10px 0; background: url(../images/pone_toolbar_bg.gif) repeat-x top;}
 div.commentview	fieldset{ border: 1px solid #ccc; border-width: 1px 0; margin: 0 -5px 5px -5px; padding: 10px; background-color: #eee; position: relative;}
 div.commentview	 li 	{ font-size: .9em; }
 div.commentview h6		{ margin: 0; }
@@ -342,31 +349,34 @@ a.bug,
 a:visited.bug			{ padding: 2px 7px 10px 7px; color: #fff; text-decoration: none; font-size: .85em; font-weight: bold; background-image: url(../images/pone_annotation_bug.gif); background-repeat: no-repeat; background-position: top left; position: relative; top: -8px;}
 
 span.self-private a.bug,
-span.self-private a:visited.bug	{ background-color: #3C9544;}
-span.self-private a:hover.bug,
+span.self-private a:visited.bug,
 span.self-private-active a.bug,
-span.self-private-active a:hover.bug	{ background-color: #55E912;}
+span.self-private-active a:visited.bug	{ background-color: #3C9544;}
 span.self-private-active		{ background-color:#cfc; border-bottom: 1px solid #55E912;}
+span.self-private-active a.bug-active,
+span.self-private-active a:hover.bug-active	{ background-color: #55E912;}
 
 span.public a.bug,
-span.public a:visited.bug	{ background-color: #069;}
-span.public a:hover.bug,
-span.public-active a.bug		{ background-color: #0BF;}
+span.public a:visited.bug,
+span.public-active a.bug,
+span.public-active a:visited.bug	{ background-color: #069;}
 span.public-active			{ background-color:#D2F7FF; border-bottom: 1px solid #0bf;}
+span.public-active a:hover.bug		{ background-color: #0BF;}
 
 span.author-private		{ }
-span.author-private-active
-						{ background-color: #FFDAED; }
+span.author-private-active		{ background-color: #FFDAED; }
 
 span.author a.bug,
-span.author a:visited.bug	{ background-color: #B6491F;}
-span.author a:hover.bug,
-span.author-active a.bug	{ background-color: #f63;}
-span.author				{ }
+span.author a:visited.bug,
+span.author-active a.bug,
+span.author-active a:visited.bug	{ background-color: #B6491F;}
 span.author-active		{ background-color: #FFD3C5; border-bottom: 1px solid #f63;}
+span.author-active a.bug-active,
+span.author-active a:hover.bug-active	{ background-color: #f63;}
+span.author				{ }
 
 
-div.beta				{ text-align: center; font-size: .9em; font-style: italic; border: 1px dotted #0bf; border-width: 1px 0; color: #0bf; font-weight: bold;}
+div.beta				{ text-align: center; font-size: .9em; font-style: italic; background-color: #069; border-width: 1px 0; color: #D2F7FF; font-weight: bold;}
 
 /* ------ DOM Styles ------- */
 .commentPrivate { display: block; }

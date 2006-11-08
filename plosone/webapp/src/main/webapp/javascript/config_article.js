@@ -13,7 +13,7 @@ var annotationConfig = {
   annotationImgMarker: "noteImg",
   dialogMarker: "rdm",
   isAuthor: false,  //TODO: *** Default to false when the hidden input is hooked up.
-  isPublic: false,
+  isPublic: true,
   rangeInfoObj: new Object()
 };
 

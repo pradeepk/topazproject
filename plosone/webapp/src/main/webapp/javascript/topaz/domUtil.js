@@ -11,7 +11,7 @@ topaz.domUtil = new Object();
 topaz.domUtil = {
   getDisplayId: function(obj) {
     if (obj.attributes['displayId'] != null) {
-      var displayId = obj.attributes['displayId'].nodeValue;
+      var displayId = obj.attributes['displayid'].nodeValue;
       //alert(obj.nodeName + ".displayId = " + displayId);
       return displayId;
     }
@@ -22,7 +22,7 @@ topaz.domUtil = {
   
   getAnnotationId: function(obj) {
     if (obj.attributes['annotationId'] != null) {
-      var annotationId = obj.attributes['annotationId'].nodeValue;
+      var annotationId = obj.attributes['annotationid'].nodeValue;
       //alert(obj.nodeName + ".displayId = " + displayId);
       return annotationId;
     }

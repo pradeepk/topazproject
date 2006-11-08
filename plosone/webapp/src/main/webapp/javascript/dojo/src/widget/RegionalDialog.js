@@ -216,7 +216,7 @@ dojo.declare(
 				dTip.className = "tip";
 				dTip.parentNode.style.paddingTop = "auto";
 				dTip.style.marginTop = "-5px";
-				y = curtop - mbHeight;
+				y = curtop - mbHeight - 22;
 			}
 
 			if((vpWidth/2) < curleft) {

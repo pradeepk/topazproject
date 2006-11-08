@@ -109,7 +109,6 @@ document.getElementsByTagAndAttributeName = function(tagName, attributeName) {
     }
   }
 
-  alert("elements = " + elements);
   return elements;
 }
 

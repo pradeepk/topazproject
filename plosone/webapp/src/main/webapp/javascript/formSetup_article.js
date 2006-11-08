@@ -149,6 +149,7 @@ function getArticle() {
       //formUtil.textCues.on(commentTitle, titleCue);
       //formUtil.textCues.on(comments, commentCue);
       
+      topaz.displayComment.processBugCount();
       dlg.hide();
       
       return true;

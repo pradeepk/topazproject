@@ -31,4 +31,5 @@ IE PC fixes
 * html ul li a { height: 1%; }
 /* End */
 
-/* Fixes Line-height/Replaced Element Bug */
+.multiple div.btn.close	a		{ margin-right: -16px; }
+
