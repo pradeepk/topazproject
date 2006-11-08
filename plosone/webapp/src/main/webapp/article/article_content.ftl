@@ -10,7 +10,7 @@
 		${transformedArticle}
 	</div>
 
-	<div dojoType="regionalDialog" id="AnnotationDialog" bgColor="white" toggle="fade" toggleDuration="250">
+	<div dojoType="regionalDialog" id="AnnotationDialog" bgColor="#333333" bgOpacity="0.6" toggle="fade" toggleDuration="250">
 		<#include "/widget/annotation_add.ftl">
 	</div>
 

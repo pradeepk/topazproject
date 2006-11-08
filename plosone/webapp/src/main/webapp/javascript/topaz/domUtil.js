@@ -20,6 +20,17 @@ topaz.domUtil = {
     }
   },
   
+  getAnnotationId: function(obj) {
+    if (obj.attributes['annotationId'] != null) {
+      var annotationId = obj.attributes['annotationId'].nodeValue;
+      //alert(obj.nodeName + ".displayId = " + displayId);
+      return annotationId;
+    }
+    else {
+      return null;
+    }
+  },
+  
   ISOtoJSDate: function (ISO_DT) {
      var temp = ISO_DT.split(/^(....).(..).(..).(..).(..).(..).*$/);
   

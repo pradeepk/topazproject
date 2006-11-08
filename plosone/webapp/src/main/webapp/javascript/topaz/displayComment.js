@@ -105,24 +105,77 @@ topaz.displayComment = {
     //alert("jsonObj.annotation.commentWithUrlLinking = " + jsonObj.annotation.commentWithUrlLinking);
   },
   
-  mouseoverComment: function (obj) {
-   var classList = new Array();
-   classList = obj.className.split(" ");
+  mouseoverComment: function (obj, displayId) {
+   var elementList = this.getDisplayMap(obj, displayId);
    
-   var classFound = false;
-
-   for (var i=0; i<classList.length; i++) {
-     if ((classList[i].match('public') || classList[i].match('private')) && !classFound) {
-       classList[i] = classList[i].concat("-active");
-       classFound = true;
+   alert("elementList = " + elementList.toSource());
+   
+   // Find the displayId that has the most span nodes containing that has a 
+   // corresponding id in the annotationId attribute.  
+   var longestAnnotElements;
+   for (var i=0; i<elementList.length; i++) {
+     if (i == 0) {
+       longestAnnotElements = elementList[i];
+     }
+     else if (elementList[i].elementCount > elementList[i-1].elementCount){
+       longestAnnotElements = elementList[i];
      }
    }
    
-   obj.className = classList.join(' ');
+   alert("displayId = " + longestAnnotElements.toSource());
+   
+   // the annotationId attribute, modify class name.
+   for (var n=0; n<longestAnnotElements.elementCount; n++) {
+     var classList = new Array();
+     var elObj = longestAnnotElements.elementList[n];
+ 
+     this.modifyClassName(elObj);
+   }
+
   },
 
   mouseoutComment: function (obj) {
     obj.className = obj.className.replace(/\-active/, "");
+  },
+  
+  modifyClassName: function (obj) {
+     classList = obj.className.split(" ");
+     
+     for (var i=0; i<classList.length; i++) {
+       if ((classList[i].match('public') || classList[i].match('private')) && !classList[i].match('-active')) {
+         classList[i] = classList[i].concat("-active");
+       }
+     }
+     
+     obj.className = classList.join(' ');
+  },
+  
+  getDisplayMap: function(obj, displayId) {
+    var displayIdList = (displayId != null) ? displayId : topaz.domUtil.getDisplayId(obj).split(',');
+    var annoteEl = document.getElementsByTagAndAttributeName('span', 'annotationId');
+    var elDisplayList = new Array();
+    
+    // Based on the list of displayId from the element object, figure out which element 
+    // has an annotationId list in which there's an annotation id that matches the 
+    // display id.
+    for (var i=0; i<displayIdList.length; i++) {
+      var elAttrList = new Array();
+      for (var n=0; n<annoteEl.length; n++) {
+        var attrList = topaz.domUtil.getAnnotationId(annoteEl[n]);
+        
+        for (var x=0; x<attrList.length; x++) {
+          if(attrList[x] == displayIdList[i]) {
+            elAttrList.push(annoteEl[n]);
+          }
+        }
+      }
+      
+      elDisplayList.push({'displayId': displayIdList[i],
+                          'elementList': elAttrList,
+                          'elementCount': elAttrList.length});
+    }
+    
+    return elDisplayList;
   },
   
   processBugCount: function () {
@@ -132,11 +185,12 @@ topaz.displayComment = {
       var bugCount = topaz.domUtil.getDisplayId(bugList[i]);
       
       if (bugCount != null) {
-        var count = bugCount.split(',').length;
-        bugList[i].innerHTML = count;
+        var displayBugs = bugCount.split(',');
+        var count = displayBugs.length;
+        bugList[i].appendChild(document.createTextNode(count));
       }
       else {
-        bugList[i].innerHTML = 0;
+        bugList[i].appendChild(document.createTextNode('0'));
       }
     }
   }
@@ -195,7 +249,7 @@ function getComment(obj) {
          topaz.displayComment.buildDisplayView(jsonObj);
          topaz.displayComment.mouseoverComment(topaz.displayComment.target.parentNode);
   	     popup.show();  		
-        
+
          return true;
        }
       },

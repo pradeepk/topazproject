@@ -687,26 +687,28 @@ topaz.annotation = {
   insertHighlightSpan: function (rangeObj) {
   	var noteClass = annotationConfig.annotationMarker + " " + 
           					(annotationConfig.isAuthor ? "author-" : "self-") +
-          					(annotationConfig.isPublic ? "public-" : "private-") +
-          					"active";
+          					(annotationConfig.isPublic ? "public" : "private") +
+          					"-active";
   	var noteTitle = (annotationConfig.isAuthor ? "Author" : annotationConfig.isPublic ? "User" : "My") + 
-          					" Comment " + 
+          					" Annotation " + 
           					(annotationConfig.isPublic ? "(Public)" : "(Private)");
   	var spanId    = annotationConfig.dialogMarker;
   	var noteImg   = djConfig.namespace + "/images/" + "pone_note_" + (annotationConfig.isAuthor ? "author" : "private") + "_active.gif";
   	var noteImgClass = annotationConfig.annotationImgMarker;
   	  
+    
     if (rangeObj.range.pasteHTML) {
       var html = rangeObj.range.htmlText;
-      rangeObj.range.pasteHTML('<span class="'     + noteClass +
-          								     '" title="'  + noteTitle +
-          							        '" id="'     + spanId + 
+      rangeObj.range.pasteHTML('<span class="' + noteClass + 
+          								     '" title="'     + noteTitle +
+          							        '" id="'       + spanId + 
+          							        '"  annotationId=""' +
           							       '">' + 
-//          							       '<img src="' + noteImg + 
-//          							       '" title="'  + noteTitle + 
-//          							       '" class="'  + noteImgClass +
+//          							       '<img src="'  + noteImg + 
+//          							       '" title="'   + noteTitle + 
+//          							       '" class="'   + noteImgClass +
 //          							       '" />' +
-                               '<a href="#" id="bug" title="Click to preview this annotation"></a>' +
+                               '<a href="#"" class="bug" displayId="" onclick="topaz.displayComment.show(this);" title="Click to preview this annotation"></a>' +
           							       html + '</span>');
     }
     else {
@@ -718,6 +720,7 @@ topaz.annotation = {
       newSpan.className = noteClass;
       newSpan.title     = noteTitle;
       newSpan.id        = spanId;
+      newSpan.annotationId = "";
 
   	  var newImg = document.createElement('img');
   	  newImg.src       = noteImg;
@@ -729,6 +732,8 @@ topaz.annotation = {
   	  var link = document.createElement("a");
   	  link.className = 'bug';
   	  link.title = 'Click to preview this annotation';
+  	  link.displayId = "";
+  	  link.onclick = "topaz.displayComment.show(this);";
   	  newSpan.appendChild(link);
   	
       // populate the span with the content extracted from the range

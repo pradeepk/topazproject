@@ -92,23 +92,44 @@ document.getElementsByTagAndClassName = function(tagName, className) {
   return elements;
 }
 
+document.getElementsByTagAndAttributeName = function(tagName, attributeName) {
+  if ( tagName == null )
+    tagName = '*';
+   
+  var children = document.getElementsByTagName(tagName);
+  var elements = new Array();
+  
+  if ( attributeName == null )
+    return children;
+  
+  for (var i = 0; i < children.length; i++) {
+    var child = children[i];
+    if (child.attributes[attributeName] != null) {
+      elements.push(child);
+    }
+  }
+
+  alert("elements = " + elements);
+  return elements;
+}
+
 /**
  * Extending the String object
  *
  **/
-String.prototype.trim = function() {
+String.trim = function() {
   return this.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,"");
 }
 
-String.prototype.rtrim = function() {
+String.rtrim = function() {
   return this.replace(/\s+$/,"");
 }
 
-String.prototype.ltrim = function() {
+String.ltrim = function() {
   return this.replace(/^\s+/, "");
 }
 
-String.prototype.isEmpty = function() {
+String.isEmpty = function() {
   return (this == null || this == "");
 }
 

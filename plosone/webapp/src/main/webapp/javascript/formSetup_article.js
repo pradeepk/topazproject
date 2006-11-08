@@ -63,6 +63,7 @@ function initAnnotationForm() {
   	var btn = btn_cancel;
   	dlg.setCloseControl(btn);
 	  getArticle();
+    topaz.displayComment.processBugCount();
   });
 
 }

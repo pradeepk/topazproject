@@ -344,7 +344,8 @@ a:visited.bug			{ padding: 2px 7px 10px 7px; color: #fff; text-decoration: none;
 span.self-private a.bug,
 span.self-private a:visited.bug	{ background-color: #3C9544;}
 span.self-private a:hover.bug,
-span.self-private-active a.bug	{ background-color: #55E912;}
+span.self-private-active a.bug,
+span.self-private-active a:hover.bug	{ background-color: #55E912;}
 span.self-private-active		{ background-color:#cfc; border-bottom: 1px solid #55E912;}
 
 span.public a.bug,
