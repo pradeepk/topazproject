@@ -71,7 +71,7 @@ public class PlosOneFreemarkerConfig {
       defaultCss = new String[fileList.size()];
       Iterator iter = fileList.iterator();
       for (int i = 0; i < fileList.size(); i++) {
-        defaultCss[i] = (String)iter.next();
+        defaultCss[i] = dirPrefix + subdirPrefix + (String)iter.next();
       }
     } else {
       defaultCss = DEFAULT_CSS_FILES;
@@ -82,7 +82,7 @@ public class PlosOneFreemarkerConfig {
       defaultJavaScript = new String[fileList.size()];
       Iterator iter = fileList.iterator();
       for (int i = 0; i < fileList.size(); i++) {
-        defaultJavaScript[i] = (String)iter.next();
+        defaultJavaScript[i] = dirPrefix + subdirPrefix + (String)iter.next();
       }
     } else {
       defaultJavaScript = DEFAULT_JS_FILES;
@@ -109,11 +109,14 @@ public class PlosOneFreemarkerConfig {
       numCss = myConfig.getList(page + ".css.file").size();
       numJavaScript = myConfig.getList(page + ".javascript.file").size();
       cssArray = new String[numCss];
+      System.out.println ("numCSS = " + numCss);
       javaScriptArray = new String[numJavaScript];
       for (j = 0; j < numCss; j++) {
         cssArray[j] =  dirPrefix + subdirPrefix + myConfig.getString(page + ".css.file(" + j + ")");
       }
-      cssFiles.put(pageName, cssArray);
+      if (numCss > 0) {
+        cssFiles.put(pageName, cssArray);
+      }
       
       for (j = 0; j < numJavaScript; j++) {
         String fileName = myConfig.getString(page + ".javascript.file(" + j + ")");
@@ -125,7 +128,9 @@ public class PlosOneFreemarkerConfig {
         }
         javaScriptArray[j] =  filePath;
       }
-      javaScriptFiles.put(pageName, javaScriptArray);
+      if (numJavaScript > 0) {
+        javaScriptFiles.put(pageName, javaScriptArray);
+      }
     }
   }
   
@@ -154,6 +159,7 @@ public class PlosOneFreemarkerConfig {
    */  
   public String[] getCss(String templateName) {
     String[] retVal = cssFiles.get(templateName);
+    System.out.println("templateName = "  + templateName + " &array = " + retVal);
     if (retVal == null) {
       return defaultCss;
     } else {
