@@ -114,8 +114,16 @@ public class PlosOneFreemarkerConfig {
         cssArray[j] =  dirPrefix + subdirPrefix + myConfig.getString(page + ".css.file(" + j + ")");
       }
       cssFiles.put(pageName, cssArray);
+      
       for (j = 0; j < numJavaScript; j++) {
-        javaScriptArray[j] =  dirPrefix + subdirPrefix + myConfig.getString(page + ".javascript.file(" + j + ")");
+        String fileName = myConfig.getString(page + ".javascript.file(" + j + ")");
+        String filePath;
+        if (fileName.endsWith(".ftl")) {
+          filePath = subdirPrefix + fileName;
+        } else {
+          filePath = dirPrefix + subdirPrefix + fileName;
+        }
+        javaScriptArray[j] =  filePath;
       }
       javaScriptFiles.put(pageName, javaScriptArray);
     }

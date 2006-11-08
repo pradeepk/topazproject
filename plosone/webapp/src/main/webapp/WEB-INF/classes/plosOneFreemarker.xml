@@ -26,7 +26,7 @@
       <file>/javascript/topaz/topaz.js</file>      
       <file>/javascript/topaz/annotation.js</file>      
       <file>/javascript/topaz/formUtil.js</file>      
-      <file>/javascript/dojoRequire_article.js</file>
+      <file>/javascript/dojoRequire_article.ftl</file>
       <file>/javascript/formSetup_article.js</file>   
       <file>/javascript/init_article.js</file>   
     </javascript>
