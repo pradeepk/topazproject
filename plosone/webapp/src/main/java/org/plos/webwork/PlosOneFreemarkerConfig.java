@@ -109,7 +109,6 @@ public class PlosOneFreemarkerConfig {
       numCss = myConfig.getList(page + ".css.file").size();
       numJavaScript = myConfig.getList(page + ".javascript.file").size();
       cssArray = new String[numCss];
-      System.out.println ("numCSS = " + numCss);
       javaScriptArray = new String[numJavaScript];
       for (j = 0; j < numCss; j++) {
         cssArray[j] =  dirPrefix + subdirPrefix + myConfig.getString(page + ".css.file(" + j + ")");
@@ -159,7 +158,6 @@ public class PlosOneFreemarkerConfig {
    */  
   public String[] getCss(String templateName) {
     String[] retVal = cssFiles.get(templateName);
-    System.out.println("templateName = "  + templateName + " &array = " + retVal);
     if (retVal == null) {
       return defaultCss;
     } else {
