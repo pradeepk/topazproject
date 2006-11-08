@@ -1,5 +1,6 @@
 <div id="content" class="article">
 	<#include "article_rhc.ftl">
+	<!--
 	<span class="note public" title="User Annotation" annotationId="">
 		<a href="#" class="bug" id="bug1" displayId="info:doi/10.1371/annotation/1" onclick="topaz.displayComment.show(this);" onmouseover="topaz.displayComment.mouseoverComment(this);" onmouseout="topaz.displayComment.mouseoutComment(this);" title="Click to preview this annotation" ></a>This is a public note posted by someone else.</span>
 	<span class="note public" title="User Annotation" annotationId="annote1">
@@ -20,7 +21,7 @@
 		<a href="#" class="bug" id="bug9" displayId="annote8" onclick="topaz.displayComment.show(this);" onmouseover="topaz.displayComment.mouseoverComment(this);" onmouseout="topaz.displayComment.mouseoutComment(this);" title="Click to preview this annotation" ></a>This is a public note posted by someone else.</span>
 	<span class="note public" title="User Annotation" annotationId="annote7,annote9">
 		<a href="#" class="bug" id="bug10" displayId="annote9" onclick="topaz.displayComment.show(this);" onmouseover="topaz.displayComment.mouseoverComment(this);" onmouseout="topaz.displayComment.mouseoutComment(this);" title="Click to preview this annotation" ></a>This is a public note posted by someone else.</span>
-
+  -->
 	<#include "article_content.ftl">
 </div>
 

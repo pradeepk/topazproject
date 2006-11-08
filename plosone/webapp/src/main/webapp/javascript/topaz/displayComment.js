@@ -101,7 +101,9 @@ topaz.displayComment = {
     topaz.displayComment.sectionDetail.appendChild(detailDocFrag);
 
     // Insert formatted comment
-    topaz.displayComment.sectionComment.appendChild(document.createDocumentFragment(jsonObj.annotation.commentWithUrlLinking));
+    var commentFrag = document.createTextNode(jsonObj.annotation.commentWithUrlLinking);
+    //alert(commentFrag);
+    topaz.displayComment.sectionComment.appendChild(commentFrag);
     //alert("jsonObj.annotation.commentWithUrlLinking = " + jsonObj.annotation.commentWithUrlLinking);
   },
   

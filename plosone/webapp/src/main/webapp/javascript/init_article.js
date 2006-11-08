@@ -18,7 +18,11 @@
     popup.setCloseControl(popupClose);
     topaz.displayComment.init();
     dojo.event.connect(popupClose, 'onclick', function() {
-        topaz.displayComment.mouseoutComment(topaz.displayComment.target.parentNode);
+        topaz.displayComment.mouseoutComment(topaz.displayComment.target);
+      }
+    );
+    dojo.event.connect(popupClose, 'onblur', function() {
+        topaz.displayComment.mouseoutComment(topaz.displayComment.target);
       }
     );
     
