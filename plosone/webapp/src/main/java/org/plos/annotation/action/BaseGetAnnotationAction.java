@@ -22,12 +22,18 @@ import org.plos.annotation.service.Annotation;
 public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
   private String annotationId;
   private Annotation annotation;
-
+  private String creatorUserName;
+  
   private static final Log log = LogFactory.getLog(BaseGetAnnotationAction.class);
 
   public String execute() throws Exception {
     try {
       annotation = getAnnotationService().getAnnotation(annotationId);
+      creatorUserName = getUserService().getUserByTopazId(annotation.getCreator()).getDisplayName();
+      if (log.isDebugEnabled()){
+        StringBuilder message = new StringBuilder("CreatorUserName for annotationId "); 
+        log.debug(message.append(annotationId).append(": ").append(creatorUserName));
+      }
     } catch (final ApplicationException e) {
       log.error(e, e);
       addActionError("Annotation fetching failed with error message: " + e.getMessage());
@@ -52,4 +58,19 @@ public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
   public Annotation getAnnotation() {
     return annotation;
   }
+
+  /**
+   * @return Returns the creatorUserName.
+   */
+  public String getCreatorUserName() {
+    return creatorUserName;
+  }
+
+  /**
+   * @param creatorUserName The creatorUserName to set.
+   */
+  public void setCreatorUserName(String creatorUserName) {
+    this.creatorUserName = creatorUserName;
+  }
+
 }

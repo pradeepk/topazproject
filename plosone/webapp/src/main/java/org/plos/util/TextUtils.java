@@ -21,9 +21,12 @@ public class TextUtils {
    * @return hyperlinked text
    */
   public static String hyperlink(final String text) {
-    final String notNullText = (null == text)?""
-                                             : text;
-    return com.opensymphony.util.TextUtils.linkURL(notNullText);
+    String notNullText = (null == text)?"": text;
+    notNullText =  com.opensymphony.util.TextUtils.plainTextToHtml(notNullText);
+    StringBuilder retStr = new StringBuilder("<p>");
+    retStr.append(notNullText);
+    retStr.append("</p>");
+    return (retStr.toString());
   }
 
   /**

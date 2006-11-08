@@ -40,7 +40,7 @@ public abstract class AnnotationActionSupport extends BaseActionSupport {
   /**
    * @return the user service
    */
-  public UserService getUserService() {
+  protected UserService getUserService() {
     return userService;
   }
 
