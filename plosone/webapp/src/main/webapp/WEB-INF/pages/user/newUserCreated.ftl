@@ -5,5 +5,6 @@
 	</head>
 	<body>
 		User was created with ID: ${internalId}.
+		<a href="${freemarker_config.getContext()}">Continue</a> on to PLoS ONE
 	</body>
 </html>
