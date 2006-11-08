@@ -1,3 +1,6 @@
+<script type="text/javascript">
+  var namespace="${freemarker_config.getContext()}";
+</script>
 <#list freemarker_config.getJavaScript(templateFile) as x>
 	<#if x?ends_with(".ftl")>
 <script type="text/javascript">
