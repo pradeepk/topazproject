@@ -36,6 +36,8 @@
   
   <bean class="org.plos.user.action.CreateUserAction"/>
 
+  <bean class="org.plos.user.action.AssignAdminRoleAction"/>
+
   <bean class="org.plos.user.action.DisplayUserAction"/>
 
   <bean class="org.plos.annotation.action.CreateFlagAction" />

@@ -18,8 +18,10 @@ import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.pap.UserPreference;
 import org.topazproject.ws.pap.UserProfile;
+import org.topazproject.ws.users.NoSuchUserIdException;
 
 import java.rmi.RemoteException;
+import java.util.Arrays;
 
 /**
  * Class to roll up web services that a user needs in PLoS ONE. Rest of application should generally
@@ -31,6 +33,7 @@ import java.rmi.RemoteException;
 public class UserService extends BaseConfigurableService {
 
   private UserWebService userWebService;
+  private UserRoleWebService userRoleWebService;
 
   private ProfileWebService profileWebService;
 
@@ -67,7 +70,7 @@ public class UserService extends BaseConfigurableService {
    * 
    * @param topazUserId
    *          the Topaz User ID
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   private void deleteUser(final String topazUserId) throws ApplicationException {
     try {
@@ -90,6 +93,7 @@ public class UserService extends BaseConfigurableService {
   public PlosOneUser getUserByTopazId(final String topazUserId) throws ApplicationException {
     PlosOneUser pou = new PlosOneUser();
     pou.setUserProfile(getProfile(topazUserId));
+    pou.setUserId(topazUserId);
     UserPreference[] userPrefs = getPreferences(applicationId, topazUserId);
     pou.setUserPrefs(userPrefs);
     return pou;
@@ -133,7 +137,7 @@ public class UserService extends BaseConfigurableService {
    * @param userId
    *          Topaz userID
    * @return current state of the user
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public int getState(final String userId) throws ApplicationException {
     try {
@@ -151,7 +155,7 @@ public class UserService extends BaseConfigurableService {
    * @param userId
    *          Topaz userID
    * @return array of all authentiation IDs associated with the Topaz userID
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public String[] getAuthenticationIds(final String userId) throws ApplicationException {
     try {
@@ -169,13 +173,13 @@ public class UserService extends BaseConfigurableService {
    * @param authId
    *          authentication ID you are looking up
    * @return Topaz userID for a given authentication ID
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public String lookUpUserByAuthId(final String authId) throws ApplicationException {
     try {
       return userWebService.lookUpUserByAuthId(authId);
     } catch (RemoteException re) {
-      throw new ApplicationException(re);
+      throw new ApplicationException("lookUpUserByAuthId failed for authId:" + authId, re);
     }
   }
 
@@ -185,7 +189,7 @@ public class UserService extends BaseConfigurableService {
    * @param topazUserId
    *          Topaz userID
    * @return user profile of Topaz user
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public UserProfile getProfile(final String topazUserId) throws ApplicationException {
     try {
@@ -203,7 +207,7 @@ public class UserService extends BaseConfigurableService {
    * 
    * @param inUser
    *          write profile of this user to the store
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public void setProfile(final PlosOneUser inUser) throws ApplicationException {
     if (inUser != null) {
@@ -220,7 +224,7 @@ public class UserService extends BaseConfigurableService {
    *          Topaz User ID
    * @param profile
    *          profile to be written
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   protected void setProfile(final String topazUserId, final UserProfile profile)
       throws ApplicationException {
@@ -241,7 +245,7 @@ public class UserService extends BaseConfigurableService {
    * @param topazUserId
    *          Topaz User ID
    * @return array of user preferences
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public UserPreference[] getPreferences(final String appId, final String topazUserId)
       throws ApplicationException {
@@ -259,7 +263,7 @@ public class UserService extends BaseConfigurableService {
    * 
    * @param inUser
    *          User whose preferences should be written
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   public void setPreferences(final PlosOneUser inUser) throws ApplicationException {
     if (inUser != null) {
@@ -278,7 +282,7 @@ public class UserService extends BaseConfigurableService {
    *          Topaz User ID
    * @param prefs
    *          User preferences to write
-   * @throws ApplicationException
+   * @throws ApplicationException ApplicationException
    */
   protected void setPreferences(final String appId, final String topazUserId, UserPreference[] prefs)
       throws ApplicationException {
@@ -288,6 +292,41 @@ public class UserService extends BaseConfigurableService {
       throw new ApplicationException(ne);
     } catch (RemoteException re) {
       throw new ApplicationException(re);
+    }
+  }
+
+  /**
+   * @see org.plos.user.service.UserService#setRole(String, String[])
+   */
+  public void setRole(final String topazId, final String roleId) throws ApplicationException {
+    setRole(topazId, new String[]{roleId});
+  }
+
+  /**
+   * @see org.plos.user.service.UserRoleWebService#setRole(String, String[])
+   */
+  public void setRole(final String topazId, final String[] roleIds) throws ApplicationException {
+    try {
+      userRoleWebService.setRole(topazId, roleIds);
+    } catch (RemoteException re) {
+      throw new ApplicationException("topazId:" + topazId + ", roleIds:" + Arrays.toString(roleIds), re);
+    } catch (NoSuchUserIdException nsuie) {
+      throw new ApplicationException(nsuie);
+    }
+  }
+
+  /**
+   * Get the roles for the user.
+   * @param topazId topazId
+   * @see org.plos.user.service.UserRoleWebService#getRoles(String)
+   */
+  public String[] getRole(final String topazId) throws ApplicationException {
+    try {
+      return userRoleWebService.getRoles(topazId);
+    } catch (RemoteException re) {
+      throw new ApplicationException(re);
+    } catch (NoSuchUserIdException nsuie) {
+      throw new ApplicationException(nsuie);
     }
   }
 
@@ -334,6 +373,21 @@ public class UserService extends BaseConfigurableService {
    */
   public void setUserWebService(UserWebService userWebService) {
     this.userWebService = userWebService;
+  }
+
+  /**
+   * @return the userRoleWebService
+   */
+  public UserRoleWebService getUserRoleWebService() {
+    return userRoleWebService;
+  }
+
+  /**
+   * Set the userRoleWebService
+   * @param userRoleWebService userRoleWebService
+   */
+  public void setUserRoleWebService(final UserRoleWebService userRoleWebService) {
+    this.userRoleWebService = userRoleWebService;
   }
 
   /**

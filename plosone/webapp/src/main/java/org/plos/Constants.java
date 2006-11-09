@@ -22,6 +22,7 @@ public interface Constants {
   String ANONYMOUS_USER_AUTHENTICATION = "ANONYMOUS_USER_AUTHENTICATION";
   String AUTH_METHOD_KEY = "auth-method";
   String ROOT_PACKAGE = "org.plos";
+  String ADMIN_ROLE = "admin";
 
   /**
    * Defines the length of various fields used by Webwork Annotations

@@ -24,6 +24,7 @@ import org.plos.article.action.SecondaryObjectAction;
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.permission.service.PermissionWebService;
+import org.plos.user.action.AssignAdminRoleAction;
 import org.plos.user.action.CreateUserAction;
 import org.plos.user.action.DisplayUserAction;
 import org.plos.user.service.PreferencesWebService;
@@ -49,6 +50,7 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private GetAnnotationAction getAnnotationAction;
   private GetReplyAction getReplyAction;
   private CreateUserAction createUserAction;
+  private AssignAdminRoleAction assignAdminRoleAction;
   private FetchObjectAction fetchObjectAction;
   private SecondaryObjectAction secondaryObjectAction;
   private DisplayUserAction displayUserAction;
@@ -372,5 +374,15 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   /** Set the listFlagAction */
   public void setListFlagAction(final ListFlagAction listFlagAction) {
     this.listFlagAction = listFlagAction;
+  }
+
+  /** Set the assignAdminRoleAction */
+  public void setAssignAdminRoleAction(final AssignAdminRoleAction assignAdminRoleAction) {
+    this.assignAdminRoleAction = assignAdminRoleAction;
+  }
+
+  /** Get the assignAdminRoleAction */
+  protected AssignAdminRoleAction getAssignAdminRoleAction() {
+    return assignAdminRoleAction;
   }
 }

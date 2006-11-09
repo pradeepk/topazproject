@@ -11,8 +11,8 @@
     <fieldset>
       <p>
         <#list actionMessages as message>
-        ${message} <br/>
-      </#list>
+          ${message} <br/>
+        </#list>
       </p>
     </fieldset>
 
@@ -43,10 +43,14 @@
           <@ww.a href="%{listAnnotationURL}">List Annotations for http://localhost:9090/fedora/get/doi:10.1371%2Fjournal.pone.0000008/XML</@ww.a>
       </p>
 
+      <p>
+          <@ww.url id="createUserURL" namespace="/user/create" action="newUser" />
+          <@ww.a href="%{createUserURL}">Create User</@ww.a>
+      </p>
 
       <p>
-          <@ww.url id="createUserURL" namespace="/user/secure" action="newUser" />
-          <@ww.a href="%{createUserURL}">Create User</@ww.a>
+          <@ww.url id="createAdminUserURL" namespace="/user/secure" action="assignAdminRole" />
+          <@ww.a href="%{createAdminUserURL}">Assign admin role</@ww.a>
       </p>
 
     </fieldset>

@@ -128,6 +128,16 @@
     </property>
   </bean>
 
+  <bean id="userRoleWebService" class="org.plos.user.service.UserRoleWebService" scope="session">
+    <property name="userContext" ref="userContext"/>
+    <property name="configurationMap">
+      <map>
+        <entry key="uri" value="http://localhost:8080/ws-users-webapp-0.5-SNAPSHOT/services/UserRolesServicePort"/>
+        <entry key="auth-method" value-ref="auth-method"/>
+      </map>
+    </property>
+  </bean>
+
   <bean id="preferencesWebService" class="org.plos.user.service.PreferencesWebService" scope="session">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
@@ -151,12 +161,13 @@
   <bean id="userService" class="org.plos.user.service.UserService" scope="session">
     <property name="userContext" ref="userContext"/>
     <property name="userWebService" ref="userWebService"/>
+    <property name="userRoleWebService" ref="userRoleWebService"/>
     <property name="profileWebService" ref="profileWebService"/>
     <property name="preferencesWebService" ref="preferencesWebService"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="emailAddressUrl" value="https://localhost:7443/cas/email?guid="/>
   </bean>
-    
+
   <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService">
     <property name="profaneWords">
       <list>

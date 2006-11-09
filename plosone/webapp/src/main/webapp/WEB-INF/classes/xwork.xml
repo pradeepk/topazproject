@@ -199,6 +199,20 @@
     <action name="displayUser" class="org.plos.user.action.DisplayUserAction">
       <result name="success">/WEB-INF/pages/user/displayUser.ftl</result>
     </action>
+
+    <action name="assignAdminRole">
+      <result>/WEB-INF/pages/user/assignAdminRole.ftl</result>
+    </action>
+
+    <action name="assignAdminRoleSubmit" class="org.plos.user.action.AssignAdminRoleAction" method="assignAdminRole">
+      <result name="success" type="redirect">/home.action</result>
+      <result name="error" type="ajaxJSON"/>
+    </action>
+
+    <action name="assignAdminRoleToSubmit" class="org.plos.user.action.AssignAdminRoleAction">
+      <result name="success" type="redirect">/home.action</result>
+      <result name="error" type="ajaxJSON"/>
+    </action>
   </package>
 
   <package name="user-creation" extends="default" namespace="/user/create">

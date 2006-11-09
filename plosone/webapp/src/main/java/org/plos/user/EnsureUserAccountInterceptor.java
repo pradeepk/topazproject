@@ -49,6 +49,7 @@ public class EnsureUserAccountInterceptor implements Interceptor {
         //forward to new profile creation page
         return ReturnCode.NEW_PROFILE;
       } else {
+        plosUser.setAuthId(userId);
         sessionMap.put(PLOS_ONE_USER_KEY, plosUser);
 
         return getReturnCodeDependingOnDisplayName(plosUser, actionInvocation);
