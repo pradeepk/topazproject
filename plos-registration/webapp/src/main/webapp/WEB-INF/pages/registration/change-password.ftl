@@ -8,11 +8,11 @@
             <legend>Change password</legend>
             <p>
 
-              <@ww.form name="changePasswordForm" action="changePasswordSubmit">
+              <@ww.form method="post" name="changePasswordForm" action="changePasswordSubmit">
                 <@ww.textfield name="loginName" label="Enter your registered email address" />
-                <@ww.textfield name="oldPassword" label="Enter your old password" />
-                <@ww.textfield name="newPassword1" label="Enter your new password" />
-                <@ww.textfield name="newPassword2" label="Enter your new password again" />
+                <@ww.password name="oldPassword" label="Enter your old password" />
+                <@ww.password name="newPassword1" label="Enter your new password" />
+                <@ww.password name="newPassword2" label="Enter your new password again" />
                 <@ww.submit value="change my password" />
               </@ww.form>
 
