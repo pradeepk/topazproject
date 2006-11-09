@@ -18,7 +18,7 @@
         class="org.plos.webwork.PlosOneFreemarkerResult">
         <param name="location">/templates/main_template.ftl</param>
       </result-type>
-      <result-type name="plosStream" class="org.plos.action.PlosStreamResult" />
+      <result-type name="plosStream" class="org.plos.webwork.PlosStreamResult" />
       <result-type name="ajaxJSON" class="com.opensymphony.webwork.result.AjaxJSONResult" />
     </result-types>
 
@@ -86,7 +86,9 @@
     </action>
 
     <action name="fetchObject" class="org.plos.article.action.FetchObjectAction">
-      <result name="success" type="plosStream"/>
+      <result name="success" type="plosStream">
+<!--  -->        <param name="isAttachment">true</param>-->
+      </result>
     </action>
     
     <action name="fetchAnnotatedArticle" class="org.plos.article.action.FetchArticleAction" method="getAnnotatedArticle">
