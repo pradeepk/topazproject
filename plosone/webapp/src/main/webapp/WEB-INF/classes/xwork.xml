@@ -87,7 +87,7 @@
 
     <action name="fetchObject" class="org.plos.article.action.FetchObjectAction">
       <result name="success" type="plosStream">
-<!--  -->        <param name="isAttachment">true</param>-->
+        <param name="isAttachment">true</param>
       </result>
     </action>
     

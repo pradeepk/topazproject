@@ -13,12 +13,25 @@ import com.opensymphony.webwork.dispatcher.StreamResult;
 import com.opensymphony.xwork.ActionInvocation;
 
 import javax.servlet.http.HttpServletResponse;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
+/**
+ * Custom webwork result class to stream back objects from Fedora. Takes appropriate http headers
+ * and sets them the response stream as well as taking in an optional parameter indicating whether
+ * to set the content-diposition to an attachment.
+ */
+
 public class PlosStreamResult extends StreamResult {
+  private boolean isAttachment = false;
+
+  private static final Log log = LogFactory.getLog(PlosStreamResult.class);
 
   protected void doExecute(String finalLocation, ActionInvocation invocation) throws Exception {
     InputStream oInput = null;
@@ -60,8 +73,10 @@ public class PlosStreamResult extends StreamResult {
 
       // Set the content-disposition
       if (this.contentDisposition != null) {
-        oResponse.addHeader("Content-disposition", getProperty("contentDisposition",
-            this.contentDisposition, invocation));
+        oResponse.addHeader("Content-disposition", isAttachment ? "attachment; " : ""
+            + getProperty("contentDisposition", this.contentDisposition, invocation));
+      } else if (isAttachment) {
+        oResponse.addHeader("Content-disposition", "attachment;");
       }
 
       // Get the outputstream
@@ -106,5 +121,22 @@ public class PlosStreamResult extends StreamResult {
     }
 
     return propertyValue;
+  }
+
+  /**
+   * @return Returns the isAttachment.
+   */
+  public boolean isAttachment() {
+    return isAttachment;
+  }
+
+  /**
+   * If set to true, will add attachment to content disposition
+   * 
+   * @param isAttachment
+   *          The isAttachment to set.
+   */
+  public void setIsAttachment(boolean isAttachment) {
+    this.isAttachment = isAttachment;
   }
 }
