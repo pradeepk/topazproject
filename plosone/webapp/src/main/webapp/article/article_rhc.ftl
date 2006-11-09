@@ -12,14 +12,15 @@
 	                  <@ww.param name="representation" value="%{'PDF'}"/>
                    </@ww.url>
 							      
-			<li><a href="${articleArticleRepPDF}" class="pdf" title="Download PDF">PDF</a></li>
-			<li><a href="#" class="citation last" title="Download Citation">Citation</a></li>
+			<li><a href="${articleArticleRepPDF}" class="pdf last" title="Download PDF">PDF</a></li>
+<!--			<li><a href="#" class="citation last" title="Download Citation">Citation</a></li>-->
 		</ul>
 	</div>
 	<div class="buttons">
 	<span><a href="#" class="email">Email Article</a></span>
 	<span><a href="#" class="print">Print Article</a></span>
 	</div>
+<!--
 	<div class="links">
 		<ul>
 			<li><a href="#" class="plos" title="View Related PLoS Articles">Related PLoS Articles</a></li>
@@ -27,7 +28,7 @@
 			<li><a href="#" class="ncbi" title="View PubMed Record">PubMed Record</a></li>
 			<li><a href="#" class="google last" title="View Google Scholar Citation">Google Scholar Citation</a></li>
 		</ul>
-	</div>
+	</div>-->
 <!--	<div class="tools">
 		<h3>Overall Rating</h3>
 		<img src="${freemarker_config.getContext()}/images/temp_tools_rating.gif" />
@@ -38,7 +39,7 @@
 		<h6>Commentary</h6>
 		<ol>
 			<li><a href="#" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>
-			<li><a href="#" class="expand tooltip" title="Click to turn comments on/off">Turn comments on/off</a>
+			<li><a href="#" class="expand tooltip" title="Click to turn annotations on/off">Turn annotations on/off</a>
 			<!-- begin : expanded block -->
 				<fieldset>
 					<form>

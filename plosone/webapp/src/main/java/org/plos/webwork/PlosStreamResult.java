@@ -73,7 +73,7 @@ public class PlosStreamResult extends StreamResult {
 
       // Set the content-disposition
       if (this.contentDisposition != null) {
-        oResponse.addHeader("Content-disposition", isAttachment ? "attachment; " : ""
+        oResponse.addHeader("Content-disposition", (isAttachment ? "attachment; " : "")
             + getProperty("contentDisposition", this.contentDisposition, invocation));
       } else if (isAttachment) {
         oResponse.addHeader("Content-disposition", "attachment;");
