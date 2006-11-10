@@ -8,7 +8,6 @@ dojo.require("dojo.lang.common");
 
 dojo.string.Builder = function(/* string? */str){
 	//	summary
-	//	Builder object based on .NET's StringBuilder.
 	this.arrConcat = (dojo.render.html.capable && dojo.render.html["ie"]);
 
 	var a = [];

@@ -31,8 +31,8 @@ dojo.html.BackgroundIframe = function(/* HTMLElement */node) {
 	//	2. new dojo.html.BackgroundIframe()
 	//		Attaches frame to dojo.body().  User must call size() to set size.
 	if(dojo.render.html.ie55 || dojo.render.html.ie60) {
-		var html="<iframe "
-			+ "style='position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"
+		var html="<iframe src='javascript:false'"
+			+ "' style='position: absolute; left: 0px; top: 0px; width: 100%; height: 100%;"
 			+ "z-index: -1; filter:Alpha(Opacity=\"0\");' "
 			+ ">";
 		this.iframe = dojo.doc().createElement(html);

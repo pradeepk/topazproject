@@ -620,7 +620,18 @@ dojo.flash.Embed.prototype = {
 	
 	/** Controls whether this is a visible Flash applet or not. */
 	_visible: true,
-			
+
+	protocol: function(){
+		switch(window.location.protocol){
+			case "https:":
+				return "https";
+				break;
+			default:
+				return "http";
+				break;
+		}
+	},
+	
 	/** 
 			Writes the Flash into the page. This must be called before the page
 			is finished loading. 
@@ -628,6 +639,7 @@ dojo.flash.Embed.prototype = {
 			@param doExpressInstall Whether to write out Express Install
 			information. Optional value; defaults to false.
 	*/
+	
 	write: function(flashVer, doExpressInstall){
 		//dojo.debug("write");
 		if(dojo.lang.isUndefined(doExpressInstall)){
@@ -655,7 +667,6 @@ dojo.flash.Embed.prototype = {
 			swfloc = dojo.flash.flash6_version;
 			var dojoPath = djConfig.baseRelativePath;
 			swfloc = swfloc + "?baseRelativePath=" + escape(dojoPath);
-			
 			objectHTML = 
 						  '<embed id="' + this.id + '" src="' + swfloc + '" '
 						+ '    quality="high" bgcolor="#ffffff" '
@@ -663,7 +674,9 @@ dojo.flash.Embed.prototype = {
 						+ '    name="' + this.id + '" '
 						+ '    align="middle" allowScriptAccess="sameDomain" '
 						+ '    type="application/x-shockwave-flash" swLiveConnect="true" '
-						+ '    pluginspage="http://www.macromedia.com/go/getflashplayer">';
+						+ '    pluginspage="'
+						+ this.protocol()
+						+ '://www.macromedia.com/go/getflashplayer">';
 		}else{ // Flash 8
 			swfloc = dojo.flash.flash8_version;
 			var swflocObject = swfloc;
@@ -689,7 +702,10 @@ dojo.flash.Embed.prototype = {
 			
 			objectHTML =
 				'<object classid="clsid:d27cdb6e-ae6d-11cf-96b8-444553540000" '
-				  + 'codebase="http://fpdownload.macromedia.com/pub/shockwave/cabs/flash/swflash.cab#version=8,0,0,0" '
+				  + 'codebase="'
+					+ this.protocol()
+					+ '://fpdownload.macromedia.com/pub/shockwave/cabs/flash/'
+					+ 'swflash.cab#version=8,0,0,0" '
 				  + 'width="' + this.width + '" '
 				  + 'height="' + this.height + '" '
 				  + 'id="' + this.id + '" '
@@ -709,7 +725,9 @@ dojo.flash.Embed.prototype = {
 				  + 'align="middle" '
 				  + 'allowScriptAccess="sameDomain" '
 				  + 'type="application/x-shockwave-flash" '
-				  + 'pluginspage="http://www.macromedia.com/go/getflashplayer" />'
+				  + 'pluginspage="'
+					+ this.protocol()
+					+'://www.macromedia.com/go/getflashplayer" />'
 				+ '</object>';
 		}
 
@@ -751,8 +769,8 @@ dojo.flash.Embed.prototype = {
 		var viewport_size = dojo.html.getViewport();
 
 		// compute the centered position    
-		var x = scroll_offset.x + (viewport_size.x - elementWidth) / 2;
-		var y = scroll_offset.y + (viewport_size.y - elementHeight) / 2; 
+		var x = scroll_offset.x + (viewport_size.width - elementWidth) / 2;
+		var y = scroll_offset.y + (viewport_size.height - elementHeight) / 2; 
 
 		// set the centered position
 		var container = dojo.byId(this.id + "Container");
@@ -1169,7 +1187,8 @@ dojo.flash.Install.prototype = {
 		}else{ // older Flash install than version 6r65
 			alert("This content requires a more recent version of the Macromedia "
 						+" Flash Player.");
-			window.location.href = "http://www.macromedia.com/go/getflashplayer";
+			window.location.href = + dojo.flash.Embed.protocol() +
+						"://www.macromedia.com/go/getflashplayer";
 		}
 	},
 	
@@ -1184,7 +1203,8 @@ dojo.flash.Install.prototype = {
 		}else if(msg == "Download.Cancelled"){
 			alert("This content requires a more recent version of the Macromedia "
 						+" Flash Player.");
-			window.location.href = "http://www.macromedia.com/go/getflashplayer";
+			window.location.href = dojo.flash.Embed.protocol() +
+						"://www.macromedia.com/go/getflashplayer";
 		}else if (msg == "Download.Failed"){
 			// The end user failed to download the installer due to a network failure
 			alert("There was an error downloading the Flash Player update. "

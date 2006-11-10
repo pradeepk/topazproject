@@ -1,8 +1,5 @@
 dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.declare");
-dojo.provide("dojo.dnd.DragSource");
-dojo.provide("dojo.dnd.DropTarget");
-dojo.provide("dojo.dnd.DragObject");
 dojo.provide("dojo.dnd.DragAndDrop");
 
 dojo.declare("dojo.dnd.DragSource", null, {

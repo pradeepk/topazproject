@@ -7,6 +7,8 @@ dojo.require("dojo.string.extras");
 dojo.require("dojo.dom");
 dojo.require("dojo.undo.browser");
 
+if(!dj_undef("window")) {
+
 dojo.io.checkChildrenForFile = function(node){
 	var hasFile = false;
 	var inputs = node.getElementsByTagName("input");
@@ -243,7 +245,7 @@ dojo.io.XMLHTTPTransport = new function(){
 					dojo.debug(http.responseText);
 					ret = null;
 				}
-			}else if(kwArgs.mimetype == "text/json"){
+			}else if(kwArgs.mimetype == "text/json" || kwArgs.mimetype == "application/json"){
 				try{
 					ret = dj_eval("("+http.responseText+")");
 				}catch(e){
@@ -355,7 +357,7 @@ dojo.io.XMLHTTPTransport = new function(){
 		// multi-part mime encoded and avoid using this transport for those
 		// requests.
 		return hasXmlHttp
-			&& dojo.lang.inArray(["text/plain", "text/html", "application/xml", "text/xml", "text/javascript", "text/json"], (kwArgs["mimetype"].toLowerCase()||""))
+			&& dojo.lang.inArray(["text/plain", "text/html", "application/xml", "text/xml", "text/javascript", "text/json", "application/json"], (kwArgs["mimetype"].toLowerCase()||""))
 			&& !( kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]) );
 	}
 
@@ -548,7 +550,11 @@ dojo.io.XMLHTTPTransport = new function(){
 				tmpUrl += (dojo.string.endsWithAny(tmpUrl, "?", "&")
 					? "" : (tmpUrl.indexOf("?") > -1 ? "&" : "?")) + "dojo.preventCache=" + new Date().valueOf();
 			}
-			http.open(kwArgs.method.toUpperCase(), tmpUrl, async);
+			if (!kwArgs.user) {
+				http.open(kwArgs.method.toUpperCase(), tmpUrl, async);
+			}else{
+				http.open(kwArgs.method.toUpperCase(), tmpUrl, async, kwArgs.user, kwArgs.password);
+			}
 			setHeaders(http, kwArgs);
 			try {
 				http.send(null);
@@ -575,4 +581,6 @@ dojo.io.XMLHTTPTransport = new function(){
 		return;
 	}
 	dojo.io.transports.addTransport("XMLHTTPTransport");
+}
+
 }

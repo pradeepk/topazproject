@@ -1,3 +1,8 @@
+dojo.provide("dojo.logging.Logger");
+dojo.provide("dojo.logging.LogFilter");
+dojo.provide("dojo.logging.Record");
+dojo.require("dojo.lang.common");
+
 /*		This is the dojo logging facility, which is imported from nWidgets
 		(written by Alex Russell, CLA on file), which is patterned on the
 		Python logging module, which in turn has been heavily influenced by
@@ -30,37 +35,46 @@
 		type
 		level
 */
-// TODO: conver documentation to javadoc style once we confirm that is our choice
 // TODO: define DTD for XML-formatted log messages
 // TODO: write XML Formatter class
 // TODO: write HTTP Handler which uses POST to send log lines/sections
 
-// Filename:	LogCore.js
-// Purpose:		a common logging infrastructure for dojo
-// Classes:		dojo.logging, dojo.logging.Logger, dojo.logging.Record, dojo.logging.LogFilter
-// Global Objects:	dojo.logging
-// Dependencies:	none
 
-dojo.provide("dojo.logging.Logger");
-dojo.provide("dojo.log");
-dojo.require("dojo.lang.common");
-
-/*
-	A simple data structure class that stores information for and about
-	a logged event. Objects of this type are created automatically when
-	an event is logged and are the internal format in which information
-	about log events is kept.
-*/
-
-dojo.logging.Record = function(lvl, msg){
-	this.level = lvl;
-	this.message = msg;
+dojo.logging.Record = function(/*Integer*/logLevel, /*String||Array*/message){
+	// summary:
+	//		A simple data structure class that stores information for and about
+	//		a logged event. Objects of this type are created automatically when
+	//		an event is logged and are the internal format in which information
+	//		about log events is kept.
+	// logLevel:
+	//		Integer mapped via the dojo.logging.log.levels object from a
+	//		string. This mapping also corresponds to an instance of
+	//		dojo.logging.Logger
+	// message:
+	//		The contents of the message represented by this log record.
+	this.level = logLevel;
+	this.message = "";
+	this.msgArgs = [];
 	this.time = new Date();
+	
+	if(dojo.lang.isArray(message)){
+		if(message.length > 0 && dojo.lang.isString(message[0])){
+			this.message=message.shift();
+		}
+		this.msgArgs = message;
+	}else{
+		this.message = message;
+	}
 	// FIXME: what other information can we receive/discover here?
 }
 
-// an empty parent (abstract) class which concrete filters should inherit from.
 dojo.logging.LogFilter = function(loggerChain){
+	// summary:
+	//		An empty parent (abstract) class which concrete filters should
+	//		inherit from. Filters should have only a single method, filter(),
+	//		which processes a record and returns true or false to denote
+	//		whether or not it should be handled by the next step in a filter
+	//		chain.
 	this.passChain = loggerChain || "";
 	this.filter = function(record){
 		// FIXME: need to figure out a way to enforce the loggerChain
@@ -79,7 +93,7 @@ dojo.logging.Logger = function(){
 	this.handlers = [];
 }
 
-dojo.extend(dojo.logging.Logger, {
+dojo.extend(dojo.logging.Logger,{
 	argsToArr: function(args){
 		// utility function, reproduced from __util__ here to remove dependency
 		var ret = [];
@@ -225,20 +239,20 @@ dojo.extend(dojo.logging.Logger, {
 	},
 
 	logType: function(type, args){
-		if (!dojo.lang.isArray(args)){
-			args = this.argsToArr(args);
-		}
 		return this.log.apply(this, [dojo.logging.log.getLevel(type), 
-			args.join('')]);
+			args]);
+	},
+	
+	warn:function(){
+		this.warning.apply(this,arguments);
+	},
+	err:function(){
+		this.error.apply(this,arguments);
+	},
+	crit:function(){
+		this.critical.apply(this,arguments);
 	}
 });
-
-void(function(){
-	var ptype = dojo.logging.Logger.prototype;
-	ptype.warn = ptype.warning;
-	ptype.err = ptype.error;
-	ptype.crit = ptype.critical;
-})();
 
 // the Handler class
 dojo.logging.LogHandler = function(level){
@@ -247,35 +261,51 @@ dojo.logging.LogHandler = function(level){
 	this.data = [];
 	this.filters = [];
 }
-
-dojo.logging.LogHandler.prototype.setFormatter = function(fmtr){
-	// FIXME: need to vet that it is indeed a formatter object
-	dojo.unimplemented("setFormatter");
-}
-
-dojo.logging.LogHandler.prototype.flush = function(){
-	dojo.unimplemented("flush");
-}
-
-dojo.logging.LogHandler.prototype.close = function(){
-	dojo.unimplemented("close");
-}
-
-dojo.logging.LogHandler.prototype.handleError = function(){
-	dojo.unimplemented("handleError");
-}
-
-dojo.logging.LogHandler.prototype.handle = function(record){
-	// emits the passed record if it passes this object's filters
-	if((this.filter(record))&&(record.level>=this.cutOffLevel)){
-		this.emit(record);
+dojo.lang.extend(dojo.logging.LogHandler,{
+	
+	setFormatter:function(formatter){
+		dojo.unimplemented("setFormatter");
+	},
+	
+	flush:function(){
+		// summary:
+		//		Unimplemented. Should be implemented by subclasses to handle
+		//		finishing a transaction or otherwise comitting pending log
+		//		messages to whatevery underlying transport or storage system is
+		//		available.
+	},
+	close:function(){
+		// summary:
+		//		Unimplemented. Should be implemented by subclasses to handle
+		//		shutting down the logger, including a call to flush()
+	},
+	handleError:function(){
+		// summary:
+		//		Unimplemented. Should be implemented by subclasses.
+		dojo.deprecated("dojo.logging.LogHandler.handleError", "use handle()", "0.6");
+	},
+	
+	handle:function(/*dojo.logging.Record*/record){
+		// summary:
+		//		Emits the record object passed in should the record meet the
+		//		current logging level cuttof, as specified in cutOffLevel.
+		if((this.filter(record))&&(record.level>=this.cutOffLevel)){
+			this.emit(record);
+		}
+	},
+	
+	emit:function(/*dojo.logging.Record*/record){
+		// summary:
+		//		Unimplemented. Should be implemented by subclasses to handle
+		//		an individual record. Subclasses may batch records and send
+		//		them to their "substrate" only when flush() is called, but this
+		//		is generally not a good idea as losing logging messages may
+		//		make debugging significantly more difficult. Tuning the volume
+		//		of logging messages written to storage should be accomplished
+		//		with log levels instead.
+		dojo.unimplemented("emit");
 	}
-}
-
-dojo.logging.LogHandler.prototype.emit = function(record){
-	// do whatever is necessaray to actually log the record
-	dojo.unimplemented("emit");
-}
+});
 
 // set aliases since we don't want to inherit from dojo.logging.Logger
 void(function(){ // begin globals protection closure
@@ -303,6 +333,7 @@ dojo.logging.log.levels = [ {"name": "DEBUG", "level": 1},
 dojo.logging.log.loggers = {};
 
 dojo.logging.log.getLogger = function(name){
+	// summary:
 	if(!this.loggers[name]){
 		this.loggers[name] = new dojo.logging.Logger();
 		this.loggers[name].parent = this;
@@ -348,40 +379,29 @@ dojo.logging.MemoryLogHandler = function(level, recordsToKeep, postType, postInt
 	this.postType = (typeof djConfig['loggingPostType'] != 'undefined') ? djConfig['loggingPostType'] : ( postType || -1);
 	// milliseconds for time, interger for number of records, -1 for non-posting,
 	this.postInterval = (typeof djConfig['loggingPostInterval'] != 'undefined') ? djConfig['loggingPostInterval'] : ( postType || -1);
-	
 }
-// prototype inheritance
-dojo.logging.MemoryLogHandler.prototype = new dojo.logging.LogHandler();
 
-// FIXME
-// dojo.inherits(dojo.logging.MemoryLogHandler, 
-
-// over-ride base-class
-dojo.logging.MemoryLogHandler.prototype.emit = function(record){
-	this.data.push(record);
-	if(this.numRecords != -1){
-		while(this.data.length>this.numRecords){
-			this.data.shift();
+dojo.lang.inherits(dojo.logging.MemoryLogHandler, dojo.logging.LogHandler);
+dojo.lang.extend(dojo.logging.MemoryLogHandler,{
+	
+	emit:function(record){
+		if (!djConfig.isDebug) { return; }
+		var logStr = String(dojo.log.getLevelName(record.level)+": "
+					+record.time.toLocaleTimeString())+": "+record.message;
+		if(!dj_undef("println", dojo.hostenv)){
+			dojo.hostenv.println(logStr, record.msgArgs);
+		}
+		
+		this.data.push(record);
+		if(this.numRecords != -1){
+			while(this.data.length>this.numRecords){
+				this.data.shift();
+			}
 		}
 	}
-}
+});
 
 dojo.logging.logQueueHandler = new dojo.logging.MemoryLogHandler(0,50,0,10000);
-// actual logging event handler
-dojo.logging.logQueueHandler.emit = function(record){
-	if (!djConfig.isDebug) { return; }
-	// we should probably abstract this in the future
-	var logStr = String(dojo.log.getLevelName(record.level)+": "+record.time.toLocaleTimeString())+": "+record.message;
-	if(!dj_undef("println", dojo.hostenv)){
-		dojo.hostenv.println(logStr);
-	}
-	this.data.push(record);
-	if(this.numRecords != -1){
-		while(this.data.length>this.numRecords){
-			this.data.shift();
-		}
-	}
-}
 
 dojo.logging.log.addHandler(dojo.logging.logQueueHandler);
 dojo.log = dojo.logging.log;

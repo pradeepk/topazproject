@@ -1,13 +1,4 @@
-dojo.provide("dojo.widget.ToolbarContainer");
 dojo.provide("dojo.widget.Toolbar");
-dojo.provide("dojo.widget.ToolbarItem");
-dojo.provide("dojo.widget.ToolbarButtonGroup");
-dojo.provide("dojo.widget.ToolbarButton");
-dojo.provide("dojo.widget.ToolbarDialog");
-dojo.provide("dojo.widget.ToolbarMenu");
-dojo.provide("dojo.widget.ToolbarSeparator");
-dojo.provide("dojo.widget.ToolbarSpace");
-dojo.provide("dojo.widget.Icon");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.html.style");
@@ -118,7 +109,7 @@ dojo.widget.defineWidget(
 
 /* Toolbar
  **********/
- 
+
 dojo.widget.defineWidget(
 	"dojo.widget.Toolbar",
 	dojo.widget.HtmlWidget,
@@ -158,7 +149,7 @@ dojo.widget.defineWidget(
 
 	_onclick: function(e) {
 		var widget = this._getItem(e.target);
-		if(widget && widget._onclick){ 
+		if(widget && widget._onclick){
 			widget._onclick(e);
 		}
 	},
@@ -339,8 +330,7 @@ dojo.widget.defineWidget(
 		return this.setSelected(!this._selected, force);
 	},
 
-	_enabled: true,
-	isEnabled: function() { return this._enabled; },
+	isEnabled: function() { return !this.disabled; },
 	setEnabled: function(is, force, preventEvent) {
 		is = Boolean(is);
 		if(force || this._enabled != is) {
@@ -694,17 +684,17 @@ dojo.widget.defineWidget(
 dojo.widget.defineWidget(
 	"dojo.widget.ToolbarDialog",
 	dojo.widget.ToolbarButton,
-{	
+{
 	fillInTemplate: function (args, frag) {
 		dojo.widget.ToolbarDialog.superclass.fillInTemplate.call(this, args, frag);
 		dojo.event.connect(this, "onSelect", this, "showDialog");
 		dojo.event.connect(this, "onDeselect", this, "hideDialog");
 	},
-	
+
 	showDialog: function (e) {
 		dojo.lang.setTimeout(dojo.event.connect, 1, document, "onmousedown", this, "deselect");
 	},
-	
+
 	hideDialog: function (e) {
 		dojo.event.disconnect(document, "onmousedown", this, "deselect");
 	}
@@ -746,11 +736,11 @@ dojo.widget.defineWidget(
 	},
 
 	// don't want events!
-	_onmouseover: null, 
-    _onmouseout: null, 
-    _onclick: null, 
-    _onmousedown: null, 
-    _onmouseup: null 
+	_onmouseover: null,
+    _onmouseout: null,
+    _onclick: null,
+    _onmousedown: null,
+    _onmouseup: null
 });
 
 /* ToolbarSpace
@@ -768,7 +758,7 @@ dojo.widget.defineWidget(
 });
 
 /* ToolbarSelect
- ******************/ 
+ ******************/
 
 dojo.widget.defineWidget(
 	"dojo.widget.ToolbarSelect",
@@ -909,3 +899,37 @@ dojo.widget.Icon.make = function(a,b,c,d){
 
 	return new dojo.widget.Icon(a,b,c,d);
 }
+
+/* ToolbarColorDialog
+ ******************/
+dojo.widget.defineWidget(
+	"dojo.widget.ToolbarColorDialog",
+	dojo.widget.ToolbarDialog,
+{
+ 	palette: "7x10",
+
+	fillInTemplate: function (args, frag) {
+		dojo.widget.ToolbarColorDialog.superclass.fillInTemplate.call(this, args, frag);
+		this.dialog = dojo.widget.createWidget("ColorPalette", {palette: this.palette});
+		this.dialog.domNode.style.position = "absolute";
+
+		dojo.event.connect(this.dialog, "onColorSelect", this, "_setValue");
+	},
+
+	_setValue: function(color) {
+		this._value = color;
+		this._fireEvent("onSetValue", color);
+	},
+
+	showDialog: function (e) {
+		dojo.widget.ToolbarColorDialog.superclass.showDialog.call(this, e);
+		var abs = dojo.html.getAbsolutePosition(this.domNode, true);
+		var y = abs.y + dojo.html.getBorderBox(this.domNode).height;
+		this.dialog.showAt(abs.x, y);
+	},
+
+	hideDialog: function (e) {
+		dojo.widget.ToolbarColorDialog.superclass.hideDialog.call(this, e);
+		this.dialog.hide();
+	}
+});

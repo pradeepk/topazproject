@@ -3,7 +3,6 @@ dojo.provide("dojo.widget.TreeSelector");
 
 dojo.require("dojo.widget.HtmlWidget");
 
-dojo.deprecated("dojo.widget.TreeSelector", "use TreeV3 and TreeSelectorV3 instead", "0.5");
 
 dojo.widget.defineWidget("dojo.widget.TreeSelector", dojo.widget.HtmlWidget, function() {
 	this.eventNames = {};

@@ -165,7 +165,7 @@ dojo.html.isTag = function(/* HTMLElement */node) {
 
 //define dojo.html.createExternalElement for IE to workaround the annoying activation "feature" in new IE
 //details: http://msdn.microsoft.com/library/default.asp?url=/workshop/author/dhtml/overview/activating_activex.asp
-if(dojo.render.html.ie){
+if(dojo.render.html.ie && !dojo.render.html.ie70){
 	//only define createExternalElement for IE in none https to avoid "mixed content" warning dialog
 	if(window.location.href.substr(0,6).toLowerCase() != "https:"){
 		(function(){

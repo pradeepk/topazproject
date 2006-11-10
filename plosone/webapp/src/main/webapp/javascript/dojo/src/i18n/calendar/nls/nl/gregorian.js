@@ -13,5 +13,15 @@
 
 	'timeFormat-full': "HH:mm:ss v",
 
-	eras: ['v. Chr.','n. Chr.']
+	eras: ['v. Chr.','n. Chr.'],
+
+	'field-era': "Tijdperk",
+	'field-year': "Jaar",
+	'field-month': "Maand",
+	'field-day': "Dag",
+	'field-weekday': "Dag van de week",
+	'field-dayperiod': "Dagdeel",
+	'field-hour': "Uur",
+	'field-minute': "Minuut",
+	'field-second': "Seconde",
 })

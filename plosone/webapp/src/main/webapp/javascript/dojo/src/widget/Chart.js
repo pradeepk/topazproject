@@ -1,21 +1,22 @@
 dojo.provide("dojo.widget.Chart");
-dojo.provide("dojo.widget.Chart.DataSeries");
 
 dojo.require("dojo.widget.*");
 dojo.require("dojo.gfx.color");
 dojo.require("dojo.gfx.color.hsl");
 
-// Base class for svg and vml implementations of Chart
 dojo.declare(
 	"dojo.widget.Chart",
 	null,
 	function(){
+		// summary: Base class for svg and vml implementations of Chart
 		this.series = [];
 	},
 {
 	isContainer: false,
 
 	assignColors: function(){
+		//	summary
+		//	Assigns/generates a color for a data series.
 		var hue=30;
 		var sat=120;
 		var lum=120;
@@ -93,15 +94,15 @@ dojo.declare(
 	}
 });
 
-/*
- *	Every chart has a set of data series; this is the series.  Note that each
- *	member of value is an object and in the minimum has 2 properties: .x and
- *	.value.
- */
 dojo.declare(
 	"dojo.widget.Chart.DataSeries",
 	null,
 	function(key, label, plotType, color){
+		//	summary:
+		//		Every chart has a set of data series; this is the series.  Note that each
+		//		member of value is an object and in the minimum has 2 properties: .x and
+		//		.value.
+		//
 		this.id = "DataSeries"+dojo.widget.Chart.DataSeries.count++;
 		this.key = key;
 		this.label = label||this.id;

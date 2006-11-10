@@ -4,17 +4,12 @@ dojo.require("dojo.uri.*");
 dojo.require("dojo.html.common");
 
 dojo.a11y = {
-	// String
-	// path to the test image for determining if images are displayed or not
+	// imgPath: String path to the test image for determining if images are displayed or not
+	// doAccessibleCheck: Boolean if true will perform check for need to create accessible widgets
+	// accessible: Boolean uninitialized when null (accessible check has not been performed)
+	//   if true generate accessible widgets
 	imgPath:dojo.uri.dojoUri("src/widget/templates/images"),
-	
-	// Boolean
-	// if true will perform check for need to create accessible widgets
 	doAccessibleCheck: true,
-	
-	// Boolean
-	// uninitialized when null (accessible check has not been performed)
-	// if true generate accessible widgets
 	accessible: null,		
 
 	checkAccessible: function(){ 

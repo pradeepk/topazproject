@@ -4,27 +4,12 @@ dojo.require("dojo.dom");
 //TODO: determine dependencies
 // currently has dependency on dojo.xml.DomUtil nodeTypes constants...
 
-/* generic class for taking a node and parsing it into an object
-
-TODO: WARNING: This comment is wrong!
-
-For example, the following xml fragment
-
-<foo bar="bar">
-	<baz xyzzy="xyzzy"/>
-</foo>
-
-can be described as:
-
-dojo.???.foo = {}
-dojo.???.foo.bar = {}
-dojo.???.foo.bar.value = "bar";
-dojo.???.foo.baz = {}
-dojo.???.foo.baz.xyzzy = {}
-dojo.???.foo.baz.xyzzy.value = "xyzzy"
-
+/* 
+  generic class for taking a node and parsing it into an object
 */
+
 // using documentFragment nomenclature to generalize in case we don't want to require passing a collection of nodes with a single parent
+
 dojo.xml.Parse = function(){
 
 	// supported dojoTagName's:
@@ -40,11 +25,17 @@ dojo.xml.Parse = function(){
 	// get normalized (lowercase) tagName
 	// some browsers report tagNames in lowercase no matter what
 	function getTagName(node){
-		return ((node)&&(node.tagName) ? node.tagName.toLowerCase() : '');
+		/*
+		return ((node)&&(node["tagName"]) ? node.tagName.toLowerCase() : '');
+		*/
+		try{
+			return node.tagName.toLowerCase();
+		}catch(e){
+			return "";
+		}
 	}
 
 	// locate dojo qualified tag name
-	// FIXME: add rejection test against namespace filters declared in djConfig
 	function getDojoTagName(node){
 		var tagName = getTagName(node);
 		if (!tagName){
@@ -94,16 +85,16 @@ dojo.xml.Parse = function(){
 		}
 		if(djt){ return "dojo:"+djt.toLowerCase(); }
 		// <tag class="classa dojo-type classb"> => dojo:type	
-		if(!dj_global["djConfig"] || !djConfig["ignoreClassNames"]){ 
+		if((!dj_global["djConfig"])|| (djConfig["ignoreClassNames"])){ 
 			// FIXME: should we make this optionally enabled via djConfig?
 			var classes = node.className||node.getAttribute("class");
 			// FIXME: following line, without check for existence of classes.indexOf
 			// breaks firefox 1.5's svg widgets
-			if(classes && classes.indexOf && classes.indexOf("dojo-") != -1){
-		    var aclasses = classes.split(" ");
-		    for(var x=0, c=aclasses.length; x<c; x++){
-	        if(aclasses[x].slice(0, 5) == "dojo-"){
-            return "dojo:"+aclasses[x].substr(5).toLowerCase(); 
+			if((classes )&&(classes.indexOf)&&(classes.indexOf("dojo-")!=-1)){
+				var aclasses = classes.split(" ");
+				for(var x=0, c=aclasses.length; x<c; x++){
+					if(aclasses[x].slice(0, 5) == "dojo-"){
+						return "dojo:"+aclasses[x].substr(5).toLowerCase(); 
 					}
 				}
 			}
@@ -114,13 +105,18 @@ dojo.xml.Parse = function(){
 
 	this.parseElement = function(node, hasParentNodeSet, optimizeForDojoML, thisIdx){
 
-		var parsedNodeSet = {};
-		
+		// run shortcuts to bail out of processing up front to save time and
+		// object alloc if possible.
 		var tagName = getTagName(node);
 		//There's a weird bug in IE where it counts end tags, e.g. </dojo:button> as nodes that should be parsed.  Ignore these
-		if((tagName)&&(tagName.indexOf("/")==0)){
-			return null;
-		}
+		if(tagName.indexOf("/")==0){ return null; }
+
+		try{
+			if(node.getAttribute("parseWidgets").toLowerCase() == "false"){
+				return {};
+			}
+		}catch(e){/*continue*/}
+
 		
 		// look for a dojoml qualified name
 		// process dojoml only when optimizeForDojoML is true
@@ -131,13 +127,14 @@ dojo.xml.Parse = function(){
 			process = Boolean(dojoTagName);
 		}
 
+		var parsedNodeSet = {};
 		parsedNodeSet[tagName] = [];
 		var pos = tagName.indexOf(":");
 		if(pos>0){
 			var ns = tagName.substring(0,pos);
-			parsedNodeSet["namespace"] = ns;
+			parsedNodeSet["ns"] = ns;
 			// honor user namespace filters
-			if((dojo["namespace"])&&(!dojo["namespace"].allow(ns))){process=false;}
+			if((dojo.ns)&&(!dojo.ns.allow(ns))){process=false;}
 		}
 
 		if(process){
@@ -154,7 +151,6 @@ dojo.xml.Parse = function(){
 			parsedNodeSet[tagName].nodeRef = node;
 			parsedNodeSet.tagName = tagName;
 			parsedNodeSet.index = thisIdx||0;
-			//dojo.debug("parseElement: set the element tagName = "+parsedNodeSet.tagName+" and namespace to "+parsedNodeSet["namespace"]);
 		}
 
 		var count = 0;
@@ -208,6 +204,8 @@ dojo.xml.Parse = function(){
 		return parsedNodeSet;
 	};
 
+	var isIE = ((dojo.render.html.capable)&&(dojo.render.html.ie));
+
 	/* parses a set of attributes on a node into an object tree */
 	this.parseAttributes = function(node){
 		var parsedAttributeSet = {};
@@ -216,9 +214,9 @@ dojo.xml.Parse = function(){
 		// would any of the relevant dom implementations even allow this?
 		var attnode, i=0;
 		while((attnode=atts[i++])){
-			if((dojo.render.html.capable)&&(dojo.render.html.ie)){
+			if(isIE){
 				if(!attnode){ continue; }
-				if(	(typeof attnode == "object")&&
+				if((typeof attnode == "object")&&
 					(typeof attnode.nodeValue == 'undefined')||
 					(attnode.nodeValue == null)||
 					(attnode.nodeValue == '')){ 

@@ -159,7 +159,7 @@ dojo.hostenv.getXmlhttpObject = function(){
  */
 dojo.hostenv._blockAsync = false;
 dojo.hostenv.getText = function(uri, async_cb, fail_ok){
-	// need to block async callbacks from snatching this thread as the result 
+	// need to block async callbacks from snatching this thread as the result
 	// of an async callback might call another sync XHR, this hangs khtml forever
 	// hostenv._blockAsync must also be checked in BrowserIO's watchInFlight()
 	// NOTE: must be declared before scope switches ie. this.getXmlhttpObject()
@@ -307,17 +307,24 @@ function dj_load_init(e){
 		initFunc();
 		dojo.hostenv.modulesLoaded();
 	}else{
-		dojo.addOnLoad(initFunc);
+		//This else case should be xdomain loading.
+		//Make sure this is the first thing in the load listener array.
+		//Part of the dojo.addOnLoad guarantee is that when the listeners are notified,
+		//It means the DOM (or page) has loaded and that widgets have been parsed.
+		dojo.hostenv.modulesLoadedListeners.unshift(initFunc);
 	}
 }
 
 //	START DOMContentLoaded
 // Mozilla and Opera 9 expose the event we could use
-if(document.addEventListener) {
-	document.addEventListener("DOMContentLoaded", dj_load_init, null);
+if(document.addEventListener){
+	if(dojo.render.html.opera || (dojo.render.html.moz && !djConfig.delayMozLoadingFix)){
+		document.addEventListener("DOMContentLoaded", dj_load_init, null);
+	}
 
 	//	mainly for Opera 8.5, won't be fired if DOMContentLoaded fired already.
-	document.addEventListener("load", dj_load_init, null);
+	//  also used for Mozilla because of trac #1640
+	window.addEventListener("load", dj_load_init, null);
 }
 
 // 	for Internet Explorer. readyState will not be achieved on init call, but dojo doesn't need it
@@ -341,8 +348,24 @@ if (/(WebKit|khtml)/i.test(navigator.userAgent)) { // sniff
 }
 //	END DOMContentLoaded
 
+// IE WebControl hosted in an application can fire "beforeunload" and "unload"
+// events when control visibility changes, causing Dojo to unload too soon. The
+// following code fixes the problem
+// Reference: http://support.microsoft.com/default.aspx?scid=kb;en-us;199155
+if(dojo.render.html.ie){
+	dj_addNodeEvtHdlr(window, "beforeunload", function(){
+		dojo.hostenv._unloading = true;
+		window.setTimeout(function() {
+			dojo.hostenv._unloading = false;
+		}, 0);
+	});
+}
+
 dj_addNodeEvtHdlr(window, "unload", function(){
 	dojo.hostenv.unloaded();
+	if((!dojo.render.html.ie)||(dojo.render.html.ie && dojo.hostenv._unloading)){
+		dojo.hostenv.unloaded();
+	}
 });
 
 dojo.hostenv.makeWidgets = function(){
@@ -396,9 +419,9 @@ dojo.hostenv.writeIncludes = function(){}
 
 //TODOC:  HOW TO DOC THIS?
 // @global: dj_currentDocument
-// summary: 
+// summary:
 //		Current document object. 'dj_currentDocument' can be modified for temporary context shifting.
-// description:  
+// description:
 //    dojo.doc() returns dojo.currentDocument.
 //		Refer to dojo.doc() rather than referring to 'window.document' to ensure your
 //		code runs correctly in managed contexts.
@@ -445,7 +468,7 @@ dojo.byId = function(id, doc){
 	}
 	return id; // assume it's a node
 }
- 
+
 dojo.setContext = function(/*Object*/globalObject, /*Object*/ globalDocument){
 	dj_currentContext = globalObject;
 	dj_currentDocument = globalDocument;
@@ -460,10 +483,10 @@ dojo._fireCallback = function(callback, context, cbArguments) {
 
 dojo.withGlobal = function(/*Object*/globalObject, /*Function*/callback, /*Object?*/thisObject, /*Array?*/cbArguments){
 	// summary:
-	//		Call callback with globalObject as dojo.global() and globalObject.document 
-	//		as dojo.doc(). If provided, globalObject will be executed in the context of 
+	//		Call callback with globalObject as dojo.global() and globalObject.document
+	//		as dojo.doc(). If provided, globalObject will be executed in the context of
 	//		object thisObject
-	// description: 
+	// description:
 	//		When callback() returns or throws an error, the dojo.global() and dojo.doc() will
 	//		be restored to its previous state.
 	var rval;
@@ -482,7 +505,7 @@ dojo.withDoc = function (/*Object*/documentObject, /*Function*/callback, /*Objec
 	// summary:
 	//		Call callback with documentObject as dojo.doc(). If provided, callback will be executed
 	//		in the context of object thisObject
-	// description: 
+	// description:
 	//		When callback() returns or throws an error, the dojo.doc() will
 	//		be restored to its previous state.
 	var rval;
@@ -496,4 +519,4 @@ dojo.withDoc = function (/*Object*/documentObject, /*Function*/callback, /*Objec
 	return rval;
 }
 
-}
+} //if (typeof window != 'undefined')

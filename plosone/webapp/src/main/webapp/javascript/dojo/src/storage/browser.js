@@ -1,5 +1,4 @@
 dojo.provide("dojo.storage.browser");
-dojo.provide("dojo.storage.browser.FlashStorageProvider");
 
 dojo.require("dojo.storage");
 dojo.require("dojo.flash");

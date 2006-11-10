@@ -10,6 +10,7 @@ dojo.widget.defineWidget(
 	[dojo.widget.HtmlWidget, dojo.widget.TreeWithNode],
 	function() {
 		this.actionsDisabled = [];
+	        this.object = {};
 	},
 {
 	tryLazyInit: true,
@@ -32,15 +33,17 @@ dojo.widget.defineWidget(
 	expandNode: null,
 	labelNode: null,
 		
-		
-	nodeType: "",
+    /**
+     *	can't call it nodeType cause of IE problems
+     */
+	nodeDocType: "",
     selected: false,
 	
-	getNodeType: function() {
-		return this.nodeType;
+	getnodeDocType: function() {
+		return this.nodeDocType;
 	},
 	
-	cloneProperties: ["actionsDisabled","tryLazyInit","nodeType","objectId","object",
+	cloneProperties: ["actionsDisabled","tryLazyInit","nodeDocType","objectId","object",
 		   "title","isFolder","isExpanded","state"],
 	
 	
@@ -225,6 +228,8 @@ dojo.widget.defineWidget(
 		}
 		//dojo.debug("publish "+this.tree.eventNames.changeTree);
 		
+		        
+
 		dojo.event.topic.publish(this.tree.eventNames.afterChangeTree, {oldTree:null, newTree:this.tree, node:this} );
 		
 		
@@ -279,7 +284,7 @@ dojo.widget.defineWidget(
 			while (elem = stack.pop()) {
 				for(var i=0; i<elem.childNodes.length; i++) {
 					var childNode = elem.childNodes[i]
-					if (childNode.nodeType != 1) continue;
+					if (childNode.nodeDocType != 1) continue;
 					// change prefix for classes
 					dojo.html.setClass(childNode, dojo.html.getClass(childNode).replace(reg, '$1'+newTree.classPrefix));
 					stack.push(childNode);
@@ -536,7 +541,16 @@ dojo.widget.defineWidget(
 	viewFocus: function() {
 		dojo.html.addClass(this.labelNode, this.tree.classPrefix+"LabelFocused");
 	},
-	
+    
+    viewEmphasize: function() {
+        dojo.html.clearSelection(this.labelNode);
+        
+		dojo.html.addClass(this.labelNode, this.tree.classPrefix+'NodeEmphasized');
+    },
+    
+    viewUnemphasize: function() {
+        dojo.html.removeClass(this.labelNode, this.tree.classPrefix+'NodeEmphasized');
+    },
 	
 	
 // ================================ detach from parent ===================================
@@ -662,7 +676,7 @@ dojo.widget.defineWidget(
 
 	hideChildren: function(){
 		this.tree.toggleObj.hide(
-			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onHideChildren")
+			this.containerNode, this.tree.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onHideChildren")
 		);
 	},
 
@@ -671,7 +685,7 @@ dojo.widget.defineWidget(
 		//dojo.profile.start("showChildren"+this);
         
 		this.tree.toggleObj.show(
-			this.containerNode, this.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onShowChildren")
+			this.containerNode, this.tree.toggleDuration, this.explodeSrc, dojo.lang.hitch(this, "onShowChildren")
 		);
         
 		//dojo.profile.end("showChildren"+this);

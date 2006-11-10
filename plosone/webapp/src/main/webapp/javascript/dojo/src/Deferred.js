@@ -1,7 +1,7 @@
 dojo.provide("dojo.Deferred");
 dojo.require("dojo.lang.func");
 
-dojo.Deferred = function(/* optional */ canceller){
+dojo.Deferred = function(/*Function?*/ canceller){
 	/*
 	NOTE: this namespace and documentation are imported wholesale 
 		from MochiKit
@@ -142,14 +142,12 @@ dojo.lang.extend(dojo.Deferred, {
 	})(),
 
 	cancel: function(){
-		/***
-		Cancels a Deferred that has not yet received a value, or is
-		waiting on another Deferred as its value.
-
-		If a canceller is defined, the canceller is called. If the
-		canceller did not return an error, or there was no canceller,
-		then the errback chain is started with CancelledError.
-		***/
+		// summary:	Cancels a Deferred that has not yet received a value, or is
+		//		waiting on another Deferred as its value.
+		// description:
+		//		If a canceller is defined, the canceller is called. If the
+		//		canceller did not return an error, or there was no canceller,
+		//		then the errback chain is started with CancelledError.
 		if(this.fired == -1){
 			if (this.canceller){
 				this.canceller(this);
@@ -167,12 +165,12 @@ dojo.lang.extend(dojo.Deferred, {
 			
 
 	_pause: function(){
-		// Used internally to signal that it's waiting on another Deferred
+		// summary: Used internally to signal that it's waiting on another Deferred
 		this.paused++;
 	},
 
 	_unpause: function(){
-		// Used internally to signal that it's no longer waiting on
+		// summary: Used internally to signal that it's no longer waiting on
 		// another Deferred.
 		this.paused--;
 		if ((this.paused == 0) && (this.fired >= 0)) {
@@ -181,7 +179,7 @@ dojo.lang.extend(dojo.Deferred, {
 	},
 
 	_continue: function(res){
-		// Used internally when a dependent deferred fires.
+		// summary: Used internally when a dependent deferred fires.
 		this._resback(res);
 		this._unpause();
 	},
@@ -204,9 +202,9 @@ dojo.lang.extend(dojo.Deferred, {
 	},
 
 	callback: function(res){
-		/*
-		Begin the callback sequence with a non-error value.
+		// summary:	Begin the callback sequence with a non-error value.
 		
+		/*
 		callback or errback should only be called once on a given
 		Deferred.
 		*/
@@ -215,7 +213,7 @@ dojo.lang.extend(dojo.Deferred, {
 	},
 
 	errback: function(res){
-		// Begin the callback sequence with an error result.
+		// summary: Begin the callback sequence with an error result.
 		this._check();
 		if(!(res instanceof Error)){
 			res = new Error(res);
@@ -224,7 +222,7 @@ dojo.lang.extend(dojo.Deferred, {
 	},
 
 	addBoth: function(cb, cbfn){
-		/*
+		/* summary
 		Add the same function as both a callback and an errback as the
 		next element on the callback sequence.	This is useful for code
 		that you want to guarantee to run, e.g. a finalizer.
@@ -237,7 +235,7 @@ dojo.lang.extend(dojo.Deferred, {
 	},
 
 	addCallback: function(cb, cbfn){
-		// Add a single callback to the end of the callback sequence.
+		// summary: Add a single callback to the end of the callback sequence.
 		var enclosed = this.getFunctionFromArgs(cb, cbfn);
 		if(arguments.length > 2){
 			enclosed = dojo.lang.curryArguments(null, enclosed, arguments, 2);
@@ -246,7 +244,7 @@ dojo.lang.extend(dojo.Deferred, {
 	},
 
 	addErrback: function(cb, cbfn){
-		// Add a single callback to the end of the callback sequence.
+		// summary: Add a single callback to the end of the callback sequence.
 		var enclosed = this.getFunctionFromArgs(cb, cbfn);
 		if(arguments.length > 2){
 			enclosed = dojo.lang.curryArguments(null, enclosed, arguments, 2);
@@ -256,7 +254,7 @@ dojo.lang.extend(dojo.Deferred, {
 	},
 
 	addCallbacks: function (cb, eb) {
-		// Add separate callback and errback to the end of the callback
+		// summary: Add separate callback and errback to the end of the callback
 		// sequence.
 		this.chain.push([cb, eb])
 		if (this.fired >= 0) {
@@ -266,7 +264,7 @@ dojo.lang.extend(dojo.Deferred, {
 	},
 
 	_fire: function(){
-		// Used internally to exhaust the callback sequence when a result
+		// summary: Used internally to exhaust the callback sequence when a result
 		// is available.
 		var chain = this.chain;
 		var fired = this.fired;

@@ -1,14 +1,12 @@
-﻿dojo.provide("dojo.dnd.HtmlDragCopy");
-dojo.provide("dojo.dnd.HtmlDragCopySource");
-dojo.provide("dojo.dnd.HtmlDragCopyObject");
+dojo.provide("dojo.dnd.HtmlDragCopy");
 dojo.require("dojo.dnd.*");
 
-dojo.declare("dojo.dnd.HtmlDragCopySource", dojo.dnd.HtmlDragSource, {
-	initializer: function(node, type, copyOnce){
-		this.inherited("initializer", [node, type]);
+dojo.declare("dojo.dnd.HtmlDragCopySource", dojo.dnd.HtmlDragSource,
+function(node, type, copyOnce){
 		this.copyOnce = copyOnce;
 		this.makeCopy = true;
-	},
+},
+{
 	onDragStart: function(){
 		var dragObj = new dojo.dnd.HtmlDragCopyObject(this.dragObject, this.type, this);
 		if(this.dragClass) { dragObj.dragClass = this.dragClass; }
@@ -26,13 +24,13 @@ dojo.declare("dojo.dnd.HtmlDragCopySource", dojo.dnd.HtmlDragSource, {
 	}
 });
 
-dojo.declare("dojo.dnd.HtmlDragCopyObject", dojo.dnd.HtmlDragObject, {
-	initializer: function(dragObject, type, source){
-		this.inherited("initializer", [dragObject, type]);
+dojo.declare("dojo.dnd.HtmlDragCopyObject", dojo.dnd.HtmlDragObject,
+function(dragObject, type, source){
 		this.copySource = source;
-	},
+},
+{
 	onDragStart: function(e) {
-		this.inherited("onDragStart", [e]);
+		dojo.dnd.HtmlDragCopyObject.superclass.onDragStart.apply(this, arguments);
 		if(this.copySource.makeCopy) {
 			this.sourceNode = this.domNode;
 			this.domNode    = this.domNode.cloneNode(true);
@@ -66,7 +64,7 @@ dojo.declare("dojo.dnd.HtmlDragCopyObject", dojo.dnd.HtmlDragObject, {
 				dojo.event.topic.publish('dragEnd', { source: this } );
 				return;
 		}
-		this.inherited("onDragEnd", [e]);
+		dojo.dnd.HtmlDragCopyObject.superclass.onDragEnd.apply(this, arguments);
 		this.copySource.dragObject = this.domNode;
 		if(this.copySource.copyOnce){
 			this.copySource.makeCopy = false;

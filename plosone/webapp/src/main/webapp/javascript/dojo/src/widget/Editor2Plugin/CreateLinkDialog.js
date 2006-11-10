@@ -1,5 +1,4 @@
-﻿dojo.provide("dojo.widget.Editor2Plugin.CreateLinkDialog");
-dojo.provide("dojo.widget.Editor2CreateLinkDialog");
+dojo.provide("dojo.widget.Editor2Plugin.CreateLinkDialog");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2CreateLinkDialog",
@@ -10,6 +9,8 @@ dojo.widget.defineWidget(
 	editableAttributes: ['href', 'target', 'class'],
 	loadContent: function(){
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+
+		curInst.saveSelection(); //save selection (none-activeX IE)
 
 		this.linkNode = dojo.withGlobal(curInst.window, "getAncestorElement", dojo.html.selection, ['a']);
 		var linkAttributes = {};
@@ -42,13 +43,15 @@ dojo.widget.defineWidget(
 	},
 	ok: function(){
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+		curInst.restoreSelection(); //restore previous selection, required for none-activeX IE
+
 		if(!this.linkNode){
 			var html = dojo.withGlobal(curInst.window, "getSelectedHtml", dojo.html.selection);
 		}else{
 			var html = this.linkNode.innerHTML;
 			dojo.withGlobal(curInst.window, "selectElement", dojo.html.selection, [this.linkNode]);
 		}
-	
+
 		var attstr='';
 		for(var i=0; i<this.editableAttributes.length; ++i){
 			name = this.editableAttributes[i];
@@ -57,8 +60,9 @@ dojo.widget.defineWidget(
 				attstr += name + '="'+value+'" ';
 			}
 		}
+
 		curInst.execCommand('inserthtml', '<a '+attstr+this.extraAttribText+'>'+html+'</a>');
-	
+
 		this.cancel();
 	}
 });

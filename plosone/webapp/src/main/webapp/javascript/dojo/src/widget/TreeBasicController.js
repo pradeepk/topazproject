@@ -5,7 +5,6 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.json")
 dojo.require("dojo.io.*");
 
-dojo.deprecated("dojo.widget.TreeBasicController", "use TreeV3 and TreeBasicControllerV3 instead", "0.5");
 
 dojo.widget.defineWidget("dojo.widget.TreeBasicController", dojo.widget.HtmlWidget, {
 	widgetType: "TreeBasicController",

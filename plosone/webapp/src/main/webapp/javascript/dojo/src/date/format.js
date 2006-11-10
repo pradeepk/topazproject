@@ -52,7 +52,7 @@ dojo.date.format = function(/*Date*/dateObject, /*Object?*/options){
 
 	// Format a pattern without literals
 	function formatPattern(dateObject, pattern){
-		return pattern.replace(/[a-zA-Z]+/g, function(match){
+		return pattern.replace(/([a-z])\1*/ig, function(match){
 			var s;
 			var c = match.charAt(0);
 			var l = match.length;
@@ -482,7 +482,7 @@ function _processPattern(pattern, applyPattern, applyLiteral, applyAll){
 }
 
 function _buildDateTimeRE(groups, info, options, pattern){
-	return pattern.replace(/[a-zA-Z]+/g, function(match){
+	return pattern.replace(/([a-z])\1*/ig, function(match){
 		// Build a simple regexp without parenthesis, which would ruin the match list
 		var s;
 		var c = match.charAt(0);

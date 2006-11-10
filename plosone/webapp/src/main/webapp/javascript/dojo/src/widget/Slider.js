@@ -1,45 +1,3 @@
-/**
- * Slider Widget.
- * 
- * The slider widget comes in three forms:
- *  1. Base Slider widget which supports movement in x and y dimensions
- *  2. Vertical Slider (SliderVertical) widget which supports movement
- *     only in the y dimension.
- *  3. Horizontal Slider (SliderHorizontal) widget which supports movement
- *     only in the x dimension.
- *
- * The key objects in the widget are:
- *  - a container div which displays a bar in the background (Slider object)
- *  - a handle inside the container div, which represents the value
- *    (sliderHandle DOM node)
- *  - the object which moves the handle (_handleMove is of type 
- *    SliderDragMoveSource)
- *
- * The values for the slider are calculated by grouping pixels together, 
- * based on the number of values to be represented by the slider.
- * The number of pixels in a group is called the _valueSize
- *  e.g. if slider is 150 pixels long, and is representing the values
- *       0,1,...10 then pixels are grouped into lots of 15 (_valueSize), where:
- *         value 0 maps to pixels  0 -  7
- *               1                 8 - 22
- *               2                23 - 37 etc.
- * The accuracy of the slider is limited to the number of pixels
- * (i.e tiles > pixels will result in the slider not being able to
- *  represent some values).
- *
- * Technical Notes:
- *  - 3 widgets exist because the framework caches the template in
- *    dojo.widget.fillFromTemplateCache (which ignores the changed URI)
- *
- * References (aka sources of inspiration):
- *  - http://dojotoolkit.org/docs/fast_widget_authoring.html
- *  - http://dojotoolkit.org/docs/dojo_event_system.html
- * 
- * $Id: $
- */
-
-// tell the package system what functionality is provided in this module (file)
-// (note that the package system works on modules, not the classes)
 dojo.provide("dojo.widget.Slider");
 
 // load dependencies
@@ -51,36 +9,77 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.html.layout");
 
 
-/**
- * Define the two dimensional slider widget class.
- */
 dojo.widget.defineWidget (
 	"dojo.widget.Slider",
 	dojo.widget.HtmlWidget,
 	{
-		// useful properties (specified as attributes in the html tag)
-		// minimum value to be represented by slider in the horizontal direction
+		// summary
+		//	Slider Widget.
+		//	
+		//	The slider widget comes in three forms:
+		//	 1. Base Slider widget which supports movement in x and y dimensions
+		//	 2. Vertical Slider (SliderVertical) widget which supports movement
+		//	    only in the y dimension.
+		//	 3. Horizontal Slider (SliderHorizontal) widget which supports movement
+		//	    only in the x dimension.
+		//
+		//	The key objects in the widget are:
+		//	 - a container div which displays a bar in the background (Slider object)
+		//	 - a handle inside the container div, which represents the value
+		//	   (sliderHandle DOM node)
+		//	 - the object which moves the handle (_handleMove is of type 
+		//	   SliderDragMoveSource)
+		//
+		//	The values for the slider are calculated by grouping pixels together, 
+		//	based on the number of values to be represented by the slider.
+		//	The number of pixels in a group is called the _valueSize
+		//	 e.g. if slider is 150 pixels long, and is representing the values
+		//	      0,1,...10 then pixels are grouped into lots of 15 (_valueSize), where:
+		//	        value 0 maps to pixels  0 -  7
+		//	              1                 8 - 22
+		//	              2                23 - 37 etc.
+		//	The accuracy of the slider is limited to the number of pixels
+		//	(i.e tiles > pixels will result in the slider not being able to
+		//	 represent some values).
+
+		// minimumX: Number
+		//	minimum value to be represented by slider in the horizontal direction
 		minimumX: 0,
-		// minimum value to be represented by slider in the vertical direction
+
+		// minimumY: Number
+		//	minimum value to be represented by slider in the vertical direction
 		minimumY: 0,
-		// maximum value to be represented by slider in the horizontal direction
+
+		// maximumX: Number
+		//	maximum value to be represented by slider in the horizontal direction
 		maximumX: 10,
-		// maximum value to be represented by slider in the vertical direction
+
+		// maximumY: Number
+		//	maximum value to be represented by slider in the vertical direction
 		maximumY: 10,
-		// can values be changed on the x (horizontal) axis?
-		// number of values to be represented by slider in the horizontal direction
-		// =0 means no snapping
+
+		// snapValuesX: Number
+		//	number of values to be represented by slider in the horizontal direction
+		//	=0 means no snapping
 		snapValuesX: 0,
-		// number of values to be represented by slider in the vertical direction
-		// =0 means no snapping
+
+		// snapValuesY: Number
+		//	number of values to be represented by slider in the vertical direction
+		//	=0 means no snapping
 		snapValuesY: 0,
+
 		// should the handle snap to the grid or remain where it was dragged to?
 		// FIXME: snapToGrid=false is logically in conflict with setting snapValuesX and snapValuesY
 		_snapToGrid: true,
-		// can values be changed on the x (horizontal) axis?
+
+		// isEnableX: Boolean
+		//	enables (disables) sliding in the horizontal direction
 		isEnableX: true,
-		// can values be changed on the y (vertical) axis?
+
+		// isEnableY: Boolean
+		//	enables (disables) sliding in the vertical direction
 		isEnableY: true,
+
 		// value size (pixels) in the x dimension
 		_valueSizeX: 0.0,
 		// value size (pixels) in the y dimension
@@ -105,111 +104,145 @@ dojo.widget.defineWidget (
 		_clipXdelta: 0,
 		// half the size of the slider handle (pixels) in the Y dimension
 		_clipYdelta: 0,
-		// initial value in the x dimension
+
+		// initialValueX: Number
+		//	initial value in the x dimension
 		initialValueX: 0,
-		// initial value in the y dimension
+
+		// initialValueY: Number
+		//	initial value in the y dimension
 		initialValueY: 0,
-		// values decrease in the X dimension
+
+		// flipX: Boolean
+		//	values decrease in the X dimension
 		flipX: false,
-		// values decrease in the Y dimension
+
+		// flipY: Boolean
+		//	values decrease in the Y dimension
 		flipY: false,
 
-		// do we allow the user to click on the slider to set the position?
-		// (note: dojo's infrastructor will convert attribute to a boolean)
+		// clickSelect: Boolean
+		//	enables (disables) the user to click on the slider to set the position
 		clickSelect: true,
-		// should the value change while you are dragging, or just after drag finishes?
+
+		// activeDrag: Boolean
+		//	disables (enables) the value to change while you are dragging, or just after drag finishes
 		activeDrag: false,
 
 		templateCssPath: dojo.uri.dojoUri ("src/widget/templates/Slider.css"),
 		templatePath: dojo.uri.dojoUri ("src/widget/templates/Slider.html"),
 
-		// our DOM nodes
-		sliderHandleNode: null,
-		constrainingContainerNode: null,
-		sliderBackgroundNode: null,
-		progressBackgroundNode: null,
-		topButtonNode: null,
-		leftButtonNode: null,
-		rightButtonNode: null,
-		bottomButtonNode: null,
-		focusNode: null,
-
-		// private attributes
 		// This is set to true when a drag is started, so that it is not confused
 		// with a click
-		isDragInProgress: false,
+		_isDragInProgress: false,
 
 		// default user style attributes
-		widgetStyle: "",
-		buttonStyleX: "",
-		buttonStyleY: "",
+
+		// bottomButtonSrc: String
+		//	down arrow graphic URL
 		bottomButtonSrc: dojo.uri.dojoUri("src/widget/templates/images/slider_down_arrow.png"),
+
+		// topButtonSrc: String
+		//	up arrow graphic URL
 		topButtonSrc: dojo.uri.dojoUri("src/widget/templates/images/slider_up_arrow.png"),
+
+		// leftButtonSrc: String
+		//	left arrow graphic URL
 		leftButtonSrc: dojo.uri.dojoUri("src/widget/templates/images/slider_left_arrow.png"),
+
+		// rightButtonSrc: String
+		//	right arrow graphic URL
 		rightButtonSrc: dojo.uri.dojoUri("src/widget/templates/images/slider_right_arrow.png"),
+
+		// backgroundSrc: String
+		//	slider background graphic URL
 		backgroundSrc: dojo.uri.dojoUri("src/widget/templates/images/blank.gif"),
+
+		// progressBackgroundSrc: String
+		//	slider background graphic URL to overlay the normal background to show progress
 		progressBackgroundSrc: dojo.uri.dojoUri("src/widget/templates/images/blank.gif"),
+
+		// backgroundSize: String
+		//	sizing style attributes for the background image
 		backgroundSize: "width:200px;height:200px;",
+
+		// backgroundStyle: String
+		//	style attributes (other than sizing) for the background image
 		backgroundStyle: "",
+
+		// buttonStyleX: String
+		//	style attributes for the left and right arrow images
+		buttonStyleX: "",
+
+		// buttonStyleY: String
+		//	style attributes for the up and down arrow images
+		buttonStyleY: "",
+
+		// handleStyle: String
+		//	style attributes for the moveable slider image
 		handleStyle: "",
+
+		// handleSrc: String
+		//	moveable slider graphic URL
 		handleSrc: dojo.uri.dojoUri("src/widget/templates/images/slider-button.png"),
+
+		// showButtons: Boolean
+		//	show (don't show) the arrow buttons
 		showButtons: true,
+
 		_eventCount: 0,
 		_typamaticTimer: null,
 		_typamaticFunction: null,
+
+		// defaultTimeout: Number
+		//	number of milliseconds before a held key or button becomes typematic 
 		defaultTimeout: 500,
+
+		// timeoutChangeRate: Number
+		//	fraction of time used to change the typematic timer between events
+		//	1.0 means that each typematic event fires at defaultTimeout intervals
+		//	< 1.0 means that each typematic event fires at an increasing faster rate
 		timeoutChangeRate: 0.90,
+
 		_currentTimeout: this.defaultTimeout,
 
 		// does the keyboard related stuff
-		_handleKeyEvents: function(evt){
-			var k = dojo.event.browser.keys;
-			var keyCode = evt.keyCode;
+		_handleKeyEvents: function(/*Event*/ evt){
+			if(!evt.key){ return; }
 
-			switch(keyCode){
-				case k.KEY_LEFT_ARROW:
-					dojo.event.browser.stopEvent(evt);
-					this._leftButtonPressed(evt);
-					return;
-				case k.KEY_RIGHT_ARROW:
-					dojo.event.browser.stopEvent(evt);
-					this._rightButtonPressed(evt);
-					return;
-				case k.KEY_DOWN_ARROW:
-					dojo.event.browser.stopEvent(evt);
-					this._bottomButtonPressed(evt);
-					return;
-				case k.KEY_UP_ARROW:
-					dojo.event.browser.stopEvent(evt);
-					this._topButtonPressed(evt);
-					return;
+			if(!evt.ctrlKey && !evt.altKey){
+				switch(evt.key){
+					case evt.KEY_LEFT_ARROW:
+						dojo.event.browser.stopEvent(evt);
+						this._leftButtonPressed(evt);
+						return;
+					case evt.KEY_RIGHT_ARROW:
+						dojo.event.browser.stopEvent(evt);
+						this._rightButtonPressed(evt);
+						return;
+					case evt.KEY_DOWN_ARROW:
+						dojo.event.browser.stopEvent(evt);
+						this._bottomButtonPressed(evt);
+						return;
+					case evt.KEY_UP_ARROW:
+						dojo.event.browser.stopEvent(evt);
+						this._topButtonPressed(evt);
+						return;
+				}
 			}
 			this._eventCount++;
 
 		},
 
-		_onKeyDown: function(evt){
-			// IE needs to stop keyDown others need to stop keyPress
-			if(!document.createEvent){ // only IE
-				this._handleKeyEvents(evt);
-			}
-		},
-
-		_onKeyPress: function(evt){
-			if(document.createEvent){ // never IE
-				this._handleKeyEvents(evt);
-			}
-		},
-
-		_pressButton: function(buttonNode){
+		_pressButton: function(/*DomNode*/ buttonNode){
 			buttonNode.className = buttonNode.className.replace("Outset","Inset");
 		},
 
-		_releaseButton: function(buttonNode){
+		_releaseButton: function(/*DomNode*/ buttonNode){
 			buttonNode.className = buttonNode.className.replace("Inset","Outset");
 		},
 
-		_buttonPressed: function(evt, buttonNode){
+		_buttonPressed: function(/*Event*/ evt, /*DomNode*/ buttonNode){
 			this._setFocus();
 			if(typeof evt == "object"){
 				if(this._typamaticTimer != null){
@@ -227,17 +260,17 @@ dojo.widget.defineWidget (
 				this._buttonReleased(null);
 				return false;
 			}
-			if (buttonNode == this.leftButtonNode && this.isEnableX) {
-				this._snapX(dojo.html.getPixelValue (this.sliderHandleNode,"left") - this._valueSizeX, this._handleMove );
+			if (buttonNode == this.leftButtonNode && this.isEnableX){
+				this._snapX(dojo.html.getPixelValue (this.sliderHandleNode,"left") - this._valueSizeX);
 			}
-			else if (buttonNode == this.rightButtonNode && this.isEnableX) {
-				this._snapX(dojo.html.getPixelValue (this.sliderHandleNode,"left") + this._valueSizeX, this._handleMove );
+			else if (buttonNode == this.rightButtonNode && this.isEnableX){
+				this._snapX(dojo.html.getPixelValue (this.sliderHandleNode,"left") + this._valueSizeX);
 			}
-			else if (buttonNode == this.topButtonNode && this.isEnableY) {
-				this._snapY(dojo.html.getPixelValue (this.sliderHandleNode,"top") - this._valueSizeY, this._handleMove );
+			else if (buttonNode == this.topButtonNode && this.isEnableY){
+				this._snapY(dojo.html.getPixelValue (this.sliderHandleNode,"top") - this._valueSizeY);
 			}
-			else if (buttonNode == this.bottomButtonNode && this.isEnableY) {
-				this._snapY(dojo.html.getPixelValue (this.sliderHandleNode,"top") + this._valueSizeY, this._handleMove );
+			else if (buttonNode == this.bottomButtonNode && this.isEnableY){
+				this._snapY(dojo.html.getPixelValue (this.sliderHandleNode,"top") + this._valueSizeY);
 			}
 			else {
 				return false;
@@ -250,60 +283,59 @@ dojo.widget.defineWidget (
 			return false;
 		},
 
-		_bottomButtonPressed: function(evt){
+		_bottomButtonPressed: function(/*Event*/ evt){
 			return this._buttonPressed(evt,this.bottomButtonNode);
 		},
 
 		// IE sends these events when rapid clicking, mimic an extra single click
-		_bottomButtonDoubleClicked: function(evt){
+		_bottomButtonDoubleClicked: function(/*Event*/ evt){
 			var rc = this._bottomButtonPressed(evt);
 			dojo.lang.setTimeout( this, "_buttonReleased", 50, null);
 			return rc;
 		},
 
-		_topButtonPressed: function(evt){
+		_topButtonPressed: function(/*Event*/ evt){
 			return this._buttonPressed(evt,this.topButtonNode);
 		},
 
 		// IE sends these events when rapid clicking, mimic an extra single click
-		_topButtonDoubleClicked: function(evt){
+		_topButtonDoubleClicked: function(/*Event*/ evt){
 			var rc = this._topButtonPressed(evt);
 			dojo.lang.setTimeout( this, "_buttonReleased", 50, null);
 			return rc;
 		},
 
-		_leftButtonPressed: function(evt) {
+		_leftButtonPressed: function(/*Event*/ evt){
 			return this._buttonPressed(evt,this.leftButtonNode);
 		},
 
 		// IE sends these events when rapid clicking, mimic an extra single click
-		_leftButtonDoubleClicked: function(evt){
+		_leftButtonDoubleClicked: function(/*Event*/ evt){
 			var rc = this._leftButtonPressed(evt);
 			dojo.lang.setTimeout( this, "_buttonReleased", 50, null);
 			return rc;
 		},
 
-		_rightButtonPressed: function(evt) {
+		_rightButtonPressed: function(/*Event*/ evt){
 			return this._buttonPressed(evt,this.rightButtonNode);
 		},
 
 		// IE sends these events when rapid clicking, mimic an extra single click
-		_rightButtonDoubleClicked: function(evt){
+		_rightButtonDoubleClicked: function(/*Event*/ evt){
 			var rc = this._rightButtonPressed(evt);
 			dojo.lang.setTimeout( this, "_buttonReleased", 50, null);
 			return rc;
 		},
 
-		_buttonReleased: function(evt){
+		_buttonReleased: function(/*Event*/ evt){
 			if(typeof evt == "object" && evt != null && typeof evt.keyCode != "undefined" && evt.keyCode != null){
 				var keyCode = evt.keyCode;
-				var k = dojo.event.browser.keys;
 
 				switch(keyCode){
-					case k.KEY_LEFT_ARROW:
-					case k.KEY_RIGHT_ARROW:
-					case k.KEY_DOWN_ARROW:
-					case k.KEY_UP_ARROW:
+					case evt.KEY_LEFT_ARROW:
+					case evt.KEY_RIGHT_ARROW:
+					case evt.KEY_DOWN_ARROW:
+					case evt.KEY_UP_ARROW:
 						dojo.event.browser.stopEvent(evt);
 						break;
 				}
@@ -320,14 +352,14 @@ dojo.widget.defineWidget (
 			this._currentTimeout = this.defaultTimeout;
 		},
 
-		_mouseWheeled: function(evt) {
+		_mouseWheeled: function(/*Event*/ evt){
 			var scrollAmount = 0;
 			if(typeof evt.wheelDelta == 'number'){ // IE
 				scrollAmount = evt.wheelDelta;
 			}else if (typeof evt.detail == 'number'){ // Mozilla+Firefox
 				scrollAmount = -evt.detail;
 			}
-			if (this.isEnableY) {
+			if (this.isEnableY){
 				if(scrollAmount > 0){
 					this._topButtonPressed(evt);
 					this._buttonReleased(evt);
@@ -335,7 +367,7 @@ dojo.widget.defineWidget (
 					this._bottomButtonPressed(evt);
 					this._buttonReleased(evt);
 				}
-			} else if (this.isEnableX) {
+			} else if (this.isEnableX){
 				if(scrollAmount > 0){
 					this._rightButtonPressed(evt);
 					this._buttonReleased(evt);
@@ -346,37 +378,19 @@ dojo.widget.defineWidget (
 			}
 		},
 
-		_discardEvent: function(evt) {
+		_discardEvent: function(/*Event*/ evt){
 			dojo.event.browser.stopEvent(evt);
 		},
 
 		_setFocus: function(){
-			if (this.focusNode.focus) {
+			if (this.focusNode.focus){
 				this.focusNode.focus();
 			}
 		},
 
-		// remove comments from the node
-		_removeComments: function(parent){
-			var children = parent.childNodes;
-			for (var i = children.length-1; i >= 0; i--) {
-				var aChild = children.item(i);
-				if (aChild  != null) {
-					switch(aChild.nodeType){
-						case 1: // recurse
-							this._removeComments(aChild);
-							break;
-						case 8: // comment
-							parent.removeChild(aChild);
-					}
-				}
-			}
-		},
-
 		// This function is called when the template is loaded
-		fillInTemplate: function (args, frag) 
+		fillInTemplate: function (/*Object*/ args, /*Object*/ frag) 
 		{
-			this._removeComments(this.domNode);
 			var source = this.getFragNodeRef(frag);
 			dojo.html.copyStyle(this.domNode, source);
 			// the user's style for the widget might include border and padding
@@ -384,7 +398,7 @@ dojo.widget.defineWidget (
 			// so I get to fake everyone out by setting the border and padding
 			// of the outer table cells
 			var padding = this.domNode.style.padding;
-			if (dojo.lang.isString(padding) && padding != "" && padding != "0px" && padding != "0px 0px 0px 0px") {
+			if (dojo.lang.isString(padding) && padding != "" && padding != "0px" && padding != "0px 0px 0px 0px"){
 				this.topBorderNode.style.padding = 
 					this.bottomBorderNode.style.padding = padding;
 				this.topBorderNode.style.paddingBottom = "0px";
@@ -394,7 +408,7 @@ dojo.widget.defineWidget (
 				this.domNode.style.padding = "0px 0px 0px 0px";
 			}
 			var borderWidth = this.domNode.style.borderWidth;
-			if (dojo.lang.isString(borderWidth) && borderWidth != "" && borderWidth != "0px" && borderWidth != "0px 0px 0px 0px") {
+			if (dojo.lang.isString(borderWidth) && borderWidth != "" && borderWidth != "0px" && borderWidth != "0px 0px 0px 0px"){
 				this.topBorderNode.style.borderStyle = 
 					this.rightBorderNode.style.borderStyle = 
 					this.bottomBorderNode.style.borderStyle = 
@@ -420,23 +434,23 @@ dojo.widget.defineWidget (
 			this._handleMove = new dojo.widget._SliderDragMoveSource (this.sliderHandleNode);
 			this._handleMove.setParent (this);
 
-			if (this.clickSelect) {
-				dojo.event.connect (this.constrainingContainerNode, "onmousedown", this, "onClick");
+			if (this.clickSelect){
+				dojo.event.connect (this.constrainingContainerNode, "onmousedown", this, "_onClick");
 			} 
 
-			if (this.isEnableX) {
+			if (this.isEnableX){
 				this.setValueX (!isNaN(this.initialValueX) ? this.initialValueX : (!isNaN(this.minimumX) ? this.minimumX : 0));
 			}
-			if (!this.isEnableX || !this.showButtons) {
+			if (!this.isEnableX || !this.showButtons){
 				this.rightButtonNode.style.width = "1px"; // allow the border to show
 				this.rightButtonNode.style.visibility = "hidden";
 				this.leftButtonNode.style.width = "1px"; // allow the border to show
 				this.leftButtonNode.style.visibility = "hidden";
 			}
-			if (this.isEnableY) {
+			if (this.isEnableY){
 				this.setValueY (!isNaN(this.initialValueY) ? this.initialValueY : (!isNaN(this.minimumY) ? this.minimumY : 0));
 			}
-			if (!this.isEnableY || !this.showButtons) {
+			if (!this.isEnableY || !this.showButtons){
 				this.bottomButtonNode.style.width = "1px"; // allow the border to show
 				this.bottomButtonNode.style.visibility = "hidden";
 				this.topButtonNode.style.width = "1px"; // allow the border to show
@@ -449,15 +463,15 @@ dojo.widget.defineWidget (
 		},
 
 		// move the X value to the closest allowable value
-		_snapX: function (x,_handleMove) {
-			if (x < 0) { x = 0; }
-			else if (x > this._constraintWidth) { x = this._constraintWidth; }
+		_snapX: function(/*Number*/ x){
+			if (x < 0){ x = 0; }
+			else if (x > this._constraintWidth){ x = this._constraintWidth; }
 			else {
 				var selectedValue = Math.round (x / this._valueSizeX);
 				x = Math.round (selectedValue * this._valueSizeX);
 			}
 			this.sliderHandleNode.style.left = x + "px";
-			if (this.flipX) {
+			if (this.flipX){
 				this._clipLeft = x + this._clipXdelta;
 			} else {
 				this._clipRight = x + this._clipXdelta;
@@ -466,10 +480,10 @@ dojo.widget.defineWidget (
 		},
 
 		// compute _valueSizeX & _constraintWidth & default snapValuesX
-		_calc_valueSizeX: function () {
+		_calc_valueSizeX: function (){
 			var constrainingCtrBox = dojo.html.getContentBox(this.constrainingContainerNode);
 			var sliderHandleBox = dojo.html.getContentBox(this.sliderHandleNode);
-			if (isNaN(constrainingCtrBox.width) || isNaN(sliderHandleBox.width) || constrainingCtrBox.width <= 0 || sliderHandleBox.width <= 0) { 
+			if (isNaN(constrainingCtrBox.width) || isNaN(sliderHandleBox.width) || constrainingCtrBox.width <= 0 || sliderHandleBox.width <= 0){ 
 				return false; 
 			}
 
@@ -477,19 +491,19 @@ dojo.widget.defineWidget (
 				+ dojo.html.getPadding(this.constrainingContainerNode).width
 				- sliderHandleBox.width;
 
-			if (this.flipX) {
+			if (this.flipX){
 				this._clipLeft = this._clipRight = constrainingCtrBox.width;
 			} else {
 				this._clipLeft = this._clipRight = 0;
 			}
 			this._clipXdelta = sliderHandleBox.width >> 1;
-			if (!this.isEnableY) {
+			if (!this.isEnableY){
 				this._clipTop = 0;
 				this._clipBottom = constrainingCtrBox.height;
 			}
 
-			if (this._constraintWidth <= 0) { return false; }
-			if (this.snapValuesX == 0) {
+			if (this._constraintWidth <= 0){ return false; }
+			if (this.snapValuesX == 0){
 				this.snapValuesX = this._constraintWidth + 1;
 			}
 
@@ -497,51 +511,53 @@ dojo.widget.defineWidget (
 			return true;
 		},
 
-		// Move the handle (in the X dimension) to the specified value
-		setValueX: function (value) {
-			if (0.0 == this._valueSizeX) {
-				if (this._calc_valueSizeX () == false) {
+		// summary
+		//	move the handle horizontally to the specified value
+		setValueX: function (/*Number*/ value){
+			if (0.0 == this._valueSizeX){
+				if (this._calc_valueSizeX () == false){
 					dojo.lang.setTimeout(this, "setValueX", 100, value);
 					return;
 				}
 			}
-			if (isNaN(value)) {
+			if (isNaN(value)){
 				value = 0;
 			}
-			if (value > this.maximumX) {
+			if (value > this.maximumX){
 				value = this.maximumX;
 			}
-			else if (value < this.minimumX) {
+			else if (value < this.minimumX){
 				value = this.minimumX;
 			}
 			var pixelPercent = (value-this.minimumX) / (this.maximumX-this.minimumX);
-			if (this.flipX) {
+			if (this.flipX){
 				pixelPercent = 1.0 - pixelPercent;
 			}
-			this._snapX (pixelPercent * this._constraintWidth, this._handleMove);
+			this._snapX (pixelPercent * this._constraintWidth);
 			this.notifyListeners();
 		},
 
 
-		// Get the number of the value that matches the position of the handle
-		getValueX: function () {
+		// summary
+		//	return the X value that the matches the position of the handle
+		getValueX: function (){
 			var pixelPercent = dojo.html.getPixelValue (this.sliderHandleNode,"left") / this._constraintWidth;
-			if (this.flipX) {
+			if (this.flipX){
 				pixelPercent = 1.0 - pixelPercent;
 			}
 			return Math.round (pixelPercent * (this.snapValuesX-1)) * ((this.maximumX-this.minimumX) / (this.snapValuesX-1)) + this.minimumX;
 		},
 
 		// move the Y value to the closest allowable value
-		_snapY: function (y,_handleMove) {
-			if (y < 0) { y = 0; }
-			else if (y > this._constraintHeight) { y = this._constraintHeight; }
+		_snapY: function (/*Number*/ y){
+			if (y < 0){ y = 0; }
+			else if (y > this._constraintHeight){ y = this._constraintHeight; }
 			else {
 				var selectedValue = Math.round (y / this._valueSizeY);
 				y = Math.round (selectedValue * this._valueSizeY);
 			}
 			this.sliderHandleNode.style.top = y + "px";
-			if (this.flipY) {
+			if (this.flipY){
 				this._clipTop = y + this._clipYdelta;
 			} else {
 				this._clipBottom = y + this._clipYdelta;
@@ -549,10 +565,10 @@ dojo.widget.defineWidget (
 			this.progressBackgroundNode.style.clip = "rect("+this._clipTop+"px,"+this._clipRight+"px,"+this._clipBottom+"px,"+this._clipLeft+"px)";
 		},
 		// compute _valueSizeY & _constraintHeight & default snapValuesY
-		_calc_valueSizeY: function () {
+		_calc_valueSizeY: function (){
 			var constrainingCtrBox = dojo.html.getContentBox(this.constrainingContainerNode);
 			var sliderHandleBox = dojo.html.getContentBox(this.sliderHandleNode);
-			if (isNaN(constrainingCtrBox.height) || isNaN(sliderHandleBox.height) || constrainingCtrBox.height <= 0 || sliderHandleBox.height <= 0) { 
+			if (isNaN(constrainingCtrBox.height) || isNaN(sliderHandleBox.height) || constrainingCtrBox.height <= 0 || sliderHandleBox.height <= 0){ 
 				return false; 
 			}
 
@@ -560,19 +576,19 @@ dojo.widget.defineWidget (
 				+ dojo.html.getPadding(this.constrainingContainerNode).height
 				- sliderHandleBox.height;
 
-			if (this.flipY) {
+			if (this.flipY){
 				this._clipTop = this._clipBottom = constrainingCtrBox.height;
 			} else {
 				this._clipTop = this._clipBottom = 0;
 			}
 			this._clipYdelta = sliderHandleBox.height >> 1;
-			if (!this.isEnableX) {
+			if (!this.isEnableX){
 				this._clipLeft = 0;
 				this._clipRight = constrainingCtrBox.width;
 			}
 
-			if (this._constraintHeight <= 0) { return false; }
-			if (this.snapValuesY == 0) {
+			if (this._constraintHeight <= 0){ return false; }
+			if (this.snapValuesY == 0){
 				this.snapValuesY = this._constraintHeight + 1;
 			}
 
@@ -580,129 +596,154 @@ dojo.widget.defineWidget (
 			return true;
 		},
 
-		// set the slider to a particular value
-		setValueY: function (value) {
-			if (0.0 == this._valueSizeY) {
-				if (this._calc_valueSizeY () == false) {
+		// summary
+		//	move the handle vertically to the specified value
+		setValueY: function (/*Number*/ value){
+			if (0.0 == this._valueSizeY){
+				if (this._calc_valueSizeY () == false){
 					dojo.lang.setTimeout(this, "setValueY", 100, value);
 					return;
 				}
 			}
-			if (isNaN(value)) {
+			if (isNaN(value)){
 				value = 0;
 			}
-			if (value > this.maximumY) {
+			if (value > this.maximumY){
 				value = this.maximumY;
 			}
-			else if (value < this.minimumY) {
+			else if (value < this.minimumY){
 				value = this.minimumY;
 			}
 			var pixelPercent = (value-this.minimumY) / (this.maximumY-this.minimumY);
-			if (this.flipY) {
+			if (this.flipY){
 				pixelPercent = 1.0 - pixelPercent;
 			}
-			this._snapY (pixelPercent * this._constraintHeight, this._handleMove);
+			this._snapY (pixelPercent * this._constraintHeight);
 			this.notifyListeners();
 		},
 
-		// Get the number of the value that the matches the position of the handle
-		getValueY: function () {
+		// summary
+		//	return the Y value that the matches the position of the handle
+		getValueY: function (){
 			var pixelPercent = dojo.html.getPixelValue (this.sliderHandleNode,"top") / this._constraintHeight;
-			if (this.flipY) {
+			if (this.flipY){
 				pixelPercent = 1.0 - pixelPercent;
 			}
 			return Math.round (pixelPercent * (this.snapValuesY-1)) * ((this.maximumY-this.minimumY) / (this.snapValuesY-1)) + this.minimumY;
 		},
 
 		// set the position of the handle
-		onClick: function (evt) {
-			if (this.isDragInProgress) {
+		_onClick: function(/*Event*/ evt){
+			if (this._isDragInProgress){
 				return;
 			}
 
 			var parent = dojo.html.getAbsolutePosition(this.constrainingContainerNode, true, dojo.html.boxSizing.MARGIN_BOX);
 			var content = dojo.html.getContentBox(this._handleMove.domNode);			
-			if (this.isEnableX) {
+			if (this.isEnableX){
 				var x = evt.pageX - parent.x - (content.width >> 1);
-				this._snapX(x, this._handleMove);
+				this._snapX(x);
 			}
-			if (this.isEnableY) {
+			if (this.isEnableY){
 				var y = evt.pageY - parent.y - (content.height >> 1);
-				this._snapY(y, this._handleMove);
+				this._snapY(y);
 			}
 			this.notifyListeners();
 		},
 
-		notifyListeners: function() {
+		// summary
+		//	method to invoke user's onValueChanged method
+		notifyListeners: function(){
 			this.onValueChanged(this.getValueX(), this.getValueY());
 		},
 
-		onValueChanged: function(x, y){
+		// summary
+		//	empty method to be overridden by user
+		onValueChanged: function(/*Number*/ x, /*Number*/ y){
 		}
 	}
 );
 
 
-/* ------------------------------------------------------------------------- */
 
-
-/**
- * Define the horizontal slider widget class.
- */
 dojo.widget.defineWidget (
 	"dojo.widget.SliderHorizontal",
 	dojo.widget.Slider,
 	{
-		widgetType: "SliderHorizontal",
+		// summary
+		//	the horizontal slider widget subclass
 
 		isEnableX: true,
 		isEnableY: false,
+
+		// initialValue: Number
+		//	sets initialValueX.
+		//	TODO: should be called "value".  Also, common attributes between SliderHorizontal/SliderVertical
+		//	should be consolidated to Slider1D base class
 		initialValue: "",
+
+		// snapValues: Number
+		//	sets snapValuesX
 		snapValues: "",
+
+		// minimum: Number
+		//	sets minimumX
 		minimum: "",
+
+		// maximum: Number
+		//	sets maximumX
 		maximum: "",
+
+		// buttonStyle: String
+		//	sets buttonStyleX
 		buttonStyle: "",
+
 		backgroundSize: "height:10px;width:200px;",
 		backgroundSrc: dojo.uri.dojoUri("src/widget/templates/images/slider-bg.gif"),
+
+		// flip: Boolean
+		//	sets flipX
 		flip: false,
 
 		postMixInProperties: function(){
 			dojo.widget.SliderHorizontal.superclass.postMixInProperties.apply(this, arguments);
-			if (!isNaN(parseFloat(this.initialValue))) {
+			if (!isNaN(parseFloat(this.initialValue))){
 				this.initialValueX = parseFloat(this.initialValue);
 			}
-			if (!isNaN(parseFloat(this.minimum))) {
+			if (!isNaN(parseFloat(this.minimum))){
 				this.minimumX = parseFloat(this.minimum);
 			}
-			if (!isNaN(parseFloat(this.maximum))) {
+			if (!isNaN(parseFloat(this.maximum))){
 				this.maximumX = parseFloat(this.maximum);
 			}
-			if (!isNaN(parseInt(this.snapValues))) {
+			if (!isNaN(parseInt(this.snapValues))){
 				this.snapValuesX = parseInt(this.snapValues);
 			}
-			if (dojo.lang.isString(this.buttonStyle) && this.buttonStyle != "") {
+			if (dojo.lang.isString(this.buttonStyle) && this.buttonStyle != ""){
 				this.buttonStyleX = this.buttonStyle;
 			}
-			if (dojo.lang.isBoolean(this.flip)) {
+			if (dojo.lang.isBoolean(this.flip)){
 				this.flipX = this.flip;
 			}
 		},
 
-		notifyListeners: function() {
+		notifyListeners: function(){
 			this.onValueChanged(this.getValueX());
 		},
 
-		// wrapper for getValueX
-		getValue: function () {
+		// summary
+		//	wrapper for getValueX()
+		getValue: function (){
 			return this.getValueX ();
 		},
 
-		// wrapper for setValueX
-		setValue: function (value) {
+		// summary
+		//	wrapper for setValueX()
+		setValue: function (/*Number*/ value){
 			this.setValueX (value);
 		},
 
-		onValueChanged: function(value){
+		onValueChanged: function(/*Number*/ value){
 		}
 	}
 );
@@ -711,63 +752,82 @@ dojo.widget.defineWidget (
 /* ------------------------------------------------------------------------- */
 
 
-/**
- * Define the vertical slider widget class.
- */
 dojo.widget.defineWidget (
 	"dojo.widget.SliderVertical",
 	dojo.widget.Slider,
 	{
-		widgetType: "SliderVertical",
+		// summary
+		//	the vertical slider widget subclass
 
 		isEnableX: false,
 		isEnableY: true,
+
+		// initialValue: Number
+		//	sets initialValueY
 		initialValue: "",
+
+		// snapValues: Number
+		//	sets snapValuesY
 		snapValues: "",
+
+		// minimum: Number
+		//	sets minimumY
 		minimum: "",
+
+		// Number
+		//	maximum: sets maximumY
 		maximum: "",
+
+		// buttonStyle: String
+		//	sets buttonStyleY
 		buttonStyle: "",
+
 		backgroundSize: "width:10px;height:200px;",
 		backgroundSrc: dojo.uri.dojoUri("src/widget/templates/images/slider-bg-vert.gif"),
+
+		// flip: Boolean
+		//	sets flipY
 		flip: false,
 
 		postMixInProperties: function(){
 			dojo.widget.SliderVertical.superclass.postMixInProperties.apply(this, arguments);
-			if (!isNaN(parseFloat(this.initialValue))) {
+			if (!isNaN(parseFloat(this.initialValue))){
 				this.initialValueY = parseFloat(this.initialValue);
 			}
-			if (!isNaN(parseFloat(this.minimum))) {
+			if (!isNaN(parseFloat(this.minimum))){
 				this.minimumY = parseFloat(this.minimum);
 			}
-			if (!isNaN(parseFloat(this.maximum))) {
+			if (!isNaN(parseFloat(this.maximum))){
 				this.maximumY = parseFloat(this.maximum);
 			}
-			if (!isNaN(parseInt(this.snapValues))) {
+			if (!isNaN(parseInt(this.snapValues))){
 				this.snapValuesY = parseInt(this.snapValues);
 			}
-			if (dojo.lang.isString(this.buttonStyle) && this.buttonStyle != "") {
+			if (dojo.lang.isString(this.buttonStyle) && this.buttonStyle != ""){
 				this.buttonStyleY = this.buttonStyle;
 			}
-			if (dojo.lang.isBoolean(this.flip)) {
+			if (dojo.lang.isBoolean(this.flip)){
 				this.flipY = this.flip;
 			}
 		},
 
-		notifyListeners: function() {
+		notifyListeners: function(){
 			this.onValueChanged(this.getValueY());
 		},
 
-		// wrapper for getValueY
-		getValue: function () {
+		// summary
+		//	wrapper for getValueY()
+		getValue: function (){
 			return this.getValueY ();
 		},
 
-		// wrapper for setValueY
-		setValue: function (value) {
+		// summary
+		//	wrapper for setValueY()
+		setValue: function (/*Number*/ value){
 			this.setValueY (value);
 		},
 
-		onValueChanged: function(value){
+		onValueChanged: function(/*Number*/ value){
 		}
 	}
 );
@@ -788,34 +848,26 @@ dojo.declare (
 
 	/** Setup the handle for drag
 	 *  Extends dojo.dnd.HtmlDragMoveSource by creating a SliderDragMoveSource */
-	onDragStart: function (evt) {
-		this.slider.isDragInProgress = true;
-		var pos = dojo.html.getAbsolutePosition(this.slider.constrainingContainerNode, true, dojo.html.boxSizing.MARGIN_BOX);
-		if (this.slider.isEnableX) {
-			this.slider._minX = pos.x;
-		}
-		if (this.slider.isEnableY) {
-			this.slider._minY = pos.y;
-		}
-
+	onDragStart: function(/*Event*/ evt){
+		this.slider._isDragInProgress = true;
 		var dragObj = this.createDragMoveObject ();
 
 		this.slider.notifyListeners();
 		return dragObj;
 	},
 
-	onDragEnd: function (evt) {
-		this.slider.isDragInProgress = false;
+	onDragEnd: function(/*Event*/ evt){
+		this.slider._isDragInProgress = false;
 		this.slider.notifyListeners();
 	},
 
-	createDragMoveObject: function () {
+	createDragMoveObject: function (){
 		//dojo.debug ("SliderDragMoveSource#createDragMoveObject - " + this.slider);
 		var dragObj = new dojo.widget._SliderDragMoveObject (this.dragObject, this.type);
 		dragObj.slider = this.slider;
 
 		// this code copied from dojo.dnd.HtmlDragSource#onDragStart
-		if (this.dragClass) { 
+		if (this.dragClass){ 
 			dragObj.dragClass = this.dragClass; 
 		}
 
@@ -823,7 +875,7 @@ dojo.declare (
 	},
 
 
-	setParent: function (slider) {
+	setParent: function (/*Widget*/ slider){
 		this.slider = slider;
 	}
 });
@@ -846,17 +898,17 @@ dojo.declare (
 	/** Moves the node to follow the mouse.
 	 *  Extends functon HtmlDragObject by adding functionality to snap handle
 	 *  to a discrete value */
-	onDragMove: function (evt) {
+	onDragMove: function(/*Event*/ evt){
 		this.updateDragOffset ();
 
-		if (this.slider.isEnableX) {
-			var x = this.dragOffset.x + evt.pageX - this.slider._minX;
-			this.slider._snapX(x, this.slider._handleMove);
+		if (this.slider.isEnableX){
+			var x = this.dragOffset.x + evt.pageX;
+			this.slider._snapX(x);
 		}
 
-		if (this.slider.isEnableY) {
-			var y = this.dragOffset.y + evt.pageY - this.slider._minY;
-			this.slider._snapY(y, this.slider._handleMove);
+		if (this.slider.isEnableY){
+			var y = this.dragOffset.y + evt.pageY;
+			this.slider._snapY(y);
 		}
 		if(this.slider.activeDrag){
 			this.slider.notifyListeners();

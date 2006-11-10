@@ -5,23 +5,25 @@ dojo.require("dojo.widget.*");
 dojo.require("dojo.event.*");
 dojo.require("dojo.html.selection");
 
-// A PageContainer is a container that has multiple children, but shows only
-// one child at a time (like looking at the pages in a book one by one).
-//
-// Publishes topics <widgetId>-addChild, <widgetId>-removeChild, and <widgetId>-selectChild
-//
-// Can be base class for container, Wizard, Show, etc.
 dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
+	// summary
+	//	A container that has multiple children, but shows only
+	//	one child at a time (like looking at the pages in a book one by one).
+	//
+	//	Publishes topics <widgetId>-addChild, <widgetId>-removeChild, and <widgetId>-selectChild
+	//
+	//	Can be base class for container, Wizard, Show, etc.
+
 	isContainer: true,
 
-	// Boolean
+	// doLayout: Boolean
 	//  if true, change the size of my currently displayed child to match my size
 	doLayout: true,
 
 	templateString: "<div dojoAttachPoint='containerNode'></div>",
 
-	// String
-	//   id of the initially shown page
+	// selectedChild: String
+	//   id of the currently shown page
 	selectedChild: "",
 
 	fillInTemplate: function(args, frag) {
@@ -32,46 +34,51 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 	},
 
 	postCreate: function(args, frag) {
-		// Setup each page panel
-		dojo.lang.forEach(this.children, this._setupChild, this);
+		if(this.children.length){
+			// Setup each page panel
+			dojo.lang.forEach(this.children, this._setupChild, this);
 
-		// Display the selected page
-		if(this.selectedChildWidget){
-			this.selectChild(this.selectedChildWidget, true);
+			// Figure out which child to initially display
+			var initialChild;
+			if(this.selectedChild){
+				this.selectChild(this.selectedChild);
+			}else{
+				for(var i=0; i<this.children.length; i++){
+					if(this.children[i].selected){
+						this.selectChild(this.children[i]);
+						break;
+					}
+				}
+				if(!this.selectedChildWidget){
+					this.selectChild(this.children[0]);
+				}
+			}
 		}
 	},
 
 	addChild: function(child){
-		this._setupChild(child);
 		dojo.widget.PageContainer.superclass.addChild.apply(this, arguments);
+		this._setupChild(child);
 
 		// in case the page labels have overflowed from one line to two lines
 		this.onResized();
+
+		// if this is the first child, then select it
+		if(!this.selectedChildWidget){
+			this.selectChild(child);
+		}
 	},
 
-	_setupChild: function(page){
+	_setupChild: function(/*Widget*/ page){
 		// Summary: Add the given child to this page container
-		page.domNode.style.display="none";
 
-		if(!this.selectedChildWidget || this.selectedChild==page.widgetId || page.selected || (this.children.length==0)){
-			// Deselect old page and select new one
-			// We do this instead of calling selectChild in this case, because other wise other widgets
-			// listening for addChild and selectChild can run into a race condition
-			if(this.selectedChildWidget){
-				this._hideChild(this.selectedChildWidget);
-			}
-			this.selectedChildWidget = page;
-			this._showChild(page);
-
-		} else {
-			this._hideChild(page);
-		}
+		page.hide();
 
 		// publish the addChild event for panes added via addChild(), and the original panes too
 		dojo.event.topic.publish(this.widgetId+"-addChild", page);
 	},
 
-	removeChild: function(/* Widget */page){
+	removeChild: function(/*Widget*/ page){
 		dojo.widget.PageContainer.superclass.removeChild.apply(this, arguments);
 
 		// If we are being destroyed than don't run the code below (to select another page), because we are deleting
@@ -89,7 +96,7 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 		}
 	},
 
-	selectChild: function(/* Widget */ page, /* Boolean */ _noRefresh, /* Widget */ callingWidget){
+	selectChild: function(/*Widget*/ page, /*Widget*/ callingWidget){
 		// summary
 		//	Show the given widget (which must be one of my children)
 		page = dojo.widget.byId(page);
@@ -100,7 +107,8 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 			this._hideChild(this.selectedChildWidget);
 		}
 		this.selectedChildWidget = page;
-		this._showChild(page, _noRefresh);
+		this.selectedChild = page.widgetId;
+		this._showChild(page);
 		page.isFirstChild = (page == this.children[0]);
 		page.isLastChild = (page == this.children[this.children.length-1]);
 		dojo.event.topic.publish(this.widgetId+"-selectChild", page);
@@ -130,33 +138,23 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 		}
 	},
 
-	_showChild: function(page, _noRefresh) {
-		page.selected=true;
-
+	_showChild: function(/*Widget*/ page) {
 		// size the current page (in case this is the first time it's being shown, or I have been resized)
 		if(this.doLayout){
 			var content = dojo.html.getContentBox(this.containerNode);
 			page.resizeTo(content.width, content.height);
 		}
 
-		// make sure we dont refresh onClose and on postCreate
-		// speeds up things a bit when using refreshOnShow and fixes #646
-		if(_noRefresh && page.refreshOnShow){
-			var tmp = page.refreshOnShow;
-			page.refreshOnShow = false;
-			page.show();
-			page.refreshOnShow = tmp;
-		}else{
-			page.show();
-		}
+		page.selected=true;
+		page.show();
 	},
 
-	_hideChild: function(page) {
-		page.x=false;
+	_hideChild: function(/*Widget*/ page) {
+		page.selected=false;
 		page.hide();
 	},
 
-	closeChild: function(page) {
+	closeChild: function(/*Widget*/ page) {
 		// summary
 		//	callback when user clicks the [X] to remove a page
 		//	if onClose() returns true then remove and destroy the childd
@@ -178,25 +176,27 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 });
 
 
-// PageController - set of buttons to select the page in a page list
-// When intialized, the PageController monitors the container, and whenever a page is
-// added or deleted updates itself accordingly.
 dojo.widget.defineWidget(
     "dojo.widget.PageController",
     dojo.widget.HtmlWidget,
 	{
+		// summary
+		//	Set of buttons to select a page in a page list.
+		//	Monitors the specified PageContaine, and whenever a page is
+		//	added, deleted, or selected, updates itself accordingly.
+
 		templateString: "<span wairole='tablist' dojoAttachEvent='onKey'></span>",
 		isContainer: true,
 
-		// String
+		// containerId: String
 		//	the id of the page container that I point to
 		containerId: "",
 
-		// String
+		// buttonWidget: String
 		//	the name of the button widget to create to correspond to each page
 		buttonWidget: "PageButton",
 
-		// String
+		// class: String
 		//	Class name to apply to the top dom node
 		"class": "dojoPageController",
 
@@ -226,7 +226,7 @@ dojo.widget.defineWidget(
 			dojo.widget.PageController.superclass.destroy.apply(this, arguments);
 		},
 
-		onAddChild: function(/* Widget */ page){
+		onAddChild: function(/*Widget*/ page){
 			// summary
 			//   Called whenever a page is added to the container.
 			//   Create button corresponding to the page.
@@ -245,13 +245,15 @@ dojo.widget.defineWidget(
 			dojo.event.connect(button, "onCloseButtonClick", function(){ _this.onCloseButtonClick(page); });
 		},
 
-		onRemoveChild: function(/* Widget */ page){
+		onRemoveChild: function(/*Widget*/ page){
 			// summary
 			//   Called whenever a page is removed from the container.
 			//   Remove the button corresponding to the page.
 			if(this._currentChild == page){ this._currentChild = null; }
 			var button = this.pane2button[page];
-			button.destroy();
+			if(button){
+				button.destroy();
+			}
 			this.pane2button[page] = null;
 		},
 
@@ -281,7 +283,7 @@ dojo.widget.defineWidget(
 			container.closeChild(page);
 		},
 
-		onKey: function(evt){
+		onKey: function(/*Event*/ evt){
 			// summary:
 			//   Handle keystrokes on the page list, for advancing to next/previous button
 
@@ -307,19 +309,22 @@ dojo.widget.defineWidget(
 	}
 );
 
-// PageButton (the thing you click to select or delete a page)
 dojo.widget.defineWidget("dojo.widget.PageButton", dojo.widget.HtmlWidget,
 {
+	// summary
+	//	Internal widget used by PageList.
+	//	The button-like or tab-like object you click to select or delete a page
+
 	templateString: "<span class='item'>" +
 						"<span dojoAttachEvent='onClick' dojoAttachPoint='titleNode' class='selectButton'>${this.label}</span>" +
 						"<span dojoAttachEvent='onClick:onCloseButtonClick' class='closeButton'>[X]</span>" +
 					"</span>",
 
-	// String
+	// label: String
 	//  Name to print on the button
 	label: "foo",
 	
-	// Boolean
+	// closeButton: Boolean
 	//	true iff we should also print a close icon to destroy corresponding page
 	closeButton: false,
 
@@ -341,7 +346,7 @@ dojo.widget.defineWidget("dojo.widget.PageButton", dojo.widget.HtmlWidget,
 		dojo.html.removeClass(this.closeButtonNode, "closeHover");
 	},
 
-	onCloseButtonClick: function(evt){
+	onCloseButtonClick: function(/*Event*/ evt){
 		// summary
 		//	Handle clicking the close button for this tab
 	},
@@ -373,8 +378,20 @@ dojo.widget.defineWidget("dojo.widget.PageButton", dojo.widget.HtmlWidget,
 // Since any widget can be specified as a PageContainer child, mix them
 // into the base widget class.  (This is a hack, but it's effective.)
 dojo.lang.extend(dojo.widget.Widget, {
+	// label: String
+	//		Label or title of this widget.  Used by TabContainer to the name the tab, etc.
 	label: "",
-	selected: false,	// is this tab currently selected?
+	
+	// selected: Boolean
+	//		Is this child currently selected?
+	selected: false,
+	
+	// closable: Boolean
+	//		True if user can close (destroy) this child, such as (for example) clicking the X on the tab.
 	closable: false,	// true if user can close this tab pane
-	onClose: function(){ return true; }	// callback if someone tries to close the child, child will be closed if func returns true
+	
+	onClose: function(){
+		// summary: Callback if someone tries to close the child, child will be closed if func returns true
+		return true;
+	}
 });

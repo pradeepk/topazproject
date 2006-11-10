@@ -116,6 +116,9 @@ dojo.html.getElementsByClass = function(
 	//	summary
 	//	Returns an array of nodes for the given classStr, children of a
 	//	parent, and optionally of a certain nodeType
+	// FIXME: temporarily set to false because of several dojo tickets related
+	// to the xpath version not working consistently in firefox.
+	useNonXpath = false;
 	var _document = dojo.doc();
 	parent = dojo.byId(parent) || _document;
 	var classes = classStr.split(/\s+/g);
@@ -464,27 +467,27 @@ dojo.html.fixPathsInCssText = function(/* string */cssStr, /* string */URI){
 	//	summary
 	// usage: cssText comes from dojoroot/src/widget/templates/Foobar.css
 	// 	it has .dojoFoo { background-image: url(images/bar.png);} then uri should point to dojoroot/src/widget/templates/
-	function iefixPathsInCssText() {
-		var regexIe = /AlphaImageLoader\(src\=['"]([\t\s\w()\/.\\'"-:#=&?]*)['"]/;
+	if(!cssStr || !URI){ return; }
+	var match, str = "", url = "", urlChrs = "[\\t\\s\\w\\(\\)\\/\\.\\\\'\"-:#=&?~]+";
+	var regex = new RegExp('url\\(\\s*('+urlChrs+')\\s*\\)');
+	var regexProtocol = /(file|https?|ftps?):\/\//;
+	regexTrim = new RegExp("^[\\s]*(['\"]?)("+urlChrs+")\\1[\\s]*?$");
+	if(dojo.render.html.ie55 || dojo.render.html.ie60){
+		var regexIe = new RegExp("AlphaImageLoader\\((.*)src\=['\"]("+urlChrs+")['\"]");
+		// TODO: need to decide how to handle relative paths and AlphaImageLoader see #1441
+		// current implementation breaks on build with intern_strings
 		while(match = regexIe.exec(cssStr)){
-			url = match[1].replace(regexTrim, "$2");
+			url = match[2].replace(regexTrim, "$2");
 			if(!regexProtocol.exec(url)){
 				url = (new dojo.uri.Uri(URI, url).toString());
 			}
-			str += cssStr.substring(0, match.index) + "AlphaImageLoader(src='" + url + "'";
+			str += cssStr.substring(0, match.index) + "AlphaImageLoader(" + match[1] + "src='" + url + "'";
 			cssStr = cssStr.substr(match.index + match[0].length);
 		}
-		return str + cssStr;
+		cssStr = str + cssStr;
+		str = "";
 	}
 
-	if(!cssStr || !URI){ return; }
-	var match, str = "", url = "";
-	var regex = /url\(\s*([\t\s\w()\/.\\'"-:#=&?]+)\s*\)/;
-	var regexProtocol = /(file|https?|ftps?):\/\//;
-	var regexTrim = /^[\s]*(['"]?)([\w()\/.\\'"-:#=&?]*)\1[\s]*?$/;
-	if (dojo.render.html.ie55 || dojo.render.html.ie60) {
-		cssStr = iefixPathsInCssText();
-	}
 	while(match = regex.exec(cssStr)){
 		url = match[1].replace(regexTrim, "$2");
 		if(!regexProtocol.exec(url)){

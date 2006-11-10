@@ -6,42 +6,47 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.selection");
 
-// summary
-//	Same as an HTML checkbox, but with fancy styling
 dojo.widget.defineWidget(
 	"dojo.widget.Checkbox",
 	dojo.widget.HtmlWidget,
 	{
+		// summary
+		//	Same as an HTML checkbox, but with fancy styling
+
 		templatePath: dojo.uri.dojoUri('src/widget/templates/Checkbox.html'),
 		templateCssPath: dojo.uri.dojoUri('src/widget/templates/Checkbox.css'),
 
-		// Boolean
-		//	if true, clicking will not change the state of the checkbox.
-		//	in markup, this is specified as "disabled='disabled'", or just "disabled", 
-		disabled: false,
-		
-		// String
+		// name: String
 		//	name used when submitting form; same as "name" attribute or plain HTML elements
 		name: "",
 
-		// String
+		// id: String
 		//	id attached to the checkbox, used when submitting form
 		id: "",
 
-		// Boolean
+		// checked: Boolean
 		//	if true, checkbox is initially marked turned on;
 		//	in markup, specified as "checked='checked'" or just "checked"
 		checked: false,
 		
-		// Integer
+		// tabIndex: Integer
 		//	order fields are traversed when user hits the tab key
 		tabIndex: "",
+
+		// value: Value
+		//	equivalent to value field on normal checkbox (if checked, the value is passed as
+		//	the value when form is submitted)
+		value: "on",
 
 		postMixInProperties: function(){
 			dojo.widget.Checkbox.superclass.postMixInProperties.apply(this, arguments);
 			
 			// set tabIndex="0" because if tabIndex=="" user won't be able to tab to the field
 			if(!this.disabled && this.tabIndex==""){ this.tabIndex="0"; }
+		},
+
+		fillInTemplate: function(){
+			this._setInfo();
 		},
 
 		postCreate: function(){
@@ -76,10 +81,6 @@ dojo.widget.defineWidget(
 			dojo.html.disableSelection(node);
 		},
 
-		fillInTemplate: function(){
-			this._setInfo();
-		},
-
 		_onClick: function(/*Event*/ e){
 			if(this.disabled == false){
 				this.checked = !this.checked;
@@ -88,6 +89,14 @@ dojo.widget.defineWidget(
 			e.preventDefault();
 			e.stopPropagation();
 			this.onClick();
+		},
+
+		setValue: function(/*boolean*/ bool){
+			// summary: set the checkbox state
+			if(this.disabled == false){
+				this.checked = bool;
+				this._setInfo();
+			}
 		},
 
 		onClick: function(){
@@ -125,25 +134,33 @@ dojo.widget.defineWidget(
 		},
 
 		_setInfo: function(){
-			// summary: set CSS class string according to checked/unchecked and disabled/enabled state
+			// summary:
+			//	set state of hidden checkbox node to correspond to displayed value.
+			//	also set CSS class string according to checked/unchecked and disabled/enabled state
 			var state = "dojoHtmlCheckbox" + (this.disabled ? "Disabled" : "") + (this.checked ? "On" : "Off");
 			dojo.html.setClass(this.imageNode, "dojoHtmlCheckbox " + state);
 			this.inputNode.checked = this.checked;
-			if (this.disabled){
-				this.inputNode.disabled = true;
+			if(this.disabled){
+				this.inputNode.setAttribute("disabled",true);
+			}else{
+				this.inputNode.removeAttribute("disabled");
 			}
 			dojo.widget.wai.setAttr(this.domNode, "waiState", "checked", this.checked);
 		}
 	}
 );
 
-// summary
-//	variation on Checkbox widget to be display on monitors in high-contrast mode (that don't display CSS background images)
 dojo.widget.defineWidget(
 	"dojo.widget.a11y.Checkbox",
 	dojo.widget.Checkbox,
 	{
+		// summary
+		//	variation on Checkbox widget to be display on monitors in high-contrast mode (that don't display CSS background images)
+
 		templatePath: dojo.uri.dojoUri('src/widget/templates/CheckboxA11y.html'),
+
+		fillInTemplate: function(){
+		},
 
 		postCreate: function(args, frag){
 			this.inputNode.checked=this.checked;
@@ -151,9 +168,6 @@ dojo.widget.defineWidget(
 			if (this.disabled){
 				this.inputNode.setAttribute("disabled",true);
 			} 
-		},
-
-		fillInTemplate: function(){
 		},
 
 		_onClick: function(){

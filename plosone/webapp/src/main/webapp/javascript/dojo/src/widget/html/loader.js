@@ -6,8 +6,9 @@ dojo.require("dojo.lang.common");
 dojo.require("dojo.lang.extras");
 
 dojo.require("dojo.experimental");
+dojo.experimental("dojo.widget.html.loader");
 
-// as this is a singleton dojo.declare doesnt by us anything here
+// as this is a singleton dojo.declare doesn't buy us anything here
 dojo.widget.html.loader = new (function(){
 	// summary:
 	// 	loading stuff moved out of contentpane to make it directly accessible by other widgets
@@ -58,7 +59,7 @@ dojo.widget.html.loader = new (function(){
 
 
 	/************ private needed functions, no need to be part of widget API ***********/
-	// usefull if user wants to prevent default behaviour ie: _setContent("Error...")
+	// useful if user wants to prevent default behaviour ie: _setContent("Error...")
 	function handleDefaults(e, handler, useAlert){
 		if(!handler){ handler = "onContentError"; }
 		if(dojo.lang.isString(e)){ e = {_text: e}; }
@@ -141,7 +142,7 @@ dojo.widget.html.loader = new (function(){
 
 	// run java function
 	function runHandler(){
-		//FIXME: current behaviour is to return false if handler is there, is that intended?
+		//FIXME: current behaviour is to return false if handler is there; is that intended?
 		if(dojo.lang.isFunction(this.handler)) {
 			this.handler(this, this.containerNode||this.domNode);
 			refreshed.call(this);
@@ -262,7 +263,7 @@ dojo.widget.html.loader = new (function(){
 				if(!sc){ continue; }
 
 				// cut out all dojo .require (...) calls, if we have execute 
-				// scripts false widgets dont get there require calls
+				// scripts false widgets don't get their require calls
 				// takes out possible widgetpackage registration as well
 				while(tmp = regexRequires.exec(sc)){
 					requires.push(tmp[0]);
@@ -298,7 +299,7 @@ dojo.widget.html.loader = new (function(){
 		//	url 			string? or dojo.uri.Uri that that pulled the content in, for path adjust
 		//	adjustPaths		boolean, if true adjust relative paths in content to match this page
 		//	collectScripts	boolean, if true it takes out all <script and <script src=.. tags and collects
-		//					 dojo.require calls in a separate array, usefull for eval
+		//					 dojo.require calls in a separate array, useful for eval
 		//	collectRequires	boolean, if true and collectScripts is false it still collects scripts along with
 		//					 dojo.require calls
 		//	bodyExtract		boolean, if true only return content inside of the body tag
@@ -309,7 +310,7 @@ dojo.widget.html.loader = new (function(){
 		//					scripts: array, remote scripts get object {path: /*string*/url}
 		//					url: string}
 		if(!args.url) { args.url = "./"; } // point to this page if not set
-		// make sure back/forward buttons dont mess up url.
+		// make sure back/forward buttons don't mess up url.
 		url = new dojo.uri.Uri(location, args.url).toString();
 		var ret = {'xml': 	"",
 				'styles':	[],
@@ -318,7 +319,7 @@ dojo.widget.html.loader = new (function(){
 				'scripts':	[],
 				'url':		url };
 
-		if(args.content){ // make sure we dont run regexes on empty content
+		if(args.content){ // make sure we don't run regexes on empty content
 			var tmp = null, content = args.content;
 			if(args.adjustPaths){
 				content = _loader.htmlContentAdjustPaths.call(this, content, url);
@@ -364,9 +365,9 @@ dojo.widget.html.loader = new (function(){
 			widget = dojo.evalObjPath(widget);
 		}
 		if(!widget || !(widget instanceof dojo.widget.HtmlWidget)){
-			dojo.raise(this.toString()+" Widget is'nt defined or isnt a HtmlWidget instance"); 
+			dojo.raise(this.toString()+" Widget isn't defined or isn't a HtmlWidget instance"); 
 		}
-		// make sure we dont mixin more than once
+		// make sure we don't mixin more than once
 		if(widget.loader && widget.setUrl){ return; }
 
 		// extend widget prototype or mixin this widget instance
@@ -429,7 +430,7 @@ dojo.widget.html.loader = new (function(){
 				};
 				return function(){
 					if(wg.abort){ wg.abort(); }
-					// make sure we dont unhook prototype if there is more widgets of this type left
+					// make sure we don't unhook prototype if there are more widgets of this type left
 					if((w != wg) && (dojo.widget.byType(wg.widgetType).length>1)){ return; }
 					for(var x in oldProps){
 						if(oldProps[x]===undefined){
@@ -443,12 +444,12 @@ dojo.widget.html.loader = new (function(){
 			})(widgetProto, widget)
 		};
 
-		// make sure we dont do this more than once per widget/widgetprototype
+		// make sure we don't do this more than once per widget/widgetprototype
 		if(widgetProto._loader_defined || widget._loader_defined){ return; }		
 
 		/**************** private variables *********************/
 
-		// loading options, prototype parts of widgets mixin to prototype
+		// loading options, prototype parts of widget's mixin to prototype
 		dojo.mixin(widgetProto, {
 			// always set to a containerwidget
 			isContainer: true,
@@ -465,7 +466,7 @@ dojo.widget.html.loader = new (function(){
 			cacheContent: 	undef(widgetProto.cacheContent) ? true : widgetProto.cacheContent,
 			// specify  specific  io.bind arguments such as transport and useCache
 			bindArgs:		undef(widgetProto.bindArgs) ? {} : widgetProto.bindArgs,
-			// force load even if widget isnt shown (lazyload setting)
+			// force load even if widget isn't shown (lazyload setting)
 			preload: 		undef(widgetProto.preload) ? false : widgetProto.preload,
 			// reload content automatically onShow, use with cacheContent = flase
 			refreshOnShow:	undef(widgetProto.refreshOnShow) ? false : widgetProto.refreshOnShow,
@@ -479,7 +480,7 @@ dojo.widget.html.loader = new (function(){
 		});
 
 		/****************************************************
-		******* public functions, becomes part of widgets API
+		******* public functions, becomes part of widget's API
 		*****************************************************/
 
 		/*********** Public functions that wigets cant overide **********/
@@ -683,7 +684,7 @@ dojo.widget.html.loader = new (function(){
 					}
 				}catch(e){
 					e._text = "Could'nt load content: "+e;
-					var useAlert = (this.loader._onSetContent_err == e._text); // make sure we dont loop
+					var useAlert = (this.loader._onSetContent_err == e._text); // make sure we don't loop
 					this.loader._onSetContent_err = e._text;
 					handleDefaults.call(this, e, "onContentError", useAlert);
 				}
@@ -799,8 +800,8 @@ dojo.widget.html.loader = new (function(){
 				}
 
 				try{
-					// initialize a new anonymous container for our script, dont make it part of this widgets scope chain
-					// instead send in a variable that points to this widget, usefull to connect events to onLoad, onUnLoad etc..
+					// initialize a new anonymous container for our script, don't make it part of this widget's scope chain
+					// instead send in a variable that points to this widget, useful to connect events to onLoad, onUnLoad etc..
 					delete this.scriptScope;
 					this.scriptScope = new (new Function('_container_', code+'; return this;'))(self);
 				}catch(e){

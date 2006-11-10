@@ -4,10 +4,13 @@
 		@author Brad Neuberg, bkn3@columbia.edu 
 */
 dojo.provide("dojo.storage");
-dojo.provide("dojo.storage.StorageProvider");
 
 dojo.require("dojo.lang.*");
 dojo.require("dojo.event.*");
+
+// create an empty "StorageProvider", which was being created as a side-effect
+//	of the erroneous dojo.provide("dojo.storage.StorageProvider")
+dojo.storage.StorageProvider = {}
 
 
 /** The base class for all storage providers. */

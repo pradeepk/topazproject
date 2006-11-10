@@ -8,13 +8,6 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 
-
-//PopupContainerBase is the mixin class which provide popup behaviors:
-//it can open in a given position x,y or around a given node.
-//In addition, it handles animation and IE bleed through workaround.
-//This class can not be used standalone: it should be mixed-in to a
-//dojo.widget.HtmlWidget. Use PopupContainer instead if you want a
-//a standalone popup widget
 dojo.declare(
 	"dojo.widget.PopupContainerBase",
 	null,
@@ -22,45 +15,67 @@ dojo.declare(
 		this.queueOnAnimationFinish = [];
 	},
 {
+	// summary:
+	//		PopupContainerBase is the mixin class which provide popup behaviors:
+	//		it can open in a given position x,y or around a given node.
+	//		In addition, it handles animation and IE bleed through workaround.
+	// description:
+	//		This class can not be used standalone: it should be mixed-in to a
+	//		dojo.widget.HtmlWidget. Use PopupContainer instead if you want a
+	//		a standalone popup widget
+
 	isContainer: true,
 	templateString: '<div dojoAttachPoint="containerNode" style="display:none;position:absolute;" class="dojoPopupContainer" ></div>',
 
+	// isShowingNow: Boolean: whether this popup is shown
 	isShowingNow: false,
 
+	// currentSubpopup: Widget: the shown sub popup if any
 	currentSubpopup: null,
 
+	// beginZIndex: Integer: the minimal popup zIndex
 	beginZIndex: 1000,
 
+	// parentPopup: Widget: parent popup widget
 	parentPopup: null,
-	parent: null, // parent Widget
+
+	// parent: Widget: the widget that caused me to be displayed; the logical parent.
+	parent: null,
+
+	// popupIndex: Integer: level of sub popup
 	popupIndex: 0,
 
-	aroundBox: dojo.html.boxSizing.BORDER_BOX, //by default, popup around the BORDER box of the aroundNode in open()
+	// aroundBox: dojo.html.boxSizing: which bounding box to use for open aroundNode. By default use BORDER box of the aroundNode
+	aroundBox: dojo.html.boxSizing.BORDER_BOX,
 
-	openedForWindow: null, //in which window, the open() is triggered
+	// openedForWindow: Object: in which window the open() is triggered
+	openedForWindow: null,
 
-	processKey: function(evt){
+	processKey: function(/*Event*/evt){
+		// summary: key event handler
 		return false;
 	},
 
-	//this function should be called in sub class where a custom
-	//templateString/templateStringPath is used (see Tooltip widget)
 	applyPopupBasicStyle: function(){
+		// summary: apply necessary css rules to the top domNode
+		// description:
+		//		this function should be called in sub class where a custom
+		//		templateString/templateStringPath is used (see Tooltip widget)
 		with(this.domNode.style){
 			display = 'none';
 			position = 'absolute';
 		}
 	},
 
-	//connect to this stub to modify the content of the popup
-	aboutToShow: function() {},
+	aboutToShow: function() {
+		// summary: connect to this stub to modify the content of the popup
+	},
 
-	/**
-	 * Open the popup at position (x,y), relative to dojo.body()
-	 * Or open(node, parent, explodeSrc, aroundOrient) to open
-	 * around node
-	 */
-	open: function(x, y, parent, explodeSrc, orient, padding){
+	open: function(/*Integer*/x, /*Integer*/y, /*DomNode*/parent, /*Object*/explodeSrc, /*String?*/orient, /*Array?*/padding){
+		// summary:
+		//		Open the popup at position (x,y), relative to dojo.body()
+	 	//		Or open(node, parent, explodeSrc, aroundOrient) to open
+	 	//		around node
 		if (this.isShowingNow){ return; }
 
 		this.aboutToShow();
@@ -148,9 +163,10 @@ dojo.declare(
 		this.isShowingNow = true;
 	},
 
-	/* Summery: calculate where to place the popup
-		move(node, padding, aroundOrient) */
-	move: function(x, y, padding, orient){
+	// TODOC: move(node, padding, aroundOrient) how to do this?
+	move: function(/*Int*/x, /*Int*/y, /*Integer?*/padding, /*String?*/orient){
+		// summary: calculate where to place the popup
+
 		var around = (typeof x == "object");
 		if(around){
 			var aroundOrient=padding;
@@ -166,7 +182,8 @@ dojo.declare(
 		}
 	},
 
-	close: function(force){
+	close: function(/*Boolean?*/force){
+		// summary: hide the popup
 		if(force){
 			this.domNode.style.display="none";
 		}
@@ -203,7 +220,8 @@ dojo.declare(
 		this._bookmark = null;
 	},
 
-	closeAll: function(force){
+	closeAll: function(/*Boolean?*/force){
+		// summary: hide all popups including sub ones
 		if (this.parentPopup){
 			this.parentPopup.closeAll(force);
 		}else{
@@ -211,12 +229,13 @@ dojo.declare(
 		}
 	},
 
-	//call this when a embedded popup is shown
-	setOpenedSubpopup: function(popup) {
+	setOpenedSubpopup: function(/*Widget*/popup) {
+		// summary: used by sub popup to set currentSubpopup in the parent popup
 		this.currentSubpopup = popup;
 	},
 
-	closeSubpopup: function(force) {
+	closeSubpopup: function(/*Boolean?*/force) {
+		// summary: close opened sub popup
 		if(this.currentSubpopup == null){ return; }
 
 		this.currentSubpopup.close(force);
@@ -224,7 +243,7 @@ dojo.declare(
 	},
 
 	onShow: function() {
-		this.inherited('onShow');
+		dojo.widget.PopupContainer.superclass.onShow.apply(this, arguments);
 		// With some animation (wipe), after close, the size of the domnode is 0
 		// and next time when shown, the open() function can not determine
 		// the correct place to popup, so we store the opened size here and
@@ -243,8 +262,8 @@ dojo.declare(
 		this.processQueue();
 	},
 
-	// do events from queue
 	processQueue: function() {
+		// summary: do events from queue
 		if (!this.queueOnAnimationFinish.length) return;
 
 		var func = this.queueOnAnimationFinish.shift();
@@ -271,17 +290,17 @@ dojo.declare(
 
 dojo.widget.defineWidget(
 	"dojo.widget.PopupContainer",
-	[dojo.widget.HtmlWidget, dojo.widget.PopupContainerBase], {});
+	[dojo.widget.HtmlWidget, dojo.widget.PopupContainerBase], {
+		// summary: dojo.widget.PopupContainer is the widget version of dojo.widget.PopupContainerBase	
+	});
 
-
-//
-// the popup manager makes sure we don't have several popups
-// open at once. the root popup in an opening sequence calls
-// opened(). when a root menu closes it calls closed(). then
-// everything works. lovely.
-//
 
 dojo.widget.PopupManager = new function(){
+	// summary:
+	//		the popup manager makes sure we don't have several popups
+	//		open at once. the root popup in an opening sequence calls
+	//		opened(). when a root menu closes it calls closed(). then
+	//		everything works. lovely.
 
 	this.currentMenu = null;
 	this.currentButton = null;		// button that opened current menu (if any)
@@ -289,7 +308,8 @@ dojo.widget.PopupManager = new function(){
 	this.focusNode = null;
 	this.registeredWindows = [];
 
-	this.registerWin = function(win){
+	this.registerWin = function(/*Window*/win){
+		// summary: register a window so that when clicks/scroll in it, the popup can be closed automatically
 		if(!win.__PopupManagerRegistered)
 		{
 			dojo.event.connect(win.document, 'onmousedown', this, 'onClick');
@@ -301,13 +321,16 @@ dojo.widget.PopupManager = new function(){
 	};
 
 	/*
-		This function register all the iframes and the top window,
-		so that whereever the user clicks in the page, the popup
-		menu will be closed
-		In case you add an iframe after onload event, please call
-		dojo.widget.PopupManager.registerWin manually
+
 	*/
-	this.registerAllWindows = function(targetWindow){
+	this.registerAllWindows = function(/*Window*/targetWindow){
+		// summary:
+		//		This function register all the iframes and the top window,
+		//		so that whereever the user clicks in the page, the popup
+		//		menu will be closed
+		//		In case you add an iframe after onload event, please call
+		//		dojo.widget.PopupManager.registerWin manually
+
 		//starting from window.top, clicking everywhere in this page
 		//should close popup menus
 		if(!targetWindow) { //see comment below
@@ -327,7 +350,8 @@ dojo.widget.PopupManager = new function(){
 		}
 	};
 
-	this.unRegisterWin = function(win){
+	this.unRegisterWin = function(/*Window*/win){
+		// summary: remove listeners on the registered window
 		if(win.__PopupManagerRegistered)
 		{
 			dojo.event.disconnect(win.document, 'onmousedown', this, 'onClick');
@@ -338,6 +362,7 @@ dojo.widget.PopupManager = new function(){
 	};
 
 	this.unRegisterAllWindows = function(){
+		// summary: remove listeners on all the registered windows
 		for(var i=0;i<this.registeredWindows.length;++i){
 			this.unRegisterWin(this.registeredWindows[i]);
 		}
@@ -347,7 +372,8 @@ dojo.widget.PopupManager = new function(){
 	dojo.addOnLoad(this, "registerAllWindows");
 	dojo.addOnUnload(this, "unRegisterAllWindows");
 
-	this.closed = function(menu){
+	this.closed = function(/*Widget*/menu){
+		// summary: notify the manager that menu is closed
 		if (this.currentMenu == menu){
 			this.currentMenu = null;
 			this.currentButton = null;
@@ -355,7 +381,8 @@ dojo.widget.PopupManager = new function(){
 		}
 	};
 
-	this.opened = function(menu, button){
+	this.opened = function(/*Widget*/menu, /*DomNode*/button){
+		// summary: sets the current opened popup
 		if (menu == this.currentMenu){ return; }
 
 		if (this.currentMenu){
@@ -367,11 +394,13 @@ dojo.widget.PopupManager = new function(){
 		this.currentButton = button;
 	};
 
-	this.setFocusedMenu = function(menu){
+	this.setFocusedMenu = function(/*Widget*/menu){
+		// summary:
+		// 		Set the current focused popup, This is used by popups which supports keyboard navigation
 		this.currentFocusMenu = menu;
 	};
 
-	this.onKey = function(e){
+	this.onKey = function(/*Event*/e){
 		if (!e.key) { return; }
 		if(!this.currentMenu || !this.currentMenu.isShowingNow){ return; }
 
@@ -386,7 +415,7 @@ dojo.widget.PopupManager = new function(){
 		}
 	},
 
-	this.onClick = function(e){
+	this.onClick = function(/*Event*/e){
 		if (!this.currentMenu){ return; }
 
 		var scrolloffset = dojo.html.getScroll().offset;

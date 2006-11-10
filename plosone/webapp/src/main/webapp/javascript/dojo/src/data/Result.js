@@ -17,23 +17,12 @@ dojo.declare("dojo.data.Result", null, {
 		 *   for each item in the result list.
 		 * description:
 		 *   The forEach() method will call the callback function once for 
-		 *   each item in the result list.  If a callbackObject is provided
-		 *   the callbackFunction will be called in the context of the 
-		 *   callbackObject (the callbackObject will be used as the 'this'
-		 *   for each invocation of the callbackFunction).  If callbackObject 
-		 *   is not provided, or is null, the global object associated with 
-		 *   callback is used instead.  The forEach() method will pass 
+		 *   each item in the result list.  The forEach() method will pass 
 		 *   3 arguments to the callbackFunction: an item, the index of 
 		 *   item in the context of this forEach() loop, and the result object
 		 *   itself.  The signature of this forEach() method was modeled on
 		 *   the forEach() method of Mozilla's Array object in JavaScript 1.6:
 		 *   http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Objects:Array:forEach
-		 *   In addition to the callbackFunction and callbackObject parameters,
-		 *   the forEach() method may accept a third parameter, which should be
-		 *   an object with keyword parameters.  Different implementations may
-		 *   make use of different keyword paramters.  Conforming 
-		 *   implementations ignore keyword parameters that they don't 
-		 *   recognize.
 		 *   The forEach() method will returns true if the entire result list 
 		 *   has been looped through, or false if the result list has not yet
 		 *   been looped through.
@@ -41,31 +30,34 @@ dojo.declare("dojo.data.Result", null, {
 		 *   the callbackFunction.
 		 *   After the forEach() operation has finished (or been cancelled)
 		 *   result.forEach() can be called again on the same result object.
-		 * functionOrKeywordObject:
-		 *   The forEach() method always takes exactly one argument,
-		 *   which is either a simple callback function or an object
-		 *   with keyword parameters.  Conforming implementations must
-		 *   accept 'object' and 'callback' as keyword parameters.  If
-		 *   the caller provides 'object', then the value of 'callback'
-		 *   must be a string with the name of a method available on that
-		 *   object.  If the caller does not provide 'object', then the
-		 *   'callback' value must be a function.  Different implementations
-		 *   may support additional keywords, but implementations are not
-		 *   required to support anything else.
-		 * examples:
-		 *   var results = store.find("recent books");            // synchronous
-		 *   var results = store.find("all books", {async: true}); // asynchronous
-		 *   someCallbackFunction = function(item, resultObject) {};
-		 *   results.forEach(someCallbackFunction);
-		 *   results.forEach({object:someHandlerObject, callback:"someCallbackMethod"});
-		 * issues:
+		 * ISSUES -
 		 *   We haven't yet decided what other parameters we might allow to
 		 *   support fancy features.  Here are some ideas:
 		 *     results.forEach({callback:callbackFunction, onCompletion: finishedFunction});
 		 *     results.forEach({callback:callbackFunction, first: 201, last: 300}); // partial loop
 		 *     results.forEach({callback:callbackFunction, first: 200, numItems: 50}); // partial loop from 200 to 250
-		 *   CCM: How to specify datastore-specific options to allow caching n
+		 *   CCM - How to specify datastore-specific options to allow caching n
 		 *   items before/after current window of items being viewed?
+		 * callbackObject:
+		 *   If a callbackObject is provided the callbackFunction will be called
+		 *   in the context of the callbackObject (the callbackObject will be 
+		 *   used as the 'this' for each invocation of the callbackFunction).
+		 *   If callbackObject is not provided, or is null, the global object
+		 *   associated with callback is used instead.
+		 * optionalKeywordArgs:
+		 *   The forEach() method may accept a third parameter, which should be
+		 *   an object with keyword parameters.  Different implementations may
+		 *   make use of different keyword paramters.  Conforming 
+		 *   implementations ignore keyword parameters that they don't 
+		 *   recognize.
+		 */
+		 
+		/* examples:
+		 *   var results = store.find("recent books");            // synchronous
+		 *   var results = store.find("all books", {sync: false}); // asynchronous
+		 *   someCallbackFunction = function(item, resultObject) {};
+		 *   results.forEach(someCallbackFunction);
+		 *   results.forEach({object:someHandlerObject, callback:"someCallbackMethod"});
 		 */
 			dojo.unimplemented('dojo.data.Result.forEach');
 			return false; // boolean
@@ -115,7 +107,7 @@ dojo.declare("dojo.data.Result", null, {
 		 *   null, the global object associated with callback is used instead.
 		 *   The setOnFindCompleted() method will ignore any return value 
 		 *   returned by the callbackFunction.
-		 * issues:
+		 * ISSUES -
 		 *   We have not yet decided what parameters the setOnFindCompleted() 
 		 *   will pass to the callbackFunction...
 		 *   (A) The setOnFindCompleted() method will pass one parameter to the 

@@ -17,7 +17,7 @@ dojo.html.getDocumentWindow = function(doc){
 			This is a Safari specific function that fix the reference to the parent
 			window from the document object.
 		*/
-	
+
 		var fix=function(win){
 			win.document._parentWindow=win;
 			for(var i=0; i<win.frames.length; i++){
@@ -27,14 +27,14 @@ dojo.html.getDocumentWindow = function(doc){
 		fix(window.top);
 	}
 
-	//In some IE versions (at least 6.0), document.parentWindow does not return a 
+	//In some IE versions (at least 6.0), document.parentWindow does not return a
 	//reference to the real window object (maybe a copy), so we must fix it as well
-	//We use IE specific execScript to attach the real window reference to 
+	//We use IE specific execScript to attach the real window reference to
 	//document._parentWindow for later use
 	if(dojo.render.html.ie && window !== document.parentWindow && !doc._parentWindow){
 		/*
 		In IE 6, only the variable "window" can be used to connect events (others
-		may be only copies). 
+		may be only copies).
 		*/
 		doc.parentWindow.execScript("document._parentWindow = window;", "Javascript");
 		//to prevent memory leak, unset it after use
@@ -72,7 +72,7 @@ dojo.html.gravity = function(/* HTMLElement */node, /* DOMEvent */e){
 		var nodecenterx = absolute.x + (bb.width / 2);
 		var nodecentery = absolute.y + (bb.height / 2);
 	}
-	
+
 	with (dojo.html.gravity) {
 		return ((mouse.x < nodecenterx ? WEST : EAST) | (mouse.y < nodecentery ? NORTH : SOUTH));	//	integer
 	}
@@ -86,6 +86,7 @@ dojo.html.gravity.WEST = 1 << 3;
 dojo.html.overElement = function(/* HTMLElement */element, /* DOMEvent */e){
 	//	summary
 	//	Returns whether the mouse is over the passed element.
+	//	Element must be display:block (ie, not a <span>)
 	element = dojo.byId(element);
 	var mouse = dojo.html.getCursorPosition(e);
 	var bb = dojo.html.getBorderBox(element);
@@ -94,10 +95,10 @@ dojo.html.overElement = function(/* HTMLElement */element, /* DOMEvent */e){
 	var bottom = top + bb.height;
 	var left = absolute.x;
 	var right = left + bb.width;
-	
-	return (mouse.x >= left 
-		&& mouse.x <= right 
-		&& mouse.y >= top 
+
+	return (mouse.x >= left
+		&& mouse.x <= right
+		&& mouse.y >= top
 		&& mouse.y <= bottom
 	);	//	boolean
 }
@@ -127,9 +128,9 @@ dojo.html.renderedTextContent = function(/* HTMLElement */node){
 						result += dojo.html.renderedTextContent(node.childNodes[i]);
 						result += "\n";
 						break;
-					
+
 					case "none": break;
-					
+
 					default:
 						if(node.childNodes[i].tagName && node.childNodes[i].tagName.toLowerCase() == "br") {
 							result += "\n";
@@ -222,7 +223,7 @@ dojo.html.createNodesFromText = function(/* string */txt, /* boolean? */trim){
 	}
 
 	/* this doesn't make much sense, I'm assuming it just meant trim() so wrap was replaced with trim
-	if(wrap){ 
+	if(wrap){
 		var ret = [];
 		// start hack
 		var fc = tn.firstChild;
@@ -243,12 +244,12 @@ dojo.html.createNodesFromText = function(/* string */txt, /* boolean? */trim){
 }
 
 dojo.html.placeOnScreen = function(
-	/* HTMLElement */node, 
-	/* integer */desiredX, 
-	/* integer */desiredY, 
-	/* integer */padding, 
-	/* boolean? */hasScroll, 
-	/* string? */corners, 
+	/* HTMLElement */node,
+	/* integer */desiredX,
+	/* integer */desiredY,
+	/* integer */padding,
+	/* boolean? */hasScroll,
+	/* string? */corners,
 	/* boolean? */tryOnly
 ){
 	//	summary
@@ -263,7 +264,7 @@ dojo.html.placeOnScreen = function(
 	//	placeOnScreen(node, desiredX, desiredY, padding, hasScroll, "TR")
 	//	placeOnScreen(node, [desiredX, desiredY], padding, hasScroll, ["TR", "BL"])
 	//
-	//	The desiredX/desiredY will be treated as the topleft(TL)/topright(TR) or 
+	//	The desiredX/desiredY will be treated as the topleft(TL)/topright(TR) or
 	//	BottomLeft(BL)/BottomRight(BR) corner of the node. Each corner is tested
 	//	and if a perfect match is found, it will be used. Otherwise, it goes through
 	//	all of the specified corners, and choose the most appropriate one.
@@ -316,7 +317,7 @@ dojo.html.placeOnScreen = function(
 	if(!(corners instanceof Array || typeof corners == "array")){
 		corners = ['TL'];
 	}
-	
+
 	var bestx, besty, bestDistance = Infinity, bestCorner;
 
 	for(var cidex=0; cidex<corners.length; ++cidex){
@@ -347,7 +348,7 @@ dojo.html.placeOnScreen = function(
 			x = tryX;
 		}
 		x = Math.max(padding[0], x) + scroll.x;
-	
+
 		var y = tryY + h;
 		if(y > view.height) {
 			y = view.height - h;
@@ -379,7 +380,7 @@ dojo.html.placeOnScreen = function(
 		node.style.left = bestx + "px";
 		node.style.top = besty + "px";
 	}
-	
+
 	return { left: bestx, top: besty, x: bestx, y: besty, dist: bestDistance, corner:  bestCorner};	//	object
 }
 
@@ -389,19 +390,19 @@ dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasSc
 }
 
 dojo.html.placeOnScreenAroundElement = function(
-	/* HTMLElement */node, 
-	/* HTMLElement */aroundNode, 
-	/* integer */padding, 
-	/* string? */aroundType, 
-	/* string? */aroundCorners, 
+	/* HTMLElement */node,
+	/* HTMLElement */aroundNode,
+	/* integer */padding,
+	/* string? */aroundType,
+	/* string? */aroundCorners,
 	/* boolean? */tryOnly
 ){
 	//	summary
-	//	Like placeOnScreen, except it accepts aroundNode instead of x.y 
-	//	and attempts to place node around it. aroundType (see 
+	//	Like placeOnScreen, except it accepts aroundNode instead of x,y
+	//	and attempts to place node around it. aroundType (see
 	//	dojo.html.boxSizing in html/layout.js) determines which box of the
 	//	aroundNode should be used to calculate the outer box.
-	//	aroundCorners specify Which corner of aroundNode should be 
+	//	aroundCorners specify Which corner of aroundNode should be
 	//	used to place the node => which corner(s) of node to use (see the
 	//	corners parameter in dojo.html.placeOnScreen)
 	//	aroundCorners: {'TL': 'BL', 'BL': 'TL'}
@@ -415,7 +416,7 @@ dojo.html.placeOnScreenAroundElement = function(
 	var aroundNodeH = mb.height;
 	var aroundNodePos = dojo.html.getAbsolutePosition(aroundNode, true, aroundType);
 	aroundNode.style.display=oldDisplay;
-	
+
 	for(var nodeCorner in aroundCorners){
 		var pos, desiredX, desiredY;
 		var corners = aroundCorners[nodeCorner];
@@ -447,7 +448,7 @@ dojo.html.scrollIntoView = function(/* HTMLElement */node){
 	//	summary
 	//	Scroll the passed node into view, if it is not.
 	if(!node){ return; }
-	
+
 	// don't rely on that node.scrollIntoView works just because the function is there
 	// it doesnt work in Konqueror or Opera even though the function is there and probably
 	// not safari either

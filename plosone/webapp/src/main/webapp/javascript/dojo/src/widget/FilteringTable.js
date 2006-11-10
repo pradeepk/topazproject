@@ -14,6 +14,8 @@ dojo.widget.defineWidget(
 	"dojo.widget.FilteringTable", 
 	dojo.widget.HtmlWidget, 
 	function(){
+		//	summary
+		//	Initializes all properties for the widget.
 		this.store=new dojo.collections.Store();
 
 		//declare per instance changeable widget properties
@@ -50,38 +52,48 @@ dojo.widget.defineWidget(
 	templateCssPath: null,
 
 	//	methods.
-	getTypeFromString: function(s){
+	getTypeFromString: function(/* string */s){
+		//	summary
+		//	Gets a function based on the passed string.
 		var parts = s.split("."), i = 0, obj = dj_global; 
 		do{ 
 			obj = obj[parts[i++]]; 
 		} while (i < parts.length && obj); 
-		return (obj != dj_global) ? obj : null;
+		return (obj != dj_global) ? obj : null;	//	function
 	},
 
 	//	custom data access.
 	getByRow: function(/*HTMLTableRow*/row){
-		return this.store.getByKey(dojo.html.getAttribute(row, "value")); 
+		//	summary
+		//	Returns the data object based on the passed row.
+		return this.store.getByKey(dojo.html.getAttribute(row, "value"));	//	object
 	},
 	getDataByRow: function(/*HTMLTableRow*/row){
-		return this.store.getDataByKey(dojo.html.getAttribute(row, "value"));
+		//	summary
+		//	Returns the source data object based on the passed row.
+		return this.store.getDataByKey(dojo.html.getAttribute(row, "value")); // object
 	},
 
 	getRow: function(/* Object */ obj){
+		//	summary
+		//	Finds the row in the table based on the passed data object.
 		var rows = this.domNode.tBodies[0].rows;
 		for(var i=0; i<rows.length; i++){
 			if(this.store.getDataByKey(dojo.html.getAttribute(rows[i], "value")) == obj){
-				return rows[i];
+				return rows[i];	//	HTMLTableRow
 			}
 		}
-		return null;
+		return null;	//	HTMLTableRow
 	},
 	getColumnIndex: function(/* string */fieldPath){
+		//	summary
+		//	Returns index of the column that represents the passed field path.
 		for(var i=0; i<this.columns.length; i++){
 			if(this.columns[i].getField() == fieldPath){
-				return i;
+				return i;	//	integer
 			}
 		}
-		return -1;
+		return -1;	//	integer
 	},
 
 	getSelectedData: function(){
@@ -102,6 +114,8 @@ dojo.widget.defineWidget(
 	},
 	
 	isSelected: function(/* object */obj){
+		//	summary
+		//	Returns whether the passed object is currently selected.
 		var data = this.store.get();
 		for(var i=0; i<data.length; i++){
 			if(data[i].src == obj){
@@ -111,28 +125,36 @@ dojo.widget.defineWidget(
 		return false;	//	boolean
 	},
 	isValueSelected: function(/* string */val){
+		//	summary
+		//	Returns the object represented by key "val" is selected.
 		var v = this.store.getByKey(val);
 		if(v){
-			return v.isSelected;
+			return v.isSelected;	//	boolean
 		}
-		return false;
+		return false;	//	boolean
 	},
 	isIndexSelected: function(/* number */idx){
+		//	summary
+		//	Returns the object represented by integer "idx" is selected.
 		var v = this.store.getByIndex(idx);
 		if(v){
-			return v.isSelected;
+			return v.isSelected;	//	boolean
 		}
-		return false;
+		return false;	//	boolean
 	},
 	isRowSelected: function(/* HTMLTableRow */row){
+		//	summary
+		//	Returns if the passed row is selected.
 		var v = this.getByRow(row);
 		if(v){
-			return v.isSelected;
+			return v.isSelected;	//	boolean
 		}
-		return false;
+		return false;	//	boolean
 	},
 
 	reset: function(){
+		//	summary
+		//	Resets the widget to its initial internal state.
 		this.store.clearData();
 		this.columns = [];
 		this.sortInformation = [ {index:0, direction:0} ];
@@ -141,14 +163,21 @@ dojo.widget.defineWidget(
 		this.onReset();
 	},
 	resetSelections: function(){
+		//	summary
+		//	Unselects all data objects.
 		this.store.forEach(function(element){
 			element.isSelected = false;
 		});
 	},
-	onReset:function(){ },
+	onReset:function(){ 
+		//	summary
+		//	Stub for onReset event.
+	},
 
 	//	selection and toggle functions
 	select: function(/*object*/ obj){
+		//	summary
+		//	selects the passed object.
 		var data = this.store.get();
 		for(var i=0; i<data.length; i++){
 			if(data[i].src == obj){
@@ -159,22 +188,35 @@ dojo.widget.defineWidget(
 		this.onDataSelect(obj);
 	},
 	selectByValue: function(/*string*/ val){
+		//	summary
+		//	selects the object represented by key "val".
 		this.select(this.store.getDataByKey(val));
 	},
 	selectByIndex: function(/*number*/ idx){
+		//	summary
+		//	selects the object represented at index "idx".
 		this.select(this.store.getDataByIndex(idx));
 	},
 	selectByRow: function(/*HTMLTableRow*/ row){
+		//	summary
+		//	selects the object represented by HTMLTableRow row.
 		this.select(this.getDataByRow(row));
 	},
 	selectAll: function(){
+		//	summary
+		//	selects all objects.
 		this.store.forEach(function(element){
 			element.isSelected = true;
 		});
 	},
-	onDataSelect: function(/* object */obj){ },
+	onDataSelect: function(/* object */obj){ 
+		//	summary
+		//	Stub for onDataSelect event.
+	},
 
 	toggleSelection: function(/*object*/obj){
+		//	summary
+		//	Flips the selection state of passed obj.
 		var data = this.store.get();
 		for(var i=0; i<data.length; i++){
 			if(data[i].src == obj){
@@ -185,20 +227,31 @@ dojo.widget.defineWidget(
 		this.onDataToggle(obj);
 	},
 	toggleSelectionByValue: function(/*string*/val){
+		//	summary
+		//	Flips the selection state of object represented by val.
 		this.toggleSelection(this.store.getDataByKey(val));
 	},
 	toggleSelectionByIndex: function(/*number*/idx){
+		//	summary
+		//	Flips the selection state of object at index idx.
 		this.toggleSelection(this.store.getDataByIndex(idx));
 	},
 	toggleSelectionByRow: function(/*HTMLTableRow*/row){
+		//	summary
+		//	Flips the selection state of object represented by row.
 		this.toggleSelection(this.getDataByRow(row));
 	},
 	toggleAll: function(){
+		//	summary
+		//	Flips the selection state of all objects.
 		this.store.forEach(function(element){
 			element.isSelected = !element.isSelected;
 		});
 	},
-	onDataToggle: function(/* object */obj){ },
+	onDataToggle: function(/* object */obj){ 
+		//	summary
+		//	Stub for onDataToggle event.
+	},
 
 	//	parsing functions, from HTML to metadata/SimpleStore
 	_meta:{
@@ -238,6 +291,8 @@ dojo.widget.defineWidget(
 		return obj;	//	object
 	},
 	parseMetadata: function(/* HTMLTableHead */head){
+		//	summary
+		//	Parses the passed HTMLTableHead element to create meta data.
 		this.columns=[];
 		this.sortInformation=[];
 		var row = head.getElementsByTagName("tr")[0];
@@ -548,9 +603,9 @@ dojo.widget.defineWidget(
 			var meta=self.columns[fieldIndex];
 			var field=meta.getField();
 			return function(rowA, rowB){
-				if(dojo.html.hasAttribute(rowA,"emptyRow") || dojo.html.hasAttribute(rowB,"emptyRow")){
-					return -1;
-				}
+				if(dojo.html.hasAttribute(rowA,"emptyRow")){ return 1; }
+				if(dojo.html.hasAttribute(rowB,"emptyRow")){ return -1; }
+
 				//	TODO: check for markup and compare by rendered text.
 				var a = self.store.getField(self.getDataByRow(rowA), field);
 				var b = self.store.getField(self.getDataByRow(rowB), field);
@@ -584,6 +639,8 @@ dojo.widget.defineWidget(
 
 	//	rendering
 	createRow: function(/* object */obj){
+		//	summary
+		//	Create an HTML row based on the passed object
 		var row=document.createElement("tr");
 		dojo.html.disableSelection(row);
 		if(obj.key != null){
@@ -601,9 +658,11 @@ dojo.widget.defineWidget(
 			this.fillCell(cell, this.columns[j], val);
 			row.appendChild(cell);
 		}
-		return row;
+		return row;	//	HTMLTableRow
 	},
 	fillCell: function(/* HTMLTableCell */cell, /* object */meta, /* object */val){
+		//	summary
+		//	Fill the passed cell with value, based on the passed meta object.
 		if(meta.sortType=="__markup__"){
 			cell.innerHTML=val;
 		} else {
@@ -700,7 +759,6 @@ dojo.widget.defineWidget(
 			var data = this.store.get();
 			for(var i=0; i<data.length; i++){
 				var row = this.createRow(data[i]);
-				dojo.event.connect(row, "onclick", this, "onSelect");
 				body.appendChild(row);
 				idx++;
 			}
@@ -739,6 +797,9 @@ dojo.widget.defineWidget(
 		return this.isInitialized;
 	},
 	render: function(){
+		//	summary
+		//	Renders the actual table data.
+
 	/*	The method that should be called once underlying changes
 	 *	are made, including sorting, filtering, data changes.
 	 *	Rendering the selections themselves are a different method,
@@ -776,6 +837,8 @@ dojo.widget.defineWidget(
 		}
 	},
 	renderSelections: function(){
+		//	summary
+		//	Render all selected objects using CSS.
 		var body=this.domNode.tBodies[0];
 		for(var i=0; i<body.rows.length; i++){
 			dojo.html[(this.isRowSelected(body.rows[i])?"addClass":"removeClass")](body.rows[i], this.rowSelectedClass);
@@ -784,6 +847,8 @@ dojo.widget.defineWidget(
 
 	//	widget lifetime handlers
 	initialize: function(){ 
+		//	summary
+		//	Initializes the widget.
 		var self=this;
 		//	connect up binding listeners here.
 		dojo.event.connect(this.store, "onSetData", function(){
@@ -800,11 +865,11 @@ dojo.widget.defineWidget(
 			self.render();
 		});
 		dojo.event.connect(this.store, "onClearData", function(){
+			self.isInitialized = false;
 			self.render();
 		});
 		dojo.event.connect(this.store, "onAddData", function(addedObject){
 			var row=self.createRow(addedObject);
-			dojo.event.connect(row, "onclick", self, "onSelect");
 			self.domNode.tBodies[0].appendChild(row);
 			self.render();
 		});
@@ -812,7 +877,6 @@ dojo.widget.defineWidget(
 			for(var i=0; i<arr.length; i++){
 				arr[i].isSelected=false;
 				var row=self.createRow(arr[i]);
-				dojo.event.connect(row, "onclick", self, "onSelect");
 				self.domNode.tBodies[0].appendChild(row);
 			};
 			self.render();
@@ -835,11 +899,9 @@ dojo.widget.defineWidget(
 			}
 		});
 	},
-//	fillInTemplate: function(args, frag){ },
 	postCreate: function(){
 		//	summary
 		//	finish widget initialization.
-
 		this.store.keyField = this.valueField;
 
 		if(this.domNode){
@@ -881,6 +943,7 @@ dojo.widget.defineWidget(
 			if (this.tbodyClass.length > 0){
 				body.className = this.tbodyClass;
 			}
+			dojo.event.connect(body, "onclick", this, "onSelect");
 			this.parseData(body);
 		}
 	}

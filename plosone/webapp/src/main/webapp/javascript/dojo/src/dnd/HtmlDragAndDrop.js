@@ -1,7 +1,4 @@
 dojo.provide("dojo.dnd.HtmlDragAndDrop");
-dojo.provide("dojo.dnd.HtmlDragSource");
-dojo.provide("dojo.dnd.HtmlDropTarget");
-dojo.provide("dojo.dnd.HtmlDragObject");
 
 dojo.require("dojo.dnd.HtmlDragManager");
 dojo.require("dojo.dnd.DragAndDrop");
@@ -166,10 +163,6 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 
 		dojo.body().appendChild(this.dragClone);
 
-		// shortly the browser will fire an onClick() event,
-		// but since this was really a drag, just squelch it
-		dojo.event.connect(this.domNode, "onclick", this, "squelchOnClick");
-
 		dojo.event.topic.publish('dragStart', { source: this } );
 	},
 
@@ -179,8 +172,9 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 			var viewport = dojo.html.getViewport();
 			var width = viewport.width;
 			var height = viewport.height;
-			var x = 0;
-			var y = 0;
+			var scroll = dojo.html.getScroll().offset;
+			var x = scroll.x;
+			var y = scroll.y;
 		} else {
 			var content = dojo.html.getContentBox(this.constrainingContainer);
 			width = content.width;
@@ -194,7 +188,8 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 				dojo.html.getPixelValue(this.constrainingContainer, "padding-top", true) +
 				dojo.html.getBorderExtent(this.constrainingContainer, "top");
 		}
-		
+
+		// TODO: should handle left/top/right/bottom margin separately; left/top should affect minX/minY
 		var mb = dojo.html.getMarginBox(this.domNode);
 		return {
 			minX: x,
@@ -247,7 +242,7 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 
 
 	/**
-	 * If the drag operation returned a success we reomve the clone of
+	 * If the drag operation returned a success we remove the clone of
 	 * ourself from the original position. If the drag operation returned
 	 * failure we slide back over to where we came from and end the operation
 	 * with a little grace.
@@ -283,16 +278,6 @@ dojo.declare("dojo.dnd.HtmlDragObject", dojo.dnd.DragObject, {
 		}
 
 		dojo.event.topic.publish('dragEnd', { source: this } );
-	},
-
-	squelchOnClick: function(e){
-		// squelch this onClick() event because it's the result of a drag (it's not a real click)
-		dojo.event.browser.stopEvent(e);
-
-		// disconnect after a short delay to prevent "Null argument to unrollAdvice()" warning
-		dojo.lang.setTimeout(function() {
-				dojo.event.disconnect(this.domNode, "onclick", this, "squelchOnClick");
-			},50);
 	},
 
 	constrainTo: function(container) {

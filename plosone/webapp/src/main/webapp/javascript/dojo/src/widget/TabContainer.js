@@ -7,19 +7,22 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.html.selection");
 dojo.require("dojo.widget.html.layout");
 
-// A TabContainer is a container that has multiple panes, but shows only
-// one pane at a time.  There are a set of tabs corresponding to each pane,
-// where each tab has the title (aka label) of the pane, and optionally a close button.
-//
-// Publishes topics <widgetId>-addPane, <widgetId>-removePane, and <widgetId>-selectPane
 dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, {
 
-	// String
+	// summary
+	//	A TabContainer is a container that has multiple panes, but shows only
+	//	one pane at a time.  There are a set of tabs corresponding to each pane,
+	//	where each tab has the title (aka label) of the pane, and optionally a close button.
+	//
+	//	Publishes topics <widgetId>-addChild, <widgetId>-removeChild, and <widgetId>-selectChild
+	//	(where <widgetId> is the id of the TabContainer itself.
+
+	// labelPosition: String
 	//   Defines where tab labels go relative to tab content.
 	//   "top", "bottom", "left-h", "right-h"
 	labelPosition: "top",
 	
-	// String
+	// closeButton: String
 	//   If closebutton=="tab", then every tab gets a close button.
 	//   DEPRECATED:  Should just say closable=true on each
 	//   pane you want to be closable.
@@ -29,7 +32,7 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 	templatePath: dojo.uri.dojoUri("src/widget/templates/TabContainer.html"),
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/TabContainer.css"),
 
-	// String
+	// selectedTab: String
 	//	initially selected tab (widgetId)
 	//	DEPRECATED: use selectedChild instead.
 	selectedTab: "",
@@ -57,17 +60,11 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 		dojo.widget.TabContainer.superclass.fillInTemplate.apply(this, arguments);
 	},
 
-	postCreate: function(args, frag) {
-		// Setup each page panel
-		dojo.lang.forEach(this.children, this._setupChild, this);
+	postCreate: function(args, frag) {	
+		dojo.widget.TabContainer.superclass.postCreate.apply(this, arguments);
 
 		// size the container pane to take up the space not used by the tabs themselves
 		this.onResized();
-
-		// Display the selected page
-		if(this.selectedChildWidget){
-			this.selectChild(this.selectedChildWidget, true);
-		}
 	},
 
 	_setupChild: function(tab){
@@ -97,15 +94,16 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 		}
 	},
 
-	selectTab: function(tab, _noRefresh, callingWidget){
+	selectTab: function(tab, callingWidget){
 		dojo.deprecated("use selectChild() rather than selectTab(), selectTab() will be removed in", "0.5");
-		this.selectChild(tab, _noRefresh, callingWidget);
+		this.selectChild(tab, callingWidget);
 	},
 
-	// Keystroke handling for keystrokes on the tab panel itself (that were bubbled up to me)
-	// Ctrl-up: focus is returned from the pane to the tab button
-	// Alt-del: close tab
 	onKey: function(e){
+		// summary
+		//	Keystroke handling for keystrokes on the tab panel itself (that were bubbled up to me)
+		//	Ctrl-up: focus is returned from the pane to the tab button
+		//	Alt-del: close tab
 		if(e.keyCode == e.KEY_UP_ARROW && e.ctrlKey){
 			// set focus to current tab
 			var button = this.correspondingTabButton || this.selectedTabWidget.tabButton;
@@ -125,27 +123,30 @@ dojo.widget.defineWidget("dojo.widget.TabContainer", dojo.widget.PageContainer, 
 	}
 });
 
-// TabController - set of tabs (the things with labels and a close button, that you click to show a tab panel)
-// When intialized, the TabController monitors the TabContainer, and whenever a pane is
-// added or deleted updates itself accordingly.
 dojo.widget.defineWidget(
     "dojo.widget.TabController",
     dojo.widget.PageController,
 	{
+		// summary
+		// 	Set of tabs (the things with labels and a close button, that you click to show a tab panel).
+		//	Lets the user select the currently shown pane in a TabContainer or PageContainer.
+		//	TabController also monitors the TabContainer, and whenever a pane is
+		//	added or deleted updates itself accordingly.
+
 		templateString: "<div wairole='tablist' dojoAttachEvent='onKey'></div>",
 
-		// String
+		// labelPosition: String
 		//   Defines where tab labels go relative to tab content.
 		//   "top", "bottom", "left-h", "right-h"
 		labelPosition: "top",
 
 		doLayout: true,
 
-		// String
+		// class: String
 		//	Class name to apply to the top dom node
 		"class": "",
 
-		// String
+		// buttonWidget: String
 		//	the name of the tab widget to create to correspond to each page
 		buttonWidget: "TabButton",
 
@@ -158,11 +159,13 @@ dojo.widget.defineWidget(
 	}
 );
 
-// TabButton (the thing you click to select a pane)
-// Contains the title (aka label) of the pane, and optionally a close-button to destroy the pane
-
 dojo.widget.defineWidget("dojo.widget.TabButton", dojo.widget.PageButton,
 {
+	// summary
+	//	A tab (the thing you click to select a pane).
+	//	Contains the title (aka label) of the pane, and optionally a close-button to destroy the pane.
+	//	This is an internal widget and should not be instantiated directly.
+
 	templateString: "<div class='dojoTab' dojoAttachEvent='onClick'>"
 						+"<div dojoAttachPoint='innerDiv'>"
 							+"<span dojoAttachPoint='titleNode' tabIndex='-1' waiRole='tab'>${this.label}</span>"
@@ -173,21 +176,24 @@ dojo.widget.defineWidget("dojo.widget.TabButton", dojo.widget.PageButton,
 
 	postMixInProperties: function(){
 		this.closeButtonStyle = this.closeButton ? "" : "display: none";
-		dojo.widget.TabContainer.superclass.postMixInProperties.apply(this, arguments);
+		dojo.widget.TabButton.superclass.postMixInProperties.apply(this, arguments);
 	},
 
 	fillInTemplate: function(){
 		dojo.html.disableSelection(this.titleNode);
-		dojo.widget.TabContainer.superclass.fillInTemplate.apply(this, arguments);
+		dojo.widget.TabButton.superclass.fillInTemplate.apply(this, arguments);
 	}
 });
 
 
-// Tab for display in high-contrast mode (where background images don't show up)
 dojo.widget.defineWidget(
 	"dojo.widget.a11y.TabButton",
 	dojo.widget.TabButton,
 	{
+		// summary
+		//	Tab for display in high-contrast mode (where background images don't show up).
+		//	This is an internal widget and shouldn't be instantiated directly.
+
 		imgPath: dojo.uri.dojoUri("src/widget/templates/images/tab_close.gif"),
 		
 		templateString: "<div class='dojoTab' dojoAttachEvent='onClick;onKey'>"

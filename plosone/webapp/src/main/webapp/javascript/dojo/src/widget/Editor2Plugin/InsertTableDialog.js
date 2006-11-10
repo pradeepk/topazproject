@@ -1,5 +1,4 @@
-﻿dojo.provide("dojo.widget.Editor2Plugin.InsertTableDialog");
-dojo.provide("dojo.widget.Editor2InsertTableDialog");
+dojo.provide("dojo.widget.Editor2Plugin.InsertTableDialog");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2InsertTableDialog",
@@ -15,7 +14,7 @@ dojo.widget.defineWidget(
 		if(!this.tableNode || this.tableNode.tagName.toLowerCase() != 'table'){
 			this.tableNode = dojo.withGlobal(curInst.window, "getAncestorElement", dojo.html.selection, ['table']);
 		}
-	
+
 		var tableAttributes = {};
 		this.extraAttribText = "";
 		if(this.tableNode){
@@ -23,13 +22,13 @@ dojo.widget.defineWidget(
 			this["table_rows"].disabled = true;
 			this["table_cols"].value = this.tableNode.rows[0].cells.length;
 			this["table_cols"].disabled = true;
-	
+
 			if (this.tableNode.caption){
 				this["table_caption"].value = this.tableNode.caption.innerHTML;
 			}else{
 				this["table_caption"].value = "";
 			}
-	
+
 			var width = this.tableNode.style.width || this.tableNode.width;
 			if(width){
 				this["table_width"].value = parseInt(width);
@@ -41,14 +40,14 @@ dojo.widget.defineWidget(
 			}else{
 				this["table_width"].value = "100";
 			}
-	
+
 			var height = this.tableNode.style.height || this.tableNode.height;
 			if(height){
 				this["table_height"].value = parseInt(width);
 			}else{
 				this["table_height"].value = "";
 			}
-	
+
 			var attrs = this.tableNode.attributes;
 			for(var i=0; i<attrs.length; i++) {
 				if(dojo.lang.find(this.editableAttributes, attrs[i].name.toLowerCase())>-1){
@@ -66,7 +65,7 @@ dojo.widget.defineWidget(
 			this["table_widthtype"].value = "percent";
 			this["table_height"].value = "";
 		}
-	
+
 		for(var i=0; i<this.editableAttributes.length; ++i){
 			name = this.editableAttributes[i];
 			this["table_"+name].value = (tableAttributes[name] == undefined) ? "" : tableAttributes[name];
@@ -79,7 +78,7 @@ dojo.widget.defineWidget(
 	ok: function(){
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
 		var args = {};
-	
+
 		args['rows'] = this["table_rows"].value;
 		args['cols'] = this["table_cols"].value;
 		args['caption'] = this["table_caption"].value;
@@ -96,16 +95,16 @@ dojo.widget.defineWidget(
 				args["tableattrs"] += name + '="'+value+'" ';
 			}
 		}
-	
+
 		if(!args["tableattrs"]){
 			args["tableattrs"] = "";
 		}
-	
+
 		//show the border in IE by applying a custom class
 		if(dojo.render.html.ie && !this["table_border"].value){
 			args["tableattrs"] += 'class="dojoShowIETableBorders" ';
 		}
-	
+
 		var html = "<table "+args["tableattrs"]+">";
 		if(args['caption']){
 			html += "<caption>"+args["caption"]+"</caption>";

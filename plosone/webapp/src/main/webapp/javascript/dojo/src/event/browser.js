@@ -67,13 +67,41 @@ dojo.event.browser = new function(){
 
 	var clobberIdx = 0;
 
-	this.clean = function(node){
+	this.normalizedEventName = function(/*String*/eventName){
+		switch(eventName){
+			case "CheckboxStateChange":
+			case "DOMAttrModified":
+			case "DOMMenuItemActive":
+			case "DOMMenuItemInactive":
+			case "DOMMouseScroll":
+			case "DOMNodeInserted":
+			case "DOMNodeRemoved":
+			case "RadioStateChange":
+				return eventName;
+				break;
+			default:
+				return eventName.toLowerCase();
+				break;
+		}
+	}
+	
+	this.clean = function(/*DOMNode*/node){
+		// summary:
+		//		removes native event handlers so that destruction of the node
+		//		will not leak memory. On most browsers this is a no-op, but
+		//		it's critical for manual node removal on IE.
+		// node:
+		//		A DOM node. All of it's children will also be cleaned.
 		if(dojo.render.html.ie){ 
 			dojo._ie_clobber.clobber(node);
 		}
 	}
 
-	this.addClobberNode = function(node){
+	this.addClobberNode = function(/*DOMNode*/node){
+		// summary:
+		//		register the passed node to support event stripping
+		// node:
+		//		A DOM node
 		if(!dojo.render.html.ie){ return; }
 		if(!node["__doClobber__"]){
 			node.__doClobber__ = true;
@@ -85,7 +113,13 @@ dojo.event.browser = new function(){
 		}
 	}
 
-	this.addClobberNodeAttrs = function(node, props){
+	this.addClobberNodeAttrs = function(/*DOMNode*/node, /*Array*/props){
+		// summary:
+		//		register the passed node to support event stripping
+		// node:
+		//		A DOM node to stip properties from later
+		// props:
+		//		A list of propeties to strip from the node
 		if(!dojo.render.html.ie){ return; }
 		this.addClobberNode(node);
 		for(var x=0; x<props.length; x++){
@@ -93,9 +127,22 @@ dojo.event.browser = new function(){
 		}
 	}
 
-	this.removeListener = function(node, evtName, fp, capture){
+	this.removeListener = function(	/*DOMNode*/ node, 
+									/*String*/	evtName, 
+									/*Function*/fp, 
+									/*Boolean*/	capture){
+		// summary:
+		//		clobbers the listener from the node
+		// evtName:
+		//		the name of the handler to remove the function from
+		// node:
+		//		DOM node to attach the event to
+		// fp:
+		//		the function to register
+		// capture:
+		//		Optional. should this listener prevent propigation?
 		if(!capture){ var capture = false; }
-		evtName = evtName.toLowerCase();
+		evtName = dojo.event.browser.normalizedEventName(evtName);
 		if( (evtName == "onkey") || (evtName == "key") ){
 			if(dojo.render.html.ie){
 				this.removeListener(node, "onkeydown", fp, capture);
@@ -109,10 +156,25 @@ dojo.event.browser = new function(){
 		}
 	}
 
-	this.addListener = function(node, evtName, fp, capture, dontFix){
+	this.addListener = function(/*DOMNode*/node, /*String*/evtName, /*Function*/fp, /*Boolean*/capture, /*Boolean*/dontFix){
+		// summary:
+		//		adds a listener to the node
+		// evtName:
+		//		the name of the handler to add the listener to can be either of
+		//		the form "onclick" or "click"
+		// node:
+		//		DOM node to attach the event to
+		// fp:
+		//		the function to register
+		// capture:
+		//		Optional. Should this listener prevent propigation?
+		// dontFix:
+		//		Optional. Should we avoid registering a new closure around the
+		//		listener to enable fixEvent for dispatch of the registered
+		//		function?
 		if(!node){ return; } // FIXME: log and/or bail?
 		if(!capture){ var capture = false; }
-		evtName = evtName.toLowerCase();
+		evtName = dojo.event.browser.normalizedEventName(evtName);
 		if( (evtName == "onkey") || (evtName == "key") ){
 			if(dojo.render.html.ie){
 				this.addListener(node, "onkeydown", fp, capture, dontFix);
@@ -156,17 +218,27 @@ dojo.event.browser = new function(){
 		}
 	}
 
-	this.isEvent = function(obj){
+	this.isEvent = function(/*Object*/obj){
+		// summary: 
+		//		Tries to determine whether or not the object is a DOM event.
+
 		// FIXME: event detection hack ... could test for additional attributes
 		// if necessary
-		return (typeof obj != "undefined")&&(typeof Event != "undefined")&&(obj.eventPhase);
+		return (typeof obj != "undefined")&&(typeof Event != "undefined")&&(obj.eventPhase); // Boolean
 		// Event does not support instanceof in Opera, otherwise:
 		//return (typeof Event != "undefined")&&(obj instanceof Event);
 	}
 
 	this.currentEvent = null;
 	
-	this.callListener = function(listener, curTarget){
+	this.callListener = function(/*Function*/listener, /*DOMNode*/curTarget){
+		// summary:
+		//		calls the specified listener in the context of the passed node
+		//		with the current DOM event object as the only parameter
+		// listener:
+		//		the function to call
+		// curTarget:
+		//		the Node to call the function in the scope of
 		if(typeof listener != 'function'){
 			dojo.raise("listener not a function: " + listener);
 		}
@@ -174,12 +246,12 @@ dojo.event.browser = new function(){
 		return listener.call(curTarget, dojo.event.browser.currentEvent);
 	}
 
-	this.stopPropagation = function(){
-		dojo.event.browser.currentEvent.cancelBubble = true;
+	this._stopPropagation = function(){
+		dojo.event.browser.currentEvent.cancelBubble = true; 
 	}
 
-	this.preventDefault = function(){
-	  dojo.event.browser.currentEvent.returnValue = false;
+	this._preventDefault = function(){
+		dojo.event.browser.currentEvent.returnValue = false;
 	}
 
 	this.keys = {
@@ -249,7 +321,12 @@ dojo.event.browser = new function(){
 		this.revKeys[this.keys[key]] = key;
 	}
 
-	this.fixEvent = function(evt, sender){
+	this.fixEvent = function(/*Event*/evt, /*DOMNode*/sender){
+		// summary:
+		//		normalizes properties on the event object including event
+		//		bubbling methods, keystroke normalization, and x/y positions
+		// evt: the native event object
+		// sender: the node to treat as "currentTarget"
 		if(!evt){
 			if(window["event"]){
 				evt = window.event;
@@ -405,19 +482,23 @@ dojo.event.browser = new function(){
 			if(evt.type == "mouseout"){ evt.relatedTarget = evt.toElement; }
 			this.currentEvent = evt;
 			evt.callListener = this.callListener;
-			evt.stopPropagation = this.stopPropagation;
-			evt.preventDefault = this.preventDefault;
+			evt.stopPropagation = this._stopPropagation;
+			evt.preventDefault = this._preventDefault;
 		}
-		return evt;
+		return evt; // Event
 	}
 
-	this.stopEvent = function(ev){
+	this.stopEvent = function(/*Event*/evt){
+		// summary:
+		//		prevents propigation and clobbers the default action of the
+		//		passed event
+		// evt: Optional for IE. The native event object.
 		if(window.event){
-			ev.returnValue = false;
-			ev.cancelBubble = true;
+			evt.cancelBubble = true;
+			evt.returnValue = false;
 		}else{
-			ev.preventDefault();
-			ev.stopPropagation();
+			evt.preventDefault();
+			evt.stopPropagation();
 		}
 	}
 }

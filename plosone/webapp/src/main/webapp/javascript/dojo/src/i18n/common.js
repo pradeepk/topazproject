@@ -1,6 +1,6 @@
 dojo.provide("dojo.i18n.common");
 
-dojo.i18n.getLocalization = function(packageName, bundleName, locale /*optional*/){
+dojo.i18n.getLocalization = function(/*String*/packageName, /*String*/bundleName, /*String?*/locale){
 //	summary:
 //		Returns an Object containing the localization for a given resource bundle
 //		in a package, matching the specified locale.

@@ -10,7 +10,7 @@ dojo.lang.whatAmI.custom = {};
 dojo.lang.getType = function(/* anything */ value){
 	/* summary:
 	 *	 Attempts to determine what type value is.
-	 * value: anything Any literal value or object instance.
+	 * value: Any literal value or object instance.
 	 */
 	try {
 		if(dojo.lang.isArray(value)) { 
@@ -43,15 +43,17 @@ dojo.lang.getType = function(/* anything */ value){
 		if(dojo.lang.isObject(value)) { 
 			return "object";	//	string 
 		}
-	} catch(E) {}
+	} catch(e) {}
 	return "unknown";	//	string
 }
 
 dojo.lang.isNumeric = function(/* anything */ value){
 	/* summary:
 	 *   Returns true if value can be interpreted as a number
-	 * value: anything Any literal value or object instance.
-	 * examples: 
+	 * value: Any literal value or object instance.
+	 */
+	 
+	/* examples: 
 	 *   dojo.lang.isNumeric(3);                 // returns true
 	 *   dojo.lang.isNumeric("3");               // returns true
 	 *   dojo.lang.isNumeric(new Number(3));     // returns true
@@ -75,11 +77,11 @@ dojo.lang.isNumeric = function(/* anything */ value){
 dojo.lang.isBuiltIn = function(/* anything */ value){
 	/* summary:
 	 *   Returns true if value is of a type provided by core JavaScript
-	 * value: anything Any literal value or object instance.
 	 * description: 
 	 *   Returns true for any literal, and for any object that is an 
 	 *   instance of a built-in type like String, Number, Boolean, 
 	 *   Array, Function, or Error.
+	 * value: Any literal value or object instance.
 	 */
 	return (dojo.lang.isArray(value)
 		|| dojo.lang.isFunction(value)	
@@ -95,12 +97,14 @@ dojo.lang.isBuiltIn = function(/* anything */ value){
 dojo.lang.isPureObject = function(/* anything */ value){
 	/* summary:
 	 *   Returns true for any value where the value of value.constructor == Object
-	 * value: anything Any literal value or object instance.
 	 * description: 
 	 *   Returns true for any literal, and for any object that is an 
 	 *   instance of a built-in type like String, Number, Boolean, 
 	 *   Array, Function, or Error.
-	 * examples: 
+	 * value: Any literal value or object instance.
+	 */
+	
+	/* examples: 
 	 *   dojo.lang.isPureObject(new Object()); // returns true
 	 *   dojo.lang.isPureObject({a: 1, b: 2}); // returns true
 	 * 
@@ -121,10 +125,12 @@ dojo.lang.isOfType = function(/* anything */ value, /* function */ type, /* obje
 	 *	 type of the value matches the datatype. The datatype parameter
 	 *	 can be an array of datatypes, in which case the method returns
 	 *	 true if the type of the value matches any of the datatypes.
-	 * value: anything Any literal value or object instance.
-	 * type: misc. A class of object, or a literal type, or the string name of a type, or an array with a list of types.
-	 * keywordParameters: object? {optional: boolean}
-	 * examples: 
+	 * value: Any literal value or object instance.
+	 * type: A class of object, or a literal type, or the string name of a type, or an array with a list of types.
+	 * keywordParameters: {optional: boolean}
+	 */
+	 
+	/* examples: 
 	 *   dojo.lang.isOfType("foo", String);                // returns true
 	 *   dojo.lang.isOfType(12345, Number);                // returns true
 	 *   dojo.lang.isOfType(false, Boolean);               // returns true
@@ -172,57 +178,43 @@ dojo.lang.isOfType = function(/* anything */ value, /* function */ type, /* obje
 			case Array:
 			case "array":
 				return dojo.lang.isArray(value);	//	boolean
-				break;
 			case Function:
 			case "function":
 				return dojo.lang.isFunction(value);	//	boolean
-				break;
 			case String:
 			case "string":
 				return dojo.lang.isString(value);	//	boolean
-				break;
 			case Number:
 			case "number":
 				return dojo.lang.isNumber(value);	//	boolean
-				break;
 			case "numeric":
 				return dojo.lang.isNumeric(value);	//	boolean
-				break;
 			case Boolean:
 			case "boolean":
 				return dojo.lang.isBoolean(value);	//	boolean
-				break;
 			case Object:
 			case "object":
 				return dojo.lang.isObject(value);	//	boolean
-				break;
 			case "pureobject":
 				return dojo.lang.isPureObject(value);	//	boolean
-				break;
 			case "builtin":
 				return dojo.lang.isBuiltIn(value);	//	boolean
-				break;
 			case "alien":
 				return dojo.lang.isAlien(value);	//	boolean
-				break;
 			case "undefined":
 				return dojo.lang.isUndefined(value);	//	boolean
-				break;
 			case null:
 			case "null":
 				return (value === null);	//	boolean
-				break;
 			case "optional":
 				dojo.deprecated('dojo.lang.isOfType(value, [type, "optional"])', 'use dojo.lang.isOfType(value, type, {optional: true} ) instead', "0.5");
 				return ((value === null) || dojo.lang.isUndefined(value));	//	boolean
-				break;
 			default:
 				if (dojo.lang.isFunction(type)) {
 					return (value instanceof type);	//	boolean
 				} else {
 					dojo.raise("dojo.lang.isOfType() was passed an invalid type");
 				}
-				break;
 		}
 	}
 	dojo.raise("If we get here, it means a bug was introduced above.");

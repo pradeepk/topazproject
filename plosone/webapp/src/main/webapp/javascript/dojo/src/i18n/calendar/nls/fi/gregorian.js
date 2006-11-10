@@ -18,5 +18,17 @@
 
 	am: "ap.",
 	pm: "ip.",
-	eras: ['eKr.','jKr.']
+	eras: ['eKr.','jKr.'],
+
+	'field-era': "aikakausi",
+	'field-year': "vuosi",
+	'field-month': "kuukausi",
+	'field-week': "viikko",
+	'field-day': "päivä",
+	'field-weekday': "viikonpäivä",
+	'field-dayperiod': "ap/ip-valinta",
+	'field-hour': "tunti",
+	'field-minute': "minuutti",
+	'field-second': "sekunti",
+	'field-zone': "aikavyöhyke"
 })

@@ -3,7 +3,9 @@ dojo.provide("dojo.lfx.shadow");
 dojo.require("dojo.lang.common");
 dojo.require("dojo.uri.Uri");
 
-dojo.lfx.shadow = function(node) {
+dojo.lfx.shadow = function(/* HTMLElement */node) {
+	//	summary
+	//	creates a shadow underneath node.
 	this.shadowPng = dojo.uri.dojoUri("src/html/images/shadow");
 	this.shadowThickness = 8;
 	this.shadowOffset = 15;
@@ -11,7 +13,9 @@ dojo.lfx.shadow = function(node) {
 }
 
 dojo.extend(dojo.lfx.shadow, {
-	init: function(node){
+	init: function(/* HTMLElement */node){
+		//	summary
+		//	Initializes the shadow.
 		this.node=node;
 
 		// make all the pieces of the shadow, and position/size them as much
@@ -49,7 +53,9 @@ dojo.extend(dojo.lfx.shadow, {
 		this.node.appendChild(img);
 	},
 
-	size: function(width, height){
+	size: function(/* int */width, /* int */height){
+		//	summary
+		//	Resizes the shadow based on width and height.
 		var sideHeight = height - (this.shadowOffset+this.shadowThickness+1);
 		if (sideHeight < 0) { sideHeight = 0; }
 		if (height < 1) { height = 1; }

@@ -402,3 +402,26 @@ dojo.hostenv.flattenRequireArray = function(target){
 		}
 	}
 }
+
+//Need to preload any flattened i18n bundles before we start
+//executing code, since we cannot do it synchronously, as the
+//i18n code normally expects.
+dojo.hostenv.xdHasCalledPreload = false;
+dojo.hostenv.xdRealCallLoaded = dojo.hostenv.callLoaded;
+dojo.hostenv.callLoaded = function(){
+	//If getModulePrefix for dojo returns anything other than "src", that means
+	//there is a path registered for dojo, with implies that dojo was xdomain loaded.
+	if(this.xdHasCalledPreload || dojo.hostenv.getModulePrefix("dojo") == "src" || !this.localesGenerated){
+		this.xdRealCallLoaded();
+		this.xdHasCalledPreload = true;
+	}else{
+		if(this.localesGenerated){
+			this.registerNlsPrefix = function(){
+				//Need to set the nls prefix to be the xd location.
+				dojo.registerModulePath("nls", dojo.hostenv.getModulePrefix("dojo") + "/../nls");	
+			};
+			this.preloadLocalizations();
+		}
+		this.xdHasCalledPreload = true;
+	}
+}

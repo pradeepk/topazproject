@@ -10,8 +10,9 @@ dojo.require("dojo.html.layout");
  *	Original port done by Brian Lucas.
  *	Refactor and function by trt.
  */
-dojo.lfx.rounded = function(/* object */settings){
-	//	setup
+dojo.lfx.rounded = function(/* object */settings /* ... */){
+	//	summary
+	//	Creates a set of rounded corners based on settings.
 	var options={
 		validTags:settings.validTags || ["div"],					//	tags we can apply this to
 		autoPad:settings.autoPad!=null ? settings.autoPad : true,		//	automatically pad
@@ -44,6 +45,8 @@ dojo.lfx.rounded = function(/* object */settings){
 
 //	can call this directly if one wants.
 dojo.lfx.rounded.applyCorners = function(/* object */options, /* HTMLElement */node){
+	//	summary
+	//	Rounds corners based on options to passed node.
 	var top = null;
 	var bottom = null;
 	var contentNode = null;

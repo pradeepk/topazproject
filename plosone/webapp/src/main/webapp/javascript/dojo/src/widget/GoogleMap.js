@@ -40,6 +40,8 @@ dojo.widget.defineWidget(
 	"dojo.widget.GoogleMap",
 	dojo.widget.HtmlWidget,
 	function(){
+		//	summary
+		//	initializer/constructor for the simple GoogleMap widget.
 		this.map=null;
 		this.geocoder=null;
 		this.data=[];
@@ -54,6 +56,8 @@ dojo.widget.defineWidget(
 	_defaultPoint:{lat:39.10662, lng: -94.578209},
 
 	setControls:function(){
+		//	summary
+		//	Set any controls on the map in question.
 		var methodmap={
 			largemap:GLargeMapControl,
 			smallmap:GSmallMapControl,
@@ -67,31 +71,39 @@ dojo.widget.defineWidget(
 		}
 	},
 	
-	findCenter:function(bounds){
+	findCenter:function(/* GLatLngBounds */bounds){
+		//	summary
+		//	Returns the center point given the Bounds object.
 		if(this.data.length==1){
-			return (new GLatLng(this.data[0].lat, this.data[0].lng));
+			return (new GLatLng(this.data[0].lat, this.data[0].lng));	//	GLatLng
 		}
 		var clat=(bounds.getNorthEast().lat()+bounds.getSouthWest().lat())/2;
 		var clng=(bounds.getNorthEast().lng()+bounds.getSouthWest().lng())/2;
-		return (new GLatLng(clat,clng));
+		return (new GLatLng(clat,clng));	//	GLatLng
 	},
 
-	createPinpoint:function(pt,overlay){
+	createPinpoint:function(/* GLatLng */pt, /* string? */overlay){
+		//	summary
+		//	Creates a marker at the given point, with an optional overlay HTML string.
 		var m=new GMarker(pt);
 		if(overlay){
 			GEvent.addListener(m,"click",function(){
 				m.openInfoWindowHtml("<div>"+overlay+"</div>");
 			});
 		}
-		return m;
+		return m;	//	GMarker
 	},
-	plot:function(obj){
+	plot:function(/* object */obj){
+		//	summary
+		//	Plots a point at given lat/lng coordinate
 		var p=new GLatLng(obj.lat,obj.lng);
 		var d=obj.description||null;
 		var m=this.createPinpoint(p,d);
 		this.map.addOverlay(m);
 	},
-	plotAddress:function(address){
+	plotAddress:function(/* string */address){
+		//	summary
+		//	Calls the Google Geocoder to get a lat/lng coordinate at string address
 		var self=this;
 		this.geocoder.getLocations(address, function(response){
 			if(!response || response.Status.code != 200){
@@ -108,7 +120,9 @@ dojo.widget.defineWidget(
 		});
 	},
 
-	parse:function(table){
+	parse:function(/* HTMLTable */table){
+		//	summary
+		//	Parses the passed table for data to plot on this map.
 		this.data=[];
 
 		//	get the column indices
@@ -151,6 +165,8 @@ dojo.widget.defineWidget(
 		}
 	},
 	render:function(){
+		//	summary
+		//	Plots all acutal points in the current data array.
 		if(this.data.length==0){
 			this.map.setCenter(new GLatLng(this._defaultPoint.lat, this._defaultPoint.lng), 4);
 			return;
@@ -172,7 +188,9 @@ dojo.widget.defineWidget(
 		}
 	},
 
-	initialize:function(args, frag){
+	initialize:function(/* object */args, /* object */frag){
+		//	summary
+		//	initializes the widget
 		if(this.datasrc){
 			this.parse(dojo.byId(this.datasrc));
 		}
@@ -181,6 +199,9 @@ dojo.widget.defineWidget(
 		}
 	},
 	postCreate:function(){
+		//	summary
+		//	Sets up and renders the widget.
+
 		//	clean the domNode before creating the map.
 		while(this.domNode.childNodes.length>0){
 			this.domNode.removeChild(this.domNode.childNodes[0]);

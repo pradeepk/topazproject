@@ -4,8 +4,7 @@ dojo.require("dojo.string.extras");
 dojo.require("dojo.AdapterRegistry");
 
 dojo.json = {
-	// AdapterRegistry:
-	//		a registry of type-based serializers
+	// jsonRegistry: AdapterRegistry a registry of type-based serializers
 	jsonRegistry: new dojo.AdapterRegistry(),
 
 	register: function(	/*String*/		name, 

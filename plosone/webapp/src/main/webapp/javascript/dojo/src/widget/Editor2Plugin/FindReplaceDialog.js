@@ -1,6 +1,4 @@
-﻿dojo.provide("dojo.widget.Editor2Plugin.FindReplaceDialog");
-dojo.provide("dojo.widget.Editor2FindDialog");
-dojo.provide("dojo.widget.Editor2ReplaceDialog");
+dojo.provide("dojo.widget.Editor2Plugin.FindReplaceDialog");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2FindDialog",
@@ -9,7 +7,8 @@ dojo.widget.defineWidget(
 	templatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/Dialog/find.html"),
 
 	find: function(){
-		var findcmd = dojo.widget.Editor2Manager.getCommand('find');
+		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+		var findcmd = curInst.getCommand('find');
 		var option = 0;
 	
 		if(this["find_option_casesens"].checked){

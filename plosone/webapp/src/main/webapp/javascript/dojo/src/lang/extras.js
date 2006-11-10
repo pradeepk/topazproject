@@ -2,14 +2,15 @@ dojo.provide("dojo.lang.extras");
 
 dojo.require("dojo.lang.common");
 
-/**
- * Sets a timeout in milliseconds to execute a function in a given context
- * with optional arguments.
- *
- * setTimeout (Object context, function func, number delay[, arg1[, ...]]);
- * setTimeout (function func, number delay[, arg1[, ...]]);
- */
-dojo.lang.setTimeout = function(func, delay){
+dojo.lang.setTimeout = function(/*Function*/func, /*int*/delay /*, ...*/){
+	// summary:
+	//	Sets a timeout in milliseconds to execute a function in a given context
+	//	with optional arguments.
+	//
+	// usage:
+	//	setTimeout (Object context, function func, number delay[, arg1[, ...]]);
+	//	setTimeout (function func, number delay[, arg1[, ...]]);
+
 	var context = window, argsStart = 2;
 	if(!dojo.lang.isFunction(func)){
 		context = func;
@@ -23,88 +24,91 @@ dojo.lang.setTimeout = function(func, delay){
 	}
 	
 	var args = [];
-	for (var i = argsStart; i < arguments.length; i++) {
+	for (var i = argsStart; i < arguments.length; i++){
 		args.push(arguments[i]);
 	}
-	return dojo.global().setTimeout(function () { func.apply(context, args); }, delay);
+	return dojo.global().setTimeout(function () { func.apply(context, args); }, delay); // int
 }
 
-dojo.lang.clearTimeout = function(timer){
+dojo.lang.clearTimeout = function(/*int*/timer){
+	// summary: clears timer by number from the execution queue
 	dojo.global().clearTimeout(timer);
 }
 
-dojo.lang.getNameInObj = function(ns, item){
+dojo.lang.getNameInObj = function(/*Object*/ns, /*unknown*/item){
+	// summary: looks for a value in the object ns with a value matching item and returns the property name
+	// ns: if null, dj_global is used
+	// item: value to match
 	if(!ns){ ns = dj_global; }
 
 	for(var x in ns){
 		if(ns[x] === item){
-			return new String(x);
+			return new String(x); // String
 		}
 	}
-	return null;
+	return null; // null
 }
 
-dojo.lang.shallowCopy = function(obj, deep) {	
+dojo.lang.shallowCopy = function(/*Object*/obj, /*Boolean?*/deep){
+	// summary: copies object obj one level deep, or full depth if deep is true
 	var i, ret;	
+
+	if(obj === null){ /*obj: null*/ return null; } // null
 	
-	if (obj === null) return null;
-	
-	if (dojo.lang.isObject(obj)) {		
+	if(dojo.lang.isObject(obj)){
+		// obj: Object	
 		ret = new obj.constructor();
-		for (i in obj) {
-			if(dojo.lang.isUndefined(ret[i])) {
+		for(i in obj){
+			if(dojo.lang.isUndefined(ret[i])){
 				ret[i] = deep ? dojo.lang.shallowCopy(obj[i], deep) : obj[i];
 			}
 		}
-	} else if (dojo.lang.isArray(obj)) {
+	} else if(dojo.lang.isArray(obj)){
+		// obj: Array
 		ret = [];
-		for(i=0; i<obj.length; i++) {
+		for(i=0; i<obj.length; i++){
 			ret[i] = deep ? dojo.lang.shallowCopy(obj[i], deep) : obj[i];
 		}
 	} else {
+		// obj: unknown
 		ret = obj;
 	}
-			
-	return ret;
+
+	return ret; // unknown
 }
 
-/**
- * Return the first argument that isn't undefined
- */
-dojo.lang.firstValued = function(/* ... */) {
-	for(var i = 0; i < arguments.length; i++) {
-		if(typeof arguments[i] != "undefined") {
-			return arguments[i];
+dojo.lang.firstValued = function(/* ... */){
+	// summary: Return the first argument that isn't undefined
+
+	for(var i = 0; i < arguments.length; i++){
+		if(typeof arguments[i] != "undefined"){
+			return arguments[i]; // unknown
 		}
 	}
-	return undefined;
+	return undefined; // undefined
 }
 
-/**
- * Get a value from a reference specified as a string descriptor,
- * (e.g. "A.B") in the given context.
- * 
- * getObjPathValue(String objpath [, Object context, Boolean create])
- *
- * If context is not specified, dj_global is used
- * If create is true, undefined objects in the path are created.
- */
-dojo.lang.getObjPathValue = function(objpath, context, create){
+dojo.lang.getObjPathValue = function(/*String*/objpath, /*Object?*/context, /*Boolean?*/create){
+	// summary:
+	//	Gets a value from a reference specified as a string descriptor,
+	//	(e.g. "A.B") in the given context.
+	//
+	// context: if not specified, dj_global is used
+	// create: if true, undefined objects in the path are created.
+
 	with(dojo.parseObjPath(objpath, context, create)){
-		return dojo.evalProp(prop, obj, create);
+		return dojo.evalProp(prop, obj, create); // unknown
 	}
 }
 
-/**
- * Set a value on a reference specified as a string descriptor. 
- * (e.g. "A.B") in the given context.
- * 
- * setObjPathValue(String objpath, value [, Object context, Boolean create])
- *
- * If context is not specified, dj_global is used
- * If create is true, undefined objects in the path are created.
- */
-dojo.lang.setObjPathValue = function(objpath, value, context, create){
+dojo.lang.setObjPathValue = function(/*String*/objpath, /*unknown*/value, /*Object?*/context, /*Boolean?*/create){
+	// summary:
+	//	Sets a value on a reference specified as a string descriptor. 
+	//	(e.g. "A.B") in the given context.
+	//
+	//	context: if not specified, dj_global is used
+	//	create: if true, undefined objects in the path are created.
+
 	if(arguments.length < 4){
 		create = true;
 	}

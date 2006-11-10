@@ -3,7 +3,13 @@ dojo.provide("dojo.lfx.extras");
 dojo.require("dojo.lfx.html");
 dojo.require("dojo.lfx.Animation");
 
-dojo.lfx.html.fadeWipeIn = function(nodes, duration, easing, callback){
+dojo.lfx.html.fadeWipeIn = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// summary: Returns an animation that will fade "nodes" from its current
+	//			opacity to fully opaque while wiping it in.
+	// nodes: An array of DOMNodes or one DOMNode.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var anim = dojo.lfx.combine(
 		dojo.lfx.fadeIn(nodes, duration, easing),
@@ -16,10 +22,16 @@ dojo.lfx.html.fadeWipeIn = function(nodes, duration, easing, callback){
 		});
 	}
 	
-	return anim;
+	return anim; // dojo.lfx.Combine
 }
 
-dojo.lfx.html.fadeWipeOut = function(nodes, duration, easing, callback){
+dojo.lfx.html.fadeWipeOut = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// summary: Returns an animation that will fade "nodes" from its current
+	//			opacity to fully transparent while wiping it out.
+	// nodes: An array of DOMNodes or one DOMNode.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var anim = dojo.lfx.combine(
 		dojo.lfx.fadeOut(nodes, duration, easing),
@@ -27,15 +39,32 @@ dojo.lfx.html.fadeWipeOut = function(nodes, duration, easing, callback){
 	);
 	
 	if(callback){
+		/* callback: Function
+		   pId: f */
 		anim.connect("onEnd", function(){
 			callback(nodes, anim);
 		});
 	}
 
-	return anim;
+	return anim; // dojo.lfx.Combine
 }
 
-dojo.lfx.html.scale = function(nodes, percentage, scaleContent, fromCenter, duration, easing, callback){
+dojo.lfx.html.scale = function(/*DOMNode[]*/nodes,
+							   /*int*/ percentage,
+							   /*bool?*/ scaleContent,
+							   /*bool?*/ fromCenter,
+							   /*int?*/ duration,
+							   /*Function?*/ easing,
+							   /*Function?*/ callback){
+	// summary: Returns an animation that will scale "nodes" by "percentage".
+	// nodes: An array of DOMNodes or one DOMNode.
+	// percentage: A whole number representing the percentage to scale "nodes".
+	// scaleContent: If true, will scale the contents of "nodes".
+	// fromCenter: If true, will scale "nodes" from its center rather than the
+	//			   lower right corner.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 
@@ -103,7 +132,7 @@ dojo.lfx.html.scale = function(nodes, percentage, scaleContent, fromCenter, dura
 		anims.push(anim);
 	});
 	
-	return dojo.lfx.combine(anims);
+	return dojo.lfx.combine(anims); // dojo.lfx.Combine
 }
 
 dojo.lang.mixin(dojo.lfx, dojo.lfx.html);

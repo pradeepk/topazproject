@@ -10,7 +10,8 @@ dojo.widget.defineWidget(
 	function() {
 		this.eventNames = {};
 		this.listenedTrees = {};
-		this.selectedNodes = [];		
+		this.selectedNodes = [];
+		this.lastClicked = {}
 	},
 {
 	// TODO: add multiselect
@@ -19,6 +20,11 @@ dojo.widget.defineWidget(
 	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},	
 	
 	allowedMulti: true,
+	
+	/**
+	* if time between clicks < dblselectTimeout => its dblselect
+	*/
+	dblselectTimeout: 300,
 	
 	eventNamesDefault: {
 		select : "select",
@@ -101,11 +107,25 @@ dojo.widget.defineWidget(
 	},
 	
 	
-	onTreeClick: function(event) {
+	onTreeClick: function(event) {		
+		
 		var node = this.domElement2TreeNode(event.target);
-		if (node) {
-			this.processNode(node, event);
+				
+		if (!node) {
+			return;
 		}
+		
+		
+		
+		var checkLabelClick = function(domElement) {
+			return domElement === node.labelNode;
+		}
+		
+		if (this.checkPathCondition(event.target, checkLabelClick)) {
+			this.processNode(node, event);			
+		}
+		
+		
 	},
 	
 	
@@ -117,15 +137,16 @@ dojo.widget.defineWidget(
 	 *
 	 * event may be both mouse & keyboard enter
 	 */
-	processNode: function(node, event) {		
+	processNode: function(node, event) {
+		
 		if (node.actionIsDisabled(node.actions.SELECT)) {
 			return;
 		}
 		
-		//dojo.debug("click "+node+ "special "+this.checkSpecialEvent(event));
-		//dojo.html.setClass(event.target, "TreeLabel TreeNodeEmphased");
+		//dojo.debug("click "+node+ "special "+this.checkSpecialEvent(event));		
 		
-		if (dojo.lang.inArray(this.selectedNodes, node)) {			
+		if (dojo.lang.inArray(this.selectedNodes, node)) {
+				
 			if(this.checkSpecialEvent(event)){				
 				// If the node is currently selected, and they select it again while holding
 				// down a meta key, it deselects it
@@ -136,44 +157,86 @@ dojo.widget.defineWidget(
 			var _this = this;
 			var i=0;
 			var selectedNode;
+			
+			/* remove all nodes from selection excepts this one */
 			while(this.selectedNodes.length > i) {
 				selectedNode = this.selectedNodes[i];
 				if (selectedNode !== node) {
 					//dojo.debug("Deselect "+selectedNode);
-					_this.deselect(selectedNode);
+					this.deselect(selectedNode);
 					continue;
 				}
 			
 				i++; // skip the doubleclicked node
 			}
 		
+			/* lastClicked.node may be undefined if node was selected(before) programmatically */
+			var wasJustClicked = this.checkRecentClick(node)
 			
-			dojo.event.topic.publish(this.eventNames.dblselect, { node: node });
+			eventName = wasJustClicked ? this.eventNames.dblselect : this.eventNames.select;
+			if (wasJustClicked) {
+				eventName = this.eventNames.dblselect;
+				/* after dblselect, next select is usual select */
+				this.forgetLastClicked();
+			} else {
+				eventName = this.eventNames.select;
+				this.setLastClicked(node)
+			}
+			
+			dojo.event.topic.publish(eventName, { node: node });
+			
 			return;
 		}
 		
-		// if unselected node..
+		/* if unselected node..	*/
 		
-		
-		// deselect all if no meta key or disallowed
-		if (!this.checkSpecialEvent(event) || !this.allowedMulti) {
-			//dojo.debug("deselect All");
-			this.deselectAll();
-		}
+		this.deselectIfNoMulti(event);
 		
 		//dojo.debug("select");
-
+		
+		this.setLastClicked(node);
+		
 		this.select(node);
 
 	},
 	
+	forgetLastClicked: function() {
+		this.lastClicked = {}
+	},
+	
+	setLastClicked: function(node) {
+		this.lastClicked.date = new Date();	
+		this.lastClicked.node = node;
+	},
+	
+	checkRecentClick: function(node) {
+		var diff = new Date() - this.lastClicked.date;
+		//dojo.debug(new Date())
+		//dojo.debug("check old "+this.lastClicked.node+" now "+(new Date())+" diff "+diff)
+		if (this.lastClicked.node && diff < this.dblselectTimeout) {
+			return true;
+		} else {
+			return false;
+		}
+	},
+	
+	// deselect all if no meta key or disallowed
+	deselectIfNoMulti: function(event) {
+		if (!this.checkSpecialEvent(event) || !this.allowedMulti) {
+			//dojo.debug("deselect All");
+			this.deselectAll();
+		}
+	},
 
 	deselectIfAncestorMatch: function(ancestor) {
 		/* deselect all nodes with this ancestor */
 		var _this = this;
 		dojo.lang.forEach(this.selectedNodes, function(node) {
 			var selectedNode = node;
+			node = node.parent
 			while (node && node.isTreeNode) {
+				//dojo.debug("ancestor try "+node);
+				
 				if (node === ancestor) {
 					_this.deselect(selectedNode); 
 					return;					
@@ -198,7 +261,7 @@ dojo.widget.defineWidget(
 		if (index >=0 ) {
 			return; // already selected
 		}
-		
+				
 		//dojo.debug("select "+node);
 		this.selectedNodes.push(node);
 						

@@ -12,5 +12,17 @@
 	'timeFormat-medium': "ahh:mm:ss",
 	'timeFormat-short': "ah:mm",
 
-	eras: ['西元前','西元']
+	eras: ['西元前','西元'],
+
+	'field-era': "年代",
+	'field-year': "年",
+	'field-month': "月",
+	'field-week': "週",
+	'field-day': "整日",
+	'field-weekday': "週天",
+	'field-dayperiod': "日間",
+	'field-hour': "小時",
+	'field-minute': "分鐘",
+	'field-second': "秒",
+	'field-zone': "區域"
 })

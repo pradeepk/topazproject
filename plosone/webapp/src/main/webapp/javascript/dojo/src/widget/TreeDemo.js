@@ -72,6 +72,12 @@ dojo.widget.TreeDemo = {
 			}
 		);
 
+		dojo.event.topic.subscribe('treeContextMenuRefresh/engage',
+			function (menuItem) {
+                var node = menuItem.getTreeNode();
+                _t.reportIfDefered(controller.refreshChildren(node));
+			}
+		);
 
 		dojo.event.topic.subscribe('treeContextMenuCreate/engage',
 			function (menuItem) {
@@ -105,6 +111,7 @@ dojo.widget.TreeDemo = {
                 _t.reportIfDefered(controller.editLabelStart(node));
 			}
 		);
+
 
 	}
 	

@@ -12,11 +12,13 @@ dojo.experimental("dojo.data.Write");
  
 dojo.declare("dojo.data.Write", dojo.data.Read, {
 	newItem:
-		function(/* keyword arguments (optional) */ keywordArgs) {
+		function(/* object? */ keywordArgs) {
 		/* summary:
 		 *   Returns a newly created item.  Sets the attributes of the new
 		 *   item based on the keywordArgs provided.
-		 * exceptions:
+		 */
+		 
+		/* exceptions:
 		 *   Throws an exception if *keywordArgs* is a string or a number or
 		 *   anything other than a simple anonymous object.
 		 * examples:
@@ -30,7 +32,9 @@ dojo.declare("dojo.data.Write", dojo.data.Read, {
 		function(/* item */ item) {
 		/* summary:
 		 *   Deletes an item from the store.
-		 * exceptions:
+		 */
+		 
+		/* exceptions:
 		 *   Throws an exception if *item* is not an item (if store.isItem(item)
 		 *   returns false).
 		 * examples:
@@ -40,11 +44,13 @@ dojo.declare("dojo.data.Write", dojo.data.Read, {
 			return false; // boolean
 		},
 	set:
-		function(/* item */ item, /* attribute or string */ attribute, /* almost anything */ value) {
+		function(/* item */ item, /* attribute || string */ attribute, /* almost anything */ value) {
 		/* summary:
 		 *   Sets the value of an attribute on an item.
 		 *   Replaces any previous value or values.
-		 * exceptions:
+		 */
+		 
+		/* exceptions:
 		 *   Throws an exception if *item* is not an item, or if *attribute*
 		 *   is neither an attribute object or a string.
 		 *   Throws an exception if *value* is undefined.
@@ -55,14 +61,16 @@ dojo.declare("dojo.data.Write", dojo.data.Read, {
 			return false; // boolean
 		},
 	setValues:
-		function(/* item */ item, /* attribute or string */ attribute, /* array */ values) {
+		function(/* item */ item, /* attribute || string */ attribute, /* array */ values) {
 		/* summary:
 		 *   Adds each value in the *values* array as a value of the given
 		 *   attribute on the given item.
 		 *   Replaces any previous value or values.
 		 *   Calling store.setValues(x, y, []) (with *values* as an empty array) has
 		 *   the same effect as calling store.clear(x, y).
-		 * exceptions:
+		 */
+		 
+		/* exceptions:
 		 *   Throws an exception if *values* is not an array, if *item* is not an
 		 *   item, or if *attribute* is neither an attribute object or a string.
 		 * examples:
@@ -74,10 +82,12 @@ dojo.declare("dojo.data.Write", dojo.data.Read, {
 			return false; // boolean
 		},
 	clear:
-		function(/* item */ item, /* attribute or string */ attribute) {
+		function(/* item */ item, /* attribute || string */ attribute) {
 		/* summary:
 		 *   Deletes all the values of an attribute on an item.
-		 * exceptions:
+		 */
+		 
+		/* exceptions:
 		 *   Throws an exception if *item* is not an item, or if *attribute*
 		 *   is neither an attribute object or a string.
 		 * examples:
@@ -98,7 +108,8 @@ dojo.declare("dojo.data.Write", dojo.data.Read, {
 		 *   either a synchronous or asynchronous save, whichever it prefers.
 		 *   Different data store implementations may take additional optional
 		 *   parameters.
-		 * issue:
+		 * description:
+		 * ISSUE - 
 		 *   Should the async save take a callback, like this:
 		 *     store.save({async: true, onComplete: callback});
 		 *   Or should the async save return a Deferred, like this:
@@ -106,7 +117,9 @@ dojo.declare("dojo.data.Write", dojo.data.Read, {
 		 *     deferred.addCallbacks(successCallback, errorCallback);
 		 *   Or should save() return boolean, like this:
 		 *     var success = store.save();
-		 * examples:
+		 */
+		 
+		/* examples:
 		 *   var success = store.save();
 		 *   var success = store.save({async: true});
 		 */
@@ -117,7 +130,9 @@ dojo.declare("dojo.data.Write", dojo.data.Read, {
 		function() {
 		/* summary:
 		 *   Discards any unsaved changes.
-		 * examples:
+		 */
+		 
+		/* examples:
 		 *   var success = store.revert();
 		 */
 			dojo.unimplemented('dojo.data.Write.revert');
@@ -130,7 +145,9 @@ dojo.declare("dojo.data.Write", dojo.data.Read, {
 		 *   If the datastore object itself is given as a parameter instead of an
 		 *   item, then this method returns true if any item has been modified since
 		 *   the last save().
-		 * exceptions:
+		 */
+		 
+		/* exceptions:
 		 *   Throws an exception if *item* is neither an item nor the datastore itself.
 		 * examples:
 		 *   var trueOrFalse = store.isDirty(kermit); // true if kermit is dirty

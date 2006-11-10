@@ -4,7 +4,7 @@ dojo.provide("dojo.widget.TreeDocIconExtension");
 dojo.require("dojo.widget.HtmlWidget");
 dojo.require("dojo.widget.TreeExtension");
 
-// selector extension to emphase node
+// selector extension to emphasize node
 
 dojo.widget.defineWidget(
 	"dojo.widget.TreeDocIconExtension",
@@ -21,19 +21,19 @@ dojo.widget.defineWidget(
 	
 	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget },
 	
-	getNodeType: function(node) {
-		var nodeType = node.getNodeType();
-		if (!nodeType) { // set default type
-			nodeType = node.isFolder ? "Folder" : "Document";
+	getnodeDocType: function(node) {
+		var nodeDocType = node.getnodeDocType();
+		if (!nodeDocType) { // set default type
+			nodeDocType = node.isFolder ? "Folder" : "Document";
 		}
-		return nodeType;
+		return nodeDocType;
 	},
 	
-	setNodeTypeClass: function(node) {
+	setnodeDocTypeClass: function(node) {
 		
 		var reg = new RegExp("(^|\\s)"+node.tree.classPrefix+"Icon\\w+",'g');			
 				
-		var clazz = dojo.html.getClass(node.iconNode).replace(reg,'') + ' ' + node.tree.classPrefix+'Icon'+this.getNodeType(node);
+		var clazz = dojo.html.getClass(node.iconNode).replace(reg,'') + ' ' + node.tree.classPrefix+'Icon'+this.getnodeDocType(node);
 		dojo.html.setClass(node.iconNode, clazz);		
 	},
 		
@@ -43,13 +43,13 @@ dojo.widget.defineWidget(
 		if (message.source.iconNode) {
 			// on node-initialize time when folder is set there is no iconNode
 			// this case will be processed in treeChange anyway			
-			this.setNodeTypeClass(message.source);
+			this.setnodeDocTypeClass(message.source);
 		}
 	},
 	
 	
 	onAfterUnsetFolder: function(message) {
-		this.setNodeTypeClass(message.source);
+		this.setnodeDocTypeClass(message.source);
 	},
 		
 	
@@ -71,7 +71,7 @@ dojo.widget.defineWidget(
 		node.contentNode.parentNode.replaceChild(node.contentIconNode, node.expandNode);
 									  
 	  	node.iconNode = document.createElement("div");
-		dojo.html.setClass(node.iconNode, node.tree.classPrefix+"Icon"+' '+node.tree.classPrefix+'Icon'+this.getNodeType(node));
+		dojo.html.setClass(node.iconNode, node.tree.classPrefix+"Icon"+' '+node.tree.classPrefix+'Icon'+this.getnodeDocType(node));
 		
 		node.contentIconNode.appendChild(node.expandNode);
 		node.contentIconNode.appendChild(node.iconNode);

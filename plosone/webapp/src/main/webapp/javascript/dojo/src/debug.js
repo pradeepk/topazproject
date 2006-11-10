@@ -1,10 +1,9 @@
-/**
- * Produce a line of debug output. 
- * Does nothing unless djConfig.isDebug is true.
- * varargs, joined with ''.
- * Caller should not supply a trailing "\n".
- */
-dojo.debug = function(){
+dojo.debug = function(/*...*/){
+	// summary:
+	//		Produce a line of debug output. Does nothing unless
+	//		djConfig.isDebug is true. Accepts any nubmer of args, joined with
+	//		' ' to produce a single line of debugging output.  Caller should not
+	//		supply a trailing "\n".
 	if (!djConfig.isDebug) { return; }
 	var args = arguments;
 	if(dj_undef("println", dojo.hostenv)){
@@ -39,7 +38,11 @@ dojo.debug = function(){
  * display the properties of the object
 **/
 
-dojo.debugShallow = function(obj){
+dojo.debugShallow = function(/*Object*/obj){
+	// summary:
+	//		outputs a "name: value" style listing of all enumerable properties
+	//		in obj. Does nothing if djConfig.isDebug == false.
+	// obj: the object to be enumerated
 	if (!djConfig.isDebug) { return; }
 	dojo.debug('------------------------------------------------------------');
 	dojo.debug('Object: '+obj);
@@ -58,7 +61,11 @@ dojo.debugShallow = function(obj){
 	dojo.debug('------------------------------------------------------------');
 }
 
-dojo.debugDeep = function(obj){
+dojo.debugDeep = function(/*Object*/obj){
+	// summary:
+	//		provides an "object explorer" view of the passed obj in a popup
+	//		window.
+	// obj: the object to be examined
 	if (!djConfig.isDebug) { return; }
 	if (!dojo.uri || !dojo.uri.dojoUri){ return dojo.debug("You'll need to load dojo.uri.* for deep debugging - sorry!"); }
 	if (!window.open){ return dojo.debug('Deep debugging is only supported in host environments with window.open'); }

@@ -46,7 +46,7 @@ dojo.html.getFontMeasurements = function(){
 	//	summary
 	//	Returns an object that has pixel equivilents of standard font size values.
 	var heights = {
-		'1em':0, '100%':0, '12pt':0, '16px':0, 'xx-small':0, 'x-small':0,
+		'1em':0, '1ex':0, '100%':0, '12pt':0, '16px':0, 'xx-small':0, 'x-small':0,
 		'small':0, 'medium':0, 'large':0, 'x-large':0, 'xx-large':0
 	};
 
@@ -80,6 +80,15 @@ dojo.html.getFontMeasurements = function(){
 	dojo.body().removeChild(div);
 	div = null;
 	return heights; 	//	object
+};
+
+dojo.html._fontMeasurements = null;
+
+dojo.html.getCachedFontMeasurements = function(recalculate){
+	if(recalculate || !dojo.html._fontMeasurements){
+		dojo.html._fontMeasurements = dojo.html.getFontMeasurements();
+	}
+	return dojo.html._fontMeasurements;
 };
 
 dojo.html.measureFragment = function(/* HTMLElement */node, /* string */html, /* string? */boxType){

@@ -40,8 +40,8 @@ if(dojo.render.html.opera){
  */
 
 dojo.undo.browser = {
-	initialHref: window.location.href,
-	initialHash: window.location.hash,
+	initialHref: (!dj_undef("window")) ? window.location.href : "",
+	initialHash: (!dj_undef("window")) ? window.location.hash : "",
 
 	moveForward: false,
 	historyStack: [],

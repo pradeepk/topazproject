@@ -4,14 +4,14 @@ dojo.require("dojo.lang.common");
 
 // FIXME: Is this worthless since you can do: if(name in obj)
 // is this the right place for this?
-dojo.lang.has = function(obj, name){
+dojo.lang.has = function(/*Object*/obj, /*String*/name){
 	try{
-		return (typeof obj[name] != "undefined");
+		return typeof obj[name] != "undefined";
 	}catch(e){ return false; }
 }
 
-dojo.lang.isEmpty = function(obj) {
-	if(dojo.lang.isObject(obj)) {
+dojo.lang.isEmpty = function(/*Object*/obj){
+	if(dojo.lang.isObject(obj)){
 		var tmp = {};
 		var count = 0;
 		for(var x in obj){
@@ -20,15 +20,16 @@ dojo.lang.isEmpty = function(obj) {
 				break;
 			} 
 		}
-		return (count == 0);
-	} else if(dojo.lang.isArrayLike(obj) || dojo.lang.isString(obj)) {
+		return count == 0;
+	}else if(dojo.lang.isArrayLike(obj) || dojo.lang.isString(obj)){
 		return obj.length == 0;
 	}
 }
 
-dojo.lang.map = function(arr, obj, unary_func){
+dojo.lang.map = function(/*Array*/arr, /*Object|Function*/obj, /*Function?*/unary_func){
 	var isString = dojo.lang.isString(arr);
 	if(isString){
+		// arr: String
 		arr = arr.split("");
 	}
 	if(dojo.lang.isFunction(obj)&&(!unary_func)){
@@ -49,13 +50,13 @@ dojo.lang.map = function(arr, obj, unary_func){
 		}
 	}
 	if(isString) {
-		return outArr.join("");
+		return outArr.join(""); // String
 	} else {
-		return outArr;
+		return outArr; // Array
 	}
 }
 
-dojo.lang.reduce = function(arr, initialValue, obj, binary_func){
+dojo.lang.reduce = function(/*Array*/arr, initialValue, /*Object|null*/obj, /*Function*/binary_func){
 	var reducedValue = initialValue;
 	var ob = obj ? obj : dj_global;
 	dojo.lang.map(arr, 
@@ -67,8 +68,9 @@ dojo.lang.reduce = function(arr, initialValue, obj, binary_func){
 }
 
 // http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:forEach
-dojo.lang.forEach = function(anArray /* Array */, callback /* Function */, thisObject /* Object */){
-	if(dojo.lang.isString(anArray)){ 
+dojo.lang.forEach = function(/*Array*/anArray, /*Function*/callback, /*Object?*/thisObject){
+	if(dojo.lang.isString(anArray)){
+		// anArray: String
 		anArray = anArray.split(""); 
 	}
 	if(Array.forEach){
@@ -84,90 +86,91 @@ dojo.lang.forEach = function(anArray /* Array */, callback /* Function */, thisO
 	}
 }
 
-dojo.lang._everyOrSome = function(every, arr, callback, thisObject){
+dojo.lang._everyOrSome = function(/*Boolean*/every, /*Array*/arr, /*Function*/callback, /*Object?*/thisObject){
 	if(dojo.lang.isString(arr)){ 
+		//arr: String
 		arr = arr.split(""); 
 	}
 	if(Array.every){
-		return Array[ (every) ? "every" : "some" ](arr, callback, thisObject);
+		return Array[ every ? "every" : "some" ](arr, callback, thisObject);
 	}else{
 		if(!thisObject){
 			thisObject = dj_global;
 		}
 		for(var i=0,l=arr.length; i<l; i++){
 			var result = callback.call(thisObject, arr[i], i, arr);
-			if((every)&&(!result)){
-				return false;
+			if(every && !result){
+				return false; // Boolean
 			}else if((!every)&&(result)){
-				return true;
+				return true; // Boolean
 			}
 		}
-		return (every) ? true : false;
+		return Boolean(every); // Boolean
 	}
 }
 
-dojo.lang.every = function(arr, callback, thisObject){
-	return this._everyOrSome(true, arr, callback, thisObject);
+dojo.lang.every = function(/*Array*/arr, /*Function*/callback, /*Object?*/thisObject){
+	return this._everyOrSome(true, arr, callback, thisObject); // Boolean
 }
 
-dojo.lang.some = function(arr, callback, thisObject){
-	return this._everyOrSome(false, arr, callback, thisObject);
+dojo.lang.some = function(/*Array*/arr, /*Function*/callback, /*Object?*/thisObject){
+	return this._everyOrSome(false, arr, callback, thisObject); // Boolean
 }
 
-dojo.lang.filter = function(arr, callback, thisObject) {
+dojo.lang.filter = function(/*Array*/arr, /*Function*/callback, /*Object?*/thisObject){
 	var isString = dojo.lang.isString(arr);
-	if(isString) { arr = arr.split(""); }
-	if(Array.filter) {
-		var outArr = Array.filter(arr, callback, thisObject);
+	if(isString){ /*arr: String*/arr = arr.split(""); }
+	var outArr;
+	if(Array.filter){
+		outArr = Array.filter(arr, callback, thisObject);
 	} else {
-		if(!thisObject) {
-			if(arguments.length >= 3) { dojo.raise("thisObject doesn't exist!"); }
+		if(!thisObject){
+			if(arguments.length >= 3){ dojo.raise("thisObject doesn't exist!"); }
 			thisObject = dj_global;
 		}
 
-		var outArr = [];
-		for(var i = 0; i < arr.length; i++) {
-			if(callback.call(thisObject, arr[i], i, arr)) {
+		outArr = [];
+		for(var i = 0; i < arr.length; i++){
+			if(callback.call(thisObject, arr[i], i, arr)){
 				outArr.push(arr[i]);
 			}
 		}
 	}
-	if(isString) {
-		return outArr.join("");
+	if(isString){
+		return outArr.join(""); // String
 	} else {
-		return outArr;
+		return outArr; // Array
 	}
 }
 
-/**
- * Creates a 1-D array out of all the arguments passed,
- * unravelling any array-like objects in the process
- *
- * Ex:
- * unnest(1, 2, 3) ==> [1, 2, 3]
- * unnest(1, [2, [3], [[[4]]]]) ==> [1, 2, 3, 4]
- */
-dojo.lang.unnest = function(/* ... */) {
+dojo.lang.unnest = function(/* ... */){
+	// summary:
+	//	Creates a 1-D array out of all the arguments passed,
+	//	unravelling any array-like objects in the process
+	//
+	// usage:
+	//	unnest(1, 2, 3) ==> [1, 2, 3]
+	//	unnest(1, [2, [3], [[[4]]]]) ==> [1, 2, 3, 4]
+
 	var out = [];
-	for(var i = 0; i < arguments.length; i++) {
-		if(dojo.lang.isArrayLike(arguments[i])) {
+	for(var i = 0; i < arguments.length; i++){
+		if(dojo.lang.isArrayLike(arguments[i])){
 			var add = dojo.lang.unnest.apply(this, arguments[i]);
 			out = out.concat(add);
-		} else {
+		}else{
 			out.push(arguments[i]);
 		}
 	}
-	return out;
+	return out; // Array
 }
 
-/**
- * Converts an array-like object (i.e. arguments, DOMCollection)
- * to an array
-**/
-dojo.lang.toArray = function(arrayLike, startOffset) {
+dojo.lang.toArray = function(/*Object*/arrayLike, /*Number*/startOffset){
+	// summary:
+	//	Converts an array-like object (i.e. arguments, DOMCollection)
+	//	to an array
 	var array = [];
-	for(var i = startOffset||0; i < arrayLike.length; i++) {
+	for(var i = startOffset||0; i < arrayLike.length; i++){
 		array.push(arrayLike[i]);
 	}
-	return array;
+	return array; // Array
 }

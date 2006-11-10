@@ -7,9 +7,6 @@
 */
 
 dojo.provide("dojo.dnd.TreeDragAndDrop");
-dojo.provide("dojo.dnd.TreeDragSource");
-dojo.provide("dojo.dnd.TreeDropTarget");
-dojo.provide("dojo.dnd.TreeDNDController");
 
 dojo.require("dojo.dnd.HtmlDragAndDrop");
 dojo.require("dojo.lang.func");

@@ -8,7 +8,7 @@ dojo.lang.inherits = function(/*Function*/ subclass, /*Function*/ superclass){
 	subclass.prototype = new superclass();
 	subclass.prototype.constructor = subclass;
 	subclass.superclass = superclass.prototype;
-	// DEPRICATED: super is a reserved word, use 'superclass'
+	// DEPRECATED: super is a reserved word, use 'superclass'
 	subclass['super'] = superclass.prototype;
 }
 
@@ -32,7 +32,7 @@ dojo.lang._mixin = function(/*Object*/ obj, /*Object*/ props){
 	{
 		obj.toString = props.toString;
 	}
-	return obj;
+	return obj; // Object
 }
 
 dojo.lang.mixin = function(/*Object*/ obj, /*Object...*/props){
@@ -49,7 +49,7 @@ dojo.lang.extend = function(/*Object*/ constructor, /*Object...*/ props){
 	for(var i=1, l=arguments.length; i<l; i++){
 		dojo.lang._mixin(constructor.prototype, arguments[i]);
 	}
-	return constructor;
+	return constructor; // Object
 }
 
 // Promote to dojo module
@@ -63,13 +63,12 @@ dojo.lang.find = function(	/*Array*/		array,
 							/*Boolean?*/	identity,
 							/*Boolean?*/	findLast){
 	// summary:	Return the index of value in array, returning -1 if not found.
-	
-	// param: identity:  If true, matches with identity comparison (===).  
+	// identity: If true, matches with identity comparison (===).  
 	//					 If false, uses normal comparison (==).
-	// param: findLast:  If true, returns index of last instance of value.
-	// usage:
+	// findLast: If true, returns index of last instance of value.
+	
+	// examples:
 	//  find(array, value[, identity [findLast]]) // recommended
-	// usage:
  	//  find(value, array[, identity [findLast]]) // deprecated
 							
 	// support both (array, value) and (value, array)
@@ -109,17 +108,15 @@ dojo.lang.indexOf = dojo.lang.find;
 
 dojo.lang.findLast = function(/*Array*/ array, /*Object*/ value, /*boolean?*/ identity){
 	// summary:	Return index of last occurance of value in array, returning -1 if not found.
-
-	// param: identity:  If true, matches with identity comparison (===).  
-	//					 If false, uses normal comparison (==).
-	return dojo.lang.find(array, value, identity, true);
+	// identity: If true, matches with identity comparison (===). If false, uses normal comparison (==).
+	return dojo.lang.find(array, value, identity, true); // number
 }
 
 dojo.lang.lastIndexOf = dojo.lang.findLast;
 
 dojo.lang.inArray = function(array /*Array*/, value /*Object*/){
 	// summary:	Return true if value is present in array.
-	return dojo.lang.find(array, value) > -1; // return: boolean
+	return dojo.lang.find(array, value) > -1; // boolean
 }
 
 /**
@@ -132,18 +129,18 @@ dojo.lang.inArray = function(array /*Array*/, value /*Object*/){
  * The following is* functions are fairly "safe"
  */
 
-dojo.lang.isObject = function(it){
+dojo.lang.isObject = function(/*anything*/ it){
 	// summary:	Return true if it is an Object, Array or Function.
 	if(typeof it == "undefined"){ return false; }
-	return (typeof it == "object" || it === null || dojo.lang.isArray(it) || dojo.lang.isFunction(it));
+	return (typeof it == "object" || it === null || dojo.lang.isArray(it) || dojo.lang.isFunction(it)); // Boolean
 }
 
-dojo.lang.isArray = function(it){
+dojo.lang.isArray = function(/*anything*/ it){
 	// summary:	Return true if it is an Array.
-	return (it && it instanceof Array || typeof it == "array");
+	return (it && it instanceof Array || typeof it == "array"); // Boolean
 }
 
-dojo.lang.isArrayLike = function(it){
+dojo.lang.isArrayLike = function(/*anything*/ it){
 	// summary:	Return true if it can be used as an array (i.e. is an object with an integer length property).
 	if((!it)||(dojo.lang.isUndefined(it))){ return false; }
 	if(dojo.lang.isString(it)){ return false; }
@@ -152,31 +149,31 @@ dojo.lang.isArrayLike = function(it){
 	// form node itself is ArrayLike, but not always iterable. Use form.elements instead.
 	if((it.tagName)&&(it.tagName.toLowerCase()=='form')){ return false; }
 	if(dojo.lang.isNumber(it.length) && isFinite(it.length)){ return true; }
-	return false;
+	return false; // Boolean
 }
 
-dojo.lang.isFunction = function(it){
+dojo.lang.isFunction = function(/*anything*/ it){
 	// summary:	Return true if it is a Function.
 	if(!it){ return false; }
 	// webkit treats NodeList as a function, which is bad
 	if((typeof(it) == "function") && (it == "[object NodeList]")) { return false; }
-	return (it instanceof Function || typeof it == "function");
+	return (it instanceof Function || typeof it == "function"); // Boolean
 }
 
-dojo.lang.isString = function(it){
+dojo.lang.isString = function(/*anything*/ it){
 	// summary:	Return true if it is a String.
 	return (typeof it == "string" || it instanceof String);
 }
 
-dojo.lang.isAlien = function(it){
+dojo.lang.isAlien = function(/*anything*/ it){
 	// summary:	Return true if it is not a built-in function.
 	if(!it){ return false; }
-	return !dojo.lang.isFunction() && /\{\s*\[native code\]\s*\}/.test(String(it));
+	return !dojo.lang.isFunction() && /\{\s*\[native code\]\s*\}/.test(String(it)); // Boolean
 }
 
-dojo.lang.isBoolean = function(it){
+dojo.lang.isBoolean = function(/*anything*/ it){
 	// summary:	Return true if it is a Boolean.
-	return (it instanceof Boolean || typeof it == "boolean");
+	return (it instanceof Boolean || typeof it == "boolean"); // Boolean
 }
 
 /**
@@ -185,11 +182,10 @@ dojo.lang.isBoolean = function(it){
  * in the WARNING messages.
  *
  */
-dojo.lang.isNumber = function(it){
+dojo.lang.isNumber = function(/*anything*/ it){
 	// summary:	Return true if it is a number.
-
-	// warning: 
-	//		In most cases, isNaN(it) is sufficient to determine whether or not
+	// description: 
+	//		WARNING - In most cases, isNaN(it) is sufficient to determine whether or not
 	// 		something is a number or can be used as such. For example, a number or string
 	// 		can be used interchangably when accessing array items (array["1"] is the same as
 	// 		array[1]) and isNaN will return false for both values ("1" and 1). However,
@@ -198,27 +194,27 @@ dojo.lang.isNumber = function(it){
 	// 		are corner cases (like when you want to make sure that two things are really
 	// 		the same type of thing). That is really where isNumber "shines".
 	//
-	// recommendation: Use isNaN(it) when possible
+	// Recommendation - Use isNaN(it) when possible
 	
-	return (it instanceof Number || typeof it == "number");
+	return (it instanceof Number || typeof it == "number"); // Boolean
 }
 
 /*
  * FIXME: Should isUndefined go away since it is error prone?
  */
-dojo.lang.isUndefined = function(it){
+dojo.lang.isUndefined = function(/*anything*/ it){
 	// summary: Return true if it is not defined.
-	
-	// warning: In some cases, isUndefined will not behave as you
+	// description: 
+	//		WARNING - In some cases, isUndefined will not behave as you
 	// 		might expect. If you do isUndefined(foo) and there is no earlier
 	// 		reference to foo, an error will be thrown before isUndefined is
 	// 		called. It behaves correctly if you scope yor object first, i.e.
 	// 		isUndefined(foo.bar) where foo is an object and bar isn't a
 	// 		property of the object.
 	//
-	// recommendation: Use typeof foo == "undefined" when possible
+	// Recommendation - Use typeof foo == "undefined" when possible
 
-	return ((typeof(it) == "undefined")&&(it == undefined));
+	return ((typeof(it) == "undefined")&&(it == undefined)); // Boolean
 }
 
 // end Crockford functions

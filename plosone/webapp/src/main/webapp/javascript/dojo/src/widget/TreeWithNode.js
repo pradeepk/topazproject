@@ -22,6 +22,7 @@ dojo.declare(
 	
 	state: "UNCHECKED",  // after creation will change to loadStates: "loaded/loading/unchecked"
 
+    //RpcUrl: "", // user can override rpc url for specific nodes
 
 	objectId: "", // the widget represents an object
 
@@ -43,8 +44,8 @@ dojo.declare(
 	},
 	
 	
-	expandLevel: "", // expand to level automatically
-	loadLevel: "", // load to level automatically
+	expandLevel: 0, // expand to level automatically
+	loadLevel: 0, // load to level automatically
 		
 	hasLock: function() {
 		return this.lockLevel>0;
@@ -131,6 +132,11 @@ dojo.declare(
 		
 		var hadChildren = this.children.length > 0;
 		
+        if (hadChildren && childrenArray){
+            // perf: most of time setChildren used for empty nodes, so save function call
+            this.destroyChildren()
+        }
+        
 		if (childrenArray) {
 			this.children = childrenArray;
 		}

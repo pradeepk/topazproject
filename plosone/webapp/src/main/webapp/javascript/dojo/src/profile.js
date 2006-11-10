@@ -1,11 +1,26 @@
 dojo.provide("dojo.profile");
 
+// summary:
+//		provides a manual profiling utility that can be used to gather relative
+//		timing data.
+
+
+// FIXME: need to tie into the event system or provide a closure-based way to
+// watch timings of functions without manually instrumenting them.
+// FIXME: need to make the dump() function work in command line environments
 
 dojo.profile = {
 	_profiles: {},
 	_pns: [],
 
 	start:function(/*String*/ name){
+		// summary:
+		//		start an iteration for the profiling target with the specified
+		//		name. If a previously started iteration has not yet been ended
+		//		for this name, it's automatically closed out and a new
+		//		iteration begun.
+		// name:
+		//		a unique name to identify the thing being profiled
 		if(!this._profiles[name]){
 			this._profiles[name] = {iters: 0, total: 0};
 			this._pns[this._pns.length] = name;
@@ -19,6 +34,11 @@ dojo.profile = {
 	},
 
 	end:function(/*String*/ name){
+		// summary:
+		//		closes a timing loop for the named profiling target
+		// name:
+		//		a unique name to identify the thing being profiled. The name
+		//		passed to end() should be the same as that passed to start()
 		var ed = new Date();
 		if((this._profiles[name])&&(this._profiles[name]["start"])){
 			with(this._profiles[name]){
@@ -34,6 +54,14 @@ dojo.profile = {
 	},
 
 	dump:function(/*boolean*/ appendToDoc){
+		// summary:
+		//		output profiling data to an HTML table, optionally adding it to
+		//		the bottom of the document. If profiling data has already been
+		//		generated and appended to the document, it's replaced with the
+		//		new data.
+		// appendToDoc:
+		//		optional. Defautls to "false". Should profiling information be
+		//		added to the document?
 		var tbl = document.createElement("table");
 		with(tbl.style){
 			border = "1px solid black";
@@ -101,7 +129,7 @@ dojo.profile = {
 			ne.appendChild(tbl);
 		}
 
-		return tbl;
+		return tbl; // DOMNode
 	}
 }
 

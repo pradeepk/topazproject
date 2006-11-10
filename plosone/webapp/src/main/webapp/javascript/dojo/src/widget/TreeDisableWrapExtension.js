@@ -4,7 +4,7 @@ dojo.provide( "dojo.widget.TreeDisableWrapExtension" );
 dojo.require( "dojo.widget.HtmlWidget" );
 dojo.require( "dojo.widget.TreeExtension" );
 
-// selector extension to emphase node
+// selector extension to emphasize node
 dojo.widget.defineWidget(
 	"dojo.widget.TreeDisableWrapExtension",
 	dojo.widget.TreeExtension,

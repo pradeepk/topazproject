@@ -5,14 +5,18 @@ dojo.require("dojo.string.extras");
 dojo.require("dojo.html.style");
 dojo.require("dojo.html.layout");
 
-/**
- * Layout a bunch of child dom nodes within a parent dom node
- * Input is an array of objects like:
- * @ container - parent node
- * @ layoutPriority - "top-bottom" or "left-right"
- * @ children an array like [ {domNode: foo, layoutAlign: "bottom" }, {domNode: bar, layoutAlign: "client"} ]
- */
-dojo.widget.html.layout = function(container, children, layoutPriority) {
+dojo.widget.html.layout = function(/*DomNode*/ container, /*Object[]*/ children, /*String*/ layoutPriority) {
+	/**
+	 * summary
+	 *		Layout a bunch of child dom nodes within a parent dom node
+	 * container:
+	 *		parent node
+	 * layoutPriority:
+	 *		"top-bottom" or "left-right"
+	 * children:
+	 *		an array like [ {domNode: foo, layoutAlign: "bottom" }, {domNode: bar, layoutAlign: "client"} ]
+	 */
+
 	dojo.html.addClass(container, "dojoLayoutContainer");
 
 	// Copy children array and remove elements w/out layout.

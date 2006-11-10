@@ -58,7 +58,15 @@ dojo.require("dojo.lang.extras");
 dojo.io.transports = [];
 dojo.io.hdlrFuncNames = [ "load", "error", "timeout" ]; // we're omitting a progress() event for now
 
-dojo.io.Request = function(url, mimetype, transport, changeUrl){
+dojo.io.Request = function(/*String*/ url, /*String*/ mimetype, /*String*/ transport, /*String or Boolean*/ changeUrl){
+// summary:
+//		Constructs a Request object that is used by dojo.io.bind().
+// description:
+//		dojo.io.bind() will create one of these for you if
+//		you call dojo.io.bind() with an plain object containing the bind parameters.
+//		This method can either take the arguments specified, or an Object containing all of the parameters that you
+//		want to use to create the dojo.io.Request (similar to how dojo.io.bind() is called.
+//		The named parameters to this constructor represent the minimum set of parameters need
 	if((arguments.length == 1)&&(arguments[0].constructor == Object)){
 		this.fromKwArgs(arguments[0]);
 	}else{
@@ -106,12 +114,77 @@ dojo.lang.extend(dojo.io.Request, {
 	preventCache: false,
 	
 	// events stuff
-	load: function(type, data, evt){ },
-	error: function(type, error){ },
-	timeout: function(type){ },
-	handle: function(){ },
+	load: function(type, data, transportImplementation, kwArgs){
+		// summary:
+		//		Called on successful completion of a bind.
+		//		type: String
+		//				A string with value "load"
+		//		data: Object
+		//				The object representing the result of the bind. The actual structure
+		//				of the data object will depend on the mimetype that was given to bind
+		//				in the bind arguments.
+		//		transportImplementation: Object
+		//				The object that implements a particular transport. Structure is depedent
+		//				on the transport. For XMLHTTPTransport (dojo.io.BrowserIO), it will be the
+		//				XMLHttpRequest object from the browser.
+		//		kwArgs: Object
+		//				Object that contains the request parameters that were given to the
+		//				bind call. Useful for storing and retrieving state from when bind
+		//				was called.
+	},
+	error: function(type, error, transportImplementation, kwArgs){
+		// summary:
+		//		Called when there is an error with a bind.
+		//		type: String
+		//				A string with value "error"
+		//		error: Object
+		//				The error object. Should be a dojo.io.Error object, but not guaranteed.
+		//		transportImplementation: Object
+		//				The object that implements a particular transport. Structure is depedent
+		//				on the transport. For XMLHTTPTransport (dojo.io.BrowserIO), it will be the
+		//				XMLHttpRequest object from the browser.
+		//		kwArgs: Object
+		//				Object that contains the request parameters that were given to the
+		//				bind call. Useful for storing and retrieving state from when bind
+		//				was called.
+	},
+	timeout: function(type, empty, transportImplementation, kwArgs){
+		// summary:
+		//		Called when there is an error with a bind. Only implemented in certain transports at this time.
+		//		type: String
+		//				A string with value "timeout"
+		//		empty: Object
+		//				Should be null. Just a spacer argument so that load, error, timeout and handle have the
+		//				same signatures.
+		//		transportImplementation: Object
+		//				The object that implements a particular transport. Structure is depedent
+		//				on the transport. For XMLHTTPTransport (dojo.io.BrowserIO), it will be the
+		//				XMLHttpRequest object from the browser. May be null for the timeout case for
+		//				some transports.
+		//		kwArgs: Object
+		//				Object that contains the request parameters that were given to the
+		//				bind call. Useful for storing and retrieving state from when bind
+		//				was called.
+	},
+	handle: function(type, data, transportImplementation, kwArgs){
+		// summary:
+		//		The handle method can be defined instead of defining separate load, error and timeout
+		//		callbacks.
+		//		type: String
+		//				A string with the type of callback: "load", "error", or "timeout".
+		//		data: Object
+		//				See the above callbacks for what this parameter could be.
+		//		transportImplementation: Object
+		//				The object that implements a particular transport. Structure is depedent
+		//				on the transport. For XMLHTTPTransport (dojo.io.BrowserIO), it will be the
+		//				XMLHttpRequest object from the browser.
+		//		kwArgs: Object
+		//				Object that contains the request parameters that were given to the
+		//				bind call. Useful for storing and retrieving state from when bind
+		//				was called.	
+	},
 
-	//FIXME: change BrowserIO.js to use timeouts? IframeIO?
+	//FIXME: change IframeIO.js to use timeouts?
 	// The number of seconds to wait until firing a timeout callback.
 	// If it is zero, that means, don't do a timeout check.
 	timeoutSeconds: 0,
@@ -123,7 +196,10 @@ dojo.lang.extend(dojo.io.Request, {
 	// backButton: function(){ },
 	// forwardButton: function(){ },
 
-	fromKwArgs: function(kwArgs){
+	fromKwArgs: function(/*Object*/ kwArgs){
+		// summary:
+		//		Creates a dojo.io.Request from a simple object (kwArgs object).
+
 		// normalize args
 		if(kwArgs["url"]){ kwArgs.url = kwArgs.url.toString(); }
 		if(kwArgs["formNode"]) { kwArgs.formNode = dojo.byId(kwArgs.formNode); }
@@ -160,40 +236,53 @@ dojo.lang.extend(dojo.io.Request, {
 
 });
 
-dojo.io.Error = function(msg, type, num){
+dojo.io.Error = function(/*String*/ msg, /*String*/ type, /*Number*/num){
+	// summary:
+	//		Constructs an object representing a bind error.
 	this.message = msg;
 	this.type =  type || "unknown"; // must be one of "io", "parse", "unknown"
 	this.number = num || 0; // per-substrate error number, not normalized
 }
 
 dojo.io.transports.addTransport = function(name){
+	// summary:
+	//		Used to register transports that can support bind calls.
 	this.push(name);
 	// FIXME: do we need to handle things that aren't direct children of the
-	// dojo.io namespace? (say, dojo.io.foo.fooTransport?)
+	// dojo.io module? (say, dojo.io.foo.fooTransport?)
 	this[name] = dojo.io[name];
 }
 
 // binding interface, the various implementations register their capabilities
 // and the bind() method dispatches
 dojo.io.bind = function(request){
-	// if the request asks for a particular implementation, use it
+	// summary:
+	//		Binding interface for IO. Loading different IO transports, like
+	//		dojo.io.BrowserIO or dojo.io.IframeIO, will register with bind
+	//		to handle particular types of bind calls.
+	//		request: Object
+	//				Object containing bind arguments. This object is converted to
+	//				a dojo.io.Request object, and that request object is the return
+	//				value for this method.
 	if(!(request instanceof dojo.io.Request)){
 		try{
 			request = new dojo.io.Request(request);
 		}catch(e){ dojo.debug(e); }
 	}
+
+	// if the request asks for a particular implementation, use it
 	var tsName = "";
 	if(request["transport"]){
 		tsName = request["transport"];
 		if(!this[tsName]){
 			dojo.io.sendBindError(request, "No dojo.io.bind() transport with name '"
 				+ request["transport"] + "'.");
-			return request;
+			return request; //dojo.io.Request
 		}
 		if(!this[tsName].canHandle(request)){
 			dojo.io.sendBindError(request, "dojo.io.bind() transport with name '"
 				+ request["transport"] + "' cannot handle this type of request.");
-			return request;		
+			return request;	//dojo.io.Request
 		}
 	}else{
 		// otherwise we do our best to auto-detect what available transports
@@ -202,20 +291,24 @@ dojo.io.bind = function(request){
 			var tmp = dojo.io.transports[x];
 			if((this[tmp])&&(this[tmp].canHandle(request))){
 				tsName = tmp;
+				break;
 			}
 		}
 		if(tsName == ""){
 			dojo.io.sendBindError(request, "None of the loaded transports for dojo.io.bind()"
 				+ " can handle the request.");
-			return request;
+			return request; //dojo.io.Request
 		}
 	}
 	this[tsName].bind(request);
 	request.bindSuccess = true;
-	return request;
+	return request; //dojo.io.Request
 }
 
 dojo.io.sendBindError = function(request /* Object */, message /* String */){
+	// summary:
+	//		Used internally by dojo.io.bind() to return/raise a bind error.
+
 	//Need to be careful since not all hostenvs support setTimeout.
 	if((typeof request.error == "function" || typeof request.handle == "function")
 		&& (typeof setTimeout == "function" || typeof setTimeout == "object")){
@@ -229,6 +322,15 @@ dojo.io.sendBindError = function(request /* Object */, message /* String */){
 }
 
 dojo.io.queueBind = function(request){
+	// summary:
+	//		queueBind will use dojo.io.bind() but guarantee that only one bind
+	//		call is handled at a time.
+	// description:
+	//		If queueBind is called while a bind call
+	//		is in process, it will queue up the other calls to bind and call them
+	//		in order as bind calls complete.
+	//		request: Object
+	//			Same sort of request object as used for dojo.io.bind().
 	if(!(request instanceof dojo.io.Request)){
 		try{
 			request = new dojo.io.Request(request);
@@ -254,10 +356,12 @@ dojo.io.queueBind = function(request){
 
 	dojo.io._bindQueue.push(request);
 	dojo.io._dispatchNextQueueBind();
-	return request;
+	return request; //dojo.io.Request
 }
 
 dojo.io._dispatchNextQueueBind = function(){
+	// summary:
+	//	Private method used by dojo.io.queueBind().
 	if(!dojo.io._queueBindInFlight){
 		dojo.io._queueBindInFlight = true;
 		if(dojo.io._bindQueue.length > 0){
@@ -271,6 +375,17 @@ dojo.io._bindQueue = [];
 dojo.io._queueBindInFlight = false;
 
 dojo.io.argsFromMap = function(map, encoding, last){
+	// summary:
+	//		Converts name/values pairs in the map object to an URL-encoded string
+	//		with format of name1=value1&name2=value2...
+	//		map: Object
+	//			Object that has the contains the names and values.
+	//		encoding: String
+	//			String to specify how to encode the name and value. If the encoding string
+	//			contains "utf" (case-insensitive), then encodeURIComponent is used. Otherwise
+	//			dojo.string.encodeAscii is used.
+	//		last: String
+	//			The last parameter in the list. Helps with final string formatting?
 	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
 	var mapped = [];
 	var control = new Object();
@@ -289,10 +404,13 @@ dojo.io.argsFromMap = function(map, encoding, last){
 			}
 		}
 	}
-	return mapped.join("&");
+	return mapped.join("&"); //String
 }
 
-dojo.io.setIFrameSrc = function(iframe, src, replace){
+dojo.io.setIFrameSrc = function(/*DOMNode*/ iframe, /*String*/ src, /*Boolean*/ replace){
+	//summary:
+	//		Sets the URL that is loaded in an IFrame. The replace parameter indicates whether
+	//		location.replace() should be used when changing the location of the iframe.
 	try{
 		var r = dojo.render.html;
 		// dojo.debug(iframe);

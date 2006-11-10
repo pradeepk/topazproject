@@ -104,12 +104,24 @@ dojo.event.topic = new function(){
 }
 
 dojo.event.topic.TopicImpl = function(topicName){
+	// summary: a class to represent topics
+
 	this.topicName = topicName;
 
-	this.subscribe = function(listenerObject, listenerMethod){
+	this.subscribe = function(/*Object*/listenerObject, /*Function or String*/listenerMethod){
+		// summary:
+		//		use dojo.event.connect() to attach the passed listener to the
+		//		topic represented by this object
+		// listenerObject:
+		//		if a string and listenerMethod is ommitted, this is treated as
+		//		the name of a function in the global namespace. If
+		//		listenerMethod is provided, this is the scope to find/execute
+		//		the function in.
+		// listenerMethod:
+		//		Optional. The function to register.
 		var tf = listenerMethod||listenerObject;
 		var to = (!listenerMethod) ? dj_global : listenerObject;
-		dojo.event.kwConnect({
+		return dojo.event.kwConnect({ // dojo.event.MethodJoinPoint
 			srcObj:		this, 
 			srcFunc:	"sendMessage", 
 			adviceObj:	to,
@@ -117,10 +129,20 @@ dojo.event.topic.TopicImpl = function(topicName){
 		});
 	}
 
-	this.unsubscribe = function(listenerObject, listenerMethod){
+	this.unsubscribe = function(/*Object*/listenerObject, /*Function or String*/listenerMethod){
+		// summary:
+		//		use dojo.event.disconnect() to attach the passed listener to the
+		//		topic represented by this object
+		// listenerObject:
+		//		if a string and listenerMethod is ommitted, this is treated as
+		//		the name of a function in the global namespace. If
+		//		listenerMethod is provided, this is the scope to find the
+		//		function in.
+		// listenerMethod:
+		//		Optional. The function to unregister.
 		var tf = (!listenerMethod) ? listenerObject : listenerMethod;
 		var to = (!listenerMethod) ? null : listenerObject;
-		dojo.event.kwDisconnect({
+		return dojo.event.kwDisconnect({ // dojo.event.MethodJoinPoint
 			srcObj:		this, 
 			srcFunc:	"sendMessage", 
 			adviceObj:	to,
@@ -132,19 +154,37 @@ dojo.event.topic.TopicImpl = function(topicName){
 		return dojo.event.MethodJoinPoint.getForMethod(this, "sendMessage");
 	}
 
-	this.setSquelch = function(shouldSquelch){
+	this.setSquelch = function(/*Boolean*/shouldSquelch){
+		// summary: 
+		//		determine whether or not exceptions in the calling of a
+		//		listener in the chain should stop execution of the chain.
 		this._getJoinPoint().squelch = shouldSquelch;
 	}
 
 	this.destroy = function(){
+		// summary: disconnects all listeners from this topic
 		this._getJoinPoint().disconnect();
 	}
 
-	this.registerPublisher = function(publisherObject, publisherMethod){
+	this.registerPublisher = function(	/*Object*/publisherObject, 
+										/*Function or String*/publisherMethod){
+		// summary:
+		//		registers the passed function as a publisher on this topic.
+		//		Each time the function is called, an event will be published on
+		//		this topic.
+		// publisherObject:
+		//		if a string and listenerMethod is ommitted, this is treated as
+		//		the name of a function in the global namespace. If
+		//		listenerMethod is provided, this is the scope to find the
+		//		function in.
+		// publisherMethod:
+		//		Optional. The function to register.
 		dojo.event.connect(publisherObject, publisherMethod, this, "sendMessage");
 	}
 
 	this.sendMessage = function(message){
+		// summary: a stub to be called when a message is sent to the topic.
+
 		// The message has been propagated
 	}
 }

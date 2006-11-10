@@ -73,7 +73,28 @@ dojo.declare(
 	},
 	
 	
+	/**
+	 * check condition for node.domNode -> .. -> any node chain
+	 */
+	checkPathCondition: function(domElement, condition) {
+		
+		while (domElement && !domElement.widgetId) {
+			if (condition.call(null, domElement)) {
+				return true;
+			}
+			
+			domElement = domElement.parentNode;
+		}
+		
+		return false;
+	},
+		
+	
+	/**
+	 * get node widget id by its descendant dom node
+	 */
 	domElement2TreeNode: function(domElement) {
+		
 		while (domElement && !domElement.widgetId) {
 			domElement = domElement.parentNode;
 		}
@@ -83,6 +104,7 @@ dojo.declare(
 		}
 		
 		var widget = dojo.widget.byId(domElement.widgetId);
+		
 		if (!widget.isTreeNode) {
 			return null;
 		}

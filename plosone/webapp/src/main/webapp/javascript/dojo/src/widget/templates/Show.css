@@ -4,9 +4,6 @@
 		padding: 0px;
 		width: 100%;
 	}
-	body {
-		display: none;
-	}
 	h1 {
 		font-size: 50px;
 	}
@@ -35,6 +32,9 @@
 		position: absolute;
 		left: 5px;
 		top: 0px;
+	}
+	.dojoShow {
+		display: none;
 	}
 }
 @media print {

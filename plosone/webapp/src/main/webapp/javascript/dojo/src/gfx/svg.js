@@ -5,6 +5,7 @@ dojo.require("dojo.svg");
 
 dojo.require("dojo.gfx.color");
 dojo.require("dojo.gfx.common");
+dojo.require("dojo.gfx.shape");
 dojo.require("dojo.gfx.path");
 
 dojo.require("dojo.experimental");
@@ -311,60 +312,38 @@ dojo.declare("dojo.gfx.Group", dojo.gfx.Shape, {
 });
 dojo.gfx.Group.nodeType = "g";
 
-dojo.declare("dojo.gfx.Rect", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultRect, true);
-		this.attach(rawNode);
+dojo.declare("dojo.gfx.Rect", dojo.gfx.shape.Rect, {
+	attachShape: function(rawNode){
+		var shape = null;
+		if(rawNode){
+			shape = dojo.gfx.Rect.superclass.attachShape.apply(this, arguments);
+			shape.r = Math.min(rawNode.getAttribute("rx"), rawNode.getAttribute("ry"));
+		}
+		return shape;
 	},
 	setShape: function(newShape){
 		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.bbox = null;
 		for(var i in this.shape){
 			if(i != "type" && i != "r"){ this.rawNode.setAttribute(i, this.shape[i]); }
 		}
 		this.rawNode.setAttribute("rx", this.shape.r);
 		this.rawNode.setAttribute("ry", this.shape.r);
 		return this;
-	},
-	attachShape: function(rawNode){
-		var shape = null;
-		if(rawNode){
-			shape = this.inherited("attachShape", [rawNode]);
-			shape.r = Math.min(rawNode.getAttribute("rx"), rawNode.getAttribute("ry"));
-		}
-		return shape;
 	}
 });
 dojo.gfx.Rect.nodeType = "rect";
 
-dojo.declare("dojo.gfx.Ellipse", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultEllipse, true);
-		this.attach(rawNode);
-	}
-});
+dojo.gfx.Ellipse = dojo.gfx.shape.Ellipse;
 dojo.gfx.Ellipse.nodeType = "ellipse";
 
-dojo.declare("dojo.gfx.Circle", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultCircle, true);
-		this.attach(rawNode);
-	}
-});
+dojo.gfx.Circle = dojo.gfx.shape.Circle;
 dojo.gfx.Circle.nodeType = "circle";
 
-dojo.declare("dojo.gfx.Line", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultLine, true);
-		this.attach(rawNode);
-	}
-});
+dojo.gfx.Line = dojo.gfx.shape.Line;
 dojo.gfx.Line.nodeType = "line";
 
-dojo.declare("dojo.gfx.Polyline", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultPolyline, true);
-		this.attach(rawNode);
-	},
+dojo.declare("dojo.gfx.Polyline", dojo.gfx.shape.Polyline, {
 	setShape: function(points){
 		if(points && points instanceof Array){
 			this.shape = dojo.gfx.makeParameters(this.shape, { points: points });
@@ -374,92 +353,28 @@ dojo.declare("dojo.gfx.Polyline", dojo.gfx.Shape, {
 		}else{
 			this.shape = dojo.gfx.makeParameters(this.shape, points);
 		}
-		var attr = "";
-		for(var i = 0; i< this.shape.points.length; ++i){
-			attr += this.shape.points[i].x.toFixed(8) + " " + this.shape.points[i].y.toFixed(8) + " ";
+		this.box = null;
+		var attr = [];
+		var p = this.shape.points;
+		for(var i = 0; i < p.length; ++i){
+			attr.push(p[i].x.toFixed(8));
+			attr.push(p[i].y.toFixed(8));
 		}
-		this.rawNode.setAttribute("points", attr);
+		this.rawNode.setAttribute("points", attr.join(" "));
 		return this;
 	}
 });
 dojo.gfx.Polyline.nodeType = "polyline";
 
-/*
-dojo.lang.extend(dojo.gfx.Path, {
-	_extraDrawTo: function(action){
-		this.rawNode.setAttribute("d", this.shape.path);
-		return this;
-	},
-	_update: function(x,y){
-		if(this.shape.absolute){
-			this.lastPos = {x: x, y: y};
-		}else{
-			this.lastPos.x += x;
-			this.lastPos.y += y;
-		}
-	},
-	_drawTo: function(action, args){
-		this.shape.path += this.shape.absolute ? action.toUpperCase() : action.toLowerCase();
-		for(var i = 0; i < args.length; ++i){
-			var t = args[i];
-			this.shape.path += (typeof(t) == "number" ? t.toFixed(8) : t) + " ";
-		}
-		this._extraDrawTo(action);
-		return this;
-	},
-	setShape: function(newShape){
-		this.shape = dojo.gfx.makeParameters(this.shape, typeof(newShape) == "string" ? {path: newShape} : newShape);
-		this.setAbsoluteMode(this.shape.absolute);
-		this.rawNode.setAttribute("d", this.shape.path);
-		return this;
-	},
-	smoothCurveTo: function(x2, y2, x, y){
-		this._update(x, y);
-		return this._drawTo("s", [x2, y2, x, y]);
-	},
-	arcTo: function(endAngle, cx, cy, rx, ry, xRotate, isCCW) {
-		var startAngle = Math.atan2(cy - this.lastPos.y, this.lastPos.x - cx) - xRotate;
-		if(!this.shape.absolute) {
-			// calculate the startAngle
-			endAngle = startAngle + endAngle;
-		} 
-		// calculate the endpoint
-		var eta = Math.atan2(Math.sin(endAngle) / ry, Math.cos(endAngle) / rx);
-		var endPoint = dojo.gfx.matrix.multiplyPoint(
-			[
-				dojo.gfx.matrix.translate(cx, cy),
-				dojo.gfx.matrix.rotate(xRotate),
-				dojo.gfx.matrix.scale(rx, ry)
-			],
-			Math.cos(-eta),
-			Math.sin(-eta)
-		);
-		var sweepflag = isCCW ? "0" : "1";
-		var theta = isCCW ? endAngle - startAngle : startAngle - endAngle;
-		if(theta < 0){
-			theta += this._2PI;
-		}else if(theta > this._2PI){
-			theta = this._2PI;
-		}
-		var largearc = theta > Math.PI ? "1" : "0";
-		this._update(endPoint.x, endPoint.y);
-		return this._drawTo("a", [rx, ry, dojo.math.radToDeg(-xRotate), largearc, sweepflag, endPoint.x, endPoint.y] );
-	}
-});
-dojo.gfx.Path.nodeType = "path";
-*/
-
-dojo.declare("dojo.gfx.Image", dojo.gfx.Shape, {
-	initializer: function(rawNode) {
-		this.shape = dojo.lang.shallowCopy(dojo.gfx.defaultImage, true);
-		this.attach(rawNode);
-	},
+dojo.declare("dojo.gfx.Image", dojo.gfx.shape.Image, {
 	setShape: function(newShape){
 		this.shape = dojo.gfx.makeParameters(this.shape, newShape);
+		this.bbox = null;
+		var rawNode = this.rawNode;
 		for(var i in this.shape){
-			if(i != "type" && i != "src"){ this.rawNode.setAttribute(i, this.shape[i]); }
+			if(i != "type" && i != "src"){ rawNode.setAttribute(i, this.shape[i]); }
 		}
-		this.rawNode.setAttributeNS(dojo.svg.xmlns.xlink, "href", this.shape.src);
+		rawNode.setAttributeNS(dojo.svg.xmlns.xlink, "href", this.shape.src);
 		return this;
 	},
 	setStroke: function() { return this; },
@@ -469,24 +384,18 @@ dojo.declare("dojo.gfx.Image", dojo.gfx.Shape, {
 });
 dojo.gfx.Image.nodeType = "image";
 
-dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path, {
-	initializer: function(rawNode){
-		this.inherited("initializer", [rawNode]);
-		// override inherited methods
-		var _this = this;
-		var old_updateWithSegment = this._updateWithSegment;
-		this._updateWithSegment = function(segment){
-			old_updateWithSegment.call(_this, segment);
-			if(typeof(_this.shape.path) == "string"){
-				_this.rawNode.setAttribute("d", _this.shape.path);
-			}
-		};
-		var oldSetShape = this.setShape;
-		this.setShape = function(newShape){
-			oldSetShape.call(_this, newShape);
-			_this.rawNode.setAttribute("d", _this.shape.path);
-			return _this;
-		};
+dojo.declare("dojo.gfx.Path", dojo.gfx.path.Path,
+{
+	_updateWithSegment: function(segment){
+		dojo.gfx.Path.superclass._updateWithSegment.apply(this, arguments);
+		if(typeof(this.shape.path) == "string"){
+			this.rawNode.setAttribute("d", this.shape.path);
+		}
+	},
+	setShape: function(newShape){
+		dojo.gfx.Path.superclass.setShape.apply(this, arguments);
+		this.rawNode.setAttribute("d", this.shape.path);
+		return this;
 	}
 });
 dojo.gfx.Path.nodeType = "path";

@@ -23,6 +23,10 @@ dojo.lang.extend(dojo.rpc.YahooService, {
 	strictArgChecks: false,
 
 	bind: function(method, parameters, deferredRequestHandler, url){
+		//summary
+		//Yahoo RPC bind method. Takes remote method, parameters, deferred,
+		//and a url and sends of a ScriptSrcIO request to connect to Yahoo
+		//services crossplatform
 		var params = parameters;
 		if(	(dojo.lang.isArrayLike(parameters))&&
 			(parameters.length == 1)){

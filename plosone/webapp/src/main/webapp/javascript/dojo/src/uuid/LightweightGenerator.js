@@ -1,21 +1,24 @@
 dojo.provide("dojo.uuid.LightweightGenerator");
 
-dojo.uuid.LightweightGenerator = new function() {
 /*
- * The LightweightGenerator is intended to be small and fast,
- * but not necessarily good.
+ * summary:
+ *   The LightweightGenerator is intended to be small and fast,
+ *   but not necessarily good.
  * 
- * Small: The LightweightGenerator has a small footprint. 
- * Once comments are stripped, it's only about 25 lines of 
- * code, and it doesn't dojo.require() any other packages.
+ * description:
+ *   Small: The LightweightGenerator has a small footprint. 
+ *   Once comments are stripped, it's only about 25 lines of 
+ *   code, and it doesn't dojo.require() any other packages.
  *
- * Fast: The LightweightGenerator can generate lots of new 
- * UUIDs fairly quickly (at least, more quickly than the other 
- * dojo UUID generators).
+ *   Fast: The LightweightGenerator can generate lots of new 
+ *   UUIDs fairly quickly (at least, more quickly than the other 
+ *   dojo UUID generators).
  *
- * Not necessarily good: We use Math.random() as our source
- * of randomness, which may or may not provide much randomness. 
+ *   Not necessarily good: We use Math.random() as our source
+ *   of randomness, which may or may not provide much randomness. 
  */
+ 
+dojo.uuid.LightweightGenerator = new function() {
 	var HEX_RADIX = 16;
 
 	function _generateRandomEightCharacterHexString() {
@@ -30,13 +33,14 @@ dojo.uuid.LightweightGenerator = new function() {
 	}
 
 	this.generate = function(/* constructor? */ returnType) {
-		// Summary: 
+		// summary: 
 		//   This function generates random UUIDs, meaning "version 4" UUIDs.
-		// returnType: constructor The type of object to return. Usually String or dojo.uuid.Uuid
-		// Description: 
+		// description: 
 		//   A typical generated value would be something like this:
 		//   "3b12f1df-5232-4804-897e-917bf397618a"
-		// Examples: 
+		// returnType: The type of object to return. Usually String or dojo.uuid.Uuid
+
+		// examples: 
 		//   var string = dojo.uuid.LightweightGenerator.generate();
 		//   var string = dojo.uuid.LightweightGenerator.generate(String);
 		//   var uuid   = dojo.uuid.LightweightGenerator.generate(dojo.uuid.Uuid);

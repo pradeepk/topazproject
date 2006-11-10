@@ -23,7 +23,8 @@ dojo.widget.defineWidget(
 	"dojo.widget.YahooMap",
 	dojo.widget.HtmlWidget,
 	function(){
-		// parameters
+		//	summary
+		//	Initialize properties of the widget.
 		this.map=null;
 		this.datasrc="";
 		this.data=[];
@@ -36,7 +37,9 @@ dojo.widget.defineWidget(
 	templatePath:null,
 	templateCssPath:null,
 
-	findCenter:function(aPts){
+	findCenter:function(/* array */aPts){
+		//	summary
+		//	Find the center lat/lng coordinate based on the passed points.
 		var start=new YGeoPoint(37,-90);
 		if(aPts.length==0) return start;
 		var minLat,maxLat, minLon, maxLon, cLat, cLon;
@@ -50,9 +53,11 @@ dojo.widget.defineWidget(
 		}
 		cLat=dojo.math.round((minLat+maxLat)/2,6);
 		cLon=dojo.math.round((minLon+maxLon)/2,6);
-		return new YGeoPoint(cLat,cLon);
+		return new YGeoPoint(cLat,cLon);	//	YGeoPoint
 	},
 	setControls:function(){
+		//	summary
+		//	Set the controls on the map
 		var methodmap={
 			maptype:"addTypeControl",
 			pan:"addPanControl",
@@ -68,7 +73,9 @@ dojo.widget.defineWidget(
 		}
 	},
 	
-	parse:function(table){
+	parse:function(/* HTMLTable */table){
+		//	summary
+		//	Parses an HTML table for data to plot on the map.
 		this.data=[];
 
 		//	get the column indices
@@ -111,6 +118,8 @@ dojo.widget.defineWidget(
 		}
 	},
 	render:function(){
+		//	summary
+		//	Plots all points in internal data array on the map.
 		var pts=[];
 		var d=this.data;
 		for(var i=0; i<d.length; i++){
@@ -131,7 +140,9 @@ dojo.widget.defineWidget(
 		this.map.drawZoomAndCenter(c,z);
 	},
 	
-	initialize:function(args, frag){
+	initialize:function(/* object */args, /* object */frag){
+		//	summary
+		//	Initialize the widget.
 		if(!YMap || !YGeoPoint){
 			dojo.raise("dojo.widget.YahooMap: The Yahoo Map script must be included in order to use this widget.");
 		}
@@ -143,7 +154,8 @@ dojo.widget.defineWidget(
 		}
 	},
 	postCreate:function(){
-		//	clean the domNode before creating the map.
+		//	summary
+		//	Finalize and plot all points on the widget.
 		while(this.domNode.childNodes.length>0){
 			this.domNode.removeChild(this.domNode.childNodes[0]);
 		}

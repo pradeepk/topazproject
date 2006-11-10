@@ -35,6 +35,8 @@ dojo.widget.defineWidget(
 			// where from
 			child: this.getInfo(child),
 			childTree: this.getInfo(child.tree),
+			oldParent: this.getInfo(child.parent),
+			oldParentTree: this.getInfo(child.parent.tree),
 			// where to
 			newParent: this.getInfo(newParent),
 			newParentTree: this.getInfo(newParent.tree),
@@ -371,10 +373,10 @@ dojo.widget.defineWidget(
 		
 		
 		deferred.addCallback(function(server_data) {
-			dojo.lang.mixin(server_data, data); // add my data as less priority
+			dojo.lang.mixin(data, server_data); // add my data as less priority
 			//dojo.debug("Create ");
 			//dojo.debug(server_data);
-			return dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.call(_this,parent,index,server_data);
+			return dojo.widget.TreeBasicControllerV3.prototype.doCreateChild.call(_this,parent,index,data);
 		});
 		
 						
@@ -386,7 +388,10 @@ dojo.widget.defineWidget(
 		
 		var params = {
 			child: this.getInfo(child),
+			oldParent: this.getInfo(child.parent),
+			oldParentTree: this.getInfo(child.parent.tree),
 			newParent: this.getInfo(newParent),
+			newParentTree: this.getInfo(newParent.tree),
 			index: index,
 			deep: deep ? true : false, // undefined -> false
 			tree: this.getInfo(child.tree)

@@ -1,4 +1,4 @@
-dojo.provide("dojo.widget.DatePicker");
+	dojo.provide("dojo.widget.DatePicker");
 dojo.require("dojo.date.common");
 dojo.require("dojo.date.format");
 dojo.require("dojo.date.serialize");
@@ -8,69 +8,79 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
 
-		/*
-		summary: 
-	 	              Base class for a stand-alone DatePicker widget 
-	 	              that makes it easy to select a date, or switch by month and/or year. 
-	 	description: 
-	 	              A stand-alone DatePicker widget that makes it  
-	 	              easy to select a date, or increment by week, month, and/or year. 
-	 	              It is designed to be used on its own, or inside of other widgets to  
-	 	              create drop down DatePickers or other similar combination widgets. 
-	 	              To get a sense of what month to highlight, we initialize on 
-	 	              the first Saturday of each month, since that will be either the first  
-	 	              of two or the second of three months being partially displayed, and  
-	 	              then work forwards and backwards from that point. 
-	 	              Dates are passed as Date objects or in the `RFC 3339` format  
-	 	              http://www.faqs.org/rfcs/rfc3339.html (2005-06-30T08:05:00-07:00),
-	 	              so that they are serializable and locale-independent.
-
-	 	 usage: 
-	 	              var datePicker = dojo.widget.createWidget("DatePicker", {},   
-	 	              dojo.byId("datePickerNode")); 
-	 	 
-	 	              <div dojoType="DatePicker"></div> 
-		*/
 
 dojo.widget.defineWidget(
 	"dojo.widget.DatePicker",
 	dojo.widget.HtmlWidget,
 	{	
+
+		/*
+		summary: 
+			Base class for a stand-alone DatePicker widget 
+			which makes it easy to select a date, or switch by month and/or year. 
+		description: 
+			A stand-alone DatePicker widget that makes it  
+			easy to select a date, or increment by week, month, and/or year. 
+			It is designed to be used on its own, or inside of other widgets to  
+			(see dojo.widget.DropdownDatePicker) or other similar combination widgets. 
+		 	              
+			Dates attributes passed in the `RFC 3339` format:
+			http://www.faqs.org/rfcs/rfc3339.html (2005-06-30T08:05:00-07:00)
+			so that they are serializable and locale-independent.
+		
+		usage: 
+			var datePicker = dojo.widget.createWidget("DatePicker", {},   
+			dojo.byId("datePickerNode")); 
+		 	 
+			<div dojoType="DatePicker"></div> 
+		*/
+
 		//start attributes
 		
-		//String|Date
-		//	form value property if =='today' will default to todays date
+		// value: String|Date
+		//	form value property if =='today' will be today's date
 		value: "", 
-		//String
+
+		// name: String
 		// 	name of the form element
 		name: "",
-		//Integer
+
+		// displayWeeks: Integer
 		//	total weeks to display default 
 		displayWeeks: 6, 
-		//Boolean
+
+		// adjustWeeks: Boolean
 		//	if true, weekly size of calendar changes to acomodate the month if false, 42 day format is used
 		adjustWeeks: false,
-		//String|Date
+
+		// startDate: String|Date
 		//	first available date in the calendar set
 		startDate: "1492-10-12",
-		//String|Date
+
+		// endDate: String|Date
 		//	last available date in the calendar set
 		endDate: "2941-10-12",
-		//Integer
+
+		// weekStartsOn: Integer
 		//	adjusts the first day of the week 0==Sunday..6==Saturday
 		weekStartsOn: "",
-		//String
+
+		// storedDate: String
 		//	deprecated use value instead
 		storedDate: "",
-		//Boolean
-		//d	isable all incremental controls, must pick a date in the current display
+
+		// staticDisplay: Boolean
+		//	disable all incremental controls, must pick a date in the current display
 		staticDisplay: false,
 		
-		//how to render the names of the days in the header.  see dojo.date.getDayNames
+		// dayWidth: String
+		//	how to render the names of the days in the header. see dojo.date.getDayNames
 		dayWidth: 'narrow',
+
 		classNames: {
 		// summary:
-		//              stores a list of class names that may be overriden 
+		//	stores a list of class names that may be overriden
+		//	TODO: this is not good; can't be adjusted via markup, etc. since it's an array
 			previous: "previousMonth",
 			disabledPrevious: "previousMonthDisabled",
 			current: "currentMonth",
@@ -88,7 +98,7 @@ dojo.widget.defineWidget(
 
 			dojo.widget.DatePicker.superclass.postMixInProperties.apply(this, arguments);
 			if(this.storedDate){
-				dojo.deprecated("dojo.widget.DatePicker", "use 'date' instead of 'storedDate'", "0.5");
+				dojo.deprecated("dojo.widget.DatePicker", "use 'value' instead of 'storedDate'", "0.5");
 				this.value=this.storedDate;
 			}
 			this.startDate = dojo.date.fromRfc3339(this.startDate);
@@ -100,7 +110,9 @@ dojo.widget.defineWidget(
 			}
 			this.today = new Date();
 			this.today.setHours(0,0,0,0);
-			if(this.value && (typeof this.value=="string") && (this.value.split("-").length > 2)) {
+			if(typeof(this.value)=='string'&&this.value.toLowerCase()=='today'){
+				this.value = new Date();
+			}else if(this.value && (typeof this.value=="string") && (this.value.split("-").length > 2)) {
 				this.value = dojo.date.fromRfc3339(this.value);
 				this.value.setHours(0,0,0,0);
 			}
@@ -116,7 +128,7 @@ dojo.widget.defineWidget(
 			dojo.html.copyStyle(this.domNode, source);
 
 			this.weekTemplate = dojo.dom.removeNode(this.calendarWeekTemplate);
-			this._preInitUI((this.value)?this.value:this.today,false,true); //init UI with date selected ONLY if user supplies one
+			this._preInitUI(this.value ? this.value : this.today, false, true); //init UI with date selected ONLY if user supplies one
 
 			// Insert localized day names in the template
 			var dayLabels = dojo.lang.unnest(dojo.date.getNames('days', this.dayWidth, 'standAlone', this.lang)); //if we dont use unnest, we risk modifying the dayLabels array inside of dojo.date and screwing up other calendars on the page
@@ -130,6 +142,11 @@ dojo.widget.defineWidget(
  			for(i=0; i<7; i++) {
 				dayLabelNodes.item(i).innerHTML = dayLabels[i];
 			}
+
+			if(this.value){
+				this.setValue(this.value);
+			}
+
 		},
 		
 		getValue: function() {
@@ -170,8 +187,18 @@ dojo.widget.defineWidget(
 		},
 
 		_preInitUI: function(dateObj,initFirst,initUI) {
+			/*
+	 	              To get a sense of what month to highlight, we initialize on 
+	 	              the first Saturday of each month, since that will be either the first  
+	 	              of two or the second of three months being partially displayed, and  
+	 	              then work forwards and backwards from that point.
+			*/
+
 			//initFirst is to tell _initFirstDay if you want first day of the displayed calendar, or first day of the week for dateObj
 			//initUI tells preInitUI to go ahead and run initUI if set to true
+			if(dateObj<this.startDate||dateObj>this.endDate){
+				dateObj = new Date((dateObj<this.startDate)?this.startDate:this.endDate);
+			}
 			this.firstDay = this._initFirstDay(dateObj,initFirst);
 			this.selectedIsUsed = false;
 			this.currentIsUsed = false;

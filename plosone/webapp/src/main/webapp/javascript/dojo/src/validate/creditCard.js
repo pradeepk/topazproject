@@ -1,6 +1,7 @@
 dojo.provide('dojo.validate.creditCard');
 
 dojo.require("dojo.lang.common");
+dojo.require("dojo.validate.common");
 
 /*
 	Validates Credit Cards using account number rules in conjunction with the Luhn algorightm

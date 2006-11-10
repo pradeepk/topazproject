@@ -3,7 +3,6 @@ dojo.require("dojo.lang.declare");
 dojo.require("dojo.data.Result");
 dojo.require("dojo.experimental");
 
-
 /* summary:
  *   This is an abstract API that data provider implementations conform to.  
  *   This file defines methods signatures and intentionally leaves all the
@@ -13,7 +12,7 @@ dojo.experimental("dojo.data.Read");
  
 dojo.declare("dojo.data.Read", null, {
 	get:
-		function(/* item */ item, /* attribute or attribute-name-string */ attribute, /* value? */ defaultValue) {
+		function(/* item */ item, /* attribute || attribute-name-string */ attribute, /* value? */ defaultValue) {
 		/* summary:
 		 *   Returns a single attribute value.
 		 *   Returns defaultValue if item does not have a value for attribute.
@@ -21,7 +20,9 @@ dojo.declare("dojo.data.Read", null, {
 		 *   Returns undefined if the item does not have a value for the given attribute.
 		 *   (So, if store.hasAttribute(item, attribute) returns false, then
 		 *   store.get(item, attribute) will return undefined.)
-		 * exceptions:
+		 */
+		 
+		/* exceptions:
 		 *   Conforming implementations should throw an exception if *item* is not
 		 *   an item, or *attribute* is neither an attribute object or a string.
 		 * examples:
@@ -32,7 +33,7 @@ dojo.declare("dojo.data.Read", null, {
 			return attributeValue; // a literal, an item, null, or undefined (never an array)
 		},
 	getValues:
-		function(/* item */ item, /* attribute or attribute-name-string */ attribute) {
+		function(/* item */ item, /* attribute || attribute-name-string */ attribute) {
 		/* summary:
 		 *   This getValues() method works just like the get() method, but getValues()
 		 *   always returns an array rather than a single attribute value.  The array
@@ -41,7 +42,9 @@ dojo.declare("dojo.data.Read", null, {
 		 *   If the item does not have a value for the given attribute, then getValues()
 		 *   will return an empty array: [].  (So, if store.hasAttribute(item, attribute)
 		 *   returns false, then store.getValues(item, attribute) will return [].)
-		 * exceptions:
+		 */
+		 
+		/* exceptions:
 		 *   Throws an exception if item is not an item, or attribute is neither an 
 		 *   attribute object or a string.
 		 * examples:
@@ -55,7 +58,9 @@ dojo.declare("dojo.data.Read", null, {
 		function(/* item */ item) {
 		/* summary:
 		 *   Returns an array with all the attributes that this item has.
-		 * exceptions:
+		 */
+		 
+		/* exceptions:
 		 *   Throws an exception if item is not an item. 
 		 * examples:
 		 *   var array = store.getAttributes(kermit);
@@ -65,10 +70,12 @@ dojo.declare("dojo.data.Read", null, {
 			return array; // array
 		},
 	hasAttribute:
-		function(/* item */ item, /* attribute or attribute-name-string */ attribute) {
+		function(/* item */ item, /* attribute || attribute-name-string */ attribute) {
 		/* summary:
 		 *   Returns true if the given *item* has a value or the given *attribute*.
-		 * exceptions:
+		 */
+		 
+		/* exceptions:
 		 *   Throws an exception if item is not an item, or attribute is neither an 
 		 *   attribute object or a string.
 		 * examples:
@@ -78,16 +85,13 @@ dojo.declare("dojo.data.Read", null, {
 			return false; // boolean
 		},
 	hasAttributeValue:
-		function(/* item */ item, /* attribute or attribute-name-string */ attribute, /* anything */ value) {
+		function(/* item */ item, /* attribute || attribute-name-string */ attribute, /* anything */ value) {
 		/* summary:
 		 *   Returns true if the given *value* is one of the values that getValue()
 		 *   would return.
-		 * issue:
-		 *   This is really just a convenience-method -- it doesn't add any functionality
-		 *   that you couldn't do by calling getValues() and looping through the results.
-		 *   Maybe we should cut this method from the API, or at least move it out of
-		 *   the basic Read portion of the API?
-		 * exceptions:
+		 */
+		 
+		/* exceptions:
 		 *   Throws an exception if item is not an item, or attribute is neither an 
 		 *   attribute object or a string.
 		 * examples:
@@ -101,7 +105,9 @@ dojo.declare("dojo.data.Read", null, {
 		/* summary:
 		 *   Returns true if *something* is an item.  Returns false if *something*
 		 *   is a literal or is any object other than an item.
-		 * examples:
+		 */
+		 
+		/* examples:
 		 *   var yes = store.isItem(store.newItem());
 		 *   var no  = store.isItem("green");
 		 */
@@ -113,7 +119,18 @@ dojo.declare("dojo.data.Read", null, {
 		/* summary:
 		 *   Given a query, this method returns a Result object containing
 		 *   all the items in the query result set.
-		 * queries:
+		 * description:
+		 *   A Result object will always be returned, even if the result set
+		 *   is empty.  A Result object will always be returned immediately.
+		 *   By default the Result object will be fully populated with result
+		 *   items as soon as it is created (synchronously).  The caller may request
+		 *   an asynchronous Result, meaning a Result that will be populated
+		 *   with result items at some point in the future.  If the caller requests
+		 *   an asynchronous Result, the data store may return either a synchronous
+		 *   or asynchronous Result, whichever it prefers.  Simple data store
+		 *   implementations may always return synchronous Results.
+		 *   For more info about the Result API, see dojo.data.Result
+		 * query:
 		 *   The query may be optional in some data store implementations.
 		 *   The dojo.data.Read API does not specify the syntax or semantics
 		 *   of the query itself -- each different data store implementation
@@ -129,18 +146,9 @@ dojo.declare("dojo.data.Read", null, {
 		 *   the implementation actually perform asynchronously when
 		 *   {async: true} is set.  Some implementations may take additional
 		 *   keyword options, such as {async: true, maxResults:100}.
-		 * result lists:
-		 *   A Result object will always be returned, even if the result set
-		 *   is empty.  A Result object will always be returned immediately.
-		 *   By default the Result object will be fully populated with result
-		 *   items as soon as it is created (synchronously).  The caller may request
-		 *   an asynchronous Result, meaning a Result that will be populated
-		 *   with result items at some point in the future.  If the caller requests
-		 *   an asynchronous Result, the data store may return either a synchronous
-		 *   or asynchronous Result, whichever it prefers.  Simple data store
-		 *   implementations may always return synchronous Results.
-		 *   For more info about the Result API, see dojo.data.Result
-		 * exceptions:
+		 */
+		
+		/* exceptions:
 		 *   Throws an exception if the query is not valid, or if the query
 		 *   is required but was not supplied.
 		 * examples:
@@ -160,12 +168,15 @@ dojo.declare("dojo.data.Read", null, {
 		 *   Returns a unique identifer for an item.  The return value will be
 		 *   either a string or something that has a toString() method (such as,
 		 *   for example, a dojo.uuid.Uuid object).
-		 * exceptions:
-		 *   Conforming implementations may throw an exception or return null if
-		 *   item is not an item.
-		 * issue:
+		 * description:
+		 * ISSUE - 
 		 *   Should we move this method out of dojo.data.Read, and put it somewhere
 		 *   else, like maybe dojo.data.Identity?
+		 */
+		 
+		/* exceptions:
+		 *   Conforming implementations may throw an exception or return null if
+		 *   item is not an item.
 		 * examples:
 		 *   var itemId = store.getIdentity(kermit);
 		 *   assert(kermit === store.getByIdentity(store.getIdentity(kermit)));
@@ -180,16 +191,19 @@ dojo.declare("dojo.data.Read", null, {
 		 *   Given the id of an item, this method returns the item that has that id.
 		 *   Conforming implementations should return null if there is no item with
 		 *   the given id.
-		 * issue:
+		 * description:
+		 * ISSUE - 
 		 *   We may want to change the name from getByIdentity() to findByIdentity(),
 		 *   to reflect the fact that an implementation may not be able to get the
 		 *   item from a local cache, and may need to send a request to the server.
-		 * issue:
+		 * ISSUE - 
 		 *   Can this method run asynchronously?  Should the return value be a Deferred?
-		 * issue:
+		 * ISSUE - 
 		 *   Should we move this method out of dojo.data.Read, and put it somewhere
 		 *   else, like maybe dojo.data.Identity?
-		 * examples:
+		 */
+		 
+		/* examples:
 		 *   var alaska = store.getByIdentity("AK");
 		 *   assert("AK" == store.getIdentity(store.getByIdentity("AK")));
 		 */

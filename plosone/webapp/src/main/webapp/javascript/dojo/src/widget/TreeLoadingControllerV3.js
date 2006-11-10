@@ -237,6 +237,7 @@ dojo.widget.defineWidget(
 		return deferred;
 	},
 	
+	
 	expandToLevel: function(nodeOrTree, level, sync) {
 		return this.recurseToLevel(nodeOrTree, nodeOrTree.isTree ? level+1 : level, this.expand, this, nodeOrTree.isTree, sync);
 	},
@@ -321,12 +322,13 @@ dojo.widget.defineWidget(
 		
 		//deferred.addCallback(function(res) { dojo.debug("Prepare fired "+res); return res});
 		
-		var _this = this;
-		deferred.addCallback(function() {			
+		if (make) {
+			deferred.addCallback(function() {			
 			var res = make.apply(_this, args);
 			//res.addBoth(function(r) {dojo.debugShallow(r); return r;});
 			return res;
-		});
+			});
+		}
 		
 		//deferred.addCallback(function(res) { dojo.debug("Main fired "+res); return res});
 		
@@ -392,22 +394,54 @@ dojo.widget.defineWidget(
 			//dojo.debug("has lock");	
 			nodes[i].unlock();
 			if (nodes[i].isTreeNode) {
+				//dojo.debug("unmark "+nodes[i]);
 				nodes[i].unmarkProcessing();
 			}
 		}
 	},
 	
-	refresh: function(nodeOrTree, sync) {
+	// ----------------- refresh -----------------
+	
+	refreshChildren: function(nodeOrTree, sync) {		
+		return this.runStages(null, this.prepareRefreshChildren, this.doRefreshChildren, this.finalizeRefreshChildren, this.exposeRefreshChildren, arguments);
+	},
+
+
+	prepareRefreshChildren: function(nodeOrTree, sync) {
+		var deferred = this.startProcessing(nodeOrTree);
 		nodeOrTree.destroyChildren();
+						
+		nodeOrTree.state = nodeOrTree.loadStates.UNCHECKED;
 		
-		nodeOrTree.state == nodeOrTree.loadStates.UNCHECKED;
-		
-		
+		return deferred;
+	},
+	
+	doRefreshChildren: function(nodeOrTree, sync) {
 		return this.loadRemote(nodeOrTree, sync);
+	},
+	
+	finalizeRefreshChildren: function(nodeOrTree, sync) {
+		this.finishProcessing(nodeOrTree);
+	},
+	
+	exposeRefreshChildren: function(nodeOrTree, sync) {
+		nodeOrTree.expand();
 	},
 
 	// ----------------- move -----------------
 
+	move: function(child, newParent, index/*,...*/) {
+		return this.runStages(this.canMove, this.prepareMove, this.doMove, this.finalizeMove, this.exposeMove, arguments);			
+	},
+
+	doMove: function(child, newParent, index) {
+		//dojo.debug("MOVE "+child);
+		child.tree.move(child, newParent, index);
+
+		return true;
+	},
+	
+	
 	prepareMove: function(child, newParent, index, sync) {
 		var deferred = this.startProcessing(newParent);
 		deferred.addCallback(dojo.lang.hitch(this, function() {

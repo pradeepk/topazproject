@@ -1,6 +1,5 @@
-dojo.require("dojo.io.common"); // io/common.js provides setIFrameSrc and the IO namespace
+dojo.require("dojo.io.common"); // io/common.js provides setIFrameSrc and the IO module
 dojo.provide("dojo.io.cometd");
-dojo.provide("cometd");
 dojo.require("dojo.AdapterRegistry");
 dojo.require("dojo.json");
 dojo.require("dojo.io.BrowserIO"); // we need XHR for the handshake, etc.
@@ -36,7 +35,7 @@ cometd = new function(){
 	this.minimumVersion = 0.1;
 	this.clientId = null;
 
-	this.isXD = false;
+	this._isXD = false;
 	this.handshakeReturn = null;
 	this.currentTransport = null;
 	this.url = null;
@@ -104,9 +103,10 @@ cometd = new function(){
 					dojo.debug(thisHost, urlHost);
 					dojo.debug(thisPort, urlPort);
 
-					this.isXD = true;
+					this._isXD = true;
 					bindArgs.transport = "ScriptSrcTransport";
 					bindArgs.jsonParamName = "jsonp";
+					bindArgs.method = "GET";
 				}
 			}
 		}
@@ -131,7 +131,7 @@ cometd = new function(){
 		this.currentTransport = this.connectionTypes.match(
 			data.supportedConnectionTypes,
 			data.version,
-			this.isXD
+			this._isXD
 		);
 		this.currentTransport.version = data.version;
 		this.clientId = data.clientId;
@@ -146,7 +146,7 @@ cometd = new function(){
 		}
 	}
 
-	this.getRandStr = function(){
+	this._getRandStr = function(){
 		return Math.random().toString().substring(2, 10);
 	}
 
@@ -572,7 +572,7 @@ cometd.iframeTransport = new function(){
 
 		// NOTE: we require the server to cooperate by hosting
 		// cometdInit.html at the designated endpoint
-		this.rcvNodeName = "cometdRcv_"+cometd.getRandStr();
+		this.rcvNodeName = "cometdRcv_"+cometd._getRandStr();
 		// the "forever frame" approach
 
 		var initUrl = cometd.url+"/?tunnelInit=iframe"; // &domain="+document.domain;
@@ -862,9 +862,10 @@ cometd.callbackPollTransport = new function(){
 
 	this.openTunnelWith = function(content, url){
 		// create a <script> element to generate the request
-		dojo.io.bind({
+		var req = dojo.io.bind({
 			url: (url||cometd.url),
 			content: content,
+			mimetype: "text/json",
 			transport: "ScriptSrcTransport",
 			jsonParamName: "jsonp",
 			load: dojo.lang.hitch(this, function(type, data, evt, args){
@@ -891,6 +892,7 @@ cometd.callbackPollTransport = new function(){
 			message.clientId = cometd.clientId;
 			var bindArgs = {
 				url: cometd.url||djConfig["cometdRoot"],
+				mimetype: "text/json",
 				transport: "ScriptSrcTransport",
 				jsonParamName: "jsonp",
 				content: { message: dojo.json.serialize([ message ]) }

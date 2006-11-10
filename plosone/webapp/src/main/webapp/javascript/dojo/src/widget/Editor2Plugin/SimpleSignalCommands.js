@@ -1,4 +1,4 @@
-﻿/*
+/*
  * This plugin adds save() and insertImage() to Editor2 widget, and two commands for each
  * of them. When the corresponding button is clicked in the toolbar, the added function in the
  * Editor2 widget is called. This mimics the original Editor2 behavior. If you want to have other
@@ -18,18 +18,14 @@ dojo.provide("dojo.widget.Editor2Plugin.SimpleSignalCommands");
 dojo.require("dojo.widget.Editor2");
 
 dojo.declare("dojo.widget.Editor2Plugin.SimpleSignalCommand", dojo.widget.Editor2Command,
-	function(name){
+	function(editor, name){
 		if(dojo.widget.Editor2.prototype[name] == undefined){
-			dojo.widget.Editor2.prototype[name] = function(){ dojo.debug("Editor2::"+name); };
+			dojo.widget.Editor2.prototype[name] = function(){ /*dojo.debug("Editor2::"+name);*/ };
 		}
 	},
 {
 	execute: function(){
-		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-
-		if(curInst){
-			curInst[this._name]();
-		}
+		this._editor[this._name]();
 	}
 });
 
@@ -46,10 +42,17 @@ dojo.widget.Editor2Plugin.SimpleSignalCommands = {
 			return new dojo.widget.Editor2ToolbarButton('InsertImage');
 		}
 	},
-	registerAllSignalCommands: function(){
-		for(var i=0;i<this.signals.length;i++){
-			dojo.widget.Editor2Manager.registerCommand(this.signals[i],
-				new dojo.widget.Editor2Plugin.SimpleSignalCommand(this.signals[i]));
+	getCommand: function(editor, name){
+		var signal;
+		dojo.lang.every(this.signals,function(s){
+			if(s.toLowerCase() == name.toLowerCase()){
+				signal = s;
+				return false;
+			}
+			return true;
+		});
+		if(signal){
+			return new dojo.widget.Editor2Plugin.SimpleSignalCommand(editor, signal);
 		}
 	}
 };
@@ -57,6 +60,5 @@ dojo.widget.Editor2Plugin.SimpleSignalCommands = {
 if(dojo.widget.Editor2Plugin['_SimpleSignalCommands']){
 	dojo.lang.mixin(dojo.widget.Editor2Plugin.SimpleSignalCommands, dojo.widget.Editor2Plugin['_SimpleSignalCommands']);
 }
-
-dojo.widget.Editor2Plugin.SimpleSignalCommands.registerAllSignalCommands();
+dojo.widget.Editor2Manager.registerHandler(dojo.widget.Editor2Plugin.SimpleSignalCommands, 'getCommand');
 dojo.widget.Editor2ToolbarItemManager.registerHandler(dojo.widget.Editor2Plugin.SimpleSignalCommands.Handler);

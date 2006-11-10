@@ -1,5 +1,8 @@
 dojo.provide("dojo.widget.SwtWidget");
 
+dojo.require("dojo.experimental");
+dojo.experimental("dojo.widget.SwtWidget");
+
 dojo.require("dojo.event.*");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.uri.*");
@@ -26,9 +29,8 @@ try{
 		registerChild: function(){ },
 		addWidgetAsDirectChild: function(){ },
 		removeChild: function(){ },
-		cleanUp: function(){ },
 		destroyRendering: function(){ },
-		postInitialize: function(){ },
+		postInitialize: function(){ }
 	});
 
 	// initialize SWT runtime

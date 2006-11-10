@@ -1,21 +1,23 @@
-﻿dojo.provide("dojo.gfx.common");
+dojo.provide("dojo.gfx.common");
 
 dojo.require("dojo.gfx.color");
 dojo.require("dojo.lang.declare");
 dojo.require("dojo.lang.extras");
 dojo.require("dojo.dom");
 
-//dojo.gfx.defaultRenderer.init();
-
 dojo.lang.mixin(dojo.gfx, {
+	// summary: defines constants, prototypes, and utility functions
+	
+	// default shapes, which is used to fill in missing parameters
 	defaultPath:     {type: "path",     path: ""},
 	defaultPolyline: {type: "polyline", points: []},
 	defaultRect:     {type: "rect",     x: 0, y: 0, width: 100, height: 100, r: 0},
-	defaultEllipse:  {type: "ellipse",  cx: 0, cy: 0, rx: 100, ry: 200},
+	defaultEllipse:  {type: "ellipse",  cx: 0, cy: 0, rx: 200, ry: 100},
 	defaultCircle:   {type: "circle",   cx: 0, cy: 0, r: 100},
 	defaultLine:     {type: "line",     x1: 0, y1: 0, x2: 100, y2: 100},
 	defaultImage:    {type: "image",    width: 0, height: 0, src: ""},
 
+	// default geometric attributes (a stroke, and fills)
 	defaultStroke: {color: "black", width: 1, cap: "butt", join: 4},
 	defaultLinearGradient: {type: "linear", x1: 0, y1: 0, x2: 100, y2: 100, 
 		colors: [{offset: 0, color: "black"}, {offset: 1, color: "white"}]},
@@ -23,10 +25,14 @@ dojo.lang.mixin(dojo.gfx, {
 		colors: [{offset: 0, color: "black"}, {offset: 1, color: "white"}]},
 	defaultPattern: {type: "pattern", x: 0, y: 0, width: 0, height: 0, src: ""},
 
-	normalizeColor: function(color){
-		return (color instanceof dojo.gfx.color.Color) ? color : new dojo.gfx.color.Color(color);
+	normalizeColor: function(/*Color*/ color){
+		// summary: converts any legal color representation to normalized dojo.gfx.color.Color object
+		return (color instanceof dojo.gfx.color.Color) ? color : new dojo.gfx.color.Color(color); // dojo.gfx.color.Color
 	},
 	normalizeParameters: function(existed, update){
+		// summary: updates an existing object with properties from an "update" object
+		// existed: Object: the "target" object to be updated
+		// update:  Object: the "update" object, whose properties will be used to update the existed object
 		if(update){
 			var empty = {};
 			for(var x in existed){
@@ -35,9 +41,12 @@ dojo.lang.mixin(dojo.gfx, {
 				}
 			}
 		}
-		return existed;
+		return existed;	// Object
 	},
 	makeParameters: function(defaults, update){
+		// summary: copies the original object, and all copied properties from the "update" object
+		// defaults: Object: the object to be cloned before updating
+		// update:   Object: the object, which properties are to be cloned during updating
 		if(!update) return dojo.lang.shallowCopy(defaults, true);
 		var result = {};
 		for(var i in defaults){
@@ -45,9 +54,12 @@ dojo.lang.mixin(dojo.gfx, {
 				result[i] = dojo.lang.shallowCopy((i in update) ? update[i] : defaults[i], true);
 			}
 		}
-		return result;
+		return result; // Object
 	},
 	formatNumber: function(x, addSpace){
+		// summary: converts a number to a string using a fixed notation
+		// x:			Number:		number to be converted
+		// addSpace:	Boolean?:	if it is true, add a space before a positive number
 		var val = x.toString();
 		if(val.indexOf("e") >= 0){
 			val = x.toFixed(4);
@@ -58,135 +70,33 @@ dojo.lang.mixin(dojo.gfx, {
 			}
 		}
 		if(x < 0){
-			return val;
+			return val; // String
 		}
-		return addSpace ? " " + val : val;
+		return addSpace ? " " + val : val; // String
+	},
+	
+	// a constant used to split a SVG/VML path into primitive components
+	pathRegExp: /([A-Za-z]+)|(\d+(\.\d+)?)|(\.\d+)|(-\d+(\.\d+)?)|(-\.\d+)/g
+});
+
+dojo.declare("dojo.gfx.Surface", null, {
+	// summary: a surface object to be used for drawings
+	
+	initializer: function(){
+		// summary: a constructor
+		
+		// underlying node
+		this.rawNode = null;
+	},
+	getEventSource: function(){
+		// summary: returns a node, which can be used to attach event listeners
+		
+		return this.rawNode; // Node
 	}
 });
 
-// this is a Shape object, which knows how to apply graphical attributes and a transformation
-dojo.gfx.Shape = function(){
-	// underlying node
-	this.rawNode = null;
-	// abstract shape object
-	this.shape = null;
-	// transformation matrix
-	this.matrix  = null;
-	// graphical attributes
-	this.fillStyle   = null;
-	this.strokeStyle = null;
-	// virtual group structure
-	this.parent = null;
-	this.parentMatrix = null;
-	// bounding box
-	this.bbox = null;
-};
-
-dojo.lang.extend(dojo.gfx.Shape, {
-	// trivial getters
-	getNode:        function(){ return this.rawNode; },
-	getShape:       function(){ return this.shape; },
-	getTransform:   function(){ return this.matrix; },
-	getFill:        function(){ return this.fillStyle; },
-	getStroke:      function(){ return this.strokeStyle; },
-	getParent:      function(){ return this.parent; },
-	getBoundingBox: function(){ return this.bbox; },
-	getEventSource: function(){ return this.rawNode; },
-	
-	// empty settings
-	setShape:  function(shape) { return this; },	// ignore
-	setStroke: function(stroke){ return this; },	// ignore
-	setFill:   function(fill)  { return this; },	// ignore
-	
-	// z-index
-	moveToFront: function(){ return this; },		// ignore
-	moveToBack:  function(){ return this; },		// ignore
-
-	// apply transformations
-	setTransform: function(matrix){
-		this.matrix = dojo.gfx.matrix.clone(matrix ? dojo.gfx.matrix.normalize(matrix) : dojo.gfx.identity, true);
-		return this._applyTransform();
-	},
-	
-	// apply left & right transformation
-	applyRightTransform: function(matrix){
-		return matrix ? this.setTransform([this.matrix, matrix]) : this;
-	},
-	applyLeftTransform: function(matrix){
-		return matrix ? this.setTransform([matrix, this.matrix]) : this;
-	},
-
-	// a shortcut for apply-right
-	applyTransform: function(matrix){
-		return matrix ? this.setTransform([this.matrix, matrix]) : this;
-	},
-	
-	// virtual group methods
-	remove: function(silently){
-		if(this.parent){
-			this.parent.remove(this, silently);
-		}
-		return this;
-	},
-	_setParent: function(parent, matrix){
-		this.parent = parent;
-		return this._updateParentMatrix(matrix);
-	},
-	_updateParentMatrix: function(matrix){
-		this.parentMatrix = matrix ? dojo.gfx.matrix.clone(matrix) : null;
-		return this._applyTransform();
-	},
-	_getRealMatrix: function(){
-		return this.parentMatrix ? new dojo.gfx.matrix.Matrix2D([this.parentMatrix, this.matrix]) : this.matrix;
-	}
-});
-
-dojo.declare("dojo.gfx.VirtualGroup", dojo.gfx.Shape, {
-	initializer: function() {
-		this.children = [];
-	},
-	
-	// group management
-	add: function(shape){
-		var oldParent = shape.getParent();
-		if(oldParent){
-			oldParent.remove(shape, true);
-		}
-		this.children.push(shape);
-		return shape._setParent(this, this._getRealMatrix());
-	},
-	remove: function(shape, silently){
-		var i = 0;
-		for(; i < this.children.length; ++i){
-			if(this.children[i] == shape){
-				if(silently){
-					// skip for now
-				}else{
-					shape._setParent(null, null);
-				}
-				this.children.splice(i, 1);
-				break;
-			}
-		}
-		return this;
-	},
-	
-	// apply transformation
-	_applyTransform: function(){
-		var matrix = this._getRealMatrix();
-		for(var i = 0; i < this.children.length; ++i){
-			this.children[i]._updateParentMatrix(matrix);
-		}
-		return this;
-	}
-});
-
-// this is a Surface object
-dojo.gfx.Surface = function(){
-	// underlying node
-	this.rawNode = null;
-};
-
-dojo.lang.extend(dojo.gfx.Surface, {
-	getEventSource: function(){ return this.rawNode; }
+dojo.declare("dojo.gfx.Point", null, {
+	// summary: a 2D point object to be used for drawings
+	// description: This object is created for documentation purposes.
+	//	You should use a naked object instead: {x: 1, y: 2}.
 });

@@ -1,5 +1,4 @@
 dojo.provide("dojo.io.XhrIframeProxy");
-dojo.provide("dojo.io.XhrIframeFacade");
 
 dojo.require("dojo.experimental");
 dojo.experimental("dojo.io.XhrIframeProxy");

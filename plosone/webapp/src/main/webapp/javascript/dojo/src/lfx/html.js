@@ -28,11 +28,19 @@ dojo.lfx.html._byId = function(nodes){
 	}
 }
 
-dojo.lfx.html.propertyAnimation = function(	/*DOMNode*/ nodes, 
-											/*Array*/ propertyMap, 
+dojo.lfx.html.propertyAnimation = function(	/*DOMNode[]*/ nodes, 
+											/*Object[]*/ propertyMap, 
 											/*int*/ duration,
 											/*function*/ easing,
 											/*Object*/ handlers){
+	// summary: Returns an animation that will transition the properties of "nodes"
+	//			depending how they are defined in "propertyMap".
+	// nodes: An array of DOMNodes or one DOMNode.
+	// propertyMap: { property: String, start: Decimal?, end: Decimal?, units: String? }
+	//				An array of objects defining properties to change.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// handlers: { handler: Function?, onstart: Function?, onstop: Function?, onanimate: Function? }
 	nodes = dojo.lfx.html._byId(nodes);
 
 	var targs = {
@@ -188,8 +196,17 @@ dojo.lfx.html._makeFadeable = function(nodes){
 	}
 }
 
-dojo.lfx.html.fade = function(/*Array*/ nodes, /*Object*/values, /*Decimal?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
-	// values: object { start: Decimal?, end: Decimal? }
+dojo.lfx.html.fade = function(/*DOMNode[]*/ nodes,
+							  /*Object*/values,
+							  /*int?*/ duration,
+							  /*Function?*/ easing,
+							  /*Function?*/ callback){
+	// summary:Returns an animation that will fade the "nodes" from the start to end values passed.
+	// nodes: An array of DOMNodes or one DOMNode.
+	// values: { start: Decimal?, end: Decimal? }
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var props = { property: "opacity" };
 	if(!dj_undef("start", values)){
@@ -215,15 +232,31 @@ dojo.lfx.html.fade = function(/*Array*/ nodes, /*Object*/values, /*Decimal?*/ du
 	return anim; // dojo.lfx.Animation
 }
 
-dojo.lfx.html.fadeIn = function(nodes, duration, easing, callback){
-	return dojo.lfx.html.fade(nodes, { end: 1 }, duration, easing, callback);
+dojo.lfx.html.fadeIn = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// summary: Returns an animation that will fade "nodes" from its current opacity to fully opaque.
+	// nodes: An array of DOMNodes or one DOMNode.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
+	return dojo.lfx.html.fade(nodes, { end: 1 }, duration, easing, callback); // dojo.lfx.Animation
 }
 
-dojo.lfx.html.fadeOut = function(nodes, duration, easing, callback){
-	return dojo.lfx.html.fade(nodes, { end: 0 }, duration, easing, callback);
+dojo.lfx.html.fadeOut = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// summary: Returns an animation that will fade "nodes" from its current opacity to fully transparent.
+	// nodes: An array of DOMNodes or one DOMNode.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.	
+	return dojo.lfx.html.fade(nodes, { end: 0 }, duration, easing, callback); // dojo.lfx.Animation
 }
 
-dojo.lfx.html.fadeShow = function(nodes, duration, easing, callback){
+dojo.lfx.html.fadeShow = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// summary: Returns an animation that will fade "nodes" from transparent to opaque and shows
+	//			"nodes" at the end if it is hidden.
+	// nodes: An array of DOMNodes or one DOMNode.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.	
 	nodes=dojo.lfx.html._byId(nodes);
 	dojo.lang.forEach(nodes, function(node){
 		dojo.html.setOpacity(node, 0.0);
@@ -238,10 +271,16 @@ dojo.lfx.html.fadeShow = function(nodes, duration, easing, callback){
 		}
 	});
 
-	return anim;
+	return anim; // dojo.lfx.Animation
 }
 
-dojo.lfx.html.fadeHide = function(nodes, duration, easing, callback){
+dojo.lfx.html.fadeHide = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// summary: Returns an animation that will fade "nodes" from its current opacity to opaque and hides
+	//			"nodes" at the end.
+	// nodes: An array of DOMNodes or one DOMNode.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	var anim = dojo.lfx.html.fadeOut(nodes, duration, easing, function(){
 		if(dojo.lang.isArrayLike(nodes)){
 			dojo.lang.forEach(nodes, dojo.html.hide);
@@ -251,36 +290,41 @@ dojo.lfx.html.fadeHide = function(nodes, duration, easing, callback){
 		if(callback){ callback(nodes, anim); }
 	});
 	
-	return anim;
+	return anim; // dojo.lfx.Animation
 }
 
-dojo.lfx.html.wipeIn = function(/*Array*/ nodes, /*Decimal?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+dojo.lfx.html.wipeIn = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// summary: Returns an animation that will show and wipe in "nodes".
+	// nodes: An array of DOMNodes or one DOMNode.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 
 	dojo.lang.forEach(nodes, function(node){
-		var oprop = { overflow: null };
+		var oprop = {  };	// old properties of node (before we mucked w/them)
 		
-		// for FF, the node has to be rendered before node.scrollHeight has a value
-		node.style.visibility = "hidden";
-		node.style.display = "block";
+		// get node height, either it's natural height or it's height specified via style or class attributes
+		// (for FF, the node has to be (temporarily) rendered to measure height)
+		dojo.html.show(node);
+		var height = dojo.html.getBorderBox(node).height;
+		dojo.html.hide(node);
 
 		var anim = dojo.lfx.propertyAnimation(node,
 			{	"height": {
 					start: 1, // 0 causes IE to display the whole panel
-					end: function(){ return node.scrollHeight; } 
+					end: function(){ return height; } 
 				}
 			}, 
 			duration, 
 			easing);
 	
 		anim.connect("beforeBegin", function(){
-			oprop.overflow = dojo.html.getStyle(node, "overflow");
+			oprop.overflow = node.style.overflow;
+			oprop.height = node.style.height;
 			with(node.style){
-				if(oprop.overflow == "visible") {
-					overflow = "hidden";
-				}
-				visibility = "visible";
+				overflow = "hidden";
 				height = "1px"; // 0 causes IE to display the whole panel
 			}
 			dojo.html.show(node);
@@ -289,9 +333,7 @@ dojo.lfx.html.wipeIn = function(/*Array*/ nodes, /*Decimal?*/ duration, /*Functi
 		anim.connect("onEnd", function(){ 
 			with(node.style){
 				overflow = oprop.overflow;
-				// height = "auto";
-				height = "";
-				visibility = "visible";
+				height = oprop.height;
 			}
 			if(callback){ callback(node, anim); }
 		});
@@ -301,12 +343,17 @@ dojo.lfx.html.wipeIn = function(/*Array*/ nodes, /*Decimal?*/ duration, /*Functi
 	return dojo.lfx.combine(anims); // dojo.lfx.Combine
 }
 
-dojo.lfx.html.wipeOut = function(/*Array*/ nodes, /*Decimal?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+dojo.lfx.html.wipeOut = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// summary: Returns an animation that will wipe out and hide "nodes".
+	// nodes: An array of DOMNodes or one DOMNode.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 	
 	dojo.lang.forEach(nodes, function(node){
-		var oprop = { overflow: null };
+		var oprop = {  };	// old properties of node (before we mucked w/them)
 		var anim = dojo.lfx.propertyAnimation(node,
 			{	"height": {
 					start: function(){ return dojo.html.getContentBox(node).height; },
@@ -317,20 +364,19 @@ dojo.lfx.html.wipeOut = function(/*Array*/ nodes, /*Decimal?*/ duration, /*Funct
 			easing,
 			{
 				"beforeBegin": function(){
-					oprop.overflow = dojo.html.getStyle(node, "overflow");
-					if(oprop.overflow == "visible") {
-						node.style.overflow = "hidden";
+					oprop.overflow = node.style.overflow;
+					oprop.height = node.style.height;
+					with(node.style){
+						overflow = "hidden";
 					}
-					node.style.visibility = "visible";
 					dojo.html.show(node);
 				},
 				
 				"onEnd": function(){ 
-					// dojo.html.hide(node);
+					dojo.html.hide(node);
 					with(node.style){
 						overflow = oprop.overflow;
-						visibility = "hidden";
-						height = "1px";		// 0 cause IE to display the whole panel
+						height = oprop.height;
 					}
 					if(callback){ callback(node, anim); }
 				}
@@ -342,8 +388,18 @@ dojo.lfx.html.wipeOut = function(/*Array*/ nodes, /*Decimal?*/ duration, /*Funct
 	return dojo.lfx.combine(anims); // dojo.lfx.Combine
 }
 
-dojo.lfx.html.slideTo = function(/*Array*/ nodes, /*Object*/ coords, /*Decimal?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
-	// coords: object { top: Decimal?, left: Decimal? }
+dojo.lfx.html.slideTo = function(/*DOMNode*/ nodes,
+								 /*Object*/ coords,
+								 /*int?*/ duration,
+								 /*Function?*/ easing,
+								 /*Function?*/ callback){
+	// summary: Returns an animation that will slide "nodes" from its current position to
+	//			the position defined in "coords".
+	// nodes: An array of DOMNodes or one DOMNode.
+	// coords: { top: Decimal?, left: Decimal? }
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 	var compute = dojo.html.getComputedStyle;
@@ -394,8 +450,14 @@ dojo.lfx.html.slideTo = function(/*Array*/ nodes, /*Object*/ coords, /*Decimal?*
 	return dojo.lfx.combine(anims); // dojo.lfx.Combine
 }
 
-dojo.lfx.html.slideBy = function(/*Array*/ nodes, /*Object*/ coords, /*Decimal?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
-	// coords: object { top: Decimal?, left: Decimal? }
+dojo.lfx.html.slideBy = function(/*DOMNode*/ nodes, /*Object*/ coords, /*int?*/ duration, /*Function?*/ easing, /*Function?*/ callback){
+	// summary: Returns an animation that will slide "nodes" from its current position
+	//			to its current position plus the numbers defined in "coords".
+	// nodes: An array of DOMNodes or one DOMNode.
+	// coords: { top: Decimal?, left: Decimal? }
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 	var compute = dojo.html.getComputedStyle;
@@ -446,7 +508,17 @@ dojo.lfx.html.slideBy = function(/*Array*/ nodes, /*Object*/ coords, /*Decimal?*
 	return dojo.lfx.combine(anims); // dojo.lfx.Combine
 }
 
-dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
+dojo.lfx.html.explode = function(/*DOMNode*/ start,
+								 /*DOMNode*/ endNode,
+								 /*int?*/ duration,
+								 /*Function?*/ easing,
+								 /*Function?*/ callback){
+	// summary: Returns an animation that will 
+	// start:
+	// endNode:
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	var h = dojo.html;
 	start = dojo.byId(start);
 	endNode = dojo.byId(endNode);
@@ -494,10 +566,20 @@ dojo.lfx.html.explode = function(start, endNode, duration, easing, callback){
 	if(callback){
 		anim.connect("onEnd", function(){ callback(endNode, anim); });
 	}
-	return anim;
+	return anim; // dojo.lfx.Animation
 }
 
-dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
+dojo.lfx.html.implode = function(/*DOMNode*/ startNode,
+								 /*DOMNode*/ end,
+								 /*int?*/ duration,
+								 /*Function?*/ easing,
+								 /*Function?*/ callback){
+	// summary: Returns an animation that will 
+	// startNode:
+	// end:
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	var h = dojo.html;
 	startNode = dojo.byId(startNode);
 	end = dojo.byId(end);
@@ -538,10 +620,21 @@ dojo.lfx.html.implode = function(startNode, end, duration, easing, callback){
 	if(callback){
 		anim.connect("onEnd", function(){ callback(startNode, anim); });
 	}
-	return anim;
+	return anim; // dojo.lfx.Animation
 }
 
-dojo.lfx.html.highlight = function(nodes, startColor, duration, easing, callback){
+dojo.lfx.html.highlight = function(/*DOMNode[]*/ nodes,
+								   /*dojo.gfx.color.Color*/ startColor,
+								   /*int?*/ duration,
+								   /*Function?*/ easing,
+								   /*Function?*/ callback){
+	// summary: Returns an animation that will set the background color
+	//			of "nodes" to startColor and transition it to "nodes"
+	//			original color.
+	// startColor: Color to transition from.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 
@@ -582,10 +675,20 @@ dojo.lfx.html.highlight = function(nodes, startColor, duration, easing, callback
 
 		anims.push(anim);
 	});
-	return dojo.lfx.combine(anims);
+	return dojo.lfx.combine(anims); // dojo.lfx.Combine
 }
 
-dojo.lfx.html.unhighlight = function(nodes, endColor, duration, easing, callback){
+dojo.lfx.html.unhighlight = function(/*DOMNode[]*/ nodes,
+									 /*dojo.gfx.color.Color*/ endColor,
+									 /*int?*/ duration,
+									 /*Function?*/ easing,
+									 /*Function?*/ callback){
+	// summary: Returns an animation that will transition "nodes" background color
+	//			from its current color to "endColor".
+	// endColor: Color to transition to.
+	// duration: Duration of the animation in milliseconds.
+	// easing: An easing function.
+	// callback: Function to run at the end of the animation.
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 
@@ -615,7 +718,7 @@ dojo.lfx.html.unhighlight = function(nodes, endColor, duration, easing, callback
 		);
 		anims.push(anim);
 	});
-	return dojo.lfx.combine(anims);
+	return dojo.lfx.combine(anims); // dojo.lfx.Combine
 }
 
 dojo.lang.mixin(dojo.lfx, dojo.lfx.html);

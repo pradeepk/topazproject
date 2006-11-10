@@ -49,6 +49,10 @@ dojo.widget.defineWidget(
 		return elem.getInfo();
 	},
 
+	onBeforeTreeDestroy: function(message) {
+                this.unlistenTree(message.source);
+	},
+
 	onAfterSetFolder: function(message) {
 		
 		//dojo.profile.start("onTreeChange");
@@ -64,8 +68,6 @@ dojo.widget.defineWidget(
 		//dojo.profile.end("onTreeChange");
 	},
 	
-	
-
 
 	// down arrow
 	_focusNextVisible: function(nodeWidget) {
@@ -196,7 +198,7 @@ dojo.widget.defineWidget(
 	
 	
 	_focusLabel: function(node) {
-				
+		//dojo.debug((new Error()).stack)		
 		var lastFocused = node.tree.lastFocused;
 		var labelNode;
 		
@@ -277,7 +279,7 @@ dojo.widget.defineWidget(
 				if (treeWidget.lastFocused && treeWidget.lastFocused.isTreeNode) { // onClick could have chosen a non-root node
 					nodeWidget = treeWidget.lastFocused;
 				}
-				this._focusLabel(treeWidget, nodeWidget);
+				this._focusLabel(nodeWidget);
 			}
 		}
 		catch(e) {}
@@ -287,7 +289,7 @@ dojo.widget.defineWidget(
 	onAfterTreeCreate: function(message) {
 		var tree = message.source;
 		dojo.event.browser.addListener(tree.domNode, "onKey", dojo.lang.hitch(this, this.onKey));
-		//dojo.event.browser.addListener(tree.domNode, "onclick", dojo.lang.hitch(this, this.onClick));
+		dojo.event.browser.addListener(tree.domNode, "onmousedown", dojo.lang.hitch(this, this.onTreeMouseDown));
 		dojo.event.browser.addListener(tree.domNode, "onclick", dojo.lang.hitch(this, this.onTreeClick));
 		dojo.event.browser.addListener(tree.domNode, "onfocus", dojo.lang.hitch(this, this.onFocusTree));
 		tree.domNode.setAttribute("tabIndex", "0");
@@ -300,24 +302,27 @@ dojo.widget.defineWidget(
 		}
 	},
 
+    onTreeMouseDown: function(e) {
+    },
+
 	onTreeClick: function(e){
 		//dojo.profile.start("onTreeClick");
 		
 		var domElement = e.target;
-		
+		//dojo.debug('click')
 		// find node
         var node = this.domElement2TreeNode(domElement);		
 		if (!node || !node.isTreeNode) {
 			return;
 		}
 		
-		// now check if expand was clicked
-		while (!domElement.widgetId) { // node found => there must be widgetId up here
-			if (domElement === node.expandNode) {
-				this.processExpandClick(node);
-				break;
-			}
-			domElement = domElement.parentNode;
+		
+		var checkExpandClick = function(el) {
+			return el === node.expandNode;
+		}
+		
+		if (this.checkPathCondition(domElement, checkExpandClick)) {
+			this.processExpandClick(node);			
 		}
 		
 		this._focusLabel(node);
@@ -368,6 +373,20 @@ dojo.widget.defineWidget(
 		}
 	},
 	
+	/**
+	 * expand tree to specific node
+	 */
+	expandToNode: function(node, withSelected) {
+		n = withSelected ? node : node.parent
+		s = []
+		while (!n.isExpanded) {
+			s.push(n)
+			n = n.parent
+		}
+				
+		dojo.lang.forEach(s, function(n) { n.expand() })
+	},
+		
 	/**
 	 * walk a node in time, forward order, with pauses between expansions
 	 */
@@ -423,11 +442,9 @@ dojo.widget.defineWidget(
 		
 		//dojo.debug("Expand "+node.isFolder);
 		
-		if (node.isFolder) {
-			
+		if (node.isFolder) {			
 			node.expand(); // skip trees or non-folders
-		}
-		
+		}		
 		
 		//dojo.profile.end("expand");
 				
@@ -496,7 +513,10 @@ dojo.widget.defineWidget(
 
 		if (save) {
 			var data = {title:editorTitle};
-			dojo.lang.mixin(data, server_data);
+			
+			if (server_data) { // may be undefined
+				dojo.lang.mixin(data, server_data);
+			}
 			
 			
 			if (node.isPhantom) {			

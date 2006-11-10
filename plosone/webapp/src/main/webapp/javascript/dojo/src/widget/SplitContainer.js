@@ -1,5 +1,4 @@
 dojo.provide("dojo.widget.SplitContainer");
-dojo.provide("dojo.widget.SplitContainerPanel");
 
 //
 // TODO
@@ -22,34 +21,42 @@ dojo.widget.defineWidget(
 		this.sizers = [];
 	},
 {
+	// summary
+	//		Contains multiple children widgets, all of which are displayed side by side
+	//		(either horizontally or vertically); there's a bar between each of the children,
+	//		and you can adjust the relative size of each child by dragging the bars.
+	//
+	//		You must specify a size (width and height) for the SplitContainer.
+
 	isContainer: true,
 
-	// variables
-	virtualSizer: null,
-	isHorizontal: null,
-	paneBefore: null,
-	paneAfter: null,
-	isSizing: false,
-	dragOffset: 0,
-	startPoint: 0,
-	lastPoint: 0,
-	sizingSplitter: null,
-	screenToClientOffset: 0,
-	isDraggingLeft: 0,
 	templateCssPath: dojo.uri.dojoUri("src/widget/templates/SplitContainer.css"),
-	originPos: 0,
 
-	// parameters (user settable)
+	// activeSizing: Boolean
+	//		If true, the children's size changes as you drag the bar;
+	//		otherwise, the sizes don't change until you drop the bar (by mouse-up)
 	activeSizing: false,
+	
+	// sizerWidget: Integer
+	//		Size in pixels of the bar between each child
 	sizerWidth: 15,
+	
+	// orientation: String
+	//		either 'horizontal' or vertical; indicates whether the children are
+	//		arranged side-by-side or up/down.
 	orientation: 'horizontal',
-	persist: true,		// save splitter positions in a cookie
+	
+	// persist: Boolean
+	//		Save splitter positions in a cookie
+	persist: true,
 
-	debugName: '',
+	postMixInProperties: function(){
+		dojo.widget.SplitContainer.superclass.postMixInProperties.apply(this, arguments);
+		this.isHorizontal = (this.orientation == 'horizontal');
+	},
 
 	fillInTemplate: function(){
-
-		dojo.html.insertCssFile(this.templateCssPath, null, true);
+		dojo.widget.SplitContainer.superclass.fillInTemplate.apply(this, arguments);
 		dojo.html.addClass(this.domNode, "dojoSplitContainer");
 		// overflow has to be explicitly hidden for splitContainers using gekko (trac #1435)
 		// to keep other combined css classes from inadvertantly making the overflow visible
@@ -60,23 +67,17 @@ dojo.widget.defineWidget(
 		var content = dojo.html.getContentBox(this.domNode);
 		this.paneWidth = content.width;
 		this.paneHeight = content.height;
-
-		this.isHorizontal = (this.orientation == 'horizontal');
-
-		//dojo.debug("fillInTemplate for "+this.debugName);
 	},
 
 	onResized: function(e){
 		var content = dojo.html.getContentBox(this.domNode);
 		this.paneWidth = content.width;
 		this.paneHeight = content.height;
-		this.layoutPanels();
+		this._layoutPanels();
 	},
 
 	postCreate: function(args, fragment, parentComp){
-
-		// dojo.debug("post create for "+this.debugName);
-
+		dojo.widget.SplitContainer.superclass.postCreate.apply(this, arguments);
 		// attach the children and create the draggers
 		for(var i=0; i<this.children.length; i++){
             with(this.children[i].domNode.style){
@@ -109,7 +110,7 @@ dojo.widget.defineWidget(
 		dojo.html.disableSelection(this.virtualSizer);
 
 		if(this.persist){
-			this.restoreState();
+			this._restoreState();
 		}
 
 		// size the panels once the browser has caught up
@@ -158,18 +159,18 @@ dojo.widget.defineWidget(
         this.onResized();
     },
 
-    addChild: function(widget, overrideContainerNode, pos, ref, insertIndex){
-        dojo.widget.SplitContainer.superclass.addChild.call(this, widget, overrideContainerNode, pos, ref, insertIndex);
+    addChild: function(widget){
+        dojo.widget.SplitContainer.superclass.addChild.apply(this, arguments);
         this._injectChild(widget);
 
         if (this.children.length > 1) {
             this._addSizer();
         }
 
-        this.layoutPanels();
+        this._layoutPanels();
     },
 
-    layoutPanels: function(){
+    _layoutPanels: function(){
         if (this.children.length == 0){ return; }
 
 		//
@@ -177,9 +178,7 @@ dojo.widget.defineWidget(
 		//
 
 		var space = this.isHorizontal ? this.paneWidth : this.paneHeight;
-
 		if (this.children.length > 1){
-
 			space -= this.sizerWidth * (this.children.length - 1);
 		}
 
@@ -189,9 +188,7 @@ dojo.widget.defineWidget(
 		//
 
 		var out_of = 0;
-
 		for(var i=0; i<this.children.length; i++){
-
 			out_of += this.children[i].sizeShare;
 		}
 
@@ -210,7 +207,6 @@ dojo.widget.defineWidget(
 		var total_size = 0;
 
 		for(var i=0; i<this.children.length-1; i++){
-
 			var size = Math.round(pix_per_unit * this.children[i].sizeShare);
 			this.children[i].sizeActual = size;
 			total_size += size;
@@ -221,7 +217,7 @@ dojo.widget.defineWidget(
 		// make sure the sizes are ok
 		//
 
-		this.checkSizes();
+		this._checkSizes();
 
 
 		//
@@ -230,7 +226,7 @@ dojo.widget.defineWidget(
 
 		var pos = 0;
 		var size = this.children[0].sizeActual;
-		this.movePanel(this.children[0].domNode, pos, size);
+		this._movePanel(this.children[0].domNode, pos, size);
 		this.children[0].position = pos;
 		this.children[0].checkSize();
 		pos += size;
@@ -238,19 +234,19 @@ dojo.widget.defineWidget(
 		for(var i=1; i<this.children.length; i++){
 
 			// first we position the sizing handle before this pane
-			this.movePanel(this.sizers[i-1], pos, this.sizerWidth);
+			this._movePanel(this.sizers[i-1], pos, this.sizerWidth);
 			this.sizers[i-1].position = pos;
 			pos += this.sizerWidth;
 
 			size = this.children[i].sizeActual;
-			this.movePanel(this.children[i].domNode, pos, size);
+			this._movePanel(this.children[i].domNode, pos, size);
 			this.children[i].position = pos;
 			this.children[i].checkSize();
 			pos += size;
 		}
 	},
 
-	movePanel: function(panel, pos, size){
+	_movePanel: function(panel, pos, size){
 		if (this.isHorizontal){
 			panel.style.left = pos + 'px';
 			panel.style.top = 0;
@@ -264,8 +260,7 @@ dojo.widget.defineWidget(
 		}
 	},
 
-	growPane: function(growth, pane){
-
+	_growPane: function(growth, pane){
 		if (growth > 0){
 			if (pane.sizeActual > pane.sizeMin){
 				if ((pane.sizeActual - pane.sizeMin) > growth){
@@ -283,7 +278,7 @@ dojo.widget.defineWidget(
 		return growth;
 	},
 
-	checkSizes: function(){
+	_checkSizes: function(){
 
 		var total_min_size = 0;
 		var total_size = 0;
@@ -312,11 +307,11 @@ dojo.widget.defineWidget(
 			if (growth > 0){
 				if (this.isDraggingLeft){
 					for(var i=this.children.length-1; i>=0; i--){
-						growth = this.growPane(growth, this.children[i]);
+						growth = this._growPane(growth, this.children[i]);
 					}
 				}else{
 					for(var i=0; i<this.children.length; i++){
-						growth = this.growPane(growth, this.children[i]);
+						growth = this._growPane(growth, this.children[i]);
 					}
 				}
 			}
@@ -349,7 +344,7 @@ dojo.widget.defineWidget(
 		this.dragOffset = this.lastPoint - this.paneBefore.sizeActual - this.originPos - this.paneBefore.position;
 
 		if (!this.activeSizing){
-			this.showSizingLine();
+			this._showSizingLine();
 		}
 
 		//
@@ -365,10 +360,10 @@ dojo.widget.defineWidget(
 		this.lastPoint = this.isHorizontal ? e.pageX : e.pageY;
 		if (this.activeSizing){
 			this.movePoint();
-			this.updateSize();
+			this._updateSize();
 		}else{
 			this.movePoint();
-			this.moveSizingLine();
+			this._moveSizingLine();
 		}
 		dojo.event.browser.stopEvent(e);
 	},
@@ -376,10 +371,10 @@ dojo.widget.defineWidget(
 	endSizing: function(e){
 
 		if (!this.activeSizing){
-			this.hideSizingLine();
+			this._hideSizingLine();
 		}
 
-		this.updateSize();
+		this._updateSize();
 
 		this.isSizing = false;
 
@@ -387,7 +382,7 @@ dojo.widget.defineWidget(
 		dojo.event.disconnect(document.documentElement, "onmouseup", this, "endSizing");
 		
 		if(this.persist){
-			this.saveState(this);
+			this._saveState(this);
 		}
 	},
 
@@ -407,7 +402,7 @@ dojo.widget.defineWidget(
 
 		a += this.sizingSplitter.position;
 
-		this.isDraggingLeft = (a > 0) ? 1 : 0;
+		this.isDraggingLeft = (a > 0) ? true : false;
 
 		if (!this.activeSizing){
 
@@ -424,12 +419,12 @@ dojo.widget.defineWidget(
 
 		a -= this.sizingSplitter.position;
 
-		this.checkSizes();
+		this._checkSizes();
 
 		return a;
 	},
 
-	updateSize: function(){
+	_updateSize: function(){
 		var pos = this.lastPoint - this.dragOffset - this.originPos;
 
 		var start_region = this.paneBefore.position;
@@ -444,12 +439,12 @@ dojo.widget.defineWidget(
 			this.children[i].sizeShare = this.children[i].sizeActual;
 		}
 
-		this.layoutPanels();
+		this._layoutPanels();
 	},
 
-	showSizingLine: function(){
+	_showSizingLine: function(){
 
-		this.moveSizingLine();
+		this._moveSizingLine();
 
 		if (this.isHorizontal){
 			dojo.html.setMarginBox(this.virtualSizer, { width: this.sizerWidth, height: this.paneHeight });
@@ -460,11 +455,11 @@ dojo.widget.defineWidget(
 		this.virtualSizer.style.display = 'block';
 	},
 
-	hideSizingLine: function(){
+	_hideSizingLine: function(){
 		this.virtualSizer.style.display = 'none';
 	},
 
-	moveSizingLine: function(){
+	_moveSizingLine: function(){
 		var pos = this.lastPoint - this.startPoint + this.sizingSplitter.position;
 		if (this.isHorizontal){
 			this.virtualSizer.style.left = pos + 'px';
@@ -479,7 +474,7 @@ dojo.widget.defineWidget(
 		return this.widgetId + "_" + i;
 	},
 
-	restoreState: function () {
+	_restoreState: function () {
 		for(var i=0; i<this.children.length; i++) {
 			var cookieName = this._getCookieName(i);
 			var cookieValue = dojo.io.cookie.getCookie(cookieName);
@@ -492,7 +487,7 @@ dojo.widget.defineWidget(
 		}
 	},
 
-	saveState: function (){
+	_saveState: function (){
 		for(var i=0; i<this.children.length; i++) {
 			var cookieName = this._getCookieName(i);
 			dojo.io.cookie.setCookie(cookieName, this.children[i].sizeShare, null, null, null, null);
@@ -504,7 +499,16 @@ dojo.widget.defineWidget(
 // Since any widget can be specified as a SplitContainer child, mix them
 // into the base widget class.  (This is a hack, but it's effective.)
 dojo.lang.extend(dojo.widget.Widget, {
+	// sizeMin: Integer
+	//	Minimum size (width or height) of a child of a SplitContainer.
+	//	The value is relative to other children's sizeShare properties.
 	sizeMin: 10,
+
+	// sizeShare: Integer
+	//	Size (width or height) of a child of a SplitContainer.
+	//	The value is relative to other children's sizeShare properties.
+	//	For example, if there are two children and each has sizeShare=10, then
+	//	each takes up 50% of the available space.
 	sizeShare: 10
 });
 

@@ -1,9 +1,9 @@
 ({
 	'months-format-wide': ["Januar", "Februar", "März", "April", "Mai", "Juni", "Juli", "August", "September", "Oktober", "November", "Dezember"],
-	'months-format-abbr': ["Jan", "Feb", "Mär", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
+	'months-format-abbr': ["Jan", "Feb", "Mrz", "Apr", "Mai", "Jun", "Jul", "Aug", "Sep", "Okt", "Nov", "Dez"],
 	'months-standAlone-narrow': ["J", "F", "M", "A", "M", "J", "J", "A", "S", "O", "N", "D"],
 	'days-format-wide': ["Sonntag", "Montag", "Dienstag", "Mittwoch", "Donnerstag", "Freitag", "Samstag"],
-	'days-format-abbr': ["So", "Mo", "Di", "Mi", "Do", "Fri", "Sat"],
+	'days-format-abbr': ["So", "Mo", "Di", "Mi", "Do", "Fr", "Sa"],
 	'days-standAlone-narrow': ["S", "M", "D", "M", "D", "F", "S"],
 
 	'dateFormat-full': "EEEE, d. MMMM yyyy",
@@ -15,5 +15,16 @@
 
 	am: "vorm.",
 	pm: "nachm.",
-	eras: ['v. Chr.','n. Chr.']
+	eras: ['v. Chr.','n. Chr.'],
+
+	'field-era': "Epoche",
+	'field-year': "Jahr",
+	'field-month': "Monat",
+	'field-week': "Woche",
+	'field-day': "Tag",
+	'field-weekday': "Wochentag",
+	'field-dayperiod': "Tageshälfte",
+	'field-hour': "Stunde",
+	'field-second': "Sekunde",
+	'field-zone': "Zone"
 })

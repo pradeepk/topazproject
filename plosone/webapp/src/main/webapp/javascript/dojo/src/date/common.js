@@ -5,12 +5,14 @@ dojo.provide("dojo.date.common");
  *******************************/
 
 dojo.date.setDayOfYear = function(/*Date*/dateObject, /*Number*/dayOfYear){
+	// summary: sets dateObject according to day of the year (1..366)
 	dateObject.setMonth(0);
 	dateObject.setDate(dayOfYear);
 	return dateObject; // Date
 }
 
 dojo.date.getDayOfYear = function(/*Date*/dateObject){
+	// summary: gets the day of the year as represented by dateObject
 	var fullYear = dateObject.getFullYear();
 	var lastDayOfPrevYear = new Date(fullYear-1, 11, 31);
 	return Math.floor((dateObject.getTime() -
@@ -35,7 +37,6 @@ dojo.date.getWeekOfYear = function(/*Date*/dateObject, /*Number*/firstDay){
 	return Math.floor((dateObject.getTime() -
 		firstDayOfYear.getTime()) / 604800000);
 }
-
 
 dojo.date.setIsoWeekOfYear = function(/*Date*/dateObject, /*Number*/week, /*Number*/firstDay){
 	// summary: unimplemented
@@ -154,13 +155,14 @@ dojo.date.getTimezoneName = function(/*Date*/dateObject){
 
 
 //FIXME: not localized
-dojo.date.getOrdinal = function (dateObject) {
+dojo.date.getOrdinal = function(dateObject){
+	// summary: returns the appropriate suffix (English only) for the day of the month, e.g. 'st' for 1, 'nd' for 2, etc.)
 	var date = dateObject.getDate();
 
-	if (date%100 != 11 && date%10 == 1) { return "st"; } // String
-	else if (date%100 != 12 && date%10 == 2) { return "nd"; } // String
-	else if (date%100 != 13 && date%10 == 3) { return "rd"; } // String
-	else { return "th"; } // String
+	if(date%100 != 11 && date%10 == 1){ return "st"; } // String
+	else if(date%100 != 12 && date%10 == 2){ return "nd"; } // String
+	else if(date%100 != 13 && date%10 == 3){ return "rd"; } // String
+	else{ return "th"; } // String
 }
 
 

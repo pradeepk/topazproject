@@ -2,108 +2,103 @@ dojo.provide("dojo.validate.common");
 
 dojo.require("dojo.regexp");
 
-// *** Validation Functions ****
 
-/**
-  Checks if a string has non whitespace characters. 
-  Parameters allow you to constrain the length.
+dojo.validate.isText = function(/*String*/value, /*Object?*/flags){
+// summary:
+//	Checks if a string has non whitespace characters. 
+//	Parameters allow you to constrain the length.
+//
+// value: A string
+// flags: {length: Number, minlength: Number, maxlength: Number}
+//    flags.length  If set, checks if there are exactly flags.length number of characters.
+//    flags.minlength  If set, checks if there are at least flags.minlength number of characters.
+//    flags.maxlength  If set, checks if there are at most flags.maxlength number of characters.
 
-  @param value  A string.
-  @param flags  An object.
-    flags.length  If set, checks if there are exactly flags.length number of characters.
-    flags.minlength  If set, checks if there are at least flags.minlength number of characters.
-    flags.maxlength  If set, checks if there are at most flags.maxlength number of characters.
-  @return  true or false.
-*/
-dojo.validate.isText = function(value, flags) {
 	flags = (typeof flags == "object") ? flags : {};
 
 	// test for text
-	if ( /^\s*$/.test(value) ) { return false; }
+	if(/^\s*$/.test(value)){ return false; } // Boolean
 
 	// length tests
-	if ( typeof flags.length == "number" && flags.length != value.length ) { return false; }
-	if ( typeof flags.minlength == "number" && flags.minlength > value.length ) { return false; }
-	if ( typeof flags.maxlength == "number" && flags.maxlength < value.length ) { return false; }
+	if(typeof flags.length == "number" && flags.length != value.length){ return false; } // Boolean
+	if(typeof flags.minlength == "number" && flags.minlength > value.length){ return false; } // Boolean
+	if(typeof flags.maxlength == "number" && flags.maxlength < value.length){ return false; } // Boolean
 
-	return true;
+	return true; // Boolean
 }
 
-/**
-  Validates whether a string is in an integer format. 
+dojo.validate.isInteger = function(/*String*/value, /*Object?*/flags){
+// summary:
+//	Validates whether a string is in an integer format
+//
+// value  A string
+// flags  {signed: Boolean|[true,false], separator: String}
+//    flags.signed  The leading plus-or-minus sign.  Can be true, false, or [true, false].
+//      Default is [true, false], (i.e. sign is optional).
+//    flags.separator  The character used as the thousands separator.  Default is no separator.
+//      For more than one symbol use an array, e.g. [",", ""], makes ',' optional.
 
-  @param value  A string.
-  @param flags  An object.
-    flags.signed  The leading plus-or-minus sign.  Can be true, false, or [true, false].
-      Default is [true, false], (i.e. sign is optional).
-    flags.separator  The character used as the thousands separator.  Default is no separator.
-      For more than one symbol use an array, e.g. [",", ""], makes ',' optional.
-  @return  true or false.
-*/
-dojo.validate.isInteger = function(value, flags) {
 	var re = new RegExp("^" + dojo.regexp.integer(flags) + "$");
-	return re.test(value);
+	return re.test(value); // Boolean
 }
 
-/**
-  Validates whether a string is a real valued number. 
-  Format is the usual exponential notation.
+dojo.validate.isRealNumber = function(/*String*/value, /*Object?*/flags){
+// summary:
+//	Validates whether a string is a real valued number. 
+//	Format is the usual exponential notation.
+//
+// value: A string
+// flags: {places: Number, decimal: String, exponent: Boolean|[true,false], eSigned: Boolean|[true,false], ...}
+//    flags.places  The integer number of decimal places.
+//      If not given, the decimal part is optional and the number of places is unlimited.
+//    flags.decimal  The character used for the decimal point.  Default is ".".
+//    flags.exponent  Express in exponential notation.  Can be true, false, or [true, false].
+//      Default is [true, false], (i.e. the exponential part is optional).
+//    flags.eSigned  The leading plus-or-minus sign on the exponent.  Can be true, false, 
+//      or [true, false].  Default is [true, false], (i.e. sign is optional).
+//    flags in regexp.integer can be applied.
 
-  @param value  A string.
-  @param flags  An object.
-    flags.places  The integer number of decimal places.
-      If not given, the decimal part is optional and the number of places is unlimited.
-    flags.decimal  The character used for the decimal point.  Default is ".".
-    flags.exponent  Express in exponential notation.  Can be true, false, or [true, false].
-      Default is [true, false], (i.e. the exponential part is optional).
-    flags.eSigned  The leading plus-or-minus sign on the exponent.  Can be true, false, 
-      or [true, false].  Default is [true, false], (i.e. sign is optional).
-    flags in regexp.integer can be applied.
-  @return  true or false.
-*/
-dojo.validate.isRealNumber = function(value, flags) {
 	var re = new RegExp("^" + dojo.regexp.realNumber(flags) + "$");
-	return re.test(value);
+	return re.test(value); // Boolean
 }
 
-/**
-  Validates whether a string denotes a monetary value. 
+dojo.validate.isCurrency = function(/*String*/value, /*Object?*/flags){
+// summary:
+//	Validates whether a string denotes a monetary value. 
+// value: A string
+// flags: {signed:Boolean|[true,false], symbol:String, placement:String, separator:String,
+//	fractional:Boolean|[true,false], decimal:String}
+//    flags.signed  The leading plus-or-minus sign.  Can be true, false, or [true, false].
+//      Default is [true, false], (i.e. sign is optional).
+//    flags.symbol  A currency symbol such as Yen "�", Pound "�", or the Euro sign "�".  
+//      Default is "$".  For more than one symbol use an array, e.g. ["$", ""], makes $ optional.
+//    flags.placement  The symbol can come "before" the number or "after".  Default is "before".
+//    flags.separator  The character used as the thousands separator. The default is ",".
+//    flags.fractional  The appropriate number of decimal places for fractional currency (e.g. cents)
+//      Can be true, false, or [true, false].  Default is [true, false], (i.e. cents are optional).
+//    flags.decimal  The character used for the decimal point.  Default is ".".
 
-  @param value  A string.
-  @param flags  An object.
-    flags.signed  The leading plus-or-minus sign.  Can be true, false, or [true, false].
-      Default is [true, false], (i.e. sign is optional).
-    flags.symbol  A currency symbol such as Yen "�", Pound "�", or the Euro sign "�".  
-      Default is "$".  For more than one symbol use an array, e.g. ["$", ""], makes $ optional.
-    flags.placement  The symbol can come "before" the number or "after".  Default is "before".
-    flags.separator  The character used as the thousands separator. The default is ",".
-    flags.fractional  The appropriate number of decimal places for fractional currency (e.g. cents)
-      Can be true, false, or [true, false].  Default is [true, false], (i.e. cents are optional).
-    flags.decimal  The character used for the decimal point.  Default is ".".
-  @return  true or false.
-*/
-dojo.validate.isCurrency = function(value, flags) {
 	var re = new RegExp("^" + dojo.regexp.currency(flags) + "$");
-	return re.test(value);
+	return re.test(value); // Boolean
 }
 
-/**
-  Validates whether a string denoting an integer, 
-  real number, or monetary value is between a max and min. 
+dojo.validate.isInRange = function(/*String*/value, /*Object?*/flags){
+//summary:
+//	Validates whether a string denoting an integer, 
+//	real number, or monetary value is between a max and min. 
+//
+// value: A string
+// flags: {max:Number, min:Number, decimal:String}
+//    flags.max  A number, which the value must be less than or equal to for the validation to be true.
+//    flags.min  A number, which the value must be greater than or equal to for the validation to be true.
+//    flags.decimal  The character used for the decimal point.  Default is ".".
 
-  @param value  A string.
-  @param flags  An object.
-    flags.max  A number, which the value must be less than or equal to for the validation to be true.
-    flags.min  A number, which the value must be greater than or equal to for the validation to be true.
-    flags.decimal  The character used for the decimal point.  Default is ".".
-  @return  true or false.
-*/
-dojo.validate.isInRange = function(value, flags) {
-	//stripping the seperator allows NaN to perform as expected, if no separator, we assume ','
+	//stripping the separator allows NaN to perform as expected, if no separator, we assume ','
 	//once i18n support is ready for this, instead of assuming, we default to i18n's recommended value
-	value = value.replace((dojo.lang.has(flags,'separator'))?flags.separator:',','');
+	value = value.replace(dojo.lang.has(flags,'separator')?flags.separator:',', '', 'g').
+		replace(dojo.lang.has(flags,'symbol')?flags.symbol:'$', '');
 	if(isNaN(value)){
-		return false;
+		return false; // Boolean
 	}
 	// assign default values to missing paramters
 	flags = (typeof flags == "object") ? flags : {};
@@ -124,40 +119,40 @@ dojo.validate.isInRange = function(value, flags) {
 	value = value.replace(RegExp(pattern, "g"), "$1.$2");
 
 	value = Number(value);
-	if ( value < min || value > max ) { return false; }
+	if ( value < min || value > max ) { return false; } // Boolean
 
-	return true;
+	return true; // Boolean
 }
 
+dojo.validate.isNumberFormat = function(/*String*/value, /*Object?*/flags){
+// summary:
+//	Validates any sort of number based format
+//
+// description:
+//	Use it for phone numbers, social security numbers, zip-codes, etc.
+//	The value can be validated against one format or one of multiple formats.
+//
+//  Format
+//    #        Stands for a digit, 0-9.
+//    ?        Stands for an optional digit, 0-9 or nothing.
+//    All other characters must appear literally in the expression.
+//
+//  Example   
+//    "(###) ###-####"       ->   (510) 542-9742
+//    "(###) ###-#### x#???" ->   (510) 542-9742 x153
+//    "###-##-####"          ->   506-82-1089       i.e. social security number
+//    "#####-####"           ->   98225-1649        i.e. zip code
+//
+// value: A string
+// flags: {format:String}
+//    flags.format  A string or an Array of strings for multiple formats.
 
-/**
-  Validates any sort of number based format.
-  Use it for phone numbers, social security numbers, zip-codes, etc.
-  The value can be validated against one format or one of multiple formats.
-
-  Format
-    #        Stands for a digit, 0-9.
-    ?        Stands for an optional digit, 0-9 or nothing.
-    All other characters must appear literally in the expression.
-
-  Example   
-    "(###) ###-####"       ->   (510) 542-9742
-    "(###) ###-#### x#???" ->   (510) 542-9742 x153
-    "###-##-####"          ->   506-82-1089       i.e. social security number
-    "#####-####"           ->   98225-1649        i.e. zip code
-
-  @param value  A string.
-  @param flags  An object.
-    flags.format  A string or an Array of strings for multiple formats.
-  @return  true or false
-*/
-dojo.validate.isNumberFormat = function(value, flags) {
 	var re = new RegExp("^" + dojo.regexp.numberFormat(flags) + "$", "i");
-	return re.test(value);
+	return re.test(value); // Boolean
 }
 
-//Compares value against the Luhn algorithm to verify its integrity
-dojo.validate.isValidLuhn = function(value) {
+dojo.validate.isValidLuhn = function(/*String*/value){
+//summary: Compares value against the Luhn algorithm to verify its integrity
 	var sum, parity, curDigit;
 	if(typeof value!='string'){
 		value = String(value);
@@ -177,6 +172,7 @@ dojo.validate.isValidLuhn = function(value) {
 	}
 	return !(sum%10);
 }
+
 /**
 	Procedural API Description
 

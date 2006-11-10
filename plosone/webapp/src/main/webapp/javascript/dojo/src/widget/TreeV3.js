@@ -61,8 +61,10 @@ dojo.widget.defineWidget(
 		afterAddChild: "afterAddChild",
 		afterDetach: "afterDetach",
 		afterExpand: "afterExpand",
+		beforeExpand: "beforeExpand",
 		afterSetTitle: "afterSetTitle",		
-		afterCollapse: "afterCollapse"
+		afterCollapse: "afterCollapse",	
+		beforeCollapse: "beforeCollapse"
 	},
 
 	classPrefix: "Tree",
@@ -108,7 +110,7 @@ dojo.widget.defineWidget(
 		} else if (this.defaultChildWidget.prototype.createSimple) {			
 			return this.defaultChildWidget.prototype.createSimple(data);					
 		} else {
-			var ns = this.defaultChildWidget.prototype["namespace"]; 
+			var ns = this.defaultChildWidget.prototype.ns; 
 			var wt = this.defaultChildWidget.prototype.widgetType; 
 
 			return dojo.widget.createWidget(ns + ":" + wt, data); 
@@ -147,11 +149,11 @@ dojo.widget.defineWidget(
 		var clazz = this.classPrefix+"Content";
 		
 		/**
-		 * IE does not support min-height properly so I have to rely
+		 * IE<7 does not support min-height properly so I have to rely
 		 * on this hack
-		 * FIXME: do it in CSS only, remove iconHeight from code
+		 * FIXME: do it in CSS only
 		 */
-		if (dojo.render.html.ie) {
+		if (dojo.render.html.ie && !dojo.render.html.ie70) {
 			clazz = clazz + ' ' + this.classPrefix+"IEContent";
 		}	
 		
@@ -256,7 +258,7 @@ dojo.widget.defineWidget(
 		
 		var _this = this;
 			
-		
+		//dojo.html.disableSelection(this.domNode)
 				
 		dojo.lang.forEach(this.listeners,
 			function(elem) {
@@ -264,6 +266,8 @@ dojo.widget.defineWidget(
 				t.listenTree(_this)				
 			}
 		);
+		
+
 		
 		
 

@@ -73,7 +73,7 @@ dojo.io.ScriptSrcTransport = new function(){
 	}
 
 	this.canHandle = function(kwArgs){
-		return dojo.lang.inArray(["text/javascript", "text/json"], (kwArgs["mimetype"].toLowerCase()))
+		return dojo.lang.inArray(["text/javascript", "text/json", "application/json"], (kwArgs["mimetype"].toLowerCase()))
 			&& (kwArgs["method"].toLowerCase() == "get")
 			&& !(kwArgs["formNode"] && dojo.io.formHasFile(kwArgs["formNode"]))
 			&& (!kwArgs["sync"] || kwArgs["sync"] == false)

@@ -6,22 +6,40 @@ dojo.require("dojo.html.selection");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
 
-// Widget that provides useful/common functionality that may be desirable
-// when interacting with ul/ol html lists.
-//
-// This widget was mostly developed under supervision/guidance from Tom Trenka.
 dojo.widget.defineWidget(
 	"dojo.widget.RadioGroup", 
 	dojo.widget.HtmlWidget,
 	function(){
-		this.selectedItem=null; //currently selected li, if any
-		this.listNode=null; //the containing ul or ol
-		this.items=[]; //the individual li's
+		// summary:
+		// 	Widget that provides useful/common functionality that may be desirable
+		// 	when interacting with ul/ol html lists.
+		//	
+		// The core behaviour of the lists this widget manages is expected to be determined
+		// by the css class names defined: 
+		// 	
+		// 	 "radioGroup" - Applied to main ol or ul 
+		//	 "selected"	- Applied to the currently selected li, if any.
+		//   "itemContent" - Applied to the content contained in a li, this widget embeds a span 
+		//					within each <li></li> to contain the contents of the li.
+		// This widget was mostly developed under supervision/guidance from Tom Trenka.
+		
+		// selectedItem: DomNode: Currently selected li, if any
+		this.selectedItem=null;
+
+		// items: DomNode[]: Array of li nodes being managed by widget
+		this.items=[];
+
+		// selected: String[]: List of optional ids specifying which li's should be selected by default
 		this.selected=[];
 		
-		//	CSS classes as attributes.
+		// groupCssClass: String: Css class applied to main ol or ul, value is "radioGroup"
 		this.groupCssClass="radioGroup";
+
+		// selectedCssClass: String: Css class applied to the currently selected li, if any. value of "selected"
 		this.selectedCssClass="selected";
+
+		// itemContentCssClass: String: Css class Applied to the content contained in a li, this widget embeds a span 
+		// within each <li></li> to contain the contents of the li. value is "itemContent"
 		this.itemContentCssClass="itemContent";
 	},
 	{
@@ -29,56 +47,53 @@ dojo.widget.defineWidget(
 		templatePath: null,
 		templateCssPath: null,
 		
-		//	overridden from HtmlWidget
 		postCreate:function(){
-			this.parseStructure();
-			dojo.html.addClass(this.listNode, this.groupCssClass);
-			this.setupChildren();
-			dojo.event.browser.addListener(this.listNode, "onclick", dojo.lang.hitch(this, "onSelect"));
+			// summary: Parses content of widget and sets up the default state of any 
+			// default selections / etc. The onSelect function will also be fired for any
+			// default selections.
+			this._parseStructure();
+			dojo.html.addClass(this.domNode, this.groupCssClass);
+			this._setupChildren();
+			
+			dojo.event.browser.addListener(this.domNode, "onclick", dojo.lang.hitch(this, "onSelect"));
 			if (this.selectedItem){
-				this.selectItem(this.selectedItem);
+				this._selectItem(this.selectedItem);
 			}
 		},
 		
-		/* 
-		 * Sets local radioGroup and items properties, also validates
-		 * that domNode contains an expected list.
-		 *
-		 * exception: If a ul or ol node can't be found in this widgets domNode
-		 */
-		parseStructure:function() {
-			var listNode = dojo.dom.firstElement(this.domNode, "ul");
-			if (!listNode) { listNode = dojo.dom.firstElement(this.domNode, "ol");}
-			
-			if (listNode) {
-				this.listNode = listNode;
-				this.items=[];	//	reset the items.
-				var nl=listNode.getElementsByTagName("li");
-				for (var i=0; i<nl.length; i++){
-					if(nl[i].parentNode==listNode){
-						this.items.push(nl[i]);
-					}
-				}
+		_parseStructure: function() {
+			// summary: Sets local radioGroup and items properties, also validates
+		    // that domNode contains an expected list.
+		    // 
+		    // Exception raised if a ul or ol node can't be found in this widgets domNode.
+			if(this.domNode.tagName.toLowerCase() != "ul" 
+				&& this.domNode.tagName.toLowerCase() != "ol") {
+				dojo.raise("RadioGroup: Expected ul or ol content.");
 				return;
 			}
-			dojo.raise("RadioGroup: Expected ul or ol content.");
+			
+			this.items=[];	//	reset the items.
+			var nl=this.domNode.getElementsByTagName("li");
+			for (var i=0; i<nl.length; i++){
+				if(nl[i].parentNode==this.domNode){
+					this.items.push(nl[i]);
+				}
+			}
 		},
 		
-		/*
-		 * Allows the app to add a node on the fly, finishing up
-		 * the setup so that we don't need to deal with it on a
-		 * widget-wide basis.
-		 */
-		add:function(node){
-			if(node.parentNode!=this.listNode){
-				this.listNode.appendChild(node);
+		add:function(/*DomNode*/ node){
+			// summary: Allows the app to add a node on the fly, finishing up
+		    // the setup so that we don't need to deal with it on a
+		    // widget-wide basis.
+			if(node.parentNode!=this.domNode){
+				this.domNode.appendChild(node);
 			}
 			this.items.push(node);
-			this.setup(node);
+			this._setup(node);
 		},
 		
-		// removes the specified node from this group, if it exists
-		remove:function(node){
+		remove:function(/*DomNode*/ node){
+			// summary: Removes the specified node from this group, if it exists.
 			var idx=-1;
 			for(var i=0; i<this.items.length; i++){
 				if(this.items[i]==node){
@@ -91,23 +106,23 @@ dojo.widget.defineWidget(
 			node.parentNode.removeChild(node);
 		},
 		
-		// removes all items in this list
 		clear:function(){
+			// summary: Removes all items in this list
 			for(var i=0; i<this.items.length; i++){
-				this.listNode.removeChild(this.items[i]);
+				this.domNode.removeChild(this.items[i]);
 			}
 			this.items=[];
 		},
 		
-		// clears any selected items from being selected
 		clearSelections:function(){
+			// summary: Clears any selected items from being selected
 			for(var i=0; i<this.items.length; i++){
 				dojo.html.removeClass(this.items[i], this.selectedCssClass);
 			}
 			this.selectedItem=null;
 		},
 		
-		setup:function(node){
+		_setup:function(node){
 			var span = document.createElement("span");
 			dojo.html.disableSelection(span);
 			dojo.html.addClass(span, this.itemContentCssClass);
@@ -127,21 +142,16 @@ dojo.widget.defineWidget(
 				dojo.event.browser.addListener(node, "onclick", dojo.lang.hitch(this, tn));
 			}
 		},
-		
-		/*
-		 * Iterates over the items li nodes and manipulates their
-		 * dom structures to handle things like span tag insertion
-		 * and selecting a default item.
-		 */
-		setupChildren:function(){
+
+		_setupChildren:function(){
 			for (var i=0; i<this.items.length; i++){
-				this.setup(this.items[i]);
+				this._setup(this.items[i]);
 			}
 		},
-		
-		// Sets the selectedItem to passed in node, applies
-		// css selection class on new item
-		selectItem:function(node, event, nofire){
+
+		_selectItem:function(node, event, nofire){
+			// summary: Sets the selectedItem to passed in node, applies
+			// css selection class on new item
 			if(this.selectedItem){
 				dojo.html.removeClass(this.selectedItem, this.selectedCssClass);
 			}
@@ -166,18 +176,20 @@ dojo.widget.defineWidget(
 			}
 		},
 		
-		// gets the currently selected item
 		getValue:function() {
-			return this.selectedItem;
+			// summary: Gets the currently selected item, if any.
+			return this.selectedItem; /*DomNode*/
 		},
 		
-		// when the ul or ol contained by this widget is selected
-		onSelect:function(e) { },
+		onSelect:function(e) { 
+			// summary: When the ul or ol contained by this widget is selected this function
+			// is fired. A good function to listen to via dojo.event.connect. 
+		},
 		
-		// when an individual li is selected
 		onItemSelect:function(e) {
+			// summary: when an individual li is selected
 			if (!dj_undef("currentTarget", e)){
-				this.selectItem(e.currentTarget, e);
+				this._selectItem(e.currentTarget, e);
 			}
 		}
 	}

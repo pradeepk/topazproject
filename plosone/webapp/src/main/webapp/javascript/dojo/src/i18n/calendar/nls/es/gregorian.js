@@ -15,5 +15,17 @@
 
 	am: "a.m.",
 	pm: "p.m.",
-	eras: ['a.C.','d.C.']
+	eras: ['a.C.','d.C.'],
+
+	'field-era': "era",
+	'field-year': "año",
+	'field-month': "mes",
+	'field-week': "semana",
+	'field-day': "día",
+	'field-weekday': "día de la semana",
+	'field-dayperiod': "periodo del día",
+	'field-hour': "hora",
+	'field-minute': "minuto",
+	'field-second': "segundo",
+	'field-zone': "zona"
 })

@@ -3,7 +3,9 @@ dojo.require("dojo.lang.array");
 dojo.require("dojo.lang.func");
 dojo.require("dojo.event.*");
 
-// Manager class
+// summary
+//	Manager class for the widgets.
+//	This is an internal class used by dojo; users shouldn't call this class directly.
 dojo.widget.manager = new function(){
 	this.widgets = [];
 	this.widgetIds = [];
@@ -15,8 +17,12 @@ dojo.widget.manager = new function(){
 	var renderPrefixCache = [];
 
 	this.getUniqueId = function (widgetType) {
-		return widgetType + "_" + (widgetTypeCtr[widgetType] != undefined ?
+		var widgetId;
+		do{
+			widgetId = widgetType + "_" + (widgetTypeCtr[widgetType] != undefined ?
 			++widgetTypeCtr[widgetType] : widgetTypeCtr[widgetType] = 0);
+		}while(this.getWidgetById(widgetId));
+		return widgetId;
 	}
 
 	this.add = function(widget){
@@ -33,7 +39,7 @@ dojo.widget.manager = new function(){
 			}else if(widget.extraArgs["id"]){
 				widget.widgetId = widget.extraArgs["id"];
 			}else{
-				widget.widgetId = this.getUniqueId(widget.widgetType);
+				widget.widgetId = this.getUniqueId(widget.ns+'_'+widget.widgetType);
 			}
 		}
 		if(this.widgetIds[widget.widgetId]){
@@ -237,25 +243,25 @@ dojo.widget.manager = new function(){
 		}
 
 		// lookup namespace
-		var nsObj = dojo["namespace"].get(ns);
+		var nsObj = dojo.ns.get(ns);
 		if(!nsObj){
 			// default to <ns>.widget by convention
-			dojo.namespace.register(ns, ns + '.widget');
-			nsObj = dojo["namespace"].get(ns);
+			dojo.ns.register(ns, ns + '.widget');
+			nsObj = dojo.ns.get(ns);
 		}
 		
 		// allow the namespace to resolve the widget module
 		if(nsObj){nsObj.resolve(widgetName);}
 
 		// locate a widget implementation in the registered module for our current rendering environment
-		impl = findImplementation(lowerCaseWidgetName, nsObj.getModule(widgetName));
+		impl = findImplementation(lowerCaseWidgetName, nsObj.module);
 		if(impl){return(imps[lowerCaseWidgetName] = impl)};
 
 		// try to load a manifest to resolve this implemenation
-		nsObj = dojo["namespace"].require(ns);
+		nsObj = dojo.ns.require(ns);
 		if((nsObj)&&(nsObj.resolver)){
 			nsObj.resolve(widgetName);
-			impl = findImplementation(lowerCaseWidgetName, nsObj.getModule(widgetName));
+			impl = findImplementation(lowerCaseWidgetName, nsObj.module);
 			if(impl){return(imps[lowerCaseWidgetName] = impl)};
 		}
 	

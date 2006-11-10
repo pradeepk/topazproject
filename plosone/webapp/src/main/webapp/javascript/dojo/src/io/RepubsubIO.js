@@ -5,8 +5,6 @@ dojo.require("dojo.event.*");
 dojo.require("dojo.io.BrowserIO");
 
 dojo.provide("dojo.io.RepubsubIO");
-dojo.provide("dojo.io.repubsub");
-dojo.provide("dojo.io.repubsubTransport");
 
 dojo.io.repubsubTranport = new function(){
 	var rps = dojo.io.repubsub;
