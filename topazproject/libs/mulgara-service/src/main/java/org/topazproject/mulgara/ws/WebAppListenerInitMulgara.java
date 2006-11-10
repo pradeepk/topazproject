@@ -26,15 +26,15 @@ import org.apache.commons.configuration.ConfigurationFactory;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 
-import org.kowari.query.QueryException;
-import org.kowari.server.NonRemoteSessionException;
-import org.kowari.server.SessionFactory;
-import org.kowari.server.driver.SessionFactoryFinder;
-import org.kowari.server.driver.SessionFactoryFinderException;
-import org.kowari.server.local.LocalSessionFactory;
+import org.mulgara.query.QueryException;
+import org.mulgara.server.NonRemoteSessionException;
+import org.mulgara.server.SessionFactory;
+import org.mulgara.server.driver.SessionFactoryFinder;
+import org.mulgara.server.driver.SessionFactoryFinderException;
+import org.mulgara.server.local.LocalSessionFactory;
 
 /**
- * A ServletContextListener that we use to initialize kowari/mulgara.
+ * A ServletContextListener that we use to initialize mulgara.
  *
  * @author Eric Brown
  */

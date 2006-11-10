@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.kowari;
+package org.topazproject.mulgara.resolver;
 
 import java.lang.reflect.Constructor;
 import java.net.URI;
@@ -15,12 +15,12 @@ import java.util.Properties;
 
 import org.apache.log4j.Logger;
 
-import org.kowari.resolver.spi.InitializerException;
-import org.kowari.resolver.spi.Resolver;
-import org.kowari.resolver.spi.ResolverFactory;
-import org.kowari.resolver.spi.ResolverFactoryException;
-import org.kowari.resolver.spi.ResolverFactoryInitializer;
-import org.kowari.resolver.spi.ResolverSession;
+import org.mulgara.resolver.spi.InitializerException;
+import org.mulgara.resolver.spi.Resolver;
+import org.mulgara.resolver.spi.ResolverFactory;
+import org.mulgara.resolver.spi.ResolverFactoryException;
+import org.mulgara.resolver.spi.ResolverFactoryInitializer;
+import org.mulgara.resolver.spi.ResolverSession;
 
 /** 
  * The factory for {@link FilterResolver}s.

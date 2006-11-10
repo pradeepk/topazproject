@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.kowari;
+package org.topazproject.mulgara.resolver;
 
 import java.net.URI;
 import java.util.AbstractSet;
@@ -29,34 +29,34 @@ import org.jrdf.graph.SubjectNode;
 import org.jrdf.graph.Triple;
 import org.jrdf.graph.URIReference;
 
-import org.kowari.query.Constraint;
-import org.kowari.query.ConstraintElement;
-import org.kowari.query.ConstraintImpl;
-import org.kowari.query.ConstraintIs;
-import org.kowari.query.ConstraintNegation;
-import org.kowari.query.ConstraintNotOccurs;
-import org.kowari.query.ConstraintOccurs;
-import org.kowari.query.ConstraintOccursLessThan;
-import org.kowari.query.ConstraintOccursMoreThan;
-import org.kowari.query.QueryException;
-import org.kowari.query.SingleTransitiveConstraint;
-import org.kowari.query.TransitiveConstraint;
-import org.kowari.query.TuplesException;
-import org.kowari.query.WalkConstraint;
-import org.kowari.query.rdf.URIReferenceImpl;
-import org.kowari.resolver.spi.EmptyResolution;
-import org.kowari.resolver.spi.GlobalizeException;
-import org.kowari.resolver.spi.LocalizeException;
-import org.kowari.resolver.spi.Resolution;
-import org.kowari.resolver.spi.Resolver;
-import org.kowari.resolver.spi.ResolverException;
-import org.kowari.resolver.spi.ResolverSession;
-import org.kowari.resolver.spi.Statements;
-import org.kowari.resolver.view.SessionView;
-import org.kowari.resolver.view.ViewMarker;
-import org.kowari.server.Session;
-import org.kowari.store.LocalNode;
-import org.kowari.store.tuples.Tuples;
+import org.mulgara.query.Constraint;
+import org.mulgara.query.ConstraintElement;
+import org.mulgara.query.ConstraintImpl;
+import org.mulgara.query.ConstraintIs;
+import org.mulgara.query.ConstraintNegation;
+import org.mulgara.query.ConstraintNotOccurs;
+import org.mulgara.query.ConstraintOccurs;
+import org.mulgara.query.ConstraintOccursLessThan;
+import org.mulgara.query.ConstraintOccursMoreThan;
+import org.mulgara.query.LocalNode;
+import org.mulgara.query.QueryException;
+import org.mulgara.query.SingleTransitiveConstraint;
+import org.mulgara.query.TransitiveConstraint;
+import org.mulgara.query.TuplesException;
+import org.mulgara.query.WalkConstraint;
+import org.mulgara.query.rdf.URIReferenceImpl;
+import org.mulgara.resolver.spi.EmptyResolution;
+import org.mulgara.resolver.spi.GlobalizeException;
+import org.mulgara.resolver.spi.LocalizeException;
+import org.mulgara.resolver.spi.Resolution;
+import org.mulgara.resolver.spi.Resolver;
+import org.mulgara.resolver.spi.ResolverException;
+import org.mulgara.resolver.spi.ResolverSession;
+import org.mulgara.resolver.spi.Statements;
+import org.mulgara.resolver.view.SessionView;
+import org.mulgara.resolver.view.ViewMarker;
+import org.mulgara.server.Session;
+import org.mulgara.store.tuples.Tuples;
 
 /** 
  * The factory for {@link FilterResolver}s. The model URI used for this filter
@@ -84,7 +84,7 @@ public class FilterResolver implements Resolver, ViewMarker {
   private final Resolver        systemResolver;
   private final FilterHandler   handler;
 
-  private Session sess;
+  private SessionView sess;
 
   /** 
    * Create a new FilterResolver instance. 
@@ -106,7 +106,7 @@ public class FilterResolver implements Resolver, ViewMarker {
   }
 
   public void setSession(SessionView session) {
-    this.sess = (Session) session;
+    this.sess = session;
   }
 
   /**
@@ -139,17 +139,12 @@ public class FilterResolver implements Resolver, ViewMarker {
     if (logger.isDebugEnabled())
       logger.debug("Creating model '" + realModelURI + "'");
 
-    // create the real model if it doesn't exist
+    // create the real model (a no-op if it already exists)
     try {
-      if (!sess.modelExists(realModelURI)) {
-        //s.createModel(realModelURI, modelType);
-        model = resolverSession.localizePersistent(new URIReferenceImpl(realModelURI, false));
-        systemResolver.createModel(model, modelType);
-      }
+      model = resolverSession.localizePersistent(new URIReferenceImpl(realModelURI, false));
+      systemResolver.createModel(model, modelType);
     } catch (LocalizeException le) {
       throw new ResolverException("Error localizing model uri '" + realModelURI + "'", le);
-    } catch (QueryException qe) {
-      throw new ResolverException("Error creating model " + realModelURI, qe);
     }
 
     if (handler != null)
@@ -187,7 +182,7 @@ public class FilterResolver implements Resolver, ViewMarker {
   public Resolution resolve(Constraint constraint) throws QueryException {
     constraint = translateModel(constraint);
 
-    Tuples ans = ((SessionView) sess).resolve(constraint);
+    Tuples ans = sess.resolve(constraint);
     if (ans instanceof Resolution)
       return (Resolution) ans;
 

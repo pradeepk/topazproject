@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.kowari;
+package org.topazproject.mulgara.resolver;
 
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
@@ -33,23 +33,22 @@ import org.jrdf.graph.GraphException;
 import org.jrdf.graph.Node;
 import org.jrdf.graph.URIReference;
 import org.jrdf.graph.mem.GraphImpl;
-import org.kowari.query.Answer;
-import org.kowari.query.QueryException;
-import org.kowari.query.TuplesException;
-import org.kowari.resolver.spi.GlobalizeException;
-import org.kowari.resolver.spi.ResolverException;
-import org.kowari.resolver.spi.ResolverSession;
-import org.kowari.resolver.spi.Statements;
-import org.kowari.server.SessionFactory;
-import org.kowari.server.JRDFSession;
-import org.kowari.server.driver.SessionFactoryFinder;
+import org.mulgara.query.Answer;
+import org.mulgara.query.QueryException;
+import org.mulgara.query.TuplesException;
+import org.mulgara.resolver.spi.GlobalizeException;
+import org.mulgara.resolver.spi.ResolverException;
+import org.mulgara.resolver.spi.ResolverSession;
+import org.mulgara.resolver.spi.Statements;
+import org.mulgara.server.SessionFactory;
+import org.mulgara.server.JRDFSession;
+import org.mulgara.server.driver.SessionFactoryFinder;
 import org.openrdf.rio.RdfDocumentWriter;
 import org.openrdf.rio.rdfxml.RdfXmlWriter;
 import org.openrdf.model.Resource;
 import org.openrdf.model.Value;
 import org.openrdf.model.impl.ValueFactoryImpl;
 import org.trippi.io.RIOTripleWriter;
-import org.trippi.impl.kowari.KowariTripleIterator;
 
 import fedora.client.APIMStubFactory;
 import fedora.client.Uploader;
@@ -373,7 +372,7 @@ class FedoraUpdater extends AbstractFilterHandler {
     for (Iterator iter = ((Set) dsModelMap.get(ds)).iterator(); iter.hasNext(); ) {
       String model = (String) iter.next();
       Answer ans = sess.find(modelBase.resolve("#" + model), subj, null, null);
-      rtw.write(new KowariTripleIterator(ans));
+      rtw.write(new MulgaraTripleIterator(ans));
       hasStmts |= ans.getRowCardinality() != Answer.ZERO;
     }
 

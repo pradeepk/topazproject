@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.kowari;
+package org.topazproject.mulgara.resolver;
 
 import java.io.BufferedWriter;
 import java.io.File;
@@ -35,12 +35,12 @@ import org.apache.log4j.Logger;
 import org.jrdf.graph.Node;
 import org.jrdf.graph.Literal;
 import org.jrdf.graph.URIReference;
-import org.kowari.query.TuplesException;
-import org.kowari.query.rdf.BlankNodeImpl;
-import org.kowari.resolver.spi.GlobalizeException;
-import org.kowari.resolver.spi.ResolverException;
-import org.kowari.resolver.spi.ResolverSession;
-import org.kowari.resolver.spi.Statements;
+import org.mulgara.query.TuplesException;
+import org.mulgara.query.rdf.BlankNodeImpl;
+import org.mulgara.resolver.spi.GlobalizeException;
+import org.mulgara.resolver.spi.ResolverException;
+import org.mulgara.resolver.spi.ResolverSession;
+import org.mulgara.resolver.spi.Statements;
 
 /** 
  * This logs all transactions (committed statements) to a log file.

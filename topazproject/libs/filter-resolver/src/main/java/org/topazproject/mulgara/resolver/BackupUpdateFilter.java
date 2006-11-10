@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.kowari;
+package org.topazproject.mulgara.resolver;
 
 import java.io.IOException;
 import java.net.URI;

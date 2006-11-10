@@ -26,15 +26,28 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.kowari</groupId>
-      <artifactId>kowari-local</artifactId>
-      <version>1.1.0-pre2-p2</version>
+      <groupId>org.mulgara</groupId>
+      <artifactId>mulgara-lite</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.mulgara</groupId>
+      <artifactId>mulgara</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
-      <groupId>org.kowari</groupId>
-      <artifactId>kowari-driver</artifactId>
-      <version>1.1.0-pre2-p2</version>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.13</version>
+      <scope>runtime</scope>
     </dependency>
 
     <dependency>
@@ -42,38 +55,7 @@
       <artifactId>filter-resolver</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
-    <dependency>
-      <groupId>castor</groupId>
-      <artifactId>castor</artifactId>
-      <version>0.9.9</version>
-    </dependency>
-    <dependency>
-      <groupId>xml-apis</groupId>
-      <artifactId>xml-apis</artifactId>
-      <version>1.3.03</version>
-    </dependency>
-    <dependency>
-      <groupId>xerces</groupId>
-      <artifactId>xercesImpl</artifactId>
-      <version>2.6.2</version>
-    </dependency>
-    <dependency>
-      <groupId>trove</groupId>
-      <artifactId>trove</artifactId>
-      <version>1.0.2</version>
-    </dependency>
-    <dependency>
-      <groupId>lucene</groupId>
-      <artifactId>lucene</artifactId>
-      <version>1.3</version>
-    </dependency>
 
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
-      <version>2.4</version>
-      <scope>provided</scope>
-    </dependency>
     <dependency>
       <groupId>commons-configuration</groupId>
       <artifactId>commons-configuration</artifactId>
@@ -98,86 +80,31 @@
         </exclusion>
         <exclusion>
           <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
+          <artifactId>commons-logging-api</artifactId>
         </exclusion>
         <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging-api</artifactId>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
         </exclusion>
       </exclusions>
     </dependency>
     
     <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.3</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
       <groupId>axis</groupId>
       <artifactId>axis</artifactId>
       <version>1.4</version>
-      <exclusions>
-        <exclusion>
-          <groupId>commons-logging</groupId>
-          <artifactId>commons-logging</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>axis</groupId>
       <artifactId>axis-jaxrpc</artifactId>
       <version>1.4</version>
-    </dependency>
-    <dependency>
-      <groupId>javax.activation</groupId>
-      <artifactId>activation</artifactId>
-      <version>1.0.2</version>
-    </dependency>
-
-    <!-- jotm is patched; jotm_iiop_stubs is not on ibiblio. So we provide these ourselves.
-    <dependency>
-      <groupId>jotm</groupId>
-      <artifactId>jotm</artifactId>
-      <version>1.5.3</version>
-    </dependency>
-    <dependency>
-      <groupId>jotm</groupId>
-      <artifactId>jotm-carol</artifactId>
-      <version>1.5.3</version>
-    </dependency>
-    <dependency>
-      <groupId>jotm</groupId>
-      <artifactId>jotm_iiop_stubs</artifactId>
-      <version>1.5.3</version>
-    </dependency>
-    -->
-
-    <!-- version 1.5 isn't on ibiblio, so we provide it ourselves.
-    <dependency>
-      <groupId>javax.resource</groupId>
-      <artifactId>connector</artifactId>
-      <version>1.5</version>
-    </dependency>
-    -->
-
-    <dependency>
-      <groupId>geronimo-spec</groupId>
-      <artifactId>geronimo-spec-jta</artifactId>
-      <version>1.0.1B-rc4</version>
-    </dependency>
-    <dependency>
-      <groupId>xalan</groupId>
-      <artifactId>xalan</artifactId>
-      <version>2.7.0</version>
-    </dependency>
-
-    <!-- Used by jetty/cargo -->
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.13</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>commons-logging</groupId>
-      <artifactId>commons-logging</artifactId>
-      <version>1.1</version>
-      <scope>provided</scope>
     </dependency>
   </dependencies>
 
@@ -185,22 +112,67 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>2.0-alpha-1-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>copy</goal>
+            </goals>
+            <configuration>
+              <artifactItems>
+                <artifactItem>
+                  <groupId>org.mulgara</groupId>
+                  <artifactId>mulgara-lite</artifactId>
+                </artifactItem>
+              </artifactItems>
+              <stripVersion>true</stripVersion>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
         <executions>
           <execution>
-            <id>tucana-config patch</id>
-            <phase>package</phase>
-            <configuration>
-              <tasks>
-                <jar destfile="${project.build.directory}/${project.build.finalName}/WEB-INF/lib/kowari-driver-1.1.0-pre2-p2.jar"
-                     basedir="src/main/patches/kowari-driver" update="true" />
-                <war destfile="${project.build.directory}/${project.build.finalName}.war"
-                     basedir="${project.build.directory}/${project.build.finalName}" update="true" />
-              </tasks>
-            </configuration>
+            <id>unpack</id>
+            <phase>process-resources</phase>
             <goals>
               <goal>run</goal>
             </goals>
+            <configuration>
+              <tasks>
+                <property name="webinf"
+                    location="${project.build.directory}/${project.build.finalName}/WEB-INF"/>
+                  <property name="mulgara-jar"
+                      location="${project.build.directory}/dependency/mulgara-lite.jar"/>
+
+                <unjar src="${mulgara-jar}" dest="${webinf}">
+                  <patternset>
+                    <include name="lib/*.jar"/>
+                    <exclude name="lib/*rmi*"/>
+                    <exclude name="lib/*beep*"/>
+                    <exclude name="lib/*axis*"/>
+                    <exclude name="lib/dtd-base*"/>
+                    <exclude name="lib/log4j*"/>
+                    <exclude name="lib/commons-logging*"/>
+                  </patternset>
+                </unjar>
+                <unjar src="${mulgara-jar}" dest="${webinf}/classes">
+                  <patternset>
+                    <include name="org/**"/>
+                    <include name="com/**"/>
+                    <include name="javax/**"/>
+                  </patternset>
+                </unjar>
+
+                <copy todir="${webinf}/classes">
+                  <fileset dir="${basedir}/src/main/patches/mulgara"/>
+                </copy>
+              </tasks>
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -224,15 +196,6 @@
                 <output>${project.build.directory}/jetty.log</output>
                 <log>${project.build.directory}/cargo.log</log>
                 <dependencies>
-                  <dependency>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                  </dependency>
-                  <!-- Doesn't seem to want to work
-                  <dependency>
-                    <groupId>commons-logging</groupId>
-                    <artifactId>commons-logging</artifactId>
-                  </dependency> -->
                   <dependency>
                     <location>${user.home}/.m2/topaz/container-classes</location>
                   </dependency>

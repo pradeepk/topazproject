@@ -29,7 +29,7 @@
       <profiles type="http://topazproject.org/models#filter">${topaz.mulgara.baseuri}#filter:model=profiles</profiles>
       <ratings type="http://topazproject.org/models#filter">${topaz.mulgara.baseuri}#filter:model=ratings</ratings>
       <alerts type="http://topazproject.org/models#filter">${topaz.mulgara.baseuri}#filter:model=alerts</alerts>
-      <xsd type="http://tucana.org/tucana#XMLSchemaModel">${topaz.mulgara.baseuri}#xsd</xsd>
+      <xsd type="http://mulgara.org/mulgara#XMLSchemaModel">${topaz.mulgara.baseuri}#xsd</xsd>
     </models>
     <services>
       <fedora>

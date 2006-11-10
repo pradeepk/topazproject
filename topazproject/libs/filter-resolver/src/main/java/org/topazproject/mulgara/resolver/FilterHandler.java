@@ -8,14 +8,14 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.kowari;
+package org.topazproject.mulgara.resolver;
 
 import java.net.URI;
 import javax.transaction.xa.XAResource;
 
-import org.kowari.resolver.spi.ResolverException;
-import org.kowari.resolver.spi.ResolverSession;
-import org.kowari.resolver.spi.Statements;
+import org.mulgara.resolver.spi.ResolverException;
+import org.mulgara.resolver.spi.ResolverSession;
+import org.mulgara.resolver.spi.Statements;
 
 /** 
  * The is the interface for classes wishing to handle the updates intercepted by the

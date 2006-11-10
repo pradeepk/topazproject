@@ -76,7 +76,7 @@ public class ItqlHelper {
   /** The base URI for xml-schema defined URIs: {@value} */
   public static final String XSD_URI      = "http://www.w3.org/2001/XMLSchema#";
   /** The base URI for tucana defined URIs: {@value} */
-  public static final String TUCANA_URI   = "http://tucana.org/tucana#";
+  public static final String TUCANA_URI   = "http://mulgara.org/mulgara#";
   /** The base URI for dublin-core defined URIs: {@value} */
   public static final String DC_URI       = "http://purl.org/dc/elements/1.1/";
   /** The base URI for dublin-core terms URIs: {@value} */

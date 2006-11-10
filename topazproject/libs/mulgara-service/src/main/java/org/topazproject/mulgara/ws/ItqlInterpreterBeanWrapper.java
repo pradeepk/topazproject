@@ -18,12 +18,12 @@ import javax.xml.rpc.server.ServletEndpointContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.kowari.itql.ItqlInterpreterBean;
-import org.kowari.itql.ItqlInterpreterException;
+import org.mulgara.itql.ItqlInterpreterBean;
+import org.mulgara.itql.ItqlInterpreterException;
 
-import org.kowari.query.QueryException;
+import org.mulgara.query.QueryException;
 
-import org.kowari.server.SessionFactory;
+import org.mulgara.server.SessionFactory;
 
 /**
  * A wrapper around ItqlInterpreterBean to properly initialize it and manage the instances.

@@ -295,13 +295,13 @@
                   <phase>pre-integration-test</phase>
                   <goals><goal>start</goal></goals>
                 </execution>
-              <!-- doesn't work properly (yet)
-              <execution>
-              <id>jetty-stop</id>
-              <phase>post-integration-test</phase>
-              <goals><goal>stop</goal></goals>
-            </execution>
-              -->
+                <!-- doesn't work properly (yet)
+                <execution>
+                  <id>jetty-stop</id>
+                  <phase>post-integration-test</phase>
+                  <goals><goal>stop</goal></goals>
+                </execution>
+                -->
               </executions>
             </plugin>
           
@@ -312,79 +312,14 @@
 
     </profile>
 
-    <!-- it-startenv: Start and stop fedora/ecqs before and after integration testing -->
+    <!-- it-startenv: Start and stop fedora/ecqs/mulgara before and after integration testing -->
     
     <profile>
       <id>it-startenv</id>
 
-      <dependencies>
-        <dependency>
-          <groupId>org.topazproject</groupId>
-          <artifactId>mulgara-service</artifactId>
-          <version>0.5-SNAPSHOT</version>
-          <type>war</type>
-          <scope>provided</scope>
-        </dependency>
-        <dependency>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-          <version>1.2.13</version>
-          <scope>provided</scope>
-        </dependency>
-      </dependencies>
-      
       <build>
         <plugins>
-
-          <plugin>
-            <groupId>org.topazproject.patch.cargo</groupId>
-            <artifactId>cargo-maven2-plugin</artifactId>
-            <version>0.2</version>
-            <executions>
-              <execution>
-                <id>mulgara-start</id>
-                <phase>package</phase> <!-- should be pre-integration-test, but bug in maven -->
-                <goals><goal>start</goal></goals>
-
-                <configuration>
-                  <wait>false</wait>
-                  <container>
-                    <containerId>jetty6x</containerId>
-                    <type>embedded</type>
-                    <output>${project.build.directory}/mulgara-jetty.log</output>
-                    <log>${project.build.directory}/mulgara-cargo.log</log>
-                    <dependencies>
-                      <dependency>
-                        <groupId>log4j</groupId>
-                        <artifactId>log4j</artifactId>
-                      </dependency>
-                      <dependency>
-                        <location>${user.home}/.m2/topaz/container-classes</location>
-                      </dependency>
-                      <dependency>
-                        <location>${basedir}/src/it/container-classes</location>
-                      </dependency>
-                    </dependencies>
-                  </container>
-                  <configuration>
-                    <home>${project.build.directory}/mulgara-jetty</home>
-                    <properties>
-                      <cargo.servlet.port>9091</cargo.servlet.port>
-                      <cargo.logging>high</cargo.logging>
-                    </properties>
-                    <deployables>
-                      <deployable>
-                        <groupId>org.topazproject</groupId>
-                        <artifactId>mulgara-service</artifactId>
-                      </deployable>
-                    </deployables>
-                  </configuration>
-                </configuration>
-              </execution>
-            </executions>
-          </plugin>
-
-          <!-- Run ant-tasks:ecqs/fedora-start/stop around integration tests -->
+          <!-- Run ant-tasks:ecqs/fedora/mulgara-start/stop around integration tests -->
           <plugin>
             <groupId>org.topazproject.plugins</groupId>
             <artifactId>ant-tasks</artifactId>
@@ -394,6 +329,7 @@
                 <phase>pre-integration-test</phase>
                 <goals>
                   <goal>ecqs-start</goal>
+                  <goal>mulgara-start</goal>
                   <goal>fedora-start</goal>
                 </goals>
                 <configuration>
@@ -407,11 +343,11 @@
                 <goals>
                   <goal>ecqs-stop</goal>
                   <goal>fedora-stop</goal>
+                  <goal>mulgara-stop</goal>
                 </goals>
               </execution>
             </executions>
           </plugin>
-
         </plugins>
       </build>
     </profile>

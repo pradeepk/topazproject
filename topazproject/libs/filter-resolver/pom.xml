@@ -23,15 +23,9 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-      <groupId>org.kowari</groupId>
-      <artifactId>kowari-driver</artifactId>
-      <version>1.1.0-pre2-p2</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>org.kowari</groupId>
-      <artifactId>kowari-local</artifactId>
-      <version>1.1.0-pre2-p2</version>
+      <groupId>org.mulgara</groupId>
+      <artifactId>mulgara</artifactId>
+      <version>1.0.1-SNAPSHOT</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
