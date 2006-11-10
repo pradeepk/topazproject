@@ -60,7 +60,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
 
   private static final String MODEL          = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String MODEL_TYPE     =
-      "<" + CONF.getString("topaz.models.users[@type]", "http://tucana.org/tucana#Model") + ">";
+      "<" + CONF.getString("topaz.models.users[@type]", "tucana:Model") + ">";
   private static final String ACCOUNT_PID_NS = "account";
   private static final String AUTH_PATH_PFX  = "authids";
 
@@ -125,7 +125,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_FIND_DUP_AUTHIDS_POST =
-      ("  ) having $k0 <http://tucana.org/tucana#occursMoreThan> '1.0'^^<http://www.w3.org/2001/XMLSchema#double>;").
+      ("  ) having $k0 <tucana:occursMoreThan> '1.0'^^<http://www.w3.org/2001/XMLSchema#double>;").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private final TopazContext    ctx;

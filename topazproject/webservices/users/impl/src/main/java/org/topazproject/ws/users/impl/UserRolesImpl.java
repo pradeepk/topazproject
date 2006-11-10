@@ -54,7 +54,7 @@ public class UserRolesImpl implements UserRoles {
 
   private static final String MODEL          = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String MODEL_TYPE     =
-      "<" + CONF.getString("topaz.models.users[@type]", "http://tucana.org/tucana#Model") + ">";
+      "<" + CONF.getString("topaz.models.users[@type]", "tucana:Model") + ">";
   private static final String ROLES_PATH_PFX = "roles";
 
   private static final Map    aliases;

@@ -56,7 +56,7 @@ public class RatingsImpl implements Ratings {
   private static final Configuration CONF      = ConfigurationStore.getInstance().getConfiguration();
   private static final String MODEL            = "<" + CONF.getString("topaz.models.ratings") + ">";
   private static final String MODEL_TYPE       =
-      "<" + CONF.getString("topaz.models.ratings[@type]", "http://tucana.org/tucana#Model") + ">";
+      "<" + CONF.getString("topaz.models.ratings[@type]", "tucana:Model") + ">";
   private static final String USER_MODEL       = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String RATINGS_PATH_PFX = "ratings";
 

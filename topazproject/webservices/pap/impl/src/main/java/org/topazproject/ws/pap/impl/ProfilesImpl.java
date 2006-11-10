@@ -66,7 +66,7 @@ public class ProfilesImpl implements Profiles {
 
   private static final String MODEL          = "<" + CONF.getString("topaz.models.profiles") + ">";
   private static final String MODEL_TYPE     =
-      "<" + CONF.getString("topaz.models.profiles[@type]", "http://tucana.org/tucana#Model") + ">";
+      "<" + CONF.getString("topaz.models.profiles[@type]", "tucana:Model") + ">";
   private static final String USER_MODEL     = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String IDS_NS         = "topaz.ids";
   private static final String PROF_PATH_PFX  = "profile";

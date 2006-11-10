@@ -63,7 +63,7 @@ public class PreferencesImpl implements Preferences {
 
   private static final String MODEL          = "<" + CONF.getString("topaz.models.preferences") + ">";
   private static final String MODEL_TYPE     =
-    "<" + CONF.getString("topaz.models.preferences[@type]", "http://tucana.org/tucana#Model") + ">";
+    "<" + CONF.getString("topaz.models.preferences[@type]", "tucana:Model") + ">";
   private static final String USER_MODEL     = "<" + CONF.getString("topaz.models.users") + ">";
   private static final String PREFS_PATH_PFX = "preferences";
 

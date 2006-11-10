@@ -74,7 +74,7 @@ public class AlertsImpl implements Alerts {
 
   private static final String MODEL_ALERTS   = "<" + CONF.getString("topaz.models.alerts") + ">";
   private static final String ALERTS_TYPE    =
-      "<" + CONF.getString("topaz.models.alerts[@type]", "http://tucana.org/tucana#Model") + ">";
+      "<" + CONF.getString("topaz.models.alerts[@type]", "tucana:Model") + ">";
   private static final String MODEL_ARTICLES = "<" + CONF.getString("topaz.models.articles") + ">";
   private static final String MODEL_PREFS    = "<" + CONF.getString("topaz.models.preferences") + ">";
   private static final String MODEL_XSD      = "<" + CONF.getString("topaz.models.xsd") + ">";
@@ -265,7 +265,7 @@ public class AlertsImpl implements Alerts {
     //  $user <http://rdf.topazproject.org/RDF/hasPreferences> $pref and
     //  $pref <http://rdf.topazproject.org/RDF/preference> $prefm and
     //  $prefm <http://rdf.topazproject.org/RDF/prefName> 'alertsCategories'
-    //  having $k0 <http://tucana.org/tucana#occurs>
+    //  having $k0 <tucana:occurs>
     //  '1.0'^^<http://www.w3.org/2001/XMLSchema#double>;
 
     return true; // Everything went okay
