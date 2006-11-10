@@ -24,12 +24,26 @@
           <@ww.a href="%{articleListURL}">View Articles</@ww.a>
       </p>
 
-      <p>
+			<p>
+			  <@ww.a href="/plos-registration/registerPart1.action">Register New User</@ww.a>
+			</p>
+		
+			<p>
+					<#assign returnURL="http://"+freemarker_config.getPlosOneHost()+"/"+freemarker_config.getContext()>
+					<a href="${freemarker_config.getCasLoginURL()}?service=${returnURL?url("UTF-8")}">Login</a>
+			</p>
+
+			<p>
+					<a href="${freemarker_config.getCasLogoutURL()}">Logout</a>
+			</p>
+
+
+<!--      <p>
           <@ww.url id="createAnnotationURL" namespace="/annotation/secure" action="createAnnotation" />
           <@ww.a href="%{createAnnotationURL}">Create Annotation</@ww.a>
-      </p>
+      </p>-->
 
-      <p>
+<!--      <p>
           <@ww.url id="listAnnotationURL" namespace="/annotation" action="listAnnotation">
             <@ww.param name="target" value="%{'http://here.is/viru'}"/>
           </@ww.url>
@@ -41,8 +55,10 @@
             <@ww.param name="target" value="%{'http://localhost:9090/fedora/get/doi:10.1371%2Fjournal.pone.0000008/XML'}"/>
           </@ww.url>
           <@ww.a href="%{listAnnotationURL}">List Annotations for http://localhost:9090/fedora/get/doi:10.1371%2Fjournal.pone.0000008/XML</@ww.a>
-      </p>
+      </p>-->
 
+
+<!--
       <p>
           <@ww.url id="createUserURL" namespace="/user/create" action="newUser" />
           <@ww.a href="%{createUserURL}">Create User</@ww.a>
@@ -52,6 +68,7 @@
           <@ww.url id="createAdminUserURL" namespace="/user/secure" action="assignAdminRole" />
           <@ww.a href="%{createAdminUserURL}">Assign admin role</@ww.a>
       </p>
+-->
 
     </fieldset>
   </body>

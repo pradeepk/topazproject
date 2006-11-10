@@ -43,7 +43,11 @@ public class PlosOneFreemarkerConfig {
   
   private String dirPrefix;
   private String subdirPrefix;
-
+  
+  private String plosOneHost;
+  private String casLoginURL;
+  private String casLogoutURL;
+  
   private static final String[] DEFAULT_CSS_FILES = {"/css/pone_iepc.css", "/css/pone_screen.css"};
   private static final String[] DEFAULT_JS_FILES = {"/javascript/all.js"};
   private static final String DEFAULT_TITLE = "PLoS ONE";
@@ -58,6 +62,9 @@ public class PlosOneFreemarkerConfig {
     Configuration myConfig = myConfigStore.getConfiguration();
     dirPrefix = myConfig.getString("webapp-dir");
     subdirPrefix = myConfig.getString("webapp-subdir");
+    plosOneHost = myConfig.getString("plosone-host");
+    casLoginURL = myConfig.getString("cas-login-url");
+    casLogoutURL = myConfig.getString("cas-logout-url");
     
     String title = myConfig.getString("default.title");
     if (title != null) {
@@ -253,6 +260,48 @@ public class PlosOneFreemarkerConfig {
    */
   public void setTitles(HashMap<String, String> titles) {
     this.titles = titles;
+  }
+
+  /**
+   * @return Returns the casLoginURL.
+   */
+  public String getCasLoginURL() {
+    return casLoginURL;
+  }
+
+  /**
+   * @param casLoginURL The casLoginURL to set.
+   */
+  public void setCasLoginURL(String casLoginURL) {
+    this.casLoginURL = casLoginURL;
+  }
+
+  /**
+   * @return Returns the plosOneHostname.
+   */
+  public String getPlosOneHost() {
+    return plosOneHost;
+  }
+
+  /**
+   * @param plosOneHostname The plosOneHostname to set.
+   */
+  public void setPlosOneHost( String plosOneHost) {
+    this.plosOneHost = plosOneHost;
+  }
+
+  /**
+   * @return Returns the casLogoutURL.
+   */
+  public String getCasLogoutURL() {
+    return casLogoutURL;
+  }
+
+  /**
+   * @param casLogoutURL The casLogoutURL to set.
+   */
+  public void setCasLogoutURL(String casLogoutURL) {
+    this.casLogoutURL = casLogoutURL;
   }
   
 }

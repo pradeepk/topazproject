@@ -6,9 +6,9 @@
 	<div>
 	<p>Logged in as <a href="#" class="icon user">margare18charlimit</a></p>
 	<ul>
-		<li><a href="#" class="icon nomessage">0 New</a></li>
+<!--		<li><a href="#" class="icon nomessage">0 New</a></li>-->
 		<li><a href="#" class="icon preferences">Preferences</a></li>
-		<li><a href="#" class="icon logout">Logout</a></li>
+		<li><a href="${freemarker_config.getCasLogoutURL()}" class="icon logout">Logout</a></li>
 	</ul>
 	</div>
 	</div>
