@@ -1,4 +1,5 @@
 	<div class="dialog annotate">
+		<div class="tipu" id="dTipu"></div>
 		<div class="btn close" title="Click to close and cancel">
 			<a id="btn_cancel" title="Click to close and cancel">Cancel</a>
 		</div>

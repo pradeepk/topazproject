@@ -12,6 +12,8 @@ var annotationConfig = {
   annotationMarker: "note",
   annotationImgMarker: "noteImg",
   dialogMarker: "rdm",
+  tipDownDiv: "dTip",
+  tipUpDiv: "dTipu",
   isAuthor: false,  //TODO: *** Default to false when the hidden input is hooked up.
   isPublic: true,
   rangeInfoObj: new Object()
@@ -25,5 +27,7 @@ var commentConfig = {
   sectionTitle: "viewCmtTitle",
   sectionDetail: "viewCmtDetail",  
   sectionComment: "viewComment",  
-  retrieveMsg: "retrieveMsg"  
+  retrieveMsg: "retrieveMsg",  
+  tipDownDiv: "cTip",
+  tipUpDiv: "cTipu"
 };  

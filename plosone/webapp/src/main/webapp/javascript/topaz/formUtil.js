@@ -10,6 +10,10 @@ formUtil = {
 	  off: function ( formEl, textCue ) {
 	    if (formEl.value == textCue)
 	    	formEl.value = "";
+	  },
+	  
+	  reset: function ( formEl, textCue ){
+	    formEl.value = textCue;
 	  }
   },
   

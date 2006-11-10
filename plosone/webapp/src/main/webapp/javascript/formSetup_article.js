@@ -50,20 +50,23 @@ function initAnnotationForm() {
 	});
 	
 	// Annotation Dialog Box: Save button
-	dojo.event.connect(btn_save, "onclick", function() {
+	dojo.event.connect(btn_save, "onclick", function(e) {
     validateNewComment();
+    e.preventDefault();
   });
   
 	// Annotation Dialog Box: Post buttons
-	dojo.event.connect(btn_post, "onclick", function() {
-	  validateNewComment();
+	dojo.event.connect(btn_post, "onclick", function(e) {
+    validateNewComment();
+    e.preventDefault();
   });
 
-	dojo.event.connect(btn_cancel, "onclick", function() {
+	dojo.event.connect(btn_cancel, "onclick", function(e) {
   	var btn = btn_cancel;
   	dlg.setCloseControl(btn);
 	  getArticle();
     topaz.displayComment.processBugCount();
+    e.preventDefault();
   });
 
 }
@@ -114,7 +117,7 @@ function validateNewComment() {
        }
        else {
          getArticle();
-         return true;
+         return false;
        }
        
       },
@@ -138,21 +141,23 @@ function getArticle() {
     error: function(type, data, evt){
      //alert("ERROR:" + data.toSource());
      var err = document.createTextNode("ERROR:" + data.toSource());
-     submitMsg.appendChild(err);
+     //submitMsg.appendChild(err);
      return false;
     },
     load: function(type, data, evt){
       var docFragment = document.createDocumentFragment();
       docFragment = data;
       refreshArea.innerHTML = docFragment;
+      //dojo.dom.removeChildren(refreshArea);
+      //refreshArea.appendChild(docFragment);
       
-      //formUtil.textCues.on(commentTitle, titleCue);
-      //formUtil.textCues.on(comments, commentCue);
+      formUtil.textCues.reset(commentTitle, titleCue);
+      formUtil.textCues.reset(comments, commentCue);
       
       topaz.displayComment.processBugCount();
       dlg.hide();
       
-      return true;
+      return false;
     },
     mimetype: "text/html"
    };

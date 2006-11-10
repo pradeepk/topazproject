@@ -42,6 +42,20 @@ topaz.domUtil = {
   
     //alert (newDate);
     return newDate;
-  }
+  },
   
+  removeChildNodes: function(obj) {
+    if (obj.hasChildNodes()) {
+      alert("obj has child nodes");
+      for (var i=0; i<obj.childNodes.length; i++) {
+        alert(childNodes[i].hasChildNodes);
+        if (obj.removeChild) {
+          obj.removeChild(childNodes[i]);
+        }
+        else {
+          obj.childNodes[i].removeNode(true);
+        }
+      }
+    }
+  }
 }

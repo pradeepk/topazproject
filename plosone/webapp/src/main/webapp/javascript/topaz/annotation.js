@@ -52,6 +52,8 @@ topaz.annotation = {
   },
   
   createAnnotationOnMouseDown: function (event) {
+	  formUtil.textCues.reset(commentTitle, titleCue); 
+	  formUtil.textCues.reset(comments, commentCue); 
     var captureText = this.createNewAnnotation();
 		
     if ( captureText ) {
@@ -60,7 +62,9 @@ topaz.annotation = {
     	if (event.stopPropagation) event.stopPropagation();
     }
 
-    return true;
+    //dojo.event.browser.preventDefault();
+
+    return false;
   },
   
   createNewAnnotation: function () {
@@ -731,16 +735,17 @@ topaz.annotation = {
       
   	  var link = document.createElement("a");
   	  link.className = 'bug';
-  	  link.href = '#';
+  	  //link.href = '#';
   	  link.title = 'Click to preview this annotation';
   	  link.displayId = "";
   	  link.onclick = function() { topaz.displayComment.show(this); }
   	  link.onmouseover = function() { topaz.displayComment.mouseoverComment(this); }
   	  link.onmouseout = function() { topaz.displayComment.mouseoutComment(this); }
   	  link.appendChild(document.createTextNode('1'));
+
   	  newSpan.appendChild(link);
   	  //newSpan.innerHTML = '<a href="#"" class="bug" displayId=""  onclick="topaz.displayComment.show(this);" onmouseover="topaz.displayComment.mouseoverComment(this);" onmouseout="topaz.displayComment.mouseoutComment(this);" title="Click to preview this annotation">&nbsp;</a>';
-  	
+  	  
       // populate the span with the content extracted from the range
       for (var i = 0; i < contents.childNodes.length; i++) {
         newSpan.appendChild(contents.childNodes[i].cloneNode(true));

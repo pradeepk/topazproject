@@ -48,6 +48,8 @@ topaz.displayComment = {
     
 		popup.setMarker(this.target);
     getComment(this.target);
+    
+    return false;
   },
     
   buildDisplayView: function(jsonObj){
@@ -62,18 +64,16 @@ topaz.displayComment = {
     titleLink.appendChild(document.createTextNode(jsonObj.annotation.commentTitle));
     titleDocFrag.appendChild(titleLink);
     
+    dojo.dom.removeChildren(topaz.displayComment.sectionTitle);
     topaz.displayComment.sectionTitle.appendChild(titleDocFrag);
     
     // Insert creator detail info
-    var creatorId = jsonObj.annotation.creatorUserName;
+    var creatorId = jsonObj.creatorUserName;
     var creatorLink = document.createElement('a');
     creatorLink.href = "#";
     creatorLink.title = "Annotation Author";
     creatorLink.className = "user icon";
     creatorLink.appendChild(document.createTextNode(creatorId));
-    
-    //var createDate = jsonObj.annotation.created;
-    //var createTime = jsonObj.annotation.created;
     
     var d = new Date(topaz.domUtil.ISOtoJSDate(jsonObj.annotation.created));
     var day = d.getDate();
@@ -98,11 +98,13 @@ topaz.displayComment = {
     detailDocFrag.appendChild(document.createTextNode(' at '));
     detailDocFrag.appendChild(timeStr);
     
+    dojo.dom.removeChildren(topaz.displayComment.sectionDetail);
     topaz.displayComment.sectionDetail.appendChild(detailDocFrag);
 
     // Insert formatted comment
     var commentFrag = document.createTextNode(jsonObj.annotation.commentWithUrlLinking);
     //alert(commentFrag);
+    dojo.dom.removeChildren(topaz.displayComment.sectionComment);
     topaz.displayComment.sectionComment.appendChild(commentFrag);
     //alert("jsonObj.annotation.commentWithUrlLinking = " + jsonObj.annotation.commentWithUrlLinking);
   },
@@ -146,7 +148,7 @@ topaz.displayComment = {
   modifyClassName: function (obj) {
      classList = obj.className.split(" ");
      for (var i=0; i<classList.length; i++) {
-       if ((classList[i].match('public') || classList[i].match('private')) && !classList[i].match('-active')) {
+       if ((classList[i].match('public') || classList[i].match('private') || classList[i].match('bug')) && !classList[i].match('-active')) {
          classList[i] = classList[i].concat("-active");
          
        }
@@ -220,7 +222,7 @@ function getComment(obj) {
       error: function(type, data, evt){
        alert("ERROR [AJAX]:" + data.toSource());
        var err = document.createTextNode("ERROR:" + data.toSource());
-       topaz.displayComment.retrieveMsg.appendChild(err);
+       topaz.displayComment.retrieveMsg.innerHTML = err;
        return false;
       },
       load: function(type, data, evt){
@@ -237,7 +239,7 @@ function getComment(obj) {
          
          alert("ERROR [actionErrors]: " + errorMsg);
          var err = document.createTextNode("ERROR:" + errorMsg);
-         topaz.displayComment.retrieveMsg.appendChild(err);
+         topaz.displayComment.retrieveMsg.innerHTML = err;
          
          return false;
        }
@@ -250,7 +252,7 @@ function getComment(obj) {
          
          alert("ERROR [numFieldErrors]: " + fieldErrors);
          var err = document.createTextNode("ERROR:" + fieldErrors);
-         topaz.displayComment.retrieveMsg.appendChild(err);
+         topaz.displayComment.retrieveMsg.innerHTML = err;
 
          return false;
        }
@@ -260,7 +262,7 @@ function getComment(obj) {
          topaz.displayComment.mouseoverComment(topaz.displayComment.target);
   	     popup.show();  		
 
-         return true;
+         return false;
        }
       },
       mimetype: "text/html"

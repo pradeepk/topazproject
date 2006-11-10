@@ -1,5 +1,6 @@
 <!-- begin : annotation preview view (wireframe page 12) [SIMPLE] -->
 <div class="dialog preview">
+	<div class="tipu" id="cTipu"></div>
 	<div class="btn close" id="btn_close" title="Click to close">
 		<a title="Click to close">Close</a>
 	</div>
@@ -12,7 +13,7 @@
 			<a href="#" class="respond tooltip" title="Click to respond to this posting">Respond to this</a>
 		</div>
 	</div>
-	<div class="tip" id="dTip"></div>
+	<div class="tip" id="cTip"></div>
 </div>
 <!-- end : annotation preview view -->
 

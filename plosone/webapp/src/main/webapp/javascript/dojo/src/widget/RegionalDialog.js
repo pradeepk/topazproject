@@ -38,6 +38,12 @@ dojo.declare(
 		followScroll: true,
 		
 		markerNode: null,
+		
+		tipDownNode: null,
+		
+		tipUpNode: null,
+		
+		activeNode: null,
 
 		templatePath: dojo.uri.dojoUri("src/widget/templates/RegionalDialog.html"),
 
@@ -153,6 +159,7 @@ dojo.declare(
 					width = w + "px";
 					height = h + "px";
 				}
+				
 				var scroll_offset = dojo.html.getScroll().offset;
 				this.shared.bg.style.top = scroll_offset.y + "px";
 				this.shared.bg.style.left = scroll_offset.x + "px";
@@ -170,7 +177,20 @@ dojo.declare(
 				this.shared.bg.style.display = "block";
 			}
 		},
-
+		
+		_changeTipDirection: function(isTipDown, xShift) {
+			var dTip = this.tipDownNode;
+			var dTipu = this.tipUpNode;
+			
+			dTip.className = dTip.className.replace(/\son/, "");
+    	dTipu.className = dTipu.className.replace(/\son/, ""); 
+			
+			var targetTip = (isTipDown) ? dTip : dTipu;
+			
+			targetTip.className = targetTip.className.concat(" on");
+ 			targetTip.style.marginLeft = (xShift) ? xShift + "px" : "auto";
+		},
+		
 		placeModalDialog: function() {
 			var scroll_offset = dojo.html.getScroll().offset;
 			var viewport_size = dojo.html.getViewport();
@@ -182,19 +202,13 @@ dojo.declare(
 				curleft = dialog_marker.offsetLeft
 				curtop = dialog_marker.offsetTop
 				while (dialog_marker = dialog_marker.offsetParent) {
-					curleft += dialog_marker.offsetLeft
+					curleft += dialog_marker.offsetLeft  
 					curtop += dialog_marker.offsetTop
 				}
 			}
 			
-			/*dojo.byId(djConfig.debugContainerId).innerHTML = "curleft = " + curleft + "<br/>" +
-															 "curtop = "  + curtop + "<br/>" +
-															 "curleft = " + curleft + "<br/>" +
-															 "curleft = " + curleft + "<br/>" +*/
-			
 			// find the size of the dialog
 			var mb = dojo.html.getMarginBox(this.containerNode);
-			var dTip = dojo.byId('dTip');
 			
 			var mbWidth = mb.width;
 			var mbHeight = mb.height;
@@ -203,53 +217,104 @@ dojo.declare(
 			var scrollX = scroll_offset.x;
 			var scrollY = scroll_offset.y;
 			
-			var x;
-			var y;
+			// The height of the tip.
+			var tipHeight = 22;
 			
-			if((curtop - scrollY) < mbHeight) {
-				dTip.className = "tipu";
-				dTip.parentNode.style.paddingTop = "71px";
-				dTip.style.marginTop = "-" + (mbHeight + 5) + "px";
-				y = curtop + 75;
-			}
-			else {
-				dTip.className = "tip";
-				dTip.parentNode.style.paddingTop = "auto";
-				dTip.style.marginTop = "-5px";
-				y = curtop - mbHeight - 22;
-			}
+			// The width of the tip.
+			var tipWidth = 39;
+			
+			// The minimum distance from the left edge of the dialog box to the left edge of the tip.
+			var tipMarginLeft = 22;
+			
+			// The minimum distance from the right edge of the dialog box to the right edge of the tip.
+			var tipMarginRight = 22;
+			
+			// The minimum distance from either side edge of the dialog box to the corresponding side edge of the viewport.
+			var mbMarginX = 10;
+			
+			// The minimum distance from the top or bottom edge of the dialog box to the top or bottom, respectively, of the viewport.
+			var mbMarginY = 10;
 
-			if((vpWidth/2) < curleft) {
-				x = vpWidth - mbWidth;
-				curTip.style.marginLeft = (curleft - (vpWidth - mbWidth)- 10) + "px";
-			}
-			else {
-				x = curleft - 33;
-			}
-			  
-			//var x = scroll_offset.x + (viewport_size.width - mb.width)/2;
-			//var y = scroll_offset.y + (viewport_size.height - mb.height)/2;
+      // The height of the bug. This is used when the tip points up to figure out how far down to push everything.
+      var bugHeight = 15;
+
+      // The minimum x-offset of the dialog box top-left corner, relative to the page.
+      var xMin = scrollX + mbMarginX;
+      
+      // The minimum y-offset of the dialog box top-left corner, relative to the page.
+      var yMin = scrollY + mbMarginY;
+      
+      // The maximum x-offset of the dialog box top-left corner, relative to the page.
+      var xMax = scrollX + vpWidth - mbMarginX - mbWidth;
+
+      // The maximum y-offset of the dialog box top-left corner, relative to the page.
+      var yMax = scrollY + vpHeight - mbMarginY - mbHeight;
+      
+      // The minimum x-offset of the tip left edge, relative to the page.
+      var xTipMin = xMin + tipMarginLeft;
+
+      // The maximum x-offset of the tip left edge, relative to the page.
+      var xTipMax = xMax + mbWidth - tipMarginRight - tipWidth;
+
+      // True if the tip is pointing down (the default)
+      var tipDown = true;
+
+      // Sanity check to make sure that the viewport is large enough to accomodate the dialog box, the tip, and the minimum margins
+      if (xMin > xMax || yMin > yMax || xTipMin > xTipMax) {
+        // big error. Do something about it!
+      }
 			
-			var debugDiv = dojo.byId(djConfig.debugContainerId);
-			
-			debugDiv.innerHTML = "mbWidth = " + mbWidth + "<br>" +
-								 "mbHeight = " + mbHeight + "<br>" +
-								 "vpWidth = " + vpWidth + "<br>" +
-								 "vpHeight = " + vpHeight + "<br>" +
-								 "scrollX = " + scrollX + "<br>" +
-								 "scrollY = " + scrollY + "<br>" +
-								 "x = " + x + "<br>" +
-								 "dTip.style.marginLeft = " + dTip.style.marginLeft + "<br>" +
-								 "y = " + y + "<br>" +
-								 "dTip.className = " + dTip.className + "<br>" +
-								 "curleft = " + curleft + "<br>" +
-								 "curtop = " + curtop;
-								 
-			
+			// Default values put the box generally above and to the right of the annotation "bug"
+      var xTip = curleft - (tipWidth / 2);
+      var yTip = curtop - tipHeight - (tipHeight/4);
+      
+      var x = xTip - tipMarginLeft;
+      var y = yTip - mbHeight;
+
+      // If the box is too far to the left, try sliding it over to the right. The tip will slide with it, and thus no longer be pointing directly to the bug.
+      if (x < xMin) {
+        x = xMin;
+        if (xTip < xTipMin) {
+          xTip = xTipMin;
+        }
+      }
+      // If the box is too far to the right, slide it over to the left, but leave the tip in the same place if possible.
+      else if (x > xMax) {
+        x = xMax;
+        if (xTip > xTipMax) {
+          xTip = xTipMax;
+        }
+      }
+
+      if (y < yMin) {
+        tipDown = false; // flip the tip
+
+        yTip = curtop + bugHeight - (tipHeight/4);
+        y = yTip + tipHeight;
+        
+        if (y > yMax) {
+          // this is bad, because it means that there isn't enough room above or below the annotation for the dialog box, the tip, and/or the minimum margins
+        }
+      }
+      
+      var xTipDiff = curleft - x;
+      
+      if(xTipDiff < tipMarginLeft) {
+        xTipPos = tipMarginLeft - (tipWidth / 4);
+        x = x - (tipMarginLeft - xTipDiff);
+      }
+      else {
+        xTipPos = xTipDiff - (tipWidth / 4);
+        //x = x - (tipMarginLeft - xTipDiff);
+      }
+            
+      this._changeTipDirection(tipDown, xTipPos);
+
 			with(this.domNode.style){
 				left = x + "px";
 				top = y + "px";
 			}
+
 		},
 		
 		showModalDialog: function() {
@@ -274,7 +339,7 @@ dojo.declare(
 				dojo.byId(this.focusElement).focus(); 
 				dojo.byId(this.focusElement).blur();
 			}
-
+			
 			this.shared.bg.style.display = "none";
 			this.shared.bg.style.width = this.shared.bg.style.height = "1px";
 
@@ -386,6 +451,18 @@ dojo.widget.defineWidget(
 		  // summary
 		  // when specified is clicked, pass along the marker object
 		  this.markerNode = node;
+		},
+		
+		setTipUp: function(node) {
+		  // summary
+		  // when specified is clicked, pass along the marker object
+		  this.tipUpNode = node;
+		},
+		
+		setTipDown: function(node) {
+		  // summary
+		  // when specified is clicked, pass along the marker object
+		  this.tipDownNode = node;
 		},
 		
 		_onTick: function(){
