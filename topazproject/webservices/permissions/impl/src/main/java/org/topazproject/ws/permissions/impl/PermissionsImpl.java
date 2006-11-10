@@ -59,27 +59,89 @@ public class PermissionsImpl implements Permissions {
   //
   private static final String GRANTS_MODEL  = "<" + CONF.getString("topaz.models.grants") + ">";
   private static final String REVOKES_MODEL = "<" + CONF.getString("topaz.models.revokes") + ">";
+  private static final String PP_MODEL          = "<" + CONF.getString("topaz.models.pp") + ">";
   private static final String GRANTS_MODEL_TYPE =
     "<" + CONF.getString("topaz.models.grants[@type]", "http://tucana.org/tucana#Model") + ">";
   private static final String REVOKES_MODEL_TYPE =
     "<" + CONF.getString("topaz.models.revokes[@type]", "http://tucana.org/tucana#Model") + ">";
+  private static final String PP_MODEL_TYPE =
+    "<" + CONF.getString("topaz.models.pp[@type]", "http://tucana.org/tucana#Model") + ">";
 
   //
-  private static final String  ITQL_LIST =
-    "select $p from ${MODEL} where <${resource}> $p <${principal}>;";
-  private static final HashMap impliesMap = new HashMap();
+  private static final String IMPLIES    = ItqlHelper.TOPAZ_URI + "implies";
+  private static final String PROPAGATES = ItqlHelper.TOPAZ_URI + "propagate-permissions-to";
 
-  static {
+  //
+  private static final String ITQL_LIST =
+    "select $p from ${MODEL} where <${resource}> $p <${principal}>;";
+  private static final String ITQL_LIST_PP =
+    "select $o from ${MODEL} where <${s}> <${p}> $o".replaceAll("\\Q${MODEL}", PP_MODEL);
+  private static final String ITQL_LIST_PP_TRANS =
+    ("select $o from ${MODEL} where <${s}> <${p}> $o "
+    + " or (trans($s <${p}> $o) and $s <tucana:is> <${s}>);").replaceAll("\\Q${MODEL}", PP_MODEL);
+  private static final String ITQL_INFER_PERMISSION =
+    ("select $s from ${PP_MODEL} where $s $p $o in ${MODEL} "
+    + "and ($s <tucana:is> <${resource}> or $s <tucana:is> <${ALL}> "
+    + "      or $s <${PP}> <${resource}> "
+    + "      or (trans($s <${PP}> $res) and $res <tucana:is> <${resource}>)) "
+    + "and ($p <tucana:is> <${permission}> or $p <tucana:is> <${ALL}> "
+    + "      or $p <${IMPLIES}> <${permission}> "
+    + "      or (trans($p <${IMPLIES}> $perm) and $perm <tucana:is> <${permission}>)) "
+    + "and ($o <tucana:is> <${principal}> or $o <tucana:is> <${ALL}>)" //
+    ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
+      .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
+
+  //
+  private static boolean initialized = false;
+
+  static private void initialize(ItqlHelper itql) {
+    try {
+      itql.doUpdate("create " + GRANTS_MODEL + " " + GRANTS_MODEL_TYPE + ";");
+      itql.doUpdate("create " + REVOKES_MODEL + " " + REVOKES_MODEL_TYPE + ";");
+      itql.doUpdate("create " + PP_MODEL + " " + PP_MODEL_TYPE + ";");
+    } catch (IOException e) {
+      log.warn("failed to create grants, revokes and pp models", e);
+    }
+
     Configuration conf = CONF.subset("topaz.permissions.impliedPermissions");
 
+    StringBuffer  sb          = new StringBuffer();
     List          permissions = conf.getList("permission[@uri]");
     int           c           = permissions.size();
 
     for (int i = 0; i < c; i++) {
       List implies = conf.getList("permission(" + i + ").implies[@uri]");
-      impliesMap.put(permissions.get(i), implies.toArray(new String[0]));
-      log.info(permissions.get(i) + " implies " + implies);
+      log.info("config contains " + permissions.get(i) + " implies " + implies);
+
+      for (int j = 0; j < implies.size(); j++) {
+        sb.append("<").append(permissions.get(i)).append("> ");
+        sb.append("<").append(IMPLIES).append("> ");
+        sb.append("<").append(implies.get(j)).append("> ");
+      }
     }
+
+    String triples = sb.toString();
+    String cmd =
+      "delete " + triples + " from " + PP_MODEL + "; insert " + triples + " into " + PP_MODEL + ";";
+
+    String txn = "load implied-permissions from config";
+
+    try {
+      itql.beginTxn(txn);
+      itql.doUpdate(cmd);
+      itql.commitTxn(txn);
+      txn = null;
+    } catch (IOException e) {
+      log.warn("failed to store implied permissions loaded from config", e);
+    } finally {
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+      }
+    }
+
+    initialized = true;
   }
 
   //
@@ -101,15 +163,8 @@ public class PermissionsImpl implements Permissions {
           if (handle instanceof ItqlHelper) {
             ItqlHelper itql = (ItqlHelper) handle;
 
-            // clear all since we want un-aliased uris always
-            itql.getAliases().clear();
-
-            try {
-              itql.doUpdate("create " + GRANTS_MODEL + " " + GRANTS_MODEL_TYPE + ";");
-              itql.doUpdate("create " + REVOKES_MODEL + " " + REVOKES_MODEL_TYPE + ";");
-            } catch (IOException e) {
-              log.warn("failed to create grants and revokes models", e);
-            }
+            if (!initialized)
+              initialize(itql);
           }
         }
       });
@@ -163,6 +218,70 @@ public class PermissionsImpl implements Permissions {
     return listPermissions(pep.LIST_REVOKES, REVOKES_MODEL, resource, principal);
   }
 
+  /*
+   * @see org.topazproject.ws.permissions.Permission#implyPermission
+   */
+  public void implyPermissions(String permission, String[] implies)
+                        throws RemoteException {
+    updatePP(pep.IMPLY_PERMISSIONS, permission, IMPLIES, implies, true);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#cancelImplyPermission
+   */
+  public void cancelImplyPermissions(String permission, String[] implies)
+                              throws RemoteException {
+    updatePP(pep.CANCEL_IMPLY_PERMISSIONS, permission, IMPLIES, implies, false);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#listImpliedPermissions
+   */
+  public String[] listImpliedPermissions(String permission, boolean transitive)
+                                  throws RemoteException {
+    return listPP(pep.LIST_IMPLIED_PERMISSIONS, permission, IMPLIES, transitive);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#propagatePermissions
+   */
+  public void propagatePermissions(String resource, String[] to)
+                            throws RemoteException {
+    updatePP(pep.PROPAGATE_PERMISSIONS, resource, PROPAGATES, to, true);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#cancelPropagatePermissions
+   */
+  public void cancelPropagatePermissions(String resource, String[] to)
+                                  throws RemoteException {
+    updatePP(pep.CANCEL_PROPAGATE_PERMISSIONS, resource, PROPAGATES, to, false);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#listPermissionPropagations
+   */
+  public String[] listPermissionPropagations(String resource, boolean transitive)
+                                      throws RemoteException {
+    return listPP(pep.LIST_PERMISSION_PROPAGATIONS, resource, PROPAGATES, transitive);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#isGranted
+   */
+  public boolean isGranted(String resource, String permission, String principal)
+                    throws RemoteException {
+    return isInferred(GRANTS_MODEL, resource, permission, principal);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#isGranted
+   */
+  public boolean isRevoked(String resource, String permission, String principal)
+                    throws RemoteException {
+    return isInferred(REVOKES_MODEL, resource, permission, principal);
+  }
+
   private void updateModel(String action, String model, String resource, String[] permissions,
                            String[] principals, boolean insert)
                     throws RemoteException {
@@ -188,16 +307,6 @@ public class PermissionsImpl implements Permissions {
         sb.append("<").append(resource).append("> ");
         sb.append("<").append(permissions[j]).append("> ");
         sb.append("<").append(principal).append("> ");
-
-        String[] implies = (String[]) impliesMap.get(permissions[j]);
-
-        if (implies != null) {
-          for (int k = 0; k < implies.length; k++) {
-            sb.append("<").append(resource).append("> ");
-            sb.append("<").append(implies[k]).append("> ");
-            sb.append("<").append(principal).append("> ");
-          }
-        }
       }
     }
 
@@ -208,11 +317,79 @@ public class PermissionsImpl implements Permissions {
     if (insert)
       cmd += ("insert " + triples + " into " + model + ";");
 
-    ctx.getItqlHelper().doUpdate(cmd);
+    ItqlHelper itql = ctx.getItqlHelper();
+    String     txn = action + " on " + resource;
+
+    try {
+      itql.beginTxn(txn);
+      itql.doUpdate(cmd);
+      itql.commitTxn(txn);
+      txn = null;
+    } catch (IOException e) {
+      log.warn("failed to do " + txn, e);
+    } finally {
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+      }
+    }
 
     if (log.isInfoEnabled()) {
       log.info(action + " succeeded for resource " + resource + "\npermissions:\n"
                + Arrays.asList(permissions) + "\nprincipals:\n" + Arrays.asList(principals));
+    }
+  }
+
+  private void updatePP(String action, String subject, String predicate, String[] objects,
+                        boolean insert) throws RemoteException {
+    String sLabel;
+    String oLabel;
+
+    if (PROPAGATES.equals(predicate)) {
+      sLabel   = "resource";
+      oLabel   = "to[]";
+    } else if (IMPLIES.equals(predicate)) {
+      sLabel   = "permission";
+      oLabel   = "implies[]";
+    } else {
+      sLabel   = "subject";
+      oLabel   = "object[]";
+    }
+
+    objects = validateUriList(objects, oLabel, false);
+    pep.checkAccess(action, ItqlHelper.validateUri(subject, sLabel));
+
+    StringBuffer sb = new StringBuffer(512);
+
+    for (int i = 0; i < objects.length; i++) {
+      sb.append("<").append(subject).append("> ");
+      sb.append("<").append(predicate).append("> ");
+      sb.append("<").append(objects[i]).append("> ");
+    }
+
+    String triples = sb.toString();
+    String cmd = "delete " + triples + " from " + PP_MODEL + ";";
+
+    if (insert)
+      cmd += ("insert " + triples + " into " + PP_MODEL + ";");
+
+    ItqlHelper itql = ctx.getItqlHelper();
+    String     txn = action + " on " + subject;
+
+    try {
+      itql.beginTxn(txn);
+      itql.doUpdate(cmd);
+      itql.commitTxn(txn);
+      txn = null;
+    } catch (IOException e) {
+      log.warn("failed to store " + txn, e);
+    } finally {
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+      }
     }
   }
 
@@ -245,6 +422,70 @@ public class PermissionsImpl implements Permissions {
     } catch (AnswerException ae) {
       throw new RemoteException("Error listing permissions for resource '" + resource
                                 + "' and principal '" + principal + "'", ae);
+    }
+  }
+
+  private String[] listPP(String action, String subject, String predicate, boolean transitive)
+                   throws RemoteException {
+    String sLabel;
+    String oLabel;
+
+    if (PROPAGATES.equals(predicate)) {
+      sLabel   = "resource";
+      oLabel   = "permission-propagates";
+    } else if (IMPLIES.equals(predicate)) {
+      sLabel   = "permission";
+      oLabel   = "implied-permissions";
+    } else {
+      sLabel   = "subject";
+      oLabel   = "objects";
+    }
+
+    pep.checkAccess(action, ItqlHelper.validateUri(subject, sLabel));
+
+    String query = transitive ? ITQL_LIST_PP_TRANS : ITQL_LIST_PP;
+
+    query = ItqlHelper.bindValues(query, "s", subject, "p", predicate);
+
+    try {
+      StringAnswer ans  = new StringAnswer(ctx.getItqlHelper().doQuery(query));
+      List         rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+
+      String[]     result = new String[rows.size()];
+
+      for (int i = 0; i < result.length; i++)
+        result[i] = ((String[]) rows.get(i))[0];
+
+      return result;
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error while loading " + oLabel + " for " + subject, ae);
+    }
+  }
+
+  private boolean isInferred(String model, String resource, String permission, String principal)
+                      throws RemoteException {
+    if (principal == null)
+      principal = ctx.getUserName();
+
+    ItqlHelper.validateUri(resource, "resource");
+    ItqlHelper.validateUri(permission, "permission");
+    ItqlHelper.validateUri(principal, "principal");
+
+    HashMap values = new HashMap();
+    values.put("resource", resource);
+    values.put("permission", permission);
+    values.put("principal", principal);
+    values.put("MODEL", model);
+
+    String query = ItqlHelper.bindValues(ITQL_INFER_PERMISSION, values);
+
+    try {
+      StringAnswer ans  = new StringAnswer(ctx.getItqlHelper().doQuery(query));
+      List         rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+
+      return rows.size() > 0;
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error while querying inferred permissions", ae);
     }
   }
 

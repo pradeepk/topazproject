@@ -20,7 +20,7 @@ import java.rmi.RemoteException;
 public interface Permissions extends Remote {
   /**
    * A URI to indicate all resources, permissions or subjects. eg. to grant all permissions to a
-   * principal on a resource, the permissions URI can be set to this URI. To grant a specific
+   * principal on resource, the permissions URI can be set to a this URI. To grant a specific
    * permission to all subjects on all resources, the resource and subject URIs can be set to this
    * URI.
    */
@@ -59,6 +59,38 @@ public interface Permissions extends Remote {
      * The action that represents a list permission revokes operation in XACML policies.
      */
     public static final String LIST_REVOKES = "permissions:listRevokes";
+
+    /**
+     * The action that represents an implyPermissions operation in XACML policies.
+     */
+    public static final String IMPLY_PERMISSIONS = "permissions:implyPermissions";
+
+    /**
+     * The action that represents a cancelImplyPermissions operation in XACML policies.
+     */
+    public static final String CANCEL_IMPLY_PERMISSIONS = "permissions:cancelImplyPermissions";
+
+    /**
+     * The action that represents a listImpliedPermissions operation in XACML policies.
+     */
+    public static final String LIST_IMPLIED_PERMISSIONS = "permissions:listImpliedPermissions";
+
+    /**
+     * The action that represents a propagatePermissions operation in XACML policies.
+     */
+    public static final String PROPAGATE_PERMISSIONS = "permissions:propagatePermissions";
+
+    /**
+     * The action that represents a cancelPropagatePermissions operation in XACML policies.
+     */
+    public static final String CANCEL_PROPAGATE_PERMISSIONS =
+      "permissions:cancelPropagatePermissions";
+
+    /**
+     * The action that represents a listPropagatePermissions operation in XACML policies.
+     */
+    public static final String LIST_PERMISSION_PROPAGATIONS =
+      "permissions:listPermissionPropagations";
   }
 
   /**
@@ -144,4 +176,106 @@ public interface Permissions extends Remote {
    */
   public String[] listRevokes(String resource, String principal)
                        throws RemoteException;
+
+  /**
+   * Add new permissions to the list of permissions directly implied by a permission.
+   *
+   * @param permission the permission that implies others
+   * @param implies the list of permissions that are to be directly implied
+   *
+   * @throws RemoteException if some other error occured
+   */
+  public void implyPermissions(String permission, String[] implies)
+                        throws RemoteException;
+
+  /**
+   * Remove permissions from the list of permissions directly implied by a permission.
+   *
+   * @param permission the permission that implies other permissions
+   * @param implies the list of permissions that are not to be directly implied
+   *
+   * @throws RemoteException if some other error occured
+   */
+  public void cancelImplyPermissions(String permission, String[] implies)
+                              throws RemoteException;
+
+  /**
+   * Return the list of permissions directly implied by a permission.
+   *
+   * @param permission the permission that implies other permissions
+   * @param transitive include permissions that are transitive
+   *
+   * @return Returns the list of permissions that are directly implied
+   *
+   * @throws RemoteException if some other error occured
+   */
+  public String[] listImpliedPermissions(String permission, boolean transitive)
+                                  throws RemoteException;
+
+  /**
+   * Propagate permissions on a resource to the supplied list of resources.
+   *
+   * @param resource the resource whose permissions are to be propagated
+   * @param to the list of resources to propagate permissions to
+   *
+   * @throws RemoteException if some other error occured
+   */
+  public void propagatePermissions(String resource, String[] to)
+                            throws RemoteException;
+
+  /**
+   * Cancel the propagation of permissions to the list of resources.
+   *
+   * @param resource the resource whose permissions are to be propagated
+   * @param to the list of resources to propagate permissions to
+   *
+   * @throws RemoteException if some other error occured
+   */
+  public void cancelPropagatePermissions(String resource, String[] to)
+                                  throws RemoteException;
+
+  /**
+   * List the resources to which the permissions of the given resource are propagated.
+   *
+   * @param resource the resource whose permissions are propagated
+   * @param transitive include resources that are transitive
+   *
+   * @return the list of resources to which permissions are propagated
+   *
+   * @throws RemoteException if some other error occured
+   */
+  public String[] listPermissionPropagations(String resource, boolean transitive)
+                                      throws RemoteException;
+
+  /**
+   * Checks the grants list for a match. All transitive grants via implied permissions and
+   * propagated permissions are also checked.
+   *
+   * @param resource the resource uri to match.
+   * @param permission the permission to match.
+   * @param principal the principal to match or <code>null</code> to indicate the user making this
+   *        call.
+   *
+   * @return Returns true if a matching grant is found in the grants list
+   *
+   * @throws RemoteException if some other error occured
+   */
+  public boolean isGranted(String resource, String permission, String principal)
+                    throws RemoteException;
+
+  /**
+   * Checks the revokes list for a match. All transitive revokes via implied permissions and
+   * propagated permissions are also checked.
+   *
+   * @param resource the resource uri to match.
+   * @param permission the permission to match.
+   * @param principal the principal to match or <code>null</code> to indicate the user making this
+   *        call.
+   *
+   * @return Returns true if a matching revoke is found in the grants list
+   *
+   * @throws RemoteException if some other error occured
+   */
+  public boolean isRevoked(String resource, String permission, String principal)
+                    throws RemoteException;
 }

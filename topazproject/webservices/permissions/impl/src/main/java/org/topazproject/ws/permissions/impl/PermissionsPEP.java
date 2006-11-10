@@ -32,13 +32,17 @@ public abstract class PermissionsPEP extends AbstractSimplePEP
    * The list of all supported actions
    */
   protected static final String[] SUPPORTED_ACTIONS =
-    new String[] { GRANT, REVOKE, CANCEL_GRANTS, CANCEL_REVOKES, LIST_GRANTS, LIST_REVOKES };
+    new String[] {
+                   GRANT, REVOKE, CANCEL_GRANTS, CANCEL_REVOKES, LIST_GRANTS, LIST_REVOKES,
+                   IMPLY_PERMISSIONS, CANCEL_IMPLY_PERMISSIONS, LIST_IMPLIED_PERMISSIONS,
+                   PROPAGATE_PERMISSIONS, CANCEL_PROPAGATE_PERMISSIONS, LIST_PERMISSION_PROPAGATIONS
+    };
 
   /**
    * The list of all supported obligations
    */
   protected static final String[][] SUPPORTED_OBLIGATIONS =
-    new String[][] { null, null, null, null, null, null };
+    new String[][] { null, null, null, null, null, null, null, null, null, null, null, null };
 
   /*
    *@see org.topazproject.xacml.AbstractSimplePEP

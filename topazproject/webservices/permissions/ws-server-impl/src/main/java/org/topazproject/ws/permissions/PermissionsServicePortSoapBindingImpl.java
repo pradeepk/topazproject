@@ -122,6 +122,70 @@ public class PermissionsServicePortSoapBindingImpl implements Permissions, Servi
     return impl.listRevokes(resource, principal);
   }
 
+  /*
+   * @see org.topazproject.ws.permissions.Permission#implyPermission
+   */
+  public void implyPermissions(String permission, String[] implies)
+                        throws RemoteException {
+    impl.implyPermissions(permission, implies);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#cancelImplyPermission
+   */
+  public void cancelImplyPermissions(String permission, String[] implies)
+                              throws RemoteException {
+    impl.cancelImplyPermissions(permission, implies);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#listImpliedPermissions
+   */
+  public String[] listImpliedPermissions(String permission, boolean transitive)
+                                  throws RemoteException {
+    return impl.listImpliedPermissions(permission, transitive);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#propagatePermissions
+   */
+  public void propagatePermissions(String resource, String[] to)
+                            throws RemoteException {
+    impl.propagatePermissions(resource, to);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#cancelPropagatePermissions
+   */
+  public void cancelPropagatePermissions(String resource, String[] to)
+                                  throws RemoteException {
+    impl.cancelPropagatePermissions(resource, to);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#listPermissionPropagations
+   */
+  public String[] listPermissionPropagations(String resource, boolean transitive)
+                                      throws RemoteException {
+    return impl.listPermissionPropagations(resource, transitive);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#isGranted
+   */
+  public boolean isGranted(String resource, String permission, String principal)
+                    throws RemoteException {
+    return impl.isGranted(resource, permission, principal);
+  }
+
+  /*
+   * @see org.topazproject.ws.permissions.Permission#isGranted
+   */
+  public boolean isRevoked(String resource, String permission, String principal)
+                    throws RemoteException {
+    return impl.isRevoked(resource, permission, principal);
+  }
+
   private static class WSPermissionsPEP extends PermissionsPEP {
     static {
       init(WSPermissionsPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);

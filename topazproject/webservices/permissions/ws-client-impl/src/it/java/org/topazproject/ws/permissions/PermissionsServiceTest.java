@@ -35,11 +35,16 @@ public class PermissionsServiceTest extends TestCase {
   private String[]    revokes    = new String[] { "foo:list-all", "foo:purge" };
   private String[]    principals =
     new String[] { "user:joe", "group:joe-friends", "group:joe-family" };
+  private String      permission      = "foo:set";
+  private String[]    implied         = new String[] { "bar:get", "bar:set" };
+  private String[]    propagated1     = new String[] { "foo:foo" };
+  private String[]    propagated2     = new String[] { "bar:foo", "bar:bar" };
+  private String[]    transPropagated = new String[] { "foo:foo", "bar:foo", "bar:bar" };
 
   /**
    * Creates a new PermissionsServiceTest object.
    *
-   * @param testName DOCUMENT ME!
+   * @param testName junit test name
    */
   public PermissionsServiceTest(String testName) {
     super(testName);
@@ -133,6 +138,93 @@ public class PermissionsServiceTest extends TestCase {
     }
   }
 
+  /**
+   * Test for imply permissions.
+   *
+   * @throws RemoteException on error
+   */
+  public void test5ImplyPermissions() throws RemoteException {
+    service.implyPermissions(permission, implied);
+
+    String[] l = service.listImpliedPermissions(permission, false);
+    arraysEqual(implied, l);
+  }
+
+  /**
+   * Test for cancel implies.
+   *
+   * @throws RemoteException on error
+   */
+  public void test6CancelImplyPermissions() throws RemoteException {
+    service.implyPermissions(permission, implied);
+    service.cancelImplyPermissions(permission, implied);
+
+    String[] l = service.listImpliedPermissions(permission, false);
+    assertEquals(0, l.length);
+  }
+
+  /**
+   * Test for propagagate permissions.
+   *
+   * @throws RemoteException on error
+   */
+  public void test7PropagatePermissions() throws RemoteException {
+    service.propagatePermissions(resource, propagated1);
+
+    for (int i = 0; i < propagated1.length; i++)
+      service.propagatePermissions(propagated1[i], propagated2);
+
+    String[] l = service.listPermissionPropagations(resource, false);
+    arraysEqual(propagated1, l);
+
+    l = service.listPermissionPropagations(resource, true);
+    arraysEqual(transPropagated, l);
+  }
+
+  /**
+   * Test for cancel propagate permissions.
+   *
+   * @throws RemoteException on error
+   */
+  public void test8CancelPropagatePermissions() throws RemoteException {
+    service.propagatePermissions(resource, propagated1);
+
+    for (int i = 0; i < propagated1.length; i++)
+      service.propagatePermissions(propagated1[i], propagated2);
+
+    service.cancelPropagatePermissions(resource, propagated1);
+
+    for (int i = 0; i < propagated1.length; i++)
+      service.cancelPropagatePermissions(propagated1[i], propagated2);
+
+    String[] l = service.listPermissionPropagations(resource, false);
+    assertEquals(0, l.length);
+
+    l = service.listPermissionPropagations(resource, true);
+    assertEquals(0, l.length);
+  }
+
+  /**
+   * Test for isGranted and isRevoked.
+   *
+   * @throws RemoteException on error
+   */
+  public void test9EffectivePermission() throws RemoteException {
+    service.grant(resource, grants, principals);
+    service.revoke(resource, revokes, principals);
+    service.propagatePermissions(resource, propagated1);
+
+    for (int i = 0; i < propagated1.length; i++)
+      service.propagatePermissions(propagated1[i], propagated2);
+
+    service.implyPermissions(permission, implied);
+
+    assertTrue(service.isGranted("bar:bar", "bar:set", principals[0]));
+    assertTrue(service.isRevoked("bar:bar", "foo:purge", principals[0]));
+    assertTrue(!service.isGranted("bar:bar", "foo:purge", "some:user"));
+    assertTrue(!service.isRevoked("bar:bar", "foo:purge", "some:user"));
+  }
+
   private void clearAll() throws RemoteException {
     for (int i = 0; i < principals.length; i++) {
       String[] l = service.listGrants(resource, principals[i]);
@@ -145,5 +237,20 @@ public class PermissionsServiceTest extends TestCase {
       if (l.length > 0)
         service.cancelRevokes(resource, l, new String[] { principals[i] });
     }
+
+    service.cancelImplyPermissions(resource, implied);
+    service.cancelPropagatePermissions(resource, propagated1);
+
+    for (int i = 0; i < propagated1.length; i++)
+      service.cancelPropagatePermissions(propagated1[i], propagated2);
+  }
+
+  private void arraysEqual(Object[] s, Object[] r) {
+    assertEquals(s.length, r.length);
+    Arrays.sort(s);
+    Arrays.sort(r);
+
+    for (int i = 0; i < s.length; i++)
+      assertEquals(s[i], r[i]);
   }
 }
