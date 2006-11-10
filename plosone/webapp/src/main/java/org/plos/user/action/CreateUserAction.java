@@ -36,6 +36,15 @@ public class CreateUserAction extends UserActionSupport {
   private String authId;
 
   private static final Log log = LogFactory.getLog(CreateUserAction.class);
+  private String givennames;
+  private String positionType;
+  private String organizationType;
+  private String postalAddress;
+  private String biographyText;
+  private String interestsText;
+  private String researchAreasText;
+  private String city;
+  private String country;
 
   /**
    * Will take the CAS ID and create a user in Topaz associated with that auth ID. If auth ID
@@ -46,9 +55,7 @@ public class CreateUserAction extends UserActionSupport {
    */
   public String execute() throws Exception {
     final Map<String, Object> sessionMap = getSessionMap();
-    if (sessionMap != null) {
-      authId = getUserId(sessionMap);
-    }
+    authId = getUserId(sessionMap);
 
     topazId = getUserService().lookUpUserByAuthId(authId);
     if (topazId == null) {
@@ -58,18 +65,30 @@ public class CreateUserAction extends UserActionSupport {
       log.debug("Topaz ID: " + topazId + " with authID: " + authId);
     }
 
-    final PlosOneUser newUser = new PlosOneUser(authId);
-    newUser.setUserId(topazId);
-    newUser.setEmail(this.email);
-    newUser.setDisplayName(this.username);
-    newUser.setRealName(this.realName);
+    final PlosOneUser newUser = createPlosOneUser();
 
     getUserService().setProfile(newUser);
 
-    if (sessionMap != null) {
-      sessionMap.put(PLOS_ONE_USER_KEY, newUser);
-    }
+    sessionMap.put(PLOS_ONE_USER_KEY, newUser);
     return SUCCESS;
+  }
+
+  private PlosOneUser createPlosOneUser() {
+    final PlosOneUser newUser = new PlosOneUser(this.authId);
+    newUser.setUserId(this.topazId);
+    newUser.setEmail(this.email);
+    newUser.setDisplayName(this.username);
+    newUser.setRealName(this.realName);
+    newUser.setGivennames(this.givennames);
+    newUser.setPositionType(this.positionType);
+    newUser.setOrganizationType(this.organizationType);
+    newUser.setPostalAddress(this.postalAddress);
+    newUser.setBiographyText(this.biographyText);
+    newUser.setInterestsText(this.interestsText);
+    newUser.setResearchAreasText(this.researchAreasText);
+    newUser.setCity(this.city);
+    newUser.setCountry(this.country);
+    return newUser;
   }
 
   /**
@@ -166,4 +185,184 @@ public class CreateUserAction extends UserActionSupport {
     this.authId = authId;
   }
 
+
+  /**
+   * Getter for property 'biographyText'.
+   *
+   * @return Value for property 'biographyText'.
+   */
+  public String getBiographyText() {
+    return biographyText;
+  }
+
+  /**
+   * Setter for property 'biographyText'.
+   *
+   * @param biographyText Value to set for property 'biographyText'.
+   */
+  public void setBiographyText(final String biographyText) {
+    this.biographyText = biographyText;
+  }
+
+  /**
+   * Getter for property 'city'.
+   *
+   * @return Value for property 'city'.
+   */
+  public String getCity() {
+    return city;
+  }
+
+  /**
+   * Setter for property 'city'.
+   *
+   * @param city Value to set for property 'city'.
+   */
+  public void setCity(final String city) {
+    this.city = city;
+  }
+
+  /**
+   * Getter for property 'country'.
+   *
+   * @return Value for property 'country'.
+   */
+  public String getCountry() {
+    return country;
+  }
+
+  /**
+   * Setter for property 'country'.
+   *
+   * @param country Value to set for property 'country'.
+   */
+  public void setCountry(final String country) {
+    this.country = country;
+  }
+
+  /**
+   * Getter for property 'givennames'.
+   *
+   * @return Value for property 'givennames'.
+   */
+  public String getGivennames() {
+    return givennames;
+  }
+
+  /**
+   * Setter for property 'givennames'.
+   *
+   * @param givennames Value to set for property 'givennames'.
+   */
+  public void setGivennames(final String givennames) {
+    this.givennames = givennames;
+  }
+
+  /**
+   * Getter for property 'interestsText'.
+   *
+   * @return Value for property 'interestsText'.
+   */
+  public String getInterestsText() {
+    return interestsText;
+  }
+
+  /**
+   * Setter for property 'interestsText'.
+   *
+   * @param interestsText Value to set for property 'interestsText'.
+   */
+  public void setInterestsText(final String interestsText) {
+    this.interestsText = interestsText;
+  }
+
+  /**
+   * Getter for property 'organizationType'.
+   *
+   * @return Value for property 'organizationType'.
+   */
+  public String getOrganizationType() {
+    return organizationType;
+  }
+
+  /**
+   * Setter for property 'organizationType'.
+   *
+   * @param organizationType Value to set for property 'organizationType'.
+   */
+  public void setOrganizationType(final String organizationType) {
+    this.organizationType = organizationType;
+  }
+
+  /**
+   * Getter for property 'positionType'.
+   *
+   * @return Value for property 'positionType'.
+   */
+  public String getPositionType() {
+    return positionType;
+  }
+
+  /**
+   * Setter for property 'positionType'.
+   *
+   * @param positionType Value to set for property 'positionType'.
+   */
+  public void setPositionType(final String positionType) {
+    this.positionType = positionType;
+  }
+
+  /**
+   * Getter for property 'postalAddress'.
+   *
+   * @return Value for property 'postalAddress'.
+   */
+  public String getPostalAddress() {
+    return postalAddress;
+  }
+
+  /**
+   * Setter for property 'postalAddress'.
+   *
+   * @param postalAddress Value to set for property 'postalAddress'.
+   */
+  public void setPostalAddress(final String postalAddress) {
+    this.postalAddress = postalAddress;
+  }
+
+  /**
+   * Getter for property 'researchAreasText'.
+   *
+   * @return Value for property 'researchAreasText'.
+   */
+  public String getResearchAreasText() {
+    return researchAreasText;
+  }
+
+  /**
+   * Setter for property 'researchAreasText'.
+   *
+   * @param researchAreasText Value to set for property 'researchAreasText'.
+   */
+  public void setResearchAreasText(final String researchAreasText) {
+    this.researchAreasText = researchAreasText;
+  }
+
+  /**
+   * Getter for property 'topazId'.
+   *
+   * @return Value for property 'topazId'.
+   */
+  public String getTopazId() {
+    return topazId;
+  }
+
+  /**
+   * Setter for property 'topazId'.
+   *
+   * @param topazId Value to set for property 'topazId'.
+   */
+  public void setTopazId(final String topazId) {
+    this.topazId = topazId;
+  }
 }

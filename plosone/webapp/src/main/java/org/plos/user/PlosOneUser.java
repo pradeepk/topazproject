@@ -8,6 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */package org.plos.user;
 
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.topazproject.ws.pap.UserPreference;
@@ -41,9 +42,6 @@ public class PlosOneUser {
   private Map<String, String[]> userPrefs;
 
   // Constants for application specific User Preferences
-  private static final String CITY = "CITY";
-  private static final String COUNTRY = "COUNTRY";
-  private static final String STATE = "STATE";
   private static final String ALERTS_EMAIL_ADDRESS = "alertsEmailAddress";
   private static final String ALERTS_CATEGORIES = "alertsCategories";
 
@@ -157,7 +155,7 @@ public class PlosOneUser {
    * @return Returns the biography.
    */
   public String getBiography() {
-    return userProfile.getBiography();
+    return getNonNull(userProfile.getBiography());
   }
 
   /**
@@ -172,7 +170,7 @@ public class PlosOneUser {
    * @return Returns the displayName.
    */
   public String getDisplayName() {
-    return userProfile.getDisplayName();
+    return getNonNull(userProfile.getDisplayName());
   }
 
   /**
@@ -187,7 +185,7 @@ public class PlosOneUser {
    * @return Returns the email.
    */
   public String getEmail() {
-    return userProfile.getEmail();
+    return getNonNull(userProfile.getEmail());
   }
 
   /**
@@ -202,7 +200,7 @@ public class PlosOneUser {
    * @return Returns the gender.
    */
   public String getGender() {
-    return userProfile.getGender();
+    return getNonNull(userProfile.getGender());
   }
 
   /**
@@ -217,7 +215,7 @@ public class PlosOneUser {
    * @return Returns the homePage.
    */
   public String getHomePage() {
-    return userProfile.getHomePage();
+    return getNonNull(userProfile.getHomePage());
   }
 
   /**
@@ -247,7 +245,7 @@ public class PlosOneUser {
    * @return Returns the publications.
    */
   public String getPublications() {
-    return userProfile.getPublications();
+    return getNonNull(userProfile.getPublications());
   }
 
   /**
@@ -262,7 +260,7 @@ public class PlosOneUser {
    * @return Returns the realName.
    */
   public String getRealName() {
-    return userProfile.getRealName();
+    return getNonNull(userProfile.getRealName());
   }
 
   /**
@@ -277,7 +275,7 @@ public class PlosOneUser {
    * @return Returns the title.
    */
   public String getTitle() {
-    return userProfile.getTitle();
+    return getNonNull(userProfile.getTitle());
   }
 
   /**
@@ -307,7 +305,7 @@ public class PlosOneUser {
    * @return Returns the weblog.
    */
   public String getWeblog() {
-    return userProfile.getWeblog();
+    return getNonNull(userProfile.getWeblog());
   }
 
   /**
@@ -323,7 +321,7 @@ public class PlosOneUser {
    * @return Returns the city.
    */
   public String getCity() {
-    return userPrefs.get(PlosOneUser.CITY)[0];
+    return getNonNull(userProfile.getCity());
   }
 
   /**
@@ -332,24 +330,7 @@ public class PlosOneUser {
    *          The city to set.
    */
   public void setCity(String city) {
-    userPrefs.put(PlosOneUser.CITY, new String[] { city });
-  }
-
-  /**
-   * 
-   * @return Returns the state.
-   */
-  public String getState() {
-    return userPrefs.get(PlosOneUser.STATE)[0];
-  }
-
-  /**
-   * 
-   * @param state
-   *          The state to set.
-   */
-  public void setState(String state) {
-    userPrefs.put(PlosOneUser.STATE, new String[] { state });
+    userProfile.setCity(city);
   }
 
   /**
@@ -357,7 +338,7 @@ public class PlosOneUser {
    * @return Returns the country.
    */
   public String getCountry() {
-    return userPrefs.get(PlosOneUser.COUNTRY)[0];
+    return getNonNull(userProfile.getCountry());
   }
 
   /**
@@ -366,7 +347,7 @@ public class PlosOneUser {
    *          The country to set.
    */
   public void setCountry(String country) {
-    userPrefs.put(PlosOneUser.COUNTRY, new String[] { country });
+    userProfile.setCountry(country);
   }
 
   /**
@@ -401,6 +382,136 @@ public class PlosOneUser {
    */
   public void setAlertsEmailAddress(String inEmail) {
     userPrefs.put(PlosOneUser.ALERTS_EMAIL_ADDRESS, new String[] { inEmail });
+  }
+
+  /**
+   * @return givennames givennames
+   */
+  public String getGivennames() {
+    return getNonNull(userProfile.getGivenNames());
+  }
+
+  /**
+   * @param givennames givennames
+   */
+  public void setGivennames(final String givennames) {
+    userProfile.setGivenNames(givennames);
+  }
+
+  /**
+   * @return positionType positionType
+   */
+  public String getPositionType() {
+    return getNonNull(userProfile.getPositionType());
+  }
+
+  /**
+   * @param surnames surnames
+   */
+  public void setSurnames(final String surnames) {
+    userProfile.setSurnames(surnames);
+  }
+
+  /**
+   * @return surnames surnames
+   */
+  public String getSurnames() {
+    return getNonNull(userProfile.getSurnames());
+  }
+
+  /**
+   * @param positionType positionType
+   */
+  public void setPositionType(final String positionType) {
+    userProfile.setPositionType(positionType);
+  }
+
+  /**
+   * @return organizationType organizationType
+   */
+  public String getOrganizationType() {
+    return getNonNull(userProfile.getOrganizationType());
+  }
+
+  /**
+   * @param organizationType organizationType
+   */
+  public void setOrganizationType(final String organizationType) {
+    userProfile.setOrganizationType(organizationType);
+  }
+
+  /**
+   * @return organizationName organizationName
+   */
+  public String getOrganizationName() {
+    return getNonNull(userProfile.getOrganizationName());
+  }
+
+  /**
+   * @param organizationName organizationName
+   */
+  public void setOrganizationName(final String organizationName) {
+    userProfile.setOrganizationName(organizationName);
+  }
+
+  /**
+   * @return postalAddress postalAddress
+   */
+  public String getPostalAddress() {
+    return getNonNull(userProfile.getPostalAddress());
+  }
+
+  /**
+   * @param postalAddress postalAddress
+   */
+  public void setPostalAddress(final String postalAddress) {
+    userProfile.setPostalAddress(postalAddress);
+  }
+
+  /**
+   * @return biographyText biographyText
+   */
+  public String getBiographyText() {
+    return getNonNull(userProfile.getBiographyText());
+  }
+
+  /**
+   * @param biographyText biographyText
+   */
+  public void setBiographyText(final String biographyText) {
+    userProfile.setBiographyText(biographyText);
+  }
+
+  /**
+   * @return interestsText interestsText
+   */
+  public String getInterestsText() {
+    return getNonNull(userProfile.getInterestsText());
+  }
+
+  /**
+   * @param interestsText interestsText
+   */
+  public void setInterestsText(final String interestsText) {
+    userProfile.setInterestsText(interestsText);
+  }
+
+  /**
+   * @return researchAreasText researchAreasText
+   */
+  public String getResearchAreasText() {
+    return getNonNull(userProfile.getResearchAreasText());
+  }
+
+  /**
+   * @param researchAreasText researchAreasText
+   */
+  public void setResearchAreasText(final String researchAreasText) {
+    userProfile.setResearchAreasText(researchAreasText);
+  }
+
+  private String getNonNull(final String value) {
+    return null == value ? StringUtils.EMPTY : value;
   }
 
 }

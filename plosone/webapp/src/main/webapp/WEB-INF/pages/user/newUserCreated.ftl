@@ -6,5 +6,10 @@
 	<body>
 		User was created with ID: ${internalId}.
 		<a href="${freemarker_config.getContext()}">Continue</a> on to PLoS ONE
-	</body>
+
+    <br/>
+    <@ww.url id="displayUserURL" namespace="/user/secure" action="displayUser" userId="${internalId}"/>
+    <@ww.a href="%{displayUserURL}">Display user info</@ww.a>
+
+  </body>
 </html>
