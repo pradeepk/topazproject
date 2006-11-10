@@ -8,9 +8,10 @@
 	CREATED BY	: MARGARET SHEAR
 	MODIFIED BY	: MARGARET SHEAR
 
+ 
    	------------------------------------------------------------- */	
 
-/* --- contains all annotation views, in order to set styles --- */
+/* --- contains all annotation views --- */
 .dialog			{ line-height: 1.4em; }
 /* dialog box styles */
 .dialog .hd		{ font-weight: bold; font-size: 1.2em; letter-spacing: -.03em; }
@@ -31,7 +32,7 @@
 #CommentDialog .dialog .tip 	{ background:transparent url(../images/pone_dialog_preview_pb.gif) no-repeat 0px 0px; margin-left:22px; margin-bottom:-22px; width:39px; height:22px; }
 #CommentDialog .dialog .tipu 	{ background:transparent url(../images/pone_dialog_preview_pt.gif) no-repeat 0px 0px; margin-left:22px; margin-top:-22px; width:39px; height:22px; }
 .dialog .tip.on,
-.dialog .tipu.on { display: block !important; }
+.dialog .tipu.on { display: block; }
 
 .dialog h5			{ margin: 0 0 10px 0; font-size: 1em; color: #333;}
 /* annotation post title */
@@ -57,10 +58,13 @@ div.comment .comment h6
 .preview	{ width: 32em; border: 3px solid #666; background: url(../images/pone_response_blockquote_bg.gif) repeat-x top;}
 .preview div.detail a { margin: 0 10px; }
 /* annotate is applied to dialog viewers in the annotation process */
-.annotate	{ width: 42em; border: 3px solid #0bf; background: #fff url(../images/pone_forms_bg.gif) repeat-x bottom;}
+.annotate	{ width: 42em; border: 3px solid #0bf; background: url(../images/pone_forms_bg.gif) repeat-x bottom;}
 
 /* comment wraps the contents of annotation blocks to apply padding */
 .comment	{ padding: 10px; }
+
+.loadingCycler { z-index: 9998 !important; }
+.loadingCycler img { z-index: 9999 !important; }
 
 /* --- viewer is full pane view --- */
 .viewer		{ }
@@ -130,10 +134,8 @@ div.comment .comment h6
 div.author blockquote{ background: #FFF; }
 div.author hd	{ background-color: #069; }
 
-
 div.response h3	{ font-size: 1.2em; font-weight: bold; margin: .25em 0;}
 div.response	{ margin: 15px 0 0 15px; border: 2px solid #ccc; border-width: 2px 2px 0 0; position: relative;/*  background-color: #ccc; */}
-
 
 div.response div.response { border: none; margin-top: -2px; border-top: 2px solid #ccc; position: relative;}
 div.response blockquote	{ background: #F5F5F6 url(../images/pone_response_blockquote_bg.gif) repeat-x bottom; margin: 0; padding: 10px 20px; font-style: normal; border: 1px solid #ccc; border-width: 1px 0 1px 2px; position: relative; }
