@@ -10,17 +10,20 @@
 package org.plos.user.service;
 
 import com.opensymphony.xwork.Action;
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.BasePlosoneTestCase;
 import org.plos.user.PlosOneUser;
+import org.plos.user.ProfileGrantEnum;
 import org.plos.user.action.DisplayUserAction;
 import org.topazproject.common.NoSuchIdException;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 
 public class UserServiceTest extends BasePlosoneTestCase {
   private static final String TEST_EMAIL = "testcase@topazproject.org";
@@ -66,6 +69,76 @@ public class UserServiceTest extends BasePlosoneTestCase {
     for (final String tId : topazIds) {
       getUserWebService().deleteUser(tId);
     }
+  }
+
+  public void testUserProfilePermission() {
+    final ProfileGrantEnum[] selected = new ProfileGrantEnum[]{
+            ProfileGrantEnum.DISPLAY_NAME,
+            ProfileGrantEnum.BIOGRAPHY,
+            ProfileGrantEnum.FIND_USERS_BY_PROF_FIELD,
+            ProfileGrantEnum.EMAIL
+    };
+
+    final String[] grants = new String[selected.length];
+
+    for (int i = 0; i < selected.length; i++) {
+      ProfileGrantEnum profileGrantEnum = selected[i];
+      grants[i] = profileGrantEnum.getGrant();
+    }
+
+    final Collection<ProfileGrantEnum> collection = ProfileGrantEnum.getUserProfilePermissionsForGrants(grants);
+    
+    for (final ProfileGrantEnum profileGrantEnum : collection) {
+      assertTrue(ArrayUtils.contains(selected, profileGrantEnum));
+      assertTrue(ArrayUtils.contains(grants, profileGrantEnum.getGrant()));
+    }
+  }
+
+  public void testCreateUserWithFieldVisibilitySet() throws Exception {
+    final String USER_EMAIL = UserServiceTest.TEST_EMAIL;
+    final String REAL_NAME = UserServiceTest.REAL_NAME;
+    final String AUTH_ID = UserServiceTest.AUTH_ID;
+    final String USERNAME = UserServiceTest.USERNAME;
+
+    final String topazId = createUser(AUTH_ID, USER_EMAIL, USERNAME, REAL_NAME);
+    ArrayList<String> topazIds = new ArrayList<String>();
+    topazIds.add(topazId);  //add for teardown
+
+    {
+      final ProfileGrantEnum[] selectedGrantEnums = new ProfileGrantEnum[]{
+                                                            ProfileGrantEnum.DISPLAY_NAME,
+                                                            ProfileGrantEnum.EMAIL,
+                                                            ProfileGrantEnum.BIOGRAPHY_TEXT
+                                                          };
+
+      getUserService().setProfileFieldsPublic(topazId, selectedGrantEnums);
+
+      final Collection<ProfileGrantEnum> fieldsThatArePublic = getUserService().getProfileFieldsThatArePublic(topazId);
+      for (final ProfileGrantEnum profileGrantEnum : fieldsThatArePublic) {
+        assertTrue(ArrayUtils.contains(selectedGrantEnums, profileGrantEnum));
+      }
+
+      assertFalse(ArrayUtils.contains(selectedGrantEnums, ProfileGrantEnum.COUNTRY));
+    }
+
+    {
+      final ProfileGrantEnum[] selectedGrantEnums = new ProfileGrantEnum[]{
+                                                              ProfileGrantEnum.EMAIL,
+                                                          };
+
+      getUserService().setProfileFieldsPublic(topazId, selectedGrantEnums);
+
+      final Collection<ProfileGrantEnum> fieldsThatArePublic = getUserService().getProfileFieldsThatArePublic(topazId);
+      for (final ProfileGrantEnum profileGrantEnum : fieldsThatArePublic) {
+        assertTrue(ArrayUtils.contains(selectedGrantEnums, profileGrantEnum));
+      }
+
+      assertFalse(ArrayUtils.contains(selectedGrantEnums, ProfileGrantEnum.DISPLAY_NAME));
+    }
+    for (final String tId : topazIds) {
+      getUserWebService().deleteUser(tId);
+    }
+
   }
 
   private void deleteAccount(final int num) throws NoSuchIdException, RemoteException {

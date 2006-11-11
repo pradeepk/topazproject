@@ -50,4 +50,11 @@ public interface Constants {
     int FLAG = 0x002;   //binary 0010
     int DELETE = 0x004; //binary 0100
   }
+
+  /**
+   * Permission constants
+   */
+  public interface Permission {
+    String ALL_PRINCIPALS = "http://rdf.topazproject.org/RDF/permissions#all";
+  }
 }

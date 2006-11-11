@@ -74,6 +74,43 @@ public class UserActionsTest extends BasePlosoneTestCase {
     getUserWebService().deleteUser(topazId);
   }
 
+  public void testCreateUserWithRightVisibilityOfFields() throws Exception {
+    final CreateUserAction createUserAction = getMockCreateUserAction(AUTH_ID);
+    createUserAction.setEmail(TEST_EMAIL);
+    createUserAction.setRealName(REAL_NAME);
+    createUserAction.setAuthId(AUTH_ID);
+    createUserAction.setUsername(USERNAME);
+    createUserAction.setOrganizationType(ORGANIZATION_TYPE);
+    createUserAction.setPostalAddress(POSTAL_ADDRESS);
+
+    final String[] privateFields = new String[]{"email", "realName", "username", "postalAddress"};
+    createUserAction.setPrivate(privateFields);
+
+    assertEquals(SUCCESS, createUserAction.execute());
+    final String topazId = createUserAction.getInternalId();
+    assertNotNull(topazId);
+
+    final DisplayUserAction displayUserAction = getDisplayUserAction();
+    displayUserAction.setUserId(topazId);
+    assertEquals(SUCCESS, displayUserAction.execute());
+
+    final PlosOneUser pou = displayUserAction.getPou();
+    assertEquals(TEST_EMAIL, pou.getEmail());
+    assertEquals(REAL_NAME, pou.getRealName());
+    assertEquals(USERNAME, pou.getDisplayName());
+    assertEquals(GIVENNAMES, pou.getGivennames());
+    assertEquals(POSITION_TYPE, pou.getPositionType());
+		assertEquals(ORGANIZATION_TYPE, pou.getOrganizationType());
+		assertEquals(POSTAL_ADDRESS, pou.getPostalAddress());
+		assertEquals(BIOGRAPHY_TEXT, pou.getBiographyText());
+		assertEquals(INTERESTS_TEXT, pou.getInterestsText());
+		assertEquals(RESEARCH_AREAS_TEXT, pou.getResearchAreasText());
+		assertEquals(CITY, pou.getCity());
+		assertEquals(COUNTRY, pou.getCountry());
+
+    getUserWebService().deleteUser(topazId);
+  }
+
   public void testCreateAdminUser() throws Exception {
     final CreateUserAction createUserAction = getMockCreateUserAction(AUTH_ID);
     createUserAction.setEmail(TEST_EMAIL);

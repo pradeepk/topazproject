@@ -6,7 +6,8 @@
  *
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
- */package org.plos.user;
+ */
+package org.plos.user;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
@@ -22,9 +23,7 @@ import java.util.Set;
 
 /**
  * Class to roll up access for a user into a PLoS ONE appplication specific object.
- * 
  * @author Stephen Cheng
- * 
  */
 
 public class PlosOneUser {
@@ -47,7 +46,6 @@ public class PlosOneUser {
 
   /**
    * Initializes a new PLoS ONE user
-   * 
    */
   public PlosOneUser() {
     userProfile = new UserProfile();
@@ -56,7 +54,7 @@ public class PlosOneUser {
 
   /**
    * Initializes a new PLoS ONE user and sets the authentication ID
-   * 
+   *
    * @param authId
    *          authentication ID of new user
    */
@@ -67,7 +65,7 @@ public class PlosOneUser {
 
   /**
    * Method to check to see if this was a migrated PLoS user or not.
-   * 
+   *
    * @return Returns true if the user is initialized (i.e. has chosen a username)
    */
   public boolean isInitialized() {
@@ -80,7 +78,7 @@ public class PlosOneUser {
   /**
    * Returns the userPrefs for the web services to use. Should never need to be used by the main
    * parts of the application.
-   * 
+   *
    * @return Returns the userPrefs.
    */
   public UserPreference[] getUserPrefs() {
@@ -105,7 +103,7 @@ public class PlosOneUser {
   /**
    * Sets the userPrefs for the back end web services. Should never need to be used by the main
    * parts of the application.
-   * 
+   *
    * @param inUserPrefs
    *          The userPrefs to set.
    */
@@ -317,7 +315,7 @@ public class PlosOneUser {
   }
 
   /**
-   * 
+   *
    * @return Returns the city.
    */
   public String getCity() {
@@ -325,7 +323,7 @@ public class PlosOneUser {
   }
 
   /**
-   * 
+   *
    * @param city
    *          The city to set.
    */
@@ -334,7 +332,7 @@ public class PlosOneUser {
   }
 
   /**
-   * 
+   *
    * @return Returns the country.
    */
   public String getCountry() {
@@ -342,7 +340,7 @@ public class PlosOneUser {
   }
 
   /**
-   * 
+   *
    * @param country
    *          The country to set.
    */
@@ -351,7 +349,7 @@ public class PlosOneUser {
   }
 
   /**
-   * 
+   *
    * @return array of categories user is subscribed to
    */
   public String[] getAlerts() {
@@ -359,7 +357,7 @@ public class PlosOneUser {
   }
 
   /**
-   * 
+   *
    * @param inAlerts
    *          the array of alert categories to set
    */
@@ -368,7 +366,7 @@ public class PlosOneUser {
   }
 
   /**
-   * 
+   *
    * @return email address alerts are being sent to
    */
   public String getAlertsEmailAddress() {
@@ -376,7 +374,7 @@ public class PlosOneUser {
   }
 
   /**
-   * 
+   *
    * @param inEmail
    *          the email to set
    */

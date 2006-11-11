@@ -9,11 +9,15 @@
  */
 package org.plos.user.service;
 
+import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import org.plos.Constants;
+import org.plos.permission.service.PermissionWebService;
 import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
+import org.plos.user.ProfileGrantEnum;
 import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.pap.UserPreference;
@@ -21,7 +25,10 @@ import org.topazproject.ws.pap.UserProfile;
 import org.topazproject.ws.users.NoSuchUserIdException;
 
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
 
 /**
  * Class to roll up web services that a user needs in PLoS ONE. Rest of application should generally
@@ -34,16 +41,17 @@ public class UserService extends BaseConfigurableService {
 
   private UserWebService userWebService;
   private UserRoleWebService userRoleWebService;
-
   private ProfileWebService profileWebService;
-
+  private PermissionWebService permissionWebService;
   private PreferencesWebService preferencesWebService;
 
   private String applicationId;
-
   private String emailAddressUrl;
 
+  private final static String[] allUserProfileFieldGrants = getAllUserProfileFieldGrants();
+
   private static final Log log = LogFactory.getLog(UserService.class);
+  private final String[] ALL_PRINCIPALS = new String[]{Constants.Permission.ALL_PRINCIPALS};
 
   /**
    * Create a new user account and associate a single authentication id with it.
@@ -238,8 +246,96 @@ public class UserService extends BaseConfigurableService {
   }
 
   /**
+   * Get the ProfileGrantEnum for the profile fields that are public
+   * @param topazId topazId
+   * @throws ApplicationException ApplicationException
+   * @return the collection of ProfileGrantEnum
+   */
+  public Collection<ProfileGrantEnum> getProfileFieldsThatArePublic(final String topazId) throws ApplicationException {
+    try {
+      final String[] grants = permissionWebService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
+
+      final Collection<String> result = new ArrayList<String>(grants.length);
+      for (final String grant : grants) {
+        if (ArrayUtils.contains(allUserProfileFieldGrants, grant)) {
+          result.add(grant);
+        }
+      }
+
+      return ProfileGrantEnum.getUserProfilePermissionsForGrants(result.toArray(new String[result.size()]));
+
+    } catch (RemoteException ex) {
+      throw new ApplicationException("Unable to fetch the access rights on the profile fields", ex);
+    }
+  }
+
+  /**
+   * Set the selected profileGrantEnums on the given topaz profile to be private for the user making this call.
+   * All the other fields will be set as public.
+   *
+   * @param topazId topazId
+   * @param profileGrantEnums profileGrantEnums
+   * @throws ApplicationException ApplicationException
+   */
+  public void setProfileFieldsPrivate(final String topazId, final ProfileGrantEnum[] profileGrantEnums) throws ApplicationException {
+    final String[] grants = getGrants(profileGrantEnums);
+
+    final ArrayList<String> allGrants = getAllUserProfileGrants();
+    allGrants.removeAll(Arrays.asList(grants));
+
+    setProfileFieldsPublic(topazId, grants);
+  }
+
+  /**
+   * Set the selected profileGrantEnums on the given topaz profile for all the users as public.
+   * All the other fields will be set as private.
+   *
+   * @param topazId topazId
+   * @param profileGrantEnums profileGrantEnums
+   * @throws ApplicationException ApplicationException
+   */
+  public void setProfileFieldsPublic(final String topazId, final ProfileGrantEnum[] profileGrantEnums) throws ApplicationException {
+    final String[] grants = getGrants(profileGrantEnums);
+    setProfileFieldsPublic(topazId, grants);
+  }
+
+  private void setProfileFieldsPublic(final String topazId, final String[] grants) throws ApplicationException {
+    try {
+      //Cancel all grants first
+      permissionWebService.cancelGrants(topazId, allUserProfileFieldGrants, ALL_PRINCIPALS);
+      //Now add the grants as requested
+      permissionWebService.grant(topazId, grants, ALL_PRINCIPALS);
+    } catch (RemoteException e) {
+      throw new ApplicationException("Failed to set the userProfilePermission on the profile fields", e);
+    }
+  }
+
+  private ArrayList<String> getAllUserProfileGrants() {
+    return new ArrayList<String>(Arrays.asList(allUserProfileFieldGrants));
+  }
+
+  private String[] getGrants(final ProfileGrantEnum[] grantEnums) {
+    final List<String> grantsList = new ArrayList<String>(grantEnums.length);
+    for (final ProfileGrantEnum grantEnum : grantEnums) {
+      grantsList.add(grantEnum.getGrant());
+    }
+
+    return grantsList.toArray(new String[grantsList.size()]);
+  }
+
+  private static String[] getAllUserProfileFieldGrants() {
+    final ProfileGrantEnum[] profileGrantEnums = ProfileGrantEnum.values();
+    final Collection<String> allGrantsList =  new ArrayList<String>(profileGrantEnums.length);
+    for (final ProfileGrantEnum allProfileGrantEnum : profileGrantEnums) {
+      allGrantsList.add(allProfileGrantEnum.getGrant());
+    }
+
+    return allGrantsList.toArray(new String[profileGrantEnums.length]);
+  }
+
+  /**
    * Retrieves user preferences for this application and this Topaz user ID
-   * 
+   *
    * @param appId
    *          application ID
    * @param topazUserId
@@ -260,7 +356,7 @@ public class UserService extends BaseConfigurableService {
 
   /**
    * Writes the preferences for the given user to the store
-   * 
+   *
    * @param inUser
    *          User whose preferences should be written
    * @throws ApplicationException ApplicationException
@@ -275,7 +371,7 @@ public class UserService extends BaseConfigurableService {
 
   /**
    * Writes the preferences for the user ID and application ID to the store.
-   * 
+   *
    * @param appId
    *          application ID
    * @param topazUserId
@@ -418,5 +514,23 @@ public class UserService extends BaseConfigurableService {
    */
   public void setEmailAddressUrl(final String emailAddressUrl) {
     this.emailAddressUrl = emailAddressUrl;
+  }
+
+  /**
+   * Getter for property 'permissionWebService'.
+   *
+   * @return Value for property 'permissionWebService'.
+   */
+  public PermissionWebService getPermissionWebService() {
+    return permissionWebService;
+  }
+
+  /**
+   * Setter for property 'permissionWebService'.
+   *
+   * @param permissionWebService Value to set for property 'permissionWebService'.
+   */
+  public void setPermissionWebService(final PermissionWebService permissionWebService) {
+    this.permissionWebService = permissionWebService;
   }
 }

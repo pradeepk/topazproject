@@ -6,6 +6,7 @@ package org.plos.annotation.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import org.plos.Constants;
 import org.plos.annotation.FlagUtil;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.service.BaseConfigurableService;
@@ -347,7 +348,7 @@ public class AnnotationService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    */
   public void setAnnotationPublic(final String annotationDoi) throws ApplicationException {
-    final String[] everyone = new String[]{AnnotationPermission.ALL_PRINCIPALS};
+    final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
     try {
       permissionWebService.grant(
               annotationDoi,

@@ -14,15 +14,17 @@ import static com.opensymphony.xwork.Action.SUCCESS;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
+import org.plos.Constants;
 import org.plos.annotation.service.Annotation;
-import org.plos.annotation.service.AnnotationPermission;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.Reply;
 import org.plos.article.action.FetchArticleAction;
 import org.plos.permission.service.PermissionWebService;
 import org.topazproject.ws.annotation.Annotations;
+import org.topazproject.ws.article.DuplicateArticleIdException;
 
+import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -39,7 +41,25 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
   private static final Log log = LogFactory.getLog(AnnotationActionsTest.class);
   private static String annotationId = "doi:somedefaultvalue";
   private final String PROFANE_WORD = "BUSH";
-  private String testXmlTarget = "file:webapp/src/test/resources/test.xml";
+//  private String testXmlTarget = "file:webapp/src/test/resources/test.xml";
+  private String testXmlTarget = "info:doi/10.1371/journal.pone.0000008";
+
+
+  protected void onSetUp() throws Exception {
+    super.onSetUp();
+
+    String BASE_TEST_PATH = "src/test/resources/";
+    final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
+
+    final URL article = getAsUrl(resourceToIngest);
+
+    try {
+      testXmlTarget = getArticleWebService().ingest(article);
+    } catch(DuplicateArticleIdException ex) {
+      //article has already been ingested
+    }
+
+  }
 
   public void testSequencedTests() throws Exception {
     deleteAllAnnotations(target);
@@ -439,7 +459,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final Annotation annotation = retrieveAnnotation(annotationId);
     assertTrue(annotation.isPublic());
 
-    final List<String> grantsList = Arrays.asList(permissionWebService.listGrants(annotationId, AnnotationPermission.ALL_PRINCIPALS));
+    final List<String> grantsList = Arrays.asList(permissionWebService.listGrants(annotationId, Constants.Permission.ALL_PRINCIPALS));
     assertTrue(grantsList.contains(Annotations.Permissions.GET_ANNOTATION_INFO));
 
     final String currentUser = ANON_PRINCIPAL;
@@ -462,7 +482,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     permissionWebService.cancelGrants(
             annotationId,
             new String[] {Annotations.Permissions.GET_ANNOTATION_INFO},
-            new String[] {AnnotationPermission.ALL_PRINCIPALS}
+            new String[] {Constants.Permission.ALL_PRINCIPALS}
     );
   }
 

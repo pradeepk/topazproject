@@ -45,6 +45,7 @@ public class CreateUserAction extends UserActionSupport {
   private String researchAreasText;
   private String city;
   private String country;
+  private String[] privateFields;
 
   /**
    * Will take the CAS ID and create a user in Topaz associated with that auth ID. If auth ID
@@ -364,5 +365,21 @@ public class CreateUserAction extends UserActionSupport {
    */
   public void setTopazId(final String topazId) {
     this.topazId = topazId;
+  }
+
+  /**
+   * Set the private fields
+   * @param privateFields privateFields
+   */
+  public void setPrivate(final String[] privateFields) {
+    this.privateFields = privateFields;
+  }
+
+  /**
+   * Get the private fields
+   * @return the private fields
+   */
+  public String[] getPrivateFields() {
+    return privateFields;
   }
 }
