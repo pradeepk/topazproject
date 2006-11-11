@@ -124,9 +124,8 @@ public class PreferencesImpl implements Preferences {
         public void handleCreated(TopazContext ctx, Object handle) {
           if (handle instanceof ItqlHelper) {
             ItqlHelper itql = (ItqlHelper) handle;
-            itql.getAliases().putAll(aliases);
             try {
-              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
             } catch (IOException e) {
               log.warn("failed to create model " + MODEL, e);
             }
@@ -147,8 +146,7 @@ public class PreferencesImpl implements Preferences {
       throws IOException, ConfigurationException {
     this.pep  = pep;
 
-    itql.getAliases().putAll(aliases);
-    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
 
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
     conf = conf.subset("topaz");
@@ -207,7 +205,7 @@ public class PreferencesImpl implements Preferences {
       String qry = ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId) +
                    ItqlHelper.bindValues(ITQL_GET_PREFS, "userId", userId,
                                          "appId", formatAppId(appId));
-      ans = new StringAnswer(itql.doQuery(qry));
+      ans = new StringAnswer(itql.doQuery(qry, aliases));
     } catch (AnswerException ae) {
       throw new RemoteException("Error getting preferences for user '" + userId + "'", ae);
     }
@@ -291,7 +289,7 @@ public class PreferencesImpl implements Preferences {
         cmd.append(" into ").append(MODEL).append(";");
       }
 
-      itql.doUpdate(cmd.toString());
+      itql.doUpdate(cmd.toString(), aliases);
 
       itql.commitTxn(txn);
       txn = null;
@@ -331,7 +329,7 @@ public class PreferencesImpl implements Preferences {
     ItqlHelper itql = ctx.getItqlHelper();
     try {
       String qry = ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId);
-      StringAnswer ans = new StringAnswer(itql.doQuery(qry));
+      StringAnswer ans = new StringAnswer(itql.doQuery(qry, aliases));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       return rows.size() > 0;
     } catch (AnswerException ae) {

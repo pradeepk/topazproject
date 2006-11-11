@@ -101,9 +101,8 @@ public class UserRolesImpl implements UserRoles {
         public void handleCreated(TopazContext ctx, Object handle) {
           if (handle instanceof ItqlHelper) {
             ItqlHelper itql = (ItqlHelper) handle;
-            itql.getAliases().putAll(aliases);
             try {
-              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
             }catch (IOException e) {
               log.warn("failed to create model " + MODEL, e);
             }
@@ -125,8 +124,7 @@ public class UserRolesImpl implements UserRoles {
     this.pep  = pep;
     this.ctx = new SimpleTopazContext(itql, null, null);
 
-    itql.getAliases().putAll(aliases);
-    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
 
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
     conf = conf.subset("topaz");
@@ -181,7 +179,7 @@ public class UserRolesImpl implements UserRoles {
     try {
       String qry = ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId) +
                    ItqlHelper.bindValues(ITQL_GET_ROLES, "userId", userId);
-      StringAnswer ans = new StringAnswer(itql.doQuery(qry));
+      StringAnswer ans = new StringAnswer(itql.doQuery(qry, aliases));
 
       List user = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       if (user.size() == 0)
@@ -241,7 +239,7 @@ public class UserRolesImpl implements UserRoles {
         cmd.append(" into ").append(MODEL).append(";");
       }
 
-      itql.doUpdate(cmd.toString());
+      itql.doUpdate(cmd.toString(), aliases);
 
       itql.commitTxn(txn);
       txn = null;
@@ -262,7 +260,7 @@ public class UserRolesImpl implements UserRoles {
     ItqlHelper itql = ctx.getItqlHelper();
     try {
       StringAnswer ans =
-          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId)));
+          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId), aliases));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       return rows.size() > 0;
     } catch (AnswerException ae) {

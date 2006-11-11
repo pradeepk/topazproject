@@ -152,8 +152,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     this.baseURI = null;
     this.ctx = new SimpleTopazContext(itql, null, null);
 
-    itql.getAliases().putAll(aliases);
-    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
   }
 
   /** 
@@ -171,9 +170,8 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
         public void handleCreated(TopazContext ctx, Object handle) {
           if (handle instanceof ItqlHelper) {
             ItqlHelper itql = (ItqlHelper) handle;
-            itql.getAliases().putAll(aliases);
             try {
-              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
             }catch (IOException e) {
               log.warn("failed to create model " + MODEL, e);
             }
@@ -196,8 +194,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     this.pep  = pep;
     this.ctx = new SimpleTopazContext(itql, apim, null);
 
-    itql.getAliases().putAll(aliases);
-    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
 
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
     conf = conf.subset("topaz");
@@ -272,7 +269,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       params.put("auth", auth);
       params.put("authId", ItqlHelper.escapeLiteral(authId));
 
-      itql.doUpdate(ItqlHelper.bindValues(ITQL_CREATE_ACCT, params));
+      itql.doUpdate(ItqlHelper.bindValues(ITQL_CREATE_ACCT, params), aliases);
 
       itql.commitTxn(txn);
 
@@ -284,7 +281,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
 
       if (findDupAuthId(itql, new String[] { authId }) != null) {
         try {
-          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_ACCT, "userId", userId));
+          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_ACCT, "userId", userId), aliases);
           itql.commitTxn(txn);
           txn = null;
         } catch (RemoteException re) {
@@ -319,7 +316,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       if (!userExists(itql, userId))
         throw new NoSuchUserIdException(userId);
 
-      itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_ACCT, "userId", userId));
+      itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_ACCT, "userId", userId), aliases);
 
       itql.commitTxn(txn);
       txn = null;
@@ -348,7 +345,8 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     ItqlHelper itql = ctx.getItqlHelper();
     try {
       StringAnswer ans =
-          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_GET_STATE, "userId", userId)));
+          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_GET_STATE, "userId", userId),
+                                        aliases));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       if (rows.size() == 0) {
         if (!userExists(itql, userId))
@@ -401,7 +399,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
                  append(state).append("'^^<xsd:int> ");
       cmd.append(" into ").append(MODEL).append(";");
 
-      itql.doUpdate(cmd.toString());
+      itql.doUpdate(cmd.toString(), aliases);
 
       itql.commitTxn(txn);
       txn = null;
@@ -425,7 +423,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       throws NoSuchUserIdException, RemoteException {
     try {
       String qry = ItqlHelper.bindValues(ITQL_GET_AUTH_IDS, "userId", userId);
-      StringAnswer ans = new StringAnswer(itql.doQuery(qry));
+      StringAnswer ans = new StringAnswer(itql.doQuery(qry, aliases));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       if (rows.size() == 0 && !userExists(itql, userId))
         throw new NoSuchUserIdException(userId);
@@ -504,7 +502,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       cmd.append(" into ").append(MODEL).append(";");
     }
 
-    itql.doUpdate(cmd.toString());
+    itql.doUpdate(cmd.toString(), aliases);
   }
 
   public String lookUpUserByAuthId(String authId) throws RemoteException {
@@ -524,7 +522,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     try {
       String qry =
           ItqlHelper.bindValues(ITQL_GET_USERID, "authId", ItqlHelper.escapeLiteral(authId));
-      StringAnswer ans = new StringAnswer(itql.doQuery(qry));
+      StringAnswer ans = new StringAnswer(itql.doQuery(qry, aliases));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       return (rows.size() > 0) ? ((String[]) rows.get(0))[0] : null;
     } catch (AnswerException ae) {
@@ -542,7 +540,8 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   protected boolean userExists(ItqlHelper itql, String userId) throws RemoteException {
     try {
       StringAnswer ans =
-          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId)));
+          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId),
+                                        aliases));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       return rows.size() > 0;
     } catch (AnswerException ae) {
@@ -572,7 +571,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     qry.append(ITQL_FIND_DUP_AUTHIDS_POST);
 
     try {
-      StringAnswer ans = new StringAnswer(itql.doQuery(qry.toString()));
+      StringAnswer ans = new StringAnswer(itql.doQuery(qry.toString(), aliases));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       return rows.size() > 0 ? ((String[]) rows.get(0))[0] : null;
     } catch (AnswerException ae) {

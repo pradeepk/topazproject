@@ -330,7 +330,7 @@ public class Ingester {
     sw.write(" into <" + model + ">;");
 
     // insert
-    itql.doUpdate(sw.toString());
+    itql.doUpdate(sw.toString(), null);
   }
 
   private static final boolean hasNonWS(CharSequence seq, int idx) {
@@ -491,7 +491,7 @@ public class Ingester {
     if (log.isDebugEnabled())
       log.debug("Indexed " + pid + ":\n" + result);
   }
-  
+
   private String dom2String(Node dom) {
     try {
       StringWriter sw = new StringWriter(500);

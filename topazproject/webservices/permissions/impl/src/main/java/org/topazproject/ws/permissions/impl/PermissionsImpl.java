@@ -96,9 +96,9 @@ public class PermissionsImpl implements Permissions {
 
   static private void initialize(ItqlHelper itql) {
     try {
-      itql.doUpdate("create " + GRANTS_MODEL + " " + GRANTS_MODEL_TYPE + ";");
-      itql.doUpdate("create " + REVOKES_MODEL + " " + REVOKES_MODEL_TYPE + ";");
-      itql.doUpdate("create " + PP_MODEL + " " + PP_MODEL_TYPE + ";");
+      itql.doUpdate("create " + GRANTS_MODEL + " " + GRANTS_MODEL_TYPE + ";", null);
+      itql.doUpdate("create " + REVOKES_MODEL + " " + REVOKES_MODEL_TYPE + ";", null);
+      itql.doUpdate("create " + PP_MODEL + " " + PP_MODEL_TYPE + ";", null);
     } catch (IOException e) {
       log.warn("failed to create grants, revokes and pp models", e);
     }
@@ -128,7 +128,7 @@ public class PermissionsImpl implements Permissions {
 
     try {
       itql.beginTxn(txn);
-      itql.doUpdate(cmd);
+      itql.doUpdate(cmd, null);
       itql.commitTxn(txn);
       txn = null;
     } catch (IOException e) {
@@ -322,7 +322,7 @@ public class PermissionsImpl implements Permissions {
 
     try {
       itql.beginTxn(txn);
-      itql.doUpdate(cmd);
+      itql.doUpdate(cmd, null);
       itql.commitTxn(txn);
       txn = null;
     } catch (IOException e) {
@@ -379,7 +379,7 @@ public class PermissionsImpl implements Permissions {
 
     try {
       itql.beginTxn(txn);
-      itql.doUpdate(cmd);
+      itql.doUpdate(cmd, null);
       itql.commitTxn(txn);
       txn = null;
     } catch (IOException e) {
@@ -410,7 +410,7 @@ public class PermissionsImpl implements Permissions {
 
       String       query = ItqlHelper.bindValues(ITQL_LIST, map);
 
-      StringAnswer ans  = new StringAnswer(ctx.getItqlHelper().doQuery(query));
+      StringAnswer ans  = new StringAnswer(ctx.getItqlHelper().doQuery(query, null));
       List         rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
 
       String[]     result = new String[rows.size()];
@@ -448,7 +448,7 @@ public class PermissionsImpl implements Permissions {
     query = ItqlHelper.bindValues(query, "s", subject, "p", predicate);
 
     try {
-      StringAnswer ans  = new StringAnswer(ctx.getItqlHelper().doQuery(query));
+      StringAnswer ans  = new StringAnswer(ctx.getItqlHelper().doQuery(query, null));
       List         rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
 
       String[]     result = new String[rows.size()];
@@ -480,7 +480,7 @@ public class PermissionsImpl implements Permissions {
     String query = ItqlHelper.bindValues(ITQL_INFER_PERMISSION, values);
 
     try {
-      StringAnswer ans  = new StringAnswer(ctx.getItqlHelper().doQuery(query));
+      StringAnswer ans  = new StringAnswer(ctx.getItqlHelper().doQuery(query, null));
       List         rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
 
       return rows.size() > 0;

@@ -134,10 +134,8 @@ public class RatingsImpl implements Ratings {
           if (handle instanceof ItqlHelper) {
             ItqlHelper itql = (ItqlHelper) handle;
 
-            itql.getAliases().putAll(aliases);
-
             try {
-              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
             } catch (IOException e) {
               log.warn("failed to create model " + MODEL, e);
             }
@@ -157,8 +155,7 @@ public class RatingsImpl implements Ratings {
   public RatingsImpl(ItqlHelper itql, RatingsPEP pep) throws IOException, ConfigurationException {
     this.pep  = pep;
 
-    itql.getAliases().putAll(aliases);
-    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
 
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
     conf = conf.subset("topaz");
@@ -233,7 +230,7 @@ public class RatingsImpl implements Ratings {
       String qry = ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId) +
                    ItqlHelper.bindValues(ITQL_GET_RATINGS, params);
 
-      ans = new StringAnswer(ctx.getItqlHelper().doQuery(qry));
+      ans = new StringAnswer(ctx.getItqlHelper().doQuery(qry, aliases));
     } catch (AnswerException ae) {
       throw new RemoteException("Error getting ratings for object '" + userId + "'", ae);
     }
@@ -361,7 +358,7 @@ public class RatingsImpl implements Ratings {
         cmd.append(" into ").append(MODEL).append(";");
       }
 
-      itql.doUpdate(cmd.toString());
+      itql.doUpdate(cmd.toString(), aliases);
 
       if (old_ratings != null) {
         for (Iterator iter = old_ratings.keySet().iterator(); iter.hasNext(); ) {
@@ -482,7 +479,7 @@ public class RatingsImpl implements Ratings {
     if (idx == 0)
       cmd.setLength(clr_len);   // don't insert anything if no stats
 
-    ctx.getItqlHelper().doUpdate(cmd.toString());
+    ctx.getItqlHelper().doUpdate(cmd.toString(), aliases);
   }
 
   public ObjectRatingStats[] getRatingStats(String appId, String object) throws RemoteException {
@@ -534,7 +531,7 @@ public class RatingsImpl implements Ratings {
     try {
       String qry =
           ItqlHelper.bindValues(ITQL_GET_STATS, "object", object, "appId", formatAppId(appId));
-      ans = new StringAnswer(ctx.getItqlHelper().doQuery(qry));
+      ans = new StringAnswer(ctx.getItqlHelper().doQuery(qry, aliases));
     } catch (AnswerException ae) {
       throw new RemoteException("Error getting ratings for object '" + object + "'", ae);
     }

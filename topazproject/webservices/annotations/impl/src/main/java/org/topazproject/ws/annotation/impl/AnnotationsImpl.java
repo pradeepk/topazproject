@@ -161,14 +161,6 @@ public class AnnotationsImpl implements Annotations {
     this.pep      = pep;
     this.ctx      = ctx;
     this.fedora   = new FedoraHelper(ctx);
-
-    ctx.addListener(new TopazContextListener() {
-        public void handleCreated(TopazContext ctx, Object handle) {
-          if (handle instanceof ItqlHelper) {
-            ((ItqlHelper) handle).setAliases(aliases);
-          }
-        }
-      });
   }
 
   /*
@@ -265,7 +257,7 @@ public class AnnotationsImpl implements Annotations {
       values.put("mediator", ItqlHelper.escapeLiteral(mediator));
     }
 
-    ctx.getItqlHelper().doUpdate(ItqlHelper.bindValues(create, values));
+    ctx.getItqlHelper().doUpdate(ItqlHelper.bindValues(create, values), aliases);
 
     if (log.isDebugEnabled())
       log.debug("created annotaion " + id + " for " + annotates + " annotated by " + body);
@@ -297,14 +289,14 @@ public class AnnotationsImpl implements Annotations {
 
     try {
       itql.beginTxn(txn);
-      itql.doUpdate(del);
+      itql.doUpdate(del, aliases);
 
       if (log.isDebugEnabled())
         log.debug("deleted " + id);
 
       for (int i = 0; i < preceding.length; i++) {
         del = ItqlHelper.bindValues(DELETE_ITQL, "id", preceding[i]);
-        itql.doUpdate(del);
+        itql.doUpdate(del, aliases);
 
         if (log.isDebugEnabled())
           log.debug("deleted preceding " + preceding[i]);
@@ -333,7 +325,7 @@ public class AnnotationsImpl implements Annotations {
     try {
       String query = ItqlHelper.bindValues(GET_ITQL, "id", id);
 
-      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
@@ -373,7 +365,7 @@ public class AnnotationsImpl implements Annotations {
 
       query = ItqlHelper.bindValues(query, values);
 
-      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -394,7 +386,7 @@ public class AnnotationsImpl implements Annotations {
     try {
       String query = ItqlHelper.bindValues(LATEST_ITQL, "id", id);
 
-      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -419,7 +411,7 @@ public class AnnotationsImpl implements Annotations {
     try {
       String query = ItqlHelper.bindValues(PRECEDING_ITQL, "id", id);
 
-      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -440,7 +432,7 @@ public class AnnotationsImpl implements Annotations {
 
     String set = ItqlHelper.bindValues(SET_STATE_ITQL, "id", id, "state", "" + state);
 
-    ctx.getItqlHelper().doUpdate(set);
+    ctx.getItqlHelper().doUpdate(set, aliases);
   }
 
   /*
@@ -464,7 +456,7 @@ public class AnnotationsImpl implements Annotations {
       else
         query += (" and $a <topaz:state> '" + state + "';");
 
-      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       return buildAnnotationInfoList(rows);
@@ -502,7 +494,7 @@ public class AnnotationsImpl implements Annotations {
 
     try {
       String query = ItqlHelper.bindValues(CHECK_ID_ITQL, "id", id);
-      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
@@ -581,7 +573,7 @@ public class AnnotationsImpl implements Annotations {
     query = ItqlHelper.bindValues(query, "id", id);
 
     try {
-      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       int    c    = rows.size();
@@ -606,7 +598,7 @@ public class AnnotationsImpl implements Annotations {
     try {
       String query = ItqlHelper.bindValues(PRECEDING_ALL_ITQL, "id", id);
 
-      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 

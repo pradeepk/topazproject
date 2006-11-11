@@ -208,7 +208,7 @@ public class ArticleImpl implements Article {
 
     ctx.getItqlHelper().doUpdate("insert <" + oldArt + "> <dc_terms:isReplacedBy> <" + newArt +
                                  "> <" + newArt + "> <dc_terms:replaces> <" + oldArt +
-                                 "> into " + MODEL + ";");
+                                 "> into " + MODEL + ";", null);
   }
 
   public void setState(String article, int state) throws NoSuchArticleIdException, RemoteException {
@@ -243,7 +243,7 @@ public class ArticleImpl implements Article {
 
         if (purge) {
           apim.purgeObject(DoiUtil.uri2PID(objList[idx]), "Purged object", false);
-          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_OBJ, "subj", objList[idx]));
+          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_OBJ, "subj", objList[idx]), null);
         } else {
           apim.modifyObject(DoiUtil.uri2PID(objList[idx]), "D", null, "Deleted object");
         }
@@ -284,7 +284,7 @@ public class ArticleImpl implements Article {
     ItqlHelper itql = ctx.getItqlHelper();
     try {
       String articlesQuery = ArticleFeed.getQuery(start, end, categories, authors, false);
-      StringAnswer articlesAnswer = new StringAnswer(itql.doQuery(articlesQuery));
+      StringAnswer articlesAnswer = new StringAnswer(itql.doQuery(articlesQuery, null));
       Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
 
       for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
@@ -299,7 +299,7 @@ public class ArticleImpl implements Article {
       }
 
       String detailsQuery = ArticleFeed.getDetailsQuery(articles.values());
-      StringAnswer detailsAnswer = new StringAnswer(itql.doQuery(detailsQuery));
+      StringAnswer detailsAnswer = new StringAnswer(itql.doQuery(detailsQuery, null));
       ArticleFeed.addArticlesDetails(articles, detailsAnswer);
 
       return ArticleFeed.buildXml(articles.values());
@@ -315,7 +315,7 @@ public class ArticleImpl implements Article {
     ItqlHelper itql = ctx.getItqlHelper();
     try {
       AnswerSet ans =
-          new AnswerSet(itql.doQuery(ItqlHelper.bindValues(ITQL_LIST_SEC_OBJS, "art", article)));
+          new AnswerSet(itql.doQuery(ItqlHelper.bindValues(ITQL_LIST_SEC_OBJS, "art", article), null));
       ans.next();
       AnswerSet.QueryAnswerSet rows = ans.getQueryResults();
 
@@ -362,7 +362,7 @@ public class ArticleImpl implements Article {
 
     ItqlHelper itql = ctx.getItqlHelper();
     StringAnswer ans =
-        new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_FIND_OBJS, "subj", subj)));
+        new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_FIND_OBJS, "subj", subj), null));
     List uris = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
     if (uris.size() == 0)
       throw new NoSuchArticleIdException(subj);
@@ -384,7 +384,7 @@ public class ArticleImpl implements Article {
   protected boolean articleExists(ItqlHelper itql, String art) throws RemoteException {
     try {
       StringAnswer ans =
-          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_TEST_ARTICLE, "art", art)));
+          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_TEST_ARTICLE, "art", art), null));
       List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       return rows.size() > 0;
     } catch (AnswerException ae) {
@@ -410,7 +410,7 @@ public class ArticleImpl implements Article {
         log.debug("setting representation '" + rep + "' for '" + obj + "'");
 
       itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_REP, "subj", obj,
-                                          "rep", ItqlHelper.escapeLiteral(rep)));
+                                          "rep", ItqlHelper.escapeLiteral(rep)), null);
 
       if (content != null) {
         String ct = content.getContentType();
@@ -438,7 +438,7 @@ public class ArticleImpl implements Article {
         map.put("rep", ItqlHelper.escapeLiteral(rep));
         map.put("size", Long.toString(bcis.getLength()));
         map.put("type", ItqlHelper.escapeLiteral(ct));
-        itql.doUpdate(ItqlHelper.bindValues(ITQL_CREATE_REP, map));
+        itql.doUpdate(ItqlHelper.bindValues(ITQL_CREATE_REP, map), null);
       } else {
         try {
           apim.purgeDatastream(DoiUtil.uri2PID(obj), rep, null, "Purged datastream", false);
@@ -539,7 +539,7 @@ public class ArticleImpl implements Article {
     ItqlHelper itql = ctx.getItqlHelper();
     try {
       AnswerSet ans =
-          new AnswerSet(itql.doQuery(ItqlHelper.bindValues(ITQL_GET_OBJ_INFO, "subj", obj)));
+          new AnswerSet(itql.doQuery(ItqlHelper.bindValues(ITQL_GET_OBJ_INFO, "subj", obj), null));
       ans.next();
       AnswerSet.QueryAnswerSet info = ans.getQueryResults();
 

@@ -153,11 +153,9 @@ public class AlertsImpl implements Alerts {
           if (handle instanceof ItqlHelper) {
             ItqlHelper itql = (ItqlHelper) handle;
 
-            itql.getAliases().putAll(aliases);
-
             try {
-              itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";");
-              itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";");
+              itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";", aliases);
+              itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";", aliases);
             } catch (IOException e) {
               log.warn("failed to create alerts models", e);
             }
@@ -179,9 +177,8 @@ public class AlertsImpl implements Alerts {
     this.pep = pep;
 
     ItqlHelper itql = new ItqlHelper(itqlService);
-    itql.getAliases().putAll(this.aliases);
-    itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";");
-    itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";");
+    itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";", aliases);
+    itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";", aliases);
 
     FedoraAPIM apim = APIMStubFactory.create(fedoraService);
     ctx = new SimpleTopazContext(itql, apim, null);
@@ -200,9 +197,8 @@ public class AlertsImpl implements Alerts {
     this.pep = null; // means we are super-user
 
     ItqlHelper itql = new ItqlHelper(mulgaraUri);
-    itql.getAliases().putAll(this.aliases);
-    itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";");
-    itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";");
+    itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";", aliases);
+    itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";", aliases);
     ctx = new SimpleTopazContext(itql, null, null);
   }
 
@@ -224,7 +220,7 @@ public class AlertsImpl implements Alerts {
     values.put("userId", userId);
     values.put("stamp", AlertsHelper.getTimestamp(cal));
     String query = ItqlHelper.bindValues(AlertsImpl.CREATE_USER_ITQL, values);
-    ctx.getItqlHelper().doUpdate(query);
+    ctx.getItqlHelper().doUpdate(query, aliases);
   }
 
   // See Alerts.java interface
@@ -236,7 +232,7 @@ public class AlertsImpl implements Alerts {
     values.put("ALERTS", AlertsImpl.MODEL_ALERTS);
     values.put("userId", userId);
     String query = ItqlHelper.bindValues(AlertsImpl.CLEAN_USER_ITQL, values);
-    ctx.getItqlHelper().doUpdate(query);
+    ctx.getItqlHelper().doUpdate(query, aliases);
   }
 
   // See Alerts.java interface
@@ -388,7 +384,7 @@ public class AlertsImpl implements Alerts {
     values.put("stamp", endDate);
     // TODO: This query should include count(*) from ARTICLES delimited by dates
     String query = ItqlHelper.bindValues(AlertsImpl.GET_NEXT_USERS_ITQL, values);
-    String response = ctx.getItqlHelper().doQuery(query);
+    String response = ctx.getItqlHelper().doQuery(query, aliases);
     Answer result = new Answer(response);
     QueryAnswer  answer = (QueryAnswer)result.getAnswers().get(0);
 
@@ -421,7 +417,7 @@ public class AlertsImpl implements Alerts {
     values.put("ALERTS", MODEL_ALERTS);
     values.put("userId", userId);
     String query = ItqlHelper.bindValues(AlertsImpl.GET_TIMESTAMP_ITQL, values);
-    StringAnswer result = new StringAnswer(ctx.getItqlHelper().doQuery(query));
+    StringAnswer result = new StringAnswer(ctx.getItqlHelper().doQuery(query, aliases));
     QueryAnswer  answer = (QueryAnswer)result.getAnswers().get(0);
 
     // If user has no timestamp yet, then return today
@@ -442,7 +438,7 @@ public class AlertsImpl implements Alerts {
     values.put("userId", userId);
     values.put("stamp", stamp);
     String query = ItqlHelper.bindValues(AlertsImpl.UPDATE_TIMESTAMP_ITQL, values);
-    ctx.getItqlHelper().doUpdate(query);
+    ctx.getItqlHelper().doUpdate(query, aliases);
   }
 
 
@@ -481,7 +477,7 @@ public class AlertsImpl implements Alerts {
   protected Collection getArticles(String query)
       throws RemoteException {
     try {
-      StringAnswer articlesAnswer = new StringAnswer(ctx.getItqlHelper().doQuery(query));
+      StringAnswer articlesAnswer = new StringAnswer(ctx.getItqlHelper().doQuery(query, aliases));
       Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
 
       for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
@@ -496,7 +492,7 @@ public class AlertsImpl implements Alerts {
       }
 
       String detailsQuery = ArticleFeed.getDetailsQuery(articles.values());
-      StringAnswer detailsAnswer = new StringAnswer(ctx.getItqlHelper().doQuery(detailsQuery));
+      StringAnswer detailsAnswer = new StringAnswer(ctx.getItqlHelper().doQuery(detailsQuery, aliases));
       ArticleFeed.addArticlesDetails(articles, detailsAnswer);
 
       return articles.values();

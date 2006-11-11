@@ -140,9 +140,8 @@ public class ProfilesImpl implements Profiles {
         public void handleCreated(TopazContext ctx, Object handle) {
           if (handle instanceof ItqlHelper) {
             ItqlHelper itql = (ItqlHelper) handle;
-            itql.getAliases().putAll(aliases);
             try {
-              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
             } catch (IOException e) {
               log.warn("failed to create model " + MODEL, e);
             }
@@ -165,8 +164,7 @@ public class ProfilesImpl implements Profiles {
     this.pep = pep;
 
     ItqlHelper itql = new ItqlHelper(mulgaraSvc);
-    itql.getAliases().putAll(aliases);
-    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";");
+    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
 
     FedoraAPIM apim = APIMStubFactory.create(fedoraSvc);
 
@@ -344,7 +342,7 @@ public class ProfilesImpl implements Profiles {
     qry.append(ITQL_FIND_USER_BY_PROF_POST);
 
     try {
-      AnswerSet ans = new AnswerSet(ctx.getItqlHelper().doQuery(qry.toString()));
+      AnswerSet ans = new AnswerSet(ctx.getItqlHelper().doQuery(qry.toString(), aliases));
       ans.next();
       AnswerSet.QueryAnswerSet rows = ans.getQueryResults();
 
@@ -489,7 +487,7 @@ public class ProfilesImpl implements Profiles {
       ItqlHelper itql = ctx.getItqlHelper();
       String qry = ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId) +
                    ItqlHelper.bindValues(ITQL_GET_PROFID, "userId", userId);
-      StringAnswer ans = new StringAnswer(itql.doQuery(qry));
+      StringAnswer ans = new StringAnswer(itql.doQuery(qry, aliases));
 
       List user = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
       if (user.size() == 0)
@@ -554,7 +552,7 @@ public class ProfilesImpl implements Profiles {
       cmd.append(" into ").append(MODEL).append(";");
     }
 
-    ctx.getItqlHelper().doUpdate(cmd.toString());
+    ctx.getItqlHelper().doUpdate(cmd.toString(), aliases);
   }
 
   private static final void addLiteralVal(StringBuffer buf, String subj, String pred, String lit) {
@@ -586,7 +584,7 @@ public class ProfilesImpl implements Profiles {
     try {
       String qry = ItqlHelper.bindValues(ITQL_TEST_USERID, "userId", userId) +
                    ItqlHelper.bindValues(ITQL_GET_PROF, "userId", userId);
-      ans = new StringAnswer(ctx.getItqlHelper().doQuery(qry));
+      ans = new StringAnswer(ctx.getItqlHelper().doQuery(qry, aliases));
     } catch (AnswerException ae) {
       throw new RemoteException("Error getting profile-info for user '" + userId + "'", ae);
     }

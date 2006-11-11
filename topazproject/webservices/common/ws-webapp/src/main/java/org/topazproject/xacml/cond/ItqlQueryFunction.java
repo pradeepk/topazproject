@@ -119,7 +119,7 @@ public class ItqlQueryFunction extends DBQueryFunction {
 
     // Execute the query
     try {
-      answer = new StringAnswer(itql.doQuery(query));
+      answer = new StringAnswer(itql.doQuery(query, null));
     } catch (Exception e) {
       throw new QueryException("query '" + query + "' execution failed.", e);
     } finally {

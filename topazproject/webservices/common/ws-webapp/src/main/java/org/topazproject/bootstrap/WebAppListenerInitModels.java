@@ -79,7 +79,7 @@ public class WebAppListenerInitModels implements ServletContextListener {
         if (log.isDebugEnabled())
           log.debug("topaz.models." + key + ": " + create);
 
-        itql.doUpdate(create);
+        itql.doUpdate(create, null);
       }
     } catch (Exception e) {
       log.warn("bootstrap of models failed", e);

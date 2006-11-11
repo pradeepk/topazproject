@@ -91,7 +91,6 @@ public class ItqlHelper {
   private final ItqlInterpreterBean interpreter;
   private       BeanReference       cleanupRef;
   private       boolean             inTransaction = false;
-  private       Map                 aliases = new HashMap();
 
   static {
     defaultAliases.put("rdf",      RDF_URI);
@@ -233,35 +232,6 @@ public class ItqlHelper {
 
   private void init() throws RemoteException {
     registerInstance(this);
-    setAliases(defaultAliases);
-  }
-
-  /** 
-   * Set the current list of aliases.
-   * 
-   * @param aliases the aliases to use; keys and values must be {@link java.lang.String String}'s
-   */
-  public void setAliases(Map aliases) {
-    /* Ideally we would send a bunch of iTQL alias commands. However, those are local to an
-     * ItqlInterpreter instance, which in turn is bound to a (http) session. The problem is
-     * that if there is a long period of inactivity that causes the server to time-out the
-     * session, then the ItqlInterpreter instance goes away and a new is created, meaning we
-     * loose the aliases. If we could easily detect this case then that wouldn't be a problem,
-     * but I know of no way to do so.
-     *
-     * Hence we do the aliases locally. It's a bit of a hack, since we don't truly parse the
-     * iTQL, but it seems to work for most cases.
-     */
-    this.aliases = aliases;
-  }
-
-  /** 
-   * Get the current list of aliases. 
-   * 
-   * @return the aliases; this map is "live"
-   */
-  public Map getAliases() {
-    return aliases;
   }
 
   /**
@@ -273,8 +243,17 @@ public class ItqlHelper {
     return new HashMap(defaultAliases);
   }
 
-  private String unalias(String itql) {
-    // this is not particularly sophisticated, but should catch most stuff
+  private String unalias(String itql, Map aliases) {
+    /* Ideally we would send a bunch of iTQL alias commands. However, those are local to an
+     * ItqlInterpreter instance, which in turn is bound to a (http) session. The problem is
+     * that if there is a long period of inactivity that causes the server to time-out the
+     * session, then the ItqlInterpreter instance goes away and a new is created, meaning we
+     * loose the aliases. If we could easily detect this case then that wouldn't be a problem,
+     * but I know of no way to do so.
+     *
+     * Hence we do the aliases locally. It's a bit of a hack, since we don't truly parse the
+     * iTQL, but it seems to work for most cases.
+     */
     for (Iterator iter = aliases.keySet().iterator(); iter.hasNext(); ) {
       String alias = (String) iter.next();
       String uri   = (String) aliases.get(alias);
@@ -289,12 +268,17 @@ public class ItqlHelper {
    * Run one or more iTQL queries. 
    * 
    * @param itql the iTQL query/queries to run
+   * @param aliases the aliases to use or <code>null</code> for default; 
+   *                keys and values must be {@link java.lang.String String}'s
    * @return the answer as an XML string; use one of the Answer classes to parse it
    * @throws ItqlInterpreterException if an exception was encountered while processing the queries
    * @throws RemoteException if an exception occurred talking to the service
    */
-  public String doQuery(String itql) throws ItqlInterpreterException, RemoteException {
-    itql = unalias(itql);
+  public String doQuery(String itql, Map aliases) throws ItqlInterpreterException, RemoteException {
+    if (aliases == null)
+      aliases = defaultAliases;
+
+    itql = unalias(itql, aliases);
     if (!itql.trim().endsWith(";"))
       itql += ";";
 
@@ -313,11 +297,16 @@ public class ItqlHelper {
    * Run one or more iTQL update commands (or any commands that do not produce output).
    * 
    * @param itql the iTQL statement(s) to execute
+   * @param aliases the aliases to use or <code>null</code> for default; 
+   *                keys and values must be {@link java.lang.String String}'s
    * @throws ItqlInterpreterException if an exception was encountered while processing the queries
    * @throws RemoteException if an exception occurred talking to the service
    */
-  public void doUpdate(String itql) throws ItqlInterpreterException, RemoteException {
-    itql = unalias(itql);
+  public void doUpdate(String itql, Map aliases) throws ItqlInterpreterException, RemoteException {
+    if (aliases == null)
+      aliases = defaultAliases;
+
+    itql = unalias(itql, aliases);
     if (!itql.trim().endsWith(";"))
       itql += ";";
 

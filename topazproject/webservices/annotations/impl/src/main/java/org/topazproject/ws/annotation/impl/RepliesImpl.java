@@ -157,14 +157,6 @@ public class RepliesImpl implements Replies {
     this.pep      = pep;
     this.ctx      = ctx;
     this.fedora   = new FedoraHelper(ctx);
-
-    ctx.addListener(new TopazContextListener() {
-        public void handleCreated(TopazContext ctx, Object handle) {
-          if (handle instanceof ItqlHelper) {
-            ((ItqlHelper) handle).setAliases(aliases);
-          }
-        }
-      });
   }
 
   /*
@@ -249,7 +241,7 @@ public class RepliesImpl implements Replies {
       create += ITQL_INSERT_MEDIATOR;
     }
 
-    ctx.getItqlHelper().doUpdate(ItqlHelper.bindValues(create, values));
+    ctx.getItqlHelper().doUpdate(ItqlHelper.bindValues(create, values), aliases);
 
     if (log.isDebugEnabled())
       log.debug("created reply " + id + " for " + inReplyTo + " with root " + root + " with body "
@@ -293,7 +285,7 @@ public class RepliesImpl implements Replies {
     try {
       itql.beginTxn(txn);
 
-      Answer ans = new Answer(itql.doQuery(query));
+      Answer ans = new Answer(itql.doQuery(query, aliases));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -318,7 +310,7 @@ public class RepliesImpl implements Replies {
           pids.add(fedora.uri2PID(body));
 
         String del = ItqlHelper.bindValues(ITQL_DELETE_ID, "id", id.toString());
-        itql.doUpdate(del);
+        itql.doUpdate(del, aliases);
       }
 
       itql.commitTxn(txn);
@@ -350,7 +342,7 @@ public class RepliesImpl implements Replies {
     try {
       String query = ItqlHelper.bindValues(ITQL_GET, "id", id);
 
-      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
@@ -374,7 +366,7 @@ public class RepliesImpl implements Replies {
     try {
       String query = ItqlHelper.bindValues(ITQL_LIST_REPLIES, "root", root, "inReplyTo", inReplyTo);
 
-      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -397,7 +389,7 @@ public class RepliesImpl implements Replies {
       String query =
         ItqlHelper.bindValues(ITQL_LIST_ALL_REPLIES, "root", root, "inReplyTo", inReplyTo);
 
-      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
 
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
@@ -471,7 +463,7 @@ public class RepliesImpl implements Replies {
 
     String set = ItqlHelper.bindValues(SET_STATE_ITQL, "id", id, "state", "" + state);
 
-    ctx.getItqlHelper().doUpdate(set);
+    ctx.getItqlHelper().doUpdate(set, aliases);
   }
 
   /*
@@ -494,7 +486,7 @@ public class RepliesImpl implements Replies {
       else
         query += (" and $a <topaz:state> '" + state + "';");
 
-      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       return buildReplyInfoList(rows);
@@ -506,7 +498,7 @@ public class RepliesImpl implements Replies {
   private URI checkId(URI id) throws RemoteException, NoSuchAnnotationIdException {
     try {
       String query = ItqlHelper.bindValues(ITQL_CHECK_ID, "id", id.toString());
-      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
@@ -527,7 +519,7 @@ public class RepliesImpl implements Replies {
       String query =
         ItqlHelper.bindValues(ITQL_CHECK_IN_REPLY_TO, "root", root.toString(), "inReplyTo",
                               inReplyTo.toString());
-      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query));
+      Answer ans  = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
       List   rows = ((Answer.QueryAnswer) ans.getAnswers().get(0)).getRows();
 
       if (rows.size() == 0)
