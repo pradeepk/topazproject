@@ -136,9 +136,7 @@
   <module role="fedora.server.security.Authorization" class="fedora.server.security.DefaultAuthorization">
     -->
     <comment>Builds and manages Fedora's authorization structure.</comment>
-    <!-- Disabled access check with Topaz; pending the seperation of mulgara service from Fedora
     <param name="access-service-uri" value="http://localhost:9090/access/services/AccessServicePort"/>
-    -->
     <param name="access-service-pdp" value="_default_"/>
    
     <param name="ALLOW-SURROGATES" value="false"/>

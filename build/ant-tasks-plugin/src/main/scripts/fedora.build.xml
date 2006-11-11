@@ -107,9 +107,7 @@
     <unjar src="${MULGARA_WAR}" dest="${TOMCAT_HOME}/webapps/mulgara"/>
     
     <!-- Install access-service -->
-    <!-- Disabled deployment of access check service; pending seperation of mulgara from Fedora
     <unjar src="${ACCESS_WAR}" dest="${TOMCAT_HOME}/webapps/access"/>
-    -->
   </target>
 
   <!-- Runs fedora-install IF the INSTALL propery/config is set - used by fedora-start -->
