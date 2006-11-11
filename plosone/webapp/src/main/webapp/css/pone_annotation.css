@@ -14,6 +14,8 @@
 /* detail wraps annotation post details such as date and posting time and username */
 div.detail{ font-size: .9em; color: #666; position: relative;}
 div.detail strong{ color: #444; /* strong wraps date and time for added emphasis and clarity */}
+.dialog .tip,
+.dialog .tipu { display: none; }
 #AnnotationDialog .dialog .tip 	{ background:transparent url(../images/pone_dialog_pb.gif) no-repeat 0px 0px; margin-left:22px; margin-bottom:-22px; width:39px; height:22px; }
 #AnnotationDialog .dialog .tipu 	{ background:transparent url(../images/pone_dialog_pt.gif) no-repeat 0px 0px; margin-left:22px; margin-top:-22px; width:39px; height:22px; }
 #CommentDialog .dialog .tip 	{ background:transparent url(../images/pone_dialog_preview_pb.gif) no-repeat 0px 0px; margin-left:22px; margin-bottom:-22px; width:39px; height:22px; }
@@ -42,13 +44,13 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .preview{ width: 32em; border: 3px solid #666; background: url(../images/pone_dialog_preview_bg.gif) repeat-x top;}
 .preview div.detail a { margin: 0 10px; }
 /* annotate is applied to dialog viewers in the annotation process */
-.annotate{ width: 42em; border: 3px solid #0bf; background: url(../images/pone_forms_bg.gif) repeat-x bottom;}
+.annotate{ width: 42em; border: 3px solid #0bf; background: #fff url(../images/pone_forms_bg.gif) repeat-x bottom;}
 
 /* comment wraps the contents of annotation blocks to apply padding */
 .comment{ padding: 10px; }
 
-.loadingCycler { z-index: 9998 !important; }
-.loadingCycler img { z-index: 9999 !important; }
+.loadingCycler { z-index: 99998 !important; }
+.loadingCycler img { z-index: 99999 !important; }
 
 .response fieldset{ border: none; }
 .response fieldset .reply{ display: block; margin: 10px 0; padding: 2px; border: 1px solid #ccc}
