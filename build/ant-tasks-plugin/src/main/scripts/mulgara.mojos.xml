@@ -47,7 +47,7 @@
 
       </parameters>
     </mojo>
-    
+
     <mojo>
       <goal>mulgara-start</goal>
 
@@ -89,7 +89,7 @@
           <property>INSTALL</property>
           <description>Whether we should install first</description>
         </parameter>
-        
+
         <parameter>
           <name>TOMCAT_HOME</name>
           <property>TOMCAT_HOME</property>
@@ -99,7 +99,7 @@
 
       </parameters>
     </mojo>
-    
+
     <mojo>
       <goal>mulgara-stop</goal>
 
@@ -127,9 +127,16 @@
           <defaultValue>mulgara-service</defaultValue>
         </parameter>
 
+        <parameter>
+          <name>TOMCAT_HOME</name>
+          <property>TOMCAT_HOME</property>
+          <description>The location of the tomcat 5.x installation. Must be the same as what
+              was given in the mulgara-start command.</description>
+        </parameter>
+
       </parameters>
     </mojo>
-    
+
     <mojo>
       <goal>mulgara-uninstall</goal>
 

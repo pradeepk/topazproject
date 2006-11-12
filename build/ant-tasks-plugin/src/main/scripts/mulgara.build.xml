@@ -112,7 +112,7 @@
 
   <!-- Stop mulgara -->
   <target name="mulgara-stop" depends="init,exec-ext">
-    <cargo containerId="tomcat5x" home="${home}" action="stop">
+    <cargo containerId="tomcat5x" home="${tomcathome}" action="stop">
       <configuration home="${tomcatconfig.dir}"/>
     </cargo>
   </target>
