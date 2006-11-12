@@ -53,6 +53,11 @@
       <artifactId>fedoragsearch-client</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>entity-resolver</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
   </dependencies>
 
 </project>

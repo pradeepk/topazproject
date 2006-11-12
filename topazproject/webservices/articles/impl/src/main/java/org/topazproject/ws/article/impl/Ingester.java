@@ -41,7 +41,6 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,11 +49,8 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.XMLReader;
-import org.xml.sax.helpers.XMLReaderFactory;
 
 import org.topazproject.common.impl.TopazContext;
 import org.topazproject.configuration.ConfigurationStore;
@@ -63,6 +59,7 @@ import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.ws.article.DuplicateArticleIdException;
 import org.topazproject.ws.article.IngestException;
 
+import org.topazproject.xml.transform.cache.CachedSource;
 import org.topazproject.fedoragsearch.service.FgsOperations;
 
 import net.sf.saxon.Controller;
@@ -530,23 +527,7 @@ public class Ingester {
    * This allows the stylesheets to access XML docs (such as pmc.xml) in the zip archive.
    */
   private static class ZipURIResolver extends URLResolver {
-    private static final String xmlReaderCName;
     private final Zip zip;
-
-    static {
-      /* Remember the name of the XMLReader class so we can use it in the XMLReaderFactory
-       * call. Note that we don't set the org.xml.sax.driver property because there seem to
-       * be cases where that property is removed again.
-       */
-      String cname = null;
-      try {
-        cname =
-            SAXParserFactory.newInstance().newSAXParser().getXMLReader().getClass().getName();
-      } catch (Exception e) {
-        log.warn("Failed to get the XMLReader class", e);
-      }
-      xmlReaderCName = cname;
-    }
 
     /** 
      * Create a new resolver that returns documents from the given zip.
@@ -579,152 +560,12 @@ public class Ingester {
         InputSource src = new InputSource(is);
         src.setSystemId(uri.toString());
 
-        XMLReader rdr = XMLReaderFactory.createXMLReader(xmlReaderCName);
-        rdr.setEntityResolver(new CachedEntityResolver());
-
-        return new SAXSource(rdr, src);
-
+        return new CachedSource(src);
       } catch (IOException ioe) {
         throw new TransformerException(ioe);
       } catch (SAXException se) {
         throw new TransformerException(se);
       }
-    }
-  }
-
-  private static class CachedEntityResolver implements EntityResolver {
-    private static final URLRetriever retriever;
-
-    static {
-      URLRetriever r = new NetworkURLRetriever(null);
-      try {
-        r = new ResourceURLRetriever(r);
-      } catch (IOException ioe) {
-        log.error("Error loading entity-cache map - continuing without it", ioe);
-      }
-      retriever = new MemoryCacheURLRetriever(r);
-    }
-
-    public InputSource resolveEntity(String publicId, String systemId) throws IOException {
-      if (log.isDebugEnabled())
-        log.debug("Resolving entity '" + systemId + "'");
-
-      byte[] res = retriever.retrieve(systemId);
-      if (log.isDebugEnabled())
-        log.debug("Entity '" + systemId + "' " + (res != null ? "found" : "not found"));
-
-      if (res == null)
-        return null;
-
-      InputSource is = new InputSource(new ByteArrayInputStream(res));
-      is.setPublicId(publicId);
-      is.setSystemId(systemId);
-
-      return is;
-    }
-  }
-
-  /** 
-   * Retrieve the content of a URL.
-   */
-  private static interface URLRetriever {
-    /** 
-     * Retrieve the contents of a URL as a byte[]. 
-     * 
-     * @param url the url to retrieve
-     * @return the contents, or null if not found
-     * @throws IOException if an error occurred retrieving the contents (other than not-found)
-     */
-    public byte[] retrieve(String url) throws IOException;
-  }
-
-  /**
-   * Look up the URL in an in-memory cache.
-   */
-  private static class MemoryCacheURLRetriever implements URLRetriever {
-    private final Map          cache = new HashMap();
-    private final URLRetriever delegate;
-
-    public MemoryCacheURLRetriever(URLRetriever delegate) {
-      this.delegate = delegate;
-    }
-
-    public synchronized byte[] retrieve(String url) throws IOException {
-      SoftReference ref = (SoftReference) cache.get(url);
-      byte[] res = (ref != null) ? (byte[]) ref.get() : null;
-
-      if (log.isDebugEnabled())
-        log.debug("Memory cache('" + url + "'): " +
-                  (res != null ? "found" : ref != null ? "expired" : "not found"));
-
-      if (res != null || delegate == null)
-        return res;
-
-      res = delegate.retrieve(url);
-      if (res == null)
-        return null;
-
-      if (log.isDebugEnabled())
-        log.debug("Caching '" + url + "'");
-
-      cache.put(url, new SoftReference(res));
-      return res;
-    }
-  }
-
-  /**
-   * Look up the URL in a resource cache.
-   */
-  private static class ResourceURLRetriever implements URLRetriever {
-    private static final String CONF_KEY = "topaz.articles.url_rsrc_map";
-    private static final String DEF_MAP  = "url_rsrc_map.properties";
-
-    private final Properties   urlMap;
-    private final URLRetriever delegate;
-
-    public ResourceURLRetriever(URLRetriever delegate) throws IOException {
-      this.delegate = delegate;
-
-      Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-      String map_file = conf.getString(CONF_KEY, DEF_MAP);
-      InputStream is = ResourceURLRetriever.class.getResourceAsStream(map_file);
-
-      urlMap = new Properties();
-      if (is != null)
-        urlMap.load(is);
-      else
-        log.info("url-map resource '" + map_file + "' not found - no map loaded");
-    }
-
-    public byte[] retrieve(String url) throws IOException {
-      String resource = urlMap.getProperty(url);
-
-      if (log.isDebugEnabled())
-        log.debug("Resource retriever ('" + url + "'): " +
-                  (resource != null ? "found" : "not found"));
-
-      if (resource == null)
-        return (delegate != null) ? delegate.retrieve(url) : null;
-
-      return IOUtils.toByteArray(ResourceURLRetriever.class.getResourceAsStream(resource));
-    }
-  }
-
-  /**
-   * Retrieve the URL over the network.
-   */
-  private static class NetworkURLRetriever implements URLRetriever {
-    private final URLRetriever delegate;
-
-    public NetworkURLRetriever(URLRetriever delegate) {
-      this.delegate = delegate;
-    }
-
-    public byte[] retrieve(String url) throws IOException {
-      if (log.isDebugEnabled())
-        log.debug("Network retriever ('" + url + "')");
-
-      return IOUtils.toByteArray(new URL(url).openStream());
     }
   }
 }
