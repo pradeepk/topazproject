@@ -18,6 +18,11 @@
       <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
+      <groupId>${pom.parent.groupId}</groupId>
+      <artifactId>ws-permissions-impl</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
+    <dependency>
       <groupId>cas</groupId>
       <artifactId>casclient</artifactId>
       <version>2.1.1</version>

@@ -5,9 +5,8 @@
   RuleCombiningAlgId="urn:oasis:names:tc:xacml:1.0:rule-combining-algorithm:first-applicable">
 
   <Description>
-    Deny all explicitly configured revokes. This rule additionally accepts
-    http://rdf.topazproject.org/RDF/permissions#all as the designator for 
-    all resources, permissions and principals.
+    Evaluates the is-revoked function on permissions service for the given 
+    resource, permission and principal.
   </Description>
 
   <Target>
@@ -18,56 +17,23 @@
     <Target>
       <AnyTarget/>
     </Target>
-    <Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-greater-than">
-      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
-        <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:itql">
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
-            select $s from &lt;?&gt; where ($s &lt;?&gt; &lt;?&gt; or 
-            $s &lt;?&gt; &lt;http://rdf.topazproject.org/RDF/permissions#all&gt; or
-            $s &lt;http://rdf.topazproject.org/RDF/permissions#all&gt; &lt;?&gt; or
-            $s &lt;http://rdf.topazproject.org/RDF/permissions#all&gt;
-            &lt;http://rdf.topazproject.org/RDF/permissions#all&gt;)
-            and ($s &lt;tucana:is&gt; &lt;?&gt; or 
-            $s &lt;tucana:is&gt; &lt;http://rdf.topazproject.org/RDF/permissions#all&gt; or
-            $s &lt;topaz:propagate-permissions-to&gt; &lt;?&gt; in &lt;?&gt;);
-          </AttributeValue>
-          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
-            <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-              AttributeId="topaz.models.revokes"/>   
-          </Apply>
-          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
-            <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-              AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>        
-          </Apply>
-          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
-            <SubjectAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
-              AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"/>   
-          </Apply>
-          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
-            <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-              AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>        
-          </Apply>
-          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
-            <SubjectAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
-              AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"/>   
-          </Apply>
-          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
-            <ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
-              AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>   
-          </Apply>
-          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
-            <ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
-              AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>   
-          </Apply>
-          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
-            <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-              AttributeId="topaz.models.pp"/>   
-          </Apply>
-        </Apply> 
+  
+    <Condition FunctionId="urn:topazproject:names:tc:xacml:1.0:function:is-revoked">
+      <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
+      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
+        <ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
+          AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>   
       </Apply>
-      <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#integer">0</AttributeValue>  
+      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+        <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
+          AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>        
+      </Apply>
+      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
+        <SubjectAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
+          AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"/>   
+      </Apply>
     </Condition>
+  
   </Rule>
 
   <Obligations>
