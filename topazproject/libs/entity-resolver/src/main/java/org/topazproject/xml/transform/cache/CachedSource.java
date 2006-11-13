@@ -16,7 +16,6 @@ import java.util.Properties;
 import javax.xml.transform.Source;
 import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
-import org.xml.sax.XMLReader;
 import org.xml.sax.SAXException;
 
 import org.apache.commons.logging.Log;
@@ -40,7 +39,7 @@ import org.topazproject.xml.transform.CustomEntityResolver;
  *   transformer.transform(new CachedSource(myInputSource), new StreamResult(outFileName));
  * </pre>
  *
- * @example Eric Brown and Ronald Tschalär
+ * @author Eric Brown and Ronald Tschalär
  * @version $Id$
  */
 public class CachedSource extends EntityResolvingSource implements Source {
@@ -63,12 +62,12 @@ public class CachedSource extends EntityResolvingSource implements Source {
     }
     resolver = new CustomEntityResolver(new MemoryCacheURLRetriever(r));
   }
-  
+
   /**
    * Construct a new CachedSource object.
    *
    * @param src is the source of the XML document
-   * @throws SAXException if we're unable to create an XMLReader (sound never happen)
+   * @throws SAXException if we're unable to create an XMLReader (should never happen)
    */
   public CachedSource(InputSource src) throws SAXException {
     super(src, resolver);
