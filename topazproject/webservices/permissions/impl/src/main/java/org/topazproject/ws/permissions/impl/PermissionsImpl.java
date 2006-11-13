@@ -325,8 +325,6 @@ public class PermissionsImpl implements Permissions {
       itql.doUpdate(cmd, null);
       itql.commitTxn(txn);
       txn = null;
-    } catch (IOException e) {
-      log.warn("failed to do " + txn, e);
     } finally {
       try {
         if (txn != null)
@@ -382,8 +380,6 @@ public class PermissionsImpl implements Permissions {
       itql.doUpdate(cmd, null);
       itql.commitTxn(txn);
       txn = null;
-    } catch (IOException e) {
-      log.warn("failed to store " + txn, e);
     } finally {
       try {
         if (txn != null)
