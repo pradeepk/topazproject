@@ -24,6 +24,8 @@ public class RepresentationInfo {
   private String contentType;
   /** The size, in bytes, of the representation content. */
   private long   size;
+  /** The URL at which the representation can be retrieved. */
+  private String url;
 
   /**
    * Get the name of the representation.
@@ -77,5 +79,23 @@ public class RepresentationInfo {
    */
   public void setSize(long size) {
     this.size = size;
+  }
+
+  /**
+   * Get the URL where this representation can be downloaded from.
+   *
+   * @return the URL.
+   */
+  public String getURL() {
+    return url;
+  }
+
+  /**
+   * Set the URL where this representation can be downloaded from.
+   *
+   * @param url the URL.
+   */
+  public void setURL(String url) {
+    this.url = url;
   }
 }

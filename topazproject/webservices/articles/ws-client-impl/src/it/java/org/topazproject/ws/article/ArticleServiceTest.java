@@ -157,14 +157,17 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-name mismatch", "HTML", ri[0].getName());
     assertEquals("ri-cont-type mismatch", "text/html", ri[0].getContentType());
     assertEquals("ri-size mismatch", 51284L, ri[0].getSize());
+    assertNotNull("null ri-url", ri[0].getURL());
 
     assertEquals("ri-name mismatch", "PDF", ri[1].getName());
     assertEquals("ri-cont-type mismatch", "application/pdf", ri[1].getContentType());
     assertEquals("ri-size mismatch", 81173L, ri[1].getSize());
+    assertNotNull("null ri-url", ri[1].getURL());
 
     assertEquals("ri-name mismatch", "XML", ri[2].getName());
     assertEquals("ri-cont-type mismatch", "text/xml", ri[2].getContentType());
     assertEquals("ri-size mismatch", 65680L, ri[2].getSize());
+    assertNotNull("null ri-url", ri[2].getURL());
 
     // test getObjectInfo on g001
     String secUri = uri + ".g001";
@@ -182,10 +185,12 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-name mismatch", "PNG", ri[0].getName());
     assertEquals("ri-cont-type mismatch", "image/png", ri[0].getContentType());
     assertEquals("ri-size mismatch", 52422L, ri[0].getSize());
+    assertNotNull("null ri-url", ri[0].getURL());
 
     assertEquals("ri-name mismatch", "TIF", ri[1].getName());
     assertEquals("ri-cont-type mismatch", "image/tiff", ri[1].getContentType());
     assertEquals("ri-size mismatch", 120432L, ri[1].getSize());
+    assertNotNull("null ri-url", ri[1].getURL());
 
     // test getObjectInfo on sv001
     secUri = uri + ".sv001";
@@ -201,6 +206,7 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-name mismatch", "MOV", ri[0].getName());
     assertEquals("ri-cont-type mismatch", "video/quicktime", ri[0].getContentType());
     assertEquals("ri-size mismatch", 0L, ri[0].getSize());
+    assertNotNull("null ri-url", ri[0].getURL());
 
     // clean up
     service.delete(uri, true);
@@ -239,14 +245,17 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-name mismatch", "HTML", ri[0].getName());
     assertEquals("ri-cont-type mismatch", "text/html", ri[0].getContentType());
     assertEquals("ri-size mismatch", 51284L, ri[0].getSize());
+    assertNotNull("null ri-url", ri[0].getURL());
 
     assertEquals("ri-name mismatch", "PDF", ri[1].getName());
     assertEquals("ri-cont-type mismatch", "application/pdf", ri[1].getContentType());
     assertEquals("ri-size mismatch", 81173L, ri[1].getSize());
+    assertNotNull("null ri-url", ri[1].getURL());
 
     assertEquals("ri-name mismatch", "XML", ri[2].getName());
     assertEquals("ri-cont-type mismatch", "text/xml", ri[2].getContentType());
     assertEquals("ri-size mismatch", 65680L, ri[2].getSize());
+    assertNotNull("null ri-url", ri[2].getURL());
 
     // create a new Representation
     service.setRepresentation(art, "TXT",
@@ -261,18 +270,22 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-name mismatch", "HTML", ri[0].getName());
     assertEquals("ri-cont-type mismatch", "text/html", ri[0].getContentType());
     assertEquals("ri-size mismatch", 51284L, ri[0].getSize());
+    assertNotNull("null ri-url", ri[0].getURL());
 
     assertEquals("ri-name mismatch", "PDF", ri[1].getName());
     assertEquals("ri-cont-type mismatch", "application/pdf", ri[1].getContentType());
     assertEquals("ri-size mismatch", 81173L, ri[1].getSize());
+    assertNotNull("null ri-url", ri[1].getURL());
 
     assertEquals("ri-name mismatch", "TXT", ri[2].getName());
     assertEquals("ri-cont-type mismatch", "text/plain", ri[2].getContentType());
     assertEquals("ri-size mismatch", 14L, ri[2].getSize());
+    assertNotNull("null ri-url", ri[2].getURL());
 
     assertEquals("ri-name mismatch", "XML", ri[3].getName());
     assertEquals("ri-cont-type mismatch", "text/xml", ri[3].getContentType());
     assertEquals("ri-size mismatch", 65680L, ri[3].getSize());
+    assertNotNull("null ri-url", ri[3].getURL());
 
     // update a Representation
     service.setRepresentation(art, "TXT",
@@ -287,18 +300,22 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-name mismatch", "HTML", ri[0].getName());
     assertEquals("ri-cont-type mismatch", "text/html", ri[0].getContentType());
     assertEquals("ri-size mismatch", 51284L, ri[0].getSize());
+    assertNotNull("null ri-url", ri[0].getURL());
 
     assertEquals("ri-name mismatch", "PDF", ri[1].getName());
     assertEquals("ri-cont-type mismatch", "application/pdf", ri[1].getContentType());
     assertEquals("ri-size mismatch", 81173L, ri[1].getSize());
+    assertNotNull("null ri-url", ri[1].getURL());
 
     assertEquals("ri-name mismatch", "TXT", ri[2].getName());
     assertEquals("ri-cont-type mismatch", "text/foo", ri[2].getContentType());
     assertEquals("ri-size mismatch", 18L, ri[2].getSize());
+    assertNotNull("null ri-url", ri[2].getURL());
 
     assertEquals("ri-name mismatch", "XML", ri[3].getName());
     assertEquals("ri-cont-type mismatch", "text/xml", ri[3].getContentType());
     assertEquals("ri-size mismatch", 65680L, ri[3].getSize());
+    assertNotNull("null ri-url", ri[3].getURL());
 
     // remove a Representation
     service.setRepresentation(art, "TXT", null);
@@ -312,14 +329,17 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-name mismatch", "HTML", ri[0].getName());
     assertEquals("ri-cont-type mismatch", "text/html", ri[0].getContentType());
     assertEquals("ri-size mismatch", 51284L, ri[0].getSize());
+    assertNotNull("null ri-url", ri[0].getURL());
 
     assertEquals("ri-name mismatch", "PDF", ri[1].getName());
     assertEquals("ri-cont-type mismatch", "application/pdf", ri[1].getContentType());
     assertEquals("ri-size mismatch", 81173L, ri[1].getSize());
+    assertNotNull("null ri-url", ri[1].getURL());
 
     assertEquals("ri-name mismatch", "XML", ri[2].getName());
     assertEquals("ri-cont-type mismatch", "text/xml", ri[2].getContentType());
     assertEquals("ri-size mismatch", 65680L, ri[2].getSize());
+    assertNotNull("null ri-url", ri[2].getURL());
 
     // remove a non-existent Representation
     service.setRepresentation(art, "TXT", null);
@@ -333,14 +353,17 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-name mismatch", "HTML", ri[0].getName());
     assertEquals("ri-cont-type mismatch", "text/html", ri[0].getContentType());
     assertEquals("ri-size mismatch", 51284L, ri[0].getSize());
+    assertNotNull("null ri-url", ri[0].getURL());
 
     assertEquals("ri-name mismatch", "PDF", ri[1].getName());
     assertEquals("ri-cont-type mismatch", "application/pdf", ri[1].getContentType());
     assertEquals("ri-size mismatch", 81173L, ri[1].getSize());
+    assertNotNull("null ri-url", ri[1].getURL());
 
     assertEquals("ri-name mismatch", "XML", ri[2].getName());
     assertEquals("ri-cont-type mismatch", "text/xml", ri[2].getContentType());
     assertEquals("ri-size mismatch", 65680L, ri[2].getSize());
+    assertNotNull("null ri-url", ri[2].getURL());
 
     // clean up
     service.delete(art, true);
@@ -416,46 +439,55 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("ri-name mismatch", "PNG", ri.getName());
     assertEquals("ri-cont-type mismatch", "image/png", ri.getContentType());
     assertEquals("ri-size mismatch", 52422L, ri.getSize());
+    assertNotNull("null ri-url", ri.getURL());
 
     ri = oi[0].getRepresentations()[1];
     assertEquals("ri-name mismatch", "TIF", ri.getName());
     assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
     assertEquals("ri-size mismatch", 120432L, ri.getSize());
+    assertNotNull("null ri-url", ri.getURL());
 
     ri = oi[1].getRepresentations()[0];
     assertEquals("ri-name mismatch", "TIF", ri.getName());
     assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
     assertEquals("ri-size mismatch", 375480L, ri.getSize());
+    assertNotNull("null ri-url", ri.getURL());
 
     ri = oi[2].getRepresentations()[0];
     assertEquals("ri-name mismatch", "TIF", ri.getName());
     assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
     assertEquals("ri-size mismatch", 170324L, ri.getSize());
+    assertNotNull("null ri-url", ri.getURL());
 
     ri = oi[3].getRepresentations()[0];
     assertEquals("ri-name mismatch", "TIF", ri.getName());
     assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
     assertEquals("ri-size mismatch", 458812L, ri.getSize());
+    assertNotNull("null ri-url", ri.getURL());
 
     ri = oi[4].getRepresentations()[0];
     assertEquals("ri-name mismatch", "TIF", ri.getName());
     assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
     assertEquals("ri-size mismatch", 164130L, ri.getSize());
+    assertNotNull("null ri-url", ri.getURL());
 
     ri = oi[5].getRepresentations()[0];
     assertEquals("ri-name mismatch", "TIF", ri.getName());
     assertEquals("ri-cont-type mismatch", "image/tiff", ri.getContentType());
     assertEquals("ri-size mismatch", 101566L, ri.getSize());
+    assertNotNull("null ri-url", ri.getURL());
 
     ri = oi[6].getRepresentations()[0];
     assertEquals("ri-name mismatch", "MOV", ri.getName());
     assertEquals("ri-cont-type mismatch", "video/quicktime", ri.getContentType());
     assertEquals("ri-size mismatch", 0L, ri.getSize());
+    assertNotNull("null ri-url", ri.getURL());
 
     ri = oi[7].getRepresentations()[0];
     assertEquals("ri-name mismatch", "MOV", ri.getName());
     assertEquals("ri-cont-type mismatch", "video/quicktime", ri.getContentType());
     assertEquals("ri-size mismatch", 0L, ri.getSize());
+    assertNotNull("null ri-url", ri.getURL());
 
     // clean up
     service.delete(art, true);

@@ -581,6 +581,9 @@ public class ArticleImpl implements Article {
       ri[idx] = new RepresentationInfo();
       ri[idx].setName((String) reps.get(idx));
       ri[idx].setSize(-1);
+
+      String path = "/fedora/get/" + DoiUtil.uri2PID(oi.getUri()) + "/" + ri[idx].getName();
+      ri[idx].setURL(fedoraServer.resolve(path).toString());
     }
 
     info.beforeFirst();
