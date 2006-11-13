@@ -16,11 +16,9 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.BasePlosoneTestCase;
 import org.plos.user.PlosOneUser;
-import org.plos.user.ProfileGrantEnum;
+import org.plos.user.UserProfileGrant;
 import org.plos.user.action.DisplayUserAction;
-import org.topazproject.common.NoSuchIdException;
 
-import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -72,29 +70,31 @@ public class UserServiceTest extends BasePlosoneTestCase {
   }
 
   public void testUserProfilePermission() {
-    final ProfileGrantEnum[] selected = new ProfileGrantEnum[]{
-            ProfileGrantEnum.DISPLAY_NAME,
-            ProfileGrantEnum.BIOGRAPHY,
-            ProfileGrantEnum.FIND_USERS_BY_PROF_FIELD,
-            ProfileGrantEnum.EMAIL
+    final UserProfileGrant[] selected = new UserProfileGrant[]{
+            UserProfileGrant.DISPLAY_NAME,
+            UserProfileGrant.BIOGRAPHY,
+            UserProfileGrant.FIND_USERS_BY_PROF_FIELD,
+            UserProfileGrant.EMAIL
     };
 
     final String[] grants = new String[selected.length];
 
     for (int i = 0; i < selected.length; i++) {
-      ProfileGrantEnum profileGrantEnum = selected[i];
+      UserProfileGrant profileGrantEnum = selected[i];
       grants[i] = profileGrantEnum.getGrant();
     }
 
-    final Collection<ProfileGrantEnum> collection = ProfileGrantEnum.getUserProfilePermissionsForGrants(grants);
+    final Collection<UserProfileGrant> collection = UserProfileGrant.getProfileGrantsForGrants(grants);
     
-    for (final ProfileGrantEnum profileGrantEnum : collection) {
+    for (final UserProfileGrant profileGrantEnum : collection) {
       assertTrue(ArrayUtils.contains(selected, profileGrantEnum));
       assertTrue(ArrayUtils.contains(grants, profileGrantEnum.getGrant()));
     }
   }
 
   public void testCreateUserWithFieldVisibilitySet() throws Exception {
+//    deleteTopazIdSeries(201,301,20);
+
     final String USER_EMAIL = UserServiceTest.TEST_EMAIL;
     final String REAL_NAME = UserServiceTest.REAL_NAME;
     final String AUTH_ID = UserServiceTest.AUTH_ID;
@@ -105,35 +105,35 @@ public class UserServiceTest extends BasePlosoneTestCase {
     topazIds.add(topazId);  //add for teardown
 
     {
-      final ProfileGrantEnum[] selectedGrantEnums = new ProfileGrantEnum[]{
-                                                            ProfileGrantEnum.DISPLAY_NAME,
-                                                            ProfileGrantEnum.EMAIL,
-                                                            ProfileGrantEnum.BIOGRAPHY_TEXT
+      final UserProfileGrant[] selectedGrantEnums = new UserProfileGrant[]{
+                                                            UserProfileGrant.DISPLAY_NAME,
+                                                            UserProfileGrant.EMAIL,
+                                                            UserProfileGrant.BIOGRAPHY_TEXT
                                                           };
 
       getUserService().setProfileFieldsPublic(topazId, selectedGrantEnums);
 
-      final Collection<ProfileGrantEnum> fieldsThatArePublic = getUserService().getProfileFieldsThatArePublic(topazId);
-      for (final ProfileGrantEnum profileGrantEnum : fieldsThatArePublic) {
+      final Collection<UserProfileGrant> fieldsThatArePublic = getUserService().getProfileFieldsThatArePublic(topazId);
+      for (final UserProfileGrant profileGrantEnum : fieldsThatArePublic) {
         assertTrue(ArrayUtils.contains(selectedGrantEnums, profileGrantEnum));
       }
 
-      assertFalse(ArrayUtils.contains(selectedGrantEnums, ProfileGrantEnum.COUNTRY));
+      assertFalse(ArrayUtils.contains(selectedGrantEnums, UserProfileGrant.COUNTRY));
     }
 
     {
-      final ProfileGrantEnum[] selectedGrantEnums = new ProfileGrantEnum[]{
-                                                              ProfileGrantEnum.EMAIL,
+      final UserProfileGrant[] selectedGrantEnums = new UserProfileGrant[]{
+                                                              UserProfileGrant.EMAIL,
                                                           };
 
-      getUserService().setProfileFieldsPublic(topazId, selectedGrantEnums);
+      getUserService().setProfileFieldsPrivate(topazId, selectedGrantEnums);
 
-      final Collection<ProfileGrantEnum> fieldsThatArePublic = getUserService().getProfileFieldsThatArePublic(topazId);
-      for (final ProfileGrantEnum profileGrantEnum : fieldsThatArePublic) {
-        assertTrue(ArrayUtils.contains(selectedGrantEnums, profileGrantEnum));
+      final Collection<UserProfileGrant> fieldsThatArePublic = getUserService().getProfileFieldsThatArePublic(topazId);
+      for (final UserProfileGrant profileGrantEnum : fieldsThatArePublic) {
+        assertFalse(ArrayUtils.contains(selectedGrantEnums, profileGrantEnum));
       }
 
-      assertFalse(ArrayUtils.contains(selectedGrantEnums, ProfileGrantEnum.DISPLAY_NAME));
+      assertTrue(fieldsThatArePublic.contains(UserProfileGrant.EMAIL));
     }
     for (final String tId : topazIds) {
       getUserWebService().deleteUser(tId);
@@ -141,7 +141,13 @@ public class UserServiceTest extends BasePlosoneTestCase {
 
   }
 
-  private void deleteAccount(final int num) throws NoSuchIdException, RemoteException {
+  private void deleteTopazIdSeries(final int startNum, final int endNum, final int step) throws Exception {
+    for (int i = startNum; i < endNum; i+= step) {
+        deleteAccount(i);
+    }
+  }
+
+  private void deleteAccount(final int num) throws Exception {
     try {
       getUserWebService().deleteUser("info:doi/10.1371/account/" + num);
     } catch (Exception ex) {
@@ -150,7 +156,7 @@ public class UserServiceTest extends BasePlosoneTestCase {
   }
 
   private String createUser(final String AUTH_ID, final String USER_EMAIL, final String USERNAME, final String REAL_NAME) throws ApplicationException {
-    String topazId = getUserService().createUser(AUTH_ID);
+    String topazId = getUserService().createUser(AUTH_ID, new String[]{});
     log.debug("topazId = " + topazId);
 
     final PlosOneUser newUser = new PlosOneUser(AUTH_ID);

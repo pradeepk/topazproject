@@ -17,7 +17,7 @@ import org.plos.Constants;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
-import org.plos.user.ProfileGrantEnum;
+import org.plos.user.UserProfileGrant;
 import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.pap.UserPreference;
@@ -58,13 +58,18 @@ public class UserService extends BaseConfigurableService {
    * 
    * @param authId
    *          the user's authentication id from CAS
+   * @param privateFields privateFields
    * @return the user's internal id
    * @throws ApplicationException
    *           if an error occured
    */
-  public String createUser(final String authId) throws ApplicationException {
+  public String createUser(final String authId, final String[] privateFields) throws ApplicationException {
     try {
-      return userWebService.createUser(authId);
+      final String topazId = userWebService.createUser(authId);
+      final Collection<UserProfileGrant> profileGrantsList = UserProfileGrant.getProfileGrantsForFields(privateFields);
+      final UserProfileGrant[] profileGrants = profileGrantsList.toArray(new UserProfileGrant[profileGrantsList.size()]);
+      setProfileFieldsPrivate(topazId, profileGrants);
+      return topazId;
     } catch (DuplicateIdException e) {
       throw new ApplicationException(e);
     } catch (RemoteException e) {
@@ -246,12 +251,12 @@ public class UserService extends BaseConfigurableService {
   }
 
   /**
-   * Get the ProfileGrantEnum for the profile fields that are public
+   * Get the UserProfileGrant for the profile fields that are public
    * @param topazId topazId
    * @throws ApplicationException ApplicationException
-   * @return the collection of ProfileGrantEnum
+   * @return the collection of UserProfileGrant
    */
-  public Collection<ProfileGrantEnum> getProfileFieldsThatArePublic(final String topazId) throws ApplicationException {
+  public Collection<UserProfileGrant> getProfileFieldsThatArePublic(final String topazId) throws ApplicationException {
     try {
       final String[] grants = permissionWebService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
 
@@ -262,7 +267,7 @@ public class UserService extends BaseConfigurableService {
         }
       }
 
-      return ProfileGrantEnum.getUserProfilePermissionsForGrants(result.toArray(new String[result.size()]));
+      return UserProfileGrant.getProfileGrantsForGrants(result.toArray(new String[result.size()]));
 
     } catch (RemoteException ex) {
       throw new ApplicationException("Unable to fetch the access rights on the profile fields", ex);
@@ -277,13 +282,14 @@ public class UserService extends BaseConfigurableService {
    * @param profileGrantEnums profileGrantEnums
    * @throws ApplicationException ApplicationException
    */
-  public void setProfileFieldsPrivate(final String topazId, final ProfileGrantEnum[] profileGrantEnums) throws ApplicationException {
-    final String[] grants = getGrants(profileGrantEnums);
+  public void setProfileFieldsPrivate(final String topazId, final UserProfileGrant[] profileGrantEnums) throws ApplicationException {
+    UserProfileGrant[] allUserProfileGrants = UserProfileGrant.values();
 
-    final ArrayList<String> allGrants = getAllUserProfileGrants();
-    allGrants.removeAll(Arrays.asList(grants));
+    for (final UserProfileGrant profileGrantEnum : profileGrantEnums) {
+      allUserProfileGrants = (UserProfileGrant[]) ArrayUtils.removeElement(allUserProfileGrants, profileGrantEnum);
+    }
 
-    setProfileFieldsPublic(topazId, grants);
+    setProfileFieldsPublic(topazId, allUserProfileGrants);
   }
 
   /**
@@ -294,19 +300,21 @@ public class UserService extends BaseConfigurableService {
    * @param profileGrantEnums profileGrantEnums
    * @throws ApplicationException ApplicationException
    */
-  public void setProfileFieldsPublic(final String topazId, final ProfileGrantEnum[] profileGrantEnums) throws ApplicationException {
+  public void setProfileFieldsPublic(final String topazId, final UserProfileGrant[] profileGrantEnums) throws ApplicationException {
     final String[] grants = getGrants(profileGrantEnums);
     setProfileFieldsPublic(topazId, grants);
   }
 
   private void setProfileFieldsPublic(final String topazId, final String[] grants) throws ApplicationException {
-    try {
-      //Cancel all grants first
-      permissionWebService.cancelGrants(topazId, allUserProfileFieldGrants, ALL_PRINCIPALS);
-      //Now add the grants as requested
-      permissionWebService.grant(topazId, grants, ALL_PRINCIPALS);
-    } catch (RemoteException e) {
-      throw new ApplicationException("Failed to set the userProfilePermission on the profile fields", e);
+    if (grants.length > 0) {
+      try {
+        //Cancel all grants first
+        permissionWebService.cancelGrants(topazId, allUserProfileFieldGrants, ALL_PRINCIPALS);
+        //Now add the grants as requested
+        permissionWebService.grant(topazId, grants, ALL_PRINCIPALS);
+      } catch (RemoteException e) {
+        throw new ApplicationException("Failed to set the userProfilePermission on the profile fields", e);
+      }
     }
   }
 
@@ -314,9 +322,9 @@ public class UserService extends BaseConfigurableService {
     return new ArrayList<String>(Arrays.asList(allUserProfileFieldGrants));
   }
 
-  private String[] getGrants(final ProfileGrantEnum[] grantEnums) {
+  private String[] getGrants(final UserProfileGrant[] grantEnums) {
     final List<String> grantsList = new ArrayList<String>(grantEnums.length);
-    for (final ProfileGrantEnum grantEnum : grantEnums) {
+    for (final UserProfileGrant grantEnum : grantEnums) {
       grantsList.add(grantEnum.getGrant());
     }
 
@@ -324,9 +332,9 @@ public class UserService extends BaseConfigurableService {
   }
 
   private static String[] getAllUserProfileFieldGrants() {
-    final ProfileGrantEnum[] profileGrantEnums = ProfileGrantEnum.values();
+    final UserProfileGrant[] profileGrantEnums = UserProfileGrant.values();
     final Collection<String> allGrantsList =  new ArrayList<String>(profileGrantEnums.length);
-    for (final ProfileGrantEnum allProfileGrantEnum : profileGrantEnums) {
+    for (final UserProfileGrant allProfileGrantEnum : profileGrantEnums) {
       allGrantsList.add(allProfileGrantEnum.getGrant());
     }
 

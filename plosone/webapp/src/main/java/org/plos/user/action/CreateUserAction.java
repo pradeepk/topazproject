@@ -60,7 +60,7 @@ public class CreateUserAction extends UserActionSupport {
 
     topazId = getUserService().lookUpUserByAuthId(authId);
     if (topazId == null) {
-      topazId = getUserService().createUser(authId);
+      topazId = getUserService().createUser(authId, privateFields);
     }
     if (log.isDebugEnabled()) {
       log.debug("Topaz ID: " + topazId + " with authID: " + authId);
@@ -371,7 +371,7 @@ public class CreateUserAction extends UserActionSupport {
    * Set the private fields
    * @param privateFields privateFields
    */
-  public void setPrivate(final String[] privateFields) {
+  public void setPrivateFields(final String[] privateFields) {
     this.privateFields = privateFields;
   }
 

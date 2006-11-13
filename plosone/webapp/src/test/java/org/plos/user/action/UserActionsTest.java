@@ -84,7 +84,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
     createUserAction.setPostalAddress(POSTAL_ADDRESS);
 
     final String[] privateFields = new String[]{"email", "realName", "username", "postalAddress"};
-    createUserAction.setPrivate(privateFields);
+    createUserAction.setPrivateFields(privateFields);
 
     assertEquals(SUCCESS, createUserAction.execute());
     final String topazId = createUserAction.getInternalId();

@@ -45,7 +45,7 @@ import java.util.List;
 /**
  * Enums for fieldnames and their corresponding grants to read the values.
  */
-public enum ProfileGrantEnum {
+public enum UserProfileGrant {
   EMAIL ("email", GET_EMAIL),
   REAL_NAME ("realName", GET_REAL_NAME),
   DISPLAY_NAME ("displayName", GET_DISP_NAME),
@@ -72,9 +72,9 @@ public enum ProfileGrantEnum {
 
   private final String fieldName; //name of the field
   private final String grant; //grant to read this field
-  private static Collection<ProfileGrantEnum> sortedProfileGrantEnums;
+  private static Collection<UserProfileGrant> sortedProfileGrants;
 
-  ProfileGrantEnum(final String fieldName, final String permission) {
+  UserProfileGrant(final String fieldName, final String permission) {
     this.fieldName = fieldName;
     this.grant = permission;
   }
@@ -88,14 +88,14 @@ public enum ProfileGrantEnum {
   }
 
   /**
-   * Return the ProfileGrantEnum for a list of grants.
+   * Return the UserProfileGrant for a list of grants.
    * @param grants grants
-   * @return collection of ProfileGrantEnum's
+   * @return collection of UserProfileGrant's
    */
-  public static Collection<ProfileGrantEnum> getUserProfilePermissionsForGrants(final String[] grants) {
+  public static Collection<UserProfileGrant> getProfileGrantsForGrants(final String[] grants) {
     final Predicate predicate = new Predicate() {
       public boolean evaluate(Object object) {
-        final ProfileGrantEnum permEnum = (ProfileGrantEnum) object;
+        final UserProfileGrant permEnum = (UserProfileGrant) object;
         return ArrayUtils.contains(grants, permEnum.getGrant());
       }
     };
@@ -104,14 +104,14 @@ public enum ProfileGrantEnum {
   }
 
   /**
-   * Return the ProfileGrantEnum for a list of fields.
+   * Return the UserProfileGrant for a list of fields.
    * @param fields fields
-   * @return collection of ProfileGrantEnum's
+   * @return collection of UserProfileGrant's
    */
-  public static Collection<ProfileGrantEnum> getUserProfilePermissionsForFields(final String[] fields) {
+  public static Collection<UserProfileGrant> getProfileGrantsForFields(final String[] fields) {
     final Predicate predicate = new Predicate() {
       public boolean evaluate(Object object) {
-        final ProfileGrantEnum permEnum = (ProfileGrantEnum) object;
+        final UserProfileGrant permEnum = (UserProfileGrant) object;
         return ArrayUtils.contains(fields, permEnum.getFieldName());
       }
     };
@@ -119,20 +119,20 @@ public enum ProfileGrantEnum {
     return selectProfileGrantEnums(fields, predicate);
   }
 
-  private static Collection<ProfileGrantEnum> selectProfileGrantEnums(final String[] values, final Predicate predicate) {
-    if (null == sortedProfileGrantEnums) {
-      sortedProfileGrantEnums = sortUserProfilePermissions();
+  private static Collection<UserProfileGrant> selectProfileGrantEnums(final String[] values, final Predicate predicate) {
+    if (null == sortedProfileGrants) {
+      sortedProfileGrants = sortProfileGrants();
     }
 
     Arrays.sort(values);
 
-    return CollectionUtils.select(sortedProfileGrantEnums, predicate);
+    return CollectionUtils.select(sortedProfileGrants, predicate);
   }
 
-  private static Collection<ProfileGrantEnum> sortUserProfilePermissions() {
-    final List<ProfileGrantEnum> list = Arrays.asList(values());
-    Collections.sort(list, new Comparator<ProfileGrantEnum>() {
-      public int compare(final ProfileGrantEnum o1, final ProfileGrantEnum o2) {
+  private static Collection<UserProfileGrant> sortProfileGrants() {
+    final List<UserProfileGrant> list = Arrays.asList(values());
+    Collections.sort(list, new Comparator<UserProfileGrant>() {
+      public int compare(final UserProfileGrant o1, final UserProfileGrant o2) {
         return o1.getGrant().compareTo(o2.getGrant());
       }
     });
