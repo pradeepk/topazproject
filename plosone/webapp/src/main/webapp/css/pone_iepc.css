@@ -31,5 +31,8 @@ IE PC fixes
 * html ul li a { height: 1%; }
 /* End */
 
-.multiple div.btn.close	a		{ margin-right: -16px; }
+* html .multiple div.btn.close	a		{ margin-right: -16px; }
 
+* html div.response { width: 98%; position: relative; margin: 0;}
+* html div.response * { border-color: #ccc; position: relative;}
+* html div.response div.response { margin-right: 0; }

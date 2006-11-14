@@ -7,7 +7,6 @@
 	
 	CREATED BY	: MARGARET SHEAR
 	MODIFIED BY	: MARGARET SHEAR
-
  
    	------------------------------------------------------------- */	
 
@@ -18,8 +17,10 @@ div.detail strong{ color: #444; /* strong wraps date and time for added emphasis
 .dialog .tipu { display: none; }
 #AnnotationDialog .dialog .tip 	{ background:transparent url(../images/pone_dialog_pb.gif) no-repeat 0px 0px; margin-left:22px; margin-bottom:-22px; width:39px; height:22px; }
 #AnnotationDialog .dialog .tipu 	{ background:transparent url(../images/pone_dialog_pt.gif) no-repeat 0px 0px; margin-left:22px; margin-top:-22px; width:39px; height:22px; }
-#CommentDialog .dialog .tip 	{ background:transparent url(../images/pone_dialog_preview_pb.gif) no-repeat 0px 0px; margin-left:22px; margin-bottom:-22px; width:39px; height:22px; }
-#CommentDialog .dialog .tipu 	{ background:transparent url(../images/pone_dialog_preview_pt.gif) no-repeat 0px 0px; margin-left:22px; margin-top:-22px; width:39px; height:22px; }
+#CommentDialog .dialog .tip,
+#CommentDialogMultiple .dialog .tip 	{ background:transparent url(../images/pone_dialog_preview_pb.gif) no-repeat 0px 0px; margin-left:22px; margin-bottom:-22px; width:39px; height:22px; }
+#CommentDialog .dialog .tipu,
+#CommentDialogMultiple .dialog .tipu 	{ background:transparent url(../images/pone_dialog_preview_pt.gif) no-repeat 0px 0px; margin-left:22px; margin-top:-22px; width:39px; height:22px; }
 .dialog .tip.on,
 .dialog .tipu.on { display: block; }
 
@@ -48,9 +49,6 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 
 /* comment wraps the contents of annotation blocks to apply padding */
 .comment{ padding: 10px; }
-
-.loadingCycler { z-index: 99998 !important; }
-.loadingCycler img { z-index: 99999 !important; }
 
 .response fieldset{ border: none; }
 .response fieldset .reply{ display: block; margin: 10px 0; padding: 2px; border: 1px solid #ccc}
@@ -97,10 +95,11 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .multiple dt .detail	{ font-weight: normal; margin-top: 4px;}
 .multiple ol			{ height: 100%; background-color: #fff;}
 .multiple li			{ margin: 0; padding: 0; background-color: #fff; vertical-align: bottom; width: 40%;}
+.multiple li dd   { display: none; }
 .multiple li.active		{ background-color: #FFF; color: #000; width: 100%;}
 .multiple span.detail 	{ display: block; font-weight: normal;}
 .multiple .active dt 	{ background: #fff; cursor: default; border-right: none;}
-.multiple .active dd	{ background-color: transparent; position: absolute; top: 3px; right: 0; width: 60%; z-index: 100; border: none; }
+.multiple .active dd	{ display: block; background-color: transparent; position: absolute; top: 3px; right: 0; width: 60%; z-index: 100; border: none; }
 .multiple div.contentwrap	{ border: none; }
 .multiple div.btn.close	a		{ margin: -10px -10px 5px 0; }
 /* multiple annotation post detail styles */

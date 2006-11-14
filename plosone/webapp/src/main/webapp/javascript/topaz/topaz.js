@@ -104,9 +104,12 @@ document.getElementsByTagAndAttributeName = function(tagName, attributeName) {
   
   for (var i = 0; i < children.length; i++) {
     var child = children[i];
-    if (child.attributes[attributeName] != null) {
+    if (child.getAttributeNode(attributeName) != null) {
       elements.push(child);
     }
+/*    else if (child.attributes[attributeName] != null) {
+      elements.push(child);
+    }*/
   }
 
   return elements;

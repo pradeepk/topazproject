@@ -4,23 +4,34 @@ var titleCue     = 'Enter your annotation title...';
 var commentCue   = 'Enter your annotation...';
 var btn_save;
 var btn_post;
-var submitMsg    = document.getElementById('submitMsg');
 
 function initAnnotationForm() {	
-	commentTitle     = document.getElementById("commentTitle");
-	comments         = document.getElementById("commentArea");
-	var privateFlag  = document.getElementById("privateFlag");
-	var publicFlag   = document.getElementById("publicFlag");
-	var btn_cancel    = document.getElementById("btn_cancel");
-  btn_save         = document.getElementById("btn_save");
-  btn_post         = document.getElementById("btn_post");
+	commentTitle     = annotationForm.cTitle;
+	comments         = annotationForm.cArea;
+	var privateFlag  = annotationForm.privateFlag;
+	var publicFlag   = annotationForm.publicFlag;
+	btn_save         = document.getElementById("btn_save");
+	btn_post         = document.getElementById("btn_post");
+	var btn_cancel   = document.getElementById("btn_cancel");
 	
 	// Annotation Dialog Box: Title field
 	dojo.event.connect(commentTitle, "onfocus", function () { 
 	  formUtil.textCues.off(commentTitle, titleCue); 
 	});
 	
+	dojo.event.connect(commentTitle, "onchange", function () {
+    if(annotationForm.cTitle.value != "" && annotationForm.cTitle.value != titleCue) {
+      var fldTitle = annotationForm.commentTitle;
+      fldTitle.value = annotationForm.cTitle.value;
+    }
+	});
+
 	dojo.event.connect(commentTitle, "onblur", function () { 
+    if(annotationForm.cTitle.value != "" && annotationForm.cTitle.value != titleCue) {
+      var fldTitle = annotationForm.commentTitle;
+      fldTitle.value = annotationForm.cTitle.value;
+    }
+
 	  formUtil.textCues.on(commentTitle, titleCue); 
 	});
 	
@@ -28,10 +39,22 @@ function initAnnotationForm() {
 	dojo.event.connect(comments, "onfocus", function () {
 	  formUtil.textCues.off(comments, commentCue);
 	});
+
+	dojo.event.connect(comments, "onchange", function () {
+    if(annotationForm.cArea.value != "" && annotationForm.cArea.value != commentCue) {
+      var fldTitle = annotationForm.comment;
+      fldTitle.value = annotationForm.cArea.value;
+    }
+	});
 	
 	dojo.event.connect(comments, "onblur", function () {
+    if(annotationForm.cArea.value != "" && annotationForm.cArea.value != commentCue) {
+      var fldTitle = annotationForm.comment;
+      fldTitle.value = annotationForm.cArea.value;
+    }
+
 	  formUtil.textCues.on(comments, commentCue); 
-	  formUtil.checkFieldStrLength(comments);
+	  //formUtil.checkFieldStrLength(comments);
 	});
 	
 	// Annotation Dialog Box: Private/Public radio buttons
@@ -51,12 +74,14 @@ function initAnnotationForm() {
 	
 	// Annotation Dialog Box: Save button
 	dojo.event.connect(btn_save, "onclick", function(e) {
+	  //getCommentValues();
     validateNewComment();
     e.preventDefault();
   });
   
 	// Annotation Dialog Box: Post buttons
 	dojo.event.connect(btn_post, "onclick", function(e) {
+	  //getCommentValues();
     validateNewComment();
     e.preventDefault();
   });
@@ -72,22 +97,37 @@ function initAnnotationForm() {
 }
 
 function validateNewComment() {
-  formUtil.textCues.off(commentTitle, titleCue);
-  formUtil.textCues.off(comments, commentCue);
+  //formUtil.textCues.off(commentTitle, titleCue);
+  //formUtil.textCues.off(comments, commentCue);
   var str = formUtil.checkFieldStrLength(comments);
+  var submitMsg = dojo.byId('submitMsg');
+  dojo.dom.removeChildren(submitMsg);
   
+  formUtil.disableFormFields(annotationForm);
+  //topaz.domUtil.addNewClass('post', ' disable');
+  
+  ldc.show();
+
   if (str < 0) {
      var bindArgs = {
       url: namespace + "/annotation/secure/createAnnotationSubmit.action",
       method: "post",
       error: function(type, data, evt){
        //alert("An error occurred." + data.toSource());
-       var err = document.createTextNode("ERROR:" + data.toSource());
+       var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
        submitMsg.appendChild(err);
+
+       formUtil.enableFormFields(annotationForm);
+       //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
+       ldc.hide();
+       
        return false;
       },
       load: function(type, data, evt){
        var jsonObj = dojo.json.evalJson(data);
+       
+       //alert("jsonObj:\n" + jsonObj.toSource());
+       //submitMsg.appendChild(document.createTextNode(jsonObj.toSource()));
        
        if (jsonObj.actionErrors.list.length > 0) {
          var errorMsg;
@@ -97,9 +137,13 @@ function validateNewComment() {
          }
          
          //alert("ERROR: " + errorMsg);
-         var err = document.createTextNode("ERROR:" + errorMsg);
+         var err = document.createTextNode("ERROR [Action]:" + errorMsg);
          submitMsg.appendChild(err);
+         formUtil.enableFormFields(annotationForm);
+         //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
          
+         ldc.hide();
+
          return false;
        }
        else if (jsonObj.numFieldErrors > 0) {
@@ -110,19 +154,27 @@ function validateNewComment() {
          }
          
          //alert("ERROR: " + fieldErrors);
-         var err = document.createTextNode("ERROR:" + fieldErrors);
+         var err = document.createTextNode("ERROR [Field]:" + fieldErrors);
          submitMsg.appendChild(err);
+         formUtil.enableFormFields(annotationForm);
+         //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
+
+         ldc.hide();
 
          return false;
        }
        else {
          getArticle();
+         dlg.hide();
+
+         formUtil.enableFormFields(annotationForm);
+         //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
          return false;
        }
        
       },
       mimetype: "text/plain",
-      formNode: document.getElementById("createAnnotation")
+      formNode: annotationForm
      };
      dojo.io.bind(bindArgs);
   }
@@ -132,14 +184,16 @@ function validateNewComment() {
 }  
 
 function getArticle() {
-  var refreshArea = document.getElementById(djConfig.articleContainer);
+  var refreshArea = dojo.byId(djConfig.articleContainer);
   var targetUri = annotationForm.target.value;
+
+  ldc.show();
   
   var bindArgs = {
     url: namespace + "/article/fetchBody.action?articleURI=" + targetUri,
     method: "get",
     error: function(type, data, evt){
-     //alert("ERROR:" + data.toSource());
+     alert("ERROR:" + data.toSource());
      var err = document.createTextNode("ERROR:" + data.toSource());
      //submitMsg.appendChild(err);
      return false;
@@ -147,6 +201,9 @@ function getArticle() {
     load: function(type, data, evt){
       var docFragment = document.createDocumentFragment();
       docFragment = data;
+
+      ldc.hide();
+
       refreshArea.innerHTML = docFragment;
       //dojo.dom.removeChildren(refreshArea);
       //refreshArea.appendChild(docFragment);
@@ -155,7 +212,6 @@ function getArticle() {
       formUtil.textCues.reset(comments, commentCue);
       
       topaz.displayComment.processBugCount();
-      dlg.hide();
       
       return false;
     },

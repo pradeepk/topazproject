@@ -54,6 +54,9 @@ topaz.annotation = {
   createAnnotationOnMouseDown: function (event) {
 	  formUtil.textCues.reset(commentTitle, titleCue); 
 	  formUtil.textCues.reset(comments, commentCue); 
+	  annotationForm.commentTitle.value = "";
+	  annotationForm.comment.value = "";
+	  
     var captureText = this.createNewAnnotation();
 		
     if ( captureText ) {
@@ -80,10 +83,10 @@ topaz.annotation = {
           "annotationConfig.rangeInfoObj.startXpath = "     + annotationConfig.rangeInfoObj.startXpath + "\n" +
           "annotationConfig.rangeInfoObj.endXpath = "       + annotationConfig.rangeInfoObj.endXpath + "\n" +
           "annotationConfig.rangeInfoObj.pageOffsetX = "    + annotationConfig.rangeInfoObj.pageOffsetX + "\n" +
-          "annotationConfig.rangeInfoObj.pageOffsetY = "    + annotationConfig.rangeInfoObj.pageOffsetY + "\n" +
-          "annotationConfig.rangeInfoObj.startAncestors = " + annotationConfig.rangeInfoObj.startAncestors + "\n" +
-          "annotationConfig.rangeInfoObj.endAncestors = "   + annotationConfig.rangeInfoObj.endAncestors);*/
-    
+          "annotationConfig.rangeInfoObj.pageOffsetY = "    + annotationConfig.rangeInfoObj.pageOffsetY);*/
+//          "annotationConfig.rangeInfoObj.startAncestors = " + annotationConfig.rangeInfoObj.startAncestors + "\n" +
+//          "annotationConfig.rangeInfoObj.endAncestors = "   + annotationConfig.rangeInfoObj.endAncestors);
+                      
     if (annotationConfig.rangeInfoObj == null) {
       alert("This area of text is not annotatable.");
     }
@@ -341,13 +344,13 @@ topaz.annotation = {
   getFirstAncestorByAttribute: function ( selfNode, targetAttribute ) {
     var parentalNode = selfNode;
     
-    while ( parentalNode.parentNode.attributes['xpathLocation'].nodeValue  == null && parentalNode.parentNode.attributes['xpathLocation'].nodeValue  == "" ) {
+    while ( parentalNode.parentNode.getAttributeNode('xpathLocation') == null || parentalNode.parentNode.getAttributeNode('xpathLocation').nodeValue  == "" ) {
       parentalNode = parentalNode.parentNode;
     }
     
     var parentObj = new Object();
-    parentObj.element = ( parentalNode.parentNode.attributes['xpathLocation'].nodeValue  == "noSelect" ) ? null : parentalNode.parentNode;
-    parentObj.xpathLocation = parentalNode.parentNode.attributes['xpathLocation'].nodeValue;
+    parentObj.element = ( parentalNode.parentNode.getAttributeNode('xpathLocation').nodeValue  == "noSelect" ) ? null : parentalNode.parentNode;
+    parentObj.xpathLocation = parentalNode.parentNode.getAttributeNode('xpathLocation').nodeValue;
     return parentObj;
   },
   
@@ -375,6 +378,8 @@ topaz.annotation = {
   
   promoteChild: function (obj, element, elName) {
     var childSearch = obj.getElementsByTagName(element);
+    
+    //alert("childSearch.length = " + childSearch.length);
     
     for (var i=0; i<childSearch.length; i++) {
     
@@ -692,7 +697,7 @@ topaz.annotation = {
   	var noteClass = annotationConfig.annotationMarker + " " + 
     //      					(annotationConfig.isAuthor ? "author-" : "self-") +
           					(annotationConfig.isPublic ? "public" : "private") +
-          					"-active";
+          					" active";
   	var noteTitle = (annotationConfig.isAuthor ? "Author" : annotationConfig.isPublic ? "User" : "My") + 
           					" Annotation " + 
           					(annotationConfig.isPublic ? "(Public)" : "(Private)");

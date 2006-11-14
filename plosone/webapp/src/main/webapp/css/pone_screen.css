@@ -3,7 +3,7 @@
 	GLOBAL STYLE SHEET FOR : www.plosone.org
 	
 	CREATED ON 	: 08-26-2006
-	MODIFIED ON : 10-18-2006
+	MODIFIED ON : 11-10-2006
 	
 	CREATED BY	: MARGARET SHEAR
 	MODIFIED BY	: MARGARET SHEAR
@@ -61,7 +61,8 @@ a.tooltip:hover 	{ color: #45BF0F; }
 a.icon, 	/* use for any accent oriented icon */
 a.tooltip	/* use for any functional icon for on page actions */
 					{ padding: 2px 0 2px 16px; background-repeat: no-repeat; background-position: 0px 0px; }
-#hdr a.icon			{ padding: 0 0 0 16px; background-repeat: no-repeat; background-position: 0 -12px; }
+/* for user dashboard icons */
+#user a.icon			{ padding: 0 0 0 16px; background-repeat: no-repeat; background-position: 0 -14px; padding-top: 1px; padding-bottom: 1px;}
 
 /* for the advanced search, rss, and feedback links above search bar */
 #links a.icon,
@@ -74,33 +75,31 @@ div.topbar	{ background-color: #069; text-align: right; }
 
 /* portions of this icon set have been adapted Mark Jame's Silk icon set available under a Creative Commons Attribution 2.5 license at http://www.famfamfam.com/lab/icons/silk/ */
 
-a.logout		{ background-image: url(../images/pone_icon_logout.gif); }
-a.nomessage		{ background-image: url(../images/pone_icon_nomessage.gif); }
+a.logout		{ background-image: url(../images/pone_icon_user_logout.gif); }
+a.nomessage		{ background-image: url(../images/pone_icon_user_nomessage.gif); }
 a.user			{ background-image: url(../images/pone_icon_user.gif); font-weight: bold; /*username always appears bolded for emphasis*/}
-a.preferences 	{ background-image: url(../images/pone_icon_preferences.gif); }
+a.preferences 	{ background-image: url(../images/pone_icon_user_preferences.gif); }
 a.rss			{ background-image: url(../images/pone_icon_rss.gif); }
 a.advanced		{ background-image: url(../images/pone_icon_advanced.gif); }
 
 /* Article Icons */
 
-a.xml 		{ background-image: url(../images/jour_sidenav_xml.gif); }
-a.pdf 		{ background-image: url(../images/jour_sidenav_pdf.gif); }
-a.email 	{ background-image: url(../images/jour_sidenav_email.gif); }
-a.connotea	{ background-image: url(../images/jour_sidenav_connotea.gif); }
-a.send 		{ background-image: url(../images/jour_sidenav_send.gif); }
+a.xml 		{ background-image: url(../images/pone_sidenav_xml.gif); }
+a.pdf 		{ background-image: url(../images/pone_sidenav_pdf.gif); }
+a.email 	{ background-image: url(../images/pone_sidenav_email.gif); }
+a.print 	{ background-image: url(../images/pone_sidenav_print.gif); }
+a.citation	{ background-image: url(../images/pone_sidenav_citation.gif); }
+a.citing	{ background-image: url(../images/pone_sidenav_citing.gif); }
+
+
 a.read 		{ background-image: url(../images/jour_sidenav_read.gif); }
-a.reprint 	{ background-image: url(../images/jour_sidenav_reprint.gif); }
-a.print 	{ background-image: url(../images/jour_sidenav_print.gif); }
-a.delicious	{ background-image: url(../images/jour_sidenav_delicious.gif); }
 a.ncbi 		{ background-image: url(../images/jour_sidenav_ncbi.gif); }
-a.article 	{ background-image: url(../images/jour_sidenav_article.gif); }
-a.citation	{ background-image: url(../images/jour_sidenav_citation.gif); }
+
+a.article 	{ background-image: url(../images/pone_icon_article.gif); }
 a.plos		{ background-image: url(../images/jour_sidenav_plos.gif); }
-a.synopsis	{ background-image: url(../images/jour_sidenav_synopsis.gif); }
-a.primer	{ background-image: url(../images/jour_sidenav_primer.gif); }
+
 a.license 	{ background-image: url(../images/jour_sidenav_license.gif); }
 a.google 	{ background-image: url(../images/jour_sidenav_google.gif); }
-a.archive 	{ background-image: url(../images/jour_sidenav_archive.gif); }
 
 a.annotation{ background-image: url(../images/pone_icon_annotation.gif); }
 a.discuss	{ background-image: url(../images/pone_icon_discuss.gif); }
@@ -125,7 +124,11 @@ div.close a			{ color: #666; float: right; margin: 0; border-left: 2px solid #0b
 div.close a:hover	{ background-color: #D2F7FF; }
 /* for posting and saving */
 div.post			{ font-weight: bold; margin-left: 40%; margin-top: 5px; }
-div.post a			{ color: #393; border: 2px solid #393; background: #fff url(../images/pone_icon_post.gif) no-repeat 96% 50%;}
+div.post a			{ display:block; color: #393; border: 2px solid #393; background: #fff url(../images/pone_icon_post.gif) no-repeat 96% 50%;}
+div.post span.loading { padding-left: 40px; }
+div.post span,
+div.post.disable a    { display:none; }
+div.post.disable span			{ display:block; color: #333; border: 2px solid #333; background: #fff url(../images/pone_icon_post.gif) no-repeat 96% 50%;}
 div.post a:hover	{ background-color: #55E912; color: #fff;}
 .important 			{ font-weight: bold; }
 
@@ -142,7 +145,7 @@ div.pane div.post a:hover	{ background-color: #393; }
 
 */
 #container 			{ position: relative; }
-#container, #hdr 	{ margin: 0 auto; min-width: 675px; max-width: 910px; }
+#container, #hdr	{ margin: 0 auto; min-width: 675px; max-width: 910px; }
 #content 			{ margin: 50px 4px; line-height: 1.8em; font-size: .9em; }
 
 /* Horizontal Advertising Banners : Top & Bottom Slots
@@ -221,6 +224,7 @@ ul#nav li	{ float: left; position: relative; background-color: #ECEDED; list-sty
 
 /* User Dashboard Block */
 #user 		{ position: absolute; width: 24.5em; height: 6.1em; background: transparent url(../images/pone_user_bg.gif) no-repeat; top: 54px; right: 0; font-size: .75em; text-align: right; }
+
 #user div 	{ margin: 14px 18px; } /* contains elements and applies padding */
 #user p 	{ margin: 0 0 12px 0; }
 #user ul 	{ margin: 0; padding: 0; display: inline;}
@@ -229,7 +233,8 @@ ul#nav li	{ float: left; position: relative; background-color: #ECEDED; list-sty
 #user a:visited 	{ color: #330; }
 #user a:hover
 			{ color: #069; }
-#user a.user{ background-image: url(../images/pone_user_user.gif); }
+#user a.user{ background-image: url(../images/pone_icon_user_user.gif); }
+
 
 /* Advanced Search, RSS */
 #links 		{ position: absolute; right: 12px; top: 2px;text-decoration: none;}
@@ -256,7 +261,7 @@ div#ftr {
 	width: 100%;
 	border-top: 1px solid #003956;
 	margin: 20px 0 0 0;
-	padding: 0 0 10px 0;
+	padding: 0;
 	text-align: center;
 	clear: both;
 }
@@ -267,7 +272,10 @@ div#ftr ul a, div#ftr ul a:visited
 div#ftr img 	{ margin: 0 10px -8px 10px; display: inline; }
 div#ftr p 		{ margin: 0 0 10px 0; padding: 10px; background-color: #FFF; border-bottom: 1px solid #003956; white-space: nowrap; }
 div#ftr p span 	{ display: inline; background: #FFF url(../images/jour_ftr_cc_logo.png) no-repeat left center; padding: 8px 8px 8px 25px; }
-
+div#ftr div.powered { text-transform: uppercase; background-color: #202020; color: #eee; font-size: .9em; padding: 6px 0 2px 0; letter-spacing: .15em; margin-top: 10px; border-top: 1px solid #fff;}
+div.powered a:link,
+div.powered a:visited,
+div.powered a:hover { color: #fff; font-weight: bold;}
 /* Research Article : Elements
 ----------------------------------------------------------=
 */
@@ -335,6 +343,7 @@ div.links li
 div.tools li			{ list-style-type: none; margin: 0; padding: 0; }				
 
 
+
 #sectionNav a,
 #sectionNavTop a,
 #sectionNav a:visited,
@@ -363,29 +372,29 @@ a:visited.bug			{ padding: 2px 7px 10px 7px; color: #fff; text-decoration: none;
 
 span.self-private a.bug,
 span.self-private a:visited.bug,
-span.self-private-active a.bug,
-span.self-private-active a:visited.bug	{ background-color: #3C9544;}
-span.self-private-active		{ background-color:#cfc; border-bottom: 1px solid #55E912;}
-span.self-private-active a.bug-active,
-span.self-private-active a:hover.bug-active	{ background-color: #55E912;}
+span.self-private.active a.bug,
+span.self-private.active a:visited.bug	{ background-color: #3C9544;}
+span.self-private.active		{ background-color:#cfc; border-bottom: 1px solid #55E912;}
+span.self-private.active a.bug.active,
+span.self-private.active a:hover.bug.active	{ background-color: #55E912;}
 
 span.public a.bug,
 span.public a:visited.bug,
-span.public-active a.bug,
-span.public-active a:visited.bug	{ background-color: #069;}
-span.public-active			{ background-color:#D2F7FF; border-bottom: 1px solid #0bf;}
-span.public-active a:hover.bug		{ background-color: #0BF;}
+span.public.active a.bug,
+span.public.active a:visited.bug	{ background-color: #069;}
+span.public.active			{ background-color:#D2F7FF; border-bottom: 1px solid #0bf;}
+span.public.active a:hover.bug		{ background-color: #0BF;}
 
 span.author-private		{ }
-span.author-private-active		{ background-color: #FFDAED; }
+span.author-private.active		{ background-color: #FFDAED; }
 
 span.author a.bug,
 span.author a:visited.bug,
-span.author-active a.bug,
-span.author-active a:visited.bug	{ background-color: #B6491F;}
-span.author-active		{ background-color: #FFD3C5; border-bottom: 1px solid #f63;}
-span.author-active a.bug-active,
-span.author-active a:hover.bug-active	{ background-color: #f63;}
+span.author.active a.bug,
+span.author.active a:visited.bug	{ background-color: #B6491F;}
+span.author.active		{ background-color: #FFD3C5; border-bottom: 1px solid #f63;}
+span.author.active a.bug.active,
+span.author.active a:hover.bug.active	{ background-color: #f63;}
 span.author				{ }
 span.author.active		{ background-color: #FFD3C5; border-bottom: 1px solid #f63;}
 

@@ -18,7 +18,7 @@ dojo.declare(
 		isContainer: true,
 
 		// static variables
-		shared: {bg: null, bgIframe: null},
+		shared: {bg: null, bgIframe: null, onClickCatcher: null},
 
 		// String
 		//	provide a focusable element or element id if you need to
@@ -46,6 +46,9 @@ dojo.declare(
 		activeNode: null,
 
 		templatePath: dojo.uri.dojoUri("src/widget/templates/RegionalDialog.html"),
+		// closeOnBackgroundClick: Boolean
+		//	clicking anywhere on the background will close the dialog
+		closeOnBackgroundClick: true,
 
 		trapTabs: function(/*Event*/ e){
 			// summary
@@ -117,7 +120,15 @@ dojo.declare(
 				}
 				this.setBackgroundColor(this.bgColor);
 				b.appendChild(this.shared.bg);
-				this.shared.bgIframe = new dojo.html.BackgroundIframe(this.shared.bg);
+
+				if(this.closeOnBackgroundClick){
+					// on IE6 the click events to close the dialog (when there is no assigned close button)
+					// go the the iframe rather than the dialogUnderlay
+					var onClickCatcher = this.shared.bgIframe.iframe ? 
+						this.shared.bgIframe.iframe.contentWindow.document : this.shared.bg;
+					dojo.event.kwConnect({srcObj: onClickCatcher, srcFunc: "onclick",
+						adviceObj: this, adviceFunc: "onBackgroundClick", once: true});
+				}
 			}
 		},
 
@@ -319,12 +330,13 @@ dojo.declare(
 		
 		showModalDialog: function() {
 			// summary
-			//	call this function in show() of subclass
+			//	call this function in show() of subclass before calling superclass.show()
 			if (this.followScroll && !this._scrollConnected){
 				this._scrollConnected = true;
 				dojo.event.connect(window, "onscroll", this, "_onScroll");
 			}
-			
+
+			this.placeModalDialog();
 			this.setBackgroundOpacity();
 			this._sizeBackground();
 			this._showBackground();
@@ -345,7 +357,7 @@ dojo.declare(
 
 			if (this._scrollConnected){
 				this._scrollConnected = false;
-				dojo.event.disconnect(window, "onscroll", this, "false");
+				dojo.event.disconnect(window, "onscroll", this, "_onScroll");
 			}
 		},
 		
@@ -362,6 +374,16 @@ dojo.declare(
 				this.placeModalDialog();
 				this.onResized();
 			}
+		},
+		
+		onBackgroundClick: function(){
+			// summary
+			//		Callback on background click.
+			//		Clicking anywhere on the background will close the dialog, but only
+			//		if the dialog doesn't have an explicit close button, and only if
+			//		the dialog doesn't have a blockDuration.
+			if(this.lifetime - this.timeRemaining >= this.blockDuration){ return; }
+			this.hide();
 		}
 	});
 
@@ -372,13 +394,35 @@ dojo.widget.defineWidget(
 	"dojo.widget.RegionalDialog",
 	[dojo.widget.ContentPane, dojo.widget.RegionalDialogBase],
 	{
-		// Integer
+		// summary
+		//	Pops up a modal dialog window, blocking access to the screen and also graying out the screen
+		//	Dialog is extended from ContentPane so it supports all the same parameters (href, etc.)
+
+		templatePath: dojo.uri.dojoUri("src/widget/templates/Dialog.html"),
+
+		// blockDuration: Integer
 		//	number of seconds for which the user cannot dismiss the dialog
 		blockDuration: 0,
 		
-		// Integer
+		// lifetime: Integer
 		//	if set, this controls the number of seconds the dialog will be displayed before automatically disappearing
 		lifetime: 0,
+
+		// closeNode: String
+		//	Id of button or other dom node to click to close this dialog
+		closeNode: "",
+
+		postMixInProperties: function(){
+			dojo.widget.Dialog.superclass.postMixInProperties.apply(this, arguments);
+			if(this.closeNode){
+				this.setCloseControl(this.closeNode);
+			}
+		},
+
+		postCreate: function(){
+			dojo.widget.Dialog.superclass.postCreate.apply(this, arguments);
+			dojo.widget.ModalDialogBase.prototype.postCreate.apply(this, arguments);
+		},
 
 		show: function() {
 			if(this.lifetime){
@@ -397,6 +441,9 @@ dojo.widget.defineWidget(
 					}else{
 						this.closeNode.style.display = "none";
 					}
+				}
+				if (this.timer) {
+					clearInterval(this.timer);
 				}
 				this.timer = setInterval(dojo.lang.hitch(this, "_onTick"), 100);
 			}
@@ -432,18 +479,20 @@ dojo.widget.defineWidget(
 			this.timerNode = node;
 		},
 
-		setCloseControl: function(node) {
+		setCloseControl: function(/*String|DomNode*/ node) {
 			// summary
-			//	specify which node is the close button for this dialog
-			// TODO: make this a parameter too
-			this.closeNode = node;
-			dojo.event.connect(node, "onclick", this, "hide");
+			//	Specify which node is the close button for this dialog.
+			//	If no close node is specified then clicking anywhere on the screen will close the dialog.
+			this.closeNode = dojo.byId(node);
+			dojo.event.connect(this.closeNode, "onclick", this, "hide");
+			this.closeOnBackgroundClick = false;
 		},
 
-		setShowControl: function(node) {
+		setShowControl: function(/*String|DomNode*/ node) {
 			// summary
 			//	when specified node is clicked, show this dialog
 			// TODO: make this a parameter too
+			node = dojo.byId(node);
 			dojo.event.connect(node, "onclick", this, "show");
 		},
 		
@@ -471,7 +520,7 @@ dojo.widget.defineWidget(
 			if(this.timer){
 				this.timeRemaining -= 100;
 				if(this.lifetime - this.timeRemaining >= this.blockDuration){
-					dojo.event.connect(this.shared.bg, "onclick", this, "hide");
+					// TODO: this block of code is executing over and over again, rather than just once
 					if(this.closeNode){
 						this.closeNode.style.visibility = "visible";
 					}

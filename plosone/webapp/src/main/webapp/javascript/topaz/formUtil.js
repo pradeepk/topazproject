@@ -39,5 +39,49 @@ formUtil = {
     else {
       return -1;
     }
+  },
+  
+  disableFormFields: function (formObj) {
+    for (var i=0; i<formObj.elements.length; i++) {
+      if (formObj.elements[i].type != 'hidden') {
+        formObj.elements[i].disabled = true;
+      } 
+    }
+  },
+  
+  enableFormFields: function (formObj) {
+    for (var i=0; i<formObj.elements.length; i++) {
+      if (formObj.elements[i].type != 'hidden') {
+        formObj.elements[i].disabled = false;
+      } 
+    }
+  },
+  
+  addItemInArray: function (array, item) {
+    var foundItem = false;
+    for (var i=0; i<array.length; i++) {
+      alert("array[" + i + "] = " + array[i] + "\n" +
+            "item = " + item);
+      if (array[i] == item) 
+        foundItem = true;
+    }
+    
+    alert("foundItem = " + foundItem);
+    
+    if (!foundItem)
+      array.push(item);
+  },
+  
+  isItemInArray: function (array, item) {
+    var foundItem = false;
+    for (var i=0; i<array.length; i++) {
+      if (array[i] == item) 
+        foundItem = true;
+    }
+    
+    if (foundItem)
+      return true;
+    else
+      return false;
   }
 }

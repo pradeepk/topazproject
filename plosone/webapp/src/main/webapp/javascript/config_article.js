@@ -31,3 +31,12 @@ var commentConfig = {
   tipDownDiv: "cTip",
   tipUpDiv: "cTipu"
 };  
+
+var multiCommentConfig = {
+  sectionTitle: "viewCmtTitle",
+  sectionDetail: "viewCmtDetail",  
+  sectionComment: "viewComment",  
+  retrieveMsg: "retrieveMsg",  
+  tipDownDiv: "mTip",
+  tipUpDiv: "mTipu"
+};  
