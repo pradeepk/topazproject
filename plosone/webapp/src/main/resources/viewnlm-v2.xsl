@@ -5137,13 +5137,15 @@ Make article meta data
 		
 		<!-- only add an annotation to the display list if this is the beginning of the annotation -->
 		<xsl:variable name="displayAnn">
-			<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
-				<xsl:variable name="annId" select="@aml:id"/>
-				<xsl:if test="count(../preceding-sibling::aml:region/aml:annotation[@aml:id=$annId]) = 0">
-					<xsl:text>,</xsl:text>
-					<xsl:value-of select="@aml:id"/>
-				</xsl:if>
-			</xsl:for-each>
+			<xsl:if test="@aml:first='true'">
+			<xsl:variable name="annId" select="@aml:id"/>
+				<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
+					<xsl:if test="count(../preceding-sibling::aml:region/aml:annotation[@aml:id=$annId]) = 0">
+						<xsl:text>,</xsl:text>
+						<xsl:value-of select="@aml:id"/>
+					</xsl:if>
+				</xsl:for-each>
+			</xsl:if>
 		</xsl:variable>
 		
 		<xsl:if test="not($displayAnn='')">

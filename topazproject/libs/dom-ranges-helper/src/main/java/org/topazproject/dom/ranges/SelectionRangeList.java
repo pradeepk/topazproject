@@ -89,6 +89,9 @@ public class SelectionRangeList {
         Element rNode =
           range.getStartContainer().getOwnerDocument().createElementNS(nsUri, elemQName);
         rNode.setAttributeNS(nsUri, idAttrQName, "" + (i + 1));
+	if (j == 0) {
+	    rNode.setAttribute("aml:first", "true");
+	}
         range.surroundContents(rNode);
       }
     }
