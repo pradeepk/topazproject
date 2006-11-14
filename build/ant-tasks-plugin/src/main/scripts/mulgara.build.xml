@@ -94,10 +94,10 @@
     <mkdir dir="${tomcatconfig.dir}"/>
 
     <echo message="Starting Mulgara..."/>
-    <echo message="Using tomcat  = ${tomcathome} "/>
-    <echo message="Using home    = ${home} "/>
-    <echo message="Using log-dir = ${tomcatlog.dir} "/>
-    <echo message="Using war     = ${mulgara-war} "/>
+    <echo message="Using tomcat  = ${tomcathome}"/>
+    <echo message="Using home    = ${home}"/>
+    <echo message="Using log-dir = ${tomcatlog.dir}"/>
+    <echo message="Using war     = ${mulgara-war}"/>
 
     <cargo containerId="tomcat5x" home="${tomcathome}" output="${tomcatlog.dir}/output.log"
         log="${tomcatlog.dir}/cargo.log" action="start" wait="${wait}">
