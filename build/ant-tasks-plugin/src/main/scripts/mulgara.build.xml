@@ -32,6 +32,7 @@
     <property name="tomcatinstall.dir"  location="${home}/tomcat/install"/>
     <property name="tomcatconfig.dir"   location="${home}/tomcat/config"/>
     <property name="tomcatlog.dir"      location="${home}/tomcat/log"/>
+    <property name="port"               value="${PORT}"/>
     <pathconvert property="mulgara-war" refid="mulgara.fileset"/>
 
     <condition property="tomcat.url" value="${TOMCAT_URL}"
@@ -98,11 +99,12 @@
     <echo message="Using home    = ${home}"/>
     <echo message="Using log-dir = ${tomcatlog.dir}"/>
     <echo message="Using war     = ${mulgara-war}"/>
+    <echo message="Using port    = ${port}"/>
 
     <cargo containerId="tomcat5x" home="${tomcathome}" output="${tomcatlog.dir}/output.log"
         log="${tomcatlog.dir}/cargo.log" action="start" wait="${wait}">
       <configuration home="${tomcatconfig.dir}">
-        <property name="cargo.servlet.port" value="9091"/>
+        <property name="cargo.servlet.port" value="${port}"/>
         <property name="cargo.logging" value="high"/>
         <deployable type="war" file="${mulgara-war}"/>
       </configuration>

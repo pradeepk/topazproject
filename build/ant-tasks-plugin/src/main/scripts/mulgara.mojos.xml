@@ -81,6 +81,14 @@
         </parameter>
 
         <parameter>
+          <name>PORT</name>
+          <property>PORT</property>
+          <required>true</required>
+          <expression>${PORT}</expression>
+          <defaultValue>9091</defaultValue>
+        </parameter>
+
+        <parameter>
           <name>SPAWN</name>
           <property>SPAWN</property>
           <required>true</required>
