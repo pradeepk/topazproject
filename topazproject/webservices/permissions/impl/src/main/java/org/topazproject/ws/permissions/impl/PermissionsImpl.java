@@ -15,6 +15,7 @@ import java.net.URI;
 
 import java.rmi.RemoteException;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -37,6 +38,12 @@ import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.mulgara.itql.StringAnswer;
 
 import org.topazproject.ws.permissions.Permissions;
+
+import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheManager;
+import net.sf.ehcache.Ehcache;
+import net.sf.ehcache.Element;
+import net.sf.ehcache.constructs.blocking.BlockingCache;
 
 /**
  * This provides the implementation of the permissions service.
@@ -90,11 +97,51 @@ public class PermissionsImpl implements Permissions {
     + "and ($o <tucana:is> <${principal}> or $o <tucana:is> <${ALL}>)" //
     ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
+  private static final String ITQL_RESOURCE_PERMISSIONS =
+    ("select $p $o from ${PP_MODEL} where ($s $p $o in ${MODEL} " //
+    + "   and ($s <tucana:is> <${resource}> or $s <tucana:is> <${ALL}> "
+    + "      or $s <${PP}> <${resource}> "
+    + "      or (trans($s <${PP}> $res) and $res <tucana:is> <${resource}>))"
+    + ") or ($s $impliedBy $o in ${MODEL} " //
+    + "   and ($impliedBy <${IMPLIES}> $p " //
+    + "      or trans($impliedBy <${IMPLIES}> $p)) " //
+    + "   and ($s <tucana:is> <${resource}> or $s <tucana:is> <${ALL}> "
+    + "      or $s <${PP}> <${resource}> "
+    + "      or (trans($s <${PP}> $res) and $res <tucana:is> <${resource}>))" + ")" //
+    ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
+      .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
 
   //
-  private static boolean initialized = false;
+  private static boolean itqlInitialized = false;
 
-  static private void initialize(ItqlHelper itql) {
+  //
+  private static Ehcache grantsCache  = initCache("permission-grants");
+  private static Ehcache revokesCache = initCache("permission-revokes");
+
+  private static Ehcache initCache(String name) {
+    Ehcache cache = CacheManager.getInstance().getEhcache(name);
+
+    if (cache == null) {
+      log.warn("No cache configuration found for " + name + ".");
+
+      return cache;
+    }
+
+    if (!(cache instanceof BlockingCache)) {
+      BlockingCache newBlockingCache = new BlockingCache(cache);
+      CacheManager.getInstance().replaceCacheWithDecoratedCache(cache, newBlockingCache);
+    }
+
+    log.warn("Cache configuration found for " + name + ".");
+
+    return CacheManager.getInstance().getEhcache(name);
+  }
+
+  private static void initializeItql(ItqlHelper itql) {
+    if (((grantsCache != null) && (grantsCache.getSize() != 0))
+         || ((revokesCache != null) && (revokesCache.getSize() != 0)))
+      return; // xxx: cache has entries perhaps from peers. so initialized is a good guess
+
     try {
       itql.doUpdate("create " + GRANTS_MODEL + " " + GRANTS_MODEL_TYPE + ";", null);
       itql.doUpdate("create " + REVOKES_MODEL + " " + REVOKES_MODEL_TYPE + ";", null);
@@ -141,7 +188,13 @@ public class PermissionsImpl implements Permissions {
       }
     }
 
-    initialized = true;
+    if (grantsCache != null)
+      grantsCache.removeAll();
+
+    if (revokesCache != null)
+      revokesCache.removeAll();
+
+    itqlInitialized = true;
   }
 
   //
@@ -163,8 +216,8 @@ public class PermissionsImpl implements Permissions {
           if (handle instanceof ItqlHelper) {
             ItqlHelper itql = (ItqlHelper) handle;
 
-            if (!initialized)
-              initialize(itql);
+            if (!itqlInitialized)
+              initializeItql(itql);
           }
         }
       });
@@ -175,7 +228,7 @@ public class PermissionsImpl implements Permissions {
    */
   public void grant(String resource, String[] permissions, String[] principals)
              throws RemoteException {
-    updateModel(pep.GRANT, GRANTS_MODEL, resource, permissions, principals, true);
+    updateModel(pep.GRANT, GRANTS_MODEL, grantsCache, resource, permissions, principals, true);
   }
 
   /*
@@ -183,7 +236,7 @@ public class PermissionsImpl implements Permissions {
    */
   public void revoke(String resource, String[] permissions, String[] principals)
               throws RemoteException {
-    updateModel(pep.REVOKE, REVOKES_MODEL, resource, permissions, principals, true);
+    updateModel(pep.REVOKE, REVOKES_MODEL, revokesCache, resource, permissions, principals, true);
   }
 
   /*
@@ -191,7 +244,8 @@ public class PermissionsImpl implements Permissions {
    */
   public void cancelGrants(String resource, String[] permissions, String[] principals)
                     throws RemoteException {
-    updateModel(pep.CANCEL_GRANTS, GRANTS_MODEL, resource, permissions, principals, false);
+    updateModel(pep.CANCEL_GRANTS, GRANTS_MODEL, grantsCache, resource, permissions, principals,
+                false);
   }
 
   /*
@@ -199,7 +253,8 @@ public class PermissionsImpl implements Permissions {
    */
   public void cancelRevokes(String resource, String[] permissions, String[] principals)
                      throws RemoteException {
-    updateModel(pep.CANCEL_REVOKES, REVOKES_MODEL, resource, permissions, principals, false);
+    updateModel(pep.CANCEL_REVOKES, REVOKES_MODEL, revokesCache, resource, permissions, principals,
+                false);
   }
 
   /*
@@ -271,7 +326,25 @@ public class PermissionsImpl implements Permissions {
    */
   public boolean isGranted(String resource, String permission, String principal)
                     throws RemoteException {
-    return isInferred(GRANTS_MODEL, resource, permission, principal);
+    if (principal == null)
+      principal = ctx.getUserName();
+
+    if (grantsCache == null)
+      return isInferred(GRANTS_MODEL, resource, permission, principal);
+
+    HashMap map;
+    Element element = grantsCache.get(resource);
+
+    if (element != null)
+      map = (HashMap) element.getValue();
+    else {
+      map = createPermissionMap(resource, GRANTS_MODEL);
+      grantsCache.put(new Element(resource, map));
+    }
+
+    ArrayList list = (ArrayList) map.get(permission);
+
+    return (list != null) && (list.contains(principal) || list.contains(ALL));
   }
 
   /*
@@ -279,11 +352,29 @@ public class PermissionsImpl implements Permissions {
    */
   public boolean isRevoked(String resource, String permission, String principal)
                     throws RemoteException {
-    return isInferred(REVOKES_MODEL, resource, permission, principal);
+    if (principal == null)
+      principal = ctx.getUserName();
+
+    if (revokesCache == null)
+      return isInferred(REVOKES_MODEL, resource, permission, principal);
+
+    HashMap map;
+    Element element = revokesCache.get(resource);
+
+    if (element != null)
+      map = (HashMap) element.getValue();
+    else {
+      map = createPermissionMap(resource, REVOKES_MODEL);
+      revokesCache.put(new Element(resource, map));
+    }
+
+    ArrayList list = (ArrayList) map.get(permission);
+
+    return (list != null) && (list.contains(principal) || list.contains(ALL));
   }
 
-  private void updateModel(String action, String model, String resource, String[] permissions,
-                           String[] principals, boolean insert)
+  private void updateModel(String action, String model, Ehcache cache, String resource,
+                           String[] permissions, String[] principals, boolean insert)
                     throws RemoteException {
     String user = ctx.getUserName();
     permissions = validateUriList(permissions, "permissions", false);
@@ -333,6 +424,9 @@ public class PermissionsImpl implements Permissions {
       }
     }
 
+    if (cache != null)
+      cache.remove(resource);
+
     if (log.isInfoEnabled()) {
       log.info(action + " succeeded for resource " + resource + "\npermissions:\n"
                + Arrays.asList(permissions) + "\nprincipals:\n" + Arrays.asList(principals));
@@ -372,19 +466,52 @@ public class PermissionsImpl implements Permissions {
     if (insert)
       cmd += ("insert " + triples + " into " + PP_MODEL + ";");
 
-    ItqlHelper itql = ctx.getItqlHelper();
-    String     txn = action + " on " + subject;
+    ItqlHelper   itql = ctx.getItqlHelper();
+    String       txn = action + " on " + subject;
+
+    StringAnswer ans = null;
 
     try {
       itql.beginTxn(txn);
       itql.doUpdate(cmd, null);
+
+      if (((grantsCache != null) || (revokesCache != null)) && PROPAGATES.equals(predicate))
+        ans =
+          new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_LIST_PP_TRANS, "s", subject,
+                                                              "p", predicate), null));
+
       itql.commitTxn(txn);
       txn = null;
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error while querying propagated resources", ae);
     } finally {
       try {
         if (txn != null)
           itql.rollbackTxn(txn);
       } catch (Throwable t) {
+      }
+    }
+
+    if (ans == null) {
+      // implied permissions changed.
+      if (grantsCache != null)
+        grantsCache.removeAll();
+
+      if (revokesCache != null)
+        revokesCache.removeAll();
+    } else {
+      List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+
+      int  c = rows.size();
+
+      for (int i = 0; i < c; i++) {
+        String res = ((String[]) rows.get(i))[0];
+
+        if (grantsCache != null)
+          grantsCache.remove(res);
+
+        if (revokesCache != null)
+          revokesCache.remove(res);
       }
     }
   }
@@ -440,7 +567,6 @@ public class PermissionsImpl implements Permissions {
     pep.checkAccess(action, ItqlHelper.validateUri(subject, sLabel));
 
     String query = transitive ? ITQL_LIST_PP_TRANS : ITQL_LIST_PP;
-
     query = ItqlHelper.bindValues(query, "s", subject, "p", predicate);
 
     try {
@@ -505,5 +631,33 @@ public class PermissionsImpl implements Permissions {
     }
 
     return list;
+  }
+
+  private HashMap createPermissionMap(String resource, String model)
+                               throws RemoteException {
+    String query =
+      ItqlHelper.bindValues(ITQL_RESOURCE_PERMISSIONS, "resource", resource, "MODEL", model);
+
+    try {
+      StringAnswer ans  = new StringAnswer(ctx.getItqlHelper().doQuery(query, null));
+      List         rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+      HashMap      map  = new HashMap();
+
+      for (int i = 0; i < rows.size(); i++) {
+        String[]  result = (String[]) rows.get(i);
+        ArrayList list = (ArrayList) map.get(result[0]);
+
+        if (list == null) {
+          list = new ArrayList();
+          map.put(result[0], list);
+        }
+
+        list.add(result[1]);
+      }
+
+      return map;
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error while querying inferred permissions", ae);
+    }
   }
 }
