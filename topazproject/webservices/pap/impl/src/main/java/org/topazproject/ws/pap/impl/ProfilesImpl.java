@@ -294,8 +294,12 @@ public class ProfilesImpl implements Profiles {
       itql.commitTxn(txn);
       txn = null;
     } finally {
-      if (txn != null)
-        itql.rollbackTxn(txn);
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
+      }
     }
   }
 

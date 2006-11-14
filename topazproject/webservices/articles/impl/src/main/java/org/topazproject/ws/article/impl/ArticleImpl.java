@@ -262,8 +262,12 @@ public class ArticleImpl implements Article {
     } catch (AnswerException ae) {
       throw new RemoteException("Error querying RDF", ae);
     } finally {
-      if (txn != null)
-        itql.rollbackTxn(txn);
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
+      }
     }
   }
 
@@ -461,8 +465,12 @@ public class ArticleImpl implements Article {
     } catch (IOException ioe) {
       throw new RemoteException("Error uploading representation", ioe);
     } finally {
-      if (txn != null)
-        itql.rollbackTxn(txn);
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
+      }
     }
   }
 

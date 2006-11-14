@@ -297,8 +297,12 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
 
       return userId;
     } finally {
-      if (txn != null)
-        itql.rollbackTxn(txn);
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
+      }
     }
   }
 
@@ -321,8 +325,12 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       itql.commitTxn(txn);
       txn = null;
     } finally {
-      if (txn != null)
-        itql.rollbackTxn(txn);
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
+      }
     }
   }
 
@@ -404,8 +412,12 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       itql.commitTxn(txn);
       txn = null;
     } finally {
-      if (txn != null)
-        itql.rollbackTxn(txn);
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
+      }
     }
   }
 
@@ -477,8 +489,12 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       }
 
     } finally {
-      if (txn != null)
-        itql.rollbackTxn(txn);
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
+      }
     }
   }
 
