@@ -327,6 +327,7 @@ public class RepliesImpl implements Replies {
           itql.rollbackTxn(txn);
         }
       } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
       }
     }
 

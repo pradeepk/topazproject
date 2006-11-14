@@ -186,6 +186,7 @@ public class PermissionsImpl implements Permissions {
         if (txn != null)
           itql.rollbackTxn(txn);
       } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
       }
     }
 
@@ -412,6 +413,7 @@ public class PermissionsImpl implements Permissions {
         if (txn != null)
           itql.rollbackTxn(txn);
       } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
       }
     }
 
@@ -482,6 +484,7 @@ public class PermissionsImpl implements Permissions {
         if (txn != null)
           itql.rollbackTxn(txn);
       } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
       }
     }
 
