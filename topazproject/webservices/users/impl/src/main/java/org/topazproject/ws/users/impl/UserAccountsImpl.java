@@ -151,8 +151,6 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     this.pep     = null;
     this.baseURI = null;
     this.ctx = new SimpleTopazContext(itql, null, null);
-
-    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
   }
 
   /** 
@@ -165,19 +163,6 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     this.pep     = pep;
     this.baseURI = ctx.getObjectBaseUri().toString();
     this.ctx     = ctx;
-
-    ctx.addListener(new TopazContextListener() {
-        public void handleCreated(TopazContext ctx, Object handle) {
-          if (handle instanceof ItqlHelper) {
-            ItqlHelper itql = (ItqlHelper) handle;
-            try {
-              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
-            }catch (IOException e) {
-              log.warn("failed to create model " + MODEL, e);
-            }
-          }
-        }
-      });
   }
 
   /** 
