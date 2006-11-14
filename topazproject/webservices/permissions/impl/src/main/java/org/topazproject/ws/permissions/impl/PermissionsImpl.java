@@ -64,8 +64,9 @@ public class PermissionsImpl implements Permissions {
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
   //
-  private static final String GRANTS_MODEL  = "<" + CONF.getString("topaz.models.grants") + ">";
-  private static final String REVOKES_MODEL = "<" + CONF.getString("topaz.models.revokes") + ">";
+  private static final String GRANTS_MODEL      = "<" + CONF.getString("topaz.models.grants") + ">";
+  private static final String REVOKES_MODEL     =
+    "<" + CONF.getString("topaz.models.revokes") + ">";
   private static final String PP_MODEL          = "<" + CONF.getString("topaz.models.pp") + ">";
   private static final String GRANTS_MODEL_TYPE =
     "<" + CONF.getString("topaz.models.grants[@type]", "tucana:Model") + ">";
@@ -168,8 +169,7 @@ public class PermissionsImpl implements Permissions {
     }
 
     String triples = sb.toString();
-    String cmd =
-      "delete " + triples + " from " + PP_MODEL + "; insert " + triples + " into " + PP_MODEL + ";";
+    String cmd = "insert " + triples + " into " + PP_MODEL + ";";
 
     String txn = "load implied-permissions from config";
 
@@ -403,10 +403,12 @@ public class PermissionsImpl implements Permissions {
 
     String triples = sb.toString();
 
-    String cmd = "delete " + triples + " from " + model + ";";
+    String cmd;
 
     if (insert)
-      cmd += ("insert " + triples + " into " + model + ";");
+      cmd = "insert " + triples + " into " + model + ";";
+    else
+      cmd = "delete " + triples + " from " + model + ";";
 
     ItqlHelper itql = ctx.getItqlHelper();
     String     txn = action + " on " + resource;
@@ -461,10 +463,12 @@ public class PermissionsImpl implements Permissions {
     }
 
     String triples = sb.toString();
-    String cmd = "delete " + triples + " from " + PP_MODEL + ";";
+    String cmd;
 
     if (insert)
-      cmd += ("insert " + triples + " into " + PP_MODEL + ";");
+      cmd = "insert " + triples + " into " + PP_MODEL + ";";
+    else
+      cmd = "delete " + triples + " from " + PP_MODEL + ";";
 
     ItqlHelper   itql = ctx.getItqlHelper();
     String       txn = action + " on " + subject;
