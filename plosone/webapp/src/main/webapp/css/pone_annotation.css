@@ -47,6 +47,9 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 /* annotate is applied to dialog viewers in the annotation process */
 .annotate{ width: 42em; border: 3px solid #0bf; background: #fff url(../images/pone_forms_bg.gif) repeat-x bottom;}
 
+.loadingCycler { z-index: 99998 !important; }
+.loadingCycler img { z-index: 99999 !important; }
+
 /* comment wraps the contents of annotation blocks to apply padding */
 .comment{ padding: 10px; }
 

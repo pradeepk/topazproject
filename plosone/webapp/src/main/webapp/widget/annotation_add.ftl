@@ -2,7 +2,7 @@
 	<div class="dialog annotate">
 		<div class="tipu" id="dTipu"></div>
 		<div class="btn close" title="Click to close and cancel">
-			<a id="btn_cancel" title="Click to close and cancel">Cancel</a>
+			<a id="btn_cancel_annotation" title="Click to close and cancel">Cancel</a>
 		</div>
 		<div class="comment">
 			<h5><span class="commentPrivate">Add Your Annotation (For Private Viewing)</span><span class="commentPublic">Post Your Annotation (For Public Viewing)</span></h5>
