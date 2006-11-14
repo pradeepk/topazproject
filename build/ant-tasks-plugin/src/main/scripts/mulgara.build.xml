@@ -106,6 +106,7 @@
       <configuration home="${tomcatconfig.dir}">
         <property name="cargo.servlet.port" value="${port}"/>
         <property name="cargo.logging" value="high"/>
+        <property name="cargo.jvmargs" value="-Xmx200m"/>
         <deployable type="war" file="${mulgara-war}"/>
       </configuration>
     </cargo>
