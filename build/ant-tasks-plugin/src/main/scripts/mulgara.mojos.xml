@@ -29,6 +29,7 @@
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
+          <expression>${DEST_DIR}</expression>
           <defaultValue>${topazproject.install.dir}</defaultValue>
         </parameter>
 
@@ -36,12 +37,14 @@
           <name>ROOT</name>
           <property>ROOT</property>
           <required>true</required>
+          <expression>${ROOT}</expression>
           <defaultValue>mulgara-service</defaultValue>
         </parameter>
 
         <parameter>
           <name>TOMCAT_URL</name>
           <property>TOMCAT_URL</property>
+          <expression>${TOMCAT_URL}</expression>
           <description>The location to download tomcat 5.x from.</description>
         </parameter>
 
@@ -65,6 +68,7 @@
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
+          <expression>${DEST_DIR}</expression>
           <defaultValue>${topazproject.install.dir}</defaultValue>
         </parameter>
 
@@ -72,6 +76,7 @@
           <name>ROOT</name>
           <property>ROOT</property>
           <required>true</required>
+          <expression>${ROOT}</expression>
           <defaultValue>mulgara-service</defaultValue>
         </parameter>
 
@@ -87,12 +92,14 @@
         <parameter>
           <name>INSTALL</name>
           <property>INSTALL</property>
+          <expression>${INSTALL}</expression>
           <description>Whether we should install first</description>
         </parameter>
 
         <parameter>
           <name>TOMCAT_HOME</name>
           <property>TOMCAT_HOME</property>
+          <expression>${TOMCAT_HOME}</expression>
           <description>The location of the tomcat 5.x installation; tomcat will be downloaded
               from TOMCAT_URL if not set</description>
         </parameter>
@@ -117,6 +124,7 @@
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
+          <expression>${DEST_DIR}</expression>
           <defaultValue>${topazproject.install.dir}</defaultValue>
         </parameter>
 
@@ -124,12 +132,14 @@
           <name>ROOT</name>
           <property>ROOT</property>
           <required>true</required>
+          <expression>${ROOT}</expression>
           <defaultValue>mulgara-service</defaultValue>
         </parameter>
 
         <parameter>
           <name>TOMCAT_HOME</name>
           <property>TOMCAT_HOME</property>
+          <expression>${TOMCAT_HOME}</expression>
           <description>The location of the tomcat 5.x installation. Must be the same as what
               was given in the mulgara-start command.</description>
         </parameter>
@@ -154,6 +164,7 @@
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
+          <expression>${DEST_DIR}</expression>
           <defaultValue>${topazproject.install.dir}</defaultValue>
         </parameter>
 
@@ -161,6 +172,7 @@
           <name>ROOT</name>
           <property>ROOT</property>
           <required>true</required>
+          <expression>${ROOT}</expression>
           <defaultValue>mulgara-service</defaultValue>
         </parameter>
 
