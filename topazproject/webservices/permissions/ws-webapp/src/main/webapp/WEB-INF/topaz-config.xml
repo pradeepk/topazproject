@@ -8,6 +8,9 @@
   -->
 <config>
   <topaz>
+    <life-cycle-listeners>
+      <listener name="init-permissions-model">org.topazproject.bootstrap.permissions.WebAppListenerInitPermissionsModel</listener>
+    </life-cycle-listeners>
     <permissions>
       <pdpName>_default_</pdpName>
       <impliedPermissions>

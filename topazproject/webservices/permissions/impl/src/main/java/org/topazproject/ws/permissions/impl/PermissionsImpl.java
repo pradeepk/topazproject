@@ -64,9 +64,8 @@ public class PermissionsImpl implements Permissions {
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
   //
-  private static final String GRANTS_MODEL      = "<" + CONF.getString("topaz.models.grants") + ">";
-  private static final String REVOKES_MODEL     =
-    "<" + CONF.getString("topaz.models.revokes") + ">";
+  private static final String GRANTS_MODEL  = "<" + CONF.getString("topaz.models.grants") + ">";
+  private static final String REVOKES_MODEL = "<" + CONF.getString("topaz.models.revokes") + ">";
   private static final String PP_MODEL          = "<" + CONF.getString("topaz.models.pp") + ">";
   private static final String GRANTS_MODEL_TYPE =
     "<" + CONF.getString("topaz.models.grants[@type]", "tucana:Model") + ">";
@@ -113,9 +112,6 @@ public class PermissionsImpl implements Permissions {
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
 
   //
-  private static boolean itqlInitialized = false;
-
-  //
   private static Ehcache grantsCache  = initCache("permission-grants");
   private static Ehcache revokesCache = initCache("permission-revokes");
 
@@ -138,7 +134,12 @@ public class PermissionsImpl implements Permissions {
     return CacheManager.getInstance().getEhcache(name);
   }
 
-  private static void initializeItql(ItqlHelper itql) {
+  /**
+   * Initialize the permissions ITQL model. 
+   *
+   * @param itql itql handle to use
+   */
+  public static void initializeModel(ItqlHelper itql) {
     if (((grantsCache != null) && (grantsCache.getSize() != 0))
          || ((revokesCache != null) && (revokesCache.getSize() != 0)))
       return; // xxx: cache has entries perhaps from peers. so initialized is a good guess
@@ -194,7 +195,6 @@ public class PermissionsImpl implements Permissions {
     if (revokesCache != null)
       revokesCache.removeAll();
 
-    itqlInitialized = true;
   }
 
   //
@@ -210,17 +210,6 @@ public class PermissionsImpl implements Permissions {
   public PermissionsImpl(PermissionsPEP pep, TopazContext ctx) {
     this.ctx   = ctx;
     this.pep   = pep;
-
-    ctx.addListener(new TopazContextListener() {
-        public void handleCreated(TopazContext ctx, Object handle) {
-          if (handle instanceof ItqlHelper) {
-            ItqlHelper itql = (ItqlHelper) handle;
-
-            if (!itqlInitialized)
-              initializeItql(itql);
-          }
-        }
-      });
   }
 
   /*
