@@ -100,7 +100,7 @@ public enum UserProfileGrant {
       }
     };
 
-    return selectProfileGrantEnums(grants, predicate);
+    return selectProfileGrants(grants, predicate);
   }
 
   /**
@@ -116,13 +116,15 @@ public enum UserProfileGrant {
       }
     };
 
-    return selectProfileGrantEnums(fields, predicate);
+    return selectProfileGrants(fields, predicate);
   }
 
-  private static Collection<UserProfileGrant> selectProfileGrantEnums(final String[] values, final Predicate predicate) {
+  private static Collection<UserProfileGrant> selectProfileGrants(final String[] values, final Predicate predicate) {
     if (null == sortedProfileGrants) {
       sortedProfileGrants = sortProfileGrants();
     }
+
+    if (null == values) return Collections.EMPTY_LIST;
 
     Arrays.sort(values);
 

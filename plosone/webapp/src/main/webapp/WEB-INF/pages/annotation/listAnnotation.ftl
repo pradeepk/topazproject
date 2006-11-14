@@ -21,6 +21,12 @@
           <@ww.url id="listReplyURL" action="listAllReplies" root="${annotation.id}" inReplyTo="${annotation.id}"/>
           <@ww.a href="%{listReplyURL}">list all replies</@ww.a> <br/>
         </li>
+
+        <li>
+          <@ww.url id="listThreadedRepliesURL" action="listThreadedReplies" root="${annotation.id}" inReplyTo="${annotation.id}"/>
+          <@ww.a href="%{listThreadedRepliesURL}">list threaded replies</@ww.a> <br/>
+        </li>
+
         <li>
           <fieldset>
               <legend>Create an reply</legend>

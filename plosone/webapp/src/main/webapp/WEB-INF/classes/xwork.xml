@@ -124,6 +124,11 @@
       <result name="success">/WEB-INF/pages/annotation/listReply.ftl</result>
     </action>
 
+    <action name="listThreadedReplies" class="org.plos.annotation.action.ListReplyAction"
+      method="listAllReplies">
+      <result name="success">/WEB-INF/pages/annotation/listThreadedReply.ftl</result>
+    </action>
+
     <action name="getReply" class="org.plos.annotation.action.GetReplyAction">
       <result name="success" type="ajaxJSON"/>
     </action>
