@@ -2239,7 +2239,7 @@ public class FedoraAuthorization extends Module implements Authorization {
           log("no pid. skipping access service check");
         else {
           log("checking access for " + pid);
-          accessService.checkAccess(accessServicePdp, login, pid, target);
+          accessService.checkAccess(accessServicePdp, login, pid2URI(pid), target);
         }
       }
     } catch (SecurityException e) {
@@ -2247,6 +2247,17 @@ public class FedoraAuthorization extends Module implements Authorization {
     } catch (java.rmi.RemoteException e) {
       throw new AuthzOperationalException(e.getMessage(), e);
     }
+  }
+
+  /**
+   * Converts a fedora PID to a fedora URI.
+   *
+   * @param pid the pid to convert
+   *
+   * @return Returns the fedora pid
+   */
+  public static String pid2URI(String pid) {
+    return "info:fedora/" + pid;
   }
 
   private static final String pad(int n, int length) throws Exception {
