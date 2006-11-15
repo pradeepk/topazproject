@@ -58,24 +58,34 @@ public class WebAppListenerInitMulgara implements ServletContextListener {
     try {
       ServletContext context = event.getServletContext();
       Configuration config = initWebAppCommonsConfig(context, CONFIG_FACTORY_PROPERTY_NAME);
+      config = config.subset("topaz.mulgara");
 
       // Create directories
-      File serverDir = new File(context.getRealPath(config.getString("serverDir")));
-      if (serverDir.exists()) {
-        if (!serverDir.isDirectory()) {
-          log.error("Mulgara directory '" + serverDir + "' is not a directory");
+      String sdir = config.getString("databaseDir", null);
+      if (sdir == null)
+        throw new ConfigurationException("Missing config entry for 'topaz.mulgara.databaseDir'");
+      if (sdir.startsWith("webctxt:"))
+        sdir = context.getRealPath(sdir.substring(8));
+
+      File databaseDir = new File(sdir);
+      if (databaseDir.exists()) {
+        if (!databaseDir.isDirectory()) {
+          log.error("Mulgara directory '" + databaseDir + "' is not a directory");
           return;
         }
-      } else if (!serverDir.mkdirs()) {
-        log.error("Unable to create Mulgara directory '" + serverDir + "'");
+      } else if (!databaseDir.mkdirs()) {
+        log.error("Unable to create Mulgara directory '" + databaseDir + "'");
         return;
       }
-      log.info("Mulgara directory: " + serverDir);
+      log.info("Mulgara directory: " + databaseDir);
 
       // Create the database session
-      String serverUri = config.getString("serverUri");
+      String serverUri = config.getString("serverUri", null);
+      if (serverUri == null)
+        throw new ConfigurationException("Missing config entry for 'topaz.mulgara.serverUri'");
+
       sessionFactory = SessionFactoryFinder.newSessionFactory(new URI(serverUri));
-      ((LocalSessionFactory) sessionFactory).setDirectory(serverDir);
+      ((LocalSessionFactory) sessionFactory).setDirectory(databaseDir);
 
       log.info("Mulgara Initialized - Mulgara URI is '" + serverUri + "'");
     } catch (URISyntaxException use) {

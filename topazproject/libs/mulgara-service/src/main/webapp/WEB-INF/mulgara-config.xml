@@ -10,6 +10,10 @@
   http://opensource.org/licenses/ecl1.php
 -->
 <config>
-  <serverUri>local:///topazproject</serverUri>
-  <serverDir>/WEB-INF/mulgara_db</serverDir>
+  <topaz>
+    <mulgara>
+      <serverUri>local:///topazproject</serverUri>
+      <databaseDir>webctxt:/WEB-INF/mulgara_db</databaseDir>
+    </mulgara>
+  </topaz>
 </config>
