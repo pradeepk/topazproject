@@ -207,6 +207,10 @@
       <result name="success">/WEB-INF/pages/user/displayUser.ftl</result>
     </action>
 
+    <action name="getUserProfilePrivateFields" class="org.plos.user.action.DisplayUserAction" method="fetchUserProfileWithPrivateVisibility">
+      <result name="success">/WEB-INF/pages/user/displayPrivateFieldNames.ftl</result>
+    </action>
+
     <action name="assignAdminRole">
       <result>/WEB-INF/pages/user/assignAdminRole.ftl</result>
     </action>

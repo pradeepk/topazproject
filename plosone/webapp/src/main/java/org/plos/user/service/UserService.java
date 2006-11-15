@@ -251,20 +251,42 @@ public class UserService extends BaseConfigurableService {
   }
 
   /**
-   * Get the UserProfileGrant for the profile fields that are public
+   * Get the UserProfileGrants for the profile fields that are public
    * @param topazId topazId
    * @throws ApplicationException ApplicationException
    * @return the collection of UserProfileGrant
    */
   public Collection<UserProfileGrant> getProfileFieldsThatArePublic(final String topazId) throws ApplicationException {
     try {
-      final String[] grants = permissionWebService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
+      final String[] publicGrants = permissionWebService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
 
-      final Collection<String> result = new ArrayList<String>(grants.length);
-      for (final String grant : grants) {
-        if (ArrayUtils.contains(allUserProfileFieldGrants, grant)) {
-          result.add(grant);
+      final Collection<String> result = new ArrayList<String>(publicGrants.length);
+      for (final String publicGrant : publicGrants) {
+        if (ArrayUtils.contains(allUserProfileFieldGrants, publicGrant)) {
+          result.add(publicGrant);
         }
+      }
+
+      return UserProfileGrant.getProfileGrantsForGrants(result.toArray(new String[result.size()]));
+
+    } catch (RemoteException ex) {
+      throw new ApplicationException("Unable to fetch the access rights on the profile fields", ex);
+    }
+  }
+
+  /**
+   * Get the UserProfileGrants for the profile fields that are private
+   * @param topazId topazId
+   * @throws ApplicationException ApplicationException
+   * @return the collection of UserProfileGrant
+   */
+  public Collection<UserProfileGrant> getProfileFieldsThatArePrivate(final String topazId) throws ApplicationException {
+    try {
+      final String[] publicGrants = permissionWebService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
+
+      final Collection<String> result = Arrays.asList(getAllUserProfileFieldGrants());
+      for (final String publicGrant : publicGrants) {
+        result.remove(publicGrant);
       }
 
       return UserProfileGrant.getProfileGrantsForGrants(result.toArray(new String[result.size()]));

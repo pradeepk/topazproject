@@ -14,6 +14,10 @@ package org.plos.user.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.user.PlosOneUser;
+import org.plos.user.UserProfileGrant;
+
+import java.util.Collection;
+import java.util.ArrayList;
 
 /**
  * Simple class to display a user based on a TopazId
@@ -27,6 +31,7 @@ public class DisplayUserAction extends UserActionSupport {
 
   private PlosOneUser pou;
   private String userId;
+  private Collection<String> privateFields;
 
   /**
    * Returns the user based on the userId passed in.
@@ -36,6 +41,22 @@ public class DisplayUserAction extends UserActionSupport {
   public String execute() throws Exception {
 
     pou = getUserService().getUserByTopazId(userId);
+    return SUCCESS;
+  }
+
+  /**
+   * Returns the user profile fields names that have private visibility.
+   *
+   * @return webwork status string
+   * @throws Exception Exception when it fails
+   */
+  public String fetchUserProfileWithPrivateVisibility() throws Exception {
+    final Collection<UserProfileGrant> privateGrants = getUserService().getProfileFieldsThatArePrivate(userId);
+
+    privateFields = new ArrayList<String>(privateGrants.size());
+    for (final UserProfileGrant userProfileGrant : privateGrants) {
+      privateFields.add(userProfileGrant.getFieldName());
+    }
     return SUCCESS;
   }
 
@@ -68,4 +89,12 @@ public class DisplayUserAction extends UserActionSupport {
   public void setUserId(String userId) {
     this.userId = userId;
   }
+
+  /**
+   * @return the field names that are private.
+   */
+  public Collection<String> getPrivateFields() {
+    return privateFields;
+  }
+
 }
