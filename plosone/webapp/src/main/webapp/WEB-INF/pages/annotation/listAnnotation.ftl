@@ -28,6 +28,11 @@
         </li>
 
         <li>
+          <@ww.url includeParams="none" id="listThreadURL" action="listThread" root="${annotation.id}" inReplyTo="${annotation.id}"/>
+          <@ww.a href="%{listThreadURL}">list threaded replies (new - plosone)</@ww.a> <br/>
+        </li>
+
+        <li>
           <fieldset>
               <legend>Create an reply</legend>
               <@ww.form name="createReplyForm" action="createReplySubmit" namespace="/annotation/secure">
