@@ -115,7 +115,7 @@
              xmlns:topaz="http://rdf.topazproject.org/RDF/"
              model="pp">
       <rdf:Description rdf:about="{my:doi-to-uri($article-doi)}">
-        <xsl:call-template name="pp-rdf"/>
+        <xsl:call-template name="main-pp-rdf"/>
       </rdf:Description>
     </rdf:RDF>
   </xsl:template>
@@ -183,8 +183,9 @@
   </xsl:template>
 
   <!-- generate the propagate-permissions rdf statements for the article -->
-  <xsl:template name="pp-rdf" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+  <xsl:template name="main-pp-rdf" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:topaz="http://rdf.topazproject.org/RDF/">
+    <topaz:propagate-permissions-to rdf:resource="{my:doi-to-fedora-uri($article-doi)}"/>
     <xsl:for-each select="$sec-dois">
       <topaz:propagate-permissions-to rdf:resource="{my:doi-to-uri(.)}"/>
     </xsl:for-each>
@@ -286,6 +287,16 @@
         <xsl:sequence select="$rdf"/>
       </rdf:Description>
     </rdf:RDF>
+
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+             xmlns:topaz="http://rdf.topazproject.org/RDF/"
+             model="pp">
+      <rdf:Description rdf:about="{my:doi-to-uri($sdoi)}">
+        <xsl:call-template name="sec-pp-rdf">
+          <xsl:with-param name="sdoi" select="$sdoi"/>
+        </xsl:call-template>
+      </rdf:Description>
+    </rdf:RDF>
   </xsl:template>
 
   <!-- generate the rdf statements for the secondary object -->
@@ -344,6 +355,13 @@
     <topaz:isPID><xsl:value-of select="my:doi-to-pid($sdoi)"/></topaz:isPID>
 
     <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
+  </xsl:template>
+
+  <!-- generate the propagate-permissions rdf statements for the article -->
+  <xsl:template name="sec-pp-rdf" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:topaz="http://rdf.topazproject.org/RDF/">
+    <xsl:param name="sdoi" as="xs:string"/>
+    <topaz:propagate-permissions-to rdf:resource="{my:doi-to-fedora-uri($sdoi)}"/>
   </xsl:template>
 
   <!-- generate the object's datastream definitions for the secondary object -->
@@ -499,6 +517,12 @@
         my:urldecode(substring($uri, 10))
       else
         error((), concat('cannot convert uri ''', $uri, ''' to doi'))"/>
+  </xsl:function>
+
+  <!-- DOI to fedora-URI mapping -->
+  <xsl:function name="my:doi-to-fedora-uri" as="xs:string">
+    <xsl:param name="doi" as="xs:string"/>
+    <xsl:value-of select="concat('info:fedora/', $doi)"/>
   </xsl:function>
 
   <!-- test for doi-URI's -->
