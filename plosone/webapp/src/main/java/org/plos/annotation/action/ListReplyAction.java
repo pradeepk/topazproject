@@ -12,9 +12,13 @@ package org.plos.annotation.action;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.plos.ApplicationException;
 import org.plos.annotation.service.Reply;
+import org.plos.annotation.service.Annotation;
+import org.plos.article.service.ArticleWebService;
 
+import org.topazproject.ws.article.ObjectInfo;
 /**
  * Action class to get a list of replies to annotations.
  */
@@ -22,7 +26,10 @@ public class ListReplyAction extends AnnotationActionSupport {
   private String root;
   private String inReplyTo;
   private Reply[] replies;
-
+  private Annotation baseAnnotation;
+  private ArticleWebService articleWebService;
+  private ObjectInfo articleInfo;
+  
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
 
   public String execute() throws Exception {
@@ -38,7 +45,9 @@ public class ListReplyAction extends AnnotationActionSupport {
 
   public String listAllReplies() throws Exception {
     try {
+      baseAnnotation = getAnnotationService().getAnnotation(root);
       replies = getAnnotationService().listAllReplies(root, inReplyTo);
+      articleInfo = getArticleWebService().getObjectInfo(baseAnnotation.getAnnotates());
     } catch (final ApplicationException e) {
       log.error(e, e);
       addActionError("Reply fetching failed with error message: " + e.getMessage());
@@ -67,5 +76,47 @@ public class ListReplyAction extends AnnotationActionSupport {
   @RequiredStringValidator(message = "InReplyTo is required")
   public String getInReplyTo() {
     return inReplyTo;
+  }
+
+  /**
+   * @return Returns the baseAnnotation.
+   */
+  public Annotation getBaseAnnotation() {
+    return baseAnnotation;
+  }
+
+  /**
+   * @param baseAnnotation The baseAnnotation to set.
+   */
+  public void setBaseAnnotation(Annotation baseAnnotation) {
+    this.baseAnnotation = baseAnnotation;
+  }
+
+  /**
+   * @return Returns the articleWebService.
+   */
+  public ArticleWebService getArticleWebService() {
+    return articleWebService;
+  }
+
+  /**
+   * @param articleWebService The articleWebService to set.
+   */
+  public void setArticleWebService(ArticleWebService articleWebService) {
+    this.articleWebService = articleWebService;
+  }
+
+  /**
+   * @return Returns the articleInfo.
+   */
+  public ObjectInfo getArticleInfo() {
+    return articleInfo;
+  }
+
+  /**
+   * @param articleInfo The articleInfo to set.
+   */
+  public void setArticleInfo(ObjectInfo articleInfo) {
+    this.articleInfo = articleInfo;
   }
 }

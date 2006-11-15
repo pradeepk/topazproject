@@ -37,7 +37,7 @@
 	<h1>Annotation and Responses</h1>
 	<div class="source">
 		<span>Original Article</span>
-		<a href="${baseAnnotation.annotates}" title="Back to original article" class="article icon">X Chromosomes Alternate between Two States prior to Random X-Inactivation</a>
+		<a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=${baseAnnotation.annotates}" title="Back to original article" class="article icon">${articleInfo.title}</a>
 	</div>
 	<div class="response original">
 		<div class="hd">
