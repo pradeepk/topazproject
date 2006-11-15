@@ -3541,9 +3541,30 @@ Make article meta data
 <!-- default: any other titles found -->
 
 <xsl:template match="title">
-  <xsl:call-template name="nl-1"/>
-  <span class="tl-default"><xsl:apply-templates/></span>
-  <xsl:call-template name="nl-1"/>
+
+  <xsl:choose>
+    <!-- if there's a title, use it -->
+    <xsl:when test="count(ancestor::sec) > 1">
+		<xsl:call-template name="nl-1"/>
+		<h4>
+		<xsl:call-template name="makeXpathLocation" >
+			<xsl:with-param name="node" select="."/>
+		</xsl:call-template>
+		<xsl:apply-templates/>
+		</h4>
+		<xsl:call-template name="nl-1"/>
+	</xsl:when>
+	<xsl:otherwise>
+		<xsl:call-template name="nl-1"/>
+		<h3>
+		<xsl:call-template name="makeXpathLocation" >
+			<xsl:with-param name="node" select="."/>
+		</xsl:call-template>
+		<xsl:apply-templates/>
+		</h3>
+		<xsl:call-template name="nl-1"/>  
+	</xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
 
 
