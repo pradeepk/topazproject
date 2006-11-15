@@ -177,6 +177,8 @@
       <topaz:nextObject rdf:resource="{$sec-obj-refs[1]/@xlink:href}"/>
     </xsl:if>
 
+    <topaz:isPID><xsl:value-of select="my:doi-to-pid($article-doi)"/></topaz:isPID>
+
     <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
   </xsl:template>
 
@@ -208,12 +210,14 @@
 
   <!-- generate the auxiliary object definitions (objects not directly present in the pmc) -->
   <xsl:template name="cat-aux">
-    <xsl:variable name="rdf" as="element()*">
-      <xsl:call-template name="cat-aux-rdf"/>
-    </xsl:variable>
-
     <xsl:variable name="cat-doi" as="xs:string"
         select="my:doi-to-aux($article-doi, 'category', position())"/>
+
+    <xsl:variable name="rdf" as="element()*">
+      <xsl:call-template name="cat-aux-rdf">
+        <xsl:with-param name="cat-doi" select="$cat-doi"/>
+      </xsl:call-template>
+    </xsl:variable>
 
     <Object pid="{my:doi-to-pid($cat-doi)}" cModel="PlosCategory">
       <DC xmlns:dc="http://purl.org/dc/elements/1.1/">
@@ -238,6 +242,8 @@
 
   <!-- generate the rdf statements for an auxiliary object -->
   <xsl:template name="cat-aux-rdf" xmlns:topaz="http://rdf.topazproject.org/RDF/">
+    <xsl:param name="cat-doi"/>
+
     <xsl:variable name="main-cat" as="xs:string"
         select="if (contains(., '/')) then substring-before(., '/') else ."/>
     <xsl:variable name="sub-cat" as="xs:string" select="substring-after(., '/')"/>
@@ -246,6 +252,8 @@
     <xsl:if test="$sub-cat">
       <topaz:subCategory><xsl:value-of select="$sub-cat"/></topaz:subCategory>
     </xsl:if>
+
+    <topaz:isPID><xsl:value-of select="my:doi-to-pid($cat-doi)"/></topaz:isPID>
   </xsl:template>
 
   <!-- templates for all secondary entries -->
@@ -332,6 +340,8 @@
         <dc:description rdf:parseType="Literal"><xsl:copy-of select="$ctxt-obj/caption/node()"/></dc:description>
       </xsl:if>
     </xsl:if>
+
+    <topaz:isPID><xsl:value-of select="my:doi-to-pid($sdoi)"/></topaz:isPID>
 
     <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
   </xsl:template>
@@ -522,9 +532,9 @@
     <xsl:sequence select="matches($uri, '^[^:/?#]+:')"/>
   </xsl:function>
 
-  <!-- pid-encode a string (replace reserved chars with %HH). Note this is the
-     - same as the built-in encode-for-uri, except that it encodes all non-fedora-pid
-     - chars -->
+  <!-- doi-encode a string (replace reserved chars with %HH). Note this is the
+     - same as the built-in encode-for-uri, except that it only encodes % ? # [ and ]
+     -->
   <xsl:function name="my:doiencode" as="xs:string">
     <xsl:param name="str" as="xs:string"/>
     <xsl:value-of select="iri-to-uri(string-join(my:doiencode-seq($str), ''))"/>

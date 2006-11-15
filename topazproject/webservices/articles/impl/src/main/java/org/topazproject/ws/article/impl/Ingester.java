@@ -21,6 +21,7 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
@@ -64,8 +65,6 @@ import org.topazproject.fedoragsearch.service.FgsOperations;
 
 import net.sf.saxon.Controller;
 import net.sf.saxon.TransformerFactoryImpl;
-
-import org.topazproject.common.impl.DoiUtil;
 
 /** 
  * The article ingestor.
@@ -436,8 +435,13 @@ public class Ingester {
     try {
       apim.ingest(foxml.getBytes("UTF-8"), "foxml1.0", logMsg);
     } catch (RemoteException re) {
-      FedoraUtil.detectDuplicateArticleIdException(re, DoiUtil.pid2URI(pid));
+      FedoraUtil.detectDuplicateArticleIdException(re, pidToURI(pid));
     }
+  }
+
+  private static final String pidToURI(String pid) throws IOException {
+    String doi = URLDecoder.decode(pid.substring(pid.indexOf(":") + 1), "UTF-8");
+    return "info:doi/" + doi;
   }
 
   private void fedoraAddDatastream(FedoraAPIM apim, Uploader uploader, String pid, Element ds, 

@@ -61,8 +61,6 @@ import org.topazproject.fedoragsearch.service.FgsOperations;
 
 import org.topazproject.feed.ArticleFeed;
 
-import org.topazproject.common.impl.DoiUtil;
-
 /** 
  * The default implementation of the article manager.
  * 
@@ -98,9 +96,9 @@ public class ArticleImpl implements Article {
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_FIND_OBJS =
-      ("select $obj from ${MODEL} where " +
+      ("select $obj $pid from ${MODEL} where " +
           // ensure it's an article
-       "  <${subj}> <rdf:type> <topaz:Article> and (" +
+       "  <${subj}> <rdf:type> <topaz:Article> and $obj <topaz:isPID> $pid and (" +
           // find all related objects
        "  <${subj}> <dc_terms:hasPart> $obj or <${subj}> <topaz:hasCategory> $obj " +
           // find the article itself
@@ -116,6 +114,10 @@ public class ArticleImpl implements Article {
        "  from ${MODEL} where " +
        "  <${art}> <rdf:type> <topaz:Article> and " +
        "  walk(<${art}> <topaz:nextObject> $cur and $prev <topaz:nextObject> $cur);").
+      replaceAll("\\Q${MODEL}", MODEL);
+
+  private static final String ITQL_GET_PID =
+      ("select $pid from ${MODEL} where <${uri}> <topaz:isPID> $pid;").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_TEST_ARTICLE =
@@ -215,8 +217,10 @@ public class ArticleImpl implements Article {
     pep.checkAccess(pep.SET_ARTICLE_STATE, ItqlHelper.validateUri(article, "article"));
 
     try {
-      ctx.getFedoraAPIM().modifyObject(DoiUtil.uri2PID(article), state2Str(state),
-                                       null, "Changed state");
+      String pid = getPIDForURI(article, ctx.getItqlHelper());
+      if (pid == null)
+        throw new NoSuchArticleIdException(article);
+      ctx.getFedoraAPIM().modifyObject(pid, state2Str(state), null, "Changed state");
     } catch (RemoteException re) {
       FedoraUtil.detectNoSuchArticleIdException(re, article);
     }
@@ -233,23 +237,25 @@ public class ArticleImpl implements Article {
       if (txn != null)
         itql.beginTxn(txn);
 
-      String[] objList = findAllObjects(article);
+      String[][] objList = findAllObjects(article);
       if (log.isDebugEnabled())
         log.debug("deleting all objects for uri '" + article + "'");
 
       for (int idx = 0; idx < objList.length; idx++) {
+        String uri = objList[idx][0];
+        String pid = objList[idx][1];
+
         if (log.isDebugEnabled())
-          log.debug("deleting uri '" + objList[idx] + "'");
+          log.debug("deleting uri '" + uri + "'");
 
         if (purge) {
-          apim.purgeObject(DoiUtil.uri2PID(objList[idx]), "Purged object", false);
-          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_OBJ, "subj", objList[idx]), null);
+          apim.purgeObject(pid, "Purged object", false);
+          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_OBJ, "subj", uri), null);
         } else {
-          apim.modifyObject(DoiUtil.uri2PID(objList[idx]), "D", null, "Deleted object");
+          apim.modifyObject(pid, "D", null, "Deleted object");
         }
 
         // Remove article from full-text index first
-        String pid = DoiUtil.uri2PID(objList[idx]);
         String result = fgs.updateIndex("deletePid", pid, FGS_REPO, null, null, null);
         if (log.isDebugEnabled())
           log.debug("Removed " + pid + " from full-text index:\n" + result);
@@ -275,7 +281,11 @@ public class ArticleImpl implements Article {
       throws NoSuchObjectIdException, RemoteException {
     pep.checkAccess(pep.GET_OBJECT_URL, ItqlHelper.validateUri(obj, "object"));
 
-    String path = "/fedora/get/" + DoiUtil.uri2PID(obj) + "/" + rep;
+    String pid = getPIDForURI(obj, ctx.getItqlHelper());
+    if (pid == null)
+      throw new NoSuchObjectIdException(obj);
+
+    String path = "/fedora/get/" + pid + "/" + rep;
     return fedoraServer.resolve(path).toString();
   }
 
@@ -360,7 +370,7 @@ public class ArticleImpl implements Article {
     }
   }
 
-  protected String[] findAllObjects(String subj)
+  protected String[][] findAllObjects(String subj)
       throws NoSuchArticleIdException, RemoteException, AnswerException {
     ItqlHelper.validateUri(subj, "subject");
 
@@ -371,9 +381,9 @@ public class ArticleImpl implements Article {
     if (uris.size() == 0)
       throw new NoSuchArticleIdException(subj);
 
-    String[] res = new String[uris.size()];
+    String[][] res = new String[uris.size()][];
     for (int idx = 0; idx < res.length; idx++)
-      res[idx] = ((String[]) uris.get(idx))[0];
+      res[idx] = (String[]) uris.get(idx);
 
     return res;
   }
@@ -413,6 +423,10 @@ public class ArticleImpl implements Article {
       if (log.isDebugEnabled())
         log.debug("setting representation '" + rep + "' for '" + obj + "'");
 
+      String pid = getPIDForURI(obj, itql);
+      if (pid == null)
+        throw new NoSuchObjectIdException(obj);
+
       itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_REP, "subj", obj,
                                           "rep", ItqlHelper.escapeLiteral(rep)), null);
 
@@ -424,7 +438,7 @@ public class ArticleImpl implements Article {
         ByteCounterInputStream bcis = new ByteCounterInputStream(content.getInputStream());
         String reLoc = ctx.getFedoraUploader().upload(bcis);
         try {
-          apim.modifyDatastreamByReference(DoiUtil.uri2PID(obj), rep, null, null, false, ct,
+          apim.modifyDatastreamByReference(pid, rep, null, null, false, ct,
                                            null, reLoc, "A", "Updated datastream", false);
         } catch (RemoteException re) {
           if (!isNoSuchDatastream(re))
@@ -433,7 +447,7 @@ public class ArticleImpl implements Article {
           if (log.isDebugEnabled())
             log.debug("representation '" + rep + "' for '" + obj + "' doesn't exist yet - " +
                       "creating it", re);
-          apim.addDatastream(DoiUtil.uri2PID(obj), rep, new String[0], "Represention", false, ct,
+          apim.addDatastream(pid, rep, new String[0], "Represention", false, ct,
                              null, reLoc, "M", "A", "New representation");
         }
 
@@ -445,7 +459,7 @@ public class ArticleImpl implements Article {
         itql.doUpdate(ItqlHelper.bindValues(ITQL_CREATE_REP, map), null);
       } else {
         try {
-          apim.purgeDatastream(DoiUtil.uri2PID(obj), rep, null, "Purged datastream", false);
+          apim.purgeDatastream(pid, rep, null, "Purged datastream", false);
         } catch (RemoteException re) {
           if (!isNoSuchDatastream(re))
             throw re;
@@ -541,6 +555,23 @@ public class ArticleImpl implements Article {
     }
   }
 
+  private String getPIDForURI(String uri, ItqlHelper itql) throws RemoteException {
+    try {
+      AnswerSet ans =
+          new AnswerSet(itql.doQuery(ItqlHelper.bindValues(ITQL_GET_PID, "uri", uri), null));
+      ans.next();
+
+      AnswerSet.QueryAnswerSet info = ans.getQueryResults();
+
+      if (!info.next())
+        return null;
+
+      return info.getString("pid");
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error querying RDF", ae);
+    }
+  }
+
   public ObjectInfo getObjectInfo(String obj) throws NoSuchObjectIdException, RemoteException {
     pep.checkAccess(pep.GET_OBJECT_INFO, ItqlHelper.validateUri(obj, "object"));
 
@@ -570,11 +601,14 @@ public class ArticleImpl implements Article {
     int predCol = info.indexOf("p");
     int objCol  = info.indexOf("o");
 
-    List reps = new ArrayList();
+    List   reps = new ArrayList();
+    String pid  = null;
 
     while (info.next()) {
       String pred = info.getString(predCol);
-      if (pred.equals(ItqlHelper.TOPAZ_URI + "hasRepresentation"))
+      if (pred.equals(ItqlHelper.TOPAZ_URI + "isPID"))
+        pid = info.getString(objCol);
+      else if (pred.equals(ItqlHelper.TOPAZ_URI + "hasRepresentation"))
         reps.add(info.getString(objCol));
       else if (pred.equals(ItqlHelper.DC_URI + "title"))
         oi.setTitle(info.getString("o"));
@@ -590,7 +624,7 @@ public class ArticleImpl implements Article {
       ri[idx].setName((String) reps.get(idx));
       ri[idx].setSize(-1);
 
-      String path = "/fedora/get/" + DoiUtil.uri2PID(oi.getUri()) + "/" + ri[idx].getName();
+      String path = "/fedora/get/" + pid + "/" + ri[idx].getName();
       ri[idx].setURL(fedoraServer.resolve(path).toString());
     }
 
