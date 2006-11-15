@@ -39,7 +39,7 @@ import org.topazproject.xml.transform.CustomEntityResolver;
  *   transformer.transform(new CachedSource(myInputSource), new StreamResult(outFileName));
  * </pre>
  *
- * @author Eric Brown and Ronald Tschal�r
+ * @author Eric Brown and Ronald Tschalär
  * @version $Id$
  */
 public class CachedSource extends EntityResolvingSource implements Source {
