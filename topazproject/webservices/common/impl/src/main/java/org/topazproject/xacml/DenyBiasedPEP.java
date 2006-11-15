@@ -78,6 +78,15 @@ public class DenyBiasedPEP {
   }
 
   /**
+   * Get the pdp used by this Pep.
+   *
+   * @return the pdp
+   */
+  public PDP getPdp() {
+    return pdp;
+  }
+
+  /**
    * Evaluates a request. The steps are as follows:
    * 
    * <ul>

@@ -101,6 +101,16 @@ public abstract class AbstractSimplePEP extends DenyBiasedPEP {
     subjectAttrs = subjAttrs;
   }
 
+  /**
+   * Creates a new PEP object with the same pdp and subject Attrs.
+   *
+   * @param  pep the pep to copy from
+   */
+  protected AbstractSimplePEP(AbstractSimplePEP pep) {
+    super(pep.getPdp());
+    this.subjectAttrs = pep.subjectAttrs;
+  }
+
   /** 
    * Check if the requested operation is allowed on the given resources.
    * 

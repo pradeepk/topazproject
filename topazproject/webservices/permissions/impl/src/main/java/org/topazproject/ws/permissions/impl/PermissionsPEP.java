@@ -52,4 +52,25 @@ public abstract class PermissionsPEP extends AbstractSimplePEP
                     throws IOException, ParsingException, UnknownIdentifierException {
     super(pdp, subjAttrs);
   }
+
+  /*
+   *@see org.topazproject.xacml.AbstractSimplePEP
+   *
+   */
+  protected PermissionsPEP(AbstractSimplePEP pep) {
+    super(pep);
+  }
+
+  /**
+   * A PermissionsPEP that inherits its pdp and subject attrs from another.
+   */
+  public static class Proxy extends PermissionsPEP {
+    static {
+      init(Proxy.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
+    }
+
+    public Proxy(AbstractSimplePEP pep) {
+      super(pep);
+    }
+  }
 }
