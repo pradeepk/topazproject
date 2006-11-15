@@ -139,6 +139,16 @@ public class AlertsImpl implements Alerts {
   }
 
   /**
+   * Initialize the ITQL model. 
+   *
+   * @param itql itql handle to use
+   */
+  public static void initializeModel(ItqlHelper itql) throws RemoteException {
+    itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";", aliases);
+    itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";", aliases);
+  }
+
+  /**
    * Create a new permission instance.
    *
    * @param pep the policy-enforcer to use for access-control
@@ -147,21 +157,6 @@ public class AlertsImpl implements Alerts {
   public AlertsImpl(AlertsPEP pep, TopazContext ctx) {
     this.ctx   = ctx;
     this.pep   = pep;
-
-    ctx.addListener(new TopazContextListener() {
-        public void handleCreated(TopazContext ctx, Object handle) {
-          if (handle instanceof ItqlHelper) {
-            ItqlHelper itql = (ItqlHelper) handle;
-
-            try {
-              itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";", aliases);
-              itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";", aliases);
-            } catch (IOException e) {
-              log.warn("failed to create alerts models", e);
-            }
-          }
-        }
-      });
   }
   /**
    * Create a new alerts service instance.
@@ -177,9 +172,6 @@ public class AlertsImpl implements Alerts {
     this.pep = pep;
 
     ItqlHelper itql = new ItqlHelper(itqlService);
-    itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";", aliases);
-    itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";", aliases);
-
     FedoraAPIM apim = APIMStubFactory.create(fedoraService);
     ctx = new SimpleTopazContext(itql, apim, null);
   }
@@ -197,8 +189,6 @@ public class AlertsImpl implements Alerts {
     this.pep = null; // means we are super-user
 
     ItqlHelper itql = new ItqlHelper(mulgaraUri);
-    itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";", aliases);
-    itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";", aliases);
     ctx = new SimpleTopazContext(itql, null, null);
   }
 

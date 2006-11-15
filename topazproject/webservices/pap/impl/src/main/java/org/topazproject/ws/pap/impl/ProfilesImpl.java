@@ -125,6 +125,15 @@ public class ProfilesImpl implements Profiles {
   }
 
   /**
+   * Initialize the ITQL model. 
+   *
+   * @param itql itql handle to use
+   */
+  public static void initializeModel(ItqlHelper itql) throws RemoteException {
+    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
+  }
+
+  /**
    * Create a new profiles instance.
    *
    * @param pep the policy-enforcer to use for access-control
@@ -135,19 +144,6 @@ public class ProfilesImpl implements Profiles {
     this.ctx   = ctx;
     this.pep   = pep;
     this.baseURI = ctx.getObjectBaseUri().toString();
-
-    ctx.addListener(new TopazContextListener() {
-        public void handleCreated(TopazContext ctx, Object handle) {
-          if (handle instanceof ItqlHelper) {
-            ItqlHelper itql = (ItqlHelper) handle;
-            try {
-              itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
-            } catch (IOException e) {
-              log.warn("failed to create model " + MODEL, e);
-            }
-          }
-        }
-      });
   }
   /** 
    * Create a new profiles manager instance. 
@@ -164,7 +160,6 @@ public class ProfilesImpl implements Profiles {
     this.pep = pep;
 
     ItqlHelper itql = new ItqlHelper(mulgaraSvc);
-    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
 
     FedoraAPIM apim = APIMStubFactory.create(fedoraSvc);
 

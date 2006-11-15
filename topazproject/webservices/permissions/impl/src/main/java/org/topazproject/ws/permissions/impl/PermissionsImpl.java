@@ -135,22 +135,20 @@ public class PermissionsImpl implements Permissions {
   }
 
   /**
-   * Initialize the permissions ITQL model. 
+   * Initialize the permissions ITQL model.
    *
    * @param itql itql handle to use
+   *
+   * @throws RemoteException on a failure
    */
-  public static void initializeModel(ItqlHelper itql) {
+  public static void initializeModel(ItqlHelper itql) throws RemoteException {
     if (((grantsCache != null) && (grantsCache.getSize() != 0))
          || ((revokesCache != null) && (revokesCache.getSize() != 0)))
       return; // xxx: cache has entries perhaps from peers. so initialized is a good guess
 
-    try {
-      itql.doUpdate("create " + GRANTS_MODEL + " " + GRANTS_MODEL_TYPE + ";", null);
-      itql.doUpdate("create " + REVOKES_MODEL + " " + REVOKES_MODEL_TYPE + ";", null);
-      itql.doUpdate("create " + PP_MODEL + " " + PP_MODEL_TYPE + ";", null);
-    } catch (IOException e) {
-      log.warn("failed to create grants, revokes and pp models", e);
-    }
+    itql.doUpdate("create " + GRANTS_MODEL + " " + GRANTS_MODEL_TYPE + ";", null);
+    itql.doUpdate("create " + REVOKES_MODEL + " " + REVOKES_MODEL_TYPE + ";", null);
+    itql.doUpdate("create " + PP_MODEL + " " + PP_MODEL_TYPE + ";", null);
 
     Configuration conf = CONF.subset("topaz.permissions.impliedPermissions");
 
@@ -179,14 +177,13 @@ public class PermissionsImpl implements Permissions {
       itql.doUpdate(cmd, null);
       itql.commitTxn(txn);
       txn = null;
-    } catch (IOException e) {
-      log.warn("failed to store implied permissions loaded from config", e);
     } finally {
       try {
         if (txn != null)
           itql.rollbackTxn(txn);
       } catch (Throwable t) {
-        log.debug("Error rolling failed transaction", t);
+        if (log.isDebugEnabled())
+          log.debug("Error rolling failed transaction", t);
       }
     }
 
@@ -195,7 +192,6 @@ public class PermissionsImpl implements Permissions {
 
     if (revokesCache != null)
       revokesCache.removeAll();
-
   }
 
   //
@@ -413,7 +409,8 @@ public class PermissionsImpl implements Permissions {
         if (txn != null)
           itql.rollbackTxn(txn);
       } catch (Throwable t) {
-        log.debug("Error rolling failed transaction", t);
+        if (log.isDebugEnabled())
+          log.debug("Error rolling failed transaction", t);
       }
     }
 
@@ -484,7 +481,8 @@ public class PermissionsImpl implements Permissions {
         if (txn != null)
           itql.rollbackTxn(txn);
       } catch (Throwable t) {
-        log.debug("Error rolling failed transaction", t);
+        if (log.isDebugEnabled())
+          log.debug("Error rolling failed transaction", t);
       }
     }
 

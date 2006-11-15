@@ -140,6 +140,15 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
     aliases.put("foaf", FOAF_URI);
   }
 
+  /**
+   * Initialize the ITQL model. 
+   *
+   * @param itql itql handle to use
+   */
+  public static void initializeModel(ItqlHelper itql) throws RemoteException {
+    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
+  }
+
   /** 
    * Create a new user lookup instance. <em>Only use this if all you intend to use is the
    * {@link UserAccountLookup UserAccountLookup} interface.</em>
@@ -178,8 +187,6 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
       throws IOException, ConfigurationException {
     this.pep  = pep;
     this.ctx = new SimpleTopazContext(itql, apim, null);
-
-    itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
 
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
     conf = conf.subset("topaz");
