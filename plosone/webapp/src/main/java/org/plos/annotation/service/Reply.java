@@ -9,10 +9,13 @@
  */
 package org.plos.annotation.service;
 
+import org.plos.util.DateParser;
+import org.plos.util.InvalidDateException;
 import org.topazproject.ws.annotation.ReplyInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 
 /**
  * Plosone wrapper around the ReplyInfo from topaz service. It provides
@@ -27,6 +30,18 @@ public abstract class Reply extends BaseAnnotation {
     this.reply = reply;
   }
 
+  /**
+   * Get created date.
+   * @return created as java.util.Date.
+   */
+  public Date getCreatedAsDate() {
+    try {
+      return DateParser.parse(reply.getCreated());
+    } catch (InvalidDateException ide) {
+    }
+    return null;
+  }
+  
   /**
    * Get created.
    *

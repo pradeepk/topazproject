@@ -9,7 +9,11 @@
  */
 package org.plos.annotation.service;
 
+import java.util.Date;
+
 import org.topazproject.ws.annotation.AnnotationInfo;
+import org.plos.util.DateParser;
+import org.plos.util.InvalidDateException;
 
 /**
  * Plosone wrapper around the AnnotationsInfo from topaz service. It provides
@@ -49,6 +53,19 @@ public abstract class Annotation extends BaseAnnotation {
    */
   public void setContext(final String context) {
     annotation.setContext(context);
+  }
+  
+  
+  /**
+   * Get created date.
+   * @return created as java.util.Date.
+   */
+  public Date getCreatedAsDate() {
+    try {
+      return DateParser.parse(annotation.getCreated());
+    } catch (InvalidDateException ide) {
+    }
+    return null;
   }
 
   /**

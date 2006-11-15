@@ -129,6 +129,13 @@
       <result name="success">/WEB-INF/pages/annotation/listThreadedReply.ftl</result>
     </action>
 
+    <action name="listThread" class="org.plos.annotation.action.ListReplyAction" method="listAllReplies">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/discussion/threaded_replies.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
     <action name="getReply" class="org.plos.annotation.action.GetReplyAction">
       <result name="success" type="ajaxJSON"/>
     </action>
@@ -206,7 +213,9 @@
     <action name="displayUser" class="org.plos.user.action.DisplayUserAction">
       <result name="success">/WEB-INF/pages/user/displayUser.ftl</result>
     </action>
-
+    <action name="secureHome" >
+      <result type="redirect">/home.action</result>
+    </action>
     <action name="getUserProfilePrivateFields" class="org.plos.user.action.DisplayUserAction" method="fetchUserProfileWithPrivateVisibility">
       <result name="success">/WEB-INF/pages/user/displayPrivateFieldNames.ftl</result>
     </action>

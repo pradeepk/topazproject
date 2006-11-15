@@ -36,15 +36,11 @@
       <file>/javascript/init_article.js</file>   
     </javascript>
   </page>
-
   <page>
-    <name>test2</name>
-    <title>Title2 Goes Here</title>
-    <css>
-      <file>css0</file>
-    </css>
+    <name>/discussion/commentary.ftl</name>
     <javascript>
-      <file>javascript0</file>
+      <file>/javascript/prototype.js</file>
+      <file>/javascript/dojo/dojo.js</file>
     </javascript>
   </page>
 </pages>
