@@ -171,6 +171,7 @@
                     <exclude name="lib/dtd-base*"/>
                     <exclude name="lib/log4j*"/>
                     <exclude name="lib/commons-logging*"/>
+                    <exclude name="lib/javax.servlet*"/>
                   </patternset>
                 </unjar>
                 <unjar src="${mulgara-jar}" dest="${webinf}/classes">
