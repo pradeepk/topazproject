@@ -4,7 +4,6 @@
 package org.plos.article.service;
 
 import com.sun.org.apache.xpath.internal.XPathAPI;
-import org.apache.commons.io.IOUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
@@ -14,10 +13,10 @@ import org.plos.util.FileUtils;
 import org.plos.util.TextUtils;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.annotation.AnnotationInfo;
+import org.topazproject.xml.transform.cache.CachedSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
-import org.xml.sax.EntityResolver;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -34,24 +33,18 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
 import java.io.StringReader;
 import java.io.Writer;
-import java.lang.ref.SoftReference;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
 
 /**
  * Fetch article service
@@ -66,10 +59,7 @@ public class FetchArticleService {
   private String encodingCharset;
 
   private static final Log log = LogFactory.getLog(FetchArticleService.class);
-  private Map<String, InputSource> entityResolvers = new HashMap<String, InputSource>();
   private AnnotationWebService annotationWebService;
-  private String firstEntLocation;
-  private String firstEnt;
   private DocumentBuilderFactory factory;
 
   public void init() {
@@ -278,77 +268,28 @@ public class FetchArticleService {
   private DocumentBuilder createDocBuilder() throws ParserConfigurationException {
     // Create the builder and parse the file
     final DocumentBuilder builder = factory.newDocumentBuilder();
-//    builder.setEntityResolver(new CachedEntityResolver());
-    builder.setEntityResolver(new EntityResolver() {
-      public InputSource resolveEntity(final String publicId, final String systemId) throws SAXException, IOException {
-        if (log.isDebugEnabled()) {
-          log.debug("publicId = " + publicId + "systemId = " + systemId);
-        }
-
-        return getInputSource(systemId);
-      }
-    });
+    builder.setEntityResolver(CachedSource.getResolver());
     return builder;
   }
 
-  private InputSource getInputSource(final String systemId) throws IOException {
-    final String entityFilename = FileUtils.getFileName(systemId);
-    if (firstEntLocation == null) {
-      firstEntLocation = entityFilename;
-      firstEnt = systemId;
-    }
-    
-    final String entityUri = firstEnt.replaceFirst(firstEntLocation, entityFilename);
-    //Get an instance from the cache
-    //TODO: A potential bottleneck place when multiple callers are trying to work with the same instance of the entity resolver
-//    InputSource entityResolver = entityResolvers.get(entityFilename);
-    InputSource entityResolver = null;
-    if (null == entityResolver) {
-//      log.debug("Creating entity resolver for " + systemId);
-      //TODO: fix this constant value thingy and also fix for location under /xmlchars/
-      final String entityFilePath = "/jp-dtd-2.0/" + entityFilename;
-      URL resourceURL = FetchArticleService.class.getResource(entityFilePath);
-      if (null == resourceURL) {
-        createLocalCopyOfEntity(entityUri, FetchArticleService.class.getResource("/").getPath(), entityFilePath);
-        resourceURL = FetchArticleService.class.getResource(entityFilePath);
-      }
-
-      entityResolver = new InputSource(new BufferedReader(new InputStreamReader(resourceURL.openStream())));
-      entityResolvers.put(entityFilePath, entityResolver);
-    }
-    return entityResolver;
-  }
-
-  private static void createLocalCopyOfEntity(final String systemId, final String location, final String entityFilename) throws IOException {
-    if (FileUtils.isHttpURL(systemId)) {
-      try {
-        FileUtils.createLocalCopyOfTextFile(systemId, location + entityFilename);
-        log.debug("local entity created = " + entityFilename);
-      } catch (IOException e) {
-        log.error("Entity creation failed for " + entityFilename, e);
-        throw e;
-      }
-    }
-  }
-
-  private Document getAnnotatedContentAsDocument(final String infoUri) throws IOException, 
-                                        NoSuchIdException, ParserConfigurationException {
+  private Document getAnnotatedContentAsDocument(final String infoUri) throws IOException,
+          NoSuchIdException, ParserConfigurationException, SAXException, ApplicationException {
     final String contentUrl = articleService.getObjectURL(infoUri, articleRep);
     return getAnnotatedContentAsDocument(contentUrl, infoUri);
   }
   
   
   private Document getAnnotatedContentAsDocument(final String contentUrl, final String infoUri)
-                                            throws IOException, ParserConfigurationException {
+          throws IOException, ParserConfigurationException, ApplicationException {
     final AnnotationInfo[] annotations = annotationWebService.listAnnotations(infoUri);
     return applyAnnotationsOnContentAsDocument (contentUrl, annotations);
   }
 
   private Document applyAnnotationsOnContentAsDocument (final String contentUrl, 
-                                                        final AnnotationInfo[] annotations) 
-                                          throws IOException, ParserConfigurationException {
+                                                        final AnnotationInfo[] annotations)
+          throws IOException, ParserConfigurationException, ApplicationException {
     
-    DataHandler content = new DataHandler(new URLDataSource(new URL(contentUrl)));
+    final DataHandler content = new DataHandler(new URLDataSource(new URL(contentUrl)));
     if (annotations.length != 0) {
       return Annotator.annotateAsDocument(content, annotations, createDocBuilder());
     }
@@ -356,8 +297,8 @@ public class FetchArticleService {
       return createDocBuilder().parse(content.getInputStream());
     } catch (Exception e){
       log.error(e, e);
+      throw new ApplicationException("Applying annotations failed for resource:" + contentUrl, e);
     }
-    return null;
   }
   
  
@@ -373,7 +314,7 @@ public class FetchArticleService {
   /**
    * Setter for annotationWebService
    * 
-   * @param annotationWebService
+   * @param annotationWebService annotationWebService
    */
   public void setAnnotationWebService(final AnnotationWebService annotationWebService) {
     this.annotationWebService = annotationWebService;
@@ -418,137 +359,4 @@ public class FetchArticleService {
   public void setEncodingCharset(final String encodingCharset) {
     this.encodingCharset = encodingCharset;
   }
-/*
-  private static class CachedEntityResolver implements EntityResolver {
-    private static final URLRetriever retriever;
-
-    static {
-      URLRetriever r = new NetworkURLRetriever(null);
-      try {
-        r = new ResourceURLRetriever(r);
-      } catch (IOException ioe) {
-        log.error("Error loading entity-cache map - continuing without it", ioe);
-      }
-      retriever = new MemoryCacheURLRetriever(r);
-    }
-
-    public InputSource resolveEntity(String publicId, String systemId) throws IOException {
-      if (log.isDebugEnabled())
-        log.debug("Resolving entity '" + systemId + "'");
-
-      byte[] res = retriever.retrieve(systemId);
-      if (log.isDebugEnabled())
-        log.debug("Entity '" + systemId + "' " + (res != null ? "found" : "not found"));
-
-      if (res == null)
-        return null;
-
-      InputSource is = new InputSource(new ByteArrayInputStream(res));
-      is.setPublicId(publicId);
-      is.setSystemId(systemId);
-
-      return is;
-    }
-  }*/
-
-  /**
-   * Retrieve the content of a URL.
-   */
-  private static interface URLRetriever {
-    /**
-     * Retrieve the contents of a URL as a byte[].
-     *
-     * @param url the url to retrieve
-     * @return the contents, or null if not found
-     * @throws IOException if an error occurred retrieving the contents (other than not-found)
-     */
-    public byte[] retrieve(String url) throws IOException;
-  }
-
-  /**
-   * Look up the URL in an in-memory cache.
-   */
-  private static class MemoryCacheURLRetriever implements URLRetriever {
-    private final Map          cache = new HashMap();
-    private final URLRetriever delegate;
-
-    public MemoryCacheURLRetriever(URLRetriever delegate) {
-      this.delegate = delegate;
-    }
-
-    public synchronized byte[] retrieve(String url) throws IOException {
-      SoftReference ref = (SoftReference) cache.get(url);
-      byte[] res = (ref != null) ? (byte[]) ref.get() : null;
-
-      if (log.isDebugEnabled())
-        log.debug("Memory cache('" + url + "'): " +
-                  (res != null ? "found" : ref != null ? "expired" : "not found"));
-
-      if (res != null || delegate == null)
-        return res;
-
-      res = delegate.retrieve(url);
-      if (res == null)
-        return null;
-
-      if (log.isDebugEnabled())
-        log.debug("Caching '" + url + "'");
-
-      cache.put(url, new SoftReference(res));
-      return res;
-    }
-  }
-
-  /**
-   * Look up the URL in a resource cache.
-   */
-  private static class ResourceURLRetriever implements URLRetriever {
-    private final Properties urlMap;
-    private final URLRetriever delegate;
-
-    public ResourceURLRetriever(URLRetriever delegate) throws IOException {
-      this.delegate = delegate;
-
-      String map_file = "url_rsrc_map.properties";
-      InputStream is = ResourceURLRetriever.class.getResourceAsStream(map_file);
-
-      urlMap = new Properties();
-      if (is != null)
-        urlMap.load(is);
-      else
-        log.info("url-map resource '" + map_file + "' not found - no map loaded");
-    }
-
-    public byte[] retrieve(String url) throws IOException {
-      String resource = urlMap.getProperty(url);
-
-      if (log.isDebugEnabled())
-        log.debug("Resource retriever ('" + url + "'): " +
-                  (resource != null ? "found" : "not found"));
-
-      if (resource == null)
-        return (delegate != null) ? delegate.retrieve(url) : null;
-
-      return IOUtils.toByteArray(ResourceURLRetriever.class.getResourceAsStream(resource));
-    }
-  }
-
-  /**
-   * Retrieve the URL over the network.
-   */
-  private static class NetworkURLRetriever implements URLRetriever {
-    private final URLRetriever delegate;
-
-    public NetworkURLRetriever(URLRetriever delegate) {
-      this.delegate = delegate;
-    }
-
-    public byte[] retrieve(String url) throws IOException {
-      if (log.isDebugEnabled())
-        log.debug("Network retriever ('" + url + "')");
-
-      return IOUtils.toByteArray(new URL(url).openStream());
-    }
-  }
-
 }
