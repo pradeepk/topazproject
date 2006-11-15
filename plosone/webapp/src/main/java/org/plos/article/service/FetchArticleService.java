@@ -290,11 +290,12 @@ public class FetchArticleService {
           throws IOException, ParserConfigurationException, ApplicationException {
     
     final DataHandler content = new DataHandler(new URLDataSource(new URL(contentUrl)));
+    final DocumentBuilder builder = createDocBuilder();
     if (annotations.length != 0) {
-      return Annotator.annotateAsDocument(content, annotations, createDocBuilder());
+      return Annotator.annotateAsDocument(content, annotations, builder);
     }
     try {
-      return createDocBuilder().parse(content.getInputStream());
+      return builder.parse(content.getInputStream());
     } catch (Exception e){
       log.error(e, e);
       throw new ApplicationException("Applying annotations failed for resource:" + contentUrl, e);
