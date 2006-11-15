@@ -1,9 +1,10 @@
 <!--
-  - This is the DTD for describing the fedora objects and their datastreams to create.
-  - The result of processing the zip description (see zip.dtd) must generate a document
-  - conforming to this; because DTD's are not namespace aware, and because arbitrary
-  - child elements are allowed in DC, RELS-EXT, and RDF elements, the result is not
-  - expected to actually validate against this DTD.
+  - This is the DTD for describing actions for the ingester to take. This includes the fedora
+  - objects (and their datastreams) to create, the RDF statements to insert, and permissions to
+  - create. The result of processing the zip description (see zip.dtd) must generate a document
+  - conforming to this; because DTD's are not namespace aware, and because arbitrary child
+  - elements are allowed in DC, RELS-EXT, and RDF elements, the result is not expected to
+  - actually validate against this DTD.
   -->
 
 <!ELEMENT ObjectList (Object | RDF)* >
