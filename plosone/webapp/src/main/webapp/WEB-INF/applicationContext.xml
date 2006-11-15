@@ -29,8 +29,12 @@
   </bean>
 
   <util:map id="xmlFactoryProperties">
-    <entry key="javax.xml.transform.TransformerFactory"
-           value="com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl"/>
+<!--      <entry key="javax.xml.transform.TransformerFactory"
+           value="com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl"/>-->
+   <entry key="javax.xml.transform.TransformerFactory"
+               value="net.sf.saxon.TransformerFactoryImpl"/>
+    <entry key="javax.xml.transform.Transformer"
+            value="net.sf.saxon.Controller"/>
   </util:map>
 
   <!-- TODO: Update the servicePort url's automatically using maven build process itself-->

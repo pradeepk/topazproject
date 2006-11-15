@@ -185,6 +185,19 @@
     </dependency>
 
     <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>8.7</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon-dom</artifactId>
+      <version>8.7</version>
+    </dependency>
+
+
+    <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
       <version>2.4</version>
@@ -281,7 +294,7 @@
             </connector>
             <connector implementation="org.mortbay.jetty.nio.SelectChannelConnector">
               <port>9080</port>
-              <maxIdleTime>30000</maxIdleTime>
+              <maxIdleTime>300000</maxIdleTime>
               <acceptors>10</acceptors>
             </connector>
           </connectors>

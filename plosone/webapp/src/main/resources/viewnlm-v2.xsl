@@ -1013,17 +1013,16 @@ Make article meta data
 			<xsl:for-each select="contrib-group/contrib[@contrib-type='editor']">
 				<xsl:choose>
 				  <xsl:when test="@xlink:href">
-					<a>
+					<xsl:element name="a">
 					  <xsl:call-template name="make-href"/>
 					  <xsl:call-template name="make-id"/>
-					  <xsl:call-template name="make-id"/>
 					  <xsl:apply-templates select="name | collab" mode="front"/>
-					</a>
+					</xsl:element>
 				  </xsl:when>
-				  <xsl:otherwise>
+<!--				  <xsl:otherwise>
 					  <xsl:call-template name="make-id"/>
 					  <xsl:apply-templates select="name | collab" mode="front"/>,
-				  </xsl:otherwise>
+				  </xsl:otherwise>-->
 				</xsl:choose>
 				<!-- the name element handles any contrib/xref and contrib/degrees -->
 				<xsl:apply-templates select="*[not(self::name)
@@ -1149,14 +1148,14 @@ Make article meta data
   		<xsl:for-each select="contrib-group/contrib[@contrib-type='author']">
             <xsl:choose>
               <xsl:when test="@xlink:href">
-                <a>
+                <xsl:element name="a">
                   <xsl:call-template name="make-href"/>
                   <xsl:call-template name="make-id"/>
                   <xsl:apply-templates select="name | collab" mode="front"/>
-                </a>
+                </xsl:element>
               </xsl:when>
               <xsl:otherwise>
-                  <xsl:call-template name="make-id"/>
+<!--                  <xsl:call-template name="make-id"/>-->
                   <xsl:apply-templates select="name | collab" mode="front"/>
                   <xsl:if test="position() != last()">
 					  <xsl:text>, </xsl:text>
@@ -1611,7 +1610,7 @@ Make article meta data
 <!-- no other level of sec puts out a rule -->
 <xsl:template match="sec">
 <!--  <div>-->
-    <xsl:call-template name="make-id"/>
+<!--    <xsl:call-template name="make-id"/>-->
     <xsl:apply-templates/>
 <!--</div>-->
   <xsl:call-template name="nl-1"/>
@@ -3488,7 +3487,7 @@ Make article meta data
 		<xsl:with-param name="node" select="."/>
 	</xsl:call-template>
     <xsl:apply-templates/>
-    	</h3>
+    </h3>
 </xsl:template>
 
 
@@ -5138,8 +5137,8 @@ Make article meta data
 		<!-- only add an annotation to the display list if this is the beginning of the annotation -->
 		<xsl:variable name="displayAnn">
 			<xsl:variable name="annId" select="@aml:id"/>
-			<xsl:if test=". = (/article//aml:annotated[@aml:id=$annId])[1]">
-<!--			<xsl:if test="@aml:first">-->
+<!--			<xsl:if test=". = (/article//aml:annotated[@aml:id=$annId])[1]">-->
+			<xsl:if test="@aml:first">
 				<xsl:for-each select="/article/aml:regions/aml:region[@aml:id=$regionId]/aml:annotation">
 					<xsl:variable name="localAnnId" select="@aml:id"/>
 					<xsl:if test="count(../preceding-sibling::aml:region/aml:annotation[@aml:id=$localAnnId]) = 0">
