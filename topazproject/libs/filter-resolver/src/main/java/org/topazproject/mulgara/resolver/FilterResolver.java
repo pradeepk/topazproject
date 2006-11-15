@@ -351,7 +351,10 @@ public class FilterResolver implements Resolver, ViewMarker {
    * <code>rmi://localhost/fedora#filter:model=ri;ds=RELS-EXT</code> -&gt; <code>rmi://localhost/fedora#ri</code>
    */
   private URI toRealModelURI(URI model) throws ResolverException {
-    return dbURI.resolve('#' + getModelName(model));
+    // Note: URI.resolve() collapses the slashes on local:///foo, so we do this thing by hand
+    String u = dbURI.getScheme() + ':' + dbURI.getRawSchemeSpecificPart() +
+               '#' + getModelName(model);
+    return URI.create(u);
   }
 
   private Set toSetOfTriples(final Statements stmts) {
