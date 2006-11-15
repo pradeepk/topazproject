@@ -47,6 +47,8 @@ import org.topazproject.ws.annotation.NoSuchAnnotationIdException;
 import org.topazproject.ws.annotation.Replies;
 import org.topazproject.ws.annotation.ReplyInfo;
 import org.topazproject.ws.annotation.ReplyThread;
+import org.topazproject.ws.permissions.impl.PermissionsImpl;
+import org.topazproject.ws.permissions.impl.PermissionsPEP;
 
 /**
  * Implementation of Replies.
@@ -62,8 +64,7 @@ public class RepliesImpl implements Replies {
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
   //
-  private static final String MODEL    = "<" + CONF.getString("topaz.models.annotations") + ">";
-  private static final String PP_MODEL = "<" + CONF.getString("topaz.models.pp") + ">";
+  private static final String MODEL = "<" + CONF.getString("topaz.models.annotations") + ">";
 
   //
   private static final String ITQL_CREATE =
@@ -79,11 +80,6 @@ public class RepliesImpl implements Replies {
   // 
   private static final String ITQL_INSERT_MEDIATOR =
     ("insert <${id}> <dt:mediator> '${mediator}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
-
-  // 
-  private static final String INSERT_IMPLIES_ITQL =
-    ("insert <${id}> <topaz:propagate-permissions-to> <${pid}>          into ${PP_MODEL};")
-     .replaceAll("\\Q${PP_MODEL}", PP_MODEL);
 
   //
   private static final String ITQL_CHECK_ID =
@@ -143,9 +139,10 @@ public class RepliesImpl implements Replies {
     aliases.put("dt", AnnotationModel.dt.toString());
   }
 
-  private final RepliesPEP   pep;
-  private final TopazContext ctx;
-  private final FedoraHelper fedora;
+  private final RepliesPEP      pep;
+  private final TopazContext    ctx;
+  private final FedoraHelper    fedora;
+  private final PermissionsImpl permissions;
 
   /**
    * Creates a new RepliesImpl object.
@@ -154,9 +151,10 @@ public class RepliesImpl implements Replies {
    * @param ctx The topaz context
    */
   public RepliesImpl(RepliesPEP pep, TopazContext ctx) {
-    this.pep      = pep;
-    this.ctx      = ctx;
-    this.fedora   = new FedoraHelper(ctx);
+    this.pep           = pep;
+    this.ctx           = ctx;
+    this.fedora        = new FedoraHelper(ctx);
+    this.permissions   = new PermissionsImpl(new PermissionsPEP.Proxy(pep), ctx);
   }
 
   /*
@@ -216,9 +214,6 @@ public class RepliesImpl implements Replies {
 
       if (log.isDebugEnabled())
         log.debug("created fedora object " + body + " for reply " + id);
-
-      create += INSERT_IMPLIES_ITQL;
-      values.put("pid", fedora.uri2PID(body));
     }
 
     values.put("id", id);
@@ -242,6 +237,8 @@ public class RepliesImpl implements Replies {
     }
 
     ctx.getItqlHelper().doUpdate(ItqlHelper.bindValues(create, values), aliases);
+
+    permissions.propagatePermissions(id, new String[] { body });
 
     if (log.isDebugEnabled())
       log.debug("created reply " + id + " for " + inReplyTo + " with root " + root + " with body "
@@ -327,7 +324,8 @@ public class RepliesImpl implements Replies {
           itql.rollbackTxn(txn);
         }
       } catch (Throwable t) {
-        log.debug("Error rolling failed transaction", t);
+        if (log.isDebugEnabled())
+          log.debug("Error rolling failed transaction", t);
       }
     }
 

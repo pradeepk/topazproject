@@ -19,7 +19,7 @@
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-common-impl</artifactId>
+      <artifactId>ws-permissions-impl</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
