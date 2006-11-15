@@ -90,6 +90,9 @@
       <isfalse value="${SPAWN}"/>
     </condition>
 
+    <!-- hack until propertyref's are supported inside syspropertyset -->
+    <property name="topaz.mulgara.databaseDir" value="webctxt:/WEB-INF/mulgara_db"/>
+
     <delete dir="${tomcatconfig.dir}" />
     <mkdir dir="${tomcatlog.dir}"/>
     <mkdir dir="${tomcatconfig.dir}"/>
@@ -103,6 +106,12 @@
 
     <cargo containerId="tomcat5x" home="${tomcathome}" output="${tomcatlog.dir}/output.log"
         log="${tomcatlog.dir}/cargo.log" action="start" wait="${wait}">
+      <!-- not supported yet by cargo...
+      <syspropertyset>
+        <propertyref prefix="topaz."/>
+      </syspropertyset>
+      -->
+      <sysproperty key="topaz.mulgara.databaseDir" value="${topaz.mulgara.databaseDir}"/>
       <configuration home="${tomcatconfig.dir}">
         <property name="cargo.servlet.port" value="${port}"/>
         <property name="cargo.logging" value="high"/>
