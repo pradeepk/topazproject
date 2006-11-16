@@ -365,6 +365,9 @@ public class PermissionsImpl implements Permissions {
     String user = ctx.getUserName();
     permissions = validateUriList(permissions, "permissions", false);
 
+    if (permissions.length == 0)
+      return;
+
     if ((principals == null) || (principals.length == 0))
       principals = new String[] { user };
     else
@@ -440,6 +443,10 @@ public class PermissionsImpl implements Permissions {
     }
 
     objects = validateUriList(objects, oLabel, false);
+
+    if (objects.length == 0)
+      return;
+
     pep.checkAccess(action, ItqlHelper.validateUri(subject, sLabel));
 
     StringBuffer sb = new StringBuffer(512);
@@ -608,9 +615,6 @@ public class PermissionsImpl implements Permissions {
   private String[] validateUriList(String[] list, String name, boolean nullOk) {
     if (list == null)
       throw new NullPointerException(name + " list can't be null");
-
-    if (list.length == 0)
-      throw new IllegalArgumentException(name + " list can't be empty");
 
     // eliminate duplicates
     list   = (String[]) (new HashSet(Arrays.asList(list))).toArray(new String[0]);
