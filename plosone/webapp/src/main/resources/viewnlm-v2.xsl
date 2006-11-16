@@ -5173,7 +5173,7 @@ Make article meta data
 		<xsl:if test="not($displayAnn='')">
 			<xsl:element name="a">
 				<xsl:attribute name="href">#</xsl:attribute>
-				<xsl:attribute name="class">bug</xsl:attribute> 
+				<xsl:attribute name="class">bug public</xsl:attribute> 
 				<xsl:attribute name="id">
 					<xsl:value-of select="concat('annAnchor',@aml:id)"/>
 				</xsl:attribute>
