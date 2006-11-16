@@ -717,7 +717,7 @@ topaz.annotation = {
 //          							       '" title="'   + noteTitle + 
 //          							       '" class="'   + noteImgClass +
 //          							       '" />' +
-                               '<a href="#"" class="bug" displayId=""  onclick="topaz.displayComment.show(this);" onmouseover="topaz.displayComment.mouseoverComment(this);" onmouseout="topaz.displayComment.mouseoutComment(this);" title="Click to preview this annotation">&nbsp;</a>' +
+                               '<a href="#"" class="bug public" displayId=""  onclick="topaz.displayComment.show(this);" onmouseover="topaz.displayComment.mouseoverComment(this);" onmouseout="topaz.displayComment.mouseoutComment(this);" title="Click to preview this annotation">&nbsp;</a>' +
           							       html + '</span>');
     }
     else {
@@ -739,7 +739,7 @@ topaz.annotation = {
       //newSpan.appendChild(newImg);
       
   	  var link = document.createElement("a");
-  	  link.className = 'bug';
+  	  link.className = 'bug public';
   	  //link.href = '#';
   	  link.title = 'Click to preview this annotation';
   	  link.displayId = "";

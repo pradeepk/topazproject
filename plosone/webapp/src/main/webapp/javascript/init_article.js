@@ -7,6 +7,10 @@
   function init(e) {
     ldc = dojo.widget.byId("LoadingCycle");
     ldc.show();
+    
+    errView = dojo.widget.byId("ErrorConsole");
+    var errClose = dojo.byId("btn_ok");
+    errView.setCloseControl(errClose);
         
     var triggerNode = dojo.byId(annotationConfig.trigger);
   	dojo.event.connect(triggerNode, 'onmousedown', function(e) {
@@ -21,6 +25,8 @@
     formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate');
     
   	dlg = dojo.widget.byId("AnnotationDialog");
+  	var dlgCancel = dojo.byId('btn_cancel');
+  	dlg.setCloseControl(dlgCancel);
   	dlg.setTipDown(dojo.byId(annotationConfig.tipDownDiv));
   	dlg.setTipUp(dojo.byId(annotationConfig.tipUpDiv));
 

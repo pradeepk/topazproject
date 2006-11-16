@@ -2,7 +2,7 @@
 	<div class="dialog annotate">
 		<div class="tipu" id="dTipu"></div>
 		<div class="btn close" title="Click to close and cancel">
-			<a id="btn_cancel_annotation" title="Click to close and cancel">Cancel</a>
+			<a id="btn_cancel" title="Click to close and cancel">Cancel</a>
 		</div>
 		<div class="comment">
 			<h5><span class="commentPrivate">Add Your Annotation (For Private Viewing)</span><span class="commentPublic">Post Your Annotation (For Public Viewing)</span></h5>
@@ -26,11 +26,13 @@
 						<label for="reponse"><span class="none">Enter your annotation</span><!-- error message text <em>Please enter your annotation</em>--></label>
 						<textarea name="cArea" id="cArea" value="Enter your annotation..." alt="Enter your annotation...">Enter your annotation...</textarea>
 						
+						<input type="hidden" name="isPublic" value="true" />
+						<!--
 						<div><input type="radio" id="privateFlag" class="radio" title="Choose from one of the options" name="public" value="false" disabled="true" /><label for="Private">Private</label></div>
 						<div><input type="radio" id="publicFlag" class="radio" title="Choose from one of the options" name="public" value="true" checked="true" /><label for="Public">Public</label></div>
-
-						<div class="post btn commentPrivate"><a href="#" title="Click to save your annotation privately" id="btn_save">Save</a><!--<span>Save</span><span class="loading"><img src="${freemarker_config.getContext()}/images/pone_loading.gif" width="58" height="58" title="Loading..." /></span>--></div>
-						<div class="post btn commentPublic"><a href="#" title="Click to post your annotation publicly" id="btn_post">Post</a><!--<span>Post</span><span class="loading"><img src="${freemarker_config.getContext()}/images/pone_loading.gif" width="58" height="58" title="Loading..." /></span>--></div>
+						-->
+						<div class="post btn commentPrivate"><input type="button" value="Save" title="Click to save your annotation privately" id="btn_save"/><!--<span>Save</span><span class="loading"><img src="${freemarker_config.getContext()}/images/pone_loading.gif" width="58" height="58" title="Loading..." /></span>--></div>
+						<div class="post btn commentPublic"><input type="button" value="Post" title="Click to post your annotation publicly" id="btn_post"/><!--<span>Post</span><span class="loading"><img src="${freemarker_config.getContext()}/images/pone_loading.gif" width="58" height="58" title="Loading..." /></span>--></div>
 					</fieldset>
 				</form>
 			</div>

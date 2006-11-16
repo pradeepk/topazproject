@@ -112,7 +112,8 @@ topaz.displayComment = {
   
   buildDisplayBody: function (jsonObj) {
     // Insert formatted comment
-    var commentFrag = document.createTextNode(jsonObj.annotation.commentWithUrlLinking);
+    var commentFrag = document.createDocumentFragment();
+    commentFrag = jsonObj.annotation.commentWithUrlLinking;
     
     return commentFrag;
   },
@@ -126,7 +127,7 @@ topaz.displayComment = {
 
     //alert(commentFrag);
     dojo.dom.removeChildren(topaz.displayComment.sectionComment);
-    topaz.displayComment.sectionComment.appendChild(this.buildDisplayBody(jsonObj));
+    topaz.displayComment.sectionComment.innerHTML = this.buildDisplayBody(jsonObj);
     //alert("jsonObj.annotation.commentWithUrlLinking = " + jsonObj.annotation.commentWithUrlLinking);
   },
   
@@ -154,8 +155,10 @@ topaz.displayComment = {
     var dd = document.createElement('dd');
     var contentDiv = document.createElement('div');
     contentDiv.className = 'contentwrap';
-    contentDiv.appendChild(this.buildDisplayBody(jsonObj));
+    contentDiv.innerHTML = this.buildDisplayBody(jsonObj);
     
+    var cDetailDiv = document.createElement('div');
+    cDetailDiv.className = 'detail';
     var commentLink = document.createElement('a');
     commentLink.href = '#';
     commentLink.className = 'commentary icon';
@@ -168,7 +171,6 @@ topaz.displayComment = {
     responseLink.title = 'Click to respond to this posting';
     responseLink.appendChild(document.createTextNode('Respond to this'));
     
-    var cDetailDiv = document.createElement('div');
     cDetailDiv.appendChild(commentLink);
     cDetailDiv.appendChild(responseLink);
     
@@ -276,8 +278,9 @@ function getComment(obj) {
         method: "get",
         error: function(type, data, evt){
          alert("ERROR [AJAX]:" + data.toSource());
-         var err = document.createTextNode("ERROR:" + data.toSource());
-         //topaz.displayComment.retrieveMsg.innerHTML = err;
+         var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
+         //topaz.errorConsole.writeToConsole("ERROR [AJAX]:" + data.toSource());
+         //errView.show();
          return false;
         },
         load: function(type, data, evt){
@@ -303,7 +306,11 @@ function getComment(obj) {
            var fieldErrors;
            //alert("jsonObj.numFieldErrors = " + jsonObj.numFieldErrors);
            for (var item in jsonObj.fieldErrors.map) {
-             fieldErrors = fieldErrors + item + ": " + jsonObj.fieldErrors.map[item] + "\n";
+             var errorString = "";
+             for (var i=0; i<jsonObj.fieldErrors.map[item].list[0].length; i++) {
+               errorString += jsonObj.fieldErrors.map[item].list[0][i];
+             }
+             fieldErrors = fieldErrors + item + ": " + errorString + "<br/>";
            }
            
            alert("ERROR [numFieldErrors]: " + fieldErrors);
@@ -317,26 +324,27 @@ function getComment(obj) {
            if (uriArray.length > 1) {             
              var newListItem = topaz.displayComment.buildDisplayViewMultiple(jsonObj, targetContainer.childNodes.length);
              targetContainer.appendChild(newListItem);
+             if (targetContainer.childNodes.length == stopPt) {
+               topaz.displayComment.mouseoverComment(topaz.displayComment.target, uriArray[0]);
+                
+               popupm.show();
+               ldc.hide();
+            
+               return false;
+             }
            }
            else {
              topaz.displayComment.buildDisplayView(jsonObj);
              topaz.displayComment.mouseoverComment(topaz.displayComment.target);
+ 
+             popup.show();
+             ldc.hide();
+          
+             return false;
            }
            
            //alert("targetContainer.childNodes.length = " + targetContainer.childNodes.length + "\n" + "stopPt = " + stopPt);
            
-           if (targetContainer.childNodes.length == stopPt) {
-              topaz.displayComment.mouseoverComment(topaz.displayComment.target, uriArray[0]);
-              
-              if(uriArray.length > 1)
-               popupm.show();
-              else
-               popup.show();
-                 
-              ldc.hide();
-          
-              return false;
-           }
          }
         },
         mimetype: "text/html"

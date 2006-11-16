@@ -68,7 +68,7 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .userinfo dd{ font-size: .9em; }
 
 /* --- pane contains viewing area --- */
-.pane			{ margin: 20px; overflow: auto; padding: 0 5px;  margin: 10px 0; position: relative; overflow: }
+.pane			{ margin: 20px; overflow: auto; padding: 0 5px;  margin: 10px 0; position: relative; }
 .reading.pane 	{ height: 12em; }
 .dialog fieldset{ border: 0; margin: 0; padding: 0;}
 .dialog .text label,
