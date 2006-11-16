@@ -9,6 +9,7 @@
  */
 package org.plos.user.action;
 
+import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
@@ -66,6 +67,7 @@ public class AssignAdminRoleAction extends UserActionSupport {
    * Getter for topazId
    * @return Value for property topazId.
    */
+  @RequiredStringValidator(message = "Topaz id is required.")
   public String getTopazId() {
     return topazId;
   }

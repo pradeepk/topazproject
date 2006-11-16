@@ -604,7 +604,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
       deleteAnnotationAction.deletePrivateAnnotation();
     }
 
-    if (false) { //to test if the xsl transformation worked fine and got any annotation in the output
+    if (true) { //to test if the xsl transformation worked fine and got any annotation in the output
       final FetchArticleAction fetchArticleAction = getFetchArticleAction();
       fetchArticleAction.setArticleURI(target);
       assertEquals(SUCCESS, fetchArticleAction.execute());

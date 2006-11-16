@@ -98,11 +98,10 @@ public class CreateUserAction extends UserActionSupport {
    * @return Returns the email.
    */
   @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "email", 
-                  message = "You must enter a valid email")
-  @RequiredStringValidator(type = ValidatorType.FIELD, fieldName = "email",
-                           message = "You must enter an email address")
-  @StringLengthFieldValidator(fieldName = "email", maxLength = Length.EMAIL,
-                              message = "Email must be less than " + Length.EMAIL)
+                  message = "You must enter a valid email", shortCircuit = true)
+  @RequiredStringValidator(message = "You must enter an email address", shortCircuit = true)
+  @StringLengthFieldValidator(maxLength = Length.EMAIL,
+                              message = "Email must be less than " + Length.EMAIL, shortCircuit = true)
   public String getEmail() {
     return email;
   }
@@ -133,12 +132,12 @@ public class CreateUserAction extends UserActionSupport {
   /**
    * @return Returns the username.
    */
-  @RequiredStringValidator(type = ValidatorType.FIELD, fieldName = "username", 
-                           message = "You must enter a username")
+  @RequiredStringValidator(message = "You must enter a username", shortCircuit = true)
   @StringLengthFieldValidator(fieldName = "username",
                               minLength = Length.DISPLAY_NAME_MIN,
                               maxLength = Length.DISPLAY_NAME_MAX,
-                              message = "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters")
+                              message = "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters",
+                              shortCircuit = true)
   public String getUsername() {
     return username;
   }

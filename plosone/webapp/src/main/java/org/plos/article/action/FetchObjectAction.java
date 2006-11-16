@@ -9,6 +9,7 @@
  */
 package org.plos.article.action;
 
+import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
@@ -55,11 +56,21 @@ public class FetchObjectAction extends BaseActionSupport {
     this.articleWebService = articleWebService;
   }
 
+  @RequiredStringValidator(message = "Object URI is required.")
+  public String getUri() {
+    return uri;
+  }
+
   /**
    * @param uri set uri
    */
   public void setUri(final String uri) {
     this.uri = uri;
+  }
+
+  @RequiredStringValidator(message = "Object representation is required.")
+  public String getRepresentation() {
+    return representation;
   }
 
   /**

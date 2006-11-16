@@ -9,6 +9,7 @@
  */
 package org.plos.article.action;
 
+import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
@@ -32,6 +33,11 @@ public class SecondaryObjectAction extends BaseActionSupport {
       return ERROR;
     }
     return SUCCESS;
+  }
+
+  @RequiredStringValidator(message = "Object URI is required.")
+  public String getUri() {
+    return uri;
   }
 
   /**

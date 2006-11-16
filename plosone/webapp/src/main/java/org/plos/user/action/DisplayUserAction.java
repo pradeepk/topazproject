@@ -11,13 +11,14 @@
 
 package org.plos.user.action;
 
+import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.user.PlosOneUser;
 import org.plos.user.UserProfileGrant;
 
-import java.util.Collection;
 import java.util.ArrayList;
+import java.util.Collection;
 
 /**
  * Simple class to display a user based on a TopazId
@@ -78,6 +79,7 @@ public class DisplayUserAction extends UserActionSupport {
   /**
    * @return Returns the userId.
    */
+  @RequiredStringValidator(message = "Topaz id is required.")
   public String getUserId() {
     return userId;
   }

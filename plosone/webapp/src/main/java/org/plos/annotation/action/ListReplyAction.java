@@ -12,13 +12,12 @@ package org.plos.annotation.action;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.ApplicationException;
-import org.plos.annotation.service.Reply;
 import org.plos.annotation.service.Annotation;
+import org.plos.annotation.service.Reply;
 import org.plos.article.service.ArticleWebService;
-
 import org.topazproject.ws.article.ObjectInfo;
+
 /**
  * Action class to get a list of replies to annotations.
  */
@@ -43,6 +42,11 @@ public class ListReplyAction extends AnnotationActionSupport {
     return SUCCESS;
   }
 
+  /**
+   * List all the replies for a given root and inRelyTo in a threaded tree structure.
+   * @return webwork status for the call
+   * @throws Exception Exception
+   */
   public String listAllReplies() throws Exception {
     try {
       baseAnnotation = getAnnotationService().getAnnotation(root);
