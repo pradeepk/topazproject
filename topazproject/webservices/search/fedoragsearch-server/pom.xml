@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $HeadURL::                                                                                       $
+  $Id$
+
+  Copyright (c) 2006 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Educational Community License version 1.0
+  http://opensource.org/licenses/ecl1.php
+
+
+  This is a wrapper around the FedoraGenericSearch source distribution. The primary
+  purpose of wroapping the source was because the binary distribution was soley as
+  a WAR file and topaz needs this stuff separated (as it is in the source dist)
+  into a useable JAR file. Doing it as a source-level module also  makes it easier
+  to have consistent dependencies.
+-->
+<project
+  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>info.fedora</groupId>
+  <artifactId>fedoragsearch-server</artifactId>
+  <packaging>jar</packaging>
+  <version>2.1.1</version>
+  <name>fedoragsearch server implementation</name>
+  <url>http://defxws2006.cvt.dk/fedoragsearch/</url>
+
+  <distributionManagement>
+    <repository>
+      <id>topaz</id>
+      <url>http://gandalf.topazproject.org/maven2/</url>
+    </repository>
+  </distributionManagement>
+
+  <dependencies>
+    <dependency>
+      <groupId>axis</groupId>
+      <artifactId>axis</artifactId>
+      <version>1.2.1</version>
+    </dependency>
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.13</version>
+    </dependency>
+    <dependency>
+      <groupId>info.fedora</groupId>
+      <artifactId>fedora-client</artifactId>
+      <version>2.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>lucene</groupId>
+      <artifactId>lucene-demos</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>pdfbox</groupId>
+      <artifactId>pdfbox</artifactId>
+      <version>0.7.1</version>
+    </dependency>
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.3</version>
+      <scope>provided</scope>
+    </dependency>
+  </dependencies>
+  
+  <properties>
+    <wsdl.filename>fedoragsearch-service.wsdl</wsdl.filename>
+  </properties>
+  
+  <build>
+    <plugins>
+
+      <!-- Generate wsdl -->
+      <plugin>
+<!--        <groupId>org.codehaus.mojo</groupId> -->
+        <groupId>org.topazproject.patch.plugin</groupId>
+        <artifactId>axistools-maven-plugin</artifactId>
+        <version>1.1-SNAPSHOT</version>
+        <executions>
+          <execution>
+            <id>generate-wsdl</id>
+            <phase>process-classes</phase>
+            <goals>
+              <goal>java2wsdl</goal>
+            </goals>
+            <configuration>
+              <implementationClassName>FedoraGenericSearchServiceImplementation</implementationClassName>
+              <filename>${wsdl.filename}</filename>
+              <all>true</all>
+              <namespace>server.fedoragsearch.defxws.dk</namespace>
+              <servicePortName>FedoraGenericSearchServicePort</servicePortName>
+              <location>http://localhost/service-location</location>
+              <classesDirectory>${project.build.directory}/classes</classesDirectory>
+              <classOfPortType>dk.defxws.fedoragsearch.server.Operations</classOfPortType>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
+
+      <!-- Copy .wsdl so that it will end up in .jar -->
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-antrun-plugin</artifactId>
+        <executions>
+          <execution>
+            <phase>process-classes</phase>
+            <configuration>
+              <tasks>
+                <copy todir="${project.build.directory}/classes" 
+                  file="${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}"/>
+              </tasks>
+            </configuration>
+            <goals>
+              <goal>run</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+    </plugins>
+  </build>
+  
+</project>
