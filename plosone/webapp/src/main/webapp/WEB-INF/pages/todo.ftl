@@ -69,7 +69,11 @@
           <@ww.a href="%{createAdminUserURL}">Assign admin role</@ww.a>
       </p>
 -->
-
+      <p>
+          <@ww.url id="adminTopURL" namespace="/admin" action="adminTop" />
+          <@ww.a href="%{adminTopURL}">Admin Functions</@ww.a>
+      </p>
+      
     </fieldset>
   </body>
 </html>

@@ -54,6 +54,19 @@
     <property name="mediumImageRep" value="PNG-M"/>
     <property name="largeImageRep" value="PNG-L"/>
     -->
+   </bean>
+   
+   <bean id="crossRefPosterService" class="org.plos.admin.service.CrossRefPosterService">
+    <!-- following is the URL for the CrossRef service. The three parameters which should be set are
+    	* area=  test or live. Decides if the cross ref is actually 'posted'. area=test for testing, area=live for deployment
+    	* login_id=crossref user name
+    	* login_passwd=crossref user password
+    -->
+    <property 
+    	name="doiXrefUrl" 
+    	value="http://doi.crossref.org/servlet/deposit?operation=doMDUpload&amp;login_id=atypon&amp;login_passwd=_atypon_&amp;area=test"
+    />      
+    <property name="xslTemplate" value="/crossref.xsl"/>    
   </bean>
 
   <bean id="defaultEncodingCharset" class="java.lang.String">
