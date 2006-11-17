@@ -52,6 +52,8 @@ public class UserService extends BaseConfigurableService {
 
   private static final Log log = LogFactory.getLog(UserService.class);
   private final String[] ALL_PRINCIPALS = new String[]{Constants.Permission.ALL_PRINCIPALS};
+  private Collection<String> weeklyCategories;
+  private Collection<String> monthlyCategories;
 
   /**
    * Create a new user account and associate a single authentication id with it.
@@ -563,4 +565,38 @@ public class UserService extends BaseConfigurableService {
   public void setPermissionWebService(final PermissionWebService permissionWebService) {
     this.permissionWebService = permissionWebService;
   }
+
+  /**
+   * @return all the weekly categories
+   * TODO: should these not really be in a database
+   */
+  public Collection<String> getWeeklyCategories() {
+    return weeklyCategories;
+  }
+
+  /**
+   * Set the weekly categories.
+   * @param weeklyCategories weeklyCategories
+   */
+  public void setWeeklyCategories(final Collection<String> weeklyCategories) {
+    this.weeklyCategories = weeklyCategories;
+  }
+
+  /**
+   * @return all the monthly categories
+   * TODO: should these not really be in a database
+   */
+  public Collection<String> getMonthlyCategories() {
+    return monthlyCategories;
+  }
+
+  /**
+   * Set the monthly categories.
+   * @param monthlyCategories monthlyCategories
+   */
+  public void setMonthlyCategories(final Collection<String> monthlyCategories) {
+    this.monthlyCategories = monthlyCategories;
+  }
+
+
 }
