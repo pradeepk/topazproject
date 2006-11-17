@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $HeadURL::                                                                                      $
+  $Id$
+
+  Copyright (c) 2006 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Educational Community License version 1.0
+  http://opensource.org/licenses/ecl1.php
+-->
+<project xmlns:artifact="antlib:org.apache.maven.artifact.ant">
+
+  <artifact:dependencies filesetId="cargo.fileset" useScope="runtime">
+    <dependency groupId="org.codehaus.cargo" artifactId="cargo-ant" version="0.8"/>
+    <dependency groupId="org.codehaus.cargo" artifactId="cargo-core-uberjar" version="0.8"/>
+  </artifact:dependencies>
+
+  <artifact:dependencies filesetId="search.fileset" useScope="runtime">
+    <dependency groupId="org.topazproject.ws" artifactId="ws-search-webapp" version="0.5-SNAPSHOT"
+                type="war"/>
+  </artifact:dependencies>
+
+  <taskdef resource="cargo.tasks">
+    <classpath>
+      <fileset refid="cargo.fileset"/>
+    </classpath>
+  </taskdef>
+
+  <target name="init">
+    <property name="home"               location="${DEST_DIR}/${ROOT}"/>
+    <property name="tomcatinstall.dir"  location="${home}/tomcat/install"/>
+    <property name="tomcatconfig.dir"   location="${home}/tomcat/config"/>
+    <property name="tomcatlog.dir"      location="${home}/tomcat/log"/>
+    <property name="port"               value="${PORT}"/>
+    <property name="cargo.rmi.port"     value="${SHUTDOWN_PORT}"/>
+    <pathconvert property="search-war"     refid="search.fileset"/>
+
+    <condition property="tomcat.url" value="${TOMCAT_URL}"
+        else="http://www.apache.org/dist/tomcat/tomcat-5/v5.5.16/bin/apache-tomcat-5.5.16.zip">
+      <isset property="TOMCAT_URL"/>
+    </condition>
+
+    <condition property="tomcathome" value="${TOMCAT_HOME}"
+        else="${tomcatinstall.dir}/apache-tomcat-5.5.16/apache-tomcat-5.5.16">
+      <isset property="TOMCAT_HOME"/>
+    </condition>
+  </target>
+
+  <target name="exec-ext">
+    <condition property="ext" value="">
+      <os family="unix"/>
+    </condition>
+    <condition property="ext" value=".bat">
+      <os family="windows"/>
+    </condition>
+    <property name="ext" value=""/>
+  </target>
+
+  <!-- Download and install tomcat -->
+  <target name="search-install" depends="init,exec-ext">
+    <echo message="Installing Tomcat into ${tomcatinstall.dir} ..."/>
+
+    <cargo containerId="tomcat5x" action="stop">
+      <zipUrlInstaller installUrl="${tomcat.url}" installDir="${tomcatinstall.dir}"/>
+      <configuration home="${tomcatconfig.dir}"/>
+    </cargo>
+  </target>
+
+  <!-- Clean out the whole search/tomcat directory -->
+  <target name="search-uninstall" depends="init">
+    <delete dir="${home}"/>
+  </target>
+
+  <!-- Runs search-install IF the INSTALL propery/config is set - used by search-start -->
+  <target name="search-install-if" if="INSTALL" depends="exec-ext">
+    <!-- Can't use <antcall/> - see http://jira.codehaus.org/browse/MNG-2088 -
+         fixed in maven-script-ant 2.0.5
+    <antcall target="search-install"/>
+    -->
+    <exec executable="mvn${ext}">
+      <arg line="ant-tasks:search-install -DDEST_DIR=${DEST_DIR} -DROOT=${ROOT}"/>
+    </exec>
+  </target>
+  
+  <!-- Start fedoragsearch -->
+  <target name="search-start" depends="init,search-install-if">
+    <echo>Starting fedoragsearch (spawn=${SPAWN})</echo>
+
+    <condition property="wait" value="true" else="false">
+      <isfalse value="${SPAWN}"/>
+    </condition>
+
+    <!-- hack until propertyref's are supported inside syspropertyset -->
+    <property name="topaz.search.databaseDir" value="webctxt:/WEB-INF/lucene_db"/>
+
+    <delete dir="${tomcatconfig.dir}" />
+    <mkdir dir="${tomcatlog.dir}"/>
+    <mkdir dir="${tomcatconfig.dir}"/>
+
+    <echo message="Starting fedoragsearch..."/>
+    <echo message="Using tomcat  = ${tomcathome}"/>
+    <echo message="Using home    = ${home}"/>
+    <echo message="Using log-dir = ${tomcatlog.dir}"/>
+    <echo message="Using war     = ${search-war}"/>
+    <echo message="Using port    = ${port}"/>
+    <echo message="Shutdown port = ${SHUTDOWN_PORT}"/>
+
+    <cargo containerId="tomcat5x" home="${tomcathome}" output="${tomcatlog.dir}/output.log"
+        log="${tomcatlog.dir}/cargo.log" action="start" wait="${wait}">
+      <!-- not supported yet by cargo...
+      <syspropertyset>
+        <propertyref prefix="topaz."/>
+      </syspropertyset>
+      -->
+      <sysproperty key="topaz.search.databaseDir" value="${topaz.search.databaseDir}"/>
+      <configuration home="${tomcatconfig.dir}">
+        <property name="cargo.servlet.port" value="${port}"/>
+        <property name="cargo.logging" value="high"/>
+        <property name="cargo.jvmargs" value="-Xmx200m"/>
+        <property name="cargo.rmi.port" value="${SHUTDOWN_PORT}"/>
+        <deployable type="war" file="${search-war}"/>
+      </configuration>
+    </cargo>
+
+  </target>
+
+  <!-- Stop fedoragsearch -->
+  <target name="search-stop" depends="init,exec-ext">
+    <cargo containerId="tomcat5x" home="${tomcathome}" action="stop">
+      <configuration home="${tomcatconfig.dir}">
+        <property name="cargo.rmi.port" value="${SHUTDOWN_PORT}"/>
+      </configuration>
+    </cargo>
+  </target>
+  
+</project>
