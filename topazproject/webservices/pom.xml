@@ -26,5 +26,6 @@
     <module>alerts</module>
     <module>ratings</module>
     <module>access</module>
+    <module>search</module>
   </modules>
 </project>
