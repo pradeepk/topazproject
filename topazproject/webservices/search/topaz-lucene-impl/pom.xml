@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  $HeadURL::                                                                                      $
+  $Id$
+
+  Copyright (c) 2006 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Educational Community License version 1.0
+  http://opensource.org/licenses/ecl1.php
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <artifactId>topaz-lucene-impl</artifactId>
+  <packaging>jar</packaging>
+  <version>0.5-SNAPSHOT</version>
+  <name>Fedoragsearch topaz search implementation</name>
+  
+  <parent>
+    <groupId>org.topazproject.ws</groupId>
+    <artifactId>ws-search</artifactId>
+    <version>0.5-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+
+    <dependency>
+      <groupId>info.fedora</groupId>
+      <artifactId>fedoragsearch-server</artifactId>
+      <version>2.1.1</version>
+    </dependency>
+    <dependency>
+      <groupId>lucene</groupId>
+      <artifactId>lucene-core</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>lucene</groupId>
+      <artifactId>lucene-highlighter</artifactId>
+      <version>2.0.0</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.0.4</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>entity-resolver</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>conf-helper</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
+      <version>1.2</version>
+      <type>jar</type>
+      <exclusions>
+        <!-- These aren't needed, as the jdk 1.4 provided parsers work fine -->
+        <exclusion>
+          <groupId>dom4j</groupId>
+          <artifactId>dom4j</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xerces</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xalan</groupId>
+          <artifactId>xalan</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+      </exclusions>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>mulgara-client</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-common-impl</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-articles-api</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon</artifactId>
+      <version>8.7</version>
+    </dependency>
+    <dependency>
+      <groupId>net.sf.saxon</groupId>
+      <artifactId>saxon-dom</artifactId>
+      <version>8.7</version>
+    </dependency>
+    
+  </dependencies>
+
+</project>
