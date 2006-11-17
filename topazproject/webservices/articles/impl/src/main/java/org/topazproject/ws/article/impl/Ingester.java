@@ -23,8 +23,13 @@ import java.net.URL;
 import java.net.URLConnection;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Properties;
 
 import javax.xml.parsers.SAXParserFactory;
@@ -50,6 +55,7 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
+import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -59,6 +65,9 @@ import org.topazproject.fedora.client.Uploader;
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.ws.article.DuplicateArticleIdException;
 import org.topazproject.ws.article.IngestException;
+import org.topazproject.ws.permissions.Permissions;
+import org.topazproject.ws.permissions.impl.PermissionsImpl;
+import org.topazproject.ws.permissions.impl.PermissionsPEP;
 
 import org.topazproject.xml.transform.cache.CachedSource;
 import org.topazproject.fedoragsearch.service.FgsOperations;
@@ -94,9 +103,19 @@ public class Ingester {
   private static final String DSCRPTN      = "Description";
   private static final String RDFNS        = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
   private static final String RDF_MDL_A    = "model";
+  private static final String PERMS        = "Permissions";
+  private static final String PROPAGATE    = "propagate";
+  private static final String P_FROM_A     = "from";
+  private static final String TO           = "to";
+  private static final String IMPLY        = "imply";
+  private static final String I_PERM_A     = "permission";
+  private static final String IMPLIES      = "implies";
 
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
   private static final String FGS_REPO     = CONF.getString("topaz.fedoragsearch.repository");
+
+  private static final int    OP_PRPGT     = 0;
+  private static final int    OP_IMPLY     = 1;
 
   private final TransformerFactory tFactory;
   private final TopazContext       ctx;
@@ -156,27 +175,28 @@ public class Ingester {
       pep.checkAccess(pep.INGEST_ARTICLE, URI.create(uri));
 
       // add the stuff
-      ItqlHelper itql   = ctx.getItqlHelper();
-      FedoraAPIM apim   = ctx.getFedoraAPIM();
-      Uploader uploader = ctx.getFedoraUploader();
-      String txn = "ingest " + uri;
+      ItqlHelper  itql     = ctx.getItqlHelper();
+      FedoraAPIM  apim     = ctx.getFedoraAPIM();
+      Uploader    uploader = ctx.getFedoraUploader();
+      Permissions perms    = new PermissionsImpl(new PermissionsPEP.Proxy(pep), ctx);
+
+      RollbackBuffer rb = new RollbackBuffer();
       try {
-        itql.beginTxn(txn);
-
-        /* put the RDF into the triple-store before ingesting into Fedora, because it's much
-         * harder to properly roll back Fedora if an error occurs there.
+        /* Note that the rollback buffer is far from perfect: if mulgara already contains any
+         * of the new statements we're creating, then a rollback will delete those existing
+         * statements...
+         *
+         * For this reason fedoraIngest must be first, since that will catch duplicate articles,
+         * and we really don't want to delete existing RDF or permissions in this case.
          */
-        mulgaraInsert(itql, objInfo);
-        fedoraIngest(apim, uploader, zip, objInfo);
-
-        itql.commitTxn(txn);
-        txn = null;
+        fedoraIngest(zip, objInfo, apim, uploader, rb);
+        doPermissions(objInfo, perms, rb);
+        mulgaraInsert(objInfo, itql, rb);
+        rb = null;
       } finally {
-        try {
-          if (txn != null)
-            itql.rollbackTxn(txn);
-        } catch (Throwable t) {
-          log.debug("Error rolling failed transaction", t);
+        if (rb != null) {
+          log.info("Rolling back failed ingest for '" + uri + "'");
+          rb.doRollback(itql, apim, fgs, perms);
         }
       }
 
@@ -291,22 +311,44 @@ public class Ingester {
    * Insert the RDF into the triple-store according to the given object-info doc. 
    * 
    * @param objInfo the document describing the RDF to insert
+   * @param itql    the handle to access the RDF store
+   * @param rb      where to store the list of completed operations that need to be undone
+   *                in case of a rollback
    */
-  private void mulgaraInsert(ItqlHelper itql, Document objInfo)
+  private void mulgaraInsert(Document objInfo, ItqlHelper itql, RollbackBuffer rb)
       throws IngestException, TransformerException, IOException, RemoteException {
+    Element objList = objInfo.getDocumentElement();
+
     // set up the transformer to generate the triples
-    Transformer t = tFactory.newTransformer(new StreamSource(findRDFXML2TriplesConverter()));
+    Transformer tf = tFactory.newTransformer(new StreamSource(findRDFXML2TriplesConverter()));
 
     // create the fedora objects
-    Element objList = objInfo.getDocumentElement();
-    NodeList objs = objList.getElementsByTagNameNS(RDFNS, RDF);
-    for (int idx = 0; idx < objs.getLength(); idx++) {
-      Element obj = (Element) objs.item(idx);
-      mulgaraInsertOneRDF(itql, obj, t);
+    String txn = "ingest " + objList.getAttribute(OL_AID_A);
+    try {
+      itql.beginTxn(txn);
+
+      NodeList objs = objList.getElementsByTagNameNS(RDFNS, RDF);
+      for (int idx = 0; idx < objs.getLength(); idx++) {
+        Element obj = (Element) objs.item(idx);
+        mulgaraInsertOneRDF(itql, obj, tf, rb);
+      }
+
+      itql.commitTxn(txn);
+      txn = null;
+    } finally {
+      try {
+        if (txn != null) {
+          rb.rdfStmts.clear();
+          itql.rollbackTxn(txn);
+        }
+      } catch (Throwable t) {
+        log.debug("Error rolling back failed transaction", t);
+      }
     }
   }
 
-  private void mulgaraInsertOneRDF(ItqlHelper itql, Element obj, Transformer t)
+  private void mulgaraInsertOneRDF(ItqlHelper itql, Element obj, Transformer t,
+                                   RollbackBuffer rb)
       throws IngestException, TransformerException, IOException, RemoteException {
     // figure out the model
     String m = "ri";
@@ -326,6 +368,7 @@ public class Ingester {
     t.transform(new DOMSource(obj), new StreamResult(sw));
     if (!hasNonWS(sw.getBuffer(), 7))
       return;
+    rb.addRDFStatements(model, sw.getBuffer().substring(7));
 
     sw.write(" into <" + model + ">;");
 
@@ -345,10 +388,15 @@ public class Ingester {
   /** 
    * Create the objects in Fedora according to the given object-info doc. 
    * 
-   * @param zip     the zip archive containing the data for the objects to ingest
-   * @param objInfo the document describing the objects and their datastreams to create
+   * @param zip      the zip archive containing the data for the objects to ingest
+   * @param objInfo  the document describing the objects and their datastreams to create
+   * @param apim     the handle to access the fedora management api
+   * @param uploader the handle to access the fedora upload api
+   * @param rb       where to store the list of completed operations that need to be undone
+   *                 in case of a rollback
    */
-  private void fedoraIngest(FedoraAPIM apim, Uploader uploader, Zip zip, Document objInfo)
+  private void fedoraIngest(Zip zip, Document objInfo, FedoraAPIM apim, Uploader uploader,
+                            RollbackBuffer rb)
       throws DuplicateArticleIdException, TransformerException, IOException, RemoteException,
              URISyntaxException {
     // set up the transformer to generate the foxml docs
@@ -363,46 +411,14 @@ public class Ingester {
 
     // create the fedora objects
     NodeList objs = objList.getElementsByTagName(OBJECT);
-    boolean[] objCreated = new boolean[1];
-    int idx = 0;
-    try {
-      for (idx = 0; idx < objs.getLength(); idx++) {
-        Element obj = (Element) objs.item(idx);
-        objCreated[0] = false;
-        fedoraIngestOneObj(apim, uploader, obj, t, zip, logMsg, objCreated);
-      }
-    } catch (Exception e) {
-      if (!objCreated[0])
-        idx--;          // don't purge an existing object...
-
-      // try to rollback the already completed stuff
-      while (idx >= 0) {
-        try {
-          Element obj = (Element) objs.item(idx--);
-          String pid = obj.getAttribute(O_PID_A);
-          apim.purgeObject(pid, "Rolling back failed ingest", false);
-        } catch (Exception ee) {
-          log.error("Error while rolling back failed ingest; ingest-exception was '" + e + "'", ee);
-        }
-      }
-
-      // rethrow the original exception
-      if (e instanceof DuplicateArticleIdException)
-        throw (DuplicateArticleIdException) e;
-      if (e instanceof TransformerException)
-        throw (TransformerException) e;
-      if (e instanceof URISyntaxException)
-        throw (URISyntaxException) e;
-      if (e instanceof IOException)
-        throw (IOException) e;
-      if (e instanceof RuntimeException)
-        throw (RuntimeException) e;
-      throw new Error(e);       // how could this happen?
+    for (int idx = 0; idx < objs.getLength(); idx++) {
+      Element obj = (Element) objs.item(idx);
+      fedoraIngestOneObj(apim, uploader, obj, t, zip, logMsg, rb);
     }
   }
 
   private void fedoraIngestOneObj(FedoraAPIM apim, Uploader uploader, Element obj, Transformer t, 
-                                  Zip zip, String logMsg, boolean[] objCreated)
+                                  Zip zip, String logMsg, RollbackBuffer rb)
       throws DuplicateArticleIdException, TransformerException, IOException, RemoteException,
              URISyntaxException {
     // create the foxml doc
@@ -412,7 +428,7 @@ public class Ingester {
     // create the fedora object
     String pid = obj.getAttribute(O_PID_A);
     fedoraCreateObject(apim, pid, sw.toString(), logMsg);
-    objCreated[0] = true;
+    rb.addFedoraObject(pid);
 
     // add all (non-DC/non-RDF) datastreams
     NodeList dss = obj.getElementsByTagName(DATASTREAM);
@@ -423,8 +439,10 @@ public class Ingester {
 
     // index object with fedoragsearch (lucene)
     String doIndex = obj.getAttribute(O_INDEX_A);
-    if (doIndex != null && doIndex.equals("true"))
+    if (doIndex != null && doIndex.equals("true")) {
       fgsIndex(pid);
+      rb.addFGSObject(pid);
+    }
   }
 
   private void fedoraCreateObject(FedoraAPIM apim, String pid, String foxml, String logMsg)
@@ -506,6 +524,202 @@ public class Ingester {
     } catch (TransformerException te) {
       log.error("Error converting dom to string", te);
       return "";
+    }
+  }
+
+  /** 
+   * Add the permissions according to the given object-info doc. 
+   * 
+   * @param objInfo the document describing the permissions to add
+   * @param perms   the handle to access the permissions api
+   * @param rb      where to store the list of completed operations that need to be undone
+   *                in case of a rollback
+   * @throws RemoteException if an error occurred adding the permissions
+   */
+  private void doPermissions(Document objInfo, Permissions perms, RollbackBuffer rb)
+      throws RemoteException {
+    // gather all the permission operations
+    Map propgts = new HashMap();
+    Map implies = new HashMap();
+
+    Element objList = objInfo.getDocumentElement();
+    NodeList objs = objList.getElementsByTagName(PERMS);
+    for (int idx = 0; idx < objs.getLength(); idx++) {
+      Element obj = (Element) objs.item(idx);
+      collectActions(obj.getElementsByTagName(PROPAGATE), P_FROM_A, TO, propgts);
+      collectActions(obj.getElementsByTagName(IMPLY), I_PERM_A, IMPLIES, implies);
+    }
+
+    // try to apply them
+    applyActions(perms, propgts, OP_PRPGT, true, rb);
+    applyActions(perms, implies, OP_IMPLY, true, rb);
+  }
+
+  /**
+   * Parses
+   * <pre>
+   *   <x src="...">
+   *     <dst>...</dst>
+   *     ...
+   *     <dst>...</dst>
+   *   </x>
+   * </pre>
+   *
+   * @param list    list the 'x''s
+   * @param srcAttr the 'src'
+   * @param dstElem the 'dst''s
+   * @param res     where to put the stuff
+   */
+  private static void collectActions(NodeList list, String srcAttr, String dstElem, Map res) {
+    for (int idx = 0; idx < list.getLength(); idx++) {
+      Element item = (Element) list.item(idx);
+
+      String src = item.getAttribute(srcAttr);
+      Set    dst = (Set) res.get(src);
+      if (dst == null)
+        res.put(src, dst = new HashSet());
+
+      NodeList dstList = item.getElementsByTagName(dstElem);
+      for (int idx2 = 0; idx2 < dstList.getLength(); idx2++) {
+        Element val = (Element) dstList.item(idx2);
+        Text text = (Text) val.getFirstChild();
+        if (text != null)
+          dst.add(text.getData());
+      }
+    }
+  }
+
+  private static void applyActions(Permissions perms, Map actions, int op, boolean create,
+                                   RollbackBuffer rb)
+      throws RemoteException {
+    for (Iterator iter = actions.keySet().iterator(); iter.hasNext(); ) {
+      String src = (String) iter.next();
+      Set    val = (Set) actions.get(src);
+      String[] valList = (String[]) val.toArray(new String[val.size()]);
+
+      switch (op) {
+        case OP_PRPGT:
+          if (create) {
+            perms.propagatePermissions(src, valList);
+            rb.addPropagatePerms(src, val);
+          } else {
+            try {
+              perms.cancelPropagatePermissions(src, valList);
+            } catch (Exception e) {
+              log.error("Error while rolling back permissions for failed ingest", e);
+            }
+          }
+          break;
+
+        case OP_IMPLY:
+          if (create) {
+            perms.implyPermissions(src, valList);
+            rb.addImplyPerms(src, val);
+          } else {
+            try {
+              perms.cancelImplyPermissions(src, valList);
+            } catch (Exception e) {
+              log.error("Error while rolling back permissions for failed ingest", e);
+            }
+          }
+          break;
+
+        default:
+          throw new Error("Internal error: unknown op '" + op + "'");
+      }
+    }
+  }
+
+  private static class RollbackBuffer {
+    List fedoraObjects = new ArrayList();
+    List fgsObjects    = new ArrayList();
+    Map  prpgtPerms    = new HashMap();
+    Map  implyPerms    = new HashMap();
+    Map  rdfStmts      = new HashMap();
+
+    void addFedoraObject(String pid) {
+      fedoraObjects.add(pid);
+    }
+
+    void addFGSObject(String pid) {
+      fgsObjects.add(pid);
+    }
+
+    void addPropagatePerms(String from, Set toList) {
+      addPerms(prpgtPerms, from, toList);
+    }
+
+    void addImplyPerms(String perm, Set dstList) {
+      addPerms(implyPerms, perm, dstList);
+    }
+
+    private void addPerms(Map map, String src, Set dstList) {
+      Set t = (Set) map.get(src);
+      if (t != null)
+        t.addAll(dstList);
+      else
+        map.put(src, dstList);
+    }
+
+    void addRDFStatements(String model, String statements) {
+      List s = (List) rdfStmts.get(model);
+      if (s == null)
+        rdfStmts.put(model, s = new ArrayList());
+
+      s.add(statements);
+    }
+
+    void doRollback(ItqlHelper itql, FedoraAPIM apim, FgsOperations fgs, Permissions perms) {
+      // clear out RDF statements
+      log.debug("Rolling back RDF statements");
+      for (Iterator iter = rdfStmts.keySet().iterator(); iter.hasNext(); ) {
+        String model = (String) iter.next();
+
+        for (Iterator iter2 = ((List) rdfStmts.get(model)).iterator(); iter2.hasNext(); ) {
+          String stmts = (String) iter2.next();
+          String cmd   = "delete " + stmts + " from <" + model + ">;";
+          try {
+            itql.doUpdate(cmd, null);
+          } catch (Exception e) {
+            log.error("Error while rolling back failed ingest: failed itql command was '" + cmd +
+                      "'", e);
+          }
+        }
+      }
+
+      // clear out search index
+      log.debug("Rolling back fgs index");
+      for (Iterator iter = fgsObjects.iterator(); iter.hasNext(); ) {
+        String pid = (String) iter.next();
+        try {
+          fgs.updateIndex("deletePid", pid, FGS_REPO, null, null, null);
+        } catch (Exception e) {
+          log.error("Error while rolling back failed ingest: fgs deletePid failed for pid '" +
+                    pid + "' on repo '" + FGS_REPO + "'", e);
+        }
+      }
+
+      // delete fedora objects
+      log.debug("Rolling back fedora objects");
+      for (Iterator iter = fedoraObjects.iterator(); iter.hasNext(); ) {
+        String pid = (String) iter.next();
+        try {
+          apim.purgeObject(pid, "Rolling back failed ingest", false);
+        } catch (Exception e) {
+          log.error("Error while rolling back failed ingest: fedora purge object failed for pid '" +
+                    pid + "'", e);
+        }
+      }
+
+      // remove permissions
+      log.debug("Rolling back permissions");
+      try {
+        applyActions(perms, prpgtPerms, OP_PRPGT, false, null);
+        applyActions(perms, implyPerms, OP_IMPLY, false, null);
+      } catch (RemoteException re) {
+        log.error("Internal error: impossible exception received while rolling back permissions",
+                  re);
+      }
     }
   }
 

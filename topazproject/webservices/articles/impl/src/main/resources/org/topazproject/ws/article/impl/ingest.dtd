@@ -7,7 +7,7 @@
   - actually validate against this DTD.
   -->
 
-<!ELEMENT ObjectList (Object | RDF)* >
+<!ELEMENT ObjectList (Object | RDF | Permissions)* >
 <!ATTLIST ObjectList
     articleId   CDATA  #REQUIRED
     logMessage  CDATA  #IMPLIED >
@@ -46,22 +46,6 @@
        <!ELEMENT topaz:keyword (#PCDATA) >
   -->
 
-<!ELEMENT rdf:RDF ANY >
-<!ATTLIST rdf:RDF
-    xmlns:rdf  CDATA  #FIXED "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
-    rdf:about  CDATA  #REQUIRED
-    model      (ri | articles | annotations | users | grants | revokes | pp | preferences | profiles | ratings | alerts | xsd | ANY) "ri" >
-<!-- This contains RDF/XML. Example:
-
-       <!ATTLIST rdf:RDF
-           xmlns:topaz CDATA #FIXED "http://rdf.topazproject.org/RDF/">
-
-       <!ELEMENT rdf:Description      (rdf:type) >
-       <!ATTLIST rdf:Description rdf:about CDATA #REQUIRED >
-       <!ELEMENT rdf:type      (EMPTY) >
-       <!ATTLIST rdf:type rdf:resource CDATA #REQUIRED >
-  -->
-
 <!ENTITY % dsattrs
  "id           CDATA          #REQUIRED
   state        (Active | Inactive | Deleted) 'Active'
@@ -79,6 +63,37 @@
 <!-- Either a contLoc attribute OR a content must be provided, but not both. contLoc
      is a URI, interpreted relative to the zip (input doc).
   -->
+
+<!ELEMENT rdf:RDF ANY >
+<!ATTLIST rdf:RDF
+    xmlns:rdf  CDATA  #FIXED "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    rdf:about  CDATA  #REQUIRED
+    model      (ri | articles | annotations | users | grants | revokes | pp | preferences | profiles | ratings | alerts | xsd | ANY) "ri" >
+<!-- This contains RDF/XML. Example:
+
+       <!ATTLIST rdf:RDF
+           xmlns:topaz CDATA #FIXED "http://rdf.topazproject.org/RDF/">
+
+       <!ELEMENT rdf:Description      (rdf:type) >
+       <!ATTLIST rdf:Description rdf:about CDATA #REQUIRED >
+       <!ELEMENT rdf:type      (EMPTY) >
+       <!ATTLIST rdf:type rdf:resource CDATA #REQUIRED >
+  -->
+
+<!ELEMENT Permissions (propagate|imply)* >
+
+<!ELEMENT propagate (to)* >
+<!ATTLIST propagate
+    from  CDATA  #REQUIRED >
+
+<!ELEMENT to (#PCDATA) >
+
+<!ELEMENT imply (implies)* >
+<!ATTLIST imply
+    permission  CDATA  #REQUIRED >
+
+<!ELEMENT implies (#PCDATA) >
+
 
 <!-- Example:
 <?xml version="1.0" encoding="UTF-8"?>
@@ -110,5 +125,16 @@
       <dc:creator>Joe D. Maggio</dc:creator>
     </rdf:Description>
   </RDF>
+
+  <Permissions>
+    <propagate from="info:doi/10.1371/foo.bar">
+      <to>info:fedora/doi:10.1371%2Ffoo.bar</to>
+      <to>info:doi/10.1371/foo.bar.i1</to>
+    </propagate>
+    <imply permission="topaz:createFoo">
+      <implies>topaz:readFoo</implies>
+      <implies>topaz:writeFoo</implies>
+    </imply>
+  </Permissions>
 </ObjectList>
 -->

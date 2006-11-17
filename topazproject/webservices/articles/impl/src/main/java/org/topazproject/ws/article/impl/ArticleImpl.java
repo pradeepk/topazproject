@@ -55,6 +55,8 @@ import org.topazproject.ws.article.NoSuchObjectIdException;
 import org.topazproject.ws.article.NoSuchArticleIdException;
 import org.topazproject.ws.article.ObjectInfo;
 import org.topazproject.ws.article.RepresentationInfo;
+import org.topazproject.ws.permissions.impl.PermissionsImpl;
+import org.topazproject.ws.permissions.impl.PermissionsPEP;
 
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
 import org.topazproject.fedoragsearch.service.FgsOperations;
@@ -230,8 +232,10 @@ public class ArticleImpl implements Article {
       throws NoSuchArticleIdException, RemoteException {
     pep.checkAccess(pep.DELETE_ARTICLE, ItqlHelper.validateUri(article, "article"));
 
-    ItqlHelper itql = ctx.getItqlHelper();
-    FedoraAPIM apim = ctx.getFedoraAPIM();
+    ItqlHelper      itql  = ctx.getItqlHelper();
+    FedoraAPIM      apim  = ctx.getFedoraAPIM();
+    PermissionsImpl perms = new PermissionsImpl(new PermissionsPEP.Proxy(pep), ctx);
+
     String txn = purge ? "delete " + article : null;
     try {
       if (txn != null)
@@ -259,6 +263,11 @@ public class ArticleImpl implements Article {
         String result = fgs.updateIndex("deletePid", pid, FGS_REPO, null, null, null);
         if (log.isDebugEnabled())
           log.debug("Removed " + pid + " from full-text index:\n" + result);
+
+        // Remove permissions
+        if (purge) {
+          perms.cancelPropagatePermissions(uri, perms.listPermissionPropagations(uri, false));
+        }
       }
 
       if (txn != null) {

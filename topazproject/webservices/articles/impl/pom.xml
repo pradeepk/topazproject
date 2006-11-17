@@ -47,6 +47,16 @@
       <artifactId>ws-common-impl</artifactId>
       <version>0.5-SNAPSHOT</version>
     </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-permissions-api</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-permissions-impl</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
     
     <dependency>
       <groupId>org.topazproject</groupId>
