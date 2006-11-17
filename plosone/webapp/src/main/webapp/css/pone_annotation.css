@@ -68,7 +68,7 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .userinfo dd{ font-size: .9em; }
 
 /* --- pane contains viewing area --- */
-.pane			{ margin: 20px; overflow: auto; padding: 0 5px;  margin: 10px 0; position: relative; }
+.pane			{ margin: 20px; overflow: auto; padding: 0 5px;  margin: 10px 0; position: relative; overflow: }
 .reading.pane 	{ height: 12em; }
 .dialog fieldset{ border: 0; margin: 0; padding: 0;}
 .dialog .text label,
@@ -129,10 +129,13 @@ div.response div.response { border: none; margin: -2px 0 0 15px; border-top: 2px
 div.response blockquote	{ background: #F5F5F6 url(../images/pone_response_blockquote_bg.gif) repeat-x bottom; margin: 0; padding: 10px 20px; font-style: normal; border: 1px solid #ccc; border-width: 1px 0 1px 2px; position: relative; }
 div.response .hd { border-left: 2px solid #ccc; padding: 10px; background-color: #fff; position: relative; }
 div.response .response .hd	{ background: url(../images/pone_response_hd_bg.gif) repeat-x top; position: relative;}
+div.response div.detail		{ padding-left: 5px; }
 /* h5 for pane posting titles */
-div.response h5	 { margin: 0; padding: 0; font-size: 1.1em;}
+div.response h5	 { margin: 20px 0 0 0; padding: 0; font-size: 1.1em;}
 
-div.response .pane 					{ border: 2px solid #ccc; border-width: 0 0 2px 2px; padding: 20px; margin: 0; background-repeat: repeat-x; background-position: top; color: #fff;}
+div.response div.close a	{ position: absolute; float: none; top: 20px; right: 20px; color: #333;}
+
+div.response .pane 					{ border: 2px solid #ccc; border-width: 0 0 2px 2px; padding: 0 20px 20px 20px; margin: 0; background-repeat: repeat-x; background-position: top; color: #fff;}
 div.response .pane legend 			{ display: none; }
 
 /* apply class original to the original posting of either a discussio or annotation on the directory page */
@@ -143,8 +146,11 @@ div.response.original div.hd { background: url(../images/pone_toolbar_bg.gif) re
 div.response.original div.toolbar a { cursor: pointer; }
 div.response.original blockquote,
 div.response.original blockquote * { background: #fff; border-color: #666;}
-.posting.pane			{ background-color: #666; background-image: url(../images/pone_response_comment_bg.gif); }
-.flag.pane			{ background-color: #3C9544; background-image: url(../images/pone_response_flag_bg.gif); }
+
+
+div.posting	{ background-color: #666; background-image: url(../images/pone_response_comment_bg.gif); }
+div.flag	{ background-color: #3C9544; background-image: url(../images/pone_response_flag_bg.gif); }
+
 .toolbar			{ background: url(../images/pone_toolbar_bg.gif) repeat-x 20px; padding: 10px; border: 1px solid #ccc; border-width: 0 0 2px 2px; margin: 0}
 .toolbar ul,
 .toolbar li			{ margin: 0; padding: 0; text-align: right;}

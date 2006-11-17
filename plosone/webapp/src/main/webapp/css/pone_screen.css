@@ -50,7 +50,7 @@ textarea	{ font-family: Verdana, Arial, Helvetica, sans-serif; color: #555; font
 ----------------------------------------------------------
 */
 span.new	{ font-weight: bold; font-size: .85em; text-transform: uppercase;}
-input.btn	{ color:#069; text-transform: uppercase; background-color:#D2F7FF; border:1px solid; border-color: #069; filter:progid:DXImageTransform.Microsoft.Gradient (GradientType=0,StartColorStr='#ffffffff',EndColorStr='#D2F7FF'); font-size: .9em;}
+
 
 /* Global : Icons
 ----------------------------------------------------------
@@ -62,14 +62,14 @@ a.icon, 	/* use for any accent oriented icon */
 a.tooltip	/* use for any functional icon for on page actions */
 					{ padding: 2px 0 2px 16px; background-repeat: no-repeat; background-position: 0px 0px; }
 /* for user dashboard icons */
-#user a.icon			{ padding: 0 0 0 16px; background-repeat: no-repeat; background-position: 0 -14px; padding-top: 1px; padding-bottom: 1px;}
+#user a.icon		{ padding: 0 16px 0 0; background-repeat: no-repeat; background-position: 100% -14px; padding-top: 1px; padding-bottom: 1px;}
 
 /* for the advanced search, rss, and feedback links above search bar */
 #links a.icon,
 #links a.icon:hover,
 #links a.icon:visited,
-#hdr a.icon:hover	{ background-position: 0 0; }
-a.button	{ padding: 4px 4px 4px 18px; background-repeat: no-repeat; background-position: 1% 50%; font-size: .85em;}
+#hdr a.icon:hover	{ background-position: 100% 0; }
+a.button			{ padding: 4px 4px 4px 18px; background-repeat: no-repeat; background-position: 1% 50%; font-size: .85em;}
 
 div.topbar	{ background-color: #069; text-align: right; }
 
@@ -196,7 +196,7 @@ ul#nav li	{ float: left; position: relative; background-color: #ECEDED; list-sty
 #nav li a:hover ul li a 	{ display:block; font-weight:normal; background:transparent; text-decoration:none; height:auto; line-height: 1.7em;padding:0.2em 0.2em 0.2em 0.6em; width:15.8em; border-top: 0; color: #666; }
 
 #nav li:hover ul li a:hover,
-#nav li a:hover ul li a:hover { border-top: 0; background-color: #ddd; color: #000;}
+#nav li a:hover ul li a:hover { border-top: 0; background-color: #eee; color: #000;}
 #nav td	{ border: none; padding: 0; background-color: transparent; }
 #nav li.journalnav			{ float: right; }
 /* Search Dashboard */
@@ -222,7 +222,7 @@ ul#nav li	{ float: left; position: relative; background-color: #ECEDED; list-sty
 }
 #db fieldset input.button { float: left; position: relative; }
 
-/* User Dashboard Block */
+/*  user wraps logged in user controls */
 #user 		{ position: absolute; width: 24.5em; height: 6.1em; background: transparent url(../images/pone_user_bg.gif) no-repeat; top: 54px; right: 0; font-size: .75em; text-align: right; }
 
 #user div 	{ margin: 14px 18px; } /* contains elements and applies padding */
@@ -230,25 +230,28 @@ ul#nav li	{ float: left; position: relative; background-color: #ECEDED; list-sty
 #user ul 	{ margin: 0; padding: 0; display: inline;}
 #user ul li { display: inline; margin-left: 6px; text-indent: 0;}
 #user a:link,
-#user a:visited 	{ color: #330; }
+#user a:visited 	{ color: #004B70; }
 #user a:hover
 			{ color: #069; }
 #user a.user{ background-image: url(../images/pone_icon_user_user.gif); }
-
-
-/* Advanced Search, RSS */
-#links 		{ position: absolute; right: 12px; top: 2px;text-decoration: none;}
-ul#links 	{ margin: 0; padding: 0; }
-ul#links li { display: inline; margin: 0; padding: 0; }
-ul#links a	{ color: #fff; font-size: .75em; display: inline; }
-
-/* Styles for not logged in state */
-
+#user a.icon{ padding-right: 18px; }
+/* styles for unlogged in state */
 .login #links	{ top: 25px; }
 .login #db		{ top: 55px; }
 .login #user	{ background: none; top: 75px; }
 .login #user div{ margin-right: 10px; }
 .login #user a	{ color: #fff; padding-right: 0; font-size: 1.1em;}
+
+
+
+/* links wraps Advanced Search, RSS, Feedback links */
+#links 		{ position: absolute; right: 12px; top: 2px;text-decoration: none;}
+ul#links 	{ margin: 0; padding: 0; }
+ul#links li { display: inline; margin: 0; padding: 0; }
+ul#links a	{ color: #fff; font-size: .75em; display: inline;;}
+ul#links a.icon,
+ul#links a:hover.icon { padding: 0 16px 0 0; background-position: 100% 50%;}
+
 
 
 
