@@ -27,6 +27,7 @@ import org.plos.permission.service.PermissionWebService;
 import org.plos.user.action.AssignAdminRoleAction;
 import org.plos.user.action.CreateUserAction;
 import org.plos.user.action.DisplayUserAction;
+import org.plos.user.action.UserAlertsAction;
 import org.plos.user.service.PreferencesWebService;
 import org.plos.user.service.ProfileWebService;
 import org.plos.user.service.UserService;
@@ -50,6 +51,7 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private GetAnnotationAction getAnnotationAction;
   private GetReplyAction getReplyAction;
   private CreateUserAction createUserAction;
+  private UserAlertsAction userAlertsAction;
   private AssignAdminRoleAction assignAdminRoleAction;
   private FetchObjectAction fetchObjectAction;
   private SecondaryObjectAction secondaryObjectAction;
@@ -384,5 +386,18 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   /** Get the assignAdminRoleAction */
   protected AssignAdminRoleAction getAssignAdminRoleAction() {
     return assignAdminRoleAction;
+  }
+
+  /**
+   * Setter for property 'userAlertsAction'.
+   * @param userAlertsAction Value to set for property 'userAlertsAction'.
+   */
+  public void setUserAlertsAction(final UserAlertsAction userAlertsAction) {
+    this.userAlertsAction = userAlertsAction;
+  }
+
+  /** @return Value for property 'userAlertsAction'. */
+  public UserAlertsAction getUserAlertsAction() {
+    return userAlertsAction;
   }
 }
