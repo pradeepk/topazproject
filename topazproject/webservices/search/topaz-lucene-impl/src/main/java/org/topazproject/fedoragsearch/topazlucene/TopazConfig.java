@@ -20,10 +20,16 @@ import java.util.List;
 import java.util.Arrays;
 import java.io.File;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import org.topazproject.configuration.ConfigurationStore; // Wraps commons-config initialization
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.lucene.store.Directory;
+import org.apache.lucene.store.FSDirectory;
+import org.apache.lucene.search.IndexSearcher;
+import org.apache.lucene.index.IndexModifier;
+import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
 /**
  * Package private class to initialize and hold shared configuration data.
@@ -77,20 +83,28 @@ class TopazConfig {
       try {
         // Create a temporary directory to stash DB
         File dir = File.createTempFile("topazlucene", "_db");
+        indexPath = dir.toString();
         if (!dir.delete()) // Delete the file as we want a directory
           log.error("Unable to delete temporary file " + dir);
-        else {
-          if (!dir.mkdir()) // Create the directory
-            log.error("Unable to create temporary directory " + dir);
-          else {
-            indexPath = dir.toString();
-            log.info("Putting topaz-lucene db in " + dir);
-          }
-        }
       } catch (IOException ioe) {
         log.error("Unable to create temporary directory", ioe);
       }
     }
     INDEX_PATH = indexPath;
+    log.info("topaz-lucene db in " + INDEX_PATH);
+
+    try {
+      // Create a lucene directory object where the DB is
+      Directory dir = FSDirectory.getDirectory(INDEX_PATH, true);
+      try {
+        // Try to open the DB for reading. If the DB doesn't exist (no segments file), will fail
+        IndexSearcher is = new IndexSearcher(dir);
+      } catch (FileNotFoundException fnfe) {
+        // Create the database
+        IndexModifier im = new IndexModifier(dir, new StandardAnalyzer(), true);
+      }
+    } catch (IOException ioe) {
+      log.error("Error seeing or creating database", ioe);
+    }
   }
 }
