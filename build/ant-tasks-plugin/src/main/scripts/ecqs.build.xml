@@ -96,7 +96,6 @@
   <target name="ecqs-install-if" if="INSTALL" depends="exec-ext">
     <echo>Installing ECQS</echo>
     <antcall target="ecqs-install"/>
-    </exec>
   </target>
   
   <target name="ecqs-start" depends="ecqs-install-if">
