@@ -27,6 +27,7 @@ public class AxisAuthFaultDetector implements AuthFaultDetector {
     String msg = fault.getMessage();
 
     // xxx: is there a better way?
-    return msg.indexOf("(401)Unauthorized") >= 0;
+    return ((msg.indexOf("(401)Unauthorized") >= 0)
+            || (msg.indexOf("(444)Invalid CAS Ticket") >= 0));
   }
 }
