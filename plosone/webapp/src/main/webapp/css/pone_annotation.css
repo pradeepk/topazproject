@@ -15,12 +15,12 @@ div.detail{ font-size: .9em; color: #666; position: relative;}
 div.detail strong{ color: #444; /* strong wraps date and time for added emphasis and clarity */}
 .dialog .tip,
 .dialog .tipu { display: none; }
-#AnnotationDialog .dialog .tip 	{ background:transparent url(../images/pone_dialog_pb.gif) no-repeat 0px 0px; margin-left:22px; margin-bottom:-22px; width:39px; height:22px; }
-#AnnotationDialog .dialog .tipu 	{ background:transparent url(../images/pone_dialog_pt.gif) no-repeat 0px 0px; margin-left:22px; margin-top:-22px; width:39px; height:22px; }
+#AnnotationDialog .dialog .tip 	{ background:transparent url(../images/pone_dialog_pb.gif) no-repeat 0px 0px;  width:39px; height:22px; position:absolute; bottom: -22px; left:22px; }
+#AnnotationDialog .dialog .tipu 	{ background:transparent url(../images/pone_dialog_pt.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; top: -22px; left:22px;; }
 #CommentDialog .dialog .tip,
-#CommentDialogMultiple .dialog .tip 	{ background:transparent url(../images/pone_dialog_preview_pb.gif) no-repeat 0px 0px; margin-left:22px; margin-bottom:-22px; width:39px; height:22px; }
+#CommentDialogMultiple .dialog .tip 	{ background:transparent url(../images/pone_dialog_preview_pb.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; bottom: -22px; left:22px; }
 #CommentDialog .dialog .tipu,
-#CommentDialogMultiple .dialog .tipu 	{ background:transparent url(../images/pone_dialog_preview_pt.gif) no-repeat 0px 0px; margin-left:22px; margin-top:-22px; width:39px; height:22px; }
+#CommentDialogMultiple .dialog .tipu 	{ background:transparent url(../images/pone_dialog_preview_pt.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; top: -22px; left:22px; }
 .dialog .tip.on,
 .dialog .tipu.on { display: block; }
 
@@ -45,7 +45,7 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .preview{ width: 32em; border: 3px solid #666; background: url(../images/pone_dialog_preview_bg.gif) repeat-x top;}
 .preview div.detail a { margin: 0 10px; }
 /* annotate is applied to dialog viewers in the annotation process */
-.annotate{ width: 42em; border: 3px solid #0bf; background: #fff url(../images/pone_forms_bg.gif) repeat-x bottom;}
+.annotate{ width: 42em; border: 3px solid #0bf; background: #fff url(../images/pone_forms_bg.gif) repeat-x bottom; position:relative;}
 
 .loadingCycler { z-index: 99998 !important; }
 .loadingCycler img { z-index: 99999 !important; }
@@ -68,7 +68,7 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .userinfo dd{ font-size: .9em; }
 
 /* --- pane contains viewing area --- */
-.pane			{ margin: 20px; overflow: auto; padding: 0 5px;  margin: 10px 0; position: relative; overflow: }
+.pane			{ margin: 20px; padding: 0 5px;  margin: 10px 0; position: relative; }
 .reading.pane 	{ height: 12em; }
 .dialog fieldset{ border: 0; margin: 0; padding: 0;}
 .dialog .text label,
@@ -84,8 +84,8 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .dialog fieldset div { width: 5em; height: 2em; margin-left: 15px;padding: 0; display: inline;}
 .dialog fieldset div label 	{ width: 5em; vertical-align: middle; height: 1.125em; display: inline;}
 .dialog fieldset input.radio 	{ width: 1em; vertical-align: middle; height: 1.125em; display: inline; margin-right: 4px;}
-.dialog fieldset input.btn { width: auto; margin: 0 0 0 10px; float: right;}
-
+.dialog fieldset div.btnwrap { width: 100%; display:block; margin: 0; }
+.dialog fieldset div.btnwrap input { margin: 0 auto; }
 
 /* --- multiple is the containing block for multiple annotations --- */
 

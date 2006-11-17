@@ -377,31 +377,31 @@ a.bug.self-private,
 a:visited.bug.self-private,
 span.self-private a.bug,
 span.self-private a:visited.bug { background-color: #3C9544;}
-span.self-private.active			{ background-color:#cfc; border-bottom: 1px solid #55E912;}
-span.self-private.active a.bug,
-span.self-private.active a:visited.bug,
-a.bug.self-private.active,
-a:hover.bug.self-private.active		{ background-color: #55E912;}
+span.self-private-active			{ background-color:#cfc; border-bottom: 1px solid #55E912;}
+span.self-private-active a.bug,
+span.self-private-active a:visited.bug,
+a.bug.self-private-active,
+a:hover.bug.self-private-active		{ background-color: #55E912;}
 
 a.bug.public,
 a:visited.bug.public,
 span.public a.bug,
 span.public a:visited.bug { background-color: #069;}
-span.public.active			{ background-color:#D2F7FF; border-bottom: 1px solid #0bf;}
-span.public.active a.bug,
-span.public.active a:visited.bug,
-a.bug.public.active,
-a:hover.bug.public.active		{ background-color: #0BF;}
+span.public-active			{ background-color:#D2F7FF; border-bottom: 1px solid #0bf;}
+span.public-active a.bug,
+span.public-active a:visited.bug,
+a.bug.public-active,
+a:hover.bug.public-active		{ background-color: #0BF;}
 
 a.bug.author,
 a:visited.bug.author,
-span.active a.bug,
-span.active a:visited.bug { background-color: #B6491F;}
-span.author.active			{ background-color:#FFD3C5; border-bottom: 1px solid #f63;}
-span.author.active a.bug,
-span.author.active a:visited.bug,
-a.bug.author.active,
-a:hover.bug.author.active		{ background-color: #f63;}
+span-active a.bug,
+span-active a:visited.bug { background-color: #B6491F;}
+span.author-active			{ background-color:#FFD3C5; border-bottom: 1px solid #f63;}
+span.author-active a.bug,
+span.author-active a:visited.bug,
+a.bug.author-active,
+a:hover.bug.author-active		{ background-color: #f63;}
 
 
 div.beta				{ text-align: center; font-size: .9em; background-color: #069; border-width: 1px 0; color: #fff; position: relative; padding: 1px 0; vertical-align: middle;}
