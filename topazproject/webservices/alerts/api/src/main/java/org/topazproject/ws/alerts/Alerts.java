@@ -52,6 +52,10 @@ public interface Alerts extends Remote {
   /**
    * Send all the alerts as of yesterday.
    *
+   * This is meant primarily for testing. It is actually run via
+   * L{org.topazproject.ws.alerts.impl.SendAlertsJob} as configured.
+   * (Default is configured in alerts/ws-webapp - topaz-config.xml.)
+   *
    * @return true if successful
    * @throws RemoteException if there was a problem talking to the alerts service
    */

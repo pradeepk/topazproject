@@ -244,15 +244,16 @@ public class AlertsImpl implements Alerts {
       return false;
     }
 
-    // TODO: Update users that were never started:
-    // select $user count( select $timestamp from <rmi://localhost/fedora#alerts>
-    //  where $user <http://rdf.topazproject.org/RDF/alerts/timestamp> $timestamp)
-    //  from <rmi://localhost/fedora#preferences> where
-    //  $user <http://rdf.topazproject.org/RDF/hasPreferences> $pref and
-    //  $pref <http://rdf.topazproject.org/RDF/preference> $prefm and
-    //  $prefm <http://rdf.topazproject.org/RDF/prefName> 'alertsCategories'
-    //  having $k0 <tucana:occurs>
-    //  '1.0'^^<http://www.w3.org/2001/XMLSchema#double>;
+    /* TODO: Update users that were never started:
+     * select $user count( select $timestamp from <rmi://localhost/fedora#alerts>
+     *  where $user <http://rdf.topazproject.org/RDF/alerts/timestamp> $timestamp)
+     *  from <rmi://localhost/fedora#preferences> where
+     *  $user <http://rdf.topazproject.org/RDF/hasPreferences> $pref and
+     *  $pref <http://rdf.topazproject.org/RDF/preference> $prefm and
+     *  $prefm <http://rdf.topazproject.org/RDF/prefName> 'alertsCategories'
+     *  having $k0 <tucana:occurs>
+     *  '1.0'^^<http://www.w3.org/2001/XMLSchema#double>;
+     */
 
     return true; // Everything went okay
   }
@@ -482,7 +483,8 @@ public class AlertsImpl implements Alerts {
       }
 
       String detailsQuery = ArticleFeed.getDetailsQuery(articles.values());
-      StringAnswer detailsAnswer = new StringAnswer(ctx.getItqlHelper().doQuery(detailsQuery, aliases));
+      StringAnswer detailsAnswer =
+          new StringAnswer(ctx.getItqlHelper().doQuery(detailsQuery, aliases));
       ArticleFeed.addArticlesDetails(articles, detailsAnswer);
 
       return articles.values();
