@@ -4,21 +4,17 @@
 <div id="sideNav">
 	<div class="links">
 		<ul>
-	            <@ww.url id="articleArticleRepXML"  action="fetchObject" includeParams="none" uri="${articleURI}">
-        	          <@ww.param name="representation" value="%{'XML'}"/>
-	            </@ww.url>
-			<li><a href="${articleArticleRepXML}" class="xml" title="Download XML">XML</a></li>
-	            <@ww.url id="articleArticleRepPDF"  action="fetchObject" includeParams="none" uri="${articleURI}">
-	                  <@ww.param name="representation" value="%{'PDF'}"/>
-                   </@ww.url>
-							      
-			<li><a href="${articleArticleRepPDF}" class="pdf last" title="Download PDF">PDF</a></li>
-<!--			<li><a href="#" class="citation last" title="Download Citation">Citation</a></li>-->
+	    <@ww.url id="articleArticleRepXML"  action="fetchObject" includeParams="none" uri="${articleURI}">
+        <@ww.param name="representation" value="%{'XML'}"/>
+	    </@ww.url>
+			<li><a href="${articleArticleRepXML}" class="xml" title="Download XML">Download Article XML</a></li>
+	    <@ww.url id="articleArticleRepPDF"  action="fetchObject" includeParams="none" uri="${articleURI}">
+	      <@ww.param name="representation" value="%{'PDF'}"/>
+      </@ww.url>
+			<li><a href="${articleArticleRepPDF}" class="pdf" title="Download PDF">Download Article PDF</a></li>
+			<li><a href="#" class="email" title="Email This Article to a Friend or Colleague">Email This Article</a></li>
+  		<li><a href="#" class="print last" title="Go to a Printer Ready Version">Print This Article</a></li>
 		</ul>
-	</div>
-	<div class="buttons">
-	<span><a href="#" class="email">Email Article</a></span>
-	<span><a href="#" class="print">Print Article</a></span>
 	</div>
 <!--
 	<div class="links">
@@ -74,7 +70,6 @@
 				<li><a href="#s0">Top</a></li>
 				<li><a href="#s1">Introduction</a></li>
 				<li><a href="#s2">Results</a></li>
-
 				<li><a href="#s3">Discussion</a></li>
 				<li><a href="#s4">Materials and Methods</a></li>
 				<li><a href="#s5">Supporting Information</a></li>

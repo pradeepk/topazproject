@@ -1,17 +1,33 @@
 	<!-- begin : logo -->
-	<div id="logo" title="PLoS ONE: Open-Access 2.0"><a href="http://www.plosone.org" title="PLoS ONE: Open-Access 2.0"><span>PLoS ONE</span></a></div>
+	<div id="logo" title="PLoS ONE: Publishing science, acclerating research"><a href="http://www.plosone.org" title="PLoS ONE: Publishing science, accelerating research"><span>PLoS ONE</span></a></div>
 	<!-- end : logo -->
 	<!-- begin : user controls -->
+	<#if Session.PLOS_ONE_USER?exists>
+	
+	
 	<div id="user">
-	<div>
-	<p>Logged in as <a href="#" class="icon user">margare18charlimit</a></p>
-	<ul>
-<!--		<li><a href="#" class="icon nomessage">0 New</a></li>-->
-		<li><a href="#" class="icon preferences">Preferences</a></li>
-		<li><a href="${freemarker_config.getCasLogoutURL()}" class="icon logout">Logout</a></li>
-	</ul>
+		<div>
+			<p>Logged in as <a href="#" class="icon user">${Session.PLOS_ONE_USER.displayName}</a></p>
+				<ul>
+					<li><a href="#" class="icon preferences">Preferences</a></li>
+					<li><a href="${freemarker_config.getCasLogoutURL()}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}" class="icon logout">Logout</a></li>
+				</ul>
+		</div>
 	</div>
+	
+	<#else>
+	
+	<div id="user" class="login">
+		<div>
+			<ul>
+				<li><a href="#">Create Account</a></li>
+				<li><a href="${freemarker_config.getCasLoginURL()}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/user/secure/secureHome.action" class="feedback">Login</a></li>
+			</ul>
+		</div>
 	</div>
+
+	</#if>
+	
 	<!-- end : user controls -->
 	<!-- begin search links -->
 	<ul id="links">
