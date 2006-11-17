@@ -118,7 +118,7 @@
 
   <target name="save.property">
     <propertycopy name="prop.value" from="${property}" />
-    <echo file="${temp.file}" append="true">${property}=${prop.value}</echo>
+    <echo file="${temp.file}" append="true">${property}=${prop.value}${line.separator}</echo>
   </target>
 
   <!-- Stop mulgara -->
