@@ -148,7 +148,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final String title = "Annotation1";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
     final String context = createAnnotationAction.getTargetContext();
-    createAnnotationAction.setPublic(publicVisibility);
+    createAnnotationAction.setIsPublic(publicVisibility);
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);
@@ -169,7 +169,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
     final String context = createAnnotationAction.getTargetContext();
     final boolean visibility = false;
-    createAnnotationAction.setPublic(visibility);
+    createAnnotationAction.setIsPublic(visibility);
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);
@@ -747,7 +747,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     //Create an annotation
     final String title = "Annotation1";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
-    createAnnotationAction.setPublic(true);
+    createAnnotationAction.setIsPublic(true);
     final String context = createAnnotationAction.getTargetContext();
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
@@ -895,7 +895,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     //Create an annotation
     final String title = "Annotation1";
     final CreateAnnotationAction createAnnotationAction = getCreateAnnotationAction(target, title, body);
-    createAnnotationAction.setPublic(true);
+    createAnnotationAction.setIsPublic(true);
     assertEquals(SUCCESS, createAnnotationAction.execute());
     final String annotationId = createAnnotationAction.getAnnotationId();
     log.debug("annotation created with id:" + annotationId);

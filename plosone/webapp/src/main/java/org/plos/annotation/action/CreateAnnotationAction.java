@@ -200,12 +200,12 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   }
 
   /** @param isPublic set the visibility of annotation */
-  public void setPublic(final boolean isPublic) {
+  public void setIsPublic(final boolean isPublic) {
     this.isPublic = isPublic;
   }
 
   /** @return whether the annotation is public */
-  public boolean isPublic() {
+  public boolean getIsPublic() {
     return isPublic;
   }
 
