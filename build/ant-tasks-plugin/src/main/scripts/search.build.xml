@@ -91,9 +91,20 @@
     <echo message="Using port    = ${port}"/>
     <echo message="Shutdown port = ${SHUTDOWN_PORT}"/>
 
-    <tempfile property="temp.file" suffix=".properties"/>
+    <tempfile property="temp.file" prefix="search" suffix=".properties" destDir="${home}"/>
+    <echo file="${temp.file}" message=""/>
     <propertyselector property="prop.list" delimiter="," match="topaz\..*" casesensitive="false" />
-    <foreach list="${prop.list}" target="save.property" param="property" inheritall="true"/>
+    <if>
+      <isset property="prop.list"/>
+      <then>
+        <for list="${prop.list}" param="property">
+          <sequential>
+            <propertycopy name="prop.value" from="@{property}" override="true"/>
+            <echo file="${temp.file}" append="true">@{property}=${prop.value}${line.separator}</echo>
+          </sequential>
+        </for>
+      </then>
+    </if>
 
     <cargo containerId="tomcat5x" home="${tomcathome}" output="${tomcatlog.dir}/output.log"
         log="${tomcatlog.dir}/cargo.log" action="start" wait="${wait}">
@@ -114,11 +125,6 @@
 
     <delete file="${temp.file}"/>
 
-  </target>
-
-  <target name="save.property">
-    <propertycopy name="prop.value" from="${property}" />
-    <echo file="${temp.file}" append="true">${property}=${prop.value}${line.separator}</echo>
   </target>
 
   <!-- Stop fedoragsearch -->
