@@ -89,7 +89,7 @@
     <echo message="Using war     = ${mulgara-war}"/>
     <echo message="Using port    = ${port}"/>
 
-    <tempfile property="temp.file" suffix=".properties"/>
+    <tempfile property="temp.file" prefix="mulgara" suffix=".properties" destDir="${home}"/>
     <propertyselector property="prop.list" delimiter="," match="topaz\..*" casesensitive="false" />
     <foreach list="${prop.list}" target="save.property" param="property" inheritall="true"/>
 
