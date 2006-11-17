@@ -29,7 +29,7 @@ import org.topazproject.ws.article.Article;
 public class TopazHitGuard implements Guard {
   public void checkGuard(Object object) throws SecurityException {
     Document doc = (Document) object;
-    
+
     ItqlHelper itql = SearchContext.getItqlHelper();
     /* TODO: Check state & tombstone & ... throw SecurityException if it shouldn't be available
      * (This may not be necessary as these things shouldn't be in the index anyway and/or
@@ -41,12 +41,13 @@ public class TopazHitGuard implements Guard {
      */
 
     String pid = doc.get("PID");
-    String uri = "info:fedora" + pid;
+    String uri = "info:fedora/" + pid;
     AbstractSimplePEP pep = SearchContext.getPEP();
     try {
       pep.checkAccess(Article.Permissions.READ_META_DATA, new URI(uri));
     } catch (URISyntaxException us) {
-      throw new SecurityException("Unable to crate URI '" + uri + "'", us);
+      throw (SecurityException)
+          new SecurityException("Unable to create URI '" + uri + "'").initCause(us);
     }
   }
 }
