@@ -131,13 +131,6 @@
           <defaultValue>${topazproject.install.dir}/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28/conf/cacert.ks</defaultValue>
         </parameter>
 
-        <parameter>
-          <name>TOMCAT</name>
-          <property>TOMCAT</property>
-          <required>true</required>
-          <defaultValue>jakarta-tomcat-5.0.28</defaultValue>
-        </parameter>
-
       </parameters>
     </mojo>
 

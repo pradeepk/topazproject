@@ -86,22 +86,6 @@
     </exec>
 
     <delete file="${FEDORA_HOME}/server/ecqs.cert"/>
-
-    <!-- Install fedoragsearch -->
-    <property name="TOMCAT_HOME" value="${FEDORA_HOME}/server/${TOMCAT}"/>
-    <filter token="deployFile"
-            value="${TOMCAT_HOME}/webapps/fedoragsearch/WEB-INF/classes/config/deploy.wsdd"/>
-    <filter token="indexDir" value="${FEDORA_HOME}/data/lucene"/>
-    <filter token="fedoraObjectDir" value="${FEDORA_HOME}/data/objects"/>
-    <filter token="logDir" value="${FEDORA_HOME}/server/logs"/>
-    <filter token="fedoragsearchPath" value="${TOMCAT_HOME}/webapps/fedoragsearch"/>
-    <mkdir  dir="${FEDORA_HOME}/data/lucene"/>
-    <move todir="${FEDORA_HOME}/data/lucene"
-          file="${FEDORA_HOME}/fedoragsearch-topaz/segments"/>
-    <move todir="${TOMCAT_HOME}/webapps/fedoragsearch/WEB-INF/classes"
-          filtering="true" overwrite="true">
-      <fileset dir="${FEDORA_HOME}/fedoragsearch-topaz"/>
-    </move>
     
     <!-- Install mulgara-service -->
     <unjar src="${MULGARA_WAR}" dest="${TOMCAT_HOME}/webapps/mulgara"/>
@@ -208,17 +192,6 @@
       tofile="${TOMCAT_HOME}/webapps/diringest/WEB-INF/classes/diringest.properties"
       overwrite="true"/>
 
-    <!-- unwar fedoragsearch war file -->
-    <unwar
-      src="fedoragsearch.war"
-      dest="${TOMCAT_HOME}/webapps/fedoragsearch">
-    </unwar>
-
-    <!-- configure fedoragsearch (overwrite with our local copy) -->
-    <copy todir="${FEDORA_HOME}/fedoragsearch-topaz" overwrite="true">
-      <fileset dir="fedoragsearch-topaz"/>
-    </copy>
-    
     <!-- configure CAS -->
     <copy file="CAS/CAS.properties"
       tofile="${TOMCAT_HOME}/server/classes/CAS.properties" overwrite="true"/>
@@ -297,7 +270,7 @@
 
     <jar destfile="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib/driver-1.1.0.jar" update="true"
          basedir="filter-resolver" includes="**" filesonly="true"/>
-
+    
     <!-- copy authoriztion -->
     <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
       file="${WS_ACCESS_CLIENT}"/>
