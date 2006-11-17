@@ -54,6 +54,8 @@ echo "Making sure fedora is stopped: mvn ant-tasks:fedora-stop"
 ${MVN} ${MVNARGS} ant-tasks:fedora-stop > /dev/null 2>&1
 echo "Making sure mulgara is stopped: mvn ant-tasks:mulgara-stop"
 ${MVN} ${MVNARGS} ant-tasks:mulgara-stop > /dev/null 2>&1
+echo "Making sure search is stopped: mvn ant-tasks:search-stop"
+${MVN} ${MVNARGS} ant-tasks:search-stop > /dev/null 2>&1
 
 # Do a build, if it fails, just exit
 echo "Running our build: mvn clean install --batch-mode"
@@ -91,6 +93,8 @@ echo "Stopping fedora"
 ${MVN} ${MVNARGS} ant-tasks:fedora-stop > /dev/null 2>&1
 echo "Stopping mulgara"
 ${MVN} ${MVNARGS} ant-tasks:mulgara-stop > /dev/null 2>&1
+echo "Making sure search is stopped: mvn ant-tasks:search-stop"
+${MVN} ${MVNARGS} ant-tasks:search-stop > /dev/null 2>&1
 
 # Return build result
 exit ${N}

@@ -334,6 +334,7 @@
                   <goal>ecqs-start</goal>
                   <goal>mulgara-start</goal>
                   <goal>fedora-start</goal>
+                  <goal>search-start</goal>
                 </goals>
                 <configuration>
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
@@ -346,6 +347,7 @@
                   <goal>ecqs-stop</goal>
                   <goal>fedora-stop</goal>
                   <goal>mulgara-stop</goal>
+                  <goal>search-stop</goal>
                 </goals>
               </execution>
             </executions>
