@@ -170,12 +170,6 @@
           <defaultValue>false</defaultValue>
           <description>Whether we should spawn or not</description>
         </parameter>
-
-        <parameter>
-          <name>INSTALL</name>
-          <property>INSTALL</property>
-          <description>Whether we should install first</description>
-        </parameter>
         
       </parameters>
     </mojo>

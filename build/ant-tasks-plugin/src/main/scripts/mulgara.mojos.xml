@@ -98,18 +98,10 @@
         </parameter>
 
         <parameter>
-          <name>INSTALL</name>
-          <property>INSTALL</property>
-          <expression>${INSTALL}</expression>
-          <description>Whether we should install first</description>
-        </parameter>
-
-        <parameter>
           <name>TOMCAT_HOME</name>
           <property>TOMCAT_HOME</property>
           <expression>${TOMCAT_HOME}</expression>
-          <description>The location of the tomcat 5.x installation; tomcat will be downloaded
-              from TOMCAT_URL if not set</description>
+          <description>The location of the tomcat 5.x installation</description>
         </parameter>
 
       </parameters>

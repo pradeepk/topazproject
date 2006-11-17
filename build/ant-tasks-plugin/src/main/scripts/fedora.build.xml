@@ -110,15 +110,9 @@
     <unjar src="${ACCESS_WAR}" dest="${TOMCAT_HOME}/webapps/access"/>
   </target>
 
-  <!-- Runs fedora-install IF the INSTALL propery/config is set - used by fedora-start -->
-  <target name="fedora-install-if" if="INSTALL" depends="exec-ext">
-    <echo>Installing fedora</echo>
-    <antcall target="fedora-install"/>
-  </target>
-  
   <target name="fedora-start" depends="fedora-start-or-spawn, fedora-if-spawned"/>
   
-  <target name="fedora-start-or-spawn" depends="exec-ext, fedora-install-if">
+  <target name="fedora-start-or-spawn" depends="exec-ext">
     <echo>Starting mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
     <exec dir="${FEDORA_HOME}" 
       executable="${FEDORA_HOME}/server/bin/mckoi-start${ext}"

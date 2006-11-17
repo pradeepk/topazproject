@@ -47,18 +47,8 @@
     </condition>
   </target>
 
-  <target name="exec-ext">
-    <condition property="ext" value="">
-      <os family="unix"/>
-    </condition>
-    <condition property="ext" value=".bat">
-      <os family="windows"/>
-    </condition>
-    <property name="ext" value=""/>
-  </target>
-
   <!-- Download and install tomcat -->
-  <target name="search-install" depends="init,exec-ext">
+  <target name="search-install" depends="init">
     <echo message="Installing Tomcat into ${tomcatinstall.dir} ..."/>
 
     <cargo containerId="tomcat5x" action="stop">
@@ -72,19 +62,8 @@
     <delete dir="${home}"/>
   </target>
 
-  <!-- Runs search-install IF the INSTALL propery/config is set - used by search-start -->
-  <target name="search-install-if" if="INSTALL" depends="exec-ext">
-    <!-- Can't use <antcall/> - see http://jira.codehaus.org/browse/MNG-2088 -
-         fixed in maven-script-ant 2.0.5
-    <antcall target="search-install"/>
-    -->
-    <exec executable="mvn${ext}">
-      <arg line="ant-tasks:search-install -DDEST_DIR=${DEST_DIR} -DROOT=${ROOT}"/>
-    </exec>
-  </target>
-  
   <!-- Start fedoragsearch -->
-  <target name="search-start" depends="init,search-install-if">
+  <target name="search-start" depends="init">
     <echo>Starting fedoragsearch (spawn=${SPAWN})</echo>
 
     <condition property="wait" value="true" else="false">
@@ -126,7 +105,7 @@
   </target>
 
   <!-- Stop fedoragsearch -->
-  <target name="search-stop" depends="init,exec-ext">
+  <target name="search-stop" depends="init">
     <cargo containerId="tomcat5x" home="${tomcathome}" action="stop">
       <configuration home="${tomcatconfig.dir}">
         <property name="cargo.rmi.port" value="${SHUTDOWN_PORT}"/>

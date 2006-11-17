@@ -328,12 +328,14 @@
                 <id>it-startenv-exe</id>
                 <phase>pre-integration-test</phase>
                 <goals>
+                  <goal>ecqs-install</goal>
+                  <goal>mulgara-install</goal>
+                  <goal>fedora-install</goal>
                   <goal>ecqs-start</goal>
                   <goal>mulgara-start</goal>
                   <goal>fedora-start</goal>
                 </goals>
                 <configuration>
-                  <INSTALL>true</INSTALL>  <!-- Install before starting -->
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
                 </configuration>
               </execution>

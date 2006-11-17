@@ -92,13 +92,7 @@
     <delete dir="${DEST_DIR}/${ROOT}"/>
   </target>
 
-  <!-- Runs ecqs-install IF the INSTALL propery/config is set - used by ecqs-start -->
-  <target name="ecqs-install-if" if="INSTALL" depends="exec-ext">
-    <echo>Installing ECQS</echo>
-    <antcall target="ecqs-install"/>
-  </target>
-  
-  <target name="ecqs-start" depends="ecqs-install-if">
+  <target name="ecqs-start">
     <echo>Starting CAS (spawn=${SPAWN})</echo>
     <java classname="org.apache.tools.ant.Main"
           dir="${DEST_DIR}/${ROOT}"

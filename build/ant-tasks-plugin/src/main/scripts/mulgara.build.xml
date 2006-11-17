@@ -55,18 +55,8 @@
     </condition>
   </target>
 
-  <target name="exec-ext">
-    <condition property="ext" value="">
-      <os family="unix"/>
-    </condition>
-    <condition property="ext" value=".bat">
-      <os family="windows"/>
-    </condition>
-    <property name="ext" value=""/>
-  </target>
-
   <!-- Download and install tomcat -->
-  <target name="mulgara-install" depends="init,exec-ext">
+  <target name="mulgara-install" depends="init">
     <echo message="Installing Tomcat into ${tomcatinstall.dir} ..."/>
 
     <cargo containerId="tomcat5x" action="stop">
@@ -80,13 +70,8 @@
     <delete dir="${home}"/>
   </target>
 
-  <!-- Runs mulgara-install IF the INSTALL propery/config is set - used by mulgara-start -->
-  <target name="mulgara-install-if" if="INSTALL" depends="exec-ext">
-    <antcall target="mulgara-install"/>
-  </target>
-  
   <!-- Start mulgara -->
-  <target name="mulgara-start" depends="init,mulgara-install-if">
+  <target name="mulgara-start" depends="init">
     <echo>Starting Mulgara (spawn=${SPAWN})</echo>
 
     <condition property="wait" value="true" else="false">
@@ -137,7 +122,7 @@
   </target>
 
   <!-- Stop mulgara -->
-  <target name="mulgara-stop" depends="init,exec-ext">
+  <target name="mulgara-stop" depends="init">
     <cargo containerId="tomcat5x" home="${tomcathome}" action="stop">
       <configuration home="${tomcatconfig.dir}"/>
     </cargo>
