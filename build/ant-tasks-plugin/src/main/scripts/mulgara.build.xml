@@ -21,9 +21,18 @@
                 type="war"/>
   </artifact:dependencies>
 
+  <artifact:dependencies filesetId="antcontrib.fileset" useScope="runtime">
+    <dependency groupId="ant-contrib" artifactId="ant-contrib" version="1.0b2"/>
+  </artifact:dependencies>
+
   <taskdef resource="cargo.tasks">
     <classpath>
       <fileset refid="cargo.fileset"/>
+    </classpath>
+  </taskdef>
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <fileset refid="antcontrib.fileset"/>
     </classpath>
   </taskdef>
 
@@ -104,6 +113,10 @@
     <echo message="Using war     = ${mulgara-war}"/>
     <echo message="Using port    = ${port}"/>
 
+    <tempfile property="temp.file" suffix=".properties"/>
+    <propertyselector property="prop.list" delimiter="," match="topaz\..*" casesensitive="false" />
+    <foreach list="${prop.list}" target="save.property" param="property" inheritall="true"/>
+
     <cargo containerId="tomcat5x" home="${tomcathome}" output="${tomcatlog.dir}/output.log"
         log="${tomcatlog.dir}/cargo.log" action="start" wait="${wait}">
       <!-- not supported yet by cargo...
@@ -111,7 +124,7 @@
         <propertyref prefix="topaz."/>
       </syspropertyset>
       -->
-      <sysproperty key="topaz.mulgara.databaseDir" value="${topaz.mulgara.databaseDir}"/>
+      <syspropertyset file="${temp.file}"/>
       <configuration home="${tomcatconfig.dir}">
         <property name="cargo.servlet.port" value="${port}"/>
         <property name="cargo.logging" value="high"/>
@@ -120,6 +133,13 @@
       </configuration>
     </cargo>
 
+    <delete file="${temp.file}"/>
+
+  </target>
+
+  <target name="save.property">
+    <propertycopy name="prop.value" from="${property}" />
+    <echo file="${temp.file}" append="true">${property}=${prop.value}</echo>
   </target>
 
   <!-- Stop mulgara -->
