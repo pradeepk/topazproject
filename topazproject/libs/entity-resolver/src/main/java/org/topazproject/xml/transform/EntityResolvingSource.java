@@ -40,6 +40,7 @@ public class EntityResolvingSource extends SAXSource implements Source {
     String cname = null;
     try {
       cname = SAXParserFactory.newInstance().newSAXParser().getXMLReader().getClass().getName();
+      log.info("Using XMLReader: " + cname);
     } catch (Exception e) {
       log.warn("Failed to get the XMLReader class", e);
     }
@@ -57,6 +58,8 @@ public class EntityResolvingSource extends SAXSource implements Source {
    */
   public EntityResolvingSource(InputSource src, EntityResolver resolver) throws SAXException {
     super(createXMLReader(resolver), src);
+    if (log.isDebugEnabled())
+      log.debug("Created " + this.getClass().getName() + " w/" + resolver.getClass().getName());
   }
 
   private static XMLReader createXMLReader(EntityResolver resolver) throws SAXException {
