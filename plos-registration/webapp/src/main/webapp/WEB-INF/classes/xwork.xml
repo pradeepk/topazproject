@@ -16,10 +16,30 @@
       </result-types>
 
       <interceptors>
+        <interceptor-stack name="defaultPlosStack">
+          <interceptor-ref name="exception"/>
+          <interceptor-ref name="alias"/>
+          <interceptor-ref name="servlet-config"/>
+          <interceptor-ref name="prepare"/>
+          <interceptor-ref name="i18n"/>
+          <interceptor-ref name="chain"/>
+          <interceptor-ref name="model-driven"/>
+          <interceptor-ref name="static-params"/>
+          <interceptor-ref name="params"/>
+          <interceptor-ref name="conversionError"/>
+          <interceptor-ref name="validation">
+              <param name="excludeMethods">input,back,cancel,browse</param>
+          </interceptor-ref>
+          <interceptor-ref name="workflow">
+              <param name="excludeMethods">input,back,cancel,browse</param>
+          </interceptor-ref>
+        </interceptor-stack>
+      
+      
         <interceptor-stack name="plosRegistrationStack">
           <interceptor-ref name="timer" />
           <!--<interceptor-ref name="logger"/>-->
-          <interceptor-ref name="defaultStack" />
+          <interceptor-ref name="defaultPlosStack" />
         </interceptor-stack>
       </interceptors>
       <default-interceptor-ref name="plosRegistrationStack" />
@@ -28,6 +48,10 @@
 
       <action name="home">
           <result>/WEB-INF/pages/home.ftl</result>
+      </action>
+
+      <action name="register">
+          <result>/registration.ftl</result>
       </action>
 
       <action name="registerPart1">
