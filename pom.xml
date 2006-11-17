@@ -331,7 +331,7 @@
                   <goal>ecqs-install</goal>
                   <goal>mulgara-install</goal>
                   <goal>fedora-install</goal>
-                  <gaol>search-install</gaol>
+                  <goal>search-install</goal>
                   <goal>ecqs-start</goal>
                   <goal>mulgara-start</goal>
                   <goal>fedora-start</goal>
