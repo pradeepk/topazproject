@@ -95,9 +95,7 @@
   <!-- Runs ecqs-install IF the INSTALL propery/config is set - used by ecqs-start -->
   <target name="ecqs-install-if" if="INSTALL" depends="exec-ext">
     <echo>Installing ECQS</echo>
-    <!-- Stupid maven-plugin-plugin/maven-plugin-tools-ant - won't let us use <antcall /> -->
-    <exec executable="mvn${ext}">
-      <arg line="ant-tasks:ecqs-install"/>
+    <antcall target="ecqs-install"/>
     </exec>
   </target>
   

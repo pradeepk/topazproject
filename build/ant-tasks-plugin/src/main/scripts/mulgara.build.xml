@@ -82,13 +82,7 @@
 
   <!-- Runs mulgara-install IF the INSTALL propery/config is set - used by mulgara-start -->
   <target name="mulgara-install-if" if="INSTALL" depends="exec-ext">
-    <!-- Can't use <antcall/> - see http://jira.codehaus.org/browse/MNG-2088 -
-         fixed in maven-script-ant 2.0.5
     <antcall target="mulgara-install"/>
-    -->
-    <exec executable="mvn${ext}">
-      <arg line="ant-tasks:mulgara-install -DDEST_DIR=${DEST_DIR} -DROOT=${ROOT}"/>
-    </exec>
   </target>
   
   <!-- Start mulgara -->

@@ -113,10 +113,7 @@
   <!-- Runs fedora-install IF the INSTALL propery/config is set - used by fedora-start -->
   <target name="fedora-install-if" if="INSTALL" depends="exec-ext">
     <echo>Installing fedora</echo>
-    <!-- Stupid maven-plugin-plugin/maven-plugin-tools-ant - won't let us use <antcall /> -->
-    <exec executable="mvn${antext}">
-      <arg line="ant-tasks:fedora-install"/>
-    </exec>
+    <antcall target="fedora-install"/>
   </target>
   
   <target name="fedora-start" depends="fedora-start-or-spawn, fedora-if-spawned"/>
