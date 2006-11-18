@@ -1,4 +1,5 @@
-Thank you <b>${user.loginName}</b> for registering with our website.
-Your reset password token: ${user.resetPasswordToken}
+Thank you <b>${user.loginName}</b> for requesting to reset your PLoS password.
 
-Please click on this link to verify your email address: ${url}?loginName=${user.loginName}&resetPasswordToken=${user.resetPasswordToken}
+Please copy and paste the linke below into a web browser to reset your password: 
+
+${url}?loginName=${user.loginName}&resetPasswordToken=${user.resetPasswordToken}

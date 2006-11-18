@@ -1,11 +1,13 @@
 <html>
 <body>
-Thank you <b>${user.loginName}</b> for registering with our website.<br/>
-Your password reset token: ${user.resetPasswordToken}<br/>
+Thank you <b>${user.loginName}</b> for requesting to reset your PLoS password.<br/>
 
-Please click on this link to verify your email address:
+Please click on this link to reset your password:
 
-<a href="${url}?loginName=${user.loginName}&resetPasswordToken=${user.resetPasswordToken}">Reset password link</a>
+<a href="${url}?loginName=${user.loginName}&resetPasswordToken=${user.resetPasswordToken}">Reset password</a>
+<br/><br/>
+or copy and paste this link if you have problems:<br/>
+${url}?loginName=${user.loginName}&resetPasswordToken=${user.resetPasswordToken}
 
 </body>
 </html>
