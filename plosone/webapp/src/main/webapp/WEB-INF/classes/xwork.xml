@@ -140,6 +140,13 @@
       <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
+    <action name="listThreadRefresh" class="org.plos.annotation.action.ListReplyAction" method="listAllReplies">
+      <result name="success">/discussion/threaded_replies.ftl</result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+
+
     <action name="getReply" class="org.plos.annotation.action.GetReplyAction">
       <result name="success" type="ajaxJSON"/>
     </action>
