@@ -10,19 +10,20 @@
 package org.plos.user.action;
 
 import static com.opensymphony.xwork.Action.SUCCESS;
+import org.apache.commons.lang.ArrayUtils;
 import org.plos.BasePlosoneTestCase;
 import org.plos.Constants;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.user.PlosOneUser;
-import org.apache.commons.lang.ArrayUtils;
 
-import java.util.Map;
 import java.util.HashMap;
+import java.util.Map;
 
 public class UserAlertsTest extends BasePlosoneTestCase {
   final String AUTH_ID = UserAlertsTest.class.getName();
 
   public void testCreateAlerts() throws Exception {
+//    getUserWebService().deleteUser("info:doi/10.1371/account/141");
     final String topazId = createUser(AUTH_ID);
     final UserAlertsAction alertsAction = getMockUserAlertsAction(AUTH_ID, topazId);
     final String[] weeklyAlertCategories = new String[]{
@@ -39,20 +40,23 @@ public class UserAlertsTest extends BasePlosoneTestCase {
                 "genetics",
                 "pathogens"
           };
+    final String ALERT_EMAIL = "alert@emailaddress.com";
 
     alertsAction.setMonthlyAlerts(monthlyAlertCategories);
     alertsAction.setWeeklyAlerts(weeklyAlertCategories);
+    alertsAction.setAlertEmailAddress(ALERT_EMAIL);
     assertEquals(SUCCESS, alertsAction.saveAlerts());
 
     assertEquals(SUCCESS, alertsAction.retrieveAlerts());
 
     for (final String monthlyAlert : alertsAction.getMonthlyAlerts()) {
-      ArrayUtils.contains(monthlyAlertCategories, monthlyAlert);
+      assertTrue(ArrayUtils.contains(monthlyAlertCategories, monthlyAlert));
     }
 
     for (final String weeklyAlert : alertsAction.getWeeklyAlerts()) {
-      ArrayUtils.contains(monthlyAlertCategories, weeklyAlert);
+      assertTrue(ArrayUtils.contains(weeklyAlertCategories, weeklyAlert));
     }
+    assertEquals(ALERT_EMAIL, alertsAction.getAlertEmailAddress());
 
     getUserWebService().deleteUser(topazId);
   }
@@ -60,8 +64,9 @@ public class UserAlertsTest extends BasePlosoneTestCase {
   protected UserAlertsAction getMockUserAlertsAction(final String authId, final String topazId) {
     final UserAlertsAction userAlertsAction = super.getUserAlertsAction();
     final UserAlertsAction newUserAlertsAction = new UserAlertsAction() {
+      private final Map<String, Object> mockSessionMap = createMockSessionMap(authId, topazId);
       protected Map<String, Object> getSessionMap() {
-        return createMockSessionMap(authId, topazId);
+        return mockSessionMap;
       }
     };
 
@@ -86,8 +91,9 @@ public class UserAlertsTest extends BasePlosoneTestCase {
   protected CreateUserAction getMockCreateUserAction(final String authId) {
     final CreateUserAction createUserAction = super.getCreateUserAction();
     final CreateUserAction newCreateUserAction = new CreateUserAction() {
+      private Map<String,Object> mockSessionMap = createMockSessionMap(authId, null);
       protected Map<String, Object> getSessionMap() {
-        return createMockSessionMap(authId, null);
+        return mockSessionMap;
       }
     };
 

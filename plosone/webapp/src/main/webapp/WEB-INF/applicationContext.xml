@@ -184,6 +184,27 @@
     <property name="preferencesWebService" ref="preferencesWebService"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="emailAddressUrl" value="https://localhost:7443/cas/email?guid="/>
+    <property name="weeklyCategories">
+      <list>
+        <value>plosone</value>
+        <value>biology</value>
+        <value>clinical_trials</value>
+        <value>computational_biology</value>
+        <value>genetics</value>
+        <value>medicine</value>
+        <value>pathogens</value>
+      </list>
+    </property>
+    <property name="monthlyCategories">
+      <list>
+        <value>biology</value>
+        <value>clinical_trials</value>
+        <value>computational_biology</value>
+        <value>genetics</value>
+        <value>medicine</value>
+        <value>pathogens</value>
+      </list>
+    </property>
   </bean>
 
   <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService">

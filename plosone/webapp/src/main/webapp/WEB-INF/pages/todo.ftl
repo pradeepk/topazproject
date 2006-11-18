@@ -74,6 +74,11 @@
           <@ww.a href="%{adminTopURL}">Admin Functions</@ww.a>
       </p>
       
+      <p>
+          <@ww.url id="getUserAlertURL" namespace="/user/secure" action="retrieveUserAlerts" />
+          <@ww.a href="%{getUserAlertURL}">Retrieve user alerts</@ww.a>
+      </p>
+
     </fieldset>
   </body>
 </html>

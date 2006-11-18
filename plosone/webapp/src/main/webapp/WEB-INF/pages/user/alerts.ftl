@@ -151,17 +151,22 @@
 <h2>Alerts</h2>
 	<p><strong>instruction Title   Text.</strong> General Instructions- Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>
 	<p>Field marked with an <span class="required">*</span> are required. </p>
-<form name="alert-form" id="alert-form" class="pone-form" title="Alert Form" method="POST" action="" onsubmit=""> 
 
-	<fieldset>
+  <@ww.form action="saveUserAlerts" namespace="/user/secure" method="post" cssClass="pone-form" method="post" title="Alert Form">
+
+  <fieldset>
 		<legend>Choose your alerts  </legend>
 		<ol>
 			<li>Check back soon for more PLoS One alerts</li>
 			<li>
 				<ol>
 					<li class="alerts-title">PLoS One</li>
-					<li>
-						<label for="plone-weekly"><input name="plone-weekly" id="plone-weekly" value="plone-weekly" tabindex="101" checked="checked" type="checkbox" class="checkbox" /> Weekly </label>
+          <!--< @ ww .checkbox name="weeklyAlerts" label="Weekly" fieldValue="plosone" tabindex="101"/>-->
+          <li>
+
+            <label for="plone-weekly">
+              <input name="plone-weekly" id="plone-weekly" value="plone-weekly" tabindex="101" checked="checked" type="checkbox" class="checkbox" />
+              Weekly </label>
 					</li>
 					<li>
 						<label for="plone-monthly"><input name="plone-monthly" id="plone-monthly" value="plone-monthly" tabindex="102" type="checkbox" class="checkbox" /> Monthly </label>
@@ -239,8 +244,7 @@
 			<input type="submit" name="cancel" id="cancel" value="Cancel" tabindex="115">
 			<input type="submit" name="save" id="save" value="Save" tabindex="116">
 	</fieldset>
-	
-</form>
+  </@ww.form>
 
 </div>
 <!-- end : main content wrapper -->

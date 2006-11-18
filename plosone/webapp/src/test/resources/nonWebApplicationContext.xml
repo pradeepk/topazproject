@@ -162,7 +162,7 @@
     <property name="preferencesWebService" ref="preferencesWebService"/>
     <property name="applicationId" ref="applicationId"/>
     <property name="emailAddressUrl" value="https://localhost:7443/cas/email?guid="/>
-    <property name="monthlyCategories">
+    <property name="weeklyCategories">
       <list>
         <value>plosone</value>
         <value>biology</value>

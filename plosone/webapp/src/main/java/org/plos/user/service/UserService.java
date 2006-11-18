@@ -106,11 +106,14 @@ public class UserService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    */
   public PlosOneUser getUserByTopazId(final String topazUserId) throws ApplicationException {
-    PlosOneUser pou = new PlosOneUser();
+    final PlosOneUser pou = new PlosOneUser();
     pou.setUserProfile(getProfile(topazUserId));
     pou.setUserId(topazUserId);
-    UserPreference[] userPrefs = getPreferences(applicationId, topazUserId);
-    pou.setUserPrefs(userPrefs);
+    
+    final UserPreference[] userPrefs = getPreferences(applicationId, topazUserId);
+    if (null != userPrefs) {
+      pou.setUserPrefs(userPrefs);
+    }
     return pou;
   }
 

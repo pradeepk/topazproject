@@ -353,7 +353,7 @@ public class PlosOneUser {
    * @return array of categories user is subscribed to
    */
   public String[] getAlerts() {
-    return userPrefs.get(PlosOneUser.ALERTS_CATEGORIES);
+    return null == userPrefs ? null : userPrefs.get(PlosOneUser.ALERTS_CATEGORIES);
   }
 
   /**
@@ -370,7 +370,11 @@ public class PlosOneUser {
    * @return email address alerts are being sent to
    */
   public String getAlertsEmailAddress() {
-    return userPrefs.get(PlosOneUser.ALERTS_EMAIL_ADDRESS)[0];
+    final String[] emailAddresses = userPrefs.get(PlosOneUser.ALERTS_EMAIL_ADDRESS);
+    if (null == emailAddresses) {
+      return null;
+    }
+    return emailAddresses[0];
   }
 
   /**

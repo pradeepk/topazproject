@@ -11,7 +11,6 @@ package org.plos.user.action;
 
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.user.PlosOneUser;
-import org.topazproject.ws.pap.UserPreference;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -20,10 +19,11 @@ import java.util.Collection;
  * Update action for saving or getting alerts that the user subscribes to.
  */
 public class UserAlertsAction extends UserActionSupport {
-  private String[] monthlyAlerts;
-  private String[] weeklyAlerts;
+  private String[] monthlyAlerts = new String[]{""};
+  private String[] weeklyAlerts = new String[]{""};
   private final String MONTHLY_ALERT_SUFFIX = "_monthly";
   private final String WEEKLY_ALERT_SUFFIX = "_weekly";
+  private String alertEmailAddress;
 
   /**
    * Save the alerts.
@@ -42,8 +42,8 @@ public class UserAlertsAction extends UserActionSupport {
 
     final String[] alerts = alertsList.toArray(new String[alertsList.size()]);
     plosOneUser.setAlerts(alerts);
-    //TODO: What does the following line do?
-    plosOneUser.setUserPrefs(getUserPreferences());
+    plosOneUser.setAlertsEmailAddress(alertEmailAddress);
+
     getUserService().setPreferences(plosOneUser);
     return SUCCESS;
   }
@@ -55,26 +55,25 @@ public class UserAlertsAction extends UserActionSupport {
    */
   public String retrieveAlerts() throws Exception {
     final PlosOneUser plosOneUser = (PlosOneUser) getSessionMap().get(PLOS_ONE_USER_KEY);
-    final String[] alerts = plosOneUser.getAlerts();
-
     final Collection<String> monthlyAlertsList = new ArrayList<String>();
     final Collection<String> weeklyAlertsList = new ArrayList<String>();
-    for (final String alert : alerts) {
-      if (alert.endsWith(MONTHLY_ALERT_SUFFIX)) {
-        monthlyAlertsList.add(alert);
-      }
-      if (alert.endsWith(WEEKLY_ALERT_SUFFIX)) {
-        weeklyAlertsList.add(alert);
+
+    final String[] alerts = plosOneUser.getAlerts();
+
+    if (null != alerts) {
+      for (final String alert : alerts) {
+        if (alert.endsWith(MONTHLY_ALERT_SUFFIX)) {
+          monthlyAlertsList.add(alert.substring(0, alert.indexOf(MONTHLY_ALERT_SUFFIX)));
+        } else if (alert.endsWith(WEEKLY_ALERT_SUFFIX)) {
+          weeklyAlertsList.add(alert.substring(0, alert.indexOf(WEEKLY_ALERT_SUFFIX)));
+        }
       }
     }
-
-    monthlyAlerts = (String[]) monthlyAlertsList.toArray();
-    weeklyAlerts = (String[]) weeklyAlertsList.toArray();
+    
+    monthlyAlerts = monthlyAlertsList.toArray(new String[monthlyAlertsList.size()]);
+    weeklyAlerts = weeklyAlertsList.toArray(new String[weeklyAlertsList.size()]);
+    alertEmailAddress = plosOneUser.getAlertsEmailAddress();
     return SUCCESS;
-  }
-
-  private UserPreference[] getUserPreferences() {
-    return new UserPreference[0];
   }
 
   /**
@@ -105,5 +104,35 @@ public class UserAlertsAction extends UserActionSupport {
    */
   public void setWeeklyAlerts(String[] weeklyAlerts) {
     this.weeklyAlerts = weeklyAlerts;
+  }
+
+  /**
+   * Set the alert email address
+   * @param alertEmailAddress alertEmailAddress
+   */
+  public void setAlertEmailAddress(final String alertEmailAddress) {
+    this.alertEmailAddress = alertEmailAddress;
+  }
+
+  /**
+   * Getter for alertEmailAddress.
+   * @return Value for property 'alertEmailAddress'.
+   */
+  public String getAlertEmailAddress() {
+    return alertEmailAddress;
+  }
+
+  /**
+   * @return all the possible weekly categories
+   */
+  public Collection<String> getAllWeeklyCategories() {
+    return getUserService().getWeeklyCategories();
+  }
+
+  /**
+   * @return all the possible monthly categories
+   */
+  public Collection<String> getAllMonthlyCategories() {
+    return getUserService().getMonthlyCategories();
   }
 }
