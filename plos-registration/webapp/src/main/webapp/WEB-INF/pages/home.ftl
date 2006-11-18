@@ -9,7 +9,7 @@
             <fieldset>
                 <legend>A few things for you to do</legend>
                 <p>
-                    <@ww.url id="registerURL" action="registerPart1" />
+                    <@ww.url id="registerURL" action="register" />
                     <@ww.a href="%{registerURL}">Register</@ww.a>
                 </p>
 

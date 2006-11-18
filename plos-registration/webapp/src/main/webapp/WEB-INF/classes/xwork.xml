@@ -51,53 +51,48 @@
       </action>
 
       <action name="register">
-          <result>/registration.ftl</result>
-      </action>
-
-      <action name="registerPart1">
-          <result name="success">/WEB-INF/pages/registration/registerPart1.ftl</result>
+          <result>/pages/registration.ftl</result>
       </action>
 
       <action name="registerSubmit" class="org.plos.web.RegisterAction">
-        <result name="input">/WEB-INF/pages/registration/registerPart1.ftl</result>
-        <result name="error">/WEB-INF/pages/registration/registerPart1.ftl</result>
-        <result name="success">/WEB-INF/pages/registration/registration-success.ftl</result>
+        <result name="input">/pages/registration.ftl</result>
+        <result name="error">/pages/regsitration.ftl</result>
+        <result name="success">/pages/registrationSuccess.ftl</result>
       </action>
 
       <action name="emailVerification" class="org.plos.web.ConfirmationAction">
         <result name="error">/WEB-INF/pages/registration/error.ftl</result>
-        <result name="success">/WEB-INF/pages/registration/confirmation.ftl</result>
+        <result name="success">/pages/emailConfirmationSuccess.ftl</result>
       </action>
 
       <action name="forgotPassword">
-        <result>/WEB-INF/pages/registration/forgot-password.ftl</result>
+        <result>/pages/forgotPassword.ftl</result>
       </action>
 
       <action name="forgotPasswordSubmit" class="org.plos.web.ForgotPasswordAction">
-        <result name="input">/WEB-INF/pages/registration/forgot-password.ftl</result>
-        <result name="error">/WEB-INF/pages/registration/forgot-password.ftl</result>
-        <result name="success">/WEB-INF/pages/registration/forgot-password-success.ftl</result>
+        <result name="input">/pages/forgotPassword.ftl</result>
+        <result name="error">/pages/forgotPassword.ftl</result>
+        <result name="success">/pages/forgotPasswordSuccess.ftl</result>
+      </action>
+ 
+      <action name="forgotPasswordVerify">
+        <result>/pages/forgotPasswordChange.ftl</result>
       </action>
 
-      <action name="forgotPasswordChangePasswordShow" class="org.plos.web.ForgotPasswordChangePasswordAction" method="validateRequest">
-        <result name="error">/WEB-INF/pages/registration/error.ftl</result>
-        <result name="success">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
+      <action name="forgotPasswordChangeSubmit" class="org.plos.web.ForgotPasswordChangePasswordAction">
+        <result name="input">/pages/forgotPasswordChange.ftl</result>
+        <result name="error">/pages/forgotPasswordChange.ftl</result>
+        <result name="success">/pages/changePasswordSuccess.ftl</result>
       </action>
-
-      <action name="forgotPasswordChangePasswordSubmit" class="org.plos.web.ForgotPasswordChangePasswordAction">
-        <result name="input">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
-        <result name="error">/WEB-INF/pages/registration/forgot-password-change-password.ftl</result>
-        <result name="success">/WEB-INF/pages/registration/change-password-success.ftl</result>
-      </action>
-
+ 
       <action name="changePassword">
-        <result>/WEB-INF/pages/registration/change-password.ftl</result>
+        <result>/pages/changePassword.ftl</result>
       </action>
 
       <action name="changePasswordSubmit" class="org.plos.web.ChangePasswordAction">
-        <result name="input">/WEB-INF/pages/registration/change-password.ftl</result>
-        <result name="error">/WEB-INF/pages/registration/change-password.ftl</result>
-        <result name="success">/WEB-INF/pages/registration/change-password-success.ftl</result>
+        <result name="input">/pages/changePassword.ftl</result>
+        <result name="error">/pages/changePassword.ftl</result>
+        <result name="success">/pages/changePasswordSuccess.ftl</result>
       </action>
 
     </package>

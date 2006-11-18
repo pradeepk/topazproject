@@ -2,16 +2,16 @@
 	<div id="logo" title="PLoS ONE: Open-Access 2.0"><a href="http://www.plosone.org" title="PLoS ONE: Open-Access 2.0"><span>PLoS ONE</span></a></div>
 	<!-- end : logo -->
 	<!-- begin : user controls -->
-	<div id="user">
+<!--	<div id="user">
 	<div>
 	<p>Logged in as <a href="#" class="icon user">margare18charlimit</a></p>
 	<ul>
-<!--		<li><a href="#" class="icon nomessage">0 New</a></li>-->
+		<li><a href="#" class="icon nomessage">0 New</a></li>
 		<li><a href="#" class="icon preferences">Preferences</a></li>
 		<li><a href="" class="icon logout">Logout</a></li>
 	</ul>
 	</div>
-	</div>
+	</div>-->
 	<!-- end : user controls -->
 	<!-- begin search links -->
 	<ul id="links">
