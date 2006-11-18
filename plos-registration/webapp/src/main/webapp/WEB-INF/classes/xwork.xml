@@ -56,7 +56,7 @@
 
       <action name="registerSubmit" class="org.plos.web.RegisterAction">
         <result name="input">/pages/registration.ftl</result>
-        <result name="error">/pages/regsitration.ftl</result>
+        <result name="error">/pages/registration.ftl</result>
         <result name="success">/pages/registrationSuccess.ftl</result>
       </action>
 
