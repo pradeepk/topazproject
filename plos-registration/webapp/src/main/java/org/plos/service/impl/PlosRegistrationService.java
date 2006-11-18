@@ -93,11 +93,14 @@ public class PlosRegistrationService implements RegistrationService {
       throw new VerificationTokenInvalidException(loginName, emailVerificationToken);
     }
 
+    activateUser(user);
+    saveUser(user);
+  }
+
+  private void activateUser(final User user) {
     user.setVerified(true);
     user.setEmailVerificationToken(null);
     user.setActive(true);
-
-    saveUser(user);
   }
 
   /**
@@ -148,6 +151,8 @@ public class PlosRegistrationService implements RegistrationService {
 
     user.setPassword(passwordDigestService.getDigestPassword(newPassword));
     user.setResetPasswordToken(null);
+
+    activateUser(user);
     saveUser(user);
   }
 
