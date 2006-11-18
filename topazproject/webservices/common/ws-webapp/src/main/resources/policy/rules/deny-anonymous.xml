@@ -16,26 +16,15 @@
     <Target>
       <AnyTarget/>
     </Target>
-    <Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:integer-less-than">
-      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag-size">
-        <Apply FunctionId ="urn:topazproject:names:tc:xacml:1.0:function:query:itql">
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
-          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
-            select $s from &lt;?&gt; where $s &lt;tucana:is&gt; &lt;?&gt; and
-                                           $s &lt;rdf:type&gt; &lt;foaf:OnlineAccount&gt;;
-          </AttributeValue>
-          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
-            <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-              AttributeId="topaz.models.users"/>   
-          </Apply>
-          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
-            <SubjectAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
-              AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"/>   
-          </Apply>
-        </Apply> 
+    
+    <Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+      <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">anonymous:*</AttributeValue> 
+      <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+        <SubjectAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
+          AttributeId="urn:oasis:names:tc:xacml:1.0:subject:subject-id"/>   
       </Apply>
-      <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#integer">1</AttributeValue>  
     </Condition>
+
   </Rule>
 
   <Obligations>
