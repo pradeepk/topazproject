@@ -89,9 +89,6 @@
     
     <property name="TOMCAT_HOME" value="${FEDORA_HOME}/server/${TOMCAT}"/>
     
-    <!-- Install mulgara-service -->
-    <unjar src="${MULGARA_WAR}" dest="${TOMCAT_HOME}/webapps/mulgara"/>
-    
     <!-- Install access-service -->
     <unjar src="${ACCESS_WAR}" dest="${TOMCAT_HOME}/webapps/access"/>
   </target>
