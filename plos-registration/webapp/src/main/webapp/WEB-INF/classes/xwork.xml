@@ -76,6 +76,7 @@
       </action>
 
       <action name="forgotPasswordVerify" class="org.plos.web.ForgotPasswordChangePasswordAction" method="validateResetPasswordRequest">
+        <result name="input">/WEB-INF/pages/registration/error.ftl</result>
         <result name="error">/WEB-INF/pages/registration/error.ftl</result>
         <result name="success">/pages/forgotPasswordChange.ftl</result>
       </action>

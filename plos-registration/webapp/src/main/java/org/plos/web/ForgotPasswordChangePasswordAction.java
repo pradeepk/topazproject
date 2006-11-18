@@ -6,16 +6,14 @@ package org.plos.web;
 
 import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.EmailValidator;
-import com.opensymphony.xwork.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.service.RegistrationService;
-
-import java.util.ArrayList;
-import java.util.Collection;
+import org.plos.service.VerificationTokenInvalidException;
+import org.plos.service.NoUserFoundWithGivenLoginNameException;
 
 /**
  * Used to present the user with reset password facility after having forgotten their password.
@@ -27,15 +25,24 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
   private String password1;
   private String password2;
 
-  private ArrayList<String> messages = new ArrayList<String>();
   private RegistrationService registrationService;
 
   private static final Log log = LogFactory.getLog(ForgotPasswordChangePasswordAction.class);
 
   public String execute() throws Exception {
     try {
-      registrationService
-              .resetPassword(loginName, resetPasswordToken, password1);
+      if (validatePassword()) {
+        registrationService
+                .resetPassword(loginName, resetPasswordToken, password1);
+      } else {
+        return INPUT;
+      }
+    } catch (final NoUserFoundWithGivenLoginNameException e) {
+      addActionError("No user found with the login name");
+      return ERROR;
+    } catch (final VerificationTokenInvalidException e) {
+      addActionError("Verification token is invalid");
+      return ERROR;
     } catch (final ApplicationException e) {
       log.warn("Error changing password", e);
       addFieldError("password1",  e.getMessage());
@@ -47,11 +54,17 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
   /**
    * Validate the reset password request.
    * @return {@link #SUCCESS} if request is valid, else {@link #ERROR}
-   * @throws Exception
+   * @throws Exception Exception
    */
   public String validateResetPasswordRequest() throws Exception {
     try {
       registrationService.getUserWithResetPasswordToken(loginName, resetPasswordToken);
+    } catch (final NoUserFoundWithGivenLoginNameException e) {
+      addActionError("No user found with the login name");
+      return ERROR;
+    } catch (final VerificationTokenInvalidException e) {
+      addActionError("Verification token is invalid");
+      return ERROR;
     } catch (final ApplicationException e) {
       log.warn("Error validating password request", e);
       addFieldError("password1",  e.getMessage());
@@ -93,11 +106,20 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
     this.resetPasswordToken = resetPasswordToken;
   }
 
+  private boolean validatePassword() {
+    if (null == password1) {
+      addFieldError("password1",  "Password is required");
+      return false;
+    } else if (!password1.equals(password2)) {
+      addFieldError("password1",  "Passwords must match");
+      return false;
+    }
+    return true;    
+  }
+
   /**
    * @return password1
    */
-  @RequiredStringValidator(message="You must enter a password")
-  @FieldExpressionValidator(fieldName="password2", expression = "password1==password2", message="Passwords must match")
   public String getPassword1() {
     return password1;
   }
@@ -123,13 +145,6 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
    */
   public void setPassword2(final String password2) {
     this.password2 = password2;
-  }
-
-  /**
-   * @return Error or warning messages to be shown to the user.
-   */
-  public Collection<String> getMessages() {
-    return messages;
   }
 
   /**
