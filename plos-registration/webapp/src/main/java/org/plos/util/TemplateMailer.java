@@ -3,8 +3,9 @@
 */
 package org.plos.util;
 
+import org.plos.registration.User;
+
 import java.util.Map;
-import java.util.List;
 
 /**
  * A contract for all template based emailers.
@@ -14,23 +15,32 @@ public interface TemplateMailer {
   /**
    * Send a mail with both a text and a HTML version.
    * @param toEmailAddress          the email address where to send the email
+   * @param subject subject of the email
    * @param context        a {@link java.util.Map} of objects to expose to the template engine
    * @param textTemplateFilename textTemplateFilename
    * @param htmlTemplateFilename htmlTemplateFilename
    */
-  void mail(final String toEmailAddress, final Map<String, Object> context, final String textTemplateFilename, final String htmlTemplateFilename);
+  void mail(final String toEmailAddress, final String subject, final Map<String, Object> context, final String textTemplateFilename, final String htmlTemplateFilename);
 
   /**
-   * Send a mail with both a text and a HTML version.
-   * @param toEmailAddress          the email address where to send the email
-   * @param context        a {@link java.util.Map} of objects to expose to the template engine
+   * Mail to multiple email addresses with both a text and a HTML version.
+   * Each email comes with it's corresponding context to use for the templates
+   * @param emailAddressContextMap email address and it's corresponding context
+   * @param subject
+   * @param textTemplateFilename textTemplateFilename
+   * @param htmlTemplateFilename htmlTemplateFilename
    */
-  void mail(final String toEmailAddress, final Map<String, Object> context);
+  void massMail(final Map<String, Map<String, Object>> emailAddressContextMap, final String subject, final String textTemplateFilename, final String htmlTemplateFilename);
 
   /**
-   * Send a mass-mailing with both a text and a HTML version.
-   * @param emails         a {@link java.util.List} of email addresses where to send emails
-   * @param contexts       a {@link java.util.List} of {@link java.util.Map}s of objects to expose to the template engine
+   * Send an email address verification email
+   * @param user user
    */
-  void massMail(final List<String> emails, final List<Map<String, Object>> contexts);
+  void sendEmailAddressVerificationEmail(final User user);
+
+  /**
+   * Send a forgot password verification email
+   * @param user user
+   */
+  void sendForgotPasswordVerificationEmail(final User user);
 }

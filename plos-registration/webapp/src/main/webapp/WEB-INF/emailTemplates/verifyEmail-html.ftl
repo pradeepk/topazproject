@@ -5,7 +5,7 @@ Your email verification token: ${user.emailVerificationToken}<br/>
 
 Please click on this link to verify your email address:
 
-<a href="${verificationUrl}?loginName=${user.loginName}&emailVerificationToken=${user.emailVerificationToken}">Verification link</a>
+<a href="${url}?loginName=${user.loginName}&emailVerificationToken=${user.emailVerificationToken}">Verification link</a>
 
 </body>
 </html>

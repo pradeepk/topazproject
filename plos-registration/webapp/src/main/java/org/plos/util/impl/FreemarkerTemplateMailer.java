@@ -3,35 +3,35 @@
  */
 package org.plos.util.impl;
 
-import org.plos.util.TemplateMailer;
-import org.springframework.mail.javamail.JavaMailSender;
-import org.springframework.mail.javamail.MimeMessagePreparator;
-import org.springframework.mail.MailPreparationException;
-import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import freemarker.template.Configuration;
 import freemarker.template.Template;
 import freemarker.template.TemplateException;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+import org.plos.registration.User;
+import org.plos.util.TemplateMailer;
+import org.springframework.mail.MailPreparationException;
+import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessagePreparator;
+import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
-import javax.mail.internet.MimeMessage;
-import javax.mail.internet.InternetAddress;
-import javax.mail.internet.MimeBodyPart;
-import javax.mail.internet.MimeMultipart;
-import javax.mail.MessagingException;
-import javax.mail.Message;
-import javax.mail.Multipart;
-import javax.mail.BodyPart;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
-import java.util.Map;
-import java.util.HashMap;
-import java.util.List;
+import javax.mail.BodyPart;
+import javax.mail.Message;
+import javax.mail.MessagingException;
+import javax.mail.Multipart;
+import javax.mail.internet.InternetAddress;
+import javax.mail.internet.MimeBodyPart;
+import javax.mail.internet.MimeMessage;
+import javax.mail.internet.MimeMultipart;
 import java.io.IOException;
-import java.io.StringWriter;
 import java.io.InputStream;
-import java.io.StringBufferInputStream;
 import java.io.OutputStream;
+import java.io.StringBufferInputStream;
+import java.io.StringWriter;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Freemarker template based emailer.
@@ -40,45 +40,38 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
   private JavaMailSender mailSender;
   private Configuration configuration;
   private String fromEmailAddress;
-  private String subject;
-  private String textTemplateFilename;
-  private String htmlTemplateFilename;
 
-  final String MIME_TYPE_TEXT_PLAIN = "text/plain";
-  final String MIME_TYPE_TEXT_HTML = "text/html";
-  final Map<String, String> mailContentTypes = new HashMap<String, String>();
+  private final String MIME_TYPE_TEXT_PLAIN = "text/plain";
+  private final String MIME_TYPE_TEXT_HTML = "text/html";
+  private final Map<String, String> mailContentTypes = new HashMap<String, String>();
   {
     mailContentTypes.put(MIME_TYPE_TEXT_PLAIN, "text");
     mailContentTypes.put(MIME_TYPE_TEXT_HTML, "HTML");
   }
 
-  private Map<String, String> mapValues;
+  private Map<String, String> verifyEmailMap;
+  private Map<String, String> forgotPasswordVerificationEmailMap;
+  private static final String TEXT = "text";
+  private static final String HTML = "html";
+  private static final String URL = "url";
+  private static final String SUBJECT = "subject";
+  
   private static final Log log = LogFactory.getLog(FreemarkerTemplateMailer.class);
-
-  /**
-   * Mail the email.
-   * @param toEmailAddress toEmailAddress
-   * @param context context to set the values from for the template
-   */
-  public void mail(final String toEmailAddress, final Map<String, Object> context) {
-    mail(toEmailAddress, context, textTemplateFilename, htmlTemplateFilename);
-  }
 
   /**
    * Mail the email formatted using the given templates
    * @param toEmailAddress toEmailAddress
+   * @param subject subject of the email
    * @param context context to set the values from for the template
    * @param textTemplateFilename textTemplateFilename
    * @param htmlTemplateFilename htmlTemplateFilename
    */
-  public void mail(final String toEmailAddress, final Map<String, Object> context, final String textTemplateFilename, final String htmlTemplateFilename) {
+  public void mail(final String toEmailAddress, final String subject, final Map<String, Object> context, final String textTemplateFilename, final String htmlTemplateFilename) {
     final MimeMessagePreparator preparator = new MimeMessagePreparator() {
       public void prepare(final MimeMessage mimeMessage) throws MessagingException, IOException {
         mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmailAddress));
         mimeMessage.setFrom(new InternetAddress(getFromEmailAddress()));
-        mimeMessage.setSubject(getSubject());
-
-        context.putAll(mapValues);
+        mimeMessage.setSubject(subject);
 
         // Create a "text" Multipart message
         final Multipart mp = createPartForMultipart(textTemplateFilename, context, "alternative", MIME_TYPE_TEXT_PLAIN);
@@ -118,18 +111,15 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
   }
 
   /**
-   * Mail to multiple email addresses.
-   * @param toEmailAddresses toEmailAddresses
-   * @param contexts contexts to set the values from for the template
+   * @see org.plos.util.TemplateMailer#massMail(java.util.Map, java.lang.String, java.lang.String, java.lang.String)
    */
-  public void massMail(final List<String> toEmailAddresses, final List<Map<String, Object>> contexts) {
-    int i = 0;
-    for (final String email: toEmailAddresses) {
-      mail( email,
-            contexts.get(i),
-            getTextTemplateFilename(),
-            getHtmlTemplateFilename());
-      i++;
+  public void massMail(final Map<String, Map<String, Object>> emailAddressContextMap, final String subject, final String textTemplateFilename, final String htmlTemplateFilename) {
+    for (final Map.Entry<String, Map<String, Object>> entry : emailAddressContextMap.entrySet()) {
+      mail( entry.getKey(),
+            subject,
+            entry.getValue(),
+            textTemplateFilename,
+            htmlTemplateFilename);
     }
   }
 
@@ -161,49 +151,63 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
     this.mailSender = mailSender;
   }
 
-  private String getSubject() {
-    return subject;
+  /**
+   * @see org.plos.util.TemplateMailer#sendEmailAddressVerificationEmail(org.plos.registration.User)
+   */
+  public void sendEmailAddressVerificationEmail(final User user) {
+    sendEmail(user, verifyEmailMap);
   }
 
   /**
-   * Set the sibject for the email
-   * @param subject subject
+   * @see org.plos.util.TemplateMailer#sendForgotPasswordVerificationEmail(org.plos.registration.User)
    */
-  public void setSubject(final String subject) {
-    this.subject = subject;
-  }
-
-  private String getTextTemplateFilename() {
-    return textTemplateFilename;
+  public void sendForgotPasswordVerificationEmail(final User user) {
+    sendEmail(user, forgotPasswordVerificationEmailMap);
   }
 
   /**
-   * Set the textTemplateFilename
-   * @param textTemplateFilename textTemplateFilename
+   * @param user user
+   * @param mapValues contains the url for verification and html + text template names
    */
-  public void setTextTemplateFilename(final String textTemplateFilename) {
-    this.textTemplateFilename = textTemplateFilename;
-  }
-
-  private String getHtmlTemplateFilename() {
-    return htmlTemplateFilename;
+  private void sendEmail(final User user, final Map<String, String> mapValues) {
+    final Map<String, Object> context = new HashMap<String, Object>();
+    context.put("user", user);
+    context.put("url", mapValues.get(URL));
+    mail(user.getLoginName(), mapValues.get(SUBJECT), context, mapValues.get(TEXT), mapValues.get(HTML));
   }
 
   /**
-   * Set the htmlTemplateFilename
-   * @param htmlTemplateFilename htmlTemplateFilename
+   * Getter for property 'verifyEmailMap'.
+   * @return Value for property 'verifyEmailMap'.
    */
-  public void setHtmlTemplateFilename(final String htmlTemplateFilename) {
-    this.htmlTemplateFilename = htmlTemplateFilename;
+  public Map<String, String> getVerifyEmailMap() {
+    return verifyEmailMap;
   }
 
-  public Map<String, String> getMapValues() {
-    return mapValues;
+  /**
+   * Setter for property 'verifyEmailMap'.
+   * @param verifyEmailMap Value to set for property 'verifyEmailMap'.
+   */
+  public void setVerifyEmailMap(final Map<String, String> verifyEmailMap) {
+    this.verifyEmailMap = verifyEmailMap;
   }
 
-  public void setMapValues(final Map<String, String> mapValues) {
-    this.mapValues = mapValues;
+  /**
+   * Getter for property 'forgotPasswordVerificationEmailMap'.
+   * @return Value for property 'forgotPasswordVerificationEmailMap'.
+   */
+  public Map<String, String> getForgotPasswordVerificationEmailMap() {
+    return forgotPasswordVerificationEmailMap;
   }
+
+  /**
+   * Setter for property 'forgotPasswordVerificationEmailMap'.
+   * @param forgotPasswordVerificationEmailMap Value to set for property 'forgotPasswordVerificationEmailMap'.
+   */
+  public void setForgotPasswordVerificationEmailMap(final Map<String, String> forgotPasswordVerificationEmailMap) {
+    this.forgotPasswordVerificationEmailMap = forgotPasswordVerificationEmailMap;
+  }
+
 }
 
 class BodyPartDataHandler extends DataHandler {

@@ -28,7 +28,6 @@
 
   <bean id="registrationService" class="org.plos.service.impl.PlosRegistrationService">
     <property name="userDAO" ref="userDAO"/>
-    <property name="registrationMessagingService" ref="registrationMessagingService"/>
     <property name="passwordDigestService" ref="plosPasswordDigestService"/>
     <property name="mailer" ref="registrationVerificationMailer"/>
   </bean>
@@ -60,14 +59,21 @@
   <bean id="registrationVerificationMailer" class="org.plos.util.MockTemplateMailer">
     <property name="mailSender" ref="mailSender"/>
     <property name="fromEmailAddress" value="registration@plosone.org"/>
-    <property name="subject" value="Please verify your newly registered email address at Plosone"/>
     <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>
-    <property name="textTemplateFilename" value="verifyEmail-text.ftl"/>
-    <property name="htmlTemplateFilename" value="verifyEmail-html.ftl"/>
-    <property name="mapValues">
-      <!-- NOTE: moving this map out as a util:map somehow makes hibernate fail -->
+    <property name="verifyEmailMap">
       <map>
-        <entry key="verificationUrl" value="http://localhost:8080/registration/emailVerification.action"/>
+        <entry key="text" value="verifyEmail-text.ftl"/>
+        <entry key="html" value="verifyEmail-html.ftl"/>
+        <entry key="url" value="http://localhost:8080/plos-registration-webapp/emailVerification.action"/>
+        <entry key="subject" value="Please verify your newly registered email address at Plosone"/>
+      </map>
+    </property>
+    <property name="forgotPasswordVerificationEmailMap">
+      <map>
+        <entry key="text" value="forgotPasswordVerificationEmailTemplate-text.ftl"/>
+        <entry key="html" value="forgotPasswordVerificationEmailTemplate-html.ftl"/>
+        <entry key="url" value="http://localhost:8080/plos-registration-webapp/forgotPasswordVerify.action"/>
+        <entry key="subject" value="Your forgot password verification email"/>
       </map>
     </property>
   </bean>
@@ -76,8 +82,6 @@
     <property name="algorithm" value="SHA-256"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
   </bean>
-
-  <bean id="registrationMessagingService" class="org.plos.service.impl.PlosRegistrationMessagingService"/>
 
   <bean id="RegistrationManager" class="org.plos.management.RegistrationManager">
     <property name="userDAO" ref="userDAO"/>

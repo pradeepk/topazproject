@@ -8,29 +8,24 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.registration.User;
 import org.plos.registration.UserImpl;
-import org.plos.util.TokenGenerator;
-import org.plos.util.TemplateMailer;
-import org.plos.service.RegistrationService;
-import org.plos.service.UserDAO;
-import org.plos.service.RegistrationMessagingService;
-import org.plos.service.UserAlreadyExistsException;
-import org.plos.service.VerificationTokenInvalidException;
-import org.plos.service.UserAlreadyVerifiedException;
 import org.plos.service.NoUserFoundWithGivenLoginNameException;
 import org.plos.service.PasswordInvalidException;
+import org.plos.service.RegistrationService;
+import org.plos.service.UserAlreadyExistsException;
+import org.plos.service.UserAlreadyVerifiedException;
+import org.plos.service.UserDAO;
 import org.plos.service.UserNotVerifiedException;
+import org.plos.service.VerificationTokenInvalidException;
 import org.plos.service.password.PasswordDigestService;
 import org.plos.service.password.PasswordServiceException;
-
-import java.util.Map;
-import java.util.HashMap;
+import org.plos.util.TemplateMailer;
+import org.plos.util.TokenGenerator;
 
 /**
  * Plos registration service implementation.
  */
 public class PlosRegistrationService implements RegistrationService {
   private UserDAO userDAO;
-  private RegistrationMessagingService registrationMessagingService;
   private PasswordDigestService passwordDigestService;
   private TemplateMailer mailer;
   private static final Log log = LogFactory.getLog(PlosPersistenceService.class);
@@ -46,18 +41,12 @@ public class PlosRegistrationService implements RegistrationService {
       user.setActive(false);
 
       saveUser(user);
-      sendVerificationMail(user);
+      mailer.sendEmailAddressVerificationEmail(user);
 
       return user;
     } else {
       throw new UserAlreadyExistsException(loginName);
     }
-  }
-
-  private void sendVerificationMail(final User user) {
-    final Map<String, Object> context = new HashMap<String, Object>();
-    context.put("user", user);
-    mailer.mail(user.getLoginName(), context);
   }
 
   /**
@@ -120,10 +109,7 @@ public class PlosRegistrationService implements RegistrationService {
     user.setResetPasswordToken(TokenGenerator.getUniqueToken());
     saveUser(user);
 
-    getRegistrationMessagingService()
-            .sendForgotPasswordVerificationEmail(
-                    loginName,
-                    user.getResetPasswordToken());
+    mailer.sendForgotPasswordVerificationEmail(user);
   }
 
   /**
@@ -179,14 +165,6 @@ public class PlosRegistrationService implements RegistrationService {
   }
 
   /**
-   * Get the messaging service
-   * @return RegistrationMessagingService
-   */
-  public RegistrationMessagingService getRegistrationMessagingService() {
-    return registrationMessagingService;
-  }
-
-  /**
    * Save or update the user.
    * @param user user
    */
@@ -208,14 +186,6 @@ public class PlosRegistrationService implements RegistrationService {
    */
   public void setUserDAO(final UserDAO userDAO) {
     this.userDAO = userDAO;
-  }
-
-  /**
-   * Set the messaging service
-   * @param registrationMessagingService registrationMessagingService
-   */
-  public void setRegistrationMessagingService (final RegistrationMessagingService registrationMessagingService) {
-    this.registrationMessagingService = registrationMessagingService;
   }
 
   /**

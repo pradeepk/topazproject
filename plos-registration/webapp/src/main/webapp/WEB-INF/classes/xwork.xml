@@ -74,9 +74,10 @@
         <result name="error">/pages/forgotPassword.ftl</result>
         <result name="success">/pages/forgotPasswordSuccess.ftl</result>
       </action>
- 
-      <action name="forgotPasswordVerify">
-        <result>/pages/forgotPasswordChange.ftl</result>
+
+      <action name="forgotPasswordVerify" class="org.plos.web.ForgotPasswordChangePasswordAction" method="validateResetPasswordRequest">
+        <result name="error">/WEB-INF/pages/registration/error.ftl</result>
+        <result name="success">/pages/forgotPasswordChange.ftl</result>
       </action>
 
       <action name="forgotPasswordChangeSubmit" class="org.plos.web.ForgotPasswordChangePasswordAction">

@@ -11,7 +11,7 @@
             <p>
               Please click the following link to verify your email address:
 
-              <@ww.url id="forgotPasswordEmailURL" action="forgotPasswordChangePasswordShow">
+              <@ww.url id="forgotPasswordEmailURL" action="forgotPasswordVerify">
                 <@ww.param name="loginName" value="user.loginName"/>
                 <@ww.param name="resetPasswordToken" value="user.resetPasswordToken"/>
               </@ww.url>
