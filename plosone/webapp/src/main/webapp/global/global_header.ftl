@@ -10,18 +10,19 @@
 			<p>Logged in as <a href="#" class="icon user">${Session.PLOS_ONE_USER.displayName}</a></p>
 				<ul>
 					<li><a href="#" class="icon preferences">Preferences</a></li>
-					<li><a href="${freemarker_config.getCasLogoutURL()}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}" class="icon logout">Logout</a></li>
+					<li><a href="${freemarker_config.getCasLogoutURL()}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action" class="icon logout">Logout</a></li>
 				</ul>
 		</div>
 	</div>
 	
 	<#else>
+	<@ww.url id="thisPage" includeParams="get" includeContext="true"/>
 	
 	<div id="user" class="login">
 		<div>
 			<ul>
 				<li><a href="#">Create Account</a></li>
-				<li><a href="${freemarker_config.getCasLoginURL()}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/user/secure/secureHome.action" class="feedback">Login</a></li>
+				<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="feedback">Login</a></li>
 			</ul>
 		</div>
 	</div>

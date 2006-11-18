@@ -57,15 +57,25 @@
 
   <filter-mapping>
     <filter-name>CAS Filter</filter-name>
-<!--    <url-pattern>/*</url-pattern>-->
+<!-- <url-pattern>/*</url-pattern>-->
     <url-pattern>/annotation/secure/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>CAS Filter</filter-name>
+    <url-pattern>/user/secure/*</url-pattern>
   </filter-mapping>
 
   <filter-mapping >
     <filter-name>Member Session</filter-name>
     <url-pattern>/annotation/secure/*</url-pattern>
   </filter-mapping>
-
+  
+  <filter-mapping >
+    <filter-name>Member Session</filter-name>
+    <url-pattern>/user/secure/*</url-pattern>
+  </filter-mapping>
+  
   <filter-mapping>
     <filter-name>webwork</filter-name>
     <url-pattern>/*</url-pattern>

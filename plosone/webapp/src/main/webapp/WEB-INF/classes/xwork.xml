@@ -52,6 +52,10 @@
       </result>
     </global-results>
 
+    <action name="logout" class="org.plos.action.LogoutAction">
+      <result type="redirect">/</result>
+    </action>
+
     <action name="home">
       <result>/WEB-INF/pages/todo.ftl</result>
     </action>
@@ -213,9 +217,23 @@
     <action name="displayUser" class="org.plos.user.action.DisplayUserAction">
       <result name="success">/WEB-INF/pages/user/displayUser.ftl</result>
     </action>
-    <action name="secureHome" >
-      <result type="redirect">/home.action</result>
+    
+    <action name="secureRedirect" class="org.plos.action.RedirectAction">
+      <result type="redirect">${goTo}</result>
     </action>
+
+    <action name="displayAlerts" >
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/user/alerts.ftl</param>
+      </result>
+    </action>
+    
+    <action name="updateAlerts" class="org.plos.user.action.UpdateAlerts">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/user/alerts.ftl</param>
+      </result>
+    </action>
+    
     <action name="getUserProfilePrivateFields" class="org.plos.user.action.DisplayUserAction" method="fetchUserProfileWithPrivateVisibility">
       <result name="success">/WEB-INF/pages/user/displayPrivateFieldNames.ftl</result>
     </action>
