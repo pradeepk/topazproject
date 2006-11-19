@@ -42,7 +42,6 @@
     <property name="tomcatconfig.dir"   location="${home}/tomcat/config"/>
     <property name="tomcatlog.dir"      location="${home}/tomcat/log"/>
     <property name="port"               value="${PORT}"/>
-    <property name="cargo.rmi.port"     value="${SHUTDOWN_PORT}"/>
     <pathconvert property="search-war"  refid="search.fileset"/>
 
     <condition property="tomcat.url" value="${TOMCAT_URL}"
