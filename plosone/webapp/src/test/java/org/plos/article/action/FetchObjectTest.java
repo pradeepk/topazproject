@@ -72,7 +72,7 @@ public class FetchObjectTest extends BasePlosoneTestCase {
     final ArticleWebService service = getArticleWebService();
 
     try {
-      service.delete(uri, true);
+      service.delete(uri);
     } catch(NoSuchIdException ex) {
       //means that this article is not ingested yet, so delete would fail
     }

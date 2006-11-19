@@ -103,14 +103,12 @@ public class ArticleWebService extends BaseConfigurableService {
   /**
    * Delete an article.
    * @param article uri
-   * @param purge purge
    * @throws RemoteException RemoteException
    * @throws NoSuchIdException NoSuchIdException
    */
-  public void delete(final String article, final boolean purge)
-          throws RemoteException, NoSuchIdException {
+  public void delete(final String article) throws RemoteException, NoSuchIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    delegateService.delete(article, purge);
+    delegateService.delete(article);
   }
 
   /**
@@ -135,7 +133,7 @@ public class ArticleWebService extends BaseConfigurableService {
    */
   public String getArticles(final String startDate, final String endDate) throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return delegateService.getArticles(startDate, endDate, null, null, true);
+    return delegateService.getArticles(startDate, endDate, null, null, null, true);
   }
 
   /**

@@ -37,7 +37,7 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
 //    String resourceURI = "info:doi/10.1371/journal.pone.0000011";
 
     try {
-      getArticleWebService().delete(resourceURI, true);
+      getArticleWebService().delete(resourceURI);
     } catch (NoSuchIdException nsie) {
       // ignore - this just means there wasn't any stale stuff left
     }
@@ -83,7 +83,7 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
 
   private void doIngestTest(String resourceURI, String resourceToIngest) throws Exception {
     try {
-      getArticleWebService().delete(resourceURI, true);
+      getArticleWebService().delete(resourceURI);
     } catch (NoSuchIdException nsie) {
       // ignore - this just means there wasn't any stale stuff left
     }
@@ -101,10 +101,10 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
     } catch (DuplicateIdException die) {
     }
 
-    getArticleWebService().delete(uri, true);
+    getArticleWebService().delete(uri);
 
     try {
-      getArticleWebService().delete(uri, true);
+      getArticleWebService().delete(uri);
       fail("Failed to get NoSuchIdException");
     } catch (NoSuchIdException nsie) {
     }
