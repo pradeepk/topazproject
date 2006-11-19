@@ -103,7 +103,7 @@ public class AlertsImpl implements Alerts {
     " order by $user " +
     " limit ${limit};";
   private static final String GET_USERS_FEED_ITQL =
-    "select $art $title $description $date from ${ARTICLES} where " +
+    "select $art $title $description $date $state from ${ARTICLES} where " +
     "  <${userId}> <topaz:hasPreferences> $pref  in ${PREFS} and " +
     "  $pref       <topaz:preference>     $prefn in ${PREFS} and " +
     "  $prefn      <topaz:prefName>       'alertsCategories' in ${PREFS} and " +
@@ -112,6 +112,7 @@ public class AlertsImpl implements Alerts {
     " $art <dc:description> $description and " +
     " $art <dc_terms:available> $date and " +
     " $art <dc:subject>     $cat and " +
+    " $art <topaz:articleState> $state and " +
     " $date <tucana:before> '${endDate}' in ${XSD} and " +
     " $date <tucana:after>  '${startDate}' in ${XSD};";
   private static final String CLEAN_USER_ITQL =
