@@ -42,6 +42,7 @@ with
 public class PlosAuthDatabaseHandler extends BasicHandler {
   private PasswordDigestService passwordService;
   private String passwordSqlQuery;
+  private String verifiedUserSqlQuery;
 
   /**
 	 * Analyse the XML configuration to set netId and adminPassword attributes (constructor).
@@ -67,7 +68,8 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
 
   private void init() throws Exception {
     passwordService = getPasswordService();
-    passwordSqlQuery = getSqlQuery();
+    passwordSqlQuery = getPasswordSqlQuery();
+    verifiedUserSqlQuery = getVerifiedUserSqlQuery();
   }
 
   private PasswordDigestService getPasswordService() throws Exception {
@@ -95,16 +97,22 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
 
     try {
       final DatabaseContext databaseContext = getDatabaseContext();
-      final String savedDigestPassword
-              = databaseContext.getSingleStringValueFromDb(passwordSqlQuery, userLogin);
-
-      final boolean verified = passwordService.verifyPassword(userPassword, savedDigestPassword);
-
-      if (verified) {
-        trace("User's password matches.");
-        return SUCCEEDED;
+      final String verificationStatus
+              = databaseContext.getSingleStringValueFromDb(verifiedUserSqlQuery, userLogin);
+      if (!isTrue(verificationStatus)) {
+        trace("User: " + userLogin + " is not yet verified");
+      } else {
+        final String savedDigestPassword
+        = databaseContext.getSingleStringValueFromDb(passwordSqlQuery, userLogin);
+        
+        final boolean verified = passwordService.verifyPassword(userPassword, savedDigestPassword);
+  
+        if (verified) {
+          trace("User's password matches.");
+          return SUCCEEDED;
+        }
+        trace("User: " + userLogin + "'s password does not match");
       }
-      trace("User: " + userLogin + "'s password does not match");
       return FAILED_STOP;
     } catch (final Exception ex) {
       trace("User's password does not match " + ex.getMessage());
@@ -113,6 +121,12 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
       traceEnd();
     }
 	}
+
+  private boolean isTrue(final String verificationStatus) {
+    final String booleanStr = verificationStatus.toLowerCase();
+    return (Boolean.valueOf(booleanStr) || booleanStr.startsWith("t")) ? true 
+                                                                       : false;
+  }
 
   private DatabaseContext getDatabaseContext() throws DatabaseException {
     return DatabaseContext.getInstance();
@@ -123,7 +137,7 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
    * @return a String.
    * @throws Exception Exception
    */
-  private String getSqlQuery() throws Exception {
+  private String getPasswordSqlQuery() throws Exception {
     traceBegin();
 
     final String table = getConfigSubElementContent("table");
@@ -131,6 +145,26 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
     final String passwordColumn = getConfigSubElementContent("password_column");
 
     final String query = "SELECT " + passwordColumn
+                        + " FROM " + table
+                        + " WHERE " + loginColumn + " = ?";
+
+    traceEnd(query);
+    return query;
+  }
+
+  /**
+   * Read the verify SQL query from the configuration (deduces it from other parameters).
+   * @return a String.
+   * @throws Exception Exception
+   */
+  private String getVerifiedUserSqlQuery() throws Exception {
+    traceBegin();
+
+    final String table = getConfigSubElementContent("table");
+    final String loginColumn = getConfigSubElementContent("login_column");
+    final String verifyColumn = getConfigSubElementContent("verify_column");
+
+    final String query = "SELECT " + verifyColumn
                         + " FROM " + table
                         + " WHERE " + loginColumn + " = ?";
 
