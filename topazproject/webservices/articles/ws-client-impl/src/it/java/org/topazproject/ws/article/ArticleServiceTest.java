@@ -36,13 +36,14 @@ import org.topazproject.common.NoSuchIdException;
 public class ArticleServiceTest extends TestCase {
   private Article service;
 
-  public ArticleServiceTest(String testName) {
+  public ArticleServiceTest(String testName) throws MalformedURLException, ServiceException {
     super(testName);
-  }
 
-  protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
     String uri = "http://localhost:9997/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort";
     service = ArticleClientFactory.create(uri);
+  }
+
+  protected void setUp() {
   }
 
   public void testBasicArticle() throws Exception {
@@ -148,6 +149,7 @@ public class ArticleServiceTest extends TestCase {
                  oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
     assertNull("unexpected context-element", oi.getContextElement());
+    assertEquals("wrong state", 1, oi.getState());
 
     RepresentationInfo[] ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 3, ri.length);
@@ -176,6 +178,7 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("wrong title", "Figure 1", oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
     assertEquals("wrong context-element", "fig", oi.getContextElement());
+    assertEquals("wrong state", 1, oi.getState());
 
     ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 2, ri.length);
@@ -199,6 +202,7 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("wrong title", "Video S1", oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
     assertEquals("wrong context-element", "supplementary-material", oi.getContextElement());
+    assertEquals("wrong state", 1, oi.getState());
 
     ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 1, ri.length);
@@ -236,6 +240,7 @@ public class ArticleServiceTest extends TestCase {
                  oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
     assertNull("unexpected context-element", oi.getContextElement());
+    assertEquals("wrong state", 1, oi.getState());
 
     RepresentationInfo[] ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 3, ri.length);
@@ -433,6 +438,15 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("wrong number of rep-infos", 1, oi[6].getRepresentations().length);
     assertEquals("wrong number of rep-infos", 1, oi[7].getRepresentations().length);
 
+    assertEquals("wrong state", 1, oi[0].getState());
+    assertEquals("wrong state", 1, oi[1].getState());
+    assertEquals("wrong state", 1, oi[2].getState());
+    assertEquals("wrong state", 1, oi[3].getState());
+    assertEquals("wrong state", 1, oi[4].getState());
+    assertEquals("wrong state", 1, oi[5].getState());
+    assertEquals("wrong state", 1, oi[6].getState());
+    assertEquals("wrong state", 1, oi[7].getState());
+
     sort(oi[0].getRepresentations());
 
     RepresentationInfo ri = oi[0].getRepresentations()[0];
@@ -491,6 +505,99 @@ public class ArticleServiceTest extends TestCase {
 
     // clean up
     service.delete(art, true);
+  }
+
+  public void testState() throws Exception {
+    // some NoSuchArticleIdException tests
+    boolean gotE = false;
+    try {
+      service.setState("info:doi/blah/foo", 0);
+    } catch (NoSuchArticleIdException nsaie) {
+      assertEquals("Mismatched id in exception, ", "info:doi/blah/foo", nsaie.getId());
+      gotE = true;
+    }
+    assertTrue("Failed to get expected no-such-object-id exception", gotE);
+
+    // ingest article and test
+    URL article = getClass().getResource("/pbio.0020294.zip");
+    String art = service.ingest(new DataHandler(article));
+    assertEquals("Wrong uri returned,", "info:doi/10.1371/journal.pbio.0020294", art);
+
+    ObjectInfo oi = service.getObjectInfo(art);
+    assertEquals("wrong state", 1, oi.getState());
+
+    ObjectInfo[] ois = service.listSecondaryObjects(art);
+    assertEquals("wrong number of object-infos", 8, ois.length);
+
+    assertEquals("wrong state", 1, ois[0].getState());
+    assertEquals("wrong state", 1, ois[1].getState());
+    assertEquals("wrong state", 1, ois[2].getState());
+    assertEquals("wrong state", 1, ois[3].getState());
+    assertEquals("wrong state", 1, ois[4].getState());
+    assertEquals("wrong state", 1, ois[5].getState());
+    assertEquals("wrong state", 1, ois[6].getState());
+    assertEquals("wrong state", 1, ois[7].getState());
+
+    String res = service.getArticles(null, null, null, null, new int[] { 0 }, false);
+    assertFalse("Unexpectedly found article", hasArticle(res));
+    res = service.getArticles(null, null, null, null, new int[] { 1 }, false);
+    assertTrue("Failed to find article", hasArticle(res));
+    res = service.getArticles(null, null, null, null, new int[] { 0, 1 }, false);
+    assertTrue("Failed to find article", hasArticle(res));
+
+    service.setState(art, 42);
+
+    oi = service.getObjectInfo(art);
+    assertEquals("wrong state", 42, oi.getState());
+
+    ois = service.listSecondaryObjects(art);
+    assertEquals("wrong number of object-infos", 8, ois.length);
+
+    assertEquals("wrong state", 42, ois[0].getState());
+    assertEquals("wrong state", 42, ois[1].getState());
+    assertEquals("wrong state", 42, ois[2].getState());
+    assertEquals("wrong state", 42, ois[3].getState());
+    assertEquals("wrong state", 42, ois[4].getState());
+    assertEquals("wrong state", 42, ois[5].getState());
+    assertEquals("wrong state", 42, ois[6].getState());
+    assertEquals("wrong state", 42, ois[7].getState());
+
+    res = service.getArticles(null, null, null, null, new int[] { 0, 1 }, false);
+    assertFalse("Unexpectedly found article", hasArticle(res));
+    res = service.getArticles(null, null, null, null, new int[] { 42 }, false);
+    assertTrue("Failed to find article", hasArticle(res));
+    res = service.getArticles(null, null, null, null, new int[] { 42, 1 }, false);
+    assertTrue("Failed to find article", hasArticle(res));
+
+    service.setState(art, Article.ST_ACTIVE);
+
+    oi = service.getObjectInfo(art);
+    assertEquals("wrong state", Article.ST_ACTIVE, oi.getState());
+
+    ois = service.listSecondaryObjects(art);
+    assertEquals("wrong number of object-infos", 8, ois.length);
+
+    assertEquals("wrong state", Article.ST_ACTIVE, ois[0].getState());
+    assertEquals("wrong state", Article.ST_ACTIVE, ois[1].getState());
+    assertEquals("wrong state", Article.ST_ACTIVE, ois[2].getState());
+    assertEquals("wrong state", Article.ST_ACTIVE, ois[3].getState());
+    assertEquals("wrong state", Article.ST_ACTIVE, ois[4].getState());
+    assertEquals("wrong state", Article.ST_ACTIVE, ois[5].getState());
+    assertEquals("wrong state", Article.ST_ACTIVE, ois[6].getState());
+    assertEquals("wrong state", Article.ST_ACTIVE, ois[7].getState());
+
+    res = service.getArticles(null, null, null, null, new int[] { 2, 1 }, false);
+    assertFalse("Unexpectedly found article", hasArticle(res));
+    res = service.getArticles(null, null, null, null, new int[] { Article.ST_ACTIVE }, false);
+    assertTrue("Failed to find article", hasArticle(res));
+    res = service.getArticles(null, null, null, null, new int[] { 42, Article.ST_ACTIVE }, false);
+    assertTrue("Failed to find article", hasArticle(res));
+
+    service.delete(art, true);
+  }
+
+  private static final boolean hasArticle(String searchResult) {
+    return !searchResult.equals("<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<articles>\n</articles>\n");
   }
 
   private static byte[] loadURL(URL url) throws IOException {

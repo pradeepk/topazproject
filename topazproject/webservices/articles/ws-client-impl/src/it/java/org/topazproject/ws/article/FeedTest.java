@@ -111,42 +111,42 @@ public class FeedTest extends TestCase {
 
   private boolean tstEntireFeed() throws RemoteException, IOException {
     // Get all the articles we have
-    return this.testFeed(null, null, null, null, "entirefeed.xml");
+    return this.testFeed(null, null, null, null, null, "entirefeed.xml");
   }
 
   private boolean tstBiotechnology() throws RemoteException, IOException {
     String[] categories = new String[] { "Biotechnology" };
-    return this.testFeed(null, null, categories, null, "biotechfeed.xml");
+    return this.testFeed(null, null, categories, null, null, "biotechfeed.xml");
   }
 
   private boolean tstStartDate() throws Exception {
-    return this.testFeed("2004-08-31", null, null, null, "start08-31.xml");
+    return this.testFeed("2004-08-31", null, null, null, null, "start08-31.xml");
   }
 
   private boolean tstMultiCategory() throws RemoteException, IOException {
     String[] categories = new String[] { "Biotechnology", "Microbiology" };
-    return this.testFeed(null, null, categories, null, "multicategory.xml");
+    return this.testFeed(null, null, categories, null, null, "multicategory.xml");
   }
 
   private boolean tstDateRange() throws Exception {
-    return this.testFeed("2004-08-24", "2004-08-31", null, null, "daterange8-24_31.xml");
+    return this.testFeed("2004-08-24", "2004-08-31", null, null, null, "daterange8-24_31.xml");
   }
 
   private boolean tstAuthors() throws RemoteException, IOException {
     String[] authors = new String[] { "Richard J Roberts" };
-    return this.testFeed(null, null, null, authors, "author_roberts.xml");
+    return this.testFeed(null, null, null, authors, null, "author_roberts.xml");
   }
 
   private boolean tstNoResults() throws RemoteException, IOException {
     String [] categories = new String[] { "Bogus Categories" };
-    return this.testFeed(null, null, categories, null, "noresults.xml");
+    return this.testFeed(null, null, categories, null, null, "noresults.xml");
   }
 
   private boolean testFeed(String startDate, String endDate, String[] categories, String[] authors,
-                           String resourceName) throws RemoteException, IOException {
+                           int[] states, String resourceName) throws RemoteException, IOException {
     log.info("Running test: " + resourceName);
 
-    String testResult = service.getArticles(startDate, endDate, categories, authors, false);
+    String testResult = service.getArticles(startDate, endDate, categories, authors, states, false);
 
     // Write result in case we need it (UTF-8 issues to get expected result initally)
     //writeResult(testResult, "/tmp/" + resourceName);

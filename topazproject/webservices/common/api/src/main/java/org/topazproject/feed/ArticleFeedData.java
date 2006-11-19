@@ -24,6 +24,7 @@ public class ArticleFeedData {
   Date     date;
   List     authors;
   List     categories;
+  int      state;
 
   public String toString() {
     return "ArticleData[" + this.uri + ":" + this.date + "]";

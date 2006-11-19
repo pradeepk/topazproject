@@ -123,10 +123,9 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   /**
    * @see org.topazproject.ws.article.Article#getArticles
    */
-  public String getArticles(String startDate, String endDate,
-                            String[] categories, String[] authors,
-                            boolean ascending) throws RemoteException {
-    return impl.getArticles(startDate, endDate, categories, authors, ascending);
+  public String getArticles(String startDate, String endDate, String[] categories, String[] authors,
+                            int[] states, boolean ascending) throws RemoteException {
+    return impl.getArticles(startDate, endDate, categories, authors, states, ascending);
   }
 
   private static class WSArticlePEP extends ArticlePEP {

@@ -16,6 +16,8 @@
 
   <PolicyIdReference>permit-admin</PolicyIdReference>
 
+  <PolicyIdReference>deny-inactive</PolicyIdReference>
+
   <PolicyIdReference>deny-revokes</PolicyIdReference>
 
   <PolicyIdReference>permit-grants</PolicyIdReference>

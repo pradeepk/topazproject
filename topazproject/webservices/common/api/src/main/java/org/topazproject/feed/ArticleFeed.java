@@ -9,13 +9,13 @@
  */
 package org.topazproject.feed;
 
-import java.util.Date;
-import java.util.List;
 import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.LinkedHashMap;
+import java.util.Date;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.text.ParseException;
 import java.rmi.RemoteException;
@@ -46,10 +46,11 @@ public class ArticleFeed {
   private static final String MODEL_XSD      = "<" + CONF.getString("topaz.models.xsd") + ">";
   
   private static final String FEED_ITQL =
-    "select $obj $title $description $date from ${ARTICLES} where " +
+    "select $obj $title $description $date $state from ${ARTICLES} where " +
     " $obj <dc:title> $title and " +
     " $obj <dc:description> $description and " +
-    " $obj <dc_terms:available> $date " +
+    " $obj <dc_terms:available> $date and " +
+    " $obj <topaz:articleState> $state " +
     " ${args} " +
     " order by $date ${sort};";
   private static final String FIND_SUBJECTS_ITQL =
@@ -76,33 +77,43 @@ public class ArticleFeed {
   /**
    * Compute the iTQL to find a set of articles based on date, category and author criteria.
    *
-   * @param startDate is the date to start searching from. If empty, start from begining of time
-   * @param endDate is the date to search until. If empty, search until prsent date
-   * @param categories is list of categories to search for articles within (all categories if empty)
-   * @param authors is list of authors to search for articles within (all authors if empty)
-   * @param ascending indicates how sorting should be done (by date)
+   * @param startDate  is the date to start searching from. If null, start from begining of time
+   * @param endDate    is the date to search until. If null, search until present date
+   * @param categories is list of categories to search for articles within (all categories if null
+   *                   or empty)
+   * @param authors    is list of authors to search for articles within (all authors if null or
+   *                   empty)
+   * @param states     the list of article states to search for (all states if null or empty)
+   * @param ascending  indicates how sorting should be done (by date)
    * @return the iTQL needed to issue against kowari.
    */
-  public static String getQuery(Date startDate, Date endDate,
-                                String[] categories, String[] authors, boolean ascending) {
-    LinkedList params = new LinkedList();
-    
+  public static String getQuery(Date startDate, Date endDate, String[] categories, String[] authors,
+                                int[] states, boolean ascending) {
+    StringBuffer args = new StringBuffer(500);
+
     if (categories != null && categories.length > 0) {
+      args.append(" and (");
       for (int i = 0; i < categories.length; i++)
-        params.add("$obj <dc:subject> '" + ItqlHelper.escapeLiteral(categories[i]) + "' ");
-    } else if (authors != null && authors.length > 0) {
-      for (int i = 0; i < authors.length; i++)
-        params.add("$obj <dc:creator> '" + ItqlHelper.escapeLiteral(authors[i]) + "' ");
+        args.append("$obj <dc:subject> '").append(ItqlHelper.escapeLiteral(categories[i])).
+             append("' or ");
+      args.setLength(args.length() - 4);
+      args.append(")");
     }
 
-    StringBuffer args = new StringBuffer();
-    if (params.size() > 0) {
+    if (authors != null && authors.length > 0) {
       args.append(" and (");
-      for (Iterator i = params.iterator(); i.hasNext(); ) {
-        args.append(i.next());
-        if (i.hasNext())
-          args.append(" or ");
-      }
+      for (int i = 0; i < authors.length; i++)
+        args.append("$obj <dc:creator> '").append(ItqlHelper.escapeLiteral(authors[i])).
+             append("' or ");
+      args.setLength(args.length() - 4);
+      args.append(")");
+    }
+
+    if (states != null && states.length > 0) {
+      args.append(" and (");
+      for (int i = 0; i < states.length; i++)
+        args.append("$obj <topaz:articleState> '").append(states[i]).append("'^^<xsd:int> or ");
+      args.setLength(args.length() - 4);
       args.append(")");
     }
 
@@ -131,8 +142,8 @@ public class ArticleFeed {
    */
   public static Map getArticlesSummary(StringAnswer articlesAnswer) {
     LinkedHashMap articles = new LinkedHashMap();
-    QueryAnswer answer = (QueryAnswer)articlesAnswer.getAnswers().get(0);
-    
+    QueryAnswer answer = (QueryAnswer) articlesAnswer.getAnswers().get(0);
+
     for (Iterator rowIt = answer.getRows().iterator(); rowIt.hasNext(); ) {
       String[] row = (String[])rowIt.next();
       Date date = null;
@@ -144,12 +155,13 @@ public class ArticleFeed {
         // XXX: Should we show the message or not?
         continue; // Don't show article
       }
-        
+
       ArticleFeedData article = new ArticleFeedData();
       article.uri         = row[0];
       article.title       = row[1];
       article.description = row[2];
       article.date        = date;
+      article.state       = Integer.parseInt(row[4]);
       articles.put(article.uri, article);
     }
 

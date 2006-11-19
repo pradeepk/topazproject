@@ -218,13 +218,45 @@ public class ArticleImpl implements Article {
   public void setState(String article, int state) throws NoSuchArticleIdException, RemoteException {
     pep.checkAccess(pep.SET_ARTICLE_STATE, ItqlHelper.validateUri(article, "article"));
 
+    ItqlHelper itql = ctx.getItqlHelper();
+
+    StringBuffer del = new StringBuffer(200);
+    StringBuffer ins = new StringBuffer(200);
+
+    del.append("delete select $art <topaz:articleState> $st from ").append(MODEL).
+        append(" where $art <topaz:articleState> $st and (");
+    ins.append("insert ");
+
+    String txn = "set-state " + article;
     try {
-      String pid = getPIDForURI(article, ctx.getItqlHelper());
-      if (pid == null)
-        throw new NoSuchArticleIdException(article);
-      ctx.getFedoraAPIM().modifyObject(pid, state2Str(state), null, "Changed state");
-    } catch (RemoteException re) {
-      FedoraUtil.detectNoSuchArticleIdException(re, article);
+      itql.beginTxn(txn);
+
+      String[][] objList = findAllObjects(article, itql);
+      for (int idx = 0; idx < objList.length; idx++) {
+        String uri = objList[idx][0];
+
+        del.append("$art <tucana:is> <").append(uri).append("> or ");
+        ins.append("<").append(uri).append("> <topaz:articleState> '").append(state).
+            append("'^^<http://www.w3.org/2001/XMLSchema#int> ");
+      }
+
+      del.setLength(del.length() - 4);
+      del.append(") from ").append(MODEL).append(";");
+      ins.append("into ").append(MODEL).append(";");
+
+      itql.doUpdate(del.append(ins).toString(), null);
+
+      itql.commitTxn(txn);
+      txn = null;
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error querying RDF", ae);
+    } finally {
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
+      }
     }
   }
 
@@ -241,7 +273,7 @@ public class ArticleImpl implements Article {
       if (txn != null)
         itql.beginTxn(txn);
 
-      String[][] objList = findAllObjects(article);
+      String[][] objList = findAllObjects(article, itql);
       if (log.isDebugEnabled())
         log.debug("deleting all objects for uri '" + article + "'");
 
@@ -298,15 +330,15 @@ public class ArticleImpl implements Article {
     return fedoraServer.resolve(path).toString();
   }
 
-  public String getArticles(String startDate, String endDate,
-                            String[] categories, String[] authors,
-                            boolean ascending) throws RemoteException {
+  public String getArticles(String startDate, String endDate, String[] categories, String[] authors,
+                            int[] states, boolean ascending) throws RemoteException {
     Date start = ArticleFeed.parseDateParam(startDate);
     Date end = ArticleFeed.parseDateParam(endDate);
 
     ItqlHelper itql = ctx.getItqlHelper();
     try {
-      String articlesQuery = ArticleFeed.getQuery(start, end, categories, authors, false);
+      String articlesQuery =
+          ArticleFeed.getQuery(start, end, categories, authors, states, ascending);
       StringAnswer articlesAnswer = new StringAnswer(itql.doQuery(articlesQuery, null));
       Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
 
@@ -368,22 +400,10 @@ public class ArticleImpl implements Article {
     }
   }
 
-  protected static String state2Str(int state) {
-    switch (state) {
-      case ST_ACTIVE:
-        return "A";
-      case ST_DISABLED:
-        return "D";
-      default:
-        throw new IllegalArgumentException("Unknown state '" + state + "'");
-    }
-  }
-
-  protected String[][] findAllObjects(String subj)
+  protected String[][] findAllObjects(String subj, ItqlHelper itql)
       throws NoSuchArticleIdException, RemoteException, AnswerException {
     ItqlHelper.validateUri(subj, "subject");
 
-    ItqlHelper itql = ctx.getItqlHelper();
     StringAnswer ans =
         new StringAnswer(itql.doQuery(ItqlHelper.bindValues(ITQL_FIND_OBJS, "subj", subj), null));
     List uris = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
@@ -564,6 +584,12 @@ public class ArticleImpl implements Article {
     }
   }
 
+  private void checkArticleExists(String uri, ItqlHelper itql)
+      throws NoSuchArticleIdException, RemoteException {
+    if (getPIDForURI(uri, itql) == null)
+      throw new NoSuchArticleIdException(uri);
+  }
+
   private String getPIDForURI(String uri, ItqlHelper itql) throws RemoteException {
     try {
       AnswerSet ans =
@@ -625,6 +651,8 @@ public class ArticleImpl implements Article {
         oi.setDescription(info.getString("o"));
       else if (pred.equals(ItqlHelper.TOPAZ_URI + "contextElement"))
         oi.setContextElement(info.getString("o"));
+      else if (pred.equals(ItqlHelper.TOPAZ_URI + "articleState"))
+        oi.setState(Integer.parseInt(info.getString("o")));
     }
 
     RepresentationInfo[] ri = new RepresentationInfo[reps.size()];

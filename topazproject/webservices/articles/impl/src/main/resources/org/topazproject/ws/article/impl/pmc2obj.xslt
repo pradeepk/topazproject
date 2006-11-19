@@ -57,6 +57,8 @@
       select="(for $doi in $sec-dois return my:links-for-doi($doi)[1]) union ()"
       as="element()*"/>
 
+  <xsl:variable name="initial-state" select="1" as="xs:integer"/>
+
   <!-- top-level template - do some checks, and then run the production templates -->
   <xsl:template match="/">
     <xsl:call-template name="validate-pmc"/>
@@ -174,6 +176,7 @@
     </xsl:if>
 
     <topaz:isPID><xsl:value-of select="my:doi-to-pid($article-doi)"/></topaz:isPID>
+    <topaz:articleState rdf:datatype="http://www.w3.org/2001/XMLSchema#int"><xsl:value-of select="$initial-state"/></topaz:articleState>
 
     <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
   </xsl:template>
@@ -346,6 +349,7 @@
     </xsl:if>
 
     <topaz:isPID><xsl:value-of select="my:doi-to-pid($sdoi)"/></topaz:isPID>
+    <topaz:articleState rdf:datatype="http://www.w3.org/2001/XMLSchema#int"><xsl:value-of select="$initial-state"/></topaz:articleState>
 
     <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
   </xsl:template>

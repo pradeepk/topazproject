@@ -22,6 +22,8 @@ package org.topazproject.ws.article;
 public class ObjectInfo {
   /** The uri of the object. */
   private String uri;
+  /** The object's state. */
+  private int state;
   /** The object's title. */
   private String title;
   /** The description associated with the object. */
@@ -47,6 +49,24 @@ public class ObjectInfo {
    */
   public void setUri(String uri) {
     this.uri = uri;
+  }
+
+  /**
+   * Get the object's state.
+   *
+   * @return the state.
+   */
+  public int getState() {
+    return state;
+  }
+
+  /**
+   * Set the object's state.
+   *
+   * @param state the state.
+   */
+  public void setState(int state) {
+    this.state = state;
   }
 
   /**

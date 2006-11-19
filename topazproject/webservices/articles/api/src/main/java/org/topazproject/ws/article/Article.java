@@ -80,7 +80,7 @@ public interface Article extends Remote {
       throws NoSuchArticleIdException, RemoteException;
 
   /** 
-   * Change an articles state.
+   * Change an article's state.
    * 
    * @param article the URI of the article (e.g. "info:doi/10.1371/journal.pbio.003811")
    * @param state   the new state
@@ -174,17 +174,19 @@ public interface Article extends Remote {
    *         ...
    * </pre>
    *
-   * @param startDate  is the date to start searching from. If empty, start from begining of time.
+   * @param startDate  is the date to start searching from. If null, start from begining of time.
    *                   Can be iso8601 formatted or string representation of Date object.
-   * @param endDate    is the date to search until. If empty, search until prsent date
-   * @param categories is list of categories to search for articles within (all categories if empty)
-   * @param authors    is list of authors to search for articles within (all authors if empty)
+   * @param endDate    is the date to search until. If null, search until present date
+   * @param categories is list of categories to search for articles within (all categories if null
+   *                   or empty)
+   * @param authors    is list of authors to search for articles within (all authors if null or
+   *                   empty)
+   * @param states     the list of article states to search for (all states if null or empty)
    * @param ascending  controls the sort order (by date). If used for RSS feeds, decending would
    *                   be appropriate. For archive display, ascending would be appropriate.
    * @return the xml for the specified feed
    * @throws RemoteException if there was a problem talking to the alerts service
    */
-  public String getArticles(String startDate, String endDate,
-                            String[] categories, String[] authors,
-                            boolean ascending) throws RemoteException;
+  public String getArticles(String startDate, String endDate, String[] categories, String[] authors,
+                            int[] states, boolean ascending) throws RemoteException;
 }
