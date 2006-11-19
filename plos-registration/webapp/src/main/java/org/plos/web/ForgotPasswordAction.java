@@ -15,16 +15,12 @@ import org.plos.registration.User;
 import org.plos.service.NoUserFoundWithGivenLoginNameException;
 import org.plos.service.RegistrationService;
 
-import java.util.ArrayList;
-import java.util.Collection;
-
 /**
  * Used when a user makes a forgot password request.
  */
 public class ForgotPasswordAction extends ActionSupport {
 
   private RegistrationService registrationService;
-  private ArrayList<String> messages = new ArrayList<String>();
 
   private String loginName;
 
@@ -48,12 +44,12 @@ public class ForgotPasswordAction extends ActionSupport {
 
     } catch (final NoUserFoundWithGivenLoginNameException noUserEx) {
       final String message = "No user found for the given email address:" + loginName;
-      messages.add(noUserEx.getMessage());
+      addActionError(noUserEx.getMessage());
       log.trace(message, noUserEx);
       addFieldError("loginName", message);
       return ERROR;
     } catch (final ApplicationException e) {
-      messages.add(e.getMessage());
+      addActionError(e.getMessage());
       log.error(e, e);
       addFieldError("loginName", e.getMessage());
       return ERROR;
@@ -76,13 +72,6 @@ public class ForgotPasswordAction extends ActionSupport {
    */
   public void setLoginName(final String loginName) {
     this.loginName = loginName;
-  }
-
-  /**
-   * @return Error or warning messages to be shown to the user.
-   */
-  public Collection<String> getMessages() {
-    return messages;
   }
 
   /**

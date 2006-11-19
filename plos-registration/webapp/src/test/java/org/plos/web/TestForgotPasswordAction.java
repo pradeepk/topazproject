@@ -14,7 +14,6 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
     assertEquals(Action.ERROR, forgotPasswordAction.execute());
-    assertFalse(forgotPasswordAction.getMessages().isEmpty());
   }
 
   public void testShouldSendEmailForForgotPasswordEmailEvenIfTheEmailItIsNotVerified() throws Exception {
@@ -27,7 +26,7 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
     assertEquals(Action.SUCCESS, forgotPasswordAction.execute());
-    assertTrue(forgotPasswordAction.getMessages().isEmpty());
+    assertTrue(forgotPasswordAction.getActionErrors().isEmpty());
   }
 
   public void testShouldAcceptForgotPasswordRequestIfItIsNotActive() throws Exception {
@@ -39,7 +38,7 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
     assertEquals(Action.SUCCESS, forgotPasswordAction.execute());
-    assertTrue(forgotPasswordAction.getMessages().isEmpty());
+    assertTrue(forgotPasswordAction.getActionErrors().isEmpty());
   }
 
   public void testShouldSendEmailForForgotPasswordEmailIfTheEmailIsVerifiedAndActive() throws Exception {
@@ -57,7 +56,7 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
     assertEquals(Action.SUCCESS, forgotPasswordAction.execute());
-    assertTrue(forgotPasswordAction.getMessages().isEmpty());
+    assertTrue(forgotPasswordAction.getActionErrors().isEmpty());
   }
 
   public void testShouldSendFailToVerifyForgotPasswordTokenIfItIsWrong() throws Exception {
@@ -70,12 +69,12 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     confirmationAction.setLoginName(email);
     confirmationAction.setEmailVerificationToken(beforeVerificationUser.getEmailVerificationToken());
     assertEquals(Action.SUCCESS, confirmationAction.execute());
-    assertTrue(confirmationAction.getMessages().isEmpty());
+    assertTrue(confirmationAction.getActionErrors().isEmpty());
 
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
     assertEquals(Action.SUCCESS, forgotPasswordAction.execute());
-    assertTrue(forgotPasswordAction.getMessages().isEmpty());
+    assertTrue(forgotPasswordAction.getActionErrors().isEmpty());
 
     final User forgotPasswordUser = getRegistrationService().getUserWithLoginName(email);
     assertNotNull(forgotPasswordUser.getResetPasswordToken());
