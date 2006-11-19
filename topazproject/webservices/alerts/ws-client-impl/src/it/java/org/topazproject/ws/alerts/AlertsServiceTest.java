@@ -152,7 +152,7 @@ public class AlertsServiceTest extends TestCase {
 
   protected void deleteArticle(String uri) throws RemoteException, NoSuchArticleIdException {
     try {
-      articleService.delete(uri, true);
+      articleService.delete(uri);
       log.info("deleted article " + uri);
     } catch (Exception nsie) {
       // so what
