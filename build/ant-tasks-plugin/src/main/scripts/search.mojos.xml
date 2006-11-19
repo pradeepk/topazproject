@@ -152,6 +152,14 @@
               was given in the search-start command.</description>
         </parameter>
 
+        <parameter>
+          <name>SHUTDOWN_PORT</name>
+          <property>SHUTDOWN_PORT</property>
+          <required>true</required>
+          <expression>${SHUTDOWN_PORT}</expression>
+          <defaultValue>9292</defaultValue>
+        </parameter>
+
       </parameters>
     </mojo>
 
