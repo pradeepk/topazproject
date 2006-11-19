@@ -364,11 +364,11 @@
 				xmlns:aml="http://topazproject.org/aml/"
                 exclude-result-prefixes="util xsl ">
 
-<xsl:output method="html"
+<xsl:output 
+			method="html"
             indent="yes"
             encoding="UTF-8"
-            doctype-public="-//W3C//DTD XHTML 1.0 Transitional//EN"
-            doctype-system="http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd"/>
+            omit-xml-declaration="yes"/>
 
 <xsl:strip-space elements="abstract ack address annotation app app-group
                            array article article-categories article-meta
@@ -448,8 +448,8 @@
 	
 	<div id="researchArticle" class="content">
 		<xsl:call-template name="makeXpathLocation"/>
+		<div class="beta">We are still in beta! Help us make the site better and <a href="#" title="Submit your feedback">report bugs</a>.</div>
 		<xsl:apply-templates/>
-
 	</div>
 <!--    </body>-->
 
@@ -1019,10 +1019,10 @@ Make article meta data
 					  <xsl:apply-templates select="name | collab" mode="front"/>
 					</xsl:element>
 				  </xsl:when>
-<!--				  <xsl:otherwise>
-					  <xsl:call-template name="make-id"/>
+				  <xsl:otherwise>
+<!--					  <xsl:call-template name="make-id"/>-->
 					  <xsl:apply-templates select="name | collab" mode="front"/>,
-				  </xsl:otherwise>-->
+				  </xsl:otherwise>
 				</xsl:choose>
 				<!-- the name element handles any contrib/xref and contrib/degrees -->
 				<xsl:apply-templates select="*[not(self::name)
@@ -1031,7 +1031,7 @@ Make article meta data
 										   and not(self::degrees)]"
 									 mode="front"/>
 				<xsl:variable name="matchto" select="xref/@rid"/>
-				<xsl:for-each select="aff|../following-sibling::aff[@id=$matchto]">
+				<xsl:for-each select="../following-sibling::aff[@id=$matchto]">
 					<xsl:apply-templates select="institution" mode="aff-outside-contrib"/><xsl:text>, </xsl:text>
 					<xsl:apply-templates select="addr-line" mode="aff-outside-contrib"/>
 				 </xsl:for-each>
@@ -1039,18 +1039,18 @@ Make article meta data
 		</p>	
 	<p>
 		<strong>Received:</strong> <xsl:text> </xsl:text>
-		<xsl:value-of select="history/date[@date-type='received']/day"/><xsl:text>/</xsl:text>
-		<xsl:value-of select="history/date[@date-type='received']/month"/><xsl:text>/</xsl:text>
+		<xsl:apply-templates select="history/date[@date-type='received']/month" mode="none"/><xsl:text> </xsl:text>
+		<xsl:value-of select="history/date[@date-type='received']/day"/><xsl:text>, </xsl:text>
 		<xsl:value-of select="history/date[@date-type='received']/year"/><xsl:text>; </xsl:text>
 		<strong>Accepted:</strong> <xsl:text> </xsl:text>
-		<xsl:value-of select="history/date[@date-type='accepted']/day"/><xsl:text>/</xsl:text>
-		<xsl:value-of select="history/date[@date-type='accepted']/month"/><xsl:text>/</xsl:text>
+		<xsl:apply-templates select="history/date[@date-type='accepted']/month" mode="none"/><xsl:text> </xsl:text>
+		<xsl:value-of select="history/date[@date-type='accepted']/day"/><xsl:text>, </xsl:text>
 		<xsl:value-of select="history/date[@date-type='accepted']/year"/><xsl:text>; </xsl:text>
 		<strong>Published:</strong> <xsl:text> </xsl:text>
+		<xsl:apply-templates select="pub-date[@pub-type='epub']/month" mode="none"/><xsl:text> </xsl:text>
 		<xsl:if test="pub-date[@pub-type='epub']/day">
-			<xsl:value-of select="pub-date[@pub-type='epub']/day"/><xsl:text>/</xsl:text>		
+			<xsl:value-of select="pub-date[@pub-type='epub']/day"/><xsl:text>, </xsl:text>		
 		</xsl:if>
-		<xsl:value-of select="pub-date[@pub-type='epub']/month"/><xsl:text>/</xsl:text>
 		<xsl:value-of select="pub-date[@pub-type='epub']/year"/>
 	</p>
 	<p>
@@ -1058,7 +1058,8 @@ Make article meta data
 		<xsl:value-of select="article-id[@pub-id-type='doi']"/>
 	 </p>
 	<p>
-		<strong>Copyright:</strong><xsl:text> </xsl:text>
+		<strong>Copyright:</strong><xsl:text>  &#169; </xsl:text>
+             <xsl:apply-templates select="copyright-year | permissions/copyright-year" mode="front"/>
 	          <!-- copyright: show statement -or- year -->
           <!-- Most recent version of DTD recommends using the <permissions> wrapper
                for the copyright data. We handle both cases here. -->
@@ -1078,7 +1079,7 @@ Make article meta data
           </xsl:choose>
 	</p>
 	<p>
-		<xsl:apply-templates select="author-notes/corresp"/>
+		<xsl:apply-templates select="author-notes/corresp" mode="front"/>
 	</p>
       <!-- that's it for article-meta; return to previous context -->
       </xsl:for-each>
@@ -1182,9 +1183,11 @@ Make article meta data
 					<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
 				</xsl:element>
 				<xsl:apply-templates select="label"/><xsl:text> </xsl:text>
-				<xsl:apply-templates select="institution" mode="aff-outside-contrib"/><xsl:text>, </xsl:text>
-				<xsl:apply-templates select="addr-line" mode="aff-outside-contrib"/>
-				<xsl:text>, </xsl:text>
+				<xsl:apply-templates select="institution" /><xsl:text>, </xsl:text>
+				<xsl:apply-templates select="addr-line" />
+        <xsl:if test="position() != last()">
+          <xsl:text>, </xsl:text>
+        </xsl:if>    
 			</xsl:if>
 		</xsl:for-each>
       </p>
@@ -2808,11 +2811,24 @@ Make article meta data
   </xsl:choose>
 </xsl:template>
 
+
+<xsl:template match="xref[@ref-type='corresp']" mode="contrib">
+	<xsl:if test="./sup">
+		<sup>
+		<xsl:element name="a">
+			<xsl:attribute name="href">#<xsl:value-of select="@rid"/></xsl:attribute>
+			<xsl:attribute name="class">fnoteref</xsl:attribute>
+			 <xsl:value-of select="sup"/>
+		</xsl:element>
+		</sup>
+	</xsl:if>
+</xsl:template>
+
 <!-- the formatting is sometimes in the source XML,
      e.g., <sup><italic>a</italic></sup> -->
 <xsl:template match="xref[@ref-type='aff']" mode="contrib">
-  <xsl:choose>
-    <xsl:when test="'*'">
+ <!--   <xsl:choose>
+  <xsl:when test="'*'">
       <xsl:apply-templates/>
     </xsl:when>
     <xsl:when test="not(.//italic) and not (.//sup)">
@@ -2821,10 +2837,18 @@ Make article meta data
     <xsl:when test="not(.//italic)">
       <i><xsl:apply-templates/></i>
     </xsl:when>
-    <xsl:otherwise>
-      <xsl:apply-templates/>
-    </xsl:otherwise>
-  </xsl:choose>
+    <xsl:otherwise>-->
+	<xsl:if test="./sup">
+		<sup>
+		<xsl:element name="a">
+			<xsl:attribute name="href">#<xsl:value-of select="@rid"/></xsl:attribute>
+			 <xsl:value-of select="sup"/>
+		</xsl:element>
+		</sup>
+	</xsl:if>
+	<xsl:if test="following-sibling::xref[@ref-type='aff']"><sup>,</sup></xsl:if>
+<!--    </xsl:otherwise>
+  </xsl:choose>-->
 </xsl:template>
 
 <!-- author-comment -->
@@ -2920,14 +2944,8 @@ Make article meta data
 <!-- aff -->
 <!-- These affs are inside a contrib element -->
 <xsl:template match="aff" mode="front">
-  <span class="gen">
-    <xsl:call-template name="make-id"/>
-    <xsl:text>Affiliation: </xsl:text>
-  </span>
-
-  <xsl:apply-templates/>
-  <br/>
-  <xsl:call-template name="nl-1"/>
+		<xsl:apply-templates select="institution" /><xsl:text>, </xsl:text>
+		<xsl:apply-templates select="addr-line" />
 </xsl:template>
 
 <!-- aff -->
@@ -2999,14 +3017,11 @@ Make article meta data
 <!-- mixed-content; process it as given -->
 
 <xsl:template match="author-notes/corresp" mode="front">
-  <span class="gen">
-    <xsl:call-template name="make-id"/>
-    <xsl:text>Correspondence: </xsl:text>
-  </span>
-  <xsl:apply-templates/>
-  <br/>
-  <xsl:call-template name="nl-1"/>
-</xsl:template>
+	<xsl:element name="a">
+		<xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
+	</xsl:element>
+    <xsl:apply-templates/>
+  </xsl:template>
 
 <!-- author-notes/fn -->
 <!-- optional label, one or more paras -->
@@ -3330,24 +3345,24 @@ Make article meta data
 
  <!-- <span class="xref">
     <xsl:call-template name="make-id"/>-->
-	<xsl:if test="preceding-sibling::node()[1]!=','">
+<!--	<xsl:if test="preceding-sibling::node()[1]!=','">
 		<xsl:if test="local-name(preceding-sibling::node()[1])!='xref'">
 			<xsl:text>&#91;</xsl:text>
 		</xsl:if>
-	</xsl:if>
+	</xsl:if>-->
 <!--    <sup>-->
       <!-- if immediately-preceding sibling was an xref, punctuate
            (otherwise assume desired punctuation is in the source).-->
       <xsl:if test="local-name(preceding-sibling::node()[1])='xref'">
-        <xsl:text>, </xsl:text>
+        <xsl:text>,</xsl:text>
       </xsl:if>
       <a href="#{@rid}"><xsl:value-of select="."/></a>
 <!--    </sup>-->
-	<xsl:if test="following-sibling::node()[1]!=','">
+<!--	<xsl:if test="following-sibling::node()[1]!=','">
 		<xsl:if test="local-name(following-sibling::node()[1])!='xref'">
 			<xsl:text>&#93;</xsl:text>
 		</xsl:if>
-	</xsl:if>
+	</xsl:if>-->
     
 <!--  </span>-->
 </xsl:template>
@@ -3432,9 +3447,7 @@ Make article meta data
   <xsl:choose>
     <xsl:when test="@xlink:href">-->
       <a>
-		  <xsl:attribute name="href">
-				mailto:<xsl:apply-templates/>
-		  </xsl:attribute>
+		  <xsl:attribute name="href">mailto:<xsl:apply-templates/></xsl:attribute>
 		<xsl:apply-templates/>
       </a>
 <!--    </xsl:when>
@@ -4964,31 +4977,31 @@ Make article meta data
 <xsl:template match="month" mode="none">
  <xsl:variable name="month" select="."/>
   <xsl:choose>
-    <xsl:when test="$month='01' or $month='1' ">Jan</xsl:when>
-    <xsl:when test="$month='02' or $month='2' ">Feb</xsl:when>
-    <xsl:when test="$month='03' or $month='3' ">Mar</xsl:when>
-    <xsl:when test="$month='04' or $month='4' ">Apr</xsl:when>
+    <xsl:when test="$month='01' or $month='1' ">January</xsl:when>
+    <xsl:when test="$month='02' or $month='2' ">February</xsl:when>
+    <xsl:when test="$month='03' or $month='3' ">March</xsl:when>
+    <xsl:when test="$month='04' or $month='4' ">April</xsl:when>
     <xsl:when test="$month='05' or $month='5' ">May</xsl:when>
-    <xsl:when test="$month='06' or $month='6'">Jun</xsl:when>
-    <xsl:when test="$month='07' or $month='7'">Jul</xsl:when>
-    <xsl:when test="$month='08' or $month='8' ">Aug</xsl:when>
-    <xsl:when test="$month='09' or $month='9' ">Sep</xsl:when>
-    <xsl:when test="$month='10' ">Oct</xsl:when>
-    <xsl:when test="$month='11' ">Nov</xsl:when>
-    <xsl:when test="$month='12' ">Dec</xsl:when>
+    <xsl:when test="$month='06' or $month='6'">June</xsl:when>
+    <xsl:when test="$month='07' or $month='7'">July</xsl:when>
+    <xsl:when test="$month='08' or $month='8' ">August</xsl:when>
+    <xsl:when test="$month='09' or $month='9' ">September</xsl:when>
+    <xsl:when test="$month='10' ">October</xsl:when>
+    <xsl:when test="$month='11' ">November</xsl:when>
+    <xsl:when test="$month='12' ">December</xsl:when>
 
     <xsl:otherwise>
       <xsl:value-of select="$month"/>
     </xsl:otherwise>
   </xsl:choose>
-
+<!--
   <xsl:if test="../day">
     <xsl:text> </xsl:text>
     <xsl:value-of select="../day"/>
   </xsl:if>
 
   <xsl:text>;</xsl:text>
-
+-->
 </xsl:template>
 
 <xsl:template match="day" mode="none"/>
