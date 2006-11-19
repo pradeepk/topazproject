@@ -26,6 +26,7 @@
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">articles:getObjectURL</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">articles:readMetaData</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">articles:listSecondaryObjects</AttributeValue>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">articles:getObjectInfo</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">userAccounts:createUser</AttributeValue>
       </Apply>
     </Condition>
