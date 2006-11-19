@@ -32,25 +32,12 @@ class FedoraUtil {
   }
 
   /** 
-   * See if the given exception indicates that the fedora object does not exist, and if so generate
-   * a NoSuchArticleIdException; otherwise just rethrow the original exception. This method never
-   * returns normally.
+   * See if the given exception indicates that the fedora object does not exist.
    * 
-   * @param re  the RemoteException to analyze
-   * @param id  the id to put in the NoSuchArticleIdException
-   * @throws NoSuchArticleIdException if <var>re</var> indicates that the fedora object doesn't
-   *         exist
-   * @throws RemoteException for all other exceptions; this is just <var>re</var>
+   * @param re the RemoteException to analyze
    */
-  public static void detectNoSuchArticleIdException(RemoteException re, String id)
-      throws NoSuchArticleIdException, RemoteException {
-    if (re.getMessage().startsWith("fedora.server.errors.ObjectNotInLowlevelStorageException")) {
-      if (log.isDebugEnabled())
-        log.debug("tried to modify non-existing object", re);
-      throw new NoSuchArticleIdException(id);
-    }
-
-    throw re;
+  public static boolean isNoSuchObjectException(RemoteException re) {
+    return re.getMessage().startsWith("fedora.server.errors.ObjectNotInLowlevelStorageException");
   }
 
   /** 

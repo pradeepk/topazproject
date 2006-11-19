@@ -260,18 +260,16 @@ public class ArticleImpl implements Article {
     }
   }
 
-  public void delete(String article, boolean purge)
-      throws NoSuchArticleIdException, RemoteException {
+  public void delete(String article) throws NoSuchArticleIdException, RemoteException {
     pep.checkAccess(pep.DELETE_ARTICLE, ItqlHelper.validateUri(article, "article"));
 
     ItqlHelper      itql  = ctx.getItqlHelper();
     FedoraAPIM      apim  = ctx.getFedoraAPIM();
     PermissionsImpl perms = new PermissionsImpl(new PermissionsPEP.Proxy(pep), ctx);
 
-    String txn = purge ? "delete " + article : null;
+    String txn = "delete " + article;
     try {
-      if (txn != null)
-        itql.beginTxn(txn);
+      itql.beginTxn(txn);
 
       String[][] objList = findAllObjects(article, itql);
       if (log.isDebugEnabled())
@@ -284,28 +282,27 @@ public class ArticleImpl implements Article {
         if (log.isDebugEnabled())
           log.debug("deleting uri '" + uri + "'");
 
-        if (purge) {
-          apim.purgeObject(pid, "Purged object", false);
-          itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_OBJ, "subj", uri), null);
-        } else {
-          apim.modifyObject(pid, "D", null, "Deleted object");
-        }
-
         // Remove article from full-text index first
         String result = fgs.updateIndex("deletePid", pid, FGS_REPO, null, null, null);
         if (log.isDebugEnabled())
           log.debug("Removed " + pid + " from full-text index:\n" + result);
 
-        // Remove permissions
-        if (purge) {
-          perms.cancelPropagatePermissions(uri, perms.listPermissionPropagations(uri, false));
+        // remove object and meta-data
+        try {
+          apim.purgeObject(pid, "Purged object", false);
+        } catch (RemoteException re) {
+          if (!FedoraUtil.isNoSuchObjectException(re))
+            throw re;
+          log.warn("Tried to remove non-existent object '" + pid + "'");
         }
+        itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_OBJ, "subj", uri), null);
+
+        // Remove permissions
+        perms.cancelPropagatePermissions(uri, perms.listPermissionPropagations(uri, false));
       }
 
-      if (txn != null) {
-        itql.commitTxn(txn);
-        txn = null;
-      }
+      itql.commitTxn(txn);
+      txn = null;
     } catch (AnswerException ae) {
       throw new RemoteException("Error querying RDF", ae);
     } finally {

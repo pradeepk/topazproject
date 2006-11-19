@@ -77,7 +77,7 @@ public class FeedTest extends TestCase {
 
   protected void deleteArticle(String uri) throws RemoteException {
     try {
-      service.delete(uri, true);
+      service.delete(uri);
       log.info("deleted article " + uri);
 //    } catch (NoSuchArticleIdException nsaie) {
     } catch (Exception nsaie) {

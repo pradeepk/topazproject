@@ -90,17 +90,14 @@ public interface Article extends Remote {
   public void setState(String article, int state) throws NoSuchArticleIdException, RemoteException;
 
   /** 
-   * Delete an article.
+   * Delete an article. Note that it may not be possible to find and therefore erase all traces
+   * from the ingest.
    * 
    * @param article the URI of the article (e.g. "info:doi/10.1371/journal.pbio.003811")
-   * @param purge   if true, erase all traces; otherwise only the contents are deleted, leaving a
-   *                "tombstone". Note that it may not be possible to find and therefore erase
-   *                all traces from the ingest.
    * @throws NoSuchArticleIdException if the article does not exist
    * @throws RemoteException if some other error occured
    */
-  public void delete(String article, boolean purge)
-      throws NoSuchArticleIdException, RemoteException;
+  public void delete(String article) throws NoSuchArticleIdException, RemoteException;
 
   /** 
    * Get the URL from which the object's contents can retrieved via GET. Note that this method may

@@ -56,7 +56,7 @@ public class ArticleServiceTest extends TestCase {
 
   private void basicArticleTest(String zip, String uri, String pmc) throws Exception {
     try {
-      service.delete(uri, true);
+      service.delete(uri);
     } catch (NoSuchArticleIdException nsaie) {
       assertEquals("Mismatched id in exception, ", uri, nsaie.getId());
       // ignore - this just means there wasn't any stale stuff left
@@ -86,11 +86,11 @@ public class ArticleServiceTest extends TestCase {
                Arrays.equals(orig, saved));
     */
 
-    service.delete(retUri, true);
+    service.delete(retUri);
 
     gotE = null;
     try {
-      service.delete(retUri, true);
+      service.delete(retUri);
     } catch (NoSuchArticleIdException nsaie) {
       assertEquals("Mismatched id in exception, ", retUri, nsaie.getId());
       gotE = nsaie;
@@ -117,7 +117,7 @@ public class ArticleServiceTest extends TestCase {
     String retUri = null;
     try {
       retUri = service.ingest(new DataHandler(article));
-      service.delete(retUri, true);     // clean up in case of accidental success
+      service.delete(retUri);     // clean up in case of accidental success
     } catch (IngestException ie) {
       gotE = ie;
     }
@@ -213,7 +213,7 @@ public class ArticleServiceTest extends TestCase {
     assertNotNull("null ri-url", ri[0].getURL());
 
     // clean up
-    service.delete(uri, true);
+    service.delete(uri);
   }
 
   public void testRepresentations() throws Exception {
@@ -371,7 +371,7 @@ public class ArticleServiceTest extends TestCase {
     assertNotNull("null ri-url", ri[2].getURL());
 
     // clean up
-    service.delete(art, true);
+    service.delete(art);
   }
 
   public void testSecondaryObjects() throws Exception {
@@ -504,7 +504,7 @@ public class ArticleServiceTest extends TestCase {
     assertNotNull("null ri-url", ri.getURL());
 
     // clean up
-    service.delete(art, true);
+    service.delete(art);
   }
 
   public void testState() throws Exception {
@@ -593,7 +593,7 @@ public class ArticleServiceTest extends TestCase {
     res = service.getArticles(null, null, null, null, new int[] { 42, Article.ST_ACTIVE }, false);
     assertTrue("Failed to find article", hasArticle(res));
 
-    service.delete(art, true);
+    service.delete(art);
   }
 
   private static final boolean hasArticle(String searchResult) {

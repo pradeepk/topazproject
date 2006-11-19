@@ -77,9 +77,8 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   /**
    * @see org.topazproject.ws.article.Article#delete
    */
-  public void delete(String article, boolean purge)
-      throws RemoteException, NoSuchArticleIdException {
-    impl.delete(article, purge);
+  public void delete(String article) throws RemoteException, NoSuchArticleIdException {
+    impl.delete(article);
   }
 
   /**
