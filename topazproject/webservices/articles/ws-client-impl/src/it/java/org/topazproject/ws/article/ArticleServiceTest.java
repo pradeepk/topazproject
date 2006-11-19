@@ -148,6 +148,7 @@ public class ArticleServiceTest extends TestCase {
                  "Regulation of Muscle Fiber Type and Running Endurance by PPAR\u00A0",
                  oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
+    assertNull("unexpected superseded-by", oi.getSupersededBy());
     assertNull("unexpected context-element", oi.getContextElement());
     assertEquals("wrong state", 1, oi.getState());
 
@@ -177,6 +178,7 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("wrong uri", secUri, oi.getUri());
     assertEquals("wrong title", "Figure 1", oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
+    assertNull("unexpected superseded-by", oi.getSupersededBy());
     assertEquals("wrong context-element", "fig", oi.getContextElement());
     assertEquals("wrong state", 1, oi.getState());
 
@@ -201,6 +203,7 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("wrong uri", secUri, oi.getUri());
     assertEquals("wrong title", "Video S1", oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
+    assertNull("unexpected superseded-by", oi.getSupersededBy());
     assertEquals("wrong context-element", "supplementary-material", oi.getContextElement());
     assertEquals("wrong state", 1, oi.getState());
 
@@ -239,6 +242,7 @@ public class ArticleServiceTest extends TestCase {
                  "Regulation of Muscle Fiber Type and Running Endurance by PPAR\u00A0",
                  oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
+    assertNull("unexpected superseded-by", oi.getSupersededBy());
     assertNull("unexpected context-element", oi.getContextElement());
     assertEquals("wrong state", 1, oi.getState());
 
@@ -420,6 +424,15 @@ public class ArticleServiceTest extends TestCase {
     assertNotNull("missing description", oi[6].getDescription());
     assertNotNull("missing description", oi[7].getDescription());
 
+    assertNull("unexpected superseded-by", oi[0].getSupersededBy());
+    assertNull("unexpected superseded-by", oi[1].getSupersededBy());
+    assertNull("unexpected superseded-by", oi[2].getSupersededBy());
+    assertNull("unexpected superseded-by", oi[3].getSupersededBy());
+    assertNull("unexpected superseded-by", oi[4].getSupersededBy());
+    assertNull("unexpected superseded-by", oi[5].getSupersededBy());
+    assertNull("unexpected superseded-by", oi[6].getSupersededBy());
+    assertNull("unexpected superseded-by", oi[7].getSupersededBy());
+
     assertEquals("wrong context-element", "fig", oi[0].getContextElement());
     assertEquals("wrong context-element", "fig", oi[1].getContextElement());
     assertEquals("wrong context-element", "fig", oi[2].getContextElement());
@@ -594,6 +607,57 @@ public class ArticleServiceTest extends TestCase {
     assertTrue("Failed to find article", hasArticle(res));
 
     service.delete(art);
+  }
+
+  public void testSuperseded() throws Exception {
+    // some NoSuchArticleIdException tests
+    boolean gotE = false;
+    try {
+      service.markSuperseded("info:doi/blah/foo", "info:doi/blah/bar");
+    } catch (NoSuchArticleIdException nsaie) {
+      assertEquals("Mismatched id in exception, ", "info:doi/blah/foo", nsaie.getId());
+      gotE = true;
+    }
+    assertTrue("Failed to get expected no-such-article-id exception", gotE);
+
+    URL article = getClass().getResource("/pbio.0020294.zip");
+    String art1 = service.ingest(new DataHandler(article));
+    assertEquals("Wrong uri returned,", "info:doi/10.1371/journal.pbio.0020294", art1);
+
+    gotE = false;
+    try {
+      service.markSuperseded(art1, "info:doi/blah/bar");
+    } catch (NoSuchArticleIdException nsaie) {
+      assertEquals("Mismatched id in exception, ", "info:doi/blah/bar", nsaie.getId());
+      gotE = true;
+    }
+    assertTrue("Failed to get expected no-such-article-id exception", gotE);
+
+    gotE = false;
+    try {
+      service.markSuperseded("info:doi/blah/bar", art1);
+    } catch (NoSuchArticleIdException nsaie) {
+      assertEquals("Mismatched id in exception, ", "info:doi/blah/bar", nsaie.getId());
+      gotE = true;
+    }
+    assertTrue("Failed to get expected no-such-article-id exception", gotE);
+
+    // test that it works
+    article = getClass().getResource("/pbio.0020042.zip");
+    String art2 = service.ingest(new DataHandler(article));
+    assertEquals("Wrong uri returned,", "info:doi/10.1371/journal.pbio.0020042", art2);
+
+    service.markSuperseded(art1, art2);
+
+    ObjectInfo oi = service.getObjectInfo(art1);
+    assertEquals("wrong superseded-by", art2, oi.getSupersededBy());
+
+    oi = service.getObjectInfo(art2);
+    assertNull("unexpected superseded-by", oi.getSupersededBy());
+
+    // clean up
+    service.delete(art1);
+    service.delete(art2);
   }
 
   private static final boolean hasArticle(String searchResult) {

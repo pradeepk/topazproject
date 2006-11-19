@@ -12,8 +12,8 @@ package org.topazproject.ws.article;
 
 /**
  * This hold the information returned about an article related object. This may be either the
- * article itself, in which case certain fields may not apply and will be null, or a secondary
- * object.
+ * article itself or a secondary object; in either case certain fields may not apply and will
+ * be null,
  *
  * <p>This class is a bean.
  *
@@ -28,7 +28,9 @@ public class ObjectInfo {
   private String title;
   /** The description associated with the object. */
   private String description;
-  /** The list of representations of object. */
+  /** The article that supersedes this one. */
+  private String supersededBy;
+  /** The description associated with the object. */
   private RepresentationInfo[] representations;
   /** The the xml element in which this object is embedded (e.g. 'table-wrap', 'fig', etc). */
   private String contextElement;
@@ -103,6 +105,24 @@ public class ObjectInfo {
    */
   public void setDescription(String description) {
     this.description = description;
+  }
+
+  /**
+   * Get the uri of the article that supersededs this one.
+   *
+   * @return the uri of the supersededing article, or null.
+   */
+  public String getSupersededBy() {
+    return supersededBy;
+  }
+
+  /**
+   * Set the uri of the article that supersededs this one.
+   *
+   * @param supersededBy the uri of the supersededing article.
+   */
+  public void setSupersededBy(String supersededBy) {
+    this.supersededBy = supersededBy;
   }
 
   /**

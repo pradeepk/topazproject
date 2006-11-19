@@ -97,6 +97,13 @@ public class ArticleImpl implements Article {
        "  into ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
+  private static final String ITQL_MARK_SUPERSEDED =
+      ("insert " +
+       "    <${oldArt}> <dc_terms:isReplacedBy> <${newArt}> " +
+       "    <${newArt}> <dc_terms:replaces> <${oldArt}> " +
+       "  into ${MODEL};").
+      replaceAll("\\Q${MODEL}", MODEL);
+
   private static final String ITQL_FIND_OBJS =
       ("select $obj $pid from ${MODEL} where " +
           // ensure it's an article
@@ -210,9 +217,12 @@ public class ArticleImpl implements Article {
     pep.checkAccess(pep.INGEST_ARTICLE, ItqlHelper.validateUri(newArt, "newArt"));
     ItqlHelper.validateUri(oldArt, "oldArt");
 
-    ctx.getItqlHelper().doUpdate("insert <" + oldArt + "> <dc_terms:isReplacedBy> <" + newArt +
-                                 "> <" + newArt + "> <dc_terms:replaces> <" + oldArt +
-                                 "> into " + MODEL + ";", null);
+    ItqlHelper itql = ctx.getItqlHelper();
+    checkArticleExists(oldArt, itql);
+    checkArticleExists(newArt, itql);
+
+    itql.doUpdate(ItqlHelper.bindValues(ITQL_MARK_SUPERSEDED, "oldArt", oldArt, "newArt", newArt),
+                  null);
   }
 
   public void setState(String article, int state) throws NoSuchArticleIdException, RemoteException {
@@ -650,6 +660,8 @@ public class ArticleImpl implements Article {
         oi.setContextElement(info.getString("o"));
       else if (pred.equals(ItqlHelper.TOPAZ_URI + "articleState"))
         oi.setState(Integer.parseInt(info.getString("o")));
+      else if (pred.equals(ItqlHelper.DC_TERMS_URI + "isReplacedBy"))
+        oi.setSupersededBy(info.getString("o"));
     }
 
     RepresentationInfo[] ri = new RepresentationInfo[reps.size()];
