@@ -1001,6 +1001,25 @@
 	</xsl:for-each>
 </xsl:template>
 
+<xsl:template name="makeInitials">
+  <xsl:param name="string" />
+  <xsl:param name="delimiter" select="' '" />
+  <xsl:choose>
+   <xsl:when test="$delimiter and contains($string, $delimiter)">
+           <xsl:value-of select="substring(substring-before($string,$delimiter), 1,1)" />
+           <xsl:call-template name="makeInitials">
+			   <xsl:with-param name="string" select="substring-after($string,$delimiter)" />
+           <xsl:with-param name="delimiter"     select="$delimiter" />
+           </xsl:call-template>
+    </xsl:when>
+    <xsl:otherwise>
+		<xsl:value-of select="substring($string,1,1)" />
+    </xsl:otherwise>
+ </xsl:choose>
+ </xsl:template>
+
+
+
 <!--
 Make article meta data
 
@@ -1037,7 +1056,37 @@ Make article meta data
 				 </xsl:for-each>
 			</xsl:for-each> <!-- end of contrib -->
 		</p>	
-	<p>
+		<p>
+			<strong>Citation: </strong>
+			<xsl:for-each select="contrib-group/contrib[@contrib-type='author'][position() &lt; 7]">
+				<xsl:choose>
+					<xsl:when test="position() = 6">
+						<xsl:text>et al. </xsl:text>					
+					</xsl:when>
+					<xsl:otherwise>
+						<xsl:apply-templates select="name/surname"/>
+						<xsl:text> </xsl:text>
+						<xsl:call-template name="makeInitials">
+							<xsl:with-param name="string"><xsl:value-of select="name/given-names"/></xsl:with-param>
+						</xsl:call-template>
+						<xsl:if test="position() != last()">
+							<xsl:text>, </xsl:text>
+						</xsl:if>
+					</xsl:otherwise>
+				</xsl:choose>
+			</xsl:for-each>
+			<xsl:text> (</xsl:text>
+			<xsl:value-of select="copyright-year"/>
+			<xsl:text>) </xsl:text>
+			<xsl:value-of select="title-group/article-title"/>
+			<xsl:text>. </xsl:text>
+			<xsl:value-of select="../journal-meta/journal-title"/>
+			<xsl:value-of select="volume"/>(<xsl:value-of select="issue"/>):
+			<xsl:value-of select="epage"/>.
+			doi:<xsl:value-of select="article-id[@pub-id-type='doi']"/>
+		</p>
+
+		<p>
 		<strong>Received:</strong> <xsl:text> </xsl:text>
 		<xsl:apply-templates select="history/date[@date-type='received']/month" mode="none"/><xsl:text> </xsl:text>
 		<xsl:value-of select="history/date[@date-type='received']/day"/><xsl:text>, </xsl:text>
@@ -1053,10 +1102,10 @@ Make article meta data
 		</xsl:if>
 		<xsl:value-of select="pub-date[@pub-type='epub']/year"/>
 	</p>
-	<p>
+<!--	<p>
 		<strong>DOI:</strong><xsl:text> </xsl:text>
 		<xsl:value-of select="article-id[@pub-id-type='doi']"/>
-	 </p>
+	 </p>-->
 	<p>
 		<strong>Copyright:</strong><xsl:text>  &#169; </xsl:text>
              <xsl:apply-templates select="copyright-year | permissions/copyright-year" mode="front"/>
