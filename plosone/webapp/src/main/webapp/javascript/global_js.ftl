@@ -1,5 +1,10 @@
 <script type="text/javascript">
   var namespace="${freemarker_config.getContext()}";
+	<#if Session.PLOS_ONE_USER?exists>
+		var loggedIn = true;
+	<#else>
+  	var loggedIn = false;
+	</#if>
 </script>
 <#list freemarker_config.getJavaScript(templateFile) as x>
 	<#if x?ends_with(".ftl")>

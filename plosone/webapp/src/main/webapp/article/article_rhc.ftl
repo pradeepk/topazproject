@@ -34,7 +34,11 @@
 	<div class="commentview">
 		<h6>Commentary</h6>
 		<ol>
+	<#if Session.PLOS_ONE_USER?exists>
 			<li><a href="#" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>
+  <#else>
+			<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>
+  </#if>
 			<li><a href="#" class="expand tooltip" title="Click to turn annotations on/off">Turn annotations on/off</a>
 			<!-- begin : expanded block -->
 				<fieldset>
