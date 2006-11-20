@@ -65,6 +65,7 @@ public class WSTopazContext implements TopazContext {
   private static final Configuration            upldConfig;
   private static final HashMap                  poolMap    = new HashMap();
   private static final GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
+  private static final ObjectPool               itqlPool;
 
   static {
     Configuration root = ConfigurationStore.getInstance().getConfiguration();
@@ -106,17 +107,18 @@ public class WSTopazContext implements TopazContext {
     poolConfig.testWhileIdle                    = true;
     poolConfig.timeBetweenEvictionRunsMillis    = 5 * 60 * 1000; // 5 min
     poolConfig.whenExhaustedAction              = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
+    itqlPool                                    = new GenericObjectPool(new ItqlHelperFactory(),
+                                                                        poolConfig);
   }
 
   private final String           sessionKey;
-  private boolean                active   = false;
-  private FedoraAPIM             apim     = null;
-  private Uploader               upld     = null;
-  private ItqlHelper             itql     = null;
-  private HandleCache            cache    = null;
-  private HttpSession            session  = null;
+  private boolean                active  = false;
+  private FedoraAPIM             apim    = null;
+  private Uploader               upld    = null;
+  private ItqlHelper             itql    = null;
+  private HandleCache            cache   = null;
+  private HttpSession            session = null;
   private ServletEndpointContext context;
-  private ObjectPool             itqlPool;
 
   /**
    * Creates a new WSTopazContext object.
@@ -125,15 +127,6 @@ public class WSTopazContext implements TopazContext {
    */
   public WSTopazContext(String sessionNs) {
     sessionKey = sessionNs + ".handle-cache";
-
-    synchronized (poolMap) {
-      itqlPool = (ObjectPool) poolMap.get(sessionNs + ".itql-pool");
-
-      if (itqlPool == null) {
-        itqlPool = new GenericObjectPool(new ItqlHelperFactory(), poolConfig);
-        poolMap.put(sessionNs + ".itql-pool", itqlPool);
-      }
-    }
   }
 
   /*
