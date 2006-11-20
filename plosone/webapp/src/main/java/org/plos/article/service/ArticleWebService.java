@@ -136,6 +136,22 @@ public class ArticleWebService extends BaseConfigurableService {
     return delegateService.getArticles(startDate, endDate, null, null, null, true);
   }
 
+  /*  * @param startDate  is the date to start searching from. If null, start from begining of time.
+  *                   Can be iso8601 formatted or string representation of Date object.
+  * @param endDate    is the date to search until. If null, search until present date
+  * @param states     the list of article states to search for (all states if null or empty)
+  * @param ascending  controls the sort order (by date). If used for RSS feeds, decending would
+  *                   be appropriate. For archive display, ascending would be appropriate.
+  * @return the xml for the specified feed
+  * @throws RemoteException if there was a problem talking to the alerts service
+  */
+ public String getArticles(final String startDate, final String endDate, 
+		             final int[] states, boolean ascending) throws RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+	return delegateService.getArticles(startDate, endDate, null, null, states, true);
+	 
+ }
+
   /**
    * Get the object-info of an object
    * @param obj uri

@@ -365,14 +365,15 @@ public class FetchArticleService {
    * Get a list of all articles
    * @param startDate startDate
    * @param endDate endDate
+   * @param state  array of matching state values
    * @return list of article uri's
    * @throws ApplicationException ApplicationException
    */
-  public Collection<String> getArticles(final String startDate, final String endDate) throws ApplicationException {
+  public Collection<String> getArticles(final String startDate, final String endDate, final int[] state) throws ApplicationException {
     final Collection<String> articles = new ArrayList<String>();
 
     try {
-      final String articlesDoc = articleService.getArticles(startDate, endDate);
+      final String articlesDoc = articleService.getArticles(startDate, endDate, state, true);
 
       // Create the builder and parse the file
       final Document articleDom = factory.newDocumentBuilder().parse(new InputSource(new StringReader(articlesDoc)));
@@ -393,6 +394,17 @@ public class FetchArticleService {
     }
   }
 
+  /**
+   * Get a list of all articles
+   * @param startDate startDate
+   * @param endDate endDate
+   * @return list of article uri's
+   * @throws ApplicationException ApplicationException
+   */
+  public Collection<String> getArticles(final String startDate, final String endDate) throws ApplicationException {
+	  return getArticles(startDate, endDate, null);
+  }
+  
   /**
    * Set the encoding charset
    * @param encodingCharset encodingCharset

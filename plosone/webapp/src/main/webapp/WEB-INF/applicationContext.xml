@@ -66,9 +66,17 @@
     	name="doiXrefUrl" 
     	value="http://doi.crossref.org/servlet/deposit?operation=doMDUpload&amp;login_id=atypon&amp;login_passwd=_atypon_&amp;area=test"
     />      
-    <property name="xslTemplate" value="/crossref.xsl"/>    
+  
   </bean>
 
+  <bean id="documentManagementService" class="org.plos.admin.service.DocumentManagementService" scope="session">
+  	<!-- These pathnames are absolute -->
+  	<property name="documentDirectory" value="/usr/plosdocs"/>
+  	<property name="ingestedDocumentDirectory" value="/usr/plosdocs/ingested"/>
+  	<!-- Whereas this is relative to webapp/src/main/resources  -->
+    <property name="xslTemplate" value="/crossref.xsl"/>    	
+  </bean>
+  
   <bean id="defaultEncodingCharset" class="java.lang.String">
     <constructor-arg value="UTF-8"/>
   </bean>
