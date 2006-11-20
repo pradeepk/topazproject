@@ -6,7 +6,7 @@
   - Licensed under the Educational Community License version 1.0
   - http://opensource.org/licenses/ecl1.php
   -->
-<beans default-autowire="autodetect"
+<beans default-autowire="byName"
        xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:util="http://www.springframework.org/schema/util"

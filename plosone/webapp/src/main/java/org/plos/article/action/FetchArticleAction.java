@@ -29,9 +29,11 @@ public class FetchArticleAction extends BaseActionSupport {
 
   public String execute() throws Exception {
     try {
-      final StringWriter stringWriter = new StringWriter(INITIAL_TRANSFORMED_FILE_SIZE);
-      fetchArticleService.getURIAsHTML(articleURI, stringWriter);
-      setTransformedArticle(stringWriter.toString());
+      //final StringWriter stringWriter = new StringWriter(INITIAL_TRANSFORMED_FILE_SIZE);
+      //fetchArticleService.getURIAsHTML(articleURI, );
+
+      setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
+      //log.debug("transformedArticle: " + transformedArticle);
     } catch (NoSuchIdException e) {
       messages.add("No article found for id: " + articleURI);
       log.warn(e, e);

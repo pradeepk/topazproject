@@ -150,6 +150,21 @@ public class FileUtils {
     final String extension = mimeTypeMap.get(mimeType.toLowerCase());
     return null == extension ? "" : extension;
   }
+
+  public static String escapeURIAsPath (final String inURI) {
+    StringBuffer buf = new StringBuffer();
+
+    int i = 0;
+    while ( i < inURI.length() ) {
+      char c = inURI.charAt(i);
+      if ( ' ' != c && '/' != c && ':' != c)
+        buf.append( c );
+      i++;
+    }
+    return buf.toString();
+    
+  }
+
 }
 
 //class PlosMimeTypeMap {

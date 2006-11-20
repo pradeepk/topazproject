@@ -3,6 +3,10 @@
  */
 package org.plos.annotation.service;
 
+
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+import com.opensymphony.oscache.base.NeedsRefreshException;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
@@ -34,6 +38,8 @@ public class AnnotationService extends BaseConfigurableService {
   private AnnotationConverter converter;
   private PermissionWebService permissionWebService;
 
+  private GeneralCacheAdministrator articleCacheAdministrator;
+  
   /**
    * Create an annotation.
    * @param target target that an annotation is being created for
@@ -52,6 +58,7 @@ public class AnnotationService extends BaseConfigurableService {
       if (isPublic) {
         setAnnotationPublic(annotationId);
       }
+      articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(target));
       return annotationId;
     } catch (RemoteException e) {
       throw new ApplicationException(e);
@@ -148,6 +155,8 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding) throws ApplicationException {
     try {
+      Annotation ai = getAnnotation(annotationId);
+      articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
       annotationWebService.deletePrivateAnnotation(annotationId, deletePreceding);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
@@ -163,6 +172,8 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public void deletePublicAnnotation(final String annotationId) throws ApplicationException {
     try {
+      Annotation ai = getAnnotation(annotationId);
+      articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
       annotationWebService.deletePublicAnnotation(annotationId);
       //TODO: Set the access permissions for administrator only
     } catch (RemoteException e) {
@@ -374,5 +385,19 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public void setPermissionWebService(final PermissionWebService permissionWebService) {
     this.permissionWebService = permissionWebService;
+  }
+
+  /**
+   * @return Returns the articleCacheAdministrator.
+   */
+  public GeneralCacheAdministrator getArticleCacheAdministrator() {
+    return articleCacheAdministrator;
+  }
+
+  /**
+   * @param articleCacheAdministrator The articleCacheAdministrator to set.
+   */
+  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
+    this.articleCacheAdministrator = articleCacheAdministrator;
   }
 }

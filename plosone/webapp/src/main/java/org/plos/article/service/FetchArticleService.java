@@ -3,12 +3,16 @@
  */
 package org.plos.article.service;
 
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.sun.org.apache.xpath.internal.XPathAPI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import org.plos.Constants;
 import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Annotator;
+import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
 import org.plos.util.TextUtils;
 import org.topazproject.common.NoSuchIdException;
@@ -37,6 +41,7 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.StringReader;
+import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -62,6 +67,8 @@ public class FetchArticleService {
   private AnnotationWebService annotationWebService;
   private DocumentBuilderFactory factory;
 
+  private GeneralCacheAdministrator articleCacheAdministrator;
+  
   public void init() {
     // Set the TransformerFactory system property.
     for (Map.Entry<String, String> entry : xmlFactoryProperty.entrySet()) {
@@ -74,26 +81,59 @@ public class FetchArticleService {
     factory.setValidating(false);
   }
 
-  /**
-   * Get the URI transformed as HTML.
-   * @param articleURI articleURI
-   * @param writer writer
-   * @throws org.plos.ApplicationException ApplicationException
-   * @throws java.rmi.RemoteException RemoteException
-   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
-   */
-  public void getURIAsHTML(final String articleURI, final Writer writer) throws ApplicationException, RemoteException, NoSuchIdException {
+
+  private String getTransformedArticle(final String articleURI) throws ApplicationException, RemoteException, NoSuchIdException {
     try {
       final Transformer transformer = getTransformer();
-
       final Source domSource = getAnnotatedContentAsDOMSource(articleURI);
+      final Writer writer = new StringWriter(100000);
       
       transformer.transform(domSource,
                             new StreamResult(writer));
+      return (writer.toString());
     } catch (Exception e) {
       log.error("Transformation of article failed", e);
       throw new ApplicationException("Transformation of article failed", e);
     }
+  }
+  
+  /**
+   * Get the URI transformed as HTML.
+   * @param articleURI articleURI
+   * @return String representing the annotated article as HTML
+   * @throws org.plos.ApplicationException ApplicationException
+   * @throws java.rmi.RemoteException RemoteException
+   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
+   */
+  public String getURIAsHTML(final String articleURI) throws ApplicationException,
+                          RemoteException, NoSuchIdException {
+    final PlosOneUser pou = (PlosOneUser)articleService.getSessionMap().get(Constants.PLOS_ONE_USER_KEY);
+    String topazUserId = "";
+    if (pou != null) {
+      topazUserId = pou.getUserId();
+    }
+    String theArticle = null;
+    String escapedURI = FileUtils.escapeURIAsPath(articleURI);
+    try {
+      //for now, since all annotations are public, don't have to cache based on userID
+      theArticle = (String)articleCacheAdministrator.getFromCache(escapedURI/* + topazUserId*/); 
+      if (log.isDebugEnabled()) {
+        log.debug("retrived article from cache: " + articleURI + " / " + topazUserId);
+      }
+    } catch (NeedsRefreshException nre) {
+      boolean updated = false;
+      try {
+        //use grouping for future when annotations can be private
+        theArticle= getTransformedArticle(articleURI);
+        articleCacheAdministrator.putInCache(escapedURI/* + topazUserId*/, 
+                                   theArticle, new String[]{escapedURI});
+        updated = true;
+      } finally {
+        if (!updated)
+          articleCacheAdministrator.cancelUpdate(escapedURI);
+      }
+    }
+    return theArticle;
   }
 
   private Transformer getTransformer() throws FileNotFoundException, TransformerException {
@@ -359,5 +399,19 @@ public class FetchArticleService {
    */
   public void setEncodingCharset(final String encodingCharset) {
     this.encodingCharset = encodingCharset;
+  }
+
+  /**
+   * @return Returns the articleCacheAdministrator.
+   */
+  public GeneralCacheAdministrator getArticleCacheAdministrator() {
+    return articleCacheAdministrator;
+  }
+
+  /**
+   * @param articleCacheAdministrator The articleCacheAdministrator to set.
+   */
+  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
+    this.articleCacheAdministrator = articleCacheAdministrator;
   }
 }
