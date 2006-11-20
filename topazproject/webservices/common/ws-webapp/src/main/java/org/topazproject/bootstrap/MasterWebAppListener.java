@@ -21,6 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.configuration.ConfigurationStore;
+import org.topazproject.configuration.WebAppListener;
 
 /**
  * A listener class for web-apps to initialize things at startup.
@@ -32,13 +33,18 @@ import org.topazproject.configuration.ConfigurationStore;
 public class MasterWebAppListener implements ServletContextListener {
   private static Log log = LogFactory.getLog(MasterWebAppListener.class);
 
+  private WebAppListener confListener = new WebAppListener();
+  private List listeners;
   /**
    * Shutdown things.
    *
    * @param event the destryed event
    */
   public void contextDestroyed(ServletContextEvent event) {
+    log.info("Shutting down topaz-web-application...");
     call("contextDestroyed", event);
+    confListener.contextDestroyed(event);
+    log.info("Topaz-web-application is now stopped.");
   }
 
   /**
@@ -47,27 +53,29 @@ public class MasterWebAppListener implements ServletContextListener {
    * @param event destroyed event
    */
   public void contextInitialized(ServletContextEvent event) {
+    log.info("Initializing topaz-web-application...");
+    confListener.contextInitialized(event);
+    Configuration conf = ConfigurationStore.getInstance().getConfiguration();
+    listeners = conf.getList("topaz.life-cycle-listeners.listener");
     call("contextInitialized", event);
+    log.info("Topaz-web-application is now initialized.");
   }
 
   private void call(String methodName, ServletContextEvent event) {
     try {
-      Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-      List listeners = conf.getList("topaz.life-cycle-listeners.listener");
       Iterator it = listeners.iterator();
       while (it.hasNext()) {
         String listenerName = (String) it.next();
         try {
           Class theClass = Class.forName(listenerName);
           ServletContextListener listener = (ServletContextListener) theClass.newInstance();
+          log.debug("Calling " + methodName + " on " + listenerName);
           Method method = theClass.getMethod(methodName, new Class[] {ServletContextEvent.class});
           method.invoke(listener, new Object[] {event});
-          log.info("Called " + methodName + " on " + listenerName);
         } catch (Exception e) {
           log.warn("Error calling " + methodName + " on " + listenerName, e);
         }
       }
-      log.info("Called " + methodName + " on topaz life-cycle-listeners");
     } catch (Exception e) {
       log.warn("Error calling " + methodName + " on topaz life-cycle-listeners", e);
     }

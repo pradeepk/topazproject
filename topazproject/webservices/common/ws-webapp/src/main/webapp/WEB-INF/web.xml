@@ -55,10 +55,6 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
   </filter-mapping>
 
   <listener>
-    <listener-class>org.topazproject.configuration.WebAppListener</listener-class>
-  </listener>
-
-  <listener>
     <listener-class>org.topazproject.bootstrap.MasterWebAppListener</listener-class>
   </listener>
   
