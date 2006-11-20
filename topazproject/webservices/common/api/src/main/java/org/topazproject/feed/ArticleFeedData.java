@@ -23,6 +23,7 @@ public class ArticleFeedData {
   String   description;
   Date     date;
   List     authors;
+  List     subjects;
   List     categories;
   int      state;
 

@@ -57,6 +57,12 @@ public class ArticleFeed {
     "select '${obj}' $subject from ${ARTICLES} where " +
     " <${obj}> <dc:subject> $subject " +
     "order by $subject;";
+  // TODO: Find sub-categories too
+  private static final String FIND_CATEGORIES_ITQL =
+    "select '${obj}' $category from ${ARTICLES} where " +
+    " <${obj}> <topaz:hasCategory> $cat and " +
+    " $cat <topaz:mainCategory> $category " +
+    "order by $category;";
   private static final String FIND_AUTHORS_ITQL =
     "select '${obj}' $author from ${ARTICLES} where " +
     " <${obj}> <dc:creator> $author " +
@@ -72,6 +78,7 @@ public class ArticleFeed {
     "    <date>${date}</date>\n" +
     "    ${authors}\n" +
     "    ${categories}\n" +
+    "    ${subjects}\n" +
     "  </article>\n";
 
   /**
@@ -94,8 +101,8 @@ public class ArticleFeed {
     if (categories != null && categories.length > 0) {
       args.append(" and (");
       for (int i = 0; i < categories.length; i++)
-        args.append("$obj <dc:subject> '").append(ItqlHelper.escapeLiteral(categories[i])).
-             append("' or ");
+        args.append("$obj <topaz:hasCategory> $cat and $cat <topaz:mainCategory> '").
+          append(ItqlHelper.escapeLiteral(categories[i])).append("' or ");
       args.setLength(args.length() - 4);
       args.append(")");
     }
@@ -187,6 +194,7 @@ public class ArticleFeed {
       values.put("ARTICLES", MODEL_ARTICLES);
       values.put("obj", article.uri);
       queryBuffer.append(ItqlHelper.bindValues(FIND_SUBJECTS_ITQL, values));
+      queryBuffer.append(ItqlHelper.bindValues(FIND_CATEGORIES_ITQL, values));
       queryBuffer.append(ItqlHelper.bindValues(FIND_AUTHORS_ITQL, values));
     }
 
@@ -230,7 +238,8 @@ public class ArticleFeed {
       List values = new LinkedList();
       for (Iterator rowIt = rows.iterator(); rowIt.hasNext(); )
         values.add(((String[])rowIt.next())[1]);
-      if (column.equals("subject")) article.categories = values;
+      if (column.equals("subject")) article.subjects = values;
+      else if (column.equals("category")) article.categories = values;
       else if (column.equals("author")) article.authors = values;
     }
   }
@@ -268,6 +277,17 @@ public class ArticleFeed {
         categoriesSb.append("    </categories>");
       }
 
+      StringBuffer subjectsSb = new StringBuffer();
+      if (article.subjects != null && article.subjects.size() > 0) {
+        for (Iterator subjectsIt = article.subjects.iterator(); subjectsIt.hasNext(); ) {
+          subjectsSb.append("      <subject>");
+          subjectsSb.append(subjectsIt.next());
+          subjectsSb.append("</subject>\n");
+        }
+        subjectsSb.insert(0, "<subjects>\n");
+        subjectsSb.append("    </subjects>");
+      }
+
       Map values = new HashMap();
       /* internationalize () */
       values.put("uri", article.uri);
@@ -275,6 +295,7 @@ public class ArticleFeed {
       values.put("description", article.description);
       values.put("date", formatDate(article.date));
       values.put("authors", authorsSb.toString());
+      values.put("subjects", subjectsSb.toString());
       values.put("categories", categoriesSb.toString());
       articlesXml += ItqlHelper.bindValues(XML_ARTICLE_TAG, values);
     }

@@ -9,9 +9,14 @@
       <author>Richard J Roberts</author>
     </authors>
     <categories>
-      <category>Bioinformatics/Computational Biology</category>
-      <category>Genetics/Genomics/Gene Therapy</category>
+      <category>Bioinformatics</category>
+      <category>Genetics</category>
       <category>Microbiology</category>
     </categories>
+    <subjects>
+      <subject>Bioinformatics/Computational Biology</subject>
+      <subject>Genetics/Genomics/Gene Therapy</subject>
+      <subject>Microbiology</subject>
+    </subjects>
   </article>
 </articles>

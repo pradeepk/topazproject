@@ -9,9 +9,15 @@
     <categories>
       <category>Biotechnology</category>
       <category>Ecology</category>
-      <category>Genetics/Genomics/Gene Therapy</category>
+      <category>Genetics</category>
       <category>Plant Science</category>
     </categories>
+    <subjects>
+      <subject>Biotechnology</subject>
+      <subject>Ecology</subject>
+      <subject>Genetics/Genomics/Gene Therapy</subject>
+      <subject>Plant Science</subject>
+    </subjects>
   </article>
   <article>
     <uri>info:doi/10.1371/journal.pbio.0020317</uri>
@@ -39,8 +45,12 @@
       <author>Yoshio Tateno</author>
     </authors>
     <categories>
-      <category>Bioinformatics/Computational Biology</category>
-      <category>Genetics/Genomics/Gene Therapy</category>
+      <category>Bioinformatics</category>
+      <category>Genetics</category>
     </categories>
+    <subjects>
+      <subject>Bioinformatics/Computational Biology</subject>
+      <subject>Genetics/Genomics/Gene Therapy</subject>
+    </subjects>
   </article>
 </articles>

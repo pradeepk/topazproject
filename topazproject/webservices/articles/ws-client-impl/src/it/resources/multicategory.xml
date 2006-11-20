@@ -9,9 +9,15 @@
     <categories>
       <category>Biotechnology</category>
       <category>Ecology</category>
-      <category>Genetics/Genomics/Gene Therapy</category>
+      <category>Genetics</category>
       <category>Plant Science</category>
     </categories>
+    <subjects>
+      <subject>Biotechnology</subject>
+      <subject>Ecology</subject>
+      <subject>Genetics/Genomics/Gene Therapy</subject>
+      <subject>Plant Science</subject>
+    </subjects>
   </article>
   <article>
     <uri>info:doi/10.1371/journal.pbio.0020294</uri>
@@ -34,9 +40,17 @@
       <category>Biotechnology</category>
       <category>Cell Biology</category>
       <category>Development</category>
-      <category>Molecular Biology/Structural Biology</category>
+      <category>Molecular Biology</category>
       <category>Physiology</category>
     </categories>
+    <subjects>
+      <subject>Bioengineering</subject>
+      <subject>Biotechnology</subject>
+      <subject>Cell Biology</subject>
+      <subject>Development</subject>
+      <subject>Molecular Biology/Structural Biology</subject>
+      <subject>Physiology</subject>
+    </subjects>
   </article>
   <article>
     <uri>info:doi/10.1371/journal.pbio.0020042</uri>
@@ -47,9 +61,14 @@
       <author>Richard J Roberts</author>
     </authors>
     <categories>
-      <category>Bioinformatics/Computational Biology</category>
-      <category>Genetics/Genomics/Gene Therapy</category>
+      <category>Bioinformatics</category>
+      <category>Genetics</category>
       <category>Microbiology</category>
     </categories>
+    <subjects>
+      <subject>Bioinformatics/Computational Biology</subject>
+      <subject>Genetics/Genomics/Gene Therapy</subject>
+      <subject>Microbiology</subject>
+    </subjects>
   </article>
 </articles>
