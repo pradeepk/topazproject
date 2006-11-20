@@ -33,6 +33,7 @@ public abstract class ArticlePEP extends AbstractSimplePEP implements Article.Pe
                                                            SET_ARTICLE_STATE,
                                                            GET_OBJECT_URL,
                                                            SET_REPRESENTATION,
+                                                           SET_AUTHOR_USER_IDS,
                                                            GET_OBJECT_INFO,
                                                            LIST_SEC_OBJECTS,
                                                            READ_META_DATA,
@@ -40,6 +41,7 @@ public abstract class ArticlePEP extends AbstractSimplePEP implements Article.Pe
 
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
+                                                           null,
                                                            null,
                                                            null,
                                                            null,

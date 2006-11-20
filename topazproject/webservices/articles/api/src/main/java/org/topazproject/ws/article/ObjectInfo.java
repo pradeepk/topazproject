@@ -30,6 +30,8 @@ public class ObjectInfo {
   private String description;
   /** The article that supersedes this one. */
   private String supersededBy;
+  /** A list of user-ids of authors of the article. */
+  private String[] authorUserIds;
   /** The description associated with the object. */
   private RepresentationInfo[] representations;
   /** The the xml element in which this object is embedded (e.g. 'table-wrap', 'fig', etc). */
@@ -123,6 +125,25 @@ public class ObjectInfo {
    */
   public void setSupersededBy(String supersededBy) {
     this.supersededBy = supersededBy;
+  }
+
+  /**
+   * Get the list of user-ids of authors of the article. This is the subset of the article
+   * authors that have user-accounts.
+   *
+   * @return the author user-ids.
+   */
+  public String[] getAuthorUserIds() {
+    return authorUserIds;
+  }
+
+  /**
+   * Set the list of user-ids of authors of the article.
+   *
+   * @param authorUserIds the author user-ids.
+   */
+  public void setAuthorUserIds(String[] authorUserIds) {
+    this.authorUserIds = authorUserIds;
   }
 
   /**

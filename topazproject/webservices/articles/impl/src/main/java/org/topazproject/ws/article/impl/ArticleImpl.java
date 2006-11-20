@@ -81,6 +81,11 @@ public class ArticleImpl implements Article {
        "  $s <tucana:is> <${subj}> from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
+  private static final String ITQL_DEL_AUTHOR_UIDS =
+      ("delete select <${art}> <topaz:userIsAuthor> $o from ${MODEL} where " +
+       "  <${art}> <topaz:userIsAuthor> $o from ${MODEL};").
+      replaceAll("\\Q${MODEL}", MODEL);
+
   private static final String ITQL_DELETE_REP =
       ("delete select $s $p $o from ${MODEL} where $s $p $o and $s <tucana:is> <${subj}> and (" +
        "    $p <tucana:is> <topaz:hasRepresentation> and $o <tucana:is> '${rep}' or " +
@@ -407,6 +412,47 @@ public class ArticleImpl implements Article {
     }
   }
 
+  public void setAuthorUserIds(String article, String[] userIds)
+      throws NoSuchArticleIdException, RemoteException {
+    pep.checkAccess(pep.SET_AUTHOR_USER_IDS, ItqlHelper.validateUri(article, "article"));
+
+    ItqlHelper itql = ctx.getItqlHelper();
+    if (!articleExists(itql, article))
+      throw new NoSuchArticleIdException(article);
+
+    String txn = "set-author-uids " + article;
+    try {
+      itql.beginTxn(txn);
+
+      StringBuffer cmd = new StringBuffer(100);
+      cmd.append(ItqlHelper.bindValues(ITQL_DEL_AUTHOR_UIDS, "art", article));
+
+      if (userIds != null && userIds.length > 0) {
+        cmd.append("insert ");
+
+        for (int idx = 0; idx < userIds.length; idx++) {
+          ItqlHelper.validateUri(userIds[idx], "user-id");
+          cmd.append("<").append(article).append("> <topaz:userIsAuthor> <").append(userIds[idx]).
+              append("> ");
+        }
+
+        cmd.append("into ").append(MODEL);
+      }
+
+      itql.doUpdate(cmd.toString(), null);
+
+      itql.commitTxn(txn);
+      txn = null;
+    } finally {
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+        log.debug("Error rolling failed transaction", t);
+      }
+    }
+  }
+
   protected String[][] findAllObjects(String subj, ItqlHelper itql)
       throws NoSuchArticleIdException, RemoteException, AnswerException {
     ItqlHelper.validateUri(subj, "subject");
@@ -644,6 +690,7 @@ public class ArticleImpl implements Article {
     int objCol  = info.indexOf("o");
 
     List   reps = new ArrayList();
+    List   aids = new ArrayList();
     String pid  = null;
 
     while (info.next()) {
@@ -653,16 +700,21 @@ public class ArticleImpl implements Article {
       else if (pred.equals(ItqlHelper.TOPAZ_URI + "hasRepresentation"))
         reps.add(info.getString(objCol));
       else if (pred.equals(ItqlHelper.DC_URI + "title"))
-        oi.setTitle(info.getString("o"));
+        oi.setTitle(info.getString(objCol));
       else if (pred.equals(ItqlHelper.DC_URI + "description"))
-        oi.setDescription(info.getString("o"));
+        oi.setDescription(info.getString(objCol));
       else if (pred.equals(ItqlHelper.TOPAZ_URI + "contextElement"))
-        oi.setContextElement(info.getString("o"));
+        oi.setContextElement(info.getString(objCol));
       else if (pred.equals(ItqlHelper.TOPAZ_URI + "articleState"))
-        oi.setState(Integer.parseInt(info.getString("o")));
+        oi.setState(Integer.parseInt(info.getString(objCol)));
       else if (pred.equals(ItqlHelper.DC_TERMS_URI + "isReplacedBy"))
-        oi.setSupersededBy(info.getString("o"));
+        oi.setSupersededBy(info.getString(objCol));
+      else if (pred.equals(ItqlHelper.TOPAZ_URI + "userIsAuthor"))
+        aids.add(info.getString(objCol));
     }
+
+    if (aids.size() > 0)
+      oi.setAuthorUserIds((String[]) aids.toArray(new String[aids.size()]));
 
     RepresentationInfo[] ri = new RepresentationInfo[reps.size()];
     for (int idx = 0; idx < reps.size(); idx++) {

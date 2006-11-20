@@ -39,6 +39,9 @@ public interface Article extends Remote {
     /** The action that represents a set-representation operation in XACML policies. */
     public static final String SET_REPRESENTATION = "articles:setRepresentation";
 
+    /** The action that represents a set-author-user-ids operation in XACML policies. */
+    public static final String SET_AUTHOR_USER_IDS = "articles:setAuthorUserIds";
+
     /** The action that represents a get-object-info operation in XACML policies. */
     public static final String GET_OBJECT_INFO = "articles:getObjectInfo";
 
@@ -129,6 +132,19 @@ public interface Article extends Remote {
    */
   public void setRepresentation(String obj, String rep, DataHandler content)
       throws NoSuchObjectIdException, RemoteException;
+
+  /** 
+   * Set the list user-ids for the authors of the article. This completely replaces any previous
+   * list for the article.
+   * 
+   * @param article the URI of the article (e.g. "info:doi/10.1371/journal.pbio.003811")
+   * @param userIds the list of user-ids of authors of the article; may be null in which
+   *                case any existing list is erased.
+   * @throws NoSuchArticleIdException if the article does not exist
+   * @throws RemoteException if some other error occured
+   */
+  public void setAuthorUserIds(String article, String[] userIds)
+      throws NoSuchArticleIdException, RemoteException;
 
   /** 
    * Get the info for a single object. This may be either an article or a secondary object. 

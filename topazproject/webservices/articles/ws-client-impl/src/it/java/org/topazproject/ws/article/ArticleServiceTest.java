@@ -151,6 +151,7 @@ public class ArticleServiceTest extends TestCase {
     assertNull("unexpected superseded-by", oi.getSupersededBy());
     assertNull("unexpected context-element", oi.getContextElement());
     assertEquals("wrong state", 1, oi.getState());
+    assertNull("unexpected author-user-ids", oi.getAuthorUserIds());
 
     RepresentationInfo[] ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 3, ri.length);
@@ -181,6 +182,7 @@ public class ArticleServiceTest extends TestCase {
     assertNull("unexpected superseded-by", oi.getSupersededBy());
     assertEquals("wrong context-element", "fig", oi.getContextElement());
     assertEquals("wrong state", 1, oi.getState());
+    assertNull("unexpected author-user-ids", oi.getAuthorUserIds());
 
     ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 2, ri.length);
@@ -206,6 +208,7 @@ public class ArticleServiceTest extends TestCase {
     assertNull("unexpected superseded-by", oi.getSupersededBy());
     assertEquals("wrong context-element", "supplementary-material", oi.getContextElement());
     assertEquals("wrong state", 1, oi.getState());
+    assertNull("unexpected author-user-ids", oi.getAuthorUserIds());
 
     ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 1, ri.length);
@@ -245,6 +248,7 @@ public class ArticleServiceTest extends TestCase {
     assertNull("unexpected superseded-by", oi.getSupersededBy());
     assertNull("unexpected context-element", oi.getContextElement());
     assertEquals("wrong state", 1, oi.getState());
+    assertNull("unexpected author-user-ids", oi.getAuthorUserIds());
 
     RepresentationInfo[] ri = oi.getRepresentations();
     assertEquals("wrong number of rep-infos", 3, ri.length);
@@ -460,6 +464,15 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("wrong state", 1, oi[6].getState());
     assertEquals("wrong state", 1, oi[7].getState());
 
+    assertNull("unexpected author-user-ids", oi[0].getAuthorUserIds());
+    assertNull("unexpected author-user-ids", oi[1].getAuthorUserIds());
+    assertNull("unexpected author-user-ids", oi[2].getAuthorUserIds());
+    assertNull("unexpected author-user-ids", oi[3].getAuthorUserIds());
+    assertNull("unexpected author-user-ids", oi[4].getAuthorUserIds());
+    assertNull("unexpected author-user-ids", oi[5].getAuthorUserIds());
+    assertNull("unexpected author-user-ids", oi[6].getAuthorUserIds());
+    assertNull("unexpected author-user-ids", oi[7].getAuthorUserIds());
+
     sort(oi[0].getRepresentations());
 
     RepresentationInfo ri = oi[0].getRepresentations()[0];
@@ -606,6 +619,77 @@ public class ArticleServiceTest extends TestCase {
     res = service.getArticles(null, null, null, null, new int[] { 42, Article.ST_ACTIVE }, false);
     assertTrue("Failed to find article", hasArticle(res));
 
+    // clean up
+    service.delete(art);
+  }
+
+  public void testAuthorUserIds() throws Exception {
+    // some NoSuchArticleIdException tests
+    boolean gotE = false;
+    try {
+      service.setAuthorUserIds("info:doi/blah/foo", null);
+    } catch (NoSuchArticleIdException nsaie) {
+      assertEquals("Mismatched id in exception, ", "info:doi/blah/foo", nsaie.getId());
+      gotE = true;
+    }
+    assertTrue("Failed to get expected no-such-object-id exception", gotE);
+
+    // ingest article and test
+    URL article = getClass().getResource("/pbio.0020294.zip");
+    String art = service.ingest(new DataHandler(article));
+    assertEquals("Wrong uri returned,", "info:doi/10.1371/journal.pbio.0020294", art);
+
+    ObjectInfo oi = service.getObjectInfo(art);
+    assertNull("unexpected author-user-ids", oi.getAuthorUserIds());
+
+    service.setAuthorUserIds(art, null);
+
+    oi = service.getObjectInfo(art);
+    assertNull("unexpected author-user-ids", oi.getAuthorUserIds());
+
+    service.setAuthorUserIds(art, new String[0]);
+
+    oi = service.getObjectInfo(art);
+    assertNull("unexpected author-user-ids", oi.getAuthorUserIds());
+
+    String[] ids = new String[] { "foo:bar" };
+    service.setAuthorUserIds(art, ids);
+
+    oi = service.getObjectInfo(art);
+    Arrays.sort(ids);
+    Arrays.sort(oi.getAuthorUserIds());
+    assertTrue("mismatched author-user-ids - got " + Arrays.asList(oi.getAuthorUserIds()),
+               Arrays.equals(ids, oi.getAuthorUserIds()));
+
+    ids = new String[] { "foo:bar", "bar:baz" };
+    service.setAuthorUserIds(art, ids);
+
+    oi = service.getObjectInfo(art);
+    Arrays.sort(ids);
+    Arrays.sort(oi.getAuthorUserIds());
+    assertTrue("mismatched author-user-ids - got " + Arrays.asList(oi.getAuthorUserIds()),
+               Arrays.equals(ids, oi.getAuthorUserIds()));
+
+    service.setAuthorUserIds(art, null);
+
+    oi = service.getObjectInfo(art);
+    assertNull("unexpected author-user-ids", oi.getAuthorUserIds());
+
+    ids = new String[] { "foo:bar", "bar:baz", "baz:blah" };
+    service.setAuthorUserIds(art, ids);
+
+    oi = service.getObjectInfo(art);
+    Arrays.sort(ids);
+    Arrays.sort(oi.getAuthorUserIds());
+    assertTrue("mismatched author-user-ids - got " + Arrays.asList(oi.getAuthorUserIds()),
+               Arrays.equals(ids, oi.getAuthorUserIds()));
+
+    service.setAuthorUserIds(art, new String[0]);
+
+    oi = service.getObjectInfo(art);
+    assertNull("unexpected author-user-ids", oi.getAuthorUserIds());
+
+    // clean up
     service.delete(art);
   }
 

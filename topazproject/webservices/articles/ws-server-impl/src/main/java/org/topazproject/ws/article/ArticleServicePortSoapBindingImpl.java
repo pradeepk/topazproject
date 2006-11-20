@@ -89,6 +89,14 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
   }
 
   /**
+   * @see org.topazproject.ws.article.Article#setAuthorUserIds
+   */
+  public void setAuthorUserIds(String article, String[] userIds)
+      throws NoSuchArticleIdException, RemoteException {
+    impl.setAuthorUserIds(article, userIds);
+  }
+
+  /**
    * @see org.topazproject.ws.article.Article#getObjectURL
    */
   public String getObjectURL(String obj, String rep)
