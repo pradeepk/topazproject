@@ -10,16 +10,23 @@
 package org.plos.article.action;
 
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleWebService;
 import org.plos.util.FileUtils;
+import org.topazproject.ws.article.ObjectInfo;
+import org.topazproject.ws.article.RepresentationInfo;
 
+import java.io.IOException;
 import java.io.InputStream;
 import java.net.URL;
 import java.net.URLConnection;
 
+/**
+ * Fetch the object for a given uri
+ */
 public class FetchObjectAction extends BaseActionSupport {
   private ArticleWebService articleWebService;
   private String uri;
@@ -30,14 +37,51 @@ public class FetchObjectAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(FetchObjectAction.class);
   private String contentType;
 
+  /**
+   * Return the object for a given uri and representation
+   * @return webwork status code
+   * @throws Exception Exception
+   */
   public String execute() throws Exception {
+    if (StringUtils.isEmpty(representation)) {
+      addFieldError("representation", "Object representation is required");
+      return ERROR;
+    }
+
     final String objectURL = articleWebService.getObjectURL(uri, representation);
-    final URLConnection urlConnection = new URL(objectURL).openConnection();
+    setOutputStreamAndAttributes(objectURL);
+    return SUCCESS;
+  }
+
+  /**
+   * Return the first representation of the uri
+   * @return webwork status code
+   * @throws Exception Exception
+   */
+  public String fetchFirstObject() throws Exception {
+    final ObjectInfo objectInfo = articleWebService.getObjectInfo(uri);
+
+    if (null == objectInfo) return ERROR;
+
+    final RepresentationInfo[] representations = objectInfo.getRepresentations();
+    if (representations.length == 0) {
+      addActionMessage("No representations found");
+      log.error("No representation found for the uri:" + uri);
+      return ERROR;
+    }
+
+    final RepresentationInfo firstRep = representations[0];
+    final String objectUrl = firstRep.getURL();
+    setOutputStreamAndAttributes(objectUrl);
+    return SUCCESS;
+  }
+
+  private void setOutputStreamAndAttributes(final String objectUrl) throws IOException {
+    final URLConnection urlConnection = new URL(objectUrl).openConnection();
     inputStream = urlConnection.getInputStream();
     contentType = urlConnection.getContentType();
     final String fileExt = getFileExtension(contentType);
     contentDisposition = getContentDisposition(fileExt);
-    return SUCCESS;
   }
 
   private String getContentDisposition(final String fileExt) {
@@ -68,7 +112,9 @@ public class FetchObjectAction extends BaseActionSupport {
     this.uri = uri;
   }
 
-  @RequiredStringValidator(message = "Object representation is required.")
+  /**
+   * @return the representation of the object
+   */
   public String getRepresentation() {
     return representation;
   }

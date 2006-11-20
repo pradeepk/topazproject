@@ -18,6 +18,10 @@
 
         <ul>
           <li>
+            <@ww.url id="firstRepresentationUrl"  action="fetchFirstRepresentation" uri="${article}"/>
+            <@ww.a href="%{firstRepresentationUrl}">View first representation</@ww.a>
+          </li>
+          <li>
             <@ww.url id="articleArticleRepXML"  action="fetchObject" uri="${article}">
               <@ww.param name="representation" value="%{'XML'}"/>
             </@ww.url>
