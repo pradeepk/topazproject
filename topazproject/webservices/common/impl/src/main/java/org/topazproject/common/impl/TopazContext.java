@@ -61,20 +61,6 @@ public interface TopazContext {
   public boolean isActive();
 
   /**
-   * Add context event listener.
-   *
-   * @param listener the listener to add
-   */
-  public void addListener(TopazContextListener listener);
-
-  /**
-   * Remove context event listener.
-   *
-   * @param listener the listener to remove
-   */
-  public void removeListener(TopazContextListener listener);
-
-  /**
    * Gets the servlet context associated with the web-application
    *
    * @return the servlet context

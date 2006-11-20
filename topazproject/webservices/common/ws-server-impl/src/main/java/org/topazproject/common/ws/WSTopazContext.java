@@ -41,7 +41,6 @@ import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 
 import org.topazproject.common.impl.TopazContext;
-import org.topazproject.common.impl.TopazContextListener;
 
 import org.topazproject.configuration.ConfigurationStore;
 
@@ -110,7 +109,6 @@ public class WSTopazContext implements TopazContext {
   }
 
   private final String           sessionKey;
-  private List                   listeners   = new ArrayList();
   private boolean                active      = false;
   private FedoraAPIM             apim        = null;
   private Uploader               upld        = null;
@@ -149,7 +147,6 @@ public class WSTopazContext implements TopazContext {
    * @see org.topazproject.common.impl.TopazContext
    */
   public void destroy() {
-    listeners.clear();
     context = null;
   }
 
@@ -268,7 +265,6 @@ public class WSTopazContext implements TopazContext {
       }
 
       if (itqlWrapper.isNewHandle()) {
-        notifyHandleCreated(itqlWrapper.ref());
         itqlWrapper.setNewHandle(false);
       }
     }
@@ -291,7 +287,6 @@ public class WSTopazContext implements TopazContext {
     try {
       ProtectedService svc = ProtectedServiceFactory.createService(apimConfig, session);
       apim = APIMStubFactory.create(svc);
-      notifyHandleCreated(apim);
     } catch (URISyntaxException e) {
       throw new Error(e); // already tested; so shouldn't happend
     } catch (MalformedURLException e) {
@@ -320,7 +315,6 @@ public class WSTopazContext implements TopazContext {
     try {
       ProtectedService svc = ProtectedServiceFactory.createService(upldConfig, session);
       upld = new Uploader(svc);
-      notifyHandleCreated(upld);
     } catch (URISyntaxException e) {
       throw new Error(e); // already tested; so shouldn't happend
     } catch (IOException e) {
@@ -335,35 +329,6 @@ public class WSTopazContext implements TopazContext {
    */
   public FedoraAPIA getFedoraAPIA() throws RemoteException, IllegalStateException {
     throw new UnsupportedOperationException("not implemented");
-  }
-
-  /*
-   * @see org.topazproject.common.impl.TopazContext
-   */
-  public void addListener(TopazContextListener listener) {
-    if (!listeners.contains(listener))
-      listeners.add(listener);
-  }
-
-  /*
-   * @see org.topazproject.common.impl.TopazContext
-   */
-  public void removeListener(TopazContextListener listener) {
-    listeners.remove(listener);
-  }
-
-  /**
-   * Notify the listeners that a new handle has been created
-   *
-   * @param handle the handle that we are reporting (itql, apim etc.)
-   */
-  protected void notifyHandleCreated(Object handle) {
-    Iterator it = listeners.iterator();
-
-    while (it.hasNext()) {
-      TopazContextListener listener = (TopazContextListener) it.next();
-      listener.handleCreated(this, handle);
-    }
   }
 
   private Object getHandle(Class clazz) throws IllegalStateException {

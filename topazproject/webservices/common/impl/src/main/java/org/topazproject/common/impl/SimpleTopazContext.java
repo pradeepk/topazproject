@@ -78,18 +78,6 @@ public class SimpleTopazContext implements TopazContext {
     return true;
   }
 
-  /*
-   * @see org.topazproject.common.impl.TopazContext
-   */
-  public void addListener(TopazContextListener listener) {
-  }
-
-  /*
-   * @see org.topazproject.common.impl.TopazContext
-   */
-  public void removeListener(TopazContextListener listener) {
-  }
-
   /**
    * Gets the servlet context associated with the web-application
    *

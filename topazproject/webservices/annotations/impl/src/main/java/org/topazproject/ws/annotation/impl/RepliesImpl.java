@@ -32,7 +32,6 @@ import org.jrdf.graph.Literal;
 import org.jrdf.graph.URIReference;
 
 import org.topazproject.common.impl.TopazContext;
-import org.topazproject.common.impl.TopazContextListener;
 
 import org.topazproject.configuration.ConfigurationStore;
 

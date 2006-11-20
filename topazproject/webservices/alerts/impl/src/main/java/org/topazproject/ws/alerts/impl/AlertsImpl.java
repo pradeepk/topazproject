@@ -42,7 +42,6 @@ import org.apache.commons.mail.EmailException;
 
 import org.topazproject.common.impl.SimpleTopazContext;
 import org.topazproject.common.impl.TopazContext;
-import org.topazproject.common.impl.TopazContextListener;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.mulgara.itql.ItqlHelper;

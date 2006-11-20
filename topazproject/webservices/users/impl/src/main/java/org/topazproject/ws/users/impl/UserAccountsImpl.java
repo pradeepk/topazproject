@@ -35,7 +35,6 @@ import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.common.impl.TopazContext;
-import org.topazproject.common.impl.TopazContextListener;
 import org.topazproject.common.impl.SimpleTopazContext;
 
 import org.topazproject.ws.users.DuplicateAuthIdException;
