@@ -264,7 +264,7 @@ public abstract class Annotation extends BaseAnnotation {
   /**
    * @return Returns the userService.
    */
-  public UserService getUserService() {
+  protected UserService getUserService() {
     return userService;
   }
 

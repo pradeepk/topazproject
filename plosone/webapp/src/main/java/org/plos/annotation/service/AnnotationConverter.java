@@ -128,7 +128,7 @@ public class AnnotationConverter {
   /**
    * @return Returns the userService.
    */
-  public UserService getUserService() {
+  protected UserService getUserService() {
     return userService;
   }
 
