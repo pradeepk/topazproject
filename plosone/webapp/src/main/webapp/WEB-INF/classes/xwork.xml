@@ -235,18 +235,6 @@
       <result type="redirect">${goTo}</result>
     </action>
 
-    <action name="displayAlerts" >
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/user/alerts.ftl</param>
-      </result>
-    </action>
-    
-    <action name="updateAlerts" class="org.plos.user.action.UpdateAlerts">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/user/alerts.ftl</param>
-      </result>
-    </action>
-    
     <action name="getUserProfilePrivateFields" class="org.plos.user.action.DisplayUserAction" method="fetchUserProfileWithPrivateVisibility">
       <result name="success">/WEB-INF/pages/user/displayPrivateFieldNames.ftl</result>
     </action>
