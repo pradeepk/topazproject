@@ -29,17 +29,17 @@ public class ProfanityCheckingService {
    */
   public List<String> validate(final String content) {
     final List<String> messages = new ArrayList<String>();
+    if (content != null) {
+      final String contentLowerCase = content.toLowerCase();
 
-    final String contentLowerCase = content.toLowerCase();
-
-    for (final Map.Entry<String,Pattern> patternEntry : profanePatterns.entrySet()) {
-      final Pattern pattern = patternEntry.getValue();
-      if (pattern.matcher(contentLowerCase).find()) {
-        messages.add("Found obscene word:" + patternEntry.getKey());
-        break;
+      for (final Map.Entry<String,Pattern> patternEntry : profanePatterns.entrySet()) {
+        final Pattern pattern = patternEntry.getValue();
+        if (pattern.matcher(contentLowerCase).find()) {
+          messages.add("Found obscene word:" + patternEntry.getKey());
+          break;
+        }
       }
     }
-
     return messages;
   }
 
