@@ -11,7 +11,14 @@ package org.plos.annotation.service;
 
 import java.util.Date;
 
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.ws.annotation.AnnotationInfo;
+import org.plos.ApplicationException;
+import org.plos.user.PlosOneUser;
+import org.plos.user.service.UserService;
 import org.plos.util.DateParser;
 import org.plos.util.InvalidDateException;
 
@@ -22,7 +29,11 @@ import org.plos.util.InvalidDateException;
  */
 public abstract class Annotation extends BaseAnnotation {
   private final AnnotationInfo annotation;
-
+  private UserService userService;
+  private String creatorName;
+  
+  private static final Log log = LogFactory.getLog(Annotation.class);
+  
   /**
    * Get the target(probably a uri) that it annotates
    * @return target
@@ -100,6 +111,28 @@ public abstract class Annotation extends BaseAnnotation {
     annotation.setCreator(creator);
   }
 
+  /**
+   * @return Returns the creatorName.
+   */
+  public String getCreatorName() {
+    if (creatorName == null) {
+      try {
+        log.debug("getting User Object for id: " + getCreator());
+        creatorName = userService.getUsernameByTopazId(getCreator());
+      } catch (ApplicationException ae) {
+        creatorName = getCreator();
+      }
+    }
+    return creatorName;
+  }
+
+  /**
+   * @param creatorName The creatorName to set.
+   */
+  public void setCreatorName(String creatorName) {
+    this.creatorName = creatorName;
+  }
+  
   /**
    * Get id.
    * @return id as String.
@@ -214,5 +247,31 @@ public abstract class Annotation extends BaseAnnotation {
 
   public Annotation(final AnnotationInfo annotation) {
     this.annotation = annotation;
+  }
+
+  /**
+   * Constructor that takes in an UserService object in addition to the annotation in order
+   * to do username lookups.
+   * 
+   * @param annotation
+   * @param userSvc
+   */
+  public Annotation(final AnnotationInfo annotation, final UserService userSvc) {
+    this.annotation = annotation;
+    this.userService = userSvc;
+  }
+  
+  /**
+   * @return Returns the userService.
+   */
+  public UserService getUserService() {
+    return userService;
+  }
+
+  /**
+   * @param userService The userService to set.
+   */
+  public void setUserService(UserService userService) {
+    this.userService = userService;
   }
 }

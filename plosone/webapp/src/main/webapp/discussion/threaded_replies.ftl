@@ -6,7 +6,7 @@
 				<!-- end : response title -->
 				<!-- begin : response poster details -->
 				<div class="detail">
-					<a href="#" class="user icon">${reply.creator}</a> replied to <a href="../viewUser?userURI=${replyToAuthorId}" class="user icon">${replyToAuthorName}</a> on <strong>${reply.createdAsDate?string("yyyy-MM-dd")}</strong> at <strong>${reply.createdAsDate?string("HH:mm")} GMT</strong>:</div>
+					<a href="${reply.creator}" class="user icon">${reply.creatorName}</a> replied to <a href="../viewUser?userURI=${replyToAuthorId}" class="user icon">${replyToAuthorName}</a> on <strong>${reply.createdAsDate?string("yyyy-MM-dd")}</strong> at <strong>${reply.createdAsDate?string("HH:mm")} GMT</strong>:</div>
 				<!-- end : response poster details -->
 			</div>
 			<!-- begin : response body text -->
@@ -27,7 +27,7 @@
 			</div>
 			<!-- end : toolbar options -->
       <#list reply.replies as subReply>
-        <@writeReplyDetails reply=subReply replyToAuthorId=reply.creator replyToAuthorName=reply.creator/>
+        <@writeReplyDetails reply=subReply replyToAuthorId=reply.creator replyToAuthorName=reply.creatorName/>
       </#list>
 		</div>
 </#macro>
@@ -45,7 +45,7 @@
 			<h3>${baseAnnotation.commentTitle}</h3>
 			<!-- end : response title -->
 			<!-- begin : response poster detail -->
-			<div class="detail">Posted by <a href="#" title="Annotation Author" class="user icon">${baseAnnotation.creator}</a> on <strong>${baseAnnotation.createdAsDate?string("yyyy-MM-dd")}</strong> at <strong>${baseAnnotation.createdAsDate?string("HH:mm")} GMT</strong>
+			<div class="detail">Posted by <a href="${baseAnnotation.creator}" title="Annotation Author" class="user icon">${baseAnnotation.creatorName}</a> on <strong>${baseAnnotation.createdAsDate?string("yyyy-MM-dd")}</strong> at <strong>${baseAnnotation.createdAsDate?string("HH:mm")} GMT</strong>
 			</div>
 			<!-- end : response poster details -->
 		</div>
@@ -69,7 +69,7 @@
 	</div>
 	<!-- begin : response note that all responses TO this response get enclosed within this response container  -->
   <#list replies as reply>
-	  <@writeReplyDetails reply=reply replyToAuthorId=reply.creator replyToAuthorName=reply.creator/>
+	  <@writeReplyDetails reply=reply replyToAuthorId=baseAnnotation.creator replyToAuthorName=baseAnnotation.creatorName/>
   </#list>
 	<!-- end : response -->
 </div>

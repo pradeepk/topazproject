@@ -10,6 +10,8 @@
 package org.plos.annotation.service;
 
 import org.plos.ApplicationException;
+import org.plos.user.service.UserService;
+
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.ReplyInfo;
 
@@ -24,7 +26,8 @@ import java.util.Map;
  */
 public class AnnotationConverter {
   private AnnotationLazyLoaderFactory lazyLoaderFactory;
-
+  private UserService userService;
+  
   /**
    * @param annotations an array of annotations
    * @return an array of Annotation objects as required by the web layer
@@ -46,7 +49,7 @@ public class AnnotationConverter {
   public Annotation convert(final AnnotationInfo annotation) throws ApplicationException {
     final AnnotationLazyLoader lazyLoader = lazyLoaderFactory.create(annotation);
 
-    return new Annotation(annotation) {
+    return new Annotation(annotation, userService) {
       protected String getOriginalBodyContent() throws ApplicationException {
         return lazyLoader.getBody();
       }
@@ -106,7 +109,7 @@ public class AnnotationConverter {
   public Reply convert(final ReplyInfo reply) throws ApplicationException {
     final AnnotationLazyLoader lazyLoader = lazyLoaderFactory.create(reply);
 
-    return new Reply(reply) {
+    return new Reply(reply, userService) {
       protected String getOriginalBodyContent() throws ApplicationException {
         return lazyLoader.getBody();
       }
@@ -120,5 +123,19 @@ public class AnnotationConverter {
    */
   public void setLazyLoaderFactory(final AnnotationLazyLoaderFactory lazyLoaderFactory) {
     this.lazyLoaderFactory = lazyLoaderFactory;
+  }
+
+  /**
+   * @return Returns the userService.
+   */
+  public UserService getUserService() {
+    return userService;
+  }
+
+  /**
+   * @param userService The userService to set.
+   */
+  public void setUserService(UserService userService) {
+    this.userService = userService;
   }
 }

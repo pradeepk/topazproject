@@ -9,8 +9,18 @@
  */
 package org.plos.annotation.service;
 
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.plos.ApplicationException;
+
+import org.plos.user.service.UserService;
+import org.plos.user.PlosOneUser;
+
 import org.plos.util.DateParser;
 import org.plos.util.InvalidDateException;
+
 import org.topazproject.ws.annotation.ReplyInfo;
 
 import java.util.ArrayList;
@@ -25,11 +35,30 @@ import java.util.Date;
 public abstract class Reply extends BaseAnnotation {
   private final ReplyInfo reply;
   private Collection<Reply> replies = new ArrayList<Reply>();
+  private String creatorName;
+  private UserService userService;  
 
+  private static final Log log = LogFactory.getLog(Reply.class);
+
+  
   public Reply(final ReplyInfo reply) {
     this.reply = reply;
   }
-
+ 
+  
+  /**
+   * Constructor that takes in a UserService object in addition to ReplyInfo in order
+   * to retrieve the username.
+   * 
+   * @param reply
+   * @param userSvc
+   */
+  public Reply(final ReplyInfo reply, UserService userSvc) {
+    this.reply = reply;
+    this.userService = userSvc;
+  }
+ 
+  
   /**
    * Get created date.
    * @return created as java.util.Date.
@@ -222,5 +251,41 @@ public abstract class Reply extends BaseAnnotation {
   /** see BaseAnnotation#isPublic */
   public boolean isPublic() {
     throw new UnsupportedOperationException("A reply is always public, so please don't call this");
+  }
+
+  /**
+   * @return Returns the creatorName.
+   */
+  public String getCreatorName() {
+    if (creatorName == null) {
+      try {
+        log.debug("getting User Object for id: " + getCreator());
+        creatorName = userService.getUsernameByTopazId(getCreator());
+      } catch (ApplicationException ae) {
+        creatorName = getCreator();
+      }
+    }
+    return creatorName;
+  }
+
+  /**
+   * @param creatorName The creatorName to set.
+   */
+  public void setCreatorName(String creatorName) {
+    this.creatorName = creatorName;
+  }
+
+  /**
+   * @return Returns the userService.
+   */
+  public UserService getUserService() {
+    return userService;
+  }
+
+  /**
+   * @param userService The userService to set.
+   */
+  public void setUserService(UserService userService) {
+    this.userService = userService;
   }
 }

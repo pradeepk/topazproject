@@ -4,11 +4,11 @@
 <div id="sideNav">
 	<div class="links">
 		<ul>
-	    <@ww.url id="articleArticleRepXML"  action="fetchObject" includeParams="none" uri="${articleURI}">
+	    <@ww.url id="articleArticleRepXML"  action="fetchObjectAttachment" includeParams="none" uri="${articleURI}">
         <@ww.param name="representation" value="%{'XML'}"/>
 	    </@ww.url>
 			<li><a href="${articleArticleRepXML}" class="xml" title="Download XML">Download Article XML</a></li>
-	    <@ww.url id="articleArticleRepPDF"  action="fetchObject" includeParams="none" uri="${articleURI}">
+	    <@ww.url id="articleArticleRepPDF"  action="fetchObjectAttachment" includeParams="none" uri="${articleURI}">
 	      <@ww.param name="representation" value="%{'PDF'}"/>
       </@ww.url>
 			<li><a href="${articleArticleRepPDF}" class="pdf" title="Download PDF">Download Article PDF</a></li>

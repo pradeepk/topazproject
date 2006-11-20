@@ -9,15 +9,20 @@
  */
 package org.plos.user.service;
 
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+import com.opensymphony.oscache.base.NeedsRefreshException;
+
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.plos.ApplicationException;
 import org.plos.Constants;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
 import org.plos.user.UserProfileGrant;
+
 import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.pap.UserPreference;
@@ -44,6 +49,7 @@ public class UserService extends BaseConfigurableService {
   private ProfileWebService profileWebService;
   private PermissionWebService permissionWebService;
   private PreferencesWebService preferencesWebService;
+  private GeneralCacheAdministrator userCacheAdministrator;
 
   private String applicationId;
   private String emailAddressUrl;
@@ -98,6 +104,34 @@ public class UserService extends BaseConfigurableService {
   }
 
   /**
+   * Returns the username for a user given a Topaz UserId.  Because usernames cannot be changed and
+   * can always be viewed by anyone, we use a simple cache here. 
+   * 
+   * @param topazUserId
+   * @return username
+   * @throws ApplicationException
+   */
+  
+  public String getUsernameByTopazId(final String topazUserId) throws ApplicationException {
+    String retVal = null;
+    try {
+      // Get from the cache
+      retVal = (String) userCacheAdministrator.getFromCache(topazUserId);
+      if (log.isDebugEnabled()) {
+        log.debug("retrieved user from cache: " + topazUserId);
+      }
+    } catch (NeedsRefreshException nre) {
+      if (log.isDebugEnabled()) {
+        log.debug("trying to get from Fedora:" + topazUserId);
+      }
+        
+      PlosOneUser pou = getUserByTopazId (topazUserId);
+      retVal = pou.getDisplayName();
+    }
+    return retVal;
+  }
+  
+  /**
    * Gets the user specified by the Topaz userID passed in
    * 
    * @param topazUserId
@@ -114,6 +148,7 @@ public class UserService extends BaseConfigurableService {
     if (null != userPrefs) {
       pou.setUserPrefs(userPrefs);
     }
+    userCacheAdministrator.putInCache(topazUserId, pou.getDisplayName());
     return pou;
   }
 
@@ -247,6 +282,7 @@ public class UserService extends BaseConfigurableService {
   protected void setProfile(final String topazUserId, final UserProfile profile)
       throws ApplicationException {
     try {
+      userCacheAdministrator.flushEntry(topazUserId);
       profileWebService.setProfile(topazUserId, profile);
     } catch (NoSuchIdException ne) {
       throw new ApplicationException(ne);
@@ -418,6 +454,7 @@ public class UserService extends BaseConfigurableService {
   protected void setPreferences(final String appId, final String topazUserId, UserPreference[] prefs)
       throws ApplicationException {
     try {
+      userCacheAdministrator.flushEntry(topazUserId);
       preferencesWebService.setPreferences(appId, topazUserId, prefs);
     } catch (NoSuchIdException ne) {
       throw new ApplicationException(ne);
@@ -599,6 +636,20 @@ public class UserService extends BaseConfigurableService {
    */
   public void setMonthlyCategories(final Collection<String> monthlyCategories) {
     this.monthlyCategories = monthlyCategories;
+  }
+
+  /**
+   * @return Returns the userCache.
+   */
+  public GeneralCacheAdministrator getUserCacheAdministrator() {
+    return userCacheAdministrator;
+  }
+
+  /**
+   * @param userCache The userCache to set.
+   */
+  public void setUserCacheAdministrator(GeneralCacheAdministrator userCache) {
+    this.userCacheAdministrator = userCache;
   }
 
 

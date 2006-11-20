@@ -190,6 +190,12 @@
     </dependency>
 
     <dependency>
+      <groupId>opensymphony</groupId>
+      <artifactId>oscache</artifactId>
+      <version>2.3.2</version>
+    </dependency>
+
+    <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon</artifactId>
       <version>8.7</version>
@@ -316,6 +322,10 @@
           </connectors>
           <!--           <jettyConfig>C:\cygwin\opt\jetty-6.0.0beta14\etc\jetty.xml</jettyConfig>-->
           <systemProperties>
+            <systemProperty>
+              <name>file.encoding</name>
+              <value>UTF-8</value>
+            </systemProperty>
             <systemProperty>
               <name>org.apache.commons.logging.Log</name>
               <value>org.apache.commons.logging.impl.Log4JLogger</value>

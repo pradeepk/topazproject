@@ -89,9 +89,15 @@
       <result name="success">/WEB-INF/pages/article/displayImages.ftl</result>
     </action>
 
-    <action name="fetchObject" class="org.plos.article.action.FetchObjectAction">
+    <action name="fetchObjectAttachment" class="org.plos.article.action.FetchObjectAction">
       <result name="success" type="plosStream">
         <param name="isAttachment">true</param>
+      </result>
+    </action>
+    
+    <action name="fetchObject" class="org.plos.article.action.FetchObjectAction">
+      <result name="success" type="plosStream">
+        <param name="isAttachment">false</param>
       </result>
     </action>
     
