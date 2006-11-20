@@ -109,12 +109,12 @@ public class WSTopazContext implements TopazContext {
   }
 
   private final String           sessionKey;
-  private boolean                active      = false;
-  private FedoraAPIM             apim        = null;
-  private Uploader               upld        = null;
-  private ItqlHelperWrapper      itqlWrapper = null;
-  private HandleCache            cache       = null;
-  private HttpSession            session     = null;
+  private boolean                active   = false;
+  private FedoraAPIM             apim     = null;
+  private Uploader               upld     = null;
+  private ItqlHelper             itql     = null;
+  private HandleCache            cache    = null;
+  private HttpSession            session  = null;
   private ServletEndpointContext context;
   private ObjectPool             itqlPool;
 
@@ -173,14 +173,14 @@ public class WSTopazContext implements TopazContext {
       upld = null;
     }
 
-    if (itqlWrapper != null) {
+    if (itql != null) {
       try {
-        itqlPool.returnObject(itqlWrapper);
+        itqlPool.returnObject(itql);
       } catch (Exception e) {
         // xxx: ignore this for now 
       }
 
-      itqlWrapper = null;
+      itql = null;
     }
 
     cache     = null;
@@ -255,21 +255,17 @@ public class WSTopazContext implements TopazContext {
    * @see org.topazproject.common.impl.TopazContext
    */
   public ItqlHelper getItqlHelper() throws RemoteException, IllegalStateException {
-    if (itqlWrapper == null) {
+    if (itql == null) {
       try {
-        itqlWrapper = (ItqlHelperWrapper) itqlPool.borrowObject();
+        itql = (ItqlHelper) itqlPool.borrowObject();
       } catch (RemoteException e) {
         throw e;
       } catch (Exception e) {
         throw new RemoteException("", e);
       }
-
-      if (itqlWrapper.isNewHandle()) {
-        itqlWrapper.setNewHandle(false);
-      }
     }
 
-    return itqlWrapper.ref();
+    return itql;
   }
 
   /*
@@ -389,38 +385,16 @@ public class WSTopazContext implements TopazContext {
     }
   }
 
-  private static class ItqlHelperWrapper {
-    private ItqlHelper itql;
-    private boolean    newHandle = true;
-
-    public ItqlHelperWrapper(ItqlHelper itql) {
-      this.itql = itql;
-    }
-
-    public ItqlHelper ref() {
-      return itql;
-    }
-
-    public boolean isNewHandle() {
-      return newHandle;
-    }
-
-    public void setNewHandle(boolean newHandle) {
-      this.newHandle = newHandle;
-    }
-  }
-
   private static class ItqlHelperFactory extends BasePoolableObjectFactory {
     public Object makeObject() throws Exception {
       //xxx: assume that we aren't using an auth scheme that requires HttpSession (eg. CAS)
       ProtectedService svc = ProtectedServiceFactory.createService(itqlConfig, (HttpSession) null);
 
-      return new ItqlHelperWrapper(new ItqlHelper(svc));
+      return new ItqlHelper(svc);
     }
 
     public void destroyObject(Object obj) throws Exception {
-      ItqlHelperWrapper wrapper = (ItqlHelperWrapper) obj;
-      ItqlHelper        itql = wrapper.ref();
+      ItqlHelper itql = (ItqlHelper) obj;
       itql.close();
     }
   }
