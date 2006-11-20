@@ -63,7 +63,6 @@ public class WSTopazContext implements TopazContext {
   private static final Configuration            itqlConfig;
   private static final Configuration            apimConfig;
   private static final Configuration            upldConfig;
-  private static final HashMap                  poolMap    = new HashMap();
   private static final GenericObjectPool.Config poolConfig = new GenericObjectPool.Config();
   private static final ObjectPool               itqlPool;
 
@@ -112,13 +111,23 @@ public class WSTopazContext implements TopazContext {
   }
 
   private final String           sessionKey;
-  private boolean                active  = false;
-  private FedoraAPIM             apim    = null;
-  private Uploader               upld    = null;
-  private ItqlHelper             itql    = null;
-  private HandleCache            cache   = null;
-  private HttpSession            session = null;
   private ServletEndpointContext context;
+
+  private static class TLC {
+    private boolean     active  = false;
+    private FedoraAPIM  apim    = null;
+    private Uploader    upld    = null;
+    private ItqlHelper  itql    = null;
+    private HandleCache cache   = null;
+    private HttpSession session = null;
+  }
+
+  private final ThreadLocal tc =
+    new ThreadLocal() {
+      protected Object initialValue() {
+        return new TLC();
+      }
+    };
 
   /**
    * Creates a new WSTopazContext object.
@@ -147,44 +156,45 @@ public class WSTopazContext implements TopazContext {
    * @see org.topazproject.common.impl.TopazContext
    */
   public void activate() {
-    active = true;
+    ((TLC) tc.get()).active = true;
   }
 
   /*
    * @see org.topazproject.common.impl.TopazContext
    */
   public void passivate() {
-    active = false;
+    TLC tlc = (TLC) tc.get();
+    tlc.active = false;
 
-    if (apim != null) {
-      cache.returnObject(apim);
-      apim = null;
+    if (tlc.apim != null) {
+      tlc.cache.returnObject(tlc.apim);
+      tlc.apim = null;
     }
 
-    if (upld != null) {
-      cache.returnObject(upld);
-      upld = null;
+    if (tlc.upld != null) {
+      tlc.cache.returnObject(tlc.upld);
+      tlc.upld = null;
     }
 
-    if (itql != null) {
+    if (tlc.itql != null) {
       try {
-        itqlPool.returnObject(itql);
+        itqlPool.returnObject(tlc.itql);
       } catch (Exception e) {
         // xxx: ignore this for now 
       }
 
-      itql = null;
+      tlc.itql = null;
     }
 
-    cache     = null;
-    session   = null;
+    tlc.cache     = null;
+    tlc.session   = null;
   }
 
   /*
    * @see org.topazproject.common.impl.TopazContext
    */
   public boolean isActive() {
-    return active;
+    return ((TLC) tc.get()).active;
   }
 
   /*
@@ -198,7 +208,7 @@ public class WSTopazContext implements TopazContext {
    * @see org.topazproject.common.impl.TopazContext
    */
   public Principal getUserPrincipal() throws IllegalStateException {
-    if (!active)
+    if (!((TLC) tc.get()).active)
       throw new IllegalStateException("not active");
 
     return context.getUserPrincipal();
@@ -208,7 +218,7 @@ public class WSTopazContext implements TopazContext {
    * @see org.topazproject.common.impl.TopazContext
    */
   public HttpSession getHttpSession() throws IllegalStateException {
-    if (!active)
+    if (!((TLC) tc.get()).active)
       throw new IllegalStateException("not active");
 
     return context.getHttpSession();
@@ -248,9 +258,11 @@ public class WSTopazContext implements TopazContext {
    * @see org.topazproject.common.impl.TopazContext
    */
   public ItqlHelper getItqlHelper() throws RemoteException, IllegalStateException {
-    if (itql == null) {
+    TLC tlc = (TLC) tc.get();
+
+    if (tlc.itql == null) {
       try {
-        itql = (ItqlHelper) itqlPool.borrowObject();
+        tlc.itql = (ItqlHelper) itqlPool.borrowObject();
       } catch (RemoteException e) {
         throw e;
       } catch (Exception e) {
@@ -258,24 +270,26 @@ public class WSTopazContext implements TopazContext {
       }
     }
 
-    return itql;
+    return tlc.itql;
   }
 
   /*
    * @see org.topazproject.common.impl.TopazContext
    */
   public FedoraAPIM getFedoraAPIM() throws RemoteException, IllegalStateException {
-    if (apim != null)
-      return apim;
+    TLC tlc = (TLC) tc.get();
 
-    apim = (FedoraAPIM) getHandle(FedoraAPIM.class);
+    if (tlc.apim != null)
+      return tlc.apim;
 
-    if (apim != null)
-      return apim;
+    tlc.apim = (FedoraAPIM) getHandle(FedoraAPIM.class);
+
+    if (tlc.apim != null)
+      return tlc.apim;
 
     try {
-      ProtectedService svc = ProtectedServiceFactory.createService(apimConfig, session);
-      apim = APIMStubFactory.create(svc);
+      ProtectedService svc = ProtectedServiceFactory.createService(apimConfig, tlc.session);
+      tlc.apim = APIMStubFactory.create(svc);
     } catch (URISyntaxException e) {
       throw new Error(e); // already tested; so shouldn't happend
     } catch (MalformedURLException e) {
@@ -286,31 +300,33 @@ public class WSTopazContext implements TopazContext {
       throw new RemoteException("", e);
     }
 
-    return apim;
+    return tlc.apim;
   }
 
   /*
    * @see org.topazproject.common.impl.TopazContext
    */
   public Uploader getFedoraUploader() throws RemoteException, IllegalStateException {
-    if (upld != null)
-      return upld;
+    TLC tlc = (TLC) tc.get();
 
-    upld = (Uploader) getHandle(Uploader.class);
+    if (tlc.upld != null)
+      return tlc.upld;
 
-    if (upld != null)
-      return upld;
+    tlc.upld = (Uploader) getHandle(Uploader.class);
+
+    if (tlc.upld != null)
+      return tlc.upld;
 
     try {
-      ProtectedService svc = ProtectedServiceFactory.createService(upldConfig, session);
-      upld = new Uploader(svc);
+      ProtectedService svc = ProtectedServiceFactory.createService(upldConfig, tlc.session);
+      tlc.upld = new Uploader(svc);
     } catch (URISyntaxException e) {
       throw new Error(e); // already tested; so shouldn't happend
     } catch (IOException e) {
       throw new RemoteException("", e);
     }
 
-    return upld;
+    return tlc.upld;
   }
 
   /*
@@ -321,27 +337,30 @@ public class WSTopazContext implements TopazContext {
   }
 
   private Object getHandle(Class clazz) throws IllegalStateException {
-    if (cache != null)
-      return cache.borrowObject(clazz);
+    TLC tlc = (TLC) tc.get();
 
-    if (session == null)
-      session = getHttpSession();
+    if (tlc.cache != null)
+      return tlc.cache.borrowObject(clazz);
 
-    cache = (HandleCache) session.getAttribute(sessionKey);
+    if (tlc.session == null)
+      tlc.session = getHttpSession();
 
-    if (cache != null)
-      return cache.borrowObject(clazz);
+    tlc.cache = (HandleCache) tlc.session.getAttribute(sessionKey);
 
-    cache = new HandleCache();
-    session.setAttribute(sessionKey, cache);
+    if (tlc.cache != null)
+      return tlc.cache.borrowObject(clazz);
+
+    tlc.cache = new HandleCache();
+    tlc.session.setAttribute(sessionKey, tlc.cache);
 
     return null;
   }
 
   /**
-   * There is one cache per HttpSession. Usually the cache only contains the three handles (itql,
-   * apim, upld). However if the client is multi-threaded and issues multiple calls to us, we have
-   * to  create more handle objects since these are typically not multi-thread safe.
+   * There is one cache per HttpSession. Usually the cache only contains the two session bound
+   * handleshandles (apim, upld). However if the client is multi-threaded and issues multiple
+   * calls to us, we have to  create more handle objects since these are typically not
+   * multi-thread safe.
    * 
    * <p>
    * Using a SoftReference here since the handles are heavy wieght and so we should let the gc get
@@ -349,7 +368,7 @@ public class WSTopazContext implements TopazContext {
    * </p>
    */
   private static class HandleCache {
-    private SoftReference[] refs  = new SoftReference[3];
+    private SoftReference[] refs  = new SoftReference[2];
     int                     count = 0;
 
     public synchronized Object borrowObject(Class clazz) {
