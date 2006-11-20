@@ -30,7 +30,7 @@ public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
     try {
       annotation = getAnnotationService().getAnnotation(annotationId);
       try {
-        creatorUserName = getUserService().getUserByTopazId(annotation.getCreator()).getDisplayName();
+        creatorUserName = getUserService().getUsernameByTopazId(annotation.getCreator());
       } catch (ApplicationException ae){
         log.debug("Couldn't retrieve username: " + annotationId, ae);  
         //Temporarily here to allow for anonymous annotations
