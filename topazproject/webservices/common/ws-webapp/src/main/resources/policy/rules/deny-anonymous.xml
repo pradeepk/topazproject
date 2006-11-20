@@ -17,7 +17,7 @@
       <AnyTarget/>
     </Target>
     
-    <Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-regexp-match">
+    <Condition FunctionId="urn:oasis:names:tc:xacml:1.0:function:regexp-string-match">
       <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">anonymous:*</AttributeValue> 
       <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
         <SubjectAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"

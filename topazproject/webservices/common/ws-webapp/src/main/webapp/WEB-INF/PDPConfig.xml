@@ -71,7 +71,6 @@
       <function class="org.topazproject.xacml.cond.PermissionFunction$IsGranted"/>
       <function class="org.topazproject.xacml.cond.PermissionFunction$IsRevoked"/>
       <function class="org.topazproject.xacml.cond.CachedBagFunction"/>
-      <function class="org.topazproject.xacml.cond.RegExpMatchFunction"/>
       <function class="org.topazproject.xacml.cond.StringToIntegerFunction"/>
     </condition>
   </functionFactory>
