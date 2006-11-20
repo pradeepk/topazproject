@@ -63,22 +63,7 @@
     
     <life-cycle-listeners>
       <listener name="models">org.topazproject.bootstrap.WebAppListenerInitModels</listener>
-      <listener name="scheduler">org.topazproject.bootstrap.WebAppListenerInitScheduler</listener>
     </life-cycle-listeners>
-
-    <scheduler>
-      <config>
-        <property>org.quartz.scheduler.instanceName = TestScheduler</property>
-        <property>org.quartz.scheduler.instanceId   = one</property>
-        
-        <property>org.quartz.threadPool.class = org.quartz.simpl.SimpleThreadPool</property>
-        <property>org.quartz.threadPool.threadCount    = 5</property>
-        <property>org.quartz.threadPool.threadPriority = 4</property>
-        
-        <property>org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore</property>
-        <property>org.quartz.jobStore.misfireThreshold = 5000</property>
-      </config>
-    </scheduler>
 
     <fedoragsearch>
       <url>http://localhost:9092/ws-search-webapp-0.5-SNAPSHOT/services/FedoraGenericSearchServicePort</url>
