@@ -5,8 +5,11 @@
   <system/>
   <!-- Allow administrator overrides -->
   <xml fileName="file:///etc/topaz/topaz.xml" optional="true"/>
-  <!-- Web-app specific defaults if no admin overrides -->
-  <xml fileName="topaz-config.xml"/>
-  <!-- Shared defaults if no admin overrides -->
-  <xml fileName="topaz-common-config.xml"/>
+
+  <additional>
+    <!-- Shared defaults if no admin overrides -->
+    <xml fileName="topaz-common-config.xml"/>
+    <!-- Web-app specific defaults if no admin overrides -->
+    <xml fileName="topaz-config.xml"/>
+  </additional>
 </configuration>
