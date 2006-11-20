@@ -24,14 +24,11 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.pool.BaseKeyedPoolableObjectFactory;
-import org.apache.commons.pool.KeyedObjectPool;
-import org.apache.commons.pool.impl.GenericKeyedObjectPool;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 
-import org.topazproject.common.impl.SimpleTopazContext;
+import org.topazproject.common.ws.WSTopazContext;
 
 import org.topazproject.configuration.ConfigurationStore;
 
@@ -106,26 +103,13 @@ public abstract class PermissionFunction implements Function {
   private URI identifier;
 
   // A List used by makeProcessingError() to save some steps.
-  private static List            processingErrList = null;
-  private static KeyedObjectPool pool;
+  private static List processingErrList = null;
 
-  static {
-    GenericKeyedObjectPool.Config poolConfig = new GenericKeyedObjectPool.Config();
-    poolConfig.maxActive                       = 20;
-    poolConfig.maxIdle                         = 20;
-    poolConfig.maxTotal                        = 20;
-    poolConfig.maxWait                         = 1000; // time to wait for handle if none available
-    poolConfig.minEvictableIdleTimeMillis      = 5 * 60 * 1000; // 5 min
-    poolConfig.minIdle                         = 0;
-    poolConfig.numTestsPerEvictionRun          = 5;
-    poolConfig.testOnBorrow                    = false;
-    poolConfig.testOnReturn                    = false;
-    poolConfig.testWhileIdle                   = true;
-    poolConfig.timeBetweenEvictionRunsMillis   = 5 * 60 * 1000; // 5 min
-    poolConfig.whenExhaustedAction             = GenericKeyedObjectPool.WHEN_EXHAUSTED_BLOCK;
+  // Thread-Local based TopazContext
+  private static final WSTopazContext ctx = new WSTopazContext("xacml");
 
-    pool = new GenericKeyedObjectPool(new PermissionsImplFactory(), poolConfig);
-  }
+  // The singleton permissions-impl to use
+  private static final PermissionsImpl permissions = new PermissionsImpl(null, ctx);
 
   /**
    * Creates a new PermissionFunction object.
@@ -197,14 +181,12 @@ public abstract class PermissionFunction implements Function {
     if (result.indeterminate())
       return result;
 
-    String      principal = result.getAttributeValue().encode();
-
-    Permissions impl = null;
+    String principal = result.getAttributeValue().encode();
 
     try {
-      impl = (Permissions) pool.borrowObject(conf);
+      ctx.activate();
 
-      boolean ret = execute(impl, resource, permission, principal);
+      boolean ret = execute(permissions, resource, permission, principal);
 
       return new EvaluationResult(BooleanAttribute.getInstance(ret));
     } catch (Exception e) {
@@ -215,12 +197,7 @@ public abstract class PermissionFunction implements Function {
 
       return makeProcessingError(msg + ". " + e.getMessage());
     } finally {
-      try {
-        if (impl != null)
-          pool.returnObject(conf, impl);
-      } catch (Throwable t) {
-        log.warn("Failed to return object back to pool", t);
-      }
+      ctx.passivate();
     }
   }
 
@@ -308,38 +285,6 @@ public abstract class PermissionFunction implements Function {
     protected boolean execute(Permissions impl, String resource, String permission, String principal)
                        throws Exception {
       return impl.isRevoked(resource, permission, principal);
-    }
-  }
-
-  private static class PermissionsImplFactory extends BaseKeyedPoolableObjectFactory {
-    private Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
-    private Map           ctxMap = Collections.synchronizedMap(new HashMap());
-
-    public Object makeObject(Object key) throws Exception {
-      Configuration subset = configuration.subset((String) key);
-
-      if ((subset == null) || (subset.getString("uri") == null))
-        throw new ConfigurationException("Can't find configuration " + key);
-
-      ProtectedService   service =
-        ProtectedServiceFactory.createService(subset, (HttpSession) null);
-
-      ItqlHelper         itql = new ItqlHelper(service);
-
-      SimpleTopazContext ctx = new SimpleTopazContext(itql, null, null);
-
-      Permissions        o = new PermissionsImpl(null, ctx);
-
-      ctxMap.put(o, ctx);
-
-      return o;
-    }
-
-    public void destroyObject(Object key, Object obj) throws Exception {
-      obj = ctxMap.remove(obj);
-
-      ItqlHelper itql = ((SimpleTopazContext) obj).getItqlHelper();
-      itql.close();
     }
   }
 }
