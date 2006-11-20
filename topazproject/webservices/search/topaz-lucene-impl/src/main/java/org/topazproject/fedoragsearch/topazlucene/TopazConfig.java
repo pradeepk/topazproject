@@ -99,9 +99,11 @@ class TopazConfig {
       try {
         // Try to open the DB for reading. If the DB doesn't exist (no segments file), will fail
         IndexSearcher is = new IndexSearcher(dir);
+        is.close();
       } catch (FileNotFoundException fnfe) {
         // Create the database
         IndexModifier im = new IndexModifier(dir, new StandardAnalyzer(), true);
+        im.close();
       }
     } catch (IOException ioe) {
       log.error("Error seeing or creating database", ioe);
