@@ -124,6 +124,11 @@
             <groupId>ant</groupId>
             <artifactId>ant-optional</artifactId>
           </exclusion>
+          <!-- jxpath declares these, but we don't use that part -->
+          <exclusion>
+            <groupId>javax.servlet</groupId>
+            <artifactId>servlet-api</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
     

@@ -10,11 +10,7 @@
  */
 package org.topazproject.ws.access;
 
-import java.net.URI;
-
 import java.rmi.RemoteException;
-
-import javax.servlet.http.HttpSession;
 
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
