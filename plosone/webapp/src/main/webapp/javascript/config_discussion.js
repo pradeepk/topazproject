@@ -1,6 +1,6 @@
 var djConfig = {
 	isDebug: true,
-	debugContainerId : "dojoDebug",
+	debugContainerId : "dojoDebug"
 };
 
 var responseConfig = {
