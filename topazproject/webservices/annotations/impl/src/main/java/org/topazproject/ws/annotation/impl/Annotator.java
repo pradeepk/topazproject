@@ -108,7 +108,7 @@ public class Annotator {
     for (int i = 0; i < lists.length; i++)
       regions.addRegion(lists[i], annotations[i]);
 
-    regions.surroundContents(AML_NS, "aml:annotated", "aml:id");
+    regions.surroundContents(AML_NS, "aml:annotated", "aml:id", "aml:first");
 
     Element rRoot = regions.createElement(AML_NS, "aml:region", "aml:annotation", "aml:id");
 
