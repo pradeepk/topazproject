@@ -115,6 +115,15 @@
             <groupId>commons-logging</groupId>
             <artifactId>commons-logging-api</artifactId>
           </exclusion>
+          <!-- jxpath declares these, but they're not needed for runtime -->
+          <exclusion>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+          </exclusion>
+          <exclusion>
+            <groupId>ant</groupId>
+            <artifactId>ant-optional</artifactId>
+          </exclusion>
         </exclusions>
       </dependency>
     
