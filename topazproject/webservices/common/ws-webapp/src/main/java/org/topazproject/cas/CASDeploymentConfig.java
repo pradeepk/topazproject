@@ -38,11 +38,6 @@ import org.topazproject.configuration.ConfigurationStore;
 public class CASDeploymentConfig implements FilterConfig, ServletConfig {
   private String         name;
   private ServletContext context;
-  private String         casBaseUrl;
-  private String         contextPath;
-  private String         serverName;
-  private String         serverPort;
-  private String         httpsPort;
   private Map            params = new HashMap();
 
   /**
@@ -87,11 +82,13 @@ public class CASDeploymentConfig implements FilterConfig, ServletConfig {
    * @throws ServletException on an error
    */
   public void initialize(ServletRequest request) throws ServletException {
-    Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-    casBaseUrl   = conf.getString("topaz.cas-server.base-url", "https://localhost:7443/cas");
-    serverName   = conf.getString("topaz.server.hostname", "localhost");
+    Configuration conf       = ConfigurationStore.getInstance().getConfiguration();
+    String        serverName = conf.getString("topaz.server.hostname", "localhost");
+    String        casBaseUrl =
+      conf.getString("topaz.cas-server.base-url", "https://localhost:7443/cas");
 
-    int port     = conf.getInt("topaz.server.https-port", 8443);
+    String httpsPort;
+    int    port = conf.getInt("topaz.server.https-port", 8443);
 
     if ((port == 0) || (port == 443))
       httpsPort = "";
@@ -101,15 +98,22 @@ public class CASDeploymentConfig implements FilterConfig, ServletConfig {
     if (!(request instanceof HttpServletRequest))
       throw new ServletException("Sorry; can handle only HttpServletRequest.");
 
-    HttpServletRequest req = (HttpServletRequest) request;
+    HttpServletRequest req         = (HttpServletRequest) request;
+    String             contextPath = req.getContextPath();
 
-    contextPath   = req.getContextPath();
-    port          = req.getServerPort();
+    String             serverPort;
+    port = req.getServerPort(); // xxx: assumes http request
 
     if ((port == 0) || (port == 80))
       serverPort = "";
     else
       serverPort = ":" + port;
+
+    params.put("edu.yale.its.tp.cas.client.filter.validateUrl", casBaseUrl + "/proxyValidate");
+    params.put("edu.yale.its.tp.cas.client.filter.serverName", serverName + serverPort);
+    params.put("edu.yale.its.tp.cas.client.filter.proxyCallbackUrl",
+               "https://" + serverName + httpsPort + contextPath + "/CasProxyServlet");
+    params.put("edu.yale.its.tp.cas.proxyUrl", casBaseUrl + "/proxy");
   }
 
   /*
@@ -131,18 +135,6 @@ public class CASDeploymentConfig implements FilterConfig, ServletConfig {
    * @see javax.servlet.ServletConfig
    */
   public String getInitParameter(String name) {
-    if ("edu.yale.its.tp.cas.client.filter.validateUrl".equals(name))
-      return casBaseUrl + "/proxyValidate";
-
-    if ("edu.yale.its.tp.cas.client.filter.serverName".equals(name))
-      return serverName + serverPort;
-
-    if ("edu.yale.its.tp.cas.client.filter.proxyCallbackUrl".equals(name))
-      return "https://" + serverName + httpsPort + contextPath + "/CasProxyServlet";
-
-    if ("edu.yale.its.tp.cas.proxyUrl".equals(name))
-      return casBaseUrl + "/proxy";
-
     return (String) params.get(name);
   }
 
