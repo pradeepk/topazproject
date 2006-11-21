@@ -68,7 +68,9 @@
 				<!-- end : expanded block -->
 				</li>
 				<li><a href="#" class="discuss icon">Start a discussion</a> about this article</li>
-				<li><a href="#" class="commentary icon">See all commentary</a> on this article</li>
+
+		    <@ww.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
+				<li><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article</li>
 			</ol>
 		</div> 
 		<div id="sectionNavTop" class="tools">
