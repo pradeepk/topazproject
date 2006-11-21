@@ -1,3 +1,7 @@
+<#function isPresent array value>
+  <#return value>
+</#function>
+
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
     "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
@@ -158,6 +162,7 @@
 		<legend>Choose your alerts  </legend>
 		<ol>
 			<li>Check back soon for more PLoS One alerts</li>
+      <@ww.textfield name="alertEmailAddress" label="Email address for alerts" required="true"/>
       <#list categoryBeans as category>
         <li>
           <ol>
@@ -165,7 +170,7 @@
             <li>
               <#if category.weeklyAvailable>
 						    <label for="${category.key}">
-              <@ww.checkbox name="weeklyAlerts" label="Weekly" labelposition="top" fieldValue="${category.key}"/>
+              <@ww.checkbox name="weeklyAlerts" fieldValue="${category.key}" nameValue="${isPresent(weeklyAlerts, category.key)}"/>
                 Weekly </label>
               </#if>
             </li>
@@ -173,7 +178,7 @@
             <li>
               <#if category.monthlyAvailable>
                 <label for="${category.key}">
-              <@ww.checkbox name="monthlyAlerts" label="Monthly" labelposition="top" fieldValue="${category.key}"/>
+              <@ww.checkbox name="monthlyAlerts" fieldValue="${category.key}"/>
                   Monthly </label>
               <#else>
                 

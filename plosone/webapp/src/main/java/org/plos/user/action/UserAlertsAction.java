@@ -9,6 +9,7 @@
  */
 package org.plos.user.action;
 
+import org.apache.commons.lang.StringUtils;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.user.PlosOneUser;
 import org.plos.user.service.CategoryBean;
@@ -32,6 +33,10 @@ public class UserAlertsAction extends UserActionSupport {
    * @throws Exception Exception
    */
   public String saveAlerts() throws Exception {
+    if (StringUtils.isEmpty(alertEmailAddress)) {
+      addFieldError("alertEmailAddress", "Email address for alerts is required.");
+      return INPUT;
+    }
     final PlosOneUser plosOneUser = (PlosOneUser) getSessionMap().get(PLOS_ONE_USER_KEY);
     final Collection<String> alertsList = new ArrayList<String>();
     for (final String alert : monthlyAlerts) {
@@ -133,5 +138,18 @@ public class UserAlertsAction extends UserActionSupport {
    */
   public Collection<CategoryBean> getCategoryBeans() {
     return getUserService().getCategoryBeans();
+  }
+
+  public boolean isWeeklySelected(final String alertCategory) {
+    return isSelected(weeklyAlerts, alertCategory);
+  }
+
+  public boolean isMonthlySelected(final String alertCategory) {
+    return isSelected(monthlyAlerts, alertCategory);
+  }
+
+  public boolean isSelected(final String[] periodAlerts, final String alertCategory) {
+    return true;
+//    return ArrayUtils.contains(periodAlerts, alertCategory);
   }
 }

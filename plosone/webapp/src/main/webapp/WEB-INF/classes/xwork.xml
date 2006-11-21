@@ -279,7 +279,7 @@
     </action>
 
     <action name="saveUserAlerts" class="org.plos.user.action.UserAlertsAction" method="saveAlerts">
-      <result name="success" type="dispatcher">retrieveUserAlerts.action</result>
+      <result name="success" type="redirect">retrieveUserAlerts.action</result>
       <result name="error">/WEB-INF/pages/user/alerts.ftl</result>
       <result name="input">/WEB-INF/pages/user/alerts.ftl</result>
     </action>
