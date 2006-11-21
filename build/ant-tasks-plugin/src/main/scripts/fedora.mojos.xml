@@ -69,60 +69,6 @@
           <type>java.lang.String</type>
           <description>version of fedora.</description>
         </parameter>
-
-        <parameter>
-          <name>mulgara-service-groupId</name>
-          <property>mulgara-service-groupId</property>
-          <required>true</required>
-          <defaultValue>org/topazproject</defaultValue>
-          <type>java.lang.String</type>
-          <description>groupId for mulgara-service</description>
-        </parameter>
-
-        <parameter>
-          <name>mulgara-service-artifactId</name>
-          <property>mulgara-service-artifactId</property>
-          <required>true</required>
-          <defaultValue>mulgara-service</defaultValue>
-          <type>java.lang.String</type>
-          <description>ArtifactId of mulgara-service</description>
-        </parameter>
-
-        <parameter>
-          <name>mulgara-service-version</name>
-          <property>mulgara-service-version</property>
-          <required>true</required>
-          <defaultValue>0.5-SNAPSHOT</defaultValue>
-          <type>java.lang.String</type>
-          <description>version of mulgara-service</description>
-        </parameter>
-
-        <parameter>
-          <name>access-service-groupId</name>
-          <property>access-service-groupId</property>
-          <required>true</required>
-          <defaultValue>org/topazproject/ws</defaultValue>
-          <type>java.lang.String</type>
-          <description>groupId for access-service</description>
-        </parameter>
-
-        <parameter>
-          <name>access-service-artifactId</name>
-          <property>access-service-artifactId</property>
-          <required>true</required>
-          <defaultValue>ws-access-webapp</defaultValue>
-          <type>java.lang.String</type>
-          <description>ArtifactId of access-service</description>
-        </parameter>
-
-        <parameter>
-          <name>access-service-version</name>
-          <property>access-service-version</property>
-          <required>true</required>
-          <defaultValue>0.5-SNAPSHOT</defaultValue>
-          <type>java.lang.String</type>
-          <description>version of access-service</description>
-        </parameter>
         
         <parameter>
           <name>ECQS_KEYSTORE</name>
@@ -245,13 +191,6 @@
         </parameter>
 
         <parameter>
-          <name>SRC_DIRINGEST_ZIP</name>
-          <property>SRC_DIRINGEST_ZIP</property>
-          <required>true</required>
-          <defaultValue>${settings.localRepository}/info/fedora/diringest-distribution/2.1.1/diringest-distribution-2.1.1.zip</defaultValue>
-        </parameter>
-
-        <parameter>
           <name>CAS_AUTHENTICATOR</name>
           <property>CAS_AUTHENTICATOR</property>
           <required>true</required>
@@ -263,20 +202,6 @@
           <property>CAS_CLIENT</property>
           <required>true</required>
           <defaultValue>${settings.localRepository}/cas/casclient/2.1.1/casclient-2.1.1.jar</defaultValue>
-        </parameter>
-
-        <parameter>
-          <name>RESOURCE_INDEXER</name>
-          <property>RESOURCE_INDEXER</property>
-          <required>true</required>
-          <defaultValue>${settings.localRepository}/org/topazproject/resource-indexer/0.5-SNAPSHOT/resource-indexer-0.5-SNAPSHOT.jar</defaultValue>
-        </parameter>
-
-        <parameter>
-          <name>FILTER_RESOLVER</name>
-          <property>FILTER_RESOLVER</property>
-          <required>true</required>
-          <defaultValue>${settings.localRepository}/org/topazproject/filter-resolver/0.5-SNAPSHOT/filter-resolver-0.5-SNAPSHOT.jar</defaultValue>
         </parameter>
 
         <parameter>
@@ -320,6 +245,14 @@
           <required>true</required>
           <defaultValue>${settings.localRepository}/org/topazproject/fedora-security/0.5-SNAPSHOT/fedora-security-0.5-SNAPSHOT.jar</defaultValue>
         </parameter>
+        
+        <parameter>
+          <name>ACCESS_WAR</name>
+          <property>ACCESS_WAR</property>
+          <required>true</required>
+          <defaultValue>${settings.localRepository}/org/topazproject/ws/ws-access-webapp/0.5-SNAPSHOT/ws-access-webapp-0.5-SNAPSHOT.war</defaultValue>
+        </parameter>
+      
       </parameters>
 
     </mojo>
