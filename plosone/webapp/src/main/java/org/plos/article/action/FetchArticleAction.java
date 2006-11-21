@@ -21,7 +21,8 @@ import java.util.ArrayList;
 public class FetchArticleAction extends BaseActionSupport {
   private String articleURI;
   private static final int INITIAL_TRANSFORMED_FILE_SIZE = 100000;
-
+  private String annotationId = "";
+  
   private ArrayList<String> messages = new ArrayList<String>();
   private static final Log log = LogFactory.getLog(FetchArticleAction.class);
   private FetchArticleService fetchArticleService;
@@ -98,5 +99,19 @@ public class FetchArticleAction extends BaseActionSupport {
 
   public ArrayList<String> getMessages() {
     return messages;
+  }
+
+  /**
+   * @return Returns the annotationId.
+   */
+  public String getAnnotationId() {
+    return annotationId;
+  }
+
+  /**
+   * @param annotationId The annotationId to set.
+   */
+  public void setAnnotationId(String annotationId) {
+    this.annotationId = annotationId;
   }
 }

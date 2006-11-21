@@ -3,7 +3,7 @@
 	<@ww.url namespace="/article" includeParams="none" id="articleURL" action="fetchArticle" articleURI="${articleInfo.uri}"/>
 
 	<div class="source">
-		<span>Original Article</span><a href="#" title="Back to original article" class="article icon">${articleInfo.title}</a>
+		<span>Original Article</span><a href="${articleURL}" title="Back to original article" class="article icon">${articleInfo.title}</a>
 	</div>
 
 
