@@ -33,7 +33,6 @@
     <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
-      <version>1.0.2</version>
     </dependency>
     
   </dependencies>

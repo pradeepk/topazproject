@@ -17,7 +17,6 @@
     <dependency>
       <groupId>axis</groupId>
       <artifactId>axis</artifactId>
-      <version>1.2.1</version>
     </dependency>
 
     <dependency>
@@ -29,21 +28,21 @@
     <dependency>
       <groupId>cas</groupId>
       <artifactId>casclient</artifactId>
-      <version>2.1.1</version>
-      <type>jar</type>
     </dependency>
 
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
-      <version>2.3</version>
+    </dependency>
+    
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
     </dependency>
 
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
     </dependency>
 
   </dependencies>

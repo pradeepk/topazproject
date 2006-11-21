@@ -30,8 +30,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
     </dependency>
 
     <!-- Pull in xacml library when building javadocs (or they fail) -->
@@ -167,7 +165,6 @@
     <dependency>
       <groupId>commons-io</groupId>
       <artifactId>commons-io</artifactId>
-      <version>1.2</version>
     </dependency>
     <!-- mailserver junit extension: http://quintanasoft.com/dumbster/ -->
     <dependency>

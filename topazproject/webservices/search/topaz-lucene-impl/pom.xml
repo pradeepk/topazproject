@@ -45,7 +45,6 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
-      <version>1.0.4</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
@@ -60,27 +59,6 @@
     <dependency>
       <groupId>commons-configuration</groupId>
       <artifactId>commons-configuration</artifactId>
-      <version>1.2</version>
-      <type>jar</type>
-      <exclusions>
-        <!-- These aren't needed, as the jdk 1.4 provided parsers work fine -->
-        <exclusion>
-          <groupId>dom4j</groupId>
-          <artifactId>dom4j</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xerces</groupId>
-          <artifactId>xerces</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xalan</groupId>
-          <artifactId>xalan</artifactId>
-        </exclusion>
-        <exclusion>
-          <groupId>xml-apis</groupId>
-          <artifactId>xml-apis</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
@@ -101,12 +79,10 @@
     <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon</artifactId>
-      <version>8.7</version>
     </dependency>
     <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon-dom</artifactId>
-      <version>8.7</version>
     </dependency>
     
   </dependencies>

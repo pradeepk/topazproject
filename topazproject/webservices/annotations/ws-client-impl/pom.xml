@@ -40,17 +40,11 @@
     <dependency>
       <groupId>axis</groupId>
       <artifactId>axis</artifactId>
-      <version>1.2.1</version>
     </dependency>
     <dependency>
-      <groupId>axis</groupId>
-      <artifactId>axis-jaxrpc</artifactId>
-      <version>1.2</version>
-    </dependency>
-    <dependency>
-      <groupId>axis</groupId>
-      <artifactId>axis-saaj</artifactId>
-      <version>1.2.1</version>
+      <groupId>javax.mail</groupId>
+      <artifactId>mail</artifactId>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
@@ -60,8 +54,6 @@
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
-      <version>3.8.1</version>
-      <scope>test</scope>
     </dependency>    
   </dependencies>
 

@@ -49,10 +49,8 @@
       <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
-      <groupId>quartz</groupId>
-      <artifactId>quartz</artifactId>
-      <version>1.5.2</version>
-      <type>jar</type>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
     </dependency>
   </dependencies>
 
