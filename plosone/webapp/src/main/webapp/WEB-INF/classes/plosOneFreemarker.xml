@@ -2,8 +2,8 @@
 <pages>
   <webapp-dir>/plosone-webapp</webapp-dir>
   <webapp-subdir></webapp-subdir>
-  <cas-login-url>https://localhost:7443/cas/login</cas-login-url>
-  <cas-logout-url>https://localhost:7443/cas/logout</cas-logout-url>
+  <cas-login-url>https://merlin.topazproject.org:7443/cas/login</cas-login-url>
+  <cas-logout-url>https://merlin.topazproject.org:7443/cas/logout</cas-logout-url>
   <plosone-host>localhost:9080</plosone-host>
   <default>
     <title>PLoS ONE</title>
@@ -48,7 +48,6 @@
       <file>/javascript/topaz/formUtil.js</file>   
       <file>/javascript/topaz/domUtil.js</file>
       <file>/javascript/dojoRequire_discussion.ftl</file>
-      <file>/javascript/formSetup_discussion.js</file>   
       <file>/javascript/topaz/responsePanel.js</file>   
       <file>/javascript/topaz/errorConsole.js</file>   
       <file>/javascript/init_discussion.js</file>   
