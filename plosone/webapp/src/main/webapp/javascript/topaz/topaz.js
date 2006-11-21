@@ -70,4 +70,21 @@ String.isEmpty = function() {
   return (this == null || this == "");
 }
 
+function toggleAnnotation(userType) {
+  ldc.show();
+  var bugs = document.getElementsByTagAndClassName('a', 'bug');
+  
+  for (var i=0; i<bugs.length; i++) {
+    var classList = new Array();
+    classList = bugs[i].className.split(' ');
+    for (var n=0; n<classList.length; n++) {
+      if (classList[n].match(userType))
+        bugs[i].style.display = (bugs[i].style.display == "none") ? "inline" : "none";
+    }
+  }
+  ldc.hide();
+  
+  return false;
+}
+
 

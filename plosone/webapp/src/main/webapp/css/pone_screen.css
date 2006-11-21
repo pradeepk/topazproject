@@ -29,6 +29,7 @@ input		{ cursor: pointer; }
 
 img			{ border: 0; }
 label em { display: block; color: #F63; } /* em wraps all error messages within labels */
+.error { display: block; color: #F63; font-style: italic; } /* em wraps all error messages within labels */
 strong		{ font-weight: bold; }
 ul, ol, dl	{ margin: 20px; position: relative; }
 dt			{ font-weight: bold; }
@@ -345,7 +346,8 @@ div.tools ul			{ background-image: url(../images/pone_tools_bg.gif);}
 div.links li
 div.tools li			{ list-style-type: none; margin: 0; padding: 0; }				
 
-
+#postcomment { width: 240px; top: 0; position: relative; }
+.fixed { position: fixed !important; }
 
 #sectionNav a,
 #sectionNavTop a,

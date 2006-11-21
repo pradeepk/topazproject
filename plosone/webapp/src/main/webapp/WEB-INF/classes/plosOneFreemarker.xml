@@ -31,16 +31,27 @@
       <file>/javascript/topaz/displayComment.js</file>
       <file>/javascript/topaz/formUtil.js</file>   
       <file>/javascript/topaz/domUtil.js</file>
+      <file>/javascript/topaz/floatingMenu.js</file>
       <file>/javascript/dojoRequire_article.ftl</file>
       <file>/javascript/formSetup_article.js</file>   
+      <file>/javascript/topaz/errorConsole.js</file>   
       <file>/javascript/init_article.js</file>   
     </javascript>
   </page>
   <page>
-    <name>/discussion/commentary.ftl</name>
+    <name>/discussion/discussion.ftl</name>
     <javascript>
       <file>/javascript/prototype.js</file>
+      <file>/javascript/config_discussion.js</file>
       <file>/javascript/dojo/dojo.js</file>
+      <file>/javascript/topaz/topaz.js</file>      
+      <file>/javascript/topaz/formUtil.js</file>   
+      <file>/javascript/topaz/domUtil.js</file>
+      <file>/javascript/dojoRequire_discussion.ftl</file>
+      <file>/javascript/formSetup_discussion.js</file>   
+      <file>/javascript/topaz/responsePanel.js</file>   
+      <file>/javascript/topaz/errorConsole.js</file>   
+      <file>/javascript/init_discussion.js</file>   
     </javascript>
   </page>
 </pages>

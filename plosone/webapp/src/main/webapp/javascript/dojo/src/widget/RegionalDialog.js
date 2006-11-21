@@ -208,15 +208,7 @@ dojo.declare(
 			//var dialog_marker = dojo.byId(djConfig.regionalDialogMarker);
 			var dialog_marker = this.markerNode;
 			
-			var curleft = curtop = 0;
-			if (dialog_marker.offsetParent) {
-				curleft = dialog_marker.offsetLeft
-				curtop = dialog_marker.offsetTop
-				while (dialog_marker = dialog_marker.offsetParent) {
-					curleft += dialog_marker.offsetLeft  
-					curtop += dialog_marker.offsetTop
-				}
-			}
+			var markerOffset = topaz.domUtil.getCurrentOffset(dialog_marker);
 			
 			// find the size of the dialog
 			var mb = dojo.html.getMarginBox(this.containerNode);
@@ -276,8 +268,8 @@ dojo.declare(
       }
 			
 			// Default values put the box generally above and to the right of the annotation "bug"
-      var xTip = curleft - (tipWidth / 2);
-      var yTip = curtop - tipHeight - (tipHeight/4);
+      var xTip = markerOffset.left - (tipWidth / 2);
+      var yTip = markerOffset.top - tipHeight - (tipHeight/4);
       
       var x = xTip - tipMarginLeft;
       var y = yTip - mbHeight;
@@ -297,6 +289,7 @@ dojo.declare(
         }
       }
 
+      // If the box is too far up, flip it over and put it below the annotation.
       if (y < yMin) {
         tipDown = false; // flip the tip
 
@@ -308,7 +301,7 @@ dojo.declare(
         }
       }
       
-      var xTipDiff = curleft - x;
+      var xTipDiff = markerOffset.left - x;
       
       if(xTipDiff < tipMarginLeft) {
         xTipPos = tipMarginLeft - (tipWidth / 4);

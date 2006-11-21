@@ -3,6 +3,7 @@
   var popupm;
   var ldc;
   var annotationForm;
+  var menu;
   
   function init(e) {
     ldc = dojo.widget.byId("LoadingCycle");
@@ -11,18 +12,20 @@
     errView = dojo.widget.byId("ErrorConsole");
     var errClose = dojo.byId("btn_ok");
     errView.setCloseControl(errClose);
-        
-    var triggerNode = dojo.byId(annotationConfig.trigger);
-  	dojo.event.connect(triggerNode, 'onmousedown', function(e) {
-	     topaz.annotation.createAnnotationOnMouseDown();
-	     e.preventDefault();
-	   }
-  	);
-       
+    
+    if (loggedIn) {    
+      var triggerNode = dojo.byId(annotationConfig.trigger);
+    	dojo.event.connect(triggerNode, 'onmousedown', function(e) {
+  	     topaz.annotation.createAnnotationOnMouseDown();
+  	     e.preventDefault();
+  	   }
+    	);
+    }
+    
  		annotationForm = document.createAnnotation;
     initAnnotationForm();
     
-    formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate');
+    topaz.formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate');
     
   	dlg = dojo.widget.byId("AnnotationDialog");
   	var dlgCancel = dojo.byId('btn_cancel');
@@ -58,12 +61,28 @@
       }
     );
     
+    dojo.event.connect(window, "onload", function() {
+        floatMenu();
+      }  
+    );
+    dojo.event.connect(window, "onscroll", function() {
+        floatMenu();
+      }  
+    );
+    dojo.event.connect(window, "onresize", function() {
+        floatMenu();
+      }  
+    );
+
+
+    
+        
     topaz.displayComment.init();
     topaz.displayComment.processBugCount();
     
     ldc.hide();
     
-    //JSFX_FloatDiv("divTopLeft", 0,0).floatIt();
+    
     
   }
   

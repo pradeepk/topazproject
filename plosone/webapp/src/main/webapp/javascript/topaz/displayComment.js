@@ -214,16 +214,16 @@ topaz.displayComment = {
     var elList = document.getElementsByTagName('span');
     
     for(var i=0; i<elList.length; i++) {
-      elList[i].className = elList[i].className.replace(/\sactive/, "");
+      elList[i].className = elList[i].className.replace(/\-active/, "");
     }
-    obj.className = obj.className.replace(/\sactive/, "");
+    obj.className = obj.className.replace(/\-active/, "");
   },
   
   modifyClassName: function (obj) {
      classList = obj.className.split(" ");
      for (var i=0; i<classList.length; i++) {
        if ((classList[i].match('public') || classList[i].match('private') || classList[i].match('bug')) && !classList[i].match(' active')) {
-         classList[i] = classList[i].concat(" active");
+         classList[i] = classList[i].concat("-active");
        }
      }
      

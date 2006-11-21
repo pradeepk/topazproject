@@ -1,6 +1,6 @@
-var formUtil = new Object();
+topaz.formUtil = new Object();
 
-formUtil = {
+topaz.formUtil = {
   textCues: {
   	on: function ( formEl, textCue ) {
     if (formEl.value == "")

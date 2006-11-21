@@ -18,12 +18,12 @@
 					<fieldset>
 						<legend>Compose Your Annotation</legend>
 
-						<div id="submitMsg"></div>
+						<div id="submitMsg" class="error"></div>
 					
-						<label for="search" class="commentPublic"><span class="none">Enter your annotation title</span><!-- error message text <em>A title is required for all public annotations</em>--></label>
+						<label for="cTitle" class="commentPublic"><span class="none">Enter your annotation title</span><!-- error message text <em>A title is required for all public annotations</em>--></label>
 						<input type="text" name="cTitle" id="cTitle" value="Enter your annotation title..." class="title commentPublic" alt="Enter your annotation title..." />
 						
-						<label for="reponse"><span class="none">Enter your annotation</span><!-- error message text <em>Please enter your annotation</em>--></label>
+						<label for="cArea"><span class="none">Enter your annotation</span><!-- error message text <em>Please enter your annotation</em>--></label>
 						<textarea name="cArea" id="cArea" value="Enter your annotation..." alt="Enter your annotation...">Enter your annotation...</textarea>
 						
 						<input type="hidden" name="isPublic" value="true" />
@@ -31,8 +31,8 @@
 						<div><input type="radio" id="privateFlag" class="radio" title="Choose from one of the options" name="public" value="false" disabled="true" /><label for="Private">Private</label></div>
 						<div><input type="radio" id="publicFlag" class="radio" title="Choose from one of the options" name="public" value="true" checked="true" /><label for="Public">Public</label></div>
 						-->
-						<div class="post btn commentPrivate"><input type="button" value="Save" title="Click to save your annotation privately" id="btn_save"/><!--<span>Save</span><span class="loading"><img src="${freemarker_config.getContext()}/images/pone_loading.gif" width="58" height="58" title="Loading..." /></span>--></div>
-						<div class="post btn commentPublic"><input type="button" value="Post" title="Click to post your annotation publicly" id="btn_post"/><!--<span>Post</span><span class="loading"><img src="${freemarker_config.getContext()}/images/pone_loading.gif" width="58" height="58" title="Loading..." /></span>--></div>
+						<div class="btnwrap commentPrivate"><input type="button" value="Save" class="commentPrivate" title="Click to save your annotation privately" id="btn_save"/></div>
+						<div class="btnwrap commentPublic"><input type="button" value="Post" class="commentPublic" title="Click to post your annotation publicly" id="btn_post"/></div>
 					</fieldset>
 				</form>
 			</div>

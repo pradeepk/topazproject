@@ -150,6 +150,8 @@ div.response.original blockquote * { background: #fff; border-color: #666;}
 
 div.posting	{ background-color: #666; background-image: url(../images/pone_response_comment_bg.gif); }
 div.flag	{ background-color: #3C9544; background-image: url(../images/pone_response_flag_bg.gif); }
+div#flagForm { display:block; }
+div#flagConfirm { display: none; }
 
 .toolbar			{ background: url(../images/pone_toolbar_bg.gif) repeat-x 20px; padding: 10px; border: 1px solid #ccc; border-width: 0 0 2px 2px; margin: 0}
 .toolbar ul,

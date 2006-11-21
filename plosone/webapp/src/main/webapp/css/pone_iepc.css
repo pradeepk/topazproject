@@ -22,6 +22,9 @@ IE PC fixes
 * html #nav li a:hover ul li a {
 	width:16em; w\idth:16em; /* hack for IE5.5 */
 }
+
+* html .fixed { position: absolute !important; }
+
 * html div#sectionNav {
 	position: absolute;
 	top: 100px; /* this just needs to be more than the 20px top of the position:fixed version */ 

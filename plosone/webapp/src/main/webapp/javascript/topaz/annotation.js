@@ -52,8 +52,8 @@ topaz.annotation = {
   },
   
   createAnnotationOnMouseDown: function (event) {
-	  formUtil.textCues.reset(commentTitle, titleCue); 
-	  formUtil.textCues.reset(comments, commentCue); 
+	  topaz.formUtil.textCues.reset(commentTitle, titleCue); 
+	  topaz.formUtil.textCues.reset(comments, commentCue); 
 	  annotationForm.commentTitle.value = "";
 	  annotationForm.comment.value = "";
 	  
@@ -329,16 +329,6 @@ topaz.annotation = {
     }
     
     return familyTree;
-  },
-  
-  getFirstAncestorByClass: function ( selfNode, ancestorId ) {
-    var parentalNode = selfNode;
-    
-    while ( parentalNode.className.search(ancestorId) < 0) {
-      parentalNode = parentalNode.parentNode;
-    }
-    
-    return parentalNode;
   },
   
   getFirstAncestorByAttribute: function ( selfNode, targetAttribute ) {
@@ -697,7 +687,7 @@ topaz.annotation = {
   	var noteClass = annotationConfig.annotationMarker + " " + 
     //      					(annotationConfig.isAuthor ? "author-" : "self-") +
           					(annotationConfig.isPublic ? "public" : "private") +
-          					" active";
+          					"-active";
   	var noteTitle = (annotationConfig.isAuthor ? "Author" : annotationConfig.isPublic ? "User" : "My") + 
           					" Annotation " + 
           					(annotationConfig.isPublic ? "(Public)" : "(Private)");

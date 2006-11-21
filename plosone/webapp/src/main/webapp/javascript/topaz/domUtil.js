@@ -104,7 +104,7 @@ topaz.domUtil = {
     var elList = document.getElementsByTagAndClassName(elObj, sourceClass);
     
     for (var i=0; i<elList.length; i++) {
-      elList[i].className.concat(newClass);
+       dojo.html.addClass(elList[i], newClass);
     }
   },
   
@@ -113,8 +113,7 @@ topaz.domUtil = {
     var elList = document.getElementsByTagAndClassName(elObj, sourceClass);
     
     for (var i=0; i<elList.length; i++) {
-      var strRegExp = new RegExp(newClass);
-      elList[i].className = elList[i].className.replace(strRegExp, "");
+      dojo.html.removeClass(elList[i], newClass);
     }
   },
   
@@ -124,12 +123,11 @@ topaz.domUtil = {
     
     for (var i=0; i<siblings.length; i++) {
       if (siblings[i].className.match(classNameValue)){
-        var strRegExp = new RegExp(classNameValue);
-        siblings[i].className = siblings[i].className.replace(strRegExp, "");   
+        dojo.html.removeClass(siblings[i], classNameValue);   
       }
     }
     
-    obj.className = (!obj.className) ? classNameValue : obj.className.concat(" " + classNameValue);
+    dojo.html.addClass(obj, classNameValue);
   },
 
   swapAttributeByClassNameForDisplay: function (obj, triggerClass, attrName, attrValue) {
@@ -145,12 +143,50 @@ topaz.domUtil = {
       }
     }
     
-    obj.className = (!obj.className) ? triggerClass : obj.className.concat(" " + triggerClass);
-    obj.parentNode.className = (!obj.parentNode.className) ? triggerClass : obj.parentNode.className.concat(" " + triggerClass);
+    dojo.html.addClass(obj, triggerClass);
+    dojo.html.addClass(obj, triggerClass);
     
     //alert("elements.displayId = " + elements.displayId + "\n" +
     //      "obj = " + obj.nodeName + "\n" +
     //      "obj.className = " + obj.className);
-  }
+  },
   
+  getCurrentOffset: function(obj) {
+		var curleft = curtop = 0;
+		if (obj.offsetParent) {
+			curleft = obj.offsetLeft
+			curtop = obj.offsetTop
+			while (obj = obj.offsetParent) {
+				curleft += obj.offsetLeft  
+				curtop += obj.offsetTop
+			}
+		}
+
+    var offset = new Object();
+    offset.top = curtop;
+    offset.left = curleft;
+    
+    return offset;
+  },
+
+  getFirstAncestorByClass: function ( selfNode, ancestorClassName ) {
+    var parentalNode = selfNode;
+    
+    while ( parentalNode.className.search(ancestorClassName) < 0) {
+      parentalNode = parentalNode.parentNode;
+    }
+    
+    return parentalNode;
+  },
+  
+  swapDisplayMode: function(objId) {
+    var obj = dojo.byId(objId);
+    
+    if(obj.style.display == "none")
+      obj.style.display = "block";
+    else
+      obj.style.display = "none";
+      
+    return false;
+  }
 }
