@@ -78,6 +78,14 @@ public class GetCommentaryAction extends AnnotationActionSupport {
     }
     return SUCCESS;
   }
+  
+  public String getArticleMetaInfo () throws Exception {
+    articleInfo = getArticleWebService().getObjectInfo(target);
+    return SUCCESS;
+  }
+    
+    
+  
 
   /**
    * @return a list of annotations

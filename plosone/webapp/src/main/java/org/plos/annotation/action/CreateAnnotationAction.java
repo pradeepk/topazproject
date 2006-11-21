@@ -147,6 +147,9 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   public String getTargetContext() throws ApplicationException {
     try {
       String context;
+      if (startPath == null || startPath.length() == 0){
+        return null;
+      }
       if (startPath.equals(endPath)) {
         context = createStringRangeFragment(startPath, startOffset, endOffset - startOffset);
       } else {
@@ -220,7 +223,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   }
 
   /** @return return the end point path */
-  @RequiredStringValidator(message="You must specify a value")
+  //@RequiredStringValidator(message="You must specify a value")
   public String getEndPath() {
     return endPath;
   }
@@ -241,7 +244,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   }
 
   /** @return the start point path */
-  @RequiredStringValidator(message="You must specify a value")
+  //@RequiredStringValidator(message="You must specify a value")
   public String getStartPath() {
     return startPath;
   }

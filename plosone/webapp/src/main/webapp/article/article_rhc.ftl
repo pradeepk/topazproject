@@ -67,7 +67,9 @@
 					</fieldset>-->
 				<!-- end : expanded block -->
 				</li>
-				<li><a href="#" class="discuss icon">Start a discussion</a> about this article</li>
+		    <@ww.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
+
+				<li><a href="${createDiscussionURL}" class="discuss icon">Start a discussion</a> about this article</li>
 
 		    <@ww.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
 				<li><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article</li>

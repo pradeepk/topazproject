@@ -184,6 +184,12 @@
       <result>/WEB-INF/pages/annotation/createAnnotation.ftl</result>
     </action>
 
+    <action name="startDiscussion" class="org.plos.annotation.action.GetCommentaryAction" method="getArticleMetaInfo">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/discussion/startDiscussion.ftl</param>
+      </result>
+    </action>
+
     <action name="createAnnotationSubmit" class="org.plos.annotation.action.CreateAnnotationAction">
       <result name="input" type="ajaxJSON"/>
       <result name="error" type="ajaxJSON"/>

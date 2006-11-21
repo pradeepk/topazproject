@@ -43,6 +43,8 @@ import java.net.URISyntaxException;
 import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.util.List;
+import java.util.ArrayList;
+
 
 /**
  * Creates an annotated version of the content.
@@ -116,7 +118,7 @@ public class Annotator {
     for (int i = 0; i < lists.length; i++)
       regions.addRegion(lists[i], annotations[i]);
 
-    regions.surroundContents(AML_NS, "aml:annotated", "aml:id");
+    regions.surroundContents(AML_NS, "aml:annotated", "aml:id", "aml:first");
 
     Element rRoot = regions.createElement(AML_NS, "aml:region", "aml:annotation", "aml:id");
 
@@ -196,27 +198,29 @@ public class Annotator {
 
   private static LocationList[] evaluate(Document document, AnnotationInfo[] annotations)
                                   throws URISyntaxException, TransformerException {
-    LocationList[] lists = new LocationList[annotations.length];
+    ArrayList<LocationList> lists = new ArrayList<LocationList>(annotations.length);
 
     for (int i = 0; i < annotations.length; i++) {
       URI    context    = new URI(annotations[i].getContext());
       String expression = context.getFragment();
+      
+      if (expression != null) {
+        try {
+          expression = URLDecoder.decode(expression, "UTF-8");
+        } catch (UnsupportedEncodingException e) {
+          throw new Error(e);
+        }
 
-      try {
-        expression = URLDecoder.decode(expression, "UTF-8");
-      } catch (UnsupportedEncodingException e) {
-        throw new Error(e);
-      }
-
-      try {
-        LocationList list = XPointerAPI.evalFullptr(document, expression);
-        lists[i] = list;
-      } catch (TransformerException e) {
-        throw new TransformerException(expression, e);
+        try {
+          LocationList list = XPointerAPI.evalFullptr(document, expression);
+          lists.add(list);
+        } catch (TransformerException e) {
+          throw new TransformerException(expression, e);
+        }
       }
     }
-
-    return lists;
+    LocationList[] theList = new LocationList[lists.size()];
+    return lists.toArray(theList);
   }
 
   private static class Regions extends SelectionRangeList {
