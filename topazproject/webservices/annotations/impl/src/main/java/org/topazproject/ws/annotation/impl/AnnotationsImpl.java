@@ -94,16 +94,18 @@ public class AnnotationsImpl implements Annotations {
   private static final String GET_ITQL =
     ("select $p $o from ${MODEL} where <${id}> $p $o;").replaceAll("\\Q${MODEL}", MODEL);
   private static final String LIST_ITQL =
-    ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL} "
+    ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL} $date "
     + " where $s <a:annotates> <${annotates}>            "
     + "    and $s <dt:isReplacedBy> <r:nil>              "
-    + "    and $s <r:type> <${type}>;                    ").replaceAll("\\Q${MODEL}", MODEL);
+    + "    and $s <r:type> <${type}>                     "
+    + "    and $s <a:created> $date order by $date;      ").replaceAll("\\Q${MODEL}", MODEL);
   private static final String LIST_BY_MEDIATOR_ITQL =
-    ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL} "
+    ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) $date from ${MODEL} "
     + " where $s <a:annotates> <${annotates}>            "
     + "    and $s <dt:isReplacedBy> <r:nil>              "
     + "    and $s <dt:mediator> '${mediator}'            "
-    + "    and $s <r:type> <${type}>;                    ").replaceAll("\\Q${MODEL}", MODEL);
+    + "    and $s <r:type> <${type}>                     "
+    + "    and $s <a:created> $date order by $date;      ").replaceAll("\\Q${MODEL}", MODEL);
   private static final String LATEST_ITQL =
     ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL} "
     + " where ( (walk(<${id}> <dt:isReplacedBy> $c and $c <dt:isReplacedBy> $s)"

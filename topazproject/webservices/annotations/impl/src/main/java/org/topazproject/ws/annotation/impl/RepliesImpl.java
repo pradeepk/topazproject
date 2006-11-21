@@ -114,15 +114,17 @@ public class RepliesImpl implements Replies {
 
   //
   private static final String ITQL_LIST_REPLIES =
-    ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL}"
+    ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) $date from ${MODEL}"
     + " where $s <tr:inReplyTo> <${inReplyTo}> and $s <tr:root> <${root}>"
-    + " and $s <r:type> <tr:Reply>;").replaceAll("\\Q${MODEL}", MODEL);
+    + " and $s <r:type> <tr:Reply> and $s <a:created> $date order by $date;") //
+    .replaceAll("\\Q${MODEL}", MODEL);
 
   //
   private static final String ITQL_LIST_ALL_REPLIES =
-    ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) from ${MODEL}"
+    ("select $s subquery(select $p $o from ${MODEL} where $s $p $o) $date from ${MODEL} "
     + " where walk($c <tr:inReplyTo> <${inReplyTo}> and $s <tr:inReplyTo> $c)"
-    + " and $s <tr:root> <${root}> and $s <r:type> <tr:Reply>;").replaceAll("\\Q${MODEL}", MODEL);
+    + " and $s <tr:root> <${root}> and $s <r:type> <tr:Reply>                "
+    + " and $s <a:created> $date order by $date;").replaceAll("\\Q${MODEL}", MODEL);
 
   //
   private static final String SET_STATE_ITQL =
