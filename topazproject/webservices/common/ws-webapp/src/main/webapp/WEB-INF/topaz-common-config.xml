@@ -57,9 +57,15 @@
         <password>fedoraAdmin</password>
       </itql-admin>
     </services>
+    
     <server>
       <hostname>localhost</hostname>
+      <https-port>8443</https-port>
     </server>
+
+    <cas-server>
+      <base-url>https://localhost:7443/cas</base-url>
+    </cas-server>
     
     <life-cycle-listeners>
       <listener name="models">org.topazproject.bootstrap.WebAppListenerInitModels</listener>
