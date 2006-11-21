@@ -183,6 +183,17 @@
         <value>pathogens</value>
       </list>
     </property>
+    <property name="categoryNames">
+      <map>
+        <entry key="plosone" value="PLoS One"/>
+        <entry key="biology" value="PLoS Biology"/>
+        <entry key="computational_biology" value="PLoS Computational Biology"/>
+        <entry key="clinical_trials" value="PLoS Clinical Trials"/>
+        <entry key="genetics" value="PLoS Genetics"/>
+        <entry key="medicine" value="PLoS Medicine"/>
+        <entry key="pathogens" value="PLoS Pathogens"/>
+      </map>
+    </property>
   </bean>
 
   <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService">

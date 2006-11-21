@@ -158,91 +158,34 @@
 		<legend>Choose your alerts  </legend>
 		<ol>
 			<li>Check back soon for more PLoS One alerts</li>
-			<li>
-				<ol>
-					<li class="alerts-title">PLoS One</li>
-          <!--< @ ww .checkbox name="weeklyAlerts" label="Weekly" fieldValue="plosone" tabindex="101"/>-->
-          <li>
+      <#list categoryBeans as category>
+        <li>
+          <ol>
+            <li class="alerts-title">${category.name}</li>
+            <li>
+              <#if category.weeklyAvailable>
+						    <label for="${category.key}">
+              <@ww.checkbox name="weeklyAlerts" label="Weekly" labelposition="top" fieldValue="${category.key}"/>
+                Weekly </label>
+              </#if>
+            </li>
 
-            <label for="plone-weekly">
-              <input name="plone-weekly" id="plone-weekly" value="plone-weekly" tabindex="101" checked="checked" type="checkbox" class="checkbox" />
-              Weekly </label>
-					</li>
-					<li>
-						<label for="plone-monthly"><input name="plone-monthly" id="plone-monthly" value="plone-monthly" tabindex="102" type="checkbox" class="checkbox" /> Monthly </label>
-					</li>					
-				</ol>
-			</li>
-		    <li>
-				<ol>
-					<li class="alerts-title">PLoS Biology</li>
-					<li>
-						<label for="biology-weekly"><input name="biology-weekly" id="biology-weekly" value="biology-weekly" tabindex="103" checked="checked" type="checkbox" class="checkbox" /> Weekly </label>
-					</li>
-					<li>
-						<label for="biology-monthly"><input name="biology-monthly" id="biology-monthly" value="biology-monthly" tabindex="104" type="checkbox" class="checkbox" /> Monthly </label>
-					</li>					
-				</ol>
-			</li>
-		    <li>
-				<ol>
-					<li class="alerts-title">PLoS Computational Biology</li>
-					<li>
-						<label for="computational-biology-weekly"><input name="computational-biology-weekly" id="computational-biology-weekly" value="computational-biology-weekly" tabindex="105" checked="checked" type="checkbox" class="checkbox" /> Weekly </label>
-					</li>
-					<li>
-						<label for="computational-biology-monthly"><input name="computational-biology-monthly" id="computational-biology-monthly" value="computational-biology-monthly" tabindex="106" type="checkbox" class="checkbox" /> Monthly </label>
-					</li>					
-				</ol>
-			</li>
-		    <li>
-				<ol>
-					<li class="alerts-title">PLoS Clinical Trials</li>
-					<li>
-						<label for="clinical-trials-weekly"><input name="clinical-trials-weekly" id="clinical-trials-weekly" value="clinical-trials-weekly" tabindex="107" checked="checked" type="checkbox" class="checkbox" /> Weekly </label>
-					</li>
-					<li>
-						<label for="clinical-trials-monthly"><input name="clinical-trials-monthly" id="clinical-trials-monthly" value="clinical-trials-monthly" tabindex="108" type="checkbox" class="checkbox" /> Monthly </label>
-					</li>					
-				</ol>
-			</li>
-		    <li>
-				<ol>
-					<li class="alerts-title">PLoS Genetics</li>
-					<li>
-						<label for="genetics-weekly"><input name="genetics-weekly" id="genetics-weekly" value="genetics-weekly" tabindex="109" checked="checked" type="checkbox" class="checkbox" /> Weekly </label>
-					</li>
-					<li>
-						<label for="genetics-monthly"><input name="genetics-monthly" id="genetics-monthly" value="genetics-monthly" tabindex="110" type="checkbox" class="checkbox" /> Monthly </label>
-					</li>					
-				</ol>
-			</li>
-		    <li>
-				<ol>
-					<li class="alerts-title">PLoS Medicine</li>
-					<li>
-						<label for="medicine-weekly"><input name="medicine-weekly" id="medicine-weekly" value="medicine-weekly" tabindex="111" checked="checked" type="checkbox" class="checkbox" /> Weekly </label>
-					</li>
-					<li>
-						<label for="medicine-monthly"><input name="medicine-monthly" id="medicine-monthly" value="medicine-monthly" tabindex="112" type="checkbox" class="checkbox" /> Monthly </label>
-					</li>					
-				</ol>
-			</li>
-		    <li>
-				<ol>
-					<li class="alerts-title">PLoS Pathogens</li>
-					<li>
-						<label for="pathogens-weekly"><input name="pathogens-weekly" id="pathogens-weekly" value="pathogens-weekly" tabindex="113" checked="checked" type="checkbox" class="checkbox" /> Weekly </label>
-					</li>
-					<li>
-						<label for="pathogens-monthly"><input name="pathogens-monthly" id="pathogens-monthly" value="pathogens-monthly" tabindex="114" type="checkbox" class="checkbox" /> Monthly </label>
-					</li>					
-				</ol>
-			</li>
+            <li>
+              <#if category.monthlyAvailable>
+                <label for="${category.key}">
+              <@ww.checkbox name="monthlyAlerts" label="Monthly" labelposition="top" fieldValue="${category.key}"/>
+                  Monthly </label>
+              <#else>
+                
+              </#if>
+            </li>
+          </ol>
+        </li>
+      </#list>
 		</ol>
 		<br clear="all" />
-			<input type="submit" name="cancel" id="cancel" value="Cancel" tabindex="115">
-			<input type="submit" name="save" id="save" value="Save" tabindex="116">
+			<input type="submit" name="cancel" id="cancel" value="Cancel" tabindex="199">
+      <@ww.submit name="Save" tabindex="200"/>
 	</fieldset>
   </@ww.form>
 

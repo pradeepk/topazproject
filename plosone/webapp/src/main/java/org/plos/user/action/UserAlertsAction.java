@@ -11,6 +11,7 @@ package org.plos.user.action;
 
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.user.PlosOneUser;
+import org.plos.user.service.CategoryBean;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -69,11 +70,16 @@ public class UserAlertsAction extends UserActionSupport {
         }
       }
     }
-    
-    monthlyAlerts = monthlyAlertsList.toArray(new String[monthlyAlertsList.size()]);
-    weeklyAlerts = weeklyAlertsList.toArray(new String[weeklyAlertsList.size()]);
+
+    monthlyAlerts = convertToArrayWithAtleastOneStringElement(monthlyAlertsList);
+    weeklyAlerts = convertToArrayWithAtleastOneStringElement(weeklyAlertsList);
     alertEmailAddress = plosOneUser.getAlertsEmailAddress();
     return SUCCESS;
+  }
+
+  private String[] convertToArrayWithAtleastOneStringElement(final Collection<String> collection) {
+    if (collection.size() == 0) return new String[]{""};
+    return collection.toArray(new String[collection.size()]);
   }
 
   /**
@@ -123,16 +129,9 @@ public class UserAlertsAction extends UserActionSupport {
   }
 
   /**
-   * @return all the possible weekly categories
+   * @return all the category beans
    */
-  public Collection<String> getAllWeeklyCategories() {
-    return getUserService().getWeeklyCategories();
-  }
-
-  /**
-   * @return all the possible monthly categories
-   */
-  public Collection<String> getAllMonthlyCategories() {
-    return getUserService().getMonthlyCategories();
+  public Collection<CategoryBean> getCategoryBeans() {
+    return getUserService().getCategoryBeans();
   }
 }

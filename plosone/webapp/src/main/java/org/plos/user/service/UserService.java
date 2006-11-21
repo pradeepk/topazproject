@@ -9,20 +9,17 @@
  */
 package org.plos.user.service;
 
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 import com.opensymphony.oscache.base.NeedsRefreshException;
-
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.ApplicationException;
 import org.plos.Constants;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
 import org.plos.user.UserProfileGrant;
-
 import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.pap.UserPreference;
@@ -34,6 +31,8 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 /**
  * Class to roll up web services that a user needs in PLoS ONE. Rest of application should generally
@@ -60,6 +59,7 @@ public class UserService extends BaseConfigurableService {
   private final String[] ALL_PRINCIPALS = new String[]{Constants.Permission.ALL_PRINCIPALS};
   private Collection<String> weeklyCategories;
   private Collection<String> monthlyCategories;
+  private Map<String, String> categoryNames;
 
   /**
    * Create a new user account and associate a single authentication id with it.
@@ -652,5 +652,42 @@ public class UserService extends BaseConfigurableService {
     this.userCacheAdministrator = userCache;
   }
 
+  /**
+   * Set the categories and their presentation names.
+   * @param categoryNames categoryNames
+   */
+  public void setCategoryNames(final Map<String, String> categoryNames) {
+    this.categoryNames = categoryNames;
+  }
 
+  /**
+   * @return the map of category and their presentation names
+   */
+  public Map<String, String> getCategoryNames() {
+    return categoryNames;
+  }
+
+  /**
+   * @return the Category beans
+   */
+  public Collection<CategoryBean> getCategoryBeans() {
+    final Collection<CategoryBean> result = new ArrayList<CategoryBean>(categoryNames.size());
+    final Set<Map.Entry<String, String>> categoryNamesSet = categoryNames.entrySet();
+
+    for (final Map.Entry<String, String> category : categoryNamesSet) {
+      final String key = category.getKey();
+      boolean weeklyCategoryKey = false;
+      boolean monthlyCategoryKey = false;
+      if (weeklyCategories.contains(key)) {
+        weeklyCategoryKey = true;
+      }
+      if (monthlyCategories.contains(key)) {
+        monthlyCategoryKey = true;
+      }
+      result.add(
+              new CategoryBean(key, category.getValue(), weeklyCategoryKey, monthlyCategoryKey));
+    }
+
+    return result;
+  }
 }
