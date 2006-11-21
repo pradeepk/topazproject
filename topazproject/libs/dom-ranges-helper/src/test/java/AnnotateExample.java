@@ -72,7 +72,7 @@ public class AnnotateExample {
     }
 
     // Step 2: surround each range
-    srl.surroundContents(NS, "aml:annotated", "aml:id");
+    srl.surroundContents(NS, "aml:annotated", "aml:id", "aml:first");
 
     // Step 3: create an index describing each element that we inserted
     Element index = document.createElementNS(NS, "aml:regions");

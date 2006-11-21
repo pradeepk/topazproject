@@ -74,7 +74,7 @@ public class SelectionRangeList {
    * @param elemQName name to assign to each surrounding element
    * @param idAttrQName the id attribute of each surrounding element
    */
-  public void surroundContents(String nsUri, String elemQName, String idAttrQName) {
+  public void surroundContents(String nsUri, String elemQName, String idAttrQName, String firstId) {
     int               length = size();
 
     RangePointsList[] ranges = new RangePointsList[length];
@@ -89,9 +89,9 @@ public class SelectionRangeList {
         Element rNode =
           range.getStartContainer().getOwnerDocument().createElementNS(nsUri, elemQName);
         rNode.setAttributeNS(nsUri, idAttrQName, "" + (i + 1));
-	if (j == 0) {
-	    rNode.setAttribute("aml:first", "true");
-	}
+        if ((j == 0) && (firstId != null)) {
+          rNode.setAttributeNS(nsUri, firstId, "true");
+        }
         range.surroundContents(rNode);
       }
     }
