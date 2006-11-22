@@ -204,15 +204,27 @@
     </property>
   </bean>
 
-<!--
-  <aop:config>
-    <aop:aspect ref="helloFromSpringAOP">
-      <aop:pointcut id="setMethod" expression="execution(* set*(..))"/>
-      <aop:after-returning pointcut-ref="setMethod" method="sayHello"/>
-     </aop:aspect>
-  </aop:config>
+  <bean id="searchService" class="org.plos.search.service.SearchService">
+    <property name="snippetsMax" value="3"/>
+    <property name="fieldMaxLength" value="50"/>
+    <property name="indexName" value="TopazIndex"/>
+    <property name="resultPageXslt" value="copyXml"/>
+  </bean>
 
-  <bean id="helloFromSpringAOP" class="org.plos.BeforeLogAspect"/>
--->
+  <bean id="searchWebService" class="org.plos.search.service.SearchWebService" init-method="init">
+    <property name="uri" 
+              value="http://localhost:9092/ws-search-webapp-0.5-SNAPSHOT/services/FedoraGenericSearchServicePort"/>
+  </bean>
+
+  <!--
+    <aop:config>
+      <aop:aspect ref="helloFromSpringAOP">
+        <aop:pointcut id="setMethod" expression="execution(* set*(..))"/>
+        <aop:after-returning pointcut-ref="setMethod" method="sayHello"/>
+       </aop:aspect>
+    </aop:config>
+
+    <bean id="helloFromSpringAOP" class="org.plos.BeforeLogAspect"/>
+  -->
 
 </beans>

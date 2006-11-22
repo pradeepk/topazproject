@@ -24,6 +24,7 @@ import org.plos.article.action.SecondaryObjectAction;
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.permission.service.PermissionWebService;
+import org.plos.search.action.SearchAction;
 import org.plos.user.action.AssignAdminRoleAction;
 import org.plos.user.action.CreateUserAction;
 import org.plos.user.action.DisplayUserAction;
@@ -70,6 +71,7 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private DeleteFlagAction deleteFlagAction;
   private UnflagAnnotationAction unflagAnnotationAction;
   private ListFlagAction listFlagAction;
+  private SearchAction searchAction;
 
   protected String[] getConfigLocations() {
     return new String[]{"testApplicationContext.xml"};
@@ -399,5 +401,20 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   /** @return Value for property 'userAlertsAction'. */
   public UserAlertsAction getUserAlertsAction() {
     return userAlertsAction;
+  }
+
+  /**
+   * @return searchAction
+   */
+  public SearchAction getSearchAction() {
+    return searchAction;
+  }
+
+  /**
+   * Set searchAction
+   * @param searchAction searchAction
+   */
+  public void setSearchAction(final SearchAction searchAction) {
+    this.searchAction = searchAction;
   }
 }

@@ -52,4 +52,6 @@
 
   <bean class="org.plos.annotation.action.ListFlagAction" />
 
+  <bean class="org.plos.search.action.SearchAction" />
+
 </beans>

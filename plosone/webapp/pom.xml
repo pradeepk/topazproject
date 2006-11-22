@@ -24,6 +24,11 @@
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
+      <artifactId>fedoragsearch-client</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
       <artifactId>entity-resolver</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
