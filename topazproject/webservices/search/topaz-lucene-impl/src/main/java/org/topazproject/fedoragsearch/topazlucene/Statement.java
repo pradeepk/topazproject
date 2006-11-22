@@ -203,14 +203,6 @@ public class Statement {
       throw new GenericSearchException("Some IOException", e);
     } catch (ParseException e) {
       throw new GenericSearchException("Some ParseException", e);
-    } finally {
-      if (searcher != null)
-        try {
-          searcher.close();
-        } catch (IOException e) {
-          // TODO: log something!
-        }
-      return null;
     }
   }
     
@@ -231,6 +223,8 @@ public class Statement {
     String cacheKey = userName + "|" + queryString;
     // TODO: these should be SoftReferences
     Results results = (Results) queryCache.get(cacheKey);
+    if (log.isDebugEnabled())
+      log.debug(cacheKey + ":" + results);
     if (results != null)
       return results;
 
@@ -246,7 +240,7 @@ public class Statement {
     queryCache.put(cacheKey, results);
 
     if (log.isDebugEnabled())
-      log.debug(cacheKey + ": " + results.size + " hits");
+      log.debug(cacheKey + ": " + results.size + " hit(s)");
     
     return results;
   }

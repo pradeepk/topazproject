@@ -82,6 +82,7 @@ public class OperationsImpl extends GenericOperationsImpl {
                              int    fieldMaxLength,
                              String indexName,
                              String resultPageXslt) throws RemoteException {
+    log.debug("gfind: " + query);
     super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength,
                        indexName, resultPageXslt);
     ResultSet resultSet =
@@ -95,9 +96,11 @@ public class OperationsImpl extends GenericOperationsImpl {
     params[11] = resultPageXslt;
 
     // Do we really need to do this??? We just want to copy the xml...
+    /* This generates some error due to bad gfindObjectstoResultPage...
     StringBuffer sb = TopazTransformer.transform(GFIND_XSLT, resultSet.getResultXml(), params);
-    
     return sb.toString();
+    */
+    return resultSet.getResultXml().toString();
   }
     
   public String browseIndex(String startTerm,
@@ -223,7 +226,6 @@ public class OperationsImpl extends GenericOperationsImpl {
           log.debug("INDEX_PATH: " + INDEX_PATH);
           log.debug("ANALYZER_NAME: " + ANALYZER_NAME);
           Analyzer analyzer = getAnalyzer(ANALYZER_NAME);
-          log.debug("analyzer: " + analyzer);
           modifier = new IndexModifier(INDEX_PATH, getAnalyzer(ANALYZER_NAME), false);
         } catch (IOException e) {
           if (e.toString().indexOf("/segments")>-1) {
@@ -292,7 +294,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     StringBuffer sb = TopazTransformer.transform(UPDATE_XSLT, resultXml, params);
 
     if (log.isDebugEnabled())
-      log.debug("Index updated");
+      log.debug("Index updated: " + sb);
     
     return sb.toString();
   }
@@ -412,16 +414,10 @@ public class OperationsImpl extends GenericOperationsImpl {
     
   public Analyzer getAnalyzer(String analyzerClassName) throws GenericSearchException {
     Analyzer analyzer = null;
-    if (log.isDebugEnabled())
-      log.debug("analyzerClassName=" + analyzerClassName);
     try {
       Class analyzerClass = Class.forName(analyzerClassName);
-      if (log.isDebugEnabled())
-        log.debug("analyzerClass=" + analyzerClass.toString());
       analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] {})
         .newInstance(new Object[] {});
-      if (log.isDebugEnabled())
-        log.debug("analyzer=" + analyzer.toString());
     } catch (ClassNotFoundException e) {
       throw new GenericSearchException(analyzerClassName
                                        + ": class not found.\n", e);

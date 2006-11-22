@@ -19,6 +19,9 @@ package org.topazproject.fedoragsearch.topazlucene;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.xacml.AbstractSimplePEP;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Class to stash thread-local variables between org.topazproject.ws:ws-search-server's
  * {@link org.topazproject.ws.search.FedoraGenericSearchServicePortSoapBindingImpl}
@@ -28,6 +31,8 @@ import org.topazproject.xacml.AbstractSimplePEP;
  * @version $Id$
  */
 public class SearchContext {
+  private static final Log log = LogFactory.getLog(SearchContext.class);
+  
   private static class ContextData {
     ItqlHelper itql;
     AbstractSimplePEP pep;
@@ -37,6 +42,9 @@ public class SearchContext {
   private static ThreadLocal threadData = new ThreadLocal();
 
   public static void setContext(ItqlHelper itql, AbstractSimplePEP pep, String userName) {
+    if (log.isDebugEnabled())
+      log.debug("Set thread context for: " + userName + " " + itql + " " + pep);
+    
     ContextData data = new ContextData();
     data.itql     = itql;
     data.pep      = pep;

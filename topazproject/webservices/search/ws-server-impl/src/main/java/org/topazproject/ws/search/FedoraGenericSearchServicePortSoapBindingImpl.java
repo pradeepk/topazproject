@@ -26,12 +26,13 @@ import org.topazproject.xacml.AbstractSimplePEP;
 import org.topazproject.ws.article.Article;
 
 import dk.defxws.fedoragsearch.server.Operations; // API
-import dk.defxws.fedoragsearch.server.GenericOperationsImpl;
+import dk.defxws.fedoragsearch.server.SOAPImpl;
 import dk.defxws.fedoragsearch.server.Config;
 
 
 public class FedoraGenericSearchServicePortSoapBindingImpl implements Operations, ServiceLifecycle {
-  private static final Log log = LogFactory.getLog(FedoraGenericSearchServicePortSoapBindingImpl.class);
+  private static final Log log =
+      LogFactory.getLog(FedoraGenericSearchServicePortSoapBindingImpl.class);
 
   private TopazContext ctx = new WSTopazContext(getClass().getName());
   private WSSearchPEP  pep = null;
@@ -48,9 +49,7 @@ public class FedoraGenericSearchServicePortSoapBindingImpl implements Operations
       ctx.init(context); // ctx contains itql, apim, user, uploader, apia, ...
 
       // create the impl
-      GenericOperationsImpl ops = new GenericOperationsImpl(); // normally ctx and pep are passed in
-      ops.init(Config.getCurrentConfig());
-      impl = (Operations)ImplInvocationHandler.newProxy(ops, ctx, log);
+      impl = (Operations)ImplInvocationHandler.newProxy(new SOAPImpl(), ctx, log);
     } catch (Exception e) {
       log.error("Failed to initialize SearchImpl", e);
       throw new ServiceException(e);

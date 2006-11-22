@@ -12,7 +12,9 @@ package org.topazproject.fedoragsearch.topazlucene;
 import java.security.Guard;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.io.IOException;
 
+import org.apache.lucene.search.Hit;
 import org.apache.lucene.document.Document;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
@@ -28,7 +30,14 @@ import org.topazproject.ws.article.Article;
  */
 public class TopazHitGuard implements Guard {
   public void checkGuard(Object object) throws SecurityException {
-    Document doc = (Document) object;
+    Hit hit = (Hit) object;
+    Document doc;
+    try {
+      doc = hit.getDocument();
+    } catch (IOException ioe) {
+      throw (SecurityException)
+          new SecurityException("Unable to access document: " + hit).initCause(ioe);
+    }
 
     ItqlHelper itql = SearchContext.getItqlHelper();
     /* TODO: Check state & tombstone & ... throw SecurityException if it shouldn't be available
