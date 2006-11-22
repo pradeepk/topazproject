@@ -16,6 +16,7 @@ import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.SecondaryObject;
 
+import java.util.ArrayList;
 /**
  * Fetch the secondary objects for a given uri
  */
@@ -25,6 +26,9 @@ public class SecondaryObjectAction extends BaseActionSupport {
   private ArticleWebService articleWebService;
   private static final Log log = LogFactory.getLog(SecondaryObjectAction.class);
 
+  private static final String FIGURE_CONTEXT = "fig";
+  private static final String TABLE_CONTEXT = "table-wrap";
+  
   public String execute() throws Exception {
     try {
       secondaryObjects = articleWebService.listSecondaryObjects(uri);
@@ -35,6 +39,25 @@ public class SecondaryObjectAction extends BaseActionSupport {
     return SUCCESS;
   }
 
+  public String listFiguresAndTables() throws Exception {
+    try {
+      secondaryObjects = articleWebService.listSecondaryObjects(uri);
+      ArrayList<SecondaryObject> figTables = new ArrayList<SecondaryObject>(secondaryObjects.length);
+      String contextElem;
+      for (SecondaryObject s: secondaryObjects) {
+        contextElem = s.getContextElement();
+        if (FIGURE_CONTEXT.equals(contextElem) || TABLE_CONTEXT.equals(contextElem)) {
+          figTables.add(s);
+        }
+      }
+      secondaryObjects = figTables.toArray(new SecondaryObject[figTables.size()]);
+    } catch (Exception ex) {
+      log.warn("Couldn't retrieve secondary object for URI: " + uri, ex);
+      return ERROR;
+    }
+    return SUCCESS;   
+  }
+  
   @RequiredStringValidator(message = "Object URI is required.")
   public String getUri() {
     return uri;

@@ -177,11 +177,14 @@ public class ArticleWebService extends BaseConfigurableService {
   }
 
   private SecondaryObject[] convert(final ObjectInfo[] objectInfos) {
-    final Collection<SecondaryObject> convertedObjectInfos = new ArrayList<SecondaryObject>(objectInfos.length);
-    for (final ObjectInfo objectInfo : objectInfos) {
-      convertedObjectInfos.add(convert(objectInfo));
+    if (objectInfos == null) {
+      return null;
     }
-    return convertedObjectInfos.toArray(new SecondaryObject[convertedObjectInfos.size()]);
+    SecondaryObject[] convertedObjectInfos = new SecondaryObject[objectInfos.length];
+    for (int i = 0; i < objectInfos.length; i++) {
+      convertedObjectInfos[i] = convert (objectInfos[i]);
+    }
+    return convertedObjectInfos;
   }
 
   private SecondaryObject convert(final ObjectInfo objectInfo) {

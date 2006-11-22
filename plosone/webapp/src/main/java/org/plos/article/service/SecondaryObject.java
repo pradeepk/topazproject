@@ -30,7 +30,16 @@ public class SecondaryObject {
     this.repLarge = repLarge;
 
   }
-
+  
+  /**
+   * @see org.topazproject.ws.article.ObjectInfo#getContextElement()
+   * 
+   * @return the context element of this object
+   */
+  public String getContextElement() {
+    return objectInfo.getContextElement();
+  }
+  
   /**
    * @see org.topazproject.ws.article.ObjectInfo#getUri()
    */
