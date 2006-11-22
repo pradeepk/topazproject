@@ -20,7 +20,7 @@ topaz.responsePanel = {
   show: function(curNode, targetObj, targetElClassName, baseId, replyId, threadTitle) {
     this.setPanel(targetObj.widget);
     this.setForm(targetObj.form);
-    targetObj.baseId = baseId;
+    targetObj.baseId = (baseId) ? baseId : "";
     targetObj.replyId = (replyId)? replyId : "";
     this.upperContainer = topaz.domUtil.getFirstAncestorByClass(curNode, targetElClassName);
     this.upperContainer.style.display = "none";
@@ -56,6 +56,7 @@ function submitResponseInfo(targetObj) {
   }
   else { 
     urlParam = "root=" + targetObj.baseId + "&inReplyTo=" + targetObj.replyId;
+    topaz.formUtil.disableFormFields(targetForm);
   }
    
   ldc.show();
