@@ -91,19 +91,15 @@ topaz.displayComment = {
     creatorLink.className = "user icon";
     creatorLink.appendChild(document.createTextNode(creatorId));
     
-    var d = new Date(topaz.domUtil.ISOtoJSDate(jsonObj.annotation.created));
+    var d = new Date(jsonObj.annotation.createdAsDate.time);
     var day = d.getDate();
     var month = d.getMonth() + 1;
     var year = d.getFullYear();
     var hours = d.getHours();
     var minutes = d.getMinutes();
     
-   // var dt = dojo.date.fromIso8601(jsonObj.annotation.createdAsDate);
     var dateStr = document.createElement('strong');
-    //dateStr.appendChild(dt);
     dateStr.appendChild(document.createTextNode(year + "-" + month + "-" + day));
-    dateStr.appendChild(document.createTextNode(topaz.domUtil.ISOtoJSDate(jsonObj.annotation.created)));
-    
     var timeStr = document.createElement('strong');
     timeStr.appendChild(document.createTextNode(hours + ":" + minutes + " GMT"));
     

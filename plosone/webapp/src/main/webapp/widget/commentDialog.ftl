@@ -31,9 +31,6 @@
 		</ol>
 		<br/>
 		<!-- display the following div only if there are more than four annotations in the same point -->
-		<div class="detail">
-			<a href="#" title="Click to view all commentary on this article" class="commentary icon">View all commentary on this article</a>
-		</div>
 		<div class="tip" id="mTip"></div>
 	</div>
 </div>
