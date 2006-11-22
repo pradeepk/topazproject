@@ -20,6 +20,6 @@ google_color_url = "FFFFFF";
 	<!-- end : left banner slot -->
 	<!-- begin : right banner slot -->
 	<div class="right">
-		<img src="${freemarker_config.getContext()}/images/temp_pone_banner.gif" />
+		<img src="${freemarker_config.context}/images/temp_pone_banner.gif" />
 	</div>
 	<!-- end : right banner slot -->

@@ -270,7 +270,10 @@
     </action>
     
     <action name="secureRedirect" class="org.plos.action.RedirectAction">
-      <result type="redirect">${goTo}</result>
+      <result type="redirect">
+        <param name="location">${goTo}</param>
+        <param name="prependServletContext">false</param>
+      </result>
     </action>
 
     <action name="getUserProfilePrivateFields" class="org.plos.user.action.DisplayUserAction" method="fetchUserProfileWithPrivateVisibility">

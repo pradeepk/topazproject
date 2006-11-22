@@ -10,13 +10,14 @@
 			<p>Logged in as <a href="#" class="icon user">${Session.PLOS_ONE_USER.displayName}</a></p>
 				<ul>
 					<li><a href="#" class="icon preferences">Preferences</a></li>
-					<li><a href="${freemarker_config.getCasLogoutURL()}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action" class="icon logout">Logout</a></li>
+					<li><a href="${freemarker_config.casLogoutURL}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action" class="icon logout">Logout</a></li>
 				</ul>
 		</div>
 	</div>
 	
 	<#else>
-	<@ww.url id="thisPage" includeParams="get" includeContext="true"/>
+	<@ww.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
+	<#assign thisPage = thisPageURL?replace("&amp;", "&")?url>
 	
 	<div id="user" class="login">
 		<div>
