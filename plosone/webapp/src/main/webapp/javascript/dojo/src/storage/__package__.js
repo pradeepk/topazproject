@@ -1,7 +1,6 @@
 dojo.kwCompoundRequire({
 	common: ["dojo.storage"],
-	browser: ["dojo.storage.browser"],
-	dashboard: ["dojo.storage.dashboard"]
+	browser: ["dojo.storage.browser"]
 });
 dojo.provide("dojo.storage.*");
 

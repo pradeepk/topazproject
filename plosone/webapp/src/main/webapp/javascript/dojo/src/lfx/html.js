@@ -90,11 +90,13 @@ dojo.lfx.html.propertyAnimation = function(	/*DOMNode[]*/ nodes,
 		n = dojo.byId(n);
 		if(!n || !n.style){ return; }
 		for(var s in style){
-			if(s == "opacity"){
-				dojo.html.setOpacity(n, style[s]);
-			}else{
-				n.style[s] = style[s];
-			}
+			try{
+				if(s == "opacity"){
+					dojo.html.setOpacity(n, style[s]);
+				}else{
+						n.style[s] = style[s];
+				}
+			}catch(e){ dojo.debug(e); }
 		}
 	}
 
@@ -307,9 +309,18 @@ dojo.lfx.html.wipeIn = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Functi
 		
 		// get node height, either it's natural height or it's height specified via style or class attributes
 		// (for FF, the node has to be (temporarily) rendered to measure height)
-		dojo.html.show(node);
+		// TODO: should this offscreen code be part of dojo.html, so that getBorderBox() works on hidden nodes?
+		var origTop, origLeft, origPosition;
+		with(node.style){
+			origTop=top; origLeft=left; origPosition=position;
+			top="-9999px"; left="-9999px"; position="absolute";
+			display="";
+		}
 		var height = dojo.html.getBorderBox(node).height;
-		dojo.html.hide(node);
+		with(node.style){
+			top=origTop; left=origLeft; position=origPosition;
+			display="none";
+		}
 
 		var anim = dojo.lfx.propertyAnimation(node,
 			{	"height": {
@@ -404,12 +415,6 @@ dojo.lfx.html.slideTo = function(/*DOMNode*/ nodes,
 	var anims = [];
 	var compute = dojo.html.getComputedStyle;
 	
-	if(dojo.lang.isArray(coords)){
-		/* coords: Array
-		   pId: a */
-		dojo.deprecated('dojo.lfx.html.slideTo(node, array)', 'use dojo.lfx.html.slideTo(node, {top: value, left: value});', '0.5');
-		coords = { top: coords[0], left: coords[1] };
-	}
 	dojo.lang.forEach(nodes, function(node){
 		var top = null;
 		var left = null;
@@ -461,13 +466,6 @@ dojo.lfx.html.slideBy = function(/*DOMNode*/ nodes, /*Object*/ coords, /*int?*/ 
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 	var compute = dojo.html.getComputedStyle;
-
-	if(dojo.lang.isArray(coords)){
-		/* coords: Array
-		   pId: a */
-		dojo.deprecated('dojo.lfx.html.slideBy(node, array)', 'use dojo.lfx.html.slideBy(node, {top: value, left: value});', '0.5');
-		coords = { top: coords[0], left: coords[1] };
-	}
 
 	dojo.lang.forEach(nodes, function(node){
 		var top = null;
@@ -525,11 +523,14 @@ dojo.lfx.html.explode = function(/*DOMNode*/ start,
 	var startCoords = h.toCoordinateObject(start, true);
 	var outline = document.createElement("div");
 	h.copyStyle(outline, endNode);
-	if (endNode.explodeClassName) { outline.className = endNode.explodeClassName; }
+	if(endNode.explodeClassName){ outline.className = endNode.explodeClassName; }
 	with(outline.style){
 		position = "absolute";
 		display = "none";
 		// border = "1px solid black";
+		var backgroundStyle = h.getStyle(start, "background-color");
+		backgroundColor = backgroundStyle ? backgroundStyle.toLowerCase() : "transparent";
+		backgroundColor = (backgroundColor == "transparent") ? "rgb(221, 221, 221)" : backgroundColor;
 	}
 	dojo.body().appendChild(outline);
 

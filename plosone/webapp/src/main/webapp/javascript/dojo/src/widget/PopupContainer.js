@@ -78,8 +78,6 @@ dojo.declare(
 	 	//		around node
 		if (this.isShowingNow){ return; }
 
-		this.aboutToShow();
-
 		// if I click right button and menu is opened, then it gets 2 commands: close -> open
 		// so close enables animation and next "open" is put to queue to occur at new location
 		if(this.animationInProgress){
@@ -87,8 +85,7 @@ dojo.declare(
 			return;
 		}
 
-		// save this so that the focus can be returned
-		this.parent = parent;
+		this.aboutToShow();
 
 		var around = false, node, aroundOrient;
 		if(typeof x == 'object'){
@@ -98,6 +95,9 @@ dojo.declare(
 			parent = y;
 			around = true;
 		}
+
+		// save this so that the focus can be returned
+		this.parent = parent;
 
 		// for unknown reasons even if the domNode is attached to the body in postCreate(),
 		// it's not attached here, so have to attach it here.
@@ -205,9 +205,24 @@ dojo.declare(
 		}
 		this.isShowingNow = false;
 		// return focus to the widget that opened the menu
-		try {
-			this.parent.domNode.focus();
-		} catch(e) {}
+
+		if(this.parent){
+			setTimeout(
+				dojo.lang.hitch(this, 
+					function(){
+						try{
+							if(this.parent['focus']){
+								this.parent.focus();
+							}else{
+								this.parent.domNode.focus(); 
+							}
+						}catch(e){dojo.debug("No idea how to focus to parent", e);}
+					}
+				),
+				10
+			);
+		}
+
 
 		//do not need to restore if current selection is not empty
 		//(use keyboard to select a menu item)

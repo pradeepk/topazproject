@@ -56,6 +56,26 @@ if(dojo.render.html.ie){
 				dojo.widget.manager.destroyAll();
 			}
 		}catch(e){}
+
+		// Workaround for IE leak recommended in ticket #1727 by schallm
+		if(dojo.widget){
+			for(var name in dojo.widget._templateCache){
+				if(dojo.widget._templateCache[name].node){
+					dojo.dom.removeNode(dojo.widget._templateCache[name].node);
+					dojo.widget._templateCache[name].node = null;
+					delete dojo.widget._templateCache[name].node;
+				}
+			}
+		}
+
+		if(dojo.dom){	
+			while (dojo.dom._ieRemovedNodes.length > 0) {
+				var node = dojo.dom._ieRemovedNodes.pop();
+				dojo.dom._discardElement(node);
+				node = null;
+			}
+		}
+
 		try{ window.onload = null; }catch(e){}
 		try{ window.onunload = null; }catch(e){}
 		dojo._ie_clobber.clobberNodes = [];
@@ -452,12 +472,36 @@ dojo.event.browser = new function(){
 					}
 				}else if(dojo.render.html.safari){
 					switch(evt.keyCode){
+						case 25: evt.key = evt.KEY_TAB; evt.shift = true;break;
 						case 63232: evt.key = evt.KEY_UP_ARROW; break;
 						case 63233: evt.key = evt.KEY_DOWN_ARROW; break;
 						case 63234: evt.key = evt.KEY_LEFT_ARROW; break;
 						case 63235: evt.key = evt.KEY_RIGHT_ARROW; break;
+						case 63236: evt.key = evt.KEY_F1; break;
+						case 63237: evt.key = evt.KEY_F2; break;
+						case 63238: evt.key = evt.KEY_F3; break;
+						case 63239: evt.key = evt.KEY_F4; break;
+						case 63240: evt.key = evt.KEY_F5; break;
+						case 63241: evt.key = evt.KEY_F6; break;
+						case 63242: evt.key = evt.KEY_F7; break;
+						case 63243: evt.key = evt.KEY_F8; break;
+						case 63244: evt.key = evt.KEY_F9; break;
+						case 63245: evt.key = evt.KEY_F10; break;
+						case 63246: evt.key = evt.KEY_F11; break;
+						case 63247: evt.key = evt.KEY_F12; break;
+						case 63250: evt.key = evt.KEY_PAUSE; break;
+						case 63272: evt.key = evt.KEY_DELETE; break;
+						case 63273: evt.key = evt.KEY_HOME; break;
+						case 63275: evt.key = evt.KEY_END; break;
+						case 63276: evt.key = evt.KEY_PAGE_UP; break;
+						case 63277: evt.key = evt.KEY_PAGE_DOWN; break;
+						case 63302: evt.key = evt.KEY_INSERT; break;
+						case 63248://prtscr
+						case 63249://scrolllock
+						case 63289://numlock
+							break;
 						default: 
-							evt.key = evt.charCode > 0 ? String.fromCharCode(evt.charCode) : evt.keyCode;
+							evt.key = evt.charCode >= evt.KEY_SPACE ? String.fromCharCode(evt.charCode) : evt.keyCode;
 					}
 				}else{
 					evt.key = evt.charCode > 0 ? String.fromCharCode(evt.charCode) : evt.keyCode;

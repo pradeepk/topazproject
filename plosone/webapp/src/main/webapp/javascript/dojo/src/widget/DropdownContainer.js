@@ -31,6 +31,11 @@ dojo.widget.defineWidget(
 		// iconURL: dojo.uri.Uri: icon for the dropdown button
 		iconURL: dojo.uri.dojoUri("src/widget/templates/images/combo_box_arrow.png"),
 
+		// copyClass:
+		//		should we use the class properties on the source node instead
+		//		of our own styles?
+		copyClasses: false,
+
 		// iconAlt: dojo.uri.Uri: alt text for the dropdown button icon
 		iconAlt: "",
 
@@ -51,13 +56,19 @@ dojo.widget.defineWidget(
 			this.containerNode = this.popup.domNode;
 		},
 
-		fillInTemplate: function(){
+		fillInTemplate: function(args, frag){
 			this.domNode.appendChild(this.popup.domNode);
 			if(this.id) { this.domNode.id = this.id; }
 			if(this.inputId){ this.inputNode.id = this.inputId; }
 			if(this.inputName){ this.inputNode.name = this.inputName; }
 			this.inputNode.style.width = this.inputWidth;
 			this.inputNode.disabled = this.disabled;
+
+			if(this.copyClasses){
+				this.inputNode.style = "";
+				this.inputNode.className = this.getFragNodeRef(frag).className;
+			}
+
 
 			dojo.event.connect(this.inputNode, "onchange", this, "onInputChange");
 		},

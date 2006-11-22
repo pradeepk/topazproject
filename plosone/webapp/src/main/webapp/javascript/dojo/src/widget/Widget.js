@@ -220,6 +220,9 @@ dojo.declare("dojo.widget.Widget", null,
 		//		tear-down?
 
 		// FIXME: this is woefully incomplete
+		if(this.parent){
+			this.parent.removeChild(this);
+		}
 		this.destroyChildren();
 		this.uninitialize();
 		this.destroyRendering(finalize);
@@ -459,13 +462,11 @@ dojo.declare("dojo.widget.Widget", null,
 						// FIXME: should we be allowing extension here to handle
 						// other object types intelligently?
 
-						// if we defined a URI, we probably want to allow plain strings
-						// to override it
+						// if a plain string is passed to a property of type dojo.uri.Uri,
+						// we assume it is relative to root of dojo
 						if (this[x] instanceof dojo.uri.Uri){
-
-							this[x] = args[x];
+							this[x] = dojo.uri.dojoUri(args[x]);
 						}else{
-
 							// FIXME: unlike all other types, we do not replace the
 							// object with a new one here. Should we change that?
 							var pairs = args[x].split(";");
@@ -553,6 +554,7 @@ dojo.declare("dojo.widget.Widget", null,
 		for(var x=0; x<this.children.length; x++){
 			if(this.children[x] === widget){
 				this.children.splice(x, 1);
+				widget.parent=null;
 				break;
 			}
 		}

@@ -52,6 +52,13 @@ dojo.lang.extend = function(/*Object*/ constructor, /*Object...*/ props){
 	return constructor; // Object
 }
 
+dojo.lang._delegate = function(obj){
+	// crockford delegation
+	function TMP(){};
+	TMP.prototype = obj;
+	return new TMP();
+}
+
 // Promote to dojo module
 dojo.inherits = dojo.lang.inherits;
 //dojo.lang._mixin = dojo.lang._mixin;
@@ -154,11 +161,18 @@ dojo.lang.isArrayLike = function(/*anything*/ it){
 
 dojo.lang.isFunction = function(/*anything*/ it){
 	// summary:	Return true if it is a Function.
-	if(!it){ return false; }
-	// webkit treats NodeList as a function, which is bad
-	if((typeof(it) == "function") && (it == "[object NodeList]")) { return false; }
 	return (it instanceof Function || typeof it == "function"); // Boolean
-}
+};
+
+(function(){
+	// webkit treats NodeList as a function, which is bad
+	if((dojo.render.html.capable)&&(dojo.render.html["safari"])){
+		dojo.lang.isFunction = function(/*anything*/ it){
+			if((typeof(it) == "function") && (it == "[object NodeList]")) { return false; }
+			return (it instanceof Function || typeof it == "function"); // Boolean
+		}
+	}
+})();
 
 dojo.lang.isString = function(/*anything*/ it){
 	// summary:	Return true if it is a String.
@@ -168,7 +182,7 @@ dojo.lang.isString = function(/*anything*/ it){
 dojo.lang.isAlien = function(/*anything*/ it){
 	// summary:	Return true if it is not a built-in function.
 	if(!it){ return false; }
-	return !dojo.lang.isFunction() && /\{\s*\[native code\]\s*\}/.test(String(it)); // Boolean
+	return !dojo.lang.isFunction(it) && /\{\s*\[native code\]\s*\}/.test(String(it)); // Boolean
 }
 
 dojo.lang.isBoolean = function(/*anything*/ it){

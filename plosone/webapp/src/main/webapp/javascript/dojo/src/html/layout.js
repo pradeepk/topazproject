@@ -65,8 +65,10 @@ dojo.html.boxSizing = {
 
 dojo.html.getAbsolutePosition = dojo.html.abs = function(/* HTMLElement */node, /* boolean? */includeScroll, /* string? */boxType){
 	//	summary
-	//	Gets the absolute position of the passed element based on the document itself.
-	node = dojo.byId(node, node.ownerDocument);
+	//		Gets the absolute position of the passed element based on the document itself.
+	//	see also: dojo.html.getAbsolutePositionExt
+	node = dojo.byId(node);
+	var ownerDocument = dojo.doc();
 	var ret = {
 		x: 0,
 		y: 0
@@ -93,18 +95,18 @@ dojo.html.getAbsolutePosition = dojo.html.abs = function(/* HTMLElement */node, 
 	}
 
 	var h = dojo.render.html;
-	var db = document["body"]||document["documentElement"];
+	var db = ownerDocument["body"]||ownerDocument["documentElement"];
 
 	if(h.ie){
 		with(node.getBoundingClientRect()){
 			ret.x = left-2;
 			ret.y = top-2;
 		}
-	}else if(document.getBoxObjectFor){
+	}else if(ownerDocument['getBoxObjectFor']){
 		// mozilla
 		nativeBoxType = 1; //getBoxObjectFor return padding box coordinate
 		try{
-			var bo = document.getBoxObjectFor(node);
+			var bo = ownerDocument.getBoxObjectFor(node);
 			ret.x = bo.x - dojo.html.sumAncestorProperties(node, "scrollLeft");
 			ret.y = bo.y - dojo.html.sumAncestorProperties(node, "scrollTop");
 		}catch(e){
@@ -367,19 +369,8 @@ dojo.html.getElementBox = function(/* HTMLElement */node, /* string */type){
 // return: coordinate object
 dojo.html.toCoordinateObject = dojo.html.toCoordinateArray = function(/* array */coords, /* boolean? */includeScroll, /* string? */boxtype) {
 	//	summary
-	//	Converts an array of coordinates into an object of named arguments.
-	if(coords instanceof Array || typeof coords == "array"){
-		dojo.deprecated("dojo.html.toCoordinateArray", "use dojo.html.toCoordinateObject({left: , top: , width: , height: }) instead", "0.5");
-		// coords is already an array (of format [x,y,w,h]), just return it
-		while ( coords.length < 4 ) { coords.push(0); }
-		while ( coords.length > 4 ) { coords.pop(); }
-		var ret = {
-			left: coords[0],
-			top: coords[1],
-			width: coords[2],
-			height: coords[3]
-		};
-	}else if(!coords.nodeType && !(coords instanceof String || typeof coords == "string") &&
+	//	Converts an object of coordinates into an object of named arguments.
+	if(!coords.nodeType && !(coords instanceof String || typeof coords == "string") &&
 			 ('width' in coords || 'height' in coords || 'left' in coords ||
 			  'x' in coords || 'top' in coords || 'y' in coords)){
 		// coords is a coordinate object or at least part of one

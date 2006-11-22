@@ -29,6 +29,7 @@ dojo.declare(
 		this._cache = {};
 	
 		this._inFlight = false;
+		this._lastRequest = null;
 	
 		// allowCache: Boolean
 		//	Setting to use/not use cache for previously seen values
@@ -60,7 +61,7 @@ dojo.declare(
 			var tss = encodeURIComponent(searchStr);
 			var realUrl = dojo.string.substituteParams(this.searchUrl, {"searchString": tss});
 			var _this = this;
-			var request = dojo.io.bind({
+			var request = this._lastRequest = dojo.io.bind({
 				url: realUrl,
 				method: "get",
 				mimetype: "text/json",
@@ -74,7 +75,9 @@ dojo.declare(
 						data = arrData;
 					}
 					_this._addToCache(searchStr, data);
-					callback(data);
+					if (request == _this._lastRequest){
+						callback(data);
+					}
 				}
 			});
 			this._inFlight = true;
@@ -152,7 +155,7 @@ dojo.declare(
 						options.setAllValues(keyValArr[0], keyValArr[1]);
 					}
 				}
-				this._setData(data);
+				this.setData(data);
 			}
 		}
 	},
@@ -168,7 +171,7 @@ dojo.declare(
 						}
 						data = arrData;
 					}
-					this._setData(data);
+					this.setData(data);
 				}),
 				mimetype: "text/json"
 			});
@@ -259,8 +262,8 @@ dojo.declare(
 			callback(ret);
 		},
 	
-		_setData: function(/*Array*/ pdata){
-			// summary: populate this._data and initialize lookup structures
+		setData: function(/*Array*/ pdata){
+			// summary: set (or reset) the data and initialize lookup structures
 			this._data = pdata;
 		}
 	}
@@ -767,7 +770,7 @@ dojo.widget.defineWidget(
 					this._handleBlurTimer(true, 100);
 					this._tryFocus();
 				}
-			} catch(e){}
+			}catch(e){}
 		},
 
 		_isInputEqualToResult: function(/*String*/ result){
@@ -867,10 +870,7 @@ dojo.widget.defineWidget(
 			// Our dear friend IE doesnt take max-height so we need to calculate that on our own every time
 			var childs = this.optionsListNode.childNodes;
 			if(childs.length){
-				var visibleCount = this.maxListLength;
-				if(childs.length < visibleCount){
-					visibleCount = childs.length;
-				}
+				var visibleCount = Math.min(childs.length,this.maxListLength);
 
 				with(this.optionsListNode.style)
 				{
@@ -885,7 +885,6 @@ dojo.widget.defineWidget(
 						height = visibleCount * dojo.html.getMarginBox(childs[0]).height +"px";
 					}
 					width = (dojo.html.getMarginBox(this.domNode).width-2)+"px";
-					
 				}
 				this.popupWidget.open(this.domNode, this, this.downArrowNode);
 			}else{

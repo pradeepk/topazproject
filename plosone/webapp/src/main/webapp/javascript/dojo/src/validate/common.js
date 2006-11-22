@@ -170,7 +170,7 @@ dojo.validate.isValidLuhn = function(/*String*/value){
 		}
 		sum+=curDigit;
 	}
-	return !(sum%10);
+	return !(sum%10); //Boolean
 }
 
 /**

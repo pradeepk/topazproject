@@ -13,5 +13,19 @@
 
 	'timeFormat-full': "HH' h 'mm z",
 
-	eras: ['av. J.-C.','apr. J.-C.']
+	am: "matin",
+	pm: "ap. m.",
+	eras: ['av. J.-C.','apr. J.-C.'],
+	
+	'field-era': "époque",
+	'field-year': "année",
+	'field-month': "mois",
+	'field-week': "semaine",
+	'field-day': "jour",
+	'field-weekday': "jour de la semaine",
+	'field-dayperiod': "période de la journée",
+	'field-hour': "heure",
+	'field-minute': "minute",
+	'field-second': "seconde",
+	'field-zone': "zone"
 })

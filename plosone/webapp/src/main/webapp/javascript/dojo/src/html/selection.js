@@ -73,10 +73,6 @@ dojo.html.enableSelection = function(/*DomNode*/element){
 	return true;
 }
 
-dojo.html.selectElement = function(/*DomNode*/element){
-	dojo.deprecated("dojo.html.selectElement", "replaced by dojo.html.selection.selectElementChildren", 0.5);
-}
-
 dojo.html.selectInputText = function(/*DomNode*/element){
 	// summary: select all the text in an input element
 	var _window = dojo.global();
@@ -95,11 +91,6 @@ dojo.html.selectInputText = function(/*DomNode*/element){
 	element.focus();
 }
 
-
-dojo.html.isSelectionCollapsed = function(){
-	dojo.deprecated("dojo.html.isSelectionCollapsed", "replaced by dojo.html.selection.isCollapsed", 0.5);
-	return dojo.html.selection.isCollapsed();
-}
 
 dojo.lang.mixin(dojo.html.selection, {
 	getType: function() {

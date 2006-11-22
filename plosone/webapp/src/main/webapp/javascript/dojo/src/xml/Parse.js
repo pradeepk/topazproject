@@ -4,23 +4,23 @@ dojo.require("dojo.dom");
 //TODO: determine dependencies
 // currently has dependency on dojo.xml.DomUtil nodeTypes constants...
 
-/* 
-  generic class for taking a node and parsing it into an object
-*/
-
 // using documentFragment nomenclature to generalize in case we don't want to require passing a collection of nodes with a single parent
 
 dojo.xml.Parse = function(){
-
-	// supported dojoTagName's:
+	// summary:
+	//		generic class for taking a DOM node and parsing it into an object
+	//		based on the "dojo tag name" of that node.
 	// 
-	// <prefix:tag> => prefix:tag
-	// <dojo:tag> => dojo:tag
-	// <dojoTag> => dojo:tag
-	// <tag dojoType="type"> => dojo:type
-	// <tag dojoType="prefix:type"> => prefix:type
-	// <tag dojo:type="type"> => dojo:type
-	// <tag class="classa dojo-type classb"> => dojo:type	
+	//		supported dojoTagName's:
+	//			<prefix:tag> => prefix:tag
+	//			<dojo:tag> => dojo:tag
+	//			<dojoTag> => dojo:tag
+	//			<tag dojoType="type"> => dojo:type
+	//			<tag dojoType="prefix:type"> => prefix:type
+	//			<tag dojo:type="type"> => dojo:type
+	//			<tag class="classa dojo-type classb"> => dojo:type	
+
+	var isIE = ((dojo.render.html.capable)&&(dojo.render.html.ie));
 
 	// get normalized (lowercase) tagName
 	// some browsers report tagNames in lowercase no matter what
@@ -85,7 +85,7 @@ dojo.xml.Parse = function(){
 		}
 		if(djt){ return "dojo:"+djt.toLowerCase(); }
 		// <tag class="classa dojo-type classb"> => dojo:type	
-		if((!dj_global["djConfig"])|| (djConfig["ignoreClassNames"])){ 
+		if((dj_global["djConfig"])&&(!djConfig["ignoreClassNames"])){ 
 			// FIXME: should we make this optionally enabled via djConfig?
 			var classes = node.className||node.getAttribute("class");
 			// FIXME: following line, without check for existence of classes.indexOf
@@ -103,13 +103,31 @@ dojo.xml.Parse = function(){
 		return '';
 	}
 
-	this.parseElement = function(node, hasParentNodeSet, optimizeForDojoML, thisIdx){
+
+	this.parseElement = function(	/*DomNode*/node,
+									/*Boolean*/hasParentNodeSet, 
+									/*Boolean*/optimizeForDojoML, 
+									/*Integer*/thisIdx	){
+		// summary:
+		//		recursively parse the passed node, returning a normalized data
+		//		structure that represents the "attributes of interest" of said
+		//		elements. If optimizeForDojoML is true, only nodes that contain
+		//		a "dojo tag name" will be inspected for attributes.
+		// node: the DomNode to be treated as the root of inspection
+		// hasParentNodeSet: no-op, please pass "null"
+		// optimizeForDojoML: should we ignore non-Dojo nodes? Defaults to false.
+		// thisIdx:
+		//		a way to specify a synthetic "index" property in the resulting
+		//		data structure. Otherwise the index property of the top-level
+		//		return element is always "0".
+
+		// TODOC: document return structure of a non-trivial element set
 
 		// run shortcuts to bail out of processing up front to save time and
 		// object alloc if possible.
 		var tagName = getTagName(node);
 		//There's a weird bug in IE where it counts end tags, e.g. </dojo:button> as nodes that should be parsed.  Ignore these
-		if(tagName.indexOf("/")==0){ return null; }
+		if(isIE && tagName.indexOf("/")==0){ return null; }
 
 		try{
 			if(node.getAttribute("parseWidgets").toLowerCase() == "false"){
@@ -204,10 +222,27 @@ dojo.xml.Parse = function(){
 		return parsedNodeSet;
 	};
 
-	var isIE = ((dojo.render.html.capable)&&(dojo.render.html.ie));
 
 	/* parses a set of attributes on a node into an object tree */
-	this.parseAttributes = function(node){
+	this.parseAttributes = function(/*DomNode*/node){
+		// summary:
+		// 		creates an attribute object that maps attribute values for the
+		// 		passed node. Note that this is similar to creating a JSON
+		// 		representation of a DOM node.
+		// usage:
+		//		a node with the following serialization:
+		//			<div foo="bar" baz="thud">...</div>	
+		//		would yeild the following return structure when passed into this
+		//		function:
+		//			{
+		//				"foo": {
+		//					"value": "bar"
+		//				},
+		//				"baz": {
+		//					"value": "thud"
+		//				}
+		//			}
+		//
 		var parsedAttributeSet = {};
 		var atts = node.attributes;
 		// TODO: should we allow for duplicate attributes at this point...

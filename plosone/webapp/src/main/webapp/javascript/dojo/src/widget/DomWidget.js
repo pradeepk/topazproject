@@ -1,7 +1,6 @@
 dojo.provide("dojo.widget.DomWidget");
 
 dojo.require("dojo.event.*");
-dojo.require("dojo.io.*");
 dojo.require("dojo.widget.Widget");
 dojo.require("dojo.dom");
 dojo.require("dojo.html.style");
@@ -558,7 +557,7 @@ dojo.declare("dojo.widget.DomWidget",
 			} else if (sourceNodeRef){
 				// Do in-place replacement of the my source node with my generated dom
 				if(this.domNode && (this.domNode !== sourceNodeRef)){
-					var oldNode = sourceNodeRef.parentNode.replaceChild(this.domNode, sourceNodeRef);
+					dojo.dom.replaceNode(sourceNodeRef, this.domNode);
 				}
 			}
 

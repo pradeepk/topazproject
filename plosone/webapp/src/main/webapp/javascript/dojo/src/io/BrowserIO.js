@@ -9,7 +9,8 @@ dojo.require("dojo.undo.browser");
 
 if(!dj_undef("window")) {
 
-dojo.io.checkChildrenForFile = function(node){
+dojo.io.checkChildrenForFile = function(/*DOMNode*/node){
+	//summary: Checks any child nodes of node for an input type="file" element.
 	var hasFile = false;
 	var inputs = node.getElementsByTagName("input");
 	dojo.lang.forEach(inputs, function(input){
@@ -18,14 +19,20 @@ dojo.io.checkChildrenForFile = function(node){
 			hasFile = true;
 		}
 	});
-	return hasFile;
+	return hasFile; //boolean
 }
 
-dojo.io.formHasFile = function(formNode){
-	return dojo.io.checkChildrenForFile(formNode);
+dojo.io.formHasFile = function(/*DOMNode*/formNode){
+	//summary: Just calls dojo.io.checkChildrenForFile().
+	return dojo.io.checkChildrenForFile(formNode); //boolean
 }
 
 dojo.io.updateNode = function(node, urlOrArgs){
+	//summary: Updates a DOMnode with the result of a dojo.io.bind() call.
+	//node: DOMNode
+	//urlOrArgs: String or Object
+	//		Either a String that has an URL, or an object containing dojo.io.bind()
+	//		arguments.
 	node = dojo.byId(node);
 	var args = urlOrArgs;
 	if(dojo.lang.isString(urlOrArgs)){
@@ -46,14 +53,28 @@ dojo.io.updateNode = function(node, urlOrArgs){
 	dojo.io.bind(args);
 }
 
-dojo.io.formFilter = function(node) {
+dojo.io.formFilter = function(/*DOMNode*/node) {
+	//summary: Returns true if the node is an input element that is enabled, has
+	//a name, and whose type is one of the following values: ["file", "submit", "image", "reset", "button"]
 	var type = (node.type||"").toLowerCase();
 	return !node.disabled && node.name
-		&& !dojo.lang.inArray(["file", "submit", "image", "reset", "button"], type);
+		&& !dojo.lang.inArray(["file", "submit", "image", "reset", "button"], type); //boolean
 }
 
 // TODO: Move to htmlUtils
 dojo.io.encodeForm = function(formNode, encoding, formFilter){
+	//summary: Converts the names and values of form elements into an URL-encoded
+	//string (name=value&name=value...).
+	//formNode: DOMNode
+	//encoding: String?
+	//		The encoding to use for the values. Specify a string that starts with
+	//		"utf" (for instance, "utf8"), to use encodeURIComponent() as the encoding
+	//		function. Otherwise, dojo.string.encodeAscii will be used.
+	//formFilter: Function?
+	//	A function used to filter out form elements. The element node will be passed
+	//	to the formFilter function, and a boolean result is expected (true indicating
+	//	indicating that the element should have its name/value included in the output).
+	//	If no formFilter is specified, then dojo.io.formFilter() will be used.
 	if((!formNode)||(!formNode.tagName)||(!formNode.tagName.toLowerCase() == "form")){
 		dojo.raise("Attempted to encode a non-form element.");
 	}
@@ -94,10 +115,16 @@ dojo.io.encodeForm = function(formNode, encoding, formFilter){
 			values.push(name + ".y=0");
 		}
 	}
-	return values.join("&") + "&";
+	return values.join("&") + "&"; //String
 }
 
 dojo.io.FormBind = function(args) {
+	//summary: constructor for a dojo.io.FormBind object. See the Dojo Book for
+	//some information on usage: http://manual.dojotoolkit.org/WikiHome/DojoDotBook/Book23
+	//args: DOMNode or Object
+	//		args can either be the DOMNode for a form element, or an object containing
+	//		dojo.io.bind() arguments, one of which should be formNode with the value of
+	//		a form element DOMNode.
 	this.bindArgs = {};
 
 	if(args && args.formNode) {
@@ -113,7 +140,9 @@ dojo.lang.extend(dojo.io.FormBind, {
 
 	clickedButton: null,
 
-	init: function(args) {
+	init: function(/*DOMNode or Object*/args) {
+		//summary: Internal function called by the dojo.io.FormBind() constructor
+		//do not call this method directly.
 		var form = dojo.byId(args.formNode);
 
 		if(!form || !form.tagName || form.tagName.toLowerCase() != "form") {
@@ -145,11 +174,15 @@ dojo.lang.extend(dojo.io.FormBind, {
 		}
 	},
 
-	onSubmit: function(form) {
-		return true;
+	onSubmit: function(/*DOMNode*/form) {
+		//summary: Function used to verify that the form is OK to submit.
+		//Override this function if you want specific form validation done.
+		return true; //boolean
 	},
 
-	submit: function(e) {
+	submit: function(/*Event*/e) {
+		//summary: internal function that is connected as a listener to the
+		//form's onsubmit event.
 		e.preventDefault();
 		if(this.onSubmit(this.form)) {
 			dojo.io.bind(dojo.lang.mixin(this.bindArgs, {
@@ -158,13 +191,17 @@ dojo.lang.extend(dojo.io.FormBind, {
 		}
 	},
 
-	click: function(e) {
+	click: function(/*Event*/e) {
+		//summary: internal method that is connected as a listener to the
+		//form's elements whose click event can submit a form.
 		var node = e.currentTarget;
 		if(node.disabled) { return; }
 		this.clickedButton = node;
 	},
 
-	formFilter: function(node) {
+	formFilter: function(/*DOMNode*/node) {
+		//summary: internal function used to know which form element values to include
+		//		in the dojo.io.bind() request.
 		var type = (node.type||"").toLowerCase();
 		var accept = false;
 		if(node.disabled || !node.name) {
@@ -175,11 +212,13 @@ dojo.lang.extend(dojo.io.FormBind, {
 		} else {
 			accept = !dojo.lang.inArray(["file", "submit", "reset", "button"], type);
 		}
-		return accept;
+		return accept; //boolean
 	},
 
 	// in case you don't have dojo.event.* pulled in
-	connect: function(srcObj, srcFcn, targetFcn) {
+	connect: function(/*Object*/srcObj, /*Function*/srcFcn, /*Function*/targetFcn) {
+		//summary: internal function used to connect event listeners to form elements
+		//that trigger events. Used in case dojo.event is not loaded.
 		if(dojo.evalObjPath("dojo.event.connect")) {
 			dojo.event.connect(srcObj, srcFcn, this, targetFcn);
 		} else {
@@ -195,6 +234,7 @@ dojo.lang.extend(dojo.io.FormBind, {
 });
 
 dojo.io.XMLHTTPTransport = new function(){
+	//summary: The object that implements the dojo.io.bind transport for XMLHttpRequest.
 	var _this = this;
 
 	var _cache = {}; // FIXME: make this public? do we even need to?
@@ -290,6 +330,8 @@ dojo.io.XMLHTTPTransport = new function(){
 	this.inFlightTimer = null;
 
 	this.startWatchingInFlight = function(){
+		//summary: internal method used to trigger a timer to watch all inflight
+		//XMLHttpRequests.
 		if(!this.inFlightTimer){
 			// setInterval broken in mozilla x86_64 in some circumstances, see
 			// https://bugzilla.mozilla.org/show_bug.cgi?id=344439
@@ -299,6 +341,8 @@ dojo.io.XMLHTTPTransport = new function(){
 	}
 
 	this.watchInFlight = function(){
+		//summary: internal method that checks each inflight XMLHttpRequest to see
+		//if it has completed or if the timeout situation applies.
 		var now = null;
 		// make sure sync calls stay thread safe, if this callback is called during a sync call
 		// and this results in another sync call before the first sync call ends the browser hangs
@@ -349,9 +393,10 @@ dojo.io.XMLHTTPTransport = new function(){
 	}
 
 	var hasXmlHttp = dojo.hostenv.getXmlhttpObject() ? true : false;
-	this.canHandle = function(kwArgs){
-		// canHandle just tells dojo.io.bind() if this is a good transport to
-		// use for the particular type of request.
+	this.canHandle = function(/*dojo.io.Request*/kwArgs){
+		//summary: Tells dojo.io.bind() if this is a good transport to
+		//use for the particular type of request. This type of transport cannot
+		//handle forms that have an input type="file" element.
 
 		// FIXME: we need to determine when form values need to be
 		// multi-part mime encoded and avoid using this transport for those
@@ -363,7 +408,29 @@ dojo.io.XMLHTTPTransport = new function(){
 
 	this.multipartBoundary = "45309FFF-BD65-4d50-99C9-36986896A96F";	// unique guid as a boundary value for multipart posts
 
-	this.bind = function(kwArgs){
+	this.bind = function(/*dojo.io.Request*/kwArgs){
+		//summary: function that sends the request to the server.
+		//description: This function will attach an abort() function to the kwArgs dojo.io.Request object,
+		//so if you need to abort the request, you can call that method on the request object.
+		//The following are acceptable properties in kwArgs (a dojo.io.Request object).
+		//url: String: URL the server URL to use for the request.
+		//transport: String: specify "XMLHTTPTransport" to force the use of this XMLHttpRequest transport.
+		//formNode: DOMNode: a form element node. This should not normally be used. Use new dojo.io.FormBind() instead.
+		//method: String: the HTTP method to use (GET, POST, etc...).
+		//file: Object or Array of Objects: an object simulating a file to be uploaded. file objects should have the following properties:
+		//		name or fileName: the name of the file
+		//		contentType: the MIME content type for the file.
+		//		content: the actual content of the file.
+		//multipart: boolean: indicates whether this should be a multipart mime request. If kwArgs.file exists, then this
+		//		property is set to true automatically.
+		//sync: boolean: if true, then a synchronous XMLHttpRequest call is done,
+		//		if false (the default), then an asynchronous call is used.
+		//preventCache: boolean. If true, then a cache busting parameter is added to the request URL.
+		//		default value is false.
+		//useCache: boolean: If true, then XMLHttpTransport will keep an internal cache of the server
+		//		response and use that response if a similar request is done again.
+		//		A similar request is one that has the same URL, query string and HTTP method value.
+		//		default is false.
 		if(!kwArgs["url"]){
 			// are we performing a history action?
 			if( !kwArgs["formNode"]

@@ -5,9 +5,37 @@ dojo.require("dojo.widget.HtmlWidget");
 
 dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 	{
+		/*
+		summary: 
+			Widget for easily moving data to/from form
+		
+			description:
+				gets and sets data to and from js-object. With
+				this it's easy to create forms to application.
+				Just create empty form, then set it's values
+				with this and after user pushes submit,
+				getValues and send them as json-notation to
+				server.
+
+				Note: not all Form widgets are supported ATM
+					
+			usage: 
+				<form dojoType="Form" id="myForm">
+					Name: <input type="text" name="name" />
+				</form>
+				myObj={name: "John Doe"};
+				dojo.widget.byId('myForm').setValues(myObj);
+
+				myObj=dojo.widget.byId('myForm').getValues();
+
+		*/
+
 		isContainer: true,
    		templateString: "<form dojoAttachPoint='containerNode' dojoAttachEvent='onSubmit:onSubmit'></form>",
 		formElements: [],
+		// ignoreNullValue:
+		//	if true, then only fields that has data is set to form
+		// 	if false, fields that does not have corresponding object, is set to empty
 		ignoreNullValues: false,
 
 		postCreate: function(args,frag){
@@ -18,7 +46,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
       				this.containerNode.setAttributeNode(attr);
     			}
   		},
-		_createRepeaters: function (obj, widget) {
+		_createRepeaters: function (/*object*/obj, /*widget*/widget) {
 			for(var i=0; i<widget.children.length; ++i) {
 				  if (widget.children[i].widgetType == "RepeaterContainer") {
 					var rIndex=widget.children[i].index;
@@ -58,7 +86,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 				this.formElements=this.containerNode.elements;
 			}
 		},
-		onSubmit: function(e) {
+		onSubmit: function(/*event*/e) {
     			e.preventDefault();
   		},
 
@@ -66,7 +94,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 			this.containerNode.submit();
 		},
 
-		_getFormElement: function(name) {
+		_getFormElement: function(/*form elements name*/name) {
 			if(dojo.render.html.ie) {
 				for(var i=0, len=this.formElements.length; i<len; i++) {
 					var element = this.formElements[i];
@@ -83,7 +111,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 			return null;
 		},
 
-		_getObject: function(obj, searchString) {
+		_getObject: function(/*object*/obj, /*string*/searchString) {
 			var namePath = [];
 			namePath=searchString.split(".");
 			var myObj=obj;
@@ -98,12 +126,12 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 			}
 			return myObj;
 		},
-		_setToContainers: function (obj, widget) {
+		_setToContainers: function (/*object*/obj,/*widget*/widget) {
 			for(var i=0, len=widget.children.length; i<len; ++i) {
 				var currentWidget=widget.children[i];
 				if (currentWidget.widgetType == "Repeater") {
         				for(var j=0,len=currentWidget.getRowCount(); j<len; ++j) {
-          					currentWidget.initRow(j);
+          					currentWidget._initRow(j);
         				}
 				}
 
@@ -132,7 +160,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 				}
 			}
 		},
-		setValues: function(obj) {
+		setValues: function(/*object*/obj) {
 			this._createFormElements();
     			this._createRepeaters(obj,this);
 			for(var i=0, len=this.formElements.length; i<len; i++) {
@@ -178,13 +206,23 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 							element.checked=true;
 						}
 						break;
+					case "select-multiple":
+						element.selectedIndex=-1;
+						for (var j=0,len2=element.options.length; j<len2; ++j) {
+							for (var k=0,len3=myObj[name].length;k<len3;++k) {
+								if (element.options[j].value == myObj[name][k]) {
+									element.options[j].selected=true;
+								}
+							}
+						}
+						break;
 					case "select-one":
 						element.selectedIndex="0";
 						for (var j=0,len2=element.options.length; j<len2; ++j) {
 							if (element.options[j].value == myObj[name]) {
 								element.options[j].selected=true;
 							} else {
-								//element.options[j].selected=false;
+							//	element.options[j].selected=false;
 							}
 						}
 						break;
@@ -196,7 +234,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 						element.value=value;
 						break;
 					default:
-						//dojo.debug("Not supported type ("+type+")");
+						dojo.debug("Not supported type ("+type+")");
 						break;
 				}
       			}
@@ -237,7 +275,7 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 					} // if
 				} // for
 
-				if ((elm.type != "checkbox" && elm.type != "radio") || (elm.type=="radio" && elm.checked)) {
+				if ((elm.type != "select-multiple" && elm.type != "checkbox" && elm.type != "radio") || (elm.type=="radio" && elm.checked)) {
 					if(name == name.split("[")[0]) {
 						myObj[name]=elm.value;
 					} else {
@@ -248,6 +286,15 @@ dojo.widget.defineWidget("dojo.widget.Form", dojo.widget.HtmlWidget,
 						myObj[name]=[ ];
 					}
 					myObj[name].push(elm.value);
+				} else if (elm.type == "select-multiple") {
+					if(typeof(myObj[name]) == 'undefined') {
+						myObj[name]=[ ];
+					}
+					for (var jdx=0,len3=elm.options.length; jdx<len3; ++jdx) {
+						if (elm.options[jdx].selected) {
+							myObj[name].push(elm.options[jdx].value);
+						}
+					}
 				} // if
 				name=undefined;
 			} // for

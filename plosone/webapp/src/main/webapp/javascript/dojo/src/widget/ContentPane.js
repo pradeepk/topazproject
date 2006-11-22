@@ -579,7 +579,7 @@ dojo.widget.defineWidget(
 				// insert styles from content (in same order they came in)
 				for(var i = 0; i < data.styles.length; i++){
 					if(data.styles[i].path){
-						this._styleNodes.push(dojo.html.insertCssFile(data.styles[i].path));
+						this._styleNodes.push(dojo.html.insertCssFile(data.styles[i].path, dojo.doc(), false, true));
 					}else{
 						this._styleNodes.push(dojo.html.insertCssText(data.styles[i]));
 					}

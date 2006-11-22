@@ -25,21 +25,17 @@ dojo.declare("dojo.dnd.DragSource", null, {
 	reregister: function(){
 		dojo.dnd.dragManager.registerDragSource(this);
 	}
-}, function(){
-
-	//dojo.profile.start("DragSource");
-
-	var dm = dojo.dnd.dragManager;
-	if(dm["registerDragSource"]){ // side-effect prevention
-		dm.registerDragSource(this);
-	}
-
-	//dojo.profile.end("DragSource");
-
 });
 
 dojo.declare("dojo.dnd.DragObject", null, {
 	type: "",
+	
+	register: function(){
+		var dm = dojo.dnd.dragManager;
+		if(dm["registerDragObject"]){ // side-effect prevention
+			dm.registerDragObject(this);
+		}
+	},
 
 	onDragStart: function(){
 		// gets called directly after being created by the DragSource
@@ -67,11 +63,6 @@ dojo.declare("dojo.dnd.DragObject", null, {
 	// non-camel aliases
 	ondragout: this.onDragOut,
 	ondragover: this.onDragOver
-}, function(){
-	var dm = dojo.dnd.dragManager;
-	if(dm["registerDragObject"]){ // side-effect prevention
-		dm.registerDragObject(this);
-	}
 });
 
 dojo.declare("dojo.dnd.DropTarget", null, {
@@ -115,9 +106,7 @@ dojo.declare("dojo.dnd.DropTarget", null, {
 	onDropEnd: function(){
 	}
 }, function(){
-	if (this.constructor == dojo.dnd.DropTarget) { return; } // need to be subclassed
 	this.acceptedTypes = [];
-	dojo.dnd.dragManager.registerDropTarget(this);
 });
 
 // NOTE: this interface is defined here for the convenience of the DragManager

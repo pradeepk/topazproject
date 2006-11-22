@@ -40,7 +40,6 @@ dojo.declare("dojo.widget.Editor2Plugin.FindCommand", dojo.widget.Editor2DialogC
 
 dojo.widget.Editor2Plugin.FindReplace ={
 	getCommand: function(editor, name){
-		var name = name.toLowerCase();
 		var command;
 		if(name == 'find'){
 			command = new dojo.widget.Editor2Plugin.FindCommand(editor, 'find', 
@@ -58,8 +57,6 @@ dojo.widget.Editor2Plugin.FindReplace ={
 		return command;
 	},
 	getToolbarItem: function(name){
-		var name = name.toLowerCase();
-	
 		var item;
 		if(name == 'replace'){
 			item = new dojo.widget.Editor2ToolbarButton('Replace');

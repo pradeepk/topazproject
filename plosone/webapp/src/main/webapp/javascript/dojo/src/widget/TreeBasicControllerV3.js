@@ -12,6 +12,17 @@ dojo.widget.defineWidget(
 	"dojo.widget.TreeBasicControllerV3",
 	[dojo.widget.HtmlWidget, dojo.widget.TreeCommon],
 	function(){
+		// Summary: TreeBasicControllerV3 performs all basic operations on TreeV3
+		// Description:
+		//	Controller is the component to operate on model.
+		//	TreeV3/TreeNodeV3 know how to modify themselves and show to user,
+		//  but operating on the tree often involves higher-level extensible logic,
+		//  like: database synchronization, node loading, reacting on clicks etc.
+		//  That's why it is handled by separate controller.
+		//  TreeBasicControllerV3 processes expand/collapse and should be used if you 
+		//  modify a tree.
+		
+		// Summary: Single controller can handle multiple trees. widgetId => tree widget mapping is stored here.
 		this.listenedTrees = {};
 	},
 {
@@ -21,18 +32,20 @@ dojo.widget.defineWidget(
 	// TODO: make sure keyboard control stuff works when node is moved between trees
 	// node should be unfocus()'ed when it its ancestor is moved and tree,lastFocus - cleared
 
-	/**
-	 * TreeCommon.listenTree will attach listeners to these events
-	 *
-	 * The logic behind the naming:
-	 * 1. (after|before)
-	 * 2. if an event refers to tree, then add "Tree"
-	 * 3. add action
-	 */
+	// Summary: TreeCommon.listenTree will attach listeners to these events
+	// Description:
+	//	The logic behind the naming:
+	//	1. (after|before)
+	//	2. if an event refers to tree, then add "Tree"
+	//	3. add action	
 	listenTreeEvents: ["afterSetFolder", "afterTreeCreate", "beforeTreeDestroy"],
-	listenNodeFilter: function(elem) { return elem instanceof dojo.widget.Widget},	
+	
+	// Summary: basic filter, so that only widgets are 'listened to'
+	listenNodeFilter: function(elem) {
+		return elem instanceof dojo.widget.Widget
+	},	
 		
-		
+	// Summary: Reference to TreeEditor component to edit nodes
 	editor: null,
 
 	
@@ -44,16 +57,19 @@ dojo.widget.defineWidget(
 		
 	},
 		
-	
+	// Summary: get serializable information about Tree/TreeNode
 	getInfo: function(elem) {
 		return elem.getInfo();
 	},
 
 	onBeforeTreeDestroy: function(message) {
-                this.unlistenTree(message.source);
+        this.unlistenTree(message.source);
 	},
 
 	onAfterSetFolder: function(message) {
+		// Summary: process "element became a folder" event
+		// Description:
+		//	Checks for expandLevel/loadLevel and expands/loads treenode to requested level
 		
 		//dojo.profile.start("onTreeChange");
         
@@ -496,7 +512,7 @@ dojo.widget.defineWidget(
 		
 		//dojo.debug("editLabelStart editor open "+node);
 		
-		this.editor.open(node);		
+		this.editor.open(node);
 	},
 	
 	doEditLabelFinish: function(save, server_data) {

@@ -112,4 +112,3 @@ dojo.html.insertCssText(
 	"body .dojoAlignClient { position: absolute }\n" +
 	".dojoAlignClient { overflow: auto; }\n"
 );
-

@@ -8,8 +8,6 @@ dojo.widget.defineWidget(
 	"dojo.widget.TreeEditor",
 	dojo.widget.HtmlWidget,
 {
-		
-		
 	singleLineMode: false, // enter saves
 	saveOnBlur: true, // blur or new edit saves current
 	sync: false,  // finish editing in sync/async mode
@@ -19,31 +17,32 @@ dojo.widget.defineWidget(
 		
 	node: null,
 	
-	richTextParams: {},
-	
-	
-	
+	richTextParams: {styleSheets: 'src/widget/templates/TreeEditor.css'},
+
 	getContents: function() {
 		return this.richText.getEditorContent();
 	},
 	
 	open: function(node) {
 		
+		var self = this;
+		var selectFunc = function(){
+			if (self.selectOnOpen && self.richText.isLoaded) {
+				self.richText.execCommand("selectall");
+			}
+		};
+			
 		if (!this.richText) {
 			this.richText = dojo.widget.createWidget("RichText", this.richTextParams, node.labelNode);
-		
+
 			dojo.event.connect("around", this.richText, "onKeyDown", this, "richText_onKeyDown" );
 			dojo.event.connect(this.richText, "onBlur", this, "richText_onBlur" );
 			
-			var self = this;
-			dojo.event.connect(this.richText, "onLoad", function(){
-				if (self.selectOnOpen) {
-					self.richText.execCommand("selectall");
-				}
-			});
+			dojo.event.connect(this.richText, "onLoad", selectFunc );
 		} else {
 			this.richText.open(node.labelNode);
 		}
+		selectFunc();
 		
 		this.node = node;		
 	},

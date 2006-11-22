@@ -23,5 +23,5 @@
 	'field-dayperiod': "Dagdeel",
 	'field-hour': "Uur",
 	'field-minute': "Minuut",
-	'field-second': "Seconde",
+	'field-second': "Seconde"
 })

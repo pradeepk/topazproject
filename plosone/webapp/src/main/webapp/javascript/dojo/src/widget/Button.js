@@ -137,6 +137,7 @@ dojo.widget.defineWidget(
 				return; // Ignore IE mouseOut events that dont actually leave button - Prevents hover image flicker in IE
 			}
 			dojo.html.removeClass(this.buttonNode, "dojoButtonHover");
+			dojo.html.removeClass(this.buttonNode, "dojoButtonDepressed");
 			this._setImage(this.inactiveImg);
 		},
 
@@ -376,6 +377,7 @@ dojo.widget.defineWidget(
 			//	onMouseOut() is the callback for the left side of the button.
 			if( this.disabled ){ return; }
 			dojo.html.removeClass(this.rightPart, "dojoButtonHover");
+			dojo.html.removeClass(this.rightPart, "dojoButtonDepressed");
 			this._setImageR(this.inactiveImg);
 		},
 

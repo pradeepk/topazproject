@@ -169,20 +169,23 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 		// constraint properties are the names of fields to bevalidated
 		for(name in profile.constraints){
 			var elem = form[name];
-			if(dj_undef("type", elem) || (elem.type != "text")&&
-				(elem.type != "textarea")&&
-				(elem.type != "password")){
-				continue;
-			}
+			if(!elem) {continue;}
+			
 			// skip if blank - its optional unless required, in which case it
 			// is already listed as missing.
-			if(/^\s*$/.test(elem.value)){ continue; }
-
+			if(!dj_undef("tagName",elem) 
+				&& (elem.tagName.toLowerCase().indexOf("input") >= 0
+					|| elem.tagName.toLowerCase().indexOf("textarea") >= 0) 
+				&& /^\s*$/.test(elem.value)){ 
+				continue; 
+			}
+			
 			var isValid = true;
 			// case 1: constraint value is validation function
 			if(dojo.lang.isFunction(profile.constraints[name])){
 				isValid = profile.constraints[name](elem.value);
 			}else if(dojo.lang.isArray(profile.constraints[name])){
+				
 				// handle nested arrays for multiple constraints
 				if(dojo.lang.isArray(profile.constraints[name][0])){
 					for (var i=0; i<profile.constraints[name].length; i++){
@@ -195,7 +198,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 					isValid = dojo.validate.evaluateConstraint(profile, profile.constraints[name], name, elem);
 				}
 			}
-
+			
 			if(!isValid){	
 				invalid[invalid.length] = elem.name;
 			}
@@ -214,7 +217,7 @@ dojo.validate.check = function(/*HTMLFormElement*/form, /*Object*/profile){
 				||(/^\s*$/.test(target.value)))	// skip if blank - only confirm if target has a value
 			{
 				continue; 
-			}	
+			}
 			invalid[invalid.length] = elem.name;
 		}
 	}
@@ -243,7 +246,7 @@ dojo.validate.evaluateConstraint=function(profile, /*Array*/constraint, fieldNam
 	// constraint: The single [] array of function and arguments for the function.
 	// fieldName: The form dom name of the field being validated.
 	// elem: The form element field.
-
+	
  	var isValidSomething = constraint[0];
 	var params = constraint.slice(1);
 	params.unshift(elem.value);

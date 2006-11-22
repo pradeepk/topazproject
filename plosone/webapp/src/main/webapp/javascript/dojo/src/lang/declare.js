@@ -145,6 +145,10 @@ dojo.lang.declare._common = {
 			p = p.constructor.superclass;
 		}while(!(prop in p));
 		return (dojo.lang.isFunction(p[prop]) ? this._contextMethod(p, prop, args) : p[prop]);
+	},
+	inherited: function(prop, args){
+		dojo.deprecated("'inherited' method is dangerous, do not up-call! 'inherited' is slated for removal in 0.5; name your super class (or use superclass property) instead.", "0.5");
+		this._inherited(prop, args);
 	}
 }
 

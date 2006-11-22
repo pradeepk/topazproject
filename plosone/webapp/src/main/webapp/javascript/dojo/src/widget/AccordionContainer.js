@@ -162,7 +162,7 @@ dojo.require("dojo.widget.PageContainer");
 					anims.push(dojo.lfx.html.slideTo(child.domNode, {top: y, left: 0}, this.duration));
 				}
 				y += child.selected ? dojo.html.getBorderBox(child.domNode).height : child.getLabelHeight();
-			});
+			}, this);
 			dojo.lfx.combine(anims).play();
 		}
 	}

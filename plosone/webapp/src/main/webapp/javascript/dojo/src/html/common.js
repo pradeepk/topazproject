@@ -4,11 +4,6 @@ dojo.require("dojo.dom");
 
 dojo.lang.mixin(dojo.html, dojo.dom);
 
-dojo.html.body = function(){
-	dojo.deprecated("dojo.html.body() moved to dojo.body()", "0.5");
-	return dojo.body();
-}
-
 // FIXME: we are going to assume that we can throw any and every rendering
 // engine into the IE 5.x box model. In Mozilla, we do this w/ CSS.
 // Need to investigate for KHTML and Opera
@@ -187,34 +182,4 @@ if(dojo.render.html.ie && !dojo.render.html.ie70){
 		//	Creates an element in the HTML document, here for ActiveX activation workaround.
 		return doc.createElement(tag);	//	HTMLElement
 	}
-}
-
-dojo.html._callDeprecated = function(inFunc, replFunc, args, argName, retValue){
-	dojo.deprecated("dojo.html." + inFunc,
-					"replaced by dojo.html." + replFunc + "(" + (argName ? "node, {"+ argName + ": " + argName + "}" : "" ) + ")" + (retValue ? "." + retValue : ""), "0.5");
-	var newArgs = [];
-	if(argName){ var argsIn = {}; argsIn[argName] = args[1]; newArgs.push(args[0]); newArgs.push(argsIn); }
-	else { newArgs = args }
-	var ret = dojo.html[replFunc].apply(dojo.html, args);
-	if(retValue){ return ret[retValue]; }
-	else { return ret; }
-}
-
-dojo.html.getViewportWidth = function(){
-	return dojo.html._callDeprecated("getViewportWidth", "getViewport", arguments, null, "width");
-}
-dojo.html.getViewportHeight = function(){
-	return dojo.html._callDeprecated("getViewportHeight", "getViewport", arguments, null, "height");
-}
-dojo.html.getViewportSize = function(){
-	return dojo.html._callDeprecated("getViewportSize", "getViewport", arguments);
-}
-dojo.html.getScrollTop = function(){
-	return dojo.html._callDeprecated("getScrollTop", "getScroll", arguments, null, "top");
-}
-dojo.html.getScrollLeft = function(){
-	return dojo.html._callDeprecated("getScrollLeft", "getScroll", arguments, null, "left");
-}
-dojo.html.getScrollOffset = function(){
-	return dojo.html._callDeprecated("getScrollOffset", "getScroll", arguments, null, "offset");
 }

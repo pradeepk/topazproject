@@ -11,8 +11,8 @@ dojo.io.RhinoHTTPTransport = new function(){
 			// a W3C dom implementation out of the box.  In the future we 
 			// should provide some kind of hook to inject your own, because
 			// in all my projects I use XML for Script to provide a W3C DOM.
-			if(!dojo.lang.find(["text/plain", "text/html", "text/xml", "text/javascript", "text/json", "application/json"],
-				(req.mimetype.toLowerCase() || ""))){
+			if(dojo.lang.find(["text/plain", "text/html", "text/xml", "text/javascript", "text/json", "application/json"],
+				(req.mimetype.toLowerCase() || "")) < 0){
 				return false;
 			}
 			

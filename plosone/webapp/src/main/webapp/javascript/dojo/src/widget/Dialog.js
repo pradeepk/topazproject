@@ -124,6 +124,14 @@ dojo.declare(
 			}
 		},
 
+		uninitialize: function(){
+			// if we're the last one, clobber the shared things
+			if(dojo.widget.byType("Dialog").length <= 1){
+				this.shared.bgIframe.remove();
+				dojo.html.removeNode(this.shared.bg, true);
+			}
+		},
+
 		setBackgroundColor: function(/*String*/ color) {
 			// summary
 			//	changes background color specified by "bgColor" parameter
@@ -205,6 +213,28 @@ dojo.declare(
 			}
 		},
 
+		_onKey: function(/*Event*/ evt){
+			if (evt.key){
+				// see if the key is for the dialog
+				var node = evt.target;
+				while (node != null){
+					if (node == this.domNode){
+						return; // yes, so just let it go
+					}
+					node = node.parentNode;
+				}
+				// this key is for the disabled document window
+				if (evt.key != evt.KEY_TAB){ // allow tabbing into the dialog for a11y
+					dojo.event.browser.stopEvent(evt);
+				// opera won't tab to a div
+				}else if (!dojo.render.html.opera){
+					try {
+						this.tabStart.focus(); 
+					} catch(e){}
+				}
+			}
+		},
+
 		showModalDialog: function() {
 			// summary
 			//	call this function in show() of subclass before calling superclass.show()
@@ -212,11 +242,19 @@ dojo.declare(
 				this._scrollConnected = true;
 				dojo.event.connect(window, "onscroll", this, "_onScroll");
 			}
+			dojo.event.connect(document.documentElement, "onkey", this, "_onKey");
 
 			this.placeModalDialog();
 			this.setBackgroundOpacity();
 			this._sizeBackground();
 			this._showBackground();
+			this._fromTrap = true; 
+			// set timeout to allow the browser to render dialog 
+			setTimeout(dojo.lang.hitch(this, function(){
+				try{
+					this.tabStart.focus();
+				}catch(e){}
+			}), 50);
 		},
 
 		hideModalDialog: function(){
@@ -232,6 +270,7 @@ dojo.declare(
 			this.shared.bg.style.display = "none";
 			this.shared.bg.style.width = this.shared.bg.style.height = "1px";
 
+			dojo.event.disconnect(document.documentElement, "onkey", this, "_onKey");
 			if (this._scrollConnected){
 				this._scrollConnected = false;
 				dojo.event.disconnect(window, "onscroll", this, "_onScroll");

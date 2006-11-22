@@ -6,12 +6,12 @@ dojo.widget.defineWidget(
 {
 	templatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/Dialog/inserttable.html"),
 
-	editableAttributes: ['summery', 'height', 'cellspacing', 'cellpadding', 'border', 'align'],
+	editableAttributes: ['summary', 'height', 'cellspacing', 'cellpadding', 'border', 'align'],
 
 	loadContent: function(){
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
 		this.tableNode = dojo.withGlobal(curInst.window, "getSelectedElement", dojo.html.selection);
-		if(!this.tableNode || this.tableNode.tagName.toLowerCase() != 'table'){
+		if(!this.tableNode || this.tableNode.tagName.toUpperCase() != 'TABLE'){
 			this.tableNode = dojo.withGlobal(curInst.window, "getAncestorElement", dojo.html.selection, ['table']);
 		}
 

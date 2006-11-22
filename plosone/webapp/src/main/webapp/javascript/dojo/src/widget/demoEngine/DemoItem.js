@@ -1,6 +1,8 @@
 dojo.provide("dojo.widget.demoEngine.DemoItem");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.HtmlWidget");
+dojo.require("dojo.i18n.common");
+dojo.requireLocalization("dojo.widget", "DemoEngine");
 
 dojo.widget.defineWidget("my.widget.demoEngine.DemoItem", 
 	dojo.widget.HtmlWidget, 
@@ -54,7 +56,8 @@ dojo.widget.defineWidget("my.widget.demoEngine.DemoItem",
 		this.descriptionNode="";
 
 		this.name="Some Demo";
-		this.description="This is the description of this demo.";
+		var bundle = dojo.i18n.getLocalization("dojo.widget", "DemoEngine");
+		this.description=bundle.itemDescription;
 		this.thumbnail="images/test_thumb.gif";
 		this.viewDemoImage="images/viewDemo.png";
 	}

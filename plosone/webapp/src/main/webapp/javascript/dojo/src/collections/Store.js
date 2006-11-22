@@ -57,7 +57,7 @@ dojo.collections.Store = function(/* array? */jsonArray){
 		return data[idx].src; 	//	object
 	};
 
-	this.update = function(/* Object */obj, /* string */fieldPath, /* Object */val){
+	this.update = function(/* Object */obj, /* string */fieldPath, /* Object */val, /* boolean? */bDontFire){
 		var parts=fieldPath.split("."), i=0, o=obj, field;
 		if(parts.length>1) {
 			field = parts.pop();
@@ -79,7 +79,9 @@ dojo.collections.Store = function(/* array? */jsonArray){
 		}
 
 		obj[field] = val;
-		this.onUpdateField(obj, fieldPath, val);
+		if(!bDontFire){
+			this.onUpdateField(obj, fieldPath, val);
+		}
 	};
 
 	this.forEach = function(/* function */fn){
@@ -106,7 +108,7 @@ dojo.collections.Store = function(/* array? */jsonArray){
 		}
 	};
 
-	this.setData = function(/*array*/arr){
+	this.setData = function(/*array*/arr, /* boolean? */bDontFire){
 		//	summary
 		//	Set up the internal data.
 		data = []; 	//	don't fire onClearData
@@ -116,17 +118,21 @@ dojo.collections.Store = function(/* array? */jsonArray){
 				src:arr[i]
 			});
 		}
-		this.onSetData();
+		if(!bDontFire){
+			this.onSetData();
+		}
 	};
 	
-	this.clearData = function(){
+	this.clearData = function(/* boolean? */bDontFire){
 		//	summary
 		//	Clears the internal data array.
 		data = [];
-		this.onClearData();
+		if(!bDontFire){
+			this.onClearData();
+		}
 	};
 
-	this.addData = function(/*obj*/obj,/*string?*/key){ 
+	this.addData = function(/*obj*/obj,/*string?*/key, /* boolean? */bDontFire){ 
 		//	summary
 		//	Add an object with optional key to the internal data array.
 		var k = key || obj[this.keyField];
@@ -137,9 +143,11 @@ dojo.collections.Store = function(/* array? */jsonArray){
 			var o={ key:k, src:obj };
 			data.push(o);
 		}
-		this.onAddData(o);
+		if(!bDontFire){
+			this.onAddData(o);
+		}
 	};
-	this.addDataRange = function(/*array*/arr){
+	this.addDataRange = function(/*array*/arr, /* boolean? */bDontFire){
 		//	summary
 		//	Add a range of objects to the internal data array.
 		var objects=[];
@@ -154,10 +162,12 @@ dojo.collections.Store = function(/* array? */jsonArray){
 			}
 			objects.push(o);
 		}
-		this.onAddDataRange(objects);
+		if(!bDontFire){
+			this.onAddDataRange(objects);
+		}
 	};
 	
-	this.removeData = function(/*obj*/obj){
+	this.removeData = function(/*obj*/obj, /* boolean? */bDontFire){
 		//	summary
 		//	remove the passed object from the internal data array.
 		var idx=-1;
@@ -169,24 +179,26 @@ dojo.collections.Store = function(/* array? */jsonArray){
 				break;
 			}
 		}
-		this.onRemoveData(o);
+		if(!bDontFire){
+			this.onRemoveData(o);
+		}
 		if(idx>-1){
 			data.splice(idx,1);
 		}
 	};
-	this.removeDataByKey = function(/*string*/key){
+	this.removeDataByKey = function(/*string*/key, /* boolean? */bDontFire){
 		//	summary
 		//	remove the object at key from the internal data array.
-		this.removeData(this.getDataByKey(key));
+		this.removeData(this.getDataByKey(key), bDontFire);
 	};
-	this.removeDataByIndex = function(/*number*/idx){
+	this.removeDataByIndex = function(/*number*/idx, /* boolean? */bDontFire){
 		//	summary
 		//	remove the object at idx from the internal data array.
-		this.removeData(this.getDataByIndex(idx));
+		this.removeData(this.getDataByIndex(idx), bDontFire);
 	};
 
 	if(jsonArray && jsonArray.length && jsonArray[0]){
-		this.setData(jsonArray);
+		this.setData(jsonArray, true);
 	}
 };
 

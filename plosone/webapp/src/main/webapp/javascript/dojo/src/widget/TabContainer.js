@@ -182,6 +182,13 @@ dojo.widget.defineWidget("dojo.widget.TabButton", dojo.widget.PageButton,
 	fillInTemplate: function(){
 		dojo.html.disableSelection(this.titleNode);
 		dojo.widget.TabButton.superclass.fillInTemplate.apply(this, arguments);
+	},
+	
+	onCloseButtonClick: function(/*Event*/ evt){
+		// since the close button is located inside the select button, make sure that the select
+		// button doesn't inadvertently get an onClick event
+		evt.stopPropagation();
+		dojo.widget.TabButton.superclass.onCloseButtonClick.apply(this, arguments);
 	}
 });
 
@@ -205,5 +212,3 @@ dojo.widget.defineWidget(
 						+"</div>"
 	}
 );
-
-

@@ -207,10 +207,8 @@ dojo.declare(
 
 			}
 			
-			if (this.tree.eagerWidgetInstantiation) {
-				dojo.lang.forEach(this.children, function(child) {
-					child.setChildren();
-				});
+			if (this.tree.eagerWidgetInstantiation && child.children.length) {
+				child.setChildren();				
 			}
 
 			//dojo.profile.end("setChildren - attach "+this);

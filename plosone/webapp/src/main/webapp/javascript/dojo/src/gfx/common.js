@@ -96,7 +96,13 @@ dojo.declare("dojo.gfx.Surface", null, {
 });
 
 dojo.declare("dojo.gfx.Point", null, {
-	// summary: a 2D point object to be used for drawings
-	// description: This object is created for documentation purposes.
+	// summary: a hypothetical 2D point to be used for drawings - {x, y}
+	// description: This object is defined for documentation purposes.
 	//	You should use a naked object instead: {x: 1, y: 2}.
+});
+
+dojo.declare("dojo.gfx.Rectangle", null, {
+	// summary: a hypothetical rectangle - {x, y, width, height}
+	// description: This object is defined for documentation purposes.
+	//	You should use a naked object instead: {x: 1, y: 2, width: 100, height: 200}.
 });

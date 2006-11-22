@@ -227,6 +227,63 @@ dojo.hostenv.packageLoaded = function(pkg){
 	}
 }
 
+dojo.hostenv.xdLoadFlattenedBundle = function(/*String*/moduleName, /*String*/bundleName, /*String?*/locale, /*Object*/bundleData){
+	locale = locale || "root";
+	var jsLoc = dojo.hostenv.normalizeLocale(locale).replace('-', '_');
+ 	var bundlePackage = [moduleName, "nls", bundleName].join(".");
+	var bundle = dojo.hostenv.startPackage(bundlePackage);
+	bundle[jsLoc] = bundleData;
+	
+	//Assign the bundle for the original locale(s) we wanted.
+	var mapName = [moduleName, jsLoc, bundleName].join(".");
+	var bundleMap = dojo.hostenv.xdBundleMap[mapName];
+	if(bundleMap){
+		for(var param in bundleMap){
+			bundle[param] = bundleData;
+		}
+	}
+};
+
+
+dojo.hostenv.xdBundleMap = {};
+
+dojo.xdRequireLocalization = function(/*String*/moduleName, /*String*/bundleName, /*String?*/locale, /*String*/availableLocales){
+	var locales = availableLocales.split(",");
+	
+	//Find the best-match locale to load.
+	var jsLoc = dojo.hostenv.normalizeLocale(locale);
+
+	var bestLocale = "";
+	for(var i = 0; i < locales.length; i++){
+		//Locale must match from start of string.
+		if(jsLoc.indexOf(locales[i]) == 0){
+			if(locales[i].length > bestLocale.length){
+				bestLocale = locales[i];
+			}
+		}
+	}
+
+	var fixedBestLocale = bestLocale.replace('-', '_');
+	//See if the bundle we are going to use is already loaded.
+ 	var bundlePackage = dojo.evalObjPath([moduleName, "nls", bundleName].join("."));
+	if(bundlePackage && bundlePackage[fixedBestLocale]){
+		bundle[jsLoc.replace('-', '_')] = bundlePackage[fixedBestLocale];
+	}else{
+		//Need to remember what locale we wanted and which one we actually use.
+		//Then when we load the one we are actually using, use that bundle for the one
+		//we originally wanted.
+		var mapName = [moduleName, (fixedBestLocale||"root"), bundleName].join(".");
+		var bundleMap = dojo.hostenv.xdBundleMap[mapName];
+		if(!bundleMap){
+			bundleMap = dojo.hostenv.xdBundleMap[mapName] = {};
+		}
+		bundleMap[jsLoc.replace('-', '_')] = true;
+		
+		//Do just a normal dojo.require so the package tracking stuff works as usual.
+		dojo.require(moduleName + ".nls" + (bestLocale ? "." + bestLocale : "") + "." + bundleName);
+	}
+}
+
 //This is a bit brittle: it has to know about the dojo methods that deal with dependencies
 //It would be ideal to intercept the actual methods and do something fancy at that point,
 //but I have concern about knowing which provide to match to the dependency in that case,

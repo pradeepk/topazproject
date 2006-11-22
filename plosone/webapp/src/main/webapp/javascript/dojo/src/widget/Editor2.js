@@ -3,8 +3,12 @@ dojo.provide("dojo.widget.Editor2");
 dojo.require("dojo.io.*");
 dojo.require("dojo.widget.RichText");
 dojo.require("dojo.widget.Editor2Toolbar");
+dojo.require("dojo.i18n.common");
+dojo.requireLocalization("dojo.widget", "Editor2");
+dojo.requireLocalization("dojo.widget", "Editor2BrowserCommand");
 
-dojo.widget.Editor2Manager = new dojo.widget.HandlerManager;
+dojo.widget.Editor2Manager = new dojo.widget.HandlerManager();
+
 dojo.lang.mixin(dojo.widget.Editor2Manager,
 {
 	// summary: Manager of current focused Editor2 Instance and available editor2 commands
@@ -33,15 +37,22 @@ dojo.lang.mixin(dojo.widget.Editor2Manager,
 				return oCommand;
 			}
 		}
+		if(name == 'createlink' || name == 'insertimage'){
+			if(!dojo.widget.Editor2Plugin.DialogCommands){
+				dojo.deprecated('Command '+name+" is now defined in plugin dojo.widget.Editor2Plugin.DialogCommands. It shall be required explicitly", "0.6");
+				dojo['require']("dojo.widget.Editor2Plugin.DialogCommands"); //avoid loading by the build
+			}
+		}
+		var resources = dojo.i18n.getLocalization("dojo.widget", "Editor2", this.lang);
 		switch(name){
 			case 'htmltoggle':
 				//Editor2 natively provide the htmltoggle functionalitity
 				//and it is treated as a builtin command
 				oCommand = new dojo.widget.Editor2BrowserCommand(editor, name);
 				break;
-			case 'formatblock':
-				oCommand = new dojo.widget.Editor2FormatBlockCommand(editor, name);
-				break;
+//			case 'formatblock':
+//				oCommand = new dojo.widget.Editor2FormatBlockCommand(editor, name);
+//				break;
 			case 'anchor':
 				oCommand = new dojo.widget.Editor2Command(editor, name);
 				break;
@@ -51,13 +62,15 @@ dojo.lang.mixin(dojo.widget.Editor2Manager,
 				oCommand = new dojo.widget.Editor2DialogCommand(editor, name,
 						{contentFile: "dojo.widget.Editor2Plugin.CreateLinkDialog",
 							contentClass: "Editor2CreateLinkDialog",
-							title: "Insert/Edit Link", width: "300px", height: "200px"});
+							title: resources.createLinkDialogTitle, width: "300px", height: "200px",
+							lang: this.lang});
 				break;
 			case 'insertimage':
 				oCommand = new dojo.widget.Editor2DialogCommand(editor, name,
 						{contentFile: "dojo.widget.Editor2Plugin.InsertImageDialog",
 							contentClass: "Editor2InsertImageDialog",
-							title: "Insert/Edit Image", width: "400px", height: "270px"});
+							title: resources.insertImageDialogTitle, width: "400px", height: "270px",
+							lang: this.lang});
 				break;
 			// By default we assume that it is a builtin simple command.
 			default:
@@ -113,65 +126,13 @@ dojo.lang.declare("dojo.widget.Editor2Command",null,
 	}
 );
 
-dojo.widget.Editor2BrowserCommandNames={
-			'bold': 'Bold',
-			'copy': 'Copy',
-			'cut': 'Cut',
-			'Delete': 'Delete',
-			'indent': 'Indent',
-			'inserthorizontalrule': 'Horizental Rule',
-			'insertorderedlist': 'Numbered List',
-			'insertunorderedlist': 'Bullet List',
-			'italic': 'Italic',
-			'justifycenter': 'Align Center',
-			'justifyfull': 'Justify',
-			'justifyleft': 'Align Left',
-			'justifyright': 'Align Right',
-			'outdent': 'Outdent',
-			'paste': 'Paste',
-			'redo': 'Redo',
-			'removeformat': 'Remove Format',
-			'selectall': 'Select All',
-			'strikethrough': 'Strikethrough',
-			'subscript': 'Subscript',
-			'superscript': 'Superscript',
-			'underline': 'Underline',
-			'undo': 'Undo',
-			'unlink': 'Remove Link',
-			'createlink': 'Create Link',
-			'insertimage': 'Insert Image',
-			'htmltoggle': 'HTML Source',
-			'forecolor': 'Foreground Color',
-			'hilitecolor': 'Background Color',
-			'plainformatblock': 'Paragraph Style',
-			'formatblock': 'Paragraph Style',
-			'fontsize': 'Font Size',
-			'fontname': 'Font Name'//,
-//			'inserttable': 'Insert Table',
-//			'insertcell':
-//			'insertcol':
-//			'insertrow':
-//			'deletecells':
-//			'deletecols':
-//			'deleterows':
-//			'mergecells':
-//			'splitcell':
-//			'inserthtml':
-//			'blockdirltr':
-//			'blockdirrtl':
-//			'dirltr':
-//			'dirrtl':
-//			'inlinedirltr':
-//			'inlinedirrtl':
-}
-
 dojo.lang.declare("dojo.widget.Editor2BrowserCommand", dojo.widget.Editor2Command, 
 	function(editor,name){
 		// summary:
 		//		dojo.widget.Editor2BrowserCommand is the base class for all the browser built
 		//		in commands
-
-		var text = dojo.widget.Editor2BrowserCommandNames[name.toLowerCase()];
+		var browserCommandNames = dojo.i18n.getLocalization("dojo.widget", "Editor2BrowserCommand", editor.lang);
+		var text = browserCommandNames[name.toLowerCase()];
 		if(text){
 			this._text = text;
 		}
@@ -207,203 +168,6 @@ dojo.lang.declare("dojo.widget.Editor2BrowserCommand", dojo.widget.Editor2Comman
 		}
 	}
 );
-
-dojo.lang.declare("dojo.widget.Editor2FormatBlockCommand", dojo.widget.Editor2BrowserCommand, {
-		/* In none-ActiveX mode under IE, <p> and no <p> text can not be distinguished
-		getCurrentValue: function(){
-			var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
-			if(!curInst){ return ''; }
-
-			var h = dojo.render.html;
-
-			// safari f's us for selection primitives
-			if(h.safari){ return ''; }
-
-			var selectedNode = (h.ie) ? curInst.document.selection.createRange().parentElement() : curInst.window.getSelection().anchorNode;
-			// make sure we actuall have an element
-			while((selectedNode)&&(selectedNode.nodeType != 1)){
-				selectedNode = selectedNode.parentNode;
-			}
-			if(!selectedNode){ return ''; }
-
-			var formats = ["p", "pre", "h1", "h2", "h3", "h4", "h5", "h6", "address"];
-			// gotta run some specialized updates for the various
-			// formatting options
-			var type = formats[dojo.lang.find(formats, selectedNode.nodeName.toLowerCase())];
-			while((selectedNode!=curInst.editNode)&&(!type)){
-				selectedNode = selectedNode.parentNode;
-				if(!selectedNode){ break; }
-				type = formats[dojo.lang.find(formats, selectedNode.nodeName.toLowerCase())];
-			}
-			if(!type){
-				type = "";
-			}
-			return type;
-		}*/
-	}
-);
-
-dojo.require("dojo.widget.FloatingPane");
-dojo.widget.defineWidget(
-	"dojo.widget.Editor2Dialog",
-	[dojo.widget.HtmlWidget, dojo.widget.FloatingPaneBase, dojo.widget.ModalDialogBase],
-	{
-		// summary:
-		//		Provides a Dialog which can be modal or normal for the Editor2.
-
-		templatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/EditorDialog.html"),
-
-		// modal: Boolean: Whether this is a modal dialog. True by default.
-		modal: true,
-
-//		refreshOnShow: true, //for debug for now
-
-		// width: String: Width of the dialog. None by default.
-		width: "",
-
-		// height: String: Height of the dialog. None by default.
-		height: "",
-
-		// windowState: String: startup state of the dialog
-		windowState: "minimized",
-
-		displayCloseAction: true,
-
-		// contentFile: String
-		//	TODO
-		contentFile: "",
-		
-		// contentClass: String
-		//	TODO
-		contentClass: "",
-
-		fillInTemplate: function(args, frag){
-			this.fillInFloatingPaneTemplate(args, frag);
-			dojo.widget.Editor2Dialog.superclass.fillInTemplate.call(this, args, frag);
-		},
-		postCreate: function(){
-			if(this.contentFile){
-				dojo.require(this.contentFile);
-			}
-			if(this.modal){
-				dojo.widget.ModalDialogBase.prototype.postCreate.call(this);
-			}else{
-				with(this.domNode.style) {
-					zIndex = 999;
-					display = "none";
-				}
-			}
-			dojo.widget.FloatingPaneBase.prototype.postCreate.apply(this, arguments);
-			dojo.widget.Editor2Dialog.superclass.postCreate.call(this);
-			if(this.width && this.height){
-				with(this.domNode.style){
-					width = this.width;
-					height = this.height;
-				}
-			}
-		},
-		createContent: function(){
-			if(!this.contentWidget && this.contentClass){
-				this.contentWidget = dojo.widget.createWidget(this.contentClass);
-				this.addChild(this.contentWidget);
-			}
-		},
-		show: function(){
-			if(!this.contentWidget){
-				//buggy IE: if the dialog is hidden, the button widgets
-				//in the dialog can not be shown, so show it temporary (as the
-				//dialog may decide not to show it in loadContent() later)
-				dojo.widget.Editor2Dialog.superclass.show.apply(this, arguments);
-				this.createContent();
-				dojo.widget.Editor2Dialog.superclass.hide.call(this);
-			}
-
-			if(!this.contentWidget || !this.contentWidget.loadContent()){
-				return;
-			}
-			this.showFloatingPane();
-			dojo.widget.Editor2Dialog.superclass.show.apply(this, arguments);
-			if(this.modal){
-				this.showModalDialog();
-			}
-			if(this.modal){
-				//place the background div under this modal pane
-				this.shared.bg.style.zIndex = this.domNode.style.zIndex-1;
-			}
-		},
-		onShow: function(){
-			dojo.widget.Editor2Dialog.superclass.onShow.call(this);
-			this.onFloatingPaneShow();
-		},
-		closeWindow: function(){
-			this.hide();
-			dojo.widget.Editor2Dialog.superclass.closeWindow.apply(this, arguments);
-		},
-		hide: function(){
-			if(this.modal){
-				this.hideModalDialog();
-			}
-			dojo.widget.Editor2Dialog.superclass.hide.call(this);
-		},
-		//modified from ModalDialogBase.checkSize to call _sizeBackground conditionally
-		checkSize: function(){
-			if(this.isShowing()){
-				if(this.modal){
-					this._sizeBackground();
-				}
-				this.placeModalDialog();
-				this.onResized();
-			}
-		}
-	}
-);
-
-dojo.widget.defineWidget(
-	"dojo.widget.Editor2DialogContent",
-	dojo.widget.HtmlWidget,
-{
-	// summary:
-	//		dojo.widget.Editor2DialogContent is the actual content of a Editor2Dialog.
-	//		This class should be subclassed to provide the content.
-
-	widgetsInTemplate: true,
-
-	loadContent:function(){
-		// summary: Load the content. Called by Editor2Dialog when first shown
-		return true;
-	},
-	cancel: function(){
-		// summary: Default handler when cancel button is clicked.
-		this.parent.hide();
-	}
-});
-
-dojo.lang.declare("dojo.widget.Editor2DialogCommand", dojo.widget.Editor2BrowserCommand,
-	function(editor, name, dialogParas){
-		// summary:
-		//		Provides an easy way to popup a dialog when
-		//		the command is executed.
-		this.dialogParas = dialogParas;
-	},
-{
-	execute: function(){
-		if(!this.dialog){
-			if(!this.dialogParas.contentFile || !this.dialogParas.contentClass){
-				alert("contentFile and contentClass should be set for dojo.widget.Editor2DialogCommand.dialogParas!");
-				return;
-			}
-			this.dialog = dojo.widget.createWidget("Editor2Dialog", this.dialogParas);
-
-			dojo.body().appendChild(this.dialog.domNode);
-
-			dojo.event.connect(this, "destroy", this.dialog, "destroy");
-		}
-		this.dialog.show();
-	},
-	getText: function(){
-		return this.dialogParas.title || dojo.widget.Editor2DialogCommand.superclass.getText.call(this);
-	}
-});
 
 dojo.widget.Editor2ToolbarGroups = {
 	// summary: keeping track of all available share toolbar groups
@@ -445,7 +209,7 @@ dojo.widget.defineWidget(
 
 		// toolbarTemplateCssPath: dojo.uri.Uri
 		//		to specify the css file for the toolbar
-		toolbarTemplateCssPath: null,
+		toolbarTemplateCssPath: dojo.uri.dojoUri("src/widget/templates/EditorToolbar.css"),
 
 		// toolbarPlaceHolder: String
 		//		element id to specify where to attach the toolbar
@@ -494,7 +258,7 @@ dojo.widget.defineWidget(
 					}
 				}
 				if(!this.toolbarWidget){
-						var tbOpts = {shareGroup: this.toolbarGroup, parent: this};
+						var tbOpts = {shareGroup: this.toolbarGroup, parent: this, lang: this.lang};
 						tbOpts.templatePath = this.toolbarTemplatePath;
 						if(this.toolbarTemplateCssPath){
 							tbOpts.templateCssPath = this.toolbarTemplateCssPath;
@@ -536,14 +300,14 @@ dojo.widget.defineWidget(
 			this.loadedPlugins.push(obj);
 		},
 		unregisterLoadedPlugin: function(/*Object*/obj){
-			// summery: Delete a loaded plugin for this instance
+			// summary: Delete a loaded plugin for this instance
 			for(var i in this.loadedPlugins){
 				if(this.loadedPlugins[i] === obj){
 					delete this.loadedPlugins[i];
 					return;
 				}
 			}
-			dojo.debug("dojo.widget.Editor2.unregisterLoadedPlugin: unknow plugin object: "+obj);
+			dojo.debug("dojo.widget.Editor2.unregisterLoadedPlugin: unknown plugin object: "+obj);
 		},
 
 		//overload the original ones to provide extra commands
@@ -631,7 +395,7 @@ dojo.widget.defineWidget(
 					this._htmlEditNode.style.display = "none";
 					this.focus();
 				}
-				this.updateToolbar(true);
+				this.onDisplayChanged(null, true);
 			}
 		},
 
@@ -709,10 +473,10 @@ dojo.widget.defineWidget(
 		},
 
 		_lastStateTimestamp: 0,
-		onDisplayChanged: function(/*Object*/e){
+		onDisplayChanged: function(/*Object*/e, /*Boolean*/forceUpdate){
 			this._lastStateTimestamp = (new Date()).getTime();
 			dojo.widget.Editor2.superclass.onDisplayChanged.call(this,e);
-			this.updateToolbar();
+			this.updateToolbar(forceUpdate);
 		},
 
 		onLoad: function(){

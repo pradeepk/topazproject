@@ -60,7 +60,7 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 		dojo.widget.PageContainer.superclass.addChild.apply(this, arguments);
 		this._setupChild(child);
 
-		// in case the page labels have overflowed from one line to two lines
+		// in case the tab labels have overflowed from one line to two lines
 		this.onResized();
 
 		// if this is the first child, then select it
@@ -87,6 +87,9 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 
 		// this will notify any tablists to remove a button; do this first because it may affect sizing
 		dojo.event.topic.publish(this.widgetId+"-removeChild", page);
+
+		// in case the tab labels now take up one line instead of two lines
+		this.onResized();
 
 		if (this.selectedChildWidget === page) {
 			this.selectedChildWidget = undefined;

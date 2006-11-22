@@ -49,12 +49,12 @@ dojo.dom.xmlns = {
 };
 
 dojo.dom.isNode = function(/* object */wh){
-	//	summary
-	//	checks to see if wh is actually a node.
+	//	summary:
+	//		checks to see if wh is actually a node.
 	if(typeof Element == "function") {
 		try {
 			return wh instanceof Element;	//	boolean
-		} catch(E) {}
+		} catch(e) {}
 	} else {
 		// best-guess
 		return wh && !isNaN(wh.nodeType);	//	boolean
@@ -62,8 +62,8 @@ dojo.dom.isNode = function(/* object */wh){
 }
 
 dojo.dom.getUniqueId = function(){
-	//	summary
-	//	returns a unique string for use with any DOM element
+	//	summary:
+	//		returns a unique string for use with any DOM element
 	var _document = dojo.doc();
 	do {
 		var id = "dj_unique_" + (++arguments.callee._idIncrement);
@@ -73,8 +73,8 @@ dojo.dom.getUniqueId = function(){
 dojo.dom.getUniqueId._idIncrement = 0;
 
 dojo.dom.firstElement = dojo.dom.getFirstChildElement = function(/* Element */parentNode, /* string? */tagName){
-	//	summary
-	//	returns the first child element matching tagName
+	//	summary:
+	//		returns the first child element matching tagName
 	var node = parentNode.firstChild;
 	while(node && node.nodeType != dojo.dom.ELEMENT_NODE){
 		node = node.nextSibling;
@@ -86,8 +86,8 @@ dojo.dom.firstElement = dojo.dom.getFirstChildElement = function(/* Element */pa
 }
 
 dojo.dom.lastElement = dojo.dom.getLastChildElement = function(/* Element */parentNode, /* string? */tagName){
-	//	summary
-	//	returns the last child element matching tagName
+	//	summary:
+	//		returns the last child element matching tagName
 	var node = parentNode.lastChild;
 	while(node && node.nodeType != dojo.dom.ELEMENT_NODE) {
 		node = node.previousSibling;
@@ -99,8 +99,8 @@ dojo.dom.lastElement = dojo.dom.getLastChildElement = function(/* Element */pare
 }
 
 dojo.dom.nextElement = dojo.dom.getNextSiblingElement = function(/* Node */node, /* string? */tagName){
-	//	summary
-	//	returns the next sibling element matching tagName
+	//	summary:
+	//		returns the next sibling element matching tagName
 	if(!node) { return null; }
 	do {
 		node = node.nextSibling;
@@ -113,8 +113,8 @@ dojo.dom.nextElement = dojo.dom.getNextSiblingElement = function(/* Node */node,
 }
 
 dojo.dom.prevElement = dojo.dom.getPreviousSiblingElement = function(/* Node */node, /* string? */tagName){
-	//	summary
-	//	returns the previous sibling element matching tagName
+	//	summary:
+	//		returns the previous sibling element matching tagName
 	if(!node) { return null; }
 	if(tagName) { tagName = tagName.toLowerCase(); }
 	do {
@@ -136,10 +136,10 @@ dojo.dom.prevElement = dojo.dom.getPreviousSiblingElement = function(/* Node */n
 	}
 }*/
 
-dojo.dom.moveChildren = function(/* Element */srcNode, /* Element */destNode, /* boolean? */trim){
-	//	summary
-	//	Moves children from srcNode to destNode and returns the count of children moved; 
-	//		will trim off text nodes if trim == true
+dojo.dom.moveChildren = function(/*Element*/srcNode, /*Element*/destNode, /*boolean?*/trim){
+	//	summary:
+	//		Moves children from srcNode to destNode and returns the count of
+	//		children moved; will trim off text nodes if trim == true
 	var count = 0;
 	if(trim) {
 		while(srcNode.hasChildNodes() &&
@@ -158,70 +158,127 @@ dojo.dom.moveChildren = function(/* Element */srcNode, /* Element */destNode, /*
 	return count;	//	number
 }
 
-dojo.dom.copyChildren = function(/* Element */srcNode, /* Element */destNode, /* boolean? */trim){
-	//	summary
-	//	Copies children from srcNde to destNode and returns the count of children copied;
-	//		will trim off text nodes if trim == true
+dojo.dom.copyChildren = function(/*Element*/srcNode, /*Element*/destNode, /*boolean?*/trim){
+	//	summary:
+	//		Copies children from srcNde to destNode and returns the count of
+	//		children copied; will trim off text nodes if trim == true
 	var clonedNode = srcNode.cloneNode(true);
 	return this.moveChildren(clonedNode, destNode, trim);	//	number
 }
 
-dojo.dom.removeChildren = function(/* Element */node){
-	//	summary
-	//	removes all children from node and returns the count of children removed.
-	var count = node.childNodes.length;
-	while(node.hasChildNodes()){ node.removeChild(node.firstChild); }
-	return count;	//	number
-}
-
-dojo.dom.replaceChildren = function(/* Element */node, /* Node */newChild){
-	//	summary
-	//	Removes all children of node and appends newChild
+dojo.dom.replaceChildren = function(/*Element*/node, /*Node*/newChild){
+	//	summary:
+	//		Removes all children of node and appends newChild
 	// FIXME: what if newChild is an array-like object?
 	dojo.dom.removeChildren(node);
 	node.appendChild(newChild);
 }
 
-dojo.dom.removeNode = function(/* Node */node){
-	//	summary
-	//	if node has a parent, removes node from parent and returns a reference to the removed child.
-	if(node && node.parentNode){
-		// return a ref to the removed child
-		return node.parentNode.removeChild(node);	//	Node
+dojo.dom.removeChildren = function(/*Element*/node){
+	//	summary:
+	//		removes all children from node and returns the count of children removed.
+	var count = node.childNodes.length;
+	while(node.hasChildNodes()){ dojo.dom.removeNode(node.firstChild); }
+	return count; // int
+}
+
+dojo.dom.replaceNode = function(/*Element*/node, /*Element*/newNode){
+	//	summary:
+	//		replaces node with newNode and returns a reference to the removed node
+	if(dojo.render.html.ie){
+		node.parentNode.insertBefore(newNode, node);
+		return dojo.dom.removeNode(node); // Node
+	}else{
+		return node.parentNode.replaceChild(newNode, node); // Node
 	}
 }
 
-dojo.dom.getAncestors = function(/* Node */node, /* function? */filterFunction, /* boolean? */returnFirstHit) {
-	//	summary
-	//	returns all ancestors matching optional filterFunction; will return only the first if returnFirstHit
+dojo.dom._ieRemovedNodes = [];
+
+dojo.dom.removeNode = function(/*Node*/node, /*Boolean*/clobber){
+	//	summary:
+	//		if node has a parent, removes node from parent and returns a
+	//		reference to the removed child.
+	//	node:
+	//		the node to remove from its parent.
+	//	clobber:
+	//		if in an HTML environment and true, this variable ensures that
+	//		potential leaks are handled correctly.  The node may no longer
+	//		be usable and a value of 'null' will be returned.
+
+	if(node && node.parentNode){
+		try{
+			if(clobber && dojo.evalObjPath("dojo.event.browser.clean", false)){
+				dojo.event.browser.clean(node);
+			}
+		}catch(e){ /* squelch */ }
+
+		if(dojo.render.html.ie){
+			if(clobber){
+				dojo.dom._discardElement(node);
+			}else{
+				// defer until page unload so that we can continue to use 'node'
+				dojo.dom._ieRemovedNodes.push(node);
+			}
+		}
+
+		if(clobber){
+			return null; // null
+		}
+
+		// return a ref to the removed child
+		return node.parentNode.removeChild(node); // Node
+	}
+}
+
+dojo.dom._discardElement = function(element){
+	// summary: workaround for IE leak recommended in ticket #1727 by schallm
+	var garbageBin = document.getElementById('IELeakGarbageBin');
+	if (!garbageBin){
+		garbageBin = document.createElement('DIV');
+		garbageBin.id = 'IELeakGarbageBin';
+		garbageBin.style.display = 'none';
+		document.body.appendChild(garbageBin);
+	}
+
+	// move the element to the garbage bin
+	garbageBin.appendChild(element);
+	garbageBin.innerHTML = '';
+}
+
+dojo.dom.getAncestors = function(/*Node*/node, /*function?*/filterFunction, /*boolean?*/returnFirstHit){
+	//	summary:
+	//		returns all ancestors matching optional filterFunction; will return
+	//		only the first if returnFirstHit
 	var ancestors = [];
 	var isFunction = (filterFunction && (filterFunction instanceof Function || typeof filterFunction == "function"));
-	while(node) {
-		if (!isFunction || filterFunction(node)) {
+	while(node){
+		if(!isFunction || filterFunction(node)){
 			ancestors.push(node);
 		}
-		if (returnFirstHit && ancestors.length > 0) { 
+		if(returnFirstHit && ancestors.length > 0){ 
 			return ancestors[0]; 	//	Node
 		}
 		
 		node = node.parentNode;
 	}
-	if (returnFirstHit) { return null; }
+	if(returnFirstHit){ return null; }
 	return ancestors;	//	array
 }
 
-dojo.dom.getAncestorsByTag = function(/* Node */node, /* string */tag, /* boolean? */returnFirstHit) {
-	//	summary
-	//	returns all ancestors matching tag (as tagName), will only return first one if returnFirstHit
+dojo.dom.getAncestorsByTag = function(/*Node*/node, /*String*/tag, /*boolean?*/returnFirstHit){
+	//	summary:
+	//		returns all ancestors matching tag (as tagName), will only return
+	//		first one if returnFirstHit
 	tag = tag.toLowerCase();
 	return dojo.dom.getAncestors(node, function(el){
 		return ((el.tagName)&&(el.tagName.toLowerCase() == tag));
 	}, returnFirstHit);	//	Node || array
 }
 
-dojo.dom.getFirstAncestorByTag = function(/* Node */node, /* string */tag) {
-	//	summary
-	//	Returns first ancestor of node with tag tagName
+dojo.dom.getFirstAncestorByTag = function(/*Node*/node, /*string*/tag){
+	//	summary:
+	//		Returns first ancestor of node with tag tagName
 	return dojo.dom.getAncestorsByTag(node, tag, true);	//	Node
 }
 
@@ -239,9 +296,9 @@ dojo.dom.isDescendantOf = function(/* Node */node, /* Node */ancestor, /* boolea
 	return false;	//	boolean
 }
 
-dojo.dom.innerXML = function(/* Node */node){
-	//	summary
-	//	Implementation of MS's innerXML function.
+dojo.dom.innerXML = function(/*Node*/node){
+	//	summary:
+	//		Implementation of MS's innerXML function.
 	if(node.innerXML){
 		return node.innerXML;	//	string
 	}else if (node.xml){
@@ -252,8 +309,8 @@ dojo.dom.innerXML = function(/* Node */node){
 }
 
 dojo.dom.createDocument = function(){
-	//	summary
-	//	cross-browser implementation of creating an XML document object.
+	//	summary:
+	//		cross-browser implementation of creating an XML document object.
 	var doc = null;
 	var _document = dojo.doc();
 
@@ -274,9 +331,10 @@ dojo.dom.createDocument = function(){
 	return doc;	//	DOMDocument
 }
 
-dojo.dom.createDocumentFromText = function(/* string */str, /* string? */mimetype){
-	//	summary
-	//	attempts to create a Document object based on optional mime-type, using str as the contents of the document
+dojo.dom.createDocumentFromText = function(/*string*/str, /*string?*/mimetype){
+	//	summary:
+	//		attempts to create a Document object based on optional mime-type,
+	//		using str as the contents of the document
 	if(!mimetype){ mimetype = "text/xml"; }
 	if(!dj_undef("DOMParser")){
 		var parser = new DOMParser();
@@ -310,7 +368,7 @@ dojo.dom.createDocumentFromText = function(/* string */str, /* string? */mimetyp
 			// FIXME: this may change all tags to uppercase!
 			var tmp = _document.createElement("xml");
 			tmp.innerHTML = str;
-			if(_document.implementation && _document.implementation.createDocument) {
+			if(_document.implementation && _document.implementation.createDocument){
 				var xmlDoc = _document.implementation.createDocument("foo", "", null);
 				for(var i = 0; i < tmp.childNodes.length; i++) {
 					xmlDoc.importNode(tmp.childNodes.item(i), true);
@@ -327,9 +385,9 @@ dojo.dom.createDocumentFromText = function(/* string */str, /* string? */mimetyp
 	return null;
 }
 
-dojo.dom.prependChild = function(/* Element */node, /* Element */parent) {
-	// summary
-	//	prepends node to parent's children nodes
+dojo.dom.prependChild = function(/*Element*/node, /*Element*/parent){
+	//	summary:
+	//		prepends node to parent's children nodes
 	if(parent.firstChild) {
 		parent.insertBefore(node, parent.firstChild);
 	} else {
@@ -338,19 +396,19 @@ dojo.dom.prependChild = function(/* Element */node, /* Element */parent) {
 	return true;	//	boolean
 }
 
-dojo.dom.insertBefore = function(/* Node */node, /* Node */ref, /* boolean? */force){
-	//	summary
-	//	Try to insert node before ref
-	if (force != true &&
+dojo.dom.insertBefore = function(/*Node*/node, /*Node*/ref, /*boolean?*/force){
+	//	summary:
+	//		Try to insert node before ref
+	if(	(force != true)&&
 		(node === ref || node.nextSibling === ref)){ return false; }
 	var parent = ref.parentNode;
 	parent.insertBefore(node, ref);
 	return true;	//	boolean
 }
 
-dojo.dom.insertAfter = function(/* Node */node, /* Node */ref, /* boolean? */force){
-	//	summary
-	//	Try to insert node after ref
+dojo.dom.insertAfter = function(/*Node*/node, /*Node*/ref, /*boolean?*/force){
+	//	summary:
+	//		Try to insert node after ref
 	var pn = ref.parentNode;
 	if(ref == pn.lastChild){
 		if((force != true)&&(node === ref)){
@@ -363,9 +421,9 @@ dojo.dom.insertAfter = function(/* Node */node, /* Node */ref, /* boolean? */for
 	return true;	//	boolean
 }
 
-dojo.dom.insertAtPosition = function(/* Node */node, /* Node */ref, /* string */position){
-	//	summary
-	//	attempt to insert node in relation to ref based on position
+dojo.dom.insertAtPosition = function(/*Node*/node, /*Node*/ref, /*string*/position){
+	//	summary:
+	//		attempt to insert node in relation to ref based on position
 	if((!node)||(!ref)||(!position)){ 
 		return false;	//	boolean 
 	}
@@ -388,9 +446,10 @@ dojo.dom.insertAtPosition = function(/* Node */node, /* Node */ref, /* string */
 	}
 }
 
-dojo.dom.insertAtIndex = function(/* Node */node, /* Element */containingNode, /* number */insertionIndex){
-	//	summary
-	//	insert node into child nodes nodelist of containingNode at insertionIndex.
+dojo.dom.insertAtIndex = function(/*Node*/node, /*Element*/containingNode, /*number*/insertionIndex){
+	//	summary:
+	//		insert node into child nodes nodelist of containingNode at
+	//		insertionIndex.
 	var siblingNodes = containingNode.childNodes;
 
 	// if there aren't any kids yet, just add it to the beginning
@@ -416,18 +475,16 @@ dojo.dom.insertAtIndex = function(/* Node */node, /* Element */containingNode, /
 
 	if (after){
 		// add it after the node in {after}
-
 		return dojo.dom.insertAfter(node, after);	//	boolean
 	}else{
 		// add it to the start
-
 		return dojo.dom.insertBefore(node, siblingNodes.item(0));	//	boolean
 	}
 }
 	
-dojo.dom.textContent = function(/* Node */node, /* string */text){
-	//	summary
-	//	implementation of the DOM Level 3 attribute; scan node for text
+dojo.dom.textContent = function(/*Node*/node, /*string*/text){
+	//	summary:
+	//		implementation of the DOM Level 3 attribute; scan node for text
 	if (arguments.length>1) {
 		var _document = dojo.doc();
 		dojo.dom.replaceChildren(node, _document.createTextNode(text));
@@ -457,10 +514,10 @@ dojo.dom.textContent = function(/* Node */node, /* string */text){
 	}
 }
 
-dojo.dom.hasParent = function (/* Node */node) {
-	//	summary
-	//	returns whether or not node is a child of another node.
-	return node && node.parentNode && dojo.dom.isNode(node.parentNode);	//	boolean
+dojo.dom.hasParent = function(/*Node*/node){
+	//	summary:
+	//		returns whether or not node is a child of another node.
+	return Boolean(node && node.parentNode && dojo.dom.isNode(node.parentNode));	//	boolean
 }
 
 /**
@@ -472,9 +529,10 @@ dojo.dom.hasParent = function (/* Node */node) {
  * isTag(myFooNode, "FOO"); // returns ""
  * isTag(myFooNode, "hey", "foo", "bar"); // returns "foo"
 **/
-dojo.dom.isTag = function(/* Node */node /* ... */) {
-	//	summary
-	//	determines if node has any of the provided tag names and returns the tag name that matches, empty string otherwise.
+dojo.dom.isTag = function(/* Node */node /* ... */){
+	//	summary:
+	//		determines if node has any of the provided tag names and returns
+	//		the tag name that matches, empty string otherwise.
 	if(node && node.tagName) {
 		for(var i=1; i<arguments.length; i++){
 			if(node.tagName==String(arguments[i])){
@@ -485,9 +543,10 @@ dojo.dom.isTag = function(/* Node */node /* ... */) {
 	return "";	//	string
 }
 
-dojo.dom.setAttributeNS = function(/* Element */elem, /* string */namespaceURI, /* string */attrName, /* string */attrValue){
-	//	summary
-	//	implementation of DOM2 setAttributeNS that works cross browser.
+dojo.dom.setAttributeNS = function(	/*Element*/elem, /*string*/namespaceURI, 
+									/*string*/attrName, /*string*/attrValue){
+	//	summary:
+	//		implementation of DOM2 setAttributeNS that works cross browser.
 	if(elem == null || ((elem == undefined)&&(typeof elem == "undefined"))){
 		dojo.raise("No element given to dojo.dom.setAttributeNS");
 	}
