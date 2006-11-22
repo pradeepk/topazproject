@@ -10,6 +10,8 @@
 package org.plos.search;
 
 import org.plos.search.service.SearchHit;
+import org.plos.util.DateParser;
+import org.plos.util.InvalidDateException;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -23,6 +25,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -40,8 +43,9 @@ public class SearchUtil {
    * @throws IOException IOException
    * @throws ParserConfigurationException ParserConfigurationException
    * @throws SAXException SAXException
+   * @throws org.plos.util.InvalidDateException InvalidDateException
    */
-  public static Collection<SearchHit> getHits(final String searchResultXml) throws IOException, ParserConfigurationException, SAXException {
+  public static Collection<SearchHit> convertSearchResultXml(final String searchResultXml) throws IOException, ParserConfigurationException, SAXException, InvalidDateException {
     final String nodeName = "hit";
     final NodeList hitList = getNodeList(searchResultXml, nodeName);
     final int noOfHits = hitList.getLength();
@@ -66,7 +70,7 @@ public class SearchUtil {
     return rootElement.getElementsByTagName(nodeName);
   }
 
-  private static SearchHit convertToSearchHit(final Element hitNode) {
+  private static SearchHit convertToSearchHit(final Element hitNode) throws InvalidDateException {
     final NamedNodeMap hitNodeMap = hitNode.getAttributes();
     final String hitNumber = hitNodeMap.getNamedItem("no").getTextContent();
     final String hitScore = hitNodeMap.getNamedItem("score").getTextContent();
@@ -76,8 +80,8 @@ public class SearchUtil {
     final String pid = map.get("PID");
     final String type = map.get("property.type");
     final String state = map.get("property.state");
-    final String createdDate = map.get("property.createdDate");
-    final String lastModifiedDate = map.get("property.lastModifiedDate");
+    final Date createdDate = DateParser.parse(map.get("property.createdDate"));
+    final Date lastModifiedDate = DateParser.parse(map.get("property.lastModifiedDate"));
     final String contentModel = map.get("property.contentModel");
     final String description = map.get("dc.description");
     final String publisher = map.get("dc.publisher");

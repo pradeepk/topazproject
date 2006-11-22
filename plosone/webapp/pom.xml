@@ -23,8 +23,8 @@
       <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>fedoragsearch-client</artifactId>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-search-client-impl</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
     <dependency>

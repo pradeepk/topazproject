@@ -3,6 +3,16 @@
     <title>Search</title>
   </head>
   <body>
+    <legend>Messages</legend>
+  
+    <fieldset>
+      <p>
+        <#list actionMessages as message>
+          ${message} <br/>
+        </#list>
+      </p>
+    </fieldset>
+
     <p>
       <fieldset>
         <legend>Simple Search</legend>

@@ -9,6 +9,8 @@
  */
 package org.plos.search.service;
 
+import java.util.Date;
+
 /**
  * Value object that holds the result of a single search item
  */
@@ -18,8 +20,8 @@ public class SearchHit {
   private final String pid;
   private final String type;
   private final String state;
-  private final String createdDate;
-  private final String lastModifiedDate;
+  private final Date createdDate;
+  private final Date lastModifiedDate;
   private final String contentModel;
   private final String description;
   private final String publisher;
@@ -28,7 +30,7 @@ public class SearchHit {
   /**
    * Create a search hit with the values set
    */
-  public SearchHit(final String hitNumber, final String hitScore, final String pid, final String type, final String state, final String createdDate, final String lastModifiedDate, final String contentModel, final String description, final String publisher, final String repositoryName) {
+  public SearchHit(final String hitNumber, final String hitScore, final String pid, final String type, final String state, final Date createdDate, final Date lastModifiedDate, final String contentModel, final String description, final String publisher, final String repositoryName) {
     this.hitNumber = hitNumber;
     this.hitScore = hitScore;
     this.pid = pid;
@@ -54,7 +56,7 @@ public class SearchHit {
    * Getter for property 'createdDate'.
    * @return Value for property 'createdDate'.
    */
-  public String getCreatedDate() {
+  public Date getCreatedDate() {
     return createdDate;
   }
 
@@ -70,7 +72,7 @@ public class SearchHit {
    * Getter for property 'lastModifiedDate'.
    * @return Value for property 'lastModifiedDate'.
    */
-  public String getLastModifiedDate() {
+  public Date getLastModifiedDate() {
     return lastModifiedDate;
   }
 

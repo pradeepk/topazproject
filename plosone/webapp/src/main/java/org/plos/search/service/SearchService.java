@@ -12,9 +12,8 @@ package org.plos.search.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import org.plos.search.SearchUtil;
 
-import java.rmi.RemoteException;
-import java.util.ArrayList;
 import java.util.Collection;
 
 /**
@@ -41,16 +40,11 @@ public class SearchService {
     try {
       final String findResult = searchWebService.find(query, startPage, pageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
       log.debug("findResult = " + findResult);
-      
-      return convertSearch(findResult);
-    } catch (RemoteException e) {
+
+      return SearchUtil.convertSearchResultXml(findResult);
+    } catch (Exception e) {
       throw new ApplicationException("Search failed with exception:", e);
     }
-  }
-
-  private Collection<SearchHit> convertSearch(final String xmlResult) {
-    final Collection<SearchHit> result = new ArrayList<SearchHit>();
-    return result;
   }
 
   /**
