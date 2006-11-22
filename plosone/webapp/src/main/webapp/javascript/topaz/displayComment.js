@@ -138,14 +138,14 @@ topaz.displayComment = {
   
   buildDisplayView: function(jsonObj){
     if (topaz.displayComment.sectionTitle.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionTitle);
-    this.sectionTitle.appendChild(this.buildDisplayHeader(jsonObj));
+    topaz.displayComment.sectionTitle.appendChild(this.buildDisplayHeader(jsonObj));
     
     if (topaz.displayComment.sectionDetail.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionDetail);
-    this.sectionDetail.appendChild(this.buildDisplayDetail(jsonObj));
+    topaz.displayComment.sectionDetail.appendChild(this.buildDisplayDetail(jsonObj));
 
     //alert(commentFrag);
     if (topaz.displayComment.sectionComment.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionComment);
-    this.sectionComment.innerHTML = this.buildDisplayBody(jsonObj);
+    topaz.displayComment.sectionComment.innerHTML = this.buildDisplayBody(jsonObj);
     //alert("jsonObj.annotation.commentWithUrlLinking = " + jsonObj.annotation.commentWithUrlLinking);
     
     if (topaz.displayComment.sectionLink.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionLink);
@@ -155,7 +155,7 @@ topaz.displayComment = {
   buildDisplayViewMultiple: function(jsonObj, iter){
     var newListItem = document.createElement('li');
     newListItem.onclick = function() {
-        this.mouseoutComment(topaz.displayComment.target);
+        topaz.displayComment.mouseoutComment(topaz.displayComment.target);
         topaz.domUtil.swapClassNameBtwnSibling(this, this.nodeName, 'active');
         topaz.domUtil.swapAttributeByClassNameForDisplay(topaz.displayComment.target, ' active', 'annotationid', jsonObj.annotationId);
       }
