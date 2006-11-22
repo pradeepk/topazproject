@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+  <topaz>
+    <mulgara>
+      <databaseDir>/usr/local/topaz/data/mulgara</databaseDir>
+    </mulgara>
+  </topaz>
+</config>

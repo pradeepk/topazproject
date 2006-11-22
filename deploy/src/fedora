@@ -1,0 +1,104 @@
+#!/bin/bash
+
+# chkconfig: 345 92 12
+# description: topaz fedora server
+
+# Notes:
+#  jsvc pretty much insists on being root
+#  jsvc must be in PATH (build it from $CATALINA_HOME/bin/jsvc.tar.gz)
+#    Recommend /usr/local/bin (and add this to root's path)
+#  We will run as JSVC_USER (unless variable is undefined -- remove it)
+#  Install-dir can be anywhere, but matches the way maven installs stuff
+#    See .m2/settings.xml : topazproject.install.dir property
+#  The PKG derivation from BASENAME is to enable one script for multipe tomcats
+#  If no CATALINA_HOME is defined (default), it is derived from PKG
+#  Tested with jakarta-tomcat-5.0.28
+
+EFFECTIVE_USER="topaz"
+EFFECTIVE_GROUP=${EFFECTIVE_USER}
+INSTALL_HOME="/usr/local/topaz"
+VARDIR="/var"
+DAEMON="daemon"
+
+# You *might* want different location for logs and pid files
+LOGDIR="${VARDIR}/log/topaz"
+PIDDIR="${VARDIR}/run/topaz"
+
+mkdir -p ${LOGDIR}
+mkdir -p ${PIDDIR}
+[ `id -u` -eq 0 ] && chown ${EFFECTIVE_USER}.${EFFECTIVE_GROUP} ${LOGDIR}
+
+if [ "$1" == "-pkg" ]; then
+  BASENAME=$2
+  shift 2
+else
+  BASENAME=$(basename $0)
+fi
+echo $BASENAME
+
+# Define log and pid files
+LOG="${LOGDIR}/${BASENAME}.log"
+PIDFILE="${PIDDIR}/${BASENAME}.pid"
+
+DAEMON_ARGS="-n ${BASENAME}"
+[ -n "$EFFECTIVE_USER" ] && DAEMON_ARGS="${DAEMON_ARGS} -u ${EFFECTIVE_USER}"
+
+# Log stuff w/date as tomcat doesn't include dates when logging!
+log() {
+  echo "`date` $*" >> $LOG; echo $*;
+  [ `id -u` -eq 0 ] && chown ${EFFECTIVE_USER}.${EFFECTIVE_GROUP} ${LOG}
+}
+
+# You must be root to run jsvc
+test_root() { [ `id -u` -ne 0 ] && echo "You must be root!" && exit 1; }
+
+run_daemon() {
+  # Make sure that we have jsvc
+  if ! which ${DAEMON} >/dev/null 2>&1; then
+    echo "Cannot find ${DAEMON} executable"
+    exit 1
+  fi
+  # It seems important to start from CATALINA_HOME to read server.xml
+  ${DAEMON} ${DAEMON_ARGS} $*
+}
+
+case "$1" in
+  start)
+    test_root
+    log "Starting ${BASENAME}"
+    run_daemon
+    ;;
+  stop)
+    test_root
+    PID=`cat ${PIDFILE} 2>/dev/null`
+    log "Stopping ${BASENAME} (${PID})"
+    run_daemon --stop
+    ;;
+  restart|reload)
+    log "Restarting ${BASENAME} (`cat $PIDFILE`)"
+    run_daemon --stop
+    run_daemon
+    ;;
+  status|check)
+    if [ -e ${PIDFILE} ]; then
+      PID=`cat ${PIDFILE}`
+      TMPFILE=/tmp/${BASENAME}.status.$$
+      if ps o "pid user rss %mem etime time %cpu comm" -p ${PID} > ${TMPFILE} 2>&1; then
+        run_daemon --running -v
+        echo "${BASENAME} (${PID}) is running from ${CATALINA_HOME}"
+        cat ${TMPFILE}
+        lsof -n -i -a -p $PID
+      else
+        echo "${BASENAME} not running"
+      fi
+      rm -f ${TMPFILE}
+    else
+      echo "${BASENAME} not running"
+    fi
+    ;;
+  *)
+    echo "Usage: $0 {start|stop|restart|status}"
+    exit 1
+esac
+
+exit $?
