@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<lucenesearch xmlns:dc="http://purl.org/dc/elements/1.1/" query="muscle+fiber" indexName="TopazIndex" hitPageStart="1" hitPageSize="10" hitTotal="1">
+<hit no="1" score="0.33126074">
+<field name="PID">doi:10.1371%2Fjournal.pbio.0020294</field>
+<field name="property.type">FedoraObject</field>
+<field name="property.state">Active</field>
+<field name="property.createdDate">2006-10-24T07:11:41.034Z</field>
+<field name="property.lastModifiedDate">2006-10-24T07:11:48.649Z</field>
+<field name="property.contentModel">PlosArticle</field>
+<field name="dc.description" snippet="yes">Engineered expression of the peroxisome proliferator-activated receptor ? in skeletal</field>
+<field name="dc.publisher">Public Library of Science</field>
+<field name="repositoryName">Topaz</field>
+</hit>
+<hit no="2" score="0.33126074">
+<field name="PID">doi:10.1371%2Fjournal.pbio.0020294</field>
+<field name="property.type">FedoraObject</field>
+<field name="property.state">Active</field>
+<field name="property.createdDate">2006-10-24T07:11:41.034Z</field>
+<field name="property.lastModifiedDate">2006-10-24T07:11:48.649Z</field>
+<field name="property.contentModel">PlosArticle</field>
+<field name="dc.description" snippet="yes">Engineered expression of the peroxisome proliferator-activated receptor ? in skeletal</field>
+<field name="dc.publisher">Public Library of Science</field>
+<field name="repositoryName">Topaz</field>
+</hit>
+</lucenesearch>

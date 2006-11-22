@@ -209,6 +209,7 @@
     <property name="fieldMaxLength" value="50"/>
     <property name="indexName" value="TopazIndex"/>
     <property name="resultPageXslt" value="copyXml"/>
+    <property name="searchWebService" ref="searchWebService"/>
   </bean>
 
   <bean id="searchWebService" class="org.plos.search.service.SearchWebService" init-method="init">

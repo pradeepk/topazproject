@@ -37,18 +37,19 @@ public class SearchService {
    * @return a Collection<SearchResult>
    * @throws ApplicationException ApplicationException
    */
-  public Collection<SearchResult> find(final String query, final int startPage, final int pageSize) throws ApplicationException {
+  public Collection<SearchHit> find(final String query, final int startPage, final int pageSize) throws ApplicationException {
     try {
       final String findResult = searchWebService.find(query, startPage, pageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
       log.debug("findResult = " + findResult);
+      
       return convertSearch(findResult);
     } catch (RemoteException e) {
       throw new ApplicationException("Search failed with exception:", e);
     }
   }
 
-  private Collection<SearchResult> convertSearch(final String xmlResult) {
-    final Collection<SearchResult> result = new ArrayList<SearchResult>();
+  private Collection<SearchHit> convertSearch(final String xmlResult) {
+    final Collection<SearchHit> result = new ArrayList<SearchHit>();
     return result;
   }
 

@@ -79,6 +79,11 @@
           <@ww.a href="%{getUserAlertURL}">Retrieve user alerts</@ww.a>
       </p>
 
+      <p>
+          <@ww.url id="searchStartURL" namespace="/search" action="simpleSearch" />
+          <@ww.a href="%{searchStartURL}">Search</@ww.a>
+      </p>
+
     </fieldset>
   </body>
 </html>

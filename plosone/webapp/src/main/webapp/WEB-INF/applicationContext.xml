@@ -235,6 +235,19 @@
     </property>
   </bean>
 
+  <bean id="searchService" class="org.plos.search.service.SearchService">
+    <property name="snippetsMax" value="3"/>
+    <property name="fieldMaxLength" value="50"/>
+    <property name="indexName" value="TopazIndex"/>
+    <property name="resultPageXslt" value="copyXml"/>
+    <property name="searchWebService" ref="searchWebService"/>
+  </bean>
+
+  <bean id="searchWebService" class="org.plos.search.service.SearchWebService" init-method="init">
+    <property name="uri"
+              value="http://localhost:9092/ws-search-webapp-0.5-SNAPSHOT/services/FedoraGenericSearchServicePort"/>
+  </bean>
+
   <bean id="plosOneFreemarkerManager" class="org.plos.webwork.PlosOneFreemarkerManager">
     <constructor-arg index="0">
       <ref bean="plosOneFreemarkerConfig" />

@@ -9,7 +9,6 @@
  */
 package org.plos.search.service;
 
-import org.plos.service.BaseConfigurableService;
 import org.topazproject.fedoragsearch.service.FgsOperations;
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
 
@@ -22,7 +21,7 @@ import java.rmi.RemoteException;
 /**
  * Wrapper over annotation(not the same as reply) web service
  */
-public class SearchWebService extends BaseConfigurableService {
+public class SearchWebService {
   private URL uri;
   private FgsOperations fgsOperations;
 
