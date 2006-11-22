@@ -165,6 +165,11 @@
       tofile="${FEDORA_HOME}/server/config/fedora.fcfg"
       overwrite="true"/>
 
+    <!-- configure mckoi (overwrite with our local copy) -->
+    <copy file="mckoi1.0.3/db.conf"
+      tofile="${FEDORA_HOME}/server/mckoi1.0.3/db.conf"
+      overwrite="true"/>
+    
     <!-- configure CAS -->
     <copy file="CAS/CAS.properties"
       tofile="${TOMCAT_HOME}/server/classes/CAS.properties" overwrite="true"/>
