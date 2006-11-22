@@ -26,7 +26,8 @@ var formConfig = {
 var commentConfig = {
   sectionTitle: "viewCmtTitle",
   sectionDetail: "viewCmtDetail",  
-  sectionComment: "viewComment",  
+  sectionComment: "viewComment", 
+  sectionLink: "viewLink", 
   retrieveMsg: "retrieveMsg",  
   tipDownDiv: "cTip",
   tipUpDiv: "cTipu"

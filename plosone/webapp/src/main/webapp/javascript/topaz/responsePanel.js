@@ -17,10 +17,11 @@ topaz.responsePanel = {
     this.targetForm = formObj;
   },
   
-  show: function(curNode, targetObj, targetElClassName, urlParam, threadTitle) {
+  show: function(curNode, targetObj, targetElClassName, baseId, replyId, threadTitle) {
     this.setPanel(targetObj.widget);
     this.setForm(targetObj.form);
-    targetObj.urlParam = urlParam;
+    targetObj.baseId = baseId;
+    targetObj.replyId = (replyId)? replyId : "";
     this.upperContainer = topaz.domUtil.getFirstAncestorByClass(curNode, targetElClassName);
     this.upperContainer.style.display = "none";
     togglePanel.newPanel = this.newPanel;
@@ -47,11 +48,20 @@ function submitResponseInfo(targetObj) {
   var submitMsg = targetObj.error;
   var targetForm = targetObj.form;
   dojo.dom.removeChildren(submitMsg);
-  
+  //topaz.formUtil.disableFormFields(targetForm);
+
+  var urlParam;
+  if (targetObj.isFlag){
+    urlParam = "target=" + targetObj.baseId;
+  }
+  else { 
+    urlParam = "root=" + targetObj.baseId + "&inReplyTo=" + targetObj.replyId;
+  }
+   
   ldc.show();
 
    var bindArgs = {
-    url: namespace + targetObj.formAction + "?" + targetObj.urlParam,
+    url: namespace + targetObj.formAction + "?" + urlParam,
     method: "post",
     error: function(type, data, evt){
      alert("An error occurred." + data.toSource());
@@ -137,12 +147,11 @@ function submitResponseInfo(targetObj) {
 
 function getDiscussion(targetObj) {
   var refreshArea = dojo.byId(responseConfig.discussionContainer);
-  var targetUri = targetObj.urlParam;
 
   ldc.show();
   
   var bindArgs = {
-    url: namespace + "/annotation/listThreadRefresh.action?" + targetUri,
+    url: namespace + "/annotation/listThreadRefresh.action?root=" + targetObj.baseId + "&inReplyTo=" + targetObj.baseId,
     method: "get",
     error: function(type, data, evt){
      var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());

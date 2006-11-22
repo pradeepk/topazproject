@@ -15,6 +15,7 @@
           annotates   =${annotation.annotates}     <br/>
           title       =${annotation.commentTitle}         <br/>
           creator     =${annotation.creator}       <br/>
+          context     =${annotation.context}       <br/>
 
       <ul>
         <li>

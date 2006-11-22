@@ -4,4 +4,6 @@
 	dojo.require("dojo.widget.RegionalDialog");
   dojo.require("dojo.io.*");
   dojo.require("dojo.event.*");
+<!--	dojo.require("dojo.date.*");-->
   dojo.require("dojo.json");
+	

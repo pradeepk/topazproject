@@ -139,7 +139,7 @@ topaz.annotation = {
       return rangeInfo;
     }
     else {
-      return '';
+      return false;
     }
   },
 

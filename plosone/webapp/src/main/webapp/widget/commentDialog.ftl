@@ -9,9 +9,9 @@
 			<h6 id="viewCmtTitle"></h6>
 			<div class="detail" id="viewCmtDetail"></div>
 			<div class="contentwrap" id="viewComment"></div>
-			<div class="detail">
-				<a href="#" class="commentary icon" title="Click to view full thread and respond">View full commentary</a>
-				<a href="#" class="respond tooltip" title="Click to respond to this posting">Respond to this</a>
+			<div class="detail" id="viewLink">
+				<!--<a href="#" class="commentary icon" title="Click to view full thread and respond">View all responses</a>
+				<a href="#" class="respond tooltip" title="Click to respond to this posting">Respond to this</a>-->
 			</div>
 		</div>
 		<div class="tip" id="cTip"></div>

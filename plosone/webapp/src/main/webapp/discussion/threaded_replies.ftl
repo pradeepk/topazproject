@@ -19,10 +19,10 @@
 				<div class="toolbar">
 					<ul>
 						<li>
-							<a href="#" onclick="topaz.responsePanel.show(this, dcf, 'toolbar', 'target=${baseAnnotation.id}'); return false;" class="flag tooltip" title="Flag this posting for moderation">Flag for moderation</a>
+							<a href="#" onclick="topaz.responsePanel.show(this, dcf, 'toolbar', '${baseAnnotation.id}'); return false;" class="flag tooltip" title="Flag this posting for moderation">Flag for moderation</a>
 						</li>
 						<li>
-							<a href="#" onclick="topaz.responsePanel.show(this, dcr, 'toolbar', 'root=${baseAnnotation.id}&inReplyTo=${baseAnnotation.id}', '${reply.commentTitle}'); return false;" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
+							<a href="#" onclick="topaz.responsePanel.show(this, dcr, 'toolbar', '${baseAnnotation.id}', '${reply.id}', '${reply.commentTitle}'); return false;" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
 						</li>
 					</ul>
 				</div>
@@ -59,10 +59,10 @@
 			<div class="toolbar">
 				<ul>
 					<li>
-						<a href="#" onclick="topaz.responsePanel.show(this, dcf, 'toolbar', 'target=${baseAnnotation.id}'); return false;" class="flag tooltip" title="Flag this posting for moderation">Flag for moderation</a>
+						<a href="#" onclick="topaz.responsePanel.show(this, dcf, 'toolbar', '${baseAnnotation.id}'); return false;" class="flag tooltip" title="Flag this posting for moderation">Flag for moderation</a>
 					</li>
 					<li>
-						<a href="#" onclick="topaz.responsePanel.show(this, dcr, 'toolbar', 'root=${baseAnnotation.id}&inReplyTo=${baseAnnotation.id}', '${baseAnnotation.commentTitle}'); return false;" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
+						<a href="#" onclick="topaz.responsePanel.show(this, dcr, 'toolbar', '${baseAnnotation.id}', '${baseAnnotation.id}', '${baseAnnotation.commentTitle}'); return false;" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
 					</li>
 				</ul>
 			</div>

@@ -15,13 +15,16 @@ topaz.displayComment = {
   
   sectionComment: "",
   
+  sectionLink: "",
+  
   retrieveMsg: "",
   
   init: function() {
-    this.sectionTitle = dojo.byId(commentConfig.sectionTitle);
-    this.sectionDetail = dojo.byId(commentConfig.sectionDetail);
+    this.sectionTitle   = dojo.byId(commentConfig.sectionTitle);
+    this.sectionDetail  = dojo.byId(commentConfig.sectionDetail);
     this.sectionComment = dojo.byId(commentConfig.sectionComment);
-    this.retrieveMsg = dojo.byId(commentConfig.retrieveMsg);    
+    this.sectionLink    = dojo.byId(commentConfig.sectionLink);
+    this.retrieveMsg    = dojo.byId(commentConfig.retrieveMsg);    
   },
   
   isMultiple: function(attr) {
@@ -44,6 +47,10 @@ topaz.displayComment = {
   
   setSectionComment: function(configObj) {
     this.sectionComment = dojo.byId(configObj.sectionComment);
+  },
+  
+  setSectionLink: function(configObj) {
+    this.sectionLink = dojo.byId(configObj.sectionLink);
   },
   
   setRetrieveMsg: function(configObj) {
@@ -91,10 +98,11 @@ topaz.displayComment = {
     var hours = d.getHours();
     var minutes = d.getMinutes();
     
-    
+   // var dt = dojo.date.fromIso8601(jsonObj.annotation.createdAsDate);
     var dateStr = document.createElement('strong');
+    //dateStr.appendChild(dt);
     dateStr.appendChild(document.createTextNode(year + "-" + month + "-" + day));
-    //dateStr.appendChild(document.createTextNode(topaz.domUtil.ISOtoJSDate(jsonObj.annotation.created)));
+    dateStr.appendChild(document.createTextNode(topaz.domUtil.ISOtoJSDate(jsonObj.annotation.created)));
     
     var timeStr = document.createElement('strong');
     timeStr.appendChild(document.createTextNode(hours + ":" + minutes + " GMT"));
@@ -118,23 +126,36 @@ topaz.displayComment = {
     return commentFrag;
   },
   
-  buildDisplayView: function(jsonObj){
-    dojo.dom.removeChildren(topaz.displayComment.sectionTitle);
-    topaz.displayComment.sectionTitle.appendChild(this.buildDisplayHeader(jsonObj));
+  buildDisplayViewLink: function (jsonObj) {
+    var commentLink = document.createElement('a');
+    commentLink.href = namespace + '/annotation/listThread.action?inReplyTo=' + jsonObj.annotationId + '&root=' + jsonObj.annotationId;
+    commentLink.className = 'commentary icon';
+    commentLink.title = 'Click to view full thread and respond';
+    commentLink.appendChild(document.createTextNode('View all responses'));
     
-    dojo.dom.removeChildren(topaz.displayComment.sectionDetail);
-    topaz.displayComment.sectionDetail.appendChild(this.buildDisplayDetail(jsonObj));
+    return commentLink;
+  },
+  
+  buildDisplayView: function(jsonObj){
+    if (topaz.displayComment.sectionTitle.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionTitle);
+    this.sectionTitle.appendChild(this.buildDisplayHeader(jsonObj));
+    
+    if (topaz.displayComment.sectionDetail.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionDetail);
+    this.sectionDetail.appendChild(this.buildDisplayDetail(jsonObj));
 
     //alert(commentFrag);
-    dojo.dom.removeChildren(topaz.displayComment.sectionComment);
-    topaz.displayComment.sectionComment.innerHTML = this.buildDisplayBody(jsonObj);
+    if (topaz.displayComment.sectionComment.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionComment);
+    this.sectionComment.innerHTML = this.buildDisplayBody(jsonObj);
     //alert("jsonObj.annotation.commentWithUrlLinking = " + jsonObj.annotation.commentWithUrlLinking);
+    
+    if (topaz.displayComment.sectionLink.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionLink);
+    this.sectionLink.appendChild(this.buildDisplayViewLink(jsonObj));
   },
   
   buildDisplayViewMultiple: function(jsonObj, iter){
     var newListItem = document.createElement('li');
     newListItem.onclick = function() {
-        topaz.displayComment.mouseoutComment(topaz.displayComment.target);
+        this.mouseoutComment(topaz.displayComment.target);
         topaz.domUtil.swapClassNameBtwnSibling(this, this.nodeName, 'active');
         topaz.domUtil.swapAttributeByClassNameForDisplay(topaz.displayComment.target, ' active', 'annotationid', jsonObj.annotationId);
       }
@@ -159,7 +180,7 @@ topaz.displayComment = {
     
     var cDetailDiv = document.createElement('div');
     cDetailDiv.className = 'detail';
-    var commentLink = document.createElement('a');
+    /*var commentLink = document.createElement('a');
     commentLink.href = '#';
     commentLink.className = 'commentary icon';
     commentLink.title = 'Click to view full thread and respond';
@@ -172,7 +193,8 @@ topaz.displayComment = {
     responseLink.appendChild(document.createTextNode('Respond to this'));
     
     cDetailDiv.appendChild(commentLink);
-    cDetailDiv.appendChild(responseLink);
+    cDetailDiv.appendChild(responseLink);*/
+    cDetailDiv.appendChild(this.buildDisplayViewLink(jsonObj));
     
     contentDiv.appendChild(cDetailDiv);
     dd.appendChild(contentDiv);
@@ -353,4 +375,6 @@ function getComment(obj) {
     }
 
   }
+  
+  
   
