@@ -12,11 +12,11 @@ function floatMenu() {
   dojo.html.removeClass(el, 'fixed');
   
   if (scrollY > mOffset.top) {
-    y = (mOffset.top - mpOffset.top) + (scrollY - mOffset.top);
+    y = scrollY - mpOffset.top;
     dojo.html.addClass(el, 'fixed');
   }
   
-  if (dojo.render.html.ie) 
+  if (BrowserDetect.browser == "Explorer" && BrowserDetect.version < 7) 
     el.style.top = y + "px";
 }
 

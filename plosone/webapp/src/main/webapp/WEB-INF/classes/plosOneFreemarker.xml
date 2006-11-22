@@ -24,6 +24,7 @@
     </css>-->
     <javascript>
       <file>/javascript/prototype.js</file>
+      <file>/javascript/browserDetection.js</file>
       <file>/javascript/config_article.js</file>
       <file>/javascript/dojo/dojo.js</file>
       <file>/javascript/topaz/topaz.js</file>      
@@ -42,6 +43,7 @@
     <name>/discussion/discussion.ftl</name>
     <javascript>
       <file>/javascript/prototype.js</file>
+      <file>/javascript/browserDetection.js</file>
       <file>/javascript/config_discussion.js</file>
       <file>/javascript/dojo/dojo.js</file>
       <file>/javascript/topaz/topaz.js</file>      

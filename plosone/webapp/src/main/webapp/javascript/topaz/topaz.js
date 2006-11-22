@@ -42,9 +42,6 @@ document.getElementsByTagAndAttributeName = function(tagName, attributeName) {
     if (child.getAttributeNode(attributeName) != null) {
       elements.push(child);
     }
-/*    else if (child.attributes[attributeName] != null) {
-      elements.push(child);
-    }*/
   }
 
   return elements;
@@ -85,6 +82,37 @@ function toggleAnnotation(userType) {
   ldc.hide();
   
   return false;
+}
+
+function getAnnotationEl(annotationId) {
+  var elements = document.getElementsByTagAndAttributeName('a', 'displayid');
+     
+  var targetEl
+  for (var i=0; i<elements.length; i++) {
+    var elDisplay = topaz.domUtil.getDisplayId(elements[i]);
+    var displayList = elDisplay.split(',');
+
+    for (var n=0; n<displayList.length; n++) {
+      if (displayList[n] == annotationId) {
+        targetEl = elements[i];
+        return targetEl;
+      }
+    }
+    
+  }
+  
+  return false;
+}
+
+var elLocation;
+function jumpToAnnotation(annotationId) {
+  var targetEl = getAnnotationEl(annotationId);
+
+  //alert("targetEl = " + targetEl.nodeName);
+  if (targetEl) {
+    elLocation = topaz.domUtil.getCurrentOffset(targetEl);
+    window.scrollBy(0, elLocation.top);
+  }
 }
 
 
