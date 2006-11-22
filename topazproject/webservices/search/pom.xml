@@ -53,6 +53,7 @@
     <module>topaz-lucene-impl</module>    <!-- Basically part of impl -->
     <module>ws-server-impl</module>
     <module>ws-webapp</module>
+    <module>ws-client-impl</module>
   </modules>
 
   <properties>
