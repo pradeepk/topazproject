@@ -25,7 +25,7 @@ import java.util.Collection;
  */
 public class SearchAction extends BaseActionSupport {
   private String query;
-  private int startPage = 1;
+  private int startPage = 0;
   private int pageSize = 10;
   private SearchService searchService;
 

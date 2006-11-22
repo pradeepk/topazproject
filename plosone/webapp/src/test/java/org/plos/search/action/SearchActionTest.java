@@ -22,7 +22,7 @@ public class SearchActionTest extends BasePlosoneTestCase {
   public void testSimpleSearchShouldReturnSomething(){
     final SearchAction searchAction = getSearchAction();
     searchAction.setQuery("membrane");
-    searchAction.setStartPage(1);
+    searchAction.setStartPage(0);
     searchAction.setPageSize(10);
     assertEquals(SUCCESS, searchAction.executeSimpleSearch());
     assertTrue(searchAction.getSearchResults().size() > 0);
