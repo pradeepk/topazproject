@@ -43,7 +43,9 @@ public class PlosOneFreemarkerResult extends FreemarkerResult {
   protected boolean preTemplateProcess(freemarker.template.Template template,
                                        freemarker.template.TemplateModel model) throws IOException{
     ((SimpleHash)model).put("templateFile", this.templateFile);
-    return true;
+    return super.preTemplateProcess(template, model);
       
   }
+  
+  
 }
