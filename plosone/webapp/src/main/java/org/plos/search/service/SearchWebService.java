@@ -22,21 +22,21 @@ import java.rmi.RemoteException;
  * Wrapper over annotation(not the same as reply) web service
  */
 public class SearchWebService {
-  private URL uri;
+  private String uri;
   private FgsOperations fgsOperations;
 
   /**
    * @see org.plos.service.BaseConfigurableService#init()
    */
   public void init() throws IOException, URISyntaxException, ServiceException {
-    fgsOperations = new FgsOperationsServiceLocator().getOperations(uri);
+    fgsOperations = new FgsOperationsServiceLocator().getOperations(new URL(uri));
   }
 
   /**
    * Set the uri for the web service
    * @param uri uri
    */
-  public void setUri(final URL uri) {
+  public void setUri(final String uri) {
     this.uri = uri;
   }
 
