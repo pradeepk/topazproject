@@ -56,7 +56,7 @@ public class TemporaryCache implements Runnable {
    * @returns The cached object or null if the item is not found.
    */
   public synchronized Object get(Object key) {
-    SoftReference ref = new SoftReference(cache.get(key));
+    SoftReference ref = (SoftReference) cache.get(key);
     if (ref != null) {
       Value value = (Value) ref.get();
       long now = System.currentTimeMillis();
