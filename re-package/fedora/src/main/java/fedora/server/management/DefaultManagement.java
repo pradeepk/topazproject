@@ -1670,7 +1670,7 @@ public class DefaultManagement extends Module implements Management {
     long      minStartTime = System.currentTimeMillis() - (60 * 1000 * m_uploadStorageMinutes);
     ArrayList removeList = new ArrayList();
 
-    synchronized (m_uploadStartTime) {
+    synchronized (m_uploadStartTime) { // patched 11/23/06
       Iterator iter = m_uploadStartTime.keySet().iterator();
 
       while (iter.hasNext()) {
