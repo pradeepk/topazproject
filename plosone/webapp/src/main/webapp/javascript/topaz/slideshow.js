@@ -1,11 +1,11 @@
 topaz.slideshow = new Object();
 
 topaz.slideshow = {
-  imgS: "PNG-S",
+  imgS: "PNG_S",
   
-  imgM: "PNG-M",
+  imgM: "PNG_M",
   
-  imgL: "PNG-L",
+  imgL: "PNG_L",
   
   imgTif: "TIF",
   
@@ -37,7 +37,7 @@ topaz.slideshow = {
     }
     
     var tbNew = obj.parentNode.parentNode;
-    alert("tbNew = " + tbNew);
+   // alert("tbNew = " + tbNew);
     tbNew.className = tbNew.className.concat("-current");
     
   } 

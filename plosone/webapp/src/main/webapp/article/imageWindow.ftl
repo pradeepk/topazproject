@@ -15,10 +15,13 @@
 			</#if>
 	    <@ww.url id="imageUrl" includeParams="none"  action="fetchObject" uri="${image.uri}"/>
 	    <@ww.a title="Click for larger image" href="#"> <!--put code here for onclick and change the pane-->
-	    <img border="0" class="thumbnail" src="${imageUrl}&representation=${image.repSmall}" onclick="topaz.slideshow.show(this, ${image_index});" title="${image.title}" />
+	    <img border="0" class="thumbnail" src="${imageUrl}&representation=${image.repSmall}" onclick="topaz.slideshow.show(this, ${image_index});" title="${image.title} ${image.plainCaptionTitle}" />
 	    </@ww.a>
 			</div>
 	  </#list>
+		<#if !currentImage?exists && secondaryObjects?size gt 0>
+			<#assign currentImage = secondaryObjects?first>
+		</#if>
 
 	</div>
 	<div id="figure-window-container">
@@ -33,11 +36,11 @@
 		</div>
 		<div id="figure-window-content">
 			<div id="figure-window-viewer">
-			<img border="1" src="${currentImageUrl}&representation=${currentImage.repMedium}" title="${currentImage.title}" class="large" id="figureImg" />
-			<span id="figureTitle">${currentImage.title}</span>
+			<img border="1" src="${currentImageUrl}&representation=${currentImage.repMedium}" title="${currentImage.title} ${currentImage.plainCaptionTitle}" class="large" id="figureImg" />
+			<span id="figureTitle">${currentImage.title} ${currentImage.transformedCaptionTitle}</span>
 			</div>
 			<div id="figure-window-description">
-					${currentImage.description}
+					${currentImage.transformedDescription}
 			</div>
 	  </div>
 	</div>

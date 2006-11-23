@@ -9,6 +9,8 @@
  */
 package org.plos.article.service;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.topazproject.ws.article.ObjectInfo;
 import org.topazproject.ws.article.RepresentationInfo;
 
@@ -20,10 +22,14 @@ public class SecondaryObject {
   private String repSmall;
   private String repMedium;
   private String repLarge;
+  private String transformedDescription;
+  private String transformedCaptionTitle;
+  private String plainCaptionTitle;
 
+  private static final Log log = LogFactory.getLog(SecondaryObject.class);
+  
   public SecondaryObject(final ObjectInfo objectInfo, 
-                         final String repSmall, final String repMedium, final String repLarge)
-  {
+                         final String repSmall, final String repMedium, final String repLarge)  {
     this.objectInfo = objectInfo;
     this.repSmall = repSmall;
     this.repMedium = repMedium;
@@ -51,14 +57,15 @@ public class SecondaryObject {
    * @see org.topazproject.ws.article.ObjectInfo#getTitle()
    */
   public String getTitle() {
-    return objectInfo.getTitle();
+    
+    return (objectInfo.getTitle() == null) ? "" : objectInfo.getTitle();
   }
 
   /**
    * @see org.topazproject.ws.article.ObjectInfo#getDescription()
    */
   public String getDescription() {
-    return objectInfo.getDescription();
+    return (objectInfo.getDescription() == null) ? "" : objectInfo.getDescription();
   }
 
   /**
@@ -88,4 +95,47 @@ public class SecondaryObject {
   public String getRepLarge() {
     return repLarge;
   }
+
+  /**
+   * @return Returns the plainTitle.
+   */
+  public String getPlainCaptionTitle() {
+    return (plainCaptionTitle == null) ? "" : plainCaptionTitle;
+  }
+
+  /**
+   * @return Returns the transformedDescription.
+   */
+  public String getTransformedDescription() {
+    return (transformedDescription == null) ? "" : transformedDescription;
+  }
+
+  /**
+   * @return Returns the transformedTitle.
+   */
+  public String getTransformedCaptionTitle() {
+    return (transformedCaptionTitle == null) ? "" : transformedCaptionTitle;
+  }
+
+  /**
+   * @param plainTitle The plainTitle to set.
+   */
+  public void setPlainCaptionTitle(String plainTitle) {
+    this.plainCaptionTitle = plainTitle;
+  }
+
+  /**
+   * @param transformedDescription The transformedDescription to set.
+   */
+  public void setTransformedDescription(String transformedDescription) {
+    this.transformedDescription = transformedDescription;
+  }
+
+  /**
+   * @param transformedTitle The transformedTitle to set.
+   */
+  public void setTransformedCaptionTitle(String transformedTitle) {
+    this.transformedCaptionTitle = transformedTitle;
+  }
+
 }

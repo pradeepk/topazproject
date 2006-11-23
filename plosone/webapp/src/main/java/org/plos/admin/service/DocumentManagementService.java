@@ -176,19 +176,19 @@ public class DocumentManagementService {
 			String context =  info.getContextElement().trim();
 			if (context.equalsIgnoreCase("fig") || context.equalsIgnoreCase("table-wrap")) {
 				RepresentationInfo rep = object.getRepresentations()[0];
-				log.info("Found image to resize");
+				log.info("Found image to resize: " + rep.getURL());
 				irs.captureImage(rep.getURL());
 				log.info("Captured image");
 				articleWebService.setRepresentation(
-						object.getUri(), "PNG-S", 
+						object.getUri(), "PNG_S", 
 						new DataHandler(new PngDataSource(irs.getSmallImage())));
 				log.info("Set small");
 				articleWebService.setRepresentation(
-						object.getUri(), "PNG-M", 
+						object.getUri(), "PNG_M", 
 						new DataHandler(new PngDataSource(irs.getMediumImage())));
 				log.info("Set medium");						
 				articleWebService.setRepresentation(
-						object.getUri(), "PNG-L", 
+						object.getUri(), "PNG_L", 
 						new DataHandler(new PngDataSource(irs.getLargeImage())));	
 				log.info("Set large");
 			}
@@ -302,7 +302,7 @@ public class DocumentManagementService {
 	    public PngDataSource(byte[] content, String contType) {
 	      src = content;
 	      ct  = contType;
-	      log.info("PngDataSource type=" + ct + " size=" + new Integer(content.length).toString());
+	      log.info("PngDataSource type=" + ct + " size=" + content.length);
 	    }
 
 	    public InputStream getInputStream() throws IOException {

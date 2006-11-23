@@ -20,6 +20,7 @@
   <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" scope="session" init-method="init">
     <property name="articleRep" value="XML"/>
     <!-- Note: remember to prefix the filename with a "/" -->
+    <property name="secondaryObjectXslTemplate" value="/objInfo.xsl"/>
     <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleWebService"/>
@@ -46,14 +47,14 @@
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
-    <property name="smallImageRep" value="TIF"/>
+ <!--   <property name="smallImageRep" value="TIF"/>
     <property name="mediumImageRep" value="TIF"/>
     <property name="largeImageRep" value="TIF"/>
-<!--
-    <property name="smallImageRep" value="PNG-S"/>
-    <property name="mediumImageRep" value="PNG-M"/>
-    <property name="largeImageRep" value="PNG-L"/>
     -->
+    <property name="smallImageRep" value="PNG_S"/>
+    <property name="mediumImageRep" value="PNG_M"/>
+    <property name="largeImageRep" value="PNG_L"/>
+
    </bean>
    
    <bean id="crossRefPosterService" class="org.plos.admin.service.CrossRefPosterService">
@@ -71,8 +72,8 @@
 
   <bean id="documentManagementService" class="org.plos.admin.service.DocumentManagementService" scope="session">
   	<!-- These pathnames are absolute -->
-  	<property name="documentDirectory" value="/usr/plosdocs"/>
-  	<property name="ingestedDocumentDirectory" value="/usr/plosdocs/ingested"/>
+  	<property name="documentDirectory" value="/etc/topaz/plosdocs"/>
+  	<property name="ingestedDocumentDirectory" value="/etc/topaz/plosdocs/ingested"/>
   	<!-- Whereas this is relative to webapp/src/main/resources  -->
     <property name="xslTemplate" value="/crossref.xsl"/>    	
   </bean>

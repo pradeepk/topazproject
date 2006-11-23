@@ -57,8 +57,10 @@ import java.util.Map;
 public class FetchArticleService {
   private ArticleWebService articleService;
   private File xslTemplate;
+  private File secondaryObjectXslTemplate;
   private String articleRep;
   private Templates translet;
+  private Templates secondaryObjectTranslet;
   private boolean useTranslet = true;
   private Map<String, String> xmlFactoryProperty;
   private String encodingCharset;
@@ -136,6 +138,32 @@ public class FetchArticleService {
     return theArticle;
   }
 
+  /**
+   * Runs secondary object description through an XSL style sheet to produce HTML
+   * 
+   * @param description
+   * @return String representing the transformed XML fragment or the original XML string if an error occurs
+   * @throws ApplicationException
+   */
+  
+  public String getTranformedSecondaryObjectDescription(String description) throws ApplicationException {
+    String transformedString = description;
+    try {
+      final DocumentBuilder builder = createDocBuilder();
+      Document desc = builder.parse(new InputSource(new StringReader("<desc>" + description + "</desc>")));
+      final DOMSource domSource = new DOMSource(desc);
+      final Transformer transformer = getSecondaryObjectTranslet();
+      final Writer writer = new StringWriter(1000);
+      
+      transformer.transform(domSource,new StreamResult(writer));
+      transformedString = writer.toString(); 
+    } catch (Exception e) {
+      throw new ApplicationException(e);      
+    }
+    return transformedString;
+  }
+  
+  
   private Transformer getTransformer() throws FileNotFoundException, TransformerException {
     if (useTranslet) {
       return getTranslet();
@@ -143,6 +171,7 @@ public class FetchArticleService {
     return getXSLTransformer();
   }
 
+ 
   /**
    * Set articleService
    * @param articleService articleService
@@ -170,6 +199,9 @@ public class FetchArticleService {
     return tFactory.newTransformer(source);
   }
 
+  
+  
+  
   /**
    * Get a translet - a compiled stylesheet.
    * @return translet
@@ -187,6 +219,26 @@ public class FetchArticleService {
     // For each thread, instantiate a new Transformer, and perform the
     // transformations on that thread from a StreamSource to a StreamResult;
     return translet.newTransformer();
+  }
+  
+  
+  /**
+   * Get a translet - a compiled stylesheet - for the secondary objects.
+   * @return translet
+   * @throws TransformerException TransformerException
+   * @throws FileNotFoundException FileNotFoundException
+   */
+  public Transformer getSecondaryObjectTranslet() throws TransformerException, FileNotFoundException {
+    if (null == secondaryObjectTranslet) {
+      // Instantiate the TransformerFactory, and use it with a StreamSource
+      // XSL stylesheet to create a translet as a Templates object.
+      final TransformerFactory tFactory = TransformerFactory.newInstance();
+      secondaryObjectTranslet = tFactory.newTemplates(new StreamSource(secondaryObjectXslTemplate));
+    }
+
+    // For each thread, instantiate a new Transformer, and perform the
+    // transformations on that thread from a StreamSource to a StreamResult;
+    return secondaryObjectTranslet.newTransformer();
   }
 
   /**
@@ -425,5 +477,18 @@ public class FetchArticleService {
    */
   public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
     this.articleCacheAdministrator = articleCacheAdministrator;
+  }
+
+
+  /**
+   * @param secondaryObjectXslTemplate The secondaryObjectXslTemplate to set.
+   */
+  public void setSecondaryObjectXslTemplate(String secondaryObjectXslTemplate) throws URISyntaxException{
+    File file = getAsFile(secondaryObjectXslTemplate);
+    if (!file.exists()) {
+      file = new File(secondaryObjectXslTemplate);
+    }
+    log.debug("secondary objectXSL template location = " + file.getAbsolutePath());
+    this.secondaryObjectXslTemplate = file;
   }
 }

@@ -14,9 +14,16 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleWebService;
+import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.SecondaryObject;
+import org.w3c.dom.Document;
+import org.xml.sax.InputSource;
 
+import java.io.StringReader;
 import java.util.ArrayList;
+import java.util.Map;
+
+import javax.xml.parsers.DocumentBuilderFactory;
 /**
  * Fetch the secondary objects for a given uri
  */
@@ -24,6 +31,9 @@ public class SecondaryObjectAction extends BaseActionSupport {
   private String uri;
   private SecondaryObject[] secondaryObjects;
   private ArticleWebService articleWebService;
+  private FetchArticleService fetchArticleService;
+  private DocumentBuilderFactory factory;
+  private Map<String, String> xmlFactoryProperty;
   private static final Log log = LogFactory.getLog(SecondaryObjectAction.class);
 
   private static final String FIGURE_CONTEXT = "fig";
@@ -39,15 +49,40 @@ public class SecondaryObjectAction extends BaseActionSupport {
     return SUCCESS;
   }
 
+  /**
+   * Action to return list of Secondary object for an article that are enclosed in Tables (table-warp)
+   * and Figures (fig) tags.   
+   * 
+   * @return webork status string
+   * @throws Exception
+   */
+  
   public String listFiguresAndTables() throws Exception {
     try {
       secondaryObjects = articleWebService.listSecondaryObjects(uri);
       ArrayList<SecondaryObject> figTables = new ArrayList<SecondaryObject>(secondaryObjects.length);
       String contextElem;
+      String allTransformed;
+      String[] elems;
+      
       for (SecondaryObject s: secondaryObjects) {
         contextElem = s.getContextElement();
         if (FIGURE_CONTEXT.equals(contextElem) || TABLE_CONTEXT.equals(contextElem)) {
           figTables.add(s);
+          try {
+            allTransformed = fetchArticleService.getTranformedSecondaryObjectDescription(s.getDescription());
+            elems = allTransformed.split("END_TITLE");
+            if (elems.length > 1) {
+              s.setTransformedCaptionTitle(elems[0]);
+              s.setPlainCaptionTitle(elems[0].replaceAll("<.*>",""));
+              s.setTransformedDescription(elems[1]);
+            } else if (elems.length == 0) {
+              s.setTransformedDescription(elems[0]);              
+            }
+          } catch (Exception e) {
+            log.warn("Could not transform description for Object: " + getUri(), e);
+            s.setTransformedDescription(s.getDescription());
+          }
         }
       }
       secondaryObjects = figTables.toArray(new SecondaryObject[figTables.size()]);
@@ -85,5 +120,19 @@ public class SecondaryObjectAction extends BaseActionSupport {
    */
   public void setArticleWebService(final ArticleWebService articleWebService) {
     this.articleWebService = articleWebService;
+  }
+
+  /**
+   * @param xmlFactoryProperty The xmlFactoryProperty to set.
+   */
+  public void setXmlFactoryProperty(Map<String, String> xmlFactoryProperty) {
+    this.xmlFactoryProperty = xmlFactoryProperty;
+  }
+
+  /**
+   * @param fetchArticleService The fetchArticleService to set.
+   */
+  public void setFetchArticleService(FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
   }
 }
