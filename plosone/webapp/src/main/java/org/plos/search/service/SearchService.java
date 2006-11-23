@@ -12,9 +12,8 @@ package org.plos.search.service;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import org.plos.search.SearchResultPage;
 import org.plos.search.SearchUtil;
-
-import java.util.Collection;
 
 /**
  * Service to provide search capabilities for the application
@@ -36,7 +35,7 @@ public class SearchService {
    * @return a Collection<SearchResult>
    * @throws ApplicationException ApplicationException
    */
-  public Collection<SearchHit> find(final String query, final int startPage, final int pageSize) throws ApplicationException {
+  public SearchResultPage find(final String query, final int startPage, final int pageSize) throws ApplicationException {
     try {
       final String findResult = searchWebService.find(query, startPage, pageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
       log.debug("findResult = " + findResult);

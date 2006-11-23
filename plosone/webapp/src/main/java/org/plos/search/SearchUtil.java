@@ -45,9 +45,11 @@ public class SearchUtil {
    * @throws SAXException SAXException
    * @throws org.plos.util.InvalidDateException InvalidDateException
    */
-  public static Collection<SearchHit> convertSearchResultXml(final String searchResultXml) throws IOException, ParserConfigurationException, SAXException, InvalidDateException {
+  public static SearchResultPage convertSearchResultXml(final String searchResultXml) throws IOException, ParserConfigurationException, SAXException, InvalidDateException {
     final String nodeName = "hit";
-    final NodeList hitList = getNodeList(searchResultXml, nodeName);
+    final Element rootNode = getRootNode(searchResultXml);
+
+    final NodeList hitList = getNodeList(rootNode, nodeName);
     final int noOfHits = hitList.getLength();
 
     final Collection<SearchHit> hits = new ArrayList<SearchHit>();
@@ -56,7 +58,11 @@ public class SearchUtil {
       final SearchHit searchHit = convertToSearchHit((Element) hitNode);
       hits.add(searchHit);
     }
-    return hits;
+
+    final NamedNodeMap rootAttributes = rootNode.getAttributes();
+    final int totalNoOfHits = Integer.parseInt(getAttributeTextValue(rootAttributes, "hitTotal"));
+    final int pageSize = Integer.parseInt(getAttributeTextValue(rootAttributes, "hitPageSize"));
+    return new SearchResultPage(totalNoOfHits, pageSize, hits);
   }
 
   private static Element getRootNode(final String xmlDocument) throws SAXException, IOException, ParserConfigurationException {
@@ -65,15 +71,14 @@ public class SearchUtil {
     return doc.getDocumentElement();
   }
 
-  private static NodeList getNodeList(final String searchResultXml, final String nodeName) throws SAXException, IOException, ParserConfigurationException {
-    final Element rootElement = getRootNode(searchResultXml);
-    return rootElement.getElementsByTagName(nodeName);
+  private static NodeList getNodeList(final Element element, final String nodeName) throws SAXException, IOException, ParserConfigurationException {
+    return element.getElementsByTagName(nodeName);
   }
 
   private static SearchHit convertToSearchHit(final Element hitNode) throws InvalidDateException {
     final NamedNodeMap hitNodeMap = hitNode.getAttributes();
-    final String hitNumber = hitNodeMap.getNamedItem("no").getTextContent();
-    final String hitScore = hitNodeMap.getNamedItem("score").getTextContent();
+    final String hitNumber = getAttributeTextValue(hitNodeMap, "no");
+    final String hitScore = getAttributeTextValue(hitNodeMap, "score");
 
     final Map<String, String> map = getFieldNodeNameAttributeValueMap(hitNode);
 
@@ -89,6 +94,10 @@ public class SearchUtil {
     return new SearchHit(hitNumber, hitScore, pid, type, state, createdDate, lastModifiedDate, contentModel, description, publisher, repositoryName);
   }
 
+  private static String getAttributeTextValue(final NamedNodeMap hitNodeMap, final String attributeName) {
+    return hitNodeMap.getNamedItem(attributeName).getTextContent();
+  }
+
   private static Map<String, String> getFieldNodeNameAttributeValueMap(final Element hitNode) {
     final NodeList fieldNodes = hitNode.getElementsByTagName("field");
 
@@ -97,8 +106,7 @@ public class SearchUtil {
     for (int i = 0; i < noOfFields; i++) {
       final Node node = fieldNodes.item(i);
       final NamedNodeMap attributes = node.getAttributes();
-      final Node item = attributes.getNamedItem("name");
-      final String key = item.getTextContent();
+      final String key = getAttributeTextValue(attributes, "name");
       final String value = node.getTextContent();
       map.put(key, value);
     }

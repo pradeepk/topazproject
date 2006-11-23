@@ -27,6 +27,8 @@
         <@ww.form name="advancedSearchForm" action="advancedSearch" namespace="/search" method="post">
           <@ww.textfield name="title" label="Title" />
           <@ww.textfield name="text" label="Text" />
+          <@ww.textfield name="description" label="Description" />
+          <@ww.textfield name="creator" label="Creator" />
           <@ww.submit value="advanced search" />
         </@ww.form>
       </fieldset>

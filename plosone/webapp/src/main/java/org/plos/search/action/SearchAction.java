@@ -14,9 +14,13 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
+import org.plos.search.SearchResultPage;
+import org.plos.search.SearchUtil;
 import org.plos.search.service.SearchHit;
 import org.plos.search.service.SearchService;
+import org.plos.util.FileUtils;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Collection;
 
@@ -33,6 +37,9 @@ public class SearchAction extends BaseActionSupport {
   private Collection<SearchHit> searchResults;
   private String title;
   private String text;
+  private int totalNoOfResults;
+  private String description;
+  private String creator;
 
   /**
    * @return return simple search result
@@ -55,7 +62,10 @@ public class SearchAction extends BaseActionSupport {
         addActionError("Please enter a query string.");
         return ERROR;
       }
-      searchResults = searchService.find(queryString, startPage, pageSize);
+      final SearchResultPage searchResultPage = searchService.find(queryString, startPage, pageSize);
+//      final SearchResultPage searchResultPage = getMockSearchResults(startPage, pageSize);
+      totalNoOfResults = searchResultPage.getTotalNoOfResults();
+      searchResults = searchResultPage.getHits();
     } catch (ApplicationException e) {
       addActionError("Search failed");
       log.error("Search failed with error", e);
@@ -64,11 +74,26 @@ public class SearchAction extends BaseActionSupport {
     return SUCCESS;
   }
 
+  private SearchResultPage getMockSearchResults(final int startPage, final int pageSize) throws ApplicationException {
+    final Collection<SearchHit> hits = new ArrayList<SearchHit>();
+    final String searchResultXml = "searchResult.xml";
+
+    final String text;
+    try {
+      text = FileUtils.getTextFromUrl(new File(searchResultXml).toURL().toString());
+      return SearchUtil.convertSearchResultXml(text);
+    } catch (Exception e) {
+      throw new ApplicationException("error");
+    }
+  }
+
   private String getAdvancedQuery() {
     final Collection<String> fields = new ArrayList<String>();
 
-    if (StringUtils.isNotBlank(title)) fields.add("title:" + title);
-    if (StringUtils.isNotBlank(text)) fields.add("text:" + text);
+    if (StringUtils.isNotBlank(title)) fields.add("dc.title:" + title);
+    if (StringUtils.isNotBlank(text)) fields.add(text);
+    if (StringUtils.isNotBlank(creator)) fields.add("dc.creator:" + creator);
+    if (StringUtils.isNotBlank(description)) fields.add("dc.description:" + description);
 
     return StringUtils.join(fields.iterator(), " AND ");
   }
@@ -167,5 +192,45 @@ public class SearchAction extends BaseActionSupport {
    */
   public void setTitle(final String title) {
     this.title = title;
+  }
+
+  /**
+   * Getter for property 'totalNoOfResults'.
+   * @return Value for property 'totalNoOfResults'.
+   */
+  public int getTotalNoOfResults() {
+    return totalNoOfResults;
+  }
+
+  /**
+   * Getter for property 'description'.
+   * @return Value for property 'description'.
+   */
+  public String getDescription() {
+    return description;
+  }
+
+  /**
+   * Setter for property 'description'.
+   * @param description Value to set for property 'description'.
+   */
+  public void setDescription(final String description) {
+    this.description = description;
+  }
+
+  /**
+   * Getter for property 'creator'.
+   * @return Value for property 'creator'.
+   */
+  public String getCreator() {
+    return creator;
+  }
+
+  /**
+   * Setter for property 'creator'.
+   * @param creator Value to set for property 'creator'.
+   */
+  public void setCreator(final String creator) {
+    this.creator = creator;
   }
 }
