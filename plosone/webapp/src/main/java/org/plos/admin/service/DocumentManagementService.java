@@ -2,9 +2,12 @@ package org.plos.admin.service;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
@@ -17,6 +20,7 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 import javax.activation.DataHandler;
+import javax.activation.DataSource;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -25,15 +29,22 @@ import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.commons.httpclient.HttpClient;
+import org.apache.commons.httpclient.HttpException;
+import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
+import org.plos.article.service.SecondaryObject;
 import org.plos.util.FileUtils;
 import org.topazproject.common.DuplicateIdException;
 import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.IngestException;
+import org.topazproject.ws.article.NoSuchArticleIdException;
+import org.topazproject.ws.article.NoSuchObjectIdException;
+import org.topazproject.ws.article.ObjectInfo;
+import org.topazproject.ws.article.RepresentationInfo;
 
 /**
  * 
@@ -112,8 +123,11 @@ public class DocumentManagementService {
 	 * @throws DuplicateIdException
 	 * @throws IOException
 	 * @throws TransformerException
+	 * @throws NoSuchArticleIdException 
+	 * @throws NoSuchObjectIdException 
 	 */
-	public String ingest(String pathname) throws IngestException, DuplicateIdException, IOException, TransformerException {
+	public String ingest(String pathname) throws IngestException, DuplicateIdException, 
+			IOException, TransformerException, NoSuchArticleIdException, NoSuchObjectIdException {
 		return ingest(new File(pathname));
 	}
 	
@@ -129,13 +143,18 @@ public class DocumentManagementService {
 	 * Ingest the file. If succesful move it to the ingestedDocumentDirectory
 	 * then create the Transformed CrossRef xml file and deposit that in the Directory 
 	 * as well.
+	 * @throws NoSuchArticleIdException 
+	 * @throws NoSuchObjectIdException 
 	 */
-	public String ingest(File file) throws IngestException, DuplicateIdException, IOException, TransformerException {
+	public String ingest(File file) throws IngestException, DuplicateIdException, 
+					IOException, TransformerException, NoSuchArticleIdException, NoSuchObjectIdException {
 		String uri;
 		File ingestedDir = new File(ingestedDocumentDirectory);
 		log.info("Ingesting: " + file);
 		uri = articleWebService.ingest(new DataHandler(file.toURL()));
 		log.info("Ingested: " + file);
+		resizeImages(uri);
+		log.info("Resized images");
 		generateCrossRefInfoDoc(file, uri);
 		log.info("Generated Xref for file: " + file);
 		if (! file.renameTo(new File(ingestedDir, file.getName()))) {
@@ -144,6 +163,38 @@ public class DocumentManagementService {
 		log.info("Ingested and relocated " + file + ":" + uri);
 		return uri;
 	}
+	
+	private void resizeImages(String uri) throws NoSuchArticleIdException, 
+			NoSuchObjectIdException, HttpException, IOException {
+		
+		ImageResizeService irs = new ImageResizeService();
+		
+		SecondaryObject[] objects = articleWebService.listSecondaryObjects(uri);
+		for (int i = 0; i < objects.length; ++i) {
+			SecondaryObject object = objects[i];
+			ObjectInfo info = articleWebService.getObjectInfo(object.getUri());
+			String context =  info.getContextElement().trim();
+			if (context.equalsIgnoreCase("fig") || context.equalsIgnoreCase("table-wrap")) {
+				RepresentationInfo rep = object.getRepresentations()[0];
+				log.info("Found image to resize");
+				irs.captureImage(rep.getURL());
+				log.info("Captured image");
+				articleWebService.setRepresentation(
+						object.getUri(), "PNG-S", 
+						new DataHandler(new PngDataSource(irs.getSmallImage())));
+				log.info("Set small");
+				articleWebService.setRepresentation(
+						object.getUri(), "PNG-M", 
+						new DataHandler(new PngDataSource(irs.getMediumImage())));
+				log.info("Set medium");						
+				articleWebService.setRepresentation(
+						object.getUri(), "PNG-L", 
+						new DataHandler(new PngDataSource(irs.getLargeImage())));	
+				log.info("Set large");
+			}
+		}
+	}
+	
 	/**
 	 * @return List of filenames of files in uploadable directory  on server
 	 */
@@ -239,4 +290,35 @@ public class DocumentManagementService {
 		}
 		articleWebService.setState(uri, Article.ST_ACTIVE);
 	}
+	
+	private static class PngDataSource implements DataSource {
+	    private final byte[] src;
+	    private final String ct;
+
+	    public PngDataSource(byte[] content) {
+	      this(content, "image/png");
+	    }
+
+	    public PngDataSource(byte[] content, String contType) {
+	      src = content;
+	      ct  = contType;
+	      log.info("PngDataSource type=" + ct + " size=" + new Integer(content.length).toString());
+	    }
+
+	    public InputStream getInputStream() throws IOException {
+	      return new ByteArrayInputStream(src);
+	    }
+
+	    public OutputStream getOutputStream() throws IOException {
+	      throw new IOException("Not supported");
+	    }
+
+	    public String getContentType() {
+	      return ct;
+	    }
+
+	    public String getName() {
+	      return "png";
+	    }
+	  }	
 }

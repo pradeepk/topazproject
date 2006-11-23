@@ -191,6 +191,27 @@ public class ArticleWebService extends BaseConfigurableService {
     return new SecondaryObject(objectInfo, smallImageRep, mediumImageRep, largeImageRep);
   }
 
+  /** 
+   * Create or update a representation of an object. The object itself must exist; if the specified
+   * representation does not exist, it is created, otherwise the current one is replaced.
+   * 
+   * @param obj      the URI of the object
+   * @param rep      the name of this representation
+   * @param content  the actual content that makes up this representation; if this contains a
+   *                 content-type then that will be used; otherwise the content-type will be
+   *                 set to <var>application/octet-stream</var>; may be null, in which case
+   *                 the representation is removed.
+   * @throws NoSuchObjectException if the object does not exist
+   * @throws RemoteException if some other error occured
+   * @throws NullPointerException if any of the parameters are null
+   */
+  public void setRepresentation(String obj, String rep, DataHandler content)
+      throws NoSuchObjectIdException, RemoteException 
+  {
+	  ensureInitGetsCalledWithUsersSessionAttributes();
+	  delegateService.setRepresentation(obj, rep, content);
+  }
+  
   /**
    * Set the small image representation
    * @param smallImageRep smallImageRep
