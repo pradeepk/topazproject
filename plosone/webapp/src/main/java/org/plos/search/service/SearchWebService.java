@@ -19,14 +19,17 @@ import java.net.URL;
 import java.rmi.RemoteException;
 
 /**
- * Wrapper over annotation(not the same as reply) web service
+ * Wrapper over search service
  */
 public class SearchWebService {
   private String uri;
   private FgsOperations fgsOperations;
 
   /**
-   * @see org.plos.service.BaseConfigurableService#init()
+   * Initialize the service
+   * @throws java.io.IOException IOException
+   * @throws javax.xml.rpc.ServiceException ServiceException
+   * @throws java.net.URISyntaxException URISyntaxException
    */
   public void init() throws IOException, URISyntaxException, ServiceException {
     fgsOperations = new FgsOperationsServiceLocator().getOperations(new URL(uri));

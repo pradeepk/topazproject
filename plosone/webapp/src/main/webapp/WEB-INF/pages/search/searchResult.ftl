@@ -21,12 +21,14 @@
 
       Total number of results found: ${totalNoOfResults} <br/>
       Total number of pages found: ${totalPages} <br/>
-      <#list 1..totalPages as pageNumber>
-        &lt;
-        <@ww.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}"/>
-        <@ww.a href="%{searchPageURL}">${pageNumber}</@ww.a>
-        &gt;&nbsp;
-      </#list>
+      <#if (totalPages > 1) >
+        <#list 1..totalPages as pageNumber>
+          &lt;
+          <@ww.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}"/>
+          <@ww.a href="%{searchPageURL}">${pageNumber}</@ww.a>
+          &gt;&nbsp;
+        </#list>
+      </#if>
 
       <#list searchResults as hit>
         <ul>
