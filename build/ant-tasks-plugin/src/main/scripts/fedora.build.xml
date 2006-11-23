@@ -226,7 +226,12 @@
        
     <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
       file="${FEDORA_SECURITY}"/>
-       
+
+    <!-- copy fedora patches -->
+    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/classes" overwrite="true">
+      <fileset dir="target/classes"/>
+    </copy> 
+    
     <!-- Install access-service -->
     <unjar src="${ACCESS_WAR}" dest="${TOMCAT_HOME}/webapps/access"/>
     
