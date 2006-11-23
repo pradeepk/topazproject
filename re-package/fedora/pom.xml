@@ -32,18 +32,6 @@
       <type>tar</type>
     </dependency>
 
-    <dependency>
-      <groupId>info.fedora</groupId>
-      <artifactId>diringest-distribution</artifactId>
-      <version>2.1.1</version>
-      <type>zip</type>
-    </dependency>
-
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>filter-resolver</artifactId>
-      <version>0.5-SNAPSHOT</version>
-    </dependency>
   </dependencies>
 
 
