@@ -1,5 +1,10 @@
-<#function isPresent array value>
-  <#return value>
+<#function isPresent categories value>
+  <#list categories as element>
+    <#if element = value>
+      <#return "true">
+    </#if>
+  </#list>
+  <#return "false">
 </#function>
 
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
@@ -169,8 +174,8 @@
             <li class="alerts-title">${category.name}</li>
             <li>
               <#if category.weeklyAvailable>
-						    <label for="${category.key}">
-              <@ww.checkbox name="weeklyAlerts" fieldValue="${category.key}" nameValue="${isPresent(weeklyAlerts, category.key)}"/>
+                <label for="${category.key}">
+              <@ww.checkbox name="weeklyAlerts" fieldValue="${category.key}" value="${isPresent(weeklyAlerts, category.key)}"/>
                 Weekly </label>
               </#if>
             </li>
@@ -178,10 +183,9 @@
             <li>
               <#if category.monthlyAvailable>
                 <label for="${category.key}">
-              <@ww.checkbox name="monthlyAlerts" fieldValue="${category.key}"/>
+              <@ww.checkbox name="monthlyAlerts" fieldValue="${category.key}" value="${isPresent(monthlyAlerts, category.key)}"/>
                   Monthly </label>
               <#else>
-                
               </#if>
             </li>
           </ol>

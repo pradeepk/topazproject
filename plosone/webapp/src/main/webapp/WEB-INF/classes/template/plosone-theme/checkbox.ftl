@@ -59,8 +59,8 @@ ${parameters.label?html}<#t/>
 </#if>
 </label><#t/>
 </#if>
+</#if>
 
-<#else>
 <#if parameters.labelposition?default("") == 'right'>
     <#if parameters.required?default(false)>
         <span class="required">*</span><#t/>
@@ -88,4 +88,3 @@ ${parameters.label?html}<#t/>
 </#if>
 </#if>
 </#if>
- <#include "/${parameters.templateDir}/xhtml/controlfooter.ftl" /><#nt/>
