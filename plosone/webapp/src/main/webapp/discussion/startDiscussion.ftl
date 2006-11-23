@@ -16,6 +16,7 @@
 				<h5>Post Your Discussion Comment</h5>
 				<div class="close btn" id="btnCancelResponse"><a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=${articleInfo.uri}" title="Cancel and go back to original article">Cancel</a></div>
 				<form name="discussionResponse" method="post" action="">
+					<input type="hidden" name="target" value="${articleInfo.uri}" />	
 					<input type="hidden" name="commentTitle" value="" />
 					<input type="hidden" name="comment" value="" />
 			

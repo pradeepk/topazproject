@@ -16,8 +16,7 @@
     dcr.responseTitleCue = "Enter your response title...";
     dcr.responseCue = "Enter your response...";
     dcr.error = dojo.byId('responseSubmitMsg');
-    dcr.urlParam = "";
-    dcr.isFlag = false;
+    dcr.requestType = "response";
     var responseTitle = dcr.form.responseTitle;
     var responseArea = dcr.form.responseArea;
     
@@ -82,10 +81,9 @@
     dcf.btnFlagClose = dojo.byId("btnFlagConfirmClose");
     dcf.form = document.discussionFlag;
     dcf.formAction = "/annotation/secure/createAnnotationFlagSubmit.action";
-    dcf.responseCue = "Enter your response...";
+    dcf.responseCue = "Add any additional information here...";
     dcf.error = dojo.byId('flagSubmitMsg');
-    dcf.urlParam = "";
-    dcf.isFlag = true;
+    dcf.requestType = "flag";
     var responseAreaFlag = dcf.form.responseArea;
     
     dojo.event.connect(dcf.btnCancel, "onclick", function(e) {
@@ -95,6 +93,7 @@
 
     dojo.event.connect(dcf.btnFlagClose, "onclick", function(e) {
         topaz.responsePanel.hide();
+        topaz.responsePanel.resetFlaggingForm(dcf);
       }
     );    
 

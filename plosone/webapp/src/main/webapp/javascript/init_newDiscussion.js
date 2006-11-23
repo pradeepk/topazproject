@@ -6,10 +6,23 @@
     ldc = dojo.widget.byId("LoadingCycle");
 
     dcr.widget = dojo.byId("DiscussionPanel");
+    dcr.btnCancel = dojo.byId("btnCancelResponse");
+    dcr.btnSubmit = dojo.byId("btnPostResponse");
+    dcr.form = document.discussionResponse;
+    dcr.formAction = "/annotation/secure/createAnnotationSubmit.action";
     dcr.responseTitleCue = "Enter your comment title...";
     dcr.responseCue = "Enter your comment...";
+    dcr.error = dojo.byId('responseSubmitMsg');
+    dcr.requestType = "new";
+    dcr.baseId = dcr.form.target.value;
+    dcr.replyId = dcr.form.target.value;
     var responseTitle = dcr.form.responseTitle;
     var responseArea = dcr.form.responseArea;
+    
+    dojo.event.connect(dcr.btnSubmit, "onclick", function(e) {
+        topaz.responsePanel.submit(dcr);
+      }
+    );    
     
     dojo.event.connect(responseTitle, "onfocus", function(e) {
         topaz.formUtil.textCues.off(responseTitle, dcr.responseTitleCue);

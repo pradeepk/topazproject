@@ -25,7 +25,7 @@
 			
 				<label for="reponse"><span class="none">Enter your response</span><!-- error message style <em>Please enter your response</em> --></label>
 	
-				<textarea id="responseArea" onfocus="if(this.value=='Add any additional information here...')value='';" onblur="if(this.value=='')value='Add any additional information here...';" alt="Add any additional information here..." class="response" name="response" >Add any additional information here...</textarea>
+				<textarea id="responseArea" title="Add any additional information here..." class="response" name="response" >Add any additional information here...</textarea>
 				
 				<div class="btnwrap"><input name="submit" value="Submit" type="button" id="btnSubmit" title="Click to Submit Your Response"/></div>
 				

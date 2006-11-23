@@ -108,12 +108,14 @@
       <result name="success">/WEB-INF/pages/article/displayImages.ftl</result>
     </action>
     
-    <action name="getFigsTables" class="org.plos.article.action.SecondaryObjectAction" method="listFiguresAndTables">
+    <action name="slideshow" class="org.plos.article.action.SecondaryObjectAction" method="listFiguresAndTables">
       <result name="error">/WEB-INF/pages/error.ftl</result>
-      <result name="success">/article/imageWindow.ftl</result>
+      <result name="success" type="plosOneFreemarker">
+      	<param name="location">/templates/headless_template.ftl</param>
+      	<param name="templateFile">/article/imageWindow.ftl</param>
+      </result>
     </action>
     
-
     <action name="fetchObjectAttachment" class="org.plos.article.action.FetchObjectAction">
       <result name="success" type="plosStream">
         <param name="isAttachment">true</param>

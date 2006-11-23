@@ -30,17 +30,27 @@ topaz.responsePanel = {
     dojo.dom.insertAfter(this.newPanel, this.upperContainer, false);
     this.newPanel.style.display = "block";
     
-    if (threadTitle)
+    if (threadTitle) {
       this.targetForm.responseTitle.value = 'RE: ' + threadTitle;
+      this.targetForm.commentTitle.value = 'RE: ' + threadTitle;
+    }
   },
   
   hide: function() {
-    togglePanel.newPanel.style.display = "none";
-    togglePanel.upperContainer.style.display = "block";
+    if (togglePanel.newPanel) togglePanel.newPanel.style.display = "none";
+    if (togglePanel.upperContainer) togglePanel.upperContainer.style.display = "block";
   },
   
   submit: function(targetObj) {
     submitResponseInfo(targetObj);
+  },
+  
+  resetFlaggingForm: function(targetObj) {
+    dojo.byId('flagForm').style.display = "block";
+    dojo.byId('flagConfirm').style.display = "none";  
+    this.targetForm.reasonCode[0].checked = true;
+    this.targetForm.comment.value = "";
+    this.targetForm.responseArea.value = targetObj.responseCue;
   }
 }  
 
@@ -50,19 +60,23 @@ function submitResponseInfo(targetObj) {
   dojo.dom.removeChildren(submitMsg);
   //topaz.formUtil.disableFormFields(targetForm);
 
-  var urlParam;
-  if (targetObj.isFlag){
-    urlParam = "target=" + targetObj.baseId;
+  var urlParam = "";
+  if (targetObj.requestType == "flag"){
+    urlParam = "?target=" + targetObj.baseId;
+  }
+  else if (targetObj.requestType == "new"){
+    urlParam = "";
+    topaz.formUtil.disableFormFields(targetForm);
   }
   else { 
-    urlParam = "root=" + targetObj.baseId + "&inReplyTo=" + targetObj.replyId;
+    urlParam = "?root=" + targetObj.baseId + "&inReplyTo=" + targetObj.replyId;
     topaz.formUtil.disableFormFields(targetForm);
   }
    
   ldc.show();
 
    var bindArgs = {
-    url: namespace + targetObj.formAction + "?" + urlParam,
+    url: namespace + targetObj.formAction + urlParam,
     method: "post",
     error: function(type, data, evt){
      alert("An error occurred." + data.toSource());
@@ -126,9 +140,13 @@ function submitResponseInfo(targetObj) {
        return false;
      }
      else {
-       if (targetObj.isFlag) {
+       if (targetObj.requestType == "flag"){
          ldc.hide();
          getFlagConfirm();
+       }
+       else if (targetObj.requestType == "new"){
+         var rootId = jsonObj.annotationId;
+         window.location.href = namespace + "/annotation/listThread.action?inReplyTo=" + rootId +"&root=" + rootId;
        }
        else {
          getDiscussion(targetObj);
