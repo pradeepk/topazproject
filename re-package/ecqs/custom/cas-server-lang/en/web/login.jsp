@@ -36,7 +36,7 @@
               </li>
               <li>
                 <label for="password">Password</label>
-                <input type="text" name="password" tabindex="2"/>
+                <input type="password" name="password" tabindex="2"/>
               </li>
               <li class="btn">
                  <input type="submit" name="Go!" value="Go!" tabindex="3"/>
@@ -47,7 +47,7 @@
 
         <ul class="links">
           <li><a href="help.html" title="Help Logging In" tabindex="10">Help</a></li>
-          <li><a href="forget.html" title="Click here if you forgot your password" tabindex="11">Forgotten Password?</a></li>
+          <li><a href="/plos-registration/forgotPassword.action" title="Click here if you forgot your password" tabindex="11">Forgotten Password?</a></li>
           <li><a href="/plos-registration/register.action" tabindex="12"><strong>Register for a New Account</strong></a></li>
         </ul> 
       </div>

@@ -114,7 +114,7 @@ public class UsernameReplacementWithGuidFilter implements Filter {
         return userService.getGuid(username);
       } catch (final DatabaseException e) {
         log.debug("No account found for userId:" + username, e);
-        return null;
+        return "";
       }
     }
   }
