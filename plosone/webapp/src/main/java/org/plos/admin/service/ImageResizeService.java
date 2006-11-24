@@ -73,7 +73,7 @@ public class ImageResizeService {
 	private BufferedImage readImage(InputStream is, String mimetype) throws IOException {
 		Iterator<ImageReader> readers = ImageIO.getImageReadersByMIMEType(mimetype);
 		ImageReader reader;
-		ImageInputStream iis = new FileCacheImageInputStream(is, new File("C:\\etc\\topaz\\"));
+		ImageInputStream iis = new FileCacheImageInputStream(is, null));
 		BufferedImage bi = null;
 		
 		if (! readers.hasNext()) {
@@ -114,12 +114,12 @@ public class ImageResizeService {
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
     ImageIO.write(image, "png", bos);
     return bos.toByteArray();
-    /*log.debug("imageToByteArray: width= " + image.getWidth() + " height: " + image.getHeight());
+    /* log.debug("imageToByteArray: width= " + image.getWidth() + " height: " + image.getHeight());
     ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		//writer.setOutput(new FileCacheImageOutputStream(bos, new File("C:\\etc\\topaz\\")));
-    writer.setOutput(new MemoryCacheImageOutputStream(bos));
+		writer.setOutput(new FileCacheImageOutputStream(bos, null));
+    //writer.setOutput(new MemoryCacheImageOutputStream(bos));
 		writer.write(image);
-		//bos.flush();
+		bos.flush();
     log.debug("imagetobytearray size: " + bos.toString());
     log.debug("imagetobytearray size: " + bos.size());
     bos.close();

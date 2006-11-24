@@ -175,7 +175,7 @@ public class DocumentManagementService {
 			ObjectInfo info = articleWebService.getObjectInfo(object.getUri());
 			String context =  info.getContextElement().trim();
 			if (context.equalsIgnoreCase("fig") || context.equalsIgnoreCase("table-wrap")) {
-				RepresentationInfo rep = object.getRepresentations()[0];
+        RepresentationInfo rep = object.getRepresentations()[0];
 				log.info("Found image to resize: " + rep.getURL());
 				irs.captureImage(rep.getURL());
 				log.info("Captured image");
@@ -191,7 +191,15 @@ public class DocumentManagementService {
 						object.getUri(), "PNG_L", 
 						new DataHandler(new PngDataSource(irs.getLargeImage())));	
 				log.info("Set large");
-			}
+			} else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
+        RepresentationInfo rep = object.getRepresentations()[0];
+        log.info("Found image to resize: " + rep.getURL());
+        irs.captureImage(rep.getURL());
+        log.info("Captured image");
+        articleWebService.setRepresentation(
+            object.getUri(), "PNG", 
+            new DataHandler(new PngDataSource(irs.getLargeImage())));
+      }
 		}
 	}
 	
