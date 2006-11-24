@@ -770,28 +770,33 @@
 
 <xsl:template match="fig">
 	<xsl:variable name="figId"><xsl:value-of select="@id"/></xsl:variable>
+	<xsl:variable name="imageURI"><xsl:value-of select="graphic/@xlink:href"/></xsl:variable>
+	<xsl:variable name="slideshowURL">
+		<xsl:value-of select="concat('slideshow.action?uri=',substring($imageURI, 1, (string-length($imageURI)-5)),'&amp;imageURI=',$imageURI)"/>
+	</xsl:variable>
 	<div class="figure">
 		<xsl:call-template name="makeXpathLocation" >
 		<xsl:with-param name="node" select="."/>
 		</xsl:call-template>
-		<a>
+		<xsl:element name="a">
 			<xsl:attribute name="name"><xsl:value-of select="$figId"/></xsl:attribute>
 			<xsl:attribute name="id"><xsl:value-of select="$figId"/></xsl:attribute>
-		</a>
-		<a>
 			<xsl:attribute name="title">Click for larger image </xsl:attribute>
-			<xsl:attribute name="href">someHrefHere</xsl:attribute>
+			<xsl:attribute name="href"><xsl:value-of select="$slideshowURL"/></xsl:attribute>
+			<xsl:attribute name="onclick">window.open('<xsl:value-of select="$slideshowURL"/>','plosSlideshow','directories=no,location=no,menubar=no,status=no,scrollbars=yes,toolbar=no,height=600,width=800');return false;</xsl:attribute>
 			<xsl:element name="img">
 				<xsl:attribute name="border">1</xsl:attribute>
-				<xsl:attribute name="src"><xsl:value-of select="concat($figId,'-S.png')"/></xsl:attribute>
+				<xsl:attribute name="src"><xsl:value-of select="concat('fetchObject.action?uri=',$imageURI,'&amp;representation=PNG_S')"/></xsl:attribute>
 				<xsl:attribute name="align">left</xsl:attribute>
 				<xsl:attribute name="alt">thumbnail</xsl:attribute>
 				<xsl:attribute name="class">thumbnail</xsl:attribute>
 			</xsl:element>
-		</a>
+		</xsl:element>
 		<h5>
 			<xsl:call-template name="makeXpathLocation"/>
-			<a href="somehrefhere">
+			<xsl:element name="a">
+				<xsl:attribute name="href"><xsl:value-of select="$slideshowURL"/></xsl:attribute>
+				<xsl:attribute name="onclick">window.open('<xsl:value-of select="$slideshowURL"/>','plosSlideshow','directories=no,location=no,menubar=no,status=no,scrollbars=yes,toolbar=no,height=600,width=800');return false;</xsl:attribute>
 				<strong>
 					<span>
 						<xsl:call-template name="makeXpathLocation" >
@@ -800,7 +805,7 @@
 						<xsl:apply-templates select="label"/>
 					</span>
 				</strong>
-			</a>
+			</xsl:element>
 			<span>
 				<xsl:call-template name="makeXpathLocation" >
 					<xsl:with-param name="node" select="."/>
@@ -814,20 +819,24 @@
 
 <xsl:template match="table-wrap">
 	<xsl:variable name="tableId"><xsl:value-of select="@id"/></xsl:variable>
-	<div class="table">
+	<xsl:variable name="imageURI"><xsl:value-of select="graphic/@xlink:href"/></xsl:variable>
+	<xsl:variable name="slideshowURL">
+		<xsl:value-of select="concat('slideshow.action?uri=',substring($imageURI, 1, (string-length($imageURI)-5)),'&amp;imageURI=',$imageURI)"/>
+	</xsl:variable>
+	<div class="figure">
 		<xsl:call-template name="makeXpathLocation" >
 		<xsl:with-param name="node" select="."/>
 		</xsl:call-template>
 		<a>
 			<xsl:attribute name="name"><xsl:value-of select="$tableId"/></xsl:attribute>
 			<xsl:attribute name="id"><xsl:value-of select="$tableId"/></xsl:attribute>
-		</a>
-		<a>
 			<xsl:attribute name="title">Click for larger image </xsl:attribute>
-			<xsl:attribute name="href">someHrefHere</xsl:attribute>
+			<xsl:attribute name="href"><xsl:value-of select="$slideshowURL"/></xsl:attribute>
+			<xsl:attribute name="onclick">window.open('<xsl:value-of select="$slideshowURL"/>','plosSlideshow','directories=no,location=no,menubar=no,status=no,scrollbars=yes,toolbar=no,height=600,width=800');return false;</xsl:attribute>
+			
 			<xsl:element name="img">
 				<xsl:attribute name="border">1</xsl:attribute>
-				<xsl:attribute name="src"><xsl:value-of select="graphic/@xlink:href"/><!--<xsl:value-of select="concat($tableId,'-S.png')"/>--></xsl:attribute>
+				<xsl:attribute name="src"><xsl:value-of select="concat('fetchObject.action?uri=',$imageURI,'&amp;representation=PNG_S')"/></xsl:attribute>
 				<xsl:attribute name="align">left</xsl:attribute>
 				<xsl:attribute name="alt">thumbnail</xsl:attribute>
 				<xsl:attribute name="class">thumbnail</xsl:attribute>
@@ -835,7 +844,9 @@
 		</a>
 		<h5>
 			<xsl:call-template name="makeXpathLocation"/>
-			<a href="somehrefhere">
+			<xsl:element name="a">
+				<xsl:attribute name="href"><xsl:value-of select="$slideshowURL"/></xsl:attribute>
+				<xsl:attribute name="onclick">window.open('<xsl:value-of select="$slideshowURL"/>','plosSlideshow','directories=no,location=no,menubar=no,status=no,scrollbars=yes,toolbar=no,height=650,width=850');return false;</xsl:attribute>
 				<strong>
 					<span>
 						<xsl:call-template name="makeXpathLocation" >
@@ -844,7 +855,7 @@
 						<xsl:apply-templates select="label"/>
 					</span>
 				</strong>
-			</a>
+			</xsl:element>
 			<span>
 				<xsl:call-template name="makeXpathLocation" >
 					<xsl:with-param name="node" select="."/>
@@ -5167,6 +5178,9 @@ Make article meta data
 	<strong><xsl:apply-templates/></strong>
 </xsl:template>
 
+<xsl:template match="text()">
+	<xsl:value-of select="translate(., '&#x200A;', ' ') "/>
+</xsl:template>
 
 <!-- ============================================================= -->
 <!--  57. "CITATION-TAG-ENDS"                                      -->

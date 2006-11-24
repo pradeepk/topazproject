@@ -32,7 +32,7 @@
 			<a href="${currentImageUrl}&representation=TIF" id="downloadTiff">		Download original TIFF</a> 
 			<a href="${currentImageUrl}&representation=${currentImage.repMedium}" id="downloadPpt">Download PowerPoint Friendly Image</a>		</div>
 			<div id="figure-window-close">
-				<a href="#5">Close Window</a> <a href="#5"><img src="${freemarker_config.context}/images/pone_button_close.gif" title="close window" name="closewindow" width="20" height="20"/></a>  	  </div>
+				<a onclick="self.close();return false;" href="#5">Close Window</a> <a onclick="self.close();return false;" href="#5"><img src="${freemarker_config.context}/images/pone_button_close.gif" title="close window" name="closewindow" width="20" height="20"/></a>  	  </div>
 		</div>
 		<div id="figure-window-content">
 			<div id="figure-window-viewer">
