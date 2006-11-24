@@ -11,6 +11,7 @@ package org.plos.user.service;
 
 import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -66,18 +67,13 @@ public class UserService extends BaseConfigurableService {
    * 
    * @param authId
    *          the user's authentication id from CAS
-   * @param privateFields privateFields
    * @return the user's internal id
    * @throws ApplicationException
    *           if an error occured
    */
-  public String createUser(final String authId, final String[] privateFields) throws ApplicationException {
+  public String createUser(final String authId) throws ApplicationException {
     try {
-      final String topazId = userWebService.createUser(authId);
-      final Collection<UserProfileGrant> profileGrantsList = UserProfileGrant.getProfileGrantsForFields(privateFields);
-      final UserProfileGrant[] profileGrants = profileGrantsList.toArray(new UserProfileGrant[profileGrantsList.size()]);
-      setProfileFieldsPrivate(topazId, profileGrants);
-      return topazId;
+      return userWebService.createUser(authId);
     } catch (DuplicateIdException e) {
       throw new ApplicationException(e);
     } catch (RemoteException e) {
@@ -107,9 +103,9 @@ public class UserService extends BaseConfigurableService {
    * Returns the username for a user given a Topaz UserId.  Because usernames cannot be changed and
    * can always be viewed by anyone, we use a simple cache here. 
    * 
-   * @param topazUserId
-   * @return username
-   * @throws ApplicationException
+   * @param topazUserId topazUserId
+   * @return username username
+   * @throws ApplicationException ApplicationException
    */
   
   public String getUsernameByTopazId(final String topazUserId) throws ApplicationException {
@@ -257,14 +253,18 @@ public class UserService extends BaseConfigurableService {
 
   /**
    * Takes in a PLoS ONE user and write the profile to the store
-   * 
+   *
    * @param inUser
    *          write profile of this user to the store
-   * @throws ApplicationException ApplicationException
+   * @param privateFields fields marked private by the user
+   * @throws org.plos.ApplicationException ApplicationException
    */
-  public void setProfile(final PlosOneUser inUser) throws ApplicationException {
+  public void setProfile(final PlosOneUser inUser, final String[] privateFields) throws ApplicationException {
     if (inUser != null) {
       setProfile(inUser.getUserId(), inUser.getUserProfile());
+      final Collection<UserProfileGrant> profileGrantsList = UserProfileGrant.getProfileGrantsForFields(privateFields);
+      final UserProfileGrant[] profileGrants = profileGrantsList.toArray(new UserProfileGrant[profileGrantsList.size()]);
+      setProfileFieldsPrivate(inUser.getUserId(), profileGrants);
     } else {
       throw new ApplicationException("User is null");
     }
@@ -325,7 +325,8 @@ public class UserService extends BaseConfigurableService {
     try {
       final String[] publicGrants = permissionWebService.listGrants(topazId, Constants.Permission.ALL_PRINCIPALS);
 
-      final Collection<String> result = Arrays.asList(getAllUserProfileFieldGrants());
+      final Collection<String> result = new ArrayList<String>();
+      CollectionUtils.addAll(result, getAllUserProfileFieldGrants());
       for (final String publicGrant : publicGrants) {
         result.remove(publicGrant);
       }
@@ -396,12 +397,13 @@ public class UserService extends BaseConfigurableService {
 
   private static String[] getAllUserProfileFieldGrants() {
     final UserProfileGrant[] profileGrantEnums = UserProfileGrant.values();
-    final Collection<String> allGrantsList =  new ArrayList<String>(profileGrantEnums.length);
+    final String[] allGrants =  new String[profileGrantEnums.length];
+    int i = 0;
     for (final UserProfileGrant allProfileGrantEnum : profileGrantEnums) {
-      allGrantsList.add(allProfileGrantEnum.getGrant());
+      allGrants[i++] = allProfileGrantEnum.getGrant();
     }
 
-    return allGrantsList.toArray(new String[profileGrantEnums.length]);
+    return allGrants;
   }
 
   /**

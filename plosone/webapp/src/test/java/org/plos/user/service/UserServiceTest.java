@@ -156,7 +156,7 @@ public class UserServiceTest extends BasePlosoneTestCase {
   }
 
   private String createUser(final String AUTH_ID, final String USER_EMAIL, final String USERNAME, final String REAL_NAME) throws ApplicationException {
-    String topazId = getUserService().createUser(AUTH_ID, new String[]{});
+    String topazId = getUserService().createUser(AUTH_ID);
     log.debug("topazId = " + topazId);
 
     final PlosOneUser newUser = new PlosOneUser(AUTH_ID);
@@ -165,7 +165,7 @@ public class UserServiceTest extends BasePlosoneTestCase {
     newUser.setDisplayName(USERNAME);
     newUser.setRealName(REAL_NAME);
 
-    getUserService().setProfile(newUser);
+    getUserService().setProfile(newUser, new String[]{});
     return topazId;
   }
 }

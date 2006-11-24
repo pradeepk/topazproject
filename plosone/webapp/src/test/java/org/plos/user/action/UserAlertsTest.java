@@ -76,21 +76,21 @@ public class UserAlertsTest extends BasePlosoneTestCase {
   }
 
   private String createUser(final String authId) throws Exception {
-    final CreateUserAction createUserAction = getMockCreateUserAction(authId);
+    final UserProfileAction createUserAction = getMockCreateUserAction(authId);
     createUserAction.setEmail("UserAlertsTest@test.com");
     createUserAction.setRealName("UserAlertsTest test com");
     createUserAction.setAuthId(authId);
     createUserAction.setUsername("UserAlertsTest");
-    assertEquals(SUCCESS, createUserAction.execute());
+    assertEquals(SUCCESS, createUserAction.executeSaveUser());
     final String topazId = createUserAction.getInternalId();
     assertNotNull(topazId);
 
     return topazId;
   }
 
-  protected CreateUserAction getMockCreateUserAction(final String authId) {
-    final CreateUserAction createUserAction = super.getCreateUserAction();
-    final CreateUserAction newCreateUserAction = new CreateUserAction() {
+  protected UserProfileAction getMockCreateUserAction(final String authId) {
+    final UserProfileAction createUserAction = super.getUserProfileAction();
+    final UserProfileAction newCreateUserAction = new UserProfileAction() {
       private Map<String,Object> mockSessionMap = createMockSessionMap(authId, null);
       protected Map<String, Object> getSessionMap() {
         return mockSessionMap;

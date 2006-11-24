@@ -313,6 +313,12 @@
       <result name="error">/WEB-INF/pages/user/alerts.ftl</result>
       <result name="input">/WEB-INF/pages/user/alerts.ftl</result>
     </action>
+
+    <action name="retrieveUserProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">
+      <result name="success">/WEB-INF/pages/user/newUser.ftl</result>
+      <result name="input">/WEB-INF/pages/user/newUser.ftl</result>
+      <result name="error">/WEB-INF/pages/user/newUser.ftl</result>
+    </action>
   </package>
 
   <package name="user-creation" extends="default" namespace="/user/create">
@@ -326,9 +332,13 @@
       <result name="update-profile">/WEB-INF/pages/user/newUser.ftl</result>
     </action>
 
-    <action name="createNewUser" class="org.plos.user.action.CreateUserAction">
-      <result name="success">/WEB-INF/pages/user/newUserCreated.ftl</result>
+    <action name="createNewUser" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">
+      <result name="success" type="redirect-action">
+        <param name="actionName">retrieveUserProfile</param>
+        <param name="namespace">/user/secure</param>
+      </result>
       <result name="input">/WEB-INF/pages/user/newUser.ftl</result>
+      <result name="error">/WEB-INF/pages/user/newUser.ftl</result>
     </action>
   </package>
   

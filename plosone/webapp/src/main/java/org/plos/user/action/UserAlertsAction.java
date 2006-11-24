@@ -140,16 +140,4 @@ public class UserAlertsAction extends UserActionSupport {
     return getUserService().getCategoryBeans();
   }
 
-  public boolean isWeeklySelected(final String alertCategory) {
-    return isSelected(weeklyAlerts, alertCategory);
-  }
-
-  public boolean isMonthlySelected(final String alertCategory) {
-    return isSelected(monthlyAlerts, alertCategory);
-  }
-
-  public boolean isSelected(final String[] periodAlerts, final String alertCategory) {
-    return true;
-//    return ArrayUtils.contains(periodAlerts, alertCategory);
-  }
 }

@@ -84,6 +84,11 @@
           <@ww.a href="%{searchStartURL}">Search</@ww.a>
       </p>
 
+      <p>
+          <@ww.url id="retrieveUserProfileURL" namespace="/user/secure" action="retrieveUserProfile" />
+          <@ww.a href="%{retrieveUserProfileURL}">Retrieve User Profile</@ww.a>
+      </p>
+
     </fieldset>
   </body>
 </html>

@@ -34,7 +34,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
   private static final String COUNTRY = "my country";
 
   public void testCreateUser() throws Exception {
-    final CreateUserAction createUserAction = getMockCreateUserAction(AUTH_ID);
+    final UserProfileAction createUserAction = getMockCreateUserAction(AUTH_ID);
     createUserAction.setEmail(TEST_EMAIL);
     createUserAction.setRealName(REAL_NAME);
     createUserAction.setAuthId(AUTH_ID);
@@ -49,7 +49,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
     createUserAction.setCity(CITY);
     createUserAction.setCountry(COUNTRY);
 
-    assertEquals(SUCCESS, createUserAction.execute());
+    assertEquals(SUCCESS, createUserAction.executeSaveUser());
     final String topazId = createUserAction.getInternalId();
     assertNotNull(topazId);
     
@@ -75,7 +75,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
   }
 
   public void testCreateUserWithRightVisibilityOfFields() throws Exception {
-    final CreateUserAction createUserAction = getMockCreateUserAction(AUTH_ID);
+    final UserProfileAction createUserAction = getMockCreateUserAction(AUTH_ID);
     createUserAction.setEmail(TEST_EMAIL);
     createUserAction.setRealName(REAL_NAME);
     createUserAction.setAuthId(AUTH_ID);
@@ -86,7 +86,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
     final String[] privateFields = new String[]{"email", "realName", "username", "postalAddress"};
     createUserAction.setPrivateFields(privateFields);
 
-    assertEquals(SUCCESS, createUserAction.execute());
+    assertEquals(SUCCESS, createUserAction.executeSaveUser());
     final String topazId = createUserAction.getInternalId();
     assertNotNull(topazId);
 
@@ -112,12 +112,12 @@ public class UserActionsTest extends BasePlosoneTestCase {
   }
 
   public void testCreateAdminUser() throws Exception {
-    final CreateUserAction createUserAction = getMockCreateUserAction(AUTH_ID);
+    final UserProfileAction createUserAction = getMockCreateUserAction(AUTH_ID);
     createUserAction.setEmail(TEST_EMAIL);
     createUserAction.setRealName(REAL_NAME);
     createUserAction.setAuthId(AUTH_ID);
     createUserAction.setUsername(USERNAME);
-    assertEquals(SUCCESS, createUserAction.execute());
+    assertEquals(SUCCESS, createUserAction.executeSaveUser());
     final String topazId = createUserAction.getInternalId();
     assertNotNull(topazId);
 
@@ -141,9 +141,9 @@ public class UserActionsTest extends BasePlosoneTestCase {
     return newAdminRoleAction;
   }
 
-  protected CreateUserAction getMockCreateUserAction(final String authId) {
-    final CreateUserAction createUserAction = super.getCreateUserAction();
-    final CreateUserAction newCreateUserAction = new CreateUserAction() {
+  protected UserProfileAction getMockCreateUserAction(final String authId) {
+    final UserProfileAction createUserAction = super.getUserProfileAction();
+    final UserProfileAction newCreateUserAction = new UserProfileAction() {
       protected Map<String, Object> getSessionMap() {
         return createMockSessionMap(authId, null);
       }

@@ -28,6 +28,7 @@ public class PrepopulateUserDetailsAction extends UserActionSupport {
   private String username;
   private String email;
   private String realName;
+  private String[] privateFields = new String[]{""};
 
   private static final Log log = LogFactory.getLog(PrepopulateUserDetailsAction.class);
 
@@ -75,5 +76,13 @@ public class PrepopulateUserDetailsAction extends UserActionSupport {
   /** @return Returns the username.*/
   public String getUsername() {
     return username;
+  }
+
+  /**
+   * Getter for property 'privateFields'.
+   * @return Value for property 'privateFields'.
+   */
+  public String[] getPrivateFields() {
+    return privateFields;
   }
 }

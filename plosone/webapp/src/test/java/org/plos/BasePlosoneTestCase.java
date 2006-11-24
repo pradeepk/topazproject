@@ -26,9 +26,9 @@ import org.plos.article.service.FetchArticleService;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.search.action.SearchAction;
 import org.plos.user.action.AssignAdminRoleAction;
-import org.plos.user.action.CreateUserAction;
 import org.plos.user.action.DisplayUserAction;
 import org.plos.user.action.UserAlertsAction;
+import org.plos.user.action.UserProfileAction;
 import org.plos.user.service.PreferencesWebService;
 import org.plos.user.service.ProfileWebService;
 import org.plos.user.service.UserService;
@@ -51,7 +51,7 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private BodyFetchAction bodyFetchAction;
   private GetAnnotationAction getAnnotationAction;
   private GetReplyAction getReplyAction;
-  private CreateUserAction createUserAction;
+  private UserProfileAction userProfileAction;
   private UserAlertsAction userAlertsAction;
   private AssignAdminRoleAction assignAdminRoleAction;
   private FetchObjectAction fetchObjectAction;
@@ -212,17 +212,17 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   }
 
   /**
-   * @return Returns the createUserAction.
+   * @return Returns the userProfileAction.
    */
-  public CreateUserAction getCreateUserAction() {
-    return createUserAction;
+  public UserProfileAction getUserProfileAction() {
+    return userProfileAction;
   }
 
   /**
-   * @param createUserAction The createUserAction to set.
+   * @param userProfileAction The userProfileAction to set.
    */
-  public void setCreateUserAction(CreateUserAction createUserAction) {
-    this.createUserAction = createUserAction;
+  public void setUserProfileAction(UserProfileAction userProfileAction) {
+    this.userProfileAction = userProfileAction;
   }
 
   /**

@@ -1,5 +1,5 @@
-<#function isPresent categories value>
-  <#list categories as element>
+<#function isFound collection value>
+  <#list collection as element>
     <#if element = value>
       <#return "true">
     </#if>
@@ -175,7 +175,7 @@
             <li>
               <#if category.weeklyAvailable>
                 <label for="${category.key}">
-              <@ww.checkbox name="weeklyAlerts" fieldValue="${category.key}" value="${isPresent(weeklyAlerts, category.key)}"/>
+              <@ww.checkbox name="weeklyAlerts" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
                 Weekly </label>
               </#if>
             </li>
@@ -183,7 +183,7 @@
             <li>
               <#if category.monthlyAvailable>
                 <label for="${category.key}">
-              <@ww.checkbox name="monthlyAlerts" fieldValue="${category.key}" value="${isPresent(monthlyAlerts, category.key)}"/>
+              <@ww.checkbox name="monthlyAlerts" fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
                   Monthly </label>
               <#else>
               </#if>

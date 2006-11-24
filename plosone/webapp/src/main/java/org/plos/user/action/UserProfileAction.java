@@ -8,19 +8,17 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-
 package org.plos.user.action;
 
-import com.opensymphony.xwork.validator.annotations.EmailValidator;
-import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork.validator.annotations.StringLengthFieldValidator;
-import com.opensymphony.xwork.validator.annotations.ValidatorType;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import static org.plos.Constants.Length;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.user.PlosOneUser;
+import org.plos.user.UserProfileGrant;
 
+import java.util.Collection;
 import java.util.Map;
 
 /**
@@ -29,23 +27,24 @@ import java.util.Map;
  * @author Stephen Cheng
  * 
  */
-public class CreateUserAction extends UserActionSupport {
+public class UserProfileAction extends UserActionSupport {
 
   private String username, email, realName, topazId;
-
   private String authId;
 
-  private static final Log log = LogFactory.getLog(CreateUserAction.class);
+  private static final Log log = LogFactory.getLog(UserProfileAction.class);
   private String givennames;
+  private String surnames;
   private String positionType;
   private String organizationType;
+  private String organizationName;
   private String postalAddress;
   private String biographyText;
   private String interestsText;
   private String researchAreasText;
   private String city;
   private String country;
-  private String[] privateFields;
+  private String[] privateFields = new String[]{""};
 
   /**
    * Will take the CAS ID and create a user in Topaz associated with that auth ID. If auth ID
@@ -54,13 +53,14 @@ public class CreateUserAction extends UserActionSupport {
    * 
    * @return status code for webwork
    */
-  public String execute() throws Exception {
+  public String executeSaveUser() throws Exception {
+    if (!validates()) return ERROR;
     final Map<String, Object> sessionMap = getSessionMap();
     authId = getUserId(sessionMap);
 
     topazId = getUserService().lookUpUserByAuthId(authId);
     if (topazId == null) {
-      topazId = getUserService().createUser(authId, privateFields);
+      topazId = getUserService().createUser(authId);
     }
     if (log.isDebugEnabled()) {
       log.debug("Topaz ID: " + topazId + " with authID: " + authId);
@@ -68,9 +68,40 @@ public class CreateUserAction extends UserActionSupport {
 
     final PlosOneUser newUser = createPlosOneUser();
 
-    getUserService().setProfile(newUser);
+    getUserService().setProfile(newUser, privateFields);
 
     sessionMap.put(PLOS_ONE_USER_KEY, newUser);
+    return SUCCESS;
+  }
+
+  public String executeRetrieveUserProfile() throws Exception {
+    final Map<String, Object> sessionMap = getSessionMap();
+    final PlosOneUser plosOneUser = (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
+
+    authId = plosOneUser.getAuthId();
+    topazId = plosOneUser.getUserId();
+    email = plosOneUser.getEmail();
+    username = plosOneUser.getDisplayName();
+    realName = plosOneUser.getRealName();
+    givennames = plosOneUser.getGivennames();
+    surnames = plosOneUser.getSurnames();
+    positionType = plosOneUser.getPositionType();
+    organizationType = plosOneUser.getOrganizationType();
+    organizationName = plosOneUser.getOrganizationName();
+    postalAddress = plosOneUser.getPostalAddress();
+    biographyText = plosOneUser.getBiographyText();
+    interestsText = plosOneUser.getInterestsText();
+    researchAreasText = plosOneUser.getResearchAreasText();
+    city = plosOneUser.getCity();
+    country = plosOneUser.getCountry();
+
+    final Collection<UserProfileGrant> grants = getUserService().getProfileFieldsThatArePrivate(topazId);
+    privateFields = new String[grants.size()];
+    int i = 0;
+    for (final UserProfileGrant grant : grants) {
+      privateFields[i++] = grant.getFieldName();
+    }
+
     return SUCCESS;
   }
 
@@ -92,16 +123,6 @@ public class CreateUserAction extends UserActionSupport {
     return newUser;
   }
 
-  /**
-   * Email is required and length must be less than 256 characters.
-   * 
-   * @return Returns the email.
-   */
-  @EmailValidator(type = ValidatorType.SIMPLE, fieldName = "email", 
-                  message = "You must enter a valid email", shortCircuit = true)
-  @RequiredStringValidator(message = "You must enter an email address", shortCircuit = true)
-  @StringLengthFieldValidator(maxLength = Length.EMAIL,
-                              message = "Email must be less than " + Length.EMAIL, shortCircuit = true)
   public String getEmail() {
     return email;
   }
@@ -129,15 +150,18 @@ public class CreateUserAction extends UserActionSupport {
     this.realName = realName;
   }
 
+  private boolean validates() {
+    final int usernameLength = StringUtils.stripToEmpty(username).length();
+    if (usernameLength < Integer.parseInt(Length.DISPLAY_NAME_MIN)
+            || usernameLength > Integer.parseInt(Length.DISPLAY_NAME_MAX)) {
+      addFieldError("username", "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters");
+      return false;
+    }
+    return true;
+  }
   /**
    * @return Returns the username.
    */
-  @RequiredStringValidator(message = "You must enter a username", shortCircuit = true)
-  @StringLengthFieldValidator(fieldName = "username",
-                              minLength = Length.DISPLAY_NAME_MIN,
-                              maxLength = Length.DISPLAY_NAME_MAX,
-                              message = "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters",
-                              shortCircuit = true)
   public String getUsername() {
     return username;
   }
@@ -380,5 +404,39 @@ public class CreateUserAction extends UserActionSupport {
    */
   public String[] getPrivateFields() {
     return privateFields;
+  }
+
+  /**
+   * Getter for property 'organizationName'.
+   * @return Value for property 'organizationName'.
+   */
+  public String getOrganizationName() {
+    return organizationName;
+  }
+
+  /**
+   * Setter for property 'organizationName'.
+   * @param organizationName Value to set for property 'organizationName'.
+   */
+  public void setOrganizationName(final String organizationName) {
+    this.organizationName = organizationName;
+  }
+
+  /**
+   * Getter for property 'surnames'.
+   *
+   * @return Value for property 'surnames'.
+   */
+  public String getSurnames() {
+    return surnames;
+  }
+
+  /**
+   * Setter for property 'surnames'.
+   *
+   * @param surnames Value to set for property 'surnames'.
+   */
+  public void setSurnames(final String surnames) {
+    this.surnames = surnames;
   }
 }

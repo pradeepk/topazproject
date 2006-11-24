@@ -26,7 +26,7 @@
 </#if>
 </#if>
 
-        <#include "/${parameters.templateDir}/simple/checkbox.ftl" />
+        <#include "/${parameters.templateDir}/${parameters.theme}/checkbox-core.ftl" />
 <#if parameters.label?exists>
 ${parameters.label?html}<#t/>
 </label><#t/>
@@ -71,7 +71,7 @@ ${parameters.label?html}<#t/>
 </#if>
 
 <#if parameters.labelposition?default("") != 'top'>
-                	<#include "/${parameters.templateDir}/simple/checkbox.ftl" />
+                	<#include "/${parameters.templateDir}/${parameters.theme}/checkbox-core.ftl" />
 </#if>                    
 
 <#if parameters.labelposition?default("") != 'top' && parameters.labelposition?default("") != 'left'>

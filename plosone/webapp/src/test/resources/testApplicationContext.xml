@@ -34,7 +34,7 @@
 
   <bean class="org.plos.annotation.action.GetReplyAction"/>
   
-  <bean class="org.plos.user.action.CreateUserAction"/>
+  <bean class="org.plos.user.action.UserProfileAction"/>
 
   <bean class="org.plos.user.action.UserAlertsAction"/>
 
