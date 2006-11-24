@@ -20,6 +20,7 @@
   <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" scope="session" init-method="init">
     <property name="articleRep" value="XML"/>
     <!-- Note: remember to prefix the filename with a "/" -->
+    <property name="secondaryObjectXslTemplate" value="/objInfo.xsl"/>
     <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleWebService"/>
@@ -42,18 +43,17 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:8000/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort"/>
+        <entry key="uri" value="http://FQHN:8000/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
-    <property name="smallImageRep" value="TIF"/>
+ <!--   <property name="smallImageRep" value="TIF"/>
     <property name="mediumImageRep" value="TIF"/>
     <property name="largeImageRep" value="TIF"/>
-<!--
-    <property name="smallImageRep" value="PNG-S"/>
-    <property name="mediumImageRep" value="PNG-M"/>
-    <property name="largeImageRep" value="PNG-L"/>
     -->
+    <property name="smallImageRep" value="PNG_S"/>
+    <property name="mediumImageRep" value="PNG_M"/>
+    <property name="largeImageRep" value="PNG_L"/>
    </bean>
    
    <bean id="crossRefPosterService" class="org.plos.admin.service.CrossRefPosterService">
@@ -71,8 +71,8 @@
 
   <bean id="documentManagementService" class="org.plos.admin.service.DocumentManagementService" scope="session">
   	<!-- These pathnames are absolute -->
-  	<property name="documentDirectory" value="/usr/plosdocs"/>
-  	<property name="ingestedDocumentDirectory" value="/usr/plosdocs/ingested"/>
+  	<property name="documentDirectory" value="/etc/topaz/plosdocs"/>
+  	<property name="ingestedDocumentDirectory" value="/etc/topaz/plosdocs/ingested"/>
   	<!-- Whereas this is relative to webapp/src/main/resources  -->
     <property name="xslTemplate" value="/crossref.xsl"/>    	
   </bean>
@@ -96,7 +96,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:8000/ws-permissions-webapp-0.5-SNAPSHOT/services/PermissionsServicePort"/>
+        <entry key="uri" value="http://FQHN:8000/ws-permissions-webapp-0.5-SNAPSHOT/services/PermissionsServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -115,7 +115,7 @@
     <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:8000/ws-annotation-webapp-0.5-SNAPSHOT/services/ReplyServicePort"/>
+        <entry key="uri" value="http://FQHN:8000/ws-annotation-webapp-0.5-SNAPSHOT/services/ReplyServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -128,7 +128,7 @@
     <property name="defaultType" value="http://www.w3.org/2000/10/annotationType#Annotation"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:8000/ws-annotation-webapp-0.5-SNAPSHOT/services/AnnotationServicePort"/>
+        <entry key="uri" value="http://FQHN:8000/ws-annotation-webapp-0.5-SNAPSHOT/services/AnnotationServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -147,7 +147,7 @@
     <property name="applicationId" ref="applicationId"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:8000/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort"/>
+        <entry key="uri" value="http://FQHN:8000/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -157,7 +157,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:8000/ws-users-webapp-0.5-SNAPSHOT/services/UserRolesServicePort"/>
+        <entry key="uri" value="http://FQHN:8000/ws-users-webapp-0.5-SNAPSHOT/services/UserRolesServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -167,7 +167,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:8000/ws-pap-webapp-0.5-SNAPSHOT/services/PreferencesServicePort"/>
+        <entry key="uri" value="http://FQHN:8000/ws-pap-webapp-0.5-SNAPSHOT/services/PreferencesServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -177,7 +177,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://localhost:8000/ws-pap-webapp-0.5-SNAPSHOT/services/ProfilesServicePort"/>
+        <entry key="uri" value="http://FQHN:8000/ws-pap-webapp-0.5-SNAPSHOT/services/ProfilesServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -233,6 +233,14 @@
         <value>bush</value>
       </list>
     </property>
+  </bean>
+
+  <bean id="searchService" class="org.plos.search.service.SearchService">
+    <property name="snippetsMax" value="3"/>
+    <property name="fieldMaxLength" value="50"/>
+    <property name="indexName" value="TopazIndex"/>
+    <property name="resultPageXslt" value="copyXml"/>
+    <property name="searchWebService" ref="searchWebService"/>
   </bean>
 
   <bean id="plosOneFreemarkerManager" class="org.plos.webwork.PlosOneFreemarkerManager">
