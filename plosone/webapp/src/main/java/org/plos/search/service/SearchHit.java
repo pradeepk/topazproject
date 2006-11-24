@@ -18,6 +18,8 @@ public class SearchHit {
   private final String hitNumber;
   private final String hitScore;
   private final String pid;
+  private final String title;
+  private final String highlight;
   private final String type;
   private final String state;
   private final Date createdDate;
@@ -26,14 +28,20 @@ public class SearchHit {
   private final String description;
   private final String publisher;
   private final String repositoryName;
+  private Date date;
+  private String creator;
+  public static final String MULTIPLE_VALUE_DELIMITER = ", ";
 
   /**
    * Create a search hit with the values set
    */
-  public SearchHit(final String hitNumber, final String hitScore, final String pid, final String type, final String state, final Date createdDate, final Date lastModifiedDate, final String contentModel, final String description, final String publisher, final String repositoryName) {
+  public SearchHit(final String hitNumber, final String hitScore, final String pid, final String title, final String highlight, final String type, final String state, final String creator, final Date date, final Date createdDate, final Date lastModifiedDate, final String contentModel, final String description, final String publisher, final String repositoryName) {
+    this.date = date;
     this.hitNumber = hitNumber;
     this.hitScore = hitScore;
     this.pid = pid;
+    this.title = title;
+    this.highlight = highlight;
     this.type = type;
     this.state = state;
     this.createdDate = createdDate;
@@ -42,6 +50,7 @@ public class SearchHit {
     this.description = description;
     this.publisher = publisher;
     this.repositoryName = repositoryName;
+    this.creator = creator;
   }
 
   /**
@@ -131,5 +140,37 @@ public class SearchHit {
    */
   public String getHitScore() {
     return hitScore;
+  }
+
+  /**
+   * Getter for property 'creator'.
+   * @return Value for property 'creator'.
+   */
+  public String getCreator() {
+    return creator;
+  }
+
+  /**
+   * Getter for property 'date'.
+   * @return Value for property 'date'.
+   */
+  public Date getDate() {
+    return date;
+  }
+
+  /**
+   * Getter for property 'highlight'.
+   * @return Value for property 'highlight'.
+   */
+  public String getHighlight() {
+    return highlight;
+  }
+
+  /**
+   * Getter for property 'title'.
+   * @return Value for property 'title'.
+   */
+  public String getTitle() {
+    return title;
   }
 }

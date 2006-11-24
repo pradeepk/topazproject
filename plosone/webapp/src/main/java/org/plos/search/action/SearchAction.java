@@ -39,7 +39,6 @@ public class SearchAction extends BaseActionSupport {
   private String text;
   private int totalNoOfResults;
   private String description;
-  private String creator;
 
   /**
    * @return return simple search result
@@ -92,7 +91,6 @@ public class SearchAction extends BaseActionSupport {
 
     if (StringUtils.isNotBlank(title)) fields.add("dc.title:" + title);
     if (StringUtils.isNotBlank(text)) fields.add(text);
-    if (StringUtils.isNotBlank(creator)) fields.add("dc.creator:" + creator);
     if (StringUtils.isNotBlank(description)) fields.add("dc.description:" + description);
 
     return StringUtils.join(fields.iterator(), " AND ");
@@ -216,21 +214,5 @@ public class SearchAction extends BaseActionSupport {
    */
   public void setDescription(final String description) {
     this.description = description;
-  }
-
-  /**
-   * Getter for property 'creator'.
-   * @return Value for property 'creator'.
-   */
-  public String getCreator() {
-    return creator;
-  }
-
-  /**
-   * Setter for property 'creator'.
-   * @param creator Value to set for property 'creator'.
-   */
-  public void setCreator(final String creator) {
-    this.creator = creator;
   }
 }

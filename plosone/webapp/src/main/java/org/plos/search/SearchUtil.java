@@ -10,6 +10,7 @@
 package org.plos.search;
 
 import org.plos.search.service.SearchHit;
+import static org.plos.search.service.SearchHit.MULTIPLE_VALUE_DELIMITER;
 import org.plos.util.DateParser;
 import org.plos.util.InvalidDateException;
 import org.w3c.dom.Document;
@@ -89,9 +90,13 @@ public class SearchUtil {
     final Date lastModifiedDate = DateParser.parse(map.get("property.lastModifiedDate"));
     final String contentModel = map.get("property.contentModel");
     final String description = map.get("dc.description");
+    final String creator = map.get("dc.creator");
     final String publisher = map.get("dc.publisher");
     final String repositoryName = map.get("repositoryName");
-    return new SearchHit(hitNumber, hitScore, pid, type, state, createdDate, lastModifiedDate, contentModel, description, publisher, repositoryName);
+    final Date date = DateParser.parse(map.get("dc.date"));
+    final String title = map.get("dc.title");
+    final String highlight = map.get("uva.access");
+    return new SearchHit(hitNumber, hitScore, pid, title, highlight, type, state, creator, date, createdDate, lastModifiedDate, contentModel, description, publisher, repositoryName);
   }
 
   private static String getAttributeTextValue(final NamedNodeMap hitNodeMap, final String attributeName) {
@@ -107,7 +112,11 @@ public class SearchUtil {
       final Node node = fieldNodes.item(i);
       final NamedNodeMap attributes = node.getAttributes();
       final String key = getAttributeTextValue(attributes, "name");
-      final String value = node.getTextContent();
+      String value = node.getTextContent();
+      final String existingValue = map.get(key);
+      if (null != existingValue) {
+        value = existingValue + MULTIPLE_VALUE_DELIMITER + value;
+      }
       map.put(key, value);
     }
     return map;
