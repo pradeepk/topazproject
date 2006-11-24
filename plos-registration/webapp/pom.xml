@@ -198,6 +198,7 @@
   <!--</properties>-->
 
   <build>
+    <finalName>plos-registration</finalName>
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
