@@ -18,6 +18,7 @@ import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.rmi.RemoteException;
+import java.util.Collection;
 import java.util.ArrayList;
 import java.util.BitSet;
 import java.util.Date;
@@ -49,6 +50,7 @@ import org.topazproject.fedora.client.Uploader;
 import org.topazproject.fedora.client.FedoraAPIM;
 
 import org.topazproject.ws.article.Article;
+import org.topazproject.ws.article.ArticleInfo;
 import org.topazproject.ws.article.DuplicateArticleIdException;
 import org.topazproject.ws.article.IngestException;
 import org.topazproject.ws.article.NoSuchObjectIdException;
@@ -62,6 +64,7 @@ import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
 import org.topazproject.fedoragsearch.service.FgsOperations;
 
 import org.topazproject.feed.ArticleFeed;
+import org.topazproject.feed.ArticleFeedData;
 
 /** 
  * The default implementation of the article manager.
@@ -342,8 +345,9 @@ public class ArticleImpl implements Article {
     return fedoraServer.resolve(path).toString();
   }
 
-  public String getArticles(String startDate, String endDate, String[] categories, String[] authors,
-                            int[] states, boolean ascending) throws RemoteException {
+  private Collection getArticleFeedData(String startDate, String endDate,
+                                        String[] categories, String[] authors, int[] states,
+                                        boolean ascending) throws RemoteException {
     Date start = ArticleFeed.parseDateParam(startDate);
     Date end = ArticleFeed.parseDateParam(endDate);
 
@@ -369,10 +373,55 @@ public class ArticleImpl implements Article {
       StringAnswer detailsAnswer = new StringAnswer(itql.doQuery(detailsQuery, null));
       ArticleFeed.addArticlesDetails(articles, detailsAnswer);
 
-      return ArticleFeed.buildXml(articles.values());
+      return articles.values();
     } catch (AnswerException ae) {
       throw new RemoteException("Error querying RDF", ae);
     }
+  }
+
+  public String getArticles(String startDate, String endDate,
+                            String[] categories, String[] authors, int[] states,
+                            boolean ascending) throws RemoteException {
+    Collection articles = getArticleFeedData(startDate, endDate,
+                                             categories, authors, states, ascending);
+    return ArticleFeed.buildXml(articles);
+  }
+  
+  public ArticleInfo[] getArticleInfos(String startDate, String endDate,
+                                       String[] categories, String[] authors, int[] states,
+                                       boolean ascending) throws RemoteException {
+    Collection articles = getArticleFeedData(startDate, endDate,
+                                             categories, authors, states, ascending);
+    ArticleInfo[] infos = new ArticleInfo[articles.size()];
+    int pos = 0;
+    for (Iterator it = articles.iterator(); it.hasNext(); ) {
+      ArticleFeedData data = (ArticleFeedData) it.next();
+      ArticleInfo info = new ArticleInfo();
+      info.setUri(data.getUri());
+      info.setTitle(data.getTitle());
+      info.setDescription(data.getDescription());
+      info.setArticleDate(data.getArticleDate());
+      info.setState(data.getState());
+      
+      List authorList = data.getAuthors();
+      String[] authorArr = new String[authorList.size()];
+      authorList.toArray(authorArr);
+      info.setAuthors(authorArr);
+
+      List subjectList = data.getSubjects();
+      String[] subjectArr = new String[subjectList.size()];
+      subjectList.toArray(subjectArr);
+      info.setSubjects(subjectArr);
+
+      List categoryList = data.getCategories();
+      String[] categoryArr = new String[categoryList.size()];
+      categoryList.toArray(categoryArr);
+      info.setCategories(categoryArr);
+
+      infos[pos++] = info;
+    }
+
+    return infos;
   }
 
   public ObjectInfo[] listSecondaryObjects(String article)

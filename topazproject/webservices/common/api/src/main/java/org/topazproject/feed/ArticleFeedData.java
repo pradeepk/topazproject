@@ -27,6 +27,23 @@ public class ArticleFeedData {
   List     categories;
   int      state;
 
+  /** Return the article's URI */
+  public String getUri() { return uri; }
+  /** Return the article's title */
+  public String getTitle() { return title; }
+  /** Return the article's description (the abstract) */
+  public String getDescription() { return description; }
+  /** Return the article's date */
+  public Date getArticleDate() { return date; }
+  /** Return the article's authors -- a list of Strings */
+  public List getAuthors() { return authors; }
+  /** Return the article's subjects (category[/subcategory]) -- a list of Strings */
+  public List getSubjects() { return subjects; }
+  /** Return the article's main categories (not subcategories) -- a list of Strings */
+  public List getCategories() { return categories; }
+  /** Return the article's state */
+  public int getState() { return state; }
+  
   public String toString() {
     return "ArticleData[" + this.uri + ":" + this.date + "]";
   }

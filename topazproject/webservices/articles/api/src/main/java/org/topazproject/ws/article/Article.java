@@ -202,4 +202,25 @@ public interface Article extends Remote {
    */
   public String getArticles(String startDate, String endDate, String[] categories, String[] authors,
                             int[] states, boolean ascending) throws RemoteException;
+
+  /**
+   * Get list of articles for a given set of categories or authors bracked by specified
+   * times. 
+   *
+   * @param startDate  is the date to start searching from. If null, start from begining of time.
+   *                   Can be iso8601 formatted or string representation of Date object.
+   * @param endDate    is the date to search until. If null, search until present date
+   * @param categories is list of categories to search for articles within (all categories if null
+   *                   or empty)
+   * @param authors    is list of authors to search for articles within (all authors if null or
+   *                   empty)
+   * @param states     the list of article states to search for (all states if null or empty)
+   * @param ascending  controls the sort order (by date). If used for RSS feeds, decending would
+   *                   be appropriate. For archive display, ascending would be appropriate.
+   * @return the (possibly empty) list of articles.
+   * @throws RemoteException if there was a problem talking to the alerts service
+   */
+  public ArticleInfo[] getArticleInfos(String startDate, String endDate,
+                                       String[] categories, String[] authors, int[] states,
+                                       boolean ascending) throws RemoteException;
 }
