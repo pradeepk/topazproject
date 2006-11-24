@@ -9,6 +9,8 @@
  */
 package org.plos.search.service;
 
+import org.apache.commons.lang.StringUtils;
+
 import java.util.Date;
 
 /**
@@ -40,7 +42,7 @@ public class SearchHit {
     this.hitNumber = hitNumber;
     this.hitScore = hitScore;
     this.pid = pid;
-    this.title = title;
+    this.title = StringUtils.split(title, MULTIPLE_VALUE_DELIMITER)[0];
     this.highlight = highlight;
     this.type = type;
     this.state = state;

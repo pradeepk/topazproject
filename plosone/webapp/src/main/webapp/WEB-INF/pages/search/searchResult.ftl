@@ -189,7 +189,7 @@
 <td class="results-title"><span class="results-item-title"><a href="#">${hit.title}</a></span>
 	<span class="results-item-preview">${hit.description}</span>
 </td>
-<td class="results-date">${hit.date.toString()}</td>
+<td class="results-date">${hit.date?string("yyyy-MM-dd")}</td>
 <td class="results-author">${hit.creator}</td>
 </tr>
 </#list>
