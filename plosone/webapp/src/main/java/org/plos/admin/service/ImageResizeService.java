@@ -73,7 +73,7 @@ public class ImageResizeService {
 	private BufferedImage readImage(InputStream is, String mimetype) throws IOException {
 		Iterator<ImageReader> readers = ImageIO.getImageReadersByMIMEType(mimetype);
 		ImageReader reader;
-		ImageInputStream iis = new FileCacheImageInputStream(is, null));
+		ImageInputStream iis = new FileCacheImageInputStream(is, null);
 		BufferedImage bi = null;
 		
 		if (! readers.hasNext()) {
