@@ -44,11 +44,11 @@
     <global-results>
       <result name="new-profile" type="redirect-action">
         <param name="actionName">prePopulateNewUser</param>
-        <param name="namespace">/user/create</param>
+        <param name="namespace">/user</param>
       </result>
       <result name="update-profile" type="redirect-action">
         <param name="actionName">prePopulateNewUser</param>
-        <param name="namespace">/user/create</param>
+        <param name="namespace">/user</param>
       </result>
     </global-results>
 
@@ -496,7 +496,7 @@
     </action>
   </package>
 
-  <package name="user-creation" extends="default" namespace="/user/create">
+  <package name="user" extends="default" namespace="/user">
     <default-interceptor-ref name="plosBaseStack" />
     <action name="newUser">
       <result>/WEB-INF/pages/user/newUser.ftl</result>

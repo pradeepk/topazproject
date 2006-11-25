@@ -60,7 +60,7 @@
 
 <!--
       <p>
-          <@ww.url id="createUserURL" namespace="/user/create" action="newUser" />
+          <@ww.url id="createUserURL" namespace="/user" action="newUser" />
           <@ww.a href="%{createUserURL}">Create User</@ww.a>
       </p>
 

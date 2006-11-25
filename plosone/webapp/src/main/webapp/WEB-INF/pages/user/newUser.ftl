@@ -15,7 +15,7 @@
     <p>
       <fieldset>
           <legend>Create a User</legend>
-          <@ww.form name="createNewUserForm" action="createNewUser" namespace="/user/create" method="post">
+          <@ww.form name="createNewUserForm" action="createNewUser" namespace="/user" method="post">
             <@ww.textfield name="username" label="Display name" required="true"/>
             <@ww.checkbox name="privateFields" label="Is it private?" fieldValue="username" value="${isFound(privateFields, 'username')}"/>
             <@ww.textfield name="email" label="Email" required="true" readonly="true"/>
