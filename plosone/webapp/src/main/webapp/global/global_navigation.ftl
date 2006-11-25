@@ -14,11 +14,11 @@
 		<li><a href="#" class="drop">Authors</a><!--[if IE 7]><!--></a><!--<![endif]-->
 			<table><tr><td>
 				<ul>
-					<li><a href="#" title="For Authors: Why Publish With Us?">Why Publish With Us?</a></li>
+					<li><a href="${freemarker_config.context}/static/whypublish.action" title="For Authors: Why Publish With Us?">Why Publish With Us?</a></li>
 
-					<li><a href="#" title="For Authors: Editorial Policies">Editorial and Publishing Policies</a></li>
-					<li><a href="#" title="For Authors: Author Guidelines">Author Guidelines</a></li>
-					<li><a href="#" title="For Authors: Figure Guidelines">Figure Guidelines</a></li>
+					<li><a href="${freemarker_config.context}/static/policies.action" title="For Authors: Editorial Policies">Editorial and Publishing Policies</a></li>
+					<li><a href="${freemarker_config.context}/static/guidelines.action" title="For Authors: Author Guidelines">Author Guidelines</a></li>
+					<li><a href="${freemarker_config.context}/static/figureGuidelines.action" title="For Authors: Figure Guidelines">Figure Guidelines</a></li>
 					<li><a href="#" title="For Authors: Submit Your Paper">Submit Your Paper</a></li>
 				</ul>
 			</li>
@@ -27,10 +27,10 @@
 		<li><a href="#" class="drop">About<!--[if IE 7]><!--></a><!--<![endif]-->
 			<table><tr><td>
 				<ul>
-					<li><a href="#" title="About: Journal Information">Journal Information</a></li>
-					<li><a href="#" title="About: Editorial Board">Editorial Board</a></li>
+					<li><a href="${freemarker_config.context}/static/information.action" title="About: Journal Information">Journal Information</a></li>
+					<li><a href="${freemarker_config.context}/static/edboard.action" title="About: Editorial Board">Editorial Board</a></li>
 					<li><a href="#" title="About: Editor-in-Chief">Editor-in-Chief</a></li>
-					<li><a href="#" title="About: Media Inquiries">Media Inquiries</a></li>
+					<li><a href="${freemarker_config.context}/static/media.action" title="About: Media Inquiries">Media Inquiries</a></li>
 					<li><a href="#" title="About: PLoS in Print">PLoS in Print</a></li>
 				</ul>
 			</li>

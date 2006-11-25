@@ -6,8 +6,8 @@
 
 <meta name="description" content="" />
 
-<link rel="shortcut icon" href="${freemarker_config.getContext()}/images/pone_favicon.ico" type="image/x-icon" />
-<link rel="home" title="home" href="http://www.plosone.org"></link>
+<link rel="shortcut icon" href="${freemarker_config.context}/images/pone_favicon.ico" type="image/x-icon" />
+<link rel="home" title="home" href="http://${freemarker_config.plosOneHost}${freemarker_config.context}"></link>
 
 <#include "../css/global_css.ftl">
 <#include "../javascript/global_js.ftl">

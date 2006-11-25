@@ -1,10 +1,8 @@
 	<!-- begin : logo -->
-	<div id="logo" title="PLoS ONE: Publishing science, acclerating research"><a href="http://www.plosone.org" title="PLoS ONE: Publishing science, accelerating research"><span>PLoS ONE</span></a></div>
+	<div id="logo" title="PLoS ONE: Publishing science, acclerating research"><a href="http://${freemarker_config.plosOneHost}${freemarker_config.context}" title="PLoS ONE: Publishing science, accelerating research"><span>PLoS ONE</span></a></div>
 	<!-- end : logo -->
 	<!-- begin : user controls -->
 	<#if Session.PLOS_ONE_USER?exists>
-	
-	
 	<div id="user">
 		<div>
 			<p>Logged in as <a href="#" class="icon user">${Session.PLOS_ONE_USER.displayName}</a></p>
