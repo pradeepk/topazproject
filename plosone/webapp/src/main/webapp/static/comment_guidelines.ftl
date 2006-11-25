@@ -2,12 +2,12 @@
 <div id="content" class="static"><h1><em>PLoS ONE</em> Guidelines for Commenting</h1>
 
 <h2 name="Annotation" id="Annotation">Annotation, Debate, and  Rating</h2>
-<p><em>PLoS ONE</em> employs a system that combines pre- and post-publication peer review. There are three major components to post-publication review:</p>
+<p><em>PLoS ONE</em> employs a system that combines pre- and post-publication peer review. There are two major components to post-publication review:</p>
 <ol>
   <li><strong>Annotations</strong>: These are short notes overlaid on the Web version of the manuscript. These should be used to either highlight a minor  point, to make additions or corrections that apply to a specific point in the  text, or to identify and link to material, including more extensive discussions, presented elsewhere.<u></u></li>
   <li><strong>Debates</strong>: These are relatively conventional, threaded discussions concerning the  content, conclusions, and consequences of a specific paper. <u></u></li>
 
-  <li><strong>Ratings</strong>: Registered users can assign  personal ratings to papers that are then aggregated to provide overall ratings and rankings of  papers. Users are not allowed to &#8216;vote' more than once, but can revise their opinions. </li>
+<!--  <li><strong>Ratings</strong>: Registered users can assign  personal ratings to papers that are then aggregated to provide overall ratings and rankings of  papers. Users are not allowed to &#8216;vote' more than once, but can revise their opinions. </li>-->
 </ol>
 <p> Contributors to Annotations and Debates will be identified. Anonymous contributions are not permitted.</p>
 

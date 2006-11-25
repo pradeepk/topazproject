@@ -5,7 +5,7 @@
 
 <p class="intro">Ready to submit your manuscript? Please refer to our submission checklist below and use our <a href="http://one.plosjms.org">online manuscript submission system</a>.</p>
 
-<p>When you submit your paper to <em>PLoS ONE</em>, you will be asked to  provide some information in addition to the manuscript file itself, as well as  some associated files. This checklist will ensure that you have gathered all the relevant information and that the manuscript is formatted appropriately. Details can be found in our <a href="guidelines.ftl" title="PLoS ONE Guidelines for Authors">Guidelines for Authors</a>.</p>
+<p>When you submit your paper to <em>PLoS ONE</em>, you will be asked to  provide some information in addition to the manuscript file itself, as well as  some associated files. This checklist will ensure that you have gathered all the relevant information and that the manuscript is formatted appropriately. Details can be found in our <a href="guidelines.action" title="PLoS ONE Guidelines for Authors">Guidelines for Authors</a>.</p>
 
 <h2>Information Needed Prior to Submission</h2>
 <ul>
@@ -23,14 +23,14 @@
   <li>Have all authors and their affiliations been included? </li>
   <li>Do you have a list of the contributions that each author has made to the project? </li>
   <li>Do you know of any competing interests any of the authors may need to report?</li>
-  <li>Does your paper conform to the <a href="guidelines.php" title="PLoS ONE | Author Guidelines">Guidelines for Authors</a>?</li>
+  <li>Does your paper conform to the <a href="guidelines.action" title="PLoS ONE | Author Guidelines">Guidelines for Authors</a>?</li>
   <li>Does your title contain fewer than 150 characters?</li>
 
   <li>Does your running title contain fewer than 30 characters? </li>
   <li>Is your summary no more than 300 words and divided into sections called Background, Methodology/Principal Findings, and Conclusions/Significance? </li>
   <li>Have you used standard nomenclature?</li>
   <li>Have your original figures been created as EPS or TIFF files in a high enough resolution to provide for adequate review?</li>
-  <li>If your manuscript is ready for publication, do your figures conform to the <a href="figure_guidelines.php" title="PLoS ONE | Figure Guidelines">Guidelines for Figure Preparation</a>? Has each multipanel figure been combined into a single file?</li>
+  <li>If your manuscript is ready for publication, do your figures conform to the <a href="figure_guidelines.action" title="PLoS ONE | Figure Guidelines">Guidelines for Figure Preparation</a>? Has each multipanel figure been combined into a single file?</li>
 
   <li>Is the manuscript file created in Word or RTF?</li>
   <li>Are tables included at the end of the manuscript file? Is the table title no more than one sentence and has all the rest of the table legend been placed below the table itself?</li>

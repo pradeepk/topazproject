@@ -19,11 +19,23 @@
 					<li><a href="${freemarker_config.context}/static/policies.action" title="For Authors: Editorial Policies">Editorial and Publishing Policies</a></li>
 					<li><a href="${freemarker_config.context}/static/guidelines.action" title="For Authors: Author Guidelines">Author Guidelines</a></li>
 					<li><a href="${freemarker_config.context}/static/figureGuidelines.action" title="For Authors: Figure Guidelines">Figure Guidelines</a></li>
-					<li><a href="#" title="For Authors: Submit Your Paper">Submit Your Paper</a></li>
+					<li><a href="${freemarker_config.context}/static/checklist.action" title="For Authors: Submit Your Paper">Submit Your Paper</a></li>
 				</ul>
 			</li>
 			</td></tr></table><!--[if lte IE 6]></a><![endif]-->
-		<li><a href="#">Users</a></li>
+		<li><a href="#" class="drop">Readers</a>
+			<table><tr><td>
+				<ul>
+					<li><a href="${freemarker_config.context}/static/faq.action" title="For Readers: Fequently Asked Questions?">Frequently Asked Questions</a></li>
+
+					<li><a href="${freemarker_config.context}/static/commentGuidelines.action" title="For Readers: Comment Guidelines">Comment Guidelines</a></li>
+					<li><a href="${freemarker_config.context}/static/help.action" title="For Readers: Help Using This Site">Help Using This Site</a></li>
+					<li><a href="${freemarker_config.context}/static/sitemap.action" title="For Readers: Site Map">Site Map</a></li>
+					<li><a href="${freemarker_config.context}/static/contact.action" title="For Readers: Contact Us">Contact Us</a></li>
+				</ul>
+			</li>
+			</td></tr></table><!--[if lte IE 6]></a><![endif]-->
+		</li>
 		<li><a href="#" class="drop">About<!--[if IE 7]><!--></a><!--<![endif]-->
 			<table><tr><td>
 				<ul>
