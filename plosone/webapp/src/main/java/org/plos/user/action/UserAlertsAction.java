@@ -78,7 +78,12 @@ public class UserAlertsAction extends UserActionSupport {
 
     monthlyAlerts = convertToArrayWithAtleastOneStringElement(monthlyAlertsList);
     weeklyAlerts = convertToArrayWithAtleastOneStringElement(weeklyAlertsList);
-    alertEmailAddress = plosOneUser.getAlertsEmailAddress();
+    final String email = plosOneUser.getAlertsEmailAddress();
+    if ((email == null) || email.equals("")) {
+      alertEmailAddress = plosOneUser.getEmail();
+    } else {
+      alertEmailAddress = email;
+    }
     return SUCCESS;
   }
 

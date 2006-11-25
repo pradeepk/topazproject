@@ -442,6 +442,18 @@
       <result name="error" type="ajaxJSON"/>
     </action>
 
+    <action name="editAlerts" class="org.plos.user.action.UserAlertsAction" method="retrieveAlerts">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/user/alerts.ftl</param>
+      </result>
+      <result name="error" type="plosOneFreemarker">
+        <param name="templateFile">/user/alerts.ftl</param>
+      </result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/user/alerts.ftl</param>
+      </result>
+    </action>
+  
     <action name="retrieveUserAlerts" class="org.plos.user.action.UserAlertsAction" method="retrieveAlerts">
       <result name="success">/WEB-INF/pages/user/alerts.ftl</result>
       <result name="error">/WEB-INF/pages/user/alerts.ftl</result>
@@ -449,9 +461,13 @@
     </action>
 
     <action name="saveUserAlerts" class="org.plos.user.action.UserAlertsAction" method="saveAlerts">
-      <result name="success" type="redirect">retrieveUserAlerts.action</result>
-      <result name="error">/WEB-INF/pages/user/alerts.ftl</result>
-      <result name="input">/WEB-INF/pages/user/alerts.ftl</result>
+      <result name="success" type="redirect">editAlerts.action</result>
+      <result name="error" type="plosOneFreemarker">
+        <param name="templateFile">/user/alerts.ftl</param>
+      </result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/user/alerts.ftl</param>
+      </result>
     </action>
 
     <action name="retrieveUserProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">

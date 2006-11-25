@@ -100,6 +100,14 @@
     </css>
   </page>
   
+  <page>
+    <name>/user/alerts.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_forms.css</file>
+    </css>
+  </page>
 
   
 </pages>

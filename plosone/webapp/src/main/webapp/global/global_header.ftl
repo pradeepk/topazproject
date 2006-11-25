@@ -2,6 +2,8 @@
 	<div id="logo" title="PLoS ONE: Publishing science, acclerating research"><a href="http://${freemarker_config.plosOneHost}${freemarker_config.context}" title="PLoS ONE: Publishing science, accelerating research"><span>PLoS ONE</span></a></div>
 	<!-- end : logo -->
 	<!-- begin : user controls -->
+	<@ww.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
+	<#assign thisPage = thisPageURL?replace("&amp;", "&")?url>
 	<#if Session.PLOS_ONE_USER?exists>
 	<div id="user">
 		<div>
@@ -14,9 +16,7 @@
 	</div>
 	
 	<#else>
-	<@ww.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
-	<#assign thisPage = thisPageURL?replace("&amp;", "&")?url>
-	
+
 	<div id="user" class="login">
 		<div>
 			<ul>
