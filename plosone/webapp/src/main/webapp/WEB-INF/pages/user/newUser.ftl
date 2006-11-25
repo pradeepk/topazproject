@@ -16,14 +16,12 @@
       <fieldset>
           <legend>Create a User</legend>
           <@ww.form name="createNewUserForm" action="createNewUser" namespace="/user" method="post">
-            <@ww.textfield name="username" label="Display name" required="true"/>
-            <@ww.checkbox name="privateFields" label="Is it private?" fieldValue="username" value="${isFound(privateFields, 'username')}"/>
+            <@ww.textfield name="displayName" label="Display name" required="true"/>
+            <@ww.checkbox name="privateFields" label="Is it private?" fieldValue="displayName" value="${isFound(privateFields, 'displayName')}"/>
             <@ww.textfield name="email" label="Email" required="true" readonly="true"/>
             <@ww.checkbox name="privateFields" label="Is it private?" fieldValue="email" value="${isFound(privateFields, 'email')}"/>
             <@ww.textfield name="realName" label="Full name" />
             <@ww.checkbox name="privateFields" label="Is it private?" fieldValue="realName" value="${isFound(privateFields, 'realName')}"/>
-            <@ww.textfield name="displayName" label="Username" />
-            <@ww.checkbox name="privateFields" label="Is it private?" fieldValue="displayName" value="${isFound(privateFields, 'displayName')}"/>
             <@ww.textfield name="givennames" label="Givennames" />
             <@ww.checkbox name="privateFields" label="Is it private?" fieldValue="givennames" value="${isFound(privateFields, 'givennames')}"/>
             <@ww.textfield name="surnames" label="Surnames" />

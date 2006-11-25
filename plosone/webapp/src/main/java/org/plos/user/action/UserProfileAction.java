@@ -29,7 +29,7 @@ import java.util.Map;
  */
 public class UserProfileAction extends UserActionSupport {
 
-  private String username, email, realName, topazId;
+  private String displayName, email, realName, topazId;
   private String authId;
 
   private static final Log log = LogFactory.getLog(UserProfileAction.class);
@@ -81,7 +81,7 @@ public class UserProfileAction extends UserActionSupport {
     authId = plosOneUser.getAuthId();
     topazId = plosOneUser.getUserId();
     email = plosOneUser.getEmail();
-    username = plosOneUser.getDisplayName();
+    displayName = plosOneUser.getDisplayName();
     realName = plosOneUser.getRealName();
     givennames = plosOneUser.getGivennames();
     surnames = plosOneUser.getSurnames();
@@ -109,7 +109,7 @@ public class UserProfileAction extends UserActionSupport {
     final PlosOneUser newUser = new PlosOneUser(this.authId);
     newUser.setUserId(this.topazId);
     newUser.setEmail(this.email);
-    newUser.setDisplayName(this.username);
+    newUser.setDisplayName(this.displayName);
     newUser.setRealName(this.realName);
     newUser.setGivennames(this.givennames);
     newUser.setPositionType(this.positionType);
@@ -151,27 +151,27 @@ public class UserProfileAction extends UserActionSupport {
   }
 
   private boolean validates() {
-    final int usernameLength = StringUtils.stripToEmpty(username).length();
+    final int usernameLength = StringUtils.stripToEmpty(displayName).length();
     if (usernameLength < Integer.parseInt(Length.DISPLAY_NAME_MIN)
             || usernameLength > Integer.parseInt(Length.DISPLAY_NAME_MAX)) {
-      addFieldError("username", "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters");
+      addFieldError("displayName", "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters");
       return false;
     }
     return true;
   }
   /**
-   * @return Returns the username.
+   * @return Returns the displayName.
    */
-  public String getUsername() {
-    return username;
+  public String getDisplayName() {
+    return displayName;
   }
 
   /**
-   * @param username
-   *          The username to set.
+   * @param displayName
+   *          The displayName to set.
    */
-  public void setUsername(String username) {
-    this.username = username;
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
   }
 
   /**

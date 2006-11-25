@@ -80,7 +80,7 @@ public class UserAlertsTest extends BasePlosoneTestCase {
     createUserAction.setEmail("UserAlertsTest@test.com");
     createUserAction.setRealName("UserAlertsTest test com");
     createUserAction.setAuthId(authId);
-    createUserAction.setUsername("UserAlertsTest");
+    createUserAction.setDisplayName("UserAlertsTest");
     assertEquals(SUCCESS, createUserAction.executeSaveUser());
     final String topazId = createUserAction.getInternalId();
     assertNotNull(topazId);

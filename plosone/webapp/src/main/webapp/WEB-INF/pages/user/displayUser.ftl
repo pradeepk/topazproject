@@ -3,7 +3,7 @@
     <title>User details</title>
   </head>
   <body>
- 		Username: ${pou.displayName} <br/>
+ 		Display Name: ${pou.displayName} <br/>
  		Real Name: ${pou.realName} <br/>
     Givennames: ${pou.givennames} <br/>
     Surnames: ${pou.surnames} <br/>

@@ -38,7 +38,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
     createUserAction.setEmail(TEST_EMAIL);
     createUserAction.setRealName(REAL_NAME);
     createUserAction.setAuthId(AUTH_ID);
-    createUserAction.setUsername(USERNAME);
+    createUserAction.setDisplayName(USERNAME);
     createUserAction.setGivennames(GIVENNAMES);
     createUserAction.setPositionType(POSITION_TYPE);
     createUserAction.setOrganizationType(ORGANIZATION_TYPE);
@@ -79,7 +79,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
     createUserAction.setEmail(TEST_EMAIL);
     createUserAction.setRealName(REAL_NAME);
     createUserAction.setAuthId(AUTH_ID);
-    createUserAction.setUsername(USERNAME);
+    createUserAction.setDisplayName(USERNAME);
     createUserAction.setOrganizationType(ORGANIZATION_TYPE);
     createUserAction.setPostalAddress(POSTAL_ADDRESS);
 
@@ -116,7 +116,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
     createUserAction.setEmail(TEST_EMAIL);
     createUserAction.setRealName(REAL_NAME);
     createUserAction.setAuthId(AUTH_ID);
-    createUserAction.setUsername(USERNAME);
+    createUserAction.setDisplayName(USERNAME);
     assertEquals(SUCCESS, createUserAction.executeSaveUser());
     final String topazId = createUserAction.getInternalId();
     assertNotNull(topazId);
