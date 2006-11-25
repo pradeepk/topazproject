@@ -10,6 +10,7 @@
 package org.plos.action;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.EmailValidator;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.service.PlosoneMailer;
 import org.plos.user.PlosOneUser;
@@ -62,24 +63,29 @@ public class FeedbackAction extends UserActionSupport {
   }
 
   private boolean validates() {
+    boolean isValid = true;
     if (StringUtils.isBlank(subject)) {
       addFieldError("subject", "Subject cannot be empty");
-      return false;
+      isValid = false;
     }
     if (StringUtils.isBlank(name)) {
       addFieldError("name", "Name cannot be empty");
-      return false;
+      isValid = false;
     }
     if (StringUtils.isBlank(fromEmailAddress)) {
       addFieldError("fromEmailAddress", "Email address cannot be empty");
-      return false;
+      isValid = false;
+    }
+    if (!EmailValidator.getInstance().isValid(fromEmailAddress)) {
+      addFieldError("fromEmailAddress", "Invalid email address");
+      isValid = false;
     }
     if (StringUtils.isBlank(note)) {
       addFieldError("note", "Message cannot be empty");
-      return false;
+      isValid = false;
     }
 
-    return true;
+    return isValid;
   }
 
   /**
