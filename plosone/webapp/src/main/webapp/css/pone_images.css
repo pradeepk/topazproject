@@ -115,8 +115,10 @@ a:active	{ }
 	background: #D2F7FF;
 	position: relative;	
 }
-#figure-window-nav-item-current {
+.figure-window-nav-item-current {
 	background: #069;
+	text-align: center;
+	padding: 10px;
 }
 .figure-window-nav-item {
 	text-align: center;

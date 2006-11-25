@@ -92,9 +92,114 @@
   </package>
 
   <package name="static" extends="default" namespace="/static">
+    <action name="checklist">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/checklist.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
     <action name="commentGuidelines">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/comment_guidelines.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="competing">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/competing.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="contact">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/contact.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="edboard">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/edboard.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="faq">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/faq.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="figureGuidelines">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/figure_guidelines.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="guidelines">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/guidelines.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="help">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/help.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="information">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/information.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="license">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/license.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="media">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/media.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="policies">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/policies.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="reviewerGuidelines">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/reviewer_guidelines.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="sitemap">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/sitemap.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="whypublish">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/whypublish.ftl</param>
       </result>
       <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
