@@ -118,7 +118,7 @@ public class FetchArticleService {
     String escapedURI = FileUtils.escapeURIAsPath(articleURI);
     try {
       //for now, since all annotations are public, don't have to cache based on userID
-      theArticle = (String)articleCacheAdministrator.getFromCache(escapedURI/* + topazUserId*/); 
+      theArticle = (String)articleCacheAdministrator.getFromCache(articleURI/* + topazUserId*/); 
       if (log.isDebugEnabled()) {
         log.debug("retrived article from cache: " + articleURI + " / " + topazUserId);
       }
@@ -127,12 +127,12 @@ public class FetchArticleService {
       try {
         //use grouping for future when annotations can be private
         theArticle= getTransformedArticle(articleURI);
-        articleCacheAdministrator.putInCache(escapedURI/* + topazUserId*/, 
+        articleCacheAdministrator.putInCache(articleURI/* + topazUserId*/, 
                                    theArticle, new String[]{escapedURI});
         updated = true;
       } finally {
         if (!updated)
-          articleCacheAdministrator.cancelUpdate(escapedURI);
+          articleCacheAdministrator.cancelUpdate(articleURI);
       }
     }
     return theArticle;
