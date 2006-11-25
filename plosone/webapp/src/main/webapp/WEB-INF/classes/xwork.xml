@@ -71,6 +71,16 @@
       <result type="chain">home</result>
     </action>
 
+    <action name="feedbackCreate" class="org.plos.action.FeedbackAction" method="executeRender">
+      <result>/WEB-INF/pages/feedback.ftl</result>
+    </action>
+
+    <action name="feedback" class="org.plos.action.FeedbackAction" method="executeSend">
+      <result name="input">/WEB-INF/pages/feedback.ftl</result>
+      <result name="error">/WEB-INF/pages/feedback.ftl</result>
+      <result name="success" type="redirect">/home.action</result>
+    </action>
+
   </package>
 
   <package name="search" extends="default" namespace="/search">
@@ -208,6 +218,14 @@
   <package name="article" extends="default" namespace="/article">
     <action name="articleList" class="org.plos.article.action.ArticleListAction">
       <result name="success">/WEB-INF/pages/article/articleList.ftl</result>
+    </action>
+
+    <action name="emailThisArticleCreate" class="org.plos.article.action.EmailArticleAction" method="executeRender">
+      <result name="success">/WEB-INF/pages/emailArticle/emailArticle.ftl</result>
+    </action>
+
+    <action name="emailThisArticleSubmit" class="org.plos.article.action.EmailArticleAction" method="executeSend">
+      <result name="success" type="redirect">/home.action</result>
     </action>
 
     <action name="fetchArticle" class="org.plos.article.action.FetchArticleAction">

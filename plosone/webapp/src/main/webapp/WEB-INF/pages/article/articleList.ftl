@@ -42,6 +42,14 @@
             <@ww.a href="%{annotatedArticleURL}">Get Annotated Article XML</@ww.a>
           </li>
           <li>
+            <@ww.url id="emailArticleURL" namespace="/article" action="emailThisArticleCreate" articleURI="${article}"/>
+            <@ww.a href="%{emailArticleURL}">Email this article</@ww.a>
+          </li>
+          <li>
+            <@ww.url id="feedbackURL" action="feedbackCreate" page="${article}"/>
+            <@ww.a href="%{feedbackURL}">Send Feedback</@ww.a>
+          </li>
+          <li>
             <fieldset>
               <legend>Create an annotation</legend>
             <@ww.form name="createAnnotationForm" action="createAnnotationSubmit" method="get" namespace="/annotation/secure">

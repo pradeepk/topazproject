@@ -10,16 +10,14 @@
 
 package org.plos.webwork;
 
-import java.util.HashMap;
-import java.util.List;
-import java.util.Iterator;
-
 import org.apache.commons.configuration.Configuration;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
 import org.plos.configuration.ConfigurationStore;
+
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 
 /**
  * Class to configure the FreeMarker templates with css and javascript files and the title of page.
@@ -284,7 +282,7 @@ public class PlosOneFreemarkerConfig {
   }
 
   /**
-   * @param plosOneHostname The plosOneHostname to set.
+   * @param plosOneHost The plosOneHostname to set.
    */
   public void setPlosOneHost( String plosOneHost) {
     this.plosOneHost = plosOneHost;

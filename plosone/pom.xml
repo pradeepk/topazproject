@@ -20,6 +20,7 @@
     <module>webapp</module>
     <module>cas-mod</module>
     <module>webwork-json-mod</module>
+    <module>emailer</module>
   </modules>
 
 </project>

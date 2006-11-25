@@ -266,4 +266,38 @@
   </bean>
   
   <bean id="articleCacheAdministrator" class="com.opensymphony.oscache.general.GeneralCacheAdministrator" destroy-method="destroy"/>
+
+  <!-- email configuration -->
+  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="localhost"/>
+  </bean>
+
+  <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+    <property name="templateLoaderPath" value="/WEB-INF/emailTemplates/"/>
+  </bean>
+
+  <bean id="plosoneMailer" class="org.plos.service.PlosoneMailer">
+    <property name="mailSender" ref="mailSender"/>
+    <property name="fromEmailAddress" value="application@plosone.org"/>
+    <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>
+    <property name="feedbackEmailMap">
+      <map>
+        <entry key="text" value="feedback-text.ftl"/>
+        <entry key="html" value="feedback-html.ftl"/>
+        <entry key="url" value="http://localhost:9080/plosone-webapp/emailVerification.action"/>
+        <entry key="subject" value="My feedback for PLoS ONE"/>
+        <entry key="toEmailAddress" value="viru@virulocalhost.com"/>
+        <!--<entry key="toEmailAddress" value="feedback@plosone.org"/>-->
+      </map>
+    </property>
+    <property name="emailThisArticleMap">
+      <map>
+        <entry key="text" value="emailThisArticle-text.ftl"/>
+        <entry key="html" value="emailThisArticle-html.ftl"/>
+        <entry key="url" value="http://localhost:9080/plosone-webapp/article/fetchArticle.action?articleURI="/>
+        <entry key="subject" value="Article from PLoS ONE sent by your friend"/>
+      </map>
+    </property>
+  </bean>
+
 </beans>
