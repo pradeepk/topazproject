@@ -72,13 +72,21 @@
     </action>
 
     <action name="feedbackCreate" class="org.plos.action.FeedbackAction" method="executeRender">
-      <result>/WEB-INF/pages/feedback.ftl</result>
+      <result type="plosOneFreemarker">
+        <param name="templateFile">/feedback/feedbackEntry.ftl</param>
+      </result>
     </action>
 
     <action name="feedback" class="org.plos.action.FeedbackAction" method="executeSend">
-      <result name="input">/WEB-INF/pages/feedback.ftl</result>
-      <result name="error">/WEB-INF/pages/feedback.ftl</result>
-      <result name="success" type="redirect">/home.action</result>
+      <result name="error" type="plosOneFreemarker">
+        <param name="templateFile">/feedback/feedbackEntry.ftl</param>
+      </result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/feedback/feedbackEntry.ftl</param>
+      </result>
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/feedback/feedbackSuccess.ftl</param>
+      </result>
     </action>
 
   </package>
@@ -89,15 +97,19 @@
     </action>
 
     <action name="simpleSearch" class="org.plos.search.action.SearchAction" method="executeSimpleSearch">
-      <result name="input">/WEB-INF/pages/search/searchStart.ftl</result>
-      <result name="error">/WEB-INF/pages/search/searchStart.ftl</result>
-      <result name="success">/WEB-INF/pages/search/searchResult.ftl</result>
+      <result name="input">/search/searchResults.ftl</result>
+      <result name="error">/search/searchResults.ftl</result>
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/search/searchResults.ftl</param>
+      </result>
     </action>
 
     <action name="advancedSearch" class="org.plos.search.action.SearchAction" method="executeAdvancedSearch">
       <result name="input">/WEB-INF/pages/search/searchStart.ftl</result>
       <result name="error">/WEB-INF/pages/search/searchStart.ftl</result>
-      <result name="success">/WEB-INF/pages/search/searchResult.ftl</result>
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/WEB-INF/pages/search/searchResults.ftl</param>
+      </result>
     </action>
   </package>
 
