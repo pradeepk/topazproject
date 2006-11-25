@@ -33,7 +33,7 @@
                 select $state from &lt;?&gt;
                 where ($s &lt;topaz:articleState&gt; $state)
                 and ($s &lt;tucana:is&gt; &lt;?&gt; or
-                     &lt;?&gt; &lt;topaz:propagate-permissions-to&gt; $s in &lt;?&gt;);
+                     $s &lt;topaz:propagate-permissions-to&gt; &lt;?&gt; in &lt;?&gt;);
               </AttributeValue>
               <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
                 <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
