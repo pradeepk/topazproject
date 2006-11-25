@@ -424,6 +424,11 @@ public class ArticleImpl implements Article {
     return infos;
   }
 
+  public String[] getCommentedArticles(int articleNumber)
+    throws RemoteException {
+    return null;
+  }
+
   public ObjectInfo[] listSecondaryObjects(String article)
       throws NoSuchArticleIdException, RemoteException {
     pep.checkAccess(pep.LIST_SEC_OBJECTS, ItqlHelper.validateUri(article, "article"));

@@ -223,4 +223,15 @@ public interface Article extends Remote {
   public ArticleInfo[] getArticleInfos(String startDate, String endDate,
                                        String[] categories, String[] authors, int[] states,
                                        boolean ascending) throws RemoteException;
+
+  /**
+   * Get the list of most commented articles. This currently returns
+   * articles with most number of annotations.
+   *
+   * @param articleNumber the top number of articles to return
+   * @throws RemoteException if there was any problem accessing the remote
+   * service or processing errors
+   */
+  public String[] getCommentedArticles(int articleNumber)
+    throws RemoteException;
 }

@@ -144,6 +144,14 @@ public class ArticleServicePortSoapBindingImpl implements Article, ServiceLifecy
     return impl.getArticleInfos(startDate, endDate, categories, authors, states, ascending);
   }
 
+  /**
+   * @see org.topazproject.ws.article.Article#getCommentedArticles
+   */
+  public String[] getCommentedArticles(int articleNumber)
+    throws RemoteException {
+    return impl.getCommentedArticles(articleNumber);
+  }
+
   private static class WSArticlePEP extends ArticlePEP {
     static {
       init(WSArticlePEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
