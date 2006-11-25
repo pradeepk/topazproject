@@ -18,6 +18,7 @@ import org.topazproject.ws.article.ArticleClientFactory;
 import org.topazproject.ws.article.IngestException;
 import org.topazproject.ws.article.NoSuchArticleIdException;
 import org.topazproject.ws.article.NoSuchObjectIdException;
+import org.topazproject.ws.article.ArticleInfo;
 import org.topazproject.ws.article.ObjectInfo;
 import org.topazproject.ws.article.RepresentationInfo;
 
@@ -152,6 +153,18 @@ public class ArticleWebService extends BaseConfigurableService {
 	 
  }
 
+ /**
+  * @see org.topazproject.ws.article.Article#getArticleInfos(java.lang.String, java.lang.String, java.lang.String[], java.lang.String[], int[], boolean)
+  */
+ public ArticleInfo[] getArticleInfos(String startDate, String endDate,
+                                     String[] categories, String[] authors, int[] states,
+                                     boolean ascending) throws RemoteException{
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    return delegateService.getArticleInfos(startDate, endDate, categories, authors, states, ascending);
+   
+ }
+ 
+ 
   /**
    * Get the object-info of an object
    * @param obj uri

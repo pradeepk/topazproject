@@ -56,7 +56,13 @@
       <result type="redirect">/</result>
     </action>
 
-    <action name="home">
+    <action name="home" class="org.plos.action.HomePageAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/index.ftl</param>
+      </result>
+    </action>
+
+    <action name="oldMenu">
       <result>/WEB-INF/pages/todo.ftl</result>
     </action>
 
@@ -469,6 +475,19 @@
         <param name="templateFile">/user/alerts.ftl</param>
       </result>
     </action>
+
+    <action name="editProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/user/editProfile.ftl</param>
+      </result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/user/editProfile.ftl</param>
+      </result>
+      <result name="error" type="plosOneFreemarker">
+        <param name="templateFile">/editProfile/newUser.ftl</param>
+      </result>
+    </action>
+
 
     <action name="retrieveUserProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">
       <result name="success">/WEB-INF/pages/user/newUser.ftl</result>
