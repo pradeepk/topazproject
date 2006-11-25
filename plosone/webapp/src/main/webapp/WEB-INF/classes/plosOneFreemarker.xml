@@ -18,10 +18,6 @@
 
   <page>
     <name>/article/article_body.ftl</name>
-<!--     <css>
-      <file>/css/pone_screen.css</file>
-      <file>/css/pone_iepc.css</file>
-    </css>-->
     <javascript>
       <file>/javascript/prototype.js</file>
       <file>/javascript/browserDetection.js</file>
@@ -39,6 +35,7 @@
       <file>/javascript/init_article.js</file>   
     </javascript>
   </page>
+
   <page>
     <name>/discussion/discussion.ftl</name>
     <javascript>
@@ -55,6 +52,7 @@
       <file>/javascript/init_discussion.js</file>   
     </javascript>
   </page>
+
   <page>
     <name>/discussion/startDiscussion.ftl</name>
     <javascript>
@@ -71,6 +69,7 @@
       <file>/javascript/init_newDiscussion.js</file>   
     </javascript>
   </page>
+
   <page>
     <name>/article/imageWindow.ftl</name>
 		<css>
@@ -91,4 +90,16 @@
       <file>/javascript/init_slideshow.js</file>   
     </javascript>
   </page>
+
+  <page>
+    <name>/feedback/feedbackEntry.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_forms.css</file>
+    </css>
+  </page>
+  
+
+  
 </pages>
