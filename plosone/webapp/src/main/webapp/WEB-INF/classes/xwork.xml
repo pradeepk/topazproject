@@ -405,10 +405,6 @@
   </package>
 
   <package name="user-secure" extends="default" namespace="/user/secure">
-    <action name="displayUser" class="org.plos.user.action.DisplayUserAction">
-      <result name="success">/WEB-INF/pages/user/displayUser.ftl</result>
-    </action>
-    
     <action name="secureRedirect" class="org.plos.action.RedirectAction">
       <result type="redirect">
         <param name="location">${goTo}</param>
@@ -457,6 +453,10 @@
     <default-interceptor-ref name="plosBaseStack" />
     <action name="newUser">
       <result>/WEB-INF/pages/user/newUser.ftl</result>
+    </action>
+    
+    <action name="displayUser" class="org.plos.user.action.DisplayUserAction">
+      <result name="success">/WEB-INF/pages/user/displayUser.ftl</result>
     </action>
 
     <action name="prePopulateNewUser" class="org.plos.user.action.PrepopulateUserDetailsAction">

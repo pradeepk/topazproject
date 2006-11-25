@@ -8,7 +8,7 @@
 		<a href="${freemarker_config.getContext()}">Continue</a> on to PLoS ONE
 
     <br/>
-    <@ww.url id="displayUserURL" namespace="/user/secure" action="displayUser" userId="${internalId}"/>
+    <@ww.url id="displayUserURL" namespace="/user/create" action="displayUser" userId="${internalId}"/>
     <@ww.a href="%{displayUserURL}">Display user info</@ww.a>
 
     <@ww.url id="displayUserURL" namespace="/user/secure" action="displayPrivateFieldNames" userId="${internalId}"/>
