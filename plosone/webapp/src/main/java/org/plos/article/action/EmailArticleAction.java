@@ -11,10 +11,13 @@ package org.plos.article.action;
 
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.EmailValidator;
+import org.plos.ApplicationException;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
+import org.plos.article.service.FetchArticleService;
 import org.plos.service.PlosoneMailer;
 import org.plos.user.PlosOneUser;
 import org.plos.user.action.UserActionSupport;
+import org.topazproject.ws.article.ObjectInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -28,7 +31,10 @@ public class EmailArticleAction extends UserActionSupport {
   private String emailFrom;
   private String senderName;
   private String note;
+  private String title;
+  private String description;
   private PlosoneMailer plosoneMailer;
+  private FetchArticleService fetchArticleService;
 
   /**
    * Render the page with the values passed in
@@ -41,7 +47,7 @@ public class EmailArticleAction extends UserActionSupport {
       senderName = plosOneUser.getDisplayName();
       emailFrom = plosOneUser.getEmail();
     }
-
+    setArticleTitleAndDesc(articleURI);
     return SUCCESS;
   }
 
@@ -53,13 +59,22 @@ public class EmailArticleAction extends UserActionSupport {
   public String executeSend() throws Exception {
     if (!validates()) return INPUT;
 
+    setArticleTitleAndDesc(articleURI);
     final Map<String, String> mapFields = new HashMap<String, String>();
     mapFields.put("articleURI", articleURI);
     mapFields.put("senderName", senderName);
     mapFields.put("note", note);
+    mapFields.put("title", title);
+    mapFields.put("description", description);
     plosoneMailer.sendEmailThisArticleEmail(emailTo, emailFrom, mapFields);
 
     return SUCCESS;
+  }
+
+  private void setArticleTitleAndDesc(final String articleURI) throws ApplicationException {
+    final ObjectInfo articleInfo = fetchArticleService.getArticleInfo(articleURI);
+    title = articleInfo.getTitle();
+    description = articleInfo.getDescription();
   }
 
   private boolean validates() {
@@ -182,5 +197,29 @@ public class EmailArticleAction extends UserActionSupport {
    */
   public void setPlosoneMailer(final PlosoneMailer plosoneMailer) {
     this.plosoneMailer = plosoneMailer;
+  }
+
+  /**
+   * Setter for fetchArticleService.
+   * @param fetchArticleService Value to set for fetchArticleService.
+   */
+  public void setFetchArticleService(final FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
+  }
+
+  /**
+   * Getter for description.
+   * @return Value of description.
+   */
+  public String getDescription() {
+    return description;
+  }
+
+  /**
+   * Getter for title.
+   * @return Value of title.
+   */
+  public String getTitle() {
+    return title;
   }
 }

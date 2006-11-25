@@ -4,13 +4,12 @@ The sender added this:
 ${note}
 ===================================================
 
-Interdigitated Paralemniscal and Lemniscal Pathways in the Mouse Barrel Cortex
+${title} - ${description}
 
-Bureau I, von Saint Paul F, Svoboda K
 
-PLoS Biology Vol. 4, No. 12, e382 ${articleURI}
+ArticleId: ${articleURI}
 
 Read the open-access, full-text article here:
-${url}=${articleURI}
+<a href="${url}=${articleURI}">${title}</a>
 
 

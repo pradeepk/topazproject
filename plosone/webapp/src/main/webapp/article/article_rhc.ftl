@@ -12,8 +12,10 @@
 	      <@ww.param name="representation" value="%{'PDF'}"/>
       </@ww.url>
 			<li><a href="${articleArticleRepPDF}" class="pdf" title="Download PDF">Download Article PDF</a></li>
-			<li><a href="#" class="email" title="Email This Article to a Friend or Colleague">Email This Article</a></li>
-  		<li><a href="#" class="print last" title="Go to a Printer Ready Version">Print This Article</a></li>
+      <@ww.url id="emailArticleURL" namespace="/article" action="emailThisArticleCreate" articleURI="${articleURI}"/>
+      <li><@ww.a href="%{emailArticleURL}"  cssClass="email" title="Email This Article to a Friend or Colleague">Email This Article</@ww.a></li>
+
+      <li><a href="#" class="print last" title="Go to a Printer Ready Version">Print This Article</a></li>
 		</ul>
 	</div>
 <!--

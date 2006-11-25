@@ -3,8 +3,8 @@
  */
 package org.plos.article.service;
 
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 import com.opensymphony.oscache.base.NeedsRefreshException;
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 import com.sun.org.apache.xpath.internal.XPathAPI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,6 +17,7 @@ import org.plos.util.FileUtils;
 import org.plos.util.TextUtils;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.annotation.AnnotationInfo;
+import org.topazproject.ws.article.ObjectInfo;
 import org.topazproject.xml.transform.cache.CachedSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -141,7 +142,7 @@ public class FetchArticleService {
   /**
    * Runs secondary object description through an XSL style sheet to produce HTML
    * 
-   * @param description
+   * @param description description
    * @return String representing the transformed XML fragment or the original XML string if an error occurs
    * @throws ApplicationException
    */
@@ -490,5 +491,20 @@ public class FetchArticleService {
     }
     log.debug("secondary objectXSL template location = " + file.getAbsolutePath());
     this.secondaryObjectXslTemplate = file;
+  }
+
+  /**
+   * @see org.plos.article.service.ArticleWebService#getObjectInfo(String)
+   * @param articleURI articleURI
+   * @return ObjectInfo
+   * @throws ApplicationException ApplicationException
+   */
+  public ObjectInfo getArticleInfo(final String articleURI) throws ApplicationException {
+    try {
+      return articleService.getObjectInfo(articleURI);
+    } catch (Exception e) {
+      log.error("Failed to get object info", e);
+      throw new ApplicationException("Failed to get object info", e);
+    }
   }
 }

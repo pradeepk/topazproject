@@ -1,5 +1,9 @@
 <html>
+<title>Email this article</title>
 <body>
+
+<b>Title:</b> ${title} <br/>
+<b>Description :</b> ${description}
 <@ww.form name="emailThisArticle" cssClass="pone-form" action="emailThisArticleSubmit" namespace="/article" method="post" title="Email this article">
   <@ww.hidden name="articleURI"/>
   <tr>

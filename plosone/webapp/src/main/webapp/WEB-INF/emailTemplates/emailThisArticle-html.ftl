@@ -1,16 +1,15 @@
-${senderName} has sent you an open-access article from Plosone.
+${senderName} has sent you an open-access article from PLoS ONE.
 
-The sender added this:
-${note}
+The sender added this:<br/>
+${note}<br/>
 ===================================================
 
-Interdigitated Paralemniscal and Lemniscal Pathways in the Mouse Barrel Cortex
+${title} - ${description} <br/><br/>
 
-Bureau I, von Saint Paul F, Svoboda K
 
-PLoS Biology Vol. 4, No. 12, e382 ${articleURI}
+ArticleId: ${articleURI}<br/>
 
-Read the open-access, full-text article here:
-${url}=${articleURI}
+Read the open-access, full-text article here:<br/>
+<a href="${url}=${articleURI}">${title}</a>
 
 

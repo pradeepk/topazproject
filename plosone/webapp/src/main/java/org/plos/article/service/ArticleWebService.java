@@ -15,12 +15,11 @@ import org.topazproject.common.DuplicateIdException;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.ArticleClientFactory;
+import org.topazproject.ws.article.ArticleInfo;
 import org.topazproject.ws.article.IngestException;
 import org.topazproject.ws.article.NoSuchArticleIdException;
 import org.topazproject.ws.article.NoSuchObjectIdException;
-import org.topazproject.ws.article.ArticleInfo;
 import org.topazproject.ws.article.ObjectInfo;
-import org.topazproject.ws.article.RepresentationInfo;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
@@ -28,8 +27,6 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
 
 /**
  * Wrapper around {@link org.topazproject.ws.article.Article} to reduce the confusion around
@@ -146,35 +143,33 @@ public class ArticleWebService extends BaseConfigurableService {
   * @return the xml for the specified feed
   * @throws RemoteException if there was a problem talking to the alerts service
   */
- public String getArticles(final String startDate, final String endDate, 
-		             final int[] states, boolean ascending) throws RemoteException {
+  public String getArticles(final String startDate, final String endDate,
+                 final int[] states, boolean ascending) throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-	return delegateService.getArticles(startDate, endDate, null, null, states, true);
-	 
- }
+    return delegateService.getArticles(startDate, endDate, null, null, states, true);
+  }
 
- /**
-  * @see org.topazproject.ws.article.Article#getArticleInfos(java.lang.String, java.lang.String, java.lang.String[], java.lang.String[], int[], boolean)
-  */
- public ArticleInfo[] getArticleInfos(String startDate, String endDate,
+  /**
+   * @see org.topazproject.ws.article.Article#getArticleInfos(String, String, String[], String[], int[], boolean)
+   */
+  public ArticleInfo[] getArticleInfos(String startDate, String endDate,
                                      String[] categories, String[] authors, int[] states,
                                      boolean ascending) throws RemoteException{
     ensureInitGetsCalledWithUsersSessionAttributes();
     return delegateService.getArticleInfos(startDate, endDate, categories, authors, states, ascending);
-   
- }
+  }
  
  
   /**
    * Get the object-info of an object
-   * @param obj uri
+   * @param uri uri
    * @return the object-info of the object
    * @throws org.topazproject.ws.article.NoSuchObjectIdException NoSuchObjectIdException
    * @throws java.rmi.RemoteException RemoteException
    */
-  public ObjectInfo getObjectInfo(final String obj) throws RemoteException, NoSuchObjectIdException {
+  public ObjectInfo getObjectInfo(final String uri) throws RemoteException, NoSuchObjectIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return delegateService.getObjectInfo(obj);
+    return delegateService.getObjectInfo(uri);
   }
 
   /**
@@ -214,7 +209,7 @@ public class ArticleWebService extends BaseConfigurableService {
    *                 content-type then that will be used; otherwise the content-type will be
    *                 set to <var>application/octet-stream</var>; may be null, in which case
    *                 the representation is removed.
-   * @throws NoSuchObjectException if the object does not exist
+   * @throws NoSuchObjectIdException if the object does not exist
    * @throws RemoteException if some other error occured
    * @throws NullPointerException if any of the parameters are null
    */
