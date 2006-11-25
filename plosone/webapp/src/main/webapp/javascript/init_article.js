@@ -9,11 +9,6 @@
     ldc = dojo.widget.byId("LoadingCycle");
     ldc.show();
     
-    
-    errView = dojo.widget.byId("ErrorConsole");
-    var errClose = dojo.byId("btn_ok");
-    errView.setCloseControl(errClose);
-    
     if (loggedIn) {    
       var triggerNode = dojo.byId(annotationConfig.trigger);
     	dojo.event.connect(triggerNode, 'onmousedown', function(e) {
@@ -22,6 +17,9 @@
   	   }
     	);
     }
+    
+    var tocObj = dojo.byId('sectionNavTop');
+    topaz.navigation.buildTOC(tocObj);
     
  		annotationForm = document.createAnnotation;
     initAnnotationForm();
@@ -82,14 +80,10 @@
     var anEl = getAnnotationEl(anId);
     jumpToAnnotation(anId);
 
-/*
-  	var anm0 = "";//dojo.lfx.smoothScroll(anEl,window,null,500);
-  	var anm1 = dojo.lfx.html.unhighlight(anEl, '#FFFFA0', 500, dojo.lfx.easeOut);
-  	var anm2 = dojo.lfx.html.highlight(anEl, '#FFFFA0', 500, dojo.lfx.easeIn);
-  	var anm = dojo.lfx.chain(anm0, anm1, anm2); 
-  	anm.play();
-*/
-
+    errView = dojo.widget.byId("ErrorConsole");
+    var errClose = dojo.byId("btn_ok");
+    errView.setCloseControl(errClose);
+    
     ldc.hide();
     
   }

@@ -77,18 +77,6 @@
 			</ol>
 		</div> 
 		<div id="sectionNavTop" class="tools">
-					<ul>
-					<li><a href="#s0">Top</a></li>
-					<li><a href="#s1">Introduction</a></li>
-					<li><a href="#s2">Results</a></li>
-	
-					<li><a href="#s3">Discussion</a></li>
-					<li><a href="#s4">Materials and Methods</a></li>
-					<li><a href="#s5">Supporting Information</a></li>
-					<li><a href="#s6">Acknowledgments</a></li>
-					<li><a href="#s7" class="last">References</a></li>
-				</ul>
-	
 		</div>
 		<div id="dojoDebug"></div>
 	</div>
