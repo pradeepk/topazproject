@@ -29,6 +29,7 @@
       <file>/javascript/topaz/formUtil.js</file>   
       <file>/javascript/topaz/domUtil.js</file>
       <file>/javascript/topaz/floatingMenu.js</file>
+     <file>/javascript/topaz/navigationUtil.js</file>
       <file>/javascript/dojoRequire_article.ftl</file>
       <file>/javascript/formSetup_article.js</file>   
       <file>/javascript/topaz/errorConsole.js</file>   
