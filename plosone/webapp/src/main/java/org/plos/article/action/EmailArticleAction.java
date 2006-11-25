@@ -10,6 +10,7 @@
 package org.plos.article.action;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.EmailValidator;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.service.PlosoneMailer;
 import org.plos.user.PlosOneUser;
@@ -62,28 +63,37 @@ public class EmailArticleAction extends UserActionSupport {
   }
 
   private boolean validates() {
+    boolean isValid = true;
     if (StringUtils.isBlank(articleURI)) {
       addFieldError("articleURI", "Article URI cannot be empty");
-      return false;
+      isValid = false;
     }
     if (StringUtils.isBlank(emailFrom)) {
       addFieldError("emailFrom", "Your email address cannot be empty");
-      return false;
+      isValid = false;
+    }
+    if (!EmailValidator.getInstance().isValid(emailFrom)) {
+      addFieldError("emailFrom", "Invalid email address");
+      isValid = false;
     }
     if (StringUtils.isBlank(emailTo)) {
       addFieldError("emailTo", "To email address cannot be empty");
-      return false;
+      isValid = false;
+    }
+    if (!EmailValidator.getInstance().isValid(emailTo)) {
+      addFieldError("emailTo", "Invalid email address");
+      isValid = false;
     }
     if (StringUtils.isBlank(senderName)) {
       addFieldError("senderName", "Your name cannot be empty");
-      return false;
+      isValid = false;
     }
     if (StringUtils.isBlank(note)) {
       addFieldError("note", "Note cannot be empty");
-      return false;
+      isValid = false;
     }
 
-    return true;
+    return isValid;
   }
 
   /**

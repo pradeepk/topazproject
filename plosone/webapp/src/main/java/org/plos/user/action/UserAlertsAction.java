@@ -10,6 +10,7 @@
 package org.plos.user.action;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.validator.EmailValidator;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.user.PlosOneUser;
 import org.plos.user.service.CategoryBean;
@@ -35,8 +36,13 @@ public class UserAlertsAction extends UserActionSupport {
   public String saveAlerts() throws Exception {
     if (StringUtils.isEmpty(alertEmailAddress)) {
       addFieldError("alertEmailAddress", "Email address for alerts is required.");
-      return INPUT;
+      return ERROR;
     }
+    if (!EmailValidator.getInstance().isValid(alertEmailAddress)) {
+      addFieldError("alertEmailAddress", "Invalid email address");
+      return ERROR;
+    }
+
     final PlosOneUser plosOneUser = (PlosOneUser) getSessionMap().get(PLOS_ONE_USER_KEY);
     final Collection<String> alertsList = new ArrayList<String>();
     for (final String alert : monthlyAlerts) {
@@ -78,11 +84,9 @@ public class UserAlertsAction extends UserActionSupport {
 
     monthlyAlerts = convertToArrayWithAtleastOneStringElement(monthlyAlertsList);
     weeklyAlerts = convertToArrayWithAtleastOneStringElement(weeklyAlertsList);
-    final String email = plosOneUser.getAlertsEmailAddress();
-    if ((email == null) || email.equals("")) {
+    alertEmailAddress = plosOneUser.getAlertsEmailAddress();
+    if (StringUtils.isBlank(alertEmailAddress)) {
       alertEmailAddress = plosOneUser.getEmail();
-    } else {
-      alertEmailAddress = email;
     }
     return SUCCESS;
   }
