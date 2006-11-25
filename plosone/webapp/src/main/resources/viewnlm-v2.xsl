@@ -449,6 +449,7 @@
 	<div id="researchArticle" class="content">
 		<xsl:call-template name="makeXpathLocation"/>
 		<div class="beta">We are still in beta! Help us make the site better and <a href="#" title="Submit your feedback">report bugs</a>.</div>
+		<a id="top" name="top" toc="top" title="Top"></a>
 		<xsl:apply-templates/>
 	</div>
 <!--    </body>-->
@@ -1089,11 +1090,11 @@ Make article meta data
 			<xsl:text> (</xsl:text>
 			<xsl:value-of select="copyright-year"/>
 			<xsl:text>) </xsl:text>
-			<xsl:value-of select="title-group/article-title"/>
+			<xsl:apply-templates select="title-group/article-title"/>
 			<xsl:text>. </xsl:text>
 			<xsl:value-of select="../journal-meta/journal-title"/>
 			<xsl:value-of select="volume"/>(<xsl:value-of select="issue"/>):
-			<xsl:value-of select="epage"/>.
+			<xsl:value-of select="elocation-id"/>.
 			doi:<xsl:value-of select="article-id[@pub-id-type='doi']"/>
 		</p>
 
@@ -1663,6 +1664,8 @@ Make article meta data
      <xsl:element name="a">
 		<xsl:attribute name="id"><xsl:value-of select="@id"></xsl:value-of></xsl:attribute>
 		<xsl:attribute name="name"><xsl:value-of select="@id"></xsl:value-of></xsl:attribute>
+		<xsl:attribute name="toc"><xsl:value-of select="@id"></xsl:value-of></xsl:attribute>
+		<xsl:attribute name="title"><xsl:value-of select="title"></xsl:value-of></xsl:attribute>
      </xsl:element>
 
     <xsl:apply-templates/>
@@ -2144,11 +2147,12 @@ Make article meta data
 <!-- ============================================================= -->
 
 <xsl:template match="graphic">
-    <img>
-      <xsl:call-template name="make-src"/>
-      <xsl:call-template name="make-id"/>
-    </img>
-  <xsl:call-template name="nl-1"/>
+	<xsl:element name="img">
+	  <xsl:if test="@xlink:href">
+		<xsl:variable name="graphicDOI"><xsl:value-of select="@xlink:href"/></xsl:variable>
+		<xsl:attribute name="src"><xsl:value-of select="concat('fetchObject.action?uri=',$graphicDOI,'&amp;representation=PNG')"/></xsl:attribute>
+	  </xsl:if>
+  </xsl:element>
 </xsl:template>
 
 
@@ -3178,6 +3182,7 @@ Make article meta data
     <xsl:call-template name="make-id"/>
     <xsl:if test="not(title)">
       <h3 xpathLocation="noSelect">Acknowledgments</h3>
+	  <a id="ack" name="ack" toc="ack" title="Acknowledgments"></a>
       <xsl:call-template name="nl-1"/>
     </xsl:if>
 
@@ -3603,6 +3608,7 @@ Make article meta data
 <xsl:template match="ref-list/title">
   <xsl:call-template name="nl-1"/>
   <h3><xsl:apply-templates/></h3>
+  <a id="refs" name="refs" toc="refs" title="References"></a>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
@@ -3900,6 +3906,7 @@ Make article meta data
   <xsl:choose>
     <xsl:when test="not(title)">
       <h3>References</h3>
+   	  <a id="refs" name="refs" toc="refs" title="References"></a>
       <xsl:call-template name="nl-1"/>
     </xsl:when>
     <xsl:otherwise>
