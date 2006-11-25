@@ -83,7 +83,7 @@ public class SearchUtil {
 
     final Map<String, String> map = getFieldNodeNameAttributeValueMap(hitNode);
 
-    final String pid = map.get("PID");
+    final String pid = map.get("dc.identifier");
     final String type = map.get("property.type");
     final String state = map.get("property.state");
     final Date createdDate = DateParser.parse(map.get("property.createdDate"));

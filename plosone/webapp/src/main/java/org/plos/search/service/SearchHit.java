@@ -32,7 +32,7 @@ public class SearchHit {
   private final String repositoryName;
   private Date date;
   private String creator;
-  public static final String MULTIPLE_VALUE_DELIMITER = ", ";
+  public static final String MULTIPLE_VALUE_DELIMITER = "@@";
 
   /**
    * Create a search hit with the values set
@@ -41,7 +41,7 @@ public class SearchHit {
     this.date = date;
     this.hitNumber = hitNumber;
     this.hitScore = hitScore;
-    this.pid = pid;
+    this.pid = StringUtils.split(pid, MULTIPLE_VALUE_DELIMITER)[0];
     this.title = StringUtils.split(title, MULTIPLE_VALUE_DELIMITER)[0];
     this.highlight = highlight;
     this.type = type;
@@ -52,7 +52,7 @@ public class SearchHit {
     this.description = description;
     this.publisher = publisher;
     this.repositoryName = repositoryName;
-    this.creator = creator;
+    this.creator = StringUtils.join(StringUtils.split(creator, MULTIPLE_VALUE_DELIMITER), ", ");
   }
 
   /**

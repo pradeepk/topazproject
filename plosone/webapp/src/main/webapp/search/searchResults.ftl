@@ -27,7 +27,14 @@
 			<#list searchResults as hit>
 			<tr>
 				<td class="results-title">
-					<span class="results-item-title"><a href="#">${hit.title}</a></span>
+					<span class="results-item-title">
+            <#if hit.contentModel == "PlosArticle">
+              <@ww.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${hit.pid}"/>
+              <@ww.a href="%{fetchArticleURL}" title="Read Open Access Article" cssClass="article icon">${hit.title}</@ww.a>
+            <#else>
+              <a href="#">${hit.title}</a>
+            </#if>
+          </span>
 					<span class="results-item-preview">${hit.description}</span>
 				</td>
 				<td class="results-date">${hit.date?string("yyyy-MM-dd")}</td>
