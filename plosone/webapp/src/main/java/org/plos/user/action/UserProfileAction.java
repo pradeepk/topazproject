@@ -118,6 +118,7 @@ public class UserProfileAction extends UserActionSupport {
     newUser.setGivennames(this.givennames);
     newUser.setPositionType(this.positionType);
     newUser.setOrganizationType(this.organizationType);
+    newUser.setOrganizationName(this.organizationName);
     newUser.setPostalAddress(this.postalAddress);
     newUser.setBiographyText(this.biographyText);
     newUser.setInterestsText(this.interestsText);
