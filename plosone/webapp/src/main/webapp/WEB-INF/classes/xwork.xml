@@ -95,6 +95,8 @@
       </result>
     </action>
 
+    <action name="selectList" class="org.plos.action.ListingAction"/>
+
   </package>
 
   <package name="search" extends="default" namespace="/search">
@@ -497,7 +499,9 @@
 
 
     <action name="retrieveUserProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">
-      <result name="success">/WEB-INF/pages/user/newUser.ftl</result>
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/WEB-INF/pages/user/newUser.ftl</param>
+      </result>
       <result name="input">/WEB-INF/pages/user/newUser.ftl</result>
       <result name="error">/WEB-INF/pages/user/newUser.ftl</result>
     </action>

@@ -45,6 +45,7 @@ public class UserProfileAction extends UserActionSupport {
   private String city;
   private String country;
   private String[] privateFields = new String[]{""};
+  private String title;
 
   /**
    * Will take the CAS ID and create a user in Topaz associated with that auth ID. If auth ID
@@ -85,6 +86,7 @@ public class UserProfileAction extends UserActionSupport {
     realName = plosOneUser.getRealName();
     givennames = plosOneUser.getGivennames();
     surnames = plosOneUser.getSurnames();
+    title = plosOneUser.getTitle();
     positionType = plosOneUser.getPositionType();
     organizationType = plosOneUser.getOrganizationType();
     organizationName = plosOneUser.getOrganizationName();
@@ -111,6 +113,8 @@ public class UserProfileAction extends UserActionSupport {
     newUser.setEmail(this.email);
     newUser.setDisplayName(this.displayName);
     newUser.setRealName(this.realName);
+    newUser.setTitle(this.title);
+    newUser.setSurnames(this.surnames);
     newUser.setGivennames(this.givennames);
     newUser.setPositionType(this.positionType);
     newUser.setOrganizationType(this.organizationType);
@@ -424,7 +428,6 @@ public class UserProfileAction extends UserActionSupport {
 
   /**
    * Getter for property 'surnames'.
-   *
    * @return Value for property 'surnames'.
    */
   public String getSurnames() {
@@ -433,10 +436,25 @@ public class UserProfileAction extends UserActionSupport {
 
   /**
    * Setter for property 'surnames'.
-   *
    * @param surnames Value to set for property 'surnames'.
    */
   public void setSurnames(final String surnames) {
     this.surnames = surnames;
+  }
+
+  /**
+   * Getter for title.
+   * @return Value of title.
+   */
+  public String getTitle() {
+    return title;
+  }
+
+  /**
+   * Setter for title.
+   * @param title Value to set for title.
+   */
+  public void setTitle(final String title) {
+    this.title = title;
   }
 }
