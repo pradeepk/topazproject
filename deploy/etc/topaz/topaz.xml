@@ -11,13 +11,13 @@
         <auth-method>CAS</auth-method>
       </fedoraUploader>
     </services>-->
-    <server>
-      <hostname>morgan.topazproject.org</hostname>
-    </server>
     <search>
       <indexpath>/usr/local/topaz/data/lucene</indexpath>
       <!-- <fedoraobjpath>...</fedoraobjpath> -->
     </search>
+    <cas-server>
+      <base-url>https://FQHN:7443/cas</base-url>
+    </cas-server>
     <server>
       <hostname>FQHN</hostname>
       <https-port>8443</https-port>

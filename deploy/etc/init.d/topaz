@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
-# $HeadURL:: http://gandalf.topazproject.org/svn/private/eric/init/bin/tomcat $
-# $Id: tomcat 1159 2006-11-17 23:58:54Z ebrown $
+# $HeadURL::                                                                                      $
+# $Id$
 #
 # Tomcat init script
 # Copyright (c) 2006 by Topaz, Inc.
@@ -10,170 +10,11 @@
 # http://opensource.org/licenses/ecl1.php
 
 # chkconfig: 345 96 11
-# description: topaz fedora server
+# description: topaz services
 
 # What to customize/do:
 # - chkconfig and description lines above
-# - Define defaults and/or overrides (minimum is <basename>_CATALINA_HOME)
-# - Ensure the jsvc binary is somewhere
+# - Read and update configuration in /usr/local/topaz/bin/tomcat
+#   (Check any changes back into svn -- head/deploy/src
 
-# Notes:
-#  jsvc pretty much insists on being root
-#  jsvc must be in PATH (build it from $CATALINA_HOME/bin/jsvc.tar.gz)
-#    Recommend /usr/local/bin (and add this to root's path)
-#  We will run as USER
-#    (unless variable is undefined -- remove it AND undefine it before running)
-#  Tested with jakarta-tomcat-5.0.28 & 5.5
-
-# Defaults:
-CATALINA_HOME=
-USER="topaz"
-JAVA_HOME="/usr/local/topaz/java"
-TOMCAT_OPTS="-Xmx256m"
-VARDIR="/var"
-LOGDIR="${VARDIR}/log/tomcat"
-PIDDIR="${VARDIR}/run/tomcat"
-JSVC="jsvc"
-JVM="server"
-
-# Overrides: basename_CATALINA_HOME, basename_TOMCAT_OPTS, basename_USER
-ecqs_CATALINA_HOME=/usr/local/topaz/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28
-ecqs_TOMCAT_OPTS="-Xmx256m"
-topaz_CATALINA_HOME=/usr/local/topaz/topaz-tomcat55
-search_CATALINA_HOME=/usr/local/topaz/search-tomcat55
-mulgara_CATALINA_HOME=/usr/local/topaz/mulgara-tomcat55
-
-#
-# Should not need to modify stuff below here
-#
-
-# Optionally change basename (used mostly for testing)
-if [ "--basename" == "$1" -o "-b" == "$1" ]; then
-  BASENAME=$2
-  shift 2
-else
-  BASENAME=$(basename $0)
-fi
-
-# Define log and pid files
-STDLOG="${LOGDIR}/${BASENAME}.log"
-ERRLOG="${LOGDIR}/${BASENAME}.err"
-PIDFILE="${PIDDIR}/${BASENAME}-jsvc.pid"
-
-# Log stuff w/date as tomcat doesn't include dates when logging!
-log() { echo "`date` $*" | tee -a $STDLOG >> $ERRLOG; echo $*; }
-
-# Expand configuration (use appropriate overrides or defaults if no overrides)
-expand () { eval "$1=\${${BASENAME}_$1:-\$$1}"; }
-expand CATALINA_HOME
-expand TOMCAT_OPTS
-expand USER
-
-# Having CATALINA_HOME set properly is critical
-export CATALINA_HOME
-[ -z "$CATALINA_HOME" ] && log "Must set/define CATALINA_HOME (for $BASENAME)" && exit 1
-[ \! -d "$CATALINA_HOME" ] && log "CATALINA_HOME ($CATALINA_HOME) does not exist" && exit 1
-
-# Setup other catalina defaults
-CATALINA_ENDORSED_DIRS=${CATALINA_HOME}/common/endorsed
-CATALINA_POLICY=${CATALINA_HOME}/conf/catalina.policy
-
-# Compute classpath
-getjars () { echo `(cd /; find $1 -name '*.jar')` | tr ' ' ':'; }
-TC=${CATALINA_HOME}
-CLASSPATH=`getjars ${TC}/bin`:`getjars ${TC}/server/lib`:`getjars ${TC}/common`
-CLASSPATH="${CLASSPATH}:/home/topaz/libs/log4j-1.2.9.jar"
-CLASSPATH="${CLASSPATH}:/etc/topaz/container-classes"
-
-# Define options for JSVC
-JSVC_OPTS="-outfile ${STDLOG} -errfile ${ERRLOG} -pidfile ${PIDFILE} -cp ${CLASSPATH}"
-[ -n "$JVM" ] && JSVC_OPTS="${JSVC_OPTS} -jvm ${JVM}"
-[ -n "$USER" ] && JSVC_OPTS="$JSVC_OPTS -user ${USER}"
-JSVC_OPTS="${JSVC_OPTS} \
-  -Djava.endorsed.dirs=${CATALINA_ENDORSED_DIRS} \
-  -Dcatalina.base=${CATALINA_HOME} \
-  -Dcatalina.home=${CATALINA_HOME}"
-JSVC_OPTS="${JSVC_OPTS} ${TOMCAT_OPTS}"
-
-# Find jsvc (in case root's PATH) doesn't contain it
-if which ${JSVC} >/dev/null 2>&1; then
-  # For some reason, jsvc has trouble starting if it is not an absolute path
-  JSVC=`which ${JSVC}`
-else
-  [ -x "${TC}/bin/jsvc" ]    && JSVC="${TC}/bin/jsvc"    && log "Using ${JSVC}"
-  [ -x /usr/local/bin/jsvc ] && JSVC=/usr/local/bin/jsvc && log "Using ${JSVC}"
-fi
-
-# You must be root to run jsvc
-test_root() { [ `id -u` -ne 0 ] && echo "You must be root!" && exit 1; }
-
-# Create dirs
-create_dirs() { mkdir -p ${LOGDIR} ${PIDDIR}; }
-
-jsvc() {
-  # Make sure that we have jsvc
-  if ! which ${JSVC} >/dev/null 2>&1; then
-    echo "Cannot find ${JSVC} executable"
-    echo "Install from ${CATALINA_HOME}/bin/jsvc.tar.gz"
-    exit 1
-  fi
-  # It seems important to start from CATALINA_HOME to read server.xml
-  cd ${CATALINA_HOME}
-  ${JSVC} ${JSVC_OPTS} $* org.apache.catalina.startup.Bootstrap
-}
-
-jsvc_start() {
-  # Create dirs if they don't exist
-  mkdir -p ${LOGDIR}
-  mkdir -p ${PIDDIR}
-  [ -n "$USER" ] && chown -R ${USER} ${LOGDIR}
-
-  # Start and wait a while for it to start properly
-  jsvc -wait 10
-  chmod ugo+r ${PIDFILE}
-}
-
-case "$1" in
-  start)
-    test_root
-    create_dirs
-    log "Starting ${BASENAME} in ${CATALINA_HOME}"
-    jsvc_start
-    ;;
-  stop)
-    test_root
-    create_dirs
-    PID=`cat ${PIDFILE} 2>/dev/null`
-    log "Stopping ${BASENAME} (${PID})"
-    jsvc -stop
-    ;;
-  restart|reload)
-    test_root
-    create_dirs
-    PID=`cat ${PIDFILE} 2>/dev/null`
-    log "Restarting ${BASENAME} (${PID}) in ${CATALINA_HOME}"
-    jsvc -stop
-    jsvc_start
-    ;;
-  status|check)
-    if [ -e ${PIDFILE} ]; then
-      PID=`cat ${PIDFILE}`
-      TMPFILE=/tmp/${BASENAME}.status.$$
-      if ps o "pid user rss %mem etime time %cpu comm" -p ${PID} > ${TMPFILE} 2>&1; then
-        echo "${BASENAME} (${PID}) is running from ${CATALINA_HOME}"
-        cat ${TMPFILE}
-        lsof -n -i -a -p $PID
-      else
-        echo "${BASENAME} not running"
-      fi
-      rm -f ${TMPFILE}
-    else
-      echo "${BASENAME} not running"
-    fi
-    ;;
-  *)
-    echo "Usage: $0 [--basename name] {start|stop|restart|status}"
-    exit 1
-esac
-
-exit $?
+/usr/local/topaz/bin/tomcat --basename $(basename $0) $*
