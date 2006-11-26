@@ -16,7 +16,7 @@
  		      <@ww.textfield label="Your name" required="true" name="senderName" size="40" />					
  		      <@ww.textarea label="Your comments to add to the E-mail" value="%{'I thought you would find this article interesting.'}" required="true" name="note" />					
 			</ol>
-		  <@ww.submit value="send"/>
+		  <@ww.submit value="Send"/>
 		</fieldset>
 	</@ww.form>	
 	<p class="citation"><a href="http://journals.plos.org/plosmedicine/privacy.php">PLoS Journals Privacy Statement</a></p>
