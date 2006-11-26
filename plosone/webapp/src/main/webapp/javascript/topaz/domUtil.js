@@ -152,7 +152,8 @@ topaz.domUtil = {
   },
   
   getCurrentOffset: function(obj) {
-		var curleft = curtop = 0;
+		var curleft = 0;
+		var curtop = 0;
 		if (obj.offsetParent) {
 			curleft = obj.offsetLeft
 			curtop = obj.offsetTop
@@ -182,11 +183,16 @@ topaz.domUtil = {
   swapDisplayMode: function(objId) {
     var obj = dojo.byId(objId);
     
-    if(obj.style.display == "none")
+    if(obj.style.display != "block")
       obj.style.display = "block";
     else
       obj.style.display = "none";
       
     return false;
+  },
+  
+  removeExtraSpaces: function(text) {
+    //alert("text = '" + text + "'");
+    return text.replace(/([\r\n]*\s*)/g," ");
   }
 }
