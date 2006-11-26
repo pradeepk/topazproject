@@ -142,6 +142,14 @@ public class ArticleImpl implements Article {
        "  $id <rdf:type> <topaz:Article> and $id <tucana:is> <${art}>;").
       replaceAll("\\Q${MODEL}", MODEL);
 
+  private static final String ITQL_LIST_COMMENTED_ARTICLES =
+    ("select $article count(select $annotation from ${MODEL} where " +
+     "$annotation <http://www.w3.org/2000/10/annotation-ns#annotates> $article) " +
+     "subquery(select $p $o from ${MODEL} where $article $p $o) " +
+     "from ${MODEL} where " +
+     "$article <rdf:type> <topaz:Article> " +
+     "order by $k0 desc limit ${number};").replaceAll("\\Q${MODEL}", MODEL);
+
   private final URI        fedoraServer;
   private final Ingester   ingester;
   private final ArticlePEP pep;
@@ -424,9 +432,31 @@ public class ArticleImpl implements Article {
     return infos;
   }
 
-  public String[] getCommentedArticles(int articleNumber)
+  public ObjectInfo[] getCommentedArticles(int maxArticles)
     throws RemoteException {
-    return null;
+    if (maxArticles <= 0) {
+      return new ObjectInfo[0];
+    }
+    ItqlHelper itql = ctx.getItqlHelper();
+
+    try {
+      AnswerSet ans = new AnswerSet(
+          itql.doQuery(ItqlHelper.bindValues(ITQL_LIST_COMMENTED_ARTICLES, "number",
+              Integer.toString(maxArticles)),null));
+      ans.next();
+      AnswerSet.QueryAnswerSet rows = ans.getQueryResults();
+
+      List infos = new ArrayList();
+      while (rows.next()) {
+        ObjectInfo info = new ObjectInfo();
+        parseObjectInfo((AnswerSet.QueryAnswerSet)rows.getSubQueryResults(2),info);
+        infos.add(info);
+      }
+
+      return (ObjectInfo[]) infos.toArray(new ObjectInfo[infos.size()]);
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error querying RDF", ae);
+    }
   }
 
   public ObjectInfo[] listSecondaryObjects(String article)
