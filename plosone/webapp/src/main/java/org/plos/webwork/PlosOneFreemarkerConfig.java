@@ -45,6 +45,7 @@ public class PlosOneFreemarkerConfig {
   private String plosOneHost;
   private String casLoginURL;
   private String casLogoutURL;
+  private String registrationURL;
   
   private static final String[] DEFAULT_CSS_FILES = {"/css/pone_iepc.css", "/css/pone_screen.css"};
   private static final String[] DEFAULT_JS_FILES = {"/javascript/all.js"};
@@ -63,6 +64,7 @@ public class PlosOneFreemarkerConfig {
     plosOneHost = myConfig.getString("plosone-host");
     casLoginURL = myConfig.getString("cas-login-url");
     casLogoutURL = myConfig.getString("cas-logout-url");
+    registrationURL = myConfig.getString("registration-url");
     
     String title = myConfig.getString("default.title");
     if (title != null) {
@@ -136,6 +138,10 @@ public class PlosOneFreemarkerConfig {
         javaScriptFiles.put(pageName, javaScriptArray);
       }
     }
+    if (log.isDebugEnabled()){
+      log.debug("End PlosOne Configuration Reading");
+    }
+  
   }
   
   /**
@@ -300,6 +306,20 @@ public class PlosOneFreemarkerConfig {
    */
   public void setCasLogoutURL(String casLogoutURL) {
     this.casLogoutURL = casLogoutURL;
+  }
+
+  /**
+   * @return Returns the registrationURL.
+   */
+  public String getRegistrationURL() {
+    return registrationURL;
+  }
+
+  /**
+   * @param registrationURL The registrationURL to set.
+   */
+  public void setRegistrationURL(String registrationURL) {
+    this.registrationURL = registrationURL;
   }
   
 }

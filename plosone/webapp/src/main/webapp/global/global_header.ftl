@@ -20,7 +20,7 @@
 	<div id="user">
 		<div>
 			<ul>
-				<li><a href="#">Create Account</a></li>
+				<li><a href="${freemarker_config.registrationURL}">Create Account</a></li>
 				<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="feedback">Login</a></li>
 			</ul>
 		</div>
