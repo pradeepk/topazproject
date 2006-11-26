@@ -65,7 +65,7 @@
       <map>
         <entry key="text" value="verifyEmail-text.ftl"/>
         <entry key="html" value="verifyEmail-html.ftl"/>
-        <entry key="url" value="http://FQHN:8080/plos-registration/emailVerification.action"/>
+        <entry key="url" value="https://FQHN:7433/plos-registration/emailVerification.action"/>
         <entry key="subject" value="Please verify your newly registered email address at Plosone"/>
       </map>
     </property>
@@ -73,7 +73,7 @@
       <map>
         <entry key="text" value="forgotPasswordVerificationEmailTemplate-text.ftl"/>
         <entry key="html" value="forgotPasswordVerificationEmailTemplate-html.ftl"/>
-        <entry key="url" value="http://FQHN:8080/plos-registration/forgotPasswordVerify.action"/>
+        <entry key="url" value="https://FQHN:7433/plos-registration/forgotPasswordVerify.action"/>
         <entry key="subject" value="Your forgot password verification email"/>
       </map>
     </property>
