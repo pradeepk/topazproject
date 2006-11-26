@@ -15,16 +15,13 @@ import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import static org.plos.Constants.ReturnCode.NEW_PROFILE;
 import static org.plos.Constants.ReturnCode.UPDATE_PROFILE;
 import org.plos.user.PlosOneUser;
-import org.plos.util.FileUtils;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
  * Prepopulate the user profile data as available
  */
 public class PrepopulateUserDetailsAction extends UserActionSupport {
-
   private String username;
   private String email;
   private String realName;
@@ -41,15 +38,7 @@ public class PrepopulateUserDetailsAction extends UserActionSupport {
     final PlosOneUser plosOneUser = (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
 
     if (null == plosOneUser) {
-      final String emailAddressUrl = getEmailAddressUrl();
-      final String userId = getUserId(sessionMap);
-      final String url = emailAddressUrl + userId;
-      try {
-        email = FileUtils.getTextFromUrl(url);
-      } catch (final IOException e) {
-        log.error("Failed to fetch the email address using the url:" + url, e);
-      }
-
+      email = fetchUserEmailAddress();
       return NEW_PROFILE;
     } else {
       email = plosOneUser.getEmail();
@@ -57,10 +46,6 @@ public class PrepopulateUserDetailsAction extends UserActionSupport {
       realName = plosOneUser.getRealName();
       return UPDATE_PROFILE;
     }
-  }
-
-  private String getEmailAddressUrl() {
-    return getUserService().getEmailAddressUrl();
   }
 
   /** @return Returns the email.*/

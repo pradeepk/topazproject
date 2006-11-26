@@ -13,6 +13,7 @@ package org.plos.user.action;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.ApplicationException;
 import static org.plos.Constants.Length;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.user.PlosOneUser;
@@ -76,8 +77,7 @@ public class UserProfileAction extends UserActionSupport {
   }
 
   public String executeRetrieveUserProfile() throws Exception {
-    final Map<String, Object> sessionMap = getSessionMap();
-    final PlosOneUser plosOneUser = (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
+    final PlosOneUser plosOneUser = getPlosOneUserFromSession();
 
     authId = plosOneUser.getAuthId();
     topazId = plosOneUser.getUserId();
@@ -107,25 +107,34 @@ public class UserProfileAction extends UserActionSupport {
     return SUCCESS;
   }
 
-  private PlosOneUser createPlosOneUser() {
-    final PlosOneUser newUser = new PlosOneUser(this.authId);
-    newUser.setUserId(this.topazId);
-    newUser.setEmail(this.email);
-    newUser.setDisplayName(this.displayName);
-    newUser.setRealName(this.realName);
-    newUser.setTitle(this.title);
-    newUser.setSurnames(this.surnames);
-    newUser.setGivennames(this.givennames);
-    newUser.setPositionType(this.positionType);
-    newUser.setOrganizationType(this.organizationType);
-    newUser.setOrganizationName(this.organizationName);
-    newUser.setPostalAddress(this.postalAddress);
-    newUser.setBiographyText(this.biographyText);
-    newUser.setInterestsText(this.interestsText);
-    newUser.setResearchAreasText(this.researchAreasText);
-    newUser.setCity(this.city);
-    newUser.setCountry(this.country);
-    return newUser;
+  private PlosOneUser createPlosOneUser() throws ApplicationException {
+    PlosOneUser plosOneUser = getPlosOneUserFromSession();
+    if (plosOneUser == null) {
+      plosOneUser = new PlosOneUser(this.authId);
+      plosOneUser.setEmail(fetchUserEmailAddress());
+    }
+
+    plosOneUser.setUserId(this.topazId);
+    plosOneUser.setDisplayName(this.displayName);
+    plosOneUser.setRealName(this.realName);
+    plosOneUser.setTitle(this.title);
+    plosOneUser.setSurnames(this.surnames);
+    plosOneUser.setGivennames(this.givennames);
+    plosOneUser.setPositionType(this.positionType);
+    plosOneUser.setOrganizationType(this.organizationType);
+    plosOneUser.setOrganizationName(this.organizationName);
+    plosOneUser.setPostalAddress(this.postalAddress);
+    plosOneUser.setBiographyText(this.biographyText);
+    plosOneUser.setInterestsText(this.interestsText);
+    plosOneUser.setResearchAreasText(this.researchAreasText);
+    plosOneUser.setCity(this.city);
+    plosOneUser.setCountry(this.country);
+    return plosOneUser;
+  }
+
+  private PlosOneUser getPlosOneUserFromSession() {
+    final Map<String, Object> sessionMap = getSessionMap();
+    return (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
   }
 
   public String getEmail() {
@@ -156,13 +165,31 @@ public class UserProfileAction extends UserActionSupport {
   }
 
   private boolean validates() {
+    boolean isValid = true;
     final int usernameLength = StringUtils.stripToEmpty(displayName).length();
     if (usernameLength < Integer.parseInt(Length.DISPLAY_NAME_MIN)
             || usernameLength > Integer.parseInt(Length.DISPLAY_NAME_MAX)) {
       addFieldError("displayName", "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters");
-      return false;
+      isValid = false;
     }
-    return true;
+    if (StringUtils.isBlank(realName)) {
+      addFieldError("realName", "First name cannot be empty");
+      isValid = false;
+    }
+    if (StringUtils.isBlank(surnames)) {
+      addFieldError("surnames", "Last name cannot be empty");
+      isValid = false;
+    }
+    //TODO: does everyone live in a city?
+    if (StringUtils.isBlank(city)) {
+      addFieldError("city", "City cannot be empty");
+      isValid = false;
+    }
+    if (StringUtils.isBlank(country)) {
+      addFieldError("country", "Country cannot be empty");
+      isValid = false;
+    }
+    return isValid;
   }
   /**
    * @return Returns the displayName.

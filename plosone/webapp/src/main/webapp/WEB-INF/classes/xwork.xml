@@ -502,8 +502,12 @@
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/WEB-INF/pages/user/newUser.ftl</param>
       </result>
-      <result name="input">/WEB-INF/pages/user/newUser.ftl</result>
-      <result name="error">/WEB-INF/pages/user/newUser.ftl</result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/WEB-INF/pages/user/newUser.ftl</param>
+      </result>
+      <result name="error" type="plosOneFreemarker">
+        <param name="templateFile">/WEB-INF/pages/user/newUser.ftl</param>
+      </result>
     </action>
   </package>
 
