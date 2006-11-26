@@ -85,7 +85,7 @@ topaz.domUtil = {
         var attrList = this.getAnnotationId(annoteEl[n]).split(',');
         
         for (var x=0; x<attrList.length; x++) {
-          if(attrList[x].match(displayIdList[i])) {
+          if(attrList[x] == displayIdList[i]) {
             elAttrList.push(annoteEl[n]);
           }
         }
@@ -152,8 +152,7 @@ topaz.domUtil = {
   },
   
   getCurrentOffset: function(obj) {
-		var curleft = 0;
-		var curtop = 0;
+		var curleft = curtop = 0;
 		if (obj.offsetParent) {
 			curleft = obj.offsetLeft
 			curtop = obj.offsetTop
@@ -193,6 +192,6 @@ topaz.domUtil = {
   
   removeExtraSpaces: function(text) {
     //alert("text = '" + text + "'");
-    return text.replace(/([\r\n]*\s*)/g," ");
+    return text.replace(/([\r\n]+\s+)/g," ");
   }
 }

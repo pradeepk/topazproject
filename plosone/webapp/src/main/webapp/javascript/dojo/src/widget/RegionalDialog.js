@@ -199,7 +199,11 @@ dojo.declare(
 			var targetTip = (isTipDown) ? dTip : dTipu;
 			
 			targetTip.className = targetTip.className.concat(" on");
- 			targetTip.style.left = (xShift) ? xShift + "px" : "auto";
+
+      //if (BrowserDetect.browser == "Explorer" && BrowserDetect.version < 7) 
+ 		  // 	targetTip.style.marginLeft = (xShift) ? xShift + "px" : "auto";
+ 		  //else
+ 		   	targetTip.style.left = (xShift) ? xShift + "px" : "auto";
 		},
 		
 		placeModalDialog: function() {

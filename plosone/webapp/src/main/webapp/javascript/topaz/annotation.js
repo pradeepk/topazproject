@@ -73,32 +73,33 @@ topaz.annotation = {
   createNewAnnotation: function () {
     annotationConfig.rangeInfoObj = this.getRangeOfSelection();
     
-    /*alert("annotationConfig.rangeInfoObj.range.text = "     + annotationConfig.rangeInfoObj.range.text + "\n" +
-          "annotationConfig.rangeInfoObj.startPoint = "     + annotationConfig.rangeInfoObj.startPoint + "\n" +
-          "annotationConfig.rangeInfoObj.endPoint = "       + annotationConfig.rangeInfoObj.endPoint + "\n" +
-          "annotationConfig.rangeInfoObj.startParent = "    + annotationConfig.rangeInfoObj.startParent + "\n" +
-          "annotationConfig.rangeInfoObj.endParent = "      + annotationConfig.rangeInfoObj.endParent + "\n" +
-          "annotationConfig.rangeInfoObj.startParentId = "  + annotationConfig.rangeInfoObj.startParentId + "\n" +
-          "annotationConfig.rangeInfoObj.endParentId = "    + annotationConfig.rangeInfoObj.endParentId + "\n" +
-          "annotationConfig.rangeInfoObj.startXpath = "     + annotationConfig.rangeInfoObj.startXpath + "\n" +
-          "annotationConfig.rangeInfoObj.endXpath = "       + annotationConfig.rangeInfoObj.endXpath + "\n" +
-          "annotationConfig.rangeInfoObj.pageOffsetX = "    + annotationConfig.rangeInfoObj.pageOffsetX + "\n" +
-          "annotationConfig.rangeInfoObj.pageOffsetY = "    + annotationConfig.rangeInfoObj.pageOffsetY);*/
-//          "annotationConfig.rangeInfoObj.startAncestors = " + annotationConfig.rangeInfoObj.startAncestors + "\n" +
-//          "annotationConfig.rangeInfoObj.endAncestors = "   + annotationConfig.rangeInfoObj.endAncestors);
-                      
-    if (annotationConfig.rangeInfoObj == null) {
-      alert("This area of text is not annotatable.");
+    if (!annotationConfig.rangeInfoObj) {
+      alert("Please make a selection to create an annotation");
+      return false;
     }
-    else {      
-     annotationForm.startPath.value = annotationConfig.rangeInfoObj.startXpath;
-     annotationForm.startOffset.value = annotationConfig.rangeInfoObj.startPoint;
-     annotationForm.endPath.value = annotationConfig.rangeInfoObj.endXpath;
-     annotationForm.endOffset.value = annotationConfig.rangeInfoObj.endPoint;
-     
-     this.analyzeRange(annotationConfig.rangeInfoObj, 'span');
+    else {
+      /*alert("annotationConfig.rangeInfoObj.range.text = "     + annotationConfig.rangeInfoObj.range.text + "\n" +
+            "annotationConfig.rangeInfoObj.startPoint = "     + annotationConfig.rangeInfoObj.startPoint + "\n" +
+            "annotationConfig.rangeInfoObj.endPoint = "       + annotationConfig.rangeInfoObj.endPoint + "\n" +
+            "annotationConfig.rangeInfoObj.startParent = "    + annotationConfig.rangeInfoObj.startParent + "\n" +
+            "annotationConfig.rangeInfoObj.endParent = "      + annotationConfig.rangeInfoObj.endParent + "\n" +
+            "annotationConfig.rangeInfoObj.startParentId = "  + annotationConfig.rangeInfoObj.startParentId + "\n" +
+            "annotationConfig.rangeInfoObj.endParentId = "    + annotationConfig.rangeInfoObj.endParentId + "\n" +
+            "annotationConfig.rangeInfoObj.startXpath = "     + annotationConfig.rangeInfoObj.startXpath + "\n" +
+            "annotationConfig.rangeInfoObj.endXpath = "       + annotationConfig.rangeInfoObj.endXpath);*/
+                        
+      if (annotationConfig.rangeInfoObj == null) {
+        alert("This area of text is not annotatable.");
+      }
+      else {      
+       annotationForm.startPath.value = annotationConfig.rangeInfoObj.startXpath;
+       annotationForm.startOffset.value = annotationConfig.rangeInfoObj.startPoint + 1;
+       annotationForm.endPath.value = annotationConfig.rangeInfoObj.endXpath;
+       annotationForm.endOffset.value = annotationConfig.rangeInfoObj.endPoint + 1;
+       
+       this.analyzeRange(annotationConfig.rangeInfoObj, 'span');
+      }
     }
-
   },
   
   getHTMLOfSelection: function () {
@@ -154,11 +155,13 @@ topaz.annotation = {
     //      "endParent.id = " + endParent.id);
     
     if (startParent.xpathLocation == endParent.xpathLocation) {
-      if (startParent.hasChildNodes) 
-        childList = this.getChildList(startParent, element);
-        
+      if (startParent.hasChildNodes) {
+        childList = this.getChildList(startParent, element); 
+      }
+  
       if (childList.length > 0) {
-        this.promoteChild(startParent, 'span', annotationConfig.annotationMarker);
+        // put this back in!!!
+//        this.promoteChild(startParent, 'span', annotationConfig.annotationMarker);
         //this.promoteChild(startParent, 'img', annotationConfig.annotationImgMarker);
       }
       
@@ -175,99 +178,95 @@ topaz.annotation = {
   },
 
   findIeRange: function() {
-    var range      = document.selection.createRange();
-    var startRange = range.duplicate();
-    var endRange   = startRange.duplicate();
-    
-    startRange.collapse(true);
-    endRange.collapse(false);
-
-    var startPoint     = this.getRangePoint(startRange);
-    var endPoint       = this.getRangePoint(endRange);
-
-    //var parentArray; // = this.getParentIdArray(startRange, startPoint.element, endRange, endPoint.element);
-    
-    if ( startPoint.element == null || endPoint.element == null ) {
-      return null;
+    if (document.selection.type == "Text") {
+      var range      = document.selection.createRange();
+      var startRange = range.duplicate();
+      var endRange   = startRange.duplicate();
+      
+      startRange.collapse(true);
+      endRange.collapse(false);
+  
+      var startPoint     = this.getRangePoint(startRange);
+      var endPoint       = this.getRangePoint(endRange);
+  
+      if ( startPoint.element == null || endPoint.element == null ) {
+        return null;
+      }
+      else {
+  	    var startParent    = startPoint.element;
+  	    var endParent      = endPoint.element;
+  	    var startXpath     = startPoint.xpathLocation;
+  	    var endXpath       = endPoint.xpathLocation;
+  	    var startParentId  = startPoint.element.id;
+  	    var endParentId    = endPoint.element.id;
+  	    
+        var ieRange = new Object();
+        ieRange  = {range:          range,
+                    startPoint:     startPoint.offset,
+                    endPoint:       endPoint.offset,
+                    startParent:    startParent,
+                    endParent:      endParent,
+                    startXpath:     startXpath,
+                    endXpath:       endXpath,
+                    startParentId:  startParentId,
+                    endParentId:    endParentId};
+        
+        return ieRange;
+      }
     }
     else {
-	    var startParent    = startPoint.element;
-	    var endParent      = endPoint.element;
-	    var startXpath     = startPoint.xpathLocation;
-	    var endXpath       = endPoint.xpathLocation;
-	    var startParentId  = startPoint.element.id;
-	    var endParentId    = endPoint.element.id;
-	    //var startAncestors = this.getAncestorsForXml(startPoint.element, annotationConfig.lastAncestor);
-	    //var endAncestors   = this.getAncestorsForXml(endPoint.element, annotationConfig.lastAncestor);
-	    
-      var ieRange = new Object();
-      ieRange  = {range:          range,
-                  startPoint:     startPoint.offset,
-                  endPoint:       endPoint.offset,
-                  startParent:    startParent,
-                  endParent:      endParent,
-                  startXpath:     startXpath,
-                  endXpath:       endXpath,
-                  startParentId:  startParentId,
-                  endParentId:    endParentId,
-                  //startAncestors: startAncestors,
-                  //endAncestors:   endAncestors,
-                  pageOffsetX:	  startPoint.pageOffsetX,
-                  pageOffsetY:	  startPoint.pageOffsetY};
-      
-      return ieRange;
+      return false;
     }
   },
 
   findMozillaRange: function() {
     var rangeSelection = window.getSelection ? window.getSelection() : 
                          document.getSelection ? document.getSelection() : 0;
-    var startRange     = rangeSelection.getRangeAt(0);
-    
-    var endRange   = startRange.cloneRange();
-    var range      = startRange.cloneRange();
-    
-    startRange.collapse(true);
-    endRange.collapse(false);
 
-    var tempNode = document.createElement("span");
-    endRange.insertNode(tempNode);
-    
-    var endPoint       = this.getRangePoint(endRange);
-    var startPoint     = this.getRangePoint(startRange);
-    
-    range.setEndAfter(tempNode);
-    tempNode.parentNode.removeChild(tempNode);
-
-    if ( startPoint.element == null || endPoint.element == null ) {
-      return null;
+    if (rangeSelection != "" && rangeSelection != null) {
+      var startRange = rangeSelection.getRangeAt(0);
+      var endRange   = startRange.cloneRange();
+      var range      = startRange.cloneRange();
+      
+      startRange.collapse(true);
+      endRange.collapse(false);
+  
+      var tempNode = document.createElement("span");
+      endRange.insertNode(tempNode);
+      
+      var endPoint       = this.getRangePoint(endRange);
+      var startPoint     = this.getRangePoint(startRange);
+      
+      range.setEndAfter(tempNode);
+      tempNode.parentNode.removeChild(tempNode);
+  
+      if ( startPoint.element == null || endPoint.element == null ) {
+        return null;
+      }
+      else {
+  	    var startParent    = startPoint.element;
+  	    var endParent      = endPoint.element;
+  	    var startXpath     = startPoint.xpathLocation;
+  	    var endXpath       = endPoint.xpathLocation;
+  	    var startParentId  = startPoint.element.id;
+  	    var endParentId    = endPoint.element.id;
+   	    
+        var mozRange = new Object();
+        mozRange = {range:          range,
+                    startPoint:     startPoint.offset,
+                    endPoint:       endPoint.offset,
+                    startParent:    startParent,
+                    endParent:      endParent,
+                    startXpath:     startXpath,
+                    endXpath:       endXpath,
+                    startParentId:  startParentId,
+                    endParentId:    endParentId};    
+                          
+        return mozRange;
+      }
     }
     else {
-	    var startParent    = startPoint.element;
-	    var endParent      = endPoint.element;
-	    var startXpath     = startPoint.xpathLocation;
-	    var endXpath       = endPoint.xpathLocation;
-	    var startParentId  = startPoint.element.id;
-	    var endParentId    = endPoint.element.id;
-	    //var startAncestors = this.getAncestorsForXml(startPoint.element, annotationConfig.lastAncestor);
-	    //var endAncestors   = this.getAncestorsForXml(endPoint.element, annotationConfig.lastAncestor);
- 	    
-      var mozRange = new Object();
-      mozRange = {range:          range,
-                  startPoint:     startPoint.offset,
-                  endPoint:       endPoint.offset,
-                  startParent:    startParent,
-                  endParent:      endParent,
-                  startXpath:     startXpath,
-                  endXpath:       endXpath,
-                  startParentId:  startParentId,
-                  endParentId:    endParentId,
-                  //startAncestors: startAncestors,
-                  //endAncestors:   endAncestors,
-                  pageOffsetX:	  startPoint.pageOffsetX,
-                  pageOffsetY:	  startPoint.pageOffsetY};    
-                        
-      return mozRange;
+      return false;
     }
   },
   
@@ -280,35 +279,40 @@ topaz.annotation = {
     else {
       var ptSpan = document.createElement("span");
       ptSpan.id = POINT_SPAN_ID;
+      ptSpan.style.border = "10px solid red;"
       range.insertNode(ptSpan);
     }
 
     var pointSpan = document.getElementById(POINT_SPAN_ID);
 
-    positionedOffset = Position.positionedOffset(pointSpan);
-    
-    var pointEl = this.getFirstAncestorByAttribute(pointSpan, "xpathLocation");
+    var pointEl = this.getFirstAncestorByAttribute(pointSpan);
     
     var point = new Object();
     point.element = pointEl.element;
     point.xpathLocation = pointEl.xpathLocation;
-    point.offset = this.getPointOffset(pointSpan);
-    point.pageOffsetX = positionedOffset[0];
-    point.pageOffsetY= positionedOffset[1];
+    point.offset = this.getPointOffset(pointSpan, pointEl);
 
     pointSpan.parentNode.removeChild(pointSpan);
-
+    
     return point;
   },
   
-  getPointOffset: function (obj) {
+  
+  getPointOffset: function (obj, targetNode) {
     var offset = 0;
     for (var currentNode = obj.previousSibling; currentNode != null; currentNode = currentNode.previousSibling) {
       if (currentNode.nodeType == 1) { // element
-        var normalText = this.normalizeText( currentNode, "");
-        offset += normalText.length;
+        if (currentNode.nodeName == 'A' && currentNode.className.match('bug')) {
+          // skip this
+        }
+        else {
+          var normalText = this.normalizeText( currentNode, "");
+          //alert("normalText = " + normalText + "\nlength = " + normalText.length);
+          offset += normalText.length;
+        }
       }
-      else if (currentNode.nodeType == 3) { // node
+      else if (currentNode.nodeType == 3) { // text
+        //alert("currentNode = " + currentNode.nodeValue + "\nlength = " + currentNode.length);
         offset += currentNode.length;
       }
       else { // other
@@ -316,6 +320,18 @@ topaz.annotation = {
       }
     }
     
+    if (targetNode) {
+      var objParent = obj.parentNode;
+      
+      //objParent.getAttributeNode('xpathLocation').nodeValue != targetNode.getAttributeNode('targetNode').nodeValue
+      
+      if (objParent.getAttributeNode('xpathLocation') == null) {
+        //alert("objParent = " + objParent.nodeName);
+        offset += this.getPointOffset(objParent, targetNode);
+      }
+    }
+    
+    //alert("offset = " + offset);
     return offset;    
   },
 
@@ -331,7 +347,7 @@ topaz.annotation = {
     return familyTree;
   },
   
-  getFirstAncestorByAttribute: function ( selfNode, targetAttribute ) {
+  getFirstAncestorByAttribute: function ( selfNode ) {
     var parentalNode = selfNode;
     
     while ( parentalNode.parentNode.getAttributeNode('xpathLocation') == null || parentalNode.parentNode.getAttributeNode('xpathLocation').nodeValue  == "" ) {
@@ -756,7 +772,12 @@ topaz.annotation = {
     
     for (var i=0; i<documentObj.childNodes.length; i++) {
       if (documentObj.childNodes[i].nodeType == 1) {
-        tempStr = tempStr + this.normalizeText(documentObj.childNodes[i], '');
+        if (documentObj.childNodes[i].nodeName == 'A' && documentObj.childNodes[i].className.match('bug')) {
+          // skip this
+        }
+        else {
+          tempStr = tempStr + this.normalizeText(documentObj.childNodes[i], '');
+        }
       }
       else if (documentObj.childNodes[i].nodeType == 3) {
         tempStr = tempStr + documentObj.childNodes[i].nodeValue;
