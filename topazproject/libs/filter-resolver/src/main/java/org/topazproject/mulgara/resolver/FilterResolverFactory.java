@@ -9,8 +9,11 @@
  */
 package org.topazproject.mulgara.resolver;
 
+import java.io.IOException;
 import java.lang.reflect.Constructor;
 import java.net.URI;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Properties;
 
 import org.apache.log4j.Logger;
@@ -33,9 +36,9 @@ public class FilterResolverFactory implements ResolverFactory {
 
   private static final Logger logger = Logger.getLogger(FilterResolverFactory.class);
 
-  private final URI           dbURI;
-  private final long          sysModelType;
-  private final FilterHandler handler;
+  private final URI             dbURI;
+  private final long            sysModelType;
+  private final FilterHandler[] handlers;
 
   /** 
    * Create a new filter-resolver-factory instance. 
@@ -67,26 +70,28 @@ public class FilterResolverFactory implements ResolverFactory {
     // remember the system-model type
     sysModelType = resolverFactoryInitializer.getSystemModelType();
 
-    // Set up the filter handler
+    // Set up the filter handlers
+    Properties config = new Properties();
     try {
-      Properties config = new Properties();
       config.load(getClass().getResourceAsStream(CONFIG_RSRC));
-
-      String handlerClsName = config.getProperty("topaz.fr.filterHandler.class");
-      if (handlerClsName != null) {
-        Class handlerClass = Class.forName(handlerClsName, true,
-                                           Thread.currentThread().getContextClassLoader());
-        Constructor c = handlerClass.getConstructor(new Class[] { Properties.class, URI.class });
-        handler = (FilterHandler) c.newInstance(new Object[] { config, dbURI });
-
-        logger.info("Handler '" + handlerClsName + "' configured");
-      } else {
-        logger.info("No handler configured");
-        handler = null;
-      }
-    } catch (Exception e) {
-      throw new InitializerException("Error creating handler instance", e);
+    } catch (IOException ioe) {
+      throw new InitializerException("Error reading '" + CONFIG_RSRC + "'", ioe);
     }
+
+    List hList = new ArrayList();
+    for (int idx = 0; ; idx++) {
+      String handlerClsName = config.getProperty("topaz.fr.filterHandler.class." + idx);
+      if (handlerClsName == null)
+        break;
+
+      hList.add(instantiateHandler(handlerClsName, config, dbURI));
+      logger.info("Loaded handler '" + handlerClsName + "'");
+    }
+
+    if (hList.size() == 0)
+      logger.info("No handlers configured");
+
+    handlers = (FilterHandler[]) hList.toArray(new FilterHandler[hList.size()]);
 
     // ensure we always close the handler so it can properly flush buffered data.
     Runtime.getRuntime().addShutdownHook(new Thread() {
@@ -94,18 +99,30 @@ public class FilterResolverFactory implements ResolverFactory {
         try {
           FilterResolverFactory.this.close();
         } catch (ResolverFactoryException rfe) {
-          logger.error("Exception while closing handler", rfe);
+          logger.error("Exception while closing handlers", rfe);
         }
       }
     });
   }
 
+  private static FilterHandler instantiateHandler(String clsName, Properties config, URI dbURI)
+      throws InitializerException {
+    try {
+      Class clazz = Class.forName(clsName, true, Thread.currentThread().getContextClassLoader());
+      Constructor c = clazz.getConstructor(new Class[] { Properties.class, URI.class });
+      return (FilterHandler) c.newInstance(new Object[] { config, dbURI });
+    } catch (Exception e) {
+      throw new InitializerException("Error creating handler instance for '" + clsName + "'", e);
+    }
+  }
+
+
   /**
    * Close the session factory.
    */
   public void close() throws ResolverFactoryException {
-    if (handler != null)
-      handler.close();
+    for (int idx = 0; idx < handlers.length; idx++)
+      handlers[idx].close();
   }
 
   /**
@@ -120,7 +137,7 @@ public class FilterResolverFactory implements ResolverFactory {
   public Resolver newResolver(boolean canWrite, ResolverSession resolverSession,
                               Resolver systemResolver)
                               throws ResolverFactoryException {
-    return new FilterResolver(dbURI, sysModelType, systemResolver, resolverSession, handler);
+    return new FilterResolver(dbURI, sysModelType, systemResolver, resolverSession, handlers);
   }
 }
 

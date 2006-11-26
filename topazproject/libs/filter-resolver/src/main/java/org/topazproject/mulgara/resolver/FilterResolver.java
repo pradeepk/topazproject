@@ -11,22 +11,18 @@
 package org.topazproject.mulgara.resolver;
 
 import java.net.URI;
-import java.util.AbstractSet;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.NoSuchElementException;
-import java.util.Set;
+import javax.transaction.xa.XAException;
 import javax.transaction.xa.XAResource;
+import javax.transaction.xa.Xid;
 
 import org.apache.log4j.Logger;
 
-import org.jrdf.graph.AbstractTriple;
 import org.jrdf.graph.Node;
-import org.jrdf.graph.ObjectNode;
-import org.jrdf.graph.PredicateNode;
-import org.jrdf.graph.SubjectNode;
-import org.jrdf.graph.Triple;
 import org.jrdf.graph.URIReference;
 
 import org.mulgara.query.Constraint;
@@ -42,7 +38,6 @@ import org.mulgara.query.LocalNode;
 import org.mulgara.query.QueryException;
 import org.mulgara.query.SingleTransitiveConstraint;
 import org.mulgara.query.TransitiveConstraint;
-import org.mulgara.query.TuplesException;
 import org.mulgara.query.WalkConstraint;
 import org.mulgara.query.rdf.URIReferenceImpl;
 import org.mulgara.resolver.spi.EmptyResolution;
@@ -55,7 +50,6 @@ import org.mulgara.resolver.spi.ResolverSession;
 import org.mulgara.resolver.spi.Statements;
 import org.mulgara.resolver.view.SessionView;
 import org.mulgara.resolver.view.ViewMarker;
-import org.mulgara.server.Session;
 import org.mulgara.store.tuples.Tuples;
 
 /** 
@@ -82,7 +76,7 @@ public class FilterResolver implements Resolver, ViewMarker {
   private final long            sysModelType;
   private final ResolverSession resolverSession;
   private final Resolver        systemResolver;
-  private final FilterHandler   handler;
+  private final FilterHandler[] handlers;
 
   private SessionView sess;
 
@@ -94,15 +88,15 @@ public class FilterResolver implements Resolver, ViewMarker {
    * @param sysModelType    the system-model type; used when creating a new model
    * @param systemResolver  the system-resolver; used for creating and modifying models
    * @param resolverSession our environment; used for globalizing and localizing nodes
-   * @param handler         the filter handler to use
+   * @param handlers        the filter handlers to use
    */
   FilterResolver(URI dbURI, long sysModelType, Resolver systemResolver,
-                 ResolverSession resolverSession, FilterHandler handler) {
+                 ResolverSession resolverSession, FilterHandler[] handlers) {
     this.dbURI           = dbURI;
     this.sysModelType    = sysModelType;
     this.systemResolver  = systemResolver;
     this.resolverSession = resolverSession;
-    this.handler         = handler;
+    this.handlers        = handlers;
   }
 
   public void setSession(SessionView session) {
@@ -113,8 +107,7 @@ public class FilterResolver implements Resolver, ViewMarker {
    * @return the updater's XAResource
    */
   public XAResource getXAResource() {
-    XAResource res = (handler != null) ? handler.getXAResource() : null;
-    return (res != null) ? res : new AbstractFilterHandler.DummyXAResource();
+    return new MultiXAResource(handlers);
   }
 
   public void createModel(long model, URI modelType) throws ResolverException, LocalizeException {
@@ -147,8 +140,8 @@ public class FilterResolver implements Resolver, ViewMarker {
       throw new ResolverException("Error localizing model uri '" + realModelURI + "'", le);
     }
 
-    if (handler != null)
-      handler.modelCreated(filterModelURI, realModelURI);
+    for (int idx = 0; idx < handlers.length; idx++)
+      handlers[idx].modelCreated(filterModelURI, realModelURI);
   }
 
   public void modifyModel(long model, Statements statements, boolean occurs)
@@ -164,8 +157,9 @@ public class FilterResolver implements Resolver, ViewMarker {
       throw new ResolverException("Failed to look up model", qe);
     }
 
-    if (handler != null)
-      handler.modelModified(filterModelURI, realModelURI, statements, occurs, resolverSession);
+    for (int idx = 0; idx < handlers.length; idx++)
+      handlers[idx].modelModified(filterModelURI, realModelURI, statements, occurs,
+                                  resolverSession);
   }
 
   public void removeModel(long model) throws ResolverException {
@@ -175,8 +169,8 @@ public class FilterResolver implements Resolver, ViewMarker {
     if (logger.isDebugEnabled())
       logger.debug("Removing model '" + filterModelURI + "'");
 
-    if (handler != null)
-      handler.modelRemoved(filterModelURI, realModelURI);
+    for (int idx = 0; idx < handlers.length; idx++)
+      handlers[idx].modelRemoved(filterModelURI, realModelURI);
   }
 
   public Resolution resolve(Constraint constraint) throws QueryException {
@@ -357,99 +351,83 @@ public class FilterResolver implements Resolver, ViewMarker {
     return URI.create(u);
   }
 
-  private Set toSetOfTriples(final Statements stmts) {
-    return new StatementTrippleSet(stmts, resolverSession);
-  }
+  private static class MultiXAResource implements XAResource {
+    private final List xaResources = new ArrayList();
 
-  /** 
-   * This implements a read-only {@link java.util.Set Set} of {@link org.jrdf.graph.Triple Triple}s
-   * based on on a list of statements.
-   */
-  private static class StatementTrippleSet extends AbstractSet {
-    private final Statements      stmts;
-    private final ResolverSession resolverSession;
-
-    /** 
-     * Create a new instance. 
-     * 
-     * @param resolverSession the resolver-session to use for globalizing nodes
-     * @param stmts           the underlying statements to represent
-     */
-    public StatementTrippleSet(Statements stmts, ResolverSession resolverSession) {
-      this.stmts           = stmts;
-      this.resolverSession = resolverSession;
-    }
-
-    public int size() {
-      try {
-        return (int) stmts.getRowCount();
-      } catch (TuplesException te) {
-        throw new RuntimeException(te);
+    MultiXAResource(FilterHandler[] handlers) {
+      for (int idx = 0; idx < handlers.length; idx++) {
+        XAResource res = handlers[idx].getXAResource();
+        if (res != null)
+          xaResources.add(res);
       }
     }
 
-    public Iterator iterator() {
-      return new StatementTrippleIterator();
+    public void start(Xid xid, int flags) throws XAException {
+      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
+        ((XAResource) iter.next()).start(xid, flags);
     }
 
-    private class StatementTrippleIterator implements Iterator {
-      private Triple  curr;
-      private boolean haveMore;
+    public void end(Xid xid, int flags) throws XAException {
+      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
+        ((XAResource) iter.next()).end(xid, flags);
+    }
 
-      public StatementTrippleIterator() {
-        try {
-          stmts.beforeFirst();
-          stmts.next();
-          nextTriple();
-        } catch (TuplesException te) {
-          throw new RuntimeException(te);
-        }
+    public int prepare(Xid xid) throws XAException {
+      int res = XA_OK;
+
+      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
+        res |= ((XAResource) iter.next()).prepare(xid);
+
+      return res;
+    }
+
+    public void commit(Xid xid, boolean onePhase) throws XAException {
+      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
+        ((XAResource) iter.next()).commit(xid, onePhase);
+    }
+
+    public void rollback(Xid xid) throws XAException {
+      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
+        ((XAResource) iter.next()).rollback(xid);
+    }
+
+    public int getTransactionTimeout() throws XAException {
+      int to = Integer.MAX_VALUE;
+
+      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
+        to = Math.min(((XAResource) iter.next()).getTransactionTimeout(), to);
+
+      return to;
+    }
+
+    public boolean setTransactionTimeout(int transactionTimeout) throws XAException {
+      boolean res = true;
+
+      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
+        res &= ((XAResource) iter.next()).setTransactionTimeout(transactionTimeout);
+
+      return res;
+    }
+
+    public Xid[] recover(int flag) throws XAException {
+      List xids = new ArrayList();
+
+      for (Iterator iter = xaResources.iterator(); iter.hasNext(); ) {
+        Xid[] l = ((XAResource) iter.next()).recover(flag);
+        for (int idx = 0; idx < l.length; idx++)
+          xids.add(l);
       }
 
-      public boolean hasNext() {
-        return haveMore;
-      }
+      return (Xid[]) xids.toArray(new Xid[xids.size()]);
+    }
 
-      public Object next() {
-        if (!haveMore)
-          throw new NoSuchElementException();
+    public void forget(Xid xid) throws XAException {
+      for (Iterator iter = xaResources.iterator(); iter.hasNext(); )
+        ((XAResource) iter.next()).forget(xid);
+    }
 
-        Triple res = curr;
-        nextTriple();
-        return res;
-      }
-
-      public void remove() {
-        throw new UnsupportedOperationException();
-      }
-
-      private void nextTriple() {
-        curr = new AbstractTriple() {
-          {
-            try {
-              subjectNode   = (SubjectNode) globalize(stmts.getSubject());
-              predicateNode = (PredicateNode) globalize(stmts.getPredicate());
-              objectNode    = (ObjectNode) globalize(stmts.getObject());
-            } catch (TuplesException te) {
-              throw new RuntimeException(te);
-            }
-          }
-        };
-
-        try {
-          haveMore = stmts.next();
-        } catch (TuplesException te) {
-          throw new RuntimeException(te);
-        }
-      }
-
-      private Node globalize(long node) {
-        try {
-          return resolverSession.globalize(node);
-        } catch (GlobalizeException ge) {
-          throw new RuntimeException("Couldn't globalize node " + node, ge);
-        }
-      }
+    public boolean isSameRM(XAResource xaResource) throws XAException {
+      return xaResource == this;
     }
   }
 }
