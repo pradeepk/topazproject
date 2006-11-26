@@ -10,6 +10,8 @@
 package org.plos.article.action;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.EmailValidator;
 import org.plos.ApplicationException;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
@@ -35,7 +37,8 @@ public class EmailArticleAction extends UserActionSupport {
   private String description;
   private PlosoneMailer plosoneMailer;
   private FetchArticleService fetchArticleService;
-
+  private static final Log log = LogFactory.getLog(EmailArticleAction.class);
+  
   /**
    * Render the page with the values passed in
    * @return webwork status
@@ -58,7 +61,6 @@ public class EmailArticleAction extends UserActionSupport {
    */
   public String executeSend() throws Exception {
     if (!validates()) return INPUT;
-
     setArticleTitleAndDesc(articleURI);
     final Map<String, String> mapFields = new HashMap<String, String>();
     mapFields.put("articleURI", articleURI);
@@ -221,5 +223,12 @@ public class EmailArticleAction extends UserActionSupport {
    */
   public String getTitle() {
     return title;
+  }
+
+  /**
+   * @param title The title to set.
+   */
+  public void setTitle(String title) {
+    this.title = title;
   }
 }

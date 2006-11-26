@@ -240,7 +240,7 @@
       <result name="success">/WEB-INF/pages/article/articleList.ftl</result>
     </action>
 
-    <action name="emailArticle">
+    <action name="emailArticle" class="org.plos.article.action.EmailArticleAction" method="executeRender">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/article/emailArticle.ftl</param>
       </result>
@@ -252,7 +252,12 @@
     </action>
 
     <action name="emailThisArticleSubmit" class="org.plos.article.action.EmailArticleAction" method="executeSend">
-      <result name="success" type="redirect">/home.action</result>
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/article/emailSuccess.ftl</param>
+      </result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/article/emailArticle.ftl</param>
+      </result>
     </action>
 
     <action name="fetchArticle" class="org.plos.article.action.FetchArticleAction">
