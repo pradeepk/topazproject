@@ -68,6 +68,10 @@
         floatMenu();
       }  
     );
+    dojo.event.connect(document.documentElement, "onscroll", function() {
+        floatMenu();
+      }  
+    );
     dojo.event.connect(window, "onresize", function() {
         floatMenu();
       }  

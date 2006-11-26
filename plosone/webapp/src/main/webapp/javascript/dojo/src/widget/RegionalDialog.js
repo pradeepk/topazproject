@@ -331,6 +331,7 @@ dojo.declare(
 			if (this.followScroll && !this._scrollConnected){
 				this._scrollConnected = true;
 				dojo.event.connect(window, "onscroll", this, "_onScroll");
+				dojo.event.connect(document.documentElement, "onscroll", this, "_onScroll");
 			}
 
 			this.placeModalDialog();

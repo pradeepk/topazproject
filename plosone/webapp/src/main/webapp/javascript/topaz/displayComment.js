@@ -152,6 +152,7 @@ topaz.displayComment = {
     var newListItem = document.createElement('li');
     newListItem.onclick = function() {
         topaz.displayComment.mouseoutComment(topaz.displayComment.target);
+        topaz.displayComment.mouseoverComment(topaz.displayComment.target, jsonObj.annotationId);
         topaz.domUtil.swapClassNameBtwnSibling(this, this.nodeName, 'active');
         topaz.domUtil.swapAttributeByClassNameForDisplay(topaz.displayComment.target, ' active', 'annotationid', jsonObj.annotationId);
       }
