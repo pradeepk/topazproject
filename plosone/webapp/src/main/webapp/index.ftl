@@ -12,70 +12,65 @@
 							<h1 style="font-size: 2.3em;">Welcome to PLoS ONE</h1>
 							<p>Today is the day that we unveil Open Access 2.0. Blah blah lorem orem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
 
-						<#if (recentArticles?size > 0)>
-
+						<#assign numArticles = recentArticles?size>
+						<#if (numArticles > 0)>
+							<#assign randomIndices = action.randomNumbers(5, numArticles)>
 						<div class="block">
 							<h1>Recently Published</h1>
 							<ul class="articles">
-								<#list recentArticles as article>
-									<#if article_index gt 4>
-										<#break>
-									</#if>
-									<#if article_index % 2 == 0>
+							  <#list randomIndices as random>
+									<#assign article = recentArticles[random]>
+									<#if random_index % 2 == 0>
 								<li class="even">
 									<#else>
 								<li>
-								  </#if>
+									</#if>
 									<a href="article/fetchArticle.action?articleURI=${article.uri?url}" title="Read Open Access Article" class="article icon">${article.title}</a>
 								</li>
 								</#list>
 							</ul>
 						</div>
 						</#if>
-
+	
+						
+						<#assign commentedArticles = action.getCommentedOnArticles(6)>
+						<#if commentedArticles?size gt 0 >
 						<div class="block">
 							<h1>Most Commented On</h1>
 							<ul class="articles">
+								<#list commentedArticles as commented>
 								<li>
-									<a href="#" title="Read Open Access Article" class="article icon">A Comparative Study on the Cost of New Antibiotics and  Drugs of Other Therapeutic Categories </a>
+									<a href="article/fetchArticle.action?articleURI=" title="Read Open Access Article" class="article icon">${commented.title}</a>
 								</li>
-								<li>
-									<a href="#" title="Read Open Access Article" class="article icon">Association and host selectivity in multi-host pathogens</a>
-								</li>
-								<li>
-									<a href="#" title="Read Open Access Article" class="article icon">Predator Mimicry: Metalmark Moths Mimic Their Jumping Spider Predators</a>
-								</li>
-								<li>
-									<a href="#" title="Read Open Access Article" class="article icon">The Dark Side of EGFP: Defective Ubiquitination</a>
-								</li>
-								<li>
-									<a href="#" title="Read Open Access Article" class="article icon">E-cadherin-coated plates maintain pluripotent ES cells without colony formation</a>
-								</li>
-								<li>
-									<a href="#" title="Read Open Access Article" class="article icon">Molecular Pathogenesis and Therapy of Polycythemia Induced  in Mice by JAK2 V617F</a>
-								</li>
+								</#list>
 							</ul>
-			</div>
-			<div class="col first">
-			<div class="block banner">
-					<img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF">
-				</div>				   
-			</div>
-			<div class="col last">		
-			<#if categoryNames?size gt 0>
-			<div class="block">
-			<h1>Subject Categories</h1>
-				<#list categoryNames as category>
-				<dl class="category">
-				<dt>${category} (1)</dt>
-					<dd><ul><#list articlesByCategory[category_index] as article>
-					<li><a href="article/fetchArticle.action?articleURI=${article.uri?url}" title="Read Open Access Article">${article.title}</a></li>
-					</#list></ul></dd>
-				</dl>
-				</#list>
-			</div>
-			</#if> 
-			</div>
+						</div>
+						</#if>
+					<div class="col first">
+						<div class="block banner">
+							<img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF">
+						</div>				   
+					</div>
+					<div class="col last">		
+						<#if categoryNames?size gt 0>
+						<div class="block">
+							<h1>Subject Categories</h1>
+							<#list categoryNames as category>
+							<dl class="category">
+							  <#assign categoryId = category?replace(" ","")>
+								<dt><a href="#" onclick="topaz.domUtil.swapDisplayMode('${categoryId?js_string}');return false;">${category} (${articlesByCategory[category_index]?size})</a></dt>
+								<dd id="${categoryId}">
+									<ul>
+										<#list articlesByCategory[category_index] as article>
+										<li><a href="article/fetchArticle.action?articleURI=${article.uri?url}" title="Read Open Access Article">${article.title}</a></li>
+										</#list>
+									</ul>
+								</dd>
+							</dl>
+							</#list>
+						</div>
+						</#if> 
+					</div>
 
 					<!-- end : col 2 -->
 				</div>

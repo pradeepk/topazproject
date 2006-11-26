@@ -195,6 +195,16 @@ public class ArticleWebService extends BaseConfigurableService {
     return convertedObjectInfos;
   }
 
+  /**
+   * 
+   * see org.topazproject.ws.article.Article#getCommentedArticles
+   */
+  public ObjectInfo[] getCommentedArticles(int maxArticles) throws RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    return delegateService.getCommentedArticles(maxArticles);
+  }
+  
+  
   private SecondaryObject convert(final ObjectInfo objectInfo) {
     return new SecondaryObject(objectInfo, smallImageRep, mediumImageRep, largeImageRep);
   }

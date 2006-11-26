@@ -12,18 +12,22 @@ package org.plos.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.math.RandomUtils;
 
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.Iterator;
-import java.util.TreeMap;
 import java.util.Map;
+import java.util.Random;
 import java.util.Set;
+import java.util.TreeMap;
 import java.rmi.RemoteException;
 
 import org.plos.article.service.ArticleWebService;
 
 import org.topazproject.ws.article.ArticleInfo;
+import org.topazproject.ws.article.ObjectInfo;
 
 /**
  * @author stevec
@@ -71,6 +75,31 @@ public class HomePageAction extends BaseActionSupport {
     return lastWeeksArticles;
   }
   
+  
+  /**
+   * Return an array of ObjectInfos representing the maxArticles most commented on articles
+   * 
+   * @param maxArticles
+   * @return
+   */
+  public ObjectInfo[] getCommentedOnArticles(int maxArticles) {
+    if (log.isDebugEnabled()){
+      log.debug("Calling getCommentedOnArticles with " + maxArticles + " maxArticles");
+    }
+    ObjectInfo[] retArray = null;
+    try {
+      retArray = articleWebService.getCommentedArticles(maxArticles);
+      /*if (log.isDebugEnabled()){
+        for (int i = 0; i < retArray.length; i++) {
+          log.debug("URI: " + retArray[i].getUri() + " title: " + retArray[i].getTitle());
+        }
+      }*/
+    } catch (RemoteException re){
+      log.error("Could not retrieve most commented on Articles", re);
+      retArray = new ObjectInfo[0];
+    }
+    return retArray;
+  }
   /**
    * Takes the articles for the last week and sets the categoryNames and
    * articlesByCategory values.  
@@ -146,5 +175,41 @@ public class HomePageAction extends BaseActionSupport {
       categoriesAreInitialized = true;
     }
     return categoryNames;
+  }
+  
+  /**
+   * returns an array of numValues ints which are randomly selected between 0 (inclusive)
+   * and maxValue(exclusive). If maxValue is less than numValues, will return maxValue items.
+   * Guarantees uniquness of values.  
+   * 
+   * @param numValues
+   * @param maxValue
+   * @return array of random ints
+   */
+  
+  public int[] randomNumbers (int numValues, int maxValue) {
+    if (maxValue < numValues) {
+      numValues = maxValue;
+    }
+    LinkedHashMap<Integer,Integer> values = new LinkedHashMap<Integer,Integer>();
+    int oneNum;
+    boolean found;
+    for (int i = 0; i < numValues; i++) {
+      found = false;
+      do{
+        oneNum = RandomUtils.nextInt(new Random(System.currentTimeMillis()), Integer.MAX_VALUE );
+        if (!values.containsKey(oneNum % maxValue)) {
+          values.put(oneNum % maxValue, null);
+          found = true;
+        }
+      } while (!found);
+    }
+    Set<Integer> intValues = values.keySet();
+    Iterator<Integer> iter = intValues.iterator();
+    int[] returnArray = new int[intValues.size()];
+    for (int i = 0; iter.hasNext(); i++) {
+      returnArray[i] = iter.next();
+    }
+    return returnArray;
   }
 }
