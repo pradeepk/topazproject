@@ -48,6 +48,13 @@
       <scope>provided</scope>
     </dependency>
 
+    <dependency>
+      <groupId>org.trippi</groupId>
+      <artifactId>trippi</artifactId>
+      <version>1.0.0</version>
+      <scope>provided</scope>
+    </dependency>
+
   </dependencies>
 
 
