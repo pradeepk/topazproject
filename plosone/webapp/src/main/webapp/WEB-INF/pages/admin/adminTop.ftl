@@ -19,7 +19,7 @@
  	<legend><b>Ingestable Archives</b></legend>
  	     <@ww.form name="ingestArchives" action="ingestArchives" method="get" namespace="/admin">
   			<#list uploadableFiles as file>
-  				<@ww.checkbox name="filesToIngest" label="${file}" fieldValue="${file}"/>${file}<br/>
+  				<@ww.checkbox name="filesToIngest" label="${file}" fieldValue="${file}"/><br/>
   			</#list>
   			<br/>
             <@ww.submit value="Ingest Selected Archives" />
@@ -30,7 +30,7 @@
 	<legend><b>Publishable Documents</b></legend>
  	     <@ww.form name="publishArchives" action="publishArchives" method="get" namespace="/admin">
   			<#list publishableFiles as article>
-  				<@ww.checkbox name="articlesToPublish" label="${article}" fieldValue="${article}"/>${article}<br/>
+  				<@ww.checkbox name="articlesToPublish" label="${article}" fieldValue="${article}"/><br/>
   			</#list>
   			<br/>
             <@ww.submit value="Publish Selected Archives" />
