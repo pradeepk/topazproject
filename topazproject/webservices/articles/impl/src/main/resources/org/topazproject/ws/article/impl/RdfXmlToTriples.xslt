@@ -528,8 +528,15 @@ any copy-of will write the text content of the XML and not the XML itself) -->
 <template match="*" mode="serialise">
 	<text/>&lt;<value-of select="name()"/>
 	<!-- Need more work here to restrict namespace output to only what is needed -->
+	<variable name="attr-ns-uris">
+		<text> </text>
+		<for-each select="@*">
+			<value-of select="namespace-uri(.)"/>
+			<text> </text>
+		</for-each>
+	</variable>
 	<for-each select="namespace::*[name() != 'xml']">
-		<if test="not(../../namespace::*[name() = name(current()) and . = current()])">
+		<if test="namespace-uri(..) = . or contains($attr-ns-uris, concat(' ', ., ' '))">
 			<text> xmlns</text>
 			<if test="name()">
 				<text />:<value-of select="name()" />
