@@ -20,16 +20,9 @@ import java.io.IOException;
 import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.List;
 import java.util.Properties;
-import javax.transaction.xa.XAResource;
-import javax.transaction.xa.Xid;
 
 import org.apache.log4j.Logger;
 import org.jrdf.graph.Node;
@@ -64,16 +57,9 @@ import org.mulgara.resolver.spi.Statements;
  *
  * @author Ronald Tschalär
  */
-class TransactionLogger extends AbstractFilterHandler {
+class TransactionLogger extends QueueingFilterHandler {
   private static final Logger logger = Logger.getLogger(TransactionLogger.class);
-
-  private final List            updQueue = new ArrayList();
-  private final Map             txQueue  = new HashMap();
-  private       boolean         newUpdPending;
-  private final XAResource      xaResource;
-  private final Worker          worker;
-  private final TxLog           txLog;
-  private       Xid             currentTxId;
+  private        final TxLog  txLog;
 
   /** 
    * Create a new logger instance. 
@@ -83,10 +69,11 @@ class TransactionLogger extends AbstractFilterHandler {
    * @throws IOException 
    */
   public TransactionLogger(Properties config, URI dbURI) throws IOException {
+    super(getFlushIval(config), 0, "TransactionLogger-Worker", true, logger);
+
     String fileName  = config.getProperty("topaz.fr.transactionLogger.log.fileName");
     String maxSize   = config.getProperty("topaz.fr.transactionLogger.log.maxSize");
     String maxAge    = config.getProperty("topaz.fr.transactionLogger.log.maxAge");
-    String flushIval = config.getProperty("topaz.fr.transactionLogger.flushInterval");
     String bufSize   = config.getProperty("topaz.fr.transactionLogger.writeBufferSize");
 
     if (fileName == null)
@@ -95,11 +82,11 @@ class TransactionLogger extends AbstractFilterHandler {
     txLog = new TxLog(fileName, maxSize != null ? Long.parseLong(maxSize) : -1L,
                       maxAge != null ? Long.parseLong(maxAge) : -1L,
                       bufSize != null ? Integer.parseInt(bufSize) : -1);
+  }
 
-    xaResource = new LoggerXAResource();
-
-    worker = new Worker(flushIval != null ? Long.parseLong(flushIval) : 30000L);
-    worker.start();
+  private static final long getFlushIval(Properties config) {
+    String flushIval = config.getProperty("topaz.fr.transactionLogger.flushInterval");
+    return (flushIval != null) ? Long.parseLong(flushIval) : 30000L;
   }
 
   public void modelCreated(URI filterModel, URI realModel) throws ResolverException {
@@ -168,109 +155,22 @@ class TransactionLogger extends AbstractFilterHandler {
     throw new ResolverException("Unsupported node type " + globalNode.getClass().getName());
   }
 
-  private void queue(String str) {
-    synchronized (txQueue) {
-      List queue = (List) txQueue.get(currentTxId);
-      if (queue == null)
-        txQueue.put(currentTxId, queue = new ArrayList());
-
-      queue.add(str);
-    }
-  }
-
-  /** 
-   * Return the XAResource representing this instance. The XAResource is used to know
-   * when a transaction is being committed or rolled-back.
-   * 
-   * @return 
-   */
-  public XAResource getXAResource() {
-    return xaResource;
-  }
-
-  /**
-   * Flush all pending data and shut down.
-   */
-  public void close() {
-    logger.info("Flushing logger");
-    worker.interrupt();
-    try {
-      worker.join();
-    } catch (InterruptedException ie) {
-      logger.warn("interrupted while waiting for logger to be flushed");
-    }
-  }
-
 
   /* =====================================================================
    * ==== Everything below is run in the context of the Worker thread ====
    * =====================================================================
    */
 
-  private void processQueue() {
-    if (logger.isDebugEnabled())
-      logger.debug("Processing logger queue");
-
-    // make a copy of the queue and clear it
-    final List mods = new ArrayList();
-    synchronized (updQueue) {
-      mods.addAll(updQueue);
-      updQueue.clear();
-      newUpdPending = false;
-    }
-
-    Iterator iter = mods.iterator();
-    String cur = null;
-    try {
-      while (iter.hasNext()) {
-        cur = (String) iter.next();
-        txLog.write(cur);
-      }
-    } catch (Exception e) {
-      logger.error("Failed to write to transaction-log - requeueing for later", e);
-
-      synchronized (updQueue) {
-        int idx = 0;
-        updQueue.add(idx++, cur);
-        while (iter.hasNext())
-          updQueue.add(idx++, iter.next());
-      }
-    }
+  protected void handleQueuedItem(Object obj) throws IOException {
+    txLog.write((String) obj);
   }
 
-  /** 
-   * This represents the logger as a resource. It is used to ensure we only log stuff that's been
-   * committed.
-   */
-  private class LoggerXAResource extends DummyXAResource {
-    public void start(Xid xid, int flags) {
-      currentTxId = xid;
-    }
+  protected void idleCallback() throws IOException {
+    txLog.flush();
+  }
 
-    public void end(Xid xid, int flags) {
-      currentTxId = null;
-    }
-
-    public void commit(Xid xid, boolean onePhase) {
-      List queue;
-      synchronized (txQueue) {
-        queue = (List) txQueue.remove(xid);
-      }
-
-      if (queue != null) {
-        synchronized (updQueue) {
-          updQueue.addAll(queue);
-          newUpdPending = true;
-          updQueue.notify();
-        }
-      }
-    }
-
-    public void rollback(Xid xid) {
-      synchronized (txQueue) {
-        txQueue.remove(xid);
-      }
-    }
+  protected void shutdownCallback() throws IOException {
+    txLog.close();
   }
 
   private static class TxLog {
@@ -449,50 +349,6 @@ class TransactionLogger extends AbstractFilterHandler {
       public void write(byte[] b, int off, int len) throws IOException {
         out.write(b, off, len);
         curSize += len;
-      }
-    }
-  }
-
-  private class Worker extends Thread {
-    private final long interval;
-
-    public Worker(long interval) {
-      super("TransactionLogger-Worker");
-      setDaemon(true);
-      this.interval = interval;
-    }
-
-    public void run() {
-      while (true) {
-        boolean process;
-        try {
-          synchronized (updQueue) {
-            if (!newUpdPending)
-              updQueue.wait(interval);
-
-            process = newUpdPending;
-          }
-        } catch (InterruptedException ie) {
-          logger.warn("Worker thread interrupted - exiting", ie);
-          break;
-        }
-
-        try {
-          if (process)
-            processQueue();
-          else
-            txLog.flush();
-        } catch (Throwable t) {
-          logger.error("Caught exception processing queue", t);
-        }
-      }
-
-      // flush anything left
-      processQueue();
-      try {
-        txLog.close();
-      } catch (IOException ioe) {
-        logger.error("Error closing log", ioe);
       }
     }
   }
