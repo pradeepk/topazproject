@@ -294,7 +294,7 @@
 
     <action name="fetchFirstRepresentation" class="org.plos.article.action.FetchObjectAction" method="fetchFirstObject">
       <result name="success" type="plosStream">
-        <param name="isAttachment">false</param>
+        <param name="isAttachment">true</param>
       </result>
     </action>
 

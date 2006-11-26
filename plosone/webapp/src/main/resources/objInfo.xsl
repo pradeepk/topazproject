@@ -207,5 +207,8 @@
 	<xsl:apply-templates/>END_TITLE
 </xsl:template>
 
+<xsl:template match="text()">
+	<xsl:value-of select="translate(., '&#x200A;', ' ') "/>
+</xsl:template>
 
 </xsl:stylesheet>

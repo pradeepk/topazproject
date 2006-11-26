@@ -366,7 +366,7 @@
 
 <xsl:output 
 			method="html"
-            indent="yes"
+			indent="no"
             encoding="UTF-8"
             omit-xml-declaration="yes"/>
 
@@ -784,7 +784,7 @@
 			<xsl:attribute name="id"><xsl:value-of select="$figId"/></xsl:attribute>
 			<xsl:attribute name="title">Click for larger image </xsl:attribute>
 			<xsl:attribute name="href"><xsl:value-of select="$slideshowURL"/></xsl:attribute>
-			<xsl:attribute name="onclick">window.open('<xsl:value-of select="$slideshowURL"/>','plosSlideshow','directories=no,location=no,menubar=no,status=no,scrollbars=yes,toolbar=no,height=600,width=800');return false;</xsl:attribute>
+			<xsl:attribute name="onclick">window.open('<xsl:value-of select="$slideshowURL"/>','plosSlideshow','directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=800');return false;</xsl:attribute>
 			<xsl:element name="img">
 				<xsl:attribute name="border">1</xsl:attribute>
 				<xsl:attribute name="src"><xsl:value-of select="concat('fetchObject.action?uri=',$imageURI,'&amp;representation=PNG_S')"/></xsl:attribute>
@@ -797,7 +797,7 @@
 			<xsl:call-template name="makeXpathLocation"/>
 			<xsl:element name="a">
 				<xsl:attribute name="href"><xsl:value-of select="$slideshowURL"/></xsl:attribute>
-				<xsl:attribute name="onclick">window.open('<xsl:value-of select="$slideshowURL"/>','plosSlideshow','directories=no,location=no,menubar=no,status=no,scrollbars=yes,toolbar=no,height=600,width=800');return false;</xsl:attribute>
+				<xsl:attribute name="onclick">window.open('<xsl:value-of select="$slideshowURL"/>','plosSlideshow','directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=800');return false;</xsl:attribute>
 				<strong>
 					<span>
 						<xsl:call-template name="makeXpathLocation" >
@@ -833,7 +833,7 @@
 			<xsl:attribute name="id"><xsl:value-of select="$tableId"/></xsl:attribute>
 			<xsl:attribute name="title">Click for larger image </xsl:attribute>
 			<xsl:attribute name="href"><xsl:value-of select="$slideshowURL"/></xsl:attribute>
-			<xsl:attribute name="onclick">window.open('<xsl:value-of select="$slideshowURL"/>','plosSlideshow','directories=no,location=no,menubar=no,status=no,scrollbars=yes,toolbar=no,height=600,width=800');return false;</xsl:attribute>
+			<xsl:attribute name="onclick">window.open('<xsl:value-of select="$slideshowURL"/>','plosSlideshow','directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=800');return false;</xsl:attribute>
 			
 			<xsl:element name="img">
 				<xsl:attribute name="border">1</xsl:attribute>
@@ -847,7 +847,7 @@
 			<xsl:call-template name="makeXpathLocation"/>
 			<xsl:element name="a">
 				<xsl:attribute name="href"><xsl:value-of select="$slideshowURL"/></xsl:attribute>
-				<xsl:attribute name="onclick">window.open('<xsl:value-of select="$slideshowURL"/>','plosSlideshow','directories=no,location=no,menubar=no,status=no,scrollbars=yes,toolbar=no,height=650,width=850');return false;</xsl:attribute>
+				<xsl:attribute name="onclick">window.open('<xsl:value-of select="$slideshowURL"/>','plosSlideshow','directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=650,width=850');return false;</xsl:attribute>
 				<strong>
 					<span>
 						<xsl:call-template name="makeXpathLocation" >
@@ -1858,23 +1858,19 @@ Make article meta data
       </xsl:otherwise>
     </xsl:choose>
   </xsl:variable>
+	
+  <xsl:element name="a">
+	<xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
+	<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
+  </xsl:element>
 
-  <span class="tl-default">
-    <xsl:choose>
-      <xsl:when test="@xlink:href">
-        <a>
-          <xsl:call-template name="make-href"/>
-          <xsl:call-template name="make-id"/>
-          <xsl:value-of select="$the-label"/>
-        </a>
-      </xsl:when>
-      <xsl:otherwise>
-        <xsl:call-template name="make-id"/>
-        <xsl:value-of select="$the-label"/>
-      </xsl:otherwise>
-    </xsl:choose>
-  </span>
-
+ <h5>
+   <xsl:element name="a">
+     <xsl:variable name="objURI"><xsl:value-of select="@xlink:href"/></xsl:variable>
+     <xsl:attribute name="href"><xsl:value-of select="concat('fetchFirstRepresentation.action?uri=',$objURI)"/></xsl:attribute>
+	  <strong><xsl:apply-templates select="label"/></strong>
+  </xsl:element> 
+ </h5>
   <xsl:apply-templates select="*[not(self::label)]"/>
 </xsl:template>
 
@@ -3181,8 +3177,8 @@ Make article meta data
 	<div>
     <xsl:call-template name="make-id"/>
     <xsl:if test="not(title)">
-      <h3 xpathLocation="noSelect">Acknowledgments</h3>
-	  <a id="ack" name="ack" toc="ack" title="Acknowledgments"></a>
+		<a id="ack" name="ack" toc="ack" title="Acknowledgments"><h3 xpathLocation="noSelect">Acknowledgments</h3></a>
+
       <xsl:call-template name="nl-1"/>
     </xsl:if>
 
