@@ -255,7 +255,34 @@ public class RepliesImpl implements Replies {
       }
     }
 
-    permissions.propagatePermissions(id, new String[] { body });
+    boolean propagated = false;
+
+    try {
+      permissions.propagatePermissions(id, new String[] { body });
+      propagated = true;
+    } finally {
+      if (!propagated) {
+        try {
+          String del = ItqlHelper.bindValues(ITQL_DELETE_ID, "id", id);
+          txn = "delete-partially-created-reply:" + id;
+          itql.beginTxn(txn);
+          itql.doUpdate(del, aliases);
+          itql.commitTxn(txn);
+          txn = null;
+        } catch (Throwable t) {
+          if (log.isDebugEnabled())
+            log.debug("Error deleting partially created reply", t);
+
+          try {
+            if (txn != null)
+              itql.rollbackTxn(txn);
+          } catch (Throwable t2) {
+            if (log.isDebugEnabled())
+              log.debug("Error rolling failed transaction", t2);
+          }
+        }
+      }
+    }
 
     if (log.isDebugEnabled())
       log.debug("created reply " + id + " for " + inReplyTo + " with root " + root + " with body "

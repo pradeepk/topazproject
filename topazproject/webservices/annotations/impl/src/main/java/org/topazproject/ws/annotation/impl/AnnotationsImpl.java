@@ -273,7 +273,34 @@ public class AnnotationsImpl implements Annotations {
       }
     }
 
-    permissions.propagatePermissions(id, new String[] { body });
+    boolean propagated = false;
+
+    try {
+      permissions.propagatePermissions(id, new String[] { body });
+      propagated = true;
+    } finally {
+      if (!propagated) {
+        try {
+          String del = ItqlHelper.bindValues(DELETE_ITQL, "id", id);
+          txn = "delete-partially-created-annotation:" + id;
+          itql.beginTxn(txn);
+          itql.doUpdate(del, aliases);
+          itql.commitTxn(txn);
+          txn = null;
+        } catch (Throwable t) {
+          if (log.isDebugEnabled())
+            log.debug("Error deleting failed annotation", t);
+
+          try {
+            if (txn != null)
+              itql.rollbackTxn(txn);
+          } catch (Throwable t2) {
+            if (log.isDebugEnabled())
+              log.debug("Error rolling failed transaction", t2);
+          }
+        }
+      }
+    }
 
     if (log.isDebugEnabled())
       log.debug("created annotaion " + id + " for " + annotates + " annotated by " + body);
