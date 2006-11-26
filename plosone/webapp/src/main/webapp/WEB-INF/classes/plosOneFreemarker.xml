@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <pages>
-  <webapp-dir>/plosone-webapp</webapp-dir>
+  <webapp-dir></webapp-dir>
   <webapp-subdir></webapp-subdir>
-  <cas-login-url>https://merlin.topazproject.org:7443/cas/login</cas-login-url>
-  <cas-logout-url>https://merlin.topazproject.org:7443/cas/logout</cas-logout-url>
-  <plosone-host>localhost:9080</plosone-host>
+  <cas-login-url>https://FQHN:7443/cas/login</cas-login-url>
+  <cas-logout-url>https://FQHN:7443/cas/logout</cas-logout-url>
+  <plosone-host>FQHN:8080</plosone-host>
   <default>
     <title>PLoS ONE</title>
     <css>

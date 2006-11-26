@@ -30,19 +30,19 @@
     <filter-class>edu.yale.its.tp.cas.client.filter.CASFilter</filter-class>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.loginUrl</param-name>
-      <param-value>https://localhost:7443/cas/login</param-value>
+      <param-value>https://FQHN:7443/cas/login</param-value>
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.validateUrl</param-name>
-      <param-value>https://localhost:7443/cas/proxyValidate</param-value>
+      <param-value>https://FQHN:7443/cas/proxyValidate</param-value>
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.serverName</param-name>
-      <param-value>localhost:9080</param-value>
+      <param-value>FQHN:8080</param-value>
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.proxyCallbackUrl</param-name>
-      <param-value>https://localhost:8443/plosone-webapp/CasProxyServlet</param-value>
+      <param-value>https://FQHN:10443/CasProxyServlet</param-value>
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.wrapRequest</param-name>
@@ -187,7 +187,7 @@
     <servlet-class>edu.yale.its.tp.cas.proxy.ProxyTicketReceptor</servlet-class>
     <init-param>
       <param-name>edu.yale.its.tp.cas.proxyUrl</param-name>
-      <param-value>https://localhost:7443/cas/proxy</param-value>
+      <param-value>https://FQHN:7443/cas/proxy</param-value>
     </init-param>
     <!--     <load-on-startup>1</load-on-startup>-->
   </servlet>
