@@ -449,6 +449,7 @@ public class ArticleImpl implements Article {
       List infos = new ArrayList();
       while (rows.next()) {
         ObjectInfo info = new ObjectInfo();
+        info.setUri(rows.getString("article"));
         parseObjectInfo((AnswerSet.QueryAnswerSet)rows.getSubQueryResults(2),info);
         infos.add(info);
       }
