@@ -16,7 +16,7 @@ div.detail strong{ color: #444; /* strong wraps date and time for added emphasis
 .dialog .tip,
 .dialog .tipu { display: none; }
 #AnnotationDialog .dialog .tip 	{ background:transparent url(../images/pone_dialog_pb.gif) no-repeat 0px 0px;  width:39px; height:22px; position:absolute; bottom: -22px; left:22px; }
-#AnnotationDialog .dialog .tipu 	{ background:transparent url(../images/pone_dialog_pt.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; top: -22px; left:22px;; }
+#AnnotationDialog .dialog .tipu 	{ background:transparent url(../images/pone_dialog_pt.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; top: -22px; left:22px; }
 #CommentDialog .dialog .tip,
 #CommentDialogMultiple .dialog .tip 	{ background:transparent url(../images/pone_dialog_preview_pb.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; bottom: -22px; left:22px; }
 #CommentDialog .dialog .tipu,
@@ -84,8 +84,8 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .dialog fieldset div { width: 5em; height: 2em; margin-left: 15px;padding: 0; display: inline;}
 .dialog fieldset div label 	{ width: 5em; vertical-align: middle; height: 1.125em; display: inline;}
 .dialog fieldset input.radio 	{ width: 1em; vertical-align: middle; height: 1.125em; display: inline; margin-right: 4px;}
-.dialog fieldset div.btnwrap { width: 100%; display:block; margin: 0; }
-.dialog fieldset div.btnwrap input { margin: 0 auto; }
+div.btnwrap { width: 100%; display:block; margin: 0; height: auto; }
+div.btnwrap input { margin: 0 auto; display: block;}
 
 /* --- multiple is the containing block for multiple annotations --- */
 
@@ -135,7 +135,7 @@ div.response h5	 { margin: 20px 0 0 0; padding: 0; font-size: 1.1em;}
 
 div.response div.close a	{ position: absolute; float: none; top: 20px; right: 20px; color: #333;}
 
-div.response .pane 					{ border: 2px solid #ccc; border-width: 0 0 2px 2px; padding: 0 20px 20px 20px; margin: 0; background-repeat: repeat-x; background-position: top; color: #fff;}
+div.response .pane 					{ border: 2px solid #ccc; border-width: 2px 0 2px 2px; padding: 0 20px 20px 20px; margin: 0; background-repeat: repeat-x; background-position: top; color: #fff;}
 div.response .pane legend 			{ display: none; }
 
 /* apply class original to the original posting of either a discussio or annotation on the directory page */
