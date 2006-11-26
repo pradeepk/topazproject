@@ -2,7 +2,9 @@
 <title>Email this article</title>
 <body>
 
-<b>Title:</b> ${title} <br/>
+<@ww.url id="fetchArticleURL" action="fetchArticle" articleURI="${articleURI}"/>
+<b>Title:</b> <@ww.a href="%{fetchArticleURL}">${title}</@ww.a> <br/>
+
 <b>Description :</b> ${description}
 <@ww.form name="emailThisArticle" cssClass="pone-form" action="emailThisArticleSubmit" namespace="/article" method="post" title="Email this article">
   <@ww.hidden name="articleURI"/>
