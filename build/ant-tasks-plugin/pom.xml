@@ -103,7 +103,5 @@
         </configuration>
       </plugin>
     </plugins>
-
-    <defaultGoal>install</defaultGoal>
   </build>
 </project>
