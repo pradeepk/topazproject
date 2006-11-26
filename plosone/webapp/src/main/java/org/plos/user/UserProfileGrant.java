@@ -57,7 +57,7 @@ public enum UserProfileGrant {
   TITLE ("title", GET_TITLE),
   GENDER ("gender", GET_GENDER),
   ORGANIZATION_NAME ("organizationName", GET_ORGANIZATION_NAME),
-  OGANIZATION_TYPE ("oganizationType", GET_ORGANIZATION_TYPE),
+  ORGANIZATION_TYPE ("organizationType", GET_ORGANIZATION_TYPE),
   COUNTRY ("country", GET_COUNTRY),
   CITY ("city", GET_CITY),
   HOME_PAGE ("homePage", GET_HOME_PAGE),

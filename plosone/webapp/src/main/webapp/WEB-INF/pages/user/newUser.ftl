@@ -1,14 +1,3 @@
-<#function isFound collection value>
-  <#list collection as element>
-    <#if element== value>
-      <#return
-      "true"/>
-    </#if>
-  </#list>
-  <#return
-  "false"/>
-</#function>
-
 <!-- begin : main content wrapper -->
 <div id="content">
 <h2>PLoS ONE Member Profiles: Create a Profile</h2>
@@ -31,11 +20,8 @@
 				</ol>
 				<fieldset class="public-private">
 				<legend>Choose display settings for your real name </legend>
-          <@ww.checkbox name="privateFields" label="Is it private?" fieldValue="realName" value="${isFound(privateFields, 'realName')}"/>
-					<label for="public-private-realname"><input name="public-private-realname" value="public" tabindex="104" type="radio" class="radio" />
-					Public </label>
-					<label for="public-private-realname"><input name="public-private-realname" value="private" tabindex="105" type="radio" class="radio" />
-					Private </label>
+          <@ww.radio name="nameVisibility" label="Public" list="{'public'}" tabindex="104" cssClass="radio" />
+          <@ww.radio name="nameVisibility" label="Private" list="{'private'}" tabindex="105" cssClass="radio" />
 				</fieldset>
 			</li>
 		</ol>
@@ -51,11 +37,8 @@
 				</ol>
 				<fieldset class="public-private">
 				<legend>Choose display settings for your address </legend>
-          <@ww.checkbox name="privateFields" label="Is it private?" fieldValue="postalAddress" value="${isFound(privateFields, 'postalAddress')}"/>
-					<label for="public-private-address"><input name="public-private-address" value="public" tabindex="112" checked="checked" type="radio" class="radio" />
-					Public </label>
-					<label for="public-private-address"><input name="public-private-address" value="private" tabindex="113" type="radio" class="radio" />
-					Private </label>
+          <@ww.radio name="extendedVisibility" label="Public" list="{'public'}" tabindex="112" cssClass="radio" />
+          <@ww.radio name="extendedVisibility" label="Private" list="{'private'}" tabindex="113" cssClass="radio" />
 				</fieldset>
 			</li>
 			<li class="form-last-item">
@@ -74,10 +57,8 @@
 				</ol>
 				<fieldset class="public-private">
 				<legend>Choose display settings for your organization and title</legend>
-					<label for="public-private-organization"><input name="public-private-organization" value="public" tabindex="118" checked="checked" type="radio" class="radio" />
-					Public </label>
-					<label for="public-private-organization"><input name="public-private-organization" value="private" tabindex="119" type="radio" class="radio" />
-					Private </label>
+          <@ww.radio name="orgVisibility" label="Public" list="{'public'}" tabindex="118" cssClass="radio" />
+          <@ww.radio name="orgVisibility" label="Private" list="{'private'}" tabindex="119" cssClass="radio" />
 				</fieldset>
 		  </li>
 		</ol>
@@ -89,17 +70,8 @@
       <@ww.textfield name="researchAreasText" label="Research Areas" cssClass="long-input" tabindex="121" />
       <@ww.textfield name="interestsText" label="Interests"  cssClass="long-input" tabindex="122" />
 			<li>
-        <!-- TODO: no mapping found for URL and URL-description -->
-        <@ww.textfield name="homePage" label="URL"  cssClass="long-input" tabindex="123" />
-
-        <label for="url-description">URL Description</label>
-				<select name="url-description" id="url-description" tabindex="124">
-					<option value="none selected" selected="selected">Choose One</option>
-					<option value="">Personal</option>
-					<option value="">Laboratory</option>
-					<option value="">Departmental</option>
-					<option value="">Blog</option>
-				</select>
+        <@ww.textfield name="homePage" label="Home page"  cssClass="long-input" tabindex="123" />
+        <@ww.textfield name="weblog" label="Weblog"  cssClass="long-input" tabindex="124" />
 			</li>
 		</ol>
     <@ww.submit value="Submit" tabindex="125"/>
