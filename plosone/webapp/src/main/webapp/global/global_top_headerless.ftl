@@ -6,5 +6,4 @@
 </head>
 <body>
 <!-- begin : container -->
-<div id="figure-window-wrapper">
 	

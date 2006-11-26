@@ -1,4 +1,3 @@
-</div>
 <!-- end : container -->	
 
 </body>
