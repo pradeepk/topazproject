@@ -27,7 +27,7 @@ journal style sheets
 #home a h1,
 #home a:hover h1{ color: inherit; } /* this ensures that the headings in the ad blocks will highlight appropriately */
 #home h2 		{ background-color: #ddd; font-size: .85em; font-family: Verdana, Arial, Helvetica, sans-serif; margin: 0 0 10px 0; letter-spacing: normal; padding: 4px; color: #555;}
-#home #second h2{ background: url(../images/jour_home_tabcontainer_bg.gif) repeat-x bottom; font-size: 1em; font-weight: bold;}
+#home #second h2{ background: url(../images/pone_home_marketing_h2.gif) repeat-x bottom; font-size: 1em; font-weight: bold;}
 .fm				{ background-image: url(../images/jour_sidenav_fm.gif); }
 /* create additional h3 header style for the marketing column */
 #home #second h3{ font-size: .9em; font-weight: bold; font-family: Verdana, Arial, Helvetica, sans-serif; margin: 0px; }
@@ -35,12 +35,13 @@ journal style sheets
 #home span.date { /* wraps last updated */color: #777; text-transform: uppercase; display: block; margin: 0 0 10px 0; font-size: .85em;}
 #home span.date strong { /* wraps date within last updated */ font-weight: normal; color: #333; text-transform: none; border-bottom: 1px solid #ccc; padding-bottom: 5px;}
 
-div.more		{ text-transform: uppercase; font-size: .85em; font-weight: bold; text-align: right; margin-left: 5px; clear: left; margin: 0; padding: 4px; background-position: bottom; background-repeat: repeat-x;}
+div.more		{ text-transform: uppercase; font-size: .85em; font-weight: bold; text-align: right; clear: left; margin: 0; margin-top: 2px; padding: 4px; background: url(../images/pone_home_more_bg.gif) repeat-x bottom;}
 
 /* read more block */
 div.more a,
-div.more a:visited	{ color: #F5F5F5; background-repeat: no-repeat; background-position: left center; padding-left: 16px; }
+div.more a:visited	{ color: #F5F5F5; padding-right: 5px;}
 div.more a:hover	{ color: #fff; }
+
 
 /* Homepage : Layout : Structure
 ----------------------------------------------------------
@@ -54,11 +55,12 @@ All rights reserved.
 /* all modules and grids nested in a grid get floated */
 .col .subcol, .col .col 	{ float:right; display:inline;   /* for ie */ }
 /* float left and kill margin on first for added flex */
-#first, .col .first 		{ float:left; }
+#first, .col .first 		{ float:left; background-color: #fff;}
 /* container column 1 */
 #first 						{ width: 520px; }
 /* column 1 */
 #first .first 				{ width: 130px; height: 300px; text-align: right; }
+#first .first h6			{ margin: 0; padding: 0; font-size: .8em; text-transform: uppercase; text-align: center; color: #666; border-top: 1px solid #ccc;}
 #first .first .block 		{ background-color: #FFF; margin: 0; margin-right: 1px; padding-left: 0; border-top: 3px double #ccc; border-width: 3px 0 0 0;}
 #home .block.banner			{ border: none; }
 #first .first .block.banner { background-color: transparent; }
@@ -69,7 +71,7 @@ All rights reserved.
 /* contains columns 3 and column 4 */
 #second 					{ width: 390px; }
 /* column 3 */ 
-#second .first 				{ width: 258px; margin-top: 27px; /* margin aligns top of col 3 with bottom of tabs in col 2 */ }
+#second .first 				{ width: 258px;  }
 #second .first .block		{ background: url(../images/jour_sidenav_li_bg.gif) repeat-x bottom; }
 /* col4 */
 #second .last				{ width: 130px; }
@@ -93,6 +95,7 @@ div.feature 			{ padding-top: 10px; line-height: 1.4em;}
 #home .block img 		{ float: left; margin: 0 10px 10px 0; }
 #home .block.banner		{ padding: 0; border: none;}
 #home .block.banner img { float: none; padding: 4px; margin: 0; border-width: 3px 0 0 0; border-style: double; border-color: #ccc; background: transparent; }
+#home .block.banner.partner img {border-top: 1px solid #ccc; }
 /* fixes float clearing bug */
 #home .block:after		{ content: ".";  display: block;  height: 0; clear: both; visibility: hidden; }
 #home p	{ font-size: .9em; }
@@ -114,7 +117,7 @@ div.top li 		{ margin-left: 20px; }
 #home .ad a:visited 
 				{ color: #555; text-decoration: none; display: block; padding: 3px; border: 2px solid #FFF; height: 5.2em;}
 #home .ad a:hover
-				{ text-decoration: none; display: block; border-width: 2px; border-style: solid;}
+				{ text-decoration: none; display: block; border-width: 2px; border-style: solid; background-color: #D2F7FF; color: #069; border-color: #069; }
 #home .ad a strong
 				{ margin: 0; font-size: 1.4em; font-weight: normal; font-family: Georgia, "Times New Roman", Times, serif; letter-spacing: -.05em; text-decoration: none; display: block; margin-bottom: 4px; }
 #home .ad a span.body
@@ -145,9 +148,9 @@ ul.mainNav li a 	{ font-family: Georgia, "Times New Roman", Times, serif; font-s
 #home .marketing.block	{ padding: 0; }
 #home .marketing h2		{ margin: 3px; }
 #home .marketing ul,
-#home .marketing li		{ margin: 0; padding: 0; list-style-type: none; background: url(../images/jour_sidenav_li_bg.gif) repeat-x bottom; }
-#home .marketing li a	{ border-top: 1px solid #ccc; margin: 0; padding: 2px 4px 2px 16px; display: block; background-repeat: no-repeat; background-position: 2px 5px; }
-
+#home .marketing li		{ margin: 0; padding: 0; list-style-type: none; background: #FFF url(../images/jour_sidenav_li_bg.gif) repeat-x bottom; }
+#home .marketing li a	{ border-top: 1px solid #ccc; margin: 0; padding: 2px 4px 2px 16px; display: block; background: transparent url(../images/pone_home_marketing_a.gif) no-repeat 0 50%; }
+#home .marketing li a:hover { background-color: #D2F7FF; text-decoration: none;}
 
 /* --- focus is for home page tabbed blocks --- */
 #tabContainer 		{ width: auto; padding: 0; }
@@ -161,3 +164,17 @@ div.block div.block		{ border: none; border-top: 1px solid #ccc; margin: 0; bord
 #recent li	{ list-style-type: none; }
 
 #home .block.about p	{ font-size: 1.1em; }
+
+#home .block.banner.partner	{ }
+#home .block.banner.partner	img	{ background: #fff; }
+#home .block.partner h3	{ }
+
+
+/* TEMP ITEMS */
+#home ul.articles,
+#home ul.articles li	{ margin: 0; padding: 0; list-style-type: none; text-indent; }
+#home ul.articles li	{ font-size: .85em; border-bottom: 2px solid #ddd; padding: 3px 0; }
+
+#home dl.category 		{ margin: 0; }
+#home dl.category dt	{ margin: 0; border-bottom: 1px solid #ccc; padding: 2px; color: #333;}
+#home dl.category dd	{ display: none; }

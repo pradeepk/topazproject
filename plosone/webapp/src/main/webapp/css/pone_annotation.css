@@ -85,7 +85,7 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .dialog fieldset div label 	{ width: 5em; vertical-align: middle; height: 1.125em; display: inline;}
 .dialog fieldset input.radio 	{ width: 1em; vertical-align: middle; height: 1.125em; display: inline; margin-right: 4px;}
 div.btnwrap { width: 100%; display:block; margin: 0; height: auto; }
-div.btnwrap input { margin: 0 auto; display: block;}
+div.btnwrap input { margin: 5px auto; display: block; width: 18em; padding: 2px;}
 
 /* --- multiple is the containing block for multiple annotations --- */
 

@@ -8,63 +8,14 @@
 				<!-- begin : wrapper for cols 1 & 2 -->
 				<div id="first" class="col">
 					<!-- begin : col 1 -->
-					<div class="subcol first">
-						<div class="block">
-							<span class="date">Last Site Update: <strong>November 25, 2006</strong>
-							</span>
-							<ul class="mainNav">
-								<li>
-									<a href="#">Open Access</a>
-								</li>
-								<li>
-									<a href="#">Join PLoS</a>
-								</li>
-							</ul>
-						</div>
-						<div class="block banner">
-							<img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF"/>
-						</div>
-						<h6>Partners</h6>
-						<div class="block banner partner">
-							<a href="http://fedora.info/" title="Fedora.info">
-								<img src="${freemarker_config.context}/images/pone_home_fedora.jpg"/>
-							</a>
-						</div>
-						<div class="block banner partner">
-							<a href="http://www.sciencecommons.org/" title="Science Commons">
-								<img src="${freemarker_config.context}/images/pone_home_sciencecommons.jpg"/>
-							</a>
-						</div>
-						<div class="block banner partner">
-							<a href="http://www.osafoundation.org" title="Open Source Applications Foundation">
-								<img src="${freemarker_config.context}/images/pone_home_osaf.jpg"/>
-							</a>
-						</div>
-						<div class="block banner partner">
-							<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation">
-								<img src="${freemarker_config.context}/images/pone_home_moore.jpg"/>
-							</a>
-						</div>
-						<div class="block banner partner">
-							<a href="http://www.unitedlayer.com/" title="United Layer Built on IP Services">
-								<img src="${freemarker_config.context}/images/pone_home_unitedlayer.jpg"/>
-							</a>
-						</div>
-					</div>
-					<!-- end : col 1 -->
-					<!-- begin : col 2 -->
-					<div class="subcol last">
-						<div class="block">
-							<h1>Welcome to PLoS ONE</h1>
+
+							<h1 style="font-size: 2.3em;">Welcome to PLoS ONE</h1>
 							<p>Today is the day that we unveil Open Access 2.0. Blah blah lorem orem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
-						</div>
 
 						<#if (recentArticles?size > 0)>
 
 						<div class="block">
-							<h1>
-								<a href="#">Most Recent</a>
-							</h1>
+							<h1>Recently Published</h1>
 							<ul class="articles">
 								<#list recentArticles as article>
 									<#if article_index gt 4>
@@ -79,9 +30,6 @@
 								</li>
 								</#list>
 							</ul>
-							<div class="more">
-								<a href="#" title="View Full List of Most Recently Published">View All</a>
-							</div>
 						</div>
 						</#if>
 
@@ -107,8 +55,28 @@
 									<a href="#" title="Read Open Access Article" class="article icon">Molecular Pathogenesis and Therapy of Polycythemia Induced  in Mice by JAK2 V617F</a>
 								</li>
 							</ul>
-						</div>
-					</div>
+			</div>
+			<div class="col first">
+			<div class="block banner">
+					<img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF">
+				</div>				   
+			</div>
+			<div class="col last">		
+			<#if categoryNames?size gt 0>
+			<div class="block">
+			<h1>Subject Categories</h1>
+				<#list categoryNames as category>
+				<dl class="category">
+				<dt>${category} (1)</dt>
+					<dd><ul><#list articlesByCategory[category_index] as article>
+					<li><a href="article/fetchArticle.action?articleURI=${article.uri?url}" title="Read Open Access Article">${article.title}</a></li>
+					</#list></ul></dd>
+				</dl>
+				</#list>
+			</div>
+			</#if> 
+			</div>
+
 					<!-- end : col 2 -->
 				</div>
 				<!-- end : wrapper for cols 1 & 2 -->
@@ -175,28 +143,38 @@
 						<div class="block banner">
 							<img src="http://a248.e.akamai.net/7/800/1129/1154526507/oascentral-s.realmedia.com/RealMedia/ads/Creatives/sciam.com/m_sciam_2006-02_podcast_sky/pod_120x600_2.gif"/>
 						</div>
+						<h6>Partners</h6>
+						<div class="block banner partner">
+							<a href="http://fedora.info/" title="Fedora.info">
+								<img src="${freemarker_config.context}/images/pone_home_fedora.jpg"/>
+							</a>
+						</div>
+						<div class="block banner partner">
+							<a href="http://www.sciencecommons.org/" title="Science Commons">
+								<img src="${freemarker_config.context}/images/pone_home_sciencecommons.jpg"/>
+							</a>
+						</div>
+						<div class="block banner partner">
+							<a href="http://www.osafoundation.org" title="Open Source Applications Foundation">
+								<img src="${freemarker_config.context}/images/pone_home_osaf.jpg"/>
+							</a>
+						</div>
+						<div class="block banner partner">
+							<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation">
+								<img src="${freemarker_config.context}/images/pone_home_moore.jpg"/>
+							</a>
+						</div>
+						<div class="block banner partner">
+							<a href="http://www.unitedlayer.com/" title="United Layer Built on IP Services">
+								<img src="${freemarker_config.context}/images/pone_home_unitedlayer.jpg"/>
+							</a>
+						</div>
+
 					</div>
 					<!-- end : col 4 -->
 				</div>
 				<!-- end : wrapper for cols 3 & 4 -->
 			</div>
-			<#if categoryNames?size gt 0>
-			<div class="block" style="margin: 0 135px; ">
-				<p style="border-bottom: 1px solid #666; padding-bottom: 5px;">
-					<em>Each week we will be publishing new articles. Below are <strong>all new articles</strong> which we are launching with; more to come next week!</em>
-				</p>
-				<#list categoryNames as category>
-				<h2>${category}</h2>
-				<ul class="articles">
-					<#list articlesByCategory[category_index] as article>
-					<li>
-						<a href="article/fetchArticle.action?articleURI=${article.uri?url}" title="Read Open Access Article" class="article icon">${article.title}</a>
-					</li>
-					</#list>
-				</ul>
-				</#list>
-			</div>
-			</#if>
 			<!-- end : layout wrapper -->
 		</div>
 	</div>

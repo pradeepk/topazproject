@@ -20,10 +20,9 @@
 	border-left-width: 0px;
 	border-right-style: none;
 	border-left-style: none;
-	margin: 0px;
+	margin: 15px 0;
 	padding: 0px 0px 15px;
-	background: #D2F7FF url(../images/forms_bg.gif) repeat-x left top;
-	margin-bottom: 15px;
+	background: #D2F7FF url(../images/pone_forms_bg.gif) repeat-x left top;
 }
 .pone-form fieldset legend {
 	font-family: Georgia, "Times New Roman", Times, serif;
