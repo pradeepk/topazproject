@@ -110,5 +110,15 @@
     </css>
   </page>
 
+  <page>
+    <name>/static/edboard.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_static.css</file>
+    </css>
+  </page>
+
+
   
 </pages>

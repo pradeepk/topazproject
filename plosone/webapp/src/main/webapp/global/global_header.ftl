@@ -17,7 +17,7 @@
 	
 	<#else>
 
-	<div id="user" class="login">
+	<div id="user">
 		<div>
 			<ul>
 				<li><a href="#">Create Account</a></li>
@@ -42,7 +42,7 @@
 			<fieldset>
 				<legend>Search PLoS ONE</legend>
 				<label for="search">Search</label>
-				<div class="wrap"><input type="text" name="query" value="Search PLoS ONE..." onfocus="if(this.value=='Search PLoS ONE...')value='';" onblur="if(this.value=='')value='Search PLoS ONE...';" class="searchField" alt="Search PLoS ONE..." /></div>
+				<div class="wrap"><input type="text" name="query" value="Search PLoS ONE..." onfocus="if(this.value=='Search PLoS ONE...')value='';" onblur="if(this.value=='')value='Search PLoS ONE...';" class="searchField" alt="Search PLoS ONE..." name="search"/></div>
 				<input src="${freemarker_config.context}/images/pone_searchinput_btn.gif" onclick="submit();" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
 			</fieldset>
 		</form>

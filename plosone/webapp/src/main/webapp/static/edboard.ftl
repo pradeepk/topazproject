@@ -341,7 +341,7 @@ United States of America</dd>
 <dd>Institute for Research in Biomedicine<br />
 Spain</dd>
 
-<dt>Marcos González-Gaitán</dt>
+<dt>Marcos Gonzï¿½lez-Gaitï¿½n</dt>
 <dd>Max Planck Institute of Molecular Cell Biology and Genetics<br />
 Germany</dd>
 
@@ -446,7 +446,7 @@ South Africa</dd>
 <dd>Max Planck Institute for Evolutionary Anthropology<br />
 Germany</dd>
 
-<dt>Jörg Hoheisel</dt>
+<dt>Jï¿½rg Hoheisel</dt>
 <dd>The German Cancer Research Center<br />
 Germany</dd>
 
@@ -506,7 +506,7 @@ France</dd>
 United Kingdom</dd>
 
 <dt>Esper Kallas</dt>
-<dd>Universidade Federal de São Paulo<br />
+<dd>Universidade Federal de SÃ£o Paulo<br />
 Brazil</dd>
 
 <dt>Rees Kassen</dt>
@@ -519,7 +519,6 @@ Germany</dd>
 
 <dt>Stefan Kepinski</dt>
 <dd>University of Leeds<br />
-
 United Kingdom</dd>
 
 <dt>Vineet KewalRamani</dt>
@@ -635,7 +634,7 @@ United States of America</dd>
 <dd>University of California, San Francisco<br />
 United States of America</dd>
 
-<dt>François Nosten</dt>
+<dt>Franï¿½ois Nosten</dt>
 <dd>Mahidol University<br />
 Thailand</dd>
 
@@ -699,7 +698,7 @@ United States of America</dd>
 Switzerland</dd>
 
 <dt>Mauricio Rodrigues</dt>
-<dd>Universidade Federal de São Paulo<br />
+<dd>Universidade Federal de SÃ£o Paulo<br />
 Brazil</dd>
 
 <dt>Floyd Romesberg</dt>
@@ -748,8 +747,8 @@ South Africa</dd>
 <dd>Pasteur Institute<br />
 France</dd>
 
-<dt>François Schweisguth</dt>
-<dd>Ecole Normale Supérieure<br />
+<dt>Franï¿½ois Schweisguth</dt>
+<dd>Ecole Normale Supï¿½rieure<br />
 France</dd>
 
 <dt>Cathal Seoighe</dt>
@@ -816,7 +815,7 @@ United Kingdom</dd>
 <dd> Samuel Lunenfeld Research Institute<br />
 Canada</dd>
 
-<dt>César Ugarte-Gil</dt>
+<dt>Cï¿½sar Ugarte-Gil</dt>
 <dd>Institute of Tropical Medicine Alexander von Humboldt<br />
 Peru</dd>
 

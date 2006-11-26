@@ -14,8 +14,14 @@
 	</div>
 	<!-- end : top banner external ad space -->
 	
+	<#if Session.PLOS_ONE_USER?exists>
 	<!-- begin : header -->
 	<div id="hdr">
+  <#else>	
+	<!-- begin : header -->
+	<div id="hdr" class="login">
+	</#if>
+	
 	<#include "global_header.ftl">
 	</div>
 	<!-- end : header -->
