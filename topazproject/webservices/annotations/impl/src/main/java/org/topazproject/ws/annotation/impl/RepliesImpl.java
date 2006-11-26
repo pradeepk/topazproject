@@ -237,7 +237,23 @@ public class RepliesImpl implements Replies {
       create += ITQL_INSERT_MEDIATOR;
     }
 
-    ctx.getItqlHelper().doUpdate(ItqlHelper.bindValues(create, values), aliases);
+    ItqlHelper itql = ctx.getItqlHelper();
+    String     txn = "create-reply:" + id;
+
+    try {
+      itql.beginTxn(txn);
+      itql.doUpdate(ItqlHelper.bindValues(create, values), aliases);
+      itql.commitTxn(txn);
+      txn = null;
+    } finally {
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+        if (log.isDebugEnabled())
+          log.debug("Error rolling failed transaction", t);
+      }
+    }
 
     permissions.propagatePermissions(id, new String[] { body });
 

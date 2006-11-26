@@ -255,7 +255,23 @@ public class AnnotationsImpl implements Annotations {
       values.put("mediator", ItqlHelper.escapeLiteral(mediator));
     }
 
-    ctx.getItqlHelper().doUpdate(ItqlHelper.bindValues(create, values), aliases);
+    ItqlHelper itql = ctx.getItqlHelper();
+    String     txn = "create-annotation:" + id;
+
+    try {
+      itql.beginTxn(txn);
+      itql.doUpdate(ItqlHelper.bindValues(create, values), aliases);
+      itql.commitTxn(txn);
+      txn = null;
+    } finally {
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+        if (log.isDebugEnabled())
+          log.debug("Error rolling failed transaction", t);
+      }
+    }
 
     permissions.propagatePermissions(id, new String[] { body });
 
