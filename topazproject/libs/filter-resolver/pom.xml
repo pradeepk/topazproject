@@ -33,26 +33,12 @@
       <artifactId>fedora-client</artifactId>
       <version>2.1.1</version>
       <scope>provided</scope>
-      <exclusions>
-        <!-- this is to work around bug http://jira.codehaus.org/browse/MNG-1412 -->
-        <exclusion>
-          <groupId>org.trippi</groupId>
-          <artifactId>trippi</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.trippi</groupId>
       <artifactId>trippi</artifactId>
       <version>1.0.0</version>
       <scope>provided</scope>
-      <exclusions>
-        <!-- this is to work around bug http://jira.codehaus.org/browse/MNG-1412 -->
-        <exclusion>
-          <groupId>log4j</groupId>
-          <artifactId>log4j</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
     <dependency>
       <groupId>org.openrdf</groupId>
