@@ -153,7 +153,12 @@ public class DocumentManagementService {
 		log.info("Ingesting: " + file);
 		uri = articleWebService.ingest(new DataHandler(file.toURL()));
 		log.info("Ingested: " + file);
-		resizeImages(uri);
+		try {
+			resizeImages(uri);
+		} catch (Exception e) {
+			log.info("Resize images failed: " + e.toString());
+			
+		}
 		log.info("Resized images");
 		generateCrossRefInfoDoc(file, uri);
 		log.info("Generated Xref for file: " + file);
@@ -176,7 +181,7 @@ public class DocumentManagementService {
 			String context =  info.getContextElement().trim();
 			if (context.equalsIgnoreCase("fig") || context.equalsIgnoreCase("table-wrap")) {
         RepresentationInfo rep = object.getRepresentations()[0];
-				log.info("Found image to resize: " + rep.getURL());
+				log.info("Found image to resize: " + rep.getURL() + " repsize-" + new Long(rep.getSize()).toString());
 				irs.captureImage(rep.getURL());
 				log.info("Captured image");
 				articleWebService.setRepresentation(
@@ -192,14 +197,14 @@ public class DocumentManagementService {
 						new DataHandler(new PngDataSource(irs.getLargeImage())));	
 				log.info("Set large");
 			} else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
-        RepresentationInfo rep = object.getRepresentations()[0];
-        log.info("Found image to resize: " + rep.getURL());
-        irs.captureImage(rep.getURL());
-        log.info("Captured image");
-        articleWebService.setRepresentation(
-            object.getUri(), "PNG", 
-            new DataHandler(new PngDataSource(irs.getLargeImage())));
-      }
+		        RepresentationInfo rep = object.getRepresentations()[0];
+		        log.info("Found image to resize: " + rep.getURL());
+		        irs.captureImage(rep.getURL());
+		        log.info("Captured image");
+		        articleWebService.setRepresentation(
+		            object.getUri(), "PNG", 
+		            new DataHandler(new PngDataSource(irs.getLargeImage())));
+			}
 		}
 	}
 	
