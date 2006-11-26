@@ -56,7 +56,10 @@ public class UserProfileAction extends UserActionSupport {
    * @return status code for webwork
    */
   public String executeSaveUser() throws Exception {
-    if (!validates()) return ERROR;
+    if (!validates()) {
+      email = fetchUserEmailAddress();
+      return ERROR;
+    }
     final Map<String, Object> sessionMap = getSessionMap();
     authId = getUserId(sessionMap);
 
