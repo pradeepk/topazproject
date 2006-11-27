@@ -18,6 +18,6 @@ public class Delete {
     String doi = args[1];
 
     Article service = ArticleClientFactory.create(serviceUrl);
-    service.delete(doi, true);
+    service.delete(doi);
   }
 }
