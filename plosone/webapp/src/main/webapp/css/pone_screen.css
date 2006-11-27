@@ -277,7 +277,7 @@ div#ftr ul a, div#ftr ul a:visited
 div#ftr img 	{ margin: 0 10px -8px 10px; display: inline; }
 div#ftr p 		{ margin: 0 0 10px 0; padding: 10px; background-color: #FFF; border-bottom: 1px solid #003956; white-space: nowrap; }
 div#ftr p span 	{ display: inline; background: #FFF url(../images/jour_ftr_cc_logo.png) no-repeat left center; padding: 8px 8px 8px 25px; }
-div#ftr div.powered { text-transform: uppercase; background-color: #202020; color: #eee; font-size: .9em; padding: 6px 0 2px 0; letter-spacing: .15em; margin-top: 10px; border-top: 1px solid #fff;}
+div#ftr div.powered { text-transform: uppercase; background-color: #202020; color: #eee; font-size: .8em; padding: 6px 0 2px 0; letter-spacing: .15em; margin-top: 10px; border-top: 1px solid #fff;}
 div.powered a:link,
 div.powered a:visited,
 div.powered a:hover { color: #fff; font-weight: bold;}
@@ -425,3 +425,23 @@ p.intro					{ border: 2px solid #ACF1FF; padding: 10px; background: url(../image
 /* ------ DOM Styles ------- */
 .commentPrivate { display: block; }
 .commentPublic { display: none; }
+
+/* ------ User Profile Page Styles ------*/
+
+div#content.profile 	{ border: 2px solid #55E912; border-width: 2px 0; background: #D2F7FF url(../images/pone_forms_bg.gif) repeat-x top; padding: 20px 0; width: 70%; margin-left: auto; margin-right: auto; position: relative;}
+div.profile img { float: left; margin: 20px 0 0 20px;}
+div.profile h1	{ position: absolute; left: 120px; margin: 0; top: 60px;}
+div.profile h2	{ background-image: none; clear: left; }
+
+
+div.profile ol { list-style-type: none; margin: 25px 0px 0px; padding: 0px; clear: left; padding-top: 20px; }
+div.profile ol li { list-style: none; display: block; padding: 0 20px 10px 20px; padding-left: 20px; border-bottom-color: #ACF1FF; border-bottom-style: solid;border-bottom-width: 2px; background-color: transparent; background-image: url(none); padding-top: 5px; clear: both; }
+div.profile li em{ color: #555; font-size: .9em;}
+div.profile ol li span.heading{ font-weight: bold; display: block; }
+div.profile ol li input { width: 200px; border: 1px solid #ACF1FF; padding: 2px; }
+div.profile ol li .long-input { width: 324px; } 
+div.profile ol li select { width: 206px; border: 1px solid #ACF1FF; padding: 2px; }
+div.profile ol li .radio { width: 14px;}
+div.profile ol li .checkbox { width: 14px;}
+div.profile textarea {width: 324px; border: 1px solid #ACF1FF; }
+div.profile #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
