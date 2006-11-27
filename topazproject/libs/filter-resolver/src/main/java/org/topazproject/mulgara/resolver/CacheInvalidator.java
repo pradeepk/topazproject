@@ -484,15 +484,23 @@ class CacheInvalidator extends QueueingFilterHandler {
       // gather up the results, grouping them by key
       Map<String,Set<String>> res = new HashMap<String,Set<String>>();
 
-      answer.beforeFirst();
-      while (answer.next()) {
-        String key = nodeToString(answer.getObject(0));
-        String val = nodeToString(answer.getObject(1));
+      try {
+        answer.beforeFirst();
+        while (answer.next()) {
+          String key = nodeToString(answer.getObject(0));
+          String val = nodeToString(answer.getObject(1));
 
-        Set<String> vals = res.get(key);
-        if (vals == null)
-          res.put(key, vals = new HashSet<String>());
-        vals.add(val);
+          Set<String> vals = res.get(key);
+          if (vals == null)
+            res.put(key, vals = new HashSet<String>());
+          vals.add(val);
+        }
+      } finally {
+        try {
+          answer.close();
+        } catch (TuplesException te) {
+          logger.warn("Error closing answer", te);
+        }
       }
 
       if (logger.isTraceEnabled())
