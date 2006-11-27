@@ -3,7 +3,7 @@ ${senderName} has sent you an open-access article from PLoS ONE.
 The sender added this:<br/>
 ${note}<br/>
 ===================================================
-
+<br/>
 ${title} - ${description} <br/><br/>
 
 

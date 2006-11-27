@@ -4,7 +4,7 @@
 	<div class="source">
 		<@ww.a href="%{fetchArticleURL}" title="Back to original article" class="article icon">${title}</@ww.a>
 	</div>						
-
+	<p>Fields marked with an <span class="required">*</span> are required. </p>
 	<@ww.form name="emailThisArticle" cssClass="pone-form" action="emailThisArticleSubmit" namespace="/article" method="post" title="Email this article">
 	  <@ww.hidden name="articleURI"/>
  	  <@ww.hidden name="title"/>
