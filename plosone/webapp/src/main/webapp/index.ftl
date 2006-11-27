@@ -33,14 +33,14 @@
 						</#if>
 	
 						
-						<#assign commentedArticles = action.getCommentedOnArticles(6)>
+						<#assign commentedArticles = action.getCommentedOnArticles(5)>
 						<#if commentedArticles?size gt 0 >
 						<div class="block">
 							<h1>Most Commented On</h1>
 							<ul class="articles">
 								<#list commentedArticles as commented>
 								<li>
-									<a href="article/fetchArticle.action?articleURI=" title="Read Open Access Article" class="article icon">${commented.title}</a>
+									<a href="article/fetchArticle.action?articleURI=${commented.uri}" title="Read Open Access Article" class="article icon">${commented.title}</a>
 								</li>
 								</#list>
 							</ul>
