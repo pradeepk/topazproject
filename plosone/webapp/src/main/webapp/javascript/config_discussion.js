@@ -1,5 +1,5 @@
 var djConfig = {
-	isDebug: true,
+	isDebug: false,
 	debugContainerId : "dojoDebug"
 };
 
