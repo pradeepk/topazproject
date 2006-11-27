@@ -17,4 +17,4 @@
 # - Read and update configuration in /usr/local/topaz/bin/tomcat
 #   (Check any changes back into svn -- head/deploy/src
 
-/usr/local/topaz/bin/tomcat --basename $(basename $0) $*
+/usr/local/topaz/bin/tomcat --basename $(basename `readlink -f $0`) $*

@@ -10,12 +10,7 @@
 # http://opensource.org/licenses/ecl1.php
 
 # chkconfig: 345 92 14
-# description: mulgara rdf database
-
-# What to customize/do:
-# - chkconfig and description lines above
-# - Read and update configuration in /usr/local/topaz/bin/tomcat
-#   (Check any changes back into svn -- head/deploy/src
+# description: ecache multicast configuration
 
 ifconfig eth0 multicast
 ifconfig lo multicast

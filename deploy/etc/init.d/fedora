@@ -4,7 +4,7 @@
 # description: topaz fedora server
 
 # Get name of thing we're trying to control
-BASENAME=$(basename $0)
+BASENAME=$(basename `readlink -f $0`)
 USER=topaz
 
 # Set these if we haven't overriden them in the environment
