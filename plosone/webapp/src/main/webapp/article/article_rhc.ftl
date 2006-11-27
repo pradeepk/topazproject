@@ -14,8 +14,8 @@
 			<li><a href="${articleArticleRepPDF}" class="pdf" title="Download PDF">Download Article PDF</a></li>
       <@ww.url id="emailArticleURL" namespace="/article" action="emailArticle" articleURI="${articleURI}"/>
       <li><@ww.a href="%{emailArticleURL}"  cssClass="email" title="Email This Article to a Friend or Colleague">Email this Article</@ww.a></li>
+      <li><a href="#" onclick="window.print();return false;" class="print last" title="Print this article">Print this Article</a></li>
 
-      <li><a href="#" class="print last" title="Print this article">Print this Article</a></li>
 		</ul>
 	</div>
 <!--
@@ -80,7 +80,7 @@
 		</div> 
 		<div id="sectionNavTop" class="tools">
 		</div>
-		<div id="dojoDebug"></div>
+<!--		<div id="dojoDebug"></div>-->
 	</div>
 	
 	
