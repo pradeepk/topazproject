@@ -696,7 +696,7 @@
 
 <xsl:template name="make-href">
   <xsl:if test="@xlink:href">
-    <xsl:attribute name="src">
+    <xsl:attribute name="href">
       <xsl:value-of select="@xlink:href"/>
     </xsl:attribute>
   </xsl:if>
@@ -3901,11 +3901,12 @@ Make article meta data
 -->
   <xsl:choose>
     <xsl:when test="not(title)">
-      <h3>References</h3>
    	  <a id="refs" name="refs" toc="refs" title="References"></a>
+      <h3>References</h3>
       <xsl:call-template name="nl-1"/>
     </xsl:when>
     <xsl:otherwise>
+   	  <a id="refs" name="refs" toc="refs" title="References"></a>
       <xsl:apply-templates select="title"/>
     </xsl:otherwise>
   </xsl:choose>
@@ -3918,6 +3919,8 @@ Make article meta data
 					<xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
 					<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
 				</a> 
+<!--				<xsl:apply-templates select="citation"/>-->
+				
 					<span class="authors">
 						<xsl:for-each select="citation/person-group[@person-group-type='author']/name">
 							<xsl:apply-templates select="surname"/><xsl:text> </xsl:text><xsl:apply-templates select="given-names"/>
@@ -3996,20 +3999,20 @@ Make article meta data
 
 <xsl:template match="ref/citation">
 
-    <xsl:choose>
+<!--    <xsl:choose>-->
       <!-- if has no significant text content, presume that
            punctuation is not supplied in the source XML
            = transform will supply it. -->
-      <xsl:when test="not(text()[normalize-space()])">
+<!--      <xsl:when test="not(text()[normalize-space()])">
         <xsl:apply-templates mode="none"/>
-      </xsl:when>
+      </xsl:when>-->
 
       <!-- if have only element content, presume that
            punctuation not supplied = generate it. -->
-      <xsl:otherwise>
+<!--      <xsl:otherwise>-->
         <xsl:apply-templates mode="nscitation"/>
-      </xsl:otherwise>
-    </xsl:choose>
+<!--      </xsl:otherwise>
+    </xsl:choose>-->
 
 </xsl:template>
 
@@ -4038,8 +4041,10 @@ Make article meta data
     <xsl:when test="$augroupcount>1 and
                     person-group[@person-group-type!='author'] and
                     article-title ">
+	  <span class="authors">
       <xsl:apply-templates select="person-group[@person-group-type='author']" mode="book"/>
       <xsl:apply-templates select="collab" mode="book"/>
+	  </span>
       <xsl:apply-templates select="article-title" mode="editedbook"/>
       <xsl:text>In: </xsl:text>
       <xsl:apply-templates select="person-group[@person-group-type='editor']
@@ -4065,11 +4070,13 @@ Make article meta data
 
     <xsl:when test="person-group[@person-group-type='author'] or
                     person-group[@person-group-type='compiler']">
+		<span class="authors">
       <xsl:apply-templates select="person-group[@person-group-type='author']
                                  | person-group[@person-group-type='compiler']"
                            mode="book"/>
       <xsl:apply-templates select="collab"
                            mode="book"/>
+      </span>
       <xsl:apply-templates select="source"
                            mode="book"/>
       <xsl:apply-templates select="edition"
@@ -4091,6 +4098,7 @@ Make article meta data
     </xsl:when>
 
     <xsl:otherwise>
+		<span class="authors">
       <xsl:apply-templates select="person-group[@person-group-type='editor']
                                  | person-group[@person-group-type='translator']
                                  | person-group[@person-group-type='transed']
@@ -4098,6 +4106,7 @@ Make article meta data
                            mode="book"/>
       <xsl:apply-templates select="collab"
                            mode="book"/>
+        </span>
       <xsl:apply-templates select="source"
                            mode="book"/>
       <xsl:apply-templates select="edition"
