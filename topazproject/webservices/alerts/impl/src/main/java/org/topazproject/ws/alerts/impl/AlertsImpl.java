@@ -102,13 +102,14 @@ public class AlertsImpl implements Alerts {
     " order by $user " +
     " limit ${limit};";
   private static final String GET_USERS_FEED_ITQL =
-    "select $art $title $description $date $state from ${ARTICLES} where " +
+    "select $art $title $date $state " +
+    " subquery(select $description from ${ARTICLES} where $art <dc:description> $description) " +
+    "   from ${ARTICLES} where " +
     "  <${userId}> <topaz:hasPreferences> $pref  in ${PREFS} and " +
     "  $pref       <topaz:preference>     $prefn in ${PREFS} and " +
     "  $prefn      <topaz:prefName>       'alertsCategories' in ${PREFS} and " +
     "  $prefn      <topaz:prefValue>      $cat   in ${PREFS} and " +
     " $art <dc:title>       $title and " +
-    " $art <dc:description> $description and " +
     " $art <dc_terms:available> $date and " +
     " $art <dc:subject>     $cat and " +
     " $art <topaz:articleState> $state and " +
