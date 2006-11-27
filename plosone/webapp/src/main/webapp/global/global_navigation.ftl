@@ -1,5 +1,5 @@
 	<ul id="nav">
-		<li><a href="${freemarker_config.plosOneHost}${freemarker_config.context}">Home</a></li>
+		<li><a href="http://${freemarker_config.plosOneHost}${freemarker_config.context}">Home</a></li>
 		
 		<li><a href="#">About<!--[if IE 7]><!--></a><!--<![endif]-->
 			<table><tr><td>

@@ -3603,8 +3603,8 @@ Make article meta data
 
 <xsl:template match="ref-list/title">
   <xsl:call-template name="nl-1"/>
-  <h3><xsl:apply-templates/></h3>
   <a id="refs" name="refs" toc="refs" title="References"></a>
+  <h3><xsl:apply-templates/></h3>
   <xsl:call-template name="nl-1"/>
 </xsl:template>
 
@@ -3906,7 +3906,6 @@ Make article meta data
       <xsl:call-template name="nl-1"/>
     </xsl:when>
     <xsl:otherwise>
-   	  <a id="refs" name="refs" toc="refs" title="References"></a>
       <xsl:apply-templates select="title"/>
     </xsl:otherwise>
   </xsl:choose>
