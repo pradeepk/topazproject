@@ -38,7 +38,7 @@ topaz.slideshow = {
   setFigImg: function(dObj) {
     this.figImg = dObj;
   },
-  
+
   setFigTitle: function(dObj) {
     this.figTitle = dObj;
   },
@@ -49,7 +49,7 @@ topaz.slideshow = {
   
   show: function (obj, index) {
     if (this.linkView) this.linkView.href = slideshow[index].imageUri + "&representation=" + this.imgL;
-    if (this.linkTiff) this.linkTiff.href = slideshow[index].imageUri + "&representation=" + this.imgTif;
+    if (this.linkTiff) this.linkTiff.href = slideshow[index].imageAttachUri + "&representation=" + this.imgTif;
     if (this.linkPpt) this.linkPpt.href  = slideshow[index].imageUri + "&representation=" + this.imgM;
     
     if (this.figImg) {
@@ -76,7 +76,7 @@ topaz.slideshow = {
   
   showSingle: function (obj, index) {
     if (this.linkView) this.linkView.href = slideshow[index].imageUri + "&representation=" + this.imgL;
-    if (this.linkTiff) this.linkTiff.href = slideshow[index].imageUri + "&representation=" + this.imgTif;
+    if (this.linkTiff) this.linkTiff.href = slideshow[index].imageAttachUri + "&representation=" + this.imgTif;
     if (this.linkPpt) this.linkPpt.href  = slideshow[index].imageUri + "&representation=" + this.imgM;
     
     if (this.figImg) {

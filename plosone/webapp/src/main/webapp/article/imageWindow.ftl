@@ -26,10 +26,11 @@
 	</div>
 	<div id="figure-window-container">
 	    <@ww.url id="currentImageUrl" includeParams="none"  action="fetchObject" uri="${currentImage.uri}"/>
+ 	    <@ww.url id="currentImageAttachmentUrl" includeParams="none"  action="fetchObjectAttachment" uri="${currentImage.uri}"/>
 		<div id="figure-window-hdr">
 			<div id="figure-window-hdr-links">
 			<a href="${currentImageUrl}&representation=${currentImage.repLarge}" id="viewL">View Larger Image</a> 
-			<a href="${currentImageUrl}&representation=TIF" id="downloadTiff">		Download original TIFF</a> 
+			<a href="${currentImageAttachmentUrl}&representation=TIF" id="downloadTiff">		Download original TIFF</a> 
 			<a href="${currentImageUrl}&representation=${currentImage.repMedium}" id="downloadPpt">Download PowerPoint Friendly Image</a>		</div>
 			<div id="figure-window-close">
 				<a onclick="self.close();return false;" href="#5">Close Window</a> <a onclick="self.close();return false;" href="#5"><img src="${freemarker_config.context}/images/pone_button_close.gif" title="close window" name="closewindow" width="20" height="20"/></a>  	  </div>
