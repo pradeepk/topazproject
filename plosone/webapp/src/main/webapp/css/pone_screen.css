@@ -389,12 +389,14 @@ a:hover.bug.self-private-active		{ background-color: #55E912;}
 a.bug.public,
 a:visited.bug.public,
 span.public a.bug,
-span.public a:visited.bug { background-color: #069;}
-span.public-active			{ background-color:#D2F7FF; border-bottom: 1px solid #0bf;}
+span.public a:visited.bug,
 span.public-active a.bug,
-span.public-active a:visited.bug,
-a.bug.public-active,
-a:hover.bug.public-active		{ background-color: #0BF;}
+span.public-active a:visited.bug { background-color: #069;}
+span.public-active			{ background-color:#D2F7FF; border:1px solid #fff; border-bottom: 1px solid #0bf; }
+span.public-active a.bug.public-active,
+span.public-active a:hover.bug.public-active		{ background-color: #0BF;}
+span.public { border:1px solid #fff; }
+
 
 a.bug.author,
 a:visited.bug.author,

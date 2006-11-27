@@ -225,6 +225,14 @@ topaz.displayComment = {
      var elObj = longestAnnotElements.elementList[n];
 
      this.modifyClassName(elObj);
+     
+     if (n == 0) {
+       var bugObj = topaz.domUtil.getChildElementsByTagAndClassName(elObj, 'a', 'bug');
+       
+       for (var i=0; i<bugObj.length; i++) {
+         this.modifyClassName(bugObj[i]);
+       }
+     }
    }
 
   },
@@ -241,7 +249,7 @@ topaz.displayComment = {
   modifyClassName: function (obj) {
      classList = obj.className.split(" ");
      for (var i=0; i<classList.length; i++) {
-       if ((classList[i].match('public') || classList[i].match('private') || classList[i].match('bug')) && !classList[i].match(' active')) {
+       if ((classList[i].match('public') || classList[i].match('private')) && !classList[i].match('-active')) {
          classList[i] = classList[i].concat("-active");
        }
      }

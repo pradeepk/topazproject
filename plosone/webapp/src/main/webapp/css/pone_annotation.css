@@ -18,9 +18,11 @@ div.detail strong{ color: #444; /* strong wraps date and time for added emphasis
 #AnnotationDialog .dialog .tip 	{ background:transparent url(../images/pone_dialog_pb.gif) no-repeat 0px 0px;  width:39px; height:22px; position:absolute; bottom: -22px; left:22px; }
 #AnnotationDialog .dialog .tipu 	{ background:transparent url(../images/pone_dialog_pt.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; top: -22px; left:22px; }
 #CommentDialog .dialog .tip,
-#CommentDialogMultiple .dialog .tip 	{ background:transparent url(../images/pone_dialog_preview_pb.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; bottom: -22px; left:22px; }
+#CommentDialogMultiple .dialog .tip 	{ background:transparent url(../images/pone_dialog_preview_pb.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; bottom: -20px; left:22px; }
 #CommentDialog .dialog .tipu,
-#CommentDialogMultiple .dialog .tipu 	{ background:transparent url(../images/pone_dialog_preview_pt.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; top: -22px; left:22px; }
+#CommentDialogMultiple .dialog .tipu 	{ background:transparent url(../images/pone_dialog_preview_pt.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; top: -18px; left:22px; }
+#CommentDialogMultiple .dialog .tip   { bottom: -19px; }
+#CommentDialogMultiple .dialog .tipu 	{ top: -18px; }
 .dialog .tip.on,
 .dialog .tipu.on { display: block; }
 

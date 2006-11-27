@@ -193,5 +193,41 @@ topaz.domUtil = {
   removeExtraSpaces: function(text) {
     //alert("text = '" + text + "'");
     return text.replace(/([\r\n]+\s+)/g," ");
+  },
+  
+  getChildElementsByTagAndClassName: function(node, tagName, className) {
+    var children = node.childNodes;
+    var elements = new Array();
+    tagName = tagName.toUpperCase();
+    
+    if ( className == null && tagName == null)
+      return children;
+    
+    for (var i = 0; i < children.length; i++) {
+      var child = children[i];
+      
+      if (tagName != null) {
+        if (child.nodeName == tagName) {
+          var classNames = child.className.split(' ');
+          for (var j = 0; j < classNames.length; j++) {
+            if (classNames[j] == className) {
+              elements.push(child);
+              break;
+            }
+          }
+        }
+      }
+      else {
+        var classNames = child.className.split(' ');
+        for (var j = 0; j < classNames.length; j++) {
+          if (classNames[j] == className) {
+            elements.push(child);
+            break;
+          }
+        }
+      }
+    }
+  
+    return elements;
   }
 }

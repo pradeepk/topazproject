@@ -285,7 +285,7 @@ topaz.annotation = {
 
     var pointSpan = document.getElementById(POINT_SPAN_ID);
 
-    var pointEl = this.getFirstAncestorByAttribute(pointSpan);
+    var pointEl = this.getFirstAncestorByXpath(pointSpan);
     
     var point = new Object();
     point.element = pointEl.element;
@@ -347,7 +347,7 @@ topaz.annotation = {
     return familyTree;
   },
   
-  getFirstAncestorByAttribute: function ( selfNode ) {
+  getFirstAncestorByXpath: function ( selfNode ) {
     var parentalNode = selfNode;
     
     while ( parentalNode.parentNode.getAttributeNode('xpathLocation') == null || parentalNode.parentNode.getAttributeNode('xpathLocation').nodeValue  == "" ) {

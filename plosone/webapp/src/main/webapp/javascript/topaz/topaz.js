@@ -67,7 +67,7 @@ String.isEmpty = function() {
   return (this == null || this == "");
 }
 
-function toggleAnnotation(userType) {
+function toggleAnnotation(obj, userType) {
   ldc.show();
   var bugs = document.getElementsByTagAndClassName('a', 'bug');
   
@@ -79,6 +79,16 @@ function toggleAnnotation(userType) {
         bugs[i].style.display = (bugs[i].style.display == "none") ? "inline" : "none";
     }
   }
+  
+  if (obj.className.match('collapse')) {
+    obj.className = obj.className.replace(/collapse/, "expand");
+    obj.innerHTML = "Turn annotations on";
+  }
+  else {
+    obj.className = obj.className.replace(/expand/, "collapse");
+    obj.innerHTML = "Turn annotations off";
+  }
+  
   ldc.hide();
   
   return false;

@@ -44,4 +44,6 @@ IE PC fixes
 * html div.source { width: auto; }
 * html div.original { margin-bottom: 20px; margin-left: 5px; margin-right: 5px;}
 
-
+/* Fix bug background color position */
+* html a.bug,
+* html a:visited.bug { margin-bottom: -10px; }
