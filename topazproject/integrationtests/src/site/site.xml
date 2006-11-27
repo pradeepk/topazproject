@@ -30,10 +30,10 @@
     
     <!-- Community: -->
     
-    <!-- External Docs: Fedora, Kawari -->
+    <!-- External Docs: Fedora, Kowari -->
     <menu name="External Documenation">
       <item name="Fedora" href="http://fedora.info" />
-      <item name="Kawari" href="http://kawari.org" />
+      <item name="Kowari" href="http://kowari.org" />
       <item name="Maven" href="http://maven.apache.org/"/>
     </menu>
 
