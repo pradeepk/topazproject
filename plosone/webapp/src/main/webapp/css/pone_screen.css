@@ -108,6 +108,8 @@ a.discuss	{ background-image: url(../images/pone_icon_discuss.gif); }
 a.commentary{ background-image: url(../images/pone_icon_commentary.gif); }
 a.feedback	{ font-weight: bold;}
 
+a.ppt		{ background-image: url(../images/pone_icon_ppt.gif);}
+
 /* Article Tooltips : for any js onpage action */
 a.addannotation	{ background-image: url(../images/pone_tooltip_addannotation.gif); }
 a.expand		{ background-image: url(../images/pone_tooltip_expand.gif); } /* apply this class on closed state */

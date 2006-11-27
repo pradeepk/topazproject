@@ -155,3 +155,7 @@ div.close a			{ text-decoration: none; padding-right: 24px; color: #666; float: 
 /* for closing and canceling viewing windows */
 
 div.close a:hover	{ background-color: #ddd; }
+
+a.icon				{ padding: 2px 0 2px 20px; background-repeat: no-repeat; background-position: 0px 0px; font-size: .8em; }
+a.ppt				{ background-image: url(../images/pone_icon_ppt.gif); }
+a.image				{ background-image: url(../images/pone_icon_image.gif); }
