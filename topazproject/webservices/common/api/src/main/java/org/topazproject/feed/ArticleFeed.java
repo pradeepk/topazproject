@@ -15,11 +15,13 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.text.ParseException;
 import java.rmi.RemoteException;
 
+import org.jrdf.graph.Literal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.configuration.Configuration;
@@ -30,6 +32,7 @@ import org.apache.commons.lang.time.DateFormatUtils;
 import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.mulgara.itql.Answer.QueryAnswer;
 
@@ -46,9 +49,10 @@ public class ArticleFeed {
   private static final String MODEL_XSD      = "<" + CONF.getString("topaz.models.xsd") + ">";
   
   private static final String FEED_ITQL =
-    "select $obj $title $description $date $state from ${ARTICLES} where " +
+    "select $obj $title $date $state " +
+    " subquery(select $description from ${ARTICLES} where $obj <dc:description> $description) " +
+    "   from ${ARTICLES} where " +
     " $obj <dc:title> $title and " +
-    " $obj <dc:description> $description and " +
     " $obj <dc_terms:available> $date and " +
     " $obj <topaz:articleState> $state " +
     " ${args} " +
@@ -147,31 +151,35 @@ public class ArticleFeed {
    * @param articlesAnswer is the response received from kowari.
    * @return a map of uri to L{ArticleFeedData} for each article received
    */
-  public static Map getArticlesSummary(StringAnswer articlesAnswer) {
+  public static Map getArticlesSummary(Answer articlesAnswer) {
     LinkedHashMap articles = new LinkedHashMap();
     QueryAnswer answer = (QueryAnswer) articlesAnswer.getAnswers().get(0);
 
     for (Iterator rowIt = answer.getRows().iterator(); rowIt.hasNext(); ) {
-      String[] row = (String[])rowIt.next();
+      Object[] row = (Object[]) rowIt.next();
       Date date = null;
 
       try {
-        date = parseDate(row[3]);
+        date = parseDate(((Literal) row[2]).getLexicalForm());
       } catch (ParseException pe) {
-        log.warn("Ignoring bad date: " + row[3], pe);
+        log.warn("Ignoring bad date: " + row[2].toString(), pe);
         // XXX: Should we show the message or not?
         continue; // Don't show article
       }
 
       ArticleFeedData article = new ArticleFeedData();
-      article.uri         = row[0];
-      article.title       = row[1];
-      article.description = row[2];
+      article.uri         = row[0].toString();
+      article.title       = ((Literal) row[1]).getLexicalForm();
       article.date        = date;
-      article.state       = Integer.parseInt(row[4]);
+      article.state       = Integer.parseInt(((Literal) row[3]).getLexicalForm());
+      
+      List descriptions = ((QueryAnswer) row[4]).getRows();
+      if (descriptions.size() > 0)
+        article.description = ((Literal) ((Object[]) descriptions.get(0))[0]).getLexicalForm();
+      
       articles.put(article.uri, article);
     }
-
+  
     return articles;
   }
 

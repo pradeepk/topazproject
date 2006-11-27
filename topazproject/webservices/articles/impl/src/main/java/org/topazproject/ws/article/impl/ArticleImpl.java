@@ -42,6 +42,7 @@ import org.topazproject.configuration.ConfigurationStore;
 
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.StringAnswer;
+import org.topazproject.mulgara.itql.Answer;
 import org.topazproject.mulgara.itql.AnswerSet;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
@@ -363,7 +364,7 @@ public class ArticleImpl implements Article {
     try {
       String articlesQuery =
           ArticleFeed.getQuery(start, end, categories, authors, states, ascending);
-      StringAnswer articlesAnswer = new StringAnswer(itql.doQuery(articlesQuery, null));
+      Answer articlesAnswer = new Answer(itql.doQuery(articlesQuery, null));
       Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
 
       for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {

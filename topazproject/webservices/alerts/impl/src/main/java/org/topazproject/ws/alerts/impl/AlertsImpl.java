@@ -468,7 +468,7 @@ public class AlertsImpl implements Alerts {
   protected Collection getArticles(String query)
       throws RemoteException {
     try {
-      StringAnswer articlesAnswer = new StringAnswer(ctx.getItqlHelper().doQuery(query, aliases));
+      Answer articlesAnswer = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
       Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
 
       for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
