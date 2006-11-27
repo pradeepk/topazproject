@@ -18,7 +18,7 @@ import org.apache.commons.logging.LogFactory;
 /**
  * Look up the URL in a resource cache.
  *
- * @author Ronald Tschal‰r
+ * @author Ronald Tschal√§r
  * @version $Id$
  */
 public class ResourceURLRetriever implements URLRetriever {

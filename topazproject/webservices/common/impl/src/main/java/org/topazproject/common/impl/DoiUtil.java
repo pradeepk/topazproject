@@ -12,7 +12,7 @@ package org.topazproject.common.impl;
 /**
  * Utility functions for converting between PID's and fedora-URI's.
  *
- * @author Eric Brown and Ronald Tschal‰r (from ArticleImpl.java)
+ * @author Eric Brown and Ronald Tschal√§r (from ArticleImpl.java)
  */
 public class DoiUtil {
   /**
