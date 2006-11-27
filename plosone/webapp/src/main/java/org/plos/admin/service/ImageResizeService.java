@@ -99,6 +99,10 @@ public class ImageResizeService {
 		return scaleImage(0.0f, 0.0f);
 	}
 	
+  public byte[] getPageWidthImage() throws FileNotFoundException, IOException {
+    return scaleImage(400.0f, 0.0f);
+  }  
+  
 	public BufferedImage getImage() {
 		return image;
 	}

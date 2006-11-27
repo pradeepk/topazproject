@@ -203,8 +203,16 @@ public class DocumentManagementService {
 		        log.info("Captured image");
 		        articleWebService.setRepresentation(
 		            object.getUri(), "PNG", 
-		            new DataHandler(new PngDataSource(irs.getLargeImage())));
-			}
+		            new DataHandler(new PngDataSource(irs.getPageWidthImage())));
+			} else if (context.equals("inline-formula")) {
+        RepresentationInfo rep = object.getRepresentations()[0];
+        log.info("Found image to resize: " + rep.getURL());
+        irs.captureImage(rep.getURL());
+        log.info("Captured image");
+        articleWebService.setRepresentation(
+            object.getUri(), "PNG", 
+            new DataHandler(new PngDataSource(irs.getLargeImage())));     
+      }
 		}
 	}
 	
