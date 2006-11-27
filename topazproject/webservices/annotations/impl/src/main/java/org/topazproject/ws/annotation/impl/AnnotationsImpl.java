@@ -71,7 +71,7 @@ public class AnnotationsImpl implements Annotations {
   private static final String CREATE_ITQL =
     ("insert <${id}> <r:type> <a:Annotation> <${id}> <r:type> <${type}>"
     + " <${id}> <topaz:state> '0' <${id}> <a:annotates> <${annotates}>"
-    + " <${id}> <a:created> '${created}' <${id}> <a:context> '${context}'"
+    + " <${id}> <a:created> '${created}'                         "
     + " <${id}> <a:body> <${body}> <${id}> <${creator}> '${user}'"
     + " <${id}> <dt:isReplacedBy> <r:nil> into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String SUPERSEDE_ITQL =
@@ -80,6 +80,8 @@ public class AnnotationsImpl implements Annotations {
     + "insert <${id}> <dt:replaces> <${supersedes}> into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String INSERT_TITLE_ITQL =
     ("insert <${id}> <d:title> '${title}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
+  private static final String INSERT_CONTEXT_ITQL =
+    ("insert <${id}> <a:context> '${context}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String INSERT_MEDIATOR_ITQL =
     ("insert <${id}> <dt:mediator> '${mediator}' into ${MODEL};").replaceAll("\\Q${MODEL}", MODEL);
   private static final String DELETE_ITQL =
@@ -197,11 +199,6 @@ public class AnnotationsImpl implements Annotations {
                                   String supersedes, boolean anonymize, String title, String body,
                                   String contentType, byte[] content)
                            throws NoSuchAnnotationIdException, RemoteException {
-    if (context == null)
-      context = annotates;
-
-    context = ItqlHelper.escapeLiteral(context);
-
     if (type == null)
       type = "http://www.w3.org/2000/10/annotationType#Annotation";
     else
@@ -233,7 +230,6 @@ public class AnnotationsImpl implements Annotations {
     values.put("id", id);
     values.put("type", type);
     values.put("annotates", annotates);
-    values.put("context", context);
     values.put("body", body);
     values.put("user", user);
     values.put("created", ItqlHelper.getUTCTime());
@@ -253,6 +249,11 @@ public class AnnotationsImpl implements Annotations {
     if (mediator != null) {
       create += INSERT_MEDIATOR_ITQL;
       values.put("mediator", ItqlHelper.escapeLiteral(mediator));
+    }
+
+    if (context != null) {
+      create += INSERT_CONTEXT_ITQL;
+      values.put("context", ItqlHelper.escapeLiteral(context));
     }
 
     ItqlHelper itql = ctx.getItqlHelper();
