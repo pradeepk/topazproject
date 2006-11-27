@@ -172,7 +172,6 @@ public class ItqlHelper {
     init();
   }
 
-
   /** 
    * Create a new instance pointed at the given service. The instance is initialized with the
    * default set of aliases.
@@ -337,30 +336,47 @@ public class ItqlHelper {
    * Commit a transaction. May only be invoked after a {@link #beginTxn beginTxn()}.
    * 
    * @param txnName  a name to associate with the transaction; used for logging only
-   * @throws QueryException if an exception occurred starting the transaction
+   * @throws QueryException if an exception occurred committing the transaction
    * @throws RemoteException if an exception occurred talking to the service
    */
   public void commitTxn(String txnName) throws QueryException, RemoteException {
     if (log.isDebugEnabled())
       log.debug("sending commit '" + txnName + "'");
 
-    interpreter.commit(txnName);
-    inTransaction = false;
+    try {
+      interpreter.commit(txnName);
+    } finally {
+      // hmm, this may not be true if we failed to talk to the server
+      inTransaction = false;
+    }
   }
 
   /** 
    * Roll back a transaction. May only be invoked after a {@link #beginTxn beginTxn()}.
    * 
    * @param txnName  a name to associate with the transaction; used for logging only
-   * @throws QueryException if an exception occurred starting the transaction
+   * @throws QueryException if an exception occurred rolling back the transaction
    * @throws RemoteException if an exception occurred talking to the service
    */
   public void rollbackTxn(String txnName) throws QueryException, RemoteException {
     if (log.isDebugEnabled())
       log.debug("sending rollback '" + txnName + "'");
 
-    interpreter.rollback(txnName);
-    inTransaction = false;
+    try {
+      interpreter.rollback(txnName);
+      inTransaction = false;
+    } finally {
+      if (inTransaction) {
+        try {
+          interpreter.commit(txnName);  // this always resets the transaction
+        } catch (Exception e) {
+          log.error("Error resetting session", e);
+        } finally {
+          // hmm, this may not be true if we failed to talk to the server
+          inTransaction = false;
+        }
+      }
+    }
   }
 
   /** 
