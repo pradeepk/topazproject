@@ -525,10 +525,25 @@
     <action name="displayUser" class="org.plos.user.action.DisplayUserAction">
       <result name="success">/WEB-INF/pages/user/displayUser.ftl</result>
     </action>
+    
+    <action name="showUser" >
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/user/displayUser.ftl</param>
+      </result>
+    </action>
+    
+    
+    <action name="displayUserJSON" class="org.plos.user.action.DisplayUserAction">
+      <result name="success" type="ajaxJSON"/>
+    </action>
 
     <action name="prePopulateNewUser" class="org.plos.user.action.PrepopulateUserDetailsAction">
-      <result name="new-profile">/WEB-INF/pages/user/newUser.ftl</result>
-      <result name="update-profile">/WEB-INF/pages/user/newUser.ftl</result>
+      <result name="new-profile" type="plosOneFreemarker">
+        <param name="templateFile">/WEB-INF/pages/user/newUser.ftl</param>
+      </result>
+      <result name="update-profile" type="plosOneFreemarker">
+        <param name="templateFile">/WEB-INF/pages/user/newUser.ftl</param>
+      </result>
     </action>
 
     <action name="createNewUser" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">
@@ -536,7 +551,9 @@
         <param name="actionName">retrieveUserProfile</param>
         <param name="namespace">/user/secure</param>
       </result>
-      <result name="input">/WEB-INF/pages/user/newUser.ftl</result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/WEB-INF/pages/user/newUser.ftl</param>
+      </result>
       <result name="error">/WEB-INF/pages/user/newUser.ftl</result>
     </action>
   </package>
