@@ -127,6 +127,10 @@ elif [ -x /usr/local/topaz/bin/jsvc ]; then JSVC=/usr/local/topaz/bin/jsvc
 elif [ -x /usr/local/bin/jsvc ];       then JSVC=/usr/local/bin/jsvc
 fi
 
+# Find lsof (in case root's PATH doesn't contain it)
+LSOF=`which lsof`
+[ -z "$LSOF" ] && LSOF=/usr/sbin/lsof
+
 # You must be root to run jsvc
 test_root() { [ `id -u` -ne 0 ] && echo "You must be root!" && exit 1; }
 
@@ -171,7 +175,7 @@ case "$1" in
     # jsvc doesn't abort if somebody else is on our port, so let's be smart!
     if [ -n "$PORT" ]; then
       TMPFILE=/tmp/${BASENAME}.status.$$
-      if lsof -i:$PORT -Fp > ${TMPFILE}; then
+      if $LSOF -i:$PORT -Fp > ${TMPFILE}; then
         echo "No PID file for ${BASENAME}, but port $PORT already in use by pid `cat ${TMPFILE}`"
 	rm -f ${TMPFILE}
 	exit 1
@@ -209,7 +213,7 @@ case "$1" in
       if ps o "pid user rss %mem etime time %cpu comm" -p ${PID} > ${TMPFILE} 2>&1; then
         echo "${BASENAME} (${PID}) is running from ${CATALINA_HOME}"
         cat ${TMPFILE}
-        lsof -n -P -i -a -p $PID | grep "LISTEN"
+        $LSOF -n -P -i -a -p $PID | grep "LISTEN"
       else
         echo "${BASENAME} not running"
       fi
@@ -224,15 +228,15 @@ case "$1" in
     if [ -e ${PIDFILE} ]; then
       PID=`cat ${PIDFILE}`
       if ps -p $PID >/dev/null; then
-        PORTS=`lsof -p $PID -a -iTCP -Fn -n -P | grep -v '-' | sort | uniq | tr 'n' ' '`
+        PORTS=`$LSOF -p $PID -a -iTCP -Fn -n -P | grep -v '-' | sort | uniq | tr 'n' ' '`
         echo "$PID $BASENAME `echo $PORTS`"
       else
         echo "$BASENAME not running -- but PIDFILE ($PIDFILE:$PID) exists"
       fi
     elif [ -n "$PORT" ]; then
-      PID=`lsof -i:$PORT | grep LISTEN | awk '{print $2}'`
+      PID=`$LSOF -i:$PORT | grep LISTEN | awk '{print $2}'`
       if [ -n "$PID" ]; then
-        PORTS=`lsof -p $PID -a -iTCP -Fn -n -P | grep -v '-' | sort | uniq | tr 'n' ' '`
+        PORTS=`$LSOF -p $PID -a -iTCP -Fn -n -P | grep -v '-' | sort | uniq | tr 'n' ' '`
         echo "`echo $PID` unknown($BASENAME) `echo $PORTS`"
       else
         # No PIDFILE and noting listening on our configured PORT
