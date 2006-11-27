@@ -107,6 +107,19 @@ public class Statement {
   }
 
   /**
+   * Finalizer. Close database.
+   *
+   * Not sure how important this is, but it is good form.
+   */
+  protected void finalize() {
+    try {
+      searcher.close();
+    } catch (IOException ioe) {
+      log.warn("Problem closing IndexSearcher", ioe);
+    }
+  }
+
+  /**
    * send a query to lucene and get back a set of hits.
    *
    * Most of these parameters are from configuration. The parameters that usually change
