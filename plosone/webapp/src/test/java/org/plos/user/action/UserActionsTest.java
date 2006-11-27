@@ -39,7 +39,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
     createUserAction.setRealName(REAL_NAME);
     createUserAction.setAuthId(AUTH_ID);
     createUserAction.setDisplayName(USERNAME);
-    createUserAction.setGivennames(GIVENNAMES);
+    createUserAction.setGivenNames(GIVENNAMES);
     createUserAction.setPositionType(POSITION_TYPE);
     createUserAction.setOrganizationType(ORGANIZATION_TYPE);
     createUserAction.setPostalAddress(POSTAL_ADDRESS);
@@ -61,7 +61,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
     assertEquals (TEST_EMAIL, pou.getEmail());
     assertEquals (REAL_NAME, pou.getRealName());
     assertEquals (USERNAME, pou.getDisplayName());
-    assertEquals(GIVENNAMES, pou.getGivennames());
+    assertEquals(GIVENNAMES, pou.getGivenNames());
     assertEquals(POSITION_TYPE, pou.getPositionType());
 		assertEquals(ORGANIZATION_TYPE, pou.getOrganizationType());
 		assertEquals(POSTAL_ADDRESS, pou.getPostalAddress());
@@ -98,7 +98,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
     assertEquals(TEST_EMAIL, pou.getEmail());
     assertEquals(REAL_NAME, pou.getRealName());
     assertEquals(USERNAME, pou.getDisplayName());
-    assertEquals(GIVENNAMES, pou.getGivennames());
+    assertEquals(GIVENNAMES, pou.getGivenNames());
     assertEquals(POSITION_TYPE, pou.getPositionType());
 		assertEquals(ORGANIZATION_TYPE, pou.getOrganizationType());
 		assertEquals(POSTAL_ADDRESS, pou.getPostalAddress());

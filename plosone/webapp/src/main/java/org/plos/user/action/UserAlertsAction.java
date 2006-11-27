@@ -36,11 +36,11 @@ public class UserAlertsAction extends UserActionSupport {
   public String saveAlerts() throws Exception {
     if (StringUtils.isEmpty(alertEmailAddress)) {
       addFieldError("alertEmailAddress", "Email address for alerts is required.");
-      return ERROR;
+      return INPUT;
     }
     if (!EmailValidator.getInstance().isValid(alertEmailAddress)) {
       addFieldError("alertEmailAddress", "Invalid email address");
-      return ERROR;
+      return INPUT;
     }
 
     final PlosOneUser plosOneUser = (PlosOneUser) getSessionMap().get(PLOS_ONE_USER_KEY);

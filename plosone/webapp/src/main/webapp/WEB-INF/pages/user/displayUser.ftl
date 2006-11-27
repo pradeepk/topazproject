@@ -5,7 +5,7 @@
   <body>
  		Display Name: ${pou.displayName} <br/>
  		Real Name: ${pou.realName} <br/>
-    Givennames: ${pou.givennames} <br/>
+    GivenNames: ${pou.givenNames} <br/>
     Surnames: ${pou.surnames} <br/>
     PositionType: ${pou.positionType} <br/>
     OrganizationName: ${pou.organizationName} <br/>

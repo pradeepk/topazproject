@@ -26,7 +26,9 @@ public class PrepopulateUserDetailsAction extends UserActionSupport {
   private String email;
   private String realName;
   private String[] privateFields = new String[]{""};
-
+  private static final String PUBLIC_VISIBLE = "public";
+   
+  
   private static final Log log = LogFactory.getLog(PrepopulateUserDetailsAction.class);
 
   /**
@@ -39,8 +41,10 @@ public class PrepopulateUserDetailsAction extends UserActionSupport {
 
     if (null == plosOneUser) {
       email = fetchUserEmailAddress();
+      log.debug("new profile with email: " + email);
       return NEW_PROFILE;
     } else {
+      log.debug("this is an existing user with email: " + plosOneUser.getEmail());
       email = plosOneUser.getEmail();
       username = plosOneUser.getDisplayName();
       realName = plosOneUser.getRealName();
@@ -50,6 +54,7 @@ public class PrepopulateUserDetailsAction extends UserActionSupport {
 
   /** @return Returns the email.*/
   public String getEmail() {
+    log.debug ("calling getEmail() for user "); new Exception().printStackTrace() ;
     return email;
   }
 
@@ -70,4 +75,30 @@ public class PrepopulateUserDetailsAction extends UserActionSupport {
   public String[] getPrivateFields() {
     return privateFields;
   }
+  
+  /**
+   * Getter for extendedVisibility.
+   * @return Value of extendedVisibility.
+   */
+  public String getExtendedVisibility() {
+    return PUBLIC_VISIBLE;
+  }
+
+  /**
+   * Getter for nameVisibility.
+   * @return Value of nameVisibility.
+   */
+  public String getNameVisibility() {
+    return PUBLIC_VISIBLE;
+  }
+
+  /**
+   * Getter for orgVisibility.
+   * @return Value of orgVisibility.
+   */
+  public String getOrgVisibility() {
+    return PUBLIC_VISIBLE;
+  }
+  
+  
 }

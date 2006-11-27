@@ -39,7 +39,7 @@ public class UserProfileAction extends UserActionSupport {
   private String authId;
 
   private static final Log log = LogFactory.getLog(UserProfileAction.class);
-  private String givennames;
+  private String givenNames;
   private String surnames;
   private String positionType;
   private String organizationType;
@@ -71,7 +71,7 @@ public class UserProfileAction extends UserActionSupport {
   private static final String ORG_GROUP = "org";
 
   static {
-    visibilityMapping.put(NAME_GROUP, new String[]{REAL_NAME, "surnames"});
+    visibilityMapping.put(NAME_GROUP, new String[]{"givenNames", "surnames"});
     visibilityMapping.put(EXTENDED_GROUP, new String[]{POSTAL_ADDRESS, "city", "country"});
     visibilityMapping.put(ORG_GROUP, new String[]{ORGANIZATION_TYPE, "organizationName", "title", "positionType"});
   }
@@ -86,7 +86,7 @@ public class UserProfileAction extends UserActionSupport {
   public String executeSaveUser() throws Exception {
     if (!validates()) {
       email = fetchUserEmailAddress();
-      return ERROR;
+      return INPUT;
     }
     final Map<String, Object> sessionMap = getSessionMap();
     authId = getUserId(sessionMap);
@@ -115,7 +115,7 @@ public class UserProfileAction extends UserActionSupport {
     email = plosOneUser.getEmail();
     displayName = plosOneUser.getDisplayName();
     realName = plosOneUser.getRealName();
-    givennames = plosOneUser.getGivennames();
+    givenNames = plosOneUser.getGivenNames();
     surnames = plosOneUser.getSurnames();
     title = plosOneUser.getTitle();
     positionType = plosOneUser.getPositionType();
@@ -148,7 +148,7 @@ public class UserProfileAction extends UserActionSupport {
     plosOneUser.setRealName(this.realName);
     plosOneUser.setTitle(this.title);
     plosOneUser.setSurnames(this.surnames);
-    plosOneUser.setGivennames(this.givennames);
+    plosOneUser.setGivenNames(this.givenNames);
     plosOneUser.setPositionType(this.positionType);
     plosOneUser.setOrganizationType(this.organizationType);
     plosOneUser.setOrganizationName(this.organizationName);
@@ -203,12 +203,12 @@ public class UserProfileAction extends UserActionSupport {
       addFieldError("displayName", "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters");
       isValid = false;
     }
-    if (StringUtils.isBlank(realName)) {
-      addFieldError("realName", "First name cannot be empty");
+    if (StringUtils.isBlank(givenNames)) {
+      addFieldError("givenNames", "First/Given Name cannot be empty");
       isValid = false;
     }
     if (StringUtils.isBlank(surnames)) {
-      addFieldError("surnames", "Last name cannot be empty");
+      addFieldError("surnames", "Last/Family Name cannot be empty");
       isValid = false;
     }
     //TODO: does everyone live in a city?
@@ -221,11 +221,11 @@ public class UserProfileAction extends UserActionSupport {
       isValid = false;
     }
     if (!StringUtils.isBlank(homePage) && !TextUtils.verifyUrl(homePage)) {
-      addFieldError("homePage", "Home page url is invalid");
+      addFieldError("homePage", "Home page URL is invalid");
       isValid = false;
     }
     if (!StringUtils.isBlank(weblog) && !TextUtils.verifyUrl(weblog)) {
-      addFieldError("weblog", "Weblog url is invalid");
+      addFieldError("weblog", "Weblog URL invalid");
       isValid = false;
     }
     return isValid;
@@ -340,8 +340,8 @@ public class UserProfileAction extends UserActionSupport {
    *
    * @return Value for property 'givennames'.
    */
-  public String getGivennames() {
-    return givennames;
+  public String getGivenNames() {
+    return givenNames;
   }
 
   /**
@@ -349,8 +349,8 @@ public class UserProfileAction extends UserActionSupport {
    *
    * @param givennames Value to set for property 'givennames'.
    */
-  public void setGivennames(final String givennames) {
-    this.givennames = givennames;
+  public void setGivenNames(final String givenNames) {
+    this.givenNames = givenNames;
   }
 
   /**
@@ -476,7 +476,7 @@ public class UserProfileAction extends UserActionSupport {
       privateFields[i++] = grant.getFieldName();
     }
 
-    nameVisibility = setFieldVisibility(privateFields, REAL_NAME);
+    nameVisibility = setFieldVisibility(privateFields, "givenNames");
     extendedVisibility = setFieldVisibility(privateFields, POSTAL_ADDRESS);
     orgVisibility = setFieldVisibility(privateFields, ORGANIZATION_TYPE);
   }
@@ -558,6 +558,9 @@ public class UserProfileAction extends UserActionSupport {
    * @return Value of extendedVisibility.
    */
   public String getExtendedVisibility() {
+    if ((extendedVisibility == null) || ("".equals(extendedVisibility))) {
+      return PUBLIC;
+    }
     return extendedVisibility;
   }
 
@@ -574,6 +577,9 @@ public class UserProfileAction extends UserActionSupport {
    * @return Value of nameVisibility.
    */
   public String getNameVisibility() {
+    if ((nameVisibility == null) || ("".equals(nameVisibility))) {
+      return PUBLIC;
+    }
     return nameVisibility;
   }
 
@@ -590,6 +596,9 @@ public class UserProfileAction extends UserActionSupport {
    * @return Value of orgVisibility.
    */
   public String getOrgVisibility() {
+    if ((orgVisibility == null) || ("".equals(orgVisibility))) {
+      return PUBLIC;
+    }
     return orgVisibility;
   }
 

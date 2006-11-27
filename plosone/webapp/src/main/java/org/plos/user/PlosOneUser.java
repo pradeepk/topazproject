@@ -168,7 +168,10 @@ public class PlosOneUser {
    * @return Returns the displayName.
    */
   public String getDisplayName() {
-    return getNonNull(userProfile.getDisplayName());
+    if (userProfile != null){
+      return getNonNull(userProfile.getDisplayName());
+    }
+    return ("");
   }
 
   /**
@@ -387,17 +390,17 @@ public class PlosOneUser {
   }
 
   /**
-   * @return givennames givennames
+   * @return givennames givenNames
    */
-  public String getGivennames() {
+  public String getGivenNames() {
     return getNonNull(userProfile.getGivenNames());
   }
 
   /**
-   * @param givennames givennames
+   * @param givenNames givenNames
    */
-  public void setGivennames(final String givennames) {
-    userProfile.setGivenNames(givennames);
+  public void setGivenNames(final String givenNames) {
+    userProfile.setGivenNames(givenNames);
   }
 
   /**

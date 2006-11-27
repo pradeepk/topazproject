@@ -5,6 +5,8 @@
 </#if>
 <div id="discussionContainer">
 	<#macro writeReplyDetails reply replyToAuthorId replyToAuthorName>
+  	<@ww.url namespace="/user" includeParams="none" id="showUserURL" action="showUser" userId="${reply.creator}"/>
+  	<@ww.url namespace="/user" includeParams="none" id="authorURL" action="showUser" userId="${replyToAuthorId}"/>
 			<div class="response">
 				<div class="hd">
 					<!-- begin response title -->
@@ -12,7 +14,7 @@
 					<!-- end : response title -->
 					<!-- begin : response poster details -->
 					<div class="detail">
-						<a href="${reply.creator}" class="user icon">${reply.creatorName}</a> replied to <a href="../viewUser?userURI=${replyToAuthorId}" class="user icon">${replyToAuthorName}</a> on <strong>${reply.createdAsDate?string("yyyy-MM-dd")}</strong> at <strong>${reply.createdAsDate?string("HH:mm")} GMT</strong>:</div>
+						<a href="${showUserURL}" class="user icon">${reply.creatorName}</a> replied to <a href="${authorURL}" class="user icon">${replyToAuthorName}</a> on <strong>${reply.createdAsDate?string("yyyy-MM-dd")}</strong> at <strong>${reply.createdAsDate?string("HH:mm")} GMT</strong>:</div>
 					<!-- end : response poster details -->
 				</div>
 				<!-- begin : response body text -->
@@ -59,7 +61,9 @@
 				<h3>${baseAnnotation.commentTitle}</h3>
 				<!-- end : response title -->
 				<!-- begin : response poster detail -->
-				<div class="detail">Posted by <a href="${baseAnnotation.creator}" title="Annotation Author" class="user icon">${baseAnnotation.creatorName}</a> on <strong>${baseAnnotation.createdAsDate?string("yyyy-MM-dd")}</strong> at <strong>${baseAnnotation.createdAsDate?string("HH:mm")} GMT</strong>
+				<@ww.url namespace="/user" includeParams="none" id="baseAuthorURL" action="showUser" userId="${baseAnnotation.creator}"/>
+				
+				<div class="detail">Posted by <a href="${baseAuthorURL}" title="Annotation Author" class="user icon">${baseAnnotation.creatorName}</a> on <strong>${baseAnnotation.createdAsDate?string("yyyy-MM-dd")}</strong> at <strong>${baseAnnotation.createdAsDate?string("HH:mm")} GMT</strong>
 				</div>
 				<!-- end : response poster details -->
 			</div>

@@ -16,9 +16,10 @@
   		<#assign class="annotation"/>
 	 	</#if>
   	<@ww.url namespace="/annotation" includeParams="none" id="listThreadURL" action="listThread" root="${comment.annotation.id}" inReplyTo="${comment.annotation.id}"/>
+  	<@ww.url namespace="/user" includeParams="none" id="showUserURL" action="showUser" userId="${comment.annotation.creator}"/>
 	
 		<dt><a href="${listThreadURL}" title="View Full Discussion Thread" class="${class} icon">${comment.annotation.commentTitle}</a></dt>
-		<dd>Posted by <a href="${comment.annotation.creator}" title="Discussion Author" class="user icon">${comment.annotation.creatorName}</a> on <strong>${comment.annotation.createdAsDate?string("yyyy-MM-dd")}</strong> at <strong>${comment.annotation.createdAsDate?string("HH:mm")} GMT</strong></dd>
+		<dd>Posted by <a href="${showUserURL}" title="Discussion Author" class="user icon">${comment.annotation.creatorName}</a> on <strong>${comment.annotation.createdAsDate?string("yyyy-MM-dd")}</strong> at <strong>${comment.annotation.createdAsDate?string("HH:mm")} GMT</strong></dd>
 		<dd class="replies">${comment.replies?size} replies</dd>
 	</#list>
 	</dl>

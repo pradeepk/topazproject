@@ -86,7 +86,7 @@ topaz.displayComment = {
     // Insert creator detail info
     var creatorId = jsonObj.creatorUserName;
     var creatorLink = document.createElement('a');
-    creatorLink.href = "#";
+    creatorLink.href = namespace + '/user/showUser.action?userId=' + jsonObj.annotation.creator;
     creatorLink.title = "Annotation Author";
     creatorLink.className = "user icon";
     creatorLink.appendChild(document.createTextNode(creatorId));
