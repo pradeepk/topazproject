@@ -24,7 +24,8 @@ public abstract class BaseAnnotation {
   public static final int PUBLIC_MASK = Constants.StateMask.PUBLIC;
   public static final int FLAG_MASK = Constants.StateMask.FLAG;
   public static final int DELETE_MASK = Constants.StateMask.DELETE;
-
+  private static final int TRUNCATED_COMMENT_LENGTH = 256;
+  
   /**
    * @return the escaped comment.
    * @throws org.plos.ApplicationException ApplicationException
@@ -41,6 +42,15 @@ public abstract class BaseAnnotation {
     return TextUtils.hyperlink(getComment());
   }
 
+
+  /**
+   * @return the url linked and escaped comment with a limit of 256 characters.
+   * @throws org.plos.ApplicationException ApplicationException
+   */
+  public String getEscapedTruncatedComment() throws ApplicationException {
+    return TextUtils.hyperlink(getComment().substring(0, TRUNCATED_COMMENT_LENGTH)); 
+  }
+  
   /**
    * @return the original content of the annotation body
    * @throws ApplicationException ApplicationException
