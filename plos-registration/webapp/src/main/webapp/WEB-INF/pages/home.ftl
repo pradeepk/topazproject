@@ -23,6 +23,11 @@
                     <@ww.a href="%{forgotPasswordURL}">Forgot Password</@ww.a>
                 </p>
 
+                <p>
+                    <@ww.action name="constants" namespace="" id="otherConstants"/>
+                    Plosone app url: ${otherConstants.get("mainAppUrl")}
+                </p>
+
 
             </fieldset>
         </p>

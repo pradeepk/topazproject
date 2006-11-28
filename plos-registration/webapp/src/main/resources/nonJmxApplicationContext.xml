@@ -141,4 +141,13 @@
     <constructor-arg value="UTF-8"/>
   </bean>
 
+  <!-- Add all your constants to the map with a key and a value/ref -->
+  <bean id="otherConstants" class="org.plos.OtherConstants">
+    <property name="allConstants">
+      <map>
+        <entry key="mainAppUrl" value="plosone-webapp"/>
+      </map>
+    </property>
+  </bean>
+
 </beans>

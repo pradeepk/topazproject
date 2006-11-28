@@ -54,6 +54,8 @@
           <result>/pages/registration.ftl</result>
       </action>
 
+      <action name="constants" class="org.plos.web.OtherConstantsAction"/>
+
       <action name="registerSubmit" class="org.plos.web.RegisterAction">
         <result name="input">/pages/registration.ftl</result>
         <result name="error">/pages/registration.ftl</result>

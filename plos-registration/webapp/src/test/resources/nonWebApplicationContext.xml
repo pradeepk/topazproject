@@ -92,9 +92,9 @@
   <!-- Postgres datasource -->
   <bean id="registrationDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
     <property name="driverClassName" value="org.postgresql.Driver"/>
-    <property name="url" value="jdbc:postgresql://localhost/postgres"/>
-    <property name="username" value="postgres"/>
-    <property name="password" value="postgres"/>
+    <property name="url" value="jdbc:postgresql://localhost/template1"/>
+    <property name="username" value="plosone"/>
+    <property name="password" value="plosone"/>
   </bean>
 
   <!-- Useful link:
@@ -138,6 +138,15 @@
 
   <bean id="defaultEncodingCharset" class="java.lang.String">
     <constructor-arg value="UTF-8"/>
+  </bean>
+
+  <!-- Add all your constants to the map with a key and a value/ref -->
+  <bean id="otherConstants" class="org.plos.OtherConstants">
+    <property name="allConstants">
+      <map>
+        <entry key="mainAppUrl" value="plosone-webapp"/>
+      </map>
+    </property>
   </bean>
 
 </beans>
