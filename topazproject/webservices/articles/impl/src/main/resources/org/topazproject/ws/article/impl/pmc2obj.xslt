@@ -58,6 +58,8 @@
       as="element()*"/>
 
   <xsl:variable name="initial-state" select="1" as="xs:integer"/>
+  <xsl:variable name="rdf-ns" select="'http://www.w3.org/1999/02/22-rdf-syntax-ns#'"
+      as="xs:string"/>
 
   <!-- top-level template - do some checks, and then run the production templates -->
   <xsl:template match="/">
@@ -126,7 +128,7 @@
     <rdf:type rdf:resource="http://rdf.topazproject.org/RDF/Article"/>
 
     <dc:identifier><xsl:value-of select="my:doi-to-uri($article-doi)"/></dc:identifier>
-    <dc:title><xsl:value-of select="$meta/title-group/article-title"/></dc:title>
+    <dc:title rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$meta/title-group/article-title"/></xsl:call-template></dc:title>
     <dc:type rdf:resource="http://purl.org/dc/dcmitype/Text"/>
     <dc:format>text/xml</dc:format>
     <dc:language>en</dc:language>
@@ -149,16 +151,16 @@
     </xsl:for-each>
     <xsl:for-each
         select="$meta/article-categories/subj-group[@subj-group-type = 'Discipline']/subject">
-      <dc:subject><xsl:value-of select="."/></dc:subject>
+        <dc:subject rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="."/></xsl:call-template></dc:subject>
     </xsl:for-each>
     <xsl:if test="$meta/abstract">
-      <dc:description rdf:parseType="Literal"><xsl:copy-of select="my:select-abstract($meta/abstract)/node()"/></dc:description>
+      <dc:description rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="my:select-abstract($meta/abstract)"/></xsl:call-template></dc:description>
     </xsl:if>
     <xsl:if test="$fixed-article/front/journal-meta/publisher">
-      <dc:publisher><xsl:value-of select="$fixed-article/front/journal-meta/publisher/publisher-name"/></dc:publisher>
+      <dc:publisher rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$fixed-article/front/journal-meta/publisher/publisher-name"/></xsl:call-template></dc:publisher>
     </xsl:if>
     <xsl:if test="$meta/copyright-statement">
-      <dc:rights><xsl:value-of select="normalize-space($meta/copyright-statement)"/></dc:rights>
+      <dc:rights rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$meta/copyright-statement"/></xsl:call-template></dc:rights>
     </xsl:if>
 
     <xsl:for-each select="$sec-dois">
@@ -313,7 +315,7 @@
       <dc:contributor><xsl:value-of select="my:format-name(.)"/></dc:contributor>
     </xsl:for-each>
     <xsl:if test="$meta/copyright-statement">
-      <dc:rights><xsl:value-of select="normalize-space($meta/copyright-statement)"/></dc:rights>
+      <dc:rights rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$meta/copyright-statement"/></xsl:call-template></dc:rights>
     </xsl:if>
 
     <xsl:variable name="dc-types" as="xs:anyURI*"
@@ -341,10 +343,10 @@
     <xsl:if test="$ctxt-obj">
       <topaz:contextElement><xsl:value-of select="local-name($ctxt-obj)"/></topaz:contextElement>
       <xsl:if test="$ctxt-obj/label">
-        <dc:title><xsl:value-of select="$ctxt-obj/label"/></dc:title>
+        <dc:title rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$ctxt-obj/label"/></xsl:call-template></dc:title>
       </xsl:if>
       <xsl:if test="$ctxt-obj/caption">
-        <dc:description rdf:parseType="Literal"><xsl:copy-of select="$ctxt-obj/caption/node()"/></dc:description>
+        <dc:description rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$ctxt-obj/caption"/></xsl:call-template></dc:description>
       </xsl:if>
     </xsl:if>
 
@@ -846,5 +848,48 @@
     <xsl:param    name="doi" as="xs:string"/>
     <xsl:sequence select="$fixed-article/body//*[@xlink:href and my:is-doi-uri(@xlink:href) and
                                                  my:uri-to-doi(@xlink:href) = $doi]"/>
+  </xsl:function>
+
+  <!-- serialize and xml string -->
+  <xsl:template name="xml-to-str">
+    <xsl:param name="xml"/>
+    <xsl:apply-templates mode="serialize" select="$xml/node()"/>
+  </xsl:template>
+
+  <xsl:template match="*" mode="serialize">
+    <xsl:text/>&lt;<xsl:value-of select="name()"/>
+    <xsl:variable name="attr-ns-uris" as="xs:anyURI*"
+        select="for $attr in (@*) return namespace-uri($attr)"/>
+    <xsl:for-each select="namespace::*[name() != 'xml']">
+      <xsl:if test=". = namespace-uri(..) or . = $attr-ns-uris">
+        <xsl:text> xmlns</xsl:text>
+        <xsl:if test="name()">
+          <xsl:text />:<xsl:value-of select="name()" />
+        </xsl:if>
+        <xsl:value-of select="concat('=&quot;', ., '&quot;')"/>
+      </xsl:if>
+    </xsl:for-each>
+    <xsl:for-each select="@*">
+      <xsl:value-of select="concat(' ', name(), '=&quot;', my:xml-escape(.), '&quot;')"/>
+    </xsl:for-each>
+    <xsl:choose>
+      <xsl:when test="node()">
+        <xsl:text>></xsl:text>
+        <xsl:apply-templates select="node()" mode="serialize"/>
+        <xsl:text/>&lt;/<xsl:value-of select="name()"/><xsl:text>></xsl:text>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>/></xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+  </xsl:template>
+
+  <xsl:template match="text()" mode="serialize">
+    <xsl:value-of select="my:xml-escape(.)"/>
+  </xsl:template>
+
+  <xsl:function name="my:xml-escape" as="xs:string">
+    <xsl:param name="str" as="xs:string"/>
+    <xsl:value-of select="replace(replace(replace($str, '&lt;', '&amp;lt;'), '&gt;', '&amp;gt;'), '&amp;', '&amp;amp;')"/>
   </xsl:function>
 </xsl:stylesheet>
