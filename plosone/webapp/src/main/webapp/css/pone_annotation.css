@@ -74,10 +74,11 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 }
 
 /* --- userinfo is for user information view --- */
-div.userinfo{ width: 14em; text-align: center; font-size: .8em; padding: 5px; border: 2px solid #333;  position: absolute;	z-index: 10; display: block; }
+.userinfo{ width: 16em; text-align: center; font-size: .9em; padding: 5px; border: 2px solid #333;  position: absolute;	z-index: 10; display: block; }
 .userinfo dl,
 .userinfo dd,
-.userinfo dt{ margin: 0 0 5px 0; list-style-type: none; }
+.userinfo dt{ margin: 0; list-style-type: none; font-size: 1em;}
+.userinfo dd{ font-size: .9em; }
 
 /* --- pane contains viewing area --- */
 .pane			{ margin: 20px; padding: 0 5px;  margin: 10px 0; position: relative; }
