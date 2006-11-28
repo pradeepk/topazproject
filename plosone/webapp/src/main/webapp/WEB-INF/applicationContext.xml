@@ -284,7 +284,6 @@
       <map>
         <entry key="text" value="feedback-text.ftl"/>
         <entry key="html" value="feedback-html.ftl"/>
-        <entry key="url" value="http://FQHN:8080/emailVerification.action"/>
         <entry key="subject" value="My feedback for PLoS ONE"/>
         <entry key="toEmailAddress" value="viru@virulocalhost.com"/>
         <!--<entry key="toEmailAddress" value="feedback@plosone.org"/>-->

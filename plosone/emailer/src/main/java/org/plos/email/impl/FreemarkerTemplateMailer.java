@@ -186,7 +186,6 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
    */
   public void sendEmail(final String toEmailAddress, final String fromEmailAddress, final Map<String, String> mapValues) {
     final Map<String, Object> context = new HashMap<String, Object>();
-    context.put("url", mapValues.get(URL));
 
     final Set<Map.Entry<String,String>> mapIter = mapValues.entrySet();
     for (final Map.Entry<String, String> entry : mapIter) {
