@@ -45,8 +45,9 @@ public class PDPFactory {
    */
   public static final String DEFAULT_PDP_CONFIG = "/WEB-INF/PDPConfig.xml";
   private ConfigurationStore store;
-  private PDP                defaultPDP = null;
-  private Map                pdpMap     = new HashMap();
+  private PDP                defaultPDP       = null;
+  private PDPConfig          defaultPDPConfig = null;
+  private Map                pdpMap           = new HashMap();
 
   /**
    * Returns a singleton instance of the factory for a wep-app. The instance is maintained in the
@@ -64,9 +65,11 @@ public class PDPFactory {
    *
    * @throws IOException on error in accessing the config file
    * @throws ParsingException on error in parsing the config file
+   * @throws UnknownIdentifierException when an unknown identifier was used in a standard xacml
+   *         factory
    */
   public static PDPFactory getInstance(ServletContext context)
-                                throws IOException, ParsingException {
+                                throws IOException, ParsingException, UnknownIdentifierException {
     PDPFactory instance;
 
     synchronized (context) {
@@ -88,12 +91,15 @@ public class PDPFactory {
    * @param configFile A file containing various PDP configurations
    *
    * @throws ParsingException on error in parsing the config file
+   * @throws UnknownIdentifierException when an unknown identifier was used in a standard xacml
+   *         factory
    */
-  public PDPFactory(File configFile) throws ParsingException {
+  public PDPFactory(File configFile) throws ParsingException, UnknownIdentifierException {
     store = new ConfigurationStore(configFile);
 
     // xxx: use defaults now; may be provide ability to choose factories later
     store.useDefaultFactories();
+    defaultPDPConfig = store.getDefaultPDPConfig();
   }
 
   /**
@@ -107,13 +113,13 @@ public class PDPFactory {
   public PDP getDefaultPDP() throws UnknownIdentifierException {
     synchronized (this) {
       if (defaultPDP == null)
-        defaultPDP = new TopazPDP(store.getDefaultPDPConfig());
+        defaultPDP = new TopazPDP(defaultPDPConfig);
 
       return defaultPDP;
     }
   }
 
- /**
+  /**
    * Returns a PDP corresponding to the named configuration.
    *
    * @param name Configuration name
@@ -124,11 +130,16 @@ public class PDPFactory {
    *         factory
    */
   public PDP getPDP(String name) throws UnknownIdentifierException {
-    synchronized (pdpMap) {
+    synchronized (this) {
       PDP pdp = (PDP) pdpMap.get(name);
 
       if (pdp == null) {
-        pdp = new TopazPDP(store.getPDPConfig(name));
+        PDPConfig config = store.getPDPConfig(name);
+
+        if (config == defaultPDPConfig)
+          return getDefaultPDP();
+
+        pdp = new TopazPDP(config);
         pdpMap.put(name, pdp);
       }
 
@@ -235,5 +246,4 @@ public class PDPFactory {
       return attrFinder;
     }
   }
-
 }

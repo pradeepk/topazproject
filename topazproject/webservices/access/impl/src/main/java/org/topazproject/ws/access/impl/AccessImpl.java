@@ -47,7 +47,11 @@ import org.topazproject.xacml.Util;
 import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
-import com.sun.xacml.attr.*;
+import com.sun.xacml.attr.AnyURIAttribute;
+import com.sun.xacml.attr.AttributeDesignator;
+import com.sun.xacml.attr.AttributeValue;
+import com.sun.xacml.attr.IntegerAttribute;
+import com.sun.xacml.attr.StringAttribute;
 import com.sun.xacml.ctx.RequestCtx;
 import com.sun.xacml.ctx.ResponseCtx;
 import com.sun.xacml.ctx.Subject;
@@ -73,8 +77,11 @@ public class AccessImpl implements Access {
    *
    * @throws IOException if PDP config file could not be located
    * @throws ParsingException if PDP config file  could not be parsed
+   * @throws UnknownIdentifierException when an unknown identifier was used in a standard xacml
+   *         factory
    */
-  public AccessImpl(AccessPEP pep, TopazContext ctx) throws IOException, ParsingException {
+  public AccessImpl(AccessPEP pep, TopazContext ctx)
+             throws IOException, ParsingException, UnknownIdentifierException {
     this.pep     = pep;
     this.ctx     = ctx;
     ual          = new UserAccountsImpl(null, ctx);
