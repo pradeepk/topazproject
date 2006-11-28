@@ -15,7 +15,7 @@
 	<#assign country = defaultValue>
 </#if>
 <#if pou.title?has_content>
-	<#assign title = pou.titles>
+	<#assign title = pou.title>
 <#else>
 	<#assign title = defaultValue>
 </#if>
@@ -39,7 +39,7 @@
 <#else>
 	<#assign interests = defaultValue>
 </#if>
-<#if pou.homePaget?has_content>
+<#if pou.homePage?has_content>
 	<#assign homePage = pou.homePage>
 <#else>
 	<#assign homePage = defaultValue>
