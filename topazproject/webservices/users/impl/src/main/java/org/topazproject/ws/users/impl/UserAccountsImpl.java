@@ -513,7 +513,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
   }
 
   public String lookUpUserByAuthId(String authId) throws RemoteException {
-    pep.checkAccess(pep.CREATE_USER, URI.create(baseURI + ACCOUNT_PID_NS));
+    pep.checkAccess(pep.LOOKUP_USER, URI.create(baseURI + ACCOUNT_PID_NS));
 
     return lookUpUserByAuthIdNoAC(authId);
   }
