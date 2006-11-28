@@ -145,10 +145,6 @@
                     <include name="javax/**"/>
                   </patternset>
                 </unjar>
-
-                <copy todir="${webinf}/classes">
-                  <fileset dir="${basedir}/src/main/patches/mulgara"/>
-                </copy>
               </tasks>
             </configuration>
           </execution>
