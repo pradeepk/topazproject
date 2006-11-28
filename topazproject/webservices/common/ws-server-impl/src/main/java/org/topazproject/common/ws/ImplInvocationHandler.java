@@ -59,20 +59,21 @@ public class ImplInvocationHandler implements InvocationHandler {
       ctx.activate();
 
       return method.invoke(target, args);
-    } catch (InvocationTargetException ite) {
-      Throwable t = ite.getCause();
+    } catch (Throwable t) {
+      if (t instanceof InvocationTargetException && t.getCause() != null)
+        t = t.getCause();
 
       if (t instanceof Error)
-        log.error("", t);
+        log.error("method " + method.getName() + " threw an error", t);
       else
-        log.debug("", t);
+        log.debug("method " + method.getName() + " threw an exception", t);
 
       Throwable nt;
 
       try {
         nt = ExceptionUtils.flattenException(t, log);
       } catch (Throwable e) {
-        log.error("", e);
+        log.error("Error flattening exception", e);
         nt = t;
       }
 
