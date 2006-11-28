@@ -39,6 +39,7 @@ import org.topazproject.mulgara.itql.StringAnswer;
 import org.topazproject.ws.permissions.Permissions;
 
 import net.sf.ehcache.Cache;
+import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
@@ -115,7 +116,16 @@ public class PermissionsImpl implements Permissions {
   private static Ehcache revokesCache = initCache("permission-revokes");
 
   private static Ehcache initCache(String name) {
-    Ehcache cache = CacheManager.getInstance().getEhcache(name);
+    Ehcache cache;
+    try {
+      cache = CacheManager.getInstance().getEhcache(name);
+    } catch (CacheException ce) {
+      log.error("Error getting cache-manager", ce);
+      return null;
+    } catch (IllegalStateException ise) {
+      log.error("Error getting cache", ise);
+      return null;
+    }
 
     if (cache == null) {
       log.warn("No cache configuration found for " + name + ".");
