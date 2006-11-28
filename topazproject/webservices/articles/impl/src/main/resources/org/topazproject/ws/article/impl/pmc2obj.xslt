@@ -60,6 +60,7 @@
   <xsl:variable name="initial-state" select="1" as="xs:integer"/>
   <xsl:variable name="rdf-ns" select="'http://www.w3.org/1999/02/22-rdf-syntax-ns#'"
       as="xs:string"/>
+  <xsl:variable name="xs-ns" select="'http://www.w3.org/2001/XMLSchema#'" as="xs:string"/>
 
   <!-- top-level template - do some checks, and then run the production templates -->
   <xsl:template match="/">
@@ -133,15 +134,15 @@
     <dc:format>text/xml</dc:format>
     <dc:language>en</dc:language>
     <xsl:if test="$meta/pub-date">
-      <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
-      <dc_terms:issued rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc_terms:issued>
-      <dc_terms:available rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc_terms:available>
+      <dc:date rdf:datatype="{$xs-ns}date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
+      <dc_terms:issued rdf:datatype="{$xs-ns}date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc_terms:issued>
+      <dc_terms:available rdf:datatype="{$xs-ns}date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc_terms:available>
     </xsl:if>
     <xsl:if test="$meta/history/date[@date-type = 'received']">
-      <dc_terms:dateSubmitted rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date($meta/history/date[@date-type = 'received'])"/></dc_terms:dateSubmitted>
+      <dc_terms:dateSubmitted rdf:datatype="{$xs-ns}date"><xsl:value-of select="my:format-date($meta/history/date[@date-type = 'received'])"/></dc_terms:dateSubmitted>
     </xsl:if>
     <xsl:if test="$meta/history/date[@date-type = 'accepted']">
-      <dc_terms:dateAccepted rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date($meta/history/date[@date-type = 'accepted'])"/></dc_terms:dateAccepted>
+      <dc_terms:dateAccepted rdf:datatype="{$xs-ns}date"><xsl:value-of select="my:format-date($meta/history/date[@date-type = 'accepted'])"/></dc_terms:dateAccepted>
     </xsl:if>
     <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
       <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
@@ -178,7 +179,7 @@
     </xsl:if>
 
     <topaz:isPID><xsl:value-of select="my:doi-to-pid($article-doi)"/></topaz:isPID>
-    <topaz:articleState rdf:datatype="http://www.w3.org/2001/XMLSchema#int"><xsl:value-of select="$initial-state"/></topaz:articleState>
+    <topaz:articleState rdf:datatype="{$xs-ns}int"><xsl:value-of select="$initial-state"/></topaz:articleState>
 
     <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
   </xsl:template>
@@ -306,7 +307,7 @@
 
     <dc:identifier><xsl:value-of select="my:doi-to-uri($sdoi)"/></dc:identifier>
     <xsl:if test="$meta/pub-date">
-      <dc:date rdf:datatype="http://www.w3.org/2001/XMLSchema#date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
+      <dc:date rdf:datatype="{$xs-ns}date"><xsl:value-of select="my:format-date(my:select-date($meta/pub-date))"/></dc:date>
     </xsl:if>
     <xsl:for-each select="$meta/contrib-group/contrib[@contrib-type = 'author']">
       <dc:creator><xsl:value-of select="my:format-name(.)"/></dc:creator>
@@ -351,7 +352,7 @@
     </xsl:if>
 
     <topaz:isPID><xsl:value-of select="my:doi-to-pid($sdoi)"/></topaz:isPID>
-    <topaz:articleState rdf:datatype="http://www.w3.org/2001/XMLSchema#int"><xsl:value-of select="$initial-state"/></topaz:articleState>
+    <topaz:articleState rdf:datatype="{$xs-ns}int"><xsl:value-of select="$initial-state"/></topaz:articleState>
 
     <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
   </xsl:template>
@@ -378,7 +379,7 @@
 
     <topaz:hasRepresentation><xsl:value-of select="$rep-name"/></topaz:hasRepresentation>
     <xsl:element name="topaz:{$rep-name}-objectSize">
-      <xsl:attribute name="rdf:datatype">http://www.w3.org/2001/XMLSchema#int</xsl:attribute>
+      <xsl:attribute name="rdf:datatype"><xsl:value-of select="$xs-ns"/>int</xsl:attribute>
       <xsl:value-of select="@size"/>
     </xsl:element>
     <xsl:element name="topaz:{$rep-name}-contentType">
@@ -664,10 +665,10 @@
     <xsl:for-each select="$rdf" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
       <xsl:choose>
         <xsl:when test="@rdf:datatype and
-                          @rdf:datatype != 'http://www.w3.org/2001/XMLSchema#int' and
-                          @rdf:datatype != 'http://www.w3.org/2001/XMLSchema#long' and
-                          @rdf:datatype != 'http://www.w3.org/2001/XMLSchema#float' and
-                          @rdf:datatype != 'http://www.w3.org/2001/XMLSchema#double'">
+                          @rdf:datatype != concat($xs-ns, 'int') and
+                          @rdf:datatype != concat($xs-ns, 'long') and
+                          @rdf:datatype != concat($xs-ns, 'float') and
+                          @rdf:datatype != concat($xs-ns, 'double')">
           <xsl:copy>
             <xsl:sequence select="not(@rdf:datatype)"/>
           </xsl:copy>
