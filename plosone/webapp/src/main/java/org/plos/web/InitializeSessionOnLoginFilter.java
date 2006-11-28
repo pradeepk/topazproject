@@ -86,7 +86,7 @@ public class InitializeSessionOnLoginFilter implements Filter {
       }
     }
 
-    if (numberOfSessionObjectsJettisoned == 0) {
+    if (numberOfSessionObjectsJettisoned != 0) {
       log.debug("numberOfSessionObjectsJettisoned was " + numberOfSessionObjectsJettisoned);
     }
 
