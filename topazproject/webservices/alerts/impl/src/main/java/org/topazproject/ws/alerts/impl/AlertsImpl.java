@@ -111,7 +111,8 @@ public class AlertsImpl implements Alerts {
     "  $prefn      <topaz:prefValue>      $cat   in ${PREFS} and " +
     " $art <dc:title>       $title and " +
     " $art <dc_terms:available> $date and " +
-    " $art <dc:subject>     $cat and " +
+    " $art <topaz:hasCategory> $catobj and " +
+    " $catobj <topaz:mainCategory> $cat and " +
     " $art <topaz:articleState> $state and " +
     " $date <tucana:before> '${endDate}' in ${XSD} and " +
     " $date <tucana:after>  '${startDate}' in ${XSD};";
