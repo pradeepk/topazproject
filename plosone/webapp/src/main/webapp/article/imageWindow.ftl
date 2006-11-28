@@ -28,17 +28,20 @@
 	    <@ww.url id="currentImageUrl" includeParams="none"  action="fetchObject" uri="${currentImage.uri}"/>
  	    <@ww.url id="currentImageAttachmentUrl" includeParams="none"  action="fetchObjectAttachment" uri="${currentImage.uri}"/>
 		<div id="figure-window-hdr">
+			<div class="figure-next">
+				<a href="#" class="previous icon">Previous</a> | <a href="#" class="next icon">Next</a>
+			</div>
 			<div id="figure-window-hdr-links">
-			<a href="${currentImageUrl}&representation=${currentImage.repLarge}" id="viewL">View Larger Image</a> 
-			<a href="${currentImageAttachmentUrl}&representation=TIF" id="downloadTiff">		Download original TIFF</a> 
-			<a href="${currentImageUrl}&representation=${currentImage.repMedium}" id="downloadPpt">Download PowerPoint Friendly Image</a>		</div>
-			<div id="figure-window-close">
-				<a onclick="self.close();return false;" href="#5">Close Window</a> <a onclick="self.close();return false;" href="#5"><img src="${freemarker_config.context}/images/pone_button_close.gif" title="close window" name="closewindow" width="20" height="20"/></a>  	  </div>
+			<a href="${currentImageUrl}&representation=${currentImage.repLarge}" id="viewL" class="larger icon" title="Click to view a larger version of this image">View Larger Image</a> 
+			<a href="${currentImageAttachmentUrl}&representation=TIF" id="downloadTiff" class="image icon" title="Click to download the original TIFF">		Download original TIFF</a> 
+			<a href="${currentImageUrl}&representation=${currentImage.repMedium}" id="downloadPpt" class="ppt icon" title="Click to download a PowerPoint friendly version">Download PowerPoint Friendly Image</a>		</div>
+				
 		</div>
+		
 		<div id="figure-window-content">
 			<div id="figure-window-viewer">
 			<img border="1" src="${currentImageUrl}&representation=${currentImage.repMedium}" title="${currentImage.title} ${currentImage.plainCaptionTitle}" class="large" id="figureImg" />
-			<span id="figureTitle">${currentImage.title} ${currentImage.transformedCaptionTitle}</span>
+			<span id="figureTitle"><strong>${currentImage.title}.</strong> ${currentImage.transformedCaptionTitle}</span>
 			</div>
 			<div id="figure-window-description">
 					${currentImage.transformedDescription}

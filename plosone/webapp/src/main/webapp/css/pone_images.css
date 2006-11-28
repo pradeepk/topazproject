@@ -86,12 +86,20 @@ a:active	{ }
 	border: solid 2px #CCC;
 	background: #F8F8F8;
 }
+* html #figure-window-wrapper  	{
+	width: expression((document.body.clientWidth < 910) ?
+	'910px' : '80%');
+	\width: expression((document.documentElement.clientWidth < 910) ?
+	'910px' : '80%');
+	}
+
 #figure-window-wrapper h2 { font-size:1.2em; font-family: Georgia, "Times New Roman", Times, serif; letter-spacing: -0.03em; color: #333; position: relative;}
 #figure-window-nav {
-	height: 500px;
-	overflow-y: scroll;
+	position: relative;
+	z-index: 100;
 	width: 113px;
 	float: left;
+	display: inline;
 	padding-top: 50px;
 }
 #figure-window-container {
@@ -102,6 +110,7 @@ a:active	{ }
 	padding: 10px 0px 10px 10px;
 	border-bottom: 2px solid #ccc;
 	background: url(../images/pone_toolbar_bg.gif) repeat-x left center;
+	text-align: center;
 }
 #figure-window-content {
 }
@@ -142,14 +151,14 @@ a:active	{ }
 	border: none;
 }
 #figure-window-hdr-links {
-	margin-right: 155px;
 	position: relative;
+	
 }
 #figure-window-hdr-links a {
 	margin-right: 10px;
 }
-
-div.btn.close				{ display: inline; margin: 0; text-transform: uppercase; font-size: .9em;}
+#figureTitle 		{ display: block; font-size: .85em;  margin-top: 10px;}
+div.btn.close		{ display: inline; margin: 0; text-transform: uppercase; font-size: .9em;}
 div.btn	*			{ vertical-align: middle; padding: 4px; font-weight: bold; cursor: pointer;}
 div.close a			{ text-decoration: none; padding-right: 24px; color: #666; float: right; margin: 0; border-left: 2px solid #ccc; border-bottom: 2px solid #ccc; background: #fff url(../images/pone_icon_close_flag.gif) no-repeat 96% 50%; font-size: .9em; position: absolute; top: 0; right: 0;}
 /* for closing and canceling viewing windows */
@@ -159,3 +168,8 @@ div.close a:hover	{ background-color: #ddd; }
 a.icon				{ padding: 2px 0 2px 20px; background-repeat: no-repeat; background-position: 0px 0px; font-size: .8em; }
 a.ppt				{ background-image: url(../images/pone_icon_ppt.gif); }
 a.image				{ background-image: url(../images/pone_icon_image.gif); }
+a.next				{ background: url(../images/pone_icon_next.gif) no-repeat right center; padding: 2px 20px 2px 0; }
+a.previous			{ background-image: url(../images/pone_icon_previous.gif); }
+a.larger			{ background-image: url(../images/pone_icon_larger.gif); }
+div.figure-next		{ text-align: center; border-bottom: 1px solid #CCC; margin-right: 10px; margin-bottom: 5px; padding-bottom: 5px;}
+div.figure-next a	{ font-weight: bold; text-decoration: none; font-size: .85em; text-transform: uppercase; }
