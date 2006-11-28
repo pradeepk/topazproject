@@ -30,9 +30,9 @@ topaz.formUtil = {
     }
   },
   
-  checkFieldStrLength: function ( fieldObj ) {
-    if(fieldObj.value && fieldObj.value.length > formConfig.commentMaxLen) {
-      alert("Your comment exceeds the allowable limit of " + formConfig.commentMaxLen + " characters by " + (fieldObj.value.length - formConfig.commentMaxLen) + " characters.");
+  checkFieldStrLength: function ( fieldObj, maxLength ) {
+    if(fieldObj.value && fieldObj.value.length > maxLength) {
+      alert("Your comment exceeds the allowable limit of " + maxLength + " characters by " + (fieldObj.value.length - maxLength) + " characters.");
       fieldObj.focus();
       return 0;
     }

@@ -2,7 +2,8 @@ var djConfig = {
 	isDebug: false,
 	debugContainerId : "dojoDebug",
 	regionalDialogMarker : "rdm",
-	articleContainer: "articleContainer"
+	articleContainer: "articleContainer",
+	debugAtAllCosts: false
 };
 
 var annotationConfig = {

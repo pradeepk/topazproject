@@ -18,11 +18,11 @@ div.detail strong{ color: #444; /* strong wraps date and time for added emphasis
 #AnnotationDialog .dialog .tip 	{ background:transparent url(../images/pone_dialog_pb.gif) no-repeat 0px 0px;  width:39px; height:22px; position:absolute; bottom: -22px; left:22px; }
 #AnnotationDialog .dialog .tipu 	{ background:transparent url(../images/pone_dialog_pt.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; top: -22px; left:22px; }
 #CommentDialog .dialog .tip,
-#CommentDialogMultiple .dialog .tip 	{ background:transparent url(../images/pone_dialog_preview_pb.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; bottom: -20px; left:22px; }
+#CommentDialogMultiple .dialog .tip 	{ background:transparent url(../images/pone_dialog_preview_pb.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; bottom: -18px; left:22px; }
 #CommentDialog .dialog .tipu,
 #CommentDialogMultiple .dialog .tipu 	{ background:transparent url(../images/pone_dialog_preview_pt.gif) no-repeat 0px 0px; width:39px; height:22px; position:absolute; top: -18px; left:22px; }
-#CommentDialogMultiple .dialog .tip   { bottom: -19px; }
-#CommentDialogMultiple .dialog .tipu 	{ top: -18px; }
+#CommentDialogMultiple .dialog .tip   { bottom: -21px; }
+#CommentDialogMultiple .dialog .tipu 	{ top: -21px; }
 .dialog .tip.on,
 .dialog .tipu.on { display: block; }
 
@@ -62,9 +62,19 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .posting textarea{ width: 34em; height: 8em; display: block; overflow: auto; margin-bottom: 10px;}
 .response .body{ width: 46em; height: 12em; overflow: auto;}
 
-/* --- userinfo is for user information view --- */
+.dojoTooltip {
+	border: solid black 1px;
+	background: beige;
+	color: black;
+	position: absolute;
+	font-size: small;
+	padding: 2px 2px 2px 2px;
+	z-index: 10;
+	display: block;
+}
 
-div.userinfo{ width: 14em; text-align: center; font-size: .8em; padding: 5px; border: 2px solid #333;}
+/* --- userinfo is for user information view --- */
+div.userinfo{ width: 14em; text-align: center; font-size: .8em; padding: 5px; border: 2px solid #333;  position: absolute;	z-index: 10; display: block; }
 .userinfo dl,
 .userinfo dd,
 .userinfo dt{ margin: 0 0 5px 0; list-style-type: none; }
@@ -98,9 +108,10 @@ div.multiple		{ width: 50em; background-color: #666; position: relative;}
 .multiple ol	{ width: 22em; position: absolute; top: 30px; left: 0;margin: 0 10px 0 10px; border: 2px solid #ccc; border-width: 2px 0 0 2px; display: inline;}
 .multiple li	{ padding: 5px; background: url(../images/pone_response_blockquote_bg.gif) repeat-x bottom;border-bottom: 2px solid #ccc; border-right: 2px solid #ccc; cursor: pointer;}
 .multiple .contentwrap div.detail,
-.multiple li div.detail	{ border: 1px solid #ccc; margin: 5px 0 0 0;}
+.multiple li div.detail	{ border: 1px solid #ccc; margin: 5px 0 0 0; }
 .multiple li.active	{ background: #FFF; border-right: none;}
-.multiple .contentwrap { width: 23em;margin: 0; margin-left: 22.9em; border: 2px solid #ccc; border-left: none; margin-top: 30px;}
+.multiple .contentwrap { display: none; width: 23em;margin: 0; margin-left: 22.9em; border: 2px solid #ccc; border-left: none; margin-top: 13px;}
+.multiple .contentwrap.active { display: block; }
 
 /* multiple annotation post detail styles */
 .dialog dt div.detail		{ border: none; background-color: transparent; padding: 0;}

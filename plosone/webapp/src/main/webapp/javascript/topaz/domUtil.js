@@ -130,8 +130,8 @@ topaz.domUtil = {
     dojo.html.addClass(obj, classNameValue);
   },
 
-  swapAttributeByClassNameForDisplay: function (obj, triggerClass, attrName, attrValue) {
-    var elements = this.getDisplayMap(obj, attrValue);
+  swapAttributeByClassNameForDisplay: function (obj, triggerClass, displayId) {
+    var elements = this.getDisplayMap(obj, displayId);
     
     //alert("attrValue = " + attrValue + "\n" +
     //      "elements = " + elements.toSource());
@@ -143,7 +143,6 @@ topaz.domUtil = {
       }
     }
     
-    dojo.html.addClass(obj, triggerClass);
     dojo.html.addClass(obj, triggerClass);
     
     //alert("elements.displayId = " + elements.displayId + "\n" +
@@ -200,14 +199,34 @@ topaz.domUtil = {
     var elements = new Array();
     tagName = tagName.toUpperCase();
     
-    if ( className == null && tagName == null)
-      return children;
+    //alert("node = " + node + "\ntagName = " + tagName + "\nclassName = " + className);
     
-    for (var i = 0; i < children.length; i++) {
-      var child = children[i];
-      
-      if (tagName != null) {
-        if (child.nodeName == tagName) {
+    if ( className != null || tagName != null) {
+      //alert("children = " + children.length);
+
+      for (var i = 0; i < children.length; i++) {
+        var child = children[i];
+        
+        if (tagName != null) {
+        
+          //alert("child.nodeName.match(tagName) = " + child.nodeName.match(tagName));
+          
+          if (child.nodeName.match(tagName)) {
+            if (className != null) {
+              var classNames = child.className.split(' ');
+              for (var j = 0; j < classNames.length; j++) {
+                if (classNames[j] == className) {
+                  elements.push(child);
+                  break;
+                }
+              }
+            }
+            else {
+              elements.push(child);
+            }
+          }
+        }
+        else if (className != null){
           var classNames = child.className.split(' ');
           for (var j = 0; j < classNames.length; j++) {
             if (classNames[j] == className) {
@@ -217,17 +236,30 @@ topaz.domUtil = {
           }
         }
       }
-      else {
-        var classNames = child.className.split(' ');
-        for (var j = 0; j < classNames.length; j++) {
-          if (classNames[j] == className) {
-            elements.push(child);
-            break;
-          }
-        }
-      }
     }
-  
+    else {
+      return children;
+    }    
+
+    //alert("elements = " + elements);
     return elements;
+  },
+
+  adjustContainerHeight: function (obj) {
+    // get size viewport
+    var viewportSize = dojo.html.getViewport();
+    
+    // get the offset of the container
+		var objOffset = topaz.domUtil.getCurrentOffset(obj);
+		
+		// find the size of the container
+		var objMb = dojo.html.getMarginBox(obj);
+
+    var maxContainerHeight = viewportSize.height - (10 * objOffset.top);
+    //alert("objOffset.top = " + objOffset.top + "\nviewportSize.height = " + viewportSize.height + "\nmaxContainerHeight = " + maxContainerHeight);
+    
+    obj.style.height = maxContainerHeight + "px";
+    obj.style.overflow = "auto";
   }
+  
 }
