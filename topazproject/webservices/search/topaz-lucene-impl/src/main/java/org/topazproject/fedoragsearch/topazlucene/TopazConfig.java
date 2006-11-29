@@ -27,7 +27,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.store.Directory;
 import org.apache.lucene.store.FSDirectory;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.index.IndexModifier;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
@@ -105,7 +104,7 @@ class TopazConfig {
         log.error("Lucene directory is not a directory! -- " + INDEX_PATH);
       try {
         // Try to open the DB for reading. If the DB doesn't exist (no segments file), will fail
-        IndexSearcher is = new IndexSearcher(INDEX_PATH);
+        TopazIndexSearcher is = new TopazIndexSearcher(INDEX_PATH);
         is.close();
       } catch (FileNotFoundException fnfe) {
         // Create the database

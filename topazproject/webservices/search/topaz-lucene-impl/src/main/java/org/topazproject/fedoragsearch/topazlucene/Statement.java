@@ -30,7 +30,6 @@ import org.apache.lucene.queryParser.MultiFieldQueryParser;
 import org.apache.lucene.queryParser.ParseException;
 import org.apache.lucene.queryParser.QueryParser;
 import org.apache.lucene.search.Hits;
-import org.apache.lucene.search.IndexSearcher;
 import org.apache.lucene.search.Query;
 import org.apache.lucene.search.highlight.Highlighter;
 import org.apache.lucene.search.highlight.QueryScorer;
@@ -73,7 +72,7 @@ public class Statement {
   private static final List     DEFAULT_FIELDS   = TopazConfig.DEFAULT_FIELDS;
   private static       String[] DEFAULT_FIELD_ARRAY;
   
-  private static IndexSearcher searcher;
+  private static TopazIndexSearcher searcher;
   private static Analyzer analyzer;
 
   /** Map of open queries to hits */
@@ -82,7 +81,7 @@ public class Statement {
   static {
     // Get the one instance of IndexSearcher that we need
     try {
-      searcher = new IndexSearcher(INDEX_PATH);
+      searcher = new TopazIndexSearcher(INDEX_PATH);
       log.info("Using lucene index: " + INDEX_PATH);
     } catch (IOException ioe) {
       log.error("Unable to open lucene index: " + INDEX_PATH, ioe);
@@ -104,19 +103,6 @@ public class Statement {
     DEFAULT_FIELD_ARRAY = new String[DEFAULT_FIELDS.size()];
     for (int i = 0; i < DEFAULT_FIELD_ARRAY.length; i++)
       DEFAULT_FIELD_ARRAY[i] = (String) DEFAULT_FIELDS.get(i);
-  }
-
-  /**
-   * Finalizer. Close database.
-   *
-   * Not sure how important this is, but it is good form.
-   */
-  protected void finalize() {
-    try {
-      searcher.close();
-    } catch (IOException ioe) {
-      log.warn("Problem closing IndexSearcher", ioe);
-    }
   }
 
   /**
