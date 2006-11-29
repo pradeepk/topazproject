@@ -34,4 +34,6 @@
   
   <PolicyIdReference>permitted-user-operations</PolicyIdReference>
   
+  <PolicyIdReference>deny-all</PolicyIdReference>
+
 </PolicySet>
