@@ -55,6 +55,7 @@
   <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
   <!--<bean id="freemarkerConfig" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">-->
     <property name="templateLoaderPath" value="/WEB-INF/emailTemplates/"/>
+    <property name="defaultEncoding" ref="defaultEncodingCharset"/>
   </bean>
 
   <bean id="registrationVerificationMailer" class="org.plos.util.impl.FreemarkerTemplateMailer">

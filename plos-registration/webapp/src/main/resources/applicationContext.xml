@@ -9,6 +9,6 @@ http://www.springframework.org/schema/util http://www.springframework.org/schema
 
   <import resource="nonJmxApplicationContext.xml" />
 
-  <import resource="jmxApplicationContext.xml"/>
+  <!--<import resource="jmxApplicationContext.xml"/>-->
 
 </beans>
