@@ -1,4 +1,4 @@
-Thank you <b>${user.loginName}</b> for registering with our website.
+Thank you ${user.loginName} for registering with our website.
 
 Please copy and paste this link into a web browser verify your email address: 
 

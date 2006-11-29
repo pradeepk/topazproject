@@ -1,4 +1,4 @@
-Thank you <b>${user.loginName}</b> for requesting to reset your PLoS password.
+Thank you ${user.loginName} for requesting to reset your PLoS password.
 
 Please copy and paste the linke below into a web browser to reset your password: 
 
