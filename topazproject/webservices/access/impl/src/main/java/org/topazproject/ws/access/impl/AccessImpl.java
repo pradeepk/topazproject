@@ -175,8 +175,11 @@ public class AccessImpl implements Access {
     if (user == null)
       user = "anonymous:user/" + ((authId == null) ? "" : URLEncoder.encode(authId));
 
+    // make subject-id available both as string and as uri
     defaultSet.add(new com.sun.xacml.ctx.Attribute(Util.SUBJECT_ID, null, null,
                                                    new AnyURIAttribute(new URI(user))));
+    defaultSet.add(new com.sun.xacml.ctx.Attribute(Util.SUBJECT_ID, null, null,
+                                                   new StringAttribute(user)));
 
     if (attrs != null)
       for (int i = 0; i < attrs.length; i++) {
