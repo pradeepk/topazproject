@@ -48,7 +48,12 @@ public abstract class BaseAnnotation {
    * @throws org.plos.ApplicationException ApplicationException
    */
   public String getEscapedTruncatedComment() throws ApplicationException {
-    return TextUtils.hyperlink(getComment().substring(0, TRUNCATED_COMMENT_LENGTH)); 
+    String comment = getComment();
+    if (comment.length() > TRUNCATED_COMMENT_LENGTH) {
+      return TextUtils.hyperlink(comment.substring(0, TRUNCATED_COMMENT_LENGTH));
+    } else { 
+      return TextUtils.hyperlink(comment);
+    }
   }
   
   /**
