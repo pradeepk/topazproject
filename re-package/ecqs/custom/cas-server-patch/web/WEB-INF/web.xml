@@ -90,7 +90,7 @@
     </context-param>
     <context-param>
       <param-name>usernameToGuidSql</param-name>
-      <param-value>select ${esup-casgeneric.auth.plos.login-column} from ${esup-casgeneric.auth.plos.table} where ${esup-casgeneric.auth.plos.login-name}=?</param-value>
+      <param-value>select ${esup-casgeneric.auth.plos.login-column} from ${esup-casgeneric.auth.plos.table} where lower(${esup-casgeneric.auth.plos.login-name})=lower(?)</param-value>
     </context-param>
     <context-param>
       <param-name>guidToUsernameSql</param-name>
