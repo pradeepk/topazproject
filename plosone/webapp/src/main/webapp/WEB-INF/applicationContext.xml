@@ -27,12 +27,13 @@
     <property name="annotationWebService" ref="annotationWebService"/>
     <property name="useTranslet" value="true"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
+    <aop:scoped-proxy/>
   </bean>
 
   <util:map id="xmlFactoryProperties">
-<!--      <entry key="javax.xml.transform.Transfor<Factory"
+<!--       <entry key="javax.xml.transform.TransformerFactory"
            value="com.sun.org.apache.xalan.internal.xsltc.trax.TransformerFactoryImpl"/>-->
-   <entry key="javax.xml.transform.TransformerFactory"
+    <entry key="javax.xml.transform.TransformerFactory"
                value="net.sf.saxon.TransformerFactoryImpl"/>
     <entry key="javax.xml.transform.Transformer"
             value="net.sf.saxon.Controller"/>
@@ -54,10 +55,10 @@
     <property name="smallImageRep" value="PNG_S"/>
     <property name="mediumImageRep" value="PNG_M"/>
     <property name="largeImageRep" value="PNG_L"/>
-
+    <aop:scoped-proxy/>
    </bean>
    
-   <bean id="crossRefPosterService" class="org.plos.admin.service.CrossRefPosterService">
+   <bean id="crossRefPosterService" class="org.plos.ad<.service.CrossRefPosterService">
     <!-- following is the URL for the CrossRef service. The three parameters which should be set are
     	* area=  test or live. Decides if the cross ref is actually 'posted'. area=test for testing, area=live for deployment
     	* login_id=crossref user name
@@ -76,6 +77,7 @@
   	<property name="ingestedDocumentDirectory" value="/etc/topaz/plosdocs/ingested"/>
   	<!-- Whereas this is relative to webapp/src/main/resources  -->
     <property name="xslTemplate" value="/crossref.xsl"/>    	
+    <aop:scoped-proxy/>    
   </bean>
   
   <bean id="defaultEncodingCharset" class="java.lang.String">
@@ -91,7 +93,9 @@
     <!--<constructor-arg value="TEST"/>-->
   </bean>
 
-  <bean id="userContext" class="org.plos.web.UserContext" scope="session"/>
+  <bean id="userContext" class="org.plos.web.UserContext" scope="session">
+    <aop:scoped-proxy/>
+  </bean>
 
   <bean id="permissionWebService" class="org.plos.permission.service.PermissionWebService" scope="session">
     <property name="userContext" ref="userContext"/>
@@ -101,12 +105,14 @@
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
+    <aop:scoped-proxy/>
   </bean>
 
   <bean id="lazyLoaderFactory" class="org.plos.annotation.service.AnnotationLazyLoaderFactory"/>
 
   <bean id="annotationConverter" class="org.plos.annotation.service.AnnotationConverter" scope="session">
     <property name="lazyLoaderFactory" ref="lazyLoaderFactory"/>
+    <aop:scoped-proxy/>
   </bean>
 
   <bean id="replyWebService" class="org.plos.annotation.service.ReplyWebService" scope="session">
@@ -120,6 +126,7 @@
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
+    <aop:scoped-proxy/>
   </bean>
 
   <bean id="annotationWebService" class="org.plos.annotation.service.AnnotationWebService" scope="session">
@@ -133,6 +140,7 @@
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
+    <aop:scoped-proxy/>
   </bean>
 
   <bean id="annotationService" class="org.plos.annotation.service.AnnotationService" scope="session">
@@ -141,6 +149,7 @@
     <property name="annotationWebService" ref="annotationWebService"/>
     <property name="replyWebService" ref="replyWebService"/>
     <property name="permissionWebService" ref="permissionWebService"/>
+    <aop:scoped-proxy/>
   </bean>
 
   <bean id="userWebService" class="org.plos.user.service.UserWebService" scope="session">
@@ -152,6 +161,7 @@
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
+    <aop:scoped-proxy/>
   </bean>
 
   <bean id="userRoleWebService" class="org.plos.user.service.UserRoleWebService" scope="session">
@@ -162,6 +172,7 @@
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
+    <aop:scoped-proxy/>
   </bean>
 
   <bean id="preferencesWebService" class="org.plos.user.service.PreferencesWebService" scope="session">
@@ -172,6 +183,7 @@
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
+    <aop:scoped-proxy/>
   </bean>
   
   <bean id="profileWebService" class="org.plos.user.service.ProfileWebService" scope="session">
@@ -182,6 +194,7 @@
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
+    <aop:scoped-proxy/>
   </bean>
 
   <bean id="userService" class="org.plos.user.service.UserService" scope="session">
@@ -226,6 +239,7 @@
         <entry key="pathogens" value="PLoS Pathogens"/>
       </map>
     </property>
+    <aop:scoped-proxy/>
   </bean>
 
   <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService">
@@ -261,6 +275,7 @@
     <constructor-arg index="0">
       <props>
         <prop key="cache.memory">true</prop>
+<!--         <prop key="cache.persistence.class">com.opensymphony.oscache.plugins.diskpersistence.HashDiskPersistenceListener</prop> -->
       </props>
     </constructor-arg>
   </bean>

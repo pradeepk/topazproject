@@ -24,6 +24,10 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.HashMap;
+import java.util.Set;
+import java.util.Map;
+import java.util.Iterator;
 
 /**
  * Create a new session when the user logs in using CAS or other authentication mechanisms
@@ -56,14 +60,13 @@ public class InitializeSessionOnLoginFilter implements Filter {
             log.debug(attribName + ":" + initialSession.getAttribute(attribName).toString());
           }
         }
-
         final String casUser = (String) initialSession.getAttribute(Constants.SINGLE_SIGNON_USER_KEY);
         if (null == casUser) {
           log.debug("No CAS receipt found");
         } else {
           final CASReceipt casReceipt = (CASReceipt) initialSession.getAttribute(Constants.SINGLE_SIGNON_RECEIPT);
 
-          final HttpSession session = reInitializeSessionForMemberLogin(initialSession);
+          final HttpSession session = reInitializeSessionForMemberLogin(initialSession, servletRequest);
           session.setAttribute(MEMBER_SESSION_RESET_FLAG, "true");
 
           filterChain.doFilter(request, response);
@@ -78,29 +81,41 @@ public class InitializeSessionOnLoginFilter implements Filter {
     }
   }
 
-  private HttpSession reInitializeSessionForMemberLogin(final HttpSession initialSession) {
+  private HttpSession reInitializeSessionForMemberLogin(final HttpSession initialSession,
+                                                        final HttpServletRequest request) {
     final Enumeration attributeNames = initialSession.getAttributeNames();
-    int numberOfSessionObjectsJettisoned = 0;
+    int numObjsKept = 0;
+    HashMap<String, Object> objectsToTransfer = new HashMap<String, Object>();
+    String attributeName;
+    Object attribute;
     while (attributeNames.hasMoreElements()) {
-      final String attributeName = (String) attributeNames.nextElement();
-      final Object attribute = initialSession.getAttribute(attributeName);
+      attributeName = (String) attributeNames.nextElement();
+      attribute = initialSession.getAttribute(attributeName);
 
-      if (attributeMatchesPlosSessionObjects(attribute)) {
-        initialSession.removeAttribute(attributeName);
-        numberOfSessionObjectsJettisoned++;
-        log.debug("Dumped " + attributeName + " with hasCode:" + attribute.hashCode());
+      if (!attributeMatchesPlosSessionObjects(attribute)) {
+        objectsToTransfer.put(attributeName, attribute);
+        numObjsKept ++;
+        if (log.isDebugEnabled()){
+          log.debug("Keeping object: " + attributeName + "  " +attribute);
+        }
       }
     }
 
-    if (numberOfSessionObjectsJettisoned != 0) {
-      log.debug("numberOfSessionObjectsJettisoned was " + numberOfSessionObjectsJettisoned);
+    if ((numObjsKept!= 0) && (log.isDebugEnabled())){
+      log.debug("numberOfSessionObjects Kept was " + numObjsKept);
     }
 
-//          initialSession.invalidate();
-//          final HttpSession newSession = servletRequest.getSession(true);
-//          newSession.setAttribute(Constants.SINGLE_SIGNON_RECEIPT, casReceipt);
-//          newSession.setAttribute(Constants.SINGLE_SIGNON_USER_KEY, casUser);
-    return initialSession;
+    initialSession.invalidate();
+    final HttpSession newSession = request.getSession(true);
+    log.debug("new session id: " + newSession.getId());
+    Set<Map.Entry<String, Object>> allObjs = objectsToTransfer.entrySet();
+    Iterator<Map.Entry<String, Object>> iter = allObjs.iterator();
+    Map.Entry<String, Object> attrib;
+    while (iter.hasNext()) {
+      attrib = iter.next();
+      newSession.setAttribute(attrib.getKey(), attrib.getValue());
+    }
+    return newSession;
   }
 
   private boolean attributeMatchesPlosSessionObjects(final Object attribute) {
