@@ -58,7 +58,7 @@
     <aop:scoped-proxy/>
    </bean>
    
-   <bean id="crossRefPosterService" class="org.plos.ad<.service.CrossRefPosterService">
+   <bean id="crossRefPosterService" class="org.plos.admin.service.CrossRefPosterService">
     <!-- following is the URL for the CrossRef service. The three parameters which should be set are
     	* area=  test or live. Decides if the cross ref is actually 'posted'. area=test for testing, area=live for deployment
     	* login_id=crossref user name
