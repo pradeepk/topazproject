@@ -6,6 +6,9 @@ IE PC fixes
 /* the next two rules fake 'min-width' and correct bad banner positioning in IE/Win */
 /* the next rule uses invalid values, but it works in IE/Win, and that's what we need */
 * html ul, ol, dl	{ position: relative; } /* fixes disappearing background list ie bug */
+
+
+/************ jocelyn - will you fix to fake : #container, #hdr	{ min-width: 675px; max-width: 910px; } */
 * html #container, * html #footer 	{
 	width: expression((document.body.clientWidth < 910) ?
 	'910px' : '80%');

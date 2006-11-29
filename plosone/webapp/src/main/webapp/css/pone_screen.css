@@ -39,7 +39,7 @@ table		{ margin: 20px; border: none;}
 th			{ padding: 6px; background-color: #ACF1FF; border: 4px solid #FFF; border-width: 0 3px 3px 0; font-weight: bold;}
 td			{ padding: 6px; background-color: #D2F7FF; border: 4px solid #FFF; border-width: 0 3px 3px 0; }
 /* Default Headings */
-h1, h2, h3	{ font-family: Georgia, "Times New Roman", Times, serif; letter-spacing: -.03em; color: #333; position: relative;}
+h1, h2, h3	{ font-family: Georgia, "Times New Roman", Times, serif; letter-spacing: -.04em; color: #333; position: relative;}
 h1			{ font-size: 2.2em; font-weight: normal;}
 h2			{ font-size: 1.6em; font-weight: normal; background: url(../images/jour_dotted_border.gif) repeat-x bottom; padding: 2px 0;}
 h3			{ font-size: 1.4em; font-weight: normal; margin: .8em 0; }
@@ -107,8 +107,6 @@ a.annotation{ background-image: url(../images/pone_icon_annotation.gif); }
 a.discuss	{ background-image: url(../images/pone_icon_discuss.gif); }
 a.commentary{ background-image: url(../images/pone_icon_commentary.gif); }
 a.feedback	{ font-weight: bold;}
-
-a.ppt		{ background-image: url(../images/pone_icon_ppt.gif);}
 
 /* Article Tooltips : for any js onpage action */
 a.addannotation	{ background-image: url(../images/pone_tooltip_addannotation.gif); }
@@ -186,7 +184,7 @@ ul#nav 		{ font-size: .75em; height:1.9em; margin: 0; padding: 0; position: abso
 ul#nav li	{ float: left; position: relative; background-color: #ECEDED; list-style-type: none; margin: 0; padding: 0; }
 #nav li a, #nav li a:visited
 			{ display:block; text-decoration:none; width: auto; padding: 3px 1.1em 0 1.1em; float:left; height: 1.6em; line-height:normal; color:#666; }
-#nav li li	{ background: url(../images/pone_toolbar_bg.gif) repeat-x 80px; border-bottom: 1px solid #666; width: 100%;}
+#nav li li	{ background: #fff; border-bottom: 1px solid #666; width: 100%;}
 #nav li ul 	{ visibility:hidden; position:absolute; top:1.5em; left:0; height:0; overflow:hidden; text-align: left; margin: 0; padding: 0; border: 1px solid #666; border-width: 0 1px 0 1px;}
 #nav table 	{ margin:-1px; border-collapse:collapse; }
 /* fist line style for IE7 and non-IE browsers and the second line for IE5.5 and IE6 */
@@ -200,9 +198,11 @@ ul#nav li	{ float: left; position: relative; background-color: #ECEDED; list-sty
 #nav li a:hover ul li a 	{ display:block; font-weight:normal; background:transparent; text-decoration:none; height:auto; line-height: 1.7em;padding:0.2em 0.2em 0.2em 0.6em; width:15.8em; border-top: 0; color: #666; }
 
 #nav li:hover ul li a:hover,
-#nav li a:hover ul li a:hover { border-top: 0; background-color: #eee; color: #000;}
+#nav li a:hover ul li a:hover { border-top: 0; background-color: #ddd; color: #000;}
 #nav td	{ border: none; padding: 0; background-color: transparent; }
 #nav li.journalnav			{ float: right; }
+
+
 /* Search Dashboard */
 
 #db 			{ padding: 0; text-align: center; font-size: .8em; position: absolute; top: 24px; right: 0; padding: 0; border-width: 0; color: #888; }
@@ -254,6 +254,7 @@ ul#links 	{ margin: 0; padding: 0; }
 ul#links li { display: inline; margin: 0; padding: 0; }
 ul#links a	{ color: #fff; font-size: .75em; display: inline;;}
 ul#links a.icon,
+ul#links a:visited.icon,
 ul#links a:hover.icon { padding: 0 16px 0 0; background-position: 100% 50%;}
 
 
@@ -323,13 +324,23 @@ div.box			{ color: #000; padding: 10px; background-color: #DDD; }
 #rhc ul li a,
 #rhc ul li a:visited 	{ background-color: transparent; background-position: 5% 50%; background-repeat: no-repeat; padding: 1px 0; text-indent: 30px; border-bottom: 1px solid #ccc; margin: 0 3px;}
 #rhc ul li a:hover		{ background-color: #ddd; color: #000;}
-#rhc ul li a.last		{ border-bottom: none; }
+#rhc ul li a.last		{ border-bottom-width: 0; }
 
 /* rhc rounded containers : top */
 div.links,
 div.tools				{ background-position: bottom; background-repeat: no-repeat; padding: 0 0 8px 0; margin: 0 0 6px 0; }
-div.links				{ background-image: url(../images/pone_sidenav_bg.gif);}
+div.links				{ background-image: url(../images/pone_sidenav_bg.gif); position: relative;}
 div.tools				{ background-image: url(../images/pone_tools_bg.gif);}
+
+
+/* rhc rounded containers : bottom */
+div.links ul,
+div.tools ul			{ background-repeat: no-repeat; background-position: top; padding: 8px 0 0 0; margin: 0; list-style-type: none; }
+div.links ul			{ background-image: url(../images/pone_sidenav_bg.gif);}
+div.tools ul			{ background-image: url(../images/pone_tools_bg.gif);}
+div.links li
+div.tools li			{ list-style-type: none; margin: 0; padding: 0; }				
+
 
 div.commentview			{ padding: 5px; border: 3px solid #999; margin: 10px 0; background: url(../images/pone_toolbar_bg.gif) repeat-x top;}
 div.commentview	fieldset{ border: 1px solid #ccc; border-width: 1px 0; margin: 0 -5px 5px -5px; padding: 10px; background-color: #eee; position: relative;}
@@ -341,13 +352,6 @@ div.commentview fieldset li	{ font-weight: bold; width: 100%; position: relative
 div.commentview label	{ font-weight: normal; }
 div.commentview div		{ display: inline; position: absolute; right: 40px;}
 
-/* rhc rounded containers : bottom */
-div.links ul,
-div.tools ul			{ background-repeat: no-repeat; background-position: top; padding: 8px 0 0 0; margin: 0; list-style-type: none; }
-div.links ul			{ background-image: url(../images/pone_sidenav_bg.gif);}
-div.tools ul			{ background-image: url(../images/pone_tools_bg.gif);}
-div.links li
-div.tools li			{ list-style-type: none; margin: 0; padding: 0; }				
 
 #postcomment { width: 240px; top: 0; position: relative; }
 .fixed { position: fixed !important; }
@@ -417,12 +421,6 @@ div.beta a:visited,
 div.beta a:hover		{ font-weight: bold;color: #fff; }
 p.intro					{ border: 2px solid #ACF1FF; padding: 10px; background: url(../images/pone_forms_bg.gif) repeat-x 0 -30px; color: #000;}
 
-
-/* ------ Static Page Styles ----*/
-
-.static h1		{ font-size: 2.4em; padding-top: 10px; border-top: 6px solid #006699; line-height: 1.1em; color: #069; }
-.static h3		{ font-size: 1.2em; color: #069; font-family: Verdana, Arial, Helvetica, sans-serif; border-bottom: 1px solid #069; }
-.static h4		{ font-size: 1em; font-weight: bold; }
 
 /* ------ DOM Styles ------- */
 .commentPrivate { display: block; }
