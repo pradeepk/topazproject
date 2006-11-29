@@ -13,7 +13,7 @@ public interface TemplateMailer {
   /**
    * Send a mail with both a text and a HTML version.
    * @param toEmailAddress          the email address where to send the email
-   * @param fromEmailAddress
+   * @param fromEmailAddress fromEmailAddress
    * @param subject subject of the email
    * @param context        a {@link java.util.Map} of objects to expose to the template engine
    * @param textTemplateFilename textTemplateFilename
@@ -30,16 +30,4 @@ public interface TemplateMailer {
    * @param htmlTemplateFilename htmlTemplateFilename
    */
   void massMail(final Map<String, Map<String, Object>> emailAddressContextMap, final String subject, final String textTemplateFilename, final String htmlTemplateFilename);
-
-  /**
-   * Send an email address verification email
-   * @param user user
-   */
-  void sendEmailAddressVerificationEmail(final MailerUser user);
-
-  /**
-   * Send a forgot password verification email
-   * @param user user
-   */
-  void sendForgotPasswordVerificationEmail(final MailerUser user);
 }

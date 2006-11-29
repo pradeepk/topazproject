@@ -8,7 +8,6 @@ import freemarker.template.Template;
 import freemarker.template.TemplateException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.email.MailerUser;
 import org.plos.email.TemplateMailer;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.javamail.JavaMailSender;
@@ -155,28 +154,11 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
   }
 
   /**
-   * @see org.plos.email.TemplateMailer#sendEmailAddressVerificationEmail(org.plos.email.MailerUser)
-   */
-  public void sendEmailAddressVerificationEmail(final MailerUser user) {
-    sendEmail(user, verifyEmailMap);
-  }
-
-  /**
-   * @see org.plos.email.TemplateMailer#sendForgotPasswordVerificationEmail(org.plos.email.MailerUser)
-   */
-  public void sendForgotPasswordVerificationEmail(final MailerUser user) {
-    sendEmail(user, forgotPasswordVerificationEmailMap);
-  }
-
-  /**
-   * @param user user
+   * @param toEmailAddress toEmailAddress
    * @param mapValues contains the url for verification and html + text template names
    */
-  public void sendEmail(final MailerUser user, final Map<String, String> mapValues) {
-    final Map<String, Object> context = new HashMap<String, Object>();
-    context.put("user", user);
-    context.put("url", mapValues.get(URL));
-    mail(user.getEmailAddress(), getFromEmailAddress(), mapValues.get(SUBJECT), context, mapValues.get(TEXT), mapValues.get(HTML));
+  public void sendEmail(final String toEmailAddress, final Map<String, Object> mapValues) {
+    mail(toEmailAddress, getFromEmailAddress(), (String)mapValues.get(SUBJECT), mapValues, (String)mapValues.get(TEXT), (String)mapValues.get(HTML));
   }
 
   /**
@@ -193,38 +175,6 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
     }
     
     mail(toEmailAddress, fromEmailAddress, mapValues.get(SUBJECT), context, mapValues.get(TEXT), mapValues.get(HTML));
-  }
-
-  /**
-   * Getter for property 'verifyEmailMap'.
-   * @return Value for property 'verifyEmailMap'.
-   */
-  public Map<String, String> getVerifyEmailMap() {
-    return verifyEmailMap;
-  }
-
-  /**
-   * Setter for property 'verifyEmailMap'.
-   * @param verifyEmailMap Value to set for property 'verifyEmailMap'.
-   */
-  public void setVerifyEmailMap(final Map<String, String> verifyEmailMap) {
-    this.verifyEmailMap = verifyEmailMap;
-  }
-
-  /**
-   * Getter for property 'forgotPasswordVerificationEmailMap'.
-   * @return Value for property 'forgotPasswordVerificationEmailMap'.
-   */
-  public Map<String, String> getForgotPasswordVerificationEmailMap() {
-    return forgotPasswordVerificationEmailMap;
-  }
-
-  /**
-   * Setter for property 'forgotPasswordVerificationEmailMap'.
-   * @param forgotPasswordVerificationEmailMap Value to set for property 'forgotPasswordVerificationEmailMap'.
-   */
-  public void setForgotPasswordVerificationEmailMap(final Map<String, String> forgotPasswordVerificationEmailMap) {
-    this.forgotPasswordVerificationEmailMap = forgotPasswordVerificationEmailMap;
   }
 
 }
