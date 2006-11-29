@@ -20,18 +20,18 @@
           <form method="post" name="login_form">
             <input type="hidden" name="lt" value="<%= request.getAttribute("edu.yale.its.tp.cas.lt") %>" />
             <ol>
-              <li>
-                <label for="username">Username
                 <% if (request.getAttribute("edu.yale.its.tp.cas.badUsernameOrPassword") != null) { %>
-                <em>Please enter a valid email and password</em>
+		<li><em>Please enter a valid email and password</em></li>
                 <% } else if (request.getAttribute("edu.yale.its.tp.cas.service") == null) { %>
-                <em>You may login now in order to access protected services later.</em>                
+                <li><em>You may login now in order to access protected services later.</em></li>
                 <% } else if (request.getAttribute("edu.yale.its.tp.cas.badLoginTicket") != null) { %>
-                <em>Bad Login Ticket: Please check to make sure you are coming form a PLoS site.</em>                        
+                <li><em>Bad Login Ticket: Please check to make sure you are coming form a PLoS site.</em></li>
                 <% } else { %>                        
                 <!-- <em>You have requested access to a site that requires authentication.</em> -->               
                 <% } %>
-                </label>
+
+              <li>
+                <label for="username">Email</label>
                 <input type="text" name="username" tabindex="1"/>
               </li>
               <li>
@@ -54,7 +54,7 @@
 
       <div id="ftr">
         <ul>  
-          <li><a href="index.html" title="Login to Your PLoS Account" tabindex="20">Login</a></li>
+<!--          <li><a href="login" title="Login to Your PLoS Account" tabindex="20">Login</a></li>-->
           <li><a href="privacy.html" title="PLoS Statement" tabindex="21">Privacy Statement</a></li>
           <li><a href="terms.html" title="PLoS Terms of Use" tabindex="22">Terms of Use</a></li>
           <li><a href="http://www.plos.org" title="PLoS.org" tabindex="23">PLoS.org</a></li>
