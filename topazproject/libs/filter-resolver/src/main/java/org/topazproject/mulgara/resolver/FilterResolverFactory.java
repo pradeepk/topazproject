@@ -92,17 +92,6 @@ public class FilterResolverFactory implements ResolverFactory {
       logger.info("No handlers configured");
 
     handlers = (FilterHandler[]) hList.toArray(new FilterHandler[hList.size()]);
-
-    // ensure we always close the handler so it can properly flush buffered data.
-    Runtime.getRuntime().addShutdownHook(new Thread() {
-      public void run() {
-        try {
-          FilterResolverFactory.this.close();
-        } catch (ResolverFactoryException rfe) {
-          logger.error("Exception while closing handlers", rfe);
-        }
-      }
-    });
   }
 
   private static FilterHandler instantiateHandler(String clsName, Properties config, URI dbURI)
