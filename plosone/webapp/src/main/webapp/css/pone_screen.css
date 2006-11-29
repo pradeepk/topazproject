@@ -12,7 +12,6 @@
 
 @import url(pone_annotation.css);
 @import url(pone_home.css);
-@import url(pone_static.css);
 @import url(pone_forms.css);
 
 html 		{ margin: 0 0 1px 0; min-height: 100%; /* set margin and height to eliminate the scroll bar page shift on mozilla and safari */ background: #FFF url(../images/pone_html_bg.gif) 0 0 repeat-x; }
@@ -20,13 +19,12 @@ body 		{ font: 0.85em Verdana, Arial, Helvetica, sans-serif; color: #330; margin
 
 a:link		{ color: #069; text-decoration: underline; }
 a:visited 	{ color: #004B70; }
-a:hover		{ color: #008ED5;}
+a:hover		{ color: #008ED5; text-decoration: none;}
 a:active	{ }
 blockquote	{ font-style: italic; font-size: .9em; margin: 0 20px;}
 cite		{ font-style: italic; }
 code		{ font-family: "Courier New", Courier, monospace; }
 em			{ font-style: italic; }
-input		{ cursor: pointer; }
 
 img			{ border: 0; }
 label em { display: block; color: #F63; } /* em wraps all error messages within labels */
@@ -41,7 +39,7 @@ td			{ padding: 6px; background-color: #D2F7FF; border: 4px solid #FFF; border-w
 /* Default Headings */
 h1, h2, h3	{ font-family: Georgia, "Times New Roman", Times, serif; letter-spacing: -.04em; color: #333; position: relative;}
 h1			{ font-size: 2.2em; font-weight: normal;}
-h2			{ font-size: 1.6em; font-weight: normal; background: url(../images/jour_dotted_border.gif) repeat-x bottom; padding: 2px 0;}
+h2			{ font-size: 1.6em; font-weight: normal; border-bottom: 1px solid #999; padding: 2px 0;}
 h3			{ font-size: 1.4em; font-weight: normal; margin: .8em 0; }
 h4			{ font-size: 1.2em; }
 h5			{ font-size: 1em; }
@@ -62,7 +60,7 @@ a.tooltip:visited	{ color: #389A0C; font-weight: bold; }
 a.tooltip:hover 	{ color: #45BF0F; }
 a.icon, 	/* use for any accent oriented icon */
 a.tooltip	/* use for any functional icon for on page actions */
-					{ padding: 2px 0 2px 16px; background-repeat: no-repeat; background-position: 0px 0px; }
+					{ padding: 2px 0 2px 18px; background-repeat: no-repeat; background-position: 0px 0px; }
 /* for user dashboard icons */
 #user a.icon		{ padding: 0 16px 0 0; background-repeat: no-repeat; background-position: 100% -14px; padding-top: 1px; padding-bottom: 1px;}
 
@@ -92,7 +90,7 @@ a.email 	{ background-image: url(../images/pone_sidenav_email.gif); }
 a.print 	{ background-image: url(../images/pone_sidenav_print.gif); }
 a.citation	{ background-image: url(../images/pone_sidenav_citation.gif); }
 a.citing	{ background-image: url(../images/pone_sidenav_citing.gif); }
-
+a.reprints	{ background-image: url(../images/pone_sidenav_reprint.gif); }
 
 a.read 		{ background-image: url(../images/jour_sidenav_read.gif); }
 a.ncbi 		{ background-image: url(../images/jour_sidenav_ncbi.gif); }
@@ -173,6 +171,10 @@ div#hdr 			{ height: 150px; position: relative; }
 #hdr #logo a 		{ width: 312px; height: 90px; display: block; }
 #hdr #logo span,
 #hdr #tagline span 	{ display: block; width: 0; height: 0; overflow: hidden; }
+
+
+
+
 /* 	Navigation : Elements
 ----------------------------------------------------------
 	Original dropdown structure and CSS was produced by CSSplay
@@ -289,11 +291,22 @@ div.powered a:hover { color: #fff; font-weight: bold;}
 */
 div#rhc			{ float: right; width: 240px; position: relative; }
 div.content 	{ margin-right: 255px; }
+
+div.static h1,
 div.content h1 	{ /* article title */font-size: 2.2em;	line-height: 1.1em;	margin: 10px 0 0 0;font-weight: normal; color: #069; }
+div.static h1		{ padding-top: 10px; border-top: 6px solid #006699;}
+
 div.content h2	{ /* article sub-title */ margin: 10px 0; font-style: italic; font-size: 1.5em; background: none; padding: 0;}
-div.content h3	{ /* article main body heading */ font-size: 1.6em; margin: 30px 0 0 0; background: transparent url(../images/jour_dotted_border.gif) repeat-x bottom; padding: 0 0 4px 0;}
+
+div.static h2,
+div.content h3	{ /* article main body heading */ font-size: 1.6em; margin: 20px 0 0 0; border-bottom: 1px solid #999; padding-bottom: 3px;}
+
+div.static h3,
 div.content h4	{ /* article second level heading */ font-size: 1.2em; margin: 20px 0 0 0; color: #333; }
+
+div.static h4,
 div.content h5	{ font-size: 1em; color: #333; }
+
 div.content ul,
 div.content ol	{ margin: 10px 0 10px 60px; padding: 0; }
 div.content li	{ margin: 0; padding: 0; }
@@ -309,11 +322,11 @@ p.authors		{ margin: 20px 0 0 0; font-weight: bold; font-size: 1em; }
 p.affiliations	{ font-size: .85em; margin: 0; }
 
 div.abstract	{ border: 1px solid #330; margin: 10px 0; padding: 10px;}
-div.articleinfo			{ font-size: .9em; padding: 10px;  margin: 10px 0; background-color: #eee; border: 2px solid #ccc; }
+div.articleinfo	{ font-size: .9em; padding: 10px;  margin: 10px 0; background: #eee url(../images/pone_abstract_bg.gif) repeat-x bottom; border: 2px solid #ccc; }
 div.articleinfo p,
 div.abstract p	{ margin: 0 0 1em 0; }
 
-div.abstract h3	{ background-image: none; font-size: 1em; margin: 0; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold;}
+div.abstract h3	{ font-size: 1em; margin: 0; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold; letter-spacing: normal;}
 
 
 
@@ -419,7 +432,6 @@ div.beta				{ text-align: center; font-size: .9em; background-color: #069; borde
 div.beta a:link,
 div.beta a:visited,
 div.beta a:hover		{ font-weight: bold;color: #fff; }
-p.intro					{ border: 2px solid #ACF1FF; padding: 10px; background: url(../images/pone_forms_bg.gif) repeat-x 0 -30px; color: #000;}
 
 
 /* ------ DOM Styles ------- */
@@ -445,3 +457,11 @@ div.profile ol li .radio { width: 14px;}
 div.profile ol li .checkbox { width: 14px;}
 div.profile textarea {width: 324px; border: 1px solid #ACF1FF; }
 div.profile #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
+
+/* ------ EdBoard Styles ----*/
+
+.edboard dl { text-align: right; margin: 0 240px 0 0; }
+.edboard dt { font-weight: bold; display: block; float: left; padding-left: 5px; margin-top: 5px; position: relative;}
+.edboard dd { margin: 0 0 5px 0; padding: 0 5px 5px 5px; background-color: #D2F7FF; border-top: 6px solid #D2F7FF; font-size: .85em; text-indent: 10px; }
+
+.static p.intro					{ border: 2px solid #ccc; padding: 10px; background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; color: #000;}

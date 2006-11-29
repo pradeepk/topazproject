@@ -14,25 +14,11 @@
 			<li><a href="${articleArticleRepPDF}" class="pdf" title="Download PDF">Download Article PDF</a></li>
       <@ww.url id="emailArticleURL" namespace="/article" action="emailArticle" articleURI="${articleURI}"/>
       <li><@ww.a href="%{emailArticleURL}"  cssClass="email" title="Email This Article to a Friend or Colleague">Email this Article</@ww.a></li>
+		<li><a href="http://www.plos.org/journals/print.html" title="Order reprinted versions of this article" class="reprints icon">Order Reprints</a></li>
       <li><a href="#" onclick="window.print();return false;" class="print last" title="Print this article">Print this Article</a></li>
-
 		</ul>
 	</div>
-<!--
-	<div class="links">
-		<ul>
-			<li><a href="#" class="plos" title="View Related PLoS Articles">Related PLoS Articles</a></li>
-			<li><a href="#" class="article" title="Find Articles Citing this Article">Articles Citing This Article</a></li>
-			<li><a href="#" class="ncbi" title="View PubMed Record">PubMed Record</a></li>
-			<li><a href="#" class="google last" title="View Google Scholar Citation">Google Scholar Citation</a></li>
-		</ul>
-	</div>-->
-<!--	<div class="tools">
-		<h3>Overall Rating</h3>
-		<img src="${freemarker_config.getContext()}/images/temp_tools_rating.gif" />
-		<a href="#">Rate this article</a>
-		<h3>My Rating</h3>
-	</div> -->
+
 	<div id="floatMarker"></div>
 	<div id="postcomment">
 		<div class="commentview">
