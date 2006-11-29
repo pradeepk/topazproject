@@ -32,4 +32,14 @@ public class TestHibernate extends BasePlosoneRegistrationTestCase {
     assertNull(user);
   }
 
+  public void testDeleteUserWithCaseInsensitiveEmailAddressCheck() {
+    User user = new UserImpl("deleteUser@home.com", "delete");
+    userDao.saveOrUpdate(user);
+    user = userDao.findUserWithLoginName("DELETEUSER@HOME.COM");
+    assertNotNull(user);
+    userDao.delete(user);
+    user = userDao.findUserWithLoginName("deleteuser@home.com");
+    assertNull(user);
+  }
+
 }

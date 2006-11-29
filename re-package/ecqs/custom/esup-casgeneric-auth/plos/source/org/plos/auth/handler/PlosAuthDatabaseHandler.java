@@ -146,7 +146,7 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
 
     final String query = "SELECT " + passwordColumn
                         + " FROM " + table
-                        + " WHERE " + loginColumn + " = ?";
+                        + " WHERE lower(" + loginColumn + ") = lower(?)";
 
     traceEnd(query);
     return query;
@@ -166,7 +166,7 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
 
     final String query = "SELECT " + verifyColumn
                         + " FROM " + table
-                        + " WHERE " + loginColumn + " = ?";
+                        + " WHERE lower(" + loginColumn + ") = lower(?)";
 
     traceEnd(query);
     return query;

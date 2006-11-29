@@ -8,6 +8,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.hibernate.HibernateException;
 import org.hibernate.Session;
+import org.hibernate.Hibernate;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Restrictions;
 import org.plos.registration.User;
@@ -49,7 +50,8 @@ public class HibernateUserDAO extends HibernateDaoSupport implements UserDAO {
       new HibernateCallback(){
         public Object doInHibernate(final Session session) throws HibernateException, SQLException {
           final DetachedCriteria detachedCriteria = DetachedCriteria.forClass(User.class);
-          detachedCriteria.add(Restrictions.eq("loginName", loginName));
+//          detachedCriteria.add(Restrictions.eq("loginName", loginName));
+          detachedCriteria.add(Restrictions.sqlRestriction("lower(loginName) = lower(?)", loginName, Hibernate.STRING));
           final List list = getHibernateTemplate().findByCriteria(detachedCriteria);
 
           if (list.size() > 1) {
