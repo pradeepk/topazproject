@@ -10,8 +10,8 @@
 
 	<dl class="directory">
 	<#list allCommentary as comment>
-  	<#if comment.annotation.context?length == 0>
-  		<#assign class="discuss"/>
+    <#if ((comment.annotation.context)!"")?length == 0>
+   		<#assign class="discuss"/>
 	 	<#else>
   		<#assign class="annotation"/>
 	 	</#if>
