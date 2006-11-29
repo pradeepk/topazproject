@@ -41,45 +41,6 @@ public class ProtectedServiceFactory {
    * </p>
    *
    * @param config The service configuration.
-   * @param sessionMap map with session properties to retrieve any run-time info (eg. CASReceipt)
-   *
-   * @return Returns the newly created instance
-   *
-   * @throws IOException if there is an error in acquiring auth credentials
-   * @throws URISyntaxException thrown from service creation
-   */
-  public static ProtectedService createService(Configuration config, Map sessionMap)
-                                        throws IOException, URISyntaxException {
-    String uri  = config.getString("uri");
-    String auth = config.getString("auth-method");
-
-    if ("CAS".equals(auth))
-      return new CASProtectedService(uri, sessionMap);
-
-    String userName = config.getString("userName");
-    String password = config.getString("password");
-
-    if ("BASIC".equals(auth))
-      return new PasswordProtectedService(uri, userName, password);
-
-    // Defaults to unprotected
-    return new UnProtectedService(uri);
-  }
-
-  /**
-   * Creates a ProtectedService instance based on configuration.
-   * 
-   * <p>
-   * The expected configuration is:
-   * <pre>
-   *   uri         = the service uri 
-   *   auth-method = CAS, BASIC, or NONE
-   *   userName    = userName for BASIC auth 
-   *   password    = password for BASIC auth
-   * </pre>
-   * </p>
-   *
-   * @param config The service configuration.
    * @param session HttpSession to retrieve any run-time info (eg. CASReceipt)
    *
    * @return Returns the newly created instance

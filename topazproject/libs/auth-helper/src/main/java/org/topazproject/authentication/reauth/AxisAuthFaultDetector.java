@@ -28,6 +28,7 @@ public class AxisAuthFaultDetector implements AuthFaultDetector {
 
     // xxx: is there a better way?
     return ((msg.indexOf("(401)") >= 0)
-            || (msg.indexOf("(444)Invalid CAS Ticket") >= 0));
+            || (msg.indexOf("(444)Invalid CAS Ticket") >= 0)
+            || (msg.indexOf("NoProxyTicketException") >= 0));
   }
 }

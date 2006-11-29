@@ -31,10 +31,11 @@ import edu.yale.its.tp.cas.proxy.ProxyTicketReceptor;
  * @author Pradeep Krishnan
  */
 public class CASProtectedService implements ProtectedService {
-  private static Log log         = LogFactory.getLog(CASProtectedService.class);
-  private URI        originalUri;
-  private String     modifiedUri;
-  private CASReceipt receipt;
+  private static Log  log         = LogFactory.getLog(CASProtectedService.class);
+  private URI         originalUri;
+  private String      modifiedUri;
+  private CASReceipt  receipt;
+  private HttpSession session;
 
   /**
    * Creates a ProtectedService instance that is protected by CAS Single Signon. The ticket is
@@ -49,41 +50,10 @@ public class CASProtectedService implements ProtectedService {
    */
   public CASProtectedService(String uri, HttpSession session)
                       throws IOException, URISyntaxException {
-    this(uri, getCASReceipt(session));
-  }
-
-  /**
-   * Creates a ProtectedService instance that is protected by CAS Single Signon. The ticket is
-   * appended to the service URI if the HTTPSession contains a validated CASReceipt and this
-   * service has set up a ProxyTicketReceptor.
-   *
-   * @param uri the service uri
-   * @param sessionMap the map containing the CASReceipt and any other info corresponding to an
-   *        authenticated user or null
-   *
-   * @throws IOException when there is an error in contacting CAS server.
-   * @throws URISyntaxException If the service uri is invalid
-   */
-  public CASProtectedService(String uri, final Map sessionMap)
-                      throws IOException, URISyntaxException {
-    this(uri, getCASReceipt(sessionMap));
-  }
-
-  /**
-   * Creates a ProtectedService instance that is protected by CAS Single Signon. The ticket is
-   * appended to the service URI if the HTTPSession contains a validated CASReceipt and this
-   * service has set up a ProxyTicketReceptor.
-   *
-   * @param uri the service uri
-   * @param receipt the CASReceipt corresponding to an authenticated user or null
-   *
-   * @throws IOException when there is an error in contacting CAS server.
-   * @throws URISyntaxException If the service uri is invalid
-   */
-  public CASProtectedService(String uri, CASReceipt receipt)
-                      throws IOException, URISyntaxException {
-    this.receipt       = receipt;
-    this.originalUri   = new URI(uri);
+    this.session   = session;
+    this.receipt =
+      (session == null) ? null : (CASReceipt) session.getAttribute(CASFilter.CAS_FILTER_RECEIPT);
+    this.originalUri = new URI(uri);
 
     // If no authenticated user, assume an unprotected service
     if (receipt == null)
@@ -179,14 +149,31 @@ public class CASProtectedService implements ProtectedService {
 
     // use the PGT-IOU to lookup the PGT deposited at our ProxyTicketReceptor servlet
     // and then use the PGT to get a new PT from CAS server.
-    return ProxyTicketReceptor.getProxyTicket(pgtIou, originalUri.toString());
+    String pt = ProxyTicketReceptor.getProxyTicket(pgtIou, originalUri.toString());
+
+    if (pt != null)
+      return pt;
+
+    // The most likely cause here is that PGT expired. User needs to login again
+    session.removeAttribute(CASFilter.CAS_FILTER_RECEIPT);
+    session.removeAttribute(CASFilter.CAS_FILTER_USER);
+    receipt   = null;
+    session   = null;
+    throw new NoProxyTicketException("No proxy ticket: PGT may have expired.");
   }
 
-  private static CASReceipt getCASReceipt(HttpSession session) {
-    return (session == null) ? null : (CASReceipt) session.getAttribute(CASFilter.CAS_FILTER_RECEIPT);
-  }
-
-  private static CASReceipt getCASReceipt(final Map sessionMap) {
-    return (sessionMap == null) ? null : (CASReceipt) sessionMap.get(CASFilter.CAS_FILTER_RECEIPT);
+  /**
+   * An exception to indicate that we can't get a proxy ticket. This would invariably mean that the
+   * user has to login to CAS server again and retry the request.
+   */
+  public static class NoProxyTicketException extends IOException {
+    /**
+     * Creates a NoProxyTicketException instance.
+     *
+     * @param msg the exception message
+     */
+    public NoProxyTicketException(String msg) {
+      super(msg);
+    }
   }
 }
