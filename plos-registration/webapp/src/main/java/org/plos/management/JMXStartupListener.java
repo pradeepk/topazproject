@@ -10,6 +10,7 @@ import com.sun.jdmk.comm.HtmlAdaptorServer;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import java.net.ServerSocket;
 import java.lang.management.ManagementFactory;
 import java.util.ArrayList;
 
@@ -65,10 +66,19 @@ public class JMXStartupListener implements ServletContextListener {
   }
 
   protected void startHtmlAdaptor() throws Exception {
+    // get a free port
+    ServerSocket ss = new ServerSocket(0);
+    int port = ss.getLocalPort();
+    ss.close();
+
+    // start the listener
     htmlAdaptor = new HtmlAdaptorServer();
-    htmlAdaptor.setPort(9092);
+    htmlAdaptor.setPort(port);
     server.registerMBean(htmlAdaptor, new ObjectName("Server:name=HtmlAdaptor"));
     htmlAdaptor.start();
+
+    // tell folks what port we're listening on
+    log.info("JMX Listener started on port " + port);
   }
 
   /*
