@@ -26,7 +26,7 @@
       <@ww.textarea name="note" cols="50" rows="5" value="%{'love you. love you. love you'}"/>
     </td>
   </tr>
-  <@ww.submit value="Submit Query"/>
+  <@ww.submit value="Submit Feedback"/>
 </@ww.form>
 </body>
 </html>
