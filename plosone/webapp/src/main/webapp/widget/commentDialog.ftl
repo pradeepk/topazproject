@@ -30,6 +30,8 @@
 		<ol id="multilist">
 		</ol>
 		<br/>
+		<div id="multidetail">
+		</div>
 		<!-- display the following div only if there are more than four annotations in the same point -->
 		<div class="tip" id="mTip"></div>
 	</div>

@@ -23,6 +23,10 @@ topaz.slideshow = {
   
   targetDiv: "",
   
+  activeItemIndex: "",
+  
+  itemCount: "",
+  
   setLinkView: function(aObj) {
     this.linkView = aObj;
   },
@@ -47,6 +51,17 @@ topaz.slideshow = {
     this.figCaption = dObj;
   },
   
+  setInitialThumbnailIndex: function() {
+    var tn = document.getElementsByTagAndClassName('div', 'figure-window-nav-item');
+    this.itemCount = tn.length;
+    
+    for (var i=0; i<this.itemCount; i++) {
+      if (tn[i].className.match('current')) {
+        this.activeItemIndex = i;
+      }
+    }
+  },
+  
   show: function (obj, index) {
     if (this.linkView) this.linkView.href = slideshow[index].imageUri + "&representation=" + this.imgL;
     if (this.linkTiff) this.linkTiff.href = slideshow[index].imageAttachUri + "&representation=" + this.imgTif;
@@ -61,17 +76,19 @@ topaz.slideshow = {
     
     if (this.figCaption) this.figCaption.innerHTML = slideshow[index].description;
     
-    var tbCurrent = document.getElementsByTagAndClassName('div', 'figure-window-nav-item-current');
+    var tbCurrent = document.getElementsByTagAndClassName('div', 'current');
     
     for (var i=0; i<tbCurrent.length; i++) {
       //alert("tbCurrent[" + i + "] = " + tbCurrent[i].nodeName + "\ntbCurrent[" + i + "].className = " + tbCurrent[i].className);
-      tbCurrent[i].className = tbCurrent[i].className.replace(/\-current/, "");
-      
+      //tbCurrent[i].className = tbCurrent[i].className.replace(/\-current/, "");
+      dojo.html.removeClass(tbCurrent[i], "current");
     }
     
     var tbNew = obj.parentNode.parentNode;
-    tbNew.className = tbNew.className.concat("-current");
+    //tbNew.className = tbNew.className.concat("-current");
+    dojo.html.addClass(tbNew, "current");
     
+    window.setTimeout("topaz.slideshow.adjustViewerHeight()", 100);
   },
   
   showSingle: function (obj, index) {
@@ -151,6 +168,72 @@ topaz.slideshow = {
     
     obj.style.height = maxContainerHeight + "px";
     obj.style.overflow = "auto";
-  }
+  },
   
+  adjustViewerHeight: function() {
+    var container1 = dojo.byId("figure-window-nav");
+    var container2 = dojo.byId("figure-window-container");
+    var container1Mb = dojo.html.getMarginBox(container1).height;
+    var container2Mb = dojo.html.getMarginBox(container2).height;
+    
+    if (container1Mb > container2Mb) {
+      container2.parentNode.style.height = container1Mb + "px";
+      container1.style.borderRight = "2px solid #ccc";
+      container2.style.borderLeft = "none";
+    }
+    else {
+      container2.parentNode.style.height = "auto";
+      container1.style.borderRight = "none";
+      container2.style.borderLeft = "2px solid #ccc";
+    }    
+  },
+  
+  showPrevious: function(obj) {
+    if (this.activeItemIndex <= 0) {
+      return false;
+    }
+    else {
+      var newIndex = this.activeItemIndex - 1;
+      var newTnObj = dojo.byId('tn' + newIndex);
+      this.show(newTnObj, newIndex);
+      
+      if (newIndex == 0) 
+        dojo.html.addClass(obj, 'hidden');
+      
+      if (this.activeItemIndex == this.itemCount-1)
+        dojo.html.removeClass(dojo.byId('next'), 'hidden');
+        
+      this.activeItemIndex = newIndex;
+    }
+  },
+  
+  showNext: function(obj) {
+    if (this.activeItemIndex == this.itemCount-1) {
+      return false;
+    }
+    else {
+      var newIndex = this.activeItemIndex + 1;
+      var newTnObj = dojo.byId('tn' + newIndex);
+      this.show(newTnObj, newIndex);
+      
+      if (newIndex == this.itemCount-1) 
+        dojo.html.addClass(obj, 'hidden');
+      
+      if (this.activeItemIndex == 0)
+        dojo.html.removeClass(dojo.byId('previous'), 'hidden');
+        
+      this.activeItemIndex = newIndex;
+    }
+  },
+  
+  openViewer: function(url) {
+    var newWindow = window.open(url,'plosSlideshow','directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=800');
+    
+    newWindow.focus();
+  },
+  
+  closeReturn: function() {
+    self.close();
+    window.opener.focus();
+  }
 }  
