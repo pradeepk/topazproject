@@ -34,6 +34,14 @@ public class BaseConfigurableService {
 
   private static final Log log = LogFactory.getLog(BaseConfigurableService.class);
 
+  protected BaseConfigurableService () {
+    if (log.isDebugEnabled()) {
+      log.debug ("Service constructed: " + this.getClass());
+      log.debug("", new Exception ());
+    }
+    
+  }
+  
   /**
    * @param configuration configuration
    * @return an instance of protected service
@@ -41,17 +49,27 @@ public class BaseConfigurableService {
    * @throws URISyntaxException URISyntaxException
    */
   protected ProtectedService createProtectedService(Configuration configuration) throws IOException, URISyntaxException {
+    if (log.isDebugEnabled()) {
+      log.debug("createProctectedService called by " + this.getClass());
+    }
     final Map sessionMap = getSessionMap();
     String memberUser = null;
     if (null != sessionMap) {
       memberUser = (String) sessionMap.get(Constants.SINGLE_SIGNON_USER_KEY);
+      if (log.isDebugEnabled()) {
+        log.debug("creating protected service memberUser = " + memberUser);
+      }
     }
     if ((null == sessionMap) || (null == memberUser)) {
+      if (log.isDebugEnabled()){
+        log.debug("session map = " + sessionMap + " AND memberUser = " + memberUser);
+      }
       configuration = new MapConfiguration(cloneConfigMap(configuration));
       configuration.setProperty(Constants.AUTH_METHOD_KEY, Constants.ANONYMOUS_USER_AUTHENTICATION);
+      
     }
 
-    return ProtectedServiceFactory.createService(configuration, sessionMap);
+    return ProtectedServiceFactory.createService(configuration, userContext.getHttpSession());
   }
 
   private Map<String, String> cloneConfigMap(final Configuration configuration) {
@@ -114,6 +132,7 @@ public class BaseConfigurableService {
   }
 
   protected void ensureInitGetsCalledWithUsersSessionAttributes() {
+    log.debug("ensureInit called by : " + this.getClass() + " initCalledInside is : " + initCalledInsideUserThread);
     if (!initCalledInsideUserThread) {
       try {
         init();
