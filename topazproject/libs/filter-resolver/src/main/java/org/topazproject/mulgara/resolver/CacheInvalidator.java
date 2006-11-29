@@ -570,5 +570,6 @@ class CacheInvalidator extends QueueingFilterHandler {
   }
 
   protected void shutdownCallback() {
+    CacheManager.getInstance().shutdown();
   }
 }
