@@ -26,8 +26,6 @@ p.intro							{ border: 1px dotted #000 !important; }
 #researchArticle h3, .static h2 { border-bottom: 1px solid #000; background-image: none; }
 #researchArticle span.authors 	{ display: block; }
 body, p 						{ font-size: 12px !important; }
-body a:link:after,
-body a:visited:after 			{ content: " (" attr(href) ") "; font-size: 90%; }
 body div.articleinfo p,
 body #ftr p 					{ font-size: 10px !important; }
 
