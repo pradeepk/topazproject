@@ -73,9 +73,17 @@ class TopazConfig {
     if (FEDORAOBJ_PATH == null) // may still work fine as long as don't re-index all of fedora
       log.info("topaz.search.fedoraobjpath - location of fedora foxml files not configured");
 
-    /* Try to configure INDEX_PATH from commons-config.
-     * If this doesn't work, setup a temporary directory. Helpful for integration testing.
-     */
+    INDEX_PATH = getIndexPath(); // Get config if set or create temp location
+    initializeIndex(); // If it doesn't exist, create it
+  }
+
+  /**
+   * Try to configure INDEX_PATH from commons-config.
+   * If this doesn't work, setup a temporary directory. Helpful for integration testing.
+   *
+   * @returns The path to use for the lucene index.
+   */
+  private static String getIndexPath() {
     String indexPath = CONF.getString("topaz.search.indexpath", null);
     if (indexPath == null) {
       log.error("topaz.search.indexpath - location of lucene index not configured");
@@ -89,9 +97,14 @@ class TopazConfig {
         log.error("Unable to create temporary directory", ioe);
       }
     }
-    INDEX_PATH = indexPath;
     log.info("topaz-lucene db in " + INDEX_PATH);
+    return indexPath;
+  }
 
+  /**
+   * Make sure that lucene index exists (trying to create it if it does not).
+   */
+  private static void initializeIndex() {
     try {
       // Create the directory if it doesn't exist
       File dir = new File(INDEX_PATH);
@@ -115,5 +128,5 @@ class TopazConfig {
     } catch (IOException ioe) {
       log.error("Error seeing or creating database", ioe);
     }
-  }
+  }    
 }
