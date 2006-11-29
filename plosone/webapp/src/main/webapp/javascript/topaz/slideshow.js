@@ -88,6 +88,19 @@ topaz.slideshow = {
     //tbNew.className = tbNew.className.concat("-current");
     dojo.html.addClass(tbNew, "current");
     
+    if (index == 0) 
+      dojo.html.addClass(dojo.byId("previous"), "hidden");
+    else
+      dojo.html.removeClass(dojo.byId("previous"), "hidden");
+    
+    if (index == this.itemCount-1) 
+      dojo.html.addClass(dojo.byId("next"), "hidden");
+    else
+      dojo.html.removeClass(dojo.byId("next"), "hidden");
+    
+    
+    this.activeItemIndex = index;
+    
     window.setTimeout("topaz.slideshow.adjustViewerHeight()", 100);
   },
   
