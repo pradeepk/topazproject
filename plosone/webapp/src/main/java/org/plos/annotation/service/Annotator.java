@@ -199,12 +199,15 @@ public class Annotator {
   private static LocationList[] evaluate(Document document, AnnotationInfo[] annotations)
                                   throws URISyntaxException, TransformerException {
     ArrayList<LocationList> lists = new ArrayList<LocationList>(annotations.length);
-
+    
+    String annotationContext;
+    
     for (int i = 0; i < annotations.length; i++) {
-      URI    context    = new URI(annotations[i].getContext());
-      String expression = context.getFragment();
+      annotationContext = annotations[i].getContext();
+      if (annotationContext != null){
+        URI    context    = new URI(annotationContext);
+        String expression = context.getFragment();
       
-      if (expression != null) {
         try {
           expression = URLDecoder.decode(expression, "UTF-8");
         } catch (UnsupportedEncodingException e) {
