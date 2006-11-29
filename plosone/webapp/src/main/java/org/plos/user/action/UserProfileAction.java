@@ -61,18 +61,30 @@ public class UserProfileAction extends UserActionSupport {
   public static final String PUBLIC = "public";
   private static final Map<String, String[]> visibilityMapping = new HashMap<String, String[]>();
 
-  private static String GIVEN_NAMES = "givennames";
-  private static final String POSTAL_ADDRESS = "postalAddress";
-  private static final String ORGANIZATION_TYPE = "organizationType";
+  private static String GIVEN_NAMES = UserProfileGrant.GIVENNAMES.getFieldName();
+  private static final String POSTAL_ADDRESS = UserProfileGrant.POSTAL_ADDRESS.getFieldName();
+  private static final String ORGANIZATION_TYPE = UserProfileGrant.ORGANIZATION_TYPE.getFieldName();
 
   private static final String NAME_GROUP = "name";
   private static final String EXTENDED_GROUP = "extended";
   private static final String ORG_GROUP = "org";
 
   static {
-    visibilityMapping.put(NAME_GROUP, new String[]{GIVEN_NAMES, "surnames"});
-    visibilityMapping.put(EXTENDED_GROUP, new String[]{POSTAL_ADDRESS, "city", "country"});
-    visibilityMapping.put(ORG_GROUP, new String[]{ORGANIZATION_TYPE, "organizationName", "title", "positionType"});
+    visibilityMapping.put(NAME_GROUP,
+                          new String[]{
+                                  GIVEN_NAMES,
+                                  UserProfileGrant.SURNAMES.getFieldName()});
+    visibilityMapping.put(EXTENDED_GROUP,
+                          new String[]{
+                                  POSTAL_ADDRESS,
+                                  UserProfileGrant.CITY.getFieldName(),
+                                  UserProfileGrant.COUNTRY.getFieldName()});
+    visibilityMapping.put(ORG_GROUP,
+                          new String[]{
+                                  ORGANIZATION_TYPE,
+                                  UserProfileGrant.ORGANIZATION_NAME.getFieldName(),
+                                  UserProfileGrant.TITLE.getFieldName(),
+                                  UserProfileGrant.POSITION_TYPE.getFieldName()});
   }
 
   /**

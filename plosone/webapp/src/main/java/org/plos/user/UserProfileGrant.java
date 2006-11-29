@@ -52,7 +52,7 @@ public enum UserProfileGrant {
   POSITION_TYPE ("positionType", GET_POSITION_TYPE),
   POSTAL_ADDRESS ("postalAddress", GET_POSTAL_ADDRESS),
   RESEARCH_AREAS_TEXT ("researchAreasText", GET_RESEARCH_AREAS_TEXT),
-  GIVENNAMES ("givennames", GET_GIVEN_NAMES),
+  GIVENNAMES ("givenNames", GET_GIVEN_NAMES),
   SURNAMES ("surnames", GET_SURNAMES),
   TITLE ("title", GET_TITLE),
   GENDER ("gender", GET_GENDER),
