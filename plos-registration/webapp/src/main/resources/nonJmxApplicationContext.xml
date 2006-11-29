@@ -25,6 +25,10 @@
     </property>
   </bean>
 
+  <bean id="defaultEncodingCharset" class="java.lang.String">
+    <constructor-arg value="UTF-8"/>
+  </bean>
+
   <bean id="registrationService" class="org.plos.service.impl.PlosRegistrationService" scope="session">
     <!-- proxy needed as this bean is a part of a singleton's reference  -->
     <aop:scoped-proxy/>
@@ -58,7 +62,7 @@
     <property name="defaultEncoding" ref="defaultEncodingCharset"/>
   </bean>
 
-  <bean id="registrationVerificationMailer" class="org.plos.util.impl.FreemarkerTemplateMailer">
+  <bean id="registrationVerificationMailer" class="org.plos.service.RegistrationMailer">
     <property name="mailSender" ref="mailSender"/>
     <property name="fromEmailAddress" value="registration@plosone.org"/>
     <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>
@@ -137,10 +141,6 @@
     </property>
   </bean>
 <!--  END - Transaction injection for annotated transaction classes-->
-
-  <bean id="defaultEncodingCharset" class="java.lang.String">
-    <constructor-arg value="UTF-8"/>
-  </bean>
 
   <!-- Add all your constants to the map with a key and a value/ref -->
   <bean id="otherConstants" class="org.plos.OtherConstants">

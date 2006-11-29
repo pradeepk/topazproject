@@ -10,6 +10,7 @@ import org.plos.registration.User;
 import org.plos.registration.UserImpl;
 import org.plos.service.NoUserFoundWithGivenLoginNameException;
 import org.plos.service.PasswordInvalidException;
+import org.plos.service.RegistrationMailer;
 import org.plos.service.RegistrationService;
 import org.plos.service.UserAlreadyExistsException;
 import org.plos.service.UserAlreadyVerifiedException;
@@ -18,7 +19,6 @@ import org.plos.service.UserNotVerifiedException;
 import org.plos.service.VerificationTokenInvalidException;
 import org.plos.service.password.PasswordDigestService;
 import org.plos.service.password.PasswordServiceException;
-import org.plos.util.TemplateMailer;
 import org.plos.util.TokenGenerator;
 
 /**
@@ -27,7 +27,7 @@ import org.plos.util.TokenGenerator;
 public class PlosRegistrationService implements RegistrationService {
   private UserDAO userDAO;
   private PasswordDigestService passwordDigestService;
-  private TemplateMailer mailer;
+  private RegistrationMailer mailer;
   private static final Log log = LogFactory.getLog(PlosPersistenceService.class);
 
   public User createUser(final String loginName, final String password) throws UserAlreadyExistsException, PasswordServiceException {
@@ -205,7 +205,7 @@ public class PlosRegistrationService implements RegistrationService {
    * Set the mailer for emailing the users.
    * @param mailer mailer
    */
-  public void setMailer(final TemplateMailer mailer) {
+  public void setMailer(final RegistrationMailer mailer) {
     this.mailer = mailer;
   }
 }

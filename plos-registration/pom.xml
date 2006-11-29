@@ -16,6 +16,14 @@
     <version>0.5-SNAPSHOT</version>
   </parent>
 
+  <dependencies>
+    <dependency>
+      <groupId>org.plosone</groupId>
+      <artifactId>plosone-emailer</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
+  </dependencies>
+
   <modules>
     <module>password-service</module>
     <module>webapp</module>

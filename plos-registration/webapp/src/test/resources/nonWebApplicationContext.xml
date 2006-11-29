@@ -26,6 +26,10 @@
     </property>
   </bean>
 
+  <bean id="defaultEncodingCharset" class="java.lang.String">
+    <constructor-arg value="UTF-8"/>
+  </bean>
+
   <bean id="registrationService" class="org.plos.service.impl.PlosRegistrationService">
     <property name="userDAO" ref="userDAO"/>
     <property name="passwordDigestService" ref="plosPasswordDigestService"/>
@@ -65,7 +69,7 @@
         <entry key="text" value="verifyEmail-text.ftl"/>
         <entry key="html" value="verifyEmail-html.ftl"/>
         <entry key="url" value="http://localhost:8080/plos-registration-webapp/emailVerification.action"/>
-        <entry key="subject" value="Please verify your newly registered email address at Plosone"/>
+        <entry key="subject" value="Please verify your PLoS registration"/>
       </map>
     </property>
     <property name="forgotPasswordVerificationEmailMap">
@@ -73,7 +77,7 @@
         <entry key="text" value="forgotPasswordVerificationEmailTemplate-text.ftl"/>
         <entry key="html" value="forgotPasswordVerificationEmailTemplate-html.ftl"/>
         <entry key="url" value="http://localhost:8080/plos-registration-webapp/forgotPasswordVerify.action"/>
-        <entry key="subject" value="Your forgot password verification email"/>
+        <entry key="subject" value="PLoS Password Reset Request"/>
       </map>
     </property>
   </bean>
@@ -135,10 +139,6 @@
     </property>
   </bean>
 <!--  END - Transaction injection for annotated transaction classes-->
-
-  <bean id="defaultEncodingCharset" class="java.lang.String">
-    <constructor-arg value="UTF-8"/>
-  </bean>
 
   <!-- Add all your constants to the map with a key and a value/ref -->
   <bean id="otherConstants" class="org.plos.OtherConstants">
