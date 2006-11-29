@@ -72,7 +72,7 @@ class TopazConfig {
   // Log some errors if necessary
   static {
     if (FEDORAOBJ_PATH == null) // may still work fine as long as don't re-index all of fedora
-      log.warn("topaz.search.fedoraobjpath - location of fedora foxml files not configured");
+      log.info("topaz.search.fedoraobjpath - location of fedora foxml files not configured");
 
     /* Try to configure INDEX_PATH from commons-config.
      * If this doesn't work, setup a temporary directory. Helpful for integration testing.
@@ -94,16 +94,24 @@ class TopazConfig {
     log.info("topaz-lucene db in " + INDEX_PATH);
 
     try {
-      // Create a lucene directory object where the DB is
-      Directory dir = FSDirectory.getDirectory(INDEX_PATH, true);
+      // Create the directory if it doesn't exist
+      File dir = new File(INDEX_PATH);
+      if (!dir.exists()) {
+        if (!dir.mkdirs())
+          log.error("Unable to create directory for lucene: " + INDEX_PATH);
+        else
+          log.info("Created directories for lucene db: " + INDEX_PATH);
+      } else if (!dir.isDirectory())
+        log.error("Lucene directory is not a directory! -- " + INDEX_PATH);
       try {
         // Try to open the DB for reading. If the DB doesn't exist (no segments file), will fail
-        IndexSearcher is = new IndexSearcher(dir);
+        IndexSearcher is = new IndexSearcher(INDEX_PATH);
         is.close();
       } catch (FileNotFoundException fnfe) {
         // Create the database
-        IndexModifier im = new IndexModifier(dir, new StandardAnalyzer(), true);
+        IndexModifier im = new IndexModifier(INDEX_PATH, new StandardAnalyzer(), true);
         im.close();
+        log.warn("Creating Lucene DB: " + INDEX_PATH + " (Error opening DB was " + fnfe + ")");
       }
     } catch (IOException ioe) {
       log.error("Error seeing or creating database", ioe);
