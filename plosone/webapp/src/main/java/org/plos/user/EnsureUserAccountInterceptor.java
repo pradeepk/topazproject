@@ -16,6 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import static org.plos.Constants.ReturnCode;
 import static org.plos.Constants.SINGLE_SIGNON_USER_KEY;
+import static org.plos.Constants.SINGLE_SIGNON_RECEIPT;
 import org.plos.user.service.UserService;
 import org.springframework.util.StringUtils;
 
@@ -30,10 +31,13 @@ public class EnsureUserAccountInterceptor implements Interceptor {
   private static final Log log = LogFactory.getLog(EnsureUserAccountInterceptor.class);
 
   public String intercept(final ActionInvocation actionInvocation) throws Exception {
+     log.debug("ensure user account interceptor called");
     final Map<String, Object> sessionMap = getUserSessionMap();
     final String userId = (String) sessionMap.get(SINGLE_SIGNON_USER_KEY);
 
     if (null == userId) {
+      log.debug("no single sign on user key");
+      log.debug("ticket is: " + sessionMap.get(SINGLE_SIGNON_RECEIPT));
       return actionInvocation.invoke();
     }
 
@@ -47,11 +51,12 @@ public class EnsureUserAccountInterceptor implements Interceptor {
 
       if (null == plosUser) {
         //forward to new profile creation page
+        log.debug("This is a new user with id: " + userId);
         return ReturnCode.NEW_PROFILE;
       } else {
         plosUser.setAuthId(userId);
         sessionMap.put(PLOS_ONE_USER_KEY, plosUser);
-
+        log.debug("Existing user detected: " + userId);
         return getReturnCodeDependingOnDisplayName(plosUser, actionInvocation);
       }
     }

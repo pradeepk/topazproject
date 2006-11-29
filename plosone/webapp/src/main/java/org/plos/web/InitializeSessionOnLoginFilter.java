@@ -36,7 +36,13 @@ public class InitializeSessionOnLoginFilter implements Filter {
     try {
       final HttpServletRequest servletRequest = (HttpServletRequest) request;
       final HttpSession initialSession = servletRequest.getSession();
-
+      
+      if (log.isDebugEnabled()){
+        log.debug("Session is hashCode: " + initialSession.hashCode());
+        log.debug("Session is id: " + initialSession.getId());
+        log.debug("Session is String: " + initialSession);
+      }
+      
 //    if member session was already recreated let the call pass through
       if (null != initialSession.getAttribute(MEMBER_SESSION_RESET_FLAG)) {
         filterChain.doFilter(request, response);
