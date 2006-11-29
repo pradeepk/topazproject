@@ -52,17 +52,16 @@ public class UserProfileAction extends UserActionSupport {
   private String weblog;
   private String city;
   private String country;
-  private String[] privateFields = new String[]{""};
   private String title;
   private String nameVisibility;
   private String extendedVisibility;
   private String orgVisibility;
 
-  private static final String PRIVATE = "private";
-  private static final String PUBLIC = "public";
+  public static final String PRIVATE = "private";
+  public static final String PUBLIC = "public";
   private static final Map<String, String[]> visibilityMapping = new HashMap<String, String[]>();
 
-  private static final String REAL_NAME = "realName";
+  private static String GIVEN_NAMES = "givennames";
   private static final String POSTAL_ADDRESS = "postalAddress";
   private static final String ORGANIZATION_TYPE = "organizationType";
 
@@ -71,7 +70,7 @@ public class UserProfileAction extends UserActionSupport {
   private static final String ORG_GROUP = "org";
 
   static {
-    visibilityMapping.put(NAME_GROUP, new String[]{"givenNames", "surnames"});
+    visibilityMapping.put(NAME_GROUP, new String[]{GIVEN_NAMES, "surnames"});
     visibilityMapping.put(EXTENDED_GROUP, new String[]{POSTAL_ADDRESS, "city", "country"});
     visibilityMapping.put(ORG_GROUP, new String[]{ORGANIZATION_TYPE, "organizationName", "title", "positionType"});
   }
@@ -345,9 +344,9 @@ public class UserProfileAction extends UserActionSupport {
   }
 
   /**
-   * Setter for property 'givennames'.
+   * Setter for property 'givenNames'.
    *
-   * @param givennames Value to set for property 'givennames'.
+   * @param givenNames Value to set for property 'givenNames'.
    */
   public void setGivenNames(final String givenNames) {
     this.givenNames = givenNames;
@@ -461,14 +460,6 @@ public class UserProfileAction extends UserActionSupport {
     this.topazId = topazId;
   }
 
-  /**
-   * Set the private fields
-   * @param privateFields privateFields
-   */
-  public void setPrivateFields(final String[] privateFields) {
-    this.privateFields = privateFields;
-  }
-
   private void setVisibility(final Collection<UserProfileGrant> grants) {
     final String[] privateFields = new String[grants.size()];
     int i = 0;
@@ -476,7 +467,7 @@ public class UserProfileAction extends UserActionSupport {
       privateFields[i++] = grant.getFieldName();
     }
 
-    nameVisibility = setFieldVisibility(privateFields, "givenNames");
+    nameVisibility = setFieldVisibility(privateFields, GIVEN_NAMES);
     extendedVisibility = setFieldVisibility(privateFields, POSTAL_ADDRESS);
     orgVisibility = setFieldVisibility(privateFields, ORGANIZATION_TYPE);
   }

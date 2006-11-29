@@ -20,7 +20,7 @@
 				</ol>
 				<fieldset class="public-private">
 					<legend>Choose display settings for your real name </legend>
-          <@ww.radio name="nameVisibility" label="Public" list="{'public'}" checked="true" tabindex="104" cssClass="radio" />
+          <@ww.radio name="nameVisibility" label="Public" list="{'public'}" tabindex="104" cssClass="radio" />
           <@ww.radio name="nameVisibility" label="Private" list="{'private'}" tabindex="105" cssClass="radio" />
 				</fieldset>
 			</li>

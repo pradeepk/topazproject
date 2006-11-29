@@ -57,7 +57,7 @@
 				</ol>
 				<fieldset class="public-private">
 				<legend>Choose display settings for your organization and title</legend>
-          <@ww.radio name="orgVisibility" label="Public" list="{'public'}" checked="true" tabindex="118" cssClass="radio" />
+          <@ww.radio name="orgVisibility" label="Public" list="{'public'}" tabindex="118" cssClass="radio" />
           <@ww.radio name="orgVisibility" label="Private" list="{'private'}" tabindex="119" cssClass="radio" />
 				</fieldset>
 		  </li>
