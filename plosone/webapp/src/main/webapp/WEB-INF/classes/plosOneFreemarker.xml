@@ -30,7 +30,8 @@
       <file>/javascript/topaz/formUtil.js</file>   
       <file>/javascript/topaz/domUtil.js</file>
       <file>/javascript/topaz/floatingMenu.js</file>
-     <file>/javascript/topaz/navigationUtil.js</file>
+     	<file>/javascript/topaz/navigationUtil.js</file>
+     	<!-- <file>/javascript/topaz/tooltipExtend.js</file> -->
       <file>/javascript/dojoRequire_article.ftl</file>
       <file>/javascript/formSetup_article.js</file>   
       <file>/javascript/topaz/errorConsole.js</file>   
@@ -109,6 +110,15 @@
       <file>/css/pone_iepc.css</file>
       <file>/css/pone_forms.css</file>
     </css>
+    <javascript>
+      <file>/javascript/prototype.js</file>
+      <file>/javascript/browserDetection.js</file>
+      <file>/javascript/dojo/dojo.js</file>
+      <file>/javascript/topaz/topaz.js</file>      
+      <file>/javascript/topaz/formUtil.js</file>   
+      <file>/javascript/topaz/domUtil.js</file>
+      <file>/javascript/topaz/errorConsole.js</file>   
+    </javascript>
   </page>
 
   <page>

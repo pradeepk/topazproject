@@ -83,5 +83,18 @@ topaz.formUtil = {
       return true;
     else
       return false;
+  },
+  
+  selectAllCheckboxes: function (srcObj, targetCheckboxObj) {
+    if (srcObj.checked) {
+      for (var i=0; i<targetCheckboxObj.length; i++) {
+        targetCheckboxObj[i].checked = true;
+      }
+    }
+    else {
+      for (var i=0; i<targetCheckboxObj.length; i++) {
+        targetCheckboxObj[i].checked = false;
+      }
+    }
   }
 }
