@@ -10,24 +10,22 @@
 
 package org.plos.action;
 
+import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.lang.math.RandomUtils;
+import org.plos.article.service.ArticleWebService;
+import org.topazproject.ws.article.ArticleInfo;
+import org.topazproject.ws.article.ObjectInfo;
 
+import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.LinkedHashMap;
 import java.util.Iterator;
+import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Random;
 import java.util.Set;
 import java.util.TreeMap;
-import java.rmi.RemoteException;
-
-import org.plos.article.service.ArticleWebService;
-
-import org.topazproject.ws.article.ArticleInfo;
-import org.topazproject.ws.article.ObjectInfo;
 
 /**
  * @author stevec
@@ -106,7 +104,7 @@ public class HomePageAction extends BaseActionSupport {
    * 
    *
    */
-  private void getArticlesAndCategories() {
+  private void setArticlesAndCategories() {
     ArticleInfo[] weeksArticles = getLastWeeksArticles();
     if (weeksArticles.length > 0){
       TreeMap<String, ArrayList<ArticleInfo>> allArticles = new TreeMap<String, ArrayList<ArticleInfo>>();
@@ -160,7 +158,7 @@ public class HomePageAction extends BaseActionSupport {
    */
   public ArticleInfo[][] getArticlesByCategory() {
     if (!categoriesAreInitialized) {
-      getArticlesAndCategories();
+      setArticlesAndCategories();
       categoriesAreInitialized = true;
     }
     return articlesByCategory;
@@ -171,7 +169,7 @@ public class HomePageAction extends BaseActionSupport {
    */
   public String[] getCategoryNames() {
     if (!categoriesAreInitialized) {
-      getArticlesAndCategories();
+      setArticlesAndCategories();
       categoriesAreInitialized = true;
     }
     return categoryNames;
