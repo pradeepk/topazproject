@@ -34,12 +34,18 @@ public class PreferencesServiceTest extends TestCase {
   private Preferences  service;
   private UserAccounts userService;
   private String       userId;
+  private int testId = -1;
 
   public PreferencesServiceTest(String testName) {
     super(testName);
   }
 
-  protected void setUp()
+  public PreferencesServiceTest(String testName, int testId) {
+    super(testName);
+    this.testId = testId;
+  }
+
+  public void setUp()
       throws MalformedURLException, ServiceException, DuplicateAuthIdException, RemoteException {
     String uri =
         "http://localhost:9997/ws-pap-webapp-0.5-SNAPSHOT/services/PreferencesServicePort";
@@ -49,10 +55,17 @@ public class PreferencesServiceTest extends TestCase {
     userService = UserAccountsClientFactory.create(uri);
 
     // create a user
-    userId = userService.createUser("musterAuth");
+    String authId = "musterAuth";
+    if (testId >= 0)
+      authId += testId;
+    try {
+      userId = userService.createUser(authId);
+    } catch (DuplicateAuthIdException e) {
+      userId = userService.lookUpUserByAuthId(authId);
+    }
   }
 
-  protected void tearDown() throws RemoteException {
+  public void tearDown() throws RemoteException {
     try {
       service.setPreferences(null, userId, null);
     } catch (NoSuchUserIdException nsuie) {
