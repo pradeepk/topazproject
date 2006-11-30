@@ -47,7 +47,7 @@
                 <sourceDependency>${pom.parent.groupId}:${pom.parent.artifactId}-api:${pom.parent.version}:/${wsdl.filename}</sourceDependency>
               </sourceDependencies>
               <serverSide>true</serverSide>
-              <deployScope>session</deployScope>
+              <deployScope>application</deployScope>
               <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
             </configuration>
           </execution>

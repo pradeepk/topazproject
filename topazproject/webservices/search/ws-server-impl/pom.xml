@@ -68,7 +68,7 @@
               -->
               <packageSpace>org.topazproject.ws.search</packageSpace>
               <serverSide>true</serverSide>
-              <deployScope>session</deployScope>
+              <deployScope>application</deployScope>
               <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
             </configuration>
           </execution>
