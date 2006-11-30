@@ -35,7 +35,7 @@ public class ProfanityCheckingService {
       for (final Map.Entry<String,Pattern> patternEntry : profanePatterns.entrySet()) {
         final Pattern pattern = patternEntry.getValue();
         if (pattern.matcher(contentLowerCase).find()) {
-          messages.add("Found obscene word:" + patternEntry.getKey());
+          messages.add("Found obscene word:" + patternEntry.getKey() + ".");
           break;
         }
       }

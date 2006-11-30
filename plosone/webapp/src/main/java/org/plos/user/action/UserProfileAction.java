@@ -20,11 +20,12 @@ import static org.plos.Constants.Length;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.user.PlosOneUser;
 import org.plos.user.UserProfileGrant;
-import org.plos.util.TextUtils;
+import org.plos.util.ProfanityCheckingService;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -56,6 +57,7 @@ public class UserProfileAction extends UserActionSupport {
   private String nameVisibility;
   private String extendedVisibility;
   private String orgVisibility;
+  private ProfanityCheckingService profanityCheckingService;
 
   public static final String PRIVATE = "private";
   public static final String PUBLIC = "public";
@@ -231,16 +233,52 @@ public class UserProfileAction extends UserActionSupport {
       addFieldError("country", "Country cannot be empty");
       isValid = false;
     }
-    if (!StringUtils.isBlank(homePage) && !TextUtils.verifyUrl(homePage)) {
-      addFieldError("homePage", "Home page URL is invalid");
+
+    if (isProfane()) {
       isValid = false;
     }
-    if (!StringUtils.isBlank(weblog) && !TextUtils.verifyUrl(weblog)) {
-      addFieldError("weblog", "Weblog URL invalid");
-      isValid = false;
-    }
+
     return isValid;
   }
+
+  private boolean isProfane() {
+    boolean isProfane = false;
+    final String[][] toValidateArray = new String[][]{
+            {"displayName", displayName},
+            {"realName", realName},
+            {"title", title},
+            {"surnames", surnames},
+            {"givenNames", givenNames},
+            {"positionType", positionType},
+            {"organizationName", organizationName},
+            {"postalAddress", postalAddress},
+            {"biographyText", biographyText},
+            {"interestsText", interestsText},
+            {"researchAreasText", researchAreasText},
+            {"homePage", homePage},
+            {"weblog", weblog},
+            {"city", city},
+            {"country", country},
+    };
+
+    for (final String[] field : toValidateArray) {
+      if (!isValidFieldForProfanity(field[0], field[1])) {
+        isProfane = true;
+      }
+    }
+
+    return isProfane;
+  }
+
+  private boolean isValidFieldForProfanity(final String fieldName, final String fieldValue) {
+    final List<String> profanityValidationMessages = profanityCheckingService.validate(fieldValue);
+    if (profanityValidationMessages.size() > 0 ) {
+      addFieldError(fieldName, StringUtils.join(profanityValidationMessages.toArray(), ", "));
+      return false;
+    }
+    return true;
+  }
+
   /**
    * @return Returns the displayName.
    */
@@ -643,5 +681,21 @@ public class UserProfileAction extends UserActionSupport {
    */
   public void setWeblog(final String weblog) {
     this.weblog = weblog;
+  }
+
+  /**
+   * Getter for profanityCheckingService.
+   * @return Value of profanityCheckingService.
+   */
+  public ProfanityCheckingService getProfanityCheckingService() {
+    return profanityCheckingService;
+  }
+
+  /**
+   * Setter for profanityCheckingService.
+   * @param profanityCheckingService Value to set for profanityCheckingService.
+   */
+  public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {
+    this.profanityCheckingService = profanityCheckingService;
   }
 }

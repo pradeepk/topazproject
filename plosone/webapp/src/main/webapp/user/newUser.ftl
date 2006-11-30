@@ -64,7 +64,7 @@
 		</ol>
 	</fieldset>
 	<fieldset>
-		<legend>Optional Information that will appear publicly</legend>
+		<legend>Optional Public Information</legend>
 		<ol>
       <@ww.textarea name="biographyText" label="About Me" rows="5" cols="50" tabindex="120"/>
       <@ww.textfield name="researchAreasText" label="Research Areas" cssClass="long-input" tabindex="121" />
