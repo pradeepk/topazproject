@@ -323,7 +323,7 @@ p.oa-banner		{ margin: 0; padding: 5px 0;font-size: .85em; border-bottom: 8px so
 p.authors		{ margin: 20px 0 0 0; font-weight: bold; font-size: 1em; }
 p.affiliations	{ font-size: .85em; margin: 0; }
 
-div.abstract	{ border: 1px solid #330; margin: 10px 0; padding: 10px;}
+div.abstract	{ margin: 15px 0; }
 div.articleinfo	{ font-size: .9em; padding: 10px;  margin: 10px 0; background: #eee url(../images/pone_abstract_bg.gif) repeat-x bottom; border: 2px solid #ccc; }
 div.articleinfo p,
 div.abstract p	{ margin: 0 0 1em 0; }
