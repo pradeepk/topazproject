@@ -172,21 +172,23 @@ public class Statement {
               analyzer.tokenStream(f.name(), new StringReader(f.stringValue()));
             snippets =
               highlighter.getBestFragments(tokenStream, f.stringValue(), snippetsMax, " ... ");
-            if (snippets != null && !snippets.equals(""))
-              resultXml.append(" snippet=\"yes\">").append(snippets);
           }
-          if (snippets == null || snippets.equals(""))
-            if (fieldMaxLength > 0 && f.stringValue().length() > fieldMaxLength) {
-              // Add portion of field to resultXml
-              String snippet = f.stringValue().substring(0, fieldMaxLength);
-              int iamp = snippet.lastIndexOf("&"); // TODO: Why are you doing this???
-              if (iamp > -1 && iamp > fieldMaxLength-8)
-                snippet = snippet.substring(0, iamp); // TODO: bug?? shouldn't we add to resultXml?
-              else
-                resultXml.append(">").append(snippet).append(" ... ");
-            } else
-              resultXml.append(">").append(f.stringValue()); // Just add field name
-          resultXml.append("</field>");
+
+          // Finish build resultXml for this field
+          if (snippets != null && !snippets.equals(""))
+            resultXml.append(" snippet=\"yes\">").append(snippets);
+          else if (fieldMaxLength > 0 && f.stringValue().length() > fieldMaxLength) {
+            // Add portion of field to resultXml
+            String snippet = f.stringValue().substring(0, fieldMaxLength);
+             // Cut out any html entities
+            int iamp = snippet.lastIndexOf("&");
+            if (iamp > -1 && iamp > fieldMaxLength-8)
+              snippet = snippet.substring(0, iamp);
+            resultXml.append(">").append(snippet).append(" ... ");
+          } else // Just add the entire field value
+            resultXml.append(">").append(f.stringValue()); // Just add field value
+          
+          resultXml.append("</field>"); // Close this field tag
         }
         resultXml.append("</hit>");
       }
