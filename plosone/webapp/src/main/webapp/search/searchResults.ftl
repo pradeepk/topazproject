@@ -3,18 +3,22 @@
  
 <#assign totalPages=(totalNoOfResults/pageSize)?int>
   <#if (totalNoOfResults%pageSize > 0) >
-  <#assign totalPages = totalPages + 1>
-</#if>
+    <#assign totalPages = totalPages + 1>
+  </#if>
 	<h2>Search Results</h2>
 
 	<div id="search-results">
-		<p><strong>There were ${totalNoOfResults} results for &quot;${query}&quot;</strong></p>
+		<p><strong>There are about ${totalNoOfResults} results for &quot;${query}&quot;</strong></p>
   	<#if (totalPages > 1) >
     	<#list 1..totalPages as pageNumber>
       	&lt;
-	      <@ww.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}"/>
-  	    <@ww.a href="%{searchPageURL}">${pageNumber}</@ww.a>
-    	  &gt;&nbsp;
+        <#if (startPage == (pageNumber-1))>
+          ${pageNumber}
+        <#else>
+          <@ww.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}"/>
+          <@ww.a href="%{searchPageURL}">${pageNumber}</@ww.a>
+        </#if>
+        &gt;&nbsp;
 	    </#list>
   	</#if>
   	<#if totalNoOfResults gt 0>
