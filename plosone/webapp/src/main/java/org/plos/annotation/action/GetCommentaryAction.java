@@ -48,6 +48,9 @@ public class GetCommentaryAction extends AnnotationActionSupport {
    */
   public String execute() throws Exception {
     try {
+      if (log.isDebugEnabled()){
+        log.debug("retrieving all commentary for article id: " + target);
+      }
       articleInfo = getArticleWebService().getObjectInfo(target);
       annotations = getAnnotationService().listAnnotations(target);
       allCommentary = new Commentary[annotations.length];
@@ -72,7 +75,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
         Arrays.sort(allCommentary, allCommentary[0]);  
       }
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not get all commentary for articleID: " + target, e);
       addActionError("Annotation fetching failed with error message: " + e.getMessage());
       return ERROR;
     }

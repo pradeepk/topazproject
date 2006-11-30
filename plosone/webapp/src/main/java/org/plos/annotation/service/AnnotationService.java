@@ -19,6 +19,7 @@ import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.Annotations;
 import org.topazproject.ws.annotation.ReplyInfo;
+import org.plos.util.FileUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -37,7 +38,8 @@ public class AnnotationService extends BaseConfigurableService {
   private static final Log log = LogFactory.getLog(AnnotationService.class);
   private AnnotationConverter converter;
   private PermissionWebService permissionWebService;
-
+  private static final String CACHE_KEY_ANNOTATION = "ANNOTATION";
+  
   private GeneralCacheAdministrator articleCacheAdministrator;
   
   /**
@@ -52,8 +54,25 @@ public class AnnotationService extends BaseConfigurableService {
    * @throws org.plos.ApplicationException ApplicationException
    * @return unique identifier for the newly created annotation
    */
-  public String createAnnotation(final String target, final String context, final String olderAnnotation, final String title, final String mimeType, final String body, final boolean isPublic) throws ApplicationException {
+  public String createAnnotation(final String target, final String context, final String olderAnnotation, 
+      final String title, final String mimeType, final String body, final boolean isPublic) throws ApplicationException {
+    
+    /** 
+     *  Placing the caching here rather than in AnnotationWebService because this
+     *  is always called by the Action.  Flags also call the AnnotationWebService, and
+     *  we need to distinguish between the two.  If annotation creation ever happens
+     *  directly by calling the AnnotationWebService, this will result in a cache
+     *  that out of date.
+     */
+   
     try {
+      if (log.isDebugEnabled()) {
+        StringBuilder debugMsg = new StringBuilder("creating annotation for target: ");
+        debugMsg.append(target).append("; context: ").append(context).append("; supercedes: ");
+        debugMsg.append(olderAnnotation).append("; title: " ).append(title).append("; mimeType: ");
+        debugMsg.append(mimeType).append("; body: ").append(body).append("; isPublic: ").append(isPublic);
+        log.debug(debugMsg);
+      }
       final String annotationId = annotationWebService.createAnnotation(mimeType, target, context, olderAnnotation, title, body);
       if (isPublic) {
         setAnnotationPublic(annotationId);
@@ -221,7 +240,7 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public void deleteReply(final String replyId) throws ApplicationException {
     try {
-      replyWebService.deleteReplies(replyId);
+      replyWebService.deleteReply(replyId);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     } catch (NoSuchIdException e) {
@@ -235,12 +254,40 @@ public class AnnotationService extends BaseConfigurableService {
    * @return a list of annotations
    */
   public Annotation[] listAnnotations(final String target) throws ApplicationException {
+    /** Placing the caching here rather than in AnnotationWebService because this
+     *  produces the objects for the Commentary view.  The Article HTML is cached
+     *  which calls the AnnotationWebService listAnnotations directly, so that call
+     *  won't happen too much.
+     */
+    
+    Annotation[] allAnnotations;
     try {
-      AnnotationInfo[] annotations = annotationWebService.listAnnotations(target);
-      return converter.convert(annotations);
-    } catch (RemoteException e) {
-      throw new ApplicationException(e);
+      //for now, since all annotations are public, don't have to cache based on userID
+      allAnnotations = (Annotation[])articleCacheAdministrator.getFromCache(target + CACHE_KEY_ANNOTATION); 
+      if (log.isDebugEnabled()) {
+        log.debug("retrieved annotation list from cache for article: " + target);
+      }
+    } catch (NeedsRefreshException nre) {
+      boolean updated = false;
+      try {
+        //use grouping for future when annotations can be private
+        AnnotationInfo[] annotations = annotationWebService.listAnnotations(target);
+        allAnnotations = converter.convert(annotations);
+        articleCacheAdministrator.putInCache(target + CACHE_KEY_ANNOTATION, 
+                                   allAnnotations, new String[]{FileUtils.escapeURIAsPath(target)});
+        updated = true;
+        if (log.isDebugEnabled()) {
+          log.debug("retrieved annotation list from FEDORA for article: " + target);
+        }        
+      } catch (RemoteException e) {
+        log.error ("Could not retrieve all annotations for article: " + target);
+        throw new ApplicationException(e);
+      } finally {
+        if (!updated)
+          articleCacheAdministrator.cancelUpdate(target);
+      }
     }
+    return allAnnotations;
   }
 
   /**

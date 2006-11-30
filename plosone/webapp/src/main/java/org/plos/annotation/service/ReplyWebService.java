@@ -9,6 +9,9 @@
  */
 package org.plos.annotation.service;
 
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+import com.opensymphony.oscache.base.NeedsRefreshException;
+
 import static org.plos.annotation.service.BaseAnnotation.DELETE_MASK;
 import static org.plos.annotation.service.BaseAnnotation.FLAG_MASK;
 import org.topazproject.authentication.ProtectedService;
@@ -28,6 +31,7 @@ import java.rmi.RemoteException;
  */
 public class ReplyWebService extends BaseAnnotationService {
   private Replies replyService;
+  private GeneralCacheAdministrator articleCacheAdministrator;
 
   public void init() throws IOException, URISyntaxException, ServiceException {
     final ProtectedService protectedService = getProtectedService();
@@ -47,10 +51,13 @@ public class ReplyWebService extends BaseAnnotationService {
    * @throws UnsupportedEncodingException UnsupportedEncodingException
    * @see org.topazproject.ws.annotation.Replies#createReply(String,String,String,String,boolean,String,String,byte[])
    */
-  public String createReply(final String mimeType, final String root, final String inReplyTo, final String title, final String body, final AnnotationService annotationService) throws RemoteException, NoSuchAnnotationIdException, UnsupportedEncodingException {
+  public String createReply(final String mimeType, final String root, final String inReplyTo, 
+                  final String title, final String body, final AnnotationService annotationService) 
+                throws RemoteException, NoSuchAnnotationIdException, UnsupportedEncodingException {
     final String contentType = getContentType(mimeType);
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return replyService.createReply(getApplicationId(), getDefaultType(), root, inReplyTo, isAnonymous(), title, contentType, body.getBytes(getEncodingCharset()));
+    return replyService.createReply(getApplicationId(), getDefaultType(), root, inReplyTo, 
+                          isAnonymous(), title, contentType, body.getBytes(getEncodingCharset()));
   }
 
   /**
@@ -60,7 +67,7 @@ public class ReplyWebService extends BaseAnnotationService {
    * @see org.topazproject.ws.annotation.Replies#deleteReplies(String)
    * @throws org.topazproject.ws.annotation.NoSuchAnnotationIdException NoSuchAnnotationIdException
    */
-  public void deleteReplies(final String replyId) throws RemoteException, NoSuchAnnotationIdException {
+  public void deleteReply(final String replyId) throws RemoteException, NoSuchAnnotationIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     replyService.setReplyState(replyId, DELETE_MASK);
   }
@@ -133,6 +140,20 @@ public class ReplyWebService extends BaseAnnotationService {
   public void setFlagged(final String replyId) throws NoSuchAnnotationIdException, RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     replyService.setReplyState(replyId, FLAG_MASK);
+  }
+
+  /**
+   * @return Returns the articleCacheAdministrator.
+   */
+  public GeneralCacheAdministrator getArticleCacheAdministrator() {
+    return articleCacheAdministrator;
+  }
+
+  /**
+   * @param articleCacheAdministrator The articleCacheAdministrator to set.
+   */
+  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
+    this.articleCacheAdministrator = articleCacheAdministrator;
   }
 
 }
