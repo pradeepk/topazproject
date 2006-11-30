@@ -65,10 +65,6 @@ public class AlertsImpl implements Alerts {
   private static final int    FETCH_SIZE     = 10; // TODO: Set to 100, test with 2
   private static final Log    log            = LogFactory.getLog(AlertsImpl.class);
 
-  private static final Map    aliases;
-  private static final String ALERTS_URI     = ItqlHelper.TOPAZ_URI + "alerts/";
-  private static final String XSD_URI        = "http://www.w3.org/2001/XMLSchema#";
-
   private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
 
   private static final String MODEL_ALERTS   = "<" + CONF.getString("topaz.models.alerts") + ">";
@@ -82,12 +78,12 @@ public class AlertsImpl implements Alerts {
   // Email Alert Queries
   private static final String UPDATE_TIMESTAMP_ITQL =
     "delete select $user $pred $date from ${ALERTS} where $user $pred $date and " +
-    " <${userId}> <alerts:timestamp> $date from ${ALERTS};\n" +
-    "insert <${userId}> <alerts:timestamp> '${stamp}'^^<xsd:date> into ${ALERTS};";
+    " <${userId}> <topaz:timeStamp> $date from ${ALERTS};\n" +
+    "insert <${userId}> <topaz:timeStamp> '${stamp}'^^<xsd:date> into ${ALERTS};";
   private static final String GET_TIMESTAMP_ITQL =
-    "select $date from ${ALERTS} where <${userId}> <alerts:timestamp> $date;";
+    "select $date from ${ALERTS} where <${userId}> <topaz:timeStamp> $date;";
   private static final String GET_USER_TIMESTAMPS_ITQL =
-    "select $user $date from ${ALERTS} where <${userId}> <alerts:timestamp> $date " +
+    "select $user $date from ${ALERTS} where <${userId}> <topaz:timeStamp> $date " +
     " and $date <tucana:after> ${date} in ${XSD};";
   private static final String GET_NEXT_USERS_ITQL =
     "select $timestamp $user " +
@@ -97,7 +93,7 @@ public class AlertsImpl implements Alerts {
     "   $prefn <topaz:prefName>       'alertsEmailAddress' and " +
     "   $prefn <topaz:prefValue>      $email ) " +
     " from ${ALERTS} where " +
-    "  $user       <alerts:timestamp> $timestamp and " +
+    "  $user       <topaz:timeStamp> $timestamp and " +
     "  $timestamp  <tucana:before>     '${stamp}'^^<xsd:date> in ${XSD} " +
     " order by $user " +
     " limit ${limit};";
@@ -120,16 +116,10 @@ public class AlertsImpl implements Alerts {
     "delete select $user $pred $date from ${ALERTS} where $user $pred $date and " +
     " <${userId}> $pred $date from ${ALERTS};";
   private static final String CREATE_USER_ITQL =
-    "insert <${userId}> <alerts:timestamp> '${stamp}'^^<xsd:date> into ${ALERTS};";
+    "insert <${userId}> <topaz:timeStamp> '${stamp}'^^<xsd:date> into ${ALERTS};";
 
   private final AlertsPEP    pep;
   private final TopazContext ctx;
-
-  static {
-    aliases = ItqlHelper.getDefaultAliases();
-    aliases.put("alerts", ALERTS_URI);
-    aliases.put("xsd", XSD_URI);
-  }
 
   /**
    * Class to stash user data while reading from Kowari.
@@ -146,8 +136,8 @@ public class AlertsImpl implements Alerts {
    * @param itql itql handle to use
    */
   public static void initializeModel(ItqlHelper itql) throws RemoteException {
-    itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";", aliases);
-    itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";", aliases);
+    itql.doUpdate("create " + MODEL_XSD + " " + XSD_TYPE + ";", null);
+    itql.doUpdate("create " + MODEL_ALERTS + " " + ALERTS_TYPE + ";", null);
   }
 
   /**
@@ -212,7 +202,7 @@ public class AlertsImpl implements Alerts {
     values.put("userId", userId);
     values.put("stamp", AlertsHelper.getTimestamp(cal));
     String query = ItqlHelper.bindValues(AlertsImpl.CREATE_USER_ITQL, values);
-    ctx.getItqlHelper().doUpdate(query, aliases);
+    ctx.getItqlHelper().doUpdate(query, null);
   }
 
   // See Alerts.java interface
@@ -224,7 +214,7 @@ public class AlertsImpl implements Alerts {
     values.put("ALERTS", AlertsImpl.MODEL_ALERTS);
     values.put("userId", userId);
     String query = ItqlHelper.bindValues(AlertsImpl.CLEAN_USER_ITQL, values);
-    ctx.getItqlHelper().doUpdate(query, aliases);
+    ctx.getItqlHelper().doUpdate(query, null);
   }
 
   // See Alerts.java interface
@@ -377,7 +367,7 @@ public class AlertsImpl implements Alerts {
     values.put("stamp", endDate);
     // TODO: This query should include count(*) from ARTICLES delimited by dates
     String query = ItqlHelper.bindValues(AlertsImpl.GET_NEXT_USERS_ITQL, values);
-    String response = ctx.getItqlHelper().doQuery(query, aliases);
+    String response = ctx.getItqlHelper().doQuery(query, null);
     Answer result = new Answer(response);
     QueryAnswer  answer = (QueryAnswer)result.getAnswers().get(0);
 
@@ -410,7 +400,7 @@ public class AlertsImpl implements Alerts {
     values.put("ALERTS", MODEL_ALERTS);
     values.put("userId", userId);
     String query = ItqlHelper.bindValues(AlertsImpl.GET_TIMESTAMP_ITQL, values);
-    StringAnswer result = new StringAnswer(ctx.getItqlHelper().doQuery(query, aliases));
+    StringAnswer result = new StringAnswer(ctx.getItqlHelper().doQuery(query, null));
     QueryAnswer  answer = (QueryAnswer)result.getAnswers().get(0);
 
     // If user has no timestamp yet, then return today
@@ -431,7 +421,7 @@ public class AlertsImpl implements Alerts {
     values.put("userId", userId);
     values.put("stamp", stamp);
     String query = ItqlHelper.bindValues(AlertsImpl.UPDATE_TIMESTAMP_ITQL, values);
-    ctx.getItqlHelper().doUpdate(query, aliases);
+    ctx.getItqlHelper().doUpdate(query, null);
   }
 
 
@@ -470,7 +460,7 @@ public class AlertsImpl implements Alerts {
   protected Collection getArticles(String query)
       throws RemoteException {
     try {
-      Answer articlesAnswer = new Answer(ctx.getItqlHelper().doQuery(query, aliases));
+      Answer articlesAnswer = new Answer(ctx.getItqlHelper().doQuery(query, null));
       Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
 
       for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
@@ -486,7 +476,7 @@ public class AlertsImpl implements Alerts {
 
       String detailsQuery = ArticleFeed.getDetailsQuery(articles.values());
       StringAnswer detailsAnswer =
-          new StringAnswer(ctx.getItqlHelper().doQuery(detailsQuery, aliases));
+          new StringAnswer(ctx.getItqlHelper().doQuery(detailsQuery, null));
       ArticleFeed.addArticlesDetails(articles, detailsAnswer);
 
       return articles.values();
