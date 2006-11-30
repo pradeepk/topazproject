@@ -37,7 +37,8 @@ public class SearchService {
    */
   public SearchResultPage find(final String query, final int startPage, final int pageSize) throws ApplicationException {
     try {
-      final String findResult = searchWebService.find(query, startPage, pageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
+      final int hitStartPage = startPage * pageSize;
+      final String findResult = searchWebService.find(query, hitStartPage, pageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
       log.debug("findResult = " + findResult);
 
       return SearchUtil.convertSearchResultXml(findResult);

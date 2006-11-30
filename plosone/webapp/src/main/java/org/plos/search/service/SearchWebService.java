@@ -46,7 +46,7 @@ public class SearchWebService {
   /**
    * @see org.topazproject.fedoragsearch.service.FgsOperations#gfindObjects(String, long, int, int, int, String, String)
    */
-  public String find(final String query, final int startPage, final int pageSize, final int snippetsMax, final int fieldMaxLength, final String indexName, final String resultPageXslt) throws RemoteException {
-    return fgsOperations.gfindObjects(query, startPage, pageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
+  public String find(final String query, final int hitStartPage, final int pageSize, final int snippetsMax, final int fieldMaxLength, final String indexName, final String resultPageXslt) throws RemoteException {
+    return fgsOperations.gfindObjects(query, hitStartPage, pageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
   }
 }
