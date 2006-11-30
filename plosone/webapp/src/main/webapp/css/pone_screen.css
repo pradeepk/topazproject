@@ -304,7 +304,7 @@ div.static h2,
 div.content h3	{ /* article main body heading */ font-size: 1.6em; margin: 20px 0 0 0; border-bottom: 1px solid #999; padding-bottom: 3px;}
 
 div.static h3,
-div.content h4	{ /* article second level heading */ font-size: 1.2em; margin: 20px 0 0 0; color: #333; }
+div.content h4	{ /* article second level heading */ font-size: 1.2em; margin: 20px 0 0 0; color: #333; font-family: Georgia, "Times New Roman", Times, serif;}
 
 div.static h4,
 div.content h5	{ font-size: 1em; color: #333; }
@@ -328,7 +328,7 @@ div.articleinfo	{ font-size: .9em; padding: 10px;  margin: 10px 0; background: #
 div.articleinfo p,
 div.abstract p	{ margin: 0 0 1em 0; }
 
-div.abstract h3	{ font-size: 1em; margin: 0; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold; letter-spacing: normal;}
+div.abstract h3	{ font-size: 1em; margin: 0; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold; letter-spacing: normal; border-bottom: none;}
 
 
 
@@ -352,7 +352,7 @@ div.tools				{ background-image: url(../images/pone_tools_bg.gif);}
 div.links ul,
 div.tools ul			{ background-repeat: no-repeat; background-position: top; padding: 8px 0 0 0; margin: 0; list-style-type: none; }
 div.links ul			{ background-image: url(../images/pone_sidenav_bg.gif);}
-div.tools ul			{ background-image: url(../images/pone_tools_bg.gif);}
+div.tools ul			{ background-image: url(../images/pone_tools_bg.gif); padding-bottom: 2px;}
 div.links li
 div.tools li			{ list-style-type: none; margin: 0; padding: 0; }				
 
