@@ -159,8 +159,10 @@
     RMICacheManagerPeerListenerFactory.
 
     -->
+    <!--
     <cacheManagerPeerListenerFactory
             class="net.sf.ehcache.distribution.RMICacheManagerPeerListenerFactory"/>
+    -->
 
     <!-- Cache configuration.
 
@@ -396,8 +398,10 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            overflowToDisk="false">
+        <!--
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+        -->
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
@@ -412,8 +416,10 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            overflowToDisk="false">
+        <!--
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+        -->
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
@@ -429,8 +435,10 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            overflowToDisk="false">
+        <!--
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+        -->
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
@@ -445,8 +453,10 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            overflowToDisk="false">
+        <!--
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+        -->
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
@@ -461,8 +471,10 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            overflowToDisk="false">
+        <!--
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+        -->
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
@@ -477,8 +489,10 @@
            timeToIdleSeconds="1800"
            timeToLiveSeconds="1800"
            overflowToDisk="false">
+        <!--
         <bootstrapCacheLoaderFactory
                 class="net.sf.ehcache.distribution.RMIBootstrapCacheLoaderFactory"/>
+        -->
         <cacheEventListenerFactory
                 class="net.sf.ehcache.distribution.RMICacheReplicatorFactory"/>
     </cache>
