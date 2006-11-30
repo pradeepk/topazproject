@@ -84,7 +84,7 @@ public class HomePageAction extends BaseActionSupport {
     if (log.isDebugEnabled()){
       log.debug("Calling getCommentedOnArticles with " + maxArticles + " maxArticles");
     }
-    ObjectInfo[] retArray = null;
+    ObjectInfo[] retArray = new ObjectInfo[0];
     try {
       retArray = articleWebService.getCommentedArticles(maxArticles);
       /*if (log.isDebugEnabled()){
@@ -104,7 +104,7 @@ public class HomePageAction extends BaseActionSupport {
    * 
    *
    */
-  private void setArticlesAndCategories() {
+  private void getArticlesAndCategories() {
     ArticleInfo[] weeksArticles = getLastWeeksArticles();
     if (weeksArticles.length > 0){
       TreeMap<String, ArrayList<ArticleInfo>> allArticles = new TreeMap<String, ArrayList<ArticleInfo>>();
@@ -134,6 +134,9 @@ public class HomePageAction extends BaseActionSupport {
         articlesByCategory[i] = new ArticleInfo[artInfoArrayList.size()];
         artInfoArrayList.toArray(articlesByCategory[i]);
       }
+    } else {
+      categoryNames = new String[0];
+      articlesByCategory = new ArticleInfo[0][];
     }
   }
   
@@ -158,7 +161,7 @@ public class HomePageAction extends BaseActionSupport {
    */
   public ArticleInfo[][] getArticlesByCategory() {
     if (!categoriesAreInitialized) {
-      setArticlesAndCategories();
+      getArticlesAndCategories();
       categoriesAreInitialized = true;
     }
     return articlesByCategory;
@@ -169,7 +172,7 @@ public class HomePageAction extends BaseActionSupport {
    */
   public String[] getCategoryNames() {
     if (!categoriesAreInitialized) {
-      setArticlesAndCategories();
+      getArticlesAndCategories();
       categoriesAreInitialized = true;
     }
     return categoryNames;

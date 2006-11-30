@@ -34,7 +34,7 @@
 	
 						
 						<#assign commentedArticles = action.getCommentedOnArticles(5)>
-						<#if commentedArticles?size gt 0 >
+						<#if (((commentedArticles?size)!0) gt 0) >
 						<div class="block">
 							<h1>Most Commented On</h1>
 							<ul class="articles">
