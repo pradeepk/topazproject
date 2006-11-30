@@ -727,8 +727,11 @@
   <xsl:function name="my:format-date" as="xs:string">
     <xsl:param name="date" as="element()"/>
 
+    <xsl:variable name="year" as="xs:integer" select="
+        if ($date/year) then $date/year else year-from-date(current-date())"/>
+
     <xsl:value-of select="concat(
-      if ($date/year) then $date/year else year-from-date(current-date()),
+      $year,
       '-',
       if ($date/season) then
         if (lower-case($date/season) = 'spring') then '03-21'
@@ -738,9 +741,15 @@
         else ''
       else
         concat(
-          my:twochar(if ($date/month) then $date/month else month-from-date(current-date())),
+          my:twochar(if ($date/month) then $date/month
+                     else if ($year != year-from-date(current-date())) then 1
+                     else month-from-date(current-date())),
           '-',
-          my:twochar(if ($date/day) then $date/day else day-from-date(current-date()))
+          my:twochar(if ($date/day) then $date/day
+                     else if ($year = year-from-date(current-date()) and
+                              $date/month and $date/month = month-from-date(current-date())) then
+                         day-from-date(current-date())
+                     else 1)
         )
       )"/>
   </xsl:function>
