@@ -44,7 +44,7 @@ plosone_CATALINA_HOME=/usr/local/topaz/plosone-tomcat55
 # These ports are only for printing status. If they're accurate, status will be better
 PORT=
 ecqs_PORT=7443
-topaz_PORT=8000
+topaz_PORT=8008
 search_PORT=9092
 mulgara_PORT=9091
 plosone_PORT=8080
