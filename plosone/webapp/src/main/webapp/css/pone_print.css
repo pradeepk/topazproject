@@ -15,7 +15,7 @@
 */
 html { color: #000; !important width: 100%; !important; }
 #topBanner,
-#hdr, div.beta, #nav, #ftr ul, #rhc, ol.references a.find {
+#hdr, div.beta, #nav, #ftr ul, div.powered, #rhc, ol.references a.find {
 	display: none !important;
 }
 body, div#content, div.content 	{ width: auto !important; margin: 0 !important; padding: 0 !important; border: none; !important}
