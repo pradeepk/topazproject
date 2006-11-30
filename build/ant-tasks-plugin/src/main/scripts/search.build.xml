@@ -21,6 +21,10 @@
                 type="war"/>
   </artifact:dependencies>
 
+  <artifact:dependencies filesetId="log4j.fileset" useScope="runtime">
+    <dependency groupId="log4j" artifactId="log4j" version="1.2.12" type="jar"/>
+  </artifact:dependencies>
+
   <artifact:dependencies filesetId="antcontrib.fileset" useScope="runtime">
     <dependency groupId="ant-contrib" artifactId="ant-contrib" version="1.0b2"/>
   </artifact:dependencies>
@@ -113,6 +117,9 @@
         <propertyref prefix="topaz."/>
       </syspropertyset>
       -->
+      <extraClasspath>
+        <fileset refid="log4j.fileset"/>
+      </extraClasspath>
       <syspropertyset file="${temp.file}"/>
       <configuration home="${tomcatconfig.dir}">
         <property name="cargo.servlet.port" value="${port}"/>
