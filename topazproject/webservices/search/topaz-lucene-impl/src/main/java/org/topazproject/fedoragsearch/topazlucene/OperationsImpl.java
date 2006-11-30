@@ -76,7 +76,7 @@ public class OperationsImpl extends GenericOperationsImpl {
    * Find a set of documents.
    *
    * @param query is the lucene formatted query string
-   * @param hitPageStart is the page in the hits to start at
+   * @param hitPageStart is the hit number to start on (not the page # to start on)
    * @param hitPageSize is the number of hits to display on each page
    * @param snippetsMax is the maximum number of snippets to return per field
    * @param fieldMaxLength is the maximum number of characters to return in one field.
