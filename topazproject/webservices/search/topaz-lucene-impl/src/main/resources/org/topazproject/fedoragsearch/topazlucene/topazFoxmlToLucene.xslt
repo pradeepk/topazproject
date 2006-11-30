@@ -126,12 +126,17 @@
   <!-- Template to index our XML content -->
   <xsl:template name="topaz-xml">
     <IndexField IFname="uva.access" index="TOKENIZED" store="YES" termVector="NO">
-      <xsl:value-of select="document(concat('http://localhost:9090/fedora/get/', $PID,
-                                            '/XML'))/article/body"/>
-      <!--
-      <xsl:value-of select="document('file:///tmp/t/XML')/article/body"/>
--->
+      <xsl:apply-templates select="document(concat('http://localhost:9090/fedora/get/', $PID,
+                                            '/XML'))/article/body" mode="value-of"/>
     </IndexField>
   </xsl:template>
-  
+
+  <xsl:template match="*" mode="value-of">
+    <xsl:text> </xsl:text>
+    <xsl:apply-templates select="*|text()" mode="value-of"/>
+  </xsl:template>
+
+  <xsl:template match="text()" mode="value-of">
+    <xsl:value-of select="."/>
+  </xsl:template>
 </xsl:stylesheet> 
