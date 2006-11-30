@@ -35,7 +35,7 @@ import java.util.TreeSet;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.lucene.analysis.Analyzer;
-import org.apache.lucene.analysis.standard.StandardAnalyzer;
+import org.apache.lucene.document.Document;
 import org.apache.lucene.document.Field;
 import org.apache.lucene.index.IndexModifier;
 import org.apache.lucene.index.IndexReader;
@@ -53,28 +53,37 @@ import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
  *   <li>Cache DTDs
  *   <li>Axis filtering
  * </ul>
- * 
+ *
  * @author  Eric Brown and <a href='mailto:gsp@dtv.dk'>Gert</a>
  * @version $Id$
  */
 public class OperationsImpl extends GenericOperationsImpl {
   private static final Log log               = LogFactory.getLog(OperationsImpl.class);
-  
+
   private static final String INDEX_PATH     = TopazConfig.INDEX_PATH;
   private static final String FEDORAOBJ_PATH = TopazConfig.FEDORAOBJ_PATH;
-  
+
   private static final String GFIND_XSLT     = TopazConfig.GFIND_XSLT;
   private static final String BROWSE_XSLT    = TopazConfig.BROWSE_XSLT;
   private static final String INDEXINFO_XSLT = TopazConfig.INDEXINFO_XSLT;
   private static final String UPDATE_XSLT    = TopazConfig.UPDATE_XSLT;
   private static final String FOXML2LUCENE_XSLT = TopazConfig.FOXML2LUCENE_XSLT;
-  
+
   private static final String INDEXINFO_XML  = TopazConfig.INDEXINFO_XML;
-  private static final String ANALYZER_NAME  = TopazConfig.ANALYZER_NAME;
-  
-  
-  private IndexModifier modifier = null;
-    
+  private static final Analyzer analyzer     = TopazConfig.getAnalyzer();
+
+  /**
+   * Find a set of documents.
+   *
+   * @param query is the lucene formatted query string
+   * @param hitPageStart is the page in the hits to start at
+   * @param hitPageSize is the number of hits to display on each page
+   * @param snippetsMax is the maximum number of snippets to return per field
+   * @param fieldMaxLength is the maximum number of characters to return in one field.
+   *        If the field value exceeds this length, it will be truncated with elipses.
+   * @param indexName is the name of the index to search
+   * @param resultPageXslt is the transform to use on the results. (Ignored right now.)
+   */
   public String gfindObjects(String query,
                              long   hitPageStart,
                              int    hitPageSize,
@@ -83,17 +92,16 @@ public class OperationsImpl extends GenericOperationsImpl {
                              String indexName,
                              String resultPageXslt) throws RemoteException {
     log.debug("gfind: " + query);
+    // Call base-class... not sure exactly what this does (perhaps setup some instance variables)
     super.gfindObjects(query, hitPageStart, hitPageSize, snippetsMax, fieldMaxLength,
                        indexName, resultPageXslt);
+    // Do the query
     ResultSet resultSet =
         (new Connection()).createStatement().executeQuery(query, hitPageStart, hitPageSize,
                                                           snippetsMax, fieldMaxLength);
-    
+
     if (log.isDebugEnabled())
-      log.debug("resultSet.getResultXml()=" + resultSet.getResultXml());
-    
-    params[10] = "RESULTPAGEXSLT";
-    params[11] = resultPageXslt;
+      log.debug("resultSet.getResultXml():\n" + resultSet.getResultXml());
 
     // Do we really need to do this??? We just want to copy the xml...
     /* This generates some error due to bad gfindObjectstoResultPage...
@@ -102,7 +110,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     */
     return resultSet.getResultXml().toString();
   }
-    
+
   public String browseIndex(String startTerm,
                             int termPageSize,
                             String fieldName,
@@ -202,7 +210,36 @@ public class OperationsImpl extends GenericOperationsImpl {
     
     return sb.toString();
   }
-    
+
+
+  /**
+   * Structure used to return results from sub-methods.
+   */
+  static class UpdateResults {
+    StringBuffer resultXml = new StringBuffer();
+    int insertTotal = 0;
+    int deleteTotal = 0;
+    int updateTotal = 0;
+  }
+
+  /**
+   * updateIndex API is used to update the lucene index.
+   *
+   * Note: createEmpty is NOT supported. We do this if necessary on initialization in TopazConfig.
+   *
+   * @param action This is the sub-function: fromFoxmlFiles, fromPid or deletePid.
+   *        The higher level API supports createEmpty. We do not.
+   * @param value This is the value to use for the specific sub-function. It is usually
+   *        a PID or a file or directory name.
+   * @param repositoryName This is the name of the repository to update.
+   * @param indexName This is the name of the index to update.
+   * @param indexDocXslt The name of the xslt stylesheet to transform foxml with.
+   * @param resultPageXslt The name of the xslt stylesheet to transform the results with.
+   *        These results are practially meaningless. They are just informational. The
+   *        stylesheet must be something that TopazTransformer can load (usually something
+   *        in the java classpath.) It must support the following stylesheet parameters:
+   *        OPERATION, ACTION, VALUE, REPOSITORYNAME, INDEXNAME, RESULTPAGEXSLT
+   */
   public synchronized String updateIndex(String action,
                                          String value,
                                          String repositoryName,
@@ -210,230 +247,198 @@ public class OperationsImpl extends GenericOperationsImpl {
                                          String indexDocXslt,
                                          String resultPageXslt) throws RemoteException {
     if (log.isDebugEnabled())
-      log.debug("updateIndex: " + action + ": " + value);
-    
-    insertTotal = 0;
-    deleteTotal = 0;
-    StringBuffer resultXml = new StringBuffer(); 
-    resultXml.append("<luceneUpdateIndex");
-    resultXml.append(" indexName=\"" + indexName + "\"");
-    resultXml.append(">\n");
+      log.debug(action + ": '" + value + "'");
+
+    UpdateResults results = new UpdateResults();
+    results.resultXml.append("<luceneUpdateIndex indexName=\"").append(indexName).append("\">\n");
+
+    IndexModifier modifier = null;
+    int docCount = 0;
     try {
-      if ("createEmpty".equals(action)) 
-        createEmpty(INDEX_PATH, resultXml);
-      else {
-        try {
-          log.debug("INDEX_PATH: " + INDEX_PATH);
-          log.debug("ANALYZER_NAME: " + ANALYZER_NAME);
-          Analyzer analyzer = getAnalyzer(ANALYZER_NAME);
-          modifier = new IndexModifier(INDEX_PATH, getAnalyzer(ANALYZER_NAME), false);
-        } catch (IOException e) {
-          if (e.toString().indexOf("/segments")>-1) {
-            try {
-              modifier = new IndexModifier(INDEX_PATH, getAnalyzer(ANALYZER_NAME), true);
-            } catch (IOException e2) {
-              throw new GenericSearchException("IndexModifier new error, creating index\n", e2);
-            }
-          }
-          else
-            throw new GenericSearchException("IndexModifier new error\n", e);
-        }
-        if ("fromFoxmlFiles".equals(action)) 
-          fromFoxmlFiles(value, repositoryName, indexName, resultXml, indexDocXslt);
-        else
-          if ("fromPid".equals(action)) 
-            fromPid(value, repositoryName, indexName, resultXml, indexDocXslt);
-          else
-            if ("deletePid".equals(action)) 
-              deletePid(value, resultXml);
-      }
-    } catch (RemoteException e) {
-      if (modifier != null) {
-        try {
-          modifier.close();
-        } catch (IOException ioe) {
-        }
-      }
-      throw new GenericSearchException("Exception on updateIndex action= "+action, e);
-    }
-    if (modifier != null) {
-      try {
-        modifier.optimize();
-      } catch (IOException e) {
-        throw new GenericSearchException("IndexModifier optimize error", e);
-      }
+      // TODO: We should really only create once, but then would need web-listener to destroy
+      modifier = new IndexModifier(INDEX_PATH, TopazConfig.getAnalyzer(), false);
+
+      if ("fromFoxmlFiles".equals(action))
+        fromFoxmlFiles(value, repositoryName, indexDocXslt, results, modifier);
+      else if ("fromPid".equals(action))
+        fromPid(value, repositoryName, indexDocXslt, results, modifier);
+      else if ("deletePid".equals(action))
+        deletePid(value, results, modifier);
+
       docCount = modifier.docCount();
+      modifier.optimize();
+    } catch (IOException ioe) {
+      throw new GenericSearchException("Error talking to lucene", ioe);
+    } finally {
       try {
-        modifier.close();
-      } catch (IOException e) {
-        throw new GenericSearchException("IndexModifier close error", e);
+        if (modifier != null)
+          modifier.close();
+      } catch (IOException ioe) {
+        // The thing is aready close? Shouldn't happen
+        log.warn("Error closing modifier", ioe);
       }
     }
-    resultXml.append("<counts");
-    resultXml.append(" insertTotal=\"" + insertTotal + "\"");
-    resultXml.append(" updateTotal=\"" + updateTotal + "\"");
-    resultXml.append(" deleteTotal=\"" + deleteTotal + "\"");
-    resultXml.append(" docCount=\"" + docCount + "\"");
-    resultXml.append("/>\n");
-    resultXml.append("</luceneUpdateIndex>\n");
-    params = new String[12];
-    params[0] = "OPERATION";
-    params[1] = "updateIndex";
-    params[2] = "ACTION";
-    params[3] = action;
-    params[4] = "VALUE";
-    params[5] = value;
-    params[6] = "REPOSITORYNAME";
-    params[7] = repositoryName;
-    params[8] = "INDEXNAME";
-    params[9] = indexName;
-    params[10] = "RESULTPAGEXSLT";
-    params[11] = resultPageXslt;
+
+    // Get rid of our old IndexSearcher
+    Statement.allocateNewSearcher();
+
+    results.resultXml.append("<counts")
+      .append(" insertTotal=\"").append(results.insertTotal).append("\"")
+      .append(" updateTotal=\"").append(results.updateTotal).append("\"")
+      .append(" deleteTotal=\"").append(results.deleteTotal).append("\"")
+      .append(" docCount=\"").append(docCount).append("\"")
+      .append("/>\n")
+      .append("</luceneUpdateIndex>\n");
+
+    // Setup parameters for transform below
+    params = new String[] {
+      "OPERATION",      "updateIndex",
+      "ACTION",         action,
+      "VALUE",          value,
+      "REPOSITORYNAME", repositoryName,
+      "INDEXNAME",      indexName,
+      "RESULTPAGEXSLT", resultPageXslt,
+    };
 
     // Transform updateIndex results
-    StringBuffer sb = TopazTransformer.transform(UPDATE_XSLT, resultXml, params);
+    StringBuffer sb = TopazTransformer.transform(UPDATE_XSLT, results.resultXml, params);
 
     if (log.isDebugEnabled())
-      log.debug("Index updated: " + sb);
-    
+      log.debug("Index updated:\n" + sb);
+
     return sb.toString();
   }
-    
-  private void createEmpty(String filePath, StringBuffer resultXml) throws RemoteException {
+
+  /**
+   * Delete the indicated PID from the lucene index.
+   */
+  private void deletePid(String pid, UpdateResults results, IndexModifier modifier)
+      throws GenericSearchException {
     try {
-      modifier = new IndexModifier(filePath, new StandardAnalyzer(), true);
+      results.deleteTotal += modifier.deleteDocuments(new Term("PID", pid));
     } catch (IOException e) {
-      throw new GenericSearchException("IndexModifier new error", e);
+      throw new GenericSearchException("Unable to delete pid '" + pid + "'", e);
     }
-    resultXml.append("<createEmpty/>\n");
   }
-    
-  private void fromFoxmlFiles(String filePath,
-                              String repositoryName,
-                              String indexName,
-                              StringBuffer resultXml,
-                              String indexDocXslt) throws RemoteException {
+
+  /**
+   * Index the document(s) in the given file or directory.
+   */
+  private void fromFoxmlFiles(String filePath, String repositoryName, String indexDocXslt,
+                              UpdateResults results, IndexModifier modifier)
+      throws RemoteException {
     File objectDir = null;
     if (filePath == null || filePath.equals("")) {
       objectDir = new File(FEDORAOBJ_PATH);
       if (objectDir == null)
-        throw new RemoteException("Fedora object path does not exist: " + FEDORAOBJ_PATH);
+        throw new RemoteException("Fedora object path does not exist '" + FEDORAOBJ_PATH + "'");
     } else
       objectDir = new File(filePath);
-    
-    indexDocs(objectDir, repositoryName, indexName, resultXml, indexDocXslt);
+
+    indexDocs(objectDir, repositoryName, indexDocXslt, results, modifier);
   }
-    
-  private void indexDocs(File file, 
-                         String repositoryName,
-                         String indexName,
-                         StringBuffer resultXml, 
-                         String indexDocXslt) throws RemoteException
-  {
+
+  /**
+   * Index the document of the indicated PID.
+   */
+  private void fromPid(String pid, String repositoryName, String indexDocXslt,
+                       UpdateResults results, IndexModifier modifier) throws RemoteException {
+    // Call super to get foxml -- stashed into super.foxmlRecord attribute (byte[])
+    getFoxmlFromPid(pid, repositoryName);
+
+    InputStream foxmlStream = new ByteArrayInputStream(foxmlRecord);
+    indexDoc(pid, repositoryName, foxmlStream, indexDocXslt, results, modifier);
+  }
+
+
+  /**
+   * Index the document(s) indicated by the specified file or directory.
+   *
+   * @param file Is a file or directory to index. If a directory, all foxml files found under
+   *             that directory are indexed/re-indexed.
+   *
+   */
+  private void indexDocs(File file, String repositoryName, String indexDocXslt,
+                         UpdateResults results, IndexModifier modifier) throws RemoteException {
     if (file.isDirectory())
     {
       String[] files = file.list();
       for (int i = 0; i < files.length; i++)
-        indexDocs(new File(file, files[i]), repositoryName, indexName, resultXml, indexDocXslt);
+        indexDocs(new File(file, files[i]), repositoryName, indexDocXslt, results, modifier);
     }
     else
     {
       try {
-        indexDoc(file.getName(), repositoryName, indexName, new FileInputStream(file),
-                 resultXml, indexDocXslt);
-      } catch (RemoteException e) {
-        throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
+        InputStream foxmlStream = new FileInputStream(file);
+        indexDoc(file.getName(), repositoryName, foxmlStream, indexDocXslt, results, modifier);
       } catch (FileNotFoundException e) {
-        throw new GenericSearchException("Error file="+file.getAbsolutePath(), e);
+        throw new GenericSearchException("Error reading file '" + file.getAbsolutePath() + "'", e);
       }
     }
-    resultXml.append("<docCount>"+modifier.docCount()+"</docCount>\n");
-  }
-    
-  private void fromPid(String pid,
-                       String repositoryName,
-                       String indexName,
-                       StringBuffer resultXml,
-                       String indexDocXslt) throws RemoteException {
-    getFoxmlFromPid(pid, repositoryName);
-    indexDoc(pid, repositoryName, indexName,
-             new ByteArrayInputStream(foxmlRecord), resultXml, indexDocXslt);
-  }
-    
-  private void deletePid(String pid,
-                         StringBuffer resultXml) throws RemoteException {
-    try {
-      int deleted = modifier.deleteDocuments(new Term("PID", pid));
-      deleteTotal += deleted;
-      docCount = modifier.docCount();
-    } catch (IOException e) {
-      throw new GenericSearchException("Update deletePid error pid="+pid, e);
-    }
-  }
-  
-  private void indexDoc(String       pidOrFilename,
-                        String       repositoryName,
-                        String       indexName,
-                        InputStream  foxmlStream,
-                        StringBuffer resultXml,
-                        String       indexDocXslt) throws RemoteException {
-    IndexDocumentHandler hdlr = null;
 
-    // Transform our stuff to get it into lucene (this is the problem?)
-    StringBuffer sb = TopazTransformer.transform(FOXML2LUCENE_XSLT,
-//                                                     new StreamSource(foxmlStream),
-                                                     foxmlStream,
-                                                     new String[] {});
-    
+    results.resultXml.append("<docCount>").append(modifier.docCount()).append("</docCount>\n");
+  }
+
+  /**
+   * Index (or re-index) our document in lucene.
+   *
+   * @param identifier A string representing what is being ingested for logging purposes.
+   * @param repositoryName The string to put into the meta-data.
+   * @param foxmlStream The stream of foxml data from fedora.
+   * @param indexDocXslt The name of the xslt stylesheet to transform foxml with.
+   * @param results The results object to store our results into.
+   * @param modifier The lucene IndexModifier to use to index the doucment.
+   * @throws RemoteException If there is a problem.
+   */
+  private void indexDoc(String        identifier,
+                        String        repositoryName,
+                        InputStream   foxmlStream,
+                        String        indexDocXslt,
+                        UpdateResults results,
+                        IndexModifier modifier) throws RemoteException {
+    // Transform our stuff to get it into lucene
+    StringBuffer sb = TopazTransformer.transform(
+      FOXML2LUCENE_XSLT, foxmlStream, new String[] {});
+
     if (log.isDebugEnabled())
       log.debug("indexDoc=\n"+sb.toString());
-    
-    hdlr = new IndexDocumentHandler(this, repositoryName, pidOrFilename, sb);
+
+    /* Parse the XML our TopazTransformer returned above and create a Lucene Document.
+     * This happends mostly in the constructor. All we care about here after that is the
+     * Lucene Document and the PID.
+     */
+    IndexDocumentHandler hdlr = new IndexDocumentHandler(this, repositoryName, identifier, sb);
+    Document doc = hdlr.getIndexDocument();
+    String pid = hdlr.getPid();
+
     try {
+      // Try to delete the document
       int deleted = 0;
-      if (!(hdlr.getPid() == null || hdlr.getPid().equals("")))
-        deleted = modifier.deleteDocuments(new Term("PID", hdlr.getPid()));
-      deleteTotal += deleted;
-      if (hdlr.getIndexDocument().fields().hasMoreElements()) {
-        hdlr.getIndexDocument().add(new Field("repositoryName", repositoryName, Field.Store.YES,
-                                              Field.Index.UN_TOKENIZED, Field.TermVector.NO));
-        modifier.addDocument(hdlr.getIndexDocument());
-        modifier.flush();
-        resultXml.append("<insert>" + hdlr.getPid() + "</insert>\n");
-        resultXml.append("<docCount>" + modifier.docCount() + "</docCount>\n");
+      if (!(pid == null || pid.equals("")))
+        deleted = modifier.deleteDocuments(new Term("PID", pid));
+      results.deleteTotal += deleted; // Add count to instance variable
+
+      // If our document has any fields (i.e. it isn't an image with no meta data), continue...
+      if (doc.fields().hasMoreElements()) {
+        // Add field(s) to our document's fields
+        doc.add(new Field("repositoryName", repositoryName, Field.Store.YES,
+                          Field.Index.UN_TOKENIZED, Field.TermVector.NO));
+
+        // Add our document to lucene
+        modifier.addDocument(doc);
+        results.resultXml.append("<insert>").append(pid).append("</insert>\n")
+                         .append("<docCount>").append(modifier.docCount()).append("</docCount>\n");
+
+        // Update some instance variables used by calling methods
         if (deleted > 0) {
-          updateTotal++;
-          deleteTotal -= deleted;
+          results.updateTotal++;
+          results.deleteTotal -= deleted;
         }
-        else insertTotal++;
+        else
+          results.insertTotal++;
       }
     } catch (IOException e) {
-      throw new GenericSearchException("Update error pidOrFilename="+pidOrFilename, e);
+      throw new GenericSearchException("Update error on '" + identifier + "'", e);
     }
-  }
-    
-  public Analyzer getAnalyzer(String analyzerClassName) throws GenericSearchException {
-    Analyzer analyzer = null;
-    try {
-      Class analyzerClass = Class.forName(analyzerClassName);
-      analyzer = (Analyzer) analyzerClass.getConstructor(new Class[] {})
-        .newInstance(new Object[] {});
-    } catch (ClassNotFoundException e) {
-      throw new GenericSearchException(analyzerClassName
-                                       + ": class not found.\n", e);
-    } catch (InstantiationException e) {
-      throw new GenericSearchException(analyzerClassName
-                                       + ": instantiation error.\n", e);
-    } catch (IllegalAccessException e) {
-      throw new GenericSearchException(analyzerClassName
-                                       + ": instantiation error.\n", e);
-    } catch (InvocationTargetException e) {
-      throw new GenericSearchException(analyzerClassName
-                                       + ": instantiation error.\n", e);
-    } catch (NoSuchMethodException e) {
-      throw new GenericSearchException(analyzerClassName
-                                       + ": instantiation error.\n", e);
-    }
-    return analyzer;
   }
 }

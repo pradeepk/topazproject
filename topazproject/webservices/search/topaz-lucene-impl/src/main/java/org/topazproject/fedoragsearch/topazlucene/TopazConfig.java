@@ -25,9 +25,8 @@ import org.topazproject.configuration.ConfigurationStore; // Wraps commons-confi
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.lucene.store.Directory;
-import org.apache.lucene.store.FSDirectory;
 import org.apache.lucene.index.IndexModifier;
+import org.apache.lucene.analysis.Analyzer;
 import org.apache.lucene.analysis.standard.StandardAnalyzer;
 
 /**
@@ -67,6 +66,8 @@ class TopazConfig {
   static final String ANALYZER_NAME =
     CONF.getString("topaz.search.analyzername",
                    "org.apache.lucene.analysis.standard.StandardAnalyzer");
+  
+  private static Analyzer analyzer;
 
   // Log some errors if necessary
   static {
@@ -75,6 +76,7 @@ class TopazConfig {
 
     INDEX_PATH = getIndexPath(); // Get config if set or create temp location
     initializeIndex(); // If it doesn't exist, create it
+    initializeAnalyzer();
   }
 
   /**
@@ -128,5 +130,29 @@ class TopazConfig {
     } catch (IOException ioe) {
       log.error("Error seeing or creating database", ioe);
     }
-  }    
+  }
+
+  /**
+   * Initialize the configured analyzer -- we only need one instance of our analyzer
+   * for all operations.
+   */
+  private static void initializeAnalyzer() {
+    try {
+      analyzer = (Analyzer) Class.forName(ANALYZER_NAME).newInstance();
+      log.debug("Using lucene analyzer: " + ANALYZER_NAME);
+    } catch (ClassNotFoundException cnfe) {
+      log.error("Unable to find lucene analyzer class: " + ANALYZER_NAME, cnfe);
+    } catch (InstantiationException ie) {
+      log.error("Unable to instantiate lucene analyzer: " + ANALYZER_NAME, ie);
+    } catch (IllegalAccessException iae) {
+      log.error("Access violation instantiating lucene analyzer: " + ANALYZER_NAME, iae);
+    }
+  }
+
+  /**
+   * Return the configured analyzer.
+   *
+   * @returns The configured analyzer.
+   */
+  public static Analyzer getAnalyzer() { return analyzer; }
 }

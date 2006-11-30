@@ -67,42 +67,41 @@ public class Statement {
   
   private static final String   INDEX_PATH       = TopazConfig.INDEX_PATH;
   private static final String   INDEX_NAME       = TopazConfig.INDEX_NAME;
-  private static final String   ANALYZER_NAME    = TopazConfig.ANALYZER_NAME;
   private static final long     CACHE_EXPIRATION = TopazConfig.CACHE_EXPIRATION;
   private static final List     DEFAULT_FIELDS   = TopazConfig.DEFAULT_FIELDS;
   private static       String[] DEFAULT_FIELD_ARRAY;
   
   private static TopazIndexSearcher searcher;
-  private static Analyzer analyzer;
 
   /** Map of open queries to hits */
   private static TemporaryCache queryCache = new TemporaryCache(CACHE_EXPIRATION);
 
   static {
-    // Get the one instance of IndexSearcher that we need
+    // Get initial searcher object
+    allocateNewSearcher();
+    
+    // Copy DEFAULT_FIELDS to DEFAULT_FIELD_ARRAY -- ONCE
+    DEFAULT_FIELD_ARRAY = new String[DEFAULT_FIELDS.size()];
+    for (int i = 0; i < DEFAULT_FIELD_ARRAY.length; i++)
+      DEFAULT_FIELD_ARRAY[i] = (String) DEFAULT_FIELDS.get(i);
+  }
+
+  /**
+   * Allocate a new searcher and define it as the one we'll be using for new searches.
+   *
+   * We will be orphaning the old searcher object (if this is not the initial allocation).
+   * It will get deallocated and its finalizer will run when any stuff in our cache is
+   * deallocated.
+   *
+   * This needs to get called whenever the index is modified.
+   */
+  synchronized static void allocateNewSearcher() {
     try {
       searcher = new TopazIndexSearcher(INDEX_PATH);
       log.info("Using lucene index: " + INDEX_PATH);
     } catch (IOException ioe) {
       log.error("Unable to open lucene index: " + INDEX_PATH, ioe);
     }
-    
-    // Get the configured analyzer
-    try {
-      analyzer = (Analyzer) Class.forName(ANALYZER_NAME).newInstance();
-      log.debug("Using lucene analyzer: " + ANALYZER_NAME);
-    } catch (ClassNotFoundException cnfe) {
-      log.error("Unable to find lucene analyzer class: " + ANALYZER_NAME, cnfe);
-    } catch (InstantiationException ie) {
-      log.error("Unable to instantiate lucene analyzer: " + ANALYZER_NAME, ie);
-    } catch (IllegalAccessException iae) {
-      log.error("Access violation instantiating lucene analyzer: " + ANALYZER_NAME, iae);
-    }
-
-    // Copy DEFAULT_FIELDS to DEFAULT_FIELD_ARRAY -- ONCE
-    DEFAULT_FIELD_ARRAY = new String[DEFAULT_FIELDS.size()];
-    for (int i = 0; i < DEFAULT_FIELD_ARRAY.length; i++)
-      DEFAULT_FIELD_ARRAY[i] = (String) DEFAULT_FIELDS.get(i);
   }
 
   /**
@@ -129,7 +128,7 @@ public class Statement {
                          int      fieldMaxLength) throws GenericSearchException {
     if (searcher == null)
       throw new GenericSearchException("Failed to initialize Lucene");
-    if (analyzer == null)
+    if (TopazConfig.getAnalyzer() == null)
       throw new GenericSearchException("Failed to initialize Lucene analyzier");
 
     try {
@@ -159,7 +158,7 @@ public class Statement {
           Field f = (Field) e.nextElement();
           resultXml.append("<field name=\"").append(f.name()).append("\"");
 
-          // Build snippets
+          // Try to build snippets
           String snippets = null;
           if (snippetsMax > 0) {
             SimpleHTMLFormatter formatter = new SimpleHTMLFormatter(
@@ -169,7 +168,7 @@ public class Statement {
             Fragmenter fragmenter = new SimpleFragmenter(fieldMaxLength);
             highlighter.setTextFragmenter(fragmenter);
             TokenStream tokenStream =
-              analyzer.tokenStream(f.name(), new StringReader(f.stringValue()));
+              TopazConfig.getAnalyzer().tokenStream(f.name(), new StringReader(f.stringValue()));
             snippets =
               highlighter.getBestFragments(tokenStream, f.stringValue(), snippetsMax, " ... ");
           }
@@ -247,6 +246,8 @@ public class Statement {
   }
 
   private Query getQuery(String queryString) throws ParseException {
+    Analyzer analyzer = TopazConfig.getAnalyzer();
+    
     // Build QueryParser or MultiFieldQueryParser based on # of default fields
     if (DEFAULT_FIELD_ARRAY.length == 0)
       throw new ParseException("No default fields. Must have at least 1.");
