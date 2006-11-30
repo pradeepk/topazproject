@@ -104,7 +104,7 @@
     <xsl:for-each select="foxml:datastream/foxml:datastreamVersion/foxml:xmlContent/oai_dc:dc/*">
       <IndexField index="TOKENIZED" store="YES" termVector="YES">
         <xsl:attribute name="IFname">
-          <xsl:value-of select="concat('dc.', substring-after(name(),':'))"/>
+          <xsl:value-of select="substring-after(name(),':')"/>
         </xsl:attribute>
         <xsl:value-of select="text()"/>
       </IndexField>
@@ -125,7 +125,7 @@
   
   <!-- Template to index our XML content -->
   <xsl:template name="topaz-xml">
-    <IndexField IFname="uva.access" index="TOKENIZED" store="YES" termVector="NO">
+    <IndexField IFname="body" index="TOKENIZED" store="YES" termVector="NO">
       <xsl:apply-templates select="document(concat('http://localhost:9090/fedora/get/', $PID,
                                             '/XML'))/article/body" mode="value-of"/>
     </IndexField>
