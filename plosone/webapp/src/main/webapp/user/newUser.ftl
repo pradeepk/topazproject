@@ -30,7 +30,7 @@
 	<legend>Your Extended Profile</legend>
 		<ol>
 			<li>
-        <@ww.textfield name="postalAddress" label="Address" cssClass="long-input" tabindex="106" />
+        <@ww.textarea name="postalAddress" label="Address" cssClass="long-input"  rows="5" cols="50" tabindex="106" />
 				<ol>
           <@ww.textfield name="city" label="City" required="true" tabindex="107"/>
           <@ww.textfield name="country" label="Country" required="true" tabindex="111"/>
