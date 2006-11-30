@@ -37,7 +37,7 @@ public class BaseConfigurableService {
   protected BaseConfigurableService () {
     if (log.isDebugEnabled()) {
       log.debug ("Service constructed: " + this.getClass());
-      log.debug("", new Exception ());
+   //   log.debug("", new Exception ());
     }
     
   }
@@ -51,6 +51,7 @@ public class BaseConfigurableService {
   protected ProtectedService createProtectedService(Configuration configuration) throws IOException, URISyntaxException {
     if (log.isDebugEnabled()) {
       log.debug("createProctectedService called by " + this.getClass());
+      //log.debug("my hash = " + this.hashCode() + " toString: " + this.toString());
     }
     final Map sessionMap = getSessionMap();
     String memberUser = null;
