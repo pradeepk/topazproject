@@ -48,7 +48,7 @@
     <profile>
       <activation>
         <property>
-          <name>AlertJournals</name>
+          <name>AlertsInfo</name>
         </property>
       </activation>
       <build>
@@ -58,9 +58,9 @@
             <groupId>org.codehaus.mojo</groupId>
             <artifactId>exec-maven-plugin</artifactId>
             <configuration>
-              <mainClass>AlertJournals</mainClass>
+              <mainClass>AlertsInfo</mainClass>
               <arguments>
-                <argument>${command.line}</argument>
+                <argument>${args}</argument>
               </arguments>
             </configuration>
           </plugin>

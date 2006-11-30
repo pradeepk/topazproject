@@ -35,34 +35,40 @@ import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
 
 /**
- * Return the list of users and journals they are subscribed to. To execute
- * this using maven, please try  mvn -o -f topazproject/tools/alerts/pom.xml
- * exec:java -Dexec.mainClass="AlertJournals".
+ * Return various useful alerts information from Mulgara. To execute
+ * this using maven, please use:
+ *
+ *        mvn -o -f topazproject/tools/alerts/pom.xml -DAlertsInfo
+ *                 -Dargs="-uri <mulgara uri>"
  *
  * @author Amit Kapoor
  */
-public class AlertJournals {
+public class AlertsInfo {
   private static final String ALERTS = "<local:///topazproject#filter:model=alerts>";
   private static final String PREFS = "<local:///topazproject#filter:model=preferences>";
 
   private static final String QUERY =
-       "select $user " +
-       "    subquery(select $email from " +
-       "             ${PREFS} where $pref <topaz:preference> $prefn and " +
-       "             $prefn <topaz:prefName> 'alertsEmailAddress' and " +
-       "             $prefn <topaz:prefValue> $email) " +
-       "    subquery(select $alertsJournals from " +
-       "             ${PREFS} where $pref <topaz:preference> $prefn and " +
-       "             $prefn <topaz:prefName> 'alertsJournals' and " +
-       "             $prefn <topaz:prefValue> $alertsJournals) " +
-       "    subquery(select $alertsCategories from " +
-       "             ${PREFS} where $pref <topaz:preference> $prefn and " +
-       "             $prefn <topaz:prefName> 'alertsCategories' and " +
-       "             $prefn <topaz:prefValue> $alertsCategories) " +
-       " from ${PREFS} " +
-       "   where $user <topaz:hasPreferences> $pref " +
-       "   and $pref <dc_terms:mediator> 'alerts' " +
-       " order by $user;";
+    // The user
+    "select $user " +
+    // email
+    "    subquery(select $email from " +
+    "             ${PREFS} where $pref <topaz:preference> $prefn and " +
+    "             $prefn <topaz:prefName> 'alertsEmailAddress' and " +
+    "             $prefn <topaz:prefValue> $email) " +
+    // Journal alerts subscription
+    "    subquery(select $alertsJournals from " +
+    "             ${PREFS} where $pref <topaz:preference> $prefn and " +
+    "             $prefn <topaz:prefName> 'alertsJournals' and " +
+    "             $prefn <topaz:prefValue> $alertsJournals) " +
+    // Categories of interest
+    "    subquery(select $alertsCategories from " +
+    "             ${PREFS} where $pref <topaz:preference> $prefn and " +
+    "             $prefn <topaz:prefName> 'alertsCategories' and " +
+    "             $prefn <topaz:prefValue> $alertsCategories) " +
+    " from ${PREFS} " +
+    "   where $user <topaz:hasPreferences> $pref " +
+    "   and $pref <dc_terms:mediator> 'alerts' " +
+    " order by $user;";
 
   private ItqlHelper itql;
 
@@ -71,14 +77,13 @@ public class AlertJournals {
   // Set up the command line options
   static {
     options = new Options();
-    options.addOption(OptionBuilder.withArgName("uri").hasArg().
-        withValueSeparator().withDescription("URI for the Mulgara service").
-        create("uri"));
-    options.addOption(new Option("help", "print this message"));
+    options.addOption(OptionBuilder.withArgName("mulgara uri").hasArg().
+        isRequired(true).  withValueSeparator(' ').
+        withDescription("URI to access Mulgara").  create("uri"));
   }
 
   /**
-   * Creates a new AlertJournals object.
+   * Creates a new AlertsInfo object.
    *
    * @param mulgaraUri the mulgara service uri
    *
@@ -86,7 +91,7 @@ public class AlertJournals {
    * @throws ServiceException if an error occurred locating the web-service
    * @throws RemoteException if an error occurred talking to the web-service
    */
-  public AlertJournals(URI mulgaraUri)
+  public AlertsInfo(URI mulgaraUri)
     throws MalformedURLException, ServiceException, RemoteException {
     itql = new ItqlHelper(mulgaraUri);
   }
@@ -153,6 +158,13 @@ public class AlertJournals {
         StrMatcher.quoteMatcher()).getTokenArray();
   }
 
+  // Print help message
+  private static final void help() {
+    HelpFormatter formatter = new HelpFormatter();
+    formatter.printHelp("AlertsInfo", options);
+    System.exit(0);
+  }
+
   /**
    * main
    *
@@ -160,27 +172,24 @@ public class AlertJournals {
    */
   public static void main(String[] args) throws Exception {
     // for broken exec:java : parse the command line ourselves
+    if (args.length == 1 && args[0] == null) {
+      help();
+    }
     if (args.length == 1 && args[0].indexOf(' ') > 0)
       args = parseArgs(args[0]);
 
     CommandLineParser parser = new GnuParser();
     try {
         // parse the command line arguments
-        CommandLine line = parser.parse(options, args);
-        if (line.hasOption("help")) {
-          HelpFormatter formatter = new HelpFormatter();
-          formatter.printHelp("AlertJournals", options);
-        }
-
-        AlertJournals alerts 
-          = new AlertJournals(new URI(line.getOptionValue("uri")));
-        String[] values = alerts.getValues();
-        for (int idx = 0; idx < values.length; idx++) {
-          System.out.println(values[idx]);
-        }
-    }
-    catch( ParseException exp ) {
+      CommandLine line = parser.parse(options, args);
+      AlertsInfo alerts = new AlertsInfo(new URI(line.getOptionValue("uri")));
+      String[] values = alerts.getValues();
+      for (int idx = 0; idx < values.length; idx++) {
+        System.out.println(values[idx]);
+      }
+    } catch( ParseException exp ) {
         System.err.println( "Parsing failed.  Reason: " + exp.getMessage() );
+        help();
     }
   }
 }
