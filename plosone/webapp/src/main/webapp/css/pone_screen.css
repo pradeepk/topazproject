@@ -30,6 +30,8 @@ img			{ border: 0; }
 label em { display: block; color: #F63; } /* em wraps all error messages within labels */
 .error { display: block; color: #F63; font-style: italic; } /* em wraps all error messages within labels */
 strong		{ font-weight: bold; }
+sup			{ font-size: .9em; }
+h1 sup		{ font-size: .75em; }
 ul, ol, dl	{ margin: 20px; position: relative; }
 dt			{ font-weight: bold; }
 dd			{ margin: 0; }
