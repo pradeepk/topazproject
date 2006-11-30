@@ -99,7 +99,7 @@ class TopazConfig {
         log.error("Unable to create temporary directory", ioe);
       }
     }
-    log.info("topaz-lucene db in " + INDEX_PATH);
+    log.info("topaz-lucene db in '" + indexPath + "'");
     return indexPath;
   }
 
