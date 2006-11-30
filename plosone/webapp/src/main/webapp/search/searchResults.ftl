@@ -25,7 +25,7 @@
 		<table>
 			<tr>
 				<th class="results-title">Title</th>
-				<th class="results-date">Published Date</th>
+				<th class="results-date">Publication Date</th>
 				<th class="results-author">Author</th>
 			</tr>
 			<#list searchResults as hit>
