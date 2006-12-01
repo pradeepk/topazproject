@@ -4,6 +4,8 @@
  */
 package org.plos.web;
 
+import static org.plos.Constants.Length.PASSWORD_MAX;
+import static org.plos.Constants.Length.PASSWORD_MIN;
 import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.EmailValidator;
 import com.opensymphony.xwork.validator.annotations.FieldExpressionValidator;
@@ -13,6 +15,7 @@ import com.opensymphony.xwork.validator.annotations.StringLengthFieldValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import org.plos.Constants;
 import org.plos.registration.User;
 import org.plos.service.RegistrationService;
 import org.plos.service.UserAlreadyExistsException;
@@ -105,9 +108,9 @@ public class RegisterAction extends ActionSupport {
    * Get password1
    * @return password1
    */
-  @RequiredStringValidator(message="You must enter a password")
-  @FieldExpressionValidator(fieldName="password2", expression = "password1==password2", message="Passwords must match")
-  @StringLengthFieldValidator(maxLength = "256", message="Password must be less than 256")
+  @RequiredStringValidator(message="You must enter a password", shortCircuit=true)
+  @FieldExpressionValidator(fieldName="password2", expression = "password1==password2", message="Passwords must match", shortCircuit=true)
+  @StringLengthFieldValidator(minLength= PASSWORD_MIN, maxLength = PASSWORD_MAX, message="Password length must be between " + PASSWORD_MIN + " and " + PASSWORD_MAX, shortCircuit=true)
   public String getPassword1() {
     return password1;
   }

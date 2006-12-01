@@ -11,6 +11,8 @@ import com.opensymphony.xwork.validator.annotations.StringLengthFieldValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import static org.plos.Constants.Length.PASSWORD_MIN;
+import static org.plos.Constants.Length.PASSWORD_MAX;
 import org.plos.service.NoUserFoundWithGivenLoginNameException;
 import org.plos.service.PasswordInvalidException;
 import org.plos.service.RegistrationService;
@@ -92,9 +94,9 @@ public class ChangePasswordAction extends ActionSupport {
   /**
    * @return newPassword1 newPassword1
    */
-  @RequiredStringValidator(message="You must enter a new password")
-  @FieldExpressionValidator(fieldName= "newPassword1", expression= "newPassword1" +"=="+ "newPassword2", message="New passwords must match")
-  @StringLengthFieldValidator(maxLength="256", message="Password must be less than 256")
+  @RequiredStringValidator(message="You must enter a new password", shortCircuit=true)
+  @FieldExpressionValidator(fieldName= "newPassword1", expression= "newPassword1==newPassword2", message="New passwords must match", shortCircuit=true)
+  @StringLengthFieldValidator(minLength= PASSWORD_MIN, maxLength = PASSWORD_MAX, message="Password length must be between " + PASSWORD_MIN + " and " + PASSWORD_MAX, shortCircuit=true)
   public String getNewPassword1() {
     return newPassword1;
   }

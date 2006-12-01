@@ -8,9 +8,12 @@ import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.EmailValidator;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
+import com.opensymphony.xwork.validator.annotations.StringLengthFieldValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import static org.plos.Constants.Length.PASSWORD_MIN;
+import static org.plos.Constants.Length.PASSWORD_MAX;
 import org.plos.service.RegistrationService;
 import org.plos.service.VerificationTokenInvalidException;
 import org.plos.service.NoUserFoundWithGivenLoginNameException;
@@ -113,8 +116,15 @@ public class ForgotPasswordChangePasswordAction extends ActionSupport {
     } else if (!password1.equals(password2)) {
       addFieldError("password1",  "Passwords must match");
       return false;
+    } else {
+      final int passwordLength = password1.length();
+      if (passwordLength < Integer.parseInt(PASSWORD_MIN) || passwordLength > Integer.parseInt(PASSWORD_MAX)) {
+        addFieldError("password1",  "Password length must be between " + PASSWORD_MIN + " and " + PASSWORD_MAX);
+        return false;
+      } 
     }
-    return true;    
+
+    return true;
   }
 
   /**
