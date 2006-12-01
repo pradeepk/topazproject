@@ -104,7 +104,7 @@ public class Articles {
   public String ingestArticle(String zipFileName) 
     throws MalformedURLException, DuplicateArticleIdException, 
                     IngestException, RemoteException {
-             return(service.ingest(new DataHandler(new File(zipFileName).toURL())));
+             return service.ingest(new DataHandler(new File(zipFileName).toURL()));
   }
 
   /**
