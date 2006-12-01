@@ -40,7 +40,8 @@
             </#if>
           </span>
 					<span class="results-item-preview">${hit.description}</span>
-				</td>
+        <!-- hitScore: ${hit.hitScore} -->
+        </td>
 				<td class="results-date">${hit.date?string("yyyy-MM-dd")}</td>
 				<td class="results-author">${hit.creator}</td>
 			</tr>
