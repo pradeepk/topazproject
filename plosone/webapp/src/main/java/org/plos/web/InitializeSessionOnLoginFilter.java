@@ -34,25 +34,34 @@ import java.util.Iterator;
  */
 public class InitializeSessionOnLoginFilter implements Filter {
   private static final Log log = LogFactory.getLog(InitializeSessionOnLoginFilter.class);
-  private final String MEMBER_SESSION_RESET_FLAG = "MemberSessionCreatedFlag";
+  private static final String PGT_IOU_KEY = "org.plos.web.InitilalizeSessionOnLoginFilter.PGT_IOU_KEY";
 
   public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain filterChain) throws IOException, ServletException {
     try {
       final HttpServletRequest servletRequest = (HttpServletRequest) request;
       final HttpSession initialSession = servletRequest.getSession();
+      final CASReceipt casReceipt = (CASReceipt) initialSession.getAttribute(Constants.SINGLE_SIGNON_RECEIPT);
+      final String sessionPgtIOU = (String)initialSession.getAttribute(PGT_IOU_KEY);
       
       if (log.isDebugEnabled()){
         log.debug("Session is hashCode: " + initialSession.hashCode());
         log.debug("Session is id: " + initialSession.getId());
         log.debug("Session is String: " + initialSession);
+        log.debug("Original Session PGT_IOU_KEY: " + sessionPgtIOU);
+        log.debug("CAS Receipt is: " + casReceipt);
       }
       
-//    if member session was already recreated let the call pass through
-      if (null != initialSession.getAttribute(MEMBER_SESSION_RESET_FLAG)) {
+      
+//    if member session was already recreated and I haven't received a new PGT_IOU
+      
+      // if user wasn't logged in before and he still isn't logged in  ||
+      // if the user was logged in before and he is still logged in with the same PGT_IOU
+      if (((null == casReceipt) && (null == sessionPgtIOU)) ||
+          ((null != sessionPgtIOU) && (null != casReceipt) &&
+           (sessionPgtIOU.equals(casReceipt.getPgtIou())))){
         filterChain.doFilter(request, response);
       } else {
-
-        if (log.isTraceEnabled()) {
+        if (log.isDebugEnabled()) {
           log.debug("Initial attributes in session were:");
           final Enumeration attribs = initialSession.getAttributeNames();
           while (attribs.hasMoreElements()) {
@@ -60,20 +69,19 @@ public class InitializeSessionOnLoginFilter implements Filter {
             log.debug(attribName + ":" + initialSession.getAttribute(attribName).toString());
           }
         }
-        final String casUser = (String) initialSession.getAttribute(Constants.SINGLE_SIGNON_USER_KEY);
-        if (null == casUser) {
-          log.debug("No CAS receipt found");
+        final HttpSession session = reInitializeSessionForMemberLogin(initialSession, servletRequest);
+          
+        if (casReceipt != null) {
+          session.setAttribute(PGT_IOU_KEY, casReceipt.getPgtIou());
+          if (log.isDebugEnabled()) {
+            log.debug("new login from CAS with PGT_IOU: " + casReceipt.getPgtIou());
+          }
         } else {
-          final CASReceipt casReceipt = (CASReceipt) initialSession.getAttribute(Constants.SINGLE_SIGNON_RECEIPT);
-
-          final HttpSession session = reInitializeSessionForMemberLogin(initialSession, servletRequest);
-          session.setAttribute(MEMBER_SESSION_RESET_FLAG, "true");
-
-          filterChain.doFilter(request, response);
-
-          log.debug("Member session created with CAS ticket:" + casReceipt.getPgtIou());
+          session.removeAttribute(PGT_IOU_KEY);
         }
-      }
+        
+        filterChain.doFilter(request, response);
+       }
     } catch (IOException io) {
       log.error("IOException raised in Filter1 Filter", io);
     } catch (ServletException se) {
