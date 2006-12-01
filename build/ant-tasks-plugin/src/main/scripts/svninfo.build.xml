@@ -31,8 +31,5 @@
     <exec dir="${directory}" executable="svn${svnext}" output="${outputPath}" append="true">
       <arg line="info"/>
     </exec>
-    <exec dir="${directory}" executable="svn${svnext}" output="${outputPath}" append="true">
-      <arg line="log"/>
-    </exec>
   </target>
 </project>
