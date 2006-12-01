@@ -50,7 +50,7 @@ class TopazConfig {
                                                          "topazFoxmlToLucene");
   static final List   DEFAULT_FIELDS    = CONF.getList(  "topaz.search.defaultfields",
                                             Arrays.asList(new Object[]
-                                              { "dc.description", "dc.title", "uva.access" }));
+                                              { "description", "title", "body" }));
   
   static final String GFIND_XSLT =
     CONF.getString("topaz.search.xslt.gfind", "gfindObjectsToResultPage");
