@@ -104,7 +104,7 @@ public class HomePageAction extends BaseActionSupport {
    * 
    *
    */
-  private void getArticlesAndCategories() {
+  private void populateArticlesAndCategories() {
     ArticleInfo[] weeksArticles = getLastWeeksArticles();
     if (weeksArticles.length > 0){
       TreeMap<String, ArrayList<ArticleInfo>> allArticles = new TreeMap<String, ArrayList<ArticleInfo>>();
@@ -161,7 +161,7 @@ public class HomePageAction extends BaseActionSupport {
    */
   public ArticleInfo[][] getArticlesByCategory() {
     if (!categoriesAreInitialized) {
-      getArticlesAndCategories();
+      populateArticlesAndCategories();
       categoriesAreInitialized = true;
     }
     return articlesByCategory;
@@ -172,7 +172,7 @@ public class HomePageAction extends BaseActionSupport {
    */
   public String[] getCategoryNames() {
     if (!categoriesAreInitialized) {
-      getArticlesAndCategories();
+      populateArticlesAndCategories();
       categoriesAreInitialized = true;
     }
     return categoryNames;
