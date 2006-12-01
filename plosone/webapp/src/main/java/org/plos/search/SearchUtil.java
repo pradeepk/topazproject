@@ -83,19 +83,19 @@ public class SearchUtil {
 
     final Map<String, String> map = getFieldNodeNameAttributeValueMap(hitNode);
 
-    final String pid = map.get("dc.identifier");
+    final String pid = map.get("identifier");
     final String type = map.get("property.type");
     final String state = map.get("property.state");
     final Date createdDate = DateParser.parse(map.get("property.createdDate"));
     final Date lastModifiedDate = DateParser.parse(map.get("property.lastModifiedDate"));
     final String contentModel = map.get("property.contentModel");
-    final String description = map.get("dc.description");
-    final String creator = map.get("dc.creator");
-    final String publisher = map.get("dc.publisher");
+    final String description = map.get("description");
+    final String creator = map.get("creator");
+    final String publisher = map.get("publisher");
     final String repositoryName = map.get("repositoryName");
-    final Date date = DateParser.parse(map.get("dc.date"));
-    final String title = map.get("dc.title");
-    final String highlight = map.get("uva.access");
+    final Date date = DateParser.parse(map.get("date"));
+    final String title = map.get("title");
+    final String highlight = map.get("body");
     return new SearchHit(hitNumber, hitScore, pid, title, highlight, type, state, creator, date, createdDate, lastModifiedDate, contentModel, description, publisher, repositoryName);
   }
 
