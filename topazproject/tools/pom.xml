@@ -26,5 +26,6 @@
 
   <modules>
     <module>alerts</module>
+    <module>rss</module>
   </modules>
 </project>
