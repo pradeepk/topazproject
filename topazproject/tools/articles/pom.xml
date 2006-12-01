@@ -44,14 +44,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-articles-webapp</artifactId>
-      <type>war</type>
-      <version>0.5-SNAPSHOT</version>
-      <scope>provided</scope>
-    </dependency>
-
-    <dependency>
       <groupId>javax.activation</groupId>
       <artifactId>activation</artifactId>
     </dependency>
