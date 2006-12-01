@@ -33,7 +33,8 @@ import javax.xml.transform.stream.StreamSource;
 
 import org.apache.axis.AxisFault;
 import org.apache.axis.client.AdminClient;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.analysis.Analyzer;
 
 import dk.defxws.fedoragsearch.server.errors.ConfigException;
@@ -75,7 +76,7 @@ public class Config {
     
     private StringBuffer errors = null;
     
-    private final Logger logger = Logger.getLogger(Config.class);
+    private static final Log logger = LogFactory.getLog(Config.class);
     
     public static void configure() throws ConfigException {
         currentConfig = (new Config());

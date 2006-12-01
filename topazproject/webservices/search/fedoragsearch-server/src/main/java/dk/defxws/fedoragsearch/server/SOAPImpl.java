@@ -11,7 +11,8 @@
  */
 package dk.defxws.fedoragsearch.server;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * target for SOAP calls, calls the operationsImpl
@@ -21,8 +22,7 @@ import org.apache.log4j.Logger;
  */
 public class SOAPImpl implements Operations {
     
-    private static final Logger logger =
-        Logger.getLogger(SOAPImpl.class);
+    private static final Log logger = LogFactory.getLog(SOAPImpl.class);
     
     public String gfindObjects(
             String query,

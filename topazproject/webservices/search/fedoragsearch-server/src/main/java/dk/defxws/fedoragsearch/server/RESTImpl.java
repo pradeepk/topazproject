@@ -20,7 +20,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.ServletException;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /**
  * servlet for REST calls, calls the operationsImpl
@@ -30,8 +31,7 @@ import org.apache.log4j.Logger;
  */
 public class RESTImpl extends HttpServlet {
     
-    private static final Logger logger =
-        Logger.getLogger(RESTImpl.class);
+    private static final Log logger = LogFactory.getLog(RESTImpl.class);
     
     private Config config;
     

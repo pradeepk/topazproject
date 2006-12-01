@@ -27,7 +27,8 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 
@@ -39,8 +40,7 @@ import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
  */
 public class GTransformer {
     
-    private static final Logger logger =
-        Logger.getLogger(GTransformer.class);
+    private static final Log logger = LogFactory.getLog(GTransformer.class);
     
     public GTransformer() {
     }

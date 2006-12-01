@@ -21,7 +21,8 @@ import java.util.StringTokenizer;
 import javax.xml.transform.stream.StreamSource;
 
 import org.apache.axis.AxisFault;
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
 import dk.defxws.fedoragsearch.server.fedorasoap.FedoraAPIMBindingSOAPHTTPStub;
@@ -38,8 +39,7 @@ import fedora.server.types.gen.MIMETypedStream;
  */
 public class GenericOperationsImpl implements Operations {
     
-    private static final Logger logger =
-        Logger.getLogger(GenericOperationsImpl.class);
+    private static final Log logger = LogFactory.getLog(GenericOperationsImpl.class);
     
     protected Config config;
     protected int insertTotal = 0;

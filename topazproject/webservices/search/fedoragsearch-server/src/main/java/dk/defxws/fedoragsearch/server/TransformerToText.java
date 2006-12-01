@@ -16,7 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 
-import org.apache.log4j.Logger;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.lucene.demo.html.HTMLParser;
 import org.pdfbox.cos.COSDocument;
 import org.pdfbox.encryption.DocumentEncryption;
@@ -36,8 +37,7 @@ import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
  */
 public class TransformerToText {
     
-    private static final Logger logger =
-        Logger.getLogger(TransformerToText.class);
+    private static final Log logger = LogFactory.getLog(TransformerToText.class);
     
     public static final String[] handledMimeTypes = {"text/plain", "text/html", "application/pdf"};
     
