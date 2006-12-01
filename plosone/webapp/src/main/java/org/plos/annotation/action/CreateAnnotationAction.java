@@ -45,7 +45,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    * Also does some profanity check for commentTitle and comment before creating the annotation.
    */
   public String execute() throws Exception {
-    if (!checkIfValid()) return ERROR;
+    if (!checkIfValid()) return INPUT;
 
     try {
       final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(commentTitle);
@@ -53,10 +53,13 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
 
       if (profanityValidationMessagesInBody.isEmpty() && profanityValidationMessagesInTitle.isEmpty()) {
         annotationId = getAnnotationService().createAnnotation(target, getTargetContext(), supercedes, commentTitle, mimeType, comment, isPublic);
+        if (log.isDebugEnabled()) {
+          log.debug("CreateAnnotationAction called and annotation created with id: " + annotationId);
+        }
       } else {
         addMessages(profanityValidationMessagesInBody, "profanity check", "comment");
         addMessages(profanityValidationMessagesInTitle, "profanity check", "commentTitle");
-        return ERROR;
+        return INPUT;
       }
     } catch (final ApplicationException e) {
       log.error(e, e);

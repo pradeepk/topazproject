@@ -6,6 +6,7 @@ package org.plos.annotation.service;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 import com.opensymphony.oscache.base.NeedsRefreshException;
+import com.opensymphony.webwork.ServletActionContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -15,6 +16,7 @@ import org.plos.annotation.FlagUtil;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.service.BaseConfigurableService;
 import org.plos.util.FileUtils;
+import org.plos.user.PlosOneUser;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.Annotations;
@@ -64,16 +66,20 @@ public class AnnotationService extends BaseConfigurableService {
      *  directly by calling the AnnotationWebService, this will result in a cache
      *  that out of date.
      */
-   
+    if (log.isDebugEnabled()) {
+      StringBuilder debugMsg = new StringBuilder("creating annotation for target: ");
+      debugMsg.append(target).append("; context: ").append(context).append("; supercedes: ");
+      debugMsg.append(olderAnnotation).append("; title: " ).append(title).append("; mimeType: ");
+      debugMsg.append(mimeType).append("; body: ").append(body).append("; isPublic: ").append(isPublic);
+      log.debug(debugMsg);
+    }
+
     try {
-      if (log.isDebugEnabled()) {
-        StringBuilder debugMsg = new StringBuilder("creating annotation for target: ");
-        debugMsg.append(target).append("; context: ").append(context).append("; supercedes: ");
-        debugMsg.append(olderAnnotation).append("; title: " ).append(title).append("; mimeType: ");
-        debugMsg.append(mimeType).append("; body: ").append(body).append("; isPublic: ").append(isPublic);
-        log.debug(debugMsg);
-      }
       final String annotationId = annotationWebService.createAnnotation(mimeType, target, context, olderAnnotation, title, body);
+      PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(Constants.PLOS_ONE_USER_KEY);
+      log.debug ("Annotation created with ID: " + annotationId + " for user: " + ((user == null)?"null":user.getUserId()) + " for IP: " +
+          ServletActionContext.getRequest().getRemoteAddr());
+
       if (isPublic) {
         setAnnotationPublic(annotationId);
       }
