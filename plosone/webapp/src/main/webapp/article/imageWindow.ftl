@@ -36,7 +36,7 @@
 			<div id="figure-window-hdr-links">
 			<a href="${currentImageUrl}&representation=${currentImage.repLarge}" id="viewL" class="larger icon" title="Click to view a larger version of this image">View Larger Image</a> 
 			<a href="${currentImageAttachmentUrl}&representation=TIF" id="downloadTiff" class="image icon" title="Click to download the original TIFF">		Download original TIFF</a> 
-			<a href="${currentImageUrl}&representation=${currentImage.repMedium}" id="downloadPpt" class="ppt icon" title="Click to download a PowerPoint friendly version">Download PowerPoint Friendly Image</a>		</div>
+			<a href="${currentImageAttachmentUrl}&representation=${currentImage.repMedium}" id="downloadPpt" class="ppt icon" title="Click to download a PowerPoint friendly version">Download PowerPoint Friendly Image</a>		</div>
 				
 		</div>
 		

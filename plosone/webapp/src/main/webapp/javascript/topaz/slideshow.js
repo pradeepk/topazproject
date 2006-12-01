@@ -65,7 +65,7 @@ topaz.slideshow = {
   show: function (obj, index) {
     if (this.linkView) this.linkView.href = slideshow[index].imageUri + "&representation=" + this.imgL;
     if (this.linkTiff) this.linkTiff.href = slideshow[index].imageAttachUri + "&representation=" + this.imgTif;
-    if (this.linkPpt) this.linkPpt.href  = slideshow[index].imageUri + "&representation=" + this.imgM;
+    if (this.linkPpt) this.linkPpt.href  = slideshow[index].imageAttachUri + "&representation=" + this.imgM;
     
     if (this.figImg) {
       this.figImg.src = slideshow[index].imageUri + "&representation=" + this.imgM;
@@ -107,7 +107,7 @@ topaz.slideshow = {
   showSingle: function (obj, index) {
     if (this.linkView) this.linkView.href = slideshow[index].imageUri + "&representation=" + this.imgL;
     if (this.linkTiff) this.linkTiff.href = slideshow[index].imageAttachUri + "&representation=" + this.imgTif;
-    if (this.linkPpt) this.linkPpt.href  = slideshow[index].imageUri + "&representation=" + this.imgM;
+    if (this.linkPpt) this.linkPpt.href  = slideshow[index].imageAttachUri + "&representation=" + this.imgM;
     
     if (this.figImg) {
       this.figImg.src = slideshow[index].imageUri + "&representation=" + this.imgM;
