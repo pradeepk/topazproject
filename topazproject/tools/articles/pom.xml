@@ -36,6 +36,25 @@
       <artifactId>commons-lang</artifactId>
       <version>2.2</version>
     </dependency>
+
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-articles-client-impl</artifactId>
+      <version>0.5-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-articles-webapp</artifactId>
+      <type>war</type>
+      <version>0.5-SNAPSHOT</version>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.activation</groupId>
+      <artifactId>activation</artifactId>
+    </dependency>
   </dependencies>
 
   <profiles>
