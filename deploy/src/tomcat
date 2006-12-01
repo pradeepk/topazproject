@@ -24,7 +24,9 @@
 # Defaults:
 CATALINA_HOME=
 USER="topaz"
-JAVA_HOME="/usr/local/topaz/java"
+TOPAZ_LOCAL="/usr/local/topaz"
+JAVA_HOME="$TOPAZ_LOCAL/java"
+LOG4J_JAR="$TOPAZ_LOCAL/lib/log4j.jar"
 TOMCAT_OPTS="-Xmx256m"
 VARDIR="/var"
 LOGDIR="${VARDIR}/log/tomcat"
@@ -34,12 +36,12 @@ JVM="server"
 
 # Overrides: basename_CATALINA_HOME, basename_TOMCAT_OPTS, basename_USER
 SERVERS="ecqs mckoi mulgara fedora search topaz plosone"
-ecqs_CATALINA_HOME=/usr/local/topaz/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28
+ecqs_CATALINA_HOME="$TOPAZ_LOCAL/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28"
 ecqs_TOMCAT_OPTS="-Xmx256m"
-topaz_CATALINA_HOME=/usr/local/topaz/topaz-tomcat55
-search_CATALINA_HOME=/usr/local/topaz/search-tomcat55
-mulgara_CATALINA_HOME=/usr/local/topaz/mulgara-tomcat55
-plosone_CATALINA_HOME=/usr/local/topaz/plosone-tomcat55
+topaz_CATALINA_HOME="$TOPAZ_LOCAL/topaz-tomcat55"
+search_CATALINA_HOME="$TOPAZ_LOCAL/search-tomcat55"
+mulgara_CATALINA_HOME="$TOPAZ_LOCAL/mulgara-tomcat55"
+plosone_CATALINA_HOME="$TOPAZ_LOCAL/plosone-tomcat55"
 
 # These ports are only for printing status. If they're accurate, status will be better
 PORT=
@@ -92,18 +94,21 @@ CATALINA_POLICY=${CATALINA_HOME}/conf/catalina.policy
 getjars () { echo `(cd /; find $1 -name '*.jar')` | tr ' ' ':'; }
 TC=${CATALINA_HOME}
 CLASSPATH="$TC/bin/bootstrap.jar:$TC/bin/commons-logging-api.jar"
-# Add /etc/topaz/container/<basename>/lib/*.jar OR /etc/topaz/container/common/lib/*.jar
-if [ -d /etc/topaz/container/$BASENAME/lib ]; then
-  EXTRA_CLASSES=`getjars /etc/topaz/container/$BASENAME/lib`
-elif [ -d /etc/topaz/container/common/lib ]; then
-  EXTRA_CLASSES=`getjars /etc/topaz/container/common/lib`
+# See if there is a log4j configuration (last test here wins -- in reverse order)
+CONTDIR=/etc/topaz/container
+[ -f $CONTDIR/common/log4j.properties ]    && LOG4J_CONFIG=$CONTDIR/common/log4j.properties
+[ -f $CONTDIR/common/log4j.xml ]           && LOG4J_CONFIG=$CONTDIR/common/log4j.xml
+[ -f $CONTDIR/$BASENAME/log4j.properties ] && LOG4J_CONFIG=$CONTDIR/$BASENAME/log4j.properties
+[ -f $CONTDIR/$BASENAME/log4j.xml ]        && LOG4J_CONFIG=$CONTDIR/$BASENAME/log4j.xml
+if [ -n "$LOG4J_CONFIG" ]; then
+  TOMCAT_OPTS="$TOMCAT_OPTS -Dlog4j.configuration=file:///$LOG4J_CONFIG"
+  CLASSPATH=$LOG4J_JAR:$CLASSPATH
 fi
-[ -n "$EXTRA_CLASSES" ] && CLASSPATH=$EXTRA_CLASSES:$CLASSPATH
 # Add /etc/topaz/container/<basename>/classes OR /etc/topaz/container/common/classes
 CLASS_OVERRIDES=common
 [ -d /etc/topaz/container/$BASENAME/classes ] && CLASS_OVERRIDES=$BASENAME
 CLASSPATH=/etc/topaz/container/$CLASS_OVERRIDES/classes:$CLASSPATH
-# Add the javac compiler
+# Add the javac compiler - for jsp files (tomcat's catalina.sh does this too)
 CLASSPATH="$JAVA_HOME/lib/tools.jar:$CLASSPATH"
 
 # Define options for JSVC
@@ -123,7 +128,7 @@ if which ${JSVC} >/dev/null 2>&1; then
   # For some reason, jsvc has trouble starting if it is not an absolute path
   JSVC=`which ${JSVC}`
 elif [ -x "${TC}/bin/jsvc" ];          then JSVC="${TC}/bin/jsvc"
-elif [ -x /usr/local/topaz/bin/jsvc ]; then JSVC=/usr/local/topaz/bin/jsvc
+elif [ -x "${TOPAZ_LOCAL}/bin/jsvc" ]; then JSVC="${TOPAZ_LOCAL}/bin/jsvc"
 elif [ -x /usr/local/bin/jsvc ];       then JSVC=/usr/local/bin/jsvc
 fi
 
