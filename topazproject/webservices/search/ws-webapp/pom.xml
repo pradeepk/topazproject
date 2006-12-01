@@ -86,6 +86,20 @@
           </execution>
         </executions>
       </plugin>
+      <plugin>
+        <groupId>org.topazproject.plugins</groupId>
+        <artifactId>ant-tasks</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals><goal>svninfo</goal></goals>
+            <configuration>
+              <directory>..</directory>
+              <outputPath>${project.build.directory}/${project.build.finalName}/svninfo.txt</outputPath>
+            </configuration>
+          </execution>
+        </executions>
+      </plugin>
     </plugins>
   </build>
 </project>
