@@ -22,6 +22,16 @@
       <hostname>FQHN</hostname>
       <https-port>8443</https-port>
     </server>
+    <!-- Schedule alerts -->
+    <scheduler>
+      <jobs>
+        <job name="sendalerts" group="topaz">
+          <class>org.topazproject.ws.alerts.impl.SendAlertsJob</class>
+          <!-- See http://www.opensymphony.com/quartz/api/org/quartz/CronExpression.html -->
+          <cron>0 0 2 4 * ?</cron> <!-- The 4th of every month -->
+        </job>
+      </jobs>
+    </scheduler>
 <!-- uncomment to enable access-control
     <articles>
       <pdpName>standard-pdp</pdpName>
