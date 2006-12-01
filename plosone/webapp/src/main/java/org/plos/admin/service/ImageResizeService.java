@@ -1,34 +1,27 @@
 package org.plos.admin.service;
 
-import java.awt.Graphics2D;
+
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
-import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.renderable.ParameterBlock;
 
 import javax.media.jai.ImageLayout;
+import javax.media.jai.InterpolationBicubic2;
+import javax.media.jai.JAI;
 import javax.media.jai.ParameterBlockJAI;
 import javax.media.jai.RasterFactory;
 import javax.media.jai.RenderedOp;
 
-import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 
-import javax.imageio.ImageIO;
-import javax.media.jai.JAI;
-import javax.media.jai.operator.SubsampleAverageDescriptor;
-import javax.media.jai.InterpolationBicubic2;
-
 import java.net.URL;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
