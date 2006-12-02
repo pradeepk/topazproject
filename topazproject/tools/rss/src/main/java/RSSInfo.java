@@ -73,12 +73,16 @@ public class RSSInfo {
         isRequired(true).withValueSeparator(' ').
         withDescription("URI to access article service").create("uri"));
 
-    OptionGroup params = new OptionGroup();
-    params.addOption(new Option("rss","Transform using inbuilt RSS stylesheet"));
-    params.addOption(OptionBuilder.withArgName("XSLT stylesheet file").hasArg().
+    OptionGroup xform = new OptionGroup();
+    xform.addOption(new Option("rss","Transform using inbuilt RSS stylesheet"));
+    xform.addOption(OptionBuilder.withArgName("XSLT stylesheet file").hasArg().
         withValueSeparator(' ').withDescription("Transform the received XML with XSLT").
         create("xslt"));
-    options.addOptionGroup(params);
+    options.addOptionGroup(xform);
+
+    options.addOption(OptionBuilder.withArgName("Prefix for link").hasArg().
+        withValueSeparator(' ').withDescription("Prefix added to article URI").
+        create("prefix"));
   }
 
   /**
@@ -152,12 +156,16 @@ public class RSSInfo {
       if (xslt != null) {
         TransformerFactory tFactory = TransformerFactory.newInstance();
         Transformer transformer = tFactory.newTransformer(new StreamSource(xslt));
+        // Set the XSLT parameter
+        if (line.hasOption("prefix")) {
+          transformer.setParameter("urlPrefix",line.getOptionValue("prefix"));
+        }
         StringWriter out = new StringWriter();
         transformer.transform(new StreamSource(new StringReader(feed)), new StreamResult(out));
         feed = out.toString();
       }
 
-      System.out.println(feed);
+      System.out.println(new String(feed.getBytes("UTF-8")));
     } catch( ParseException exp ) {
         System.err.println( "Parsing failed.  Reason: " + exp.getMessage() );
         help();
