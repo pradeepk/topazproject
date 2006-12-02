@@ -27,6 +27,7 @@
     <module>jetty-jaas-cas</module>
     <module>tomcat-jaas-cas</module>
     <module>filter-resolver</module>
+    <module>string-compare-resolver</module>
     <module>conf-helper</module>
     <module>auth-helper</module>
     <module>mulgara-client</module>
