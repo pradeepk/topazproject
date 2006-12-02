@@ -46,7 +46,7 @@ import org.topazproject.ws.article.NoSuchArticleIdException;
  *
  * To delete an article:
  *        mvn -o -f topazproject/tools/rss/pom.xml -DArticles
- *            -Dargs="-uri <Topaz article uri> -delete <article doi>"
+ *            -Dargs="-uri <Topaz article uri> -delete <article URI>"
  *
  * @author Amit Kapoor
  */
@@ -71,8 +71,8 @@ public class Articles {
     params.addOption(OptionBuilder.withArgName("Zipped article file").hasArg().
         withValueSeparator(' ').withDescription("Ingest the zip file containing article").
         create(INGEST));
-    params.addOption(OptionBuilder.withArgName("Article DOI").hasArg().
-        withValueSeparator(' ').withDescription("Delete the article associated with the DOI").
+    params.addOption(OptionBuilder.withArgName("Article URI").hasArg().
+        withValueSeparator(' ').withDescription("Delete the article associated with the URI").
         create(DELETE));
     options.addOptionGroup(params);
   }
@@ -94,7 +94,7 @@ public class Articles {
   /**
    * Carries out the actual ingestion of the article.
    *
-   * @return returns the doi of the ingested article
+   * @return returns the URI of the ingested article
    *
    * @throws MalformedURLException if the URL created from Zip file name is
    *                               wrong
@@ -114,12 +114,12 @@ public class Articles {
    *
    * @param articleUri the URI of the article to delete
    *
-   * @throws NoSuchArticleIdException no article associated with the passed doi
+   * @throws NoSuchArticleIdException no article associated with the passed URI
    * @throws RemoteException if an exception occured talking to the service
    */
-   public void deleteArticle(String doi) 
+   public void deleteArticle(String uri) 
      throws RemoteException, NoSuchArticleIdException {
-     service.delete(doi);
+     service.delete(uri);
    }
 
   // Convert from string to array of strings
@@ -156,7 +156,7 @@ public class Articles {
 
       // The command to execute
       if (line.hasOption(INGEST)) {
-        System.out.println("doi: " + articles.ingestArticle(line.getOptionValue(INGEST)));
+        System.out.println("URI: " + articles.ingestArticle(line.getOptionValue(INGEST)));
       } else if (line.hasOption(DELETE)) {
         articles.deleteArticle(line.getOptionValue(DELETE));
       }
