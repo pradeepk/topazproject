@@ -40,7 +40,6 @@ import org.mulgara.query.SingleTransitiveConstraint;
 import org.mulgara.query.TransitiveConstraint;
 import org.mulgara.query.WalkConstraint;
 import org.mulgara.query.rdf.URIReferenceImpl;
-import org.mulgara.resolver.spi.EmptyResolution;
 import org.mulgara.resolver.spi.GlobalizeException;
 import org.mulgara.resolver.spi.LocalizeException;
 import org.mulgara.resolver.spi.Resolution;
@@ -48,9 +47,6 @@ import org.mulgara.resolver.spi.Resolver;
 import org.mulgara.resolver.spi.ResolverException;
 import org.mulgara.resolver.spi.ResolverSession;
 import org.mulgara.resolver.spi.Statements;
-import org.mulgara.resolver.view.SessionView;
-import org.mulgara.resolver.view.ViewMarker;
-import org.mulgara.store.tuples.Tuples;
 
 /** 
  * The factory for {@link FilterResolver}s. The model URI used for this filter
@@ -65,7 +61,7 @@ import org.mulgara.store.tuples.Tuples;
  * 
  * @author Ronald Tschalär
  */
-public class FilterResolver implements Resolver, ViewMarker {
+public class FilterResolver implements Resolver {
   /** the model type we handle */
   public static final URI MODEL_TYPE = URI.create("http://topazproject.org/models#filter");
 
@@ -77,8 +73,6 @@ public class FilterResolver implements Resolver, ViewMarker {
   private final ResolverSession resolverSession;
   private final Resolver        systemResolver;
   private final FilterHandler[] handlers;
-
-  private SessionView sess;
 
   /** 
    * Create a new FilterResolver instance. 
@@ -97,10 +91,6 @@ public class FilterResolver implements Resolver, ViewMarker {
     this.systemResolver  = systemResolver;
     this.resolverSession = resolverSession;
     this.handlers        = handlers;
-  }
-
-  public void setSession(SessionView session) {
-    this.sess = session;
   }
 
   /**
@@ -174,16 +164,7 @@ public class FilterResolver implements Resolver, ViewMarker {
   }
 
   public Resolution resolve(Constraint constraint) throws QueryException {
-    constraint = translateModel(constraint);
-
-    Tuples ans = sess.resolve(constraint);
-    if (ans instanceof Resolution)
-      return (Resolution) ans;
-
-    //FIXME?
-    //return new TuplesWrapperResolution(ans);
-    logger.error("Unimplemented answer type '" + ans.getClass().getName() + "'");
-    return new EmptyResolution(constraint, false);
+    return systemResolver.resolve(translateModel(constraint));
   }
 
   /**
