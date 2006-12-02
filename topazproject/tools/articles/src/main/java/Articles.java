@@ -20,6 +20,7 @@ import javax.xml.rpc.ServiceException;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -41,11 +42,11 @@ import org.topazproject.ws.article.NoSuchArticleIdException;
  *
  * To ingest an article:
  *        mvn -o -f topazproject/tools/rss/pom.xml -DArticles
- *            -Dargs="-uri <Topaz article uri> -op ingest -zip <zip file>"
+ *            -Dargs="-uri <Topaz article uri> -ingest <zip file>"
  *
  * To delete an article:
  *        mvn -o -f topazproject/tools/rss/pom.xml -DArticles
- *            -Dargs="-uri <Topaz article uri> -op delete -doi <article doi>"
+ *            -Dargs="-uri <Topaz article uri> -delete <article doi>"
  *
  * @author Amit Kapoor
  */
@@ -61,18 +62,19 @@ public class Articles {
   // Set up the command line options
   static {
     options = new Options();
-    options.addOption(OptionBuilder.withArgName("Topaz article uri").hasArg().
+
+    options.addOption(OptionBuilder.withArgName("Topaz Article URI").hasArg().
         isRequired(true).withValueSeparator(' ').
         withDescription("URI to access article service").create("uri"));
-    options.addOption(OptionBuilder.withArgName("Operation to perform").hasArg().
-        isRequired(true).withValueSeparator(' ').
-        withDescription("Name of operation to perform").create("op"));
-    options.addOption(OptionBuilder.withArgName("Article zip file").hasArg().
-        withValueSeparator(' ').withDescription("Zip file containing article contents").
-        create("zip"));
-    options.addOption(OptionBuilder.withArgName("Article DOI").hasArg().
-        withValueSeparator(' ').withDescription("DOI of the article in the repository").
-        create("doi"));
+
+    OptionGroup params = new OptionGroup();
+    params.addOption(OptionBuilder.withArgName("Zipped article file").hasArg().
+        withValueSeparator(' ').withDescription("Ingest the zip file containing article").
+        create(INGEST));
+    params.addOption(OptionBuilder.withArgName("Article DOI").hasArg().
+        withValueSeparator(' ').withDescription("Delete the article associated with the DOI").
+        create(DELETE));
+    options.addOptionGroup(params);
   }
 
   /**
@@ -153,17 +155,10 @@ public class Articles {
       Articles articles = new Articles(line.getOptionValue("uri"));
 
       // The command to execute
-      String command = line.getOptionValue("op");
-      if (command.equals(INGEST)) {
-        if (!line.hasOption("zip")) {
-          throw new ParseException("Zip file name missing");
-        }
-        System.out.println("doi: " + articles.ingestArticle(line.getOptionValue("zip")));
-      } else if (command.equals(DELETE)) {
-        if (!line.hasOption("doi")) {
-          throw new ParseException("DOI missing for article");
-        }
-        articles.deleteArticle(line.getOptionValue("doi"));
+      if (line.hasOption(INGEST)) {
+        System.out.println("doi: " + articles.ingestArticle(line.getOptionValue(INGEST)));
+      } else if (line.hasOption(DELETE)) {
+        articles.deleteArticle(line.getOptionValue(DELETE));
       }
     } catch( ParseException exp ) {
         System.err.println( "Parsing failed.  Reason: " + exp.getMessage() );
