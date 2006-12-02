@@ -7,17 +7,18 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
 import java.util.List;
 import java.util.ArrayList;
 
-import javax.xml.rpc.ServiceException;
-
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -30,12 +31,33 @@ import org.apache.commons.lang.text.StrTokenizer;
 import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.ArticleClientFactory;
 
+import javax.xml.rpc.ServiceException;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.stream.StreamSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.TransformerException;
+import javax.xml.transform.TransformerConfigurationException;
+
 /**
- * Return various useful RSS information from Article service. To execute
- * this using maven, please use:
+ * Return information on articles in Topaz through various filter. This
+ * information can then be transformed either using built-in stylesheets or
+ * through externally passed stylesheets.
  *
- *        mvn -o -f topazproject/tools/rss/pom.xml -DRSSInfo
+ * To store native XML:
+ *
+ *        mvn -o -f topazproject/tools/rss/pom.xml -DRSSInfo \
  *                 -Dargs="-uri <Topaz article uri>"
+ *
+ * To transform to RSS 2.0
+ *
+ *        mvn -o -f topazproject/tools/rss/pom.xml -DRSSInfo \
+ *                 -Dargs="-uri <Topaz article uri> -rss"
+ *
+ * To transform using external stylesheet
+ *
+ *        mvn -o -f topazproject/tools/rss/pom.xml -DRSSInfo \
+ *                 -Dargs="-uri <Topaz article uri> -xslt <xlst file name>"
  *
  * @author Amit Kapoor
  */
@@ -50,6 +72,13 @@ public class RSSInfo {
     options.addOption(OptionBuilder.withArgName("Topaz article uri").hasArg().
         isRequired(true).withValueSeparator(' ').
         withDescription("URI to access article service").create("uri"));
+
+    OptionGroup params = new OptionGroup();
+    params.addOption(new Option("rss","Transform using inbuilt RSS stylesheet"));
+    params.addOption(OptionBuilder.withArgName("XSLT stylesheet file").hasArg().
+        withValueSeparator(' ').withDescription("Transform the received XML with XSLT").
+        create("xslt"));
+    options.addOptionGroup(params);
   }
 
   /**
@@ -110,6 +139,24 @@ public class RSSInfo {
       CommandLine line = parser.parse(options, args);
       RSSInfo rss = new RSSInfo(line.getOptionValue("uri"));
       String feed = rss.getFeed();
+
+      // Style sheet specified?
+      String xslt = null;
+      if (line.hasOption("rss")) {
+        xslt = rss.getClass().getResource("XMLToRSS.xslt").toString();
+      } else if (line.hasOption("xslt")) {
+        xslt = line.getOptionValue("xslt");
+      }
+
+      // Carry out transformation if necessary
+      if (xslt != null) {
+        TransformerFactory tFactory = TransformerFactory.newInstance();
+        Transformer transformer = tFactory.newTransformer(new StreamSource(xslt));
+        StringWriter out = new StringWriter();
+        transformer.transform(new StreamSource(new StringReader(feed)), new StreamResult(out));
+        feed = out.toString();
+      }
+
       System.out.println(feed);
     } catch( ParseException exp ) {
         System.err.println( "Parsing failed.  Reason: " + exp.getMessage() );
