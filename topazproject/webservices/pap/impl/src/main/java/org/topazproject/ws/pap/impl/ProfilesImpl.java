@@ -67,6 +67,9 @@ public class ProfilesImpl implements Profiles {
   private static final String MODEL_TYPE     =
       "<" + CONF.getString("topaz.models.profiles[@type]", "tucana:Model") + ">";
   private static final String USER_MODEL     = "<" + CONF.getString("topaz.models.users") + ">";
+  private static final String STR_MODEL      = "<" + CONF.getString("topaz.models.str") + ">";
+  private static final String STR_MODEL_TYPE =
+      "<" + CONF.getString("topaz.models.str[@type]", null) + ">";
   private static final String IDS_NS         = "topaz.ids";
   private static final String PROF_PATH_PFX  = "profile";
 
@@ -130,6 +133,7 @@ public class ProfilesImpl implements Profiles {
    */
   public static void initializeModel(ItqlHelper itql) throws RemoteException {
     itql.doUpdate("create " + MODEL + " " + MODEL_TYPE + ";", aliases);
+    itql.doUpdate("create " + STR_MODEL + " " + STR_MODEL_TYPE + ";", aliases);
   }
 
   /**
@@ -297,7 +301,8 @@ public class ProfilesImpl implements Profiles {
     }
   }
 
-  public String[] findUsersByProfile(UserProfile[] templates) throws RemoteException {
+  public String[] findUsersByProfile(UserProfile[] templates, boolean[] ignoreCase)
+      throws RemoteException {
     pep.checkAccess(pep.FIND_USERS_BY_PROF, URI.create("dummy:dummy"));
 
     if (templates == null || templates.length == 0)
@@ -313,13 +318,14 @@ public class ProfilesImpl implements Profiles {
 
     boolean haveTempl = false;
     int     matchAll  = -1;
+    int[]   cntr      = new int[] { 0 };
     for (int idx = 0; idx < templates.length; idx++) {
       if (templates[idx] == null)
         continue;
       haveTempl = true;
 
       qry.append("(");
-      if (!templateToConstraints(templates[idx], idx, qry)) {
+      if (!templateToConstraints(templates[idx], idx, qry, ignoreCase[idx], cntr)) {
         matchAll = idx;
         break;
       }
@@ -359,39 +365,40 @@ public class ProfilesImpl implements Profiles {
     }
   }
 
-  protected boolean templateToConstraints(UserProfile templ, int idx, StringBuffer sb) {
+  protected boolean templateToConstraints(UserProfile templ, int idx, StringBuffer sb,
+                                          boolean ignCase, int[] cntr) {
     int startLen = sb.length();
 
-    addValConstraint(templ.getDisplayName(), "topaz:displayName", sb);
-    addValConstraint(templ.getRealName(), "foaf:name", sb);
+    addValConstraint(templ.getDisplayName(), "topaz:displayName", sb, ignCase, cntr);
+    addValConstraint(templ.getRealName(), "foaf:name", sb, ignCase, cntr);
 
-    addValConstraint(templ.getGivenNames(), "foaf:givenname", sb);
-    addValConstraint(templ.getSurnames(), "foaf:surname", sb);
-    addValConstraint(templ.getTitle(), "foaf:title", sb);
-    addValConstraint(templ.getGender(), "foaf:gender", sb);
-    addValConstraint(templ.getBiography(), "bio:olb", sb);
-    addValConstraint(templ.getPositionType(), "topaz:positionType", sb);
-    addValConstraint(templ.getOrganizationName(), "topaz:organizationName", sb);
-    addValConstraint(templ.getOrganizationType(), "topaz:organizationType", sb);
-    addValConstraint(templ.getPostalAddress(), "topaz:postalAddress", sb);
-    addValConstraint(templ.getCity(), "addr:town", sb);
-    addValConstraint(templ.getCountry(), "addr:country", sb);
+    addValConstraint(templ.getGivenNames(), "foaf:givenname", sb, ignCase, cntr);
+    addValConstraint(templ.getSurnames(), "foaf:surname", sb, ignCase, cntr);
+    addValConstraint(templ.getTitle(), "foaf:title", sb, ignCase, cntr);
+    addValConstraint(templ.getGender(), "foaf:gender", sb, ignCase, cntr);
+    addValConstraint(templ.getBiography(), "bio:olb", sb, ignCase, cntr);
+    addValConstraint(templ.getPositionType(), "topaz:positionType", sb, ignCase, cntr);
+    addValConstraint(templ.getOrganizationName(), "topaz:organizationName", sb, ignCase, cntr);
+    addValConstraint(templ.getOrganizationType(), "topaz:organizationType", sb, ignCase, cntr);
+    addValConstraint(templ.getPostalAddress(), "topaz:postalAddress", sb, ignCase, cntr);
+    addValConstraint(templ.getCity(), "addr:town", sb, ignCase, cntr);
+    addValConstraint(templ.getCountry(), "addr:country", sb, ignCase, cntr);
 
     String email = templ.getEmail();
     if (email != null)
-      addRefConstraint("mailto:" + email, "foaf:mbox", sb);
+      addRefConstraint("mailto:" + email, "foaf:mbox", sb, ignCase, cntr);
 
-    addRefConstraint(templ.getHomePage(), "foaf:homepage", sb);
-    addRefConstraint(templ.getWeblog(), "foaf:weblog", sb);
-    addRefConstraint(templ.getPublications(), "foaf:publications", sb);
+    addRefConstraint(templ.getHomePage(), "foaf:homepage", sb, ignCase, cntr);
+    addRefConstraint(templ.getWeblog(), "foaf:weblog", sb, ignCase, cntr);
+    addRefConstraint(templ.getPublications(), "foaf:publications", sb, ignCase, cntr);
 
     String[] interests = templ.getInterests();
     for (int idx2 = 0; interests != null && idx2 < interests.length; idx2++)
-      addRefConstraint(interests[idx2], "foaf:interest", sb);
+      addRefConstraint(interests[idx2], "foaf:interest", sb, ignCase, cntr);
 
-    addValConstraint(templ.getBiographyText(), "topaz:bio", sb);
-    addValConstraint(templ.getInterestsText(), "topaz:interests", sb);
-    addValConstraint(templ.getResearchAreasText(), "topaz:researchAreas", sb);
+    addValConstraint(templ.getBiographyText(), "topaz:bio", sb, ignCase, cntr);
+    addValConstraint(templ.getInterestsText(), "topaz:interests", sb, ignCase, cntr);
+    addValConstraint(templ.getResearchAreasText(), "topaz:researchAreas", sb, ignCase, cntr);
 
     int endLen = sb.length();
 
@@ -400,16 +407,34 @@ public class ProfilesImpl implements Profiles {
     return (endLen > startLen);
   }
 
-  protected void addValConstraint(String field, String pred, StringBuffer sb) {
-    if (field != null)
-      sb.append("$profId <").append(pred).append("> '").
-         append(ItqlHelper.escapeLiteral(field)).append("' and ");
+  protected void addValConstraint(String field, String pred, StringBuffer sb, boolean ignCase,
+                                  int[] cntr) {
+    if (field != null) {
+      if (ignCase) {
+        sb.append("$profId <").append(pred).append("> $val").append(cntr[0]).
+           append(" and $val").append(cntr[0]).append(" <topaz:equalsIgnoreCase> '").
+           append(ItqlHelper.escapeLiteral(field)).append("' in ").append(STR_MODEL).
+           append(" and ");
+        cntr[0]++;
+      } else
+        sb.append("$profId <").append(pred).append("> '").
+           append(ItqlHelper.escapeLiteral(field)).append("' and ");
+    }
   }
 
-  protected void addRefConstraint(String field, String pred, StringBuffer sb) {
-    if (field != null)
-      sb.append("$profId <").append(pred).append("> <").
-         append(ItqlHelper.validateUri(field, pred)).append("> and ");
+  protected void addRefConstraint(String field, String pred, StringBuffer sb, boolean ignCase,
+                                  int[] cntr) {
+    if (field != null) {
+      if (ignCase) {
+        sb.append("$profId <").append(pred).append("> $val").append(cntr[0]).
+           append(" and $val").append(cntr[0]).append(" <topaz:equalsIgnoreCase> <").
+           append(ItqlHelper.validateUri(field, pred)).append("> in ").append(STR_MODEL).
+           append(" and ");
+        cntr[0]++;
+      } else
+        sb.append("$profId <").append(pred).append("> <").
+           append(ItqlHelper.validateUri(field, pred)).append("> and ");
+    }
   }
 
   protected boolean checkQueryAccess(String userId, UserProfile templ) {

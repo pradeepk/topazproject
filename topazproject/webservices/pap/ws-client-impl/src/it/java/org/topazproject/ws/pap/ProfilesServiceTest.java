@@ -151,14 +151,14 @@ public class ProfilesServiceTest extends TestCase {
 
     prof.setHomePage(null);
     prof.setEmail("hans.muster@sample.com");
-    prof.setWeblog("http://muster.blogs.org");
+    prof.setWeblog("http://muster.blogs.org/yak");
     prof.setInterests(new String[] { "http://i1.org/", "http://i2.org/" });
     service.setProfile(userId, prof);
 
     prof = service.getProfile(userId);
     assertEquals("Name mismatch;", "Hans", prof.getDisplayName());
     assertEquals("Email mismatch;", "hans.muster@sample.com", prof.getEmail());
-    assertEquals("Weblog mismatch;", "http://muster.blogs.org", prof.getWeblog());
+    assertEquals("Weblog mismatch;", "http://muster.blogs.org/yak", prof.getWeblog());
     assertNull("non-null homepage, got '" + prof.getHomePage() + "'", prof.getHomePage());
     assertNull("non-null real-name, got '" + prof.getRealName() + "'", prof.getRealName());
     assertNull("non-null surname, got '" + prof.getSurnames() + "'", prof.getSurnames());
@@ -211,7 +211,7 @@ public class ProfilesServiceTest extends TestCase {
     prof = service.getProfile(userId);
     assertEquals("Name mismatch;", "Hans", prof.getDisplayName());
     assertEquals("Email mismatch;", "hans.muster@sample.com", prof.getEmail());
-    assertEquals("Weblog mismatch;", "http://muster.blogs.org", prof.getWeblog());
+    assertEquals("Weblog mismatch;", "http://muster.blogs.org/yak", prof.getWeblog());
     assertEquals("Publications mismatch;", "http://pubs/", prof.getPublications());
     assertEquals("Real-name mismatch;", "rn", prof.getRealName());
     assertEquals("Given-names mismatch;", "a b", prof.getGivenNames());
@@ -237,165 +237,165 @@ public class ProfilesServiceTest extends TestCase {
 
   public void testFindUsers() throws RemoteException, NoSuchUserIdException, IOException {
     // simple empty queries
-    String[] users = service.findUsersByProfile(null);
+    String[] users = service.findUsersByProfile(null, null);
     assertEquals("non-empty user list for empty query", 0, users.length);
 
-    users = service.findUsersByProfile(new UserProfile[0]);
+    users = service.findUsersByProfile(new UserProfile[0], null);
     assertEquals("non-empty user list for empty query", 0, users.length);
 
     // single template queries
     UserProfile templ = new UserProfile();
 
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("non-empty user list for empty query", 0, users.length);
 
     templ.setDisplayName("foo");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("non-empty user list", 0, users.length);
 
     UserProfile prof = getExampleProfile();
     service.setProfile(userId, prof);
 
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("non-empty user list", 0, users.length);
 
     templ.setDisplayName(null);
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setDisplayName("Hans");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setTitle("mr");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setTitle("mrs");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("non-empty user list", 0, users.length);
 
     templ.setDisplayName(null);
     templ.setTitle(null);
     templ.setRealName("rn");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setRealName(null);
     templ.setGivenNames("a b");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setGivenNames(null);
     templ.setSurnames("c d");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setSurnames(null);
     templ.setTitle("mr");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setTitle(null);
     templ.setGender("male");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setGender(null);
     templ.setPositionType("type1");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setPositionType(null);
     templ.setOrganizationName("acme");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setOrganizationName(null);
     templ.setOrganizationType("general");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setOrganizationType(null);
     templ.setPostalAddress("Easy St 42\nLightcity");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setPostalAddress(null);
     templ.setCity("Lightcity");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setCity(null);
     templ.setCountry("universe");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setCountry(null);
     templ.setEmail("hans@muster.eu");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setEmail(null);
     templ.setHomePage("http://www.muster.eu/");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setHomePage(null);
     templ.setBiography("http://bio/");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setBiography(null);
     templ.setPublications("http://pubs/");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setPublications(null);
-    templ.setWeblog("http://muster.blogs.org");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    templ.setWeblog("http://muster.blogs.org/yak");
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setWeblog(null);
     templ.setInterests(new String[] { "http://i1.org/", "http://i2.org/" });
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setInterests(null);
     templ.setBiographyText("I was born");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setBiographyText(null);
     templ.setInterestsText("sex");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setInterestsText(null);
     templ.setResearchAreasText("molusks");
-    users = service.findUsersByProfile(new UserProfile[] { templ });
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
@@ -403,13 +403,15 @@ public class ProfilesServiceTest extends TestCase {
     UserProfile templ2 = new UserProfile();
 
     templ2.setDisplayName("Hans");
-    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 });
+    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 },
+                                       new boolean[] { false, false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
     templ.setDisplayName("Hans1");
     templ2.setDisplayName("Hans");
-    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 });
+    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 },
+                                       new boolean[] { false, false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", userId, users[0]);
 
@@ -422,13 +424,14 @@ public class ProfilesServiceTest extends TestCase {
     templ.setDisplayName(null);
     templ2.setDisplayName(null);
 
-    users = service.findUsersByProfile(new UserProfile[] { templ2 });
+    users = service.findUsersByProfile(new UserProfile[] { templ2 }, new boolean[] { false });
     assertEquals("wrong number of users from query", 2, users.length);
     Arrays.sort(users);
     assertEquals("wrong user-id from query", userId, users[0]);
     assertEquals("wrong user-id from query", guestIds[0], users[1]);
 
-    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 });
+    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 },
+                                       new boolean[] { false, false });
     assertEquals("wrong number of users from query", 2, users.length);
     Arrays.sort(users);
     assertEquals("wrong user-id from query", userId, users[0]);
@@ -438,16 +441,102 @@ public class ProfilesServiceTest extends TestCase {
     templ2.setResearchAreasText(null);
     templ.setRealName("rn");
     templ2.setDisplayName("Hans2");
-    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 });
+    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 },
+                                       new boolean[] { false, false });
     assertEquals("wrong number of users from query", 2, users.length);
     Arrays.sort(users);
     assertEquals("wrong user-id from query", userId, users[0]);
     assertEquals("wrong user-id from query", guestIds[0], users[1]);
 
     templ.setDisplayName("Hans1");
-    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 });
+    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 },
+                                       new boolean[] { false, false });
     assertEquals("wrong number of users from query", 1, users.length);
     assertEquals("wrong user-id from query", guestIds[0], users[0]);
+
+    // case-insensitive tests
+    templ  = new UserProfile();
+    templ2 = new UserProfile();
+
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { true });
+    assertEquals("wrong number of users from query", 2, users.length);
+    Arrays.sort(users);
+    assertEquals("wrong user-id from query", userId, users[0]);
+    assertEquals("wrong user-id from query", guestIds[0], users[1]);
+
+    templ.setDisplayName("hans");
+
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { true });
+    assertEquals("wrong number of users from query", 1, users.length);
+    assertEquals("wrong user-id from query", userId, users[0]);
+
+    templ2.setRealName("hans muster");
+
+    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 },
+                                       new boolean[] { false, false });
+    assertEquals("wrong number of users from query", 0, users.length);
+
+    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 },
+                                       new boolean[] { true, false });
+    assertEquals("wrong number of users from query", 1, users.length);
+    assertEquals("wrong user-id from query", userId, users[0]);
+
+    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 },
+                                       new boolean[] { false, true });
+    assertEquals("wrong number of users from query", 1, users.length);
+    assertEquals("wrong user-id from query", guestIds[0], users[0]);
+
+    users = service.findUsersByProfile(new UserProfile[] { templ, templ2 },
+                                       new boolean[] { true, true });
+    assertEquals("wrong number of users from query", 2, users.length);
+    Arrays.sort(users);
+    assertEquals("wrong user-id from query", userId, users[0]);
+    assertEquals("wrong user-id from query", guestIds[0], users[1]);
+
+    templ.setDisplayName(null);
+    templ2.setRealName(null);
+    templ.setResearchAreasText("Molusks");
+
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { true });
+    assertEquals("wrong number of users from query", 2, users.length);
+    Arrays.sort(users);
+    assertEquals("wrong user-id from query", userId, users[0]);
+    assertEquals("wrong user-id from query", guestIds[0], users[1]);
+    templ2.setHomePage("http://WWW.Muster.EU/");
+
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
+    assertEquals("wrong number of users from query", 0, users.length);
+
+    templ.setResearchAreasText(null);
+    templ.setHomePage("http://WWW.Muster.EU/");
+
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
+    assertEquals("wrong number of users from query", 2, users.length);
+    Arrays.sort(users);
+    assertEquals("wrong user-id from query", userId, users[0]);
+    assertEquals("wrong user-id from query", guestIds[0], users[1]);
+
+    templ2.setHomePage(null);
+    templ.setCity("lightCity");
+
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { true });
+    assertEquals("wrong number of users from query", 2, users.length);
+    Arrays.sort(users);
+    assertEquals("wrong user-id from query", userId, users[0]);
+
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
+    assertEquals("wrong number of users from query", 0, users.length);
+
+    templ.setCity(null);
+    templ.setWeblog("http://Muster.Blogs.Org/Yak");
+
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { true });
+    assertEquals("wrong number of users from query", 2, users.length);
+    Arrays.sort(users);
+    assertEquals("wrong user-id from query", userId, users[0]);
+
+    users = service.findUsersByProfile(new UserProfile[] { templ }, new boolean[] { false });
+    assertEquals("wrong number of users from query", 0, users.length);
 
     // clean up
     service.setProfile(userId, null);
@@ -473,7 +562,7 @@ public class ProfilesServiceTest extends TestCase {
     prof.setHomePage("http://www.muster.eu/");
     prof.setBiography("http://bio/");
     prof.setPublications("http://pubs/");
-    prof.setWeblog("http://muster.blogs.org");
+    prof.setWeblog("http://muster.blogs.org/yak");
     prof.setInterests(new String[] { "http://i1.org/", "http://i2.org/" });
     prof.setBiographyText("I was born");
     prof.setInterestsText("sex");

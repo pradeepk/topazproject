@@ -119,13 +119,18 @@ public interface Profiles extends Remote {
   /** 
    * Find a user by information from their profile. This is uses a query-by-example approach.
    * 
-   * @param templates the templates to use for matching. For a template to match, all non-null
-   *                  fields in the template must match exactly, and all null fields are ignored.
-   *                  In boolean terms, the fields are AND'd and the templates are OR'd.
+   * @param templates  the templates to use for matching. For a template to match, all non-null
+   *                   fields in the template must match exactly or modulo case (depending on the
+   *                   <var>ignoreCase</var> flag), and all null fields are ignored. In boolean
+   *                   terms, the fields are AND'd and the templates are OR'd.
+   * @param ignoreCase whether the template fields should be matched case-insensitively or exactly.
+   *                   This array have as many entries as there are templates; the n'th entry in
+   *                   this array affects the matching of the n'th template.
    * @return the list user-ids of users whose profile matches one of the templates; this will be the
    *         empty list if no matches are found. The list is filtered so that only those users are
    *         returned for whom the current user has read-permission on all non-null template fields.
    * @throws RemoteException if some error occured
    */
-  public String[] findUsersByProfile(UserProfile[] templates) throws RemoteException;
+  public String[] findUsersByProfile(UserProfile[] templates, boolean[] ignoreCase)
+      throws RemoteException;
 }
