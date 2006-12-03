@@ -19,5 +19,5 @@
 		  <@ww.submit value="Send"/>
 		</fieldset>
 	</@ww.form>	
-	<p class="citation"><a href="http://journals.plos.org/plosmedicine/privacy.php">PLoS Journals Privacy Statement</a></p>
+	<p class="citation"><a href="http://www.plos.org/privacy.html">PLoS Journals Privacy Statement</a></p>
 </div>
