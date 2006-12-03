@@ -34,13 +34,14 @@
     </models>
     <services>
       <fedora>
-        <uri>http://localhost:9090/fedora/services/management</uri>
+        <base-url>http://localhost:9090/fedora/</base-url>
+        <uri>${topaz.services.fedora.base-url}services/management</uri>
         <auth-method>BASIC</auth-method>
         <userName>fedoraAdmin</userName>
         <password>fedoraAdmin</password>
       </fedora>
       <fedoraUploader>
-        <uri>http://localhost:9090/fedora/management/upload</uri>
+        <uri>${topaz.services.fedora.base-url}management/upload</uri>
         <auth-method>BASIC</auth-method>
         <userName>fedoraAdmin</userName>
         <password>fedoraAdmin</password>

@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
   <topaz>
-  <!--  <services>
+    <!--
+    <services>
       <fedora>
-        <uri>http://localhost:9090/fedora/services/management</uri>
+        <base-url>http://localhost:9090/fedora/</base-url>
         <auth-method>CAS</auth-method>
       </fedora>
       <fedoraUploader>
-        <uri>http://localhost:9090/fedora/management/upload</uri>
         <auth-method>CAS</auth-method>
       </fedoraUploader>
-    </services>-->
+    </services>
+    -->
     <search>
       <indexpath>/usr/local/topaz/data/lucene</indexpath>
       <!-- <fedoraobjpath>...</fedoraobjpath> -->
