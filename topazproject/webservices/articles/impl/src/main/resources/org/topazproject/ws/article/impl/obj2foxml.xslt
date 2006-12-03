@@ -12,6 +12,8 @@
 
   <xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
 
+  <xsl:param name="datastream-loc" as="xs:string*"/>
+
   <xsl:template match="Object">
     <foxml:digitalObject
       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -35,6 +37,8 @@
 
       <xsl:apply-templates select="DC"/>
       <xsl:apply-templates select="RELS-EXT"/>
+
+      <xsl:apply-templates select="Datastream"/>
     </foxml:digitalObject>
   </xsl:template>
 
@@ -65,6 +69,25 @@
     </foxml:datastream>
   </xsl:template>
 
+  <xsl:template match="Datastream">
+    <foxml:datastream ID="{@id}" STATE="{my:get-state(@state)}" VERSIONABLE="true"
+        CONTROL_GROUP="{my:get-ctrl-grp(@controlGroup)}">
+      <foxml:datastreamVersion ID="{@id}.0" MIMETYPE="{@mimeType}">
+        <xsl:if test="@label">
+          <xsl:attribute name="LABEL" select="@label"/>
+        </xsl:if>
+        <xsl:if test="@formatUri">
+          <xsl:attribute name="FORMAT_URI" select="@formatUri"/>
+        </xsl:if>
+        <xsl:if test="@altIds">
+          <xsl:attribute name="ALT_IDS" select="@altIds"/>
+        </xsl:if>
+        <foxml:contentLocation TYPE="URL"
+            REF="{$datastream-loc[count(current()/preceding-sibling::Datastream) + 1]}"/>
+      </foxml:datastreamVersion>
+    </foxml:datastream>
+  </xsl:template>
+
   <xsl:function name="my:get-state" as="xs:string">
     <xsl:param name="state" as="xs:string?"/>
 
@@ -81,5 +104,17 @@
       <xsl:message>Warning: unrecognized state '<xsl:value-of select="$state"/>'</xsl:message>
       <xsl:value-of select="'A'"/>
     </xsl:if>
+  </xsl:function>
+
+  <xsl:function name="my:get-ctrl-grp" as="xs:string">
+    <xsl:param name="grp" as="xs:string"/>
+
+    <xsl:value-of select="
+      if ($grp = 'External') then 'E'
+      else if ($grp = 'Redirected') then 'R'
+      else if ($grp = 'Managed') then 'M'
+      else if ($grp = 'XML') then 'X'
+      else error((), concat('Invalid Control-Group ''', $grp, ''''))
+      "/>
   </xsl:function>
 </xsl:stylesheet>

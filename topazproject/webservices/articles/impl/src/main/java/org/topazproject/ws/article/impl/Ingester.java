@@ -84,6 +84,7 @@ public class Ingester {
   private static final Log    log = LogFactory.getLog(Ingester.class);
 
   private static final String OUT_LOC_P    = "output-loc";
+  private static final String DS_LOC_P     = "datastream-loc";
 
   private static final String OL_LOG_A     = "logMessage";
   private static final String OL_AID_A     = "articleId";
@@ -421,21 +422,24 @@ public class Ingester {
                                   Zip zip, String logMsg, RollbackBuffer rb)
       throws DuplicateArticleIdException, TransformerException, IOException, RemoteException,
              URISyntaxException {
+    // upload all (non-DC/non-RDF) datastreams
+    NodeList dss = obj.getElementsByTagName(DATASTREAM);
+    String[] dsLoc = new String[dss.getLength()];
+
+    for (int idx = 0; idx < dss.getLength(); idx++) {
+      Element ds = (Element) dss.item(idx);
+      dsLoc[idx] = fedoraUploadDS(uploader, ds, zip);
+    }
+
     // create the foxml doc
     StringWriter sw = new StringWriter(200);
+    t.setParameter(DS_LOC_P, dsLoc);
     t.transform(new DOMSource(obj), new StreamResult(sw));
 
     // create the fedora object
     String pid = obj.getAttribute(O_PID_A);
     fedoraCreateObject(apim, pid, sw.toString(), logMsg);
     rb.addFedoraObject(pid);
-
-    // add all (non-DC/non-RDF) datastreams
-    NodeList dss = obj.getElementsByTagName(DATASTREAM);
-    for (int idx = 0; idx < dss.getLength(); idx++) {
-      Element ds = (Element) dss.item(idx);
-      fedoraAddDatastream(apim, uploader, pid, ds, zip, logMsg);
-    }
 
     // index object with fedoragsearch (lucene)
     String doIndex = obj.getAttribute(O_INDEX_A);
@@ -462,27 +466,18 @@ public class Ingester {
     return "info:doi/" + doi;
   }
 
-  private void fedoraAddDatastream(FedoraAPIM apim, Uploader uploader, String pid, Element ds, 
-                                   Zip zip, String logMsg)
-      throws IOException, RemoteException, URISyntaxException {
+  private String fedoraUploadDS(Uploader uploader, Element ds, Zip zip)
+      throws IOException, URISyntaxException {
+    log.debug("Uploading datastream '" + ds.getAttribute(DS_CONTLOC_A) + "', id = '" +
+              ds.getAttribute(DS_ID_A) + "'");
+
     long[] size = new long[1];
     InputStream is = getContent(ds, zip, size);
-    String reLoc = (size[0] >= 0) ? uploader.upload(is, size[0]) : uploader.upload(is);
-
-    if (log.isDebugEnabled())
-      log.debug("Adding datastream for fedora object '" + pid + "', id = '" +
-                ds.getAttribute(DS_ID_A) + "'");
-
-    apim.addDatastream(pid, ds.getAttribute(DS_ID_A),
-                       StringUtils.split(ds.getAttribute(DS_ALTID_A)),
-                       ds.getAttribute(DS_LBL_A), true, ds.getAttribute(DS_MIME_A),
-                       ds.getAttribute(DS_FMT_A), reLoc, ds.getAttribute(DS_CGRP_A).substring(0, 1),
-                       ds.getAttribute(DS_ST_A).length() > 0 ?
-                          ds.getAttribute(DS_ST_A).substring(0, 1) : "A",
-                       logMsg);
+    return (size[0] >= 0) ? uploader.upload(is, size[0]) : uploader.upload(is);
   }
 
-  private InputStream getContent(Element ds, Zip zip, long[] size) throws IOException, URISyntaxException {
+  private InputStream getContent(Element ds, Zip zip, long[] size)
+      throws IOException, URISyntaxException {
     InputStream is;
 
     if (ds.hasAttribute(DS_CONTLOC_A)) {
