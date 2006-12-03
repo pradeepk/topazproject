@@ -9,7 +9,7 @@
   Licensed under the Educational Community License version 1.0
   http://opensource.org/licenses/ecl1.php
 -->
-<xsl:stylesheet version="1.0"
+<xsl:stylesheet version="2.0"
                 xmlns:xsl="http://www.w3.org/1999/XSL/Transform"   
         xmlns:exts="xalan://dk.defxws.fedoragsearch.server.XsltExtensions"
                 exclude-result-prefixes="exts"
@@ -110,7 +110,7 @@
         <xsl:attribute name="IFname">
           <xsl:value-of select="local-name()"/>
         </xsl:attribute>
-        <xsl:value-of select="text()"/>
+        <xsl:value-of select="replace(text(), '&lt;.*?&gt;', ' ')"/>
       </IndexField>
     </xsl:for-each>
       
