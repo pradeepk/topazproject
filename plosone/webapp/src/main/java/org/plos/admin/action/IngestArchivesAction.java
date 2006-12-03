@@ -43,18 +43,19 @@ public class IngestArchivesAction extends BaseActionSupport {
 		      articleURI = documentManagementService.ingest(
 							  new File(documentManagementService.getDocumentDirectory(), filename));
 		      addActionMessage("Ingested: " + filename);
-		    } catch (Exception e) {
-          addActionMessage("Error ingesting: " + filename + " - " + e.toString());
-          log.error("Error ingesting articles: " + filename, e);
-          if (e instanceof ImageResizeException) {
-            articleURI = ((ImageResizeException)e).getArticleURI();
-            log.debug("trying to delete: " + articleURI);
-            try {
-              documentManagementService.delete(articleURI);
-            } catch (Exception deleteException){
-              log.error ("Could not delete article: " + articleURI, deleteException);
-            }
+		    } catch (ImageResizeException ire) {
+          addActionMessage("Error ingesting: " + filename + " - " + ire.getCause().toString());
+          log.error("Error ingesting articles: " + filename, ire);
+          articleURI = ire.getArticleURI();
+          log.debug("trying to delete: " + articleURI);
+          try {
+            documentManagementService.delete(articleURI);
+          } catch (Exception deleteException){
+            log.error ("Could not delete article: " + articleURI, deleteException);
           }
+        } catch (Exception e) {
+          addActionMessage("Error ingesting: " + filename + " - " + e.toString());
+          log.error("Error ingesting article: " + filename, e);
 		    }
 		  }
 		  uploadableFiles = documentManagementService.getUploadableFiles();
