@@ -20,8 +20,8 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 
 import java.net.URL;
+import java.net.MalformedURLException;
 
-import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.io.output.ByteArrayOutputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -51,8 +51,16 @@ public class ImageResizeService {
 //    hints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
   }
 
-	public void captureImage(String url) throws HttpException, IOException {
-		srcImage = JAI.create("URL", new ParameterBlock().add(new URL (url)));
+  
+  
+  /**
+   * Store the contents of the image located by the url parameter into the object
+   * 
+   * @param url
+   * @throws MalformedURLException
+   */
+	public void captureImage(String url) throws MalformedURLException {
+    srcImage = JAI.create("URL", new ParameterBlock().add(new URL (url)));
 		if (log.isDebugEnabled()) {
 		  log.debug("retrieved image from URL: " + url.toString());
     }
@@ -116,6 +124,23 @@ public class ImageResizeService {
     return stream.toByteArray();
     
   }
+  private byte[] scaleFixHeight(float fixHeight) {
+    int height= srcImage.getHeight ();
+    float scale;
+    if (height > fixHeight){
+      scale = fixHeight/height;
+    } else {
+      scale = 1;
+    }
+    RenderedOp newImage; 
+    if (scale == 1) {
+      newImage = srcImage;
+    } else {
+      newImage = createScaledImage(scale, scale);
+    }
+    return renderedOpToPNGByteArray (newImage);
+  }
+
   private byte[] scaleFixWidth (float fixWidth) {
     int width = srcImage.getWidth ();
     float scale;
@@ -131,9 +156,7 @@ public class ImageResizeService {
       newImage = createScaledImage(scale, scale);
     }
     return renderedOpToPNGByteArray (newImage);
-  }
-
-  
+  }  
   
   private byte[] scaleLargestDim (float oneSide){
     int height = srcImage.getHeight();
@@ -155,22 +178,56 @@ public class ImageResizeService {
     return renderedOpToPNGByteArray (newImage);
   }
  
+  
+  /**
+   * Scale the image to 70 pixels in width into PNG
+   * 
+   * @return byte array of the new small image
+   * @throws FileNotFoundException
+   * @throws IOException
+   */
 	public byte[] getSmallImage() throws FileNotFoundException, IOException {
 		return scaleFixWidth(70.0f);
 	}
 	
+  /**
+   * Scale the image to at most 600 pixels in either direction into a PNG
+   * 
+   * @return byte array of the new medium size image
+   * @throws FileNotFoundException
+   * @throws IOException
+   */
 	public byte[] getMediumImage() throws FileNotFoundException, IOException {
 		return scaleLargestDim(600.0f);
 	}
 	
+  /**
+   * Don't scale the image, just return a PNG version of it
+   * 
+   * @return byte array of the new PNG version of the image
+   * @throws FileNotFoundException
+   * @throws IOException
+   */
 	public byte[] getLargeImage() throws FileNotFoundException, IOException {
 		return renderedOpToPNGByteArray(srcImage);
 	}
 	
+  
+  /**
+   * 
+   * 
+   * @return
+   * @throws FileNotFoundException
+   * @throws IOException
+   */
   public byte[] getPageWidthImage() throws FileNotFoundException, IOException {
     return scaleFixWidth(400.0f);
   }  
-
+  
+  public byte[] getInlineImage() throws FileNotFoundException, IOException {
+    return scaleFixHeight(21.0f);
+  }  
+  
   private RenderedOp convertCMYKtoRGB(RenderedOp op) {
     try {
         ParameterBlockJAI pb;

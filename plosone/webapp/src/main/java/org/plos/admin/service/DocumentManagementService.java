@@ -39,6 +39,7 @@ import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.SecondaryObject;
 import org.plos.util.FileUtils;
 import org.topazproject.common.DuplicateIdException;
+import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.IngestException;
 import org.topazproject.ws.article.NoSuchArticleIdException;
@@ -115,6 +116,18 @@ public class DocumentManagementService {
 	  }
 	}
 	
+  /**
+   * Deletes an article from Topaz 
+   * 
+   * @param objectURI - URI of the article to delete
+   * @throws RemoteException
+   * @throws NoSuchIdException
+   */
+  public void delete (String objectURI) throws RemoteException, NoSuchIdException {
+    articleWebService.delete(objectURI);
+  }
+  
+  
 	/**
 	 * 
 	 * @param pathname of file on server to be ingested
@@ -125,40 +138,50 @@ public class DocumentManagementService {
 	 * @throws TransformerException
 	 * @throws NoSuchArticleIdException 
 	 * @throws NoSuchObjectIdException 
-	 */
-	public String ingest(String pathname) throws IngestException, DuplicateIdException, 
+   * @throws ImageResizeException
+	 */  
+	public String ingest(String pathname) throws IngestException, DuplicateIdException, ImageResizeException, 
 			IOException, TransformerException, NoSuchArticleIdException, NoSuchObjectIdException {
 		return ingest(new File(pathname));
 	}
 	
 	/**
-	 * 
+	 * Ingest the file. If succesful move it to the ingestedDocumentDirectory
+   * then create the Transformed CrossRef xml file and deposit that in the Directory 
+   * as well.
+   * 
+   * 
 	 * @param file to be ingested
 	 * @return URI of ingested document
 	 * @throws IngestException
 	 * @throws DuplicateIdException
 	 * @throws IOException
 	 * @throws TransformerException
-	 * 
-	 * Ingest the file. If succesful move it to the ingestedDocumentDirectory
-	 * then create the Transformed CrossRef xml file and deposit that in the Directory 
-	 * as well.
 	 * @throws NoSuchArticleIdException 
 	 * @throws NoSuchObjectIdException 
+   * @throws ImageResizeException
 	 */
-	public String ingest(File file) throws IngestException, DuplicateIdException, 
+	public String ingest(File file) throws IngestException, DuplicateIdException, ImageResizeException,
 					IOException, TransformerException, NoSuchArticleIdException, NoSuchObjectIdException {
 		String uri;
 		File ingestedDir = new File(ingestedDocumentDirectory);
 		log.info("Ingesting: " + file);
-		uri = articleWebService.ingest(new DataHandler(file.toURL()));
+    DataHandler dh = new DataHandler(file.toURL());
+		uri = articleWebService.ingest(dh);
 		log.info("Ingested: " + file);
 		try {
 			resizeImages(uri);
 		} catch (Exception e) {
 			log.info("Resize images failed: " + e.toString());
-			
+			ImageResizeException ire = new ImageResizeException (uri);
+      ire.initCause(e);
+      throw ire;
 		}
+		try {
+		  dh.getOutputStream().close();
+    } catch (Exception e) {
+
+    }
 		log.info("Resized images");
 		generateCrossRefInfoDoc(file, uri);
 		log.info("Generated Xref for file: " + file);
@@ -172,47 +195,55 @@ public class DocumentManagementService {
 	private void resizeImages(String uri) throws NoSuchArticleIdException, 
 			NoSuchObjectIdException, HttpException, IOException {
 		
-		ImageResizeService irs = new ImageResizeService();
+		ImageResizeService irs;
 		
 		SecondaryObject[] objects = articleWebService.listSecondaryObjects(uri);
-		for (int i = 0; i < objects.length; ++i) {
-			SecondaryObject object = objects[i];
-			ObjectInfo info = articleWebService.getObjectInfo(object.getUri());
-			String context =  info.getContextElement().trim();
-			if (context.equalsIgnoreCase("fig") || context.equalsIgnoreCase("table-wrap")) {
-        RepresentationInfo rep = object.getRepresentations()[0];
-				log.info("Found image to resize: " + rep.getURL() + " repsize-" + new Long(rep.getSize()).toString());
-				irs.captureImage(rep.getURL());
-				log.info("Captured image");
-				articleWebService.setRepresentation(
-						object.getUri(), "PNG_S", 
-						new DataHandler(new PngDataSource(irs.getSmallImage())));
-				log.info("Set small");
-				articleWebService.setRepresentation(
-						object.getUri(), "PNG_M", 
-						new DataHandler(new PngDataSource(irs.getMediumImage())));
-				log.info("Set medium");						
-				articleWebService.setRepresentation(
-						object.getUri(), "PNG_L", 
-						new DataHandler(new PngDataSource(irs.getLargeImage())));	
-				log.info("Set large");
-			} else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
-		        RepresentationInfo rep = object.getRepresentations()[0];
-		        log.info("Found image to resize: " + rep.getURL());
-		        irs.captureImage(rep.getURL());
-		        log.info("Captured image");
-		        articleWebService.setRepresentation(
-		            object.getUri(), "PNG", 
-		            new DataHandler(new PngDataSource(irs.getPageWidthImage())));
-			} else if (context.equals("inline-formula")) {
-        RepresentationInfo rep = object.getRepresentations()[0];
-        log.info("Found image to resize: " + rep.getURL());
-        irs.captureImage(rep.getURL());
-        log.info("Captured image");
-        articleWebService.setRepresentation(
-            object.getUri(), "PNG", 
-            new DataHandler(new PngDataSource(irs.getLargeImage())));     
-      }
+    SecondaryObject object = null;
+    for (int i = 0; i < objects.length; ++i) {
+			//try {
+        irs = new ImageResizeService();
+        object = objects[i];
+  			ObjectInfo info = articleWebService.getObjectInfo(object.getUri());
+  			String context =  info.getContextElement().trim();
+  			if (context.equalsIgnoreCase("fig") || context.equalsIgnoreCase("table-wrap")) {
+          RepresentationInfo rep = object.getRepresentations()[0];
+  				log.info("Found image to resize: " + rep.getURL() + " repsize-" + new Long(rep.getSize()).toString());
+  				irs.captureImage(rep.getURL());
+  				log.info("Captured image");
+  				articleWebService.setRepresentation(
+  						object.getUri(), "PNG_S", 
+  						new DataHandler(new PngDataSource(irs.getSmallImage())));
+  				log.info("Set small");
+  				articleWebService.setRepresentation(
+  						object.getUri(), "PNG_M", 
+  						new DataHandler(new PngDataSource(irs.getMediumImage())));
+  				log.info("Set medium");						
+  				articleWebService.setRepresentation(
+  						object.getUri(), "PNG_L", 
+  						new DataHandler(new PngDataSource(irs.getLargeImage())));	
+  				log.info("Set large");
+  			} else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
+  		        RepresentationInfo rep = object.getRepresentations()[0];
+  		        log.info("Found image to resize for disp-forumla: " + rep.getURL());
+  		        irs.captureImage(rep.getURL());
+  		        log.info("Captured image");
+  		        articleWebService.setRepresentation(
+  		            object.getUri(), "PNG", 
+  		            new DataHandler(new PngDataSource(irs.getPageWidthImage())));
+  			} else if (context.equals("inline-formula")) {
+          RepresentationInfo rep = object.getRepresentations()[0];
+          log.info("Found image to resize for inline formula: " + rep.getURL());
+          irs.captureImage(rep.getURL());
+          log.info("Captured image");
+          articleWebService.setRepresentation(
+              object.getUri(), "PNG", 
+              new DataHandler(new PngDataSource(irs.getInlineImage())));     
+        }
+      //Don't continue trying to process images if one of them failed
+        /*} catch (Exception e) {
+        
+        log.error("Couldn't resize image : " + ((object == null) ? "null" : object.getUri()));
+      }*/
 		}
 	}
 	
