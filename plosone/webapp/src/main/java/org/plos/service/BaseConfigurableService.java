@@ -15,6 +15,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.Constants;
 import org.plos.web.UserContext;
+import org.topazproject.authentication.CASProtectedService;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 
@@ -132,11 +133,14 @@ public class BaseConfigurableService {
   protected void init() throws IOException, URISyntaxException, ServiceException {
   }
 
-  protected void ensureInitGetsCalledWithUsersSessionAttributes() {
+  protected void ensureInitGetsCalledWithUsersSessionAttributes() throws InvalidProxyTicketException {
     log.debug("ensureInit called by : " + this.getClass() + " initCalledInside is : " + initCalledInsideUserThread);
     if (!initCalledInsideUserThread) {
       try {
         init();
+      } catch (final CASProtectedService.NoProxyTicketException ex) {
+        log.error("No proxy ticket exception thrown for " + userContext.getSessionMap().get(Constants.SINGLE_SIGNON_RECEIPT), ex);
+        throw new InvalidProxyTicketException(ex); 
       } catch (final Exception e) {
         log.error("Init failed for service:" + getClass().getName(), e);
         throw new RuntimeException("Init failed for service:" + getClass().getName(), e);

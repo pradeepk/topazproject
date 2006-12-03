@@ -50,7 +50,15 @@
         <param name="actionName">prePopulateNewUser</param>
         <param name="namespace">/user</param>
       </result>
+      <result name="invalidProxyTicket" type="redirect">
+        <param name="location">${startingUrl}</param>
+        <param name="prependServletContext">false</param>
+      </result>
     </global-results>
+
+    <global-exception-mappings>
+      <exception-mapping exception="org.plos.service.InvalidProxyTicketException" result="invalidProxyTicket"/>
+    </global-exception-mappings>
 
     <action name="logout" class="org.plos.action.LogoutAction">
       <result type="redirect">/</result>

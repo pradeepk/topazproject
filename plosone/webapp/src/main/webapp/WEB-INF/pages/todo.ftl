@@ -89,6 +89,11 @@
           <@ww.a href="%{retrieveUserProfileURL}">Retrieve User Profile</@ww.a>
       </p>
 
+      <p>
+          <@ww.url id="homeURL" namespace="" action="home" />
+          <@ww.a href="%{homeURL}">Home</@ww.a>
+      </p>
+
     </fieldset>
   </body>
 </html>

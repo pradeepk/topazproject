@@ -12,6 +12,7 @@ import org.plos.ApplicationException;
 import org.plos.Constants;
 import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Annotator;
+import org.plos.service.InvalidProxyTicketException;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
 import org.plos.util.TextUtils;
@@ -85,7 +86,7 @@ public class FetchArticleService {
   }
 
 
-  private String getTransformedArticle(final String articleURI) throws ApplicationException, RemoteException, NoSuchIdException {
+  private String getTransformedArticle(final String articleURI) throws ApplicationException, NoSuchIdException {
     try {
       final Transformer transformer = getTransformer();
       final Source domSource = getAnnotatedContentAsDOMSource(articleURI);
@@ -94,6 +95,10 @@ public class FetchArticleService {
       transformer.transform(domSource,
                             new StreamResult(writer));
       return (writer.toString());
+    } catch (InvalidProxyTicketException ex) {
+      throw ex;
+    } catch (NoSuchIdException ex) {
+      throw ex;
     } catch (Exception e) {
       log.error("Transformation of article failed", e);
       throw new ApplicationException("Transformation of article failed", e);

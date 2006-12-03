@@ -9,8 +9,14 @@
  */
 package org.plos.action;
 
+import com.opensymphony.webwork.ServletActionContext;
+import com.opensymphony.webwork.views.util.UrlHelper;
 import com.opensymphony.xwork.ActionSupport;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Map;
@@ -19,6 +25,7 @@ import java.util.Map;
  * Base class for all actions.
  */
 public abstract class BaseActionSupport extends ActionSupport {
+  private static final Log log = LogFactory.getLog(BaseActionSupport.class);
   /**
    * This overrides the deprecated super inplementation and returns an empty implementation as we
    * want to avoid JSON serializing the deprecated implementation when it tries to serialize
@@ -26,6 +33,7 @@ public abstract class BaseActionSupport extends ActionSupport {
    *
    * @return a empty list
    */
+  @Override
   public Collection getErrorMessages() {
       return Collections.EMPTY_LIST;
   }
@@ -37,6 +45,7 @@ public abstract class BaseActionSupport extends ActionSupport {
    *
    * @return a empty map
    */
+  @Override
   public Map getErrors() {
       return Collections.EMPTY_MAP;
   }
@@ -49,4 +58,32 @@ public abstract class BaseActionSupport extends ActionSupport {
     return getFieldErrors().size();
   }
 
+  /**
+   * Return the url for this request, which could be used to redirect the user to it in case of failure  
+   * @return the start url for this request
+   */
+  public String getStartingUrl() {
+    final HttpServletRequest servletRequest = getRequest();
+    final StringBuilder urlBuilder = new StringBuilder();
+    final String method = servletRequest.getMethod();
+    if (method.equals("POST")) {
+      urlBuilder.append(UrlHelper.buildUrl(null, servletRequest, getResponse(), null, null, false, true));
+    } else {
+//      urlBuilder = UrlHelper.buildUrl(null, servletRequest, ServletActionContext.getResponse(), ActionContext.getContext().getSession());
+      urlBuilder.append(UrlHelper.buildUrl(null, servletRequest, getResponse(), null, null, false, true));
+    }
+    urlBuilder.append("?")
+       .append(servletRequest.getQueryString());
+    final String url = urlBuilder.toString();
+    log.debug("Url for redirection (on getting proxy invalidation!?) = " + url);    
+    return url;
+  }
+
+  private HttpServletResponse getResponse() {
+    return ServletActionContext.getResponse();
+  }
+
+  private HttpServletRequest getRequest() {
+    return ServletActionContext.getRequest();
+  }
 }
