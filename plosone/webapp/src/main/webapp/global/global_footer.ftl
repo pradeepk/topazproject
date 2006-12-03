@@ -3,7 +3,8 @@
 		<li><a href="http://www.plos.org/privacy.html" title="PLoS ONE Statement" tabindex="201">Privacy Statement</a></li>
 		<li><a href="#" title="PLoS ONE Terms of Use" tabindex="202">Terms of Use</a></li>
 		<li><a href="http://www.plos.org/advertise/" title="Advertise With PLoS" tabindex="203">Advertise</a></li>
-		<li><a href="${freemarker_config.context}/static/sitemap.action" title="PLoS ONE Site Map" tabindex="204">Site Map</a></li>
+		<@ww.url namespace="static" action="sitemap" includeParams="none" id="siteMapURL" />
+		<li><a href="${siteMapURL}" title="PLoS ONE Site Map" tabindex="204">Site Map</a></li>
 		<li><a href="http://www.plos.org" title="PLoS.org" tabindex="205">PLoS.org</a></li>
 	</ul>
 <div class="powered">Hosted by <a href="http://www.unitedlayer.com/" title="United Layer: Built on IP Services">United Layer</a></div>

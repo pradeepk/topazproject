@@ -59,8 +59,7 @@
       </#list>
 		</ol>
 		<br clear="all" />
-			<input type="submit" name="cancel" id="cancel" value="Cancel" tabindex="199">
-      <@ww.submit name="Save" tabindex="200"/>
+     <@ww.submit name="Save" tabindex="200"/>
 	</fieldset>
   </@ww.form>
 

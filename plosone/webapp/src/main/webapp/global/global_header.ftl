@@ -9,7 +9,7 @@
 		<div>
 			<p>Logged in as <a href="${freemarker_config.context}/user/showUser.action?userId=${Session.PLOS_ONE_USER.userId}" class="icon user">${Session.PLOS_ONE_USER.displayName}</a></p>
 				<ul>
-					<li><a href="${freemarker_config.context}/user/secure/retrieveUserProfile.action" class="icon preferences">Preferences</a></li>
+					<li><a href="${freemarker_config.context}/user/secure/editProfile.action" class="icon preferences">Preferences</a></li>
 					<li><a href="${freemarker_config.context}/user/secure/editAlerts.action" class="icon preferences">Alerts</a></li>
 					<li><a href="${freemarker_config.casLogoutURL}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action" class="icon logout">Logout</a></li>
 				</ul>

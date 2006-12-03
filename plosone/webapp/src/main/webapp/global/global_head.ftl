@@ -2,10 +2,6 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<meta name="keywords" content=""/>
-
-<meta name="description" content="" />
-
 <link rel="shortcut icon" href="${freemarker_config.context}/images/pone_favicon.ico" type="image/x-icon" />
 <link rel="home" title="home" href="http://${freemarker_config.plosOneHost}${freemarker_config.context}"></link>
 

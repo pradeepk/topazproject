@@ -80,11 +80,6 @@
       </result>
     </action>
 
-    <action name="register" class="org.plosone.action.RegistrationAction">
-      <!--<result name="success">/WEB-INF/pages/home.ftl</result>-->
-      <result type="chain">home</result>
-    </action>
-
     <action name="feedbackCreate" class="org.plos.action.FeedbackAction" method="executeRender">
       <result type="plosOneFreemarker">
         <param name="templateFile">/feedback/feedbackEntry.ftl</param>
@@ -472,52 +467,85 @@
 
     <action name="editAlerts" class="org.plos.user.action.UserAlertsAction" method="retrieveAlerts">
       <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/user/alerts.ftl</param>
+        <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
       <result name="error" type="plosOneFreemarker">
-        <param name="templateFile">/user/alerts.ftl</param>
+        <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
       <result name="input" type="plosOneFreemarker">
-        <param name="templateFile">/user/alerts.ftl</param>
+        <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
     </action>
   
+    <action name="editPrefsAlerts" class="org.plos.user.action.UserAlertsAction" method="retrieveAlerts">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/user/editPrefsAlerts.ftl</param>
+      </result>
+      <result name="error" type="plosOneFreemarker">
+        <param name="templateFile">/user/editPrefsAlerts.ftl</param>
+      </result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/user/editPrefsAlerts.ftl</param>
+      </result>
+    </action>
+  
+  
     <action name="retrieveUserAlerts" class="org.plos.user.action.UserAlertsAction" method="retrieveAlerts">
-      <result name="success">/WEB-INF/pages/user/alerts.ftl</result>
+      <result name="success">/user/alerts.ftl</result>
       <result name="error">/WEB-INF/pages/user/alerts.ftl</result>
       <result name="input">/WEB-INF/pages/user/alerts.ftl</result>
     </action>
 
-    <action name="saveUserAlerts" class="org.plos.user.action.UserAlertsAction" method="saveAlerts">
-      <result name="success" type="redirect">editAlerts.action</result>
+    <action name="saveAjaxAlerts" class="org.plos.user.action.UserAlertsAction" method="saveAlerts">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/user/editPlosAlerts.ftl</param>
+      </result>
       <result name="error" type="plosOneFreemarker">
-        <param name="templateFile">/user/alerts.ftl</param>
+        <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
       <result name="input" type="plosOneFreemarker">
-        <param name="templateFile">/user/alerts.ftl</param>
+        <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
     </action>
+ 
+    <action name="saveAlerts" class="org.plos.user.action.UserAlertsAction" method="saveAlerts">
+      <result name="success">/user/alerts.ftl</result>
+      <result name="error">/user/alerts.ftl</result>
+      <result name="input">/user/alerts.ftl</result>
+    </action>
+
 
     <action name="editProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/user/editProfile.ftl</param>
+        <param name="templateFile">/user/editUser.ftl</param>
       </result>
       <result name="input" type="plosOneFreemarker">
-        <param name="templateFile">/user/editProfile.ftl</param>
+        <param name="templateFile">/user/editUser.ftl</param>
       </result>
       <result name="error" type="plosOneFreemarker">
         <param name="templateFile">/editProfile/newUser.ftl</param>
       </result>
     </action>
-
+    
+    <action name="saveAjaxProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">
+      <result name="success">/user/user.ftl</result>
+      <result name="input">/user/user.ftl</result>
+      <result name="error" type="plosOneFreemarker">
+        <param name="templateFile">/editProfile/newUser.ftl</param>
+      </result>
+    </action>
+    
+    <action name="saveProfile" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">
+      <result name="success">/user/createNewUser.ftl</result>
+      <result name="input">/user/createNewUser.ftl</result>
+      <result name="error">/user/createNewUser.ftl</result>
+    </action>
 
     <action name="retrieveUserProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">
       <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/user/newUser.ftl</param>
+        <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
-        <param name="templateFile">/user/newUser.ftl</param>
-      </result>
+      <result name="input">/user/newUser.ftl</result>
       <result name="error" type="plosOneFreemarker">
         <param name="templateFile">/user/newUser.ftl</param>
       </result>
@@ -529,24 +557,25 @@
 
     <action name="prePopulateNewUser" class="org.plos.user.action.PrepopulateUserDetailsAction" method="execute">
       <result name="new-profile" type="plosOneFreemarker">
-        <param name="templateFile">/user/newUser.ftl</param>
+        <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
       <result name="update-profile" type="plosOneFreemarker">
-        <param name="templateFile">/user/newUser.ftl</param>
+        <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
     </action>
 
     <action name="createNewUser" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">
-      <result name="success" type="redirect-action">
-        <param name="actionName">showUser</param>
+      <result name="success" type="redirect">/user/secure/retrieveUserProfile.action </result>
+     
+<!--         <param name="actionName">showUser</param>
         <param name="namespace">/user</param>
-        <param name="userId">${topazId}</param>
-      </result>
+        <param name="userId">${topazId}</param>-->
+
       <result name="input" type="plosOneFreemarker">
-        <param name="templateFile">/user/newUser.ftl</param>
+        <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
       <result name="error" type="plosOneFreemarker">
-        <param name="templateFile">/user/newUser.ftl</param>
+        <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
     </action>
 
