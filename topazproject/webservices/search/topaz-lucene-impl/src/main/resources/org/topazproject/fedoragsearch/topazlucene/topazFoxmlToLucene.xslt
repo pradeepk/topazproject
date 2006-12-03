@@ -108,7 +108,7 @@
     <xsl:for-each select="foxml:datastream/foxml:datastreamVersion/foxml:xmlContent/oai_dc:dc/*">
       <IndexField index="TOKENIZED" store="YES" termVector="YES">
         <xsl:attribute name="IFname">
-          <xsl:value-of select="substring-after(name(),':')"/>
+          <xsl:value-of select="local-name()"/>
         </xsl:attribute>
         <xsl:value-of select="text()"/>
       </IndexField>
