@@ -539,7 +539,7 @@
     <action name="createNewUser" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect-action">
         <param name="actionName">showUser</param>
-        <param name="namespace">/user/</param>
+        <param name="namespace">/user</param>
         <param name="userId">${topazId}</param>
       </result>
       <result name="input" type="plosOneFreemarker">

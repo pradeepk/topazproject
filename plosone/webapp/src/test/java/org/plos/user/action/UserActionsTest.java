@@ -14,6 +14,7 @@ import org.plos.BasePlosoneTestCase;
 import org.plos.Constants;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.user.PlosOneUser;
+import org.plos.user.UserProfileGrant;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -83,8 +84,12 @@ public class UserActionsTest extends BasePlosoneTestCase {
     createUserAction.setOrganizationType(ORGANIZATION_TYPE);
     createUserAction.setPostalAddress(POSTAL_ADDRESS);
 
-    final String[] privateFields = new String[]{"email", "realName", "username", "postalAddress"};
-    createUserAction.setNameVisibility(UserProfileAction.PRIVATE);
+    final String[] privateFields = new String[]{
+            UserProfileGrant.POSTAL_ADDRESS.getFieldName(),
+            UserProfileGrant.COUNTRY.getFieldName(),
+            UserProfileGrant.CITY.getFieldName()};
+
+    createUserAction.setExtendedVisibility(UserProfileAction.PRIVATE);
 
     assertEquals(SUCCESS, createUserAction.executeSaveUser());
     final String topazId = createUserAction.getInternalId();

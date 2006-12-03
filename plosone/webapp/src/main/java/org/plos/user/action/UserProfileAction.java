@@ -54,7 +54,7 @@ public class UserProfileAction extends UserActionSupport {
   private String city;
   private String country;
   private String title;
-  private String nameVisibility;
+  private String nameVisibility = PUBLIC;
   private String extendedVisibility;
   private String orgVisibility;
   private ProfanityCheckingService profanityCheckingService;
@@ -536,6 +536,9 @@ public class UserProfileAction extends UserActionSupport {
     CollectionUtils.addAll(privateFieldsList, getRespectiveFields(extendedVisibility, EXTENDED_GROUP));
     CollectionUtils.addAll(privateFieldsList, getRespectiveFields(orgVisibility, ORG_GROUP));
 
+    //Add email as a private field.
+    CollectionUtils.addAll(privateFieldsList, new String[]{UserProfileGrant.EMAIL.getFieldName()});
+
     return privateFieldsList.toArray(new String[privateFieldsList.size()]);
   }
 
@@ -599,10 +602,7 @@ public class UserProfileAction extends UserActionSupport {
    * @return Value of extendedVisibility.
    */
   public String getExtendedVisibility() {
-    if ((extendedVisibility == null) || ("".equals(extendedVisibility))) {
-      return PUBLIC;
-    }
-    return extendedVisibility;
+    return getVisibility(extendedVisibility);
   }
 
   /**
@@ -618,17 +618,14 @@ public class UserProfileAction extends UserActionSupport {
    * @return Value of nameVisibility.
    */
   public String getNameVisibility() {
-    if ((nameVisibility == null) || ("".equals(nameVisibility))) {
-      return PUBLIC;
-    }
-    return nameVisibility;
+    return getVisibility(nameVisibility);
   }
 
   /**
    * Setter for nameVisibility.
    * @param nameVisibility Value to set for nameVisibility.
    */
-  public void setNameVisibility(final String nameVisibility) {
+  private void setNameVisibility(final String nameVisibility) {
     this.nameVisibility = nameVisibility;
   }
 
@@ -637,10 +634,7 @@ public class UserProfileAction extends UserActionSupport {
    * @return Value of orgVisibility.
    */
   public String getOrgVisibility() {
-    if ((orgVisibility == null) || ("".equals(orgVisibility))) {
-      return PUBLIC;
-    }
-    return orgVisibility;
+    return getVisibility(orgVisibility);
   }
 
   /**
@@ -649,6 +643,10 @@ public class UserProfileAction extends UserActionSupport {
    */
   public void setOrgVisibility(final String orgVisibility) {
     this.orgVisibility = orgVisibility;
+  }
+
+  private String getVisibility(final String visibility) {
+    return StringUtils.isBlank(visibility) ? PUBLIC : visibility;
   }
 
   /**
