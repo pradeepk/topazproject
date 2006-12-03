@@ -14,7 +14,7 @@
 		      <@ww.textfield label="Recipient's E-mail address" required="true" name="emailTo" size="40" />
  		      <@ww.textfield label="Your E-mail address" required="true" name="emailFrom" size="40" />
  		      <@ww.textfield label="Your name" required="true" name="senderName" size="40" />					
- 		      <@ww.textarea label="Your comments to add to the E-mail" value="%{'I thought you would find this article interesting.'}" required="true" name="note" />					
+ 		      <@ww.textarea label="Your comments to add to the E-mail" value="%{'I thought you would find this article interesting.'}" name="note" rows="5" cols="40"/>					
 			</ol>
 		  <@ww.submit value="Send"/>
 		</fieldset>

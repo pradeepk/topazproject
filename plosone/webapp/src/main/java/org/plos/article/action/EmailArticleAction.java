@@ -105,10 +105,6 @@ public class EmailArticleAction extends UserActionSupport {
       addFieldError("senderName", "Your name cannot be empty");
       isValid = false;
     }
-    if (StringUtils.isBlank(note)) {
-      addFieldError("note", "Note cannot be empty");
-      isValid = false;
-    }
 
     return isValid;
   }
