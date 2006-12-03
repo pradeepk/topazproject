@@ -67,13 +67,16 @@ public abstract class BaseActionSupport extends ActionSupport {
     final StringBuilder urlBuilder = new StringBuilder();
     final String method = servletRequest.getMethod();
     if (method.equals("POST")) {
-      urlBuilder.append(UrlHelper.buildUrl(null, servletRequest, getResponse(), null, null, false, true));
+      final String referer = servletRequest.getHeader("referer");
+      urlBuilder.append(referer);
     } else {
-//      urlBuilder = UrlHelper.buildUrl(null, servletRequest, ServletActionContext.getResponse(), ActionContext.getContext().getSession());
       urlBuilder.append(UrlHelper.buildUrl(null, servletRequest, getResponse(), null, null, false, true));
+      final String queryString = servletRequest.getQueryString();
+      if (null != queryString) {
+        urlBuilder.append("?")
+                  .append(queryString);
+      }
     }
-    urlBuilder.append("?")
-       .append(servletRequest.getQueryString());
     final String url = urlBuilder.toString();
     log.debug("Url for redirection (on getting proxy invalidation!?) = " + url);    
     return url;
