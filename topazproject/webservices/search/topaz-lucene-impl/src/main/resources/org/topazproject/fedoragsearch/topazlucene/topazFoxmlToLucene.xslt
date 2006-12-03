@@ -20,9 +20,13 @@
                 xmlns:uvalibdesc="http://dl.lib.virginia.edu/bin/dtd/descmeta/descmeta.dtd"
                 xmlns:uvalibadmin="http://dl.lib.virginia.edu/bin/admin/admin.dtd/">
   <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
+
   <!--
   <xsl:include href="@fedoragsearchPath@/WEB-INF/classes/config/index/DemoOnLucene/demoUvalibdescToLucene.xslt"/>
   -->
+
+  <xsl:param name="fedoraBaseURL"/>
+  <xsl:param name="articleDS"/>
 
     <xsl:template name="uvalibdesc">
       <xsl:for-each select="foxml:datastream/foxml:datastreamVersion/foxml:xmlContent/uvalibdesc:desc/*">
@@ -126,8 +130,8 @@
   <!-- Template to index our XML content -->
   <xsl:template name="topaz-xml">
     <IndexField IFname="body" index="TOKENIZED" store="YES" termVector="NO">
-      <xsl:apply-templates select="document(concat('http://localhost:9090/fedora/get/', $PID,
-                                            '/XML'))/article/body" mode="value-of"/>
+      <xsl:apply-templates mode="value-of"
+          select="document(concat($fedoraBaseURL, 'get/', $PID, '/', $articleDS))/article/body"/>
     </IndexField>
   </xsl:template>
 

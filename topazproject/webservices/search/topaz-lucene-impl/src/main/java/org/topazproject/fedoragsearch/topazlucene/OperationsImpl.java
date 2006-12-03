@@ -68,6 +68,7 @@ public class OperationsImpl extends GenericOperationsImpl {
   private static final String INDEXINFO_XSLT = TopazConfig.INDEXINFO_XSLT;
   private static final String UPDATE_XSLT    = TopazConfig.UPDATE_XSLT;
   private static final String FOXML2LUCENE_XSLT = TopazConfig.FOXML2LUCENE_XSLT;
+  private static final String FEDORA_BASE_URL   = TopazConfig.FEDORA_BASE_URL;
 
   private static final String INDEXINFO_XML  = TopazConfig.INDEXINFO_XML;
   private static final Analyzer analyzer     = TopazConfig.getAnalyzer();
@@ -398,7 +399,9 @@ public class OperationsImpl extends GenericOperationsImpl {
                         IndexModifier modifier) throws RemoteException {
     // Transform our stuff to get it into lucene
     StringBuffer sb = TopazTransformer.transform(
-      FOXML2LUCENE_XSLT, foxmlStream, new String[] {});
+      FOXML2LUCENE_XSLT, foxmlStream, new String[] {
+          "fedoraBaseURL", FEDORA_BASE_URL,
+          "articleDS",     "XML" });
 
     if (log.isDebugEnabled())
       log.debug("indexDoc=\n"+sb.toString());

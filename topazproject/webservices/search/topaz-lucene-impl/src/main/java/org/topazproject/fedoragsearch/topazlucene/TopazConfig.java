@@ -51,6 +51,7 @@ class TopazConfig {
   static final List   DEFAULT_FIELDS    = CONF.getList(  "topaz.search.defaultfields",
                                             Arrays.asList(new Object[]
                                               { "description", "title", "body" }));
+  static final String FEDORA_BASE_URL   = CONF.getString("topaz.services.fedora.base-url", null);
   
   static final String GFIND_XSLT =
     CONF.getString("topaz.search.xslt.gfind", "gfindObjectsToResultPage");
