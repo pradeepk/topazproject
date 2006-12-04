@@ -18,11 +18,6 @@
           <@ww.textfield name="givenNames" label="First/Given Name" required="true" tabindex="102" />
           <@ww.textfield name="surnames" label="Last/Family Name" required="true" tabindex="103"/>
 				</ol>
-				<fieldset class="public-private">
-					<legend>Choose display settings for your real name </legend>
-          <@ww.radio name="nameVisibility" label="Public" list="{'public'}" checked="true" tabindex="104" cssClass="radio" />
-          <@ww.radio name="nameVisibility" label="Private" list="{'private'}" tabindex="105" cssClass="radio" />
-				</fieldset>
 			</li>
 		</ol>
 	</fieldset>
@@ -37,7 +32,7 @@
 				</ol>
 				<fieldset class="public-private">
 				<legend>Choose display settings for your address </legend>
-          <@ww.radio name="extendedVisibility" label="Public" list="{'public'}" checked="true" tabindex="112" cssClass="radio" />
+          <@ww.radio name="extendedVisibility" label="Public" list="{'public'}" tabindex="112" cssClass="radio" />
           <@ww.radio name="extendedVisibility" label="Private" list="{'private'}" tabindex="113" cssClass="radio" />
 				</fieldset>
 			</li>

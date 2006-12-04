@@ -18,8 +18,11 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import static org.plos.Constants.Length;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
+import static org.plos.Constants.ReturnCode.NEW_PROFILE;
+import static org.plos.Constants.ReturnCode.UPDATE_PROFILE;
 import org.plos.user.PlosOneUser;
 import org.plos.user.UserProfileGrant;
+import org.plos.user.service.DisplayNameAlreadyExistsException;
 import org.plos.util.ProfanityCheckingService;
 
 import java.util.ArrayList;
@@ -114,7 +117,13 @@ public class UserProfileAction extends UserActionSupport {
 
     final PlosOneUser newUser = createPlosOneUser();
 
-    getUserService().setProfile(newUser, getPrivateFields());
+    try {
+      getUserService().setProfile(newUser, getPrivateFields());
+    } catch (DisplayNameAlreadyExistsException ex) {
+      email = fetchUserEmailAddress();
+      addFieldError("displayName", "User name is already in use. Please select a different display name");
+      return INPUT;
+    }
 
     sessionMap.put(PLOS_ONE_USER_KEY, newUser);
     return SUCCESS;
@@ -147,6 +156,31 @@ public class UserProfileAction extends UserActionSupport {
     setVisibility(grants);
 
     return SUCCESS;
+  }
+
+  /**
+   * Prepopulate the user profile data as available
+   * @return return code for webwork
+   * @throws Exception Exception
+   */
+  public String prePopulateUserDetails() throws Exception {
+    final Map<String, Object> sessionMap = getSessionMap();
+    final PlosOneUser plosOneUser = (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
+
+    if (null == plosOneUser) {
+      email = fetchUserEmailAddress();
+      log.debug("new profile with email: " + email);
+      return NEW_PROFILE;
+    } else {
+      try {
+        log.debug("this is an existing user with email: " + plosOneUser.getEmail());
+        email = plosOneUser.getEmail();
+        realName = plosOneUser.getRealName();
+      } catch(NullPointerException  ex) {
+        log.debug("Profile was not found");
+      }
+      return UPDATE_PROFILE;
+    }
   }
 
   private PlosOneUser createPlosOneUser() throws ApplicationException {

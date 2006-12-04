@@ -155,7 +155,7 @@ public class UserServiceTest extends BasePlosoneTestCase {
     }
   }
 
-  private String createUser(final String AUTH_ID, final String USER_EMAIL, final String USERNAME, final String REAL_NAME) throws ApplicationException {
+  private String createUser(final String AUTH_ID, final String USER_EMAIL, final String USERNAME, final String REAL_NAME) throws ApplicationException, DisplayNameAlreadyExistsException {
     String topazId = getUserService().createUser(AUTH_ID);
     log.debug("topazId = " + topazId);
 

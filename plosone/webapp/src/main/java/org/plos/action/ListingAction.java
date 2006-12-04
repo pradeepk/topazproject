@@ -16,6 +16,7 @@ import java.util.Map;
 
 /**
  * A provider of all listings for select boxes in an html page.
+ * TODO: move to constants as static values 
  */
 public class ListingAction extends ActionSupport {
 

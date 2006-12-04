@@ -574,7 +574,7 @@
   <package name="user" extends="default" namespace="/user">
     <default-interceptor-ref name="plosBaseStack" />
 
-    <action name="prePopulateNewUser" class="org.plos.user.action.PrepopulateUserDetailsAction" method="execute">
+    <action name="prePopulateNewUser" class="org.plos.user.action.UserProfileAction" method="prePopulateUserDetails">
       <result name="new-profile" type="plosOneFreemarker">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>

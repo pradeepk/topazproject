@@ -49,8 +49,8 @@ public class ProfileWebService extends BaseConfigurableService {
    * 
    * @param topazUserId Topaz User ID
    * @return profile of given user
-   * @throws NoSuchIdException
-   * @throws RemoteException
+   * @throws NoSuchIdException NoSuchIdException
+   * @throws RemoteException RemoteException
    */
   public UserProfile getProfile(final String topazUserId) throws NoSuchIdException, RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
@@ -62,12 +62,29 @@ public class ProfileWebService extends BaseConfigurableService {
    * 
    * @param topazUserId Topaz User ID
    * @param profile Profile to store
-   * @throws NoSuchIdException
-   * @throws RemoteException
+   * @throws NoSuchIdException NoSuchIdException
+   * @throws RemoteException RemoteException
    */
   public void setProfile(final String topazUserId, final UserProfile profile) throws NoSuchIdException,
       RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     profileService.setProfile(topazUserId, profile);
+  }
+
+  /**
+   * Find the user with this display name ignoring the case
+   * @param displayName displayName
+   * @throws RemoteException RemoteException
+   * @return the userId with the display name
+   */
+  public String getUserWithDisplayName(final String displayName) throws RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    final UserProfile userTemplate = new UserProfile();
+    userTemplate.setDisplayName(displayName);
+    final String[] userIds = profileService.findUsersByProfile(new UserProfile[]{userTemplate}, new boolean[]{true});
+    if ((null != userIds) && (userIds.length > 0)) {
+      return userIds[0];
+    }
+    return null;
   }
 }

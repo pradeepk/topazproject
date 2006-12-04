@@ -258,8 +258,9 @@ public class UserService extends BaseConfigurableService {
    *          write profile of this user to the store
    * @param privateFields fields marked private by the user
    * @throws org.plos.ApplicationException ApplicationException
+   * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
-  public void setProfile(final PlosOneUser inUser, final String[] privateFields) throws ApplicationException {
+  public void setProfile(final PlosOneUser inUser, final String[] privateFields) throws ApplicationException, DisplayNameAlreadyExistsException {
     if (inUser != null) {
       setProfile(inUser.getUserId(), inUser.getUserProfile());
       final Collection<UserProfileGrant> profileGrantsList = UserProfileGrant.getProfileGrantsForFields(privateFields);
@@ -278,11 +279,16 @@ public class UserService extends BaseConfigurableService {
    * @param profile
    *          profile to be written
    * @throws ApplicationException ApplicationException
+   * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
   protected void setProfile(final String topazUserId, final UserProfile profile)
-      throws ApplicationException {
+      throws ApplicationException, DisplayNameAlreadyExistsException {
     try {
       userCacheAdministrator.flushEntry(topazUserId);
+      final String userId = profileWebService.getUserWithDisplayName(profile.getDisplayName());
+      if ((null != userId) && !userId.equals(topazUserId)) {
+        throw new DisplayNameAlreadyExistsException();
+      }
       profileWebService.setProfile(topazUserId, profile);
     } catch (NoSuchIdException ne) {
       throw new ApplicationException(ne);
