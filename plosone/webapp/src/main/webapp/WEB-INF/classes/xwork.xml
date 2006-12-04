@@ -262,6 +262,12 @@
       </result>
     </action>
 
+    <action name="findArticle">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/article/findArticle.ftl</param>
+      </result>
+    </action>
+
 
     <action name="emailThisArticleCreate" class="org.plos.article.action.EmailArticleAction" method="executeRender">
       <result name="success">/WEB-INF/pages/emailArticle/emailArticle.ftl</result>
