@@ -12,6 +12,7 @@ package org.plos.action;
 import com.opensymphony.webwork.ServletActionContext;
 import com.opensymphony.webwork.views.util.UrlHelper;
 import com.opensymphony.xwork.ActionSupport;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -68,7 +69,9 @@ public abstract class BaseActionSupport extends ActionSupport {
     final String method = servletRequest.getMethod();
     if (method.equals("POST")) {
       final String referer = servletRequest.getHeader("referer");
-      urlBuilder.append(referer);
+      urlBuilder.append(
+              StringUtils.isBlank(referer)? "/"
+                                          :referer);
     } else {
       urlBuilder.append(UrlHelper.buildUrl(null, servletRequest, getResponse(), null, null, false, true));
       final String queryString = servletRequest.getQueryString();
