@@ -236,6 +236,19 @@
       </result>
       <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
+
+    <action name="pageNotFound">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/pageNotFound.ftl</param>
+      </result>
+    </action>    
+
+    <action name="error">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/serverError.ftl</param>
+      </result>
+    </action>    
+  
   </package>
 
   <package name="article" extends="default" namespace="/article">
