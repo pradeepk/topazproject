@@ -83,6 +83,18 @@ public class RSSInfo {
     options.addOption(OptionBuilder.withArgName("Prefix for link").hasArg().
         withValueSeparator(' ').withDescription("Prefix added to article URI").
         create("prefix"));
+    options.addOption(OptionBuilder.withArgName("yyyy-MM-dd'T'HH:mm:ss").hasArg().
+        withValueSeparator(' ').withDescription("Start date for articles").
+        create("startDate"));
+    options.addOption(OptionBuilder.withArgName("yyyy-MM-dd'T'HH:mm:ss").hasArg().
+        withValueSeparator(' ').withDescription("End date for articles").
+        create("endDate"));
+    options.addOption(OptionBuilder.withArgName("category1 category2..").hasArg().
+        withValueSeparator(' ').withDescription("List of categories").
+        create("categories"));
+    options.addOption(OptionBuilder.withArgName("author1 author2..").hasArg().
+        withValueSeparator(' ').withDescription("List of authors").
+        create("authors"));
   }
 
   /**
@@ -107,8 +119,10 @@ public class RSSInfo {
    *
    * @throws RemoteException if an exception occurred talking to the service
    */
-  public String getFeed() throws RemoteException {
-    return service.getArticles(null, null, null, null, null, false);
+  public String getFeed(String startDate, String endDate, String[] categories,
+      String[] authors, int[] states, boolean ascending)
+    throws RemoteException {
+    return service.getArticles(startDate, endDate, categories, authors, states, ascending);
   }
 
   // Convert from string to array of strings
@@ -142,8 +156,22 @@ public class RSSInfo {
         // parse the command line arguments
       CommandLine line = parser.parse(options, args);
       RSSInfo rss = new RSSInfo(line.getOptionValue("uri"));
-      String feed = rss.getFeed();
 
+      // Grab various parameters
+      String startDate = line.getOptionValue("startDate");
+      String endDate = line.getOptionValue("endDate");
+      String[] categories = null;
+      if (line.hasOption("categories")) {
+        categories = parseArgs(line.getOptionValue("categories"));
+      }
+      String[] authors = null;
+      if (line.hasOption("authors")) {
+        authors = parseArgs(line.getOptionValue("authors"));
+      }
+      int[] states = null;
+      boolean ascending = false;
+
+      String feed = rss.getFeed(startDate, endDate, categories, authors, states, ascending);
       // Style sheet specified?
       String xslt = null;
       if (line.hasOption("rss")) {
