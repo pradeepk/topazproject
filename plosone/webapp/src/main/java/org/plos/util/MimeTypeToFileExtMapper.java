@@ -20,7 +20,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MimeTypeToFileExtMapper {
-  private Resource mappingLocation = new ClassPathResource("mime.types", getClass());
+  private Resource mappingLocation = new ClassPathResource("mime.types");
   private BufferedReader bufferedReader;
 
   public MimeTypeToFileExtMapper() throws IOException {
