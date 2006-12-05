@@ -11,9 +11,12 @@
 .required {color: #A61200; font-weight: bold; }
 
 .pone-form {
+	position: relative;
 	display: block;
 }
+
 .pone-form fieldset {
+	position: relative;
 	border-top: 2px solid #55E912;
 	border-bottom: 2px solid #55E912;
 	border-right-width: 0px;
@@ -31,9 +34,10 @@
 	background-color: #FFFFFF;
 	padding-right: 5px;
 }
-.pone-form ol { list-style-type: none; margin: 15px 0px 0px; padding: 0px; }
+.pone-form ol { list-style-type: none; margin: 15px 0px 0px; padding: 0px; position: relative;}
 
 .pone-form ol li {
+	position: relative;
 	list-style: none;
 	display: block;
 	padding-bottom: 10px;
@@ -64,19 +68,13 @@
 }
 /************* general component styles *****************/
 .pone-form ol li label { font-weight: bold; display: block; }
-
 .pone-form ol li input { width: 200px; border: 1px solid #ACF1FF; padding: 2px; }
-
+.pone-form ol li input.radio { border-width: 0; }
 .pone-form ol li .long-input { width: 324px; } 
-
 .pone-form ol li select { width: 206px; border: 1px solid #ACF1FF; padding: 2px; }
-
 .pone-form ol li .radio { width: 14px;}
-
 .pone-form ol li .checkbox { width: 14px;}
-
 .pone-form textarea {width: 324px; border: 1px solid #ACF1FF; }
-
 .pone-form #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
 
 /***********************************************/
@@ -93,15 +91,17 @@
 
 .pone-form .public-private {
 	width:324px;
-  background-image: none;
+ 	background-image: none;
 	margin-top:10px;
 	clear: both;
 	border: none;
 }
 
-.pone-form .public-private legend { background-color:transparent; font-size:0.9em; font-weight: bold;}
+.pone-form .public-private legend { background-color:transparent; font-size:1.4em; margin: 20px 0;}
 
 /************* alerts styles *****************/
-.alerts-title { width: 225px; font-weight:bold; }
+#alert-form ol li.alerts-title { width: 190px; font-weight:bold; }
 #alert-form ol li { position: relative; margin: 0px; display: block; }
 #alert-form ol li ol { position: relative; margin: 0px; height: 40px; }
+#alert-form label { text-align: left; width: 178px; font-weight: normal;}
+#alert-form label input { margin: 0; width: 20px; border-width: 0;}

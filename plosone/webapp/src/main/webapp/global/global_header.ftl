@@ -7,11 +7,10 @@
 	<#if Session.PLOS_ONE_USER?exists>
 	<div id="user">
 		<div>
-			<p>Logged in as <a href="${freemarker_config.context}/user/showUser.action?userId=${Session.PLOS_ONE_USER.userId}" class="icon user">${Session.PLOS_ONE_USER.displayName}</a></p>
+			<p>Logged in as <a href="${freemarker_config.context}/user/showUser.action?userId=${Session.PLOS_ONE_USER.userId}" class="icon user" title="Logged in username">${Session.PLOS_ONE_USER.displayName}</a></p>
 				<ul>
-					<li><a href="${freemarker_config.context}/user/secure/editProfile.action?tabId=preferences" class="icon preferences">Preferences</a></li>
-					<li><a href="${freemarker_config.context}/user/secure/editPrefsAlerts.action?tabId=alerts" class="icon preferences">Alerts</a></li>
-					<li><a href="${freemarker_config.casLogoutURL}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action" class="icon logout">Logout</a></li>
+					<li><a href="${freemarker_config.context}/user/secure/editProfile.action?tabId=preferences" class="icon preferences" title="View and edit my account preferences and alerts">Preferences</a></li>
+					<li><a href="${freemarker_config.casLogoutURL}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action" class="icon logout" title="Logout of my PLoS ONE account">Logout</a></li>
 				</ul>
 		</div>
 	</div>

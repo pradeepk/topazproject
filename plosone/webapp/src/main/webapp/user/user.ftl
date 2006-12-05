@@ -1,3 +1,4 @@
+
 <#if Parameters.tabId?exists>
    <#assign tabId = Parameters.tabId>
 <#else>
@@ -5,25 +6,21 @@
 </#if>
 
 
-<h2>PLoS ONE Member Profiles: Create a Profile</h2>
 	<p><strong>Create or Update Your Profile</strong></p>
 	<p>Fields marked with an <span class="required">*</span> are required. </p>
 
 <@ww.form name="userForm" id="userForm"  method="post" title="User Information Form" cssClass="pone-form">
 
 <fieldset>
-  <legend>Your Profile</legend>
+  <legend>Your Public Profile</legend>
   <ol>
-    <li><label for="email">Email address</label>
-      ${email}
-    </li>
+  <li><em>The following required fields will always appear publicly.</em></li>
+
    	  <#if tabId?has_content>	
-      	<@ww.textfield name="displayName" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="Username" required="true" tabindex="101" after="Your user name will appear publicly"/>
+      	<@ww.textfield name="displayName" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="Username" required="true" tabindex="101" />
 	  <#else>
-      	<@ww.textfield name="displayName" label="Username" required="true" tabindex="101" after="Your user name will appear publicly"/>
+      	<@ww.textfield name="displayName" label="Username" required="true" tabindex="101" />
 	  </#if>
-			<li>
-				<ol>
    	  <#if tabId?has_content>	
           <@ww.textfield name="givenNames" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="First/Given Name" required="true" tabindex="102" />
 	  <#else>
@@ -34,21 +31,7 @@
 	  <#else>
           <@ww.textfield name="surnames" label="Last/Family Name" required="true" tabindex="103"/>
 	  </#if>
-				</ol>
-
-			</li>
-		</ol>
-	</fieldset>
-	<fieldset>
-	<legend>Your Extended Profile</legend>
-		<ol>
-			<li>
-   	  <#if tabId?has_content>	
-        <@ww.textarea name="postalAddress" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="Address" cssClass="long-input"  rows="5" cols="50" tabindex="106" />
-	  <#else>
-        <@ww.textarea name="postalAddress" label="Address" cssClass="long-input"  rows="5" cols="50" tabindex="106" />
-	  </#if>
-				<ol>
+		<br />
    	  <#if tabId?has_content>	
           <@ww.textfield name="city" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="City" required="true" tabindex="107"/>
 	  <#else>
@@ -59,18 +42,38 @@
 	  <#else>
           <@ww.textfield name="country" label="Country" required="true" tabindex="111"/>
 	  </#if>
-				</ol>
-				<fieldset class="public-private">
-				<legend>Choose display settings for your address </legend>
+
+			</li>
+		</ol>
+	</fieldset>
+	<fieldset>
+	<legend>Your Private Information</legend>
+	<ol>
+	    <li><p><em>Your E-mail address will always be kept private. See the the <a href="http://www.plos.org/privacy.html" title="PLoS Privacy Statement">PLoS Privacy Statement</a> for more information.</em></p>
+		<strong>${email}</strong></li>
+    </li>
+	</ol>
+	</fieldset>
+	<fieldset>
+	<legend>Your Extended Profile</legend>
+		<ol>
    	  <#if tabId?has_content>	
-          <@ww.radio name="extendedVisibility" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this);" label="Public" list="{'public'}" checked="true" tabindex="112" cssClass="radio" />
+        <@ww.textarea name="postalAddress" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="Address" cssClass="long-input"  rows="5" cols="50" tabindex="106" />
 	  <#else>
-          <@ww.radio name="extendedVisibility" label="Public" list="{'public'}" checked="true" tabindex="112" cssClass="radio" />
+        <@ww.textarea name="postalAddress" label="Address" cssClass="long-input"  rows="5" cols="50" tabindex="106" />
+	  </#if></li>
+		<li>
+				<fieldset class="public-private">
+				<legend>Would you like your address to appear publicly or privately?</legend>
+   	  <#if tabId?has_content>	
+          <@ww.radio name="extendedVisibility" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this);" label="Public" list="{'public'}" checked="true" tabindex="112" cssClass="radio" class="radio"/>
+	  <#else>
+          <@ww.radio name="extendedVisibility" label="Public" list="{'public'}" checked="true" tabindex="112" cssClass="radio" class="radio"/>
 	  </#if>
    	  <#if tabId?has_content>	
-          <@ww.radio name="extendedVisibility" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this);" label="Private" list="{'private'}" tabindex="113" cssClass="radio" />
+          <@ww.radio name="extendedVisibility" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this);" label="Private" list="{'private'}" tabindex="113" cssClass="radio" class="radio"/>
 	  <#else>
-          <@ww.radio name="extendedVisibility" label="Private" list="{'private'}" tabindex="113" cssClass="radio" />
+          <@ww.radio name="extendedVisibility" label="Private" list="{'private'}" tabindex="113" cssClass="radio" class="radio"/>
 	  </#if>
 				</fieldset>
 			</li>
@@ -98,16 +101,16 @@
 	  </#if>
 				</ol>
 				<fieldset class="public-private">
-				<legend>Choose display settings for your organization and title</legend>
+				<legend>Would you like your organization information and title to appear publicly or privately?</legend>
    	  <#if tabId?has_content>	
-          <@ww.radio name="orgVisibility" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this);" label="Public" list="{'public'}" tabindex="118" cssClass="radio" />
+          <@ww.radio name="orgVisibility" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this);" label="Public" list="{'public'}" tabindex="118" cssClass="radio" class="radio"/>
 	  <#else>
-          <@ww.radio name="orgVisibility" label="Public" list="{'public'}" tabindex="118" cssClass="radio" />
+          <@ww.radio name="orgVisibility" label="Public" list="{'public'}" tabindex="118" cssClass="radio" class="radio"/>
 	  </#if>
    	  <#if tabId?has_content>	
-          <@ww.radio name="orgVisibility" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this);" label="Private" list="{'private'}" tabindex="119" cssClass="radio" />
+          <@ww.radio name="orgVisibility" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this);" label="Private" list="{'private'}" tabindex="119" cssClass="radio" class="radio"/>
 	  <#else>
-          <@ww.radio name="orgVisibility" label="Private" list="{'private'}" tabindex="119" cssClass="radio" />
+          <@ww.radio name="orgVisibility" label="Private" list="{'private'}" tabindex="119" cssClass="radio" class="radio"/>
 	  </#if>
 				</fieldset>
 		  </li>

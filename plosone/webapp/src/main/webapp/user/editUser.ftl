@@ -4,12 +4,12 @@
    <#assign tabId = "">
 </#if>
 
-<div id="contents">
-	<h2>Profile</h2>
+<div id="content">
+	<h1>My PLoS Profile</h1>
 	
 	<div class="horizontalTabs">
-		<ol id="tabsContainer">
-		</ol>
+		<ul id="tabsContainer">
+		</ul>
 		
 		<div id="tabPaneSet" class="contentwrap">
 		  <#if tabId == "alerts">

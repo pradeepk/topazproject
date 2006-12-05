@@ -11,21 +11,17 @@
 <#else>
    <#assign tabId = "">
 </#if>
-
-
-<h2>Alerts</h2>
-	<p><strong>instruction Title   Text.</strong> General Instructions- Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>
+<strong>Select which E-mail content alerts you would like to receive.</strong>
 	<p>Field marked with an <span class="required">*</span> are required. </p>
 
   <@ww.form action="saveUserAlerts" namespace="/user/secure" method="post" cssClass="pone-form" method="post" title="Alert Form" name="userAlerts">
 
-  <fieldset>
-		<legend>Choose your alerts  </legend>
+  <fieldset id="alert-form">
+		<legend>Choose your alerts</legend>
 		<ol>
-			<li>Check back soon for more PLoS One alerts</li>
-      <@ww.textfield name="alertEmailAddress" label="Email address for alerts" required="true"/>
-			<li>
-        	<ol>
+			<li><em>Check back soon for more PLoS ONE alerts</em></li>
+      		<@ww.textfield name="alertEmailAddress" label="Email address for alerts" required="true"/>
+        	<li><ol>
         		<li class="alerts-title">&nbsp;</li>
         		<li>
         			<label for="checkAllWeekly">
@@ -76,8 +72,9 @@
               </#if>
             </li>
           </ol>
-        </li>
       </#list>
+	          </li>
+
 		</ol>
 		<br clear="all" />
       <div class="btnwrap"><input type="button" id="formSubmit" name="formSubmit" value="Save" tabindex="200"/></div>

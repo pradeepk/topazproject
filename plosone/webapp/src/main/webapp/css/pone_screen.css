@@ -26,7 +26,7 @@ code		{ font-family: "Courier New", Courier, monospace; }
 em			{ font-style: italic; }
 
 img			{ border: 0; }
-label em { display: block; color: #F63; } /* em wraps all error messages within labels */
+label em 	{ display: block; color: #c00; } /* em wraps all error messages within labels */
 .error { display: block; color: #F63; font-style: italic; } /* em wraps all error messages within labels */
 strong		{ font-weight: bold; }
 sup			{ font-size: .9em; }
@@ -183,7 +183,7 @@ div#hdr 			{ height: 150px; position: relative; }
 ----------------------------------------------------------
 */
 
-ul#nav 		{ font-size: .75em; height:1.9em; margin: 0; padding: 0; position: absolute; bottom: 0; left: 14px; list-style-type: none; z-index: 1000;}
+ul#nav 		{ font-size: .75em; height:1.9em; margin: 0; padding: 0; position: absolute; bottom: 0; left: 14px; list-style-type: none; z-index: 800;}
 ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; padding: 0; }
 #nav li a, #nav li a:visited
 			{ font-weight: bold;display:block; text-decoration:none; width: auto; padding: 3px .6em 0 .6em; float:left; height: 1.6em; line-height:normal; color:#069; }
@@ -191,19 +191,20 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 #nav li ul 	{ visibility:hidden; position:absolute; top:1.5em; left:0; height:0; overflow:hidden; text-align: left; margin: 0; padding: 0; background-color: #fff; z-index: 500;}
 #nav table 	{ margin:-1px; border-collapse:collapse; }
 /* fist line style for IE7 and non-IE browsers and the second line for IE5.5 and IE6 */
+#nav li.over a,
 #nav li:hover a,
-#nav li a:hover					{ background-color: #069; color: #FFF; }
+#nav li a:hover					{ background-color: #069; color: #FFF!important; }
 #nav li.over ul,
 #nav li:hover ul,
 #nav li a:hover ul 				{ visibility:visible; display:block; height:auto; width:16.6em; top:1.9em; overflow:visible; border: 1px solid #069;}
 
 #nav li.over li a,
 #nav li:hover ul li a,
-#nav li a:hover ul li a 		{ display:block; font-weight:normal!important; background:transparent; text-decoration:none; height:auto; line-height: 1.7em;padding:0.2em 0.2em 0.2em 0.6em; width:15.8em; border-top: 0; color: #069; }
+#nav li a:hover ul li a 		{ display:block; font-weight:normal!important; background:transparent; text-decoration:none; height:auto; line-height: 1.7em;padding:0.2em 0.2em 0.2em 0.6em; width:15.8em; border-top: 0; color: #069!important; }
 
 #nav li.over ul li a:hover,
 #nav li:hover ul li a:hover,
-#nav li a:hover ul li a:hover 	{ border-top: 0; color: #069; background-color: #fff;text-decoration: underline;}
+#nav li a:hover ul li a:hover 	{ border-top: 0; color: #069!important; background-color: #fff;text-decoration: underline;}
 #nav li.journalnav				{ float: right; }
 
 
@@ -248,7 +249,9 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 .login #db		{ top: 55px; }
 .login #user	{ background: none; top: 75px; }
 .login #user div{ margin-right: 10px; }
-.login #user a	{ color: #fff; padding-right: 0; font-size: 1.1em;}
+.login #user a:link,
+.login #user a:visited,
+.loging #user a:hover	{ color: #fff; padding-right: 0; font-size: 1.1em;}
 
 
 
@@ -256,7 +259,8 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 #links 		{ position: absolute; right: 12px; top: 2px;text-decoration: none;}
 ul#links 	{ margin: 0; padding: 0; }
 ul#links li { display: inline; margin: 0; padding: 0; }
-ul#links a	{ color: #fff; font-size: .75em; display: inline;;}
+ul#links a,
+ul#links a:visited	{ color: #fff; font-size: .75em; display: inline;;}
 ul#links a.icon,
 ul#links a:visited.icon,
 ul#links a:hover.icon { padding: 0 16px 0 0; background-position: 100% 50%;}
@@ -291,8 +295,10 @@ div.powered a:hover { color: #fff; font-weight: bold;}
 /* Research Article : Elements
 ----------------------------------------------------------=
 */
-div#rhc			{ float: right; width: 240px; position: relative; padding-top: 8px;}
+div#rhc			{ float: right; width: 240px; position: relative; }
 div.content 	{ margin-right: 255px; }
+div#content.static	{ margin-right: 22px; margin-left: 22px;}
+div.content	{ margin-left: 16px; }
 
 div.static h1,
 div.content h1 	{ /* article title */font-size: 2.2em;	line-height: 1.1em;	margin: 10px 0 0 0;font-weight: normal; color: #004263; }
@@ -303,8 +309,8 @@ div.content h2	{ /* article sub-title */ margin: 10px 0; font-style: italic; fon
 div.static h2,
 div.content h3	{ /* article main body heading */ font-size: 1.6em; margin: 20px 0 0 0; border-bottom: 1px solid #999; padding-bottom: 3px;}
 
-div.static h3,
-div.content h4	{ /* article second level heading */ font-size: 1.2em; margin: 20px 0 0 0; color: #333; font-family: Georgia, "Times New Roman", Times, serif;}
+div.static h3,	
+div.content h4	{ /* article second level heading */ font-size: 1.2em; margin: 20px 0 0 0; color: #333; font-family: Georgia, "Times New Roman", Times, serif; font-weight: bold;}
 
 div.static h4,
 div.content h5	{ font-size: 1em; color: #333; }
@@ -315,7 +321,7 @@ div.content li	{ margin: 0; padding: 0; }
 
 ol.references 	{ margin: 10px 0; padding: 0 10px; }
 ol.references li{ font-size: 1em; padding: 5px; margin: 0; list-style-position: outside; }
-ol.references a.find { font-size: .85em;}
+ol.references a.find { font-size: .9em; text-transform: uppercase; font-weight: bold; margin-left: 4px;}
 ol.references span.authors
 				{ font-weight: bold; }
 
@@ -437,7 +443,8 @@ a.bug.author-active,
 a:hover.bug.author-active		{ background-color: #f63;}
 
 
-div.beta				{ text-align: left; font-size: .85em; background: url(../images/pone_article_hdr.gif) no-repeat top right; border-width: 1px 0; color: #eee; position: relative; padding: 6px 0 0 6px; height: 28px; vertical-align: middle;}
+div.beta				{ text-align: center; font-size: .9em; color: #eee; padding: 1px; background-color: #069;}
+/*div.beta				{ text-align: left; font-size: .85em; background: url(../images/pone_article_hdr.gif) no-repeat top right; border-width: 1px 0; color: #eee; position: relative; padding: 6px 0 0 6px; height: 28px; vertical-align: middle;}*/
 div.beta a:link,
 div.beta a:visited,
 div.beta a:hover		{ font-weight: bold;color: #fff; }
@@ -467,13 +474,13 @@ div.profile ol li .checkbox { width: 14px;}
 div.profile textarea {width: 324px; border: 1px solid #ACF1FF; }
 div.profile #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
 
-div.horizontalTabs		{ position: relative;}
+div.horizontalTabs		{ position: relative; border-width: 0;}
 .horizontalTabs ul,
-.horizontalTabs li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; }
-.horizontalTabs ul	{ display: block; margin-bottom: 5px; z-index: 10; }
-.horizontalTabs li	{ padding: 5px; border: 2px solid #ccc; cursor: pointer; background-color: #d2f7ff; margin: 5px 2px 0 2px; display: inline; }
-.horizontalTabs li.active	{ background: #fff; border-bottom-color: #fff;}
-.horizontalTabs .contentwrap { width: 23em; margin: 0; border: 2px solid #ccc; position: relative; }
+.horizontalTabs ul li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; }
+.horizontalTabs ul		{ display: block; margin-bottom: 5px; z-index: 10; border-bottom: 2px solid #ACF1FF; }
+.horizontalTabs ul li	{ cursor: pointer; padding: 6px; background-color: transparent; font-weight: normal; margin: 5px 2px 3px 2px; display: inline; }
+.horizontalTabs ul li.active	{ font-weight: bold;background: url(../images/pone_forms_bg.gif) repeat-x bottom; border-bottom-color: #fff; text-decoration: none;}
+.horizontalTabs .contentwrap {margin: 0; border: 2px solid #fff; padding: 0;position: relative; }
 
 /* ------ EdBoard Styles ----*/
 
@@ -481,4 +488,4 @@ div.horizontalTabs		{ position: relative;}
 .edboard dt { font-weight: bold; display: block; float: left; padding-left: 5px; margin-top: 5px; position: relative;}
 .edboard dd { margin: 0 0 5px 0; padding: 0 5px 5px 5px; background-color: #D2F7FF; border-top: 6px solid #D2F7FF; font-size: .85em; text-indent: 10px; }
 
-.static p.intro					{ border: 2px solid #ccc; padding: 10px; background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; color: #000;}>>>>>>> .r1543
+.static p.intro					{ border: 2px solid #ccc; padding: 10px; background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; color: #000;}
