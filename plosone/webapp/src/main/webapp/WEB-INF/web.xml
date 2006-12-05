@@ -88,6 +88,13 @@
     <url-pattern>/user/secure/*</url-pattern>
   </filter-mapping>
 
+<!--
+  <filter-mapping>
+    <filter-name>CAS Filter</filter-name>
+    <url-pattern>/admin/*</url-pattern>
+  </filter-mapping>
+-->
+
   <filter-mapping >
     <filter-name>Member Session</filter-name>
     <url-pattern>/annotation/secure/*</url-pattern>
@@ -97,7 +104,14 @@
     <filter-name>Member Session</filter-name>
     <url-pattern>/user/secure/*</url-pattern>
   </filter-mapping>
-  
+
+<!--
+  <filter-mapping >
+    <filter-name>Member Session</filter-name>
+    <url-pattern>/admin/*</url-pattern>
+  </filter-mapping>
+-->
+
     
   <filter-mapping>
     <filter-name>CacheFilter</filter-name>
