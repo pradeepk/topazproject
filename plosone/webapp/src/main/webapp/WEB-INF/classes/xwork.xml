@@ -81,6 +81,14 @@
       </result>
     </action>
 
+    <action name="recentArticles" class="org.plos.action.HomePageAction">
+      <result name="success">/article/recentArticles.ftl</result>
+    </action>
+
+    <action name="mostCommented" class="org.plos.action.HomePageAction">
+      <result name="success">/article/mostCommented.ftl</result>
+    </action>
+
     <action name="oldMenu">
       <result>/WEB-INF/pages/todo.ftl</result>
     </action>

@@ -33,37 +33,7 @@
 										<div class="col last">
 							
 						<div class="tabs"><span>Recently Published</span> | <span>Most Commented</span> | <span>Most Viewed</span></div>
-						<#assign numArticles = recentArticles?size>
-						<#if (numArticles > 0)>
-							<#assign randomIndices = action.randomNumbers(5, numArticles)>
-							<ul class="articles">
-							  <#list randomIndices as random>
-									<#assign article = recentArticles[random]>
-									<#if random_index % 2 == 0>
-								<li class="even">
-									<#else>
-								<li>
-									</#if>
-									<a href="article/fetchArticle.action?articleURI=${article.uri?url}" title="Read Open Access Article">${article.title}</a>
-								</li>
-								</#list>
-							</ul>
-<!--						</#if>
-	
-						
-						<#assign commentedArticles = action.getCommentedOnArticles(5)>
-						<#if (((commentedArticles?size)!0) gt 0) >
-						<div class="block">
-							<h2>Most Commented On | Most Viewed</h2>
-							<ul class="articles">
-								<#list commentedArticles as commented>
-								<li>
-									<a href="article/fetchArticle.action?articleURI=" title="Read Open Access Article">${commented.title}</a>
-								</li>
-								</#list>
-							</ul>
-						</div> 
-						</#if> -->
+						<#include "article/recentArticles.ftl">
 						
 <div class="block info">
 <@ww.url action="information.action" namespace="/static" includeParams="none" id="info"/>
@@ -90,7 +60,7 @@
 <ul class="articles">
 	<li><a href="#">Control of Canalization and Evolvability by Hsp90</a></li>
 	<li><a href="#">Predator Mimicry: Metalmark Moths Mimic Their Jumping Spider Predators</a></li>
-	<li><a href="#">Physiological Mouse Brain Aß levels Are Not Related to the Phosphorylation State of Threonine-668 of Alzheimer's APP</a></li>
+	<li><a href="#">Physiological Mouse Brain Aï¿½ levels Are Not Related to the Phosphorylation State of Threonine-668 of Alzheimer's APP</a></li>
 	<li><a href="#">A Virtual Reprise of the Stanley Milgram Obedience Experiments</a></li>
 </ul>
 
