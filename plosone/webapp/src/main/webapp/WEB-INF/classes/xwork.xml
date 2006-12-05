@@ -41,7 +41,7 @@
 
       <interceptor-stack name="plosAdminStack">
         <interceptor-ref name="plosUserStack" />
-        <interceptor-ref name="ensureAdmin" />
+        <!--<interceptor-ref name="ensureAdmin" />-->
       </interceptor-stack>
     </interceptors>
 
