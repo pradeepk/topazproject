@@ -6,7 +6,7 @@
 				<@ww.url action="information.action" namespace="/static" includeParams="none" id="info"/>
 				<@ww.url action="edboard.action" namespace="/static" includeParams="none" id="edboard"/>
 				<@ww.url action="media.action" namespace="/static" includeParams="none" id="media"/>
-				<@ww.url action="information.action" namespace="/static" includeParams="none" id="license"/>
+				<@ww.url action="license.action" namespace="/static" includeParams="none" id="license"/>
 					<li><a href="${info}">Journal Information</a></li>
 					<li><a href="${edboard}">Editorial Board</a></li>
 					<li><a href="${media}">Media Inquiries</a></li>
