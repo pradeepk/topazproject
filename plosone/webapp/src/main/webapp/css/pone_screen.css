@@ -467,10 +467,18 @@ div.profile ol li .checkbox { width: 14px;}
 div.profile textarea {width: 324px; border: 1px solid #ACF1FF; }
 div.profile #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
 
+div.horizontalTabs		{ position: relative;}
+.horizontalTabs ol,
+.horizontalTabs li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; }
+.horizontalTabs ol	{ display: block; margin-bottom: 5px; z-index: 10; }
+.horizontalTabs li	{ padding: 5px; border: 2px solid #ccc; cursor: pointer; background-color: #d2f7ff; margin: 5px 2px 0 2px; display: inline; }
+.horizontalTabs li.active	{ background: #fff; border-bottom-color: #fff;}
+.horizontalTabs .contentwrap { width: 23em; margin: 0; border: 2px solid #ccc; position: relative; }
+
 /* ------ EdBoard Styles ----*/
 
 .edboard dl { text-align: right; margin: 0 240px 0 0; }
 .edboard dt { font-weight: bold; display: block; float: left; padding-left: 5px; margin-top: 5px; position: relative;}
 .edboard dd { margin: 0 0 5px 0; padding: 0 5px 5px 5px; background-color: #D2F7FF; border-top: 6px solid #D2F7FF; font-size: .85em; text-indent: 10px; }
 
-.static p.intro					{ border: 2px solid #ccc; padding: 10px; background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; color: #000;}
+.static p.intro					{ border: 2px solid #ccc; padding: 10px; background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; color: #000;}>>>>>>> .r1543

@@ -242,7 +242,7 @@ topaz.slideshow = {
   openViewer: function(url) {
     var newWindow = window.open(url,'plosSlideshow','directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=800');
     
-    newWindow.focus();
+    return false;
   },
   
   closeReturn: function() {

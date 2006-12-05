@@ -42,7 +42,7 @@
 	border-bottom-style: solid;
 	border-bottom-width: 2px;
 	background-color: transparent;
-	background-image: url(none);
+	background-image: none;
 	padding-top: 5px;
 	clear: both;
 }
@@ -84,7 +84,7 @@
 /***********************************************/ 
 
 /************* error styles *****************/
-.pone-form ol .form-error { background: #A61200 url(none); color: #FFFFFF; }
+.pone-form ol .form-error { background: #A61200; background-image: none; color: #FFFFFF; }
 
 /************* success message styles *****************/
 .pone-form fieldset .form-success { padding: 25px 0px 25px 10px; }
@@ -93,7 +93,7 @@
 
 .pone-form .public-private {
 	width:324px;
-	background: url(none);
+  background-image: none;
 	margin-top:10px;
 	clear: both;
 	border: none;

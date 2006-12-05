@@ -153,7 +153,7 @@ topaz.displayComment = {
   buildDisplayBody: function (jsonObj) {
     // Insert formatted comment
     var commentFrag = document.createDocumentFragment();
-    commentFrag = jsonObj.annotation.commentWithUrlLinking;
+    commentFrag = jsonObj.annotation.escapedTruncatedComment;
     
     return commentFrag;
   },

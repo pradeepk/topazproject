@@ -57,6 +57,139 @@ topaz.formUtil = {
     }
   },
   
+  createHiddenFields: function (formObj) {
+    for (var i=0; i<formObj.elements.length; i++) {
+      if(formObj.elements[i].type != 'hidden' && 
+         formObj.elements[i].type != 'button' && 
+         formObj.elements[i].type != 'submit' && 
+         formObj.elements[i].name != null) {
+        if (formObj.elements["hdn" + formObj.elements[i].name] == null) {
+          var newHdnEl = document.createElement("input");
+          
+          newHdnEl.type = "hidden";
+          newHdnEl.name = "hdn" + formObj.elements[i].name;
+          
+          if (formObj.elements[i].type == "radio") {
+            var radioName = formObj.elements[i].name;
+            
+            for (var n=0; n<formObj.elements[radioName].length; n++) {
+              if (formObj.elements[radioName][n].checked) {
+                newHdnEl.value = formObj.elements[radioName][n].value;
+
+                break;
+              }
+            }
+          }
+          else if (formObj.elements[i].type == "checkbox") {
+            var checkboxName = formObj.elements[i].name;
+            
+            for (var n=0; n<formObj.elements[checkboxName].length; n++) {
+              if (formObj.elements[checkboxName][n].checked) {
+                newHdnEl.value = (newHdnEl.value == "") ? formObj.elements[checkboxName].value : newHdnEl.value + "," + formObj.elements[checkboxName].value;
+              }
+            }
+          }
+          else if (formObj.elements[i].type == "select-one") {
+            //alert("formObj.elements[" + i + "][" + formObj.elements[i].selectedIndex + "].value = " + formObj.elements[i][formObj.elements[i].selectedIndex].value);
+            newHdnEl.value = formObj.elements[i][formObj.elements[i].selectedIndex].value; 
+          }
+          else {
+            newHdnEl.value = formObj.elements[i].value;
+          }
+    
+          formObj.appendChild(newHdnEl);
+        }
+      }
+    }
+    
+  },
+  
+  hasFieldChange: function (formObj) {
+    var thisChanged = false;
+    
+    for (var i=0; i<formObj.elements.length; i++) {
+      if(formObj.elements[i].type != 'hidden' && 
+         formObj.elements[i].type != 'button' && 
+         formObj.elements[i].type != 'submit' && 
+         formObj.elements[i].name != null) {
+        
+        var hdnFieldName = "hdn" + formObj.elements[i].name;
+        
+        //alert("formObj.elements[" + hdnFieldName + "] = " + formObj.elements[hdnFieldName]);
+        
+        if (formObj.elements[hdnFieldName] != null) {
+          
+          //alert("formObj.elements[" + i + "].type = " + formObj.elements[i].type);
+          if (formObj.elements[i].type == "radio") {
+            var radioName = formObj.elements[i].name;
+            
+            for (var n=0; n<formObj.elements[radioName].length; n++) {
+              if (formObj.elements[radioName][n].checked) {
+                alert("formObj.elements[" + radioName + "][" + n + "].value = " + formObj.elements[radioName][n].value + "\n" +
+                      "formObj.elements[" + hdnFieldName + "].value = " + formObj.elements[hdnFieldName].value);
+                if (formObj.elements[radioName][n].value != formObj.elements[hdnFieldName].value) {
+                  thisChanged = true;
+                  break;
+                }
+              }
+            }
+          }
+          else if (formObj.elements[i].type == "checkbox") {
+            var checkboxName = formObj.elements[i].name;
+            
+            var hdnCheckboxList = formObj.elements[hdnFieldName].value.split(",");
+            
+            for (var n=0; n<formObj.elements[checkboxName].length; n++) {
+              if (formObj.elements[checkboxName][n].checked) {
+                var isCheckedPreviously = false;
+                
+                for (var p=0; p<hdnCheckboxList; p++) {
+                  if (formObj.elements[checkboxName][n].value == hdnCheckboxList[p])
+                    isCheckedPreviously = true;
+                }
+                
+                alert("isCheckedPreviously = " + isCheckedPreviously);
+                if (!isCheckedPreviously) {
+                  thisChanged = true;
+                  break;
+                }
+              }
+            }
+          }
+          else if (formObj.elements[i].type == "select-one") {
+            alert("formObj.elements[" + i + "][" + formObj.elements[i].selectedIndex + "].value = " + formObj.elements[i][formObj.elements[i].selectedIndex].value + "\n" +
+                  "formObj.elements[" + hdnFieldName + "].value = " + formObj.elements[hdnFieldName].value);
+            if (formObj.elements[hdnFieldName].value != formObj.elements[i][formObj.elements[i].selectedIndex].value) {
+              thisChanged = true; 
+              break;
+            }
+          }
+          else {
+            alert("formObj.elements[" + i + "].value = " + formObj.elements[i].value + "\n" +
+                  "formObj.elements[" + hdnFieldName + "].value = " + formObj.elements[hdnFieldName].value);
+            if (formObj.elements[hdnFieldName].value != formObj.elements[i].value) {
+              thisChanged = true;
+              break;
+            }
+          }
+        }
+      }
+    }
+    
+    //alert("thisChanged = " + thisChanged);
+    
+    return thisChanged;
+  },
+  
+  removeHiddenFields: function (formObj) {
+    alert("removeHiddenFields");
+    for (var i=0; i<formObj.elements.length; i++) {
+      if (formObj.elements[i].type == 'hidden') {
+        dojo.dom.removeNode(formObj.elements[i]);
+      }
+    }
+  },
+  
   addItemInArray: function (array, item) {
     var foundItem = false;
     for (var i=0; i<array.length; i++) {
@@ -96,5 +229,16 @@ topaz.formUtil = {
         targetCheckboxObj[i].checked = false;
       }
     }
+  },
+  
+  selectCheckboxPerCollection: function (srcObj, collectionObj) {
+    var count = 0;
+    
+    for (var i=0; i<collectionObj.length; i++) {
+      if (collectionObj[i].checked)
+        count++;
+    }
+    
+    srcObj.checked = (count == collectionObj.length) ? true : false;
   }
 }

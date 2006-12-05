@@ -313,6 +313,14 @@
       </result>
     </action>
     
+    <action name="showImageLarge">
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+      <result name="success" type="plosOneFreemarker">
+      	<param name="location">/templates/headless_template.ftl</param>
+      	<param name="templateFile">/article/imageWindowLarge.ftl</param>
+      </result>
+    </action>
+    
     <action name="fetchObjectAttachment" class="org.plos.article.action.FetchObjectAction">
       <result name="success" type="plosStream">
         <param name="isAttachment">true</param>
@@ -506,17 +514,11 @@
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
     </action>
-  
-    <action name="editPrefsAlerts" class="org.plos.user.action.UserAlertsAction" method="retrieveAlerts">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/user/editPrefsAlerts.ftl</param>
-      </result>
-      <result name="error" type="plosOneFreemarker">
-        <param name="templateFile">/user/editPrefsAlerts.ftl</param>
-      </result>
-      <result name="input" type="plosOneFreemarker">
-        <param name="templateFile">/user/editPrefsAlerts.ftl</param>
-      </result>
+
+    <action name="editAjaxAlerts" class="org.plos.user.action.UserAlertsAction" method="retrieveAlerts">
+      <result name="success">/user/alerts.ftl</result>
+      <result name="error">/user/alerts.ftl</result>
+      <result name="input">/user/alerts.ftl</result>
     </action>
   
   
@@ -526,7 +528,7 @@
       <result name="input">/WEB-INF/pages/user/alerts.ftl</result>
     </action>
 
-    <action name="saveAjaxAlerts" class="org.plos.user.action.UserAlertsAction" method="saveAlerts">
+    <action name="saveAlerts" class="org.plos.user.action.UserAlertsAction" method="saveAlerts">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
@@ -538,7 +540,7 @@
       </result>
     </action>
  
-    <action name="saveAlerts" class="org.plos.user.action.UserAlertsAction" method="saveAlerts">
+    <action name="saveAjaxAlerts" class="org.plos.user.action.UserAlertsAction" method="saveAlerts">
       <result name="success">/user/alerts.ftl</result>
       <result name="error">/user/alerts.ftl</result>
       <result name="input">/user/alerts.ftl</result>
@@ -553,11 +555,29 @@
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
       <result name="error" type="plosOneFreemarker">
-        <param name="templateFile">/editProfile/newUser.ftl</param>
+        <param name="templateFile">/user/editUser.ftl</param>
       </result>
     </action>
     
-    <action name="saveAjaxProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">
+    <action name="editPrefsAlerts" class="org.plos.user.action.UserAlertsAction" method="retrieveAlerts">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/user/editUser.ftl</param>
+      </result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/user/editUser.ftl</param>
+      </result>
+      <result name="error" type="plosOneFreemarker">
+        <param name="templateFile">/user/editUser.ftl</param>
+      </result>
+    </action>
+    
+    <action name="editAjaxProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">
+      <result name="success">/user/user.ftl</result>
+      <result name="input">/user/user.ftl</result>
+      <result name="error">/user/user.ftl</result>
+    </action>
+    
+    <action name="saveAjaxProfile" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">
       <result name="success">/user/user.ftl</result>
       <result name="input">/user/user.ftl</result>
       <result name="error" type="plosOneFreemarker">
@@ -566,9 +586,13 @@
     </action>
     
     <action name="saveProfile" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">
-      <result name="success">/user/createNewUser.ftl</result>
-      <result name="input">/user/createNewUser.ftl</result>
-      <result name="error">/user/createNewUser.ftl</result>
+			<result name="success" type="redirect">/user/secure/retrieveUserProfile.action </result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="templateFile">/user/createNewUser.ftl</param>
+      </result>
+      <result name="error" type="plosOneFreemarker">
+        <param name="templateFile">/user/createNewUser.ftl</param>
+      </result>
     </action>
 
     <action name="retrieveUserProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">
@@ -580,6 +604,12 @@
         <param name="templateFile">/user/newUser.ftl</param>
       </result>
     </action>
+    
+    <action name="profile">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/user/profile.ftl</param>
+      </result>
+		</action>
   </package>
 
   <package name="user" extends="default" namespace="/user">
@@ -624,8 +654,8 @@
     </action>
     
     
-    <action name="displayUserJSON" class="org.plos.user.action.DisplayUserAction">
-      <result name="success" type="ajaxJSON"/>
+    <action name="displayUserAJAX" class="org.plos.user.action.DisplayUserAction">
+      <result name="success">/widget/userProfileTooltip.ftl</result>
     </action>
 
   </package>
