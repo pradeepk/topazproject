@@ -88,7 +88,7 @@ public class FetchObjectAction extends BaseActionSupport {
     return "filename=\"" + FileUtils.getFileName(uri) + "." + fileExt + "\"";
   }
 
-  private String getFileExtension(final String contentType) {
+  private String getFileExtension(final String contentType) throws IOException {
     return FileUtils.getDefaultFileExtByMimeType(contentType);
   }
 

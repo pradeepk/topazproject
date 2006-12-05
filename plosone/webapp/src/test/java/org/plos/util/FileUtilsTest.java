@@ -28,9 +28,9 @@ public class FileUtilsTest extends TestCase {
     assertEquals("application/pdf", FileUtils.getContentType("pdf"));
   }
 
-  public void testFileExtForMimeType() {
+  public void testFileExtForMimeType() throws Exception {
     assertEquals("tiff", FileUtils.getDefaultFileExtByMimeType("image/tiff"));
-    assertEquals("htm", FileUtils.getDefaultFileExtByMimeType("text/html"));
+    assertEquals("html", FileUtils.getDefaultFileExtByMimeType("text/html"));
     assertEquals("xml", FileUtils.getDefaultFileExtByMimeType("text/xml"));
   }
 }
