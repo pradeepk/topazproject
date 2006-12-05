@@ -24,6 +24,9 @@
 
     <interceptors>
       <interceptor name="ensureUserAccount" class="org.plos.user.EnsureUserAccountInterceptor"/>
+      <interceptor name="ensureAdmin" class="org.plos.user.EnsureRoleInterceptor">
+        <param name="roleToCheck">admin</param>
+      </interceptor>
 
       <interceptor-stack name="plosBaseStack">
         <interceptor-ref name="timer" />
@@ -34,6 +37,11 @@
       <interceptor-stack name="plosUserStack">
         <interceptor-ref name="plosBaseStack" />
         <interceptor-ref name="ensureUserAccount" />
+      </interceptor-stack>
+
+      <interceptor-stack name="plosAdminStack">
+        <interceptor-ref name="plosUserStack" />
+        <interceptor-ref name="ensureAdmin" />
       </interceptor-stack>
     </interceptors>
 
@@ -53,6 +61,9 @@
       <result name="invalidProxyTicket" type="redirect">
         <param name="location">${startingUrl}</param>
         <param name="prependServletContext">false</param>
+      </result>
+      <result name="role-insufficient" type="plosOneFreemarker">
+        <param name="templateFile">/user/inSufficientRole.ftl</param>
       </result>
     </global-results>
 
@@ -617,10 +628,11 @@
       <result name="success" type="ajaxJSON"/>
     </action>
 
-
   </package>
   
   <package name="admin" extends="default" namespace="/admin">
+    <default-interceptor-ref name="plosAdminStack" />
+                               
   	<action name="adminTop" class="org.plos.admin.action.AdminTopAction">
   	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
   	  	<result name="error">/WEB-INF/pages/admin/adminTop.ftl</result>

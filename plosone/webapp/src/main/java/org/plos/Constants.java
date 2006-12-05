@@ -40,6 +40,7 @@ public interface Constants {
   interface ReturnCode {
     String NEW_PROFILE = "new-profile";
     String UPDATE_PROFILE = "update-profile";
+    String NOT_SUFFICIENT_ROLE = "role-insufficient";
   }
 
   /**
