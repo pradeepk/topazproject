@@ -113,7 +113,7 @@ ul.articles			{ margin-top: 0; }
 
 dl.category 		{ margin: 10px 0 0 0; }
 dl.category dt a,
-dl.category dt a:visited	{ height: 30px; padding-left: 40px; background-image: url(../images/pone_home_category.gif); background-repeat: no-repeat;cursor: pointer; color: #00131D; display: block; font-size: .9em; height: 30px; }
+dl.category dt a:visited	{ background-repeat: no-repeat;cursor: pointer; color: #00131D; display: block; font-size: .9em; padding-bottom: 5px; padding-left: 20px;background: url(../images/pone_tooltip_expand.gif) no-repeat left top;}
 
 #home dl.category dt a:hover { text-decoration: none; color: #000; border-color: #fff; vertical-align: bottom;}
 dl.category dt	{ margin: 5px 0 0 0; padding: 0;color: #333; font-weight: normal;  vertical-align: bottom; clear: left;/* This fixes the IE5 Win gap! */ }
@@ -143,7 +143,7 @@ div.block.mainnav	{ margin: 0; padding: 10px 0;}
 .mainnav ul li a 	{ font-family: Georgia, "Times New Roman", Times, serif; font-size: 1.5em; letter-spacing: -.03em; line-height: 1.6em; margin-right: 10px;}
 
 
-div.info			{ width: 260px; height: 168px;background: url(../images/pone_home_info_bg.gif) no-repeat top left;}
+div.info			{ margin-top: 20px; margin-right: -1px;background: #Ddd;}
 div.feature img,
 div.info img		{ margin: 10px; border: 1px solid #ccc; position: relative; width: 45px; height: 45px;}
 #home div.feature h3,
@@ -218,3 +218,13 @@ div.feature p		{ margin: 0; }
 .virology			{ background-position: 0 -1500px; }
 .womenshe			{ background-position: 0 -1530px; }
 
+
+div.horizontalTabs		{ position: relative; border-width: 0;}
+.horizontalTabs ul,
+.horizontalTabs ul li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; }
+.horizontalTabs ul		{ display: block; padding-top: 5px;margin-bottom: 5px; margin-top: 5px;z-index: 10; border-bottom-width: 0;}
+.horizontalTabs ul li	{ background: #ddd;cursor: pointer; padding: 2px; background-color: #ccc; font-weight: normal; margin: 5px 2px 3px 2px; display: inline; padding-right: 10px;}
+.horizontalTabs ul li.active	{ font-weight: bold;background: #FFF; border-width: 0;text-decoration: none;}
+.horizontalTabs .contentwrap {margin: 0; border: 2px solid #fff; padding: 0;position: relative; }
+.horizontalTabs .contentwrap ul li	{ display: list-item; background: #fff;list-style-type: disc; margin-bottom: 0; padding: 0; border-width: 0;}
+.horizontalTabs .contentwrap ul { padding-left: 18px; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 10px;}
