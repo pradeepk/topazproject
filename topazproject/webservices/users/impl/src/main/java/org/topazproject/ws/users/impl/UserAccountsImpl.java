@@ -268,6 +268,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
        * no way to create a unique constraint and no equivalent of select-for-update, this
        * is the best we can do.
        */
+      txn = "remove duplicate user";
       itql.beginTxn(txn);
 
       if (findDupAuthId(itql, new String[] { authId }) != null) {
@@ -463,6 +464,7 @@ public class UserAccountsImpl implements UserAccounts, UserAccountLookup {
        * way to create a unique constraint and no equivalent of select-for-update, this
        * is the best we can do.
        */
+      txn = "remove-duplicate-auth-ids " + userId;
       itql.beginTxn(txn);
 
       String dupId = findDupAuthId(itql, authIds);
