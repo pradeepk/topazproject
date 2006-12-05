@@ -54,3 +54,9 @@ IE PC fixes
 /* corrects positioning of content on multiple annotation view */
 * html .multiple .contentwrap {  margin-top: -2px; margin-left: 23em;}
 
+/* ensures positioning of dropdowns in front of content */
+* html #content { position: relative; z-index: -1; }
+
+/* fixes homepage display bug */
+* html div.block.partner 		{ border-left: 1px solid #ccc; }
+
