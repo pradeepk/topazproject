@@ -468,9 +468,9 @@ div.profile textarea {width: 324px; border: 1px solid #ACF1FF; }
 div.profile #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
 
 div.horizontalTabs		{ position: relative;}
-.horizontalTabs ol,
+.horizontalTabs ul,
 .horizontalTabs li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; }
-.horizontalTabs ol	{ display: block; margin-bottom: 5px; z-index: 10; }
+.horizontalTabs ul	{ display: block; margin-bottom: 5px; z-index: 10; }
 .horizontalTabs li	{ padding: 5px; border: 2px solid #ccc; cursor: pointer; background-color: #d2f7ff; margin: 5px 2px 0 2px; display: inline; }
 .horizontalTabs li.active	{ background: #fff; border-bottom-color: #fff;}
 .horizontalTabs .contentwrap { width: 23em; margin: 0; border: 2px solid #ccc; position: relative; }

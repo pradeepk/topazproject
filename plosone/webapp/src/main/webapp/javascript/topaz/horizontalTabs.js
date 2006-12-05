@@ -67,6 +67,18 @@ topaz.horizontalTabs = {
     //this.attachFormEvents(formObj);
   },
   
+  initSimple: function(initId) {
+    var targetObj;
+    
+    if (initId)
+      targetObj = this.getMapObject(initId);
+    else 
+      targetObj = this.getMapObject();
+    
+    this.buildTabsHome(targetObj);
+    this.setTargetObj(targetObj);
+  },
+  
   tabSetup: function (targetObj) {
     this.setTargetObj(targetObj);
     
@@ -76,11 +88,15 @@ topaz.horizontalTabs = {
     this.setTargetFormObj(formObj);
     
     //alert("formObj.formSubmit = " + formObj.formSubmit.value);
-    dojo.event.connect(formObj.formSubmit, "onclick", function() {
+    /*dojo.event.connect(formObj.formSubmit, "onclick", function() {
         //alert("tabKey = " + topaz.horizontalTabs.targetObj.tabKey);
         submitContent(topaz.horizontalTabs.targetObj);
       }
-    );
+    );*/
+    
+    formObj.formSubmit.onclick = function () {
+        submitContent();
+      }
   },
 
   setTempValue: function (obj) {
@@ -210,6 +226,23 @@ topaz.horizontalTabs = {
     tempValue = "";
   },
   
+  buildTabsHome: function(obj) {
+    for (var i=0; i<this.tabsListObject.length; i++) {
+      var li = document.createElement("li");
+      li.id = this.tabsListObject[i].tabKey;
+      if (this.tabsListObject[i].tabKey == obj.tabKey) {
+        li.className = li.className.concat("active");
+      }
+      li.onclick = function () { 
+          topaz.horizontalTabs.showHome(this.id);
+          return false; 
+        }
+      li.appendChild(document.createTextNode(this.tabsListObject[i].title));
+
+      this.tabsContainer.appendChild(li);
+    }
+  },
+  
   toggleTab: function(obj) {
     for (var i=0; i<this.tabsListObject.length; i++) {
       var tabNode = dojo.byId(this.tabsListObject[i].tabKey);
@@ -265,6 +298,14 @@ topaz.horizontalTabs = {
     this.confirmChange();
     
     setTimeout("getContentFunc()", 1000);
+  },
+  
+  showHome: function(id) {
+    var newTarget = this.getMapObject(id);
+    this.setNewTarget(newTarget);
+    ldc.show();
+    
+    loadContentHome(newTarget);
   }
   
 }  
@@ -312,8 +353,44 @@ function loadContent(targetObj) {
    dojo.io.bind(bindArgs);
 }  
 
-function submitContent(srcObj) {
+function loadContentHome(targetObj) {
+  var refreshArea = dojo.byId(homeConfig.tabPaneSetId);
+  var targetUri = targetObj.urlLoad;
+
+  ldc.show();
+  
+  var bindArgs = {
+    url: namespace + targetUri,
+    method: "get",
+    error: function(type, data, evt){
+     var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
+     //topaz.errorConsole.writeToConsole(err);
+     //topaz.errorConsole.show();
+     alert("ERROR:" + data.toSource());
+     return false;
+    },
+    load: function(type, data, evt){
+      var docFragment = document.createDocumentFragment();
+      docFragment = data;
+      
+      refreshArea.innerHTML = docFragment;
+      
+      //alert("targetObj.tabKey = " + targetObj.tabKey);
+      topaz.horizontalTabs.setTargetObj(targetObj);
+      topaz.horizontalTabs.toggleTab(targetObj);
+      ldc.hide();
+
+      return false;
+    },
+    mimetype: "text/html",
+    headers: { "AJAX_USER_AGENT": "Dojo/" +  dojo.version }
+   };
+   dojo.io.bind(bindArgs);
+}  
+
+function submitContent() {
   var refreshArea = dojo.byId(profileConfig.tabPaneSetId);
+  var srcObj = topaz.horizontalTabs.targetObj;
   var targetUri = srcObj.urlSave;
   
   //alert("formName = " + srcObj.formName + "\ntargetUri = " + targetUri);
@@ -341,6 +418,11 @@ function submitContent(srcObj) {
       tempValue = "";
       changeFlag = false;
       
+      var formObj = document.forms[srcObj.formName];
+      
+      formObj.formSubmit.onclick = function () {
+          submitContent();
+        }
       //topaz.formUtil.createHiddenFields(targetObj.formName);
       //topaz.horizontalTabs.attachFormEvents(document.forms[targetObj.formName]);
       //topaz.horizontalTabs.toggleTab(targetObj);

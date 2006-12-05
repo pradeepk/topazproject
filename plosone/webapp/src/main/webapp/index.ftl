@@ -32,8 +32,15 @@
 					</div>			
 										<div class="col last">
 							
-						<div class="tabs"><span>Recently Published</span> | <span>Most Commented</span> | <span>Most Viewed</span></div>
-						<#include "article/recentArticles.ftl">
+					<div class="horizontalTabs">
+						<ul id="tabsContainer">
+						</ul>
+						
+						<div id="tabPaneSet" class="contentwrap">
+						  <#include "article/recentArticles.ftl">
+						</div>
+					</div>
+						
 						
 <div class="block info">
 <@ww.url action="information.action" namespace="/static" includeParams="none" id="info"/>
@@ -180,3 +187,4 @@
 	<!-- end : home page wrapper -->
 </div>
 <!-- end : main contents -->
+<#include "/widget/loadingCycle.ftl">
