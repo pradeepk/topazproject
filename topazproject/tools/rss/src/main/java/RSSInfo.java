@@ -14,6 +14,7 @@ import java.rmi.RemoteException;
 
 import java.util.List;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
@@ -90,11 +91,9 @@ public class RSSInfo {
         withValueSeparator(' ').withDescription("End date for articles").
         create("endDate"));
     options.addOption(OptionBuilder.withArgName("category1 category2..").hasArg().
-        withValueSeparator(' ').withDescription("List of categories").
-        create("categories"));
+        withDescription("List of categories").create("categories"));
     options.addOption(OptionBuilder.withArgName("author1 author2..").hasArg().
-        withValueSeparator(' ').withDescription("List of authors").
-        create("authors"));
+        withDescription("List of authors").create("authors"));
   }
 
   /**
@@ -131,6 +130,17 @@ public class RSSInfo {
         StrMatcher.quoteMatcher()).getTokenArray();
   }
 
+  // Convert from string to array of strings
+  private static final String[] parseList(String line) {
+    String[] args = new StrTokenizer(line, StrMatcher.commaMatcher(),
+        StrMatcher.quoteMatcher()).getTokenArray();
+    for (int idx = 0; idx < args.length; idx++) {
+      args[idx] = args[idx].trim();
+    }
+
+    return args;
+  }
+
   // Print help message
   private static final void help() {
     HelpFormatter formatter = new HelpFormatter();
@@ -162,11 +172,11 @@ public class RSSInfo {
       String endDate = line.getOptionValue("endDate");
       String[] categories = null;
       if (line.hasOption("categories")) {
-        categories = parseArgs(line.getOptionValue("categories"));
+        categories = parseList(line.getOptionValue("categories"));
       }
       String[] authors = null;
       if (line.hasOption("authors")) {
-        authors = parseArgs(line.getOptionValue("authors"));
+        authors = parseList(line.getOptionValue("authors"));
       }
       int[] states = null;
       boolean ascending = false;
