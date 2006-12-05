@@ -395,11 +395,17 @@ function submitContent() {
   
   //alert("formName = " + srcObj.formName + "\ntargetUri = " + targetUri);
   
+  var formObj = document.forms[srcObj.formName];
+  var formValueObj = topaz.formUtil.createFormValueObject(formObj);
+  
+  //alert("formValueObj = " + formValueObj.toSource());
+
   ldc.show();
   
   var bindArgs = {
     url: namespace + targetUri,
     method: "post",
+    content: formValueObj,
     error: function(type, data, evt){
      var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
      //topaz.errorConsole.writeToConsole(err);

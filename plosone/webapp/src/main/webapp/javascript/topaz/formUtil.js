@@ -104,6 +104,57 @@ topaz.formUtil = {
     
   },
   
+  createFormValueObject: function (formObj) {
+    var formValueObject = new Object();
+    
+    for (var i=0; i<formObj.elements.length; i++) {
+      if(formObj.elements[i].type != 'hidden' && 
+         formObj.elements[i].type != 'button' && 
+         formObj.elements[i].type != 'submit' && 
+         formObj.elements[i].name != null) {
+        
+        if (formObj.elements[i].type == "radio") {
+          var radioName = formObj.elements[i].name;
+          var radioObj = formObj.elements[radioName];
+          
+          for (var n=0; n<radioObj.length; n++) {
+            if (radioObj[n].checked) {
+              formValueObject[radioObj[n].name] = radioObj[n].value;
+  
+              break;
+            }
+          }
+        }
+        else if (formObj.elements[i].type == "checkbox") {
+          var checkboxName = formObj.elements[i].name;
+          var checkboxObj = formObj.elements[checkboxName];
+          
+          var cbArray = new Array();
+          if (checkboxObj.length) {
+            for (var n=0; n<checkboxObj.length; n++) {
+              if (checkboxObj[n].checked) {
+                 cbArray.push(checkboxObj[n].value);
+              }
+            }
+            
+            formValueObject[checkboxName] = cbArray;
+          }
+          else {
+            formValueObject[checkboxObj.name] = checkboxObj.value;
+          }
+        }
+        else if (formObj.elements[i].type == "select-one") {
+          formValueObject[formObj.elements[i][formObj.elements[i].selectedIndex].name] = formObj.elements[i][formObj.elements[i].selectedIndex].value;
+        }
+        else {
+          formValueObject[formObj.elements[i].name] = formObj.elements[i].value;
+        }
+      }
+    }
+
+    return formValueObject;
+  },
+  
   hasFieldChange: function (formObj) {
     var thisChanged = false;
     

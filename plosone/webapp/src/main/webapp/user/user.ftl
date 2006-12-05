@@ -5,12 +5,11 @@
 </#if>
 
 
-
 <h2>PLoS ONE Member Profiles: Create a Profile</h2>
 	<p><strong>Create or Update Your Profile</strong></p>
 	<p>Fields marked with an <span class="required">*</span> are required. </p>
 
-<@ww.form name="userForm" namespace="/user" method="post" title="User Information Form" cssClass="pone-form">
+<@ww.form name="userForm" id="userForm"  method="post" title="User Information Form" cssClass="pone-form">
 
 <fieldset>
   <legend>Your Profile</legend>
