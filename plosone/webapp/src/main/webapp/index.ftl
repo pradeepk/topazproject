@@ -18,15 +18,15 @@
 
 					
 						<div class="block banner">
-							<img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF">
+							<img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF" />
 						</div>
 						<div class="block partner">
 
 				<h6>Partners</h6>
-				<a href="http://fedora.info/" title="Fedora.info"><img src="${freemarker_config.context}/images/pone_home_fedora.jpg"/></a>
-				<a href="http://www.sciencecommons.org/" title="Science Commons"><img src="${freemarker_config.context}/images/pone_home_sciencecommons.jpg"/></a>
-				<a href="http://www.osafoundation.org" title="Open Source Applications Foundation"><img src="${freemarker_config.context}/images/pone_home_osaf.jpg"/></a>
-				<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="${freemarker_config.context}/images/pone_home_moore.jpg"/></a>
+				<a href="http://fedora.info/" title="Fedora.info"><img src="${freemarker_config.context}/images/pone_home_fedora.jpg" alt="Fedora.info"/></a>
+				<a href="http://www.sciencecommons.org/" title="Science Commons" alt="Science Commons"><img src="${freemarker_config.context}/images/pone_home_sciencecommons.jpg"/></a>
+				<a href="http://www.osafoundation.org" title="Open Source Applications Foundation" alt="OSAF"><img src="${freemarker_config.context}/images/pone_home_osaf.jpg"/></a>
+				<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation" alt="Moore Foundation"><img src="${freemarker_config.context}/images/pone_home_moore.jpg"/></a>
 						</div>
 													   
 					</div>			
@@ -42,11 +42,7 @@
 					</div>
 						
 						
-<div class="block info">
-<@ww.url action="information.action" namespace="/static" includeParams="none" id="info"/>
-<h3>What is PLoS ONE?</h3>
-<p>A new inclusive and interactive publication for the efficient dissemination and discussion of open access peer-reviewed research from all areas of science and medicine.<a href="${info}" title="Read More" class="more">Read More</a></p>
-</div>
+
 
 <div class="block feature">
 <h3>New and Noted</h3>
@@ -112,7 +108,11 @@
 							</#list>
 						</div>
 						</#if> 
-
+<div class="block info">
+<@ww.url action="information.action" namespace="/static" includeParams="none" id="info"/>
+<h3>What is PLoS ONE?</h3>
+<p>A new inclusive and interactive publication for the efficient dissemination and discussion of open access peer-reviewed research from all areas of science and medicine.<a href="${info}" title="Read More" class="more">Read More</a></p>
+</div>
 					</div>
 					<!-- end : col 3 -->
 					<!-- begin : col 4 -->
@@ -131,20 +131,20 @@
 				
 				<div class="col first">
 				<div class="block ad">
-				<a href="http://www.plos.org/contact.php?recipient=web"><img src="http://www.plosjournals.org/images/icons/t_hom_mar_04.png">
+				<a href="http://www.plos.org/contact.php?recipient=web"><img src="http://www.plosjournals.org/images/icons/t_hom_mar_04.png" />
 				<strong>Feedback</strong>
 				<span class="body">Tell us what you think about our new look</span></a>
 			</div>
 
 			<div class="block ad">
-				<a href="http://www.taxpayeraccess.org/nih.html"><img src="http://www.plosjournals.org/images/icons/t_hom_mar_09.png">
+				<a href="http://www.taxpayeraccess.org/nih.html"><img src="http://www.plosjournals.org/images/icons/t_hom_mar_09.png" />
 
 				<strong>More Reach for Research</strong>
 				<span class="body">Support NIH Public Access</span></a>
 			</div>
 			
 			<div class="block ad">
-				<a href="http://www.plos.org/advertise"><img src="http://www.plosjournals.org/images/icons/plo_adv_hp.png">
+				<a href="http://www.plos.org/advertise"><img src="http://www.plosjournals.org/images/icons/plo_adv_hp.png" />
 				<strong>Advertise with PLoS</strong>
 				<span class="body">New high-profile realty available</span></a>
 
