@@ -164,6 +164,10 @@ public class CachedBagFunction implements Function {
     } else {
       // Evaluate the bag only on cache-miss
       result = ((Evaluatable) inputs.get(2)).evaluate(context);
+
+      if (result.indeterminate())
+        return result;
+
       cache.put(new Element(key, makeValue(result)));
 
       if (log.isDebugEnabled())
