@@ -225,6 +225,38 @@
               value="http://${server.search}/ws-search-webapp-0.5-SNAPSHOT/services/FedoraGenericSearchServicePort"/>
   </bean>
 
+  <!-- email configuration -->
+  <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
+    <property name="host" value="localhost"/>
+  </bean>
+
+  <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
+    <property name="templateLoaderPath" value="/WEB-INF/emailTemplates/"/>
+    <property name="defaultEncoding" ref="defaultEncodingCharset"/>
+  </bean>
+
+  <bean id="plosoneMailer" class="org.plos.service.PlosoneMailer">
+    <property name="mailSender" ref="mailSender"/>
+    <property name="fromEmailAddress" value="application@plosone.org"/>
+    <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>
+    <property name="feedbackEmailMap">
+      <map>
+        <entry key="text" value="feedback-text.ftl"/>
+        <entry key="html" value="feedback-html.ftl"/>
+        <entry key="subject" value="My feedback for PLoS ONE"/>
+        <entry key="toEmailAddress" value="${email.feedback}"/>
+      </map>
+    </property>
+    <property name="emailThisArticleMap">
+      <map>
+        <entry key="text" value="emailThisArticle-text.ftl"/>
+        <entry key="html" value="emailThisArticle-html.ftl"/>
+        <entry key="url" value="http://${server.plosone}/article/fetchArticle.action?articleURI"/>
+        <entry key="subject" value="Article from PLoS ONE sent by your friend"/>
+      </map>
+    </property>
+  </bean>
+
   <!--
     <aop:config>
       <aop:aspect ref="helloFromSpringAOP">
