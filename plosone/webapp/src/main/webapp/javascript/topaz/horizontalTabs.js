@@ -316,7 +316,7 @@ function submitContent(srcObj) {
   var refreshArea = dojo.byId(profileConfig.tabPaneSetId);
   var targetUri = srcObj.urlSave;
   
-  alert("formName = " + srcObj.formName + "\ntargetUri = " + targetUri);
+  //alert("formName = " + srcObj.formName + "\ntargetUri = " + targetUri);
   
   ldc.show();
   
