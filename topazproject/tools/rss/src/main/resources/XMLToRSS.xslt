@@ -6,6 +6,9 @@
 
   <xsl:template match="/">
     <rss version="2.0">
+      <title>PLoS ONE RSS</title>
+      <link>http://www.plosone.org/rss/</link>
+      <description>RSS channel to monitor for updates</description>
       <channel>
         <xsl:apply-templates select="articles/article"/>
       </channel>
@@ -15,9 +18,11 @@
   <xsl:template match="article">
     <item>
       <title><xsl:value-of select="title"/></title>
-      <link><xsl:value-of select="$urlPrefix"/><xsl:value-of select="uri"/></link>
       <pubDate><xsl:value-of select="date"/></pubDate>
+      <link><xsl:value-of select="$urlPrefix"/><xsl:value-of select="uri"/></link>
+      <description><xsl:value-of select="description"/></description>
       <xsl:apply-templates select="authors/author"/>
+      <guid><xsl:value-of select="uri"/></guid>
     </item>
   </xsl:template>
 

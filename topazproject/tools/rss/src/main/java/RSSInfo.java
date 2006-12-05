@@ -9,6 +9,8 @@
  */
 import java.io.StringReader;
 import java.io.StringWriter;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.net.MalformedURLException;
 import java.rmi.RemoteException;
 
@@ -81,6 +83,9 @@ public class RSSInfo {
         create("xslt"));
     options.addOptionGroup(xform);
 
+    options.addOption(OptionBuilder.withArgName("File name").hasArg().
+        withValueSeparator(' ').withDescription("Write output to file").
+        create("out"));
     options.addOption(OptionBuilder.withArgName("Prefix for link").hasArg().
         withValueSeparator(' ').withDescription("Prefix added to article URI").
         create("prefix"));
@@ -203,7 +208,11 @@ public class RSSInfo {
         feed = out.toString();
       }
 
-      System.out.println(new String(feed.getBytes("UTF-8")));
+      OutputStream out = System.out;
+      if (line.hasOption("out")) {
+        out = new FileOutputStream(line.getOptionValue("out"));
+      }
+      out.write(feed.getBytes("UTF-8"));
     } catch( ParseException exp ) {
         System.err.println( "Parsing failed.  Reason: " + exp.getMessage() );
         help();
