@@ -88,6 +88,7 @@
     <echo message="Using log-dir = ${tomcatlog.dir}"/>
     <echo message="Using war     = ${mulgara-war}"/>
     <echo message="Using port    = ${port}"/>
+    <echo message="Shutdown port = ${SHUTDOWN_PORT}"/>
 
     <tempfile property="temp.file" prefix="mulgara" suffix=".properties" destDir="${home}"/>
     <echo file="${temp.file}" message=""/>
@@ -117,6 +118,7 @@
         <property name="cargo.servlet.port" value="${port}"/>
         <property name="cargo.logging" value="high"/>
         <property name="cargo.jvmargs" value="-Xmx200m"/>
+        <property name="cargo.rmi.port" value="${SHUTDOWN_PORT}"/>
         <deployable type="war" file="${mulgara-war}"/>
       </configuration>
     </cargo>
@@ -128,7 +130,9 @@
   <!-- Stop mulgara -->
   <target name="mulgara-stop" depends="init">
     <cargo containerId="tomcat5x" home="${tomcathome}" action="stop">
-      <configuration home="${tomcatconfig.dir}"/>
+      <configuration home="${tomcatconfig.dir}">
+        <property name="cargo.rmi.port" value="${SHUTDOWN_PORT}"/>
+      </configuration>
     </cargo>
   </target>
     

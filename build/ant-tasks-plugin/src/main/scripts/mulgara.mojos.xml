@@ -89,6 +89,14 @@
         </parameter>
 
         <parameter>
+          <name>SHUTDOWN_PORT</name>
+          <property>SHUTDOWN_PORT</property>
+          <required>true</required>
+          <expression>${SHUTDOWN_PORT}</expression>
+          <defaultValue>9291</defaultValue>
+        </parameter>
+
+        <parameter>
           <name>SPAWN</name>
           <property>SPAWN</property>
           <required>true</required>
@@ -142,6 +150,14 @@
           <expression>${TOMCAT_HOME}</expression>
           <description>The location of the tomcat 5.x installation. Must be the same as what
               was given in the mulgara-start command.</description>
+        </parameter>
+
+        <parameter>
+          <name>SHUTDOWN_PORT</name>
+          <property>SHUTDOWN_PORT</property>
+          <required>true</required>
+          <expression>${SHUTDOWN_PORT}</expression>
+          <defaultValue>9291</defaultValue>
         </parameter>
 
       </parameters>
