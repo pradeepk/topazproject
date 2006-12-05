@@ -325,7 +325,7 @@ p.affiliations	{ font-size: .85em; margin: 0; }
 
 div.abstract	{ margin: 15px 0; }
 div.articleinfo	{ font-size: .9em; padding: 10px;  margin: 10px 0; background: #eee url(../images/pone_abstract_bg.gif) repeat-x bottom; border: 2px solid #ccc; }
-div.contributions { font-size: 9em; }
+div.contributions { font-size: .9em; }
 div.articleinfo p,
 div.abstract p	{ margin: 0 0 1em 0; }
 
