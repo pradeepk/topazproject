@@ -11,32 +11,22 @@ All journal specific styles, colors are on individual
 journal style sheets
 ----------------------------------------------------------
 */
-#wrap 			{ margin: 0 auto; width: 910px; background-color: #fff; padding: 0 0 10px 0; border: 1px solid #CCC; border-width: 0; line-height: 1.5em; }
+html 		{ margin: 0 0 1px 0; min-height: 100%; /* set margin and height to eliminate the scroll bar page shift on mozilla and safari */ background: #fff url(../images/pone_html_bg.gif) 0 0 repeat-x; }
+
+body		{ background-color: transparent }
+#wrap 		{ margin: 0 auto 0 auto; width: 910px; ; padding: 0 0 10px 0; line-height: 1.5em; position: relative; }
+
 
 /* Homepage : Elements
 ----------------------------------------------------------
 */
-#home 			{ position: relative; background: url(../images/jour_home_bg.gif) repeat-y; }
-#home img		{ border: 1px solid #ccc; background-color: #fff; display: inline; }
-#home img.cover	{ border: none; }
-#homa .banner img{ background-color: transparent; }
-#home a 		{ text-decoration: none; }	/* remove the underline from all homepage links to increase legibility */
+#home			{ position: relative; border: 1px solid #ccc; background: #fff url(../images/pone_home_bg.gif) repeat-y; margin-bottom: 20px; }
+#home img		{ background-color: #fff; display: inline; position: relative;}
+#home a:link,
+#home a:visited	{ text-decoration: none; }	/* remove the underline from all homepage links to increase legibility */
 #home a:hover 	{ text-decoration: underline; } /* apply a border in hover state */
-#home h1 		{ font-size: 1.5em; margin: 0 0 10px 0; font-weight: normal;} /* block titles */
-#home h1 a		{ font-size: 1.2em; }
-#home a h1,
-#home a:hover h1{ color: inherit; } /* this ensures that the headings in the ad blocks will highlight appropriately */
-#home h2 		{ background-color: #ddd; font-size: .85em; font-family: Verdana, Arial, Helvetica, sans-serif; margin: 0 0 10px 0; letter-spacing: normal; padding: 4px; color: #555;}
-#home #second h2{ background: url(../images/pone_home_marketing_h2.gif) repeat-x bottom; font-size: 1em; font-weight: bold;}
-.fm				{ background-image: url(../images/jour_sidenav_fm.gif); }
-/* create additional h3 header style for the marketing column */
-#home #second h3{ font-size: .9em; font-weight: bold; font-family: Verdana, Arial, Helvetica, sans-serif; margin: 0px; }
-
-#home span.date { /* wraps last updated */color: #777; text-transform: uppercase; display: block; margin: 0 0 10px 0; font-size: .85em;}
-#home span.date strong { /* wraps date within last updated */ font-weight: normal; color: #333; text-transform: none; border-bottom: 1px solid #ccc; padding-bottom: 5px;}
-
-div.more		{ text-transform: uppercase; font-size: .85em; font-weight: bold; text-align: right; clear: left; margin: 0; margin-top: 2px; padding: 4px; background: url(../images/pone_home_more_bg.gif) repeat-x bottom;}
-
+#home h2		{ border-bottom: 1px solid #ccc; margin: 0; padding-bottom: 5px;}
+#home h3		{ font-size: 1.2em; margin: 6px 0; }
 /* read more block */
 div.more a,
 div.more a:visited	{ color: #F5F5F5; padding-right: 5px;}
@@ -55,126 +45,176 @@ All rights reserved.
 /* all modules and grids nested in a grid get floated */
 .col .subcol, .col .col 	{ float:right; display:inline;   /* for ie */ }
 /* float left and kill margin on first for added flex */
-#first, .col .first 		{ float:left; background-color: #fff;}
+#first, .col .first 		{ float:left; }
 /* container column 1 */
-#first 						{ width: 520px; }
+#first 						{ width: 518px; }
 /* column 1 */
-#first .first 				{ width: 130px; height: 300px; text-align: right; }
-#first .first h6			{ margin: 0; padding: 0; font-size: .8em; text-transform: uppercase; text-align: center; color: #666; border-top: 1px solid #ccc;}
-#first .first .block 		{ background-color: #FFF; margin: 0; margin-right: 1px; padding-left: 0; border-top: 3px double #ccc; border-width: 3px 0 0 0;}
-#home .block.banner			{ border: none; }
-#first .first .block.banner { background-color: transparent; }
+#first .first 				{ width: 128px; text-align: right; }
+#first .first div.block 	{ background-color: #fff; margin: 0; padding-left: 0;padding-right: 2px;}
+#first .first div.banner	{ background-color: transparent; }
+
+#first .first li,
+#first .first ul			{ margin: 0; padding: 0; }
+#first .first ul ul			{ display: none; }
+
 /* column 2 */
-#first .last 				{ width: 389px; }
-#first .last p, #first .last h1	{ color: #303030; }
-#first .last img,
+#first .last 				{ width: 385px;}
+#first .last p,
+#first .last h1				{ color: #303030; }
 /* contains columns 3 and column 4 */
 #second 					{ width: 390px; }
 /* column 3 */ 
-#second .first 				{ width: 258px;  }
-#second .first .block		{ background: url(../images/jour_sidenav_li_bg.gif) repeat-x bottom; }
+#second .first 				{ width: 260px; }
 /* col4 */
-#second .last				{ width: 130px; }
-#second .last .block		{ margin-top: 0; margin-right: 0; margin-left: 0; padding-left: 5px; padding-right: 5px; background-color: transparent; /* should only ever apply to ads */ }
-/* self clear floated parent containers */
-.col:after 					{content:".";display:block;height:0;clear:both;visibility:hidden;}	
-.col 						{zoom:1;} /* IE */
+#second .last				{ width: 128px; padding: 0; }
 
+#lower						{ width: 100%; margin: 20px 0 0 0; padding: 30px 0; clear: both; background: #fff url(../images/pone_home_lower_bg.gif) no-repeat top left; font-size: .9em;}
+#lower div.block			{ background-color: transparent; border: none;}
+#lower .first				{ width: 286px;  margin-left: 134px;}
+#lower .last				{ width: 358px; float: right; margin-right: 130px;}
+#lower .last .block			{ padding: 0;}
+/* self clear floated parent containers */
+#lower:after,
+.col:after 					{content:".";display:block;height:0;clear:both;visibility:hidden;}	
+#lower,
+.col 						{zoom:1;} /* IE */
+#lower a:link,
+#lower a:visited			{ text-decoration: underline;}
+#lower a:hover				{ text-decoration: none; }
+#lower h3					{ background-color: #ddd; letter-spacing: normal; font-size: 1em; margin-right: 10px 0; padding: 1px 5px; font-family: Verdana, Arial, Helvetica, sans-serif; }
 
 /* all homepage content blocks are wrapped in class block for padding to avoid ie box model */
-div.block 				{ margin: 0 3px 6px 3px; border: 1px solid #ccc; padding: 6px; clear: both; position: relative; }
+div.block 				{ margin: 0 3px 6px 3px; padding: 6px; clear: both; position: relative; }
 
-div.block ul,
-div.block li			{ margin: 0; padding: 0; list-style-position: inside; }
 
-/* Feature Blocks are any blocks with large images */
-div.feature 			{ padding-top: 10px; line-height: 1.4em;}
-#home .block.feature p 	{ margin: 0; }
-#home .feature img	 	{ width: 120px; height: 120px;}
-#home .feature h2		{ clear: left; }
-#home .block img 		{ float: left; margin: 0 10px 10px 0; }
-#home .block.banner		{ padding: 0; border: none;}
-#home .block.banner img { float: none; padding: 4px; margin: 0; border-width: 3px 0 0 0; border-style: double; border-color: #ccc; background: transparent; }
-#home .block.banner.partner img {border-top: 1px solid #ccc; }
+/* wraps banner ads and partner icons */
+
+div.block.banner				{ padding: 0; border: none; margin: 4px auto; }
+div.block.banner img 			{ float: none; margin: 4px; background: transparent; }
+div.block.partner 					{ text-align: center; margin-right: 0; padding-right: 0; padding-top: 0;border-right: 1px solic #ccc;background-color: #fff; position: relative; border-top: 1px solic #ccc;}
+div.block.partner h6			{ background: transparent url(../images/pone_home_lower_bg.gif) no-repeat top right; font-weight: normal; text-align: center; font-size: .9em; margin: 0; padding-bottom: 10px; padding-top: 4px;}
+#first div.partner img 				{ float: none; margin: 20px auto; text-align: center;  }
+
+.block img 			{ float: left; margin: 0 10px 10px 0; }
+
 /* fixes float clearing bug */
-#home .block:after		{ content: ".";  display: block;  height: 0; clear: both; visibility: hidden; }
-#home p	{ font-size: .9em; }
-#home div.pick			{ display: block; clear: left; border-top: 1px solid #ddd; padding-top: 2px; }
-#home div.pick p		{ margin: 0; }
-
-div.feature .more { text-align: right; margin: 0; }
-div.top li 		{ margin-left: 20px; }
-
-/* --- marketing is for 3rd col marketing real estate --- */
-
-.marketing.block li	{ font-size: .9em; }
+.block:after		{ content: ".";  display: block;  height: 0; clear: both; visibility: hidden; }
+p	{ font-size: .9em; }
 
 
-/* --- class ad is used for 3rd column ad space --- */
-#home #second div.block.ad	{ padding: 0; clear: left; background: #efefef; height: 6em; }
-.ad img 		{ width: 60px; height: 60px; display: block;}
-#home .ad a:link,
-#home .ad a:visited 
-				{ color: #555; text-decoration: none; display: block; padding: 3px; border: 2px solid #FFF; height: 5.2em;}
-#home .ad a:hover
-				{ text-decoration: none; display: block; border-width: 2px; border-style: solid; background-color: #D2F7FF; color: #069; border-color: #069; }
-#home .ad a strong
-				{ margin: 0; font-size: 1.4em; font-weight: normal; font-family: Georgia, "Times New Roman", Times, serif; letter-spacing: -.05em; text-decoration: none; display: block; margin-bottom: 4px; }
-#home .ad a span.body
-				{ font-size: .9em; text-deocoration: none;}
+div.tabs			{ padding: 4px 0; }
+div.tabs span		{ padding: 4px; color: #333; margin-right: 3px; font-size: .9em; font-weight: bold; color: #333; text-decoration: underline;}
+div.tabs span.current	{ background: #FFF; color: #000;}
+ul.articles,
+ul.articles li		{ margin: 0; padding: 0; list-style-type: bullet;}
+ul.articles			{ margin: 0 4px 10px 0;  padding: 20px 20px 0 20px;}
+ul.articles li		{ font-size: .9em; padding: 3px 5px; }
+ul.articles			{ margin-top: 0; }
+
+dl.category 		{ margin: 10px 0 0 0; }
+dl.category dt a,
+dl.category dt a:visited	{ height: 30px; padding-left: 40px; background-image: url(../images/pone_home_category.gif); background-repeat: no-repeat;cursor: pointer; color: #00131D; display: block; font-size: .9em; height: 30px; }
+
+#home dl.category dt a:hover { text-decoration: none; color: #000; border-color: #fff; vertical-align: bottom;}
+dl.category dt	{ margin: 5px 0 0 0; padding: 0;color: #333; font-weight: normal;  vertical-align: bottom; clear: left;/* This fixes the IE5 Win gap! */ }
+dl.category dd 	{ font-size: .9em; vertical-align: bottom;}
+dl.category ul	{ padding: 5px 10px; margin: 10px; clear: left;}
+dl.category li	{ list-style-position: outside; }
+dl.category li a{ vertical-align: bottom; }
+dl.category a,
+dl.category a:link { outline: none; }
+dl.category img	{ float: none; display: inline;float: left; padding: 0; margin-left: 0;}
+dl.category dd	{ display: none; background-color: #fff;}
+
+.block.recent		{ padding: 0; }
+.block.recent ul	{ margin: 10px; }
+div.subject		{ padding: 0; padding-top: 5px;border: none;}
 
 
-div.block.rhc 			{ padding: 0 0 10px 0; }
-#home #first .first li 	{ margin: 0; padding: 0; }
-#home #first .first ul 	{ margin: 0; padding: 0; list-style-type: none; }
-#home #first .first li ul { border-top: 1px solid #CECECE; list-style-type: none; }
+div.ad					{ margin-top: 20px; }
+div.ad strong			{ display: block; }
+div.ad img				{ border: 1px solid #ccc; }
 
-/* --- mainnav is for left hand column main navigation items --- */
-ul.mainNav,
-ul.mainNav li 		{ margin: 0; padding: 0; list-style-type: none;}
-ul.mainNav li a 	{ font-family: Georgia, "Times New Roman", Times, serif; font-size: 1.5em; letter-spacing: -.03em; line-height: 1.6em;}
-
-
-
-/* --- plos medicine only reader poll --- */
-#home .block.poll { background-color: transparent; padding-bottom: 10px; padding-left: 5px; font-size: .9em; }
-#home .block.poll h2 { background-image: none; background-color: transparent; border-bottom: 1px solid #ccc; font-size: 1em; color: inherit;}
-#home .poll form fieldset 		{ width: 120px; padding: 0; position: relative; border: none;}
-#home .poll form fieldset label 	{ display: block; color: #333; }
-#home .poll form fieldset input 	{ color: #000; border: none; width: auto; }
-#home .poll form fieldset div 	{ width: 120px; padding: 0; position: relative; height: 1.8em;}
-#home .poll form fieldset div input { position: absolute; top: 0; left: 0; }
-#home .poll form fieldset div label { position: absolute; top: 0; left: 2.4em; font-weight: bold;}
-#home .marketing.block	{ padding: 0; }
-#home .marketing h2		{ margin: 3px; }
-#home .marketing ul,
-#home .marketing li		{ margin: 0; padding: 0; list-style-type: none; background: #FFF url(../images/jour_sidenav_li_bg.gif) repeat-x bottom; }
-#home .marketing li a	{ border-top: 1px solid #ccc; margin: 0; padding: 2px 4px 2px 16px; display: block; background: transparent url(../images/pone_home_marketing_a.gif) no-repeat 0 50%; }
-#home .marketing li a:hover { background-color: #D2F7FF; text-decoration: none;}
-
-/* --- focus is for home page tabbed blocks --- */
-#tabContainer 		{ width: auto; padding: 0; }
-#tabContainer .block a:link,
-#tabContainer .block a:visited	{ font-size: .9em; padding-top: 2px; }
-#tabContainer ul	{ margin: 5px; }
-#home #tabContainer.block	{ border-bottom: 1px solid #ccc; border-top: none; border-right: none; }
-#home #tabContainer .block	{ overflow: hidden; background: #fff; }
-div.block div.block		{ border: none; border-top: 1px solid #ccc; margin: 0; border-right: 1px solid #ccc;}
-#recent ul,
-#recent li	{ list-style-type: none; }
-
-#home .block.about p	{ font-size: 1.1em; }
-
-#home .block.banner.partner	{ }
-#home .block.banner.partner	img	{ background: #fff; }
-#home .block.partner h3	{ }
+div.block.mainnav	{ margin: 0; padding: 10px 0;}
+*html div.block.mainnav { border-left: 1px solid #ccc; border-top: 1px solid #ccc; }
+.mainnav ul,			
+.mainnav ul li 		{ margin: 0; padding: 0; list-style-type: none; background-color: #fff;}
+.mainnav ul			{ text-indent: 10px; margin: 0; padding: 10px;position: relative; }
+.mainnav ul li a 	{ font-family: Georgia, "Times New Roman", Times, serif; font-size: 1.5em; letter-spacing: -.03em; line-height: 1.6em; margin-right: 10px;}
 
 
-/* TEMP ITEMS */
-#home ul.articles,
-#home ul.articles li	{ margin: 0; padding: 0; list-style-type: none; text-indent; }
-#home ul.articles li	{ font-size: .85em; border-bottom: 2px solid #ddd; padding: 3px 0; }
+div.info			{ width: 260px; height: 168px;background: url(../images/pone_home_info_bg.gif) no-repeat top left;}
+div.feature img,
+div.info img		{ margin: 10px; border: 1px solid #ccc; position: relative; width: 45px; height: 45px;}
+#home div.feature h3,
+#home div.info h3	{ /*font-size: 1em; border-width: 0; font-family: Verdana, Arial, Helvetica, sans-serif; padding-left: 15px; margin-left: -7px;letter-spacing: normal; background-color: #ddd; color: #000; */ background-color: transparent; padding-bottom: 4px text-align: right; font-size: 1.4em; padding-bottom: 10px; color: #666; padding-left: 10px;}
+#home div.feature h3	{ font-size: 2em; color: #333; border-top: 2px solid #333; padding-top: 10px; margin-top: 0;}
+#home div.feature div { border-bottom: 1px solid #ccc; padding: 10px;}
+#home div.feature ul.articles a{ font-size: 1em; }
+div.info p			{ margin-top: 0; margin-left: 10px;}
 
-#home dl.category 		{ margin: 0; }
-#home dl.category dt	{ margin: 0; border-bottom: 1px solid #ccc; padding: 2px; color: #333;}
-#home dl.category dd	{ display: none; }
+a.more				{ font-weight: bold; text-transform: uppercase; margin-left: 5px;}
+
+ul.journals			{ margin: 0; padding: 0; list-stype-type: none; text-align: left; background-color: #333;}
+ul.journals li		{ margin: 0; padding: 0 4px; list-style-type: none; font-size: .9em; border-bottom: 1px solid #fff;}
+ul.journals li a	{ color: #fff; }
+
+
+/*#home div.feature h3{ background-color: #069; color: #fff; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 1em; padding-left: 4px;}*/
+div.feature a		{ font-weight: bold; font-size: .9em;}
+div.feature	img		{ border: 1px solid #ccc;}
+div.feature p		{ margin: 0; }
+
+.anesthes			{ background-position: 0 0; }
+.biochemi			{ background-position: 0 -30px; }
+.biophysi			{ background-position: 0 -60px; }
+.biotechn			{ background-position: 0 -90px; }
+.cardiova			{ background-position: 0 -120px; }
+.cellbiol			{ background-position: 0 -150px; }
+.chemical			{ background-position: 0 -180px; }
+.chemistr			{ background-position: 0 -210px; }
+.computat			{ background-position: 0 -240px; }
+.computer			{ background-position: 0 -270px; }
+.critical			{ background-position: 0 -300px; }
+.dermatol			{ background-position: 0 -330px; }
+.developm			{ background-position: 0 -360px; }
+.diabetes			{ background-position: 0 -390px; }
+.ecology			{ background-position: 0 -420px; }
+.evidence			{ background-position: 0 -450px; }
+.evolutio			{ background-position: 0 -480px; }
+.gastroen			{ background-position: 0 -510px; }
+.genetics			{ background-position: 0 -540px; }
+.geriatri			{ background-position: 0 -570px; }
+.hematolo			{ background-position: 0 -600px; }
+.immunolo			{ background-position: 0 -630px; }
+.infectio			{ background-position: 0 -660px; }
+.mathemat			{ background-position: 0 -690px; }
+.mentalhe			{ background-position: 0 -720px; }
+.microbio			{ background-position: 0 -750px; }
+.molecula			{ background-position: 0 -780px; }
+.nephrolo			{ background-position: 0 -810px; }
+.neurolog			{ background-position: 0 -840px; }
+.neurosci			{ background-position: 0 -870px; }
+.non-clin			{ background-position: 0 -900px; }
+.nutritio			{ background-position: 0 -930px; }
+.obstetri			{ background-position: 0 -960px; }
+.oncology			{ background-position: 0 -990px; }
+.ophthalm			{ background-position: 0 -1020px; }
+.otolaryn			{ background-position: 0 -1050px; }
+.patholog			{ background-position: 0 -1080px; }
+.pediatri			{ background-position: 0 -1110px; }
+.pharmaco			{ background-position: 0 -1140px; }
+.physics			{ background-position: 0 -1170px; }
+.physiolo			{ background-position: 0 -1200px; }
+.plantbio			{ background-position: 0 -1230px; }
+.publiche			{ background-position: 0 -1260px; }
+.radiolog			{ background-position: 0 -1290px; }
+.respirat			{ background-position: 0 -1320px; }
+.rheumato			{ background-position: 0 -1350px; }
+.sciencep			{ background-position: 0 -1380px; }
+.subjects			{ background-position: 0 -1410px; }
+.surgery			{ background-position: 0 -1440px; }
+.urology			{ background-position: 0 -1470px; }
+.virology			{ background-position: 0 -1500px; }
+.womenshe			{ background-position: 0 -1530px; }
+

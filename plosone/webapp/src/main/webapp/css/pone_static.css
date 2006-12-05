@@ -1,3 +1,15 @@
-.edboard dl { text-align: right; margin: 0 240px 0 0; }
-.edboard dt { font-weight: bold; display: block; float: left; padding-left: 5px; margin-top: 5px; }
-.edboard dd { margin: 0 0 5px 0; padding: 0 5px 5px 5px; background-color: #D2F7FF; border-top: 6px solid #D2F7FF; font-size: .85em; text-indent: 10px; }
+/* 	-------------------------------------------------------------
+
+	STATIC STYLE SHEET FOR : www.plosone.org
+	
+	CREATED ON 	: 08-26-2006
+	MODIFIED ON : 11-10-2006
+	
+	CREATED BY	: MARGARET SHEAR
+	MODIFIED BY	: MARGARET SHEAR
+
+   	------------------------------------------------------------- */
+
+
+div#topBanner		{ display: none; }
+html 				{ background-position: 0 -70px; }

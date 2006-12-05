@@ -4,8 +4,8 @@
   <webapp-subdir></webapp-subdir>
   <cas-login-url>https://FQHN:7443/cas/login</cas-login-url>
   <cas-logout-url>https://FQHN:7443/cas/logout</cas-logout-url>
+  <plosone-host>FQHN:8888</plosone-host>
   <registration-url>https://FQHN:7443/plos-registration/register.action</registration-url>
-  <plosone-host>FQHN:8080</plosone-host>
   <default>
     <title>PLoS ONE : Publishing science\, accelerating research</title>
     <css>
@@ -13,7 +13,11 @@
       <file>/css/pone_iepc.css</file>
     </css>
     <javascript>
-      <file>/javascript/js1.js</file>
+      <file>/javascript/prototype.js</file>
+      <file>/javascript/browserDetection.js</file>
+      <file>/javascript/dojo/dojo.js</file>
+      <file>/javascript/topaz/topaz.js</file>      
+      <file>/javascript/init_navigation.js</file>  
     </javascript>
   </default>
 
@@ -35,6 +39,7 @@
       <file>/javascript/dojoRequire_article.ftl</file>
       <file>/javascript/formSetup_article.js</file>   
       <file>/javascript/topaz/errorConsole.js</file>   
+      <file>/javascript/init_navigation.js</file>   
       <file>/javascript/init_article.js</file>   
     </javascript>
   </page>
@@ -52,6 +57,7 @@
       <file>/javascript/dojoRequire_discussion.ftl</file>
       <file>/javascript/topaz/responsePanel.js</file>   
       <file>/javascript/topaz/errorConsole.js</file>   
+      <file>/javascript/init_navigation.js</file>   
       <file>/javascript/init_discussion.js</file>   
     </javascript>
   </page>
@@ -69,6 +75,7 @@
       <file>/javascript/dojoRequire_discussion.ftl</file>
       <file>/javascript/topaz/responsePanel.js</file>   
       <file>/javascript/topaz/errorConsole.js</file>   
+      <file>/javascript/init_navigation.js</file>   
       <file>/javascript/init_newDiscussion.js</file>   
     </javascript>
   </page>
@@ -90,6 +97,7 @@
       <file>/javascript/dojoRequire_slideshow.ftl</file>
       <file>/javascript/topaz/slideshow.js</file>   
       <file>/javascript/topaz/errorConsole.js</file>   
+      <file>/javascript/init_navigation.js</file>   
       <file>/javascript/init_slideshow.js</file>   
     </javascript>
   </page>
@@ -128,15 +136,23 @@
       <file>/css/pone_iepc.css</file>
       <file>/css/pone_static.css</file>
     </css>
+
   </page>
 
   <page>
     <name>/index.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_home.css</file>
+    </css>
     <javascript>
       <file>/javascript/prototype.js</file>
+      <file>/javascript/browserDetection.js</file>
       <file>/javascript/dojo/dojo.js</file>
       <file>/javascript/topaz/topaz.js</file>      
       <file>/javascript/topaz/domUtil.js</file>
+      <file>/javascript/init_navigation.js</file>   
     </javascript>
   </page>
  

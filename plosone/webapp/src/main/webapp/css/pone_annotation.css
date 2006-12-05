@@ -130,7 +130,7 @@ div.multiple		{ width: 50em; background-color: #666; position: relative;}
 div.author blockquote{ background: #FFF; }
 div.author hd	{ background-color: #069; }
 
-div.response h3	{ font-size: 1.2em; font-weight: bold; margin: .25em 0; font-family: Verdana, Arial, Helvetica, sans-serif; letter-spacing: -.03em;}
+div.response h3	{ font-size: 1.2em; font-weight: bold; margin: .25em 0; font-family: Verdana, Arial, Helvetica, sans-serif; letter-spacing: -.01em;}
 div.response	{ padding: 0; margin: 15px 0 0 15px; border: 2px solid #ccc; border-width: 2px 2px 0 0; position: relative; /*  background-color: #ccc; */}
 
 
@@ -177,14 +177,11 @@ ol.radio input		{ position: absolute; left: 0; }
 ol.radio label		{ font-weight: bold; position: absolute; left: 3em; }
 
 /* annotation and discussion thread view page */
-dl.directory			{ padding: 2px; margin: 0; }
-.directory dt			{ margin: 10px 0 0 0; padding: 4px; border: 2px solid #ccc; border-width: 2px 2px 1px 2px; }
-.directory dd			{ background: url(../images/pone_response_blockquote_bg.gif) repeat-x 30px; padding: 0 4px; margin: 0; border: 2px solid #ccc; border-width: 0 2px 2px 2px;}
-.directory dd.replies	{ font-weight: bold; width: 8em; margin-top: -1.8em; margin-left: 88%; border: none; background: transparent;}
 
-.directory li,
-.directory ul			{ margin: 0; }
-
-.directory li			{ list-style-type: none; background: url(../images/pone_sectionnav_li_bg.gif) no-repeat 0 3px; padding-left: 16px;}
-
+table.directory		{ width: 95%; }
+.directory td		{ background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;}
+.directory td.title	{ background: #eee; }
+.directory td.replies { width: 8em; }
+.directory td.replies,
+.directory td.info	{ font-size: .9em; }
 img.pointer		{ margin: -5px 0 0 0; }

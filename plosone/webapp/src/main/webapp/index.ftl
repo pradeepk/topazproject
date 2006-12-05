@@ -8,15 +8,34 @@
 				<!-- begin : wrapper for cols 1 & 2 -->
 				<div id="first" class="col">
 					<!-- begin : col 1 -->
+					<div class="col first">
+					<div class="block mainnav">
+					<ul>
+						<li><a href="http://www.plos.org/oa/index.html">Open Access</a></li>
+						<li><a href="http://www.plos.org/support/donate.php">Join PLoS</a></li>
+					</ul>
+					</div>
 
-							<h1 style="font-size: 2.3em;">Welcome to PLoS ONE</h1>
-							<p>Today is the day that we unveil Open Access 2.0. Blah blah lorem orem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+					
+						<div class="block banner">
+							<img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF">
+						</div>
+						<div class="block partner">
 
+				<h6>Partners</h6>
+				<a href="http://fedora.info/" title="Fedora.info"><img src="${freemarker_config.context}/images/pone_home_fedora.jpg"/></a>
+				<a href="http://www.sciencecommons.org/" title="Science Commons"><img src="${freemarker_config.context}/images/pone_home_sciencecommons.jpg"/></a>
+				<a href="http://www.osafoundation.org" title="Open Source Applications Foundation"><img src="${freemarker_config.context}/images/pone_home_osaf.jpg"/></a>
+				<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="${freemarker_config.context}/images/pone_home_moore.jpg"/></a>
+						</div>
+													   
+					</div>			
+										<div class="col last">
+							
+						<div class="tabs"><span>Recently Published</span> | <span>Most Commented</span> | <span>Most Viewed</span></div>
 						<#assign numArticles = recentArticles?size>
 						<#if (numArticles > 0)>
 							<#assign randomIndices = action.randomNumbers(5, numArticles)>
-						<div class="block">
-							<h1>Recently Published</h1>
 							<ul class="articles">
 							  <#list randomIndices as random>
 									<#assign article = recentArticles[random]>
@@ -25,40 +44,86 @@
 									<#else>
 								<li>
 									</#if>
-									<a href="article/fetchArticle.action?articleURI=${article.uri?url}" title="Read Open Access Article" class="article icon">${article.title}</a>
+									<a href="article/fetchArticle.action?articleURI=${article.uri?url}" title="Read Open Access Article">${article.title}</a>
 								</li>
 								</#list>
 							</ul>
-						</div>
-						</#if>
+<!--						</#if>
 	
 						
 						<#assign commentedArticles = action.getCommentedOnArticles(5)>
 						<#if (((commentedArticles?size)!0) gt 0) >
 						<div class="block">
-							<h1>Most Commented On</h1>
+							<h2>Most Commented On | Most Viewed</h2>
 							<ul class="articles">
 								<#list commentedArticles as commented>
 								<li>
-									<a href="article/fetchArticle.action?articleURI=${commented.uri}" title="Read Open Access Article" class="article icon">${commented.title}</a>
+									<a href="article/fetchArticle.action?articleURI=" title="Read Open Access Article">${commented.title}</a>
 								</li>
 								</#list>
 							</ul>
-						</div>
-						</#if>
-					<div class="col first">
-						<div class="block banner">
-							<img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF">
-						</div>				   
+						</div> 
+						</#if> -->
+						
+<div class="block info">
+<@ww.url action="information.action" namespace="/static" includeParams="none" id="info"/>
+<h3>What is PLoS ONE?</h3>
+<p>A new inclusive and interactive publication for the efficient dissemination and discussion of open access peer-reviewed research from all areas of science and medicine.<a href="${info}" title="Read More" class="more">Read More</a></p>
+</div>
+
+<div class="block feature">
+<h3>New and Noted</h3>
+<div>
+<a href="#">Wnt and Hedgehog Are Critical Mediators of Cigarette Smoke-Induced Lung Cancer</a><p>The molecular basis of cigarette-induced lung cancer is poorly understood. This paper shows that genes more normally associated with the patterning of embryos may be involved in opening new avenues for the development of therapies.</p>
+</div>
+<div>
+<a href="#">The Syntax and Meaning of Wild Gibbon Songs</a><p>Human languages are subtle. Identical words can mean different things when spoken in a different order. This paper shows that the same is true for gibbons. When threatened they change the structure of their calls, warning individuals within earshot of the danger.</p>
+</div>
+<div>
+<a href="#">Mesenchymal Stem Cell-Mediated Functional Tooth Regeneration in Swine</a><p>Much discussion surrounds the use of stem cells for regenerating organs as a possible treatment for a diverse spectrum of diseases. This paper explores the potential of human stem cells isolated from dental papillae to regenerate functional teeth.</p>
+</div>
+</div>
+
+<div class="block feature">
+
+<h3>Also of Note</h3>
+<ul class="articles">
+	<li><a href="#">Control of Canalization and Evolvability by Hsp90</a></li>
+	<li><a href="#">Predator Mimicry: Metalmark Moths Mimic Their Jumping Spider Predators</a></li>
+	<li><a href="#">Physiological Mouse Brain Aß levels Are Not Related to the Phosphorylation State of Threonine-668 of Alzheimer's APP</a></li>
+	<li><a href="#">A Virtual Reprise of the Stanley Milgram Obedience Experiments</a></li>
+</ul>
+
+
+</div>
+
+
+
+
 					</div>
-					<div class="col last">		
-						<#if categoryNames?size gt 0>
-						<div class="block">
-							<h1>Subject Categories</h1>
+
+					<!-- end : col 2 -->
+				</div>
+				<!-- end : wrapper for cols 1 & 2 -->
+				<!-- begin : wrapper for cols 3 & 4 -->
+				<div id="second" class="col">
+				
+				
+					<!-- begin : col 3 -->
+					<div class="subcol first">
+					
+											<#if categoryNames?size gt 0>
+						<div class="subject block">
+
 							<#list categoryNames as category>
 							<dl class="category">
-							  <#assign categoryId = category?replace(" ","")>
-								<dt><a href="#" onclick="topaz.domUtil.swapDisplayMode('${categoryId?js_string}');return false;">${category} (${articlesByCategory[category_index]?size})</a></dt>
+							  <#assign categoryId = category?replace("\\s|\'","","r")>
+							  <#if categoryId?length lt 8>
+								<#assign index = categoryId?length>
+							  <#else>
+  								<#assign index = 8>
+							  </#if>
+								<dt><a class="${categoryId?substring(0,index)?lower_case}"  onclick="topaz.domUtil.swapDisplayMode('${categoryId?js_string}');return false;">${category} (${articlesByCategory[category_index]?size})</a></dt>
 								<dd id="${categoryId}">
 									<ul>
 										<#list articlesByCategory[category_index] as article>
@@ -70,67 +135,7 @@
 							</#list>
 						</div>
 						</#if> 
-					</div>
 
-					<!-- end : col 2 -->
-				</div>
-				<!-- end : wrapper for cols 1 & 2 -->
-				<!-- begin : wrapper for cols 3 & 4 -->
-				<div id="second" class="col">
-					<!-- begin : col 3 -->
-					<div class="subcol first">
-						<div class="block ad">
-							<a href="http://www.plos.org/cms/node/40">
-								<img src="http://www.plosjournals.org/images/icons/pbio_reuse_hp.png"/>
-								<strong>Reuse</strong>
-								<span class="body">Feel free to be creative with our content.</span>
-							</a>
-						</div>
-						<div class="block ad">
-							<a href="http://www.plos.org/journals/license.html">
-								<img src="http://www.plosjournals.org/images/icons/pbio_permission_hp.png"/>
-								<strong>Permission not required</strong>
-								<span class="body">Our content can be used any way you wish.</span>
-							</a>
-						</div>
-						<div class="block marketing">
-							<h2>New at PLoS</h2>
-							<ul>
-								<li>
-									<a href="#">Comment on the PLoS Blog now</a>
-								</li>
-								<li>
-									<a href="#">PLoS ONE: Accepting Submissions</a>
-								</li>
-								<li>
-									<a href="#">Visit PLoS at ASMB</a>
-								</li>
-								<li>
-									<a href="#">Support the Public Research Act</a>
-								</li>
-								<li>
-									<a href="#">Read PLoS Clinical Trials</a>
-								</li>
-							</ul>
-						</div>
-						<div class="block">
-							<h2>From the Blogosphere</h2>
-							<a href="http://www.earlham.edu/~peters/fos/fosblog.html" title="Peter Suber's Blog">
-								<img src="http://www.plosjournals.org/images/icons/pbio_suber_hp.jpg" width="45" height="45" alt="Peter Suber"/>
-							</a>
-							<p>
-								<a href="http://www.earlham.edu/~peters/fos/fosblog.html" title="Peter Suber's Blog">Read Peter Suber's blog</a> for the latest news from the open access movement.</p>
-						</div>
-						<div class="block journals">
-							<h2>In the Journals</h2>
-							<a href="http://www.plosbiology.org">
-								<img src="http://www.plos.org/images/pbio_234x60.png" alt="PLoS Biology - www.plosbiology.org" border="0" height="60" width="234"/>
-							</a>
-							<p>
-								<a href="http://biology.plosjournals.org/perlserv/?request=get-document&amp;doi=10.1371/journal.pbio.0040401">ONE for All: The Next Step for PLoS</a>
-							</p>
-							<p>PLoS ONE will initiate a radical departure from existing scientific publishing platforms by being more inclusive and by taking advantage of the increasing functionality of internet-based communication.</p>
-						</div>
 					</div>
 					<!-- end : col 3 -->
 					<!-- begin : col 4 -->
@@ -138,37 +143,66 @@
 						<div class="block banner">
 							<img src="http://a248.e.akamai.net/7/800/1129/1154526507/oascentral-s.realmedia.com/RealMedia/ads/Creatives/sciam.com/m_sciam_2006-02_podcast_sky/pod_120x600_2.gif"/>
 						</div>
-						<h6>Partners</h6>
-						<div class="block banner partner">
-							<a href="http://fedora.info/" title="Fedora.info">
-								<img src="${freemarker_config.context}/images/pone_home_fedora.jpg"/>
-							</a>
-						</div>
-						<div class="block banner partner">
-							<a href="http://www.sciencecommons.org/" title="Science Commons">
-								<img src="${freemarker_config.context}/images/pone_home_sciencecommons.jpg"/>
-							</a>
-						</div>
-						<div class="block banner partner">
-							<a href="http://www.osafoundation.org" title="Open Source Applications Foundation">
-								<img src="${freemarker_config.context}/images/pone_home_osaf.jpg"/>
-							</a>
-						</div>
-						<div class="block banner partner">
-							<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation">
-								<img src="${freemarker_config.context}/images/pone_home_moore.jpg"/>
-							</a>
-						</div>
-						<div class="block banner partner">
-							<a href="http://www.unitedlayer.com/" title="United Layer Built on IP Services">
-								<img src="${freemarker_config.context}/images/pone_home_unitedlayer.jpg"/>
-							</a>
-						</div>
 
 					</div>
 					<!-- end : col 4 -->
 				</div>
 				<!-- end : wrapper for cols 3 & 4 -->
+				
+				
+				<div id="lower">
+				
+				<div class="col first">
+				<div class="block ad">
+				<a href="http://www.plos.org/contact.php?recipient=web"><img src="http://www.plosjournals.org/images/icons/t_hom_mar_04.png">
+				<strong>Feedback</strong>
+				<span class="body">Tell us what you think about our new look</span></a>
+			</div>
+
+			<div class="block ad">
+				<a href="http://www.taxpayeraccess.org/nih.html"><img src="http://www.plosjournals.org/images/icons/t_hom_mar_09.png">
+
+				<strong>More Reach for Research</strong>
+				<span class="body">Support NIH Public Access</span></a>
+			</div>
+			
+			<div class="block ad">
+				<a href="http://www.plos.org/advertise"><img src="http://www.plosjournals.org/images/icons/plo_adv_hp.png">
+				<strong>Advertise with PLoS</strong>
+				<span class="body">New high-profile realty available</span></a>
+
+			</div>	
+	
+				</div>
+			<div class="col last">
+							<h3>What PLoS is Blogging...</h3>
+							<ul>
+								<li><a href="#">Comment on the PLoS Blog now</a></li>
+								<li><a href="#">PLoS ONE: Accepting Submissions</a></li>
+								<li><a href="#">Visit PLoS at ASMB</a></li>
+								<li><a href="#">Support the Public Research Act</a></li>
+								<li><a href="#">Read PLoS Clinical Trials</a></li>
+							</ul>
+							<h3>What You're Blogging...</h3>
+							<ul>
+								<li><a href="#">Comment on the PLoS Blog now</a></li>
+								<li><a href="#">PLoS ONE: Accepting Submissions</a></li>
+								<li><a href="#">Visit PLoS at ASMB</a></li>
+								<li><a href="#">Support the Public Research Act</a></li>
+								<li><a href="#">Read PLoS Clinical Trials</a></li>
+							</ul>
+							<h3>New at PLoS</h3>
+							<ul>
+								<li><a href="#">Comment on the PLoS Blog now</a></li>
+								<li><a href="#">PLoS ONE: Accepting Submissions</a></li>
+								<li><a href="#">Visit PLoS at ASMB</a></li>
+								<li><a href="#">Support the Public Research Act</a></li>
+								<li><a href="#">Read PLoS Clinical Trials</a></li>
+							</ul>
+					</div>
+					
+				</div>
+				
 			</div>
 			<!-- end : layout wrapper -->
 		</div>

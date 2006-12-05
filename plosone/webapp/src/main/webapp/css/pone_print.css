@@ -18,6 +18,8 @@ html { color: #000; !important width: 100%; !important; }
 #hdr, div.beta, #nav, #ftr ul, div.powered, #rhc, ol.references a.find {
 	display: none !important;
 }
+
+
 body, div#content, div.content 	{ width: auto !important; margin: 0 !important; padding: 0 !important; border: none; !important}
 * html body, * html div#content, * html div.content 	{ width: 6.75in !important; }
 p.intro							{ border: 1px dotted #000 !important; }
