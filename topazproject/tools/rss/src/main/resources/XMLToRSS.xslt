@@ -6,9 +6,10 @@
 
   <xsl:template match="/">
     <rss version="2.0">
-      <title>PLoS ONE RSS</title>
-      <link>http://www.plosone.org/rss/</link>
-      <description>RSS channel to monitor for updates</description>
+      <title>PLoS ONE Alerts</title>
+      <link>http://www.plosone.org/</link>
+      <image>http://www.ploseone.org/favicon.ico</image>
+      <description>RSS channel to monitor for new articles in PLoS ONE</description>
       <channel>
         <xsl:apply-templates select="articles/article"/>
       </channel>
