@@ -303,7 +303,6 @@ topaz.horizontalTabs = {
   showHome: function(id) {
     var newTarget = this.getMapObject(id);
     this.setNewTarget(newTarget);
-    ldc.show();
     
     loadContentHome(newTarget);
   }
@@ -357,8 +356,6 @@ function loadContentHome(targetObj) {
   var refreshArea = dojo.byId(homeConfig.tabPaneSetId);
   var targetUri = targetObj.urlLoad;
 
-  ldc.show();
-  
   var bindArgs = {
     url: namespace + targetUri,
     method: "get",
@@ -378,7 +375,6 @@ function loadContentHome(targetObj) {
       //alert("targetObj.tabKey = " + targetObj.tabKey);
       topaz.horizontalTabs.setTargetObj(targetObj);
       topaz.horizontalTabs.toggleTab(targetObj);
-      ldc.hide();
 
       return false;
     },

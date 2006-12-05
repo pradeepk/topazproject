@@ -96,7 +96,7 @@
 							  <#else>
   								<#assign index = 8>
 							  </#if>
-								<dt><a class="${categoryId?substring(0,index)?lower_case}"  onclick="topaz.domUtil.swapDisplayMode('${categoryId?js_string}');return false;">${category} (${articlesByCategory[category_index]?size})</a></dt>
+								<dt><a class="expand" id="widget${categoryId?js_string}" onclick="return singleExpand(this, '${categoryId?js_string}');">${category} (${articlesByCategory[category_index]?size})</a></dt>
 								<dd id="${categoryId}">
 									<ul>
 										<#list articlesByCategory[category_index] as article>
@@ -187,4 +187,3 @@
 	<!-- end : home page wrapper -->
 </div>
 <!-- end : main contents -->
-<#include "/widget/loadingCycle.ftl">

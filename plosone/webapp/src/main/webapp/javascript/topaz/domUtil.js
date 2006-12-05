@@ -178,10 +178,12 @@ topaz.domUtil = {
     return parentalNode;
   },
   
-  swapDisplayMode: function(objId) {
+  swapDisplayMode: function(objId, state) {
     var obj = dojo.byId(objId);
     
-    if(obj.style.display != "block")
+    if (state) 
+      obj.style.display = state;
+    else if(obj.style.display != "block")
       obj.style.display = "block";
     else
       obj.style.display = "none";

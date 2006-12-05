@@ -80,18 +80,23 @@ function toggleAnnotation(obj, userType) {
     }
   }
   
-  if (obj.className.match('collapse')) {
-    obj.className = obj.className.replace(/collapse/, "expand");
-    obj.innerHTML = "Turn annotations on";
-  }
-  else {
-    obj.className = obj.className.replace(/expand/, "collapse");
-    obj.innerHTML = "Turn annotations off";
-  }
+  toggleExpand(obj, "Turn annotations on", "Turn annotations off");
   
   ldc.hide();
   
   return false;
+}
+
+function toggleExpand(obj, isOpen, textOn, textOff) {
+  if (obj.className.match('collapse') || isOpen) {
+    obj.className = obj.className.replace(/collapse/, "expand");
+    if (textOn) obj.innerHTML = textOn;
+  }
+  else {
+    obj.className = obj.className.replace(/expand/, "collapse");
+    if (textOff) obj.innerHTML = textOff;
+  }
+  
 }
 
 function getAnnotationEl(annotationId) {
@@ -125,4 +130,27 @@ function jumpToAnnotation(annotationId) {
   }
 }
 
+var activeToggle = "";
+var activeWidget = "";
+
+function setActiveToggle(widgetId, boxId) {
+  activeToggle = boxId;
+  activeWidget = dojo.byId(widgetId);
+}
+
+function singleView(obj) {
+  if (activeToggle != "") {
+    topaz.domUtil.swapDisplayMode(activeToggle, "none");
+    toggleExpand(activeWidget, false); 
+  }
+}
+
+function singleExpand(obj, targetId) {
+  singleView(obj);
+  setActiveToggle(obj.id, targetId);
+  topaz.domUtil.swapDisplayMode(targetId);
+  toggleExpand(obj); 
+  
+  return false;
+}
 

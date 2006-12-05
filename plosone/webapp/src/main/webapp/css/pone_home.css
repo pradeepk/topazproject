@@ -113,7 +113,11 @@ ul.articles			{ margin-top: 0; }
 
 dl.category 		{ margin: 10px 0 0 0; }
 dl.category dt a,
-dl.category dt a:visited	{ background-repeat: no-repeat;cursor: pointer; color: #00131D; display: block; font-size: .9em; padding-bottom: 5px; padding-left: 20px;background: url(../images/pone_tooltip_expand.gif) no-repeat left top;}
+dl.category dt a:visited	{ background-repeat: no-repeat;cursor: pointer; color: #00131D; display: block; font-size: .9em; padding-bottom: 5px; padding-left: 20px; position: relative;}
+dl.category a.expand,
+dl.category a:visited.expand {background: url(../images/pone_tooltip_expand.gif) no-repeat 0 2px;}
+dl.category a.collapse,
+dl.category a:visited.collapse {background: url(../images/pone_tooltip_collapse.gif) no-repeat 0 2px;}
 
 #home dl.category dt a:hover { text-decoration: none; color: #000; border-color: #fff; vertical-align: bottom;}
 dl.category dt	{ margin: 5px 0 0 0; padding: 0;color: #333; font-weight: normal;  vertical-align: bottom; clear: left;/* This fixes the IE5 Win gap! */ }
