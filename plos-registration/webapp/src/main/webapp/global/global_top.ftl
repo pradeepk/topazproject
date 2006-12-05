@@ -15,7 +15,8 @@
 	<!-- end : top banner external ad space -->
 	
 	<!-- begin : header -->
-	<div id="hdr">
+	<div id="hdr" class="login">
+	
 	<#include "global_header.ftl">
 	</div>
 	<!-- end : header -->

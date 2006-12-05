@@ -28,13 +28,13 @@
       <artifactId>${pom.parent.artifactId}-password-service</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
-
+<!-- 
     <dependency>
       <groupId>com.sun.jdmk</groupId>
       <artifactId>jmxtools</artifactId>
       <version>1</version>
     </dependency>
-
+ -->
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
@@ -46,13 +46,13 @@
       <artifactId>commons-pool</artifactId>
       <version>1.3</version>
     </dependency>
-
+<!-- 
     <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>ejb</artifactId>
       <version>3.0-public-draft-20060502</version>
     </dependency>
-
+ -->
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -60,12 +60,14 @@
       <scope>test</scope>
     </dependency>
 
+<!-- 
     <dependency>
       <groupId>log4j</groupId>
       <artifactId>log4j</artifactId>
       <version>1.2.9</version>
     </dependency>
-
+ -->
+ 
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>

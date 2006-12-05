@@ -5,6 +5,8 @@
 <div id="content">
 <h2>Change Your Password</h2>
 	<p><strong>Your password has been changed successfully</strong></p>
+	<br/>
+	<p>Continue to <a href="${plosOneUrl}${plosOneContext}">PLoS ONE</a></p>
 </div>
 <!-- end : main contents -->
 

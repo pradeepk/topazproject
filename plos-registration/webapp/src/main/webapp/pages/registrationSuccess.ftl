@@ -7,7 +7,7 @@
 	<p>
 		<strong>Thanks for registering!</strong>
 		Please check your email inbox to confirm your registration.
-
+ 
 		<!--
 		<@ww.url includeParams="none" id="emailVerificationURL" action="emailVerification">
     	<@ww.param name="loginName" value="user.loginName"/>
@@ -16,6 +16,8 @@
     <@ww.a href="%{emailVerificationURL}"  >${emailVerificationURL}</@ww.a>
 		-->
 	</p>
+	<br/>
+	<p>Continue to <a href="${plosOneUrl}${plosOneContext}">PLoS ONE</a></p>
 </div>
 <!-- end : main contents -->
 

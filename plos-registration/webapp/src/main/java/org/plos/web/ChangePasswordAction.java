@@ -21,7 +21,7 @@ import org.plos.service.UserNotVerifiedException;
 /**
  * Change the password action.
  */
-public class ChangePasswordAction extends ActionSupport {
+public class ChangePasswordAction extends BaseAction {
   private String loginName;
   private String oldPassword;
   private String newPassword1;

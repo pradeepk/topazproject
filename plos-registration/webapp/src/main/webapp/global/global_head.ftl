@@ -1,15 +1,14 @@
-<title></title>
+<title>PLoS Registration</title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<meta name="keywords" content=""/>
-
-<meta name="description" content="" />
-
-<link rel="shortcut icon" href="/images/pone_favicon.ico" type="image/x-icon" />
-<link rel="home" title="home" href="http://www.plosone.org"></link>
+<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+<link rel="home" title="home" href="${plosOneUrl}${plosOneContext}"></link>
 
 <#include "../css/global_css.ftl">
+
+<script type="text/javascript" src="javascript/dojo/dojo.js"></script>	
+<script type="text/javascript" src="javascript/init_navigation.js"></script>	
 
 
 <meta name="description" content="PLoS ONE: an inclusive, peer-reviewed, open-access resource from the PUBLIC LIBRARY OF SCIENCE. Reports of well-performed scientific studies from all disciplines freely available to the whole world. " />

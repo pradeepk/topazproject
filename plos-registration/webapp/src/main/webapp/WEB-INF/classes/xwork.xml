@@ -44,17 +44,15 @@
       </interceptors>
       <default-interceptor-ref name="plosRegistrationStack" />
 
-      <default-action-ref name="home" />
+      <default-action-ref name="register" />
 
-      <action name="home">
+      <action name="home" class="org.plos.web.NoOpAction">
           <result>/WEB-INF/pages/home.ftl</result>
       </action>
 
-      <action name="register">
+      <action name="register" class="org.plos.web.NoOpAction">
           <result>/pages/registration.ftl</result>
       </action>
-
-      <action name="constants" class="org.plos.web.OtherConstantsAction"/>
 
       <action name="registerSubmit" class="org.plos.web.RegisterAction">
         <result name="input">/pages/registration.ftl</result>
@@ -67,7 +65,7 @@
         <result name="success">/pages/emailConfirmationSuccess.ftl</result>
       </action>
 
-      <action name="forgotPassword">
+      <action name="forgotPassword" class="org.plos.web.NoOpAction">
         <result>/pages/forgotPassword.ftl</result>
       </action>
 
@@ -89,7 +87,7 @@
         <result name="success">/pages/changePasswordSuccess.ftl</result>
       </action>
  
-      <action name="changePassword">
+      <action name="changePassword" class="org.plos.web.NoOpAction">
         <result>/pages/changePassword.ftl</result>
       </action>
 

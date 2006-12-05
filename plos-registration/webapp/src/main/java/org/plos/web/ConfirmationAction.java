@@ -19,7 +19,7 @@ import org.plos.service.VerificationTokenInvalidException;
 /**
  * Action for verifying a user.
  */
-public class ConfirmationAction extends ActionSupport {
+public class ConfirmationAction extends BaseAction {
   private String emailVerificationToken;
   private String loginName;
   private RegistrationService registrationService;

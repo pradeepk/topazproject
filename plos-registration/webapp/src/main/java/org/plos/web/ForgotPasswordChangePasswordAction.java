@@ -21,7 +21,7 @@ import org.plos.service.NoUserFoundWithGivenLoginNameException;
 /**
  * Used to present the user with reset password facility after having forgotten their password.
  */
-public class ForgotPasswordChangePasswordAction extends ActionSupport {
+public class ForgotPasswordChangePasswordAction extends BaseAction {
 
   private String loginName;
   private String resetPasswordToken;

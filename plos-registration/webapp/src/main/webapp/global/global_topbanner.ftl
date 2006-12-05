@@ -20,6 +20,6 @@ google_color_url = "FFFFFF";
 	<!-- end : left banner slot -->
 	<!-- begin : right banner slot -->
 	<div class="right">
-		<img src="${context}/images/temp_pone_banner.gif" />
+		<img src="images/temp_pone_banner.gif" />
 	</div>
 	<!-- end : right banner slot -->

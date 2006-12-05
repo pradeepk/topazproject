@@ -8,7 +8,7 @@
         <p>
             <fieldset>
                 <legend>Forgot Password</legend>
-                <@ww.form name="forgotPasswordForm" action="forgotPasswordSubmit">
+                <@ww.form method="post" name="forgotPasswordForm" action="forgotPasswordSubmit">
                   <@ww.textfield name="loginName" label="Please enter your previously registered email address" />
                   <@ww.submit value="i want to reset my password" />
                 </@ww.form>

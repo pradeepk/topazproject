@@ -5,6 +5,8 @@
 <div id="content">
 <h2>Email Address Verification</h2>
 	<p><strong>Your email address has been successfully verified.</strong></p>
+	<br/>
+	<p>Continue to <a href="${plosOneUrl}${plosOneContext}">PLoS ONE</a></p>
 </div>
 <!-- end : main contents -->
 

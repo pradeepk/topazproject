@@ -15,6 +15,8 @@
     <@ww.a href="%{forgotPasswordEmailURL}"  >${forgotPasswordEmailURL}</@ww.a>
   -->
 	</p>
+	<br/>
+		<p>Continue to <a href="${plosOneUrl}${plosOneContext}">PLoS ONE</a></p>
 </div>
 <!-- end : main contents -->
 

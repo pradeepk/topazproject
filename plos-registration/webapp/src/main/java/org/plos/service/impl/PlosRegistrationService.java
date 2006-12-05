@@ -41,7 +41,7 @@ public class PlosRegistrationService implements RegistrationService {
       user.setActive(false);
 
       saveUser(user);
-      mailer.sendEmailAddressVerificationEmail(user);
+      //mailer.sendEmailAddressVerificationEmail(user);
 
       return user;
     } else {
@@ -112,7 +112,7 @@ public class PlosRegistrationService implements RegistrationService {
     user.setResetPasswordToken(TokenGenerator.getUniqueToken());
     saveUser(user);
 
-    mailer.sendForgotPasswordVerificationEmail(user);
+   // mailer.sendForgotPasswordVerificationEmail(user);
   }
 
   /**

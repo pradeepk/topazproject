@@ -23,7 +23,7 @@ import org.plos.service.UserAlreadyExistsException;
 /**
  * Uses use this to register as a new user. Verification stage is separate from this.
  */
-public class RegisterAction extends ActionSupport {
+public class RegisterAction extends BaseAction {
 
   private String loginName1;
   private String loginName2;

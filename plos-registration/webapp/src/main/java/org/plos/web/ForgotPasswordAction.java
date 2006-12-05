@@ -18,7 +18,7 @@ import org.plos.service.RegistrationService;
 /**
  * Used when a user makes a forgot password request.
  */
-public class ForgotPasswordAction extends ActionSupport {
+public class ForgotPasswordAction extends BaseAction {
 
   private RegistrationService registrationService;
 
