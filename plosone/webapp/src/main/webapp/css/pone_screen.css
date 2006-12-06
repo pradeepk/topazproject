@@ -29,7 +29,6 @@ img			{ border: 0; }
 label em 	{ display: block; color: #c00; } /* em wraps all error messages within labels */
 .error { display: block; color: #F63; font-style: italic; } /* em wraps all error messages within labels */
 strong		{ font-weight: bold; }
-sup			{ font-size: .9em; }
 h1 sup		{ font-size: .75em; }
 ul, ol, dl	{ margin: 20px; position: relative; }
 dt			{ font-weight: bold; }
@@ -187,8 +186,8 @@ ul#nav 		{ font-size: .75em; height:1.9em; margin: 0; padding: 0; position: abso
 ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; padding: 0; }
 #nav li a, #nav li a:visited
 			{ font-weight: bold;display:block; text-decoration:none; width: auto; padding: 3px .6em 0 .6em; float:left; height: 1.6em; line-height:normal; color:#069; }
-#nav li li	{ width: 100%; position: relative; z-index: 501;}
-#nav li ul 	{ visibility:hidden; position:absolute; top:1.5em; left:0; height:0; overflow:hidden; text-align: left; margin: 0; padding: 0; background-color: #fff; z-index: 500;}
+#nav li li	{ width: 100%; position: relative; z-index: 802;}
+#nav li ul 	{ visibility:hidden; position:absolute; top:1.5em; left:0; height:0; overflow:hidden; text-align: left; margin: 0; padding: 0; background-color: #fff; z-index: 801;}
 #nav table 	{ margin:-1px; border-collapse:collapse; }
 /* fist line style for IE7 and non-IE browsers and the second line for IE5.5 and IE6 */
 #nav li.over a,
