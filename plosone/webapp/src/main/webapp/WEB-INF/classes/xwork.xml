@@ -633,7 +633,7 @@
     </action>
 
     <action name="createNewUser" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">
-      <result name="success" type="redirect">/user/secure/retrieveUserProfile.action </result>
+      <result name="success" type="redirect">/home.action </result>
      
 <!--         <param name="actionName">showUser</param>
         <param name="namespace">/user</param>
