@@ -60,3 +60,6 @@ IE PC fixes
 /* fixes homepage display bug */
 * html div.block.partner 		{ border-left: 1px solid #ccc; }
 
+/* fixes figure block height bug */
+* html div.figure img { float: none; }
+
