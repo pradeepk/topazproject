@@ -8,8 +8,8 @@
     <rss version="2.0">
       <title>PLoS ONE Alerts</title>
       <link>http://www.plosone.org/</link>
-      <image>http://www.ploseone.org/favicon.ico</image>
-      <description>RSS channel to monitor for new articles in PLoS ONE</description>
+      <image>http://www.ploseone.org/images/pone_favicon.ico</image>
+      <description>PLoS ONE Journal</description>
       <channel>
         <xsl:apply-templates select="articles/article"/>
       </channel>
