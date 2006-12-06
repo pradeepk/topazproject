@@ -73,11 +73,14 @@ topaz.annotation = {
   createNewAnnotation: function () {
     annotationConfig.rangeInfoObj = this.getRangeOfSelection();
     
-    if (!annotationConfig.rangeInfoObj) {
-      alert("Please make a selection to create an annotation");
+    if (annotationConfig.rangeInfoObj == "noSelect") {
+      alert("This area of text cannot be annotated.");
       return false;
     }
-    else {
+    else if (!annotationConfig.rangeInfoObj) {
+      alert("Using your mouse, select the area of the article you wish to annotate.");
+      return false;
+    }
       /*alert("annotationConfig.rangeInfoObj.range.text = "     + annotationConfig.rangeInfoObj.range.text + "\n" +
             "annotationConfig.rangeInfoObj.startPoint = "     + annotationConfig.rangeInfoObj.startPoint + "\n" +
             "annotationConfig.rangeInfoObj.endPoint = "       + annotationConfig.rangeInfoObj.endPoint + "\n" +
@@ -87,18 +90,13 @@ topaz.annotation = {
             "annotationConfig.rangeInfoObj.endParentId = "    + annotationConfig.rangeInfoObj.endParentId + "\n" +
             "annotationConfig.rangeInfoObj.startXpath = "     + annotationConfig.rangeInfoObj.startXpath + "\n" +
             "annotationConfig.rangeInfoObj.endXpath = "       + annotationConfig.rangeInfoObj.endXpath);*/
-                        
-      if (annotationConfig.rangeInfoObj == null) {
-        alert("This area of text is not annotatable.");
-      }
-      else {      
-       annotationForm.startPath.value = annotationConfig.rangeInfoObj.startXpath;
-       annotationForm.startOffset.value = annotationConfig.rangeInfoObj.startPoint + 1;
-       annotationForm.endPath.value = annotationConfig.rangeInfoObj.endXpath;
-       annotationForm.endOffset.value = annotationConfig.rangeInfoObj.endPoint + 1;
-       
-       this.analyzeRange(annotationConfig.rangeInfoObj, 'span');
-      }
+    else {      
+     annotationForm.startPath.value = annotationConfig.rangeInfoObj.startXpath;
+     annotationForm.startOffset.value = annotationConfig.rangeInfoObj.startPoint + 1;
+     annotationForm.endPath.value = annotationConfig.rangeInfoObj.endXpath;
+     annotationForm.endOffset.value = annotationConfig.rangeInfoObj.endPoint + 1;
+     
+     this.analyzeRange(annotationConfig.rangeInfoObj, 'span');
     }
   },
   
@@ -160,8 +158,7 @@ topaz.annotation = {
       }
   
       if (childList.length > 0) {
-        // put this back in!!!
-//        this.promoteChild(startParent, 'span', annotationConfig.annotationMarker);
+        //this.promoteChild(startParent, 'span', annotationConfig.annotationMarker);
         //this.promoteChild(startParent, 'img', annotationConfig.annotationImgMarker);
       }
       
@@ -187,7 +184,13 @@ topaz.annotation = {
       endRange.collapse(false);
   
       var startPoint     = this.getRangePoint(startRange);
+      if (startPoint == "noSelect")
+        return startPoint;
+      
       var endPoint       = this.getRangePoint(endRange);
+      if (endPoint == "noSelect")
+        return endPoint;
+      
   
       if ( startPoint.element == null || endPoint.element == null ) {
         return null;
@@ -235,7 +238,14 @@ topaz.annotation = {
       endRange.insertNode(tempNode);
       
       var endPoint       = this.getRangePoint(endRange);
+      
+      if (endPoint == "noSelect")
+        return endPoint;
+      
       var startPoint     = this.getRangePoint(startRange);
+      
+      if (startPoint == "noSelect")
+        return startPoint;
       
       range.setEndAfter(tempNode);
       tempNode.parentNode.removeChild(tempNode);
@@ -279,7 +289,6 @@ topaz.annotation = {
     else {
       var ptSpan = document.createElement("span");
       ptSpan.id = POINT_SPAN_ID;
-      ptSpan.style.border = "10px solid red;"
       range.insertNode(ptSpan);
     }
 
@@ -287,6 +296,10 @@ topaz.annotation = {
 
     var pointEl = this.getFirstAncestorByXpath(pointSpan);
     
+    if (pointEl == "noSelect") 
+      return pointEl;
+    
+   
     var point = new Object();
     point.element = pointEl.element;
     point.xpathLocation = pointEl.xpathLocation;
@@ -350,10 +363,21 @@ topaz.annotation = {
   getFirstAncestorByXpath: function ( selfNode ) {
     var parentalNode = selfNode;
     
-    while ( parentalNode.parentNode.getAttributeNode('xpathLocation') == null || parentalNode.parentNode.getAttributeNode('xpathLocation').nodeValue  == "" ) {
+    while ( parentalNode.getAttributeNode('xpathLocation') == null || parentalNode.getAttributeNode('xpathLocation').nodeValue  == "" ) {
       parentalNode = parentalNode.parentNode;
     }
     
+    //alert("parentalNode.getAttributeNode('xpathLocation').nodeValue = " + parentalNode.getAttributeNode('xpathLocation').nodeValue);      
+    if (parentalNode.getAttributeNode('xpathLocation').nodeValue == 'noSelect') {
+      //alert("getFirstAncestorByXpath: noSelect");
+      return "noSelect";
+    }
+    else if (parentalNode.nodeName == 'BODY') {
+      return "noSelect";
+    }
+
+    parentalNode = parentalNode.parentNode;
+
     var parentObj = new Object();
     parentObj.element = ( parentalNode.parentNode.getAttributeNode('xpathLocation').nodeValue  == "noSelect" ) ? null : parentalNode.parentNode;
     parentObj.xpathLocation = parentalNode.parentNode.getAttributeNode('xpathLocation').nodeValue;
@@ -492,15 +516,15 @@ topaz.annotation = {
       
       if (obj.id == endId || isEnd) {
         isEnd = true;
-        alert("isEnd = " + isEnd);
+        //alert("isEnd = " + isEnd);
         break;
       }
       else if (obj.className && obj.className.match(elClassName) != null && obj.className.match(elClassName) != "") {
-        alert("obj.id = " + obj.id + "\n" +
-              "obj.className = " + obj.className);
+        //alert("obj.id = " + obj.id + "\n" +
+        //      "obj.className = " + obj.className);
 
         if (obj.hasChildNodes) {
-          alert("going into getChildrenInRange again");
+          //alert("going into getChildrenInRange again");
           temp = this.getChildrenInRange(obj, elClassName, endId);
         }
         else 
@@ -509,7 +533,7 @@ topaz.annotation = {
         if (temp.length <= 0) 
           objArray.push(obj.id);
         else {
-          alert("[getChildrenInRange] temp = " + temp);
+          //alert("[getChildrenInRange] temp = " + temp);
           objArray.concat(temp); 
         }
          
@@ -528,21 +552,21 @@ topaz.annotation = {
     var isEnd = false;
     
     for (var currentNode = triggerNode.nextSibling; currentNode != null; currentNode = currentNode.nextSibling) {
-        alert("isEnd = " + isEnd);
+        //alert("isEnd = " + isEnd);
       
       if (targetNode.id == currentNode.id || isEnd) {
         isEnd = true;
         break;
       }
       else if (currentNode.nodeType == 1) {
-        alert("triggerNode = " + triggerNode.id + "\n" +
-              "currentNode = " + currentNode.id + "\n" +
-              "targetNode = " + targetNode.id);
+        //alert("triggerNode = " + triggerNode.id + "\n" +
+        //      "currentNode = " + currentNode.id + "\n" +
+        //      "targetNode = " + targetNode.id);
         if (currentNode.hasChildNodes) {
           temp = new Array( this.getChildrenInRange(currentNode, annotationConfig.xpointerMarker, targetNode.id) );
           
-          alert("objArray = " + objArray + "\n" +
-                "temp = " + temp);
+          //alert("objArray = " + objArray + "\n" +
+          //      "temp = " + temp);
           if (temp.length > 0)
             objArray.concat(temp);
           else if (currentNode.id != null && currentNode.id != "")
@@ -551,7 +575,7 @@ topaz.annotation = {
       }
     }
     
-    alert("Outer objArray = " + objArray);
+    //alert("Outer objArray = " + objArray);
     
     return objArray;
   },
@@ -595,7 +619,7 @@ topaz.annotation = {
 
 //    this.setMultiBorder(startPath, "blue");
 //    this.setMultiBorder(endPath, "red");
-    this.setBorder(rootNode, "yellow");
+    //this.setBorder(rootNode, "yellow");
 
     return this.accumulateLeafNodes(rootNode, startPath, endPath, new Array(1), new Array(annotationConfig.xpointerMarker));
   },
@@ -681,7 +705,7 @@ topaz.annotation = {
     {
       nodeList.push(node);
 
-      alert("DING");
+      //alert("DING");
       this.setBorder(node, "green");
     }
     else {

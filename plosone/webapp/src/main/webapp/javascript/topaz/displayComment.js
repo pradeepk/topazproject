@@ -102,7 +102,7 @@ topaz.displayComment = {
     creatorLink.appendChild(document.createTextNode(creatorId));
     creatorLink.id = tooltipId;
     
-    var divTooltip = document.createElement('div');
+/*    var divTooltip = document.createElement('div');
     var dojoType = document.createAttribute('dojoType');
     dojoType.value = "PostTooltip";
     divTooltip.setAttributeNode(dojoType);
@@ -120,7 +120,7 @@ topaz.displayComment = {
     divTooltip.setAttributeNode(executeScripts);
     //var caption = document.createAttribute('dojo:caption');
     //caption.value = "The tooltip";
-    //divTooltip.setAttributeNode(caption);
+    //divTooltip.setAttributeNode(caption);*/
     
     var userInfoDiv = document.createElement('div');
     userInfoDiv.className = "userinfo";
