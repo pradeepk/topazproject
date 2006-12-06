@@ -97,7 +97,6 @@
       <file>/javascript/dojoRequire_slideshow.ftl</file>
       <file>/javascript/topaz/slideshow.js</file>   
       <file>/javascript/topaz/errorConsole.js</file>   
-      <file>/javascript/init_navigation.js</file>   
       <file>/javascript/init_slideshow.js</file>   
     </javascript>
   </page>
