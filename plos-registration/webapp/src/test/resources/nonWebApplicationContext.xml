@@ -58,6 +58,7 @@
   <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
   <!--<bean id="freemarkerConfig" class="org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean">-->
     <property name="templateLoaderPath" value="/WEB-INF/emailTemplates/"/>
+    <property name="defaultEncoding" ref="defaultEncodingCharset"/>
   </bean>
 
   <bean id="registrationVerificationMailer" class="org.plos.util.MockTemplateMailer">
@@ -87,18 +88,14 @@
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
   </bean>
 
-  <bean id="RegistrationManager" class="org.plos.management.RegistrationManager">
-    <property name="userDAO" ref="userDAO"/>
-  </bean>
-
   <!--Beans from Spring distribution  -->
 
   <!-- Postgres datasource -->
   <bean id="registrationDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
     <property name="driverClassName" value="org.postgresql.Driver"/>
-    <property name="url" value="jdbc:postgresql://localhost/template1"/>
-    <property name="username" value="plosone"/>
-    <property name="password" value="plosone"/>
+    <property name="url" value="jdbc:postgresql://localhost/plos_users"/>
+    <property name="username" value="postgres"/>
+    <property name="password" value="postgres"/>
   </bean>
 
   <!-- Useful link:
