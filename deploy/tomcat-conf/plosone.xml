@@ -44,7 +44,9 @@
        define subcomponents such as "Valves" or "Loggers" at this level.
    -->
 
-  <!-- Define the Tomcat Stand-Alone Service -->
+
+
+<!-- Define the Tomcat Stand-Alone Service -->
   <Service name="Catalina">
 
     <!-- A "Connector" represents an endpoint by which requests are received
@@ -90,11 +92,15 @@
 	-->
 
     <!-- Define a SSL HTTP/1.1 Connector on port 8443 -->
-    <Connector port="443" maxHttpHeaderSize="8192"
-               maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
-               enableLookups="false" disableUploadTimeout="true"
-               acceptCount="100" scheme="https" secure="true"
-               clientAuth="false" sslProtocol="TLS" />
+
+   <Connector port="10443" maxHttpHeaderSize="8192"
+              maxThreads="150" minSpareThreads="25" maxSpareThreads="75"
+              enableLookups="false" disableUploadTimeout="true"
+              acceptCount="100" scheme="https" secure="true"
+              clientAuth="false" sslProtocol="TLS"
+               keystoreType="jks"
+               keystoreFile="/usr/local/topaz/server.ks"
+               keystorePass="secret" />
 
     <!-- Define an AJP 1.3 Connector on port 8009 -->
     <Connector port="8009" 
