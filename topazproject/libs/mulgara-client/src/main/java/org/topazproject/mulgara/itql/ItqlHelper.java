@@ -106,11 +106,13 @@ public class ItqlHelper {
 
     Runtime.getRuntime().addShutdownHook(new Thread() {
       public void run() {
-        for (Iterator iter = instanceList.iterator(); iter.hasNext(); ) {
-          BeanReference ref = (BeanReference) iter.next();
-          try {
-            ref.interpreter.close();
-          } catch (Throwable t) {
+        synchronized (instanceList) {
+          for (Iterator iter = instanceList.iterator(); iter.hasNext(); ) {
+            BeanReference ref = (BeanReference) iter.next();
+            try {
+              ref.interpreter.close();
+            } catch (Throwable t) {
+            }
           }
         }
       }
