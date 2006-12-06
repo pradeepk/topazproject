@@ -189,8 +189,9 @@ topaz.displayComment = {
     
     if (iter <= 0)
       newListItem.className = 'active';
-    
-    newListItem.appendChild(this.buildDisplayHeader(jsonObj));
+      
+    newListItem.appendChild(document.createTextNode(jsonObj.annotation.commentTitle));
+    //newListItem.appendChild(this.buildDisplayHeader(jsonObj));
     var detailDiv = document.createElement('div');
     detailDiv.className = 'detail';
     detailDiv.appendChild(this.buildDisplayDetail(jsonObj)); 
