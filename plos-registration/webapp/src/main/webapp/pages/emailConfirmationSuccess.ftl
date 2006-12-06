@@ -6,7 +6,8 @@
 <h2>Email Address Verification</h2>
 	<p><strong>Your email address has been successfully verified.</strong></p>
 	<br/>
-	<p>Continue to <a href="${plosOneUrl}${plosOneContext}">PLoS ONE</a></p>
+	http://merlin.topazproject.org:8080/user/secure/secureRedirect.action?goTo=%2Fhome.action
+	<p><a href="${plosOneUrl}${plosOneContext}/user/secure/secureRedirect.action?goTo=%2Fhome.action">Login to PLoS ONE</a>.</p>
 </div>
 <!-- end : main contents -->
 
