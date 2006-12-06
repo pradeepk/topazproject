@@ -6,11 +6,6 @@
 <#else>
    <#assign imageURI = "">
 </#if>
-<#if Parameters.uri?exists>
-   <#assign uri = Parameters.uri>
-<#else>
-   <#assign uri = "">
-</#if>
 	<div id="figure-window-nav">
 
 	  <#list secondaryObjects as image>
@@ -39,7 +34,7 @@
 				<a href="#" id="previous" onclick="return topaz.slideshow.showPrevious(this);" class="previous icon<#if currentImage == secondaryObjects?first> hidden</#if>">Previous</a> | <a href="#" id="next" onclick="return topaz.slideshow.showNext(this);" class="next icon<#if currentImage == secondaryObjects?last> hidden</#if>">Next</a>
 			</div>
 			<div id="figure-window-hdr-links">
-			<a href="${freemarker_config.context}/article/showImageLarge.action?uri=${uri}&representation=${currentImage.repLarge}" id="viewL" class="larger icon" title="Click to view a larger version of this image">View Larger Image</a> 
+			<a href="${currentImageUrl}&representation=${currentImage.repLarge}" id="viewL" class="larger icon" title="Click to view a larger version of this image">View Larger Image</a> 
 			<a href="${currentImageAttachmentUrl}&representation=TIF" id="downloadTiff" class="image icon" title="Click to download the original TIFF">		Download original TIFF</a> 
 			<a href="${currentImageAttachmentUrl}&representation=${currentImage.repMedium}" id="downloadPpt" class="ppt icon" title="Click to download a PowerPoint friendly version">Download PowerPoint Friendly Image</a>		</div>
 				
