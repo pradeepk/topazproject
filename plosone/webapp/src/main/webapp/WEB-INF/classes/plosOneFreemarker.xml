@@ -1,11 +1,11 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <pages>
-  <webapp-dir>/plosone-webapp</webapp-dir>
+  <webapp-dir></webapp-dir>
   <webapp-subdir></webapp-subdir>
-  <cas-login-url>https://merlin.topazproject.com:7443/cas/login</cas-login-url>
-  <cas-logout-url>https://merlin.topazproject.com:7443/cas/logout</cas-logout-url>
-  <registration-url>https://merlin.topazproject.com:7443/plos-registration/register.action</registration-url>
-  <plosone-host>localhost:9080</plosone-host>
+  <cas-login-url>https://FQHN:7443/cas/login</cas-login-url>
+  <cas-logout-url>https://FQHN:7443/cas/logout</cas-logout-url>
+  <registration-url>https://FQHN:7443/plos-registration/register.action</registration-url>
+  <plosone-host>FQHN:9080</plosone-host>
   <default>
     <title>PLoS ONE : Publishing science\, accelerating research</title>
     <css>
