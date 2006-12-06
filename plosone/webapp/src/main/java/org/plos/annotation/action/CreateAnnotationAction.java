@@ -154,7 +154,13 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
         return null;
       }
       if (startPath.equals(endPath)) {
-        context = createStringRangeFragment(startPath, startOffset, endOffset - startOffset);
+        final int length = endOffset - startOffset;
+        if (length < 0) {
+          final String errorMessage = "Invalid length: " + length + " of the annotated content";
+		  addFieldError("endOffset", errorMessage);
+          throw new ApplicationException(errorMessage);
+        }
+		context = createStringRangeFragment(startPath, startOffset, length);
       } else {
         context = createStringRangeFragment(startPath, startOffset) +
               "/range-to(" + createStringRangeFragment(endPath, endOffset) + ")";
