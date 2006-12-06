@@ -87,18 +87,6 @@ function toggleAnnotation(obj, userType) {
   return false;
 }
 
-function toggleExpand(obj, isOpen, textOn, textOff) {
-  if (obj.className.match('collapse') || isOpen) {
-    obj.className = obj.className.replace(/collapse/, "expand");
-    if (textOn) obj.innerHTML = textOn;
-  }
-  else {
-    obj.className = obj.className.replace(/expand/, "collapse");
-    if (textOff) obj.innerHTML = textOff;
-  }
-  
-}
-
 function getAnnotationEl(annotationId) {
   var elements = document.getElementsByTagAndAttributeName('a', 'displayid');
      
@@ -130,24 +118,43 @@ function jumpToAnnotation(annotationId) {
   }
 }
 
-var activeToggle = "";
+function toggleExpand(obj, isOpen, textOn, textOff) {
+  if (isOpen == false) {
+    obj.className = obj.className.replace(/collapse/, "expand");
+    if (textOn) obj.innerHTML = textOn;
+  }
+  else if (obj.className.match('collapse')) {
+    obj.className = obj.className.replace(/collapse/, "expand");
+    if (textOn) obj.innerHTML = textOn;
+  }
+  else {
+    obj.className = obj.className.replace(/expand/, "collapse");
+    if (textOff) obj.innerHTML = textOff;
+  }
+  
+}
+
+var activeToggleId = "";
 var activeWidget = "";
 
 function setActiveToggle(widgetId, boxId) {
-  activeToggle = boxId;
+  activeToggleId = boxId;
   activeWidget = dojo.byId(widgetId);
 }
 
 function singleView(obj) {
-  if (activeToggle != "") {
-    topaz.domUtil.swapDisplayMode(activeToggle, "none");
+  if (activeToggleId != "") {
+    topaz.domUtil.swapDisplayMode(activeToggleId, "none");
     toggleExpand(activeWidget, false); 
   }
 }
 
 function singleExpand(obj, targetId) {
-  singleView(obj);
-  setActiveToggle(obj.id, targetId);
+  if (targetId != activeToggleId) {
+    singleView(obj);
+  }
+  setActiveToggle
+   (obj.id, targetId);
   topaz.domUtil.swapDisplayMode(targetId);
   toggleExpand(obj); 
   
