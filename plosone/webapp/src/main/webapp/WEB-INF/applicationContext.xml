@@ -16,7 +16,7 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
-  <import resource="classes/propertyConfigurer.xml"/>
+  <import resource="propertyConfigurer.xml"/>
 
   <!--Plosone developer beans here -->
   <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" scope="session" init-method="init">
