@@ -83,6 +83,15 @@
           <required>true</required>
           <defaultValue>jakarta-tomcat-5.0.28</defaultValue>
         </parameter>
+
+        <parameter>
+          <name>DB</name>
+          <property>DB</property>
+          <required>true</required>
+          <expression>${DB}</expression>
+          <defaultValue>mckoi</defaultValue>
+          <description>Which database to use</description>
+        </parameter>
         
       </parameters>
     </mojo>
@@ -115,6 +124,15 @@
           <expression>${SPAWN}</expression>
           <defaultValue>false</defaultValue>
           <description>Whether we should spawn or not</description>
+        </parameter>
+
+        <parameter>
+          <name>DB</name>
+          <property>DB</property>
+          <required>true</required>
+          <expression>${DB}</expression>
+          <defaultValue>mckoi</defaultValue>
+          <description>Which database to use</description>
         </parameter>
         
       </parameters>

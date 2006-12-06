@@ -11,13 +11,15 @@
 -->
 <project xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
-  <!-- Define dependencies needed if we want to use <classpath refid="dependency.classpath" />
-       in a <java /> task. See antlib: http://maven.apache.org/ant-tasks.html -->
-  <artifact:dependencies pathId="dependency.classpath"
-      xmlns:artifact="antlib:org.apache.maven.artifact.ant">
-    <dependency groupId="ant" artifactId="ant" version="1.6.5"/>
-    <dependency groupId="ant" artifactId="ant-launcher" version="1.6.5"/>
+  <artifact:dependencies filesetId="antcontrib.fileset" useScope="runtime">
+    <dependency groupId="ant-contrib" artifactId="ant-contrib" version="1.0b2"/>
   </artifact:dependencies>
+
+  <taskdef resource="net/sf/antcontrib/antlib.xml">
+    <classpath>
+      <fileset refid="antcontrib.fileset"/>
+    </classpath>
+  </taskdef>
 
   <property environment="env"/>
 
@@ -61,11 +63,17 @@
         <include name="**/bin/*"/>
       </fileset>
     </chmod>
-    <exec dir="${FEDORA_HOME}"
-      executable="${FEDORA_HOME}/server/bin/mckoi-init${ext}">
-      <arg line="fedoraAdmin fedoraAdmin"/>
-      <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
-    </exec>
+    <if>
+      <equals arg1="${DB}" arg2="mckoi" casesensitive="false" trim="true"/>
+      <then>
+        <echo>Starting mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
+        <exec dir="${FEDORA_HOME}"
+          executable="${FEDORA_HOME}/server/bin/mckoi-init${ext}">
+          <arg line="fedoraAdmin fedoraAdmin"/>
+          <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
+        </exec>
+      </then>
+    </if>
     <!-- install CAS server root cert in tomcat keystore -->
     <exec
       dir="${FEDORA_HOME}/server"
@@ -87,21 +95,26 @@
   <target name="fedora-start" depends="fedora-start-or-spawn, fedora-if-spawned"/>
   
   <target name="fedora-start-or-spawn" depends="exec-ext">
-    <echo>Starting mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
-    <exec dir="${FEDORA_HOME}" 
-      executable="${FEDORA_HOME}/server/bin/mckoi-start${ext}"
-      spawn="true">
-      <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
-    </exec>
+    <if>
+      <equals arg1="${DB}" arg2="mckoi" casesensitive="false" trim="true"/>
+      <then>
+        <echo>Starting mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
+        <exec dir="${FEDORA_HOME}" 
+          executable="${FEDORA_HOME}/server/bin/mckoi-start${ext}"
+          spawn="true">
+          <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
+        </exec>
 
-    <echo>Spawned off mckoi</echo>
-    <!-- <sleep seconds="2"/> -->
+        <echo>Spawned off mckoi</echo>
+        <!-- <sleep seconds="2"/> -->
+      </then>
+    </if>
 
     <echo>Starting fedora: FEDORA_HOME = ${FEDORA_HOME}</echo>
     <exec dir="${FEDORA_HOME}"
       executable="${FEDORA_HOME}/server/bin/fedora-start${ext}"
       spawn="${SPAWN}">
-      <arg line="mckoi"/>
+      <arg line="${DB}"/>
       <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>
   </target>
@@ -120,13 +133,17 @@
       <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
     </exec>
 
-    <echo>Stopping mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
+    <if>
+      <equals arg1="${DB}" arg2="mckoi" casesensitive="false" trim="true"/>
+      <then>
+        <echo>Stopping mckoi: FEDORA_HOME = ${FEDORA_HOME}</echo>
 
-    <exec dir="${FEDORA_HOME}"
-      executable="${FEDORA_HOME}/server/bin/mckoi-stop${ext}">
-      <arg line="fedoraAdmin fedoraAdmin"/>
-      <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
-    </exec>
+        <exec dir="${FEDORA_HOME}" executable="${FEDORA_HOME}/server/bin/mckoi-stop${ext}">
+          <arg line="fedoraAdmin fedoraAdmin"/>
+          <env key="FEDORA_HOME" file="${FEDORA_HOME}"/>
+        </exec>
+      </then>
+    </if>
   </target>
 
   <target name="fedora-package" depends="exec-ext">
