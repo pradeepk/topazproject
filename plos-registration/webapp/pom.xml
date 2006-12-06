@@ -28,35 +28,33 @@
       <artifactId>${pom.parent.artifactId}-password-service</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
-<!-- 
+
+    <!-- 
     <dependency>
       <groupId>com.sun.jdmk</groupId>
       <artifactId>jmxtools</artifactId>
       <version>1</version>
     </dependency>
--->
+    -->
+
     <dependency>
       <groupId>commons-dbcp</groupId>
       <artifactId>commons-dbcp</artifactId>
       <version>1.2.1</version>
       <exclusions>
-       <exclusion>
-         <groupId>xerces</groupId>
-         <artifactId>xerces</artifactId>
-       </exclusion>
-       <exclusion>
-         <groupId>xml-apis</groupId>
-         <artifactId>xml-apis</artifactId>
-       </exclusion>
-       <exclusion>
-         <groupId>commons-pool</groupId>
-         <artifactId>commons-pool</artifactId>
-       </exclusion>
-       <exclusion>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
-       </exclusion>
-     </exclusions>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xerces</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -64,14 +62,15 @@
       <artifactId>commons-pool</artifactId>
       <version>1.3</version>
     </dependency>
-    
-<!--
+
+    <!--
     <dependency>
       <groupId>javax.persistence</groupId>
       <artifactId>ejb</artifactId>
       <version>3.0-public-draft-20060502</version>
     </dependency>
- -->
+    -->
+
     <dependency>
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
@@ -79,14 +78,6 @@
       <scope>test</scope>
     </dependency>
 
-<!-- 
-    <dependency>
-      <groupId>log4j</groupId>
-      <artifactId>log4j</artifactId>
-      <version>1.2.9</version>
-    </dependency>
- -->
- 
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate</artifactId>
@@ -216,7 +207,7 @@
     <!--<topazproject.install.dir>${user.home}/topazproject-install</topazproject.install.dir>-->
     <!--<maven.compiler.source>1.5</maven.compiler.source>-->
     <!--<maven.compiler.target>1.5</maven.compiler.target>-->
-  <!--</properties>-->
+    <!--</properties>-->
 
   <build>
     <finalName>plos-registration</finalName>

@@ -17,15 +17,6 @@
   </parent>
 
   <dependencies>
-	<!--
-    <dependency>
-      <groupId>org.esup-portail</groupId>
-      <artifactId>esup-cas-quick-start</artifactId>
-      <version>2.0.6-1</version>
-      <type>zip</type>
-    </dependency>
-	-->
-	
     <dependency>
       <groupId>postgresql</groupId>
       <artifactId>postgresql</artifactId>
@@ -50,23 +41,19 @@
       <artifactId>commons-dbcp</artifactId>
       <version>1.2.1</version>
       <exclusions>
-       <exclusion>
-         <groupId>xerces</groupId>
-         <artifactId>xerces</artifactId>
-       </exclusion>
-       <exclusion>
-         <groupId>xml-apis</groupId>
-         <artifactId>xml-apis</artifactId>
-       </exclusion>
-       <exclusion>
-         <groupId>commons-pool</groupId>
-         <artifactId>commons-pool</artifactId>
-       </exclusion>
-       <exclusion>
-         <groupId>junit</groupId>
-         <artifactId>junit</artifactId>
-       </exclusion>
-     </exclusions>
+        <exclusion>
+          <groupId>xerces</groupId>
+          <artifactId>xerces</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>xml-apis</groupId>
+          <artifactId>xml-apis</artifactId>
+        </exclusion>
+        <exclusion>
+          <groupId>junit</groupId>
+          <artifactId>junit</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
 
     <dependency>
@@ -81,12 +68,9 @@
       <version>4.0</version>
       <scope>test</scope>
     </dependency>
-
   </dependencies>
 
   <build>
-    <!--<finalName>ecqs</finalName>-->
-
     <plugins>
       <!-- Compiler -->
       <plugin>
