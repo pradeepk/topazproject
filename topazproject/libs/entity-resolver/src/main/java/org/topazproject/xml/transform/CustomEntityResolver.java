@@ -54,8 +54,8 @@ public class CustomEntityResolver implements EntityResolver {
    * @param publicId The public identifier of the external entity being referenced, or null if
    *                 none was supplied.
    * @param systemId The system identifier of the external entity being referenced.
-   * @returns An InputSource object describing the new input source, or null to request that the
-   *          parser open a regular URI connection to the system identifier.
+   * @return An InputSource object describing the new input source, or null to request that the
+   *         parser open a regular URI connection to the system identifier.
    * @throws IOException Indicates a problem retrieving the entity.
    */
   public InputSource resolveEntity(String publicId, String systemId) throws IOException {
