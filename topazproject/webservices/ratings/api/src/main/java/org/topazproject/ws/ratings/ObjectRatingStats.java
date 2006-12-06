@@ -75,7 +75,7 @@ public class ObjectRatingStats {
   /**
    * Set the average rating (arithmetic mean).
    *
-   * @param rating the average rating
+   * @param average the average rating
    */
   public void setAverage(float average) {
     this.average = average;

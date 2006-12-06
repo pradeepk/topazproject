@@ -42,8 +42,8 @@ import org.topazproject.ws.users.impl.UserAccountsImpl;
 
 /**
  * A servlet filter that maps the authenticated user id to an internal topaz-user-id. The topaz
- * user-id is setup in the HttpSession using the key {@link USER_KEY}. The original user id is
- * available using the session key {@link AUTH_KEY}. In addition a wrapper for
+ * user-id is setup in the HttpSession using the key {@link #USER_KEY}. The original user id is
+ * available using the session key {@link #AUTH_KEY}. In addition a wrapper for
  * <code>HttpServletRequest</code> is setup so that the <code>getRemoteUser</code> and
  * <code>getUserPrincipal</code> returns the topaz-user.
  *

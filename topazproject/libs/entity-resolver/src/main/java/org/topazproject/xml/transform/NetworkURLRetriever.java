@@ -28,7 +28,7 @@ public class NetworkURLRetriever implements URLRetriever {
    * Retrieve the specified url from the network and return it.
    *
    * @param url the address of the content to retrieve.
-   * @returns a byte array containing the retrieved content.
+   * @return a byte array containing the retrieved content.
    * @throws IOException if there was a problem fetching the content.
    */
   public byte[] retrieve(String url) throws IOException {

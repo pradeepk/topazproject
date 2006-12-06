@@ -67,7 +67,7 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
   }
 
   /**
-   * @see org.topazproject.ws.pap.Ratings#setRatings
+   * @see org.topazproject.ws.ratings.Ratings#setRatings
    */
   public void setRatings(String appId, String userId, String object, ObjectRating[] ratings)
       throws RemoteException, NoSuchUserIdException {
@@ -75,7 +75,7 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
   }
 
   /**
-   * @see org.topazproject.ws.pap.Ratings#getRatings
+   * @see org.topazproject.ws.ratings.Ratings#getRatings
    */
   public ObjectRating[] getRatings(String appId, String userId, String object)
       throws RemoteException, NoSuchUserIdException {
@@ -83,7 +83,7 @@ public class RatingsServicePortSoapBindingImpl implements Ratings, ServiceLifecy
   }
 
   /**
-   * @see org.topazproject.ws.pap.Ratings#getRatingStats
+   * @see org.topazproject.ws.ratings.Ratings#getRatingStats
    */
   public ObjectRatingStats[] getRatingStats(String appId, String object) throws RemoteException {
     return impl.getRatingStats(appId, object);

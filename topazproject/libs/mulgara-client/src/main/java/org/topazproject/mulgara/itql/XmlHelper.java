@@ -66,7 +66,7 @@ class XmlHelper {
 
   /** 
    * Get all immediate element children with the given name. This differs from {@link
-   * org.w3.dom.Element.getElementsByTagName getElementsByTagName} in that this only returns
+   * org.w3c.dom.Element#getElementsByTagName getElementsByTagName} in that this only returns
    * direct children, not all descendents.
    * 
    * @param parent    the parent node
@@ -124,7 +124,7 @@ class XmlHelper {
 
   /** 
    * Get the first child element with the given name.  This differs from {@link
-   * org.w3.dom.Node.getFirstChild Node.getFirstChild} in that this only returns elements.
+   * org.w3c.dom.Node#getFirstChild Node.getFirstChild} in that this only returns elements.
    * 
    * @param parent the parent node for which to get the first child
    * @param name   the name of the child element to get; may be null or "*" to indicate the
@@ -145,7 +145,7 @@ class XmlHelper {
 
   /** 
    * Get the next sibling element with the given name.  This differs from {@link
-   * org.w3.dom.Node.getNextSibling Node.getNextSibling} in that this only returns elements.
+   * org.w3c.dom.Node#getNextSibling Node.getNextSibling} in that this only returns elements.
    * 
    * @param node   the current node for which to get the next sibling
    * @param name   the name of the next sibling element to get; may be null or "*" to indicate the

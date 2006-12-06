@@ -112,7 +112,7 @@ public class UserAccountsServicePortSoapBindingImpl implements UserAccounts, Ser
   }
 
   /**
-   * @see org.topazproject.ws.userusers.UserAccountLookup#lookUpUserByAuthId
+   * @see org.topazproject.ws.users.UserAccounts#lookUpUserByAuthId
    */
   public String lookUpUserByAuthId(String authId) throws RemoteException {
     return impl.lookUpUserByAuthId(authId);

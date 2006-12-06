@@ -56,7 +56,7 @@ public class Util {
   /**
    * Creates a set of action attributes for use in a XACML request.
    *
-   * @param action The value of {@link ACTION_ID} attribute
+   * @param action The value of {@link #ACTION_ID} attribute
    *
    * @return the singleton set containing the action-id attribute
    */

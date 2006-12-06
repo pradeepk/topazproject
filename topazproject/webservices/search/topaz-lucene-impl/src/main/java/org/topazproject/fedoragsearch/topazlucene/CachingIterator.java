@@ -74,7 +74,7 @@ public class CachingIterator implements Iterator {
    * Return data from the cache first and then from the delegate (until there is no more
    * entries in the delegate).
    *
-   * @returns true if there are more elements.
+   * @return true if there are more elements.
    */
   public boolean hasNext() {
     if (element != null)

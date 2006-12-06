@@ -111,7 +111,7 @@ public class ArticleInfo {
   /**
    * Set the article's authors.
    *
-   * @param authros the article's authors.
+   * @param authors the article's authors.
    */
   public void setAuthors(String[] authors) {
     this.authors = authors;
@@ -167,7 +167,7 @@ public class ArticleInfo {
   /**
    * Set the article's state.
    *
-   * @return the article's state.
+   * @param state the article's state.
    */
   public void setState(int state) {
     this.state = state;

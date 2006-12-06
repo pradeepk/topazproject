@@ -79,7 +79,7 @@ abstract class QueueingFilterHandler extends AbstractFilterHandler {
    * Return the XAResource representing this instance. The XAResource is used to know
    * when a transaction is being committed or rolled-back.
    * 
-   * @return 
+   * @return the xa-resource
    */
   public XAResource getXAResource() {
     return xaResource;

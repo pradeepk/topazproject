@@ -432,7 +432,7 @@ public class ItqlHelper {
 
   /**
    * Bind values to an itql fmt string containing ${xxx} placeholders. This is convenience
-   * method for {@link bindValues(java.lang.String, java.util.Map) bindValues} when there's
+   * method for {@link #bindValues(java.lang.String, java.util.Map) bindValues} when there's
    * only one variable.
    *
    * @param fmt   the ITQL fmt string
@@ -449,7 +449,7 @@ public class ItqlHelper {
 
   /**
    * Bind values to an itql fmt string containing ${xxx} placeholders. This is convenience
-   * method for {@link bindValues(java.lang.String, java.util.Map) bindValues} when there
+   * method for {@link #bindValues(java.lang.String, java.util.Map) bindValues} when there
    * are only two variables.
    *
    * @param fmt    the ITQL fmt string
@@ -470,7 +470,7 @@ public class ItqlHelper {
   }
 
   /**
-   * Does input valdation for uri parameters. Only absolute (non-relative) URIs are valid.
+   * Does input validation for uri parameters. Only absolute (non-relative) URIs are valid.
    *
    * In usage, it essentailly asserts that a URI string is a valid URI and throws a
    * subclass of RuntimeException if not. If part of a webservice, this exception is

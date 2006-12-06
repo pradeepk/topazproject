@@ -337,7 +337,7 @@ public class PreferencesImpl implements Preferences {
    * Convert a profile-id and app-id to a preferences-id. We assume a single preferences node per
    * app-id for a given profId, so the preferences id can be computed algorithmically.
    * 
-   * @param profId  the profile id
+   * @param userId  the user id
    * @param appId   the app id
    * @return the preferences id
    */

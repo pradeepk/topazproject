@@ -93,8 +93,8 @@ public abstract class AbstractSimplePEP extends DenyBiasedPEP {
   /**
    * Creates a new PEP object.
    *
-   * @param  pdp The pdp to use for evaluating requests
-   * @param  pdp The subject attributes 
+   * @param  pdp       The pdp to use for evaluating requests
+   * @param  subjAttrs The subject attributes 
    */
   protected AbstractSimplePEP(PDP pdp, Set subjAttrs) {
     super(pdp);

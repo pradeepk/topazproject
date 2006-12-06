@@ -316,9 +316,9 @@ public class ArticleFeed {
   /**
    * Parse a kowari date into a java Date object.
    *
-   * @param ios8601date is the date string to parse.
-   * @throw ParseException if there is a problem parsing the string
+   * @param iso8601date is the date string to parse.
    * @return a java Date object.
+   * @throws ParseException if there is a problem parsing the string
    */
   public static Date parseDate(String iso8601date) throws ParseException {
     // Obvious formats:

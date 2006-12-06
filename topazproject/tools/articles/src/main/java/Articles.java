@@ -112,12 +112,12 @@ public class Articles {
   /**
    * Delete the article specified by the uri
    *
-   * @param articleUri the URI of the article to delete
+   * @param uri the URI of the article to delete
    *
    * @throws NoSuchArticleIdException no article associated with the passed URI
    * @throws RemoteException if an exception occured talking to the service
    */
-   public void deleteArticle(String uri) 
+   public void deleteArticle(String uri)
      throws RemoteException, NoSuchArticleIdException {
      service.delete(uri);
    }

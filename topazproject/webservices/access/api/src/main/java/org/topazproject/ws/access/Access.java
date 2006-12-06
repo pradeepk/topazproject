@@ -71,7 +71,7 @@ public interface Access extends Remote {
   /**
    * Check access assuming a deny-biased-pep for the given authenticated-user-id. It calls the
    * {@link #evaluate} method and throws a {@link java.lang.SecurityException} if even a single
-   * result is not a {@link org.topazproject.ws.access.Result.DECISION_PERMIT DECISION_PERMIT}
+   * result is not a {@link org.topazproject.ws.access.Result#DECISION_PERMIT DECISION_PERMIT}
    *
    * @param pdpName The name of the pdp to use in evaluating this request
    * @param authId The user's raw authenticated id. (Not the topaz user-id)
@@ -86,7 +86,7 @@ public interface Access extends Remote {
 
   /**
    * Check access assuming a deny-biased-pep for the given authenticated-user-id. Same as {@link
-   * checkAccess(java.lang.String,java.lang.String,java.lang.String,java.lang.String)}. The
+   * #checkAccess(java.lang.String,java.lang.String,java.lang.String,java.lang.String)}. The
    * additional attributes will also be used in making the access decision.
    *
    * @param pdpName The name of the pdp to use in evaluating this request

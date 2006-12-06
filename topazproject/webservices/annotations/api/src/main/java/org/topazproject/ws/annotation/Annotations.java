@@ -261,7 +261,7 @@ public interface Annotations extends Remote {
    * <p>
    * Also note that this method does not need additional access control permissions. The user must
    * have permissions to execute a {@link
-   * listAnnotations(java.lang.String,java.lang.String,java.lang.String) listAnnotations} on the
+   * #listAnnotations(java.lang.String,java.lang.String,java.lang.String) listAnnotations} on the
    * resource for this call to succeed.
    * </p>
    * 

@@ -453,8 +453,6 @@ public class AlertsImpl implements Alerts {
    *
    * The query must return $art $title $description $date.
    *
-   * @param startDate is the date to start searching from. If empty, start from begining of time
-   * @param endDate is the date to search until. If empty, search until prsent date
    * @param query is the iTQL query that returns the articles we're interested in.
    */
   protected Collection getArticles(String query)

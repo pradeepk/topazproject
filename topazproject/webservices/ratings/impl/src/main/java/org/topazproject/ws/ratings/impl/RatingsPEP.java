@@ -32,7 +32,7 @@ import com.sun.xacml.ctx.Attribute;
  * @author Ronald Tschalär
  */
 public abstract class RatingsPEP extends AbstractSimplePEP implements Ratings.Permissions {
-  /** The id of the attribute containing the URI of the object: {@value} */
+  /** The id of the attribute containing the URI of the object */
   public static final URI OBJ_ID =
       URI.create("urn:topazproject:names:tc:xacml:1.0:resource:object-uri");
 
