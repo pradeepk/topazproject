@@ -158,6 +158,15 @@
           <type>java.lang.String</type>
           <description>Fedora Home directory</description>
         </parameter>
+
+        <parameter>
+          <name>DB</name>
+          <property>DB</property>
+          <required>true</required>
+          <expression>${DB}</expression>
+          <defaultValue>mckoi</defaultValue>
+          <description>Which database to use</description>
+        </parameter>
       </parameters>
     </mojo>
 
