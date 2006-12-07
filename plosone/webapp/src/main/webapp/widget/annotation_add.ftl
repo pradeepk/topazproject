@@ -1,4 +1,4 @@
-<div dojoType="regionalDialog" id="AnnotationDialog" bgColor="#333333" bgOpacity="0.6" toggle="fade" toggleDuration="250" style="padding:0;margin:0;">
+<div dojoType="regionalDialog" id="AnnotationDialog" bgColor="#333333" bgOpacity="0.6" toggle="fade" toggleDuration="250" closeOnBackgroundClick="false" style="padding:0;margin:0;">
 	<div class="dialog annotate">
 		<div class="tipu" id="dTipu"></div>
 		<div class="btn close" title="Click to close and cancel">
