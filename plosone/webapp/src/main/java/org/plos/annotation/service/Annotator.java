@@ -115,9 +115,11 @@ public class Annotator {
 
     Regions        regions = new Regions(document);
 
-    for (int i = 0; i < lists.length; i++)
-      regions.addRegion(lists[i], annotations[i]);
-
+    for (int i = 0; i < lists.length; i++) {
+      if (lists[i] != null){
+        regions.addRegion(lists[i], annotations[i]);
+      }
+    }
     regions.surroundContents(AML_NS, "aml:annotated", "aml:id", "aml:first");
 
     Element rRoot = regions.createElement(AML_NS, "aml:region", "aml:annotation", "aml:id");
@@ -220,6 +222,8 @@ public class Annotator {
         } catch (TransformerException e) {
           throw new TransformerException(expression, e);
         }
+      } else {
+        lists.add(null);
       }
     }
     LocationList[] theList = new LocationList[lists.size()];
