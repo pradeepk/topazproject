@@ -6,7 +6,7 @@ tabsListMap[tabsListMap.length] = {tabKey:   "recentlyPublished",
                                    urlSave:  ""};
 
 tabsListMap[tabsListMap.length] = {tabKey:   "mostCommented",
-                                   title:    "Most Commented",
+                                   title:    "Most Annotated",
                                    urlLoad:  "/article/mostCommented.action",
                                    urlSave:  ""};
 
