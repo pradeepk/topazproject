@@ -58,6 +58,7 @@ span.new	{ font-weight: bold; font-size: .85em; text-transform: uppercase;}
 a.tooltip,
 a.tooltip:visited	{ color: #389A0C; font-weight: bold; }
 a.tooltip:hover 	{ color: #45BF0F; }
+li.icon,
 a.icon, 	/* use for any accent oriented icon */
 a.tooltip	/* use for any functional icon for on page actions */
 					{ padding: 2px 0 2px 18px; background-repeat: no-repeat; background-position: 0px 0px; }
@@ -105,6 +106,7 @@ a.annotation{ background-image: url(../images/pone_icon_annotation.gif); }
 a.discuss	{ background-image: url(../images/pone_icon_discuss.gif); }
 a.commentary{ background-image: url(../images/pone_icon_commentary.gif); }
 a.feedback	{ font-weight: bold;}
+a.feedback.icon { background-image: url(../images/pone_icon_feedback.gif); padding-left: 22px;}
 
 /* Article Tooltips : for any js onpage action */
 a.addannotation	{ background-image: url(../images/pone_tooltip_addannotation.gif); }
@@ -164,7 +166,7 @@ div#topBanner div 	{ padding-top: 4px; } /* sets top padding on all banner slots
 
 */
 
-div#hdr 			{ height: 150px; position: relative; }
+div#hdr 			{ height: 150px; position: relative; z-index: 9997;}
 #hdr #logo			{ background: transparent url(../images/pone_hdr_logo.gif) no-repeat top left; color: #039; }
 #hdr #tagline 		{ background: transparent url(../images/pone_hdr_tagline.gif) no-repeat top left; color: #039; }
 #hdr #logo 			{ width: 312px; height: 90px; position: absolute; top: 20px; left: 8px; margin: 0; font-size: 1.6em; }
@@ -301,7 +303,7 @@ div.content	{ margin-left: 16px; }
 
 div.static h1,
 div.content h1 	{ /* article title */font-size: 2.2em;	line-height: 1.1em;	margin: 10px 0 0 0;font-weight: normal; color: #004263; }
-div.static h1		{ padding-top: 10px; border-top: 6px solid #006699; color: #069;}
+div.static h1		{ padding-top: 10px; border-top: 6px solid #004263; }
 
 div.content h2	{ /* article sub-title */ margin: 10px 0; font-style: italic; font-size: 1.5em; background: none; padding: 0;}
 
@@ -442,7 +444,7 @@ a.bug.author-active,
 a:hover.bug.author-active		{ background-color: #f63;}
 
 
-div.beta				{ text-align: center; font-size: .9em; color: #eee; padding: 1px; background-color: #069;}
+div.beta				{ text-align: center; font-size: .9em; color: #eee; padding: 1px; background: #004263;}
 /*div.beta				{ text-align: left; font-size: .85em; background: url(../images/pone_article_hdr.gif) no-repeat top right; border-width: 1px 0; color: #eee; position: relative; padding: 6px 0 0 6px; height: 28px; vertical-align: middle;}*/
 div.beta a:link,
 div.beta a:visited,
