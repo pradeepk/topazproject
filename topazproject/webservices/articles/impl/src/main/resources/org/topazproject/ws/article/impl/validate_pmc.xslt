@@ -51,10 +51,17 @@
     </xsl:if>
   </xsl:template>
 
-  <!-- validate xlink:href links. This involves:
+  <!-- validate xlink:href, xlink:role, and internal IDREF links. For href this involves:
      -   * The URL must be absolute
      -   * if the URL uses the doi scheme, and the current article doi is a prefix of the doi,
      -     then make sure the thing it points to is part of the ingest (i.e. in the zip)
+     - For role:
+     -   * The URL must be absolute
+     - For internal links:
+     -   * All ids must exist (usually as @id attributes)
+     -   * Note: we don't check that the id is on the correct element, e.g. that a
+     -     <graphic alternate-form-of="foo"> references a <graphic id="foo"> and not, say,
+     -     a <preformat id="foo"> .
      -->
   <xsl:template name="validate-links" as="empty-sequence()">
     <xsl:for-each select="$fixed-article//@xlink:href">
@@ -72,6 +79,51 @@
         </xsl:otherwise>
       </xsl:choose>
     </xsl:for-each>
+
+    <xsl:for-each select="$fixed-article//@xlink:role">
+      <xsl:if test="not(my:uri-is-absolute(.))">
+        <xsl:message>role link '<xsl:value-of select="."/>' is not absolute</xsl:message>
+      </xsl:if>
+    </xsl:for-each>
+
+    <xsl:call-template name="validate-idref-links"/>
+  </xsl:template>
+
+  <xsl:template name="validate-idref-links" as="empty-sequence()">
+    <xsl:for-each select="$fixed-article//@rid">
+      <xsl:for-each select="tokenize(., '\s+')">
+        <xsl:if test="not($fixed-article//*[@id = current()])">
+          <xsl:message>rid '<xsl:value-of select="."/>' does not reference an existing id</xsl:message>
+        </xsl:if>
+      </xsl:for-each>
+    </xsl:for-each>
+
+    <xsl:for-each select="$fixed-article//@alternate-form-of">
+      <xsl:if test="not($fixed-article//*[@id = current()])">
+        <xsl:message>alternate-form-of '<xsl:value-of select="."/>' does not reference an existing id</xsl:message>
+      </xsl:if>
+    </xsl:for-each>
+
+    <xsl:for-each select="$fixed-article//@xref">
+      <xsl:if test="not($fixed-article//*[@id = current()])">
+        <xsl:message>xref '<xsl:value-of select="."/>' does not reference an existing id</xsl:message>
+      </xsl:if>
+    </xsl:for-each>
+
+    <xsl:for-each select="$fixed-article//glyph-ref/@glyph-data">
+      <xsl:if test="not($fixed-article//glyph-data[@id = current()])">
+        <xsl:message>glyph-data '<xsl:value-of select="."/>' does not reference an existing glyph-data id</xsl:message>
+      </xsl:if>
+    </xsl:for-each>
+
+    <xsl:for-each select="$fixed-article//(th|td)/@headers">
+      <xsl:for-each select="tokenize(., '\s+')">
+        <xsl:if test="not($fixed-article//table//*[@id = current()])">
+          <xsl:message>headers '<xsl:value-of select="."/>' does not reference an existing id</xsl:message>
+        </xsl:if>
+      </xsl:for-each>
+    </xsl:for-each>
+
   </xsl:template>
 
   <!-- check that an object for the given doi exists in the zip. -->

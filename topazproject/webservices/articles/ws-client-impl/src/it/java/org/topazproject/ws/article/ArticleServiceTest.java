@@ -108,6 +108,8 @@ public class ArticleServiceTest extends TestCase {
     ingestErrorTest("/test.tpz.missing.article.zip", "Couldn't find article entry in zip file");
     ingestErrorTest("/test.ap.missing.article.zip",  "Couldn't find article entry in zip file");
     ingestErrorTest("/test.ap.invalid.file.zip",     "does not have same prefix as article");
+    ingestErrorTest("/test.ap.invalid.id.zip",       "does not reference an existing id");
+    ingestErrorTest("/test.ap.invalid.id2.zip",      "does not reference an existing id");
   }
 
   private void ingestErrorTest(String zip, String expMsg) throws Exception {
