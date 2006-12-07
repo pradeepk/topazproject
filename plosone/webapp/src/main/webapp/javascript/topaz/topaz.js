@@ -51,19 +51,19 @@ document.getElementsByTagAndAttributeName = function(tagName, attributeName) {
  * Extending the String object
  *
  **/
-String.trim = function() {
+String.prototype.trim = function() {
   return this.replace(/(?:(?:^|\n)\s+|\s+(?:$|\n))/g,"");
 }
 
-String.rtrim = function() {
+String.prototype.rtrim = function() {
   return this.replace(/\s+$/,"");
 }
 
-String.ltrim = function() {
+String.prototype.ltrim = function() {
   return this.replace(/^\s+/, "");
 }
 
-String.isEmpty = function() {
+String.prototype.isEmpty = function() {
   return (this == null || this == "");
 }
 

@@ -1,4 +1,4 @@
-<div dojoType="regionalDialog" id="CommentDialog" bgColor="white" bgOpacity="0" toggle="fade" toggleDuration="250" style="padding:0;margin:0;">
+<div dojoType="regionalDialog" id="CommentDialog" bgColor="white" bgOpacity="0" toggle="fade" toggleDuration="250" closeOnBackgroundClick="false" style="padding:0;margin:0;">
 	<!-- begin : annotation preview view (wireframe page 12) [SIMPLE] -->
 	<div class="dialog preview">
 		<div class="tipu" id="cTipu"></div>

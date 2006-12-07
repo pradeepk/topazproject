@@ -1,5 +1,5 @@
 <!-- begin : post response -->
-<div class="flag pane" id="FlaggingPanel">
+<div class="flag pane" id="FlaggingPanel" >
 	<div id="flagForm">
 		<h5 class="flag icon">Flag This Response</h5>
 		<div class="close btn" id="btnCloseFlag"><a href="#" title="Close this dialogue box">Cancel</a></div>
