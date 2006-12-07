@@ -89,9 +89,9 @@ public class SearchAction extends BaseActionSupport {
   private String getAdvancedQuery() {
     final Collection<String> fields = new ArrayList<String>();
 
-    if (StringUtils.isNotBlank(title)) fields.add("dc.title:" + title);
+    if (StringUtils.isNotBlank(title)) fields.add("title:" + title);
     if (StringUtils.isNotBlank(text)) fields.add(text);
-    if (StringUtils.isNotBlank(description)) fields.add("dc.description:" + description);
+    if (StringUtils.isNotBlank(description)) fields.add("description:" + description);
 
     return StringUtils.join(fields.iterator(), " AND ");
   }

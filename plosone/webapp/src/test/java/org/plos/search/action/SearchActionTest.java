@@ -33,7 +33,7 @@ public class SearchActionTest extends BasePlosoneTestCase {
 
     final String text = FileUtils.getTextFromUrl(new File(searchResultXml).toURL().toString());
     final SearchResultPage searchHits = SearchUtil.convertSearchResultXml(text);
-    assertEquals(2, searchHits.getTotalNoOfResults());
+    assertEquals(1, searchHits.getTotalNoOfResults());
   }
 
 }

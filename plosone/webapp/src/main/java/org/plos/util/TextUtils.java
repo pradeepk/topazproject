@@ -10,7 +10,7 @@
 package org.plos.util;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.w3c.dom.Document;
+import org.w3c.dom.Node;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -58,15 +58,15 @@ public class TextUtils {
   /**
    * Transforms an org.w3c.dom.Document into a String
    * 
-   * @param doc Document to transform
-   * @return String representation of doc
-   * @throws TransformerException
+   * @param node Document to transform
+   * @return String representation of node
+   * @throws TransformerException TransformerException
    */
-  public static String getAsXMLString(final Document doc) throws TransformerException {
+  public static String getAsXMLString(final Node node) throws TransformerException {
     final Transformer tf = TransformerFactory.newInstance().newTransformer();
 //    tf.setOutputProperty("indent", "yes");
     final StringWriter stringWriter = new StringWriter();
-    tf.transform(new DOMSource(doc), new StreamResult(stringWriter));
+    tf.transform(new DOMSource(node), new StreamResult(stringWriter));
     return stringWriter.toString();
   }
 

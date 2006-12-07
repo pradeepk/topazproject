@@ -13,6 +13,7 @@ import org.plos.search.service.SearchHit;
 import static org.plos.search.service.SearchHit.MULTIPLE_VALUE_DELIMITER;
 import org.plos.util.DateParser;
 import org.plos.util.InvalidDateException;
+import org.plos.util.TextUtils;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NamedNodeMap;
@@ -22,6 +23,7 @@ import org.xml.sax.SAXException;
 
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
+import javax.xml.transform.TransformerException;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.ArrayList;
@@ -29,6 +31,8 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * Util functions to be used for Flag related tasks like created and extracting flag attributes.
@@ -46,7 +50,7 @@ public class SearchUtil {
    * @throws SAXException SAXException
    * @throws org.plos.util.InvalidDateException InvalidDateException
    */
-  public static SearchResultPage convertSearchResultXml(final String searchResultXml) throws IOException, ParserConfigurationException, SAXException, InvalidDateException {
+  public static SearchResultPage convertSearchResultXml(final String searchResultXml) throws IOException, ParserConfigurationException, SAXException, InvalidDateException, TransformerException {
     final String nodeName = "hit";
     final Element rootNode = getRootNode(searchResultXml);
 
@@ -76,7 +80,7 @@ public class SearchUtil {
     return element.getElementsByTagName(nodeName);
   }
 
-  private static SearchHit convertToSearchHit(final Element hitNode) throws InvalidDateException {
+  private static SearchHit convertToSearchHit(final Element hitNode) throws InvalidDateException, TransformerException {
     final NamedNodeMap hitNodeMap = hitNode.getAttributes();
     final String hitNumber = getAttributeTextValue(hitNodeMap, "no");
     final String hitScore = getAttributeTextValue(hitNodeMap, "score");
@@ -103,7 +107,7 @@ public class SearchUtil {
     return hitNodeMap.getNamedItem(attributeName).getTextContent();
   }
 
-  private static Map<String, String> getFieldNodeNameAttributeValueMap(final Element hitNode) {
+  private static Map<String, String> getFieldNodeNameAttributeValueMap(final Element hitNode) throws TransformerException {
     final NodeList fieldNodes = hitNode.getElementsByTagName("field");
 
     final int noOfFields = fieldNodes.getLength();
@@ -112,7 +116,10 @@ public class SearchUtil {
       final Node node = fieldNodes.item(i);
       final NamedNodeMap attributes = node.getAttributes();
       final String key = getAttributeTextValue(attributes, "name");
-      String value = node.getTextContent();
+//      String value = node.getTextContent();
+      String asXmlString = TextUtils.getAsXMLString(node);
+      String singleLine = asXmlString.replaceAll("\\n", "");
+      String value = find("<field\\s[^>]*>(.*)</field>", singleLine);
       final String existingValue = map.get(key);
       if (null != existingValue) {
         value = existingValue + MULTIPLE_VALUE_DELIMITER + value;
@@ -120,6 +127,17 @@ public class SearchUtil {
       map.put(key, value);
     }
     return map;
+  }
+
+  // Returns the first substring in input that matches the pattern.
+  // Returns null if no match found.
+  public static String find(String patternStr, CharSequence input) {
+      Pattern pattern = Pattern.compile(patternStr);
+      Matcher matcher = pattern.matcher(input);
+      if (matcher.find()) {
+          return matcher.group(1);
+      }
+      return null;
   }
 
 }
