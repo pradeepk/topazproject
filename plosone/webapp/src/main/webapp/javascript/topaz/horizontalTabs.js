@@ -211,8 +211,9 @@ topaz.horizontalTabs = {
     for (var i=0; i<this.tabsListObject.length; i++) {
       var li = document.createElement("li");
       li.id = this.tabsListObject[i].tabKey;
+      if (obj.className) li.className = obj.className;
       if (this.tabsListObject[i].tabKey == obj.tabKey) {
-        li.className = li.className.concat("active");
+        li.className = li.className.concat(" active");
       }
       li.onclick = function () { 
           topaz.horizontalTabs.show(this.id);
@@ -230,8 +231,9 @@ topaz.horizontalTabs = {
     for (var i=0; i<this.tabsListObject.length; i++) {
       var li = document.createElement("li");
       li.id = this.tabsListObject[i].tabKey;
+      if (this.tabsListObject[i].className) li.className = this.tabsListObject[i].className;
       if (this.tabsListObject[i].tabKey == obj.tabKey) {
-        li.className = li.className.concat("active");
+        li.className = li.className.concat(" active");
       }
       li.onclick = function () { 
           topaz.horizontalTabs.showHome(this.id);
@@ -249,12 +251,12 @@ topaz.horizontalTabs = {
       
       if (tabNode.className.match("active"))
         //dojo.html.removeClass(tabNode, "active");
-        tabNode.className = tabNode.className.replace(/active/, "");
+        tabNode.className = tabNode.className.replace(/\sactive/, "");
     }
     
     var targetNode = dojo.byId(obj.tabKey);
     //dojo.html.addClass(dojo.byId(targetObj.tabKey), "active");
-    targetNode.className = targetNode.className.concat("active");
+    targetNode.className = targetNode.className.concat(" active");
   },
   
   confirmChange: function (formObj) {
