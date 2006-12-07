@@ -72,6 +72,16 @@
     <copy todir="${DEST_DIR}/${ROOT}/custom">
       <fileset dir="custom"/>
     </copy>
+
+    <!-- Remove endorsed libs to avoid Java 1.5 and Tomcat 5.0
+    problem of not being able to pick up default TransformerFactory
+    -->
+    <zip destfile="${DEST_DIR}/${ROOT}/packages/newTomcat.zip">
+      <zipfileset src="${DEST_DIR}/${ROOT}/packages/jakarta-tomcat-5.0.28.zip"
+        excludes="jakarta-tomcat-5.0.28/common/endorsed/*.jar"/>
+    </zip>
+    <move file="${DEST_DIR}/${ROOT}/packages/newTomcat.zip"
+      tofile="${DEST_DIR}/${ROOT}/packages/jakarta-tomcat-5.0.28.zip"/>
     
     <!-- jar it up -->
     <jar destfile="${DEST_DIR}.jar" basedir="${DEST_DIR}"/>
