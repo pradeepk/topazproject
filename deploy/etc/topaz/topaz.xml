@@ -15,6 +15,7 @@
     <search>
       <indexpath>/usr/local/topaz/data/lucene</indexpath>
       <!-- <fedoraobjpath>...</fedoraobjpath> -->
+      <defaultfields>description,title,body,creator</defaultfields>
     </search>
     <cas-server>
       <base-url>https://FQHN:7443/cas</base-url>
