@@ -37,31 +37,31 @@
     <property name="patch-keytool-string" value=""/>
   </target>
 
-	<!--
+  <!--
   <artifact:dependencies pathId="cas-mod.dependencies"
       xmlns:artifact="antlib:org.apache.maven.artifact.ant">
     <dependency groupId="org.plosone" artifactId="plosone-cas-mod" version="0.5-SNAPSHOT"/>
   </artifact:dependencies>
 -->
-	
+  
   <target name="ecqs-package" depends="patch-keytool">
     <!-- unzip the package -->
     <unzip src="${SRC_ZIP}" dest="${DEST_DIR}"/>
-  	
-  	<!-- needed for cas-mod -->
+    
+    <!-- needed for cas-mod -->
     <copy file="build-esup-cas-server.xml" 
-    			todir="${DEST_DIR}/${ROOT}"
-    			overwrite="true"
+          todir="${DEST_DIR}/${ROOT}"
+          overwrite="true"
     />
 
-		<copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${CAS_MOD}"/>
-		<copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${PASSWORD_MOD}"/>
-		<copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${DATABASE_DRIVER}"/>
-		<copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_LOGGING}"/>
-		<copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_DBCP}"/>
-		<copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_POOL}"/>
-		<copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_COLLECTIONS}"/>
-  	<!-- end cas-mod -->
+    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${CAS_MOD}"/>
+    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${PASSWORD_MOD}"/>
+    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${DATABASE_DRIVER}"/>
+    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_LOGGING}"/>
+    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_DBCP}"/>
+    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_POOL}"/>
+    <copy todir="${DEST_DIR}/${ROOT}/${CAS_SERVER_LIB_PATH}" file="${COMMONS_COLLECTIONS}"/>
+    <!-- end cas-mod -->
     
     <!-- configure it -->
     <copy file="properties/build.properties"
@@ -72,11 +72,11 @@
     <copy todir="${DEST_DIR}/${ROOT}/custom">
       <fileset dir="custom"/>
     </copy>
-  	
+    
     <!-- jar it up -->
     <jar destfile="${DEST_DIR}.jar" basedir="${DEST_DIR}"/>
   </target>
-	
+  
   <target name="ecqs-install" depends="exec-ext">
     <unjar src="${SRC_JAR}" dest="${DEST_DIR}"/>
     <!--

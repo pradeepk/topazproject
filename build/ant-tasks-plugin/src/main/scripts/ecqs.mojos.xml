@@ -46,7 +46,7 @@
           <defaultValue>esup-cas-quick-start-2.0.6-1</defaultValue>
         </parameter>
 
-				<!-- cas-mod begin -->
+        <!-- cas-mod begin -->
         <parameter>
           <name>CAS_SERVER_LIB_PATH</name>
           <property>CAS_SERVER_LIB_PATH</property>
@@ -102,7 +102,7 @@
           <required>true</required>
           <defaultValue>${settings.localRepository}/commons-collections/commons-collections/2.1/commons-collections-2.1.jar</defaultValue>
         </parameter>
-				<!-- cas-mod end -->
+        <!-- cas-mod end -->
 
       </parameters>
     </mojo>
