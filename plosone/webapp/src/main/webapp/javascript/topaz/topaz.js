@@ -80,7 +80,7 @@ function toggleAnnotation(obj, userType) {
     }
   }
   
-  toggleExpand(obj, "Turn annotations on", "Turn annotations off");
+  toggleExpand(obj, null, "Turn annotations on", "Turn annotations off");
   
   ldc.hide();
   
