@@ -118,7 +118,7 @@ public class SearchUtil {
       final String key = getAttributeTextValue(attributes, "name");
 //      String value = node.getTextContent();
       String asXmlString = TextUtils.getAsXMLString(node);
-      String singleLine = asXmlString.replaceAll("\\n", "");
+      String singleLine = asXmlString.replace('\n', ' ');
       String value = find("<field\\s[^>]*>(.*)</field>", singleLine);
       final String existingValue = map.get(key);
       if (null != existingValue) {
