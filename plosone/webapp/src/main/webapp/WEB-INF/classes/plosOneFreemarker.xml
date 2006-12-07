@@ -5,7 +5,7 @@
   <cas-login-url>https://FQHN:7443/cas/login</cas-login-url>
   <cas-logout-url>https://FQHN:7443/cas/logout</cas-logout-url>
   <registration-url>https://FQHN:7443/plos-registration/register.action</registration-url>
-  <plosone-host>FQHN:9080</plosone-host>
+  <plosone-host>FQHN:8080</plosone-host>
   <default>
     <title>PLoS ONE : Publishing science\, accelerating research</title>
     <css>
