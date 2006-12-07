@@ -17,11 +17,12 @@ topaz.responsePanel = {
     this.targetForm = formObj;
   },
   
-  show: function(curNode, targetObj, targetElClassName, baseId, replyId, threadTitle) {
+  show: function(curNode, targetObj, targetElClassName, baseId, replyId, threadTitle, actionIndex) {
     this.setPanel(targetObj.widget);
     this.setForm(targetObj.form);
     targetObj.baseId = (baseId) ? baseId : "";
     targetObj.replyId = (replyId)? replyId : "";
+    targetObj.actionIndex = (actionIndex) ? actionIndex : 0;
     this.upperContainer = topaz.domUtil.getFirstAncestorByClass(curNode, targetElClassName);
     this.upperContainer.style.display = "none";
     togglePanel.newPanel = this.newPanel;
@@ -62,21 +63,21 @@ function submitResponseInfo(targetObj) {
 
   var urlParam = "";
   if (targetObj.requestType == "flag"){
-    urlParam = "?target=" + targetObj.baseId;
+    urlParam = targetObj.formAction[targetObj.actionIndex] + "?target=" + targetObj.baseId;
   }
   else if (targetObj.requestType == "new"){
-    urlParam = "";
+    urlParam = targetObj.formAction;
     topaz.formUtil.disableFormFields(targetForm);
   }
   else { 
-    urlParam = "?root=" + targetObj.baseId + "&inReplyTo=" + targetObj.replyId;
+    urlParam = targetObj.formAction + "?root=" + targetObj.baseId + "&inReplyTo=" + targetObj.replyId;
     topaz.formUtil.disableFormFields(targetForm);
   }
    
   ldc.show();
 
    var bindArgs = {
-    url: namespace + targetObj.formAction + urlParam,
+    url: namespace + urlParam,
     method: "post",
     error: function(type, data, evt){
      alert("An error occurred." + data.toSource());
