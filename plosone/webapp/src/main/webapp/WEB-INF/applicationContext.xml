@@ -282,8 +282,15 @@
       </props>
     </constructor-arg>
   </bean>
-  
-  <bean id="articleCacheAdministrator" class="com.opensymphony.oscache.general.GeneralCacheAdministrator" destroy-method="destroy"/>
+<!-- store articles and annotations -->
+  <bean id="articleCacheAdministrator" class="com.opensymphony.oscache.general.GeneralCacheAdministrator" destroy-method="destroy">
+     <constructor-arg index="0">
+       <props>
+         <prop key="cache.memory">true</prop>
+ <!--    <prop key="cache.capacity">500</prop>-->
+       </props>
+     </constructor-arg>
+  </bean>
 
   <!-- email configuration -->
   <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
