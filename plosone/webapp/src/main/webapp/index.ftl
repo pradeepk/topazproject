@@ -11,28 +11,30 @@
 					<div class="col first">
 					<div class="block mainnav">
 					<ul>
-						<li><a href="http://www.plos.org/oa/index.html">Open Access</a></li>
-						<li><a href="http://www.plos.org/support/donate.php">Join PLoS</a></li>
+						<li><a href="http://www.plos.org/oa/index.html" title="Learn more about Open Access on PLoS.org">Open Access</a></li>
+						<li><a href="http://www.plos.org/support/donate.php" title="Join PLoS and our Open Access mission">Join PLoS</a></li>
+						<li><a href="/static/checklist.action"><@ww.url action="checklist.action" namespace="/static/" includeParams="none" id="checklist"/>
+Submit Today</a></li>
 					</ul>
 					</div>
-
 					
 						<div class="block banner">
 							<img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF" />
-						</div>
+						</div> 
 						<div class="block partner">
 
 				<h6>Partners</h6>
 				<a href="http://fedora.info/" title="Fedora.info"><img src="${freemarker_config.context}/images/pone_home_fedora.jpg" alt="Fedora.info"/></a>
-				<a href="http://www.sciencecommons.org/" title="Science Commons" alt="Science Commons"><img src="${freemarker_config.context}/images/pone_home_sciencecommons.jpg"/></a>
-				<a href="http://www.osafoundation.org" title="Open Source Applications Foundation" alt="OSAF"><img src="${freemarker_config.context}/images/pone_home_osaf.jpg"/></a>
-				<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation" alt="Moore Foundation"><img src="${freemarker_config.context}/images/pone_home_moore.jpg"/></a>
+				<a href="http://www.sciencecommons.org/" title="Science Commons"><img src="${freemarker_config.context}/images/pone_home_sciencecommons.jpg"  alt="Science Commons"/></a>
+				<a href="http://www.osafoundation.org" title="Open Source Applications Foundation"><img src="${freemarker_config.context}/images/pone_home_osaf.jpg" alt="OSAF"/></a>
+				<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="${freemarker_config.context}/images/pone_home_moore.jpg" alt="Moore Foundation"/></a>
+				<a href="http://www.unitedlayer.com/" title="UnitedLayer, LLC"><img src="${freemarker_config.context}/images/pone_home_unitedlayer.jpg" alt="UnitedLayer, LLC"/></a>
 						</div>
 													   
 					</div>			
-										<div class="col last">
-							
-					<div class="horizontalTabs">
+					
+					<div class="col last">		
+					<div class="horizontalTabs" style="padding-top: 0; ">
 						<ul id="tabsContainer">
 						</ul>
 						
@@ -48,25 +50,13 @@
 <h3>New and Noted</h3>
 <div>
 <a href="#">Wnt and Hedgehog Are Critical Mediators of Cigarette Smoke-Induced Lung Cancer</a><p>The molecular basis of cigarette-induced lung cancer is poorly understood. This paper shows that genes more normally associated with the patterning of embryos may be involved in opening new avenues for the development of therapies.</p>
-</div>
-<div>
-<a href="#">The Syntax and Meaning of Wild Gibbon Songs</a><p>Human languages are subtle. Identical words can mean different things when spoken in a different order. This paper shows that the same is true for gibbons. When threatened they change the structure of their calls, warning individuals within earshot of the danger.</p>
-</div>
-<div>
-<a href="#">Mesenchymal Stem Cell-Mediated Functional Tooth Regeneration in Swine</a><p>Much discussion surrounds the use of stem cells for regenerating organs as a possible treatment for a diverse spectrum of diseases. This paper explores the potential of human stem cells isolated from dental papillae to regenerate functional teeth.</p>
-</div>
-</div>
-
-<div class="block feature">
-
-<h3>Also of Note</h3>
 <ul class="articles">
 	<li><a href="#">Control of Canalization and Evolvability by Hsp90</a></li>
 	<li><a href="#">Predator Mimicry: Metalmark Moths Mimic Their Jumping Spider Predators</a></li>
 	<li><a href="#">Physiological Mouse Brain A� levels Are Not Related to the Phosphorylation State of Threonine-668 of Alzheimer's APP</a></li>
 	<li><a href="#">A Virtual Reprise of the Stanley Milgram Obedience Experiments</a></li>
 </ul>
-
+</div>
 
 </div>
 
@@ -86,17 +76,31 @@
 					<div class="subcol first">
 					
 											<#if categoryNames?size gt 0>
+					<div class="info block">
+<@ww.url action="information.action" namespace="/static/" includeParams="none" id="info"/>
+<h3>What is PLoS ONE?</h3>
+<p>A new way of communicating peer-reviewed science and medicine.</p>
+</div>
+<div class="new block">
+<h4><strong>New</strong> Features...</h4>
+<ul><li class="annotation icon"><strong>Annotations</strong> – add and share your comments</li>
+	<li class="commentary icon"><strong>Discussions</strong> – join the conversation</li>
+</ul>
+<p>More functionality coming soon.<br />
+<a href="/static/feedbackCreate.action" class="feedback icon" title="Send us your feedback">Your feedback</a> will help us shape PLoS ONE.</p>
+</div>
+					
 						<div class="subject block">
+							<dl class="category">
 
 							<#list categoryNames as category>
-							<dl class="category">
 							  <#assign categoryId = category?replace("\\s|\'","","r")>
 							  <#if categoryId?length lt 8>
 								<#assign index = categoryId?length>
 							  <#else>
   								<#assign index = 8>
 							  </#if>
-								<dt><a class="expand" id="widget${categoryId?js_string}" onclick="return singleExpand(this, '${categoryId?js_string}');">${category} (${articlesByCategory[category_index]?size})</a></dt>
+								<dt><a class="expand" id="widget${categoryId}" onclick="return singleExpand(this, '${categoryId}');">${category} (${articlesByCategory[category_index]?size})</a></dt>
 								<dd id="${categoryId}">
 									<ul>
 										<#list articlesByCategory[category_index] as article>
@@ -104,15 +108,12 @@
 										</#list>
 									</ul>
 								</dd>
-							</dl>
 							</#list>
+							</dl>
+
 						</div>
 						</#if> 
-<div class="block info">
-<@ww.url action="information.action" namespace="/static" includeParams="none" id="info"/>
-<h3>What is PLoS ONE?</h3>
-<p>A new inclusive and interactive publication for the efficient dissemination and discussion of open access peer-reviewed research from all areas of science and medicine.<a href="${info}" title="Read More" class="more">Read More</a></p>
-</div>
+
 					</div>
 					<!-- end : col 3 -->
 					<!-- begin : col 4 -->
@@ -123,7 +124,10 @@
 
 					</div>
 					<!-- end : col 4 -->
+					
 				</div>
+							<div class="beta">We are still in beta! Help us make the site better and 
+			<a href="../feedbackCreate.action?page=fetchArticle.action10.1371/journal.pone.0000011" title="Submit your feedback">report bugs</a>.</div>
 				<!-- end : wrapper for cols 3 & 4 -->
 				
 				

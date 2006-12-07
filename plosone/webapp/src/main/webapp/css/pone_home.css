@@ -11,10 +11,10 @@ All journal specific styles, colors are on individual
 journal style sheets
 ----------------------------------------------------------
 */
-html 		{ margin: 0 0 1px 0; min-height: 100%; /* set margin and height to eliminate the scroll bar page shift on mozilla and safari */ background: #fff url(../images/pone_html_bg.gif) 0 0 repeat-x; }
+
 
 body		{ background-color: transparent }
-#wrap 		{ margin: 0 auto 0 auto; width: 910px; ; padding: 0 0 10px 0; line-height: 1.5em; position: relative; }
+#wrap 		{ margin: 0 auto 0 auto; width: 910px;padding: 0 0 10px 0; line-height: 1.5em; position: relative; }
 
 
 /* Homepage : Elements
@@ -114,7 +114,7 @@ ul.articles li		{ font-size: .9em; padding: 3px 5px; font-weight: bold;}
 ul.articles			{ margin-top: 0; }
 ul.articles li a	{ font-weight: bold; }
 
-dl.category 		{ margin: 0 5px;  padding: 20px 0;}
+dl.category 		{ margin: 0 5px;  padding: 10px 0 20px 10px; }
 dl.category dt a,
 dl.category dt a:visited		{ cursor: pointer; color: #069; display: block; font-size: .9em; padding-bottom: 0; padding-left: 20px; margin-bottom: 4px;}
 dl.category a.expand,
@@ -122,7 +122,6 @@ dl.category a:visited.expand 	{ background: url(../images/pone_home_expand.gif) 
 dl.category a.collapse,
 dl.category a:visited.collapse 	{ background: url(../images/pone_home_collapse.gif) no-repeat 0 2px; color: #069; font-weight: bold;}
 
-dl.category		{ padding-left: 10px; }
 #home dl.category dt a:hover { text-decoration: none; border-color: #fff; vertical-align: bottom;}
 dl.category dt	{ margin: 0 0 0;padding: 0;color: #069; font-weight: normal;  vertical-align: bottom; clear: left;/* This fixes the IE5 Win gap! */ }
 dl.category dd 	{ font-size: .9em; vertical-align: bottom;}
@@ -152,22 +151,26 @@ div.block.mainnav	{ margin: 0; padding: 10px 0;}
 .mainnav dt			{ background-color: #D2F7FF; margin: 5px 0 0 0; padding-right: 5px; font-size: .85em;}			
 
 div.feature img,
-#home div.feature h3,
-#home div.feature h3	{ font-size: 1.8em; color: #333; margin-top: 0; margin-bottom: 10px;}
-#home div.feature h3	{ color:#333;padding: 2px;}
-#home div.feature div { border-bottom: 1px solid #ccc; padding: 10px;}
+#home div.feature h3{ font-size: 1.8em; color: #333; margin-top: 0; margin-bottom: 10px;}
+#home div.feature.block	{ padding: 0;}
+#home div.feature h3	{ color:#333;padding: 4px; padding-left: 30px; background: url(../images/pone_home_newnoted_bg.gif) no-repeat left bottom;}
+#home div.feature div { padding: 0 10px;}
 #home div.feature ul.articles a{ font-size: 1em; }
 
-div.new		{ margin: 0 8px; padding: 0 10px; font-size: .9em; color: #004263; /*background: url(../images/pone_home_new_bg.gif) no-repeat bottom left;*/}
-#home div.new h4	{ font-family: Georgia, "Times New Roman", Times, serif; margin: 0 4px 0 0; font-size: 1.4em; font-weight: normal; }
+div.new		{ margin: 0 12px 0 8px; padding: 10px 10px 0 10px; font-size: .9em; color: #004263; }
+#home div.new h4	{ margin: 0 0 10px 0; padding-left: 14px; font-size: .9em; font-weight: normal; background-color: #ACF1FF;}
+#home div.new.block	{ padding: 0; }
+#home div.new.block p,
+#home div.new.block ul { margin-left: 10px; }
 div.new ul,
 div.new li			{ margin: 0; padding: 0; }
 div.new ul			{ margin-top: 5px; padding-left: 20px; }
-div.info,
-div.info *			{ color: #fff;}
-div.info			{ margin: 0 8px; padding: 22px 18px 0 18px;background: #fff url(../images/pone_home_info_bg.gif) no-repeat top left; }
-#home div.info h3			{ font-size: 1.6em; }
+#home div.info,
+#home div.info *			{ color: #fff;}
+#home div.info.block				{ margin: 0 8px; padding: 10px 18px 0 18px;background: #fff url(../images/pone_home_info_bg.gif) no-repeat top left; }
+#home div.info h3			{ font-size: 1.6em; padding-left: 30px;}
 
+#home div.announce.block	{ margin-right: 1px; background: #ACF1FF; padding-top: 5px; padding-bottom: 5px;}
 a.more				{ font-weight: bold; text-transform: uppercase; margin-left: 5px;}
 
 ul.journals			{ margin: 0; padding: 0; list-stype-type: none; text-align: left; background-color: #333;}
@@ -234,14 +237,19 @@ div.feature p		{ margin: 0; }
 .womenshe			{ background-position: 0 -1530px; }
 
 
-div.horizontalTabs		{ margin-top: 0;position: relative; border-width: 0; }
+div.horizontalTabs		{ position: relative; border-width: 0; margin-top: 14px; background: url(../images/pone_home_tabcontainer_bg.gif) no-repeat bottom left; padding-bottom: 5px; margin-bottom: 10px;}
 .horizontalTabs ul,
 .horizontalTabs ul li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; }
-.horizontalTabs ul		{ display: block; padding-top: 0; padding-top: 3px;margin-bottom: 5px; margin-top: 5px;z-index: 10; border-bottom-width: 0; background: url(../images/pone_home_tab_bg.gif) no-repeat top left; border-bottom: 1px solid #ccc;}
-.horizontalTabs ul li	{ background: url(../images/pone_home_mostannotated.gif) no-repeat;cursor: pointer; padding: 2px; font-weight: normal; margin: 5px 0 3px 0; display: inline; padding: 6px 10px 6px 30px; color: #444;}
-.horizontalTabs ul.articles	{ background: #FFF!important;}
+.horizontalTabs ul		{ display: block; padding-top: 0; padding-top: 3px;margin-bottom: 5px; z-index: 10; border-bottom-width: 0; /*background: url(../images/pone_home_tab_bg.gif) no-repeat top left;*/ padding-bottom: 3px;}
+.horizontalTabs ul li	{ cursor: pointer; padding: 2px; font-weight: normal; margin: 5px 0 3px 0; display: inline; padding: 6px 10px 6px 30px; color: #444; color: #666;}
+.horizontalTabs ul li.annotated.active 	{ background: url(../images/pone_home_mostannotatedon.gif) no-repeat; }
+.horizontalTabs ul li.annotated			{ background: url(../images/pone_home_mostannotated.gif) no-repeat; }
+.horizontalTabs ul li.published.active	{ background: url(../images/pone_home_mostrecenton.gif) no-repeat; }
+.horizontalTabs ul li.published			{ background: url(../images/pone_home_mostrecent.gif) no-repeat; }
+
+.horizontalTabs ul.articles	{ background: transparent!important;}
 .horizotnalTabs ul li li { color: #069; }
-.horizontalTabs ul li.active	{ background: #FFF url(../images/pone_home_mostrecent.gif) no-repeat; font-weight: normal;}
+.horizontalTabs ul li.active	{ font-weight: bold;}
 .horizontalTabs .contentwrap {background: transparent;margin: 10px; border-width: 0; padding: 0;position: relative; }
 .horizontalTabs .contentwrap ul li	{ display: list-item; background: transparent;list-style-type: disc; margin-bottom: 0; padding: 0; border-width: 0;}
 .horizontalTabs .contentwrap ul { padding-left: 18px; padding-bottom: 10px; margin-bottom: 10px;}
