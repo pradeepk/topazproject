@@ -20,7 +20,7 @@ body		{ background-color: transparent }
 /* Homepage : Elements
 ----------------------------------------------------------
 */
-#home			{ position: relative; border: 1px solid #ccc; background: #fff url(../images/pone_home_bg.gif) repeat-y; margin-bottom: 20px; }
+#home			{ position: relative; background: #fff url(../images/pone_home_bg.gif) repeat-y; margin-bottom: 20px; }
 #home img		{ background-color: #fff; display: inline; position: relative;}
 #home a:link,
 #home a:visited	{ text-decoration: none; }	/* remove the underline from all homepage links to increase legibility */
@@ -32,7 +32,9 @@ div.more a,
 div.more a:visited	{ color: #F5F5F5; padding-right: 5px;}
 div.more a:hover	{ color: #fff; }
 
-
+#home div.beta	{ display: block; clear: both; background: #004263;}
+#home div.beta a:link,
+#home div.beta a:visited { text-decoration: underline; }
 /* Homepage : Layout : Structure
 ----------------------------------------------------------
 This layout has been adapted from the Yahoo Developer's Interface Library
@@ -58,7 +60,7 @@ All rights reserved.
 #first .first ul ul			{ display: none; }
 
 /* column 2 */
-#first .last 				{ width: 385px;}
+#first .last 				{ width: 385px; }
 #first .last p,
 #first .last h1				{ color: #303030; }
 /* contains columns 3 and column 4 */
@@ -68,7 +70,7 @@ All rights reserved.
 /* col4 */
 #second .last				{ width: 128px; padding: 0; }
 
-#lower						{ width: 100%; margin: 20px 0 0 0; padding: 30px 0; clear: both; background: #fff url(../images/pone_home_lower_bg.gif) no-repeat top left; font-size: .9em;}
+#lower						{ width: 100%; margin: 0; padding: 30px 0; clear: both; background: #fff url(../images/pone_home_lower_bg.gif) no-repeat top left; font-size: .9em;}
 #lower div.block			{ background-color: transparent; border: none;}
 #lower .first				{ width: 286px;  margin-left: 134px;}
 #lower .last				{ width: 358px; float: right; margin-right: 130px;}
@@ -92,7 +94,7 @@ div.block 				{ margin: 0 3px 6px 3px; padding: 6px; clear: both; position: rela
 div.block.banner				{ padding: 0; border: none; margin: 4px auto; }
 div.block.banner img 			{ float: none; margin: 4px; background: transparent; }
 div.block.partner 					{ text-align: center; margin-right: 0; padding-right: 0; padding-top: 0;border-right: 1px solic #ccc;background-color: #fff; position: relative; border-top: 1px solic #ccc;}
-div.block.partner h6			{ background: transparent url(../images/pone_home_lower_bg.gif) no-repeat top right; font-weight: normal; text-align: center; font-size: .9em; margin: 0; padding-bottom: 10px; padding-top: 4px;}
+div.block.partner h6			{ font-weight: normal; text-align: center; font-size: .9em; margin: 0; padding-bottom: 10px; padding-top: 4px;}
 #first div.partner img 				{ float: none; margin: 20px auto; text-align: center;  }
 
 .block img 			{ float: left; margin: 0 10px 10px 0; }
@@ -108,21 +110,23 @@ div.tabs span.current	{ background: #FFF; color: #000;}
 ul.articles,
 ul.articles li		{ margin: 0; padding: 0; list-style-type: bullet;}
 ul.articles			{ margin: 0 4px 10px 0;  padding: 20px 20px 0 20px;}
-ul.articles li		{ font-size: .9em; padding: 3px 5px; }
+ul.articles li		{ font-size: .9em; padding: 3px 5px; font-weight: bold;}
 ul.articles			{ margin-top: 0; }
+ul.articles li a	{ font-weight: bold; }
 
-dl.category 		{ margin: 10px 0 0 0; }
+dl.category 		{ margin: 0 5px;  padding: 20px 0;}
 dl.category dt a,
-dl.category dt a:visited	{ background-repeat: no-repeat;cursor: pointer; color: #00131D; display: block; font-size: .9em; padding-bottom: 5px; padding-left: 20px; position: relative;}
+dl.category dt a:visited		{ cursor: pointer; color: #069; display: block; font-size: .9em; padding-bottom: 0; padding-left: 20px; margin-bottom: 4px;}
 dl.category a.expand,
-dl.category a:visited.expand {background: url(../images/pone_tooltip_expand.gif) no-repeat 0 2px;}
+dl.category a:visited.expand 	{ background: url(../images/pone_home_expand.gif) no-repeat 0 2px; color: #444;}
 dl.category a.collapse,
-dl.category a:visited.collapse {background: url(../images/pone_tooltip_collapse.gif) no-repeat 0 2px;}
+dl.category a:visited.collapse 	{ background: url(../images/pone_home_collapse.gif) no-repeat 0 2px; color: #069; font-weight: bold;}
 
-#home dl.category dt a:hover { text-decoration: none; color: #000; border-color: #fff; vertical-align: bottom;}
-dl.category dt	{ margin: 5px 0 0 0; padding: 0;color: #333; font-weight: normal;  vertical-align: bottom; clear: left;/* This fixes the IE5 Win gap! */ }
+dl.category		{ padding-left: 10px; }
+#home dl.category dt a:hover { text-decoration: none; border-color: #fff; vertical-align: bottom;}
+dl.category dt	{ margin: 0 0 0;padding: 0;color: #069; font-weight: normal;  vertical-align: bottom; clear: left;/* This fixes the IE5 Win gap! */ }
 dl.category dd 	{ font-size: .9em; vertical-align: bottom;}
-dl.category ul	{ padding: 5px 10px; margin: 10px; clear: left;}
+dl.category ul	{ padding: 5px 0;}
 dl.category li	{ list-style-position: outside; }
 dl.category li a{ vertical-align: bottom; }
 dl.category a,
@@ -140,22 +144,29 @@ div.ad strong			{ display: block; }
 div.ad img				{ border: 1px solid #ccc; }
 
 div.block.mainnav	{ margin: 0; padding: 10px 0;}
-*html div.block.mainnav { border-left: 1px solid #ccc; border-top: 1px solid #ccc; }
 .mainnav ul,			
 .mainnav ul li 		{ margin: 0; padding: 0; list-style-type: none; background-color: #fff;}
 .mainnav ul			{ text-indent: 10px; margin: 0; padding: 10px;position: relative; }
 .mainnav ul li a 	{ font-family: Georgia, "Times New Roman", Times, serif; font-size: 1.5em; letter-spacing: -.03em; line-height: 1.6em; margin-right: 10px;}
+.mainnav dl			{ margin: 10px 0; padding:0; text-indent: 0; }
+.mainnav dt			{ background-color: #D2F7FF; margin: 5px 0 0 0; padding-right: 5px; font-size: .85em;}			
 
-
-div.info			{ margin-top: 20px; margin-right: -1px;background: #Ddd;}
 div.feature img,
-div.info img		{ margin: 10px; border: 1px solid #ccc; position: relative; width: 45px; height: 45px;}
 #home div.feature h3,
-#home div.info h3	{ /*font-size: 1em; border-width: 0; font-family: Verdana, Arial, Helvetica, sans-serif; padding-left: 15px; margin-left: -7px;letter-spacing: normal; background-color: #ddd; color: #000; */ background-color: transparent; padding-bottom: 4px text-align: right; font-size: 1.4em; padding-bottom: 10px; color: #666; padding-left: 10px;}
-#home div.feature h3	{ font-size: 2em; color: #333; border-top: 2px solid #333; padding-top: 10px; margin-top: 0;}
+#home div.feature h3	{ font-size: 1.8em; color: #333; margin-top: 0; margin-bottom: 10px;}
+#home div.feature h3	{ color:#333;padding: 2px;}
 #home div.feature div { border-bottom: 1px solid #ccc; padding: 10px;}
 #home div.feature ul.articles a{ font-size: 1em; }
-div.info p			{ margin-top: 0; margin-left: 10px;}
+
+div.new		{ margin: 0 8px; padding: 0 10px; font-size: .9em; color: #004263; /*background: url(../images/pone_home_new_bg.gif) no-repeat bottom left;*/}
+#home div.new h4	{ font-family: Georgia, "Times New Roman", Times, serif; margin: 0 4px 0 0; font-size: 1.4em; font-weight: normal; }
+div.new ul,
+div.new li			{ margin: 0; padding: 0; }
+div.new ul			{ margin-top: 5px; padding-left: 20px; }
+div.info,
+div.info *			{ color: #fff;}
+div.info			{ margin: 0 8px; padding: 22px 18px 0 18px;background: #fff url(../images/pone_home_info_bg.gif) no-repeat top left; }
+#home div.info h3			{ font-size: 1.6em; }
 
 a.more				{ font-weight: bold; text-transform: uppercase; margin-left: 5px;}
 
@@ -223,12 +234,14 @@ div.feature p		{ margin: 0; }
 .womenshe			{ background-position: 0 -1530px; }
 
 
-div.horizontalTabs		{ position: relative; border-width: 0;}
+div.horizontalTabs		{ margin-top: 0;position: relative; border-width: 0; }
 .horizontalTabs ul,
 .horizontalTabs ul li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; }
-.horizontalTabs ul		{ display: block; padding-top: 5px;margin-bottom: 5px; margin-top: 5px;z-index: 10; border-bottom-width: 0;}
-.horizontalTabs ul li	{ background: #ddd;cursor: pointer; padding: 2px; background-color: #ccc; font-weight: normal; margin: 5px 2px 3px 2px; display: inline; padding-right: 10px;}
-.horizontalTabs ul li.active	{ font-weight: bold;background: #FFF; border-width: 0;text-decoration: none;}
-.horizontalTabs .contentwrap {margin: 0; border: 2px solid #fff; padding: 0;position: relative; }
-.horizontalTabs .contentwrap ul li	{ display: list-item; background: #fff;list-style-type: disc; margin-bottom: 0; padding: 0; border-width: 0;}
-.horizontalTabs .contentwrap ul { padding-left: 18px; border-bottom: 1px solid #ccc; padding-bottom: 10px; margin-bottom: 10px;}
+.horizontalTabs ul		{ display: block; padding-top: 0; padding-top: 3px;margin-bottom: 5px; margin-top: 5px;z-index: 10; border-bottom-width: 0; background: url(../images/pone_home_tab_bg.gif) no-repeat top left; border-bottom: 1px solid #ccc;}
+.horizontalTabs ul li	{ background: url(../images/pone_home_mostannotated.gif) no-repeat;cursor: pointer; padding: 2px; font-weight: normal; margin: 5px 0 3px 0; display: inline; padding: 6px 10px 6px 30px; color: #444;}
+.horizontalTabs ul.articles	{ background: #FFF!important;}
+.horizotnalTabs ul li li { color: #069; }
+.horizontalTabs ul li.active	{ background: #FFF url(../images/pone_home_mostrecent.gif) no-repeat; font-weight: normal;}
+.horizontalTabs .contentwrap {background: transparent;margin: 10px; border-width: 0; padding: 0;position: relative; }
+.horizontalTabs .contentwrap ul li	{ display: list-item; background: transparent;list-style-type: disc; margin-bottom: 0; padding: 0; border-width: 0;}
+.horizontalTabs .contentwrap ul { padding-left: 18px; padding-bottom: 10px; margin-bottom: 10px;}
