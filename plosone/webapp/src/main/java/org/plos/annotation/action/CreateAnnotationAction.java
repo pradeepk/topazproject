@@ -148,22 +148,23 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    * @throws org.plos.ApplicationException ApplicationException
    */
   public String getTargetContext() throws ApplicationException {
+    if (StringUtils.isBlank(startPath)) {
+      return null;
+    }
+
     try {
       String context;
-      if (startPath == null || startPath.length() == 0){
-        return null;
-      }
       if (startPath.equals(endPath)) {
         final int length = endOffset - startOffset;
         if (length < 0) {
           final String errorMessage = "Invalid length: " + length + " of the annotated content";
-		  addFieldError("endOffset", errorMessage);
+          addFieldError("endOffset", errorMessage);
           throw new ApplicationException(errorMessage);
         }
-		context = createStringRangeFragment(startPath, startOffset, length);
+        context = createStringRangeFragment(startPath, startOffset, length);
       } else {
         context = createStringRangeFragment(startPath, startOffset) +
-              "/range-to(" + createStringRangeFragment(endPath, endOffset) + ")";
+                "/range-to(" + createStringRangeFragment(endPath, endOffset) + ")";
       }
       log.debug("xpointer fragment =" + context);
       return target + "#xpointer(" + URLEncoder.encode(context, "UTF-8") + ")";
