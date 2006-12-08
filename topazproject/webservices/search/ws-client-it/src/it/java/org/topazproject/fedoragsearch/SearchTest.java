@@ -41,7 +41,7 @@ public class SearchTest extends TestCase {
   protected static final String ARTICLES_SVC_URL =
     "http://localhost:9997/ws-articles/services/ArticleServicePort";
   protected static final String SEARCH_SVC_URL =
-    "http://localhost:9092/ws-search/services/FedoraGenericSearchServicePort";
+    "http://localhost:9092/ws-search-webapp-0.5-SNAPSHOT/services/FedoraGenericSearchServicePort";
 
   protected static final String[][] TEST_ARTICLES = {
     { "info:doi/10.1371/journal.pbio.0020294", "/pbio.0020294.zip" },
