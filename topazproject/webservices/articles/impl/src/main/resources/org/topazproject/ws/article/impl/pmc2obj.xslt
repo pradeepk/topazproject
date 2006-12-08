@@ -337,10 +337,7 @@
     </xsl:if>
 
     <xsl:variable name="ctxt-obj" as="element()?"
-        select="$sec-obj-refs[$idx]/(self::supplementary-material | parent::fig |
-                                     parent::table-wrap | parent::disp-formula |
-                                     parent::simple-display | parent::block-display |
-                                     parent::just-base-display)[1]"/>
+        select="$sec-obj-refs[$idx]/(parent::* | self::supplementary-material)[last()]"/>
     <xsl:if test="$ctxt-obj">
       <topaz:contextElement><xsl:value-of select="local-name($ctxt-obj)"/></topaz:contextElement>
       <xsl:if test="$ctxt-obj/label">
