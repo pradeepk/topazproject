@@ -20,37 +20,30 @@
   <#if (totalNoOfResults%pageSize > 0) >
     <#assign totalPages = totalPages + 1>
   </#if>
-	<h2>Search Results</h2>
+	<h1>Search Results</h1>
 
 	<div id="search-results">
-		<p><strong>There are about ${totalNoOfResults} results for &quot;${query}&quot;</strong></p>
+		<p>There are about ${totalNoOfResults} results for <strong>&quot;${query}&quot;</strong></p>
     <@renderSearchPaginationLinks totalPages/>
   	<#if totalNoOfResults gt 0>
-		<table>
-			<tr>
-				<th class="results-title">Title</th>
-				<th class="results-date">Publication Date</th>
-				<th class="results-author">Author(s)</th>
-			</tr>
+	<ul>
 			<#list searchResults as hit>
-			<tr>
-				<td class="results-title">
-					<span class="results-item-title">
+			<li>
+				<span class="date">Published ${hit.date?string("yyyy-MM-dd")}</td>
+				<span class="article">
             <#if hit.contentModel == "PlosArticle">
               <@ww.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${hit.pid}" includeParams="none"/>
-              <@ww.a href="%{fetchArticleURL}" title="Read Open Access Article" cssClass="article icon">${hit.title}</@ww.a>
+              <@ww.a href="%{fetchArticleURL}" title="Read Open Access Article">${hit.title}</@ww.a></span>
             <#else>
               <a href="#">${hit.title}</a>
             </#if>
-          </span>
-					<span class="results-item-preview">${hit.highlight}</span>
-        <!-- hitScore: ${hit.hitScore} -->
-        </td>
-				<td class="results-date">${hit.date?string("yyyy-MM-dd")}</td>
-				<td class="results-author">${hit.creator}</td>
-			</tr>
+        </span>
+		<span class="cite">${hit.highlight}</span>
+       
+	   <span class="authors"> <!-- hitScore: ${hit.hitScore} -->
+${hit.creator}</span></li>
 			</#list>
-		</table>
+		</ul>
     <@renderSearchPaginationLinks totalPages/>
 		</#if>
 	</div>
