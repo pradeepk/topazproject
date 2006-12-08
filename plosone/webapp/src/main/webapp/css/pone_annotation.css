@@ -182,6 +182,7 @@ ol.radio label		{ font-weight: bold; position: absolute; left: 3em; }
 
 table.directory		{ width: 95%; }
 .directory td		{ background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; border-bottom: 1px solid #ccc; border-right: 1px solid #ccc;}
+.directory td.last	{ background: #ddd; padding-top: 0; padding-bottom: 0; font-size: .9em; border-width: 0; border-bottom: 5px solid #fff;font-style: italic; }
 .directory td.title	{ background: #eee; }
 .directory td.replies { width: 8em; }
 .directory td.replies,
