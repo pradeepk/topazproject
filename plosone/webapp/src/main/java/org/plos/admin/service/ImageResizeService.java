@@ -1,6 +1,5 @@
 package org.plos.admin.service;
 
-
 import java.awt.RenderingHints;
 import java.awt.Transparency;
 import java.awt.color.ColorSpace;
@@ -29,59 +28,62 @@ import org.apache.commons.logging.LogFactory;
 import com.sun.media.jai.codec.PNGEncodeParam;
 
 public class ImageResizeService {
-	
-	private static final Log log = LogFactory.getLog(ImageResizeService.class);	
-	//private BufferedImage image;
-	private RenderedOp srcImage;
-	private PNGEncodeParam encodeParam;
+
+  private static final Log log = LogFactory.getLog(ImageResizeService.class);
+
+  // private BufferedImage image;
+  private RenderedOp srcImage;
+
+  private PNGEncodeParam encodeParam;
+
   private boolean isCMYK = false;
+
   private RenderingHints hints;
-  
-	public ImageResizeService() {
-		//ImageIO.setUseCache(true);
-		//ImageIO.setCacheDirectory(null);
-	
-	  hints = new RenderingHints (RenderingHints.KEY_INTERPOLATION, RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+
+  public ImageResizeService() {
+    // ImageIO.setUseCache(true);
+    // ImageIO.setCacheDirectory(null);
+
+    hints = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
+        RenderingHints.VALUE_INTERPOLATION_BICUBIC);
     hints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
     hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    hints.put(RenderingHints.KEY_ALPHA_INTERPOLATION, RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+    hints.put(RenderingHints.KEY_ALPHA_INTERPOLATION,
+        RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
     hints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
     hints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-//    hints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+    // hints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
   }
 
-  
-  
   /**
    * Store the contents of the image located by the url parameter into the object
    * 
    * @param url
    * @throws MalformedURLException
    */
-	public void captureImage(String url) throws MalformedURLException {
-    srcImage = JAI.create("URL", new ParameterBlock().add(new URL (url)));
-		if (log.isDebugEnabled()) {
-		  log.debug("retrieved image from URL: " + url.toString());
+  public void captureImage(String url) throws MalformedURLException {
+    srcImage = JAI.create("URL", new ParameterBlock().add(new URL(url)));
+    if (log.isDebugEnabled()) {
+      log.debug("retrieved image from URL: " + url.toString());
     }
-    if (srcImage.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_CMYK ) {
+    if (srcImage.getColorModel().getColorSpace().getType() == ColorSpace.TYPE_CMYK) {
       isCMYK = true;
       srcImage = convertCMYKtoRGB(srcImage);
       if (log.isDebugEnabled()) {
         log.debug("Image is of type CMYK");
       }
     }
-	}
-	
-  
+  }
+
   private RenderedOp createScaledImage(float widthPercent, float heightPercent) {
     RenderedOp transformedImage;
-    
-//  Scale the image to half its size in each direction
+
+    // Scale the image to half its size in each direction
     ParameterBlock pb;
 
-    if ((isCMYK) && ((srcImage.getWidth() * widthPercent > 512) || 
-        (srcImage.getHeight() * heightPercent > 512))) {
+    if ((isCMYK)
+        && ((srcImage.getWidth() * widthPercent > 512) || (srcImage.getHeight() * heightPercent > 512))) {
       pb = new ParameterBlock();
       pb.addSource(srcImage);
       pb.add(5);
@@ -106,8 +108,8 @@ public class ImageResizeService {
     } else {
       pb = new ParameterBlock();
       pb.addSource(srcImage);
-      pb.add((double)widthPercent);
-      pb.add((double)heightPercent);
+      pb.add((double) widthPercent);
+      pb.add((double) heightPercent);
       pb.add(hints);
       if (log.isDebugEnabled()) {
         log.debug("SubsampleAverage");
@@ -116,74 +118,74 @@ public class ImageResizeService {
     }
     return transformedImage;
   }
-  
-  private byte[] renderedOpToPNGByteArray (RenderedOp inImage) {
+
+  private byte[] renderedOpToPNGByteArray(RenderedOp inImage) {
     byte[] array = new byte[inImage.getHeight() * inImage.getWidth()];
     ByteArrayOutputStream stream = new ByteArrayOutputStream(array.length);
     JAI.create("encode", inImage, stream, "PNG");
     return stream.toByteArray();
-    
-  }
-  private byte[] scaleFixHeight(float fixHeight) {
-    int height= srcImage.getHeight ();
-    float scale;
-    if (height > fixHeight){
-      scale = fixHeight/height;
-    } else {
-      scale = 1;
-    }
-    RenderedOp newImage; 
-    if (scale == 1) {
-      newImage = srcImage;
-    } else {
-      newImage = createScaledImage(scale, scale);
-    }
-    return renderedOpToPNGByteArray (newImage);
+
   }
 
-  private byte[] scaleFixWidth (float fixWidth) {
-    int width = srcImage.getWidth ();
+  private byte[] scaleFixHeight(float fixHeight) {
+    int height = srcImage.getHeight();
     float scale;
-    if (width > fixWidth){
-      scale = fixWidth/width;
+    if (height > fixHeight) {
+      scale = fixHeight / height;
     } else {
       scale = 1;
     }
-    RenderedOp newImage; 
+    RenderedOp newImage;
     if (scale == 1) {
       newImage = srcImage;
     } else {
       newImage = createScaledImage(scale, scale);
     }
-    return renderedOpToPNGByteArray (newImage);
-  }  
-  
-  private byte[] scaleLargestDim (float oneSide){
+    return renderedOpToPNGByteArray(newImage);
+  }
+
+  private byte[] scaleFixWidth(float fixWidth) {
+    int width = srcImage.getWidth();
+    float scale;
+    if (width > fixWidth) {
+      scale = fixWidth / width;
+    } else {
+      scale = 1;
+    }
+    RenderedOp newImage;
+    if (scale == 1) {
+      newImage = srcImage;
+    } else {
+      newImage = createScaledImage(scale, scale);
+    }
+    return renderedOpToPNGByteArray(newImage);
+  }
+
+  private byte[] scaleLargestDim(float oneSide) {
     if (log.isDebugEnabled()) {
       log.debug("oneSide = " + oneSide);
     }
-    
+
     int height = srcImage.getHeight();
-    int width = srcImage.getWidth ();
+    int width = srcImage.getWidth();
 
     float scale;
-    if ((height > width) && (height > oneSide)){
-      scale = oneSide/height;
-    } else if (width > oneSide){
-      scale = oneSide/width;
+    if ((height > width) && (height > oneSide)) {
+      scale = oneSide / height;
+    } else if (width > oneSide) {
+      scale = oneSide / width;
     } else {
       scale = 1;
     }
-    RenderedOp newImage; 
+    RenderedOp newImage;
     if (scale == 1) {
       newImage = srcImage;
     } else {
       newImage = createScaledImage(scale, scale);
     }
-    return renderedOpToPNGByteArray (newImage);
+    return renderedOpToPNGByteArray(newImage);
   }
- 
-  
+
   /**
    * Scale the image to 70 pixels in width into PNG
    * 
@@ -191,10 +193,10 @@ public class ImageResizeService {
    * @throws FileNotFoundException
    * @throws IOException
    */
-	public byte[] getSmallImage() throws FileNotFoundException, IOException {
-		return scaleFixWidth(70.0f);
-	}
-	
+  public byte[] getSmallImage() throws FileNotFoundException, IOException {
+    return scaleFixWidth(70.0f);
+  }
+
   /**
    * Scale the image to at most 600 pixels in either direction into a PNG
    * 
@@ -202,10 +204,10 @@ public class ImageResizeService {
    * @throws FileNotFoundException
    * @throws IOException
    */
-	public byte[] getMediumImage() throws FileNotFoundException, IOException {
-		return scaleLargestDim(600.0f);
-	}
-	
+  public byte[] getMediumImage() throws FileNotFoundException, IOException {
+    return scaleLargestDim(600.0f);
+  }
+
   /**
    * Don't scale the image, just return a PNG version of it
    * 
@@ -213,11 +215,10 @@ public class ImageResizeService {
    * @throws FileNotFoundException
    * @throws IOException
    */
-	public byte[] getLargeImage() throws FileNotFoundException, IOException {
-		return renderedOpToPNGByteArray(srcImage);
-	}
-	
-  
+  public byte[] getLargeImage() throws FileNotFoundException, IOException {
+    return renderedOpToPNGByteArray(srcImage);
+  }
+
   /**
    * 
    * 
@@ -227,49 +228,40 @@ public class ImageResizeService {
    */
   public byte[] getPageWidthImage() throws FileNotFoundException, IOException {
     return scaleFixWidth(400.0f);
-  }  
-  
+  }
+
   public byte[] getInlineImage() throws FileNotFoundException, IOException {
     return scaleFixHeight(21.0f);
-  }  
-  
+  }
+
   private RenderedOp convertCMYKtoRGB(RenderedOp op) {
     try {
-        ParameterBlockJAI pb;
-        ICC_Profile cmyk_profile = ICC_Profile.getInstance("CMYK.pf"); //CMYK.pf
+      ParameterBlockJAI pb;
+      ICC_Profile cmyk_profile = ICC_Profile.getInstance("CMYK.pf"); // CMYK.pf
 
-        ICC_ColorSpace cmyk_icp = new ICC_ColorSpace(cmyk_profile);
-        ColorModel cmyk_cm =
-            RasterFactory.createComponentColorModel(op.getSampleModel().getDataType(),
-                                                    cmyk_icp,
-                                                    false,
-                                                    false,
-                                                    Transparency.OPAQUE);
+      ICC_ColorSpace cmyk_icp = new ICC_ColorSpace(cmyk_profile);
+      ColorModel cmyk_cm = RasterFactory.createComponentColorModel(op.getSampleModel()
+          .getDataType(), cmyk_icp, false, false, Transparency.OPAQUE);
 
-        ImageLayout cmyk_il = new ImageLayout();
-        cmyk_il.setColorModel(cmyk_cm);
-        RenderingHints cmyk_hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, cmyk_il);
-        pb = new ParameterBlockJAI("format");
-        pb.addSource(op);
-        pb.setParameter("datatype", op.getSampleModel().getDataType());
-        op = JAI.create("format", pb, cmyk_hints);
-        ColorSpace rgb_icp = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        ColorModel rgb_cm =
-            RasterFactory.createComponentColorModel(op.getSampleModel().getDataType(),
-                                                    rgb_icp,
-                                                    false,
-                                                    false,
-                                                    Transparency.OPAQUE);
-        ImageLayout rgb_il = new ImageLayout();
-        rgb_il.setSampleModel(rgb_cm.createCompatibleSampleModel(op.getWidth(),
-                                                                 op.getHeight()));
-        RenderingHints rgb_hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, rgb_il);
-        pb = new ParameterBlockJAI("colorconvert");
-        pb.addSource(op);
-        pb.setParameter("colormodel", rgb_cm);
-        op = JAI.create("colorconvert", pb, rgb_hints);
-    } catch(Exception ex) {
-        ex.printStackTrace();
+      ImageLayout cmyk_il = new ImageLayout();
+      cmyk_il.setColorModel(cmyk_cm);
+      RenderingHints cmyk_hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, cmyk_il);
+      pb = new ParameterBlockJAI("format");
+      pb.addSource(op);
+      pb.setParameter("datatype", op.getSampleModel().getDataType());
+      op = JAI.create("format", pb, cmyk_hints);
+      ColorSpace rgb_icp = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+      ColorModel rgb_cm = RasterFactory.createComponentColorModel(
+          op.getSampleModel().getDataType(), rgb_icp, false, false, Transparency.OPAQUE);
+      ImageLayout rgb_il = new ImageLayout();
+      rgb_il.setSampleModel(rgb_cm.createCompatibleSampleModel(op.getWidth(), op.getHeight()));
+      RenderingHints rgb_hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, rgb_il);
+      pb = new ParameterBlockJAI("colorconvert");
+      pb.addSource(op);
+      pb.setParameter("colormodel", rgb_cm);
+      op = JAI.create("colorconvert", pb, rgb_hints);
+    } catch (Exception ex) {
+      ex.printStackTrace();
     }
     return op;
 

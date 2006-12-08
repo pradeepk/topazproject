@@ -1,4 +1,4 @@
-  package org.plos.admin.service;
+package org.plos.admin.service;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -47,344 +47,363 @@ import org.topazproject.ws.article.RepresentationInfo;
 
 /**
  * 
- * @author alan
- * Manage documents on server. Ingest and access ingested documents.
+ * @author alan Manage documents on server. Ingest and access ingested documents.
  */
 public class DocumentManagementService {
 
-	private static final Log log = LogFactory.getLog(DocumentManagementService.class);	
-	private ArticleWebService articleWebService;
-	private FetchArticleService fetchArticleService;
-	private String documentDirectory;
-	private String ingestedDocumentDirectory;
-	private CrossRefPosterService crossRefPosterService;
-	private File xslTemplate;	
-	
-	public DocumentManagementService() {}
-	
-	public void init(){}
-	
-	/** Set the article web service
-	 * @param articleWebService articleWebService
-	 */
-	public void setArticleWebService(final ArticleWebService articleWebService) {
-		this.articleWebService = articleWebService;
-	}
-	
-	public void setFetchArticleService(final FetchArticleService fetchArticleService) {
-		this.fetchArticleService = fetchArticleService;
-	}	
+  private static final Log log = LogFactory.getLog(DocumentManagementService.class);
 
-	public void setDocumentDirectory(final String documentDirectory) {
-		this.documentDirectory = documentDirectory;
-	}
+  private ArticleWebService articleWebService;
 
-	public String getDocumentDirectory() {
-		return documentDirectory;
-	}
-	
-	public void setIngestedDocumentDirectory(final String ingestedDocumentDirectory) {
-		this.ingestedDocumentDirectory = ingestedDocumentDirectory;
-	}
-	
-	public void setCrossRefPosterService(final CrossRefPosterService crossRefPosterService) {
-		this.crossRefPosterService = crossRefPosterService;
-	}	
+  private FetchArticleService fetchArticleService;
 
-	public void setXslTemplate(final String xslTemplate) throws URISyntaxException {
-	    File file = getAsFile(xslTemplate);
-	    if (!file.exists()) {
-	      file = new File(xslTemplate);
-	    }
-	    this.xslTemplate = file;
-	}
+  private String documentDirectory;
 
-	/**
-	 * @param filenameOrURL filenameOrURL
-	 * @throws URISyntaxException URISyntaxException
-	 * @return the local or remote file or url as a java.io.File
-	 */
-	private File getAsFile(final String filenameOrURL) throws URISyntaxException {
-	  final URL resource = getClass().getResource(filenameOrURL);
-	  if (null == resource) {
-	    //access it as a local file resource
-	    return new File(FileUtils.getFileName(filenameOrURL));
-	  } else {
-	    return new File(resource.toURI());
-	  }
-	}
-	
+  private String ingestedDocumentDirectory;
+
+  private CrossRefPosterService crossRefPosterService;
+
+  private File xslTemplate;
+
+  public DocumentManagementService() {
+  }
+
+  public void init() {
+  }
+
   /**
-   * Deletes an article from Topaz 
+   * Set the article web service
    * 
-   * @param objectURI - URI of the article to delete
+   * @param articleWebService
+   *          articleWebService
+   */
+  public void setArticleWebService(final ArticleWebService articleWebService) {
+    this.articleWebService = articleWebService;
+  }
+
+  public void setFetchArticleService(final FetchArticleService fetchArticleService) {
+    this.fetchArticleService = fetchArticleService;
+  }
+
+  public void setDocumentDirectory(final String documentDirectory) {
+    this.documentDirectory = documentDirectory;
+  }
+
+  public String getDocumentDirectory() {
+    return documentDirectory;
+  }
+
+  public void setIngestedDocumentDirectory(final String ingestedDocumentDirectory) {
+    this.ingestedDocumentDirectory = ingestedDocumentDirectory;
+  }
+
+  public void setCrossRefPosterService(final CrossRefPosterService crossRefPosterService) {
+    this.crossRefPosterService = crossRefPosterService;
+  }
+
+  public void setXslTemplate(final String xslTemplate) throws URISyntaxException {
+    File file = getAsFile(xslTemplate);
+    if (!file.exists()) {
+      file = new File(xslTemplate);
+    }
+    this.xslTemplate = file;
+  }
+
+  /**
+   * @param filenameOrURL
+   *          filenameOrURL
+   * @throws URISyntaxException
+   *           URISyntaxException
+   * @return the local or remote file or url as a java.io.File
+   */
+  private File getAsFile(final String filenameOrURL) throws URISyntaxException {
+    final URL resource = getClass().getResource(filenameOrURL);
+    if (null == resource) {
+      // access it as a local file resource
+      return new File(FileUtils.getFileName(filenameOrURL));
+    } else {
+      return new File(resource.toURI());
+    }
+  }
+
+  /**
+   * Deletes an article from Topaz
+   * 
+   * @param objectURI -
+   *          URI of the article to delete
    * @throws RemoteException
    * @throws NoSuchIdException
    */
-  public void delete (String objectURI) throws RemoteException, NoSuchIdException {
+  public void delete(String objectURI) throws RemoteException, NoSuchIdException {
     articleWebService.delete(objectURI);
   }
-  
-  
-	/**
-	 * 
-	 * @param pathname of file on server to be ingested
-	 * @return URI of ingested document
-	 * @throws IngestException
-	 * @throws DuplicateIdException
-	 * @throws IOException
-	 * @throws TransformerException
-	 * @throws NoSuchArticleIdException 
-	 * @throws NoSuchObjectIdException 
+
+  /**
+   * 
+   * @param pathname
+   *          of file on server to be ingested
+   * @return URI of ingested document
+   * @throws IngestException
+   * @throws DuplicateIdException
+   * @throws IOException
+   * @throws TransformerException
+   * @throws NoSuchArticleIdException
+   * @throws NoSuchObjectIdException
    * @throws ImageResizeException
-	 */  
-	public String ingest(String pathname) throws IngestException, DuplicateIdException, ImageResizeException, 
-			IOException, TransformerException, NoSuchArticleIdException, NoSuchObjectIdException {
-		return ingest(new File(pathname));
-	}
-	
-	/**
-	 * Ingest the file. If succesful move it to the ingestedDocumentDirectory
-   * then create the Transformed CrossRef xml file and deposit that in the Directory 
-   * as well.
+   */
+  public String ingest(String pathname) throws IngestException, DuplicateIdException,
+      ImageResizeException, IOException, TransformerException, NoSuchArticleIdException,
+      NoSuchObjectIdException {
+    return ingest(new File(pathname));
+  }
+
+  /**
+   * Ingest the file. If succesful move it to the ingestedDocumentDirectory then create the
+   * Transformed CrossRef xml file and deposit that in the Directory as well.
    * 
    * 
-	 * @param file to be ingested
-	 * @return URI of ingested document
-	 * @throws IngestException
-	 * @throws DuplicateIdException
-	 * @throws IOException
-	 * @throws TransformerException
-	 * @throws NoSuchArticleIdException 
-	 * @throws NoSuchObjectIdException 
+   * @param file
+   *          to be ingested
+   * @return URI of ingested document
+   * @throws IngestException
+   * @throws DuplicateIdException
+   * @throws IOException
+   * @throws TransformerException
+   * @throws NoSuchArticleIdException
+   * @throws NoSuchObjectIdException
    * @throws ImageResizeException
-	 */
-	public String ingest(File file) throws IngestException, DuplicateIdException, ImageResizeException,
-					IOException, TransformerException, NoSuchArticleIdException, NoSuchObjectIdException {
-		String uri;
-		File ingestedDir = new File(ingestedDocumentDirectory);
-		log.info("Ingesting: " + file);
+   */
+  public String ingest(File file) throws IngestException, DuplicateIdException,
+      ImageResizeException, IOException, TransformerException, NoSuchArticleIdException,
+      NoSuchObjectIdException {
+    String uri;
+    File ingestedDir = new File(ingestedDocumentDirectory);
+    log.info("Ingesting: " + file);
     DataHandler dh = new DataHandler(file.toURL());
-		uri = articleWebService.ingest(dh);
-		log.info("Ingested: " + file);
-		try {
-			resizeImages(uri);
-		} catch (Exception e) {
-			log.error("Resize images failed for article " + uri, e);
-			ImageResizeException ire = new ImageResizeException (uri);
+    uri = articleWebService.ingest(dh);
+    log.info("Ingested: " + file);
+    try {
+      resizeImages(uri);
+    } catch (Exception e) {
+      log.error("Resize images failed for article " + uri, e);
+      ImageResizeException ire = new ImageResizeException(uri);
       ire.initCause(e);
       throw ire;
-		}
-		try {
-		  dh.getOutputStream().close();
+    }
+    try {
+      dh.getOutputStream().close();
     } catch (Exception e) {
 
     }
-		log.info("Resized images");
-		generateCrossRefInfoDoc(file, uri);
-		log.info("Generated Xref for file: " + file);
-		if (! file.renameTo(new File(ingestedDir, file.getName()))) {
-			throw new IOException("Cannot relocate ingested documented " + file.getName());
-		}
-		log.info("Ingested and relocated " + file + ":" + uri);
-		return uri;
-	}
-	
-	private void resizeImages(String uri) throws NoSuchArticleIdException, 
-			NoSuchObjectIdException, HttpException, IOException {
-		
-		ImageResizeService irs;
-		
-		SecondaryObject[] objects = articleWebService.listSecondaryObjects(uri);
+    log.info("Resized images");
+    generateCrossRefInfoDoc(file, uri);
+    log.info("Generated Xref for file: " + file);
+    if (!file.renameTo(new File(ingestedDir, file.getName()))) {
+      throw new IOException("Cannot relocate ingested documented " + file.getName());
+    }
+    log.info("Ingested and relocated " + file + ":" + uri);
+    return uri;
+  }
+
+  private void resizeImages(String uri) throws NoSuchArticleIdException, NoSuchObjectIdException,
+      HttpException, IOException {
+
+    ImageResizeService irs;
+
+    SecondaryObject[] objects = articleWebService.listSecondaryObjects(uri);
     SecondaryObject object = null;
     for (int i = 0; i < objects.length; ++i) {
-			//try {
+      // try {
       irs = new ImageResizeService();
       object = objects[i];
       if (log.isDebugEnabled()) {
         log.debug("retrieving Object Info for: " + object.getUri());
       }
-			ObjectInfo info = articleWebService.getObjectInfo(object.getUri());
+      ObjectInfo info = articleWebService.getObjectInfo(object.getUri());
       if (log.isDebugEnabled()) {
         log.debug("object Info " + info);
         log.debug("contextElement" + info.getContextElement());
       }
-      String context =  info.getContextElement();
-      if (context != null){
+      String context = info.getContextElement();
+      if (context != null) {
         context = context.trim();
         if (context.equalsIgnoreCase("fig") || context.equalsIgnoreCase("table-wrap")) {
           RepresentationInfo rep = object.getRepresentations()[0];
-  				if (log.isDebugEnabled()) {
-  				  log.debug ("Found image to resize: " + rep.getURL() + " repsize-" + rep.getSize());
-          }
-  				irs.captureImage(rep.getURL());
-  				log.debug ("Captured image");
-  				articleWebService.setRepresentation(object.getUri(), "PNG_S", 
-  						          new DataHandler(new PngDataSource(irs.getSmallImage())));
-  				log.debug ("Set small");
-  				articleWebService.setRepresentation(object.getUri(), "PNG_M", 
-  						new DataHandler(new PngDataSource(irs.getMediumImage())));
-  				log.debug ("Set medium");						
-  				articleWebService.setRepresentation(
-  						object.getUri(), "PNG_L", 
-  						new DataHandler(new PngDataSource(irs.getLargeImage())));	
-  				log.debug ("Set large");
-  			} else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
-  		        RepresentationInfo rep = object.getRepresentations()[0];
-  		        if (log.isDebugEnabled()) {
-  		          log.debug ("Found image to resize for disp-forumla: " + rep.getURL());
-              }
-  		        irs.captureImage(rep.getURL());
-  		        log.debug("Captured image");
-  		        articleWebService.setRepresentation(object.getUri(), "PNG", 
-  		                  new DataHandler(new PngDataSource(irs.getPageWidthImage())));
-  			} else if (context.equals("inline-formula")) {
-          RepresentationInfo rep = object.getRepresentations()[0];
-          if (log.isDebugEnabled()){
-            log.debug ("Found image to resize for inline formula: " + rep.getURL());
+          if (log.isDebugEnabled()) {
+            log.debug("Found image to resize: " + rep.getURL() + " repsize-" + rep.getSize());
           }
           irs.captureImage(rep.getURL());
-          log.debug ("Captured image");
-          articleWebService.setRepresentation(object.getUri(), "PNG", 
-                      new DataHandler(new PngDataSource(irs.getInlineImage())));     
+          log.debug("Captured image");
+          articleWebService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
+              new PngDataSource(irs.getSmallImage())));
+          log.debug("Set small");
+          articleWebService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
+              new PngDataSource(irs.getMediumImage())));
+          log.debug("Set medium");
+          articleWebService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
+              new PngDataSource(irs.getLargeImage())));
+          log.debug("Set large");
+        } else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
+          RepresentationInfo rep = object.getRepresentations()[0];
+          if (log.isDebugEnabled()) {
+            log.debug("Found image to resize for disp-forumla: " + rep.getURL());
+          }
+          irs.captureImage(rep.getURL());
+          log.debug("Captured image");
+          articleWebService.setRepresentation(object.getUri(), "PNG", new DataHandler(
+              new PngDataSource(irs.getPageWidthImage())));
+        } else if (context.equals("inline-formula")) {
+          RepresentationInfo rep = object.getRepresentations()[0];
+          if (log.isDebugEnabled()) {
+            log.debug("Found image to resize for inline formula: " + rep.getURL());
+          }
+          irs.captureImage(rep.getURL());
+          log.debug("Captured image");
+          articleWebService.setRepresentation(object.getUri(), "PNG", new DataHandler(
+              new PngDataSource(irs.getInlineImage())));
         }
-    //Don't continue trying to process images if one of them failed
-      /*} catch (Exception e) {
-      
-      log.error("Couldn't resize image : " + ((object == null) ? "null" : object.getUri()));
-    }*/
+        // Don't continue trying to process images if one of them failed
+        /*
+         * } catch (Exception e) {
+         * 
+         * log.error("Couldn't resize image : " + ((object == null) ? "null" : object.getUri())); }
+         */
       }
-		}
-	}
-	
-	/**
-	 * @return List of filenames of files in uploadable directory  on server
-	 */
-	public ArrayList<String> getUploadableFiles() {
-		ArrayList<String> documents = new ArrayList<String>();
-		File dir = new File(documentDirectory);
-		if (dir.isDirectory()) {
-			String filenames[] = dir.list();
-			for (int i = 0; i < filenames.length; ++i) {
-				if (filenames[i].toLowerCase().endsWith(".zip"))
-						documents.add(filenames[i]);
-			}
-		}
-		
+    }
+  }
+
+  /**
+   * @return List of filenames of files in uploadable directory on server
+   */
+  public ArrayList<String> getUploadableFiles() {
+    ArrayList<String> documents = new ArrayList<String>();
+    File dir = new File(documentDirectory);
+    if (dir.isDirectory()) {
+      String filenames[] = dir.list();
+      for (int i = 0; i < filenames.length; ++i) {
+        if (filenames[i].toLowerCase().endsWith(".zip"))
+          documents.add(filenames[i]);
+      }
+    }
+
     Collections.sort(documents);
     return documents;
-	}
+  }
 
-	/**
-	 * @return A list of URIs of ingested documents in ST_DISABLED
-	 * @throws RemoteException
-	 * @throws ApplicationException
-	 */
-	public Collection<String> getPublishableFiles() throws RemoteException, ApplicationException {
-		ArrayList<String> articles = fetchArticleService.getArticles(null, null, new int[] {Article.ST_DISABLED});
+  /**
+   * @return A list of URIs of ingested documents in ST_DISABLED
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
+  public Collection<String> getPublishableFiles() throws RemoteException, ApplicationException {
+    ArrayList<String> articles = fetchArticleService.getArticles(null, null,
+        new int[] { Article.ST_DISABLED });
     Collections.sort(articles);
     return articles;
-	}
-	
-	private void generateCrossRefInfoDoc(File file, String uri) throws ZipException, IOException, TransformerException {
-		ZipFile zip = new ZipFile(file);
-		Enumeration entries = zip.entries();
-		
-		try {
-			while (entries.hasMoreElements()) {
-				ZipEntry entry = (ZipEntry) entries.nextElement();
-				if (entry.getName().toLowerCase().endsWith(".xml")) {
-					File source_xml = File.createTempFile("xref-doi-src", ".xml");
-					File target_xml = new File(ingestedDocumentDirectory, uriToFilename(uri) + ".xml");		
-					
-					BufferedInputStream fis = new BufferedInputStream(zip.getInputStream(entry));
-					BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(source_xml));
-					byte[] buf = new byte[(int)entry.getSize()];
-					int size;
-					while (-1 != (size = fis.read(buf))) {
-							bos.write(buf, 0, size);
-					}
-					bos.flush();
-					bos.close();
-					fis.close();
-					try {
-						target_xml = crossRefXML(source_xml, target_xml);
-					} finally {
-						source_xml.delete();
-					}
-					break;
-				}
-			}
-		} finally {
-			zip.close();
-		}
-	}	
-	
-	private File crossRefXML(File src, File dest) throws IOException, TransformerFactoryConfigurationError, TransformerException {
+  }
 
-		Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(xslTemplate));
-		
-		StreamSource s_source = new StreamSource(src);
-		StreamResult s_result = new StreamResult(dest);
-		t.transform(s_source, s_result);
-		return dest;	
-	}
+  private void generateCrossRefInfoDoc(File file, String uri) throws ZipException, IOException,
+      TransformerException {
+    ZipFile zip = new ZipFile(file);
+    Enumeration entries = zip.entries();
 
-	/**
-	 * @param uri
-	 * @return a string usable as a distinct filename - ':', '/' and '.' -> '_' 
-	 */
-	private String uriToFilename(String uri) {
-		return uri.replace(':', '_').replace('/', '_').replace('.', '_');
-	}
-	
-	/**
-	 * @param uri uri to be published
-	 * Send CrossRef xml file top CrossRef -- if it is _received_ ok then set article
-	 * stat to active
-	 * @throws Exception 
-	 */
-	public void publish(String uri) throws Exception {
-		File xref = new File(ingestedDocumentDirectory, uriToFilename(uri) + ".xml");
-		int stat;
-		if (! xref.exists()) {
-			throw new IOException("Cannot find CrossRef xml");
-		}
-		stat = crossRefPosterService.post(xref);
-		if (200 != stat) {
-			throw new Exception("CrossRef status returned " + new Integer(200).toString());
-		}
-		articleWebService.setState(uri, Article.ST_ACTIVE);
-	}
-	
-	private static class PngDataSource implements DataSource {
-	    private final byte[] src;
-	    private final String ct;
+    try {
+      while (entries.hasMoreElements()) {
+        ZipEntry entry = (ZipEntry) entries.nextElement();
+        if (entry.getName().toLowerCase().endsWith(".xml")) {
+          File source_xml = File.createTempFile("xref-doi-src", ".xml");
+          File target_xml = new File(ingestedDocumentDirectory, uriToFilename(uri) + ".xml");
 
-	    public PngDataSource(byte[] content) {
-	      this(content, "image/png");
-	    }
+          BufferedInputStream fis = new BufferedInputStream(zip.getInputStream(entry));
+          BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(source_xml));
+          byte[] buf = new byte[(int) entry.getSize()];
+          int size;
+          while (-1 != (size = fis.read(buf))) {
+            bos.write(buf, 0, size);
+          }
+          bos.flush();
+          bos.close();
+          fis.close();
+          try {
+            target_xml = crossRefXML(source_xml, target_xml);
+          } finally {
+            source_xml.delete();
+          }
+          break;
+        }
+      }
+    } finally {
+      zip.close();
+    }
+  }
 
-	    public PngDataSource(byte[] content, String contType) {
-	      src = content;
-	      ct  = contType;
-	      log.info("PngDataSource type=" + ct + " size=" + content.length);
-	    }
+  private File crossRefXML(File src, File dest) throws IOException,
+      TransformerFactoryConfigurationError, TransformerException {
 
-	    public InputStream getInputStream() throws IOException {
-	      return new ByteArrayInputStream(src);
-	    }
+    Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(xslTemplate));
 
-	    public OutputStream getOutputStream() throws IOException {
-	      throw new IOException("Not supported");
-	    }
+    StreamSource s_source = new StreamSource(src);
+    StreamResult s_result = new StreamResult(dest);
+    t.transform(s_source, s_result);
+    return dest;
+  }
 
-	    public String getContentType() {
-	      return ct;
-	    }
+  /**
+   * @param uri
+   * @return a string usable as a distinct filename - ':', '/' and '.' -> '_'
+   */
+  private String uriToFilename(String uri) {
+    return uri.replace(':', '_').replace('/', '_').replace('.', '_');
+  }
 
-	    public String getName() {
-	      return "png";
-	    }
-	  }	
+  /**
+   * @param uri
+   *          uri to be published Send CrossRef xml file top CrossRef -- if it is _received_ ok then
+   *          set article stat to active
+   * @throws Exception
+   */
+  public void publish(String uri) throws Exception {
+    File xref = new File(ingestedDocumentDirectory, uriToFilename(uri) + ".xml");
+    int stat;
+    if (!xref.exists()) {
+      throw new IOException("Cannot find CrossRef xml");
+    }
+    stat = crossRefPosterService.post(xref);
+    if (200 != stat) {
+      throw new Exception("CrossRef status returned " + new Integer(200).toString());
+    }
+    articleWebService.setState(uri, Article.ST_ACTIVE);
+  }
+
+  private static class PngDataSource implements DataSource {
+    private final byte[] src;
+
+    private final String ct;
+
+    public PngDataSource(byte[] content) {
+      this(content, "image/png");
+    }
+
+    public PngDataSource(byte[] content, String contType) {
+      src = content;
+      ct = contType;
+      log.info("PngDataSource type=" + ct + " size=" + content.length);
+    }
+
+    public InputStream getInputStream() throws IOException {
+      return new ByteArrayInputStream(src);
+    }
+
+    public OutputStream getOutputStream() throws IOException {
+      throw new IOException("Not supported");
+    }
+
+    public String getContentType() {
+      return ct;
+    }
+
+    public String getName() {
+      return "png";
+    }
+  }
 }
