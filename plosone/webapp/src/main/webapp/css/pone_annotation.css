@@ -170,7 +170,7 @@ div#flagConfirm { display: none; }
 .toolbar li			{ display: inline; margin: 0 10px; font-size: .9em; }
 
 /* wrap with div source when referencing original article */
-div.source			{ border: 2px solid #666; padding: 10px; }
+div.source			{ border-top: 1px solid #004B70; border-bottom: 1px solid #004B70;padding: 10px; }
 /* span wraps original article label */
 div.source span		{ text-transform: uppercase; font-size: .85em; color: #666; font-weight: bold; margin-right: 5px;}
 ol.radio			{ margin: 0; padding: 0; }

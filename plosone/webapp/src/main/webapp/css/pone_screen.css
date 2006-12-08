@@ -38,7 +38,7 @@ th			{ padding: 6px; background-color: #ACF1FF; border: 4px solid #FFF; border-w
 td			{ padding: 6px; background-color: #D2F7FF; border: 4px solid #FFF; border-width: 0 3px 3px 0; }
 /* Default Headings */
 h1, h2, h3	{ font-family: Georgia, "Times New Roman", Times, serif; letter-spacing: -.04em; color: #333; position: relative;}
-h1			{ font-size: 2.2em; font-weight: normal;}
+h1			{ font-size: 2.2em; font-weight: normal; color: #004B70;}
 h2			{ font-size: 1.6em; font-weight: normal; border-bottom: 1px solid #ccc; padding: 2px 0;}
 h3			{ font-size: 1.4em; font-weight: normal; margin: .8em 0; }
 h4			{ font-size: 1.2em; }
@@ -84,6 +84,12 @@ a.rss			{ background-image: url(../images/pone_icon_rss.gif); }
 a.advanced		{ background-image: url(../images/pone_icon_advanced.gif); }
 
 /* Article Icons */
+a.feedback	{ font-weight: bold;}
+a.feedback.icon { background-image: url(../images/pone_icon_feedback.gif); padding-left: 22px;} /* keep at top of all classes to avoid weird ie multiple class bug */
+a.annotation{ background-image: url(../images/pone_icon_annotation.gif); }
+a.discuss	{ background-image: url(../images/pone_icon_discuss.gif); }
+a.commentary{ background-image: url(../images/pone_icon_commentary.gif); }
+
 
 a.xml 		{ background-image: url(../images/pone_sidenav_xml.gif); }
 a.pdf 		{ background-image: url(../images/pone_sidenav_pdf.gif); }
@@ -102,11 +108,7 @@ a.plos		{ background-image: url(../images/jour_sidenav_plos.gif); }
 a.license 	{ background-image: url(../images/jour_sidenav_license.gif); }
 a.google 	{ background-image: url(../images/jour_sidenav_google.gif); }
 
-a.annotation{ background-image: url(../images/pone_icon_annotation.gif); }
-a.discuss	{ background-image: url(../images/pone_icon_discuss.gif); }
-a.commentary{ background-image: url(../images/pone_icon_commentary.gif); }
-a.feedback	{ font-weight: bold;}
-a.feedback.icon { background-image: url(../images/pone_icon_feedback.gif); padding-left: 22px;}
+
 
 /* Article Tooltips : for any js onpage action */
 a.addannotation	{ background-image: url(../images/pone_tooltip_addannotation.gif); }
@@ -488,3 +490,14 @@ div.horizontalTabs		{ position: relative; border-width: 0;}
 .edboard dd { margin: 0 0 5px 0; padding: 0 5px 5px 5px; background-color: #D2F7FF; border-top: 6px solid #D2F7FF; font-size: .85em; text-indent: 10px; }
 
 .static p.intro					{ border: 2px solid #ccc; padding: 10px; background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; color: #000;}
+
+/* ------ Search Styles ----*/
+
+#browseResults ul 		{ margin: 0 30px 0 0; padding: 0; list-style-type: none; }
+#browseResults li,
+#browseResults li span	{ display: block; font-weight: bold; font-size: 1.2em; }
+#browseResults span		{ width: auto; }
+
+#browseResults span.date { color: #666; font-weight: normal; font-size: .9em; }
+
+#browseResults span.citation { font-weight: normal;font-size: .9em; }
