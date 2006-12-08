@@ -147,7 +147,7 @@
 	  </#if>
 			</li>
 		</ol>
-      <div class="btnwrap"><input type="button" id="formSubmit" name="formSubmit" value="Submit" tabindex="119"/></div>
+      <div class="btnwrap"><input type="button" id="formSubmit" name="formSubmit" value="Save" tabindex="119"/></div>
 	</fieldset>
 
 </@ww.form>
