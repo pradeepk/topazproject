@@ -33,6 +33,7 @@ import java.util.Set;
 import java.util.Properties;
 
 import javax.xml.parsers.SAXParserFactory;
+import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
 import javax.xml.transform.Source;
 import javax.xml.transform.Transformer;
@@ -287,9 +288,24 @@ public class Ingester {
      * t.setErrorListener(), but Saxon does not forward <xls:message>'s to the error listener.
      * Hence we need to use Saxon's API's in order to get at those messages.
      */
-    StringWriter msgs = new StringWriter();
+    final StringWriter msgs = new StringWriter();
     ((Controller) t).makeMessageEmitter();
     ((Controller) t).getMessageEmitter().setWriter(msgs);
+    t.setErrorListener(new ErrorListener() {
+      public void warning(TransformerException te) {
+        log.warn("Warning received while processing zip", te);
+      }
+
+      public void error(TransformerException te) {
+        log.warn("Error received while processing zip", te);
+        msgs.write(te.getMessageAndLocation() + '\n');
+      }
+
+      public void fatalError(TransformerException te) {
+        log.warn("Fatal error received while processing zip", te);
+        msgs.write(te.getMessageAndLocation() + '\n');
+      }
+    });
 
     Source    inp = new StreamSource(new StringReader(zipInfo), "zip:/");
     DOMResult res = new DOMResult();
