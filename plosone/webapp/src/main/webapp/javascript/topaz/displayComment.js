@@ -127,11 +127,11 @@ topaz.displayComment = {
     //divTooltip.appendChild(userInfoDiv);
     
     var d = new Date(jsonObj.annotation.createdAsDate.time);
-    var day = d.getDate();
-    var month = d.getMonth() + 1;
-    var year = d.getFullYear();
-    var hours = d.getHours();
-    var minutes = d.getMinutes();
+    var day = d.getUTCDate();
+    var month = d.getUTCMonth() + 1;
+    var year = d.getUTCFullYear();
+    var hours = d.getUTCHours();
+    var minutes = d.getUTCMinutes();
     
     var dateStr = document.createElement('strong');
     dateStr.appendChild(document.createTextNode(year + "-" + month + "-" + day));
