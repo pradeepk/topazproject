@@ -435,6 +435,14 @@ function submitContent() {
       formObj.formSubmit.onclick = function () {
           submitContent();
         }
+        
+      var errorNodes = document.getElementsByTagAndClassName(null, "form-error");
+      
+      if (errorNodes.length >= 0)
+        jumpToElement(errorNodes[0]);
+      else
+        jumpToElement(errorNodes);
+        
       //topaz.formUtil.createHiddenFields(targetObj.formName);
       //topaz.horizontalTabs.attachFormEvents(document.forms[targetObj.formName]);
       //topaz.horizontalTabs.toggleTab(targetObj);

@@ -111,10 +111,13 @@ var elLocation;
 function jumpToAnnotation(annotationId) {
   var targetEl = getAnnotationEl(annotationId);
 
-  //alert("targetEl = " + targetEl.nodeName);
-  if (targetEl) {
-    elLocation = topaz.domUtil.getCurrentOffset(targetEl);
-    window.scrollBy(0, elLocation.top);
+  jumpToElement(targetEl);
+}
+
+function jumpToElement(elNode) {
+  if (elNode) {
+    elLocation = topaz.domUtil.getCurrentOffset(elNode);
+    window.scrollTo(0, elLocation.top);
   }
 }
 
