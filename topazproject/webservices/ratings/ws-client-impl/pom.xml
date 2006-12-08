@@ -137,11 +137,17 @@
                     <groupId>${pom.parent.groupId}</groupId>
                     <artifactId>${pom.parent.artifactId}-webapp</artifactId>
                     <type>war</type>
+                    <properties>
+                      <context>${pom.parent.artifactId}</context>
+                    </properties>
                   </deployable>
                   <deployable>
                     <groupId>org.topazproject.ws</groupId>
                     <artifactId>ws-users-webapp</artifactId>
                     <type>war</type>
+                    <properties>
+                      <context>ws-users</context>
+                    </properties>
                   </deployable>
                 </deployables>
               </configuration>

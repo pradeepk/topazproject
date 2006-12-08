@@ -63,7 +63,7 @@ public class MTAnnotationServiceTest extends TestCase {
   public void setUp() throws Exception {
     for (int i = 0; i < services.length; i++)
       services[i] =
-        AnnotationClientFactory.create("http://localhost:9997/ws-annotation-webapp-0.5-SNAPSHOT/services/AnnotationServicePort");
+        AnnotationClientFactory.create("http://localhost:9997/ws-annotation/services/AnnotationServicePort");
   }
 
   /*

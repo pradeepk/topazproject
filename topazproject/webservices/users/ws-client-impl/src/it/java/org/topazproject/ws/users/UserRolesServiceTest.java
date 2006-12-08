@@ -35,11 +35,10 @@ public class UserRolesServiceTest extends TestCase {
 
   protected void setUp()
       throws MalformedURLException, ServiceException, DuplicateAuthIdException, RemoteException {
-    String uri =
-      "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserRolesServicePort";
+    String uri = "http://localhost:9997/ws-users/services/UserRolesServicePort";
     service = UserRolesClientFactory.create(uri);
 
-    uri = "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort";
+    uri = "http://localhost:9997/ws-users/services/UserAccountsServicePort";
     userService = UserAccountsClientFactory.create(uri);
     // create a user
     userId = userService.createUser("musterAuth");

@@ -44,7 +44,7 @@ public class AccessServiceTest extends TestCase {
    * @throws RemoteException DOCUMENT ME!
    */
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    String uri = "http://localhost:9997/ws-access-webapp-0.5-SNAPSHOT/services/AccessServicePort";
+    String uri = "http://localhost:9997/ws-access/services/AccessServicePort";
     service = AccessClientFactory.create(uri);
   }
 

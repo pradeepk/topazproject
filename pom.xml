@@ -130,8 +130,8 @@
 
   <properties>
     <topazproject.install.dir>${user.home}/topazproject-install</topazproject.install.dir>
-    <maven.compiler.source>1.4</maven.compiler.source>
-    <maven.compiler.target>1.4</maven.compiler.target>
+    <maven.compiler.source>1.5</maven.compiler.source>
+    <maven.compiler.target>1.5</maven.compiler.target>
     <maven.compiler.encoding>UTF-8</maven.compiler.encoding>
     <!-- aggregate some documentation - javadocs & jxr -->
     <aggregate>true</aggregate>
@@ -285,6 +285,9 @@
                       <groupId>${pom.parent.groupId}</groupId>
                       <artifactId>${pom.parent.artifactId}-webapp</artifactId>
                       <type>war</type>
+                      <properties>
+                        <context>${pom.parent.artifactId}</context>
+                      </properties>
                     </deployable>
                   </deployables>
                 </configuration>

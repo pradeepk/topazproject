@@ -55,8 +55,7 @@ public class PermissionsServiceTest extends TestCase {
    *
    */
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    String uri =
-      "http://localhost:9997/ws-permissions-webapp-0.5-SNAPSHOT/services/PermissionsServicePort";
+    String uri = "http://localhost:9997/ws-permissions/services/PermissionsServicePort";
     service = PermissionsClientFactory.create(uri);
 
     //

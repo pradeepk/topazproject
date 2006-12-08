@@ -106,12 +106,18 @@
                     <groupId>${pom.parent.groupId}</groupId>
                     <artifactId>${pom.parent.artifactId}-webapp</artifactId>
                     <type>war</type>
+                    <properties>
+                      <context>${pom.parent.artifactId}</context>
+                    </properties>
                   </deployable>
                   <!-- We need the articles, users and preferences webapps too -->
                   <deployable>
                     <groupId>org.topazproject.ws</groupId>
                     <artifactId>ws-articles-webapp</artifactId>
                     <type>war</type>
+                    <properties>
+                      <context>ws-articles</context>
+                    </properties>
                   </deployable>
                 </deployables>
               </configuration>

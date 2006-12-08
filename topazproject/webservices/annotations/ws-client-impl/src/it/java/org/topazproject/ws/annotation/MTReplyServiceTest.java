@@ -66,7 +66,7 @@ public class MTReplyServiceTest extends TestCase {
   public void setUp() throws Exception {
     for (int i = 0; i < services.length; i++)
       services[i] =
-        RepliesClientFactory.create("http://localhost:9997/ws-annotation-webapp-0.5-SNAPSHOT/services/ReplyServicePort");
+        RepliesClientFactory.create("http://localhost:9997/ws-annotation/services/ReplyServicePort");
   }
 
   /*

@@ -44,11 +44,10 @@ public class RatingsServiceTest extends TestCase {
 
   protected void setUp()
       throws MalformedURLException, ServiceException, DuplicateAuthIdException, RemoteException {
-    String uri =
-        "http://localhost:9997/ws-ratings-webapp-0.5-SNAPSHOT/services/RatingsServicePort";
+    String uri = "http://localhost:9997/ws-ratings/services/RatingsServicePort";
     service = RatingsClientFactory.create(uri);
 
-    uri = "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort";
+    uri = "http://localhost:9997/ws-users/services/UserAccountsServicePort";
     userService = UserAccountsClientFactory.create(uri);
 
     // create a user

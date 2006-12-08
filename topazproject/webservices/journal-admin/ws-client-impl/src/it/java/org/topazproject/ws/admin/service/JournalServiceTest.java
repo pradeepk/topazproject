@@ -27,8 +27,7 @@ public class JournalServiceTest extends TestCase {
   }
 
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    URL url =
-        new URL("http://localhost:9997/ws-journal-admin-webapp-0.5-SNAPSHOT/services/JournalServicePort");
+    URL url = new URL("http://localhost:9997/ws-journal-admin/services/JournalServicePort");
     JournalServiceLocator locator = new JournalServiceLocator();
     service = locator.getJournalServicePort(url);
   }

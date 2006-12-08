@@ -33,8 +33,7 @@ public class UserAccountsServiceTest extends TestCase {
   }
 
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    String uri =
-      "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort";
+    String uri = "http://localhost:9997/ws-users/services/UserAccountsServicePort";
     service = UserAccountsClientFactory.create(uri);
   }
 

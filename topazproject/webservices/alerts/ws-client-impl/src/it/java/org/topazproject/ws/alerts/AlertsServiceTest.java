@@ -68,13 +68,13 @@ public class AlertsServiceTest extends TestCase {
   private static final Log log = LogFactory.getLog(AlertsServiceTest.class);
   
   protected static final String ALERTS_SVC_URL =
-    "http://localhost:9997/ws-alerts-webapp-0.5-SNAPSHOT/services/AlertsServicePort";
+    "http://localhost:9997/ws-alerts/services/AlertsServicePort";
   protected static final String ARTICLES_SVC_URL =
-    "http://localhost:9997/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort";
+    "http://localhost:9997/ws-articles/services/ArticleServicePort";
   protected static final String PREF_SVC_URL =
-    "http://localhost:9997/ws-pap-webapp-0.5-SNAPSHOT/services/PreferencesServicePort";
+    "http://localhost:9997/ws-pap/services/PreferencesServicePort";
   protected static final String USER_SVC_URL =
-    "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort";
+    "http://localhost:9997/ws-users/services/UserAccountsServicePort";
   protected static final String[][] TEST_ARTICLES = {
     { "info:doi/10.1371/journal.pbio.0020294", "/pbio.0020294.zip" },
     { "info:doi/10.1371/journal.pbio.0020042", "/pbio.0020042.zip" },

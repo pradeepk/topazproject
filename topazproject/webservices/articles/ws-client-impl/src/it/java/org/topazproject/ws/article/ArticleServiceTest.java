@@ -39,7 +39,7 @@ public class ArticleServiceTest extends TestCase {
   public ArticleServiceTest(String testName) throws MalformedURLException, ServiceException {
     super(testName);
 
-    String uri = "http://localhost:9997/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort";
+    String uri = "http://localhost:9997/ws-articles/services/ArticleServicePort";
     service = ArticleClientFactory.create(uri);
   }
 

@@ -176,22 +176,34 @@
                     <groupId>${pom.parent.groupId}</groupId>
                     <artifactId>${pom.parent.artifactId}-webapp</artifactId>
                     <type>war</type>
+                    <properties>
+                      <context>${pom.parent.artifactId}</context>
+                    </properties>
                   </deployable>
                   <!-- We need the articles, users and preferences webapps too -->
                   <deployable>
                     <groupId>org.topazproject.ws</groupId>
                     <artifactId>ws-articles-webapp</artifactId>
                     <type>war</type>
+                    <properties>
+                      <context>ws-articles</context>
+                    </properties>
                   </deployable>
                   <deployable>
                     <groupId>org.topazproject.ws</groupId>
                     <artifactId>ws-users-webapp</artifactId>
                     <type>war</type>
+                    <properties>
+                      <context>ws-users</context>
+                    </properties>
                   </deployable>
                   <deployable>
                     <groupId>org.topazproject.ws</groupId>
                     <artifactId>ws-pap-webapp</artifactId>
                     <type>war</type>
+                    <properties>
+                      <context>ws-pap</context>
+                    </properties>
                   </deployable>
                 </deployables>
               </configuration>
@@ -203,6 +215,18 @@
             </executions>
           </plugin>
 
+          <plugin>
+            <groupId>org.apache.maven.plugins</groupId>
+            <artifactId>maven-surefire-plugin</artifactId>
+            <configuration>
+              <systemProperties>
+                <property>
+                  <name>log4j.configuration</name>
+                  <value>file:/tmp/log4j.properties</value>
+                </property>
+              </systemProperties>
+            </configuration>
+          </plugin>
         </plugins>
       </build>
     </profile>

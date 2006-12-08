@@ -595,51 +595,81 @@
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-articles-webapp</artifactId>
                 <type>war</type>
+                <properties>
+                  <context>ws-articles</context>
+                </properties>
               </deployable>
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-annotation-webapp</artifactId>
                 <type>war</type>
+                <properties>
+                  <context>ws-annotation</context>
+                </properties>
               </deployable>
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-users-webapp</artifactId>
                 <type>war</type>
+                <properties>
+                  <context>ws-users</context>
+                </properties>
               </deployable>
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-pap-webapp</artifactId>
                 <type>war</type>
+                <properties>
+                  <context>ws-pap</context>
+                </properties>
               </deployable>
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-permissions-webapp</artifactId>
                 <type>war</type>
+                <properties>
+                  <context>ws-permissions</context>
+                </properties>
               </deployable>
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-alerts-webapp</artifactId>
                 <type>war</type>
+                <properties>
+                  <context>ws-alerts</context>
+                </properties>
               </deployable>
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-journal-admin-webapp</artifactId>
                 <type>war</type>
+                <properties>
+                  <context>ws-journal-admin</context>
+                </properties>
               </deployable>
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-ratings-webapp</artifactId>
                 <type>war</type>
+                <properties>
+                  <context>ws-ratings</context>
+                </properties>
               </deployable>
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-access-webapp</artifactId>
                 <type>war</type>
+                <properties>
+                  <context>ws-access</context>
+                </properties>
               </deployable>
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-search-webapp</artifactId>
                 <type>war</type>
+                <properties>
+                  <context>ws-search</context>
+                </properties>
               </deployable>
             </deployables>
           </configuration> 

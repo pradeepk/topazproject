@@ -55,7 +55,7 @@ public class AnnotationServiceTest extends TestCase {
   protected void setUp() throws ServiceException, RemoteException {
     try {
       service =
-        AnnotationClientFactory.create("http://localhost:9997/ws-annotation-webapp-0.5-SNAPSHOT/services/AnnotationServicePort");
+        AnnotationClientFactory.create("http://localhost:9997/ws-annotation/services/AnnotationServicePort");
     } catch (MalformedURLException e) {
       throw new Error(e);
     }

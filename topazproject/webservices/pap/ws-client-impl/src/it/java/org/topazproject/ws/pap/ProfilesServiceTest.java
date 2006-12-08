@@ -44,15 +44,13 @@ public class ProfilesServiceTest extends TestCase {
 
   protected void setUp()
       throws MalformedURLException, ServiceException, DuplicateAuthIdException, RemoteException {
-    String uri =
-        "http://localhost:9997/ws-pap-webapp-0.5-SNAPSHOT/services/ProfilesServicePort";
+    String uri = "http://localhost:9997/ws-pap/services/ProfilesServicePort";
     service = ProfilesClientFactory.create(uri);
 
-    uri = "http://localhost:9997/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort";
+    uri = "http://localhost:9997/ws-users/services/UserAccountsServicePort";
     userService = UserAccountsClientFactory.create(uri);
 
-    uri =
-      "http://localhost:9997/ws-permissions-webapp-0.5-SNAPSHOT/services/PermissionsServicePort";
+    uri = "http://localhost:9997/ws-permissions/services/PermissionsServicePort";
     permsService = PermissionsClientFactory.create(uri);
 
     // create the users

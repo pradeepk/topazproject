@@ -39,9 +39,9 @@ public class SearchTest extends TestCase {
   private static final Log log = LogFactory.getLog(SearchTest.class);
   
   protected static final String ARTICLES_SVC_URL =
-    "http://localhost:9997/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort";
+    "http://localhost:9997/ws-articles/services/ArticleServicePort";
   protected static final String SEARCH_SVC_URL =
-    "http://localhost:9092/ws-search-webapp-0.5-SNAPSHOT/services/FedoraGenericSearchServicePort";
+    "http://localhost:9092/ws-search/services/FedoraGenericSearchServicePort";
 
   protected static final String[][] TEST_ARTICLES = {
     { "info:doi/10.1371/journal.pbio.0020294", "/pbio.0020294.zip" },
