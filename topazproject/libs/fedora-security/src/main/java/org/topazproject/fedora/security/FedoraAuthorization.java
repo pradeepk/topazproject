@@ -1273,7 +1273,7 @@ public class FedoraAuthorization extends Module implements Authorization {
 
       context.setResourceAttributes(resourceAttributes);
       enforce(context.getSubjectValue(Constants.SUBJECT.LOGIN_ID.uri), target,
-              Constants.ACTION.APIM.uri, "", extractNamespace(pid), context);
+              Constants.ACTION.APIM.uri, pid, extractNamespace(pid), context);
     } finally {
       getServer().logFinest("Exiting enforceIngestObject");
     }
@@ -2231,7 +2231,9 @@ public class FedoraAuthorization extends Module implements Authorization {
 
   private void enforce(String login, String target, String api, String pid, String namespace,
                        Context context) throws AuthzException {
-    xacmlPep.enforce(login, target, api, pid, namespace, context);
+    xacmlPep.enforce(login, target, api,
+                     target.equals(Constants.ACTION.INGEST_OBJECT.uri) ? "" : pid, namespace,
+                     context);
 
     try {
       if (accessService != null) {
