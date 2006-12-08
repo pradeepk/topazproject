@@ -61,5 +61,6 @@ IE PC fixes
 * html div.block.partner 		{ border-left: 1px solid #ccc; }
 
 /* fixes figure block height bug */
-* html div.figure img { float: none; }
-
+/* Hides from IE-mac \*/
+* html div.figure {height: 1%;}
+/* End hide from IE-mac */

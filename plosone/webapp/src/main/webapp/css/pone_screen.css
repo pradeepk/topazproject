@@ -85,7 +85,8 @@ a.advanced		{ background-image: url(../images/pone_icon_advanced.gif); }
 
 /* Article Icons */
 a.feedback	{ font-weight: bold;}
-a.feedback.icon { background-image: url(../images/pone_icon_feedback.gif); padding-left: 22px;} /* keep at top of all classes to avoid weird ie multiple class bug */
+a.yourfeedback
+			{ background-image: url(../images/pone_icon_feedback.gif);} /* keep at top of all classes to avoid weird ie multiple class bug */
 a.annotation{ background-image: url(../images/pone_icon_annotation.gif); }
 a.discuss	{ background-image: url(../images/pone_icon_discuss.gif); }
 a.commentary{ background-image: url(../images/pone_icon_commentary.gif); }
@@ -402,7 +403,7 @@ div.figure				{ background-color: #D2F7FF; padding: 10px; font-size: .85em; marg
 div.figure:after		{ content: ".";  display: block;  height: 0; clear: both; visibility: hidden; }
 div.figure h5			{ margin: 0; color: #000;}
 div.figure p			{ margin: 5px 0; }
-div.figure img			{ margin: 0 10px 10px 0; }
+#content div.figure img	{ margin: 0 10px 10px 0; float: left;}
 div.figure a img 		{ border: 2px solid #FFF; }
 div.figure a:hover img 	{ border: 2px solid #069; }
 

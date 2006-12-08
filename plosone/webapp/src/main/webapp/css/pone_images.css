@@ -1,3 +1,4 @@
+
 /***********************************************/
 /* pone_images.css                              */
 /* - seanaquino@gmail.com for Plos One         */
@@ -19,12 +20,6 @@
 	padding: 10px 10px 0px;
 	position: relative;
 	background: #8ec8de url(../images/pone_figure-header_bg.gif) repeat-x left -75px;
-}
-	
- #container div.figure img {
-	border: 2px solid #069;
-	float: left;
-	background: inherit;	
 }
 .figure-description {
 	padding: 10px; background: #D2F7FF;
