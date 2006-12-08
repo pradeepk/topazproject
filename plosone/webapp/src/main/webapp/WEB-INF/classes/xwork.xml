@@ -524,9 +524,18 @@
     </action>
 
     <action name="editAjaxAlerts" class="org.plos.user.action.UserAlertsAction" method="retrieveAlerts">
-      <result name="success">/user/alerts.ftl</result>
-      <result name="error">/user/alerts.ftl</result>
-      <result name="input">/user/alerts.ftl</result>
+      <result name="success"  type="plosOneFreemarker">
+        <param name="location">/user/alerts.ftl</param>   
+        <param name="noCache">true</param>   
+      </result> 
+      <result name="input">type="plosOneFreemarker">
+        <param name="location">/user/alerts.ftl</param>   
+        <param name="noCache">true</param>   
+      </result> 
+      <result name="error">type="plosOneFreemarker">
+        <param name="location">/user/alerts.ftl</param>   
+        <param name="noCache">true</param>   
+      </result> 
     </action>
   
   
@@ -549,10 +558,19 @@
     </action>
  
     <action name="saveAjaxAlerts" class="org.plos.user.action.UserAlertsAction" method="saveAlerts">
-      <result name="success">/user/alerts.ftl</result>
-      <result name="error">/user/alerts.ftl</result>
-      <result name="input">/user/alerts.ftl</result>
-    </action>
+      <result name="success"  type="plosOneFreemarker">
+        <param name="location">/user/alerts.ftl</param>   
+        <param name="noCache">true</param>   
+      </result> 
+      <result name="input">type="plosOneFreemarker">
+        <param name="location">/user/alerts.ftl</param>   
+        <param name="noCache">true</param>   
+      </result> 
+      <result name="error">type="plosOneFreemarker">
+        <param name="location">/user/alerts.ftl</param>   
+        <param name="noCache">true</param>   
+      </result> 
+     </action>
 
 
     <action name="editProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">
@@ -580,9 +598,18 @@
     </action>
     
     <action name="editAjaxProfile" class="org.plos.user.action.UserProfileAction" method="executeRetrieveUserProfile">
-      <result name="success">/user/user.ftl</result>
-      <result name="input">/user/user.ftl</result>
-      <result name="error">/user/user.ftl</result>
+      <result name="success" type="plosOneFreemarker">
+        <param name="location">/user/user.ftl</param>   
+        <param name="noCache">true</param>   
+      </result> 
+      <result name="input">type="plosOneFreemarker">
+        <param name="location">/user/user.ftl</param>   
+        <param name="noCache">true</param>   
+      </result> 
+      <result name="error">type="plosOneFreemarker">
+        <param name="location">/user/user.ftl</param>   
+        <param name="noCache">true</param>   
+      </result> 
     </action>
     
     <action name="saveAjaxProfile" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">

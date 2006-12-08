@@ -12,6 +12,9 @@ package org.plos.webwork;
 
 import java.io.IOException;
 
+import javax.servlet.http.HttpServletResponse;
+
+import com.opensymphony.webwork.ServletActionContext;
 import com.opensymphony.webwork.views.freemarker.FreemarkerResult;
 
 import freemarker.template.SimpleHash;
@@ -25,7 +28,7 @@ import freemarker.template.SimpleHash;
  */
 public class PlosOneFreemarkerResult extends FreemarkerResult {
   private String templateFile;
-  
+  private boolean noCache = false;
   /**
    * @return Returns the templateFile.
    */
@@ -43,8 +46,30 @@ public class PlosOneFreemarkerResult extends FreemarkerResult {
   protected boolean preTemplateProcess(freemarker.template.Template template,
                                        freemarker.template.TemplateModel model) throws IOException{
     ((SimpleHash)model).put("templateFile", this.templateFile);
+    if (noCache) {
+      HttpServletResponse response = ServletActionContext.getResponse();
+      // HTTP 1.1 browsers should defeat caching on this header
+      response.setHeader("Cache-Control", "no-cache");
+      // HTTP 1.0 browsers should defeat caching on this header
+      response.setHeader("Pragma", "no-cache");
+      // Last resort for those that ignore all of the above
+      response.setHeader("Expires", "-1");
+    }
     return super.preTemplateProcess(template, model);
-      
+  }
+
+  /**
+   * @return Returns the noCache.
+   */
+  public boolean getNoCache() {
+    return noCache;
+  }
+
+  /**
+   * @param noCache The noCache to set.
+   */
+  public void setNoCache(boolean noCache) {
+    this.noCache = noCache;
   }
   
   

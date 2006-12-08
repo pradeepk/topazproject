@@ -159,14 +159,6 @@ public class UserProfileAction extends UserActionSupport {
     final Collection<UserProfileGrant> grants = getUserService().getProfileFieldsThatArePrivate(topazId);
     setVisibility(grants);
     
-    HttpServletResponse response = ServletActionContext.getResponse();
-    // HTTP 1.1 browsers should defeat caching on this header
-    response.setHeader("Cache-Control", "no-cache");
-    // HTTP 1.0 browsers should defeat caching on this header
-    response.setHeader("Pragma", "no-cache");
-    // Last resort for those that ignore all of the above
-    response.setHeader("Expires", "-1");
-    
     return SUCCESS;
   }
 
