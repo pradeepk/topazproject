@@ -40,7 +40,6 @@
     <dependency>
       <groupId>${pom.parent.groupId}</groupId>
       <artifactId>${pom.parent.artifactId}-client-impl</artifactId>
-      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>${pom.parent.groupId}</groupId>
@@ -66,15 +65,12 @@
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-articles-client-impl</artifactId>
-      <version>0.5-SNAPSHOT</version>
       <scope>test</scope>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-articles-webapp</artifactId>
       <type>war</type>
-      <version>0.5-SNAPSHOT</version>
-      <scope>provided</scope>
     </dependency>
 
     <!-- Probably needs to be somewhere else -->

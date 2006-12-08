@@ -27,12 +27,10 @@
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-users-impl</artifactId>
-      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-common-webapp</artifactId>
-      <version>0.5-SNAPSHOT</version>
       <type>war</type>
     </dependency>
     <dependency>

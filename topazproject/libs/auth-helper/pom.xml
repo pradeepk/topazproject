@@ -22,7 +22,6 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>conf-helper</artifactId>
-      <version>0.5-SNAPSHOT</version>
     </dependency>
     
     <dependency>

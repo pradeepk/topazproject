@@ -27,7 +27,6 @@
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-common-server</artifactId>
-      <version>0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

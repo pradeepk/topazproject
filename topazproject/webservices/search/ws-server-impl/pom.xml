@@ -33,17 +33,14 @@
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-common-server</artifactId>
-      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>topaz-lucene-impl</artifactId>
-      <version>0.5-SNAPSHOT</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-articles-api</artifactId>
-      <version>0.5-SNAPSHOT</version>
     </dependency>
   </dependencies>
 

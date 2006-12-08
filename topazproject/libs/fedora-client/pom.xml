@@ -36,7 +36,6 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>auth-helper</artifactId>
-      <version>0.5-SNAPSHOT</version>
     </dependency>
 
     <dependency>
