@@ -132,12 +132,12 @@ div.multiple		{ width: 50em; background-color: #666; position: relative;}
 div.author blockquote{ background: #FFF; }
 div.author hd	{ background-color: #069; }
 
-div.response h3	{ font-size: 1.2em; font-weight: bold; margin: .25em 0; font-family: Verdana, Arial, Helvetica, sans-serif; letter-spacing: -.01em;}
-div.response	{ padding: 0; margin: 15px 0 0 15px; border: 2px solid #ccc; border-width: 2px 2px 0 0; position: relative; /*  background-color: #ccc; */}
+div.response h3	{ margin: .15em 0 .25em 5px; padding: 0;letter-spacing: -.01em;}
+div.response	{ padding: 0; margin: -2px 0 0 15px; border: 2px solid #ccc; border-width: 2px 2px 0 0; position: relative; /*  background-color: #ccc; */}
 
 
-div.response div.response { border: none; margin: -2px 0 0 15px; border-top: 2px solid #ccc; position: relative; }
-div.response blockquote	{ background: #F5F5F6 url(../images/pone_response_blockquote_bg.gif) repeat-x bottom; margin: 0; padding: 10px 20px; font-style: normal; border: 1px solid #ccc; border-width: 1px 0 1px 2px; position: relative; }
+div.response div.response { border: none; margin: -2px 0 0 20px; border-top: 2px solid #ccc; position: relative; }
+div.response blockquote	{ background: #F5F5F6 url(../images/pone_response_blockquote_bg.gif) repeat-x bottom; margin: 0; padding: 5px 10px; font-style: normal; border: 1px solid #ccc; border-width: 1px 0 1px 2px; position: relative; }
 div.response .hd { border-left: 2px solid #ccc; padding: 10px; background-color: #fff; position: relative; }
 div.response .response .hd	{ background: url(../images/pone_response_hd_bg.gif) repeat-x top; position: relative;}
 div.response div.detail		{ padding-left: 5px; }
@@ -150,13 +150,13 @@ div.response .pane 					{ border: 2px solid #ccc; border-width: 2px 0 2px 2px; p
 div.response .pane legend 			{ display: none; }
 
 /* apply class original to the original posting of either a discussio or annotation on the directory page */
-div.response.original	{ margin: 0; border-color: #666; border-top: none;}
-div.response.original div { border-color: #666; }
+div.response.original	{ margin: 0 0 3px 0; border-color: #004B70; border-top: none;}
+div.response.original div { border-color: #004B70; }
 div.response.original div.toolbar,
-div.response.original div.hd { background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; border-color: #666;}
+div.response.original div.hd { background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; border-color: #004B70;}
 div.response.original div.toolbar a { cursor: pointer; }
 div.response.original blockquote,
-div.response.original blockquote * { background: #fff; border-color: #666;}
+div.response.original blockquote * { background: #fff; border-color: #004B70;}
 
 
 div.posting	{ background-color: #666; background-image: url(../images/pone_response_comment_bg.gif); }
@@ -164,7 +164,7 @@ div.flag	{ background-color: #3C9544; background-image: url(../images/pone_respo
 div#flagForm { display:block; }
 div#flagConfirm { display: none; }
 
-.toolbar			{ background: url(../images/pone_toolbar_bg.gif) repeat-x 20px; padding: 10px; border: 1px solid #ccc; border-width: 0 0 2px 2px; margin: 0}
+.toolbar			{ background: url(../images/pone_toolbar_bg.gif) repeat-x 20px; padding: 5px; border: 1px solid #ccc; border-width: 0 0 2px 2px; margin: 0}
 .toolbar ul,
 .toolbar li			{ margin: 0; padding: 0; text-align: right;}
 .toolbar li			{ display: inline; margin: 0 10px; font-size: .9em; }
@@ -172,7 +172,7 @@ div#flagConfirm { display: none; }
 /* wrap with div source when referencing original article */
 div.source			{ border-top: 1px solid #004B70; border-bottom: 1px solid #004B70;padding: 10px; }
 /* span wraps original article label */
-div.source span		{ text-transform: uppercase; font-size: .85em; color: #666; font-weight: bold; margin-right: 5px;}
+div.source span		{ text-transform: uppercase; font-size: .85em; color: #004B70; font-weight: bold; margin-right: 5px;}
 ol.radio			{ margin: 0; padding: 0; }
 ol.radio li			{ width: 10em; position: relative;height: 2em; list-style-type: none; margin: 0; list-style-type: none;}
 ol.radio input		{ position: absolute; left: 0; }
