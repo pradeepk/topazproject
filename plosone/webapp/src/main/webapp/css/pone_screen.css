@@ -306,6 +306,7 @@ div.content 	{ margin-right: 255px; }
 div.static h1,
 div.content h1 	{ /* article title */font-size: 2.2em;	line-height: 1.1em;	margin: 10px 0 0 0;font-weight: normal; color: #004263; }
 div.static h1		{ padding-top: 10px; border-top: 6px solid #004263; }
+div.pageerror h1	{ background-color: #004263; color:#fff; padding: 8px;}
 
 div.content h2	{ /* article sub-title */ margin: 10px 0; font-style: italic; font-size: 1.5em; background: none; padding: 0;}
 

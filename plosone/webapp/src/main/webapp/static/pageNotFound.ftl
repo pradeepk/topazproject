@@ -1,7 +1,9 @@
 <!-- begin : main content wrapper -->
-<div id="content">
-<h2 class="required">Internal Server Error </h2>
-	<p>Sorry, a server error occured.  The page you were trying to view cannot be displayed. If you were submitting information, please try again in a few minutes.</p>
-	<p>If you feel you have recieved this page by mistake or want to report an error please email the <a href="#"><strong>PlosOne Site Administrator</strong></a> [need mail address] </p>
+<div id="content" class="pageerror">
+<@ww.url action="feedbackCreate.action" namespace="/static" includeParams="none" id="feedback"/>
+<h1>Page Not Found</h1>
+	<p>Sorry, the page that you've requested cannot be found; it may have been moved, changed or removed.</p>
+	<p>If you continute to experience problems with the site, please provide a detailed account of the circumstances on our <a href="${feedback}">feedback form</a>.</p>
+	<p><strong>Thank you for your patience.</strong></p>
 </div>
 <!-- end : main content wrapper -->
