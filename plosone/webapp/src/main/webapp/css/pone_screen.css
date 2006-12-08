@@ -168,7 +168,8 @@ div#topBanner div 	{ padding-top: 4px; } /* sets top padding on all banner slots
 
 */
 
-div#hdr 			{ height: 150px; position: relative; z-index: 9997;}
+
+div#hdr 			{ height: 150px; position: relative; z-index: 997;}
 #hdr #logo			{ background: transparent url(../images/pone_hdr_logo.gif) no-repeat top left; color: #039; }
 #hdr #tagline 		{ background: transparent url(../images/pone_hdr_tagline.gif) no-repeat top left; color: #039; }
 #hdr #logo 			{ width: 312px; height: 90px; position: absolute; top: 20px; left: 8px; margin: 0; font-size: 1.6em; }
