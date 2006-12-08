@@ -135,6 +135,13 @@
         </parameter>
 
         <parameter>
+          <name>PLOS_REG</name>
+          <property>PLOS_REG</property>
+          <required>true</required>
+	  <defaultValue>${settings.localRepository}/org/plos/plos-registration-webapp/0.5-SNAPSHOT/plos-registration-webapp-0.5-SNAPSHOT.war</defaultValue>
+        </parameter>
+
+        <parameter>
           <name>ROOT</name>
           <property>ROOT</property>
           <required>true</required>

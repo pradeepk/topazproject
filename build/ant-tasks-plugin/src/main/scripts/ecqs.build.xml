@@ -96,6 +96,10 @@
     <exec dir="${DEST_DIR}/${ROOT}" executable="ant${ext}">
       <arg line="install"/>
     </exec>
+    
+    <!-- install the plos-registration-app -->
+    <unjar src="${PLOS_REG}"
+	    dest="${DEST_DIR}/${ROOT}/jakarta-tomcat-5.0.28/webapps/plos-registration"/>
   </target>
 
   <target name="ecqs-uninstall">
