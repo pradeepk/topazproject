@@ -159,8 +159,13 @@ public class ImageResizeService {
   }  
   
   private byte[] scaleLargestDim (float oneSide){
+    if (log.isDebugEnabled()) {
+      log.debug("oneSide = " + oneSide);
+    }
+    
     int height = srcImage.getHeight();
     int width = srcImage.getWidth ();
+
     float scale;
     if ((height > width) && (height > oneSide)){
       scale = oneSide/height;

@@ -1,4 +1,4 @@
-package org.plos.admin.service;
+  package org.plos.admin.service;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -8,12 +8,12 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Enumeration;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
@@ -28,9 +28,7 @@ import javax.xml.transform.TransformerFactoryConfigurationError;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
-import org.apache.commons.httpclient.HttpClient;
 import org.apache.commons.httpclient.HttpException;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
@@ -172,7 +170,7 @@ public class DocumentManagementService {
 		try {
 			resizeImages(uri);
 		} catch (Exception e) {
-			log.info("Resize images failed: " + e.toString());
+			log.error("Resize images failed for article " + uri, e);
 			ImageResizeException ire = new ImageResizeException (uri);
       ire.initCause(e);
       throw ire;
@@ -201,49 +199,61 @@ public class DocumentManagementService {
     SecondaryObject object = null;
     for (int i = 0; i < objects.length; ++i) {
 			//try {
-        irs = new ImageResizeService();
-        object = objects[i];
-  			ObjectInfo info = articleWebService.getObjectInfo(object.getUri());
-  			String context =  info.getContextElement().trim();
-  			if (context.equalsIgnoreCase("fig") || context.equalsIgnoreCase("table-wrap")) {
+      irs = new ImageResizeService();
+      object = objects[i];
+      if (log.isDebugEnabled()) {
+        log.debug("retrieving Object Info for: " + object.getUri());
+      }
+			ObjectInfo info = articleWebService.getObjectInfo(object.getUri());
+      if (log.isDebugEnabled()) {
+        log.debug("object Info " + info);
+        log.debug("contextElement" + info.getContextElement());
+      }
+      String context =  info.getContextElement();
+      if (context != null){
+        context = context.trim();
+        if (context.equalsIgnoreCase("fig") || context.equalsIgnoreCase("table-wrap")) {
           RepresentationInfo rep = object.getRepresentations()[0];
-  				log.info("Found image to resize: " + rep.getURL() + " repsize-" + new Long(rep.getSize()).toString());
+  				if (log.isDebugEnabled()) {
+  				  log.debug ("Found image to resize: " + rep.getURL() + " repsize-" + rep.getSize());
+          }
   				irs.captureImage(rep.getURL());
-  				log.info("Captured image");
-  				articleWebService.setRepresentation(
-  						object.getUri(), "PNG_S", 
-  						new DataHandler(new PngDataSource(irs.getSmallImage())));
-  				log.info("Set small");
-  				articleWebService.setRepresentation(
-  						object.getUri(), "PNG_M", 
+  				log.debug ("Captured image");
+  				articleWebService.setRepresentation(object.getUri(), "PNG_S", 
+  						          new DataHandler(new PngDataSource(irs.getSmallImage())));
+  				log.debug ("Set small");
+  				articleWebService.setRepresentation(object.getUri(), "PNG_M", 
   						new DataHandler(new PngDataSource(irs.getMediumImage())));
-  				log.info("Set medium");						
+  				log.debug ("Set medium");						
   				articleWebService.setRepresentation(
   						object.getUri(), "PNG_L", 
   						new DataHandler(new PngDataSource(irs.getLargeImage())));	
-  				log.info("Set large");
+  				log.debug ("Set large");
   			} else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
   		        RepresentationInfo rep = object.getRepresentations()[0];
-  		        log.info("Found image to resize for disp-forumla: " + rep.getURL());
+  		        if (log.isDebugEnabled()) {
+  		          log.debug ("Found image to resize for disp-forumla: " + rep.getURL());
+              }
   		        irs.captureImage(rep.getURL());
-  		        log.info("Captured image");
-  		        articleWebService.setRepresentation(
-  		            object.getUri(), "PNG", 
-  		            new DataHandler(new PngDataSource(irs.getPageWidthImage())));
+  		        log.debug("Captured image");
+  		        articleWebService.setRepresentation(object.getUri(), "PNG", 
+  		                  new DataHandler(new PngDataSource(irs.getPageWidthImage())));
   			} else if (context.equals("inline-formula")) {
           RepresentationInfo rep = object.getRepresentations()[0];
-          log.info("Found image to resize for inline formula: " + rep.getURL());
+          if (log.isDebugEnabled()){
+            log.debug ("Found image to resize for inline formula: " + rep.getURL());
+          }
           irs.captureImage(rep.getURL());
-          log.info("Captured image");
-          articleWebService.setRepresentation(
-              object.getUri(), "PNG", 
-              new DataHandler(new PngDataSource(irs.getInlineImage())));     
+          log.debug ("Captured image");
+          articleWebService.setRepresentation(object.getUri(), "PNG", 
+                      new DataHandler(new PngDataSource(irs.getInlineImage())));     
         }
-      //Don't continue trying to process images if one of them failed
-        /*} catch (Exception e) {
-        
-        log.error("Couldn't resize image : " + ((object == null) ? "null" : object.getUri()));
-      }*/
+    //Don't continue trying to process images if one of them failed
+      /*} catch (Exception e) {
+      
+      log.error("Couldn't resize image : " + ((object == null) ? "null" : object.getUri()));
+    }*/
+      }
 		}
 	}
 	
@@ -260,7 +270,9 @@ public class DocumentManagementService {
 						documents.add(filenames[i]);
 			}
 		}
-		return documents;
+		
+    Collections.sort(documents);
+    return documents;
 	}
 
 	/**
@@ -269,7 +281,9 @@ public class DocumentManagementService {
 	 * @throws ApplicationException
 	 */
 	public Collection<String> getPublishableFiles() throws RemoteException, ApplicationException {
-		return fetchArticleService.getArticles(null, null, new int[] {Article.ST_DISABLED});
+		ArrayList<String> articles = fetchArticleService.getArticles(null, null, new int[] {Article.ST_DISABLED});
+    Collections.sort(articles);
+    return articles;
 	}
 	
 	private void generateCrossRefInfoDoc(File file, String uri) throws ZipException, IOException, TransformerException {

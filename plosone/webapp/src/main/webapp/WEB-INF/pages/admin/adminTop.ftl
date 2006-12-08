@@ -30,7 +30,8 @@
 	<legend><b>Publishable Documents</b></legend>
  	     <@ww.form name="publishArchives" action="publishArchives" method="post" namespace="/admin">
   			<#list publishableFiles as article>
-  				<@ww.checkbox name="articlesToPublish" label="${article}" fieldValue="${article}"/><br/>
+   				<@ww.url id="articleURL" includeParams="none" namespace="/article" action="fetchArticle" articleURI="${article}"/>
+  				<@ww.checkbox name="articlesToPublish" fieldValue="${article}"/><a href="${articleURL}">${article}</a><br/>
   			</#list>
   			<br/>
             <@ww.submit value="Publish Selected Archives" />

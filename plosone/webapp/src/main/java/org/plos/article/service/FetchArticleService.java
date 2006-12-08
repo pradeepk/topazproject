@@ -427,8 +427,8 @@ public class FetchArticleService {
    * @return list of article uri's
    * @throws ApplicationException ApplicationException
    */
-  public Collection<String> getArticles(final String startDate, final String endDate, final int[] state) throws ApplicationException {
-    final Collection<String> articles = new ArrayList<String>();
+  public ArrayList<String> getArticles(final String startDate, final String endDate, final int[] state) throws ApplicationException {
+    final ArrayList<String> articles = new ArrayList<String>();
 
     try {
       final String articlesDoc = articleService.getArticles(startDate, endDate, state, true);
