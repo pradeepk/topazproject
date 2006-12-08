@@ -25,11 +25,15 @@ import org.plos.user.UserProfileGrant;
 import org.plos.user.service.DisplayNameAlreadyExistsException;
 import org.plos.util.ProfanityCheckingService;
 
+import com.opensymphony.webwork.ServletActionContext;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Creates a new user in Topaz and sets come Profile properties.  User must be logged in via CAS.
@@ -154,7 +158,15 @@ public class UserProfileAction extends UserActionSupport {
 
     final Collection<UserProfileGrant> grants = getUserService().getProfileFieldsThatArePrivate(topazId);
     setVisibility(grants);
-
+    
+    HttpServletResponse response = ServletActionContext.getResponse();
+    // HTTP 1.1 browsers should defeat caching on this header
+    response.setHeader("Cache-Control", "no-cache");
+    // HTTP 1.0 browsers should defeat caching on this header
+    response.setHeader("Pragma", "no-cache");
+    // Last resort for those that ignore all of the above
+    response.setHeader("Expires", "-1");
+    
     return SUCCESS;
   }
 

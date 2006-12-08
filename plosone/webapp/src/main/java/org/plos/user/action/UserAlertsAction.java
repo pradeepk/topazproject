@@ -9,6 +9,8 @@
  */
 package org.plos.user.action;
 
+import com.opensymphony.webwork.ServletActionContext;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.EmailValidator;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
@@ -17,6 +19,8 @@ import org.plos.user.service.CategoryBean;
 
 import java.util.ArrayList;
 import java.util.Collection;
+
+import javax.servlet.http.HttpServletResponse;
 
 /**
  * Update action for saving or getting alerts that the user subscribes to.
@@ -88,6 +92,14 @@ public class UserAlertsAction extends UserActionSupport {
     if (StringUtils.isBlank(alertEmailAddress)) {
       alertEmailAddress = plosOneUser.getEmail();
     }
+    HttpServletResponse response = ServletActionContext.getResponse();
+    // HTTP 1.1 browsers should defeat caching on this header
+    response.setHeader("Cache-Control", "no-cache");
+    // HTTP 1.0 browsers should defeat caching on this header
+    response.setHeader("Pragma", "no-cache");
+    // Last resort for those that ignore all of the above
+    response.setHeader("Expires", "-1");
+
     return SUCCESS;
   }
 
