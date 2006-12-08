@@ -104,15 +104,17 @@ div.btnwrap input { margin: 5px auto; display: block; width: 18em; padding: 2px;
 
 div.multiple		{ width: 50em; background-color: #666; position: relative;}
 .multiple ol,
-.multiple li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold;}
+.multiple li	{ list-style-type: none; margin: 0; padding: 0; font-weight: normal;}
 .multiple .detail	{ font-weight: normal; margin: 0 10px 10px 10px;}
 .multiple ol	{ width: 22em; position: absolute; top: 30px; left: 0;margin: 0 10px 0 10px; border: 2px solid #ccc; border-width: 2px 0 0 2px; display: inline;}
-.multiple li	{ padding: 5px; background: url(../images/pone_response_blockquote_bg.gif) repeat-x bottom;border-bottom: 2px solid #ccc; border-right: 2px solid #ccc; cursor: pointer;}
+.multiple li	{ padding: 5px; background:#999;border-bottom: 2px solid #ccc; border-right: 2px solid #ccc; cursor: pointer;}
 .multiple .contentwrap div.detail,
-.multiple li div.detail	{ border: 1px solid #ccc; margin: 5px 0 0 0; }
-.multiple li.active	{ background: #FFF; border-right: none;}
+.multiple li div.detail	{ border: 1px solid #ccc; margin: 5px 0 0 0; background-color: #DDD;}
+.multiple li.active	{ background: #FFF; border-right: none; font-weight: bold;}
+.multiple li.active div.detail { background-color: #eee; }
 .multiple .contentwrap { display: none; width: 23em;margin: 0; margin-left: 22.9em; border: 2px solid #ccc; border-left: none; margin-top: 13px;}
 .multiple .contentwrap.active { display: block; }
+.multiple .contentwrap div.detail { position: absolute; bottom: 24px; width: 22.8em;}
 
 /* multiple annotation post detail styles */
 .dialog dt div.detail		{ border: none; background-color: transparent; padding: 0;}
@@ -185,3 +187,6 @@ table.directory		{ width: 95%; }
 .directory td.replies,
 .directory td.info	{ font-size: .9em; }
 img.pointer		{ margin: -5px 0 0 0; }
+
+a.bug,
+a:visited.bug	{ font-style: normal!important; }
