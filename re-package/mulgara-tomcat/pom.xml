@@ -20,12 +20,6 @@
       <version>0.5-SNAPSHOT</version>
       <type>war</type>
     </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-permissions-webapp</artifactId>
-      <version>0.5-SNAPSHOT</version>
-      <type>war</type>
-    </dependency>
   </dependencies>
 
 
@@ -37,7 +31,7 @@
         <groupId>org.topazproject.plugins</groupId>
         <artifactId>ant-tasks</artifactId>
         <configuration>
-          <dependencies>org.topazproject:mulgara-service:0.5-SNAPSHOT,org.topazproject.ws:ws-permissions-webapp:0.5-SNAPSHOT</dependencies>
+          <dependencies>org.topazproject:mulgara-service:0.5-SNAPSHOT</dependencies>
         </configuration>
 
         <executions>
