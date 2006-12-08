@@ -19,5 +19,6 @@
     <module>fedora</module>
     <module>ecqs</module>
     <module>mulgara-tomcat</module>
+    <module>topaz-tomcat</module>
   </modules>
 </project>
