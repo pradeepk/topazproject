@@ -46,7 +46,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-articles/services/ArticleServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-articles-webapp-0.5-SNAPSHOT/services/ArticleServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -103,7 +103,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-permissions/services/PermissionsServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-permissions-webapp-0.5-SNAPSHOT/services/PermissionsServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -124,7 +124,7 @@
     <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-annotation/services/ReplyServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-annotation-webapp-0.5-SNAPSHOT/services/ReplyServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -138,7 +138,7 @@
     <property name="defaultType" value="http://www.w3.org/2000/10/annotationType#Annotation"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-annotation/services/AnnotationServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-annotation-webapp-0.5-SNAPSHOT/services/AnnotationServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -159,7 +159,7 @@
     <property name="applicationId" ref="applicationId"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-users/services/UserAccountsServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-users-webapp-0.5-SNAPSHOT/services/UserAccountsServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -170,7 +170,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-users/services/UserRolesServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-users-webapp-0.5-SNAPSHOT/services/UserRolesServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -181,7 +181,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-pap/services/PreferencesServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-pap-webapp-0.5-SNAPSHOT/services/PreferencesServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -192,7 +192,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-pap/services/ProfilesServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-pap-webapp-0.5-SNAPSHOT/services/ProfilesServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -263,7 +263,7 @@
 
   <bean id="searchWebService" class="org.plos.search.service.SearchWebService" init-method="init">
     <property name="uri"
-              value="http://${server.search}/ws-search/services/FedoraGenericSearchServicePort"/>
+              value="http://${server.search}/ws-search-webapp-0.5-SNAPSHOT/services/FedoraGenericSearchServicePort"/>
   </bean>
 
   <bean id="plosOneFreemarkerManager" class="org.plos.webwork.PlosOneFreemarkerManager">
