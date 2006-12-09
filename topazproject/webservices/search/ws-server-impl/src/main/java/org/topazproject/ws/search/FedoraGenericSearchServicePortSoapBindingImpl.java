@@ -10,16 +10,20 @@
 package org.topazproject.ws.search;
 
 import java.rmi.RemoteException;
+import java.util.Iterator;
+import java.util.Properties;
 import javax.xml.rpc.ServiceException;
 import javax.xml.rpc.server.ServiceLifecycle;
 import javax.xml.rpc.server.ServletEndpointContext;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.common.impl.TopazContext;
 import org.topazproject.common.ws.ImplInvocationHandler;
 import org.topazproject.common.ws.WSTopazContext;
+import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.xacml.ws.WSXacmlUtil;
 import org.topazproject.fedoragsearch.topazlucene.SearchContext;
 import org.topazproject.xacml.AbstractSimplePEP;
@@ -47,6 +51,15 @@ public class FedoraGenericSearchServicePortSoapBindingImpl implements Operations
       pep = new WSSearchPEP((ServletEndpointContext) context);
 
       ctx.init(context); // ctx contains itql, apim, user, uploader, apia, ...
+
+      // override fgs' config from our commons-config stuff
+      Configuration tcfg = ConfigurationStore.getInstance().getConfiguration();
+      tcfg = tcfg.subset("topaz.fedoragsearch");
+      Properties scfg = Config.getCurrentConfig().getRepositoryProps(tcfg.getString("repository"));
+      for (Iterator iter = tcfg.getKeys("fgsrepository."); iter.hasNext(); ) {
+        String key = (String) iter.next();
+        scfg.setProperty(key, tcfg.getString(key));
+      }
 
       // create the impl
       impl = (Operations)ImplInvocationHandler.newProxy(new SOAPImpl(), ctx, log);

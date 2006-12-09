@@ -80,6 +80,11 @@
       <index>TopazIndex</index>
       <indexDocXslt>topazFoxmlToLucene</indexDocXslt>
       <resultPageXslt>copyXml</resultPageXslt>
+      <fgsrepository>
+        <fedoraSoap>${topaz.services.fedora.base-url}services</fedoraSoap>
+        <fedoraUser>fedoraAdmin</fedoraUser>
+        <fedoraPass>fedoraAdmin</fedoraPass>
+      </fgsrepository>
     </fedoragsearch>
     
   </topaz>
