@@ -91,9 +91,11 @@ public class AnnotationWebService extends BaseAnnotationService {
    */
   public void deletePublicAnnotation(final String annotationId) throws RemoteException, NoSuchAnnotationIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    annotationService.setAnnotationState(annotationId, PUBLIC_MASK | DELETE_MASK);
+    //annotationService.setAnnotationState(annotationId, PUBLIC_MASK | DELETE_MASK);  
+    annotationService.deleteAnnotation(annotationId, true);  
   }
 
+  
   /**
    * Mark the given flag as deleted.
    * @param flagId flagId
@@ -102,7 +104,8 @@ public class AnnotationWebService extends BaseAnnotationService {
    */
   public void deleteFlag(final String flagId) throws NoSuchAnnotationIdException, RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    annotationService.setAnnotationState(flagId, DELETE_MASK);
+    //annotationService.setAnnotationState(flagId, DELETE_MASK);
+    annotationService.deleteAnnotation(flagId, true);
   }
 
   /**
