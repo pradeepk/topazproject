@@ -34,7 +34,7 @@
         </job>
       </jobs>
     </scheduler>
-<!-- uncomment to enable access-control
+    <!-- uncomment to enable access-control
     <articles>
       <pdpName>standard-pdp</pdpName>
     </articles>
@@ -71,6 +71,6 @@
     <access>
       <pdpName>standard-pdp</pdpName>
     </access>
--->
+    -->
   </topaz>
 </config>
