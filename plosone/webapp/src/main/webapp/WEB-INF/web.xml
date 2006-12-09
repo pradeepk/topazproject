@@ -27,22 +27,22 @@
 
   <filter>
     <filter-name>CAS Filter</filter-name>
-    <filter-class>edu.yale.its.tp.cas.client.filter.CASFilter</filter-class>
+    <filter-class>org.plos.cas.client.filter.CASFilterWrapper</filter-class>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.loginUrl</param-name>
-      <param-value>https://FQHN:7443/cas/login</param-value>
+      <param-value>https://localhost:7443/cas/login</param-value>
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.validateUrl</param-name>
-      <param-value>https://FQHN:7443/cas/proxyValidate</param-value>
+      <param-value>https://localhost:7443/cas/proxyValidate</param-value>
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.serverName</param-name>
-      <param-value>FQHN:8080</param-value>
+      <param-value>localhost:8080</param-value>
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.proxyCallbackUrl</param-name>
-      <param-value>https://FQHN:10443/CasProxyServlet</param-value>
+      <param-value>https://localhost:10443/plosone-webapp/CasProxyServlet</param-value>
     </init-param>
     <init-param>
       <param-name>edu.yale.its.tp.cas.client.filter.wrapRequest</param-name>
@@ -88,31 +88,27 @@
     <url-pattern>/user/secure/*</url-pattern>
   </filter-mapping>
 
-<!--
   <filter-mapping>
     <filter-name>CAS Filter</filter-name>
     <url-pattern>/admin/*</url-pattern>
   </filter-mapping>
--->
 
   <filter-mapping >
     <filter-name>Member Session</filter-name>
     <url-pattern>/annotation/secure/*</url-pattern>
   </filter-mapping>
-  
+
   <filter-mapping >
     <filter-name>Member Session</filter-name>
     <url-pattern>/user/secure/*</url-pattern>
   </filter-mapping>
 
-<!--
   <filter-mapping >
     <filter-name>Member Session</filter-name>
     <url-pattern>/admin/*</url-pattern>
   </filter-mapping>
--->
 
-    
+
   <filter-mapping>
     <filter-name>CacheFilter</filter-name>
     <url-pattern>/article/fetchAnnotatedArticle.action</url-pattern>
@@ -122,23 +118,21 @@
     <filter-name>CacheFilter</filter-name>
     <url-pattern>/article/fetchObject.action</url-pattern>
   </filter-mapping>
-  
+
   <filter-mapping>
     <filter-name>webwork</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
-  
 
-  
   <listener>
     <listener-class>org.plos.configuration.WebAppListener</listener-class>
   </listener>
-  
+
   <!-- to hook in the spring container -->
   <listener>
     <listener-class>org.springframework.web.context.ContextLoaderListener</listener-class>
   </listener>
-  
+
   <!-- to hook in the scope management system that provides scopes like session, request for Servlet 2.4 and Spring 2.0 above  -->
   <listener>
     <listener-class>org.springframework.web.context.request.RequestContextListener</listener-class>
@@ -198,10 +192,10 @@
 
   <servlet>
     <servlet-name>ProxyTicketReceptor</servlet-name>
-    <servlet-class>edu.yale.its.tp.cas.proxy.ProxyTicketReceptor</servlet-class>
+    <servlet-class>org.plos.cas.proxy.ProxyTicketReceptorWrapper</servlet-class>
     <init-param>
       <param-name>edu.yale.its.tp.cas.proxyUrl</param-name>
-      <param-value>https://FQHN:7443/cas/proxy</param-value>
+      <param-value>https://localhost:7443/cas/proxy</param-value>
     </init-param>
     <!--     <load-on-startup>1</load-on-startup>-->
   </servlet>

@@ -15,8 +15,8 @@
         class="org.springframework.beans.factory.config.PropertyPlaceholderConfigurer">
     <property name="locations">
       <list>
-        <!--<value>file:/etc/plosone/production.properties</value>-->
-        <!--<value>file:D:/etc/plosone/production.properties</value>-->
+        <!--<value>file:/etc/topaz/production.properties</value>-->
+        <!--<value>file:D:/etc/topaz/production.properties</value>-->
         <value>classpath:development.properties</value>
       </list>
     </property>

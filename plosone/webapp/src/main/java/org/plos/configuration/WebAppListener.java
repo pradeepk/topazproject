@@ -49,7 +49,7 @@ public class WebAppListener implements ServletContextListener {
   /**
    * The default <code>ConfigurationFactory</code> config file.
    */
-  public static final String DEFAULT_CONFIG_FACTORY_CONFIG = "/WEB-INF/classes/plosOneConfig.xml";
+  public static final String DEFAULT_CONFIG_FACTORY_CONFIG = "/WEB-INF/classes/config.xml";
 
   /**
    * Destroy the configuration singleton since this web application is getting un-deployed.
