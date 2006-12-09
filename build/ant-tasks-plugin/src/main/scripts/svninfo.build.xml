@@ -27,7 +27,9 @@
   <target name="svninfo" depends="get-svnext">
     <mkdir dir="${outputPath.dir}"/>
     <echo message="svnversion: " file="${outputPath}" append="false"/>
-    <exec dir="${directory}" executable="svnversion${svnext}" output="${outputPath}" append="true"/>
+    <exec dir="${directory}" executable="svnversion${svnext}" output="${outputPath}" append="true">
+      <arg line="."/>
+    </exec>
     <exec dir="${directory}" executable="svn${svnext}" output="${outputPath}" append="true">
       <arg line="info"/>
     </exec>
