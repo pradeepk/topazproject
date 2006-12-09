@@ -1,0 +1,47 @@
+<assembly>
+  <id>plosone</id>
+  <formats>
+    <format>tar.gz</format>
+  </formats>
+
+  <componentDescriptors>
+    <componentDescriptor>src/main/assembly/components.xml</componentDescriptor>
+  </componentDescriptors>
+
+  <!-- Do not include default server.xml -->
+  <fileSets>
+    <fileSet>
+      <!--
+      Stupid bug requires us to insert bug_workaround and we cannot seem to put
+      this in the componenets.xml
+      -->
+      <directory>${project.bug_workaround.build.directory}/${tomcatFile}</directory>
+      <outputDirectory>/</outputDirectory>
+      <excludes>
+        <exclude>conf/server.xml</exclude>
+      </excludes>
+    </fileSet>
+  </fileSets>
+  <!-- Copy over webapp specific server.xml file -->
+  <files>
+    <file>
+      <source>src/main/resources/plosone.xml</source>
+      <outputDirectory>conf</outputDirectory>
+      <destName>server.xml</destName>
+    </file>
+  </files>
+
+             
+  <dependencySets>
+    <dependencySet>
+      <includes>
+        <include>org.plosone:plosone-webapp</include>
+      </includes>
+      <outputFileNameMapping>${artifactId}.${extension}</outputFileNameMapping>
+      <outputDirectory>/webapps/</outputDirectory>
+      <excludes>
+        <exclude>log4j:*</exclude>
+      </excludes>
+    </dependencySet>
+  </dependencySets>
+</assembly>

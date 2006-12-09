@@ -1,0 +1,146 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.topazproject.packages</groupId>
+  <artifactId>packages</artifactId>
+  <packaging>pom</packaging>
+  <version>0.5-SNAPSHOT</version>
+  <name>packages</name>
+
+  <parent>
+    <groupId>org.topazproject</groupId>
+    <artifactId>the-whole-shebang</artifactId>
+    <version>0.5-SNAPSHOT</version>
+  </parent>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>Maven Snapshots</id>
+      <url>http://cvs.apache.org/maven-snapshot-repository/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <!-- Common dependencies -->
+  <dependencies>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-pap-webapp</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-ratings-webapp</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-alerts-webapp</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-users-webapp</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-permissions-webapp</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-articles-webapp</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-annotation-webapp</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-search-webapp</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>mulgara-service</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.plosone</groupId>
+      <artifactId>plosone-webapp</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.14</version>
+    </dependency>
+  </dependencies>
+
+  <properties>
+    <!-- 
+    Name of the Tomcat file. Note: We are assuming that the name of the file
+    will correspond to the directory name where the ant task will unzip the
+    file to under {project.build.directory}
+    -->
+    <tomcatFile>apache-tomcat-5.5.16</tomcatFile>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.topazproject.plugins</groupId>
+        <artifactId>ant-tasks</artifactId>
+        <configuration>
+          <tomcatFile>${tomcatFile}</tomcatFile>
+        </configuration>
+
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>get-tomcat</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-SNAPSHOT</version>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/mulgara.xml</descriptor>
+            <descriptor>src/main/assembly/topaz.xml</descriptor>
+            <descriptor>src/main/assembly/plosone.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+    </plugins>
+
+    <defaultGoal>assembly:assembly</defaultGoal>
+  </build>
+</project>

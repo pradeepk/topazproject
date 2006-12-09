@@ -1,0 +1,10 @@
+<component>
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/common/lib</outputDirectory>
+      <includes>
+        <include>log4j:*</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
+</component>
