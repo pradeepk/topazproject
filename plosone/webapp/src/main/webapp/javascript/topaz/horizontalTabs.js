@@ -247,7 +247,9 @@ topaz.horizontalTabs = {
           topaz.horizontalTabs.showHome(this.id);
           return false; 
         }
-      li.appendChild(document.createTextNode(this.tabsListObject[i].title));
+      var span = document.createElement("span");
+      span.appendChild(document.createTextNode(this.tabsListObject[i].title));
+      li.appendChild(span);
 
       this.tabsContainer.appendChild(li);
     }
