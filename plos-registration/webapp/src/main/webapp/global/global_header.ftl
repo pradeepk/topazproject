@@ -4,13 +4,13 @@
 	<!-- begin search links -->
 	<ul id="links">
 <!--			<li><a href="#" title="Search PLoS ONE with advanced criteria" class="icon advanced">Advanced Search</a></li>-->
-			<li><a href="#" title="PLoS ONE RSS Feeds" class="icon rss">RSS</a></li>
-			<li><a href="${plosOneUrl}feedbackCreate.action" title="Send us your feedback" class="feedback">Feedback</a></li>
+			<li><a href="${plosOneUrl}${plosOneContext}static/rssFeeds.action" title="PLoS ONE RSS Feeds" class="icon rss">RSS</a></li>
+			<li><a href="${plosOneUrl}${plosOneContext}feedbackCreate.action" title="Send us your feedback" class="feedback">Feedback</a></li>
 	</ul>
 	<!-- end : search links -->
 	<!-- begin : dashboard -->
 	<div id="db">
-		<form name="searchForm" action="${plosOneUrl}search/simpleSearch.action" method="get">
+		<form name="searchForm" action="${plosOneUrl}${plosOneContext}search/simpleSearch.action" method="get">
 			<fieldset>
 				<legend>Search PLoS ONE</legend>
 				<label for="search">Search</label>

@@ -60,3 +60,7 @@ IE PC fixes
 /* fixes homepage display bug */
 * html div.block.partner 		{ border-left: 1px solid #ccc; }
 
+/* fixes figure block height bug */
+/* Hides from IE-mac \*/
+* html div.figure {height: 1%;}
+/* End hide from IE-mac */

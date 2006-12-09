@@ -2,7 +2,7 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<link rel="shortcut icon" href="images/favicon.ico" type="image/x-icon" />
+<link rel="shortcut icon" href="images/pone_favicon.ico" type="image/x-icon" />
 <link rel="home" title="home" href="${plosOneUrl}${plosOneContext}"></link>
 
 <#include "../css/global_css.ftl">

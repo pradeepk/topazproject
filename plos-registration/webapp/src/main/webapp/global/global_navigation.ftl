@@ -1,5 +1,5 @@
 	<ul id="nav">
-		<li><a href="${plosOneUrl}">Home</a></li>
+		<li><a href="${plosOneUrl}${plosOneContext}">Home</a></li>
 		
 		<li><a href="#">About</a>
 				<ul>
@@ -39,7 +39,6 @@
 					<li><a href="http://pathogens.plosjournals.org" title="PLoSPathogens.org">PLoS Pathogens</a></li>
 					<li><a href="http://clinicaltrials.plosjournals.org" title="PLoSClinicalTrials.org">PLoS Clinical Trials</a></li>
 					<li><a href="http://www.plosone.org/" title="PLoSONE.org">PLoS ONE</a></li>
-					<li><a href="http://clinicaltrials.plosjournals.org" title="PLoSClinicalTrials.org">PLoS Clinical Trials</a></li>
 					<li><a href="http://www.plosntd.org/" title="PLoSNTD.org">PLoS Neglected Tropical Diseases</a></li>
 				</ul>
 			</li>

@@ -29,7 +29,6 @@ img			{ border: 0; }
 label em 	{ display: block; color: #c00; } /* em wraps all error messages within labels */
 .error { display: block; color: #F63; font-style: italic; } /* em wraps all error messages within labels */
 strong		{ font-weight: bold; }
-sup			{ font-size: .9em; }
 h1 sup		{ font-size: .75em; }
 ul, ol, dl	{ margin: 20px; position: relative; }
 dt			{ font-weight: bold; }
@@ -39,8 +38,8 @@ th			{ padding: 6px; background-color: #ACF1FF; border: 4px solid #FFF; border-w
 td			{ padding: 6px; background-color: #D2F7FF; border: 4px solid #FFF; border-width: 0 3px 3px 0; }
 /* Default Headings */
 h1, h2, h3	{ font-family: Georgia, "Times New Roman", Times, serif; letter-spacing: -.04em; color: #333; position: relative;}
-h1			{ font-size: 2.2em; font-weight: normal;}
-h2			{ font-size: 1.6em; font-weight: normal; border-bottom: 1px solid #999; padding: 2px 0;}
+h1			{ font-size: 2.2em; font-weight: normal; color: #004B70;}
+h2			{ font-size: 1.6em; font-weight: normal; border-bottom: 1px solid #ccc; padding: 2px 0;}
 h3			{ font-size: 1.4em; font-weight: normal; margin: .8em 0; }
 h4			{ font-size: 1.2em; }
 h5			{ font-size: 1em; }
@@ -59,6 +58,7 @@ span.new	{ font-weight: bold; font-size: .85em; text-transform: uppercase;}
 a.tooltip,
 a.tooltip:visited	{ color: #389A0C; font-weight: bold; }
 a.tooltip:hover 	{ color: #45BF0F; }
+li.icon,
 a.icon, 	/* use for any accent oriented icon */
 a.tooltip	/* use for any functional icon for on page actions */
 					{ padding: 2px 0 2px 18px; background-repeat: no-repeat; background-position: 0px 0px; }
@@ -84,6 +84,13 @@ a.rss			{ background-image: url(../images/pone_icon_rss.gif); }
 a.advanced		{ background-image: url(../images/pone_icon_advanced.gif); }
 
 /* Article Icons */
+a.feedback	{ font-weight: bold;}
+a.yourfeedback
+			{ background-image: url(../images/pone_icon_feedback.gif);} /* keep at top of all classes to avoid weird ie multiple class bug */
+a.annotation{ background-image: url(../images/pone_icon_annotation.gif); }
+a.discuss	{ background-image: url(../images/pone_icon_discuss.gif); }
+a.commentary{ background-image: url(../images/pone_icon_commentary.gif); }
+
 
 a.xml 		{ background-image: url(../images/pone_sidenav_xml.gif); }
 a.pdf 		{ background-image: url(../images/pone_sidenav_pdf.gif); }
@@ -102,10 +109,7 @@ a.plos		{ background-image: url(../images/jour_sidenav_plos.gif); }
 a.license 	{ background-image: url(../images/jour_sidenav_license.gif); }
 a.google 	{ background-image: url(../images/jour_sidenav_google.gif); }
 
-a.annotation{ background-image: url(../images/pone_icon_annotation.gif); }
-a.discuss	{ background-image: url(../images/pone_icon_discuss.gif); }
-a.commentary{ background-image: url(../images/pone_icon_commentary.gif); }
-a.feedback	{ font-weight: bold;}
+
 
 /* Article Tooltips : for any js onpage action */
 a.addannotation	{ background-image: url(../images/pone_tooltip_addannotation.gif); }
@@ -147,7 +151,7 @@ div.pane div.post a:hover	{ background-color: #393; }
 */
 #container 			{ position: relative; }
 #container, #hdr	{ margin: 0 auto; min-width: 675px; max-width: 910px; }
-#content 			{ margin: 50px 4px; line-height: 1.8em; font-size: .9em; }
+#content 			{ margin: 50px 4px 50px 22px; line-height: 1.8em; font-size: .9em; }
 
 /* Horizontal Advertising Banners : Top & Bottom Slots
 
@@ -165,7 +169,8 @@ div#topBanner div 	{ padding-top: 4px; } /* sets top padding on all banner slots
 
 */
 
-div#hdr 			{ height: 150px; position: relative; }
+
+div#hdr 			{ height: 150px; position: relative; z-index: 997;}
 #hdr #logo			{ background: transparent url(../images/pone_hdr_logo.gif) no-repeat top left; color: #039; }
 #hdr #tagline 		{ background: transparent url(../images/pone_hdr_tagline.gif) no-repeat top left; color: #039; }
 #hdr #logo 			{ width: 312px; height: 90px; position: absolute; top: 20px; left: 8px; margin: 0; font-size: 1.6em; }
@@ -187,8 +192,8 @@ ul#nav 		{ font-size: .75em; height:1.9em; margin: 0; padding: 0; position: abso
 ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; padding: 0; }
 #nav li a, #nav li a:visited
 			{ font-weight: bold;display:block; text-decoration:none; width: auto; padding: 3px .6em 0 .6em; float:left; height: 1.6em; line-height:normal; color:#069; }
-#nav li li	{ width: 100%; position: relative; z-index: 501;}
-#nav li ul 	{ visibility:hidden; position:absolute; top:1.5em; left:0; height:0; overflow:hidden; text-align: left; margin: 0; padding: 0; background-color: #fff; z-index: 500;}
+#nav li li	{ width: 100%; position: relative; z-index: 802;}
+#nav li ul 	{ visibility:hidden; position:absolute; top:1.5em; left:0; height:0; overflow:hidden; text-align: left; margin: 0; padding: 0; background-color: #fff; z-index: 801;}
 #nav table 	{ margin:-1px; border-collapse:collapse; }
 /* fist line style for IE7 and non-IE browsers and the second line for IE5.5 and IE6 */
 #nav li.over a,
@@ -297,17 +302,16 @@ div.powered a:hover { color: #fff; font-weight: bold;}
 */
 div#rhc			{ float: right; width: 240px; position: relative; }
 div.content 	{ margin-right: 255px; }
-div#content.static	{ margin-right: 22px; margin-left: 22px;}
-div.content	{ margin-left: 16px; }
 
 div.static h1,
 div.content h1 	{ /* article title */font-size: 2.2em;	line-height: 1.1em;	margin: 10px 0 0 0;font-weight: normal; color: #004263; }
-div.static h1		{ padding-top: 10px; border-top: 6px solid #006699; color: #069;}
+div.static h1		{ padding-top: 10px; border-top: 6px solid #004263; }
+div.pageerror h1	{ background-color: #004263; color:#fff; padding: 8px;}
 
 div.content h2	{ /* article sub-title */ margin: 10px 0; font-style: italic; font-size: 1.5em; background: none; padding: 0;}
 
 div.static h2,
-div.content h3	{ /* article main body heading */ font-size: 1.6em; margin: 20px 0 0 0; border-bottom: 1px solid #999; padding-bottom: 3px;}
+div.content h3	{ /* article main body heading */ font-size: 1.6em; margin: 20px 0 0 0; border-bottom: 1px solid #ccc; padding-bottom: 3px;}
 
 div.static h3,	
 div.content h4	{ /* article second level heading */ font-size: 1.2em; margin: 20px 0 0 0; color: #333; font-family: Georgia, "Times New Roman", Times, serif; font-weight: bold;}
@@ -330,7 +334,7 @@ p.authors		{ margin: 10px 0 0 0; font-weight: bold; font-size: 1.1em; }
 p.affiliations	{ font-size: .85em; margin: 0; }
 
 div.abstract	{ margin: 15px 0; }
-div.articleinfo	{ font-size: .9em; padding: 10px;  margin: 10px 0; background: #eee url(../images/pone_abstract_bg.gif) repeat-x bottom; border: 2px solid #ccc; }
+div.articleinfo	{ font-size: .9em; padding: 10px;  margin: 10px 0; background: #DBDBDB url(../images/pone_abstract_bg.gif) repeat-x top; border: 2px solid #ccc; }
 div.contributions { font-size: .9em; }
 div.articleinfo p,
 div.abstract p	{ margin: 0 0 1em 0; }
@@ -400,7 +404,7 @@ div.figure				{ background-color: #D2F7FF; padding: 10px; font-size: .85em; marg
 div.figure:after		{ content: ".";  display: block;  height: 0; clear: both; visibility: hidden; }
 div.figure h5			{ margin: 0; color: #000;}
 div.figure p			{ margin: 5px 0; }
-div.figure img			{ margin: 0 10px 10px 0; }
+#content div.figure img	{ margin: 0 10px 10px 0; float: left;}
 div.figure a img 		{ border: 2px solid #FFF; }
 div.figure a:hover img 	{ border: 2px solid #069; }
 
@@ -443,7 +447,7 @@ a.bug.author-active,
 a:hover.bug.author-active		{ background-color: #f63;}
 
 
-div.beta				{ text-align: center; font-size: .9em; color: #eee; padding: 1px; background-color: #069;}
+div.beta				{ text-align: center; font-size: .9em; color: #eee; padding: 1px; background: #004263;}
 /*div.beta				{ text-align: left; font-size: .85em; background: url(../images/pone_article_hdr.gif) no-repeat top right; border-width: 1px 0; color: #eee; position: relative; padding: 6px 0 0 6px; height: 28px; vertical-align: middle;}*/
 div.beta a:link,
 div.beta a:visited,
@@ -489,3 +493,14 @@ div.horizontalTabs		{ position: relative; border-width: 0;}
 .edboard dd { margin: 0 0 5px 0; padding: 0 5px 5px 5px; background-color: #D2F7FF; border-top: 6px solid #D2F7FF; font-size: .85em; text-indent: 10px; }
 
 .static p.intro					{ border: 2px solid #ccc; padding: 10px; background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; color: #000;}
+
+/* ------ Search Styles ----*/
+
+#search-results ul 		{ margin: 0 30px 0 0; padding: 0; list-style-type: none; line-height: 1.6em;}
+#search-results li		{ margin-top: 10px; }
+#search-results li span	{ display: block; }
+#search-results span.article { font-weight: bold; font-size: 1.2em;}
+#search-results span.date { color: #666; font-weight: normal; font-size: .9em; }
+#search-results span.cite { font-style: italic; }
+#search-results span.highlight { font-weight: bold; display: inline;}
+#search-results span.authors { font-size: .9em; }

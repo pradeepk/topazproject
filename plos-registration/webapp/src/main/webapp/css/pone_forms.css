@@ -82,8 +82,8 @@
 /***********************************************/ 
 
 /************* error styles *****************/
-.pone-form ol .form-error { background: #A61200; background-image: none; color: #FFFFFF; }
-
+.pone-form ol .form-error { color: #A61200; }
+.pone-form ol .form-error label { color: #00131D;}
 /************* success message styles *****************/
 .pone-form fieldset .form-success { padding: 25px 0px 25px 10px; }
 
