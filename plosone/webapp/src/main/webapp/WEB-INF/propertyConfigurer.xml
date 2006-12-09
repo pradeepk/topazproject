@@ -17,7 +17,7 @@
       <list>
         <value>file:/etc/topaz/plosone.properties</value>
         <!--<value>file:D:/etc/topaz/plosone.properties</value>-->
-        <!--<value>classpath:plosOne.xml</value>-->
+        <!--<value>classpath:plosone.properties</value>-->
       </list>
     </property>
   </bean>
