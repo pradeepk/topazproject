@@ -83,12 +83,22 @@ public class RSSInfo {
         create("xslt"));
     options.addOptionGroup(xform);
 
+    // RSS Parameters
+    options.addOption(OptionBuilder.withArgName("quoted string").hasArg().
+        withDescription("RSS Title").create("rssTitle"));
+    options.addOption(OptionBuilder.withArgName("URL").hasArg().
+        withValueSeparator(' ').withDescription("RSS Link").create("rssLink"));
+    options.addOption(OptionBuilder.withArgName("URL").hasArg().
+        withValueSeparator(' ').withDescription("RSS Image Link").create("rssImage"));
+    options.addOption(OptionBuilder.withArgName("quoted string").hasArg().
+        withDescription("RSS Description").create("rssDescription"));
+    options.addOption(OptionBuilder.withArgName("Prefix for link").hasArg().
+        withValueSeparator(' ').withDescription("Prefix added to article URI").
+        create("linkPrefix"));
+
     options.addOption(OptionBuilder.withArgName("File name").hasArg().
         withValueSeparator(' ').withDescription("Write output to file").
         create("out"));
-    options.addOption(OptionBuilder.withArgName("Prefix for link").hasArg().
-        withValueSeparator(' ').withDescription("Prefix added to article URI").
-        create("prefix"));
     options.addOption(OptionBuilder.withArgName("yyyy-MM-dd'T'HH:mm:ss").hasArg().
         withValueSeparator(' ').withDescription("Start date for articles").
         create("startDate"));
@@ -199,10 +209,23 @@ public class RSSInfo {
       if (xslt != null) {
         TransformerFactory tFactory = TransformerFactory.newInstance();
         Transformer transformer = tFactory.newTransformer(new StreamSource(xslt));
-        // Set the XSLT parameter
-        if (line.hasOption("prefix")) {
-          transformer.setParameter("urlPrefix",line.getOptionValue("prefix"));
+        // Set the XSLT parameters
+        if (line.hasOption("rssTitle")) {
+          transformer.setParameter("rssTitle",line.getOptionValue("rssTitle"));
         }
+        if (line.hasOption("rssLink")) {
+          transformer.setParameter("rssLink",line.getOptionValue("rssLink"));
+        }
+        if (line.hasOption("rssImage")) {
+          transformer.setParameter("rssImage",line.getOptionValue("rssImage"));
+        }
+        if (line.hasOption("rssDescription")) {
+          transformer.setParameter("rssDescription",line.getOptionValue("rssDescription"));
+        }
+        if (line.hasOption("linkPrefix")) {
+          transformer.setParameter("linkPrefix",line.getOptionValue("linkPrefix"));
+        }
+
         StringWriter out = new StringWriter();
         transformer.transform(new StreamSource(new StringReader(feed)), new StreamResult(out));
         feed = out.toString();

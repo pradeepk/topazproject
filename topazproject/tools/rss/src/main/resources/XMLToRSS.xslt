@@ -1,15 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-  <xsl:param name="urlPrefix"></xsl:param>
+  <xsl:param name="rssTitle">PLoS ONE Alerts</xsl:param>
+  <xsl:param name="rssLink">http://www.plosone.org</xsl:param>
+  <xsl:param name="rssImage">http://www.plosone.org/images/pone_favicon.ico</xsl:param>
+  <xsl:param name="rssDescription">PLoS ONE Journal</xsl:param>
+  <xsl:param name="linkPrefix">http://www.plosone.org/getArticle?article=</xsl:param>
 
   <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
 
   <xsl:template match="/">
     <rss version="2.0">
-      <title>PLoS ONE Alerts</title>
-      <link>http://www.plosone.org/</link>
-      <image>http://www.ploseone.org/images/pone_favicon.ico</image>
-      <description>PLoS ONE Journal</description>
+      <title><xsl:value-of select="$rssTitle"/></title>
+      <link><xsl:value-of select="$rssLink"/></link>
+      <image><xsl:value-of select="$rssImage"/></image>
+      <description><xsl:value-of select="$rssDescription"/></description>
       <channel>
         <xsl:apply-templates select="articles/article"/>
       </channel>
@@ -22,7 +26,7 @@
       <pubDate>
         <xsl:value-of select="format-date(date, '[FNn,*-3], [D01] [MNn,*-3] [Y0001] 00:00:00 GMT')"/>
       </pubDate>
-      <link><xsl:value-of select="$urlPrefix"/><xsl:value-of select="uri"/></link>
+      <link><xsl:value-of select="$linkPrefix"/><xsl:value-of select="uri"/></link>
       <description><xsl:value-of select="description"/></description>
       <xsl:apply-templates select="authors/author"/>
       <guid><xsl:value-of select="uri"/></guid>
