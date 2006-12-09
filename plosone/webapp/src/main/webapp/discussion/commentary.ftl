@@ -20,7 +20,7 @@
   		<#assign class="annotation"/>
 	 	</#if>
 	 	<#assign numReplies = comment.numReplies>
-	 	<#if numReplies gt 1>
+	 	<#if numReplies != 1>
 	 		<#assign label = "responses">
 	 	<#else>
 	 		<#assign label = "response">
