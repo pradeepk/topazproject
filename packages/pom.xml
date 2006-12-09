@@ -136,6 +136,7 @@
             <descriptor>src/main/assembly/mulgara.xml</descriptor>
             <descriptor>src/main/assembly/topaz.xml</descriptor>
             <descriptor>src/main/assembly/plosone.xml</descriptor>
+            <descriptor>src/main/assembly/config.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
