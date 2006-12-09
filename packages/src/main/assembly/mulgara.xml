@@ -22,15 +22,21 @@
       </excludes>
     </fileSet>
   </fileSets>
-  <!-- Copy over webapp specific server.xml file -->
+
   <files>
+    <!-- Copy over webapp specific server.xml file -->
     <file>
       <source>src/main/resources/mulgara.xml</source>
       <outputDirectory>conf</outputDirectory>
       <destName>server.xml</destName>
     </file>
+    <!-- Copy over webassp specific log4j.xml file -->
+    <file>
+      <source>src/main/resources/mulgara_log4j.xml</source>
+      <outputDirectory>commons/classes</outputDirectory>
+      <destName>log4j.xml</destName>
+    </file>
   </files>
-
              
   <dependencySets>
     <dependencySet>
