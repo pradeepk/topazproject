@@ -18,9 +18,5 @@
   <modules>
     <module>fedora</module>
     <module>ecqs</module>
-    <module>mulgara-tomcat</module>
-    <module>topaz-tomcat</module>
-    <module>search-tomcat</module>
-    <module>plosone-tomcat</module>
   </modules>
 </project>
