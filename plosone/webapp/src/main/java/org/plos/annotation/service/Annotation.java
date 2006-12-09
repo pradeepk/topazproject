@@ -75,6 +75,8 @@ public abstract class Annotation extends BaseAnnotation {
     try {
       return DateParser.parse(annotation.getCreated());
     } catch (InvalidDateException ide) {
+      log.error("Could not parse date for reply: " + this.getId() + 
+                "; dateString is: " + annotation.getCreated(), ide);
     }
     return null;
   }

@@ -13,6 +13,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.Constants;
 import org.plos.annotation.FlagUtil;
+import org.plos.annotation.Commentary;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.service.BaseConfigurableService;
 import org.plos.util.FileUtils;
@@ -341,10 +342,23 @@ public class AnnotationService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    * @return a list of all replies
    */
-  public Reply[] listAllReplies(final String root, final String inReplyTo) throws ApplicationException {
+  public Reply[] listAllReplies(final String root, final String inReplyTo)throws ApplicationException {
+    return listAllReplies(root, inReplyTo, null);
+  }
+  
+  
+  /**
+   * Get a list of all replies
+   * @param root the discussion thread this resource is part of
+   * @param inReplyTo the resource whose replies are to be listed
+   * @throws ApplicationException ApplicationException
+   * @return a list of all replies
+   */
+  public Reply[] listAllReplies(final String root, final String inReplyTo, final Commentary com)
+                                throws ApplicationException {
     try {
       final ReplyInfo[] replies = replyWebService.listAllReplies(root, inReplyTo);
-      return converter.convert(replies);
+      return converter.convert(replies, com);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     } catch (NoSuchIdException e) {

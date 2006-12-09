@@ -61,15 +61,17 @@ public class GetCommentaryAction extends AnnotationActionSupport {
           com = new Commentary();
           com.setAnnotation(annotations[i]);
           try {
-            replies = getAnnotationService().listAllReplies(annotations[i].getId(), annotations[i].getId());
+            /*replies =*/ getAnnotationService().listAllReplies(annotations[i].getId(), annotations[i].getId(), com);
           } catch (ApplicationException ae) {
             if (ae.getCause() instanceof NoSuchIdException) {
               replies = null;
+              com.setNumReplies(0);
+              com.setReplies(null);
             } else {
               throw ae;
             }
           }
-          com.setReplies(replies);
+          //com.setReplies(replies);
           allCommentary[i] = com;
         }
         Arrays.sort(allCommentary, allCommentary[0]);  

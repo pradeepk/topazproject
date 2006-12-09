@@ -29,7 +29,7 @@
 	<ul>
 			<#list searchResults as hit>
 			<li>
-				<span class="date">Published ${hit.date?string("yyyy-MM-dd")}</td>
+				<span class="date">Published ${hit.date?string("dd MMM yyyy")}</td>
 				<span class="article">
             <#if hit.contentModel == "PlosArticle">
               <@ww.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${hit.pid}" includeParams="none"/>

@@ -10,10 +10,15 @@
 
 package org.plos.annotation;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.Reply;
+import org.plos.util.DateParser;
+import org.plos.util.InvalidDateException;
 
 import java.util.Comparator;
+import java.util.Date;
 
 /**
  * Simple wrapper class around an Annotation and the associated list of replies.
@@ -24,7 +29,10 @@ import java.util.Comparator;
  */
 public class Commentary implements Comparator<Commentary> {
   private Annotation annotation;  
+  private int numReplies;
+  private String lastModified;
   private Reply[]replies;
+  private static final Log log = LogFactory.getLog(Commentary.class);
   
   public Commentary() {
   }
@@ -67,18 +75,67 @@ public class Commentary implements Comparator<Commentary> {
    */
   public int compare (Commentary a, Commentary b){
     String dateA, dateB;
-    Reply[] allReplies = a.getReplies();
-    if (allReplies == null || allReplies.length == 0) {
-      dateA = annotation. getCreated();
+    if (a.getNumReplies() == 0) {
+      dateA = a.getAnnotation().getCreated();
     } else {
-      dateA = allReplies[allReplies.length - 1].getCreated();
+      dateA = a.getLastModified();
     }
-    allReplies = b.getReplies();
-    if (allReplies == null || allReplies.length == 0) {
-      dateB = annotation.getCreated();
+    log.debug("date A = " + dateA + " id = " + annotation.getId());
+    if (b.getNumReplies() == 0) {
+      dateB = b.getAnnotation().getCreated();
     } else {
-      dateB = allReplies[allReplies.length - 1].getCreated();
+      dateB = b.getLastModified();
     }    
+    log.debug("date B = " + dateB + " id = " + annotation.getId());
     return dateB.compareTo(dateA);
+  }
+
+  /**
+   * @return Returns the lastModified.
+   */
+  public String getLastModified() {
+    return lastModified;
+  }
+
+  /**
+   * @param lastModified The lastModified to set.
+   */
+  public void setLastModified(String lastModified) {
+    this.lastModified = lastModified;
+  }
+  
+  public Date getLastModifiedAsDate() {
+    String theDate;
+    
+    if (lastModified == null) {
+      theDate = annotation.getCreated();;
+    } else {
+      theDate = lastModified;
+    }
+    try {
+      if (log.isDebugEnabled()) {
+        log.debug("parsing date for reply: " + this.annotation.getId() +
+                  "; dateString is: " + theDate);
+      }
+      return DateParser.parse (theDate);
+    } catch (InvalidDateException ide) {
+      log.error("Could not parse date for commnetary: " + this.annotation.getId() + 
+                "; dateString is: " + theDate, ide);
+    }
+    return null;
+  }
+
+  /**
+   * @return Returns the numReplies.
+   */
+  public int getNumReplies() {
+    return numReplies;
+  }
+
+  /**
+   * @param numReplies The numReplies to set.
+   */
+  public void setNumReplies(int numReplies) {
+    this.numReplies = numReplies;
   }
 }

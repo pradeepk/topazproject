@@ -127,14 +127,19 @@ topaz.displayComment = {
     //divTooltip.appendChild(userInfoDiv);
     
     var d = new Date(jsonObj.annotation.createdAsDate.time);
-    var day = d.getUTCDate();
-    var month = d.getUTCMonth() + 1;
+		var MONTH_NAMES = new String('JanFebMarAprMayJunJulAugSepOctNovDec');
+    var dayInt = d.getUTCDate();
+	  var day = (dayInt >= 10 ? "" : "0") + dayInt;
+		var monthInt = d.getUTCMonth() * 3;
+    var month = MONTH_NAMES.substring (monthInt, monthInt + 3);
     var year = d.getUTCFullYear();
-    var hours = d.getUTCHours();
-    var minutes = d.getUTCMinutes();
+		var hrsInt = d.getUTCHours(); 
+    var hours = (hrsInt >= 10 ? "" : "0") + hrsInt;
+    var minInt = d.getUTCMinutes();
+    var minutes = (minInt >= 10 ? "" : "0") + minInt;
     
     var dateStr = document.createElement('strong');
-    dateStr.appendChild(document.createTextNode(year + "-" + month + "-" + day));
+    dateStr.appendChild(document.createTextNode(day + " " + month + " " + year));
     var timeStr = document.createElement('strong');
     timeStr.appendChild(document.createTextNode(hours + ":" + minutes + " GMT"));
     
