@@ -4,8 +4,6 @@
 package org.plos.annotation.service;
 
 
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
-import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.webwork.ServletActionContext;
 
 import org.apache.commons.logging.Log;
@@ -22,7 +20,6 @@ import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.Annotations;
 import org.topazproject.ws.annotation.ReplyInfo;
-import org.plos.util.FileUtils;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -41,9 +38,6 @@ public class AnnotationService extends BaseConfigurableService {
   private static final Log log = LogFactory.getLog(AnnotationService.class);
   private AnnotationConverter converter;
   private PermissionWebService permissionWebService;
-  private static final String CACHE_KEY_ANNOTATION = "ANNOTATION";
-  
-  private GeneralCacheAdministrator articleCacheAdministrator;
   
   /**
    * Create an annotation.
@@ -422,19 +416,5 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public void setPermissionWebService(final PermissionWebService permissionWebService) {
     this.permissionWebService = permissionWebService;
-  }
-
-  /**
-   * @return Returns the articleCacheAdministrator.
-   */
-  public GeneralCacheAdministrator getArticleCacheAdministrator() {
-    return articleCacheAdministrator;
-  }
-
-  /**
-   * @param articleCacheAdministrator The articleCacheAdministrator to set.
-   */
-  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
-    this.articleCacheAdministrator = articleCacheAdministrator;
   }
 }
