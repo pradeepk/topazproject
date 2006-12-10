@@ -78,17 +78,12 @@ public class UsernameReplacementWithGuidFilter implements Filter {
 
       filterChain.doFilter(httpRequest, response);
 
-/*
-      final PrintWriter out = response.getWriter();
-      final CharResponseWrapper servletResponse = new CharResponseWrapper((HttpServletResponse) response);
-      filterChain.doFilter(httpRequest, servletResponse);
-
-      out.write(dumpResponse(servletResponse));
-      out.close();
-*/
-      
-    } catch (final Exception ex) {
-      log.error("Exception raised in UsernameReplacementWithGuidFilter", ex);
+    } catch (final IOException ex) {
+      log.error("", ex);
+      throw ex;
+    } catch (final ServletException ex) {
+      log.error("", ex);
+      throw ex;
     }
   }
 
