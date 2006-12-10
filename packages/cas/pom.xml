@@ -1,0 +1,94 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.topazproject.packages</groupId>
+  <artifactId>cas</artifactId>
+  <packaging>pom</packaging>
+  <version>0.5-SNAPSHOT</version>
+  <name>packages</name>
+
+  <parent>
+    <groupId>org.topazproject.packages</groupId>
+    <artifactId>packages</artifactId>
+    <version>0.5-SNAPSHOT</version>
+  </parent>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>Maven Snapshots</id>
+      <url>http://cvs.apache.org/maven-snapshot-repository/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
+  </pluginRepositories>
+
+  <dependencies>
+    
+    <dependency>
+      <groupId>org.plos</groupId>
+      <artifactId>plos-registration-webapp</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <type>war</type>
+    </dependency>
+
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>ecqs</artifactId>
+      <version>2.0.6-1</version>
+      <type>jar</type>
+    </dependency>
+
+  </dependencies>
+
+  <properties>
+    <!-- 
+    Name of the Tomcat file. Note: We are assuming that the name of the file
+    will correspond to the directory name where the ant task will unzip the
+    file to under {project.build.directory}
+    -->
+    <tomcatFile>apache-tomcat-5.5.16</tomcatFile>
+    
+    <!-- the ecqs tomcat. cas web-app is extracted from here -->
+    <ecqs-tomcat>esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28</ecqs-tomcat>
+  </properties>
+
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.topazproject.plugins</groupId>
+        <artifactId>ant-tasks</artifactId>
+        <configuration>
+          <tomcatFile>${tomcatFile}</tomcatFile>
+          <DEST_DIR>${project.build.directory}</DEST_DIR>
+        </configuration>
+
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>get-tomcat</goal>
+              <goal>ecqs-install</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <version>2.2-SNAPSHOT</version>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/cas.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+    </plugins>
+
+  </build>
+</project>

@@ -49,6 +49,7 @@
     <module>mulgara</module>
     <module>topaz</module>
     <module>plosone</module>
+    <module>cas</module>
   </modules>
 
   <build>
