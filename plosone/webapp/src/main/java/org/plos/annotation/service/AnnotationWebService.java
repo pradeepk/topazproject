@@ -9,10 +9,19 @@
  */
 package org.plos.annotation.service;
 
+import com.opensymphony.oscache.base.NeedsRefreshException;
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import static org.plos.annotation.service.Annotation.DELETE_MASK;
 import static org.plos.annotation.service.Annotation.FLAG_MASK;
 import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
+
+import org.plos.ApplicationException;
+import org.plos.util.FileUtils;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.ws.annotation.AnnotationClientFactory;
 import org.topazproject.ws.annotation.AnnotationInfo;
@@ -30,7 +39,10 @@ import java.rmi.RemoteException;
  */
 public class AnnotationWebService extends BaseAnnotationService {
   private Annotations annotationService;
-
+  private GeneralCacheAdministrator articleCacheAdministrator;
+  private static final String CACHE_KEY_ANNOTATION = "ANNOTATION";
+  private static final Log log = LogFactory.getLog(AnnotationWebService.class);
+  
   public void init() throws IOException, URISyntaxException, ServiceException {
     final ProtectedService protectedService = getProtectedService();
     annotationService = AnnotationClientFactory.create(protectedService);
@@ -54,8 +66,12 @@ public class AnnotationWebService extends BaseAnnotationService {
     final String contentType = getContentType(mimeType);
     //Ensure that it is null if the olderAnnotation is empty
     final String earlierAnotation = StringUtils.isEmpty(olderAnnotation) ? null : olderAnnotation;
-
-    return annotationService.createAnnotation(getApplicationId(), getDefaultType(), target, context, earlierAnotation, false, title, contentType, body.getBytes(getEncodingCharset()));
+    final String newId = annotationService.createAnnotation(getApplicationId(), getDefaultType(), target, context, earlierAnotation, false, title, contentType, body.getBytes(getEncodingCharset()));
+    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(target));
+    if (log.isDebugEnabled()){
+      log.debug("flushing cache group: " + FileUtils.escapeURIAsPath(target));
+    }
+    return newId;
   }
 
   /**
@@ -79,6 +95,8 @@ public class AnnotationWebService extends BaseAnnotationService {
    */
   public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding) throws RemoteException, NoSuchAnnotationIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
+    AnnotationInfo ai = getAnnotation(annotationId);
+    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
     annotationService.deleteAnnotation(annotationId, deletePreceding);
   }
 
@@ -92,6 +110,8 @@ public class AnnotationWebService extends BaseAnnotationService {
   public void deletePublicAnnotation(final String annotationId) throws RemoteException, NoSuchAnnotationIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     //annotationService.setAnnotationState(annotationId, PUBLIC_MASK | DELETE_MASK);  
+    AnnotationInfo ai = getAnnotation(annotationId);
+    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
     annotationService.deleteAnnotation(annotationId, true);  
   }
 
@@ -105,6 +125,8 @@ public class AnnotationWebService extends BaseAnnotationService {
   public void deleteFlag(final String flagId) throws NoSuchAnnotationIdException, RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     //annotationService.setAnnotationState(flagId, DELETE_MASK);
+    AnnotationInfo ai = getAnnotation(flagId);
+    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
     annotationService.deleteAnnotation(flagId, true);
   }
 
@@ -116,7 +138,33 @@ public class AnnotationWebService extends BaseAnnotationService {
    */
   public AnnotationInfo[] listAnnotations(final String target) throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return annotationService.listAnnotations(getApplicationId(), target, getDefaultType());
+    AnnotationInfo[] annotations = null;
+    try {
+      //for now, since all annotations are public, don't have to cache based on userID
+      annotations = (AnnotationInfo[])articleCacheAdministrator.getFromCache(target + CACHE_KEY_ANNOTATION); 
+      if (log.isDebugEnabled()) {
+        log.debug("retrieved annotation list from cache for target: " + target);
+      }
+    } catch (NeedsRefreshException nre) {
+      boolean updated = false;
+      try {
+        //use grouping for future when annotations can be private
+        annotations = annotationService.listAnnotations(getApplicationId(), target, getDefaultType());
+        articleCacheAdministrator.putInCache(target + CACHE_KEY_ANNOTATION, 
+                                   annotations, new String[]{FileUtils.escapeURIAsPath(target)});
+        updated = true;
+        if (log.isDebugEnabled()) {
+          log.debug("retrieved annotation list from TOPAZ for target: " + target);
+        }        
+      } catch (RemoteException e) {
+        log.error ("Could not retrieve all annotations for target: " + target);
+        throw (e);
+      } finally {
+        if (!updated)
+          articleCacheAdministrator.cancelUpdate(target);
+      }
+    }
+    return annotations;
   }
 
   /**
@@ -151,6 +199,20 @@ public class AnnotationWebService extends BaseAnnotationService {
   public void setFlagged(final String annotationId) throws NoSuchAnnotationIdException, RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     annotationService.setAnnotationState(annotationId, PUBLIC_MASK | FLAG_MASK);
+  }
+
+  /**
+   * @return Returns the articleCacheAdministrator.
+   */
+  public GeneralCacheAdministrator getArticleCacheAdministrator() {
+    return articleCacheAdministrator;
+  }
+
+  /**
+   * @param articleCacheAdministrator The articleCacheAdministrator to set.
+   */
+  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
+    this.articleCacheAdministrator = articleCacheAdministrator;
   }
 
 }

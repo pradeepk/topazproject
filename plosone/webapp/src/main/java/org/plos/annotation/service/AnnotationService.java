@@ -60,13 +60,6 @@ public class AnnotationService extends BaseConfigurableService {
   public String createAnnotation(final String target, final String context, final String olderAnnotation, 
       final String title, final String mimeType, final String body, final boolean isPublic) throws ApplicationException {
     
-    /** 
-     *  Placing the caching here rather than in AnnotationWebService because this
-     *  is always called by the Action.  Flags also call the AnnotationWebService, and
-     *  we need to distinguish between the two.  If annotation creation ever happens
-     *  directly by calling the AnnotationWebService, this will result in a cache
-     *  that out of date.
-     */
     if (log.isDebugEnabled()) {
       StringBuilder debugMsg = new StringBuilder("creating annotation for target: ");
       debugMsg.append(target).append("; context: ").append(context).append("; supercedes: ");
@@ -78,13 +71,13 @@ public class AnnotationService extends BaseConfigurableService {
     try {
       final String annotationId = annotationWebService.createAnnotation(mimeType, target, context, olderAnnotation, title, body);
       PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(Constants.PLOS_ONE_USER_KEY);
-      log.debug ("Annotation created with ID: " + annotationId + " for user: " + ((user == null)?"null":user.getUserId()) + " for IP: " +
+      if (log.isDebugEnabled()) {
+        log.debug ("Annotation created with ID: " + annotationId + " for user: " + ((user == null)?"null":user.getUserId()) + " for IP: " +
           ServletActionContext.getRequest().getRemoteAddr());
-
+      }
       if (isPublic) {
         setAnnotationPublic(annotationId);
       }
-      articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(target));
       return annotationId;
     } catch (RemoteException e) {
       throw new ApplicationException(e);
@@ -131,7 +124,6 @@ public class AnnotationService extends BaseConfigurableService {
     try {
       final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
       final String flagId = annotationWebService.createAnnotation(mimeType, target, null, null, null, flagBody);
-
       if (isAnnotation) {
         annotationWebService.setFlagged(target);
       } else {
@@ -181,8 +173,6 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding) throws ApplicationException {
     try {
-      Annotation ai = getAnnotation(annotationId);
-      articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
       annotationWebService.deletePrivateAnnotation(annotationId, deletePreceding);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
@@ -198,8 +188,6 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public void deletePublicAnnotation(final String annotationId) throws ApplicationException {
     try {
-      Annotation ai = getAnnotation(annotationId);
-      articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
       annotationWebService.deletePublicAnnotation(annotationId);
       //TODO: Set the access permissions for administrator only
     } catch (RemoteException e) {
@@ -239,7 +227,7 @@ public class AnnotationService extends BaseConfigurableService {
       throw new ApplicationException(e);
     }
   }
-
+  
   /**
    * delete reply with id
    * @param replyId replyId of the reply
@@ -268,32 +256,14 @@ public class AnnotationService extends BaseConfigurableService {
      */
     
     Annotation[] allAnnotations;
+    AnnotationInfo[] annotations;
     try {
-      //for now, since all annotations are public, don't have to cache based on userID
-      allAnnotations = (Annotation[])articleCacheAdministrator.getFromCache(target + CACHE_KEY_ANNOTATION); 
-      if (log.isDebugEnabled()) {
-        log.debug("retrieved annotation list from cache for article: " + target);
-      }
-    } catch (NeedsRefreshException nre) {
-      boolean updated = false;
-      try {
-        //use grouping for future when annotations can be private
-        AnnotationInfo[] annotations = annotationWebService.listAnnotations(target);
-        allAnnotations = converter.convert(annotations);
-        articleCacheAdministrator.putInCache(target + CACHE_KEY_ANNOTATION, 
-                                   allAnnotations, new String[]{FileUtils.escapeURIAsPath(target)});
-        updated = true;
-        if (log.isDebugEnabled()) {
-          log.debug("retrieved annotation list from FEDORA for article: " + target);
-        }        
-      } catch (RemoteException e) {
-        log.error ("Could not retrieve all annotations for article: " + target);
-        throw new ApplicationException(e);
-      } finally {
-        if (!updated)
-          articleCacheAdministrator.cancelUpdate(target);
-      }
+      annotations = annotationWebService.listAnnotations(target);
+    } catch (RemoteException re){
+      log.error(re);
+      throw new ApplicationException(re);
     }
+    allAnnotations = converter.convert(annotations);
     return allAnnotations;
   }
 
