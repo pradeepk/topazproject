@@ -712,6 +712,21 @@
   	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
   	  	<result name="error"> /WEB-INF/pages/admin/adminTop.ftl</result>
   	</action> 
+  	
+  	<action name="processFlags" class="org.plos.admin.action.ProcessFlagsAction">
+  	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
+  	  	<result name="error"> /WEB-INF/pages/admin/adminTop.ftl</result>
+  	</action> 
+  	
+  	<action name="viewAnnotation" class="org.plos.admin.action.ViewAnnotationAction">
+  	  	<result name="success">/WEB-INF/pages/admin/viewAnnotation.ftl</result>
+  	  	<result name="error"> /WEB-INF/pages/admin/adminTop.ftl</result>
+  	</action>   
+  	
+  	<action name="viewReply" class="org.plos.admin.action.ViewReplyAction">
+  	  	<result name="success">/WEB-INF/pages/admin/viewReply.ftl</result>
+  	  	<result name="error"> /WEB-INF/pages/admin/adminTop.ftl</result>
+  	</action>    		
   </package>
 
 </xwork>
