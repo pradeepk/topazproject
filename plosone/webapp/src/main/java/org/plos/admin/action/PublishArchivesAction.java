@@ -16,17 +16,10 @@ import org.plos.admin.service.DocumentManagementService;
 
 import com.opensymphony.webwork.interceptor.ParameterAware;
 
-public class PublishArchivesAction extends BaseActionSupport {
+public class PublishArchivesAction extends BaseAdminActionSupport {
 
 	private static final Log log = LogFactory.getLog(PublishArchivesAction.class);
-	private DocumentManagementService documentManagementService;
-	private Collection uploadableFiles;
-	private Collection publishableFiles;
 	private String articlesToPublish;
-	
-	public void setDocumentManagementService(DocumentManagementService documentManagementService) {
-		this.documentManagementService = documentManagementService;
-	}
 	
 	public void setArticlesToPublish(String articles) {
 		articlesToPublish = articles;
@@ -37,24 +30,13 @@ public class PublishArchivesAction extends BaseActionSupport {
 		while (articles.hasNext()) {
 			String article = ((String) articles.next()).trim();
 			try {
-				documentManagementService.publish(article);
+				getDocumentManagementService().publish(article);
 				addActionMessage("Published: " + article);
 			} catch (Exception e) {
 				addActionMessage("Error publishing: " + article + " - " + e.toString());
 				e.printStackTrace();
 			}
 		}
-		uploadableFiles = documentManagementService.getUploadableFiles();
-		publishableFiles = documentManagementService.getPublishableFiles();
-		
-		return SUCCESS;
+		return base();
 	}
-	
-	public Collection getUploadableFiles() {
-		return uploadableFiles;
-	}	
-	
-	public Collection getPublishableFiles() {
-		return publishableFiles;
-	}	
 }
