@@ -52,25 +52,25 @@
   </modules>
 
   <build>
-    <plugins>
-      <plugin>
-        <groupId>org.topazproject.plugins</groupId>
-        <artifactId>ant-tasks</artifactId>
-        <configuration>
-          <tomcatFile>${tomcatFile}</tomcatFile>
-        </configuration>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <groupId>org.topazproject.plugins</groupId>
+          <artifactId>ant-tasks</artifactId>
+          <configuration>
+            <tomcatFile>${tomcatFile}</tomcatFile>
+          </configuration>
 
-        <executions>
-          <execution>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>get-tomcat</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-
-    <defaultGoal>assembly:assembly</defaultGoal>
+          <executions>
+            <execution>
+              <phase>generate-resources</phase>
+              <goals>
+                <goal>get-tomcat</goal>
+              </goals>
+            </execution>
+          </executions>
+        </plugin>
+      </plugins>
+    </pluginManagement>
   </build>
 </project>
