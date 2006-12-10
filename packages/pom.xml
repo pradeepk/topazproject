@@ -82,6 +82,9 @@
               </goals>
             </execution>
           </executions>
+          <configuration>
+            <tarLongFileMode>gnu</tarLongFileMode>
+          </configuration>
         </plugin>
       </plugins>
     </pluginManagement>
