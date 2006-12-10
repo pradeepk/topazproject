@@ -70,7 +70,7 @@
         <version>2.2-SNAPSHOT</version>
         <configuration>
           <descriptors>
-            <descriptor>src/main/assembly/cas.xml</descriptor>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
           </descriptors>
         </configuration>
       </plugin>
