@@ -2,7 +2,7 @@
 <config>
   <topaz>
     <mulgara>
-      <databaseDir>/usr/local/topaz/data/mulgara</databaseDir>
+      <databaseDir>/var/lib/topaz/data/mulgara</databaseDir>
     </mulgara>
   </topaz>
 </config>

@@ -13,7 +13,7 @@
     </services>
     -->
     <search>
-      <indexpath>/usr/local/topaz/data/lucene</indexpath>
+      <indexpath>/var/lib/topaz/data/lucene</indexpath>
       <!-- <fedoraobjpath>...</fedoraobjpath> -->
       <defaultfields>description,title,body,creator</defaultfields>
     </search>

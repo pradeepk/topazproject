@@ -1,12 +1,8 @@
 <assembly>
-  <id>topaz</id>
+  <id>tomcat</id>
   <formats>
     <format>tar.gz</format>
   </formats>
-
-  <componentDescriptors>
-    <componentDescriptor>src/main/assembly/components.xml</componentDescriptor>
-  </componentDescriptors>
 
   <!-- Do not include default server.xml -->
   <fileSets>
@@ -26,35 +22,30 @@
   <files>
     <!-- Copy over webapp specific server.xml file -->
     <file>
-      <source>src/main/resources/topaz.xml</source>
+      <source>src/main/resources/server.xml</source>
       <outputDirectory>conf</outputDirectory>
-      <destName>server.xml</destName>
     </file>
     <!-- Copy over webassp specific log4j.xml file -->
     <file>
-      <source>src/main/resources/topaz_log4j.xml</source>
+      <source>src/main/resources/log4j.xml</source>
       <outputDirectory>commons/classes</outputDirectory>
-      <destName>log4j.xml</destName>
     </file>
   </files>
-
+             
   <dependencySets>
     <dependencySet>
-      <includes>
-        <include>org.topazproject.ws:ws-pap-webapp</include>
-        <include>org.topazproject.ws:ws-ratings-webapp</include>
-        <include>org.topazproject.ws:ws-alerts-webapp</include>
-        <include>org.topazproject.ws:ws-users-webapp</include>
-        <include>org.topazproject.ws:ws-permissions-webapp</include>
-        <include>org.topazproject.ws:ws-articles-webapp</include>
-        <include>org.topazproject.ws:ws-annotation-webapp</include>
-        <include>org.topazproject.ws:ws-search-webapp</include>
-      </includes>
       <outputFileNameMapping>${artifactId}.${extension}</outputFileNameMapping>
       <outputDirectory>/webapps/</outputDirectory>
       <excludes>
         <exclude>log4j:*</exclude>
       </excludes>
+    </dependencySet>
+
+    <dependencySet>
+      <outputDirectory>/common/lib</outputDirectory>
+      <includes>
+        <include>log4j:*</include>
+      </includes>
     </dependencySet>
   </dependencySets>
 </assembly>
