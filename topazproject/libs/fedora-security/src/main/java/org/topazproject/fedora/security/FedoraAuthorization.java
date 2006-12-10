@@ -2231,9 +2231,7 @@ public class FedoraAuthorization extends Module implements Authorization {
 
   private void enforce(String login, String target, String api, String pid, String namespace,
                        Context context) throws AuthzException {
-    xacmlPep.enforce(login, target, api,
-                     target.equals(Constants.ACTION.INGEST_OBJECT.uri) ? "" : pid, namespace,
-                     context);
+    xacmlPep.enforce(login, target, api, pid, namespace, context);
 
     try {
       if (accessService != null) {
