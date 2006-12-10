@@ -15,21 +15,8 @@
     <version>0.5-SNAPSHOT</version>
   </parent>
 
-  <pluginRepositories>
-    <pluginRepository>
-      <id>Maven Snapshots</id>
-      <url>http://cvs.apache.org/maven-snapshot-repository/</url>
-      <snapshots>
-        <enabled>true</enabled>
-      </snapshots>
-      <releases>
-        <enabled>false</enabled>
-      </releases>
-    </pluginRepository>
-  </pluginRepositories>
 
   <dependencies>
-    
     <dependency>
       <groupId>org.plos</groupId>
       <artifactId>plos-registration-webapp</artifactId>
@@ -43,7 +30,6 @@
       <version>2.0.6-1</version>
       <type>jar</type>
     </dependency>
-
   </dependencies>
 
   <properties>
