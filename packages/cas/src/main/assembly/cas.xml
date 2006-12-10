@@ -23,6 +23,7 @@
       <outputDirectory>/webapps/cas</outputDirectory>
       <excludes>
         <exclude>WEB-INF/LoggerConf.xml</exclude>
+        <exclude>WEB-INF/classes/log4j.xml</exclude>
       </excludes>
     </fileSet>
     <fileSet>
