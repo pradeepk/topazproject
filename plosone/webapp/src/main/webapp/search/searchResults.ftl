@@ -23,7 +23,7 @@
 	<h1>Search Results</h1>
 
 	<div id="search-results">
-		<p>There are about ${totalNoOfResults} results for <strong>&quot;${query}&quot;</strong></p>
+		<p>There are <strong>${totalNoOfResults}</strong> results, sorted by relevance, for <strong>&quot;${query}&quot;</strong>.</p>
     <@renderSearchPaginationLinks totalPages/>
   	<#if totalNoOfResults gt 0>
 	<ul>
