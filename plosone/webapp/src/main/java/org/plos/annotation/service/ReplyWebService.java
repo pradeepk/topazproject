@@ -84,6 +84,11 @@ public class ReplyWebService extends BaseAnnotationService {
     replyService.deleteReplies(root, inReplyTo);
   }
 
+  public void deleteReplies(final String target) throws RemoteException, NoSuchAnnotationIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    replyService.deleteReplies(target);
+  }
+  
   /**
    * @param replyId replyId
    * @return a reply
@@ -154,6 +159,23 @@ public class ReplyWebService extends BaseAnnotationService {
    */
   public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
     this.articleCacheAdministrator = articleCacheAdministrator;
+  }
+  
+  /**
+   * List the set of replies in a specific administrative state.
+   *
+   * @param mediator if present only those replies that match this mediator are returned
+   * @param state the state to filter the list of replies by or 0 to return replies in any
+   *        administartive state
+   *
+   * @return an array of replies; if no matching replies are found, an empty array is returned
+   *
+   * @throws RemoteException if some error occured
+   */
+  public ReplyInfo[] listReplies(String mediator, int state)
+                          throws RemoteException {
+	    ensureInitGetsCalledWithUsersSessionAttributes();
+	    return replyService.listReplies(mediator, state);
   }
 
 }

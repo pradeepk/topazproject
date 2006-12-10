@@ -200,6 +200,24 @@ public class AnnotationWebService extends BaseAnnotationService {
     ensureInitGetsCalledWithUsersSessionAttributes();
     annotationService.setAnnotationState(annotationId, PUBLIC_MASK | FLAG_MASK);
   }
+  
+  /**
+   * List the set of annotations in a specific administrative state.
+   *
+   * @param mediator if present only those annotations that match this mediator are returned
+   * @param state the state to filter the list of annotations by or 0 to return annotations in any
+   *        administrative state
+   *
+   * @return an array of annotation metadata; if no matching annotations are found, an empty array
+   *         is returned
+   *
+   * @throws RemoteException if some error occurred
+   */
+  public AnnotationInfo[] listAnnotations(String mediator, int state)
+                                   throws RemoteException {
+	    ensureInitGetsCalledWithUsersSessionAttributes();
+	    return annotationService.listAnnotations(mediator, state);	  
+  }
 
   /**
    * @return Returns the articleCacheAdministrator.
