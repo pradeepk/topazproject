@@ -7,14 +7,13 @@
   <artifactId>cas</artifactId>
   <packaging>pom</packaging>
   <version>0.5-SNAPSHOT</version>
-  <name>packages</name>
+  <name>cas</name>
 
   <parent>
     <groupId>org.topazproject.packages</groupId>
     <artifactId>packages</artifactId>
     <version>0.5-SNAPSHOT</version>
   </parent>
-
 
   <dependencies>
     <dependency>
@@ -30,16 +29,17 @@
       <version>2.0.6-1</version>
       <type>jar</type>
     </dependency>
+
+    <dependency>
+      <groupId>org.topazproject.packages</groupId>
+      <artifactId>packages</artifactId>
+      <version>0.5-SNAPSHOT</version>
+      <type>tar.gz</type>
+      <classifier>tomcat-common</classifier>
+    </dependency>
   </dependencies>
 
   <properties>
-    <!-- 
-    Name of the Tomcat file. Note: We are assuming that the name of the file
-    will correspond to the directory name where the ant task will unzip the
-    file to under {project.build.directory}
-    -->
-    <tomcatFile>apache-tomcat-5.5.16</tomcatFile>
-    
     <!-- the ecqs tomcat. cas web-app is extracted from here -->
     <ecqs-tomcat>esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28</ecqs-tomcat>
   </properties>
@@ -50,7 +50,6 @@
         <groupId>org.topazproject.plugins</groupId>
         <artifactId>ant-tasks</artifactId>
         <configuration>
-          <tomcatFile>${tomcatFile}</tomcatFile>
           <DEST_DIR>${project.build.directory}</DEST_DIR>
         </configuration>
 
@@ -58,7 +57,6 @@
           <execution>
             <phase>generate-resources</phase>
             <goals>
-              <goal>get-tomcat</goal>
               <goal>ecqs-install</goal>
             </goals>
           </execution>
