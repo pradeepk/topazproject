@@ -10,7 +10,12 @@
 package org.plos.util;
 
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang.ArrayUtils;
+import org.apache.commons.validator.GenericValidator;
+import org.apache.commons.validator.UrlValidator;
 import org.w3c.dom.Node;
+import org.plos.ApplicationException;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -18,11 +23,17 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
+import java.net.URL;
+import java.net.MalformedURLException;
+
+import com.opensymphony.xwork.validator.validators.URLValidator;
 
 /**
  * Provides some useful text manipulation functions.
  */
 public class TextUtils {
+  public static final String HTTP_PREFIX = "http://";
+
   /**
    * Linkify any possible web links excepting email addresses
    * @param text text
@@ -70,8 +81,32 @@ public class TextUtils {
     return stringWriter.toString();
   }
 
-  /** @return whether the url is a valid address */
+  /**
+   * @return whether the url is a valid address
+   */
   public static boolean verifyUrl(final String url) {
-    return com.opensymphony.util.TextUtils.verifyUrl(url);
+    final String lowercaseUrl = url.toLowerCase();
+    try {
+      new URL(lowercaseUrl);
+      //False if it only matches the protocol names.
+      if (ArrayUtils.contains(new String[]{HTTP_PREFIX, "ftp://", "https://"}, url)) {
+        return false;
+      }
+    } catch (MalformedURLException e) {
+      return false;
+    }
+    return true;
+//    return com.opensymphony.util.TextUtils.verifyUrl(url);
+  }
+
+  public static String makeValidUrl(final String url) throws Exception {
+    String finalUrl = url;
+    if (!verifyUrl(finalUrl)) {
+      finalUrl = HTTP_PREFIX + finalUrl;
+      if (!verifyUrl(finalUrl)) {
+        throw new Exception("Invalid url:" + url);
+      }
+    }
+    return finalUrl;
   }
 }

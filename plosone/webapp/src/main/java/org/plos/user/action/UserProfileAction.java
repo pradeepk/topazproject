@@ -24,16 +24,13 @@ import org.plos.user.PlosOneUser;
 import org.plos.user.UserProfileGrant;
 import org.plos.user.service.DisplayNameAlreadyExistsException;
 import org.plos.util.ProfanityCheckingService;
-
-import com.opensymphony.webwork.ServletActionContext;
+import org.plos.util.TextUtils;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.servlet.http.HttpServletResponse;
 
 /**
  * Creates a new user in Topaz and sets come Profile properties.  User must be logged in via CAS.
@@ -77,6 +74,7 @@ public class UserProfileAction extends UserActionSupport {
   private static final String NAME_GROUP = "name";
   private static final String EXTENDED_GROUP = "extended";
   private static final String ORG_GROUP = "org";
+  private final String HTTP_PREFIX = "http://";
 
   static {
     visibilityMapping.put(NAME_GROUP,
@@ -119,6 +117,8 @@ public class UserProfileAction extends UserActionSupport {
       log.debug("Topaz ID: " + topazId + " with authID: " + authId);
     }
 
+    homePage = makeValidUrl(homePage);
+    weblog = makeValidUrl(weblog);
     final PlosOneUser newUser = createPlosOneUser();
 
     try {
@@ -131,6 +131,14 @@ public class UserProfileAction extends UserActionSupport {
 
     sessionMap.put(PLOS_ONE_USER_KEY, newUser);
     return SUCCESS;
+  }
+
+  private String makeValidUrl(final String url) throws Exception {
+    String finalUrl = url;
+    if (StringUtils.isEmpty(finalUrl) || url.equalsIgnoreCase(HTTP_PREFIX)) {
+      return StringUtils.EMPTY;
+    }
+    return TextUtils.makeValidUrl(finalUrl);
   }
 
   public String executeRetrieveUserProfile() throws Exception {
@@ -271,12 +279,27 @@ public class UserProfileAction extends UserActionSupport {
       addFieldError("country", "Country cannot be empty");
       isValid = false;
     }
+    if (isInvalidUrl(homePage)) {
+      addFieldError("homePage", "Home page url is not valid");
+      isValid = false;
+    }
+    if (isInvalidUrl(weblog)) {
+      addFieldError("weblog", "Weblog url is not valid");
+      isValid = false;
+    }
 
     if (isProfane()) {
       isValid = false;
     }
 
     return isValid;
+  }
+
+  private boolean isInvalidUrl(final String url) {
+    if (StringUtils.isEmpty(url)) {
+      return false;
+    }
+    return !TextUtils.verifyUrl(url) && !TextUtils.verifyUrl(HTTP_PREFIX + url);
   }
 
   private boolean isProfane() {
