@@ -75,7 +75,6 @@
 
       <plugin>
         <artifactId>maven-assembly-plugin</artifactId>
-        <version>2.2-SNAPSHOT</version>
         <configuration>
           <descriptors>
             <descriptor>src/main/assembly/topaz.xml</descriptor>
@@ -83,7 +82,5 @@
         </configuration>
       </plugin>
     </plugins>
-
-    <defaultGoal>assembly:assembly</defaultGoal>
   </build>
 </project>
