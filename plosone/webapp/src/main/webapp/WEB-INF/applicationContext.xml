@@ -73,6 +73,8 @@
   
   </bean>
 
+  <bean id="flagManagementService" class="org.plos.admin.service.FlagManagementService"/>
+       
   <bean id="documentManagementService" class="org.plos.admin.service.DocumentManagementService" scope="session">
   	<!-- These pathnames are absolute -->
   	<property name="documentDirectory" value="/etc/topaz/plosdocs"/>
