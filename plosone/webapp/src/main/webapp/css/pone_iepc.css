@@ -63,11 +63,11 @@ IE PC fixes
 * html div.figure { height: 1%;}
 /* End hide from IE-mac */
 
-* html ul#tabsContainer { margin-bottom: 30px; padding-top: 4px;}
+* html ul#tabsContainer { margin-bottom: 14px; padding-top: 4px;}
 * html ul#tabsContainer li	{ padding-top: 0; padding-bottom: 0; }
 /* fixes disappearing background image bug */
 * html #home { height: 1% }
-* html html>body #home { height: auto }
+html>body #home { height: auto }
 
 /* IE 7 hax */
 *:first-child+html ul#tabsContainer 	{ }
