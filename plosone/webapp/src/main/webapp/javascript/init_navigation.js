@@ -11,7 +11,7 @@
 				navLi.onmouseout = function() {
 						this.className = this.className.replace(/\sover/, "");
 						this.className = this.className.replace(/over/, "");
-					}
+			    }
 			}
 		}
 	}

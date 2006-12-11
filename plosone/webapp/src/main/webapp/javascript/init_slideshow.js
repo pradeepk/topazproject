@@ -1,3 +1,6 @@
+  var figureWindow;
+  var image;
+  var imageWidth = 0;
 
   function init(e) {
     topaz.slideshow.setLinkView(dojo.byId("viewL"));
@@ -8,15 +11,28 @@
     topaz.slideshow.setFigCaption(dojo.byId("figure-window-description"));
     topaz.slideshow.setInitialThumbnailIndex();
     
-    dojo.event.connect(window, "onload", function () {
+    //dojo.event.connect(window, "onload", function () {
         topaz.slideshow.adjustViewerHeight();
-      }
-    );
+    //  }
+    //);
     
     dojo.event.connect(window, "onresize", function () {
         topaz.slideshow.adjustViewerHeight();
       }
     );
+    
+    /*figureWindow = dojo.byId("figure-window-wrapper");
+    var imageMarginBox = dojo.html.getMarginBox(topaz.slideshow.figureImg);
+    imageWidth = imageMarginBox.width;
+    //alert("imageWidth = " + imageWidth);
+    
+    topaz.domUtil.setContainerWidth(figureWindow, imageWidth + 250);
+    
+    dojo.event.connect(window, "onresize", function() {
+        setTimeout("topaz.domUtil.setContainerWidth(figureWindow, imageWidth + 250)", 100);
+      }
+    );*/
+    
   }
   
   dojo.addOnLoad(init);

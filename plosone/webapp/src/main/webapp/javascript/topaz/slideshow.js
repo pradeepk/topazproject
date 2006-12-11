@@ -17,6 +17,8 @@ topaz.slideshow = {
   
   figImg: "",
   
+  figImgWidth: "",
+  
   figTitle: "",
   
   figCaption: "",
@@ -102,6 +104,7 @@ topaz.slideshow = {
     this.activeItemIndex = index;
     
     window.setTimeout("topaz.slideshow.adjustViewerHeight()", 100);
+    
   },
   
   showSingle: function (obj, index) {
@@ -201,6 +204,12 @@ topaz.slideshow = {
     }    
   },
   
+  adjustViewerWidth: function(figureWindow, maxWidth) {
+    var imageMarginBox = dojo.html.getMarginBox(topaz.slideshow.figureImg);
+    imageWidth = imageMarginBox.width;
+    topaz.domUtil.setContainerWidth(figureWindow, imageWidth, maxWidth, 1);
+  },
+
   showPrevious: function(obj) {
     if (this.activeItemIndex <= 0) {
       return false;
@@ -218,6 +227,10 @@ topaz.slideshow = {
         
       this.activeItemIndex = newIndex;
     }
+
+    var imageMarginBox = dojo.html.getMarginBox(topaz.slideshow.figureImg);
+    imageWidth = imageMarginBox.width;
+    topaz.domUtil.setContainerWidth(figureWindow, imageWidth, 910, 1);
   },
   
   showNext: function(obj) {
@@ -237,6 +250,10 @@ topaz.slideshow = {
         
       this.activeItemIndex = newIndex;
     }
+    
+    var imageMarginBox = dojo.html.getMarginBox(topaz.slideshow.figureImg);
+    imageWidth = imageMarginBox.width;
+    topaz.domUtil.setContainerWidth(figureWindow, imageWidth, 910, 1);
   },
   
   openViewer: function(url) {

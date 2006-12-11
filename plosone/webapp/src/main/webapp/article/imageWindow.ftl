@@ -19,7 +19,8 @@
 	    <@ww.a title="Click for larger image" href="#"> <!--put code here for onclick and change the pane-->
 	    <img border="0" class="thumbnail" id="tn${image_index}" src="${imageUrl}&representation=${image.repSmall}" onclick="topaz.slideshow.show(this, ${image_index});" title="${image.title} ${image.plainCaptionTitle}" />
 	    </@ww.a>
-			</div>
+		    
+	</div>
 	  </#list>
 		<#if !currentImage?exists && secondaryObjects?size gt 0>
 			<#assign currentImage = secondaryObjects?first>
@@ -34,9 +35,10 @@
 				<a href="#" id="previous" onclick="return topaz.slideshow.showPrevious(this);" class="previous icon<#if currentImage == secondaryObjects?first> hidden</#if>">Previous</a> | <a href="#" id="next" onclick="return topaz.slideshow.showNext(this);" class="next icon<#if currentImage == secondaryObjects?last> hidden</#if>">Next</a>
 			</div>
 			<div id="figure-window-hdr-links">
-			<a href="${currentImageUrl}&representation=${currentImage.repLarge}" id="viewL" class="larger icon" title="Click to view a larger version of this image">View Larger Image</a> 
-			<a href="${currentImageAttachmentUrl}&representation=TIF" id="downloadTiff" class="image icon" title="Click to download the original TIFF">		Download original TIFF</a> 
-			<a href="${currentImageAttachmentUrl}&representation=${currentImage.repMedium}" id="downloadPpt" class="ppt icon" title="Click to download a PowerPoint friendly version">Download PowerPoint Friendly Image</a>		</div>
+				<a href="${currentImageUrl}&representation=${currentImage.repLarge}" id="viewL" class="larger icon" title="Click to view a larger version of this image">View Larger Image</a> 
+				<a href="${currentImageAttachmentUrl}&representation=TIF" id="downloadTiff" class="image icon" title="Click to download the original TIFF">		Download original TIFF</a> 
+				<a href="${currentImageAttachmentUrl}&representation=${currentImage.repMedium}" id="downloadPpt" class="ppt icon" title="Click to download a PowerPoint friendly version">Download PowerPoint Friendly Image</a>		
+			</div>
 				
 		</div>
 		

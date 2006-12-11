@@ -73,20 +73,16 @@ a:active	{ }
 #figure-window-wrapper {
 	position: relative;
 	margin: 0;
-	min-width: 675px;
-	max-width: 910px;
-	font: 0.85em Verdana, Arial, Helvetica, sans-sif;
+	width: 735px;
+	font: 85% Verdana, Arial, Helvetica, sans-serif;
 	color: #330;
 	min-height: 100%;
 	border: solid 2px #CCC;
 	background: #F8F8F8;
 }
-* html #figure-window-wrapper  	{
-	width: expression((document.body.clientWidth < 910) ?
-	'910px' : '80%');
-	\width: expression((document.documentElement.clientWidth < 910) ?
-	'910px' : '80%');
-	}
+* html #figure-window-wrapper {
+	width: 738px;
+}
 
 #figure-window-wrapper h2 { font-size:1.2em; font-family: Georgia, "Times New Roman", Times, serif; letter-spacing: -0.03em; color: #333; position: relative;}
 #figure-window-nav {
@@ -103,23 +99,27 @@ a:active	{ }
 }
 #figure-window-hdr {
 	padding: 10px 0px 10px 10px;
-	border-bottom: 2px solid #ccc;
 	background: url(../images/pone_toolbar_bg.gif) repeat-x left center;
 	text-align: center;
 }
 #figure-window-viewer {
-	padding: 20px;
+	width: 620px;
+	padding: 20px 0;
 	text-align: center;
-	border-bottom: 2px solid #069;
-	background: #D2F7FF url(../images/pone_figure-header_bg.gif) repeat-x left bottom;
+	border-top: 2px solid #ccc;
+	border-bottom: 2px solid #ccc;
+	background: #fff;
 	position: relative;
 }
-#figure-window-viewer img {
-
+#figure-window-viewer img{
+	margin: 0 auto;
+}
+#figure-window-viewer p {
+	margin: 0 20px;
 }
 #figure-window-description {
 	padding: 10px;
-	background: #D2F7FF;
+	background: transparent;
 	position: relative;	
 }
 .figure-window-nav-item {
@@ -151,7 +151,7 @@ a:active	{ }
 #figureTitle 		{ display: block; font-size: .85em;  margin-top: 10px;}
 div.btn.close		{ display: inline; margin: 0; text-transform: uppercase; font-size: .9em;}
 div.btn	*			{ vertical-align: middle; padding: 4px; font-weight: bold; cursor: pointer;}
-a.close			{ text-decoration: none; padding: 2px 20px 2px 0; #666; font-size: .8em;}
+a.close			{ text-decoration: none; padding: 2px 20px 2px 0; font: 85% bold Verdana, Arial, Helvetica, sans-serif; margin-left: 630px;}
 /* for closing and canceling viewing windows */
 
 div.close a:hover	{ background-color: #ddd; }

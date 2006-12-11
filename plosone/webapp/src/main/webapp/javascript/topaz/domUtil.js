@@ -262,6 +262,37 @@ topaz.domUtil = {
     
     obj.style.height = maxContainerHeight + "px";
     obj.style.overflow = "auto";
-  }
+  },
   
+  setContainerWidth: function (obj, minWidth, maxWidth, variableWidth /* if the container between min and max */) {
+    var viewport = dojo.html.getViewport();
+    
+    var containerMarginBox = dojo.html.getMarginBox(obj);
+    // min-width: 675px; max-width: 910px;
+    obj.style.width = (minWidth && viewport.width < minWidth) ? minWidth + "px" : 
+                      (maxWidth && viewport.width > maxWidth) ? maxWidth + "px" :
+                      (!variableWidth && (viewport.width < maxWidth || (containerMarginBox.width/variableWidth) < maxWidth)) ? maxWidth + "px" : "auto" ;
+    //alert("container.style.width = " + obj.style.width);
+  },
+  
+  removeNode: function(node, /* boolean */ deep) {
+    if (deep && node.hasChildNodes)
+      dojo.dom.removeChildren(node);
+      
+    dojo.dom.removeNode(node);
+  },
+  
+  insertAfterLast: function(srcNode, refNode) {
+    if (refNode.hasChildNodes) 
+      dojo.dom.insertAfter(srcNode, refNode[refNode.childNodes.length-1]);
+    else
+      refNode.appendChild(srcNode);
+  },
+
+  insertBeforeFirst: function(srcNode, refNode) {
+    if (refNode.hasChildNodes) 
+      dojo.dom.insertBefore(srcNode, refNode[0]);
+    else
+      refNode.appendChild(srcNode);
+  }
 }
