@@ -6,3 +6,5 @@
 <!-- end : main contents -->
 
 <#include "/global/global_bottom.ftl">
+
+<div id="dojoDebug" style="background: yellow;"></div>
