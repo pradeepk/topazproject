@@ -75,8 +75,7 @@ public class FeedbackAction extends UserActionSupport {
     if (StringUtils.isBlank(fromEmailAddress)) {
       addFieldError("fromEmailAddress", "Email address cannot be empty");
       isValid = false;
-    }
-    if (!EmailValidator.getInstance().isValid(fromEmailAddress)) {
+    } else if (!EmailValidator.getInstance().isValid(fromEmailAddress)) {
       addFieldError("fromEmailAddress", "Invalid email address");
       isValid = false;
     }
