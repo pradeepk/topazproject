@@ -15,7 +15,7 @@
     <!-- Copy over webassp specific log4j.xml file -->
     <file>
       <source>src/main/resources/log4j.xml</source>
-      <outputDirectory>commons/classes</outputDirectory>
+      <outputDirectory>common/classes</outputDirectory>
     </file>
   </files>
 
