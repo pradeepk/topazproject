@@ -42,7 +42,7 @@ public class PlosOneUser {
 
   // Constants for application specific User Preferences
   private static final String ALERTS_EMAIL_ADDRESS = "alertsEmailAddress";
-  private static final String ALERTS_CATEGORIES = "alertsCategories";
+  private static final String ALERTS_CATEGORIES = "alertsJournals";
 
   /**
    * Initializes a new PLoS ONE user

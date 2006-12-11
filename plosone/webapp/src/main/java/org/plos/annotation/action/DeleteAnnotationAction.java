@@ -26,7 +26,7 @@ public class DeleteAnnotationAction extends AnnotationActionSupport {
     try {
       getAnnotationService().deletePrivateAnnotation(annotationId, deletePreceding);
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not delete annotation: " + annotationId, e);
       addActionError("Annotation deletion failed with error message: " + e.getMessage());
       return ERROR;
     }
@@ -43,7 +43,7 @@ public class DeleteAnnotationAction extends AnnotationActionSupport {
     try {
       getAnnotationService().deletePublicAnnotation(annotationId);
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not delete annotation: " + annotationId, e);
       addActionError("Annotation deletion failed with error message: " + e.getMessage());
       return ERROR;
     }

@@ -32,7 +32,7 @@ public class DeleteReplyAction extends AnnotationActionSupport {
     try {
       getAnnotationService().deleteReply(id);
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not delete reply: " + id, e);
       addActionError("Reply deletion failed with error message: " + e.getMessage());
       return ERROR;
     }
@@ -48,7 +48,7 @@ public class DeleteReplyAction extends AnnotationActionSupport {
     try {
       getAnnotationService().deleteReply(root, inReplyTo);
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not delete reply with root: " + root + " replyTo: " + inReplyTo, e);
       addActionError("Reply deletion failed with error message: " + e.getMessage());
       return ERROR;
     }

@@ -41,7 +41,7 @@ public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
         log.debug(message.append(annotationId).append(": ").append(creatorUserName));
       }
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not retreive annotation with id: " + annotationId, e);
       addActionError("Annotation fetching failed with error message: " + e.getMessage());
       return ERROR;
     }

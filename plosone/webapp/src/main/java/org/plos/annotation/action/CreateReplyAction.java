@@ -43,10 +43,10 @@ public class CreateReplyAction extends AnnotationActionSupport {
       } else {
         addMessages(profanityValidationMessagesInBody, "profanity check", "comment");
         addMessages(profanityValidationMessagesInTitle, "profanity check", "commentTitle");
-        return ERROR;
+        return INPUT;
       }
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not create reply to root: " + root + " and inReplyTo: " + inReplyTo, e);
       addActionError("Reply creation failed with error message: " + e.getMessage());
       return ERROR;
     }

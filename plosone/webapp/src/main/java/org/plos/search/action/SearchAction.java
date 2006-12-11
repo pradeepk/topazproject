@@ -59,15 +59,15 @@ public class SearchAction extends BaseActionSupport {
     try {
       if (StringUtils.isBlank(queryString)) {
         addActionError("Please enter a query string.");
-        return ERROR;
+        return INPUT;
       }
       final SearchResultPage searchResultPage = searchService.find(queryString, startPage, pageSize);
 //      final SearchResultPage searchResultPage = getMockSearchResults(startPage, pageSize);
       totalNoOfResults = searchResultPage.getTotalNoOfResults();
       searchResults = searchResultPage.getHits();
     } catch (ApplicationException e) {
-      addActionError("Search failed");
-      log.error("Search failed with error", e);
+      addActionError("Search failed ");
+      log.error("Search failed with error with query string: " + queryString, e);
       return ERROR;
     }
     return SUCCESS;

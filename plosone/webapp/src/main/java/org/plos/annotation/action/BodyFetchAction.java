@@ -31,7 +31,7 @@ public class BodyFetchAction extends AnnotationActionSupport {
       //htmlEncoded so that any dangerous scripting is rendered safely to viewers of the annotation.
       body = TextUtils.escapeAndHyperlink(bodyContent);
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not retrieve body for URL: " + bodyURL, e);
       addActionError("Getting the annotation body failed with error message: " + e.getMessage());
       return ERROR;
     }

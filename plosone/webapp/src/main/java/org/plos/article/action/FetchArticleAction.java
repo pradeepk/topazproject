@@ -37,15 +37,15 @@ public class FetchArticleAction extends BaseActionSupport {
       //log.debug("transformedArticle: " + transformedArticle);
     } catch (NoSuchIdException e) {
       messages.add("No article found for id: " + articleURI);
-      log.warn(e, e);
+      log.info("Could not find article: "+ articleURI, e);
       return ERROR;
     } catch (RemoteException e) {
       messages.add(e.getMessage());
-      log.warn(e, e);
+      log.error("Error retrieving article: " + articleURI, e);
       return ERROR;
     } catch (IOException e) {
       messages.add(e.getMessage());
-      log.error(e, e);
+      log.error("Error retrieving article: " + articleURI, e);
       return ERROR;
     }
 
@@ -56,7 +56,7 @@ public class FetchArticleAction extends BaseActionSupport {
     try {
       setTransformedArticle(fetchArticleService.getAnnotatedContent(articleURI));
     } catch (Exception e) {
-      log.error ("Could not get article:" + articleURI, e);
+      log.error ("Could not get annotated article:" + articleURI, e);
       return ERROR;
     }
     return SUCCESS;

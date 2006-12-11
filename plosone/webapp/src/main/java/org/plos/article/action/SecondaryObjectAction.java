@@ -43,7 +43,7 @@ public class SecondaryObjectAction extends BaseActionSupport {
     try {
       secondaryObjects = articleWebService.listSecondaryObjects(uri);
     } catch (Exception ex) {
-      log.warn(ex);
+      log.error ("Could not get secondary objects for: " + uri, ex);
       return ERROR;
     }
     return SUCCESS;

@@ -209,18 +209,21 @@ public class Annotator {
       if (annotationContext != null){
         URI    context    = new URI(annotationContext);
         String expression = context.getFragment();
-      
-        try {
-          expression = URLDecoder.decode(expression, "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-          throw new Error(e);
-        }
+        if (expression != null) {
+          try {
+            expression = URLDecoder.decode(expression, "UTF-8");
+          } catch (UnsupportedEncodingException e) {
+            throw new Error(e);
+          }
 
-        try {
-          LocationList list = XPointerAPI.evalFullptr(document, expression);
-          lists.add(list);
-        } catch (TransformerException e) {
-          throw new TransformerException(expression, e);
+          try {
+            LocationList list = XPointerAPI.evalFullptr(document, expression);
+            lists.add(list);
+          } catch (TransformerException e) {
+            throw new TransformerException(expression, e);
+          }
+        } else {
+          lists.add(null);
         }
       } else {
         lists.add(null);

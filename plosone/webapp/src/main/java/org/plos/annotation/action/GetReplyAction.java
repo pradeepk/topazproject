@@ -28,7 +28,7 @@ public class GetReplyAction extends AnnotationActionSupport {
     try {
       reply = getAnnotationService().getReply(replyId);
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not retrieve reply: " + replyId, e);
       addActionError("Reply fetching failed with error message: " + e.getMessage());
       return ERROR;
     }

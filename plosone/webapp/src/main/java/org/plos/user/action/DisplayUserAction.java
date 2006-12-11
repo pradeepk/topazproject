@@ -11,6 +11,9 @@
 
 package org.plos.user.action;
 
+import static org.plos.Constants.SINGLE_SIGNON_USER_KEY;
+
+import com.opensymphony.xwork.ActionContext;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -40,7 +43,8 @@ public class DisplayUserAction extends UserActionSupport {
    * @return webwork status string
    */
   public String execute() throws Exception {
-
+    log.debug("single signon_userReceipt = " + ActionContext.getContext().getSession().get(org.plos.Constants.SINGLE_SIGNON_RECEIPT));
+    log.debug("single signon_userkey = " + ActionContext.getContext().getSession().get(org.plos.Constants.SINGLE_SIGNON_USER_KEY));
     pou = getUserService().getUserByTopazId(userId);
     return SUCCESS;
   }

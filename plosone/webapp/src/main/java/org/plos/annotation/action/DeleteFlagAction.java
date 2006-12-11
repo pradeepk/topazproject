@@ -31,7 +31,7 @@ public class DeleteFlagAction extends AnnotationActionSupport {
     try {
       getAnnotationService().deleteFlag(flagId);
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not delete flag: " + flagId, e);
       addActionError("Flag deletion failed with error message: " + e.getMessage());
       return ERROR;
     }

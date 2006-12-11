@@ -11,6 +11,7 @@ package org.plos.user;
 
 import com.opensymphony.xwork.ActionInvocation;
 import com.opensymphony.xwork.interceptor.Interceptor;
+import com.opensymphony.webwork.ServletActionContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
@@ -36,19 +37,25 @@ public class EnsureUserAccountInterceptor implements Interceptor {
     final String userId = (String) sessionMap.get(SINGLE_SIGNON_USER_KEY);
 
     if (null == userId) {
-      log.debug("no single sign on user key");
-      log.debug("ticket is: " + sessionMap.get(SINGLE_SIGNON_RECEIPT));
+      if (log.isDebugEnabled()){
+        log.debug("no single sign on user key");
+        log.debug("ticket is: " + sessionMap.get(SINGLE_SIGNON_RECEIPT));
+      }
       return actionInvocation.invoke();
     }
 
     PlosOneUser plosUser = (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
     if (null != plosUser) {
-      log.warn("A valid PlosOneUser exists, can a call to this interceptor be avoided in this case");
+      log.debug ("A valid PlosOneUser exists, can a call to this interceptor be avoided in this case");
       return getReturnCodeDependingOnDisplayName(plosUser, actionInvocation);
     } else {
       final UserService userService = getUserService();
       plosUser = userService.getUserByAuthId(userId);
-
+      if (log.isDebugEnabled()) {
+        log.debug("UserService : " + userService + " hashcode = "  + userService.hashCode());
+        log.debug("Session: " + ServletActionContext.getRequest().getSession().getId());
+      }
+      
       if (null == plosUser) {
         //forward to new profile creation page
         log.debug("This is a new user with id: " + userId);

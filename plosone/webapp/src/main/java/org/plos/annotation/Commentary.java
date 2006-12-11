@@ -80,13 +80,11 @@ public class Commentary implements Comparator<Commentary> {
     } else {
       dateA = a.getLastModified();
     }
-    log.debug("date A = " + dateA + " id = " + annotation.getId());
     if (b.getNumReplies() == 0) {
       dateB = b.getAnnotation().getCreated();
     } else {
       dateB = b.getLastModified();
     }    
-    log.debug("date B = " + dateB + " id = " + annotation.getId());
     return dateB.compareTo(dateA);
   }
 

@@ -29,6 +29,11 @@
       </interceptor>
 
       <interceptor-stack name="plosBaseStack">
+        <interceptor-ref name="exception">
+          <param name="logEnabled">true</param>
+          <param name="logCategory">org.plos.unhandled</param>
+          <param name="logLevel">DEBUG</param>                               
+        </interceptor-ref>  
         <interceptor-ref name="timer" />
         <interceptor-ref name="logger"/>
         <interceptor-ref name="defaultStack" />
@@ -65,10 +70,14 @@
       <result name="role-insufficient" type="plosOneFreemarker">
         <param name="templateFile">/user/inSufficientRole.ftl</param>
       </result>
+      <result name="error" type="plosOneFreemarker">
+        <param name="templateFile">/static/serverError.ftl</param>
+      </result>
     </global-results>
 
-    <global-exception-mappings>
+    <global-exception-mappings >
       <exception-mapping exception="org.plos.service.InvalidProxyTicketException" result="invalidProxyTicket"/>
+      <exception-mapping exception="java.lang.Exception" result="/static/error"/>
     </global-exception-mappings>
 
     <action name="logout" class="org.plos.action.LogoutAction">
@@ -128,7 +137,6 @@
 
     <action name="simpleSearch" class="org.plos.search.action.SearchAction" method="executeSimpleSearch">
       <result name="input">/search/searchResults.ftl</result>
-      <result name="error">/search/searchResults.ftl</result>
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/search/searchResults.ftl</param>
       </result>
@@ -136,7 +144,6 @@
 
     <action name="advancedSearch" class="org.plos.search.action.SearchAction" method="executeAdvancedSearch">
       <result name="input">/WEB-INF/pages/search/searchStart.ftl</result>
-      <result name="error">/WEB-INF/pages/search/searchStart.ftl</result>
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/WEB-INF/pages/search/searchResults.ftl</param>
       </result>
@@ -148,105 +155,90 @@
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/checklist.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="commentGuidelines">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/comment_guidelines.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="competing">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/competing.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="contact">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/contact.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="edboard">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/edboard.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="faq">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/faq.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="figureGuidelines">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/figure_guidelines.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="guidelines">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/guidelines.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="help">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/help.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="information">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/information.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="license">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/license.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="media">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/media.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="policies">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/policies.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="privacy">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/privacy.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="reviewerGuidelines">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/reviewer_guidelines.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
     
     <action name="rssFeeds">
@@ -265,21 +257,18 @@
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/sitemap.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="terms">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/terms.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="whypublish">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/whypublish.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="pageNotFound">
@@ -293,9 +282,6 @@
         <param name="templateFile">/static/serverError.ftl</param>
       </result>
     </action>    
-
-  
-  
   
   </package>
 
@@ -334,16 +320,13 @@
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/article/article_body.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="fetchSecondaryObjects" class="org.plos.article.action.SecondaryObjectAction">
-      <result name="error">/WEB-INF/pages/error.ftl</result>
       <result name="success">/WEB-INF/pages/article/displayImages.ftl</result>
     </action>
     
     <action name="slideshow" class="org.plos.article.action.SecondaryObjectAction" method="listFiguresAndTables">
-      <result name="error">/WEB-INF/pages/error.ftl</result>
       <result name="success" type="plosOneFreemarker">
       	<param name="location">/templates/headless_template.ftl</param>
       	<param name="templateFile">/article/imageWindow.ftl</param>
@@ -351,7 +334,6 @@
     </action>
     
     <action name="showImageLarge">
-      <result name="error">/WEB-INF/pages/error.ftl</result>
       <result name="success" type="plosOneFreemarker">
       	<param name="location">/templates/headless_template.ftl</param>
       	<param name="templateFile">/article/imageWindowLarge.ftl</param>
@@ -378,11 +360,9 @@
 
     <action name="fetchAnnotatedArticle" class="org.plos.article.action.FetchArticleAction" method="getAnnotatedArticle">
        <result name="success">/WEB-INF/pages/article/displayArticle.ftl</result>
-       <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
     
     <action name="fetchBody" class="org.plos.article.action.FetchArticleAction">
-      <result name="error">/WEB-INF/pages/error.ftl</result>
       <result name="success">/article/article_content.ftl</result>
     </action>
   </package>
@@ -418,19 +398,16 @@
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/discussion/discussion.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="getCommentary" class="org.plos.annotation.action.GetCommentaryAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/discussion/commentary.ftl</param>
       </result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
     <action name="listThreadRefresh" class="org.plos.annotation.action.ListReplyAction" method="listAllReplies">
       <result name="success">/discussion/threaded_replies.ftl</result>
-      <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
 
@@ -532,19 +509,14 @@
 
     <action name="assignAdminRoleSubmit" class="org.plos.user.action.AssignAdminRoleAction" method="assignAdminRole">
       <result name="success" type="redirect">/home.action</result>
-      <result name="error" type="ajaxJSON"/>
     </action>
 
     <action name="assignAdminRoleToSubmit" class="org.plos.user.action.AssignAdminRoleAction">
       <result name="success" type="redirect">/home.action</result>
-      <result name="error" type="ajaxJSON"/>
     </action>
 
     <action name="editAlerts" class="org.plos.user.action.UserAlertsAction" method="retrieveAlerts">
       <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/user/editPlosAlerts.ftl</param>
-      </result>
-      <result name="error" type="plosOneFreemarker">
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
       <result name="input" type="plosOneFreemarker">
@@ -570,15 +542,11 @@
   
     <action name="retrieveUserAlerts" class="org.plos.user.action.UserAlertsAction" method="retrieveAlerts">
       <result name="success">/user/alerts.ftl</result>
-      <result name="error">/WEB-INF/pages/user/alerts.ftl</result>
       <result name="input">/WEB-INF/pages/user/alerts.ftl</result>
     </action>
 
     <action name="saveAlerts" class="org.plos.user.action.UserAlertsAction" method="saveAlerts">
       <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/user/editPlosAlerts.ftl</param>
-      </result>
-      <result name="error" type="plosOneFreemarker">
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
       <result name="input" type="plosOneFreemarker">
@@ -609,9 +577,6 @@
       <result name="input" type="plosOneFreemarker">
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
-      <result name="error" type="plosOneFreemarker">
-        <param name="templateFile">/user/editUser.ftl</param>
-      </result>
     </action>
     
     <action name="editPrefsAlerts" class="org.plos.user.action.UserAlertsAction" method="retrieveAlerts">
@@ -619,9 +584,6 @@
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
       <result name="input" type="plosOneFreemarker">
-        <param name="templateFile">/user/editUser.ftl</param>
-      </result>
-      <result name="error" type="plosOneFreemarker">
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
     </action>
@@ -652,9 +614,6 @@
     <action name="saveProfile" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">
 			<result name="success" type="redirect">/user/secure/retrieveUserProfile.action </result>
       <result name="input" type="plosOneFreemarker">
-        <param name="templateFile">/user/createNewUser.ftl</param>
-      </result>
-      <result name="error" type="plosOneFreemarker">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
     </action>
@@ -698,9 +657,6 @@
       <result name="input" type="plosOneFreemarker">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
-      <result name="error" type="plosOneFreemarker">
-        <param name="templateFile">/user/createNewUser.ftl</param>
-      </result>
     </action>
 
     <action name="newUser">
@@ -729,32 +685,26 @@
                                
   	<action name="adminTop" class="org.plos.admin.action.AdminTopAction">
   	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
-  	  	<result name="error">/WEB-INF/pages/admin/adminTop.ftl</result>
   	</action> 	
 
   	<action name="ingestArchives" class="org.plos.admin.action.IngestArchivesAction">
   	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
-  	  	<result name="error">/WEB-INF/pages/admin/adminTop.ftl</result>
   	</action> 	  	
 
   	<action name="publishArchives" class="org.plos.admin.action.PublishArchivesAction">
   	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
-  	  	<result name="error"> /WEB-INF/pages/admin/adminTop.ftl</result>
   	</action> 
   	
   	<action name="processFlags" class="org.plos.admin.action.ProcessFlagsAction">
   	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
-  	  	<result name="error"> /WEB-INF/pages/admin/adminTop.ftl</result>
   	</action> 
   	
   	<action name="viewAnnotation" class="org.plos.admin.action.ViewAnnotationAction">
   	  	<result name="success">/WEB-INF/pages/admin/viewAnnotation.ftl</result>
-  	  	<result name="error"> /WEB-INF/pages/admin/adminTop.ftl</result>
   	</action>   
   	
   	<action name="viewReply" class="org.plos.admin.action.ViewReplyAction">
   	  	<result name="success">/WEB-INF/pages/admin/viewReply.ftl</result>
-  	  	<result name="error"> /WEB-INF/pages/admin/adminTop.ftl</result>
   	</action>    		
   </package>
 

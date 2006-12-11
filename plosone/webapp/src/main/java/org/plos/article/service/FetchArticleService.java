@@ -126,7 +126,7 @@ public class FetchArticleService {
       //for now, since all annotations are public, don't have to cache based on userID
       theArticle = (String)articleCacheAdministrator.getFromCache(articleURI/* + topazUserId*/); 
       if (log.isDebugEnabled()) {
-        log.debug("retrived article from cache: " + articleURI + " / " + topazUserId);
+        log.debug("retrived article from cache: " + articleURI /*+ " / " + topazUserId*/);
       }
     } catch (NeedsRefreshException nre) {
       boolean updated = false;

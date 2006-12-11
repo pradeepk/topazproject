@@ -45,7 +45,7 @@ public class FetchObjectAction extends BaseActionSupport {
   public String execute() throws Exception {
     if (StringUtils.isEmpty(representation)) {
       addFieldError("representation", "Object representation is required");
-      return ERROR;
+      return INPUT;
     }
 
     final String objectURL = articleWebService.getObjectURL(uri, representation);

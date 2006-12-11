@@ -62,7 +62,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
         return INPUT;
       }
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not create annotation", e);
       addActionError("Annotation creation failed with error message: " + e.getMessage());
       return ERROR;
     }

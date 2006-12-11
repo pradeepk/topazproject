@@ -27,7 +27,7 @@ public class ListAnnotationAction extends AnnotationActionSupport {
     try {
       annotations = getAnnotationService().listAnnotations(target);
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not list annotations for target: " + target, e);
       addActionError("Annotation fetching failed with error message: " + e.getMessage());
       return ERROR;
     }

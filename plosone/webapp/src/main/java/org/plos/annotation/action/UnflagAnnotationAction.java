@@ -31,7 +31,7 @@ public class UnflagAnnotationAction extends AnnotationActionSupport {
     try {
       getAnnotationService().unflagAnnotation(targetId);
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not unflag annotation: " + targetId, e);
       addActionError("Annotation unflagging failed with error message: " + e.getMessage());
       return ERROR;
     }
@@ -48,7 +48,7 @@ public class UnflagAnnotationAction extends AnnotationActionSupport {
     try {
       getAnnotationService().unflagReply(targetId);
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not unflag reply: " + targetId, e);
       addActionError("Reply unflagging failed with error message: " + e.getMessage());
       return ERROR;
     }

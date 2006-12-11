@@ -46,7 +46,7 @@ public class CreateFlagAction extends AnnotationActionSupport {
     try {
       annotationId = getAnnotationService().createFlag(target, reasonCode, comment, mimeType, isAnnotation);
     } catch (final ApplicationException e) {
-      log.error(e, e);
+      log.error("Could not create flag for target: " + target, e);
       addActionError("Flag creation failed with error message: " + e.getMessage());
       return ERROR;
     }
