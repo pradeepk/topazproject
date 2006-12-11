@@ -46,7 +46,7 @@ public class ProfanityCheckingService {
   public void setProfaneWords(final Collection<String> profaneWords) {
     final Map<String, Pattern> patterns = new HashMap<String, Pattern>(profaneWords.size());
     for (final String profaneWord : profaneWords) {
-      final Pattern pattern = Pattern.compile("\\b" + profaneWord.toLowerCase());
+      final Pattern pattern = Pattern.compile("\\b" + profaneWord.toLowerCase() + "\\b");
       patterns.put(profaneWord, pattern);
     }
     this.profanePatterns = patterns;
