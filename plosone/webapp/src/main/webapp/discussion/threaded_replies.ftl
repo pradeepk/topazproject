@@ -99,6 +99,10 @@
 	  </#list>
 		<!-- end : response -->
 	</div>
+	
+			    <@ww.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${baseAnnotation.annotates}"/>
+				<p><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article</p>
+	
 	<!-- end : main contents -->
 </div>
 
