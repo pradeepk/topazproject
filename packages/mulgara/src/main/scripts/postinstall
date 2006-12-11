@@ -1,0 +1,4 @@
+# Register the mulgara service
+/bin/cp /etc/topaz/rc.d/mulgara /etc/init.d/mulgara
+/sbin/chkconfig --add mulgara
+

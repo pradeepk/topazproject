@@ -1,0 +1,2 @@
+# Post remove script
+rm /etc/init.d/topaz

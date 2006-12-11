@@ -64,6 +64,12 @@
 
           <mappings>
             <mapping>
+              <directory>/usr/local/topaz</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+            </mapping>
+            <mapping>
               <directory>/usr/local/topaz/${project.build.finalName}-tomcat</directory>
               <filemode>755</filemode>
               <username>topaz</username>
@@ -78,7 +84,7 @@
             <mapping>
               <directory>/usr/share/doc/topaz</directory>
               <documentation>true</documentation>
-              <filemode>444</filemode>
+              <filemode>755</filemode>
               <username>topaz</username>
               <groupname>topaz</groupname>
             </mapping>
@@ -99,9 +105,20 @@
             </mapping>
             <mapping>
               <directory>/var/log/topaz</directory>
-              <filemode>740</filemode>
+              <filemode>755</filemode>
               <username>topaz</username>
               <groupname>topaz</groupname>
+            </mapping>
+            <mapping>
+              <directory>/etc/topaz/rc.d</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+              <sources>
+                <source>
+                  <location>src/main/scripts/plosone</location>
+                </source>
+              </sources>
             </mapping>
           </mappings>
           <preinstallScript>src/main/scripts/preinstall</preinstallScript>

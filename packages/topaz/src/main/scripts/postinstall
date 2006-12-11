@@ -1,0 +1,4 @@
+# Register the topaz service
+/bin/cp /etc/topaz/rc.d/topaz /etc/init.d/topaz
+/sbin/chkconfig --add topaz
+
