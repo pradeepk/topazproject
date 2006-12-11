@@ -1116,7 +1116,7 @@ Make article meta data
 	</xsl:for-each>
 	<xsl:if test="contrib-group/contrib[@contrib-type='author'][@equal-contrib='yes']">
 		<p>
-			<xsl:text>#</xsl:text> These authors contributed equally to this work.
+			<a name="equal-contrib"></a><xsl:text>#</xsl:text> These authors contributed equally to this work.
 		</p>
 	</xsl:if>
       <!-- that's it for article-meta; return to previous context -->
@@ -1195,7 +1195,7 @@ Make article meta data
 <!--                  <xsl:call-template name="make-id"/>-->
                   <xsl:apply-templates select="name | collab" mode="front"/>
 				  <xsl:if test="@equal-contrib='yes'">
-					<sup><xsl:text>#</xsl:text></sup>
+					<sup><a href="#equal-contrib">#</a></sup>
 				  </xsl:if>
                   <xsl:if test="position() != last()">
 					  <xsl:text>, </xsl:text>
