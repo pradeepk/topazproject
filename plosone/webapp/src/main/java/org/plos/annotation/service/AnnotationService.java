@@ -3,19 +3,17 @@
  */
 package org.plos.annotation.service;
 
-
 import com.opensymphony.webwork.ServletActionContext;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.Constants;
-import org.plos.annotation.FlagUtil;
 import org.plos.annotation.Commentary;
+import org.plos.annotation.FlagUtil;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.service.BaseConfigurableService;
-import org.plos.util.FileUtils;
 import org.plos.user.PlosOneUser;
+import org.plos.util.FileUtils;
 import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.annotation.AnnotationInfo;
 import org.topazproject.ws.annotation.Annotations;
@@ -64,11 +62,15 @@ public class AnnotationService extends BaseConfigurableService {
 
     try {
       final String annotationId = annotationWebService.createAnnotation(mimeType, target, context, olderAnnotation, title, body);
-      PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(Constants.PLOS_ONE_USER_KEY);
+
       if (log.isDebugEnabled()) {
-        log.debug ("Annotation created with ID: " + annotationId + " for user: " + ((user == null)?"null":user.getUserId()) + " for IP: " +
-          ServletActionContext.getRequest().getRemoteAddr());
+        final PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(Constants.PLOS_ONE_USER_KEY);
+        if (log.isDebugEnabled()) {
+          log.debug("Annotation created with ID: " + annotationId + " for user: " + ((user == null) ? "null" : user.getUserId()) + " for IP: " +
+                  ServletActionContext.getRequest().getRemoteAddr());
+        }
       }
+
       if (isPublic) {
         setAnnotationPublic(annotationId);
       }
@@ -315,6 +317,7 @@ public class AnnotationService extends BaseConfigurableService {
    * Get a list of all replies
    * @param root the discussion thread this resource is part of
    * @param inReplyTo the resource whose replies are to be listed
+   * @param com commentary
    * @throws ApplicationException ApplicationException
    * @return a list of all replies
    */
