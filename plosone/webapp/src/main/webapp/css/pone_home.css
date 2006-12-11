@@ -140,12 +140,12 @@ div.mainnav	{ margin: 30px 0 0 ; padding: 20px 0 10px 0;}
 #home div.info div	{ padding-bottom: 0; }
 div.feature p		{ margin: 0 0 10px 0; font-size: .9em; font-style: italic; }
 
-#home div.info		{ padding-bottom: 0;}
+#home div.info		{ padding-bottom: 0; margin-left: 0; padding-left: 0;}
 #home div.info ul	{ margin: 0; padding: 0; text-indent: 0;}
 #home div.info li	{ background: url(../images/pone_home_new_bullet.gif) no-repeat 0 4px; padding: 0 0 5px 14px;margin:0; text-indent: 0; list-style-type: none; }
 
 
-ul#tabsContainer		{ margin: 0; padding: 5px 0 0 0; }
+ul#tabsContainer		{ margin: 0; padding: 18px 0 0 0; }
 ul#tabsContainer li		{ padding: 12px 0; font-size: .9em; border-width: 0;}
 ul#tabsContainer li span { padding: 12px 14px 10px 32px; background: url(../images/pone_home_tabs_span.gif) no-repeat 100% -40px; }
 ul#tabsContainer li.active span { background-position: 100% 0%; color: #000;}
@@ -153,7 +153,7 @@ ul#tabsContainer li				{ cursor: pointer; font-weight: normal; margin: 0; displa
 ul#tabsContainer li.published	{ background-image: url(../images/pone_home_mostrecent.gif);}
 ul#tabsContainer li.annotated	{ background-image: url(../images/pone_home_mostannotated.gif); }
 ul#tabsContainer li.active { background-position: 0% 0%!important; }
-div.horizontalTabs		{ position: relative; border-width: 0; margin-top: 14px; padding-bottom: 14px; margin-bottom: 10px;background: url(../images/pone_home_tabcontainer_bg.gif) no-repeat bottom left;}
+div.horizontalTabs		{ position: relative; border-width: 0; margin-top: 1px; padding-bottom: 14px; margin-bottom: 10px;background: url(../images/pone_home_tabcontainer_bg.gif) no-repeat bottom left;}
 .horizontalTabs ul,
 .horizontalTabs ul li	{ margin: 0; padding: 0; font-weight: bold; list-style-image: none;}
 .horizontalTabs ul		{ display: block; padding-top: 0; padding-top: 3px;margin-bottom: 5px; z-index: 10; border-bottom-width: 0; /*background: url(../images/pone_home_tab_bg.gif) no-repeat top left;*/ padding-bottom: 3px;}
