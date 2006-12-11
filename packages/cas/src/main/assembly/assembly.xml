@@ -13,6 +13,7 @@
       <excludes>
         <exclude>WEB-INF/LoggerConf.xml</exclude>
         <exclude>WEB-INF/classes/log4j.xml</exclude>
+        <exclude>WEB-INF/lib/log4j-1.2.8.jar</exclude>
       </excludes>
     </fileSet>
   </fileSets>
@@ -33,7 +34,7 @@
     <!-- Copy over webapp specific log4j.xml file -->
     <file>
       <source>src/main/resources/plos-registration-log4j.xml</source>
-      <outputDirectory>commons/classes</outputDirectory>
+      <outputDirectory>common/classes</outputDirectory>
       <destName>log4j.xml</destName>
     </file>
   </files>
@@ -43,11 +44,6 @@
       <outputDirectory>/webapps/</outputDirectory>
       <outputFileNameMapping>plos-registration</outputFileNameMapping>
       <unpack>true</unpack>
-      <unpackOptions>
-        <excludes>
-          <exclude>WEB-INF/classes/log4j.xml</exclude>  <!-- note: doesn't actually work -->
-        </excludes>
-      </unpackOptions>
       <includes>
         <include>org.plos:plos-registration-webapp</include>
       </includes>
