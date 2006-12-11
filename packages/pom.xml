@@ -26,6 +26,17 @@
         <enabled>false</enabled>
       </releases>
     </pluginRepository>
+
+    <pluginRepository>
+      <id>Codehaus Snapshots</id>
+      <url>http://snapshots.maven.codehaus.org/maven2/</url>
+      <snapshots>
+        <enabled>true</enabled>
+      </snapshots>
+      <releases>
+        <enabled>false</enabled>
+      </releases>
+    </pluginRepository>
   </pluginRepositories>
 
   <dependencies>
