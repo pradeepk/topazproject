@@ -16,7 +16,9 @@
       <@ww.password name="newPassword1" label="New password " required="true" id="newPassword1" tabindex="103" maxlength="255" after=" (Password must be at least 6 characters)"/>
       <@ww.password name="newPassword2" label="Please re-type your new password " required="true" id="newPassword2" tabindex="104" maxlength="255" />
 		</ol>
+	<div class="btnwrap">
 	  <@ww.submit name="submit" id="submit" value="Submit" tabindex="105"/>
+	</div>
 	</fieldset>
 	
 	</@ww.form>

@@ -7,18 +7,19 @@
 	<!--<p><strong>Instruction Title   Text.</strong> Additional Instructoins here.</p>-->
 	<p>Field marked with an <span class="required">*</span> are required. </p>
   <@ww.form cssClass="pone-form" method="post" name="forgotPasswordForm" id="forgotPasswordForm" action="forgotPasswordSubmit" title="Forgot Password Form">
-
+		
 	<fieldset>
 		<legend>Recover password</legend>
 		<ol class="field-list">
     	<@ww.textfield name="loginName" label="Email " required="true" id="email" tabindex="101" maxlength="256"/>
 		</ol>
+  	<div class="btnwrap">
 	  <@ww.submit name="submit" id="submit" value="Submit" tabindex="102"/>
+	</div>
 	</fieldset>
 	
 	</@ww.form>
 
 </div>
 <!-- end : main contents -->
-<a href="forgotPassword.ftl">forgotPassword.ftl</a>
 <#include "/global/global_bottom.ftl">
