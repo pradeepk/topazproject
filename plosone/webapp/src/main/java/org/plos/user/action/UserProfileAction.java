@@ -80,12 +80,12 @@ public class UserProfileAction extends UserActionSupport {
     visibilityMapping.put(NAME_GROUP,
                           new String[]{
                                   GIVEN_NAMES,
-                                  UserProfileGrant.SURNAMES.getFieldName()});
-    visibilityMapping.put(EXTENDED_GROUP,
-                          new String[]{
-                                  POSTAL_ADDRESS,
+                                  UserProfileGrant.SURNAMES.getFieldName(),
                                   UserProfileGrant.CITY.getFieldName(),
                                   UserProfileGrant.COUNTRY.getFieldName()});
+    visibilityMapping.put(EXTENDED_GROUP,
+                          new String[]{
+                                  POSTAL_ADDRESS});
     visibilityMapping.put(ORG_GROUP,
                           new String[]{
                                   ORGANIZATION_TYPE,
