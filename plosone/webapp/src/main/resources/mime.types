@@ -48,6 +48,7 @@ image/x-xbitmap				xbm
 image/x-xpixmap				xpm
 # Portable Network Graphics
 image/x-png				png
+image/png					png
 # Image Exchange Format (RFC 1314)
 image/ief				ief
 # JPEG
