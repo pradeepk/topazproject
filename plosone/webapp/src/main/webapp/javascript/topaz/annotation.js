@@ -75,22 +75,27 @@ topaz.annotation = {
     
     if (annotationConfig.rangeInfoObj == "noSelect") {
       alert("This area of text cannot be annotated.");
+      getArticle();
       return false;
     }
     else if (!annotationConfig.rangeInfoObj) {
       alert("Using your mouse, select the area of the article you wish to annotate.");
       return false;
     }
-      /*alert("annotationConfig.rangeInfoObj.range.text = "     + annotationConfig.rangeInfoObj.range.text + "\n" +
-            "annotationConfig.rangeInfoObj.startPoint = "     + annotationConfig.rangeInfoObj.startPoint + "\n" +
-            "annotationConfig.rangeInfoObj.endPoint = "       + annotationConfig.rangeInfoObj.endPoint + "\n" +
-            "annotationConfig.rangeInfoObj.startParent = "    + annotationConfig.rangeInfoObj.startParent + "\n" +
-            "annotationConfig.rangeInfoObj.endParent = "      + annotationConfig.rangeInfoObj.endParent + "\n" +
-            "annotationConfig.rangeInfoObj.startParentId = "  + annotationConfig.rangeInfoObj.startParentId + "\n" +
-            "annotationConfig.rangeInfoObj.endParentId = "    + annotationConfig.rangeInfoObj.endParentId + "\n" +
-            "annotationConfig.rangeInfoObj.startXpath = "     + annotationConfig.rangeInfoObj.startXpath + "\n" +
-            "annotationConfig.rangeInfoObj.endXpath = "       + annotationConfig.rangeInfoObj.endXpath);*/
     else {      
+      if (djConfig.isDebug) {
+        dojo.byId(djConfig.debugContainerId).innerHTML = 
+              "annotationConfig.rangeInfoObj.range.text = '"     + annotationConfig.rangeInfoObj.range.text + "'\n" +
+              "annotationConfig.rangeInfoObj.startPoint = "     + annotationConfig.rangeInfoObj.startPoint + "\n" +
+              "annotationConfig.rangeInfoObj.endPoint = "       + annotationConfig.rangeInfoObj.endPoint + "\n" +
+              "annotationConfig.rangeInfoObj.startParent = "    + annotationConfig.rangeInfoObj.startParent + "\n" +
+              "annotationConfig.rangeInfoObj.endParent = "      + annotationConfig.rangeInfoObj.endParent + "\n" +
+              "annotationConfig.rangeInfoObj.startParentId = "  + annotationConfig.rangeInfoObj.startParentId + "\n" +
+              "annotationConfig.rangeInfoObj.endParentId = "    + annotationConfig.rangeInfoObj.endParentId + "\n" +
+              "annotationConfig.rangeInfoObj.startXpath = "     + annotationConfig.rangeInfoObj.startXpath + "\n" +
+              "annotationConfig.rangeInfoObj.endXpath = "       + annotationConfig.rangeInfoObj.endXpath;
+      }
+      
      annotationForm.startPath.value = annotationConfig.rangeInfoObj.startXpath;
      annotationForm.startOffset.value = annotationConfig.rangeInfoObj.startPoint + 1;
      annotationForm.endPath.value = annotationConfig.rangeInfoObj.endXpath;
@@ -152,22 +157,22 @@ topaz.annotation = {
     //      "startParent.id = " + startParent.id + "\n" +
     //      "endParent.id = " + endParent.id);
     
-    if (startParent.xpathLocation == endParent.xpathLocation) {
+    //if (rangeInfo.startXpath == rangeInfo.endXpath) {
       if (startParent.hasChildNodes) {
         childList = this.getChildList(startParent, element); 
       }
   
       if (childList.length > 0) {
-        //this.promoteChild(startParent, 'span', annotationConfig.annotationMarker);
+        this.promoteChild(startParent, 'span', annotationConfig.annotationMarker);
         //this.promoteChild(startParent, 'img', annotationConfig.annotationImgMarker);
       }
       
       this.insertHighlightSpan(rangeInfo);
-    }
-    else {
-      var parentArray = this.findXptElementsInRange(startPoint.element, endPoint.element);
-      alert("parentArray = " + parentArray);
-    }
+    //}
+    //else {
+      //var parentArray = this.findXptElementsInRange(startParent, endParent);
+     // alert("parentArray = " + parentArray);
+    //}
     
   	var marker = dojo.byId(djConfig.regionalDialogMarker);
   	dlg.setMarker(marker);
@@ -315,12 +320,12 @@ topaz.annotation = {
     var offset = 0;
     for (var currentNode = obj.previousSibling; currentNode != null; currentNode = currentNode.previousSibling) {
       if (currentNode.nodeType == 1) { // element
-        if (currentNode.nodeName == 'A' && currentNode.className.match('bug')) {
+        if (currentNode.className.match('bug')) {
           // skip this
         }
         else {
           var normalText = this.normalizeText( currentNode, "");
-          //alert("normalText = " + normalText + "\nlength = " + normalText.length);
+          //alert("normalText = '" + normalText + "'\nlength = " + normalText.length);
           offset += normalText.length;
         }
       }
@@ -362,26 +367,44 @@ topaz.annotation = {
   
   getFirstAncestorByXpath: function ( selfNode ) {
     var parentalNode = selfNode;
-    
-    while ( parentalNode.getAttributeNode('xpathLocation') == null || parentalNode.getAttributeNode('xpathLocation').nodeValue  == "" ) {
-      parentalNode = parentalNode.parentNode;
-    }
-    
-    //alert("parentalNode.getAttributeNode('xpathLocation').nodeValue = " + parentalNode.getAttributeNode('xpathLocation').nodeValue);      
-    if (parentalNode.getAttributeNode('xpathLocation').nodeValue == 'noSelect') {
-      //alert("getFirstAncestorByXpath: noSelect");
-      return "noSelect";
-    }
-    else if (parentalNode.nodeName == 'BODY') {
-      return "noSelect";
-    }
 
-    parentalNode = parentalNode.parentNode;
+   {
+    try {
+      if (parentalNode.getAttributeNode('xpathLocation') == null) {
+        for (var pNode=parentalNode; pNode.getAttributeNode('xpathLocation') == null; pNode = pNode.parentNode) {
+          //alert("pNode = " + pNode.nodeName);
+          parentalNode = pNode;
+        }
+        //alert("parentalNode [before] = " + parentalNode.nodeName);
+        parentalNode = parentalNode.parentNode;
+        //alert("parentalNode [after] = " + parentalNode.nodeName);
+        
+        //alert("parentalNode.nodeName = " + parentalNode.nodeType);
+        if (parentalNode.getAttributeNode('xpathLocation') != null && parentalNode.getAttributeNode('xpathLocation').nodeValue == 'noSelect') {
+          //alert("getFirstAncestorByXpath: noSelect");
+          return "noSelect";
+        }
+        else if (parentalNode.nodeName == 'BODY') {
+          return "noSelect";
+        }
+      }
+          
+      //alert("parentalNode.getAttributeNode('xpathLocation').nodeValue = " + parentalNode.getAttributeNode('xpathLocation').nodeValue + ", " + parentalNode.getAttributeNode('xpathLocation').nodeValue.length);
 
-    var parentObj = new Object();
-    parentObj.element = ( parentalNode.parentNode.getAttributeNode('xpathLocation').nodeValue  == "noSelect" ) ? null : parentalNode.parentNode;
-    parentObj.xpathLocation = parentalNode.parentNode.getAttributeNode('xpathLocation').nodeValue;
-    return parentObj;
+      var parentObj = new Object();
+      parentObj.element = ( parentalNode.getAttributeNode('xpathLocation')!= null & parentalNode.getAttributeNode('xpathLocation').nodeValue  == "noSelect" ) ? null : parentalNode;
+      parentObj.xpathLocation = (parentalNode.getAttributeNode('xpathLocation') != null) ? parentalNode.getAttributeNode('xpathLocation').nodeValue : "";
+      return parentObj;
+    }
+    catch(err) {
+      //txt="There was an error on this page.\n\n";
+      //txt+="Error description: [getFirstAncestorByXpath] " + err.description + "\n\n";
+      //txt+="Click OK to continue.\n\n";
+      //alert(txt);
+    }
+   }
+   
+   return false;
   },
   
   getChildList: function (obj, element, elName) {
@@ -452,59 +475,6 @@ topaz.annotation = {
     }
   },
   
-  
-  /************************************************************************
-   *  topaz.intersectRange
-   *
-   *  @param: r1_start    start point of range1
-   *          r1_end      end point of range1
-   *          r2_start    start point of range2
-   *          r2_end      end point of range2
-   *  
-   *  @return: -1   out of range             <r1>  </r1>  <r2>  </r2>
-   *            0   ranges are the same      <r1, r2>     </r1, r2>
-   *            1   range2 overlaps range1   <r1>  <r2>  </r1>  </r2>
-   *            2   range2 is within range1  <r1>  <r2>  </r2>  </r1>
-   *            3   range1 overlaps range2   <r2>  <r1>  </r2>  </r1>
-   *            4   range1 is within range2  <r2>  <r1>  </r1>  </r2>
-   *            5   range2 overlaps range1 with the same start point    <r1, r2>  </r1>  </r2>
-   *            6   range2 overlaps range1 with the same end point      <r1>  <r2>     </r1, r2>
-   *            7   range1 overlaps range2 with the same start point    <r1, r2>  </r2>  </r1>
-   *            8   range1 overlaps range2 with the same end point      <r2>  <r1>     </r1, r2>
-   *
-   ************************************************************************/
-  intersectRange: function (r1_start, r1_end, r2_start, r2_end) {
-    if (r1_start == r2_start && r1_start == r2_end) {
-      return 0;
-    }
-    else if (r2_start >= r1_start && r2_start < r1_end && r2_end > r1_start && r2_end >= r1_end) {
-      return 1;
-    }
-    else if (r2_start >= r1_start && r2_start < r1_end && r2_end > r1_start && r2_end <=r1_end) {
-      return 2;
-    }
-    else if (r1_start >= r2_start && r1_start < r2_end && r1_end > r2_start && r1_end >= r2_end) {
-      return 3;
-    }
-    else if (r1_start >= r2_start && r1_start < r2_end && r1_end > r2_start && r1_end <= r2_end) {
-      return 4;
-    }
-/*    else if (r1_start == r2_start && r2_end > r1_end) {
-      return 5;
-    }
-    else if (r1_start < r2_start && r1_end  == r2_end) {
-      return 6;
-    }
-    else if (r1_start == r2_start && r2_end  < r1_end) {
-      return 7;
-    }
-    else if (r1_start > r2_start && r1_end  == r2_end) {
-      return 8;
-    }*/
-    else {
-      return -1;
-    }
-  },
   
   getChildrenInRange: function (elNode, elClassName, endId) {
     var objArray = new Array();
@@ -642,7 +612,7 @@ topaz.annotation = {
 
   accumulateLeafNodes: function (rootNode, startPath, endPath) {
     var nodeList = new Array();
-    this.depthFirstTraversal(nodeList, rootNode, startPath, endPath, true, false);
+    nodeList = this.depthFirstTraversal(rootNode, startPath, endPath, true, false);
     return nodeList;
   },
 
@@ -666,8 +636,9 @@ topaz.annotation = {
    * includeNonLeaves should be true if you want non-leaf nodes to be accumulated.
    * If neither one is true, then this function won't do much.
    */
-  depthFirstTraversal: function (nodeList, node, startPath, endPath, includeLeaves, includeNonLeaves) 
+  depthFirstTraversal: function (node, startPath, endPath, includeLeaves, includeNonLeaves) 
   {
+    var nodeList = new Array();
     var onStartPath = this.contains(startPath, node);
     var onEndPath   = this.contains(endPath,   node);
 
@@ -684,7 +655,7 @@ topaz.annotation = {
       }
 
       if (!onPath) {
-        this.setBorder(childNode, "red");
+        //this.setBorder(childNode, "red");
       }
 
       if (onPath) {
@@ -706,11 +677,14 @@ topaz.annotation = {
       nodeList.push(node);
 
       //alert("DING");
-      this.setBorder(node, "green");
+      //this.setBorder(node, "green");
     }
     else {
-      this.setBorder(node, null);
+      //this.setBorder(node, null);
     }
+    
+    alert("nodeList = " + nodeList);
+    return nodeList;
   },
 
   isTypeAndClassOK: function(node) {
@@ -743,10 +717,6 @@ topaz.annotation = {
           							        '" id="'       + spanId + 
           							        '"  annotationId=""' +
           							       '">' + 
-//          							       '<img src="'  + noteImg + 
-//          							       '" title="'   + noteTitle + 
-//          							       '" class="'   + noteImgClass +
-//          							       '" />' +
                                '<a href="#"" class="bug public" displayId=""  onclick="topaz.displayComment.show(this);" onmouseover="topaz.displayComment.mouseoverComment(this);" onmouseout="topaz.displayComment.mouseoutComment(this);" title="Click to preview this annotation">&nbsp;</a>' +
           							       html + '</span>');
     }
@@ -791,12 +761,23 @@ topaz.annotation = {
     }
   },
   
+  getRangeContentMoz: function(rangeObj) {
+    var contents = rangeObj.range.cloneContents();
+    //alert("contents = " + contents.childNodes.length);
+    
+    for (var i=0; i<contents.childNodes.length; i++) {
+      var node = contents.childNodes[i];
+      //alert("node[" + i + "] = " + node.nodeName);
+    }
+    
+  },
+  
   normalizeText: function ( documentObj, resultStr ) {
     var tempStr = resultStr;
     
     for (var i=0; i<documentObj.childNodes.length; i++) {
       if (documentObj.childNodes[i].nodeType == 1) {
-        if (documentObj.childNodes[i].nodeName == 'A' && documentObj.childNodes[i].className.match('bug')) {
+        if (documentObj.childNodes[i].className.match('bug')) {
           // skip this
         }
         else {

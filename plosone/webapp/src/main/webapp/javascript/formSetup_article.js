@@ -145,7 +145,7 @@ function validateNewComment() {
          //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
          dlg.placeModalDialog();
          ldc.hide();
-
+         
          return false;
        }
        else if (jsonObj.numFieldErrors > 0) {
@@ -177,6 +177,9 @@ function validateNewComment() {
          return false;
        }
        else {
+         if (djConfig.isDebug) {
+           dojo.byId(djConfig.debugContainerId).innerHTML = "";
+         }
          getArticle();
          dlg.hide();
 
@@ -190,7 +193,8 @@ function validateNewComment() {
        
       },
       mimetype: "text/plain",
-      formNode: annotationForm
+      formNode: annotationForm,
+      transport: "XMLHTTPTransport"
      };
      dojo.io.bind(bindArgs);
 /*  }
@@ -208,16 +212,23 @@ function getArticle() {
   var bindArgs = {
     url: namespace + "/article/fetchBody.action?articleURI=" + targetUri,
     method: "get",
-    error: function(type, data, evt){
-     var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
+    error: function(type, error, evt){
+     var err = document.createTextNode("ERROR [AJAX]:" + error.toSource());
      //topaz.errorConsole.writeToConsole(err);
      //topaz.errorConsole.show();
-     alert("ERROR:" + data.toSource());
+     alert("ERROR:" + error.toSource());
      return false;
     },
     load: function(type, data, evt){
       var docFragment = document.createDocumentFragment();
       docFragment = data;
+       if (djConfig.isDebug) {
+         dojo.byId(djConfig.debugContainerId).innerHTML = 
+             "type = " + type + "\n" +
+             "evt = " + evt + "\n" +
+             docFragment;
+       }
+       //alert(data);
 
       refreshArea.innerHTML = docFragment;
       //dojo.dom.removeChildren(refreshArea);
@@ -229,7 +240,8 @@ function getArticle() {
 
       return false;
     },
-    mimetype: "text/html"
+    mimetype: "text/html",
+    transport: "XMLHTTPTransport"
    };
    dojo.io.bind(bindArgs);
   

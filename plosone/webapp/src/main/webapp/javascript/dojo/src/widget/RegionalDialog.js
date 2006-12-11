@@ -331,8 +331,8 @@ dojo.declare(
 			if (this.followScroll && !this._scrollConnected){
 				this._scrollConnected = true;
 				dojo.event.connect(window, "onscroll", this, "_onScroll");
-				dojo.event.connect(document.documentElement, "onscroll", this, "_onScroll");
 			}
+			dojo.event.connect(document.documentElement, "onkey", this, "_onKey");
 
 			this.placeModalDialog();
 			this.setBackgroundOpacity();
@@ -353,6 +353,7 @@ dojo.declare(
 			this.shared.bg.style.display = "none";
 			this.shared.bg.style.width = this.shared.bg.style.height = "1px";
 
+			dojo.event.disconnect(document.documentElement, "onkey", this, "_onKey");
 			if (this._scrollConnected){
 				this._scrollConnected = false;
 				dojo.event.disconnect(window, "onscroll", this, "_onScroll");

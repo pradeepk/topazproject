@@ -68,7 +68,7 @@
         floatMenu();
       }  
     );
-    dojo.event.connect(document.documentElement, "onscroll", function() {
+    dojo.event.connect(document.documentElement, "onkey", function() {
         floatMenu();
       }  
     );
