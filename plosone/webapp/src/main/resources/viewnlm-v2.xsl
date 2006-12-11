@@ -1,4 +1,4 @@
-<!--l<?xml version="1.0"?>-->
+<!--<?xml version="1.0"?>-->
 <!-- ============================================================= -->
 <!--  MODULE:    HTML View of NLM Journal Article                  -->
 <!--  VERSION:   0.2                                               -->
@@ -458,7 +458,7 @@
 				<xsl:attribute name="title">
 					<xsl:text>Submit your feedback</xsl:text>
 				</xsl:attribute>
-				<xsl:text>report bugs</xsl:text>
+				<xsl:text>report bugs.</xsl:text>
 			</xsl:element>
 		</div>
 
@@ -4057,6 +4057,7 @@ Make article meta data
       <xsl:apply-templates select="year | month | time-stamp | season | access-date"
                            mode="book"/>
       <xsl:apply-templates select="article-title" mode="editedbook"/>
+      <xsl:text> In:</xsl:text>
       <xsl:apply-templates select="person-group[@person-group-type='editor']
                                  | person-group[@person-group-type='allauthors']
                                  | person-group[@person-group-type='translator']
@@ -5429,7 +5430,7 @@ Make article meta data
 
 
 <xsl:template match="aml:annotated">
-	<xsl:call-template name="createAnnotationSpan"/>
+		<xsl:call-template name="createAnnotationSpan"/>
 </xsl:template>
 
 
