@@ -1,8 +1,4 @@
 # Add the topaz user
-if [ -d /etc/topaz ]; then
-    echo "User exists"
-else
-    /usr/sbin/groupadd -f -r topaz 2> /dev/null
-    /usr/sbin/useradd -c "Topaz user" -g topaz -s /bin/nologin -r topaz 2> /dev/null
-fi
+/usr/sbin/groupadd -f -r topaz 2> /dev/null || :
+/usr/sbin/useradd -c "Topaz user" -g topaz -s /bin/nologin -r topaz 2> /dev/null || :
 
