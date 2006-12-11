@@ -62,6 +62,8 @@
 
 		    <@ww.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
 				<li><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article</li>
+				
+	<!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your annotation!</li> -->
 			</ol>
 		</div> 
 		<div id="sectionNavTop" class="tools">
