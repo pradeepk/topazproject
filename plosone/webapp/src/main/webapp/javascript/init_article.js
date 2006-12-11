@@ -84,9 +84,9 @@
     var anEl = getAnnotationEl(anId);
     jumpToAnnotation(anId);
 
-    errView = dojo.widget.byId("ErrorConsole");
-    var errClose = dojo.byId("btn_ok");
-    errView.setCloseControl(errClose);
+    //errView = dojo.widget.byId("ErrorConsole");
+    //var errClose = dojo.byId("btn_ok");
+    //errView.setCloseControl(errClose);
     
     ldc.hide();
     

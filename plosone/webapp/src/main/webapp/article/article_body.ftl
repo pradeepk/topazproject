@@ -19,8 +19,6 @@
 	<#include "/widget/commentDialog.ftl">
 	
 	<#include "/widget/loadingCycle.ftl">
-	
-	<#include "/widget/errorConsole.ftl">
 </div>
 
 

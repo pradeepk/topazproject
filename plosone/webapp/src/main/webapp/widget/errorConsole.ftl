@@ -1,5 +1,5 @@
-<div dojoType="dialog" id="ErrorConsole" bgColor="#333333" bgOpacity="0.75" toggle="fade" toggleDuration="250">
-	<div class="dialog preview">
+<div dojoType="dialog" id="ErrorConsole" bgColor="#333333" bgOpacity="0.75" toggle="fade" closeOnBackgroundClick="false" toggleDuration="250">
+	<!--<div class="dialog preview">
 		<div class="comment">
 			<h6>
 				ERROR
@@ -10,6 +10,6 @@
 				<input type="button" name="ok" id="btn_ok" value="OK" />
 			</div>
 		</div>
-	</div>
+	</div>-->
 </div>
 
