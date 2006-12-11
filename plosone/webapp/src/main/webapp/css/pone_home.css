@@ -14,27 +14,22 @@ journal style sheets
 
 
 body		{ background-color: transparent }
-#wrap 		{ margin: 0 auto 0 auto; width: 910px;padding: 0 0 10px 0; line-height: 1.5em; position: relative; }
-
+#wrap 		{ margin: 0 auto 0 auto; width: 940px; padding: 0 0 10px 0; line-height: 1.5em; position: relative;}
+#content 	{ margin-left: 0; }
 
 /* Homepage : Elements
 ----------------------------------------------------------
 */
-#home			{ position: relative; background: #fff url(../images/pone_home_bg.gif) repeat-y; margin-bottom: 20px; }
-#home img		{ background-color: #fff; display: inline; position: relative;}
+#home			{ position: relative; background:  url(../images/pone_home_bg.gif) no-repeat 0 9px!important; margin: 0; margin-top: -30px; border: 1px solid #fff;}
+#home img		{ display: inline; position: relative;}
 #home a:link,
 #home a:visited	{ text-decoration: none; }	/* remove the underline from all homepage links to increase legibility */
 #home a:hover 	{ text-decoration: underline; } /* apply a border in hover state */
-#home h2		{ border-bottom: 1px solid #ccc; margin: 0; padding-bottom: 5px;}
-#home h3		{ font-size: 1.2em; margin: 6px 0; }
-/* read more block */
-div.more a,
-div.more a:visited	{ color: #F5F5F5; padding-right: 5px;}
-div.more a:hover	{ color: #fff; }
-
-#home div.beta	{ display: block; clear: both; background: #004263;}
-#home div.beta a:link,
-#home div.beta a:visited { text-decoration: underline; }
+#home h2		{ margin: 10px 0; font-size: 1.8em; color: #333; border: none; padding-left: 24px; background-repeat: no-repeat; background-position: left center;}
+div.feature h2	{ background-image: url(../images/pone_home_newnoted_bg.gif); }
+div.subject h2 	{ background-image: url(../images/pone_home_subject_bg.gif); }
+div.info h2		{ background-image: url(../images/pone_home_info_bg.gif); }
+#home h3		{ font-size: 1.6em; border-top: 1px solid #ccc; padding-top: 8px; color: #444;}
 /* Homepage : Layout : Structure
 ----------------------------------------------------------
 This layout has been adapted from the Yahoo Developer's Interface Library
@@ -51,205 +46,125 @@ All rights reserved.
 /* container column 1 */
 #first 						{ width: 518px; }
 /* column 1 */
-#first .first 				{ width: 128px; text-align: right; }
-#first .first div.block 	{ background-color: #fff; margin: 0; padding-left: 0;padding-right: 2px;}
+#first .first 				{ width: 140px; /*margin-top: 30px;*/text-align: right; padding-top: 10px;}
+#first .first div.block 	{ margin: 0; padding-left: 0;padding-right: 2px; }
 #first .first div.banner	{ background-color: transparent; }
 
 #first .first li,
-#first .first ul			{ margin: 0; padding: 0; }
+#first .first ul			{ margin: 0; padding: 0; background-color: transparent;}
 #first .first ul ul			{ display: none; }
 
 /* column 2 */
-#first .last 				{ width: 385px; }
-#first .last p,
-#first .last h1				{ color: #303030; }
-/* contains columns 3 and column 4 */
-#second 					{ width: 390px; }
-/* column 3 */ 
-#second .first 				{ width: 260px; }
-/* col4 */
-#second .last				{ width: 128px; padding: 0; }
+#first .last 				{ width: 373px; position: relative;}
 
-#lower						{ width: 100%; margin: 0; padding: 30px 0; clear: both; background: #fff url(../images/pone_home_lower_bg.gif) no-repeat top left; font-size: .9em;}
+ul.articles a:link,
+ul.articles a:visited,
+div.feature a:link,
+div.feature a:visited		{ font-weight: bold; }
+
+/* contains columns 3 and column 4 */
+#second 					{ width: 390px;}
+/* column 3 */ 
+#second .first 				{ width: 250px; padding-top: 20px;}
+
+/* col4 */
+#second .last				{ width: 140px; padding: 10px 0 0 0; padding-top: 20px;}
+
+/* lower contains lower marketing/outreach/bloglines block */
+#lower						{ width: 100%; margin: 0; padding: 30px 0; clear: both; font-size: .9em; background: url(../images/pone_home_lower_bg.gif) no-repeat top center;}
 #lower div.block			{ background-color: transparent; border: none;}
 #lower .first				{ width: 286px;  margin-left: 134px;}
 #lower .last				{ width: 358px; float: right; margin-right: 130px;}
 #lower .last .block			{ padding: 0;}
+
+/* layout for LAUNCH ONLY for marketing section */
+#lower .first				{ margin: 0 0 0 80px; width: 100%;}
+#lower .first div.ad		{ float: left; width: 260px; clear: none;}
+
 /* self clear floated parent containers */
 #lower:after,
 .col:after 					{content:".";display:block;height:0;clear:both;visibility:hidden;}	
 #lower,
 .col 						{zoom:1;} /* IE */
-#lower a:link,
-#lower a:visited			{ text-decoration: underline;}
-#lower a:hover				{ text-decoration: none; }
 #lower h3					{ background-color: #ddd; letter-spacing: normal; font-size: 1em; margin-right: 10px 0; padding: 1px 5px; font-family: Verdana, Arial, Helvetica, sans-serif; }
 
 /* all homepage content blocks are wrapped in class block for padding to avoid ie box model */
-div.block 				{ margin: 0 3px 6px 3px; padding: 6px; clear: both; position: relative; }
-
+div.block 				{ margin: 0 3px 6px 3px; padding: 6px; clear: both; position: relative;}
 
 /* wraps banner ads and partner icons */
-
 div.block.banner				{ padding: 0; border: none; margin: 4px auto; }
 div.block.banner img 			{ float: none; margin: 4px; background: transparent; }
-div.block.partner 					{ text-align: center; margin-right: 0; padding-right: 0; padding-top: 0;border-right: 1px solic #ccc;background-color: #fff; position: relative; border-top: 1px solic #ccc;}
-div.block.partner h6			{ font-weight: normal; text-align: center; font-size: .9em; margin: 0; padding-bottom: 10px; padding-top: 4px;}
-#first div.partner img 				{ float: none; margin: 20px auto; text-align: center;  }
-
-.block img 			{ float: left; margin: 0 10px 10px 0; }
+div.block.partner 				{ text-align: center; margin-right: 0; padding-right: 0; padding-top: 0;border-right: 1px solic #ccc; position: relative; border-top: 1px solic #ccc;}
+div.block.partner h6			{ font-weight: normal; text-align: center; font-size: .85em; margin: 0 0 0 10px; color: #999;text-transform: uppercase; background: url(../images/pone_home_partner_h6.gif) no-repeat top left; padding-top: 8px;}
+#first div.partner img 			{ float: none; display: block; margin: 20px auto 30px auto; text-align: center;  }
+.block img 						{ float: left; margin: 0 10px 10px 0; }
 
 /* fixes float clearing bug */
-.block:after		{ content: ".";  display: block;  height: 0; clear: both; visibility: hidden; }
-p	{ font-size: .9em; }
+.block:after					{ content: ".";  display: block;  height: 0; clear: both; visibility: hidden; }
 
-
-div.tabs			{ padding: 4px 0; }
-div.tabs span		{ padding: 4px; color: #333; margin-right: 3px; font-size: .9em; font-weight: bold; color: #333; text-decoration: underline;}
-div.tabs span.current	{ background: #FFF; color: #000;}
-ul.articles,
-ul.articles li		{ margin: 0; padding: 0; list-style-type: bullet;}
-ul.articles			{ margin: 0 4px 10px 0;  padding: 20px 20px 0 20px;}
-ul.articles li		{ font-size: .9em; padding: 3px 5px; font-weight: bold;}
-ul.articles			{ margin-top: 0; }
-ul.articles li a	{ font-weight: bold; }
-
-dl.category 		{ margin: 0 5px;  padding: 10px 0 20px 10px; }
+/* subject contains and category styles the category list */
+div.subject		{ padding: 0; padding-top: 5px;border: none;}
+dl.category 		{ margin: 0;  padding: 10px 0 20px 0; }
 dl.category dt a,
-dl.category dt a:visited		{ cursor: pointer; color: #069; display: block; font-size: .9em; padding-bottom: 0; padding-left: 20px; margin-bottom: 4px;}
+dl.category dt a:visited		{ cursor: pointer; color: #069; display: block; font-size: .9em; padding-bottom: 0; padding-left: 15px; margin-bottom: 2px;}
+dl.category dt a:hover { color: #000; }
 dl.category a.expand,
-dl.category a:visited.expand 	{ background: url(../images/pone_home_expand.gif) no-repeat 0 2px; color: #444;}
+dl.category a:visited.expand 	{ background: url(../images/pone_home_expand.gif) no-repeat 0 5px; color: #666;}
 dl.category a.collapse,
-dl.category a:visited.collapse 	{ background: url(../images/pone_home_collapse.gif) no-repeat 0 2px; color: #069; font-weight: bold;}
-
+dl.category a:visited.collapse 	{ background: url(../images/pone_home_collapse.gif) no-repeat 0 5px; color: #333; font-weight: bold;}
 #home dl.category dt a:hover { text-decoration: none; border-color: #fff; vertical-align: bottom;}
-dl.category dt	{ margin: 0 0 0;padding: 0;color: #069; font-weight: normal;  vertical-align: bottom; clear: left;/* This fixes the IE5 Win gap! */ }
-dl.category dd 	{ font-size: .9em; vertical-align: bottom;}
-dl.category ul	{ padding: 5px 0;}
-dl.category li	{ list-style-position: outside; }
-dl.category li a{ vertical-align: bottom; }
-dl.category a,
-dl.category a:link { outline: none; }
+dl.category dt	{ margin: 0;padding: 0;color: #069; font-weight: normal;  vertical-align: bottom; clear: left;/* This fixes the IE5 Win gap! */ }
+dl.category dd 	{ vertical-align: bottom;}
+dl.category ul	{ padding: 4px 6px 4px 16px; }
+dl.category dt a,
+dl.category dt a:link { outline: none; }
 dl.category img	{ float: none; display: inline;float: left; padding: 0; margin-left: 0;}
 dl.category dd	{ display: none; background-color: #fff;}
 
-.block.recent		{ padding: 0; }
-.block.recent ul	{ margin: 10px; }
-div.subject		{ padding: 0; padding-top: 5px;border: none;}
-
-
+/* outreach blocks */
 div.ad					{ margin-top: 20px; }
 div.ad strong			{ display: block; }
 div.ad img				{ border: 1px solid #ccc; }
 
-div.block.mainnav	{ margin: 0; padding: 10px 0;}
+div.mainnav	{ margin: 30px 0 0 ; padding: 20px 0 10px 0;}
 .mainnav ul,			
-.mainnav ul li 		{ margin: 0; padding: 0; list-style-type: none; background-color: #fff;}
+.mainnav ul li 		{ margin: 0; padding: 0; list-style-type: none; }
 .mainnav ul			{ text-indent: 10px; margin: 0; padding: 10px;position: relative; }
 .mainnav ul li a 	{ font-family: Georgia, "Times New Roman", Times, serif; font-size: 1.5em; letter-spacing: -.03em; line-height: 1.6em; margin-right: 10px;}
 .mainnav dl			{ margin: 10px 0; padding:0; text-indent: 0; }
 .mainnav dt			{ background-color: #D2F7FF; margin: 5px 0 0 0; padding-right: 5px; font-size: .85em;}			
 
-div.feature img,
-#home div.feature h3{ font-size: 1.8em; color: #333; margin-top: 0; margin-bottom: 10px;}
-#home div.feature.block	{ padding: 0;}
-#home div.feature h3	{ color:#333;padding: 4px; padding-left: 30px; background: url(../images/pone_home_newnoted_bg.gif) no-repeat left bottom;}
-#home div.feature div { padding: 0 10px;}
-#home div.feature ul.articles a{ font-size: 1em; }
+#home div.feature	{ padding: 0;}
+#home div.feature div,
+#home div.info div 	{ padding: 0 10px;}
+#home div.info div	{ padding-bottom: 0; }
+div.feature p		{ margin: 0 0 0; font-size: .9em; font-style: italic; }
 
-div.new		{ margin: 0 12px 0 8px; padding: 10px 10px 0 10px; font-size: .9em; color: #004263; }
-#home div.new h4	{ margin: 0 0 10px 0; padding-left: 14px; font-size: .9em; font-weight: normal; background-color: #ACF1FF;}
-#home div.new.block	{ padding: 0; }
-#home div.new.block p,
-#home div.new.block ul { margin-left: 10px; }
-div.new ul,
-div.new li			{ margin: 0; padding: 0; }
-div.new ul			{ margin-top: 5px; padding-left: 20px; }
-#home div.info,
-#home div.info *			{ color: #fff;}
-#home div.info.block				{ margin: 0 8px; padding: 10px 18px 0 18px;background: #fff url(../images/pone_home_info_bg.gif) no-repeat top left; }
-#home div.info h3			{ font-size: 1.6em; padding-left: 30px;}
-
-#home div.announce.block	{ margin-right: 1px; background: #ACF1FF; padding-top: 5px; padding-bottom: 5px;}
-a.more				{ font-weight: bold; text-transform: uppercase; margin-left: 5px;}
-
-ul.journals			{ margin: 0; padding: 0; list-stype-type: none; text-align: left; background-color: #333;}
-ul.journals li		{ margin: 0; padding: 0 4px; list-style-type: none; font-size: .9em; border-bottom: 1px solid #fff;}
-ul.journals li a	{ color: #fff; }
+#home div.info		{ padding-bottom: 0;}
+#home div.info ul	{ margin: 0; padding: 0; text-indent: 0;}
+#home div.info li	{ background: url(../images/pone_home_new_bullet.gif) no-repeat 0 4px; padding: 0 0 5px 14px;margin:0; text-indent: 0; list-style-type: none; }
 
 
-/*#home div.feature h3{ background-color: #069; color: #fff; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 1em; padding-left: 4px;}*/
-div.feature a		{ font-weight: bold; font-size: .9em;}
-div.feature	img		{ border: 1px solid #ccc;}
-div.feature p		{ margin: 0; }
-
-.anesthes			{ background-position: 0 0; }
-.biochemi			{ background-position: 0 -30px; }
-.biophysi			{ background-position: 0 -60px; }
-.biotechn			{ background-position: 0 -90px; }
-.cardiova			{ background-position: 0 -120px; }
-.cellbiol			{ background-position: 0 -150px; }
-.chemical			{ background-position: 0 -180px; }
-.chemistr			{ background-position: 0 -210px; }
-.computat			{ background-position: 0 -240px; }
-.computer			{ background-position: 0 -270px; }
-.critical			{ background-position: 0 -300px; }
-.dermatol			{ background-position: 0 -330px; }
-.developm			{ background-position: 0 -360px; }
-.diabetes			{ background-position: 0 -390px; }
-.ecology			{ background-position: 0 -420px; }
-.evidence			{ background-position: 0 -450px; }
-.evolutio			{ background-position: 0 -480px; }
-.gastroen			{ background-position: 0 -510px; }
-.genetics			{ background-position: 0 -540px; }
-.geriatri			{ background-position: 0 -570px; }
-.hematolo			{ background-position: 0 -600px; }
-.immunolo			{ background-position: 0 -630px; }
-.infectio			{ background-position: 0 -660px; }
-.mathemat			{ background-position: 0 -690px; }
-.mentalhe			{ background-position: 0 -720px; }
-.microbio			{ background-position: 0 -750px; }
-.molecula			{ background-position: 0 -780px; }
-.nephrolo			{ background-position: 0 -810px; }
-.neurolog			{ background-position: 0 -840px; }
-.neurosci			{ background-position: 0 -870px; }
-.non-clin			{ background-position: 0 -900px; }
-.nutritio			{ background-position: 0 -930px; }
-.obstetri			{ background-position: 0 -960px; }
-.oncology			{ background-position: 0 -990px; }
-.ophthalm			{ background-position: 0 -1020px; }
-.otolaryn			{ background-position: 0 -1050px; }
-.patholog			{ background-position: 0 -1080px; }
-.pediatri			{ background-position: 0 -1110px; }
-.pharmaco			{ background-position: 0 -1140px; }
-.physics			{ background-position: 0 -1170px; }
-.physiolo			{ background-position: 0 -1200px; }
-.plantbio			{ background-position: 0 -1230px; }
-.publiche			{ background-position: 0 -1260px; }
-.radiolog			{ background-position: 0 -1290px; }
-.respirat			{ background-position: 0 -1320px; }
-.rheumato			{ background-position: 0 -1350px; }
-.sciencep			{ background-position: 0 -1380px; }
-.subjects			{ background-position: 0 -1410px; }
-.surgery			{ background-position: 0 -1440px; }
-.urology			{ background-position: 0 -1470px; }
-.virology			{ background-position: 0 -1500px; }
-.womenshe			{ background-position: 0 -1530px; }
-
-
-div.horizontalTabs		{ position: relative; border-width: 0; margin-top: 14px; background: url(../images/pone_home_tabcontainer_bg.gif) no-repeat bottom left; padding-bottom: 5px; margin-bottom: 10px;}
+ul#tabsContainer		{ margin: 0; padding: 5px 0 0 0; }
+ul#tabsContainer li		{ padding: 12px 0; font-size: .9em; border-width: 0;}
+ul#tabsContainer li span { padding: 12px 14px 10px 32px; background: url(../images/pone_home_tabs_span.gif) no-repeat 100% -40px; }
+ul#tabsContainer li.active span { background-position: 100% 0%; color: #000;}
+ul#tabsContainer li				{ cursor: pointer; font-weight: normal; margin: 0; display: inline; color: #444; color: #666; background-position: 0% -40px; background-repeat: no-repeat; background-color: transparent;}
+ul#tabsContainer li.published	{ background-image: url(../images/pone_home_mostrecent.gif);}
+ul#tabsContainer li.annotated	{ background-image: url(../images/pone_home_mostannotated.gif); }
+ul#tabsContainer li.active { background-position: 0% 0%; }
+div.horizontalTabs		{ position: relative; border-width: 0; margin-top: 14px; padding-bottom: 14px; margin-bottom: 10px;background: url(../images/pone_home_tabcontainer_bg.gif) no-repeat bottom left;}
 .horizontalTabs ul,
-.horizontalTabs ul li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; }
+.horizontalTabs ul li	{ margin: 0; padding: 0; font-weight: bold; list-style-image: none;}
 .horizontalTabs ul		{ display: block; padding-top: 0; padding-top: 3px;margin-bottom: 5px; z-index: 10; border-bottom-width: 0; /*background: url(../images/pone_home_tab_bg.gif) no-repeat top left;*/ padding-bottom: 3px;}
-.horizontalTabs ul li	{ cursor: pointer; padding: 2px; font-weight: normal; margin: 5px 0 3px 0; display: inline; padding: 6px 10px 6px 30px; color: #444; color: #666;}
-.horizontalTabs ul li.annotated.active 	{ background: url(../images/pone_home_mostannotatedon.gif) no-repeat; }
-.horizontalTabs ul li.annotated			{ background: url(../images/pone_home_mostannotated.gif) no-repeat; }
-.horizontalTabs ul li.published.active	{ background: url(../images/pone_home_mostrecenton.gif) no-repeat; }
-.horizontalTabs ul li.published			{ background: url(../images/pone_home_mostrecent.gif) no-repeat; }
-
 .horizontalTabs ul.articles	{ background: transparent!important;}
-.horizotnalTabs ul li li { color: #069; }
-.horizontalTabs ul li.active	{ font-weight: bold;}
 .horizontalTabs .contentwrap {background: transparent;margin: 10px; border-width: 0; padding: 0;position: relative; }
-.horizontalTabs .contentwrap ul li	{ display: list-item; background: transparent;list-style-type: disc; margin-bottom: 0; padding: 0; border-width: 0;}
-.horizontalTabs .contentwrap ul { padding-left: 18px; padding-bottom: 10px; margin-bottom: 10px;}
+.horizontalTabs .contentwrap ul li	{ display: list-item; background: transparent;list-style-type: none; margin-bottom: 0; padding: 3px 0 3px 10px;background: url(../images/pone_home_articles_li_bg.gif) no-repeat 0 12px; border-width: 0;}
+.horizontalTabs .contentwrap ul { padding-left: 8px; padding-bottom: 0; margin-bottom: 5px; }
+
+/* apply articles to all article lists on homepage */
+ul.articles,
+ul.articles li		{ margin: 0; padding: 0; list-style-type: none; }
+ul.articles			{ margin: 0 4px 10px 0;  padding: 10px 10px 0 6px;}
+ul.articles li		{ font-size: .9em; padding: 3px 0 3px 10px;background: url(../images/pone_home_articles_li_bg.gif) no-repeat 0 10px;}
+ul.articles			{ margin-top: 0; }

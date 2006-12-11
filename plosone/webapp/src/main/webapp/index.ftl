@@ -13,23 +13,23 @@
 					<ul>
 						<li><a href="http://www.plos.org/oa/index.html" title="Learn more about Open Access on PLoS.org">Open Access</a></li>
 						<li><a href="http://www.plos.org/support/donate.php" title="Join PLoS and our Open Access mission">Join PLoS</a></li>
-						<li><a href="/static/checklist.action"><@ww.url action="checklist.action" namespace="/static/" includeParams="none" id="checklist"/>
+						<li><a href="/static/checklist.action" title="Find out how to submit to PLoS ONE"><@ww.url action="checklist.action" namespace="/static/" includeParams="none" id="checklist"/>
 Submit Today</a></li>
 					</ul>
 					</div>
-					
+						<div class="block partner">
+				<h6>Hosted By</h6>
+				<a href="http://www.unitedlayer.com/" title="UnitedLayer, LLC"><img src="${freemarker_config.context}/images/pone_home_unitedlayer.gif" alt="UnitedLayer, LLC"/></a>
+				<h6>Partners</h6>
+				<a href="http://fedora.info/" title="Fedora.info"><img src="${freemarker_config.context}/images/pone_home_fedora.jpg" alt="Fedora.info"/></a>
+				<a href="http://www.sciencecommons.org/" title="Science Commons"><img src="${freemarker_config.context}/images/pone_home_sciencecommons.gif"  alt="Science Commons"/></a>
+				<a href="http://www.osafoundation.org" title="Open Source Applications Foundation"><img src="${freemarker_config.context}/images/pone_home_osaf.gif" alt="OSAF"/></a>
+				<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="${freemarker_config.context}/images/pone_home_moore.gif" alt="Moore Foundation"/></a>
+						</div>					
 						<div class="block banner">
 							<img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF" />
 						</div> 
-						<div class="block partner">
 
-				<h6>Partners</h6>
-				<a href="http://fedora.info/" title="Fedora.info"><img src="${freemarker_config.context}/images/pone_home_fedora.jpg" alt="Fedora.info"/></a>
-				<a href="http://www.sciencecommons.org/" title="Science Commons"><img src="${freemarker_config.context}/images/pone_home_sciencecommons.jpg"  alt="Science Commons"/></a>
-				<a href="http://www.osafoundation.org" title="Open Source Applications Foundation"><img src="${freemarker_config.context}/images/pone_home_osaf.jpg" alt="OSAF"/></a>
-				<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="${freemarker_config.context}/images/pone_home_moore.jpg" alt="Moore Foundation"/></a>
-				<a href="http://www.unitedlayer.com/" title="UnitedLayer, LLC"><img src="${freemarker_config.context}/images/pone_home_unitedlayer.jpg" alt="UnitedLayer, LLC"/></a>
-						</div>
 													   
 					</div>			
 					
@@ -47,17 +47,27 @@ Submit Today</a></li>
 
 
 <div class="block feature">
-<h3>New and Noted</h3>
+<h2>New and Noted</h2>
 <div>
-<a href="#">Wnt and Hedgehog Are Critical Mediators of Cigarette Smoke-Induced Lung Cancer</a><p>The molecular basis of cigarette-induced lung cancer is poorly understood. This paper shows that genes more normally associated with the patterning of embryos may be involved in opening new avenues for the development of therapies.</p>
+	<@ww.url namespace="/article" includeParams="none" id="articleURL1" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000093"/>
+	<@ww.url namespace="/article" includeParams="none" id="articleURL2" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000073"/>
+	<@ww.url namespace="/article" includeParams="none" id="articleURL3" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000075"/>
+	<@ww.url namespace="/article" includeParams="none" id="articleURL4" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000045"/>
+	<@ww.url namespace="/article" includeParams="none" id="articleURL5" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000051"/>
+	<@ww.url namespace="/article" includeParams="none" id="articleURL6" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000039"/>
+
+<a href="${articleURL1}" title="Read Open-Access Article">Wnt and Hedgehog Are Critical Mediators of Cigarette Smoke-Induced Lung Cancer</a><p>The molecular basis of cigarette-induced lung cancer is poorly understood. This paper shows that genes more normally associated with the patterning of embryos may be involved in opening new avenues for the development of therapies.</p>
+
+<a href="${articleURL2}" title="Read Open-Access Article">The Syntax and Meaning of Wild Gibbon Songs</a><p>Human languages are subtle. Identical words can mean different things when spoken in a different order. This paper shows that the same is true for gibbons. When threatened they change the structure of their calls, warning individuals within earshot of the danger.</p>
+
+<h3>Also of Note</h3>
 <ul class="articles">
-	<li><a href="#">Control of Canalization and Evolvability by Hsp90</a></li>
-	<li><a href="#">Predator Mimicry: Metalmark Moths Mimic Their Jumping Spider Predators</a></li>
-	<li><a href="#">Physiological Mouse Brain A� levels Are Not Related to the Phosphorylation State of Threonine-668 of Alzheimer's APP</a></li>
-	<li><a href="#">A Virtual Reprise of the Stanley Milgram Obedience Experiments</a></li>
+	<li><a href="${articleURL3}" title="Read Open-Access Article">Control of Canalization and Evolvability by Hsp90</a></li>
+	<li><a href="${articleURL4}" title="Read Open-Access Article">Predator Mimicry: Metalmark Moths Mimic Their Jumping Spider Predators</a></li>
+	<li><a href="${articleURL5}" title="Read Open-Access Article">Physiological Mouse Brain A&#223; levels Are Not Related to the Phosphorylation State of Threonine-668 of Alzheimer's APP</a></li>
+	<li><a href="${articleURL6}" title="Read Open-Access Article">A Virtual Reprise of the Stanley Milgram Obedience Experiments</a></li>
 </ul>
 </div>
-
 </div>
 
 
@@ -77,20 +87,23 @@ Submit Today</a></li>
 					
 											<#if categoryNames?size gt 0>
 					<div class="info block">
-<@ww.url action="information.action" namespace="/static/" includeParams="none" id="info"/>
-<h3>What is PLoS ONE?</h3>
+<@ww.url action="feedbackCreate.action" namespace="/static" includeParams="none" id="feedback"/>
+<@ww.url action="commentGuidelines.action#annotation" namespace="/static" includeParams="none" id="annotation"/>
+<@ww.url action="commentGuidelines.action#discussion" namespace="/static" includeParams="none" id="discussion"/>
+
+<h2>What is PLoS ONE?</h2>
+<div>
 <p>A new way of communicating peer-reviewed science and medicine.</p>
-</div>
-<div class="new block">
-<h4><strong>New</strong> Features...</h4>
-<ul><li class="annotation icon"><strong>Annotations</strong> – add and share your comments</li>
-	<li class="commentary icon"><strong>Discussions</strong> – join the conversation</li>
+<ul><li><strong><a href="${annotation}" title="Learn how to add an annotation">Annotations</a></strong> – add and share your comments</li>
+	<li><strong><a href="${discussion}" title="Learn how to start a discussion">Discussions</a></strong> – join the conversation</li>
+	<li><em>More functionality coming soon</em></li>
 </ul>
-<p>More functionality coming soon.<br />
-<a href="/static/feedbackCreate.action" class="feedback icon" title="Send us your feedback">Your feedback</a> will help us shape PLoS ONE.</p>
+<p><a href="${feedback}" title="Send us your feedback">Your feedback</a> will help us shape PLoS ONE.</p>
+</div>
 </div>
 					
 						<div class="subject block">
+						<h2>Explore By Subject</h2>
 							<dl class="category">
 
 							<#list categoryNames as category>
@@ -102,7 +115,7 @@ Submit Today</a></li>
 							  </#if>
 								<dt><a class="expand" id="widget${categoryId}" onclick="return singleExpand(this, '${categoryId}');">${category} (${articlesByCategory[category_index]?size})</a></dt>
 								<dd id="${categoryId}">
-									<ul>
+									<ul class="articles">
 										<#list articlesByCategory[category_index] as article>
 										<li><a href="article/fetchArticle.action?articleURI=${article.uri?url}" title="Read Open Access Article">${article.title}</a></li>
 										</#list>
@@ -126,61 +139,33 @@ Submit Today</a></li>
 					<!-- end : col 4 -->
 					
 				</div>
-							<div class="beta">We are still in beta! Help us make the site better and 
-			<a href="../feedbackCreate.action?page=fetchArticle.action10.1371/journal.pone.0000011" title="Submit your feedback">report bugs</a>.</div>
+							
 				<!-- end : wrapper for cols 3 & 4 -->
 				
 				
 				<div id="lower">
 				
-				<div class="col first">
-				<div class="block ad">
-				<a href="http://www.plos.org/contact.php?recipient=web"><img src="http://www.plosjournals.org/images/icons/t_hom_mar_04.png" />
-				<strong>Feedback</strong>
-				<span class="body">Tell us what you think about our new look</span></a>
-			</div>
-
+			<div class="col first">
 			<div class="block ad">
-				<a href="http://www.taxpayeraccess.org/nih.html"><img src="http://www.plosjournals.org/images/icons/t_hom_mar_09.png" />
+				<a href="http://www.plos.org/downloads/jbanners.html"><img src="${freemarker_config.context}/images/home/t_hom_mar_10.png" />
+				<strong>Love PLoS?</strong>
+				<span class="body">Help spread the word, download our banners</span></a>
+			</div>
+			<div class="block ad">
+				<a href="http://www.plos.org/cms/node/40"><img src="${freemarker_config.context}/images/home/t_hom_mar_05.PNG" />
 
-				<strong>More Reach for Research</strong>
-				<span class="body">Support NIH Public Access</span></a>
+				<strong>Reuse</strong>
+				<span class="body">Feel free to be creative with our content.</span></a>
 			</div>
 			
 			<div class="block ad">
-				<a href="http://www.plos.org/advertise"><img src="http://www.plosjournals.org/images/icons/plo_adv_hp.png" />
+				<a href="http://www.plos.org/advertise"><img src="${freemarker_config.context}/images/home/t_hom_mar_03.PNG" />
 				<strong>Advertise with PLoS</strong>
 				<span class="body">New high-profile realty available</span></a>
 
 			</div>	
 	
 				</div>
-			<div class="col last">
-							<h3>What PLoS is Blogging...</h3>
-							<ul>
-								<li><a href="#">Comment on the PLoS Blog now</a></li>
-								<li><a href="#">PLoS ONE: Accepting Submissions</a></li>
-								<li><a href="#">Visit PLoS at ASMB</a></li>
-								<li><a href="#">Support the Public Research Act</a></li>
-								<li><a href="#">Read PLoS Clinical Trials</a></li>
-							</ul>
-							<h3>What You're Blogging...</h3>
-							<ul>
-								<li><a href="#">Comment on the PLoS Blog now</a></li>
-								<li><a href="#">PLoS ONE: Accepting Submissions</a></li>
-								<li><a href="#">Visit PLoS at ASMB</a></li>
-								<li><a href="#">Support the Public Research Act</a></li>
-								<li><a href="#">Read PLoS Clinical Trials</a></li>
-							</ul>
-							<h3>New at PLoS</h3>
-							<ul>
-								<li><a href="#">Comment on the PLoS Blog now</a></li>
-								<li><a href="#">PLoS ONE: Accepting Submissions</a></li>
-								<li><a href="#">Visit PLoS at ASMB</a></li>
-								<li><a href="#">Support the Public Research Act</a></li>
-								<li><a href="#">Read PLoS Clinical Trials</a></li>
-							</ul>
-					</div>
 					
 				</div>
 				
