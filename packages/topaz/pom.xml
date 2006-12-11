@@ -83,6 +83,73 @@
           </descriptors>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <version>2.0-alpha-3-SNAPSHOT</version>
+
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>rpm</goal>
+            </goals>
+          </execution>
+        </executions>
+
+        <configuration>
+          <release>SNAPSHOT</release>
+          <copyright>Educational Community License version 1.0</copyright>
+          <distribution>Topaz Repository Framework</distribution>
+          <group>Applications/Internet</group>
+
+          <mappings>
+            <mapping>
+              <directory>/usr/local/topaz/${project.build.finalName}-tomcat</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+              <sources>
+                <source>
+                  <!-- The following is tied to <id> and <format> in assembly.xml -->
+                  <location>${project.build.directory}/${project.build.finalName}-tomcat.dir</location>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>/usr/share/doc/topaz</directory>
+              <documentation>true</documentation>
+              <filemode>444</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+            </mapping>
+            <mapping>
+              <directory>/etc/topaz</directory>
+              <configuration>true</configuration>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+              <sources>
+                <source>
+                  <location>src/main/resources/topaz.xml</location>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>/var/log/topaz</directory>
+              <filemode>740</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+            </mapping>
+          </mappings>
+          <preinstallScript>src/main/scripts/preinstall</preinstallScript>
+          <postinstallScript>src/main/scripts/postinstall</postinstallScript>
+          <preremoveScript>src/main/scripts/preremove</preremoveScript>
+          <postremoveScript>src/main/scripts/postremove</postremoveScript>
+          <verifyScript>src/main/scripts/verify</verifyScript>
+        </configuration>
+      </plugin>
     </plugins>
   </build>
 </project>

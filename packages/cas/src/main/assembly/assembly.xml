@@ -1,8 +1,9 @@
 <assembly>
   <id>tomcat</id>
   <formats>
-    <format>tar.gz</format>
+    <format>dir</format>
   </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
 
   <fileSets>
     <fileSet>
