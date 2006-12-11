@@ -3,9 +3,9 @@
 
 <h1><em>PLoS ONE</em> Author Checklist for Manuscript Submission</h1>
 
-<p class="intro">Ready to submit your manuscript? Please refer to our submission checklist below and use our <a href="http://one.plosjms.org">online manuscript submission system</a>.</p>
+<p class="intro">Ready to submit your manuscript? Please refer to our submission checklist below and use our <a href="http://one.plosjms.org" title="PLoS ONE | Online Manuscript Submission and Review System">online manuscript submission system</a>.</p>
 
-<p>When you submit your paper to <em>PLoS ONE</em>, you will be asked to  provide some information in addition to the manuscript file itself, as well as  some associated files. This checklist will ensure that you have gathered all the relevant information and that the manuscript is formatted appropriately. Details can be found in our <a href="guidelines.action" title="PLoS ONE Guidelines for Authors">Guidelines for Authors</a>.</p>
+<p>When you submit your paper to <em>PLoS ONE</em>, you will be asked to  provide some information in addition to the manuscript file itself, as well as  some associated files. This checklist will ensure that you have gathered all the relevant information and that the manuscript is formatted appropriately. Details can be found in our <a href="guidelines.action" title="PLoS ONE | Author Guidelines">Guidelines for Authors</a>.</p>
 
 <h2>Information Needed Prior to Submission</h2>
 <ul>
@@ -14,7 +14,7 @@
   <li>Do you have e-mail addresses for all the authors? </li>
   <li>Have you prepared a cover letter explaining the contribution your study will make to the scientific literature?</li>
   <li>Do you have PDF versions of all related manuscripts by any of the authors, submitted or in press elsewhere? </li>
-  <li>Have you discussed the publication fees with your co-authors? Standard publication fees are US$1250 per manuscript and will be billed upon acceptance (<a href="http://www.plos.org/faq.html#pubfees" title="PLoS.org | Publication Fees FAQ">read the FAQ on publication fees</a>). A reduced fee of US$750 will apply for papers submitted before the initial launch of the journal. We do offer a fee waiver for authors with insufficient funds, and the ability of authors to pay publication charges will never be a consideration in the decision whether to publish. </li>
+  <li>Have you discussed the publication fees with your co-authors? Standard publication fees are US$1250 per manuscript and will be billed upon acceptance (<a href="http://www.plos.org/about/faq.html#pubquest" title="PLoS.org | Publication Fees FAQ">read the FAQ on publication fees</a>). We do offer a fee waiver for authors with insufficient funds, and the ability of authors to pay publication charges will never be a consideration in the decision whether to publish. </li>
 </ul>
 
 <h2>Manuscript Requirements</h2>
@@ -30,7 +30,7 @@
   <li>Is your summary no more than 300 words and divided into sections called Background, Methodology/Principal Findings, and Conclusions/Significance? </li>
   <li>Have you used standard nomenclature?</li>
   <li>Have your original figures been created as EPS or TIFF files in a high enough resolution to provide for adequate review?</li>
-  <li>If your manuscript is ready for publication, do your figures conform to the <a href="figure_guidelines.action" title="PLoS ONE | Figure Guidelines">Guidelines for Figure Preparation</a>? Has each multipanel figure been combined into a single file?</li>
+  <li>If your manuscript is ready for publication, do your figures conform to the <a href="figureGuidelines.action" title="PLoS ONE | Figure Guidelines">Guidelines for Figure Preparation</a>? Has each multipanel figure been combined into a single file?</li>
 
   <li>Is the manuscript file created in Word or RTF?</li>
   <li>Are tables included at the end of the manuscript file? Is the table title no more than one sentence and has all the rest of the table legend been placed below the table itself?</li>

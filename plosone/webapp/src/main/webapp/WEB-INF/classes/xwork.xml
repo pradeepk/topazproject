@@ -235,16 +235,42 @@
       <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
 
+    <action name="privacy">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/privacy.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
     <action name="reviewerGuidelines">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/reviewer_guidelines.ftl</param>
       </result>
       <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
+    
+    <action name="rssFeeds">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/rss_feeds.ftl</param>
+      </result>
+    </action>
+
+    <action name="rssInfo">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/rss_info.ftl</param>
+      </result>
+    </action>
 
     <action name="sitemap">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/sitemap.ftl</param>
+      </result>
+      <result name="error">/WEB-INF/pages/error.ftl</result>
+    </action>
+
+    <action name="terms">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/terms.ftl</param>
       </result>
       <result name="error">/WEB-INF/pages/error.ftl</result>
     </action>
@@ -267,6 +293,9 @@
         <param name="templateFile">/static/serverError.ftl</param>
       </result>
     </action>    
+
+  
+  
   
   </package>
 
@@ -705,7 +734,7 @@
 
   	<action name="ingestArchives" class="org.plos.admin.action.IngestArchivesAction">
   	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
-  	  	<result name="error"> /WEB-INF/pages/admin/adminTop.ftl</result>
+  	  	<result name="error">/WEB-INF/pages/admin/adminTop.ftl</result>
   	</action> 	  	
 
   	<action name="publishArchives" class="org.plos.admin.action.PublishArchivesAction">

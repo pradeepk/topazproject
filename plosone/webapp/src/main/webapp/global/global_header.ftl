@@ -7,9 +7,10 @@
 	<#if Session.PLOS_ONE_USER?exists>
 	<div id="user">
 		<div>
+		<@ww.url id="editProfileURL" includeParams="none" namespace="/user/secure" action="editProfile" tabId="preferences"/>
 			<p>Logged in as <a href="${freemarker_config.context}/user/showUser.action?userId=${Session.PLOS_ONE_USER.userId}" class="icon user" title="Logged in username">${Session.PLOS_ONE_USER.displayName}</a></p>
 				<ul>
-					<li><a href="${freemarker_config.context}/user/secure/editProfile.action?tabId=preferences" class="icon preferences" title="View and edit my account preferences and alerts">Preferences</a></li>
+					<li><a href="${editProfileURL}" class="icon preferences" title="View and edit my account preferences and alerts">Preferences</a></li>
 					<li><a href="${freemarker_config.casLogoutURL}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action" class="icon logout" title="Logout of my PLoS ONE account">Logout</a></li>
 				</ul>
 		</div>
@@ -21,6 +22,7 @@
 		<div>
 			<ul>
 				<li><a href="${freemarker_config.registrationURL}">Create Account</a></li>
+				<@ww.url id="loginURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${thisPage}"/>
 				<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="feedback">Login</a></li>
 			</ul>
 		</div>
@@ -32,13 +34,16 @@
 	<!-- begin search links -->
 	<ul id="links">
 <!--			<li><a href="#" title="Search PLoS ONE with advanced criteria" class="icon advanced">Advanced Search</a></li>-->
-			<li><a href="#" title="PLoS ONE RSS Feeds" class="icon rss">RSS</a></li>
-			<li><a href="${freemarker_config.context}/feedbackCreate.action?page=${thisPageURL?url}" title="Send us your feedback" class="feedback">Feedback</a></li>
+			<@ww.url id="rssURL" includeParams="none" namespace="/static" action="rssFeeds"/>
+			<li><a href="${rssURL}" title="PLoS ONE RSS Feeds" class="icon rss">RSS</a></li>
+			<@ww.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
+			<li><a href="${feedbackURL}" title="Send us your feedback" class="feedback">Feedback</a></li>
 	</ul>
 	<!-- end : search links -->
 	<!-- begin : dashboard -->
 	<div id="db">
-		<form name="searchForm" action="${freemarker_config.context}/search/simpleSearch.action" method="get">
+		<@ww.url id="searchURL" includeParams="none" namespace="/search" action="simpleSearch" />
+		<form name="searchForm" action="${searchURL}" method="get">
 			<fieldset>
 				<legend>Search PLoS ONE</legend>
 				<label for="search">Search</label>

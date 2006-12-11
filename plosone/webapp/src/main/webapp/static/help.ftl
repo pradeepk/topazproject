@@ -23,19 +23,9 @@
 
 <p>If updating your printer drivers does not resolve the problem, please contact <a href="mailto:webmaster@plos.org">webmaster@plos.org</a> with detailed information, including your Web browser software (e.g., Internet Explorer 6.0), version of Adobe Acrobat Reader (or other PDF reader), computer operating system (e.g., Windows XP), and the URLs of the PDFs you are trying to print.</p>
 					
-
-<a id="pdf" name="pdf"></a>
-<h2>Print PDF vs. Screen PDF</h2>
-
-<p>For most of our journals, we offer you the choice of two different PDF versions per article.  The Print PDF is optimized for printing on a high-quality laser printer.  The Screen PDF has its images optimized for viewing on screen, so it normally has a smaller file size for quicker download.</p>
-
-<p>The exact resolutions of the files are as follows:<br /> 
-Print PDF: 1200 dpi &#8211; general; 300 dpi &#8211; color; 300 dpi &#8211; greyscale; 300 dpi &#8211; monochrome (Adobe's standard print setting).<br  /> 
-
-Screen PDF: 600 dpi &#8211; general; 150 dpi &#8211; color; 150 dpi &#8211; greyscale; 300 dpi &#8211; monochrome (Adobe's standard ebook setting).</p>
 					
 <a id="free" name="free"></a>
-<h4>Free Readers/Viewers</h4>
+<h2>Free Readers/Viewers</h2>
 
 <p>Free software is available for viewing Adobe Acrobat PDF, Microsoft Excel, Word, and PowerPoint files. Download sites for a few popular free programs are listed below.</p>
 
@@ -73,7 +63,7 @@ Screen PDF: 600 dpi &#8211; general; 150 dpi &#8211; color; 150 dpi &#8211; grey
 <a name="svg"></a>
 <a name="movie"></a>
 <a id="viewing" name="viewing"></a>						
-<h4>Viewing and Using Multimedia Files</h4>
+<h2>Viewing and Using Multimedia Files</h2>
 
 <p>If your Web browser does not already have a plug-in to play videos and use Flash, Shockwave, and SVG (Scaleable Vector Graphics) files, there are free players and viewers available for download. We list just a few popular programs below.</p>
 
@@ -111,12 +101,12 @@ Screen PDF: 600 dpi &#8211; general; 150 dpi &#8211; color; 150 dpi &#8211; grey
 <a id="rss" name="rss"></a>
 <h2>RSS Feeds</h2>
 
-<p>Want to keep abreast of PLoS journals content without having to regularly visit the Web sites? RSS will allow you to do just that.  Get more information <a href="rss_info.php">about PLoS RSS feeds</a>.</p>
+<p>Want to keep abreast of PLoS journals content without having to regularly visit the Web sites? RSS will allow you to do just that.  Get more information <a href="rssInfo.action" title="PLoS ONE | About PLoS RSS Feeds">about PLoS RSS feeds</a>.</p>
 					
 <a id="xmlcontent" name="xmlcontent"></a>
-<h4>XML Content</h4>
+<h2>XML Content</h2>
 
-<p>The XML for an individual article can be downloaded directly from that article's Web page using the "Download XML" link in the sidebar.  If you wish to download the XML of an entire issue, volume, or the entire corpus of a PLoS journal, please contact <a href="mailto:webmaster@plos.org">webmaster@plos.org</a>.</p>
+<p>The XML for an individual article can be downloaded directly from that article's Web page using the "Download Atricle XML" link in the sidebar.  If you wish to download the entire corpus of a PLoS journal, please contact <strong>webmaster [at] plos.org</strong>.</p>
 
 </div>
 <!-- end : main contents -->

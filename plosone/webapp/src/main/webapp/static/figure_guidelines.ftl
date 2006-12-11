@@ -103,7 +103,7 @@
 <p>Other multimedia files (e.g., .SWF) should be smaller than 10 MB in  size because of the difficulties that some users will experience in  loading or downloading files.</p>
 
 <h2>Getting Help</h2>
-<p>For further help preparing figures, contact <a href="mailto:figures@plos.org">figures@plos.org</a>.</p>
+<p>For further help preparing figures, contact <strong>figures [at] plos.org</strong>.</p>
 
 
 </div>

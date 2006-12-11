@@ -9,7 +9,8 @@
 				<@ww.url action="license.action" namespace="/static" includeParams="none" id="license"/>
 					<li><a href="${info}">Journal Information</a></li>
 					<li><a href="${edboard}">Editorial Board</a></li>
-					<li><a href="${media}">Media Inquiries</a></li>
+					<li><a href="http://www.plos.org/journals/embargopolicy.html">Media Inquiries</a></li>
+<!--					<li><a href="http://www.plos.org/journals/print.html">PLoS in Print</a></li>-->
 					<li><a href="${license}">License</a></li>
 				</ul>
 			</li>			
@@ -40,7 +41,7 @@
 					<li><a href="${guidelines}">Author Guidelines</a></li>
 					<li><a href="${figure}">Figure Guidelines</a></li>
 					<li><a href="${checklist}">Submit Your Paper</a></li>
-					<li><a href="${reviewer}">Reviewer Guidlines</a></li>
+					<li><a href="${reviewer}">Reviewer Guidelines</a></li>
 				</ul>
 			</li>
 			<li class="journalnav"><a href="http://www.plos.org" tabindex="10">PLoS.org</a></li>
@@ -54,8 +55,7 @@
 					<li><a href="http://pathogens.plosjournals.org" title="PLoSPathogens.org">PLoS Pathogens</a></li>
 					<li><a href="http://clinicaltrials.plosjournals.org" title="PLoSClinicalTrials.org">PLoS Clinical Trials</a></li>
 					<li><a href="http://www.plosone.org/" title="PLoSONE.org">PLoS ONE</a></li>
-					<li><a href="http://clinicaltrials.plosjournals.org" title="PLoSClinicalTrials.org">PLoS Clinical Trials</a></li>
-					<li><a href="http://www.plosntd.org/" title="PLoSNTD.org">PLoS Neglected Tropical Diseases</a></li>
+					<li><a href="http://www.plosntds.org/" title="PLoSNTD.org">PLoS Neglected Tropical Diseases</a></li>
 				</ul>
 			</li>
 		</ul>

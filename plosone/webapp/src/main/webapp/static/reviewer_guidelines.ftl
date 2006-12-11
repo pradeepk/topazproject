@@ -1,9 +1,26 @@
 <!-- begin : main content -->
 <div id="content" class="static">
-<h1>Reviewer Guidelines</h1>
+<h1><em>PLoS ONE</em> Guidelines for Reviewers</h1>
+
+<ol>
+<li><a href="#about">About <em>PLoS ONE</em></a></li>
+<li><a href="#criteria">Criteria for Publication</a></li>
+<li><a href="#process">Overview of the Editorial Process</a></li>
+<li><a href="#selection">Reviewer Selection</a></li>
+<li><a href="#writing">Writing the Review</a></li>
+<li><a href="#other">Other Questions for Consideration</a></li>
+<li><a href="#confidentiality">Confidentiality</a></li>
+<li><a href="#timely">Timely Review</a></li>
+<li><a href="#anonymity">Anonymity</a></li>
+<li><a href="#editing">Editing Reviewers' Reports</a></li>
+<li><a href="#competing">Competing Interests</a></li>
+<li><a href="#feedback">Feedback to Reviewers</a></li>
+<li><a href="#sharing">Sharing Reviews with Other PLoS Journals</a></li>
+</ol>
+
 <h2><a name="about" id="about">1. About <em>PLoS ONE</em></a></h2>
 <p>Scientific progress requires the exchange and  discussion of data and ideas. <em>PLoS ONE</em> is  a unique publication dedicated to presenting the results of scientific research  from any scientific or medical discipline in an open-access environment. At the same time,  it provides a forum in which to discuss that research and so provide  for each and every paper its maximum possible impact. To achieve this, <em>PLoS ONE</em> employs a two-stage assessment  process. Pre-publication peer review concentrates on objective and technical  concerns to determine whether the research has been sufficiently well  conceived, well executed, and well described to justify inclusion in the  scientific record. Post-publication, papers are opened up for interactive  discussions and assessment in which the whole scientific community can be  involved. </p>
-<p>To provide open access, PLoS journals use a business model in which our  expenses&#8212;including those of peer review, of production, and of online  hosting and archiving&#8212;are recovered in part by a publication fee paid by the  authors or research sponsors for each article they publish. Currently, this fee for <em>PLoS ONE</em> is US$1250, but there is a reduced rate of US$750 for papers submitted before the  launch of the journal (<a href="http://www.plos.org/journals/model.html">read more about publication fees</a>).  We also have a fee waiver policy for authors who do not have funds to cover  publication fees. Editors and reviewers have no access to payment  information, and hence ability to pay will not influence publication decisions.  These policies ensure that the fee is never a barrier to publication.</p>
+<p>To provide open access, PLoS journals use a business model in which our  expenses&#8212;including those of peer review, of production, and of online  hosting and archiving&#8212;are recovered in part by a publication fee paid by the  authors or research sponsors for each article they publish. Currently, this fee for <em>PLoS ONE</em> is US$1250 (<a href="http://www.plos.org/about/faq.html#pubquest" title="PLoS.org | Publication Fees FAQ">read more about publication fees</a>).  We also have a fee waiver policy for authors who do not have funds to cover  publication fees. Editors and reviewers have no access to payment  information, and hence ability to pay will not influence publication decisions.  These policies ensure that the fee is never a barrier to publication.</p>
 
   
 <h2><a name="criteria" id="criteria">2. Criteria for Publication</a></h2>
@@ -19,7 +36,7 @@
 
 <h2><a name="process" id="process"></a>3. Overview of the Editorial Process</h2>
 <p><em>PLoS ONE</em> will provide all authors  with an efficient and "hassle-free" editorial process. Our aim is to identify  those submissions that warrant inclusion in the scientific record and present  them to the scientific community with as few hurdles as possible. </p>
-  <p>The editorial process is run by its extensive <a href="edboard.php">board of academic editors</a> (AEs). AEs are invited to handle submitted manuscripts based  upon the content of the manuscript. The AE evaluates the paper and decides  whether it describes a body of work that meets the editorial criteria of <em>PLoS ONE</em>. AEs can employ a variety of  methods to reach a decision in which they are confident:</p>
+  <p>The editorial process is run by its extensive <a href="edboard.action" title="PLoS ONE | Advisory and Editorial Boards">board of academic editors</a> (AEs). AEs are invited to handle submitted manuscripts based  upon the content of the manuscript. The AE evaluates the paper and decides  whether it describes a body of work that meets the editorial criteria of <em>PLoS ONE</em>. AEs can employ a variety of  methods to reach a decision in which they are confident:</p>
 
 <ul>
   <li>Based on their own knowledge and experience</li>
@@ -37,7 +54,7 @@
 </ul>
 <p>Upon acceptance, the manuscript is checked  by <em>PLoS ONE</em> staff to ensure that it  is in a form that will allow it to be efficiently handled by our production  system. The authors will be queried and allowed to make any final minor  revisions that are needed.</p>
 
-<p>This is the final stage at which  authors  will see their manuscript before publication. The authors' files will be carefully tagged to generate XML and PDF files, but will not be subject to detailed copyediting (see <a href="guidelines.php#production" title="PLoS ONE | Authors Guidelines">Overview of the Production Process</a>). It is therefore  essential that authors provide a thoroughly proofread and checked manuscript,  following the author checklist and any comments from PLoS staff.</p>
+<p>This is the final stage at which  authors  will see their manuscript before publication. The authors' files will be carefully tagged to generate XML and PDF files, but will not be subject to detailed copyediting (see <a href="guidelines.action#production" title="PLoS ONE | Authors Guidelines">Overview of the Production Process</a>). It is therefore  essential that authors provide a thoroughly proofread and checked manuscript,  following the author checklist and any comments from PLoS staff.</p>
 
 <h2><a name="selection" id="selection">4. Reviewer Selection</a></h2>
 <p>Selection of reviewers for a particular manuscript is the responsibility of  the AE and is based on many factors, including expertise, reputation, specific  recommendations of authors and academic editors, and the AE's own knowledge of  a reviewer's past performance.</p>
@@ -54,7 +71,7 @@
   <li>What further directions would it be useful to take the current research? </li>
 </ul>
 
-<h2><a name="questions" id="questions"></a>6. Other Questions for Consideration</h2>
+<h2><a name="other" id="other"></a>6. Other Questions for Consideration</h2>
 <p>In the case of manuscripts deemed worthy of publication, we would appreciate  additional advice from the reviewer on the following:</p>
 <ul>
   <li>Is the manuscript written clearly enough that it is understandable to non-specialists? If not, how could it be improved?</li>
@@ -77,10 +94,10 @@
 <h2><a name="editing" id="editing"></a>10. Editing Reviewers' Reports</h2>
 <p>The editors and PLoS staff do not edit any comments made by reviewers that have been intended to be read by the authors unless the language is deemed inappropriate for professional communication or the comments contain information considered confidential. Such remarks should be reserved for the confidential section of the review form, which is intended to be read by the editors only. In their comments to authors, reviewers are encouraged to be honest but not offensive in their language. On the other hand, authors should not confuse frank and perhaps even robust language with unfair criticism.</p>
 
-<h2><a name="interests" id="interests"></a>11. Competing Interests</h2>
+<h2><a name="competing" id="competing"></a>11. Competing Interests</h2>
 <p>As far as possible, we respect requests by authors to exclude reviewers whom they consider to be unsuitable. We also, as much as possible, try to rule out those reviewers who may have an obvious competing interest, such as those who may have been collaborators on other projects with the authors of this manuscript, those who may be direct competitors, those who may have a known history of antipathy with the author(s), or those who might profit financially from this work. Because it is not possible for all such competing interests to be known by a particular editor, we request that reviewers who recognize a potential competing interest inform the editors or journal staff and recuse themselves if they feel that are unable to offer an impartial review.</p>
 
-<p>Read more about the <a href="competing.php" title="Competing Interests">policy of the Public Library of Science regarding competing interests</a>. When submitting your review, you must indicate whether or not you have any competing interests. 
+<p>Read more about the <a href="competing.action" title="PLoS ONE | Competing Interests Policy">policy of the Public Library of Science regarding competing interests</a>. When submitting your review, you must indicate whether or not you have any competing interests. 
 On occasion, reviewers may be asked to offer their opinion on a manuscript that they may have reviewed for some other journal. This is not in itself a competing interest. That two journals have identified the same person as especially well qualified to judge the manuscript under consideration does not in any way decrease the validity of that opinion and may perhaps even enhance it.</p>
 
 <h2><a name="feedback" id="feedback">12. Feedback to Reviewers</a></h2>

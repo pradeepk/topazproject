@@ -17,9 +17,10 @@
 
 <h2><a name="about" id="about">1. About <em>PLoS ONE</em></a></h2>
 <p>Scientific progress requires the exchange and discussion of data and ideas. <em>PLoS ONE </em>is a unique publication dedicated to presenting the results of scientific research from any scientific discipline in an open-access environment. At the same time, it provides a forum in which to discuss that scientific research and so provide for each and every paper its maximum possible impact. To achieve this, <em>PLoS ONE</em> employs a two-stage assessment process. Pre-publication peer review concentrates on objective and technical concerns to determine whether the research has been sufficiently well conceived, well executed, and well described to justify inclusion in the scientific record. Post-publication, papers are opened up for interactive discussions and assessment in which the whole scientific community can be involved. </p>
-<p>To provide open access, PLoS journals use a business model in which our expenses&#8212;including those of peer review, of production, and of online hosting and archiving&#8212;are recovered in part by a publication fee paid by the authors or research sponsors for each article they publish. Currently, this fee is US$1250, but there is a reduced rate of US$750 for papers submitted before the launch of the journal (<a href="http://www.plos.org/journals/model.html" title="PLoS.org: Publication Fees Model">read more about publication fees</a>). We also have a fee waiver policy for authors who do not have funds to cover publication fees. Editors and reviewers have no access to author payment information, and hence ability to pay will not influence publication decisions. These policies ensure that the fee is never a barrier to publication.</p>
 
-<!--<p><a href="#top" title="Go to top of this page">TOP <img src="/templates/images/arrow_up_icon.gif" alt="" border="0" height="10" width="15"></a></p>-->
+<p>To provide open access, PLoS journals use a business model in which our expenses&#8212;including those of peer review, journal production, and online hosting and archiving&#8212;are recovered in part by charging a publication fee of US$1250 to the authors or research sponsors for each article they publish. Authors who are affiliated with one of our <a href="http://www.plos.org/support/instmembers.html" title="PLoS.org | Institutional Membership program">Institutional Members</a> are eligible for a discount on this fee.</p>
+
+<p>We offer a complete or partial fee waiver for authors who do not have funds to cover publication fees. Editors and reviewers have no access to payment information, and hence inability to pay will not influence the decision to publish a paper.</p> 
 
 <h2><a name="criteria" id="criteria"></a>2. Criteria for Publication</h2>
 <p>To be considered for publication in <em>PLoS ONE</em>, any given manuscript must satisfy the following criteria: </p>
@@ -59,6 +60,7 @@
 
 <h2><a name="preparation" id="preparation"></a>5. Preparation of Research Manuscripts</h2>
 <p><em>PLoS ONE</em> considers manuscripts of any length; we encourage the submission of both substantial full-length bodies of work and shorter manuscripts based on a more limited range of experiments. There are no explicit word, figure, or supporting information restrictions, although we encourage a concise and accessible writing style. Editors may make suggestions for how to achieve this, as well as suggestions for cuts or additions that could be made to the article to strengthen the arguments made. Authors are encouraged to use their own voice and to decide how best to present their ideas, results, and conclusions. </p>
+
  <p>Although we encourage submissions from around the globe, we require that manuscripts be submitted in English. As a step toward overcoming language barriers, we encourage authors fluent in other languages to provide copies of their full articles or abstracts in other languages; these will be made available along with the published paper. Translations should be submitted as supporting information and listed, together with other supporting information files, at the end of the article text.</p>
  
 <h3>Cover Letter </h3>
@@ -115,7 +117,7 @@
 <p>Details of the funding sources that have supported the work should be confined to the funding section. Do not include them in the acknowledgments.</p>
 
 <h3>Competing Interests </h3>
-<p>Authors are asked at submission to declare whether they have any financial, personal, or professional interests that could be construed to have influenced their paper. Reviewers are also asked to declare any interests that might interfere with their objective assessment of a manuscript. Any relevant competing interests of authors must be available to editors and reviewers during the review process and will be stated in published articles. Read more about the <a href="competing.php" title="Competing Interests Policy">policy of PLoS regarding competing interests</a>.</p>
+<p>Authors are asked at submission to declare whether they have any financial, personal, or professional interests that could be construed to have influenced their paper. Reviewers are also asked to declare any interests that might interfere with their objective assessment of a manuscript. Any relevant competing interests of authors must be available to editors and reviewers during the review process and will be stated in published articles. Read more about the <a href="competing.action" title="PLoS ONE | Competing Interests Policy">policy of PLoS regarding competing interests</a>.</p>
 
 <h3>References </h3>
 <p>Only published or accepted manuscripts should be included in the reference list. Meetings abstracts, conference talks, or papers that have been submitted but not yet accepted should not be cited. Limited citation of unpublished work should be included in the body of the text only. All personal communications should be supported by a letter from the relevant authors.</p>
@@ -157,7 +159,7 @@ Hansen B (1991) New York City epidemics and history for the public. In: Harden V
 <p>Please keep abbreviations to a minimum and define them upon first use in the text. Non-standard abbreviations should not be used unless they appear at least three times in the text.</p>
 
 <h3>Figures </h3>
-<p>For the article to be accepted for publication, the author will need to supply high-resolution versions of the figures. When preparing your figures, please ensure that the files conform to our <a href="figure_guidelines.php" title="PLoS ONE | Figure Guidelines">Guidelines for Figure Preparation</a>. Please do <strong>not</strong> upload panels for a single figure separately (for example, Figure 1A, Figure 1B-1D, Figure 1E); each figure file should be a single montage of all panels. </p>
+<p>For the article to be accepted for publication, the author will need to supply high-resolution versions of the figures. When preparing your figures, please ensure that the files conform to our <a href="figureGuidelines.action" title="PLoS ONE | Figure Guidelines">Guidelines for Figure Preparation</a>. Please do <strong>not</strong> upload panels for a single figure separately (for example, Figure 1A, Figure 1B-1D, Figure 1E); each figure file should be a single montage of all panels. </p>
 <p>Please note that <em>PLoS ONE</em> can only accept figures submitted as either TIFF or EPS files. </p>
 
 <h3>Figure Legends </h3>
@@ -196,33 +198,29 @@ Nomenclature Committee">HUGO</a>. It is sometimes advisable to indicate the syno
 <p>All appropriate datasets, images, and information should be deposited in public resources. Please provide the relevant accession numbers (and version numbers, if appropriate). Suggested databases include, but are not limited to:</p>
 
 <ul>
-<li><a href="http://www.ebi.ac.uk/arrayexpress/" title="ArrayExpress">ArrayExpress</a></li>
-<li><a href="http://www.ebi.ac.uk/biomodels/" title="BioModels Database">BioModels Database</a></li>
-<li><a href="http://dip.doe-mbi.ucla.edu/" title="Database of Interacting Proteins">Database of Interacting Proteins</a></li>
-<li><a href="http://www.ddbj.nig.ac.jp/" title="DNA Data Bank of Japan">DNA Data Bank of Japan [DDBJ]</a></li>
-<li><a href="http://www.ebi.ac.uk/embl/" title="EMBL Nucleotide Sequence Database">EMBL Nucleotide Sequence Database</a></li>
-<li><a href="http://www.ncbi.nlm.nih.gov/Genbank/" title="GenBank">GenBank</a></li>
-<li><a href="http://www.ncbi.nlm.nih.gov/geo/" title="Gene Expression Omnibus">Gene Expression Omnibus [GEO]</a></li>
-<li><a href="http://www.rcsb.org/pdb/" title="Protein Data Bank">Protein Data Bank</a></li>
-
-<li><a href="http://www.ebi.ac.uk/swissprot/" title="UniProtKB/Swiss-Prot">UniProtKB/Swiss-Prot</a></li>
+<li><a href="http://www.ebi.ac.uk/arrayexpress/">ArrayExpress</a></li>
+<li><a href="http://www.ebi.ac.uk/biomodels/">BioModels Database</a></li>
+<li><a href="http://dip.doe-mbi.ucla.edu/">Database of Interacting Proteins</a></li>
+<li><a href="http://www.ddbj.nig.ac.jp/">DNA Data Bank of Japan [DDBJ]</a></li>
+<li><a href="http://www.ebi.ac.uk/embl/">EMBL Nucleotide Sequence Database</a></li>
+<li><a href="http://www.ncbi.nlm.nih.gov/Genbank/">GenBank</a></li>
+<li><a href="http://www.ncbi.nlm.nih.gov/geo/">Gene Expression Omnibus [GEO]</a></li>
+<li><a href="http://www.rcsb.org/pdb/">Protein Data Bank</a></li>
+<li><a href="http://www.ebi.ac.uk/swissprot/">UniProtKB/Swiss-Prot</a></li>
 </ul>
-
-<p>These numbers will be linked in the published paper to the relevant database entries.</p>
 
 <p>In addition, as much as possible, please provide accession numbers or identifiers for all entities such as genes, proteins, mutants, diseases, etc., for which there is an entry in a public database, for example:</p>
 
 <ul>
-<li><a href="http://www.ensembl.org/index.html" title="Ensembl">Ensembl</a></li>
-<li><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=gene" title="Entrez Gene">Entrez Gene</a></li>
-<li><a href="http://flybase.bio.indiana.edu/" title="FlyBase">FlyBase</a></li>
-
-<li><a href="http://www.ebi.ac.uk/interpro/" title="InterPro">InterPro</a></li>
+<li><a href="http://www.ensembl.org/index.html">Ensembl</a></li>
+<li><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=gene">Entrez Gene</a></li>
+<li><a href="http://flybase.bio.indiana.edu/">FlyBase</a></li>
+<li><a href="http://www.ebi.ac.uk/interpro/">InterPro</a></li>
+<li><a href="http://www.informatics.jax.org/">Mouse Genome Database (MGD)</a></li>
 <li><a href="http://www.ncbi.nlm.nih.gov/entrez/query.fcgi?db=OMIM">Online Mendelian Inheritance in Man (OMIM)</a></li>
-<li><a href="http://www.informatics.jax.org/" title="Mouse Genome Database">Mouse Genome Database (MGD)</a></li>
 </ul>
 
-<p>The accession number should be provided in parentheses after the entity on first use only. This will allow linking to and from established databases and will integrate your article with a broader collection of scientific information.</p>
+<p>Providing accession numbers allows linking to and from established databases and integrates your article with a broader collection of scientific information. Please list all accession numbers directly after the Supporting Information section.</p>
 
 <h3>Ethical Treatment of Research Subjects and Patient Consent</h3>
 <p>All research involving humans and animals must have been approved by the authors' institutional review board or equivalent committee and that board named by the authors. In the case of human participants, informed consent must have been obtained and all clinical investigation must have been conducted according to the principles expressed in the <a href="http://www.wma.net/e/policy/b3.htm" title="World Medical Association Declaration of Helsinki | Ethical Principles for Medical Research Involving Human Subjects">Declaration of Helsinki</a>.  Authors should submit a statement from the ethics committee or institutional review board indicating their approval of the research. We also encourage authors to submit a sample of a patient consent form and may require submission of completed forms on particular occasions.</p>
