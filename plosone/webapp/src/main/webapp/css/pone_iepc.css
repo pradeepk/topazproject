@@ -39,13 +39,14 @@ IE PC fixes
 
 * html .multiple div.btn.close	a		{ margin-right: -16px; }
 
-* html div.response { width: 98%; position: relative; margin: 0;}
+* html div.response { position: relative; margin: 0;}
 * html div.response * { border-color: #ccc; position: relative;}
 * html div.response blockquote { margin: 0; }
-* html div.response div.response { border-right: 1px solid #900; }
+* html div.response div.response { position: relative; }
 * html div.response div.close a { top: -22px; right: 19px;}
 * html div.source { width: auto; }
 * html div.original { margin-bottom: 20px; margin-left: 5px; margin-right: 5px;}
+* html div.response a.icon { position: relative; }
 
 /* Fix bug background color position */
 * html a.bug,
@@ -57,10 +58,18 @@ IE PC fixes
 /* ensures positioning of dropdowns in front of content */
 * html #content { position: relative; z-index: -1; }
 
-/* fixes homepage display bug */
-* html div.block.partner 		{ border-left: 1px solid #ccc; }
-
 /* fixes figure block height bug */
 /* Hides from IE-mac \*/
-* html div.figure {height: 1%;}
+* html div.figure { height: 1%;}
 /* End hide from IE-mac */
+
+* html ul#tabsContainer { margin-bottom: 30px; padding-top: 4px;}
+* html ul#tabsContainer li	{ padding-top: 0; padding-bottom: 0; }
+/* fixes disappearing background image bug */
+* html #home { height: 1% }
+* html html>body #home { height: auto }
+
+/* IE 7 hax */
+*:first-child+html ul#tabsContainer 	{ }
+*:first-child+html ul#tabsContainer li 	{ padding-top: 0; padding-bottom: 0; }
+*:first-child+html ul#tabsContainer li span { padding-top: 14px; padding-bottom: 14px;}

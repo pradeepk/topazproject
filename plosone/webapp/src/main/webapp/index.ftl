@@ -155,7 +155,7 @@ Submit Today</a></li>
 				<a href="http://www.plos.org/cms/node/40"><img src="${freemarker_config.context}/images/home/t_hom_mar_05.PNG" />
 
 				<strong>Reuse</strong>
-				<span class="body">Feel free to be creative with our content.</span></a>
+				<span class="body">Feel free to be creative with our content</span></a>
 			</div>
 			
 			<div class="block ad">
