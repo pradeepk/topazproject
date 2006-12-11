@@ -149,10 +149,10 @@ ul#tabsContainer		{ margin: 0; padding: 5px 0 0 0; }
 ul#tabsContainer li		{ padding: 12px 0; font-size: .9em; border-width: 0;}
 ul#tabsContainer li span { padding: 12px 14px 10px 32px; background: url(../images/pone_home_tabs_span.gif) no-repeat 100% -40px; }
 ul#tabsContainer li.active span { background-position: 100% 0%; color: #000;}
-ul#tabsContainer li				{ cursor: pointer; font-weight: normal; margin: 0; display: inline; color: #444; color: #666; background-position: 0% -40px; background-repeat: no-repeat; background-color: transparent;}
+ul#tabsContainer li				{ cursor: pointer; font-weight: normal; margin: 0; display: inline; color: #444; color: #666; background-position: 0% -40px!important; background-repeat: no-repeat; background-color: transparent;}
 ul#tabsContainer li.published	{ background-image: url(../images/pone_home_mostrecent.gif);}
 ul#tabsContainer li.annotated	{ background-image: url(../images/pone_home_mostannotated.gif); }
-ul#tabsContainer li.active { background-position: 0% 0%; }
+ul#tabsContainer li.active { background-position: 0% 0%!important; }
 div.horizontalTabs		{ position: relative; border-width: 0; margin-top: 14px; padding-bottom: 14px; margin-bottom: 10px;background: url(../images/pone_home_tabcontainer_bg.gif) no-repeat bottom left;}
 .horizontalTabs ul,
 .horizontalTabs ul li	{ margin: 0; padding: 0; font-weight: bold; list-style-image: none;}
@@ -166,5 +166,5 @@ div.horizontalTabs		{ position: relative; border-width: 0; margin-top: 14px; pad
 ul.articles,
 ul.articles li		{ margin: 0; padding: 0; list-style-type: none; }
 ul.articles			{ margin: 0 4px 10px 0;  padding: 10px 10px 0 6px;}
-ul.articles li		{ font-size: .9em; padding: 3px 0 3px 10px;background: url(../images/pone_home_articles_li_bg.gif) no-repeat 0 10px;}
+#home ul.articles li		{ font-size: .9em; padding: 3px 0 3px 10px;background: url(../images/pone_home_articles_li_bg.gif) no-repeat 0 10px;}
 ul.articles			{ margin-top: 0; }

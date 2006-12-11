@@ -323,6 +323,9 @@ div.content ul,
 div.content ol	{ margin: 10px 0 10px 60px; padding: 0; }
 div.content li	{ margin: 0; padding: 0; }
 
+div.static ul li,
+div.content	ul li{ list-style-type: none; background: url(../images/pone_sectionnav_li_bg.gif) no-repeat 0 6px; padding-left: 12px;}
+
 ol.references 	{ margin: 10px 0; padding: 0 10px; }
 ol.references li{ font-size: 1em; padding: 5px; margin: 0; list-style-position: outside; }
 ol.references a.find { font-size: .9em; text-transform: uppercase; font-weight: bold; margin-left: 4px;}
@@ -448,7 +451,6 @@ a:hover.bug.author-active		{ background-color: #f63;}
 
 
 div.beta				{ text-align: center; font-size: .9em; color: #eee; padding: 1px; background: #004263;}
-/*div.beta				{ text-align: left; font-size: .85em; background: url(../images/pone_article_hdr.gif) no-repeat top right; border-width: 1px 0; color: #eee; position: relative; padding: 6px 0 0 6px; height: 28px; vertical-align: middle;}*/
 div.beta a:link,
 div.beta a:visited,
 div.beta a:hover		{ font-weight: bold;color: #fff; }
