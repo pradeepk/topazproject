@@ -458,8 +458,8 @@
 				<xsl:attribute name="title">
 					<xsl:text>Submit your feedback</xsl:text>
 				</xsl:attribute>
-				<xsl:text>report bugs.</xsl:text>
-			</xsl:element>
+				<xsl:text>report bugs</xsl:text>
+			</xsl:element><xsl:text>.</xsl:text>
 		</div>
 
 		<xsl:apply-templates/>
