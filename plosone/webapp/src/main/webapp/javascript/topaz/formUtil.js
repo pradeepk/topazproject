@@ -144,7 +144,7 @@ topaz.formUtil = {
           }
         }
         else if (formObj.elements[i].type == "select-one") {
-          formValueObject[formObj.elements[i][formObj.elements[i].selectedIndex].name] = formObj.elements[i][formObj.elements[i].selectedIndex].value;
+          formValueObject[formObj.elements[i].name] = formObj.elements[i][formObj.elements[i].selectedIndex].value;
         }
         else {
           formValueObject[formObj.elements[i].name] = formObj.elements[i].value;
