@@ -182,6 +182,10 @@
       tofile="${FEDORA_HOME}/server/config/fedora.fcfg"
       overwrite="true"/>
 
+    <copy file="server/fedora.sh"
+      tofile="${FEDORA_HOME}/server/bin/fedora.sh"
+      overwrite="true"/>
+
     <!-- configure mckoi (overwrite with our local copy) -->
     <copy file="mckoi1.0.3/db.conf"
       tofile="${FEDORA_HOME}/server/mckoi1.0.3/db.conf"

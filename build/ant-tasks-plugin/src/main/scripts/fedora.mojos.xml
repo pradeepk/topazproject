@@ -207,7 +207,7 @@
           <name>SRC_SERVER_TAR</name>
           <property>SRC_SERVER_TAR</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/info/fedora/server-distribution/2.1.1-p1/server-distribution-2.1.1-p1.tar</defaultValue>
+          <defaultValue>${settings.localRepository}/info/fedora/server-distribution/2.1.1/server-distribution-2.1.1.tar</defaultValue>
         </parameter>
 
         <parameter>
