@@ -3,10 +3,10 @@
 
 <!-- begin : main content -->
 <div id="content">
-<h2>Sign up for PLoS One</h2>
+<h1>Sign Up for a PLoS Journals Profile</h1>
 	<p>
 		<strong>Thanks for registering!</strong>
-		Please check your email inbox to confirm your registration.
+		Please check your e-mail inbox to confirm your registration.
  
 		<!--
 		<@ww.url includeParams="none" id="emailVerificationURL" action="emailVerification">
@@ -17,7 +17,7 @@
 		-->
 	</p>
 	<br/>
-	<p>Continue to <a href="${plosOneUrl}${plosOneContext}">PLoS ONE</a></p>
+	<p>Continue to <a href="http://www.plosjournals.org" title="PLoS Journals: Peer-reviewed open-access journals from the Public Library of Science">PLoS Journals</a> or to <a href="${plosOneUrl}${plosOneContext}">PLoS ONE</a>.</p>
 </div>
 <!-- end : main contents -->
 

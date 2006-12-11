@@ -3,7 +3,7 @@
 
 <!-- begin : main content -->
 <div id="content">
-<h2>Forgot Your Password?</h2>
+<h1>Forgot Your Password?</h1>
 	<!--<p><strong>Instruction Title   Text.</strong> Additional Instructoins here.</p>-->
 	<p>Field marked with an <span class="required">*</span> are required. </p>
   <@ww.form cssClass="pone-form" method="post" name="forgotPasswordForm" id="forgotPasswordForm" action="forgotPasswordSubmit" title="Forgot Password Form">
@@ -20,5 +20,5 @@
 
 </div>
 <!-- end : main contents -->
-
+<a href="forgotPassword.ftl">forgotPassword.ftl</a>
 <#include "/global/global_bottom.ftl">

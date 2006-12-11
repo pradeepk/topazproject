@@ -3,7 +3,7 @@
 
 <!-- begin : main content -->
 <div id="content">
-<h2>Change Your Password</h2>
+<h1>Change Your Password</h1>
 	<!--<p><strong>Instruction Title   Text.</strong> Additional Instructoins here.</p>-->
 	<p>Field marked with an <span class="required">*</span> are required. </p>
   <@ww.form cssClass="pone-form" method="post" name="changePasswordForm" id="changePasswordForm" action="changePasswordSubmit" title="Change Password Form">

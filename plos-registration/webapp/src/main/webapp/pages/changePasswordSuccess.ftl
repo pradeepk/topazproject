@@ -3,7 +3,7 @@
 
 <!-- begin : main content -->
 <div id="content">
-<h2>Change Your Password</h2>
+<h1>Change Your Password</h1>
 	<p><strong>Your password has been changed successfully</strong></p>
 	<br/>
 	<p>Continue to <a href="${plosOneUrl}${plosOneContext}">PLoS ONE</a></p>

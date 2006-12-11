@@ -3,8 +3,8 @@
 
 <!-- begin : main content -->
 <div id="content">
-<h2>Forgot Your Password?</h2>
-	<p><strong>Password Recovery</strong>  An e-mail has been sent to: <@ww.property value="loginName"/> with instructions on how to reset your password.
+<h1>Forgot Your Password?</h1>
+	<p><strong>Password Recovery</strong>  An email has been sent to: <@ww.property value="loginName"/> with instructions on how to reset your password.
 
 	<!--
 		<@ww.url includeParams="none" id="forgotPasswordEmailURL" action="forgotPasswordVerify">

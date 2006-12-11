@@ -3,7 +3,7 @@
 
 <!-- begin : main content -->
 <div id="content">
-<h2>Sign up for PLoS One </h2>
+<h1>Sign Up for a PLoS Journals Profile</h1>
 	<!--<p><strong>Instruction Title   Text.</strong> Additional Instructoins here.</p>-->
 	<p>Fields marked with an <span class="required">*</span> are required. </p>
 
@@ -18,7 +18,9 @@
       <@ww.password label="Password " name="password1" required="true" tabindex="103" maxlength="255" after=" (Password must be atleast 6 characters)"/>
       <@ww.password label="Please re-type your password " name="password2" required="true" tabindex="104" maxlength="128"/>
 		</ol>
+		<div class="btnwrap">
       <@ww.submit name="submit" value="Submit" tabindex="105"/>
+		</div>
 	</fieldset>
   </@ww.form>
 
