@@ -25,11 +25,11 @@
 			<h6>Commentary</h6>
 			<ol>
 				<#if Session.PLOS_ONE_USER?exists>
-						<li><a href="#" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>
+						<li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here">Add your annotation</a>
 			  <#else>
 						<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>
 			  </#if>
-				<li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn annotations on/off">Turn annotations off</a>
+				<li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn annotations on/off">Hide annotations</a>
 				<!--<li><a href="#" onclick="return topaz.domUtil.swapDisplayMode('toggleAnnotations');" class="expand tooltip" title="Click to turn annotations on/off">Turn annotations on/off</a>-->
 				<!-- begin : expanded block -->
 				<!--	<fieldset>
@@ -68,7 +68,7 @@
 		</div> 
 		<div id="sectionNavTop" class="tools">
 		</div>
-<!--		<div id="dojoDebug"></div>-->
+		<!--<div id="dojoDebug"></div>-->
 	</div>
 	
 	
