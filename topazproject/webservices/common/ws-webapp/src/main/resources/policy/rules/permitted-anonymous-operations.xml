@@ -23,11 +23,15 @@
         AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>
       <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag">
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">annotations:listAnnotations</AttributeValue>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">replies:listReplies</AttributeValue>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">replies:listAllReplies</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">articles:getObjectURL</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">articles:readMetaData</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">articles:listSecondaryObjects</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">articles:getObjectInfo</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">userAccounts:createUser</AttributeValue>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">userAccounts:lookUpUser</AttributeValue>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">profiles:findUsersByProfile</AttributeValue>
       </Apply>
     </Condition>
 
