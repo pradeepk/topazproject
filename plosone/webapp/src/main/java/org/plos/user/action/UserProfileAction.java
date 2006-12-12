@@ -80,6 +80,7 @@ public class UserProfileAction extends UserActionSupport {
     visibilityMapping.put(NAME_GROUP,
                           new String[]{
                                   GIVEN_NAMES,
+                                  UserProfileGrant.DISPLAY_NAME.getFieldName(),
                                   UserProfileGrant.SURNAMES.getFieldName(),
                                   UserProfileGrant.CITY.getFieldName(),
                                   UserProfileGrant.COUNTRY.getFieldName()});
@@ -122,6 +123,7 @@ public class UserProfileAction extends UserActionSupport {
     final PlosOneUser newUser = createPlosOneUser();
 
     try {
+      //If a field is not among the private fields, it is saved as public
       getUserService().setProfile(newUser, getPrivateFields());
     } catch (DisplayNameAlreadyExistsException ex) {
       email = fetchUserEmailAddress();
