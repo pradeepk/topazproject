@@ -52,12 +52,16 @@
 
         <dependencies>
           <dependency>
-            <groupId>org.kowari</groupId>
-            <artifactId>kowari-driver</artifactId>
-            <!-- alternatively, the following should be sufficient too
-            <artifactId>itql</artifactId>
-            -->
-            <version>1.1.0-pre2-p2</version>
+            <groupId>org.mulgara</groupId>
+            <artifactId>mulgara</artifactId>
+            <version>1.0.1-SNAPSHOT</version>
+            <scope>provided</scope>
+          </dependency>
+          <dependency>
+            <groupId>log4j</groupId>
+            <artifactId>log4j</artifactId>
+            <version>1.2.8</version>
+            <scope>provided</scope>
           </dependency>
         </dependencies>
 
@@ -69,7 +73,7 @@
               <goal>java2wsdl</goal>
             </goals>
             <configuration>
-              <classOfPortType>org.kowari.itql.ItqlInterpreterBean</classOfPortType>
+              <classOfPortType>org.mulgara.itql.ItqlInterpreterBean</classOfPortType>
               <methods>
                 <method>executeQueryToString, executeUpdate, setServerURI, beginTransaction, commit, rollback, close</method>
               </methods>
