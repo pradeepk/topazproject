@@ -1,0 +1,75 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+  <modelVersion>4.0.0</modelVersion>
+  <groupId>org.topazproject.packages</groupId>
+  <artifactId>topaz-tools</artifactId>
+  <packaging>pom</packaging>
+  <version>0.5-SNAPSHOT</version>
+  <name>Topaz Tools</name>
+
+  <parent>
+    <groupId>org.topazproject.packages</groupId>
+    <artifactId>packages</artifactId>
+    <version>0.5-SNAPSHOT</version>
+  </parent>
+
+  <dependencies>
+  </dependencies>
+
+  <build>
+    <plugins>
+      <plugin>
+        <artifactId>maven-assembly-plugin</artifactId>
+        <configuration>
+          <descriptors>
+            <descriptor>src/main/assembly/assembly.xml</descriptor>
+          </descriptors>
+        </configuration>
+      </plugin>
+
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>rpm-maven-plugin</artifactId>
+        <version>2.0-alpha-3-SNAPSHOT</version>
+
+        <executions>
+          <execution>
+            <phase>package</phase>
+            <goals>
+              <goal>rpm</goal>
+            </goals>
+          </execution>
+        </executions>
+
+        <configuration>
+          <release>SNAPSHOT</release>
+          <copyright>Educational Community License version 1.0</copyright>
+          <distribution>Topaz Repository Framework</distribution>
+          <group>Applications/Internet</group>
+
+          <mappings>
+            <mapping>
+              <directory>/usr/local/topaz</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+            </mapping>
+            <mapping>
+              <directory>/usr/local/topaz/bin</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+              <sources>
+                <source>
+                  <location>src/main/resources/bin</location>
+                </source>
+              </sources>
+            </mapping>
+          </mappings>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+</project>
