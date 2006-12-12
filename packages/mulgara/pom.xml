@@ -107,10 +107,10 @@
               <groupname>topaz</groupname>
             </mapping>
             <mapping>
-              <directory>/etc/topaz/rc.d</directory>
+              <directory>/etc/rc.d/init.d/</directory>
               <filemode>755</filemode>
-              <username>topaz</username>
-              <groupname>topaz</groupname>
+              <username>root</username>
+              <groupname>root</groupname>
               <sources>
                 <source>
                   <location>src/main/scripts/mulgara</location>

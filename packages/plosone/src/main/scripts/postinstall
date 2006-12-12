@@ -1,4 +1,2 @@
 # Register the PLoS ONE application
-/bin/cp /etc/topaz/rc.d/plosone /etc/init.d/plosone
 /sbin/chkconfig --add plosone
-

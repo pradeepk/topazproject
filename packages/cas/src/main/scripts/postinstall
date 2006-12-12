@@ -1,4 +1,2 @@
 # Register the cas service
-/bin/cp /etc/topaz/rc.d/cas /etc/init.d/cas
 /sbin/chkconfig --add cas
-
