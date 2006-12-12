@@ -91,7 +91,7 @@
             <mapping>
               <directory>/etc/topaz</directory>
               <configuration>true</configuration>
-              <filemode>755</filemode>
+              <filemode>644</filemode>
               <username>topaz</username>
               <groupname>topaz</groupname>
               <sources>
@@ -99,6 +99,13 @@
                   <location>src/main/resources/mulgara.xml</location>
                 </source>
               </sources>
+            </mapping>
+            <mapping>
+              <directory>/etc/topaz</directory>
+              <configuration>true</configuration>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
             </mapping>
             <mapping>
               <directory>/var/log/topaz</directory>
