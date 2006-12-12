@@ -8,6 +8,6 @@ LINK=/usr/local/topaz/$PKG
 [ ! -e $LINK ] && [ -L $LINK ] && rm -f $LINK
 # Recreate it (presumably to some other older/newer version of same package)
 if [ ! -L $LINK ]; then
-  DIR=`find /usr/local/topaz -name '*'"$PKG"'-*' -maxdepth 1 -printf "%TY%Tm%Td%TH%TM%TS %p\n" | sort | head -1 | colrm 1 15`
+  DIR=`ls -td /usr/local/topaz/*"$PKG"-* 2>/dev/null | head -1`
   [ -n "$DIR" ] && ln -s $DIR $LINK
 fi
