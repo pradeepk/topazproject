@@ -1,0 +1,4 @@
+# Register the fedora service
+/sbin/chkconfig --add fedora
+# Fixup perms
+chmod a+x /usr/local/topaz/fedora-0.5-SNAPSHOT/*/bin/*
