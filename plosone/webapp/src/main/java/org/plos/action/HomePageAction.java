@@ -14,8 +14,13 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.article.service.ArticleWebService;
+import static org.topazproject.ws.article.Article.ST_ACTIVE;
+import static org.topazproject.ws.article.Article.ST_DISABLED;
 import org.topazproject.ws.article.ArticleInfo;
 import org.topazproject.ws.article.ObjectInfo;
+
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+import com.opensymphony.oscache.base.NeedsRefreshException;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -40,6 +45,12 @@ public class HomePageAction extends BaseActionSupport {
   private String[] categoryNames;
   private ArticleInfo[][] articlesByCategory;
   private boolean categoriesAreInitialized = false;
+  private GeneralCacheAdministrator articleCacheAdministrator;
+  private static final String WEEK_ARTICLE_CACHE_KEY = "WEEK_ARTICLE_LIST";
+  private static final int WEEK_ARTICLE_CACHE_DURATION = 7200; //2hrs  
+  private static final String MOST_COMMENTED_CACHE_KEY = "MOST_COMMENTED_LIST";
+  private static final int MOST_COMMENTED_CACHE_DURATION = 3600;  //1 hr
+  
   
   /**
    * This execute method always returns SUCCESS
@@ -61,13 +72,39 @@ public class HomePageAction extends BaseActionSupport {
   private ArticleInfo[] getLastWeeksArticles() {
     if (lastWeeksArticles == null) {
       try {
-        Date weekAgo = new Date();
-        weekAgo.setTime(weekAgo.getTime() - ONE_WEEK);
-        //TODO: need to change the state to 0 once admin app is in place
-        lastWeeksArticles = articleWebService.getArticleInfos(weekAgo.toString(), null, null, null, new int[]{1/*0*/}, false);
-      } catch (RemoteException re) {
-        log.error("Could not retrive the most recent articles", re);
-        lastWeeksArticles = new ArticleInfo[0];
+        // Get from the cache
+
+        lastWeeksArticles= (ArticleInfo[]) 
+          articleCacheAdministrator.getFromCache(WEEK_ARTICLE_CACHE_KEY, WEEK_ARTICLE_CACHE_DURATION);
+        if (log.isDebugEnabled()) {
+          log.debug("retrieved last week's articles from cache");
+        }
+      } catch (NeedsRefreshException nre) {
+        boolean updated = false;
+        try {
+          //  Get the value from TOPAZ
+          Date weekAgo = new Date();
+          weekAgo.setTime(weekAgo.getTime() - ONE_WEEK);
+          //TODO: need to change the state to 0 once admin app is in place
+          if (log.isDebugEnabled()){
+            log.debug("retrieving last week's articles from TOPAZ");
+          }
+          lastWeeksArticles = articleWebService.getArticleInfos(weekAgo.toString(), null, null,
+                              null, new int[]{ST_DISABLED/*ST_ACTIVE*/}, false);
+          
+          // Store in the cache
+          articleCacheAdministrator.putInCache(WEEK_ARTICLE_CACHE_KEY, lastWeeksArticles);
+          updated = true;
+        } catch (RemoteException re) {
+          log.error("Could not retrive the most recent articles", re);
+          lastWeeksArticles = new ArticleInfo[0];
+        } finally {
+          if (!updated) {
+              // It is essential that cancelUpdate is called if the
+              // cached content could not be rebuilt
+              articleCacheAdministrator.cancelUpdate(WEEK_ARTICLE_CACHE_KEY);
+          }
+        }
       }
     }    
     return lastWeeksArticles;
@@ -78,7 +115,7 @@ public class HomePageAction extends BaseActionSupport {
    * Return an array of ObjectInfos representing the maxArticles most commented on articles
    * 
    * @param maxArticles
-   * @return
+   * @return 
    */
   public ObjectInfo[] getCommentedOnArticles(int maxArticles) {
     if (log.isDebugEnabled()){
@@ -86,18 +123,37 @@ public class HomePageAction extends BaseActionSupport {
     }
     ObjectInfo[] retArray = new ObjectInfo[0];
     try {
-      retArray = articleWebService.getCommentedArticles(maxArticles);
-      /*if (log.isDebugEnabled()){
-        for (int i = 0; i < retArray.length; i++) {
-          log.debug("URI: " + retArray[i].getUri() + " title: " + retArray[i].getTitle());
+      // Get from the cache
+      retArray= (ObjectInfo[]) 
+        articleCacheAdministrator.getFromCache(MOST_COMMENTED_CACHE_KEY+maxArticles, MOST_COMMENTED_CACHE_DURATION);
+      if (log.isDebugEnabled()) {
+        log.debug("retrieved most commented from cache");
+      }
+    } catch (NeedsRefreshException nre) {
+      boolean updated = false;
+      try {
+        //  Get the value from TOPAZ
+        //TODO: need to change the state to 0 once admin app is in place
+        if (log.isDebugEnabled()){
+          log.debug("retrieving most commented articles from TOPAZ");
         }
-      }*/
-    } catch (RemoteException re){
-      log.error("Could not retrieve most commented on Articles", re);
-      retArray = new ObjectInfo[0];
+        retArray = articleWebService.getCommentedArticles(maxArticles);        
+        // Store in the cache
+        articleCacheAdministrator.putInCache(MOST_COMMENTED_CACHE_KEY+maxArticles, retArray);
+        updated = true;
+      } catch (RemoteException re) {
+        log.error("Could not retrieve most commented on Articles", re);
+      } finally {
+        if (!updated) {
+            // It is essential that cancelUpdate is called if the
+            // cached content could not be rebuilt
+            articleCacheAdministrator.cancelUpdate(MOST_COMMENTED_CACHE_KEY);
+        }
+      }
     }
     return retArray;
-  }
+  }    
+
   /**
    * Takes the articles for the last week and sets the categoryNames and
    * articlesByCategory values.  
@@ -212,5 +268,19 @@ public class HomePageAction extends BaseActionSupport {
       returnArray[i] = iter.next();
     }
     return returnArray;
+  }
+
+  /**
+   * @return Returns the articleCacheAdministrator.
+   */
+  public GeneralCacheAdministrator getArticleCacheAdministrator() {
+    return articleCacheAdministrator;
+  }
+
+  /**
+   * @param articleCacheAdministrator The articleCacheAdministrator to set.
+   */
+  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
+    this.articleCacheAdministrator = articleCacheAdministrator;
   }
 }
