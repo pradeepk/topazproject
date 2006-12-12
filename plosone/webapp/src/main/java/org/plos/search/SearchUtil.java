@@ -133,10 +133,10 @@ public class SearchUtil {
 
   private static String getContentWithinFieldTags(final String singleLine) {
     final Matcher matcher = patternToMatchFieldNode.matcher(singleLine);
-      if (matcher.find()) {
-        //return the first group other than the entire pattern 
-          return matcher.group(1);
-      }
-      return null;
+    if (matcher.find()) {
+      //return the first group other than the entire pattern
+      return matcher.group(1);
+    }
+    return null;
   }
 }
