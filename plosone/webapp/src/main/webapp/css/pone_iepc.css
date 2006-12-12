@@ -45,6 +45,8 @@ IE PC fixes
 /* ensures positioning of dropdowns in front of content */
 * html #content { position: relative; z-index: -1; }
 
+* html div.response div.close a	{ top: 20px;}
+
 /* fixes figure block height bug */
 /* Hides from IE-mac \*/
 * html div.figure { height: 1%;}
