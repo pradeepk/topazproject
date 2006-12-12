@@ -121,7 +121,7 @@ public class UserService extends BaseConfigurableService {
         log.debug("trying to get from Fedora:" + topazUserId);
       }
         
-      PlosOneUser pou = getUserByTopazId (topazUserId);
+      PlosOneUser pou = getPlosOneUserWithProfileLoaded(topazUserId);
       retVal = pou.getDisplayName();
     }
     return retVal;
@@ -136,15 +136,20 @@ public class UserService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    */
   public PlosOneUser getUserByTopazId(final String topazUserId) throws ApplicationException {
-    final PlosOneUser pou = new PlosOneUser();
-    pou.setUserProfile(getProfile(topazUserId));
-    pou.setUserId(topazUserId);
+    final PlosOneUser pou = getPlosOneUserWithProfileLoaded(topazUserId);
     
     final UserPreference[] userPrefs = getPreferences(applicationId, topazUserId);
     if (null != userPrefs) {
       pou.setUserPrefs(userPrefs);
     }
     userCacheAdministrator.putInCache(topazUserId, pou.getDisplayName());
+    return pou;
+  }
+
+  private PlosOneUser getPlosOneUserWithProfileLoaded(final String topazUserId) throws ApplicationException {
+    final PlosOneUser pou = new PlosOneUser();
+    pou.setUserProfile(getProfile(topazUserId));
+    pou.setUserId(topazUserId);
     return pou;
   }
 
