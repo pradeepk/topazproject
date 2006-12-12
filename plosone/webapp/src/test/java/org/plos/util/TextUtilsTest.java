@@ -36,4 +36,21 @@ public class TextUtilsTest extends TestCase {
     assertEquals("ftp://www.google.com", TextUtils.makeValidUrl("ftp://www.google.com"));
     assertEquals("https://www.google.com", TextUtils.makeValidUrl("https://www.google.com"));
   }
+
+  public void testMaliciousContent() {
+    assertTrue(TextUtils.isPotentiallyMalicious("<"));
+    assertTrue(TextUtils.isPotentiallyMalicious("something<script"));
+    assertTrue(TextUtils.isPotentiallyMalicious("something>"));
+    assertTrue(TextUtils.isPotentiallyMalicious("someth&ing"));
+    assertTrue(TextUtils.isPotentiallyMalicious("someth%ing"));
+    assertTrue(TextUtils.isPotentiallyMalicious(">something"));
+    assertTrue(TextUtils.isPotentiallyMalicious("s%omething"));
+    assertTrue(TextUtils.isPotentiallyMalicious("somet)hing"));
+    assertTrue(TextUtils.isPotentiallyMalicious("(something"));
+    assertTrue(TextUtils.isPotentiallyMalicious("someth'ing+"));
+    assertTrue(TextUtils.isPotentiallyMalicious("somethin\"g"));
+
+    assertFalse(TextUtils.isPotentiallyMalicious("something."));
+
+  }
 }

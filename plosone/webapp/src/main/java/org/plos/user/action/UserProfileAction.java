@@ -136,11 +136,10 @@ public class UserProfileAction extends UserActionSupport {
   }
 
   private String makeValidUrl(final String url) throws Exception {
-    String finalUrl = url;
-    if (StringUtils.isEmpty(finalUrl) || url.equalsIgnoreCase(HTTP_PREFIX)) {
+    if (StringUtils.isEmpty(url) || url.equalsIgnoreCase(HTTP_PREFIX)) {
       return StringUtils.EMPTY;
     }
-    return TextUtils.makeValidUrl(finalUrl);
+    return TextUtils.makeValidUrl(url);
   }
 
   public String executeRetrieveUserProfile() throws Exception {
@@ -290,11 +289,23 @@ public class UserProfileAction extends UserActionSupport {
       isValid = false;
     }
 
-    if (isProfane()) {
+    if (profanityCheckFailed()) {
+      isValid = false;
+    }
+
+    if (maliciousContentFound()) {
       isValid = false;
     }
 
     return isValid;
+  }
+
+  private boolean maliciousContentFound() {
+    if (TextUtils.isPotentiallyMalicious(displayName)) {
+      addFieldError("displayName", "Invalid characters found in field");
+      return true;
+    }
+    return false;
   }
 
   private boolean isInvalidUrl(final String url) {
@@ -304,8 +315,20 @@ public class UserProfileAction extends UserActionSupport {
     return !TextUtils.verifyUrl(url) && !TextUtils.verifyUrl(HTTP_PREFIX + url);
   }
 
-  private boolean isProfane() {
+  private boolean profanityCheckFailed() {
     boolean isProfane = false;
+    final String[][] fieldsToValidate = getFieldMappings();
+
+    for (final String[] field : fieldsToValidate) {
+      if (isProfane(field[0], field[1])) {
+        isProfane = true;
+      }
+    }
+
+    return isProfane;
+  }
+
+  private String[][] getFieldMappings() {
     final String[][] toValidateArray = new String[][]{
             {"displayName", displayName},
             {"realName", realName},
@@ -323,23 +346,16 @@ public class UserProfileAction extends UserActionSupport {
             {"city", city},
             {"country", country},
     };
-
-    for (final String[] field : toValidateArray) {
-      if (!isValidFieldForProfanity(field[0], field[1])) {
-        isProfane = true;
-      }
-    }
-
-    return isProfane;
+    return toValidateArray;
   }
 
-  private boolean isValidFieldForProfanity(final String fieldName, final String fieldValue) {
+  private boolean isProfane(final String fieldName, final String fieldValue) {
     final List<String> profanityValidationMessages = profanityCheckingService.validate(fieldValue);
     if (profanityValidationMessages.size() > 0 ) {
       addFieldError(fieldName, StringUtils.join(profanityValidationMessages.toArray(), ", "));
-      return false;
+      return true;
     }
-    return true;
+    return false;
   }
 
   /**

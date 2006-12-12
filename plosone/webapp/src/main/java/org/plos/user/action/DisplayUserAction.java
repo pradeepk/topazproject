@@ -43,7 +43,7 @@ public class DisplayUserAction extends UserActionSupport {
     if (log.isDebugEnabled()) {
       log.debug("retrieving user profile for: " + userId);
     }
-    pou = getUserService().getUserWithProfileLoaded(userId);
+    pou = new PlosOneUserDecorator(getUserService().getUserWithProfileLoaded(userId));
     return SUCCESS;
   }
 

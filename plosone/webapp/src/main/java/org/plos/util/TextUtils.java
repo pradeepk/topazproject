@@ -9,13 +9,9 @@
  */
 package org.plos.util;
 
-import org.apache.commons.lang.StringEscapeUtils;
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.validator.GenericValidator;
-import org.apache.commons.validator.UrlValidator;
+import org.apache.commons.lang.StringEscapeUtils;
 import org.w3c.dom.Node;
-import org.plos.ApplicationException;
 
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -23,16 +19,16 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
-import java.net.URL;
 import java.net.MalformedURLException;
-
-import com.opensymphony.xwork.validator.validators.URLValidator;
+import java.net.URL;
+import java.util.regex.Pattern;
 
 /**
  * Provides some useful text manipulation functions.
  */
 public class TextUtils {
   public static final String HTTP_PREFIX = "http://";
+  private static final Pattern maliciousContentPattern = Pattern.compile("[<>\"\'%;()&+]");
 
   /**
    * Linkify any possible web links excepting email addresses
@@ -108,5 +104,15 @@ public class TextUtils {
       }
     }
     return finalUrl;
+  }
+
+  /**
+   * Check if the input text is potentially malicious. For more details read;
+   * http://www.dwheeler.com/secure-programs/Secure-Programs-HOWTO/cross-site-malicious-content.html
+   * @param text text
+   * @return boolean
+   */
+  public static boolean isPotentiallyMalicious(final String text) {
+    return maliciousContentPattern.matcher(text).find();
   }
 }
