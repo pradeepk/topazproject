@@ -71,12 +71,16 @@ public class SecondaryObjectAction extends BaseActionSupport {
           figTables.add(s);
           try {
             allTransformed = fetchArticleService.getTranformedSecondaryObjectDescription(s.getDescription());
+            if (log.isDebugEnabled()){
+              log.debug("Transformed figure captions for article: " + uri);
+              log.debug(allTransformed);              
+            }
             elems = allTransformed.split("END_TITLE");
             if (elems.length > 1) {
               s.setTransformedCaptionTitle(elems[0]);
               s.setPlainCaptionTitle(elems[0].replaceAll("<.*>",""));
               s.setTransformedDescription(elems[1]);
-            } else if (elems.length == 0) {
+            } else if (elems.length == 1) {
               s.setTransformedDescription(elems[0]);              
             }
           } catch (Exception e) {
