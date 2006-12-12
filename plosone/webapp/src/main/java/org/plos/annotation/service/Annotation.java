@@ -9,18 +9,15 @@
  */
 package org.plos.annotation.service;
 
-import java.util.Date;
-
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-
-import org.topazproject.ws.annotation.AnnotationInfo;
 import org.plos.ApplicationException;
-import org.plos.user.PlosOneUser;
 import org.plos.user.service.UserService;
 import org.plos.util.DateParser;
 import org.plos.util.InvalidDateException;
+import org.topazproject.ws.annotation.AnnotationInfo;
+
+import java.util.Date;
 
 /**
  * Plosone wrapper around the AnnotationsInfo from topaz service. It provides
@@ -118,11 +115,12 @@ public abstract class Annotation extends BaseAnnotation {
    */
   public String getCreatorName() {
     if (creatorName == null) {
+      final String creator = getCreator();
       try {
-        log.debug("getting User Object for id: " + getCreator());
-        creatorName = userService.getUsernameByTopazId(getCreator());
+        log.debug("getting User Object for id: " + creator);
+        creatorName = userService.getUsernameByTopazId(creator);
       } catch (ApplicationException ae) {
-        creatorName = getCreator();
+        creatorName = creator;
       }
     }
     return creatorName;
