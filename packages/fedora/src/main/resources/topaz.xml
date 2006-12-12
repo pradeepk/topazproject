@@ -6,7 +6,7 @@
     <server>
       <hostname>FQHN</hostname>
       <https-port>8443</https-port>
-      <http-port>8008</https-port>
+      <http-port>8008</http-port>
     </server>
 
     <!-- Configuration to talk to CAS -->
