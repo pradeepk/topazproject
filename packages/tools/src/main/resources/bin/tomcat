@@ -26,7 +26,7 @@
 USER="topaz"
 TOPAZ_LOCAL="/usr/local/topaz"
 [ -z "$CATALINA_HOME" ] && CATALINA_HOME=
-[ -z "$JAVA_HOME" ] && JAVA_HOME="$TOPAZ_LOCAL/java"
+[ -z "$JAVA_HOME" ] && [ -d $TOPAZ_LOCAL/java ] && JAVA_HOME="$TOPAZ_LOCAL/java"
 [ -z "$TOMCAT_OPTS" ] && TOMCAT_OPTS="-Xmx400m -XX:MaxPermSize=256m"
 [ -z "$STARTUP" ] && STARTUP="jsvc"
 VARDIR="/var"
@@ -54,6 +54,11 @@ fedora_PORT=9090
 #
 # Should not need to modify stuff below here
 #
+
+# Verify that JAVA_HOME is set and exists
+[ -z "$JAVA_HOME" ] && echo "JAVA_HOME must be set" && exit 1
+[ ! -d "$JAVA_HOME" ] && echo "JAVA_HOME ($JAVA_HOME) invalid" && exit 1
+[ ! -e "$JAVA_HOME/lib/tools.jar" ] && echo "JAVA_HOME ($JAVA_HOME) is not JDK (no tools.jar)" && exit 1
 
 # Optionally change basename (used mostly for testing)
 if [ "--basename" == "$1" -o "-b" == "$1" ]; then
