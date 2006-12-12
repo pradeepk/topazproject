@@ -99,7 +99,7 @@
               acceptCount="100" scheme="https" secure="true"
               clientAuth="false" sslProtocol="TLS"
                keystoreType="jks"
-               keystoreFile="/usr/local/topaz/server.ks"
+               keystoreFile="/etc/topaz/keystore.jks"
                keystorePass="secret" />
 
     <!-- Define an AJP 1.3 Connector on port 8009 -->
