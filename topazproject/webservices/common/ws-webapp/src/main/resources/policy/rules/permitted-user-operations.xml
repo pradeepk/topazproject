@@ -23,6 +23,9 @@
         AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>
       <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-bag">
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">annotations:createAnnotation</AttributeValue>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">annotations:setAnnotationState</AttributeValue>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">replies:createReply</AttributeValue>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">replies:setReplyState</AttributeValue>
       </Apply>
     </Condition>
 
