@@ -13,7 +13,7 @@
       </@ww.url>
 			<li><a href="${articleArticleRepPDF}" class="pdf" title="Download PDF">Download Article PDF</a></li>
       <@ww.url id="emailArticleURL" namespace="/article" action="emailArticle" articleURI="${articleURI}"/>
-      <li><@ww.a href="%{emailArticleURL}"  cssClass="email" title="Email This Article to a Friend or Colleague">Email this Article</@ww.a></li>
+      <li><@ww.a href="%{emailArticleURL}"  cssClass="email" title="E-mail This Article to a Friend or Colleague">E-mail this Article</@ww.a></li>
 		<li><a href="http://www.plos.org/journals/print.html" title="Order reprinted versions of this article" class="reprints icon">Order Reprints</a></li>
       <li><a href="#" onclick="window.print();return false;" class="print last" title="Print this article">Print this Article</a></li>
 		</ul>

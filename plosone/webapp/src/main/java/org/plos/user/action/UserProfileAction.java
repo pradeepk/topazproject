@@ -127,7 +127,7 @@ public class UserProfileAction extends UserActionSupport {
       getUserService().setProfile(newUser, getPrivateFields());
     } catch (DisplayNameAlreadyExistsException ex) {
       email = fetchUserEmailAddress();
-      addFieldError("displayName", "User name is already in use. Please select a different display name");
+      addFieldError("displayName", "Username is already in use. Please select a different username");
       return INPUT;
     }
 
@@ -282,11 +282,11 @@ public class UserProfileAction extends UserActionSupport {
       isValid = false;
     }
     if (isInvalidUrl(homePage)) {
-      addFieldError("homePage", "Home page url is not valid");
+      addFieldError("homePage", "Home page URL is not valid");
       isValid = false;
     }
     if (isInvalidUrl(weblog)) {
-      addFieldError("weblog", "Weblog url is not valid");
+      addFieldError("weblog", "Weblog URL is not valid");
       isValid = false;
     }
 

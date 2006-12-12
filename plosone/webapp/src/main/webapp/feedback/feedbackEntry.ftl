@@ -6,7 +6,7 @@
 			<legend>Feedback</legend>
 			<ol>
   	    <@ww.textfield label="Name: " name="name" size="50" required="true"/>
-    	  <@ww.textfield label="Email Address: " name="fromEmailAddress" size="50" required="true"/>
+    	  <@ww.textfield label="E-mail Address: " name="fromEmailAddress" size="50" required="true"/>
       	<@ww.textfield label="Subject: " name="subject" required="true" size="50"/>
 	      <@ww.textarea label="Message" name="note" required="true" cols="50" rows="5" />
 			</ol>

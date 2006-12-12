@@ -86,19 +86,19 @@ public class EmailArticleAction extends UserActionSupport {
       isValid = false;
     }
     if (StringUtils.isBlank(emailFrom)) {
-      addFieldError("emailFrom", "Your email address cannot be empty");
+      addFieldError("emailFrom", "Your e-mail address cannot be empty");
       isValid = false;
     }
     if (!EmailValidator.getInstance().isValid(emailFrom)) {
-      addFieldError("emailFrom", "Invalid email address");
+      addFieldError("emailFrom", "Invalid e-mail address");
       isValid = false;
     }
     if (StringUtils.isBlank(emailTo)) {
-      addFieldError("emailTo", "To email address cannot be empty");
+      addFieldError("emailTo", "To e-mail address cannot be empty");
       isValid = false;
     }
     if (!EmailValidator.getInstance().isValid(emailTo)) {
-      addFieldError("emailTo", "Invalid email address");
+      addFieldError("emailTo", "Invalid e-mail address");
       isValid = false;
     }
     if (StringUtils.isBlank(senderName)) {

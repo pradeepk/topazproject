@@ -34,10 +34,10 @@
 <p>As a condition to your use of the PLoS Sites, you agree not to:</p>
 
 <ul>
-	<li>upload, post, email, transmit, or otherwise make available any information, materials, or other content that is illegal, harmful, threatening, abusive, harassing, defamatory, obscene, pornographic, or offensive; or that infringes another's rights, including any intellectual property rights;</li>
+	<li>upload, post, e-mail, transmit, or otherwise make available any information, materials, or other content that is illegal, harmful, threatening, abusive, harassing, defamatory, obscene, pornographic, or offensive; or that infringes another's rights, including any intellectual property rights;</li>
 
 	<li>impersonate any person or entity or falsely state or otherwise misrepresent your affiliation with a person or entity; or obtain, collect, store, or modify personal information about other users;</li>
-	<li>upload, post, email, transmit, or otherwise make available any unsolicited or unauthorized advertising, promotional materials, "junk mail," "spam," "chain letters," "pyramid schemes," or any other form of solicitation;</li>
+	<li>upload, post, e-mail, transmit, or otherwise make available any unsolicited or unauthorized advertising, promotional materials, "junk mail," "spam," "chain letters," "pyramid schemes," or any other form of solicitation;</li>
 	<li>modify, adapt, or hack the PLoS Sites or falsely imply that some other site is associated with the PLoS Sites or PLoS; or</li>
 	<li>use the PLoS Sites for any illegal or unauthorized purpose.  You must not, in the use of the PLoS Sites, violate any laws in your jurisdiction (including but not limited to copyright laws).</li>
 </ul>

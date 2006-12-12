@@ -39,11 +39,11 @@ public class UserAlertsAction extends UserActionSupport {
    */
   public String saveAlerts() throws Exception {
     if (StringUtils.isEmpty(alertEmailAddress)) {
-      addFieldError("alertEmailAddress", "Email address for alerts is required.");
+      addFieldError("alertEmailAddress", "E-mail address for alerts is required.");
       return INPUT;
     }
     if (!EmailValidator.getInstance().isValid(alertEmailAddress)) {
-      addFieldError("alertEmailAddress", "Invalid email address");
+      addFieldError("alertEmailAddress", "Invalid e-mail address");
       return INPUT;
     }
 
