@@ -94,9 +94,9 @@
   <!-- Postgres datasource -->
   <bean id="registrationDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
     <property name="driverClassName" value="org.postgresql.Driver"/>
-    <property name="url" value="jdbc:postgresql://localhost/template1"/>
+    <property name="url" value="jdbc:postgresql://localhost/plosdb"/>
     <property name="username" value="plosone"/>
-    <property name="password" value="plosone"/>
+    <property name="password" value="loot2_debonAir"/>
   </bean>
 
   <!-- Useful link:
