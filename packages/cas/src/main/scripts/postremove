@@ -1,2 +1,2 @@
 # Post remove script
-rm /etc/init.d/cas
+rm /etc/rc.d/init.d/cas

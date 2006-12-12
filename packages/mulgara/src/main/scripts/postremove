@@ -1,2 +1,2 @@
 # Post remove script
-rm /etc/init.d/mulgara
+rm /etc/rc.d/init.d/mulgara
