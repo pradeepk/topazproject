@@ -42,11 +42,8 @@ Submit Today</a></li>
 						  <#include "article/recentArticles.ftl">
 						</div>
 					</div>
-						
-						
-
-
-<div class="block feature">
+	
+	<div class="block feature">
 <h2>New and Noted</h2>
 <div>
 	<@ww.url namespace="/article" includeParams="none" id="articleURL1" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000093"/>
@@ -56,7 +53,7 @@ Submit Today</a></li>
 	<@ww.url namespace="/article" includeParams="none" id="articleURL5" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000051"/>
 	<@ww.url namespace="/article" includeParams="none" id="articleURL6" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000039"/>
 
-<a href="${articleURL1}" title="Read Open-Access Article">Wnt and Hedgehog Are Critical Mediators of Cigarette Smoke-Induced Lung Cancer</a><p>The molecular basis of cigarette-induced lung cancer is poorly understood. This paper shows that genes more normally associated with the patterning of embryos may be involved in opening new avenues for the development of therapies.</p>
+<a href="${articleURL1}" title="Read Open-Access Article">Wnt and Hedgehog Are Critical Mediators of Cigarette Smoke-Induced Lung Cancer</a><p>The molecular basis of cigarette-induced lung cancer is poorly understood. This paper shows that genes more normally associated with the patterning of embryos may be involved. This may open new avenues for the development of therapies.</p>
 
 <a href="${articleURL2}" title="Read Open-Access Article">The Syntax and Meaning of Wild Gibbon Songs</a><p>Human languages are subtle. Identical words can mean different things when spoken in a different order. This paper shows that the same is true for gibbons. When threatened they change the structure of their calls, warning individuals within earshot of the danger.</p>
 
