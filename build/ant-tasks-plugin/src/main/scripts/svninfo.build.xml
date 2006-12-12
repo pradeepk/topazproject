@@ -11,8 +11,6 @@
 -->
 <project xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
-  <dirname property="outputPath.dir" file="${outputPath}"/>
-  
   <target name="get-svnext">
     <!-- Define extension for svn -->
     <condition property="svnext" value="">
@@ -25,7 +23,9 @@
   </target>
 
   <target name="svninfo" depends="get-svnext">
+    <dirname property="outputPath.dir" file="${outputPath}"/>
     <mkdir dir="${outputPath.dir}"/>
+
     <echo message="svnversion: " file="${outputPath}" append="false"/>
     <exec dir="${directory}" executable="svnversion${svnext}" output="${outputPath}" append="true">
       <arg line="."/>
