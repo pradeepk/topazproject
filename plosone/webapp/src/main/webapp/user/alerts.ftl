@@ -12,7 +12,7 @@
    <#assign tabId = "">
 </#if>
 <strong>Select which E-mail content alerts you would like to receive.</strong>
-	<p>Field marked with an <span class="required">*</span> are required. </p>
+	<p>Fields marked with <span class="required">*</span> are required. </p>
 
   <@ww.form action="saveUserAlerts" namespace="/user/secure" method="post" cssClass="pone-form" method="post" title="Alert Form" name="userAlerts">
 
