@@ -51,7 +51,7 @@ public class RegisterAction extends BaseAction {
 
     } catch (final UserAlreadyExistsException e) {
       log.debug("UserAlreadyExists:"+loginName1, e);
-      addFieldError("loginName1", "User already exists for the given email address");
+      addFieldError("loginName1", "User already exists for the given e-mail address");
       return ERROR;
     } catch (final ApplicationException e) {
       log.error("Application error", e);
@@ -73,10 +73,10 @@ public class RegisterAction extends BaseAction {
   /**
    * @return loginName1.
    */
-  @EmailValidator(message="You must enter a valid email")
-  @RequiredStringValidator(message="You must enter an email address")
+  @EmailValidator(message="You must enter a valid e-mail")
+  @RequiredStringValidator(message="You must enter an e-mail address")
   @FieldExpressionValidator(fieldName="loginName2", expression = "loginName1==loginName2", message="Email addresses must match")
-  @StringLengthFieldValidator(maxLength = "256", message="Email must be less than 256")
+  @StringLengthFieldValidator(maxLength = "256", message="E-mail must be less than 256")
   public String getLoginName1() {
     return loginName1;
   }

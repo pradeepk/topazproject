@@ -3,8 +3,8 @@
 
 <!-- begin : main content -->
 <div id="content">
-<h1>Email Address Verification</h1>
-	<p><strong>Your email address has been successfully verified.</strong></p>
+<h1>E-mail Address Verification</h1>
+	<p><strong>Your e-mail address has been successfully verified.</strong></p>
 	<br/>
 	<p><a href="${plosOneUrl}${plosOneContext}/user/secure/secureRedirect.action?goTo=%2Fhome.action">Login to PLoS ONE</a>.</p>
 </div>

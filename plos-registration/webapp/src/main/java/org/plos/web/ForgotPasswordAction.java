@@ -43,7 +43,7 @@ public class ForgotPasswordAction extends BaseAction {
       }
 
     } catch (final NoUserFoundWithGivenLoginNameException noUserEx) {
-      final String message = "No user found for the given email address:" + loginName;
+      final String message = "No user found for the given e-mail address:" + loginName;
       addActionError(noUserEx.getMessage());
       log.trace(message, noUserEx);
       addFieldError("loginName", message);
@@ -60,8 +60,8 @@ public class ForgotPasswordAction extends BaseAction {
   /**
    * @return loginName
    */
-  @EmailValidator(type=ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid email address")
-  @RequiredStringValidator(message="Email address is required")
+  @EmailValidator(type=ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid e-mail address")
+  @RequiredStringValidator(message="E-mail address is required")
   public String getLoginName() {
     return loginName;
   }

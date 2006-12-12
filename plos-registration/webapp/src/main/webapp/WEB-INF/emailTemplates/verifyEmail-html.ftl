@@ -2,7 +2,7 @@
 <body>
 Thank you <b>${user.loginName}</b> for registering with PLoS.<br/>
 
-Please click on this link to verify your email address:
+Please click on this link to verify your e-mail address:
 
 <a href="${url}?loginName=${user.loginName}&emailVerificationToken=${user.emailVerificationToken}">Verification link</a>
 <br/><br/>

@@ -13,8 +13,8 @@
   <fieldset>
 		<legend>Registration</legend>
 		<ol>
-      <@ww.textfield label="Email " name="loginName1" required="true" tabindex="101" maxlength="256"/>
-      <@ww.textfield label="Please re-type your email " name="loginName2" required="true" tabindex="102" maxlength="256"/>
+      <@ww.textfield label="E-mail " name="loginName1" required="true" tabindex="101" maxlength="256"/>
+      <@ww.textfield label="Please re-type your e-mail " name="loginName2" required="true" tabindex="102" maxlength="256"/>
       <@ww.password label="Password " name="password1" required="true" tabindex="103" maxlength="255" after=" (Password must be at least 6 characters)"/>
       <@ww.password label="Please re-type your password " name="password2" required="true" tabindex="104" maxlength="128"/>
 		</ol>

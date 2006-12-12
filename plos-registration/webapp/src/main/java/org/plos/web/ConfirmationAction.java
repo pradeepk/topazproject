@@ -37,12 +37,12 @@ public class ConfirmationAction extends BaseAction {
       log.trace(message, e);
       return ERROR;
     } catch (final VerificationTokenInvalidException e) {
-      final String message = "Verification token invalid:"+ emailVerificationToken+", email:" + loginName;
+      final String message = "Verification token invalid:"+ emailVerificationToken+", e-mail:" + loginName;
       addActionError(message);
       log.trace(message, e);
       return ERROR;
     } catch (final NoUserFoundWithGivenLoginNameException e) {
-      final String message = "No user found with given email:"+ loginName;
+      final String message = "No user found with given e-mail:"+ loginName;
       addActionError(message);
       log.trace(message, e);
       return ERROR;
@@ -82,8 +82,8 @@ public class ConfirmationAction extends BaseAction {
   /**
    * @return loginName
    */
-  @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid email address")
-  @RequiredStringValidator(message="Email address not specified")
+  @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid e-mail address")
+  @RequiredStringValidator(message="E-mail address not specified")
   public String getLoginName() {
     return loginName;
   }

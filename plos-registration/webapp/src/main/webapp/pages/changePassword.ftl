@@ -11,7 +11,7 @@
 	<fieldset>
 		<legend>Change your password</legend>
 		<ol class="field-list">
-    	<@ww.textfield name="loginName" label="Email " required="true" id="email" tabindex="101" maxlength="256"/>
+    	<@ww.textfield name="loginName" label="E-mail " required="true" id="email" tabindex="101" maxlength="256"/>
       <@ww.password name="oldPassword" label="Old password " required="true" id="oldPassword" tabindex="102" maxlength="255"/>
       <@ww.password name="newPassword1" label="New password " required="true" id="newPassword1" tabindex="103" maxlength="255" after=" (Password must be at least 6 characters)"/>
       <@ww.password name="newPassword2" label="Please re-type your new password " required="true" id="newPassword2" tabindex="104" maxlength="255" />

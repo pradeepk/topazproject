@@ -35,7 +35,7 @@ public class ChangePasswordAction extends BaseAction {
       registrationService.changePassword(loginName, oldPassword, newPassword1);
 
     } catch (final NoUserFoundWithGivenLoginNameException e) {
-      final String message = "No user found with given email:"+ loginName;
+      final String message = "No user found with given e-mail:"+ loginName;
       addFieldError("loginName", message);
       log.trace(message, e);
       return ERROR;
@@ -61,8 +61,8 @@ public class ChangePasswordAction extends BaseAction {
   /**
    * @return loginName
    */
-  @EmailValidator(message="You must enter a valid email")
-  @RequiredStringValidator(message="You must enter an email address")
+  @EmailValidator(message="You must enter a valid e-mail")
+  @RequiredStringValidator(message="You must enter an e-mail address")
   public String getLoginName() {
     return loginName;
   }
@@ -78,7 +78,7 @@ public class ChangePasswordAction extends BaseAction {
   /**
    * @return oldPassword
    */
-  @RequiredStringValidator(message="You must enter your earlier password")
+  @RequiredStringValidator(message="You must enter your original password")
   public String getOldPassword() {
     return oldPassword;
   }

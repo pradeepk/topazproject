@@ -79,8 +79,8 @@ public class ForgotPasswordChangePasswordAction extends BaseAction {
   /**
    * @return loginName
    */
-  @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid email address")
-  @RequiredStringValidator(message="Email address not specified")
+  @EmailValidator(type= ValidatorType.SIMPLE, fieldName="loginName", message="Not a valid e-mail address")
+  @RequiredStringValidator(message="E-mail address not specified")
   public String getLoginName() {
     return loginName;
   }
