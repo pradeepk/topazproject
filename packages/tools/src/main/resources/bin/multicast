@@ -14,6 +14,10 @@
 
 ifconfig eth0 multicast
 ifconfig lo multicast
-route add -net 224.0.0.0 netmask 240.0.0.0 dev eth0
-route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
 
+if ! route | grep 224.0.0.0 | grep eth0 > /dev/null; then
+  route add -net 224.0.0.0 netmask 240.0.0.0 dev eth0
+fi
+if ! route | grep 224.0.0.0 | grep lo > /dev/null; then
+  route add -net 224.0.0.0 netmask 240.0.0.0 dev lo
+fi
