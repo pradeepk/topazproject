@@ -319,6 +319,7 @@
     <action name="fetchArticle" class="org.plos.article.action.FetchArticleAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/article/article_body.ftl</param>
+        <param name="noCache">true</param>
       </result>
     </action>
 
@@ -363,7 +364,10 @@
     </action>
     
     <action name="fetchBody" class="org.plos.article.action.FetchArticleAction">
-      <result name="success">/article/article_content.ftl</result>
+      <result name="success" type="plosOneFreemarker">
+      	<param name="location">/article/article_content.ftl</param>
+        <param name="noCache">true</param>
+      </result>
     </action>
   </package>
 
