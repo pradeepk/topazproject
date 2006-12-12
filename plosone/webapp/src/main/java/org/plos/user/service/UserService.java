@@ -390,6 +390,11 @@ public class UserService extends BaseConfigurableService {
   private void setProfileFieldsPublic(final String topazId, final String[] grants) throws ApplicationException {
     if (grants.length > 0) {
       try {
+        if (log.isDebugEnabled()) {
+          log.debug("TopazId:" + topazId);
+          log.debug("Cancelling grants:" + ArrayUtils.toString(allUserProfileFieldGrants));
+          log.debug("Adding grants:" + ArrayUtils.toString(grants));
+        }
         //Cancel all grants first
         permissionWebService.cancelGrants(topazId, allUserProfileFieldGrants, ALL_PRINCIPALS);
         //Now add the grants as requested
