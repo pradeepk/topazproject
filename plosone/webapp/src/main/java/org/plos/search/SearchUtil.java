@@ -40,6 +40,7 @@ import java.util.regex.Matcher;
 public class SearchUtil {
   private static final String charsetEncoding = "UTF-8";
   private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
+  private static final Pattern patternToMatchFieldNode = Pattern.compile("<field\\s[^>]*>(.*)</field>");
 
   /**
    * Return a collection of SearchHit's
@@ -49,6 +50,7 @@ public class SearchUtil {
    * @throws ParserConfigurationException ParserConfigurationException
    * @throws SAXException SAXException
    * @throws org.plos.util.InvalidDateException InvalidDateException
+   * @throws javax.xml.transform.TransformerException TransformerException
    */
   public static SearchResultPage convertSearchResultXml(final String searchResultXml) throws IOException, ParserConfigurationException, SAXException, InvalidDateException, TransformerException {
     final String nodeName = "hit";
@@ -119,7 +121,7 @@ public class SearchUtil {
 //      String value = node.getTextContent();
       String asXmlString = TextUtils.getAsXMLString(node);
       String singleLine = asXmlString.replace('\n', ' ');
-      String value = find("<field\\s[^>]*>(.*)</field>", singleLine);
+      String value = getContentWithinFieldTags(singleLine);
       final String existingValue = map.get(key);
       if (null != existingValue) {
         value = existingValue + MULTIPLE_VALUE_DELIMITER + value;
@@ -129,15 +131,12 @@ public class SearchUtil {
     return map;
   }
 
-  // Returns the first substring in input that matches the pattern.
-  // Returns null if no match found.
-  public static String find(String patternStr, CharSequence input) {
-      Pattern pattern = Pattern.compile(patternStr);
-      Matcher matcher = pattern.matcher(input);
+  private static String getContentWithinFieldTags(final String singleLine) {
+    final Matcher matcher = patternToMatchFieldNode.matcher(singleLine);
       if (matcher.find()) {
+        //return the first group other than the entire pattern 
           return matcher.group(1);
       }
       return null;
   }
-
 }
