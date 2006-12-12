@@ -2,7 +2,6 @@
 <!-- begin : main content -->
 <div id="content" class="static">
 <h1>About PLoS RSS Feeds</h1>
-<h1>About RSS Feeds</h1>
 
 <p class="intro">Want to keep abreast of all PLoS journals without having to regularly visit each site? RSS will allow you to do just that.</p>
 
