@@ -1,11 +1,18 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
   <topaz>
+
+    <!-- Configure the host and container where topaz is running -->
     <server>
       <hostname>FQHN</hostname>
       <https-port>8443</https-port>
     </server>
 
+    <!-- Configuration to talk to CAS -->
+    <cas-server>
+      <base-url>https://FQHN:7443/cas</base-url>
+    </cas-server>
+    
     <services>
       <!-- Configuration to talk to Fedora -->
       <fedora>
@@ -37,11 +44,6 @@
       <indexpath>/var/lib/topaz/data/lucene</indexpath>
       <defaultfields>description,title,body,creator</defaultfields>
     </search>
-
-    <!-- Configuration to talk to CAS -->
-    <cas-server>
-      <base-url>https://FQHN:7443/cas</base-url>
-    </cas-server>
 
     <!-- Schedule alerts -->
     <scheduler>
