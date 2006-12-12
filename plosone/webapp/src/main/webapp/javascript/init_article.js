@@ -64,14 +64,26 @@
         floatMenu();
       }  
     );
-    dojo.event.connect(window, "onscroll", function() {
-        floatMenu();
-      }  
-    );
-    dojo.event.connect(document.documentElement, "onkey", function() {
-        floatMenu();
-      }  
-    );
+    // Hack for browser compatibility on the use of scrolling in the viewport.
+    //
+    //if (BrowserDetect.browser == "Explorer") {
+      dojo.event.connect(window, "onscroll", function() {
+          floatMenu();
+        }  
+      );
+    //}
+    //else if (BrowserDetect.browser == "Firefox" && BrowserDetect.version < 2) {
+      dojo.event.connect(document.documentElement, "onscroll", function() {
+          floatMenu();
+        }  
+      );
+    //}
+    //else {
+      dojo.event.connect(document.documentElement, "onkey", function() {
+          floatMenu();
+        }  
+      );
+    //}
     dojo.event.connect(window, "onresize", function() {
         floatMenu();
       }  
