@@ -65,7 +65,7 @@
         <version>1.0</version>
         <executions>
           <execution>
-            <phase>generate-sources</phase>
+            <phase>process-sources</phase>
             <goals><goal>wsdl2java</goal></goals>
             <configuration>
               <sourceDependencies>

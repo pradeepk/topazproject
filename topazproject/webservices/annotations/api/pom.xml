@@ -55,6 +55,7 @@
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.annotation.Annotations</classOfPortType>
+              <outputDirectory>${project.build.directory}/classes</outputDirectory>
             </configuration>
           </execution>
           <execution>
@@ -66,35 +67,18 @@
             <configuration>
               <implementationClassName>ReplyServiceImplementation</implementationClassName>
               <filename>${wsdl.filename}</filename>
-              <input>${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}</input>
+              <input>${project.build.directory}/classes/${wsdl.filename}</input>
               <all>true</all>
               <namespace>annotation.ws.topazproject.org</namespace>
               <servicePortName>ReplyServicePort</servicePortName>
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.annotation.Replies</classOfPortType>
+              <outputDirectory>${project.build.directory}/classes</outputDirectory>
             </configuration>
           </execution>
         </executions>
       </plugin> 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>process-classes</phase>
-            <configuration>
-              <tasks>
-                <copy todir="${project.build.directory}/classes" 
-                  file="${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}"/>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 </project>

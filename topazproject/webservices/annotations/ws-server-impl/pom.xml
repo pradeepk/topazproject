@@ -55,7 +55,7 @@
         <executions>
           <execution>
             <id>CopyServiceDeploymentDescriptors</id>
-            <phase>generate-sources</phase>
+            <phase>process-sources</phase>
             <configuration>
               <tasks>
                 <copy todir="${project.build.directory}/classes" flatten="true">

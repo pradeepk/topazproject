@@ -58,6 +58,7 @@
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.users.UserAccounts</classOfPortType>
+              <outputDirectory>${project.build.directory}/classes</outputDirectory>
             </configuration>
           </execution>
           <execution>
@@ -68,7 +69,7 @@
             </goals>
             <configuration>
               <implementationClassName>UserRolesServiceImplementation</implementationClassName>
-              <input>${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}</input>
+              <input>${project.build.directory}/classes/${wsdl.filename}</input>
               <filename>${wsdl.filename}</filename>
               <all>true</all>
               <namespace>users.ws.topazproject.org</namespace>
@@ -76,28 +77,11 @@
               <location>http://localhost/service-location</location>
               <classesDirectory>${project.build.directory}/classes</classesDirectory>
               <classOfPortType>org.topazproject.ws.users.UserRoles</classOfPortType>
+              <outputDirectory>${project.build.directory}/classes</outputDirectory>
             </configuration>
           </execution>
         </executions>
       </plugin> 
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <phase>process-classes</phase>
-            <configuration>
-              <tasks>
-                <copy todir="${project.build.directory}/classes" 
-                  file="${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}"/>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
     </plugins>
   </build>
 </project>
