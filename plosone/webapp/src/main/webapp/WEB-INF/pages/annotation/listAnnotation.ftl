@@ -62,6 +62,10 @@
           </fieldset>
         </li>
         <li>
+          <@ww.url id="makePublicAnnotationURL" action="setAnnotationPublic" targetId="${annotation.id}" namespace="/annotation/secure"/>
+          <@ww.a href="%{makePublicAnnotationURL}">Set Annotation as public</@ww.a> <br/>
+        </li>
+        <li>
           <@ww.url id="unflagAnnotationURL" action="unflagAnnotation" targetId="${annotation.id}" />
           <@ww.a href="%{unflagAnnotationURL}">unflag Annotation</@ww.a> <br/>
         </li>
