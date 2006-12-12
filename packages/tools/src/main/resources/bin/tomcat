@@ -27,7 +27,7 @@ USER="topaz"
 TOPAZ_LOCAL="/usr/local/topaz"
 [ -z "$CATALINA_HOME" ] && CATALINA_HOME=
 [ -z "$JAVA_HOME" ] && JAVA_HOME="$TOPAZ_LOCAL/java"
-[ -z "$TOMCAT_OPTS" ] && TOMCAT_OPTS="-Xmx256m"
+[ -z "$TOMCAT_OPTS" ] && TOMCAT_OPTS="-Xmx400m -XX:MaxPermSize=256m"
 [ -z "$STARTUP" ] && STARTUP="jsvc"
 VARDIR="/var"
 LOGDIR="${VARDIR}/log/topaz"
@@ -37,23 +37,19 @@ JVM="server"
 [ -z "$TRUST_STORE" ] && TRUST_STORE=$TOPAZ_LOCAL/cacerts
 
 # Overrides: basename_CATALINA_HOME, basename_TOMCAT_OPTS, basename_USER
-SERVERS="ecqs mckoi mulgara fedora search topaz plosone"
-ecqs_CATALINA_HOME="$TOPAZ_LOCAL/esup-cas-quick-start-2.0.6-1/jakarta-tomcat-5.0.28"
-ecqs_TOMCAT_OPTS="-Xmx256m"
-topaz_CATALINA_HOME="$TOPAZ_LOCAL/topaz-tomcat55"
-search_CATALINA_HOME="$TOPAZ_LOCAL/search-tomcat55"
-mulgara_CATALINA_HOME="$TOPAZ_LOCAL/mulgara-tomcat55"
-plosone_CATALINA_HOME="$TOPAZ_LOCAL/plosone-tomcat55"
+SERVERS="cas mulgara fedora topaz plosone"
+cas_CATALINA_HOME="$TOPAZ_LOCAL/cas"
+topaz_CATALINA_HOME="$TOPAZ_LOCAL/topaz"
+mulgara_CATALINA_HOME="$TOPAZ_LOCAL/mulgara"
+plosone_CATALINA_HOME="$TOPAZ_LOCAL/plosone"
 
 # These ports are only for printing status. If they're accurate, status will be better
 PORT=
-ecqs_PORT=7443
+cas_PORT=7443
 topaz_PORT=8008
-search_PORT=9092
 mulgara_PORT=9091
 plosone_PORT=8080
 fedora_PORT=9090
-mckoi_PORT=9157
 
 #
 # Should not need to modify stuff below here
