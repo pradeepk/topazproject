@@ -131,6 +131,18 @@
             <mapping>
               <directory>/etc/topaz</directory>
               <configuration>true</configuration>
+              <filemode>644</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+              <sources>
+                <source>
+                  <location>src/main/resources/topaz.xml</location>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>/etc/topaz</directory>
+              <configuration>true</configuration>
               <filemode>755</filemode>
               <username>topaz</username>
               <groupname>topaz</groupname>
