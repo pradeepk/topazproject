@@ -857,7 +857,7 @@
                                                  my:uri-to-doi(@xlink:href) = $doi]"/>
   </xsl:function>
 
-  <!-- serialize and xml string -->
+  <!-- serialize an xml string -->
   <xsl:template name="xml-to-str">
     <xsl:param name="xml"/>
     <xsl:apply-templates mode="serialize" select="$xml/node()"/>
@@ -897,6 +897,6 @@
 
   <xsl:function name="my:xml-escape" as="xs:string">
     <xsl:param name="str" as="xs:string"/>
-    <xsl:value-of select="replace(replace(replace($str, '&lt;', '&amp;lt;'), '&gt;', '&amp;gt;'), '&amp;', '&amp;amp;')"/>
+    <xsl:value-of select="replace(replace(replace($str, '&amp;', '&amp;amp;'), '&lt;', '&amp;lt;'), '&gt;', '&amp;gt;')"/>
   </xsl:function>
 </xsl:stylesheet>
