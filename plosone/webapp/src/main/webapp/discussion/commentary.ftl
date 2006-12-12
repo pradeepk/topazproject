@@ -38,6 +38,6 @@
 	</table>
 	
 	<#if allCommentary?size gt 0>
-	<p>You can also <a href="$startDiscussionUrl}" title="Click to start a discussion on this article" class="discuss icon">start a new discussion</a> on this article.</p>
+	<p>You can also <a href="${startDiscussionUrl}" title="Click to start a discussion on this article" class="discuss icon">start a new discussion</a> on this article.</p>
   </#if>
 </div>
