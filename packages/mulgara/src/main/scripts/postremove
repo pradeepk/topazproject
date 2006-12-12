@@ -7,5 +7,7 @@ LINK=/usr/local/topaz/$PKG
 # Remove it if it points to nowhere
 [ ! -e $LINK ] && [ -L $LINK ] && rm -f $LINK
 # Recreate it (presumably to some other older/newer version of same package)
-DIR=`find /usr/local/topaz -name '*$PKG-*' -maxdepth 1 -printf "%TY%Tm%Td%TH%TM%TS %p\n" | sort | head -1 | colrm 1 15`
-[ -n "$DIR" ] && ln -s $DIR $LINK
+if [ ! -L $LINK ]; then
+  DIR=`find /usr/local/topaz -name '*'"$PKG"'-*' -maxdepth 1 -printf "%TY%Tm%Td%TH%TM%TS %p\n" | sort | head -1 | colrm 1 15`
+  [ -n "$DIR" ] && ln -s $DIR $LINK
+fi
