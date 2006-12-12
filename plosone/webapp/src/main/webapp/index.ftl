@@ -18,9 +18,8 @@ Submit Today</a></li>
 					</ul>
 					</div>
 						<div class="block partner">
-				<h6>Hosted By</h6>
-				<a href="http://www.unitedlayer.com/" title="UnitedLayer, LLC"><img src="${freemarker_config.context}/images/pone_home_unitedlayer.gif" alt="UnitedLayer, LLC"/></a>
 				<h6>Partners</h6>
+				<a href="http://www.unitedlayer.com/" title="UnitedLayer, LLC"><img src="${freemarker_config.context}/images/pone_home_unitedlayer.gif" alt="UnitedLayer, LLC"/></a>
 				<a href="http://fedora.info/" title="Fedora.info"><img src="${freemarker_config.context}/images/pone_home_fedora.jpg" alt="Fedora.info"/></a>
 				<a href="http://www.sciencecommons.org/" title="Science Commons"><img src="${freemarker_config.context}/images/pone_home_sciencecommons.gif"  alt="Science Commons"/></a>
 				<a href="http://www.osafoundation.org" title="Open Source Applications Foundation"><img src="${freemarker_config.context}/images/pone_home_osaf.gif" alt="OSAF"/></a>
@@ -100,7 +99,7 @@ Submit Today</a></li>
 </div>
 					
 						<div class="subject block">
-						<h2>Explore By Subject</h2>
+						<h2>Explore by Subject</h2>
 							<dl class="category">
 
 							<#list categoryNames as category>

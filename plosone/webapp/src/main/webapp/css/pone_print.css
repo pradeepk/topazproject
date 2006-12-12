@@ -15,7 +15,7 @@
 */
 html { color: #000; !important width: 100%; !important; }
 #topBanner,
-#hdr, div.beta, #nav, #ftr ul, div.powered, #rhc, ol.references a.find {
+#hdr, div.beta, #nav, #ftr ul, div.powered, #rhc, ol.references a.find, div#ftr ul {
 	display: none !important;
 }
 
@@ -29,6 +29,5 @@ p.intro							{ border: 1px dotted #000 !important; }
 #researchArticle span.authors 	{ display: block; }
 body, p 						{ font-size: 12px !important; }
 body div.articleinfo p,
-body #ftr p 					{ font-size: 10px !important; }
-
-#ftr p 							{ color: #000; }
+body #ftr p 					{ font-size: 10px !important; color: #000; border-bottom: none;}
+div#ftr 						{ background: #FFF; font-size: .85em; width: 100%; border-top: 1px solid #ccc; }

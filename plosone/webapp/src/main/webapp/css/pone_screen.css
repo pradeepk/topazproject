@@ -276,27 +276,18 @@ ul#links a:hover.icon { padding: 0 16px 0 0; background-position: 100% 50%;}
 /* Footer : Elements
 ----------------------------------------------------------=
 */
-div#ftr {
-	background: #FFF url(../images/pone_html_bg.gif) repeat-x 0px -128px;
-	font-size: .85em;
-	width: 100%;
-	border-top: 1px solid #003956;
-	margin: 20px 0 0 0;
-	padding: 0;
-	text-align: center;
-	clear: both;
-}
+div#ftr 		{ background: #FFF url(../images/pone_html_bg.gif) repeat-x 0px -128px; font-size: .85em; width: 100%; border-top: 1px solid #003956; margin: 20px 0 0 0; padding: 0; text-align: center; clear: both; }
 div#ftr ul 		{ margin: 0; padding: 0; list-style-type: none; }
 div#ftr ul li 	{ margin: 0 5px; display: inline; }
 div#ftr ul a, div#ftr ul a:visited
-				{ font-size: .85em; color: #fff;}
+				{ color: #fff;}
 div#ftr img 	{ margin: 0 10px -8px 10px; display: inline; }
 div#ftr p 		{ margin: 0 0 10px 0; padding: 10px; background-color: #FFF; border-bottom: 1px solid #003956; white-space: nowrap; }
 div#ftr p span 	{ display: inline; background: #FFF url(../images/jour_ftr_cc_logo.png) no-repeat left center; padding: 8px 8px 8px 25px; }
-div#ftr div.powered { text-transform: uppercase; background-color: #202020; color: #eee; font-size: .9em; padding: 6px 0 2px 0; letter-spacing: .15em; margin-top: 10px; border-top: 1px solid #fff;}
+div#ftr div.powered { background-color: #202020; color: #bbb; font-size: .9em; padding: 10px 0 4px 0; letter-spacing: .03em; margin-top: 10px; border-top: 1px solid #fff;}
 div.powered a:link,
 div.powered a:visited,
-div.powered a:hover { color: #fff; font-weight: bold;}
+div.powered a:hover { color: #ccc; font-weight: bold;}
 /* Research Article : Elements
 ----------------------------------------------------------=
 */
