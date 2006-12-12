@@ -9,7 +9,7 @@
     dcr.btnCancel = dojo.byId("btnCancelResponse");
     dcr.btnSubmit = dojo.byId("btnPostResponse");
     dcr.form = document.discussionResponse;
-    dcr.formAction = "/annotation/secure/createAnnotationSubmit.action";
+    dcr.formAction = "/annotation/secure/createDiscussionSubmit.action";
     dcr.responseTitleCue = "Enter your comment title...";
     dcr.responseCue = "Enter your comment...";
     dcr.error = dojo.byId('responseSubmitMsg');
