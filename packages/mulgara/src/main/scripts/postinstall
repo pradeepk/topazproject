@@ -10,3 +10,4 @@ LINK=/usr/local/topaz/$PKG
 rm -f $LINK
 DIR=`ls -td /usr/local/topaz/*"$PKG"-* 2>/dev/null | head -1`
 [ -n "$DIR" ] && ln -s $DIR $LINK
+exit 0
