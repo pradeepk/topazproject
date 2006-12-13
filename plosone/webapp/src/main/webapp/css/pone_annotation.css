@@ -135,7 +135,7 @@ div.author blockquote{ background: #FFF; }
 div.author hd	{ background-color: #069; }
 
 div.response h3	{ margin: .15em 0 .25em 5px; padding: 0;letter-spacing: normal; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 1em; font-weight: bold;}
-div.response	{ padding: 0; margin: -2px 0 0 15px; border: 2px solid #ccc; border-width: 2px 2px 0 0;  /*  background-color: #ccc; */}
+div.response	{ padding: 0; margin: -2px 0 0 15px!important; border: 2px solid #ccc; border-width: 2px 2px 0 0;  /*  background-color: #ccc; */}
 
 
 div.response div.response { border: none; margin: -2px 0 0 20px; border-top: 2px solid #ccc; }
