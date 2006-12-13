@@ -86,11 +86,17 @@ public class PlosOneFreemarkerConfig {
     }
     
     fileList = myConfig.getList("default.javascript.file");
+    String javascriptFile;
     if (fileList.size() > 0) {
       defaultJavaScript = new String[fileList.size()];
       Iterator iter = fileList.iterator();
       for (int i = 0; i < fileList.size(); i++) {
-        defaultJavaScript[i] = dirPrefix + subdirPrefix + (String)iter.next();
+        javascriptFile = (String)iter.next();
+    	if (javascriptFile.endsWith(".ftl")) {
+    	  defaultJavaScript[i] = subdirPrefix + javascriptFile;
+        } else {
+          defaultJavaScript[i] = dirPrefix + subdirPrefix +javascriptFile;
+        }
       }
     } else {
       defaultJavaScript = DEFAULT_JS_FILES;
