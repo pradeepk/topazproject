@@ -9,6 +9,8 @@ topaz.responsePanel = {
   
   targetForm: "",
   
+  previousNode: "",
+  
   setPanel: function(panel) {
     this.newPanel = panel;
   },
@@ -29,12 +31,20 @@ topaz.responsePanel = {
     togglePanel.upperContainer = this.upperContainer;
     
     dojo.dom.insertAfter(this.newPanel, this.upperContainer, false);
+
+    if (targetObj.requestType == "flag"){
+      if (this.previousUpperContainer) this.previousUpperContainer.style.display = "block";
+      this.resetFlaggingForm(targetObj);
+    }
+    
     this.newPanel.style.display = "block";
     
     if (threadTitle) {
       this.targetForm.responseTitle.value = 'RE: ' + threadTitle;
       this.targetForm.commentTitle.value = 'RE: ' + threadTitle;
     }
+    
+    this.previousUpperContainer = this.upperContainer;
   },
   
   hide: function() {
@@ -47,11 +57,20 @@ topaz.responsePanel = {
   },
   
   resetFlaggingForm: function(targetObj) {
-    dojo.byId('flagForm').style.display = "block";
-    dojo.byId('flagConfirm').style.display = "none";  
+    this.getFlagForm();  
     this.targetForm.reasonCode[0].checked = true;
     this.targetForm.comment.value = "";
     this.targetForm.responseArea.value = targetObj.responseCue;
+  },
+  
+  getFlagConfirm: function() {
+    dojo.byId('flagForm').style.display = "none";
+    dojo.byId('flagConfirm').style.display = "block";  
+  },
+  
+  getFlagForm: function() {
+    dojo.byId('flagForm').style.display = "block";
+    dojo.byId('flagConfirm').style.display = "none";  
   }
 }  
 
@@ -143,7 +162,7 @@ function submitResponseInfo(targetObj) {
      else {
        if (targetObj.requestType == "flag"){
          ldc.hide();
-         getFlagConfirm();
+         topaz.responsePanel.getFlagConfirm();
        }
        else if (targetObj.requestType == "new"){
          var rootId = jsonObj.annotationId;
@@ -196,7 +215,3 @@ function getDiscussion(targetObj) {
   
 }
 
-function getFlagConfirm() {
-  dojo.byId('flagForm').style.display = "none";
-  dojo.byId('flagConfirm').style.display = "block";  
-}
