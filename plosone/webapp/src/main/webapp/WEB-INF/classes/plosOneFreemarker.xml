@@ -316,7 +316,52 @@
   </page>
 
   <page>
+    <name>/static/privacy.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_static.css</file>
+    </css>
+  </page>
+  
+  <page>
+    <name>/static/policies.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_static.css</file>
+    </css>
+  </page>
+  
+  <page>
     <name>/static/reviwer_guidelines.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_static.css</file>
+    </css>
+  </page>
+  
+  <page>
+    <name>/static/rss_feeds.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_static.css</file>
+    </css>
+  </page>
+
+  <page>
+    <name>/static/rss_info.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_static.css</file>
+    </css>
+  </page>
+
+  <page>
+    <name>/static/serverError.ftl</name>
     <css>
       <file>/css/pone_screen.css</file>
       <file>/css/pone_iepc.css</file>
@@ -326,6 +371,15 @@
 
   <page>
     <name>/static/sitemap.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_static.css</file>
+    </css>
+  </page>
+
+  <page>
+    <name>/static/terms.ftl</name>
     <css>
       <file>/css/pone_screen.css</file>
       <file>/css/pone_iepc.css</file>
