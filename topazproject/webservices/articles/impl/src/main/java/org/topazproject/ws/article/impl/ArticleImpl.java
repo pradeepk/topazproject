@@ -372,7 +372,7 @@ public class ArticleImpl implements Article {
         try {
           pep.checkAccess(pep.READ_META_DATA, URI.create(uri));
         } catch (SecurityException se) {
-          articles.remove(uri);
+          it.remove();
           if (log.isDebugEnabled())
             log.debug(uri, se);
         }
