@@ -518,7 +518,7 @@
       <map>
         <entry key="text" value="emailThisArticle-text.ftl"/>
         <entry key="html" value="emailThisArticle-html.ftl"/>
-        <entry key="url" value="http://${homesite}/article/fetchArticle.action?articleURI"/>
+        <entry key="url" value="http://${server.plosone}/article/fetchArticle.action?articleURI"/>
         <entry key="subject" value="An Article from PLoS ONE"/>
       </map>
     </property>
