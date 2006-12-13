@@ -15,7 +15,7 @@
 */
 html { color: #000; !important width: 100%; !important; }
 #topBanner,
-#hdr, div.beta, #nav, #ftr ul, div.powered, #rhc, ol.references a.find, div#ftr ul {
+#hdr, div.beta, #nav, #ftr ul, div.powered, #rhc, ol.references a.find, div#ftr ul, span#oa {
 	display: none !important;
 }
 
@@ -24,7 +24,7 @@ body, div#content, div.content 	{ width: auto !important; margin: 0 !important; 
 * html body, * html div#content, * html div.content 	{ width: 6.75in !important; }
 p.intro							{ border: 1px dotted #000 !important; }
 .edboard dl, .edboard dt, .edboard dd	{ background: none; !important; border: none; }
-#researchArticle h1				{ margin-top: 0; padding-top: 12px; border-top: 12px solid #069;}
+#researchArticle h1				{ margin-top: 0; font-size: 24px;}
 #researchArticle h3, .static h2 { border-bottom: 1px solid #000; background-image: none; }
 #researchArticle span.authors 	{ display: block; }
 body, p 						{ font-size: 12px !important; }

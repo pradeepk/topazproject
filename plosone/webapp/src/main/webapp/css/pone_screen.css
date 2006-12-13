@@ -27,7 +27,7 @@ em			{ font-style: italic; }
 
 img			{ border: 0; }
 label em 	{ display: block; color: #c00; } /* em wraps all error messages within labels */
-.error 		{ display: block; color: #F63; font-style: normal; } /* em wraps all error messages within labels */
+.error 		{ display: block; color: #c00; font-style: normal; } /* em wraps all error messages within labels */
 strong		{ font-weight: bold; }
 h1 sup		{ font-size: .75em; }
 ul, ol, dl	{ margin: 20px; position: relative; }
@@ -291,12 +291,11 @@ div.powered a:hover { color: #ccc; font-weight: bold;}
 /* Research Article : Elements
 ----------------------------------------------------------=
 */
-div#rhc			{ float: right; width: 240px; position: relative; }
+div#rhc			{ float: right; width: 240px; position: relative; padding-top: 20px;}
 div.content 	{ margin-right: 255px; }
 
 div.static h1,
 div.content h1 	{ /* article title */font-size: 2.2em;	line-height: 1.1em;	margin: 10px 0 0 0;font-weight: normal; color: #004263; }
-div.content h1				{ border-top: 12px solid ##004B70; }
 
 div.static h1		{ padding-top: 10px; border-top: 6px solid #004263; }
 div.pageerror h1	{ background-color: #004263; color:#fff; padding: 8px;}
@@ -319,6 +318,8 @@ div.content li	{ margin: 0; padding: 0; }
 div.static ul li,
 div.content	ul li{ list-style-type: none; background: url(../images/pone_sectionnav_li_bg.gif) no-repeat 0 6px; padding-left: 12px;}
 
+div.content span#oa { /* open access image */ position: relative; top: 0; width: 98%;height: 34px; margin: 0; text-indent: -9999px; display: block; background: #004263 url(../images/pone_content_oa.gif) no-repeat 0 0; }
+
 ol.references 	{ margin: 10px 0; padding: 0 10px; }
 ol.references li{ font-size: 1em; padding: 5px; margin: 0; list-style-position: outside; }
 ol.references a.find { font-size: .9em; text-transform: uppercase; font-weight: bold; margin-left: 4px;}
@@ -334,12 +335,7 @@ div.articleinfo	{ font-size: .9em; padding: 10px;  margin: 10px 0; background: #
 div.contributions { font-size: .9em; }
 div.articleinfo p,
 div.abstract p	{ margin: 0 0 1em 0; }
-
-
 div.abstract h3	{ font-size: 1em; margin: 0; font-family: Verdana, Arial, Helvetica, sans-serif; font-weight: bold; letter-spacing: normal; border-bottom: none;}
-
-
-
 div.pullQuote	{ font-size: 2em; line-height: 1em; width: 55%; padding: 10px; float: right; letter-spacing: -.05em; font-style: italic; margin: 5px; }
 div.box			{ color: #000; padding: 10px; background-color: #DDD; }
 
@@ -443,7 +439,7 @@ a.bug.author-active,
 a:hover.bug.author-active		{ background-color: #f63;}
 
 
-div.beta				{ text-align: center; font-size: .9em; color: #999; }
+div.beta				{ text-align: center; font-size: .9em; color: #666; margin: 0;}
 
 
 /* ------ DOM Styles ------- */
