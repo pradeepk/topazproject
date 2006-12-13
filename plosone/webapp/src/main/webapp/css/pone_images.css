@@ -151,11 +151,12 @@ a:active	{ }
 #figureTitle 		{ display: block; font-size: .85em;  margin-top: 10px;}
 div.btn.close		{ display: inline; margin: 0; text-transform: uppercase; font-size: .9em;}
 div.btn	*			{ vertical-align: middle; padding: 4px; font-weight: bold; cursor: pointer;}
-a.close			{ text-decoration: none; padding: 2px 20px 2px 0; font: 85% bold Verdana, Arial, Helvetica, sans-serif; margin-left: 630px;}
+
 /* for closing and canceling viewing windows */
 
 div.close a:hover	{ background-color: #ddd; }
-
+a.close,
+a.return			{ font-family: Verdana, Arial, Helvetica, sans-serif; font-size: .8em; margin: 10px; display: block;}
 a.icon				{ padding: 2px 0 2px 20px; background-repeat: no-repeat; background-position: 0px 0px; font-size: .8em; }
 a.ppt				{ background-image: url(../images/pone_icon_ppt.gif); }
 a.image				{ background-image: url(../images/pone_icon_image.gif); }
