@@ -50,7 +50,8 @@
 	<legend>Your Private Information</legend>
 	<ol>
 	    <li><p><em>Your E-mail address will always be kept private. See the the <a href="http://www.plos.org/privacy.html" title="PLoS Privacy Statement">PLoS Privacy Statement</a> for more information.</em></p>
-		<strong>${email}</strong></li>
+		<strong>${email}</strong><br />
+<!--	Forgot your password? Change it <a href="#" title="Click here to change your password">here</a>.--></li>
     </li>
 	</ol>
 	</fieldset>
