@@ -43,7 +43,6 @@ import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
 import net.sf.ehcache.Element;
-import net.sf.ehcache.constructs.blocking.BlockingCache;
 
 /**
  * This provides the implementation of the permissions service.
@@ -117,34 +116,22 @@ public class PermissionsImpl implements Permissions {
   private static Ehcache revokesCache = initCache("permission-revokes");
 
   private static Ehcache initCache(String name) {
-    Ehcache cache;
+    Ehcache cache = null;
 
     try {
       cache = CacheManager.getInstance().getEhcache(name);
     } catch (CacheException ce) {
       log.error("Error getting cache-manager", ce);
-
-      return null;
     } catch (IllegalStateException ise) {
       log.error("Error getting cache", ise);
-
-      return null;
     }
 
-    if (cache == null) {
+    if (cache == null)
       log.info("No cache configuration found for " + name + ".");
+    else
+      log.info("Cache configuration found for " + name + ".");
 
-      return cache;
-    }
-
-    if (!(cache instanceof BlockingCache)) {
-      BlockingCache newBlockingCache = new BlockingCache(cache);
-      CacheManager.getInstance().replaceCacheWithDecoratedCache(cache, newBlockingCache);
-    }
-
-    log.info("Cache configuration found for " + name + ".");
-
-    return CacheManager.getInstance().getEhcache(name);
+    return cache;
   }
 
   /**
