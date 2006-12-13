@@ -12,6 +12,7 @@ package org.topazproject.mulgara.resolver;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URL;
 import java.util.ArrayList;
@@ -22,11 +23,11 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Properties;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.jrdf.graph.Node;
 import org.jrdf.graph.Literal;
@@ -58,8 +59,12 @@ import net.sf.ehcache.Ehcache;
  *   <dd>how often, in milliseconds, to make invalidation calls to the cache. If not specified
  *       this default to 5 seconds.</dd>
  *   <dt>topaz.fr.cacheInvalidator.rulesFile</dt>
- *   <dd>the file where the invalidation rules are stored. This is treated as a resource, and
- *       if not found as a file.</dd>
+ *   <dd>the location where the invalidation rules are stored. If this starts with a '/' it is
+ *       treated as a resource; otherwise as a URL.</dd>
+ *   <dt>topaz.fr.cacheInvalidator.ehcacheConfig</dt>
+ *   <dd>the location of the config for Ehcache. If this starts with a '/' it is treated as a
+ *       resource; otherwise as a URL. If null, the default config location "/ehcache.xml" is
+ *       used.</dd>
  * </dl>
  *
  * @author Ronald Tschalär
@@ -78,17 +83,24 @@ class CacheInvalidator extends QueueingFilterHandler {
    * Create a new cache-invalidator instance. 
    * 
    * @param config  the configuration to use
+   * @param base    the prefix under which the current <var>config</var> was retrieved
    * @param dbURI   the uri of our database
    * @throws Exception 
    */
-  public CacheInvalidator(Properties config, URI dbURI) throws Exception {
+  public CacheInvalidator(Configuration config, String base, URI dbURI) throws Exception {
     super(0, getInvIval(config), "CacheInvalidator-Worker", false, logger);
 
+    config = config.subset("cacheInvalidator");
+    base  += ".cacheInvalidator";
+
     // parse the rules file
-    String rulesLoc = config.getProperty("topaz.fr.cacheInvalidator.rulesFile");
-    URL loc = CacheInvalidator.class.getResource(rulesLoc);
+    String rulesLoc = config.getString("rulesFile", null);
+    if (rulesLoc == null)
+      throw new IOException("Missing configuration entry '" + base + ".rulesFile");
+
+    URL loc = findResOrURL(rulesLoc);
     if (loc == null)
-      loc = new File(rulesLoc).toURI().toURL();
+      throw new IOException("Rules-file '" + rulesLoc + "' not found");
 
     DocumentBuilderFactory builderFactory = DocumentBuilderFactory.newInstance();
     builderFactory.setIgnoringComments(true);
@@ -101,18 +113,32 @@ class CacheInvalidator extends QueueingFilterHandler {
     this.rules   = parseRules(rules, aliases);
 
     // set up the Ehcache
-    CacheManager.create();
+    String ehcConfigLoc = config.getString("ehcacheConfig", null);
+    if (ehcConfigLoc != null) {
+      loc = findResOrURL(ehcConfigLoc);
+      if (loc == null)
+        throw new IOException("Ehcache config file '" + ehcConfigLoc + "' not found");
 
-    String qcName = config.getProperty("topaz.fr.cacheInvalidator.queryCache", DEF_QC_NAME);
+      CacheManager.create(loc);
+    } else
+      CacheManager.create();
+
+    String qcName = config.getString("queryCache", DEF_QC_NAME);
     queryCache    = CacheManager.getInstance().getEhcache(qcName);
 
     // delay session creation because at this point we're already in a session-creation call
     this.dbURI = dbURI;
+
+    // we're ready
+    worker.start();
   }
 
-  private static final long getInvIval(Properties config) {
-    String invIval = config.getProperty("topaz.fr.cacheInvalidator.invalidationInterval");
-    return (invIval != null) ? Long.parseLong(invIval) : 5000L;
+  private static final long getInvIval(Configuration config) {
+    return config.getLong("cacheInvalidator.invalidationInterval", 5000L);
+  }
+
+  private static final URL findResOrURL(String loc) throws MalformedURLException {
+    return (loc.charAt(0) == '/') ? CacheInvalidator.class.getResource(loc) : new URL(loc);
   }
 
   private static final Map<String,String> parseAliases(Element rules, URI dbURI) throws Exception {

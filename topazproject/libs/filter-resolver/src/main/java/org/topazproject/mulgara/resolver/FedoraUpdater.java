@@ -20,12 +20,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 import javax.transaction.xa.XAResource;
 import javax.transaction.xa.Xid;
 import javax.xml.rpc.ServiceException;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.jrdf.graph.GraphElementFactory;
 import org.jrdf.graph.GraphElementFactoryException;
@@ -114,20 +114,25 @@ class FedoraUpdater extends AbstractFilterHandler {
    * Create a new udpater instance.
    *
    * @param config the configuration to use
+   * @param base   the prefix under which the current <var>config</var> was retrieved
    * @param dbURI  the database uri
    */
-  public FedoraUpdater(Properties config, URI dbURI) throws Exception {
-    this(new URI(config.getProperty("topaz.fr.fedoraUpdater.fedora.url")),
-         config.getProperty("topaz.fr.fedoraUpdater.fedora.user"),
-         config.getProperty("topaz.fr.fedoraUpdater.fedora.pass"),
+  public FedoraUpdater(Configuration config, String base, URI dbURI) throws Exception {
+    this(new URI(myConfig(config).getString("fedora.url", null)),
+         myConfig(config).getString("fedora.user", null),
+         myConfig(config).getString("fedora.pass", null),
          dbURI,
          SessionFactoryFinder.newSessionFactory(dbURI, false),
-         Long.parseLong(config.getProperty("topaz.fr.fedoraUpdater.updateInterval")),
-         config.containsKey("topaz.fr.fedoraUpdater.updateFilter.class") ?
-             (UpdateFilter) Class.forName(config.getProperty("topaz.fr.fedoraUpdater.updateFilter.class"),
+         myConfig(config).getLong("updateInterval", 10000L),
+         myConfig(config).containsKey("updateFilter.class") ?
+             (UpdateFilter) Class.forName(myConfig(config).getString("updateFilter.class"),
                                           true, Thread.currentThread().getContextClassLoader()).
                             newInstance() :
              null);
+  }
+
+  private static final Configuration myConfig(Configuration config) {
+    return config.subset("fedoraUpdater");
   }
 
   /** 

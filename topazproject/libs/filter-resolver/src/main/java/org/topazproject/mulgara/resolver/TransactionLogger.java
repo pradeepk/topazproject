@@ -22,8 +22,8 @@ import java.io.Writer;
 import java.net.URI;
 import java.util.Arrays;
 import java.util.Comparator;
-import java.util.Properties;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import org.jrdf.graph.Node;
 import org.jrdf.graph.Literal;
@@ -65,28 +65,30 @@ class TransactionLogger extends QueueingFilterHandler {
    * Create a new logger instance. 
    * 
    * @param config  the configuration to use
+   * @param base    the prefix under which the current <var>config</var> was retrieved
    * @param dbURI   ignored
    * @throws IOException 
    */
-  public TransactionLogger(Properties config, URI dbURI) throws IOException {
+  public TransactionLogger(Configuration config, String base, URI dbURI) throws IOException {
     super(getFlushIval(config), 0, "TransactionLogger-Worker", true, logger);
 
-    String fileName  = config.getProperty("topaz.fr.transactionLogger.log.fileName");
-    String maxSize   = config.getProperty("topaz.fr.transactionLogger.log.maxSize");
-    String maxAge    = config.getProperty("topaz.fr.transactionLogger.log.maxAge");
-    String bufSize   = config.getProperty("topaz.fr.transactionLogger.writeBufferSize");
+    config = config.subset("transactionLogger");
+    base  += ".transactionLogger";
+
+    String fileName  = config.getString("log.fileName", null);
+    long   maxSize   = config.getLong("log.maxSize", -1L);
+    long   maxAge    = config.getLong("log.maxAge", -1L);
+    int    bufSize   = config.getInt("writeBufferSize", -1);
 
     if (fileName == null)
-      throw new IllegalArgumentException("Missing config entry 'topaz.fr.transactionLogger.log.fileName'");
+      throw new IllegalArgumentException("Missing configuration entry '" + base + ".log.fileName'");
 
-    txLog = new TxLog(fileName, maxSize != null ? Long.parseLong(maxSize) : -1L,
-                      maxAge != null ? Long.parseLong(maxAge) : -1L,
-                      bufSize != null ? Integer.parseInt(bufSize) : -1);
+    txLog = new TxLog(fileName, maxSize, maxAge, bufSize);
+    worker.start();
   }
 
-  private static final long getFlushIval(Properties config) {
-    String flushIval = config.getProperty("topaz.fr.transactionLogger.flushInterval");
-    return (flushIval != null) ? Long.parseLong(flushIval) : 30000L;
+  private static final long getFlushIval(Configuration config) {
+    return config.getLong("transactionLogger.flushInterval", 30000L);
   }
 
   public void modelCreated(URI filterModel, URI realModel) throws ResolverException {

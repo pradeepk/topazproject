@@ -11,10 +11,8 @@
 package org.topazproject.mulgara.ws;
 
 import java.io.File;
-import java.net.URL;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.MalformedURLException;
 import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
@@ -22,7 +20,6 @@ import javax.servlet.ServletContextListener;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.apache.commons.configuration.ConfigurationFactory;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.configuration.ConfigurationException;
 
@@ -32,6 +29,8 @@ import org.mulgara.server.SessionFactory;
 import org.mulgara.server.driver.SessionFactoryFinder;
 import org.mulgara.server.driver.SessionFactoryFinderException;
 import org.mulgara.server.local.LocalSessionFactory;
+
+import org.topazproject.configuration.ConfigurationStore;
 
 /**
  * A ServletContextListener that we use to initialize mulgara.
@@ -44,12 +43,6 @@ public class WebAppListenerInitMulgara implements ServletContextListener {
   private static SessionFactory sessionFactory;
 
   /**
-   * A property used to define the <code>ConfigurationFactory</code> configuration 
-   * <code>URL</code>.
-   */
-  public static final String CONFIG_FACTORY_PROPERTY_NAME = "org.topazproject.mulgara.configuration";
-
-  /**
    * Initialize Mulgara.
    *
    * @param event context for initialization
@@ -57,7 +50,7 @@ public class WebAppListenerInitMulgara implements ServletContextListener {
   public void contextInitialized(ServletContextEvent event) {
     try {
       ServletContext context = event.getServletContext();
-      Configuration config = initWebAppCommonsConfig(context, CONFIG_FACTORY_PROPERTY_NAME);
+      Configuration config = ConfigurationStore.getInstance().getConfiguration();
       config = config.subset("topaz.mulgara");
 
       // Create directories
@@ -124,56 +117,5 @@ public class WebAppListenerInitMulgara implements ServletContextListener {
    */
   public static SessionFactory getSessionFactory() {
     return sessionFactory;
-  }
-
-  /**
-   * Initialize commons-configuration from within a web-application. The commons-configuration
-   * itself is configured from an xml configuration file. This method attempts to locate
-   * that file by building a <code>URL</code>. It can be defined as a System property (eg.
-   * <code>-Dorg.x.configuration=file:///etc/x/config.xml</code>) or as a web application
-   * context initialization parameter. If specified in both places, then the System property
-   * will take precedence over the context initialization parameter. If a property is not
-   * present or propertyName is null, configuration will be read from
-   * <code>/WEB-INF/config.xml</code>.
-   * <p>
-   * If the value of the propertyName starts with a '/', then it is assumed to be relative to
-   * the web application context. Otherwise it must be a valid <code>URL</code>.</p>
-   *
-   * @param context the context of the servlet container.
-   * @param propertyName the name of the system or webapp context initialization parameter.
-   * @throws ConfigurationException if there is a problem initalizing commons-configuration.
-   * @return a valid Configuration object
-   * @see org.apache.commons.configuration.ConfigurationFactory for details on how to configure.
-   */
-  private Configuration initWebAppCommonsConfig(ServletContext context, String propertyName)
-      throws ConfigurationException {
-    String name = null;
-
-    if (propertyName != null) {
-      name = System.getProperty(propertyName); // System property
-      if (name == null)
-        name = context.getInitParameter(propertyName); // Configured in web.xml
-    }
-    if (name == null)
-      name = "/WEB-INF/config.xml"; // Default
-
-    URL url;
-    try {
-      if (!name.startsWith("/"))
-        url = new URL(name);
-      else {
-        url = context.getResource(name);
-        if (url == null)
-          throw new ConfigurationException("'" + name + "' not found in the web-app context");
-      }
-    } catch (MalformedURLException mue) {
-      throw new ConfigurationException("Unable to load configuration from " + name, mue);
-    }
-
-    log.info("Configuration-commons configured from " + url);
-
-    ConfigurationFactory factory = new ConfigurationFactory();
-    factory.setConfigurationURL(url);
-    return factory.getConfiguration();
   }
 }

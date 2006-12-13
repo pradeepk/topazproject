@@ -14,9 +14,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Properties;
 
 import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 
 /** 
@@ -32,13 +32,11 @@ public class BackupUpdateFilter implements UpdateFilter {
 
   private final String pidBase;
 
-  public BackupUpdateFilter() throws IOException {
-    Properties config = new Properties();
-    config.load(getClass().getResourceAsStream(FilterResolverFactory.CONFIG_RSRC));
-
-    pidBase = config.getProperty("topaz.fr.backupUpdateFilter.pidBase");
+  public BackupUpdateFilter(Configuration config, String base) throws IOException {
+    pidBase = config.getString("backupUpdateFilter.pidBase", null);
     if (pidBase == null)
-      throw new IOException("Missing configuration entry 'topaz.fr.backupUpdateFilter.pidBase'");
+      throw new IOException("Missing configuration entry '" + base +
+                            ".backupUpdateFilter.pidBase'");
   }
 
   /** 

@@ -16,16 +16,15 @@ import java.net.URI;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.BitSet;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Properties;
 import java.util.Set;
 
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.net.URLCodec;
+import org.apache.commons.configuration.Configuration;
 import org.apache.log4j.Logger;
 import fedora.common.Constants;
 import fedora.common.PID;
@@ -85,24 +84,22 @@ public class BestEffortUpdateFilter implements UpdateFilter {
     PID_CHARS.set('-');
   }
 
-  public BestEffortUpdateFilter() throws IOException {
-    Properties config = new Properties();
-    config.load(getClass().getResourceAsStream(FilterResolverFactory.CONFIG_RSRC));
+  public BestEffortUpdateFilter(Configuration config, String base) throws IOException {
+    config = config.subset("bestEffortUpdateFilter");
+    base  += ".bestEffortUpdateFilter";
 
-    shortPidBase = config.getProperty("topaz.fr.bestEffortUpdateFilter.shortPidBase");
+    shortPidBase = config.getString("shortPidBase", null);
 
     prefixMap = new HashMap();
-    for (Enumeration e = config.propertyNames(); e.hasMoreElements(); ) {
-      String n = (String) e.nextElement();
-      if (n.startsWith("topaz.fr.bestEffortUpdateFilter.prefixMap."))
-        prefixMap.put(n.substring(42), config.getProperty(n));
+    for (Iterator iter = config.getKeys("prefixMap"); iter.hasNext(); ) {
+      String n = (String) iter.next();
+      prefixMap.put(n.substring(10), config.getString(n));
     }
 
     ignoreList = new HashSet();
-    for (Enumeration e = config.propertyNames(); e.hasMoreElements(); ) {
-      String n = (String) e.nextElement();
-      if (n.startsWith("topaz.fr.bestEffortUpdateFilter.ignore."))
-        ignoreList.add(config.getProperty(n));
+    for (Iterator iter = config.getKeys("ignore"); iter.hasNext(); ) {
+      String n = (String) iter.next();
+      ignoreList.add(config.getString(n));
     }
   }
 

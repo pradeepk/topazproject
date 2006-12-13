@@ -8,6 +8,9 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
 
   <!-- Initialize Mulgara -->
   <listener>
+    <listener-class>org.topazproject.configuration.WebAppListener</listener-class>
+  </listener>
+  <listener>
     <listener-class>org.topazproject.mulgara.ws.WebAppListenerInitMulgara</listener-class>
   </listener>
 

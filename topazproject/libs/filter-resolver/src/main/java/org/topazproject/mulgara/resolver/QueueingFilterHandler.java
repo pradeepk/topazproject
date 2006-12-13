@@ -62,7 +62,6 @@ abstract class QueueingFilterHandler extends AbstractFilterHandler {
     xaResource = new QueueingXAResource();
 
     worker = new Worker(workerName, workWait, clscWait);
-    worker.start();
   }
 
   protected void queue(Object obj) {
@@ -175,7 +174,7 @@ abstract class QueueingFilterHandler extends AbstractFilterHandler {
     }
   }
 
-  private class Worker extends Thread {
+  protected class Worker extends Thread {
     private final long maxWait;
     private final long coalesce;
 
