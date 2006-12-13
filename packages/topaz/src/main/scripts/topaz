@@ -1,36 +1,36 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# $HeadURL::                                                                   $
+# $Id$
 #
-# tomcat        
+# Tomcat init script
+# Copyright (c) 2006 by Topaz, Inc.
+# http://topazproject.org
 #
-# chkconfig: 2345 64 36
-# description:  Start up the Tomcat servlet engine.
+# Licensed under the Educational Community License version 1.0
+# http://opensource.org/licenses/ecl1.php
 
-# Source function library.
+# chkconfig: 2345 96 11
+# description: topaz services (& search)
+
+# Validate valid configuration files
+[ -e /etc/topaz/topaz.xml ] && ! xmllint --noout /etc/topaz/topaz.xml && exit 1
+
+# Source function library (not really used but seems standard on redhat)
 . /etc/init.d/functions
 
+# Read our configuration from sysconfig (a redhat convention)
+[ -e /etc/sysconfig/topaz ] && . /etc/sysconfig/topaz
 
-RETVAL=$?
-CATALINA_HOME="/usr/apps/apache/tomcat/jakarta-tomcat-4.0.4"
+# If our system is setup incorrectly somehow, minimal attempt to clean up
+[ -n "$JAVA_HOME" ] && [ ! -d "$JAVA_HOME" ] && \
+    echo "WARN: Resetting Invalid JAVA_HOME ($JAVA_HOME)" && JAVA_HOME=
+    
+# Try to set JAVA_HOME if not set above
+[ -z "$JAVA_HOME" ] && JAVA_HOME=`find /opt -name 'jdk*' -maxdepth 1 | head -1`
+export JAVA_HOME
 
-case "$1" in
- start)
-        if [ -f $CATALINA_HOME/bin/startup.sh ];
-          then
-            echo $"Starting Tomcat"
-            /bin/su tomcat $CATALINA_HOME/bin/startup.sh
-        fi
-        ;;
- stop)
-        if [ -f $CATALINA_HOME/bin/shutdown.sh ];
-          then
-            echo $"Stopping Tomcat"
-            /bin/su tomcat $CATALINA_HOME/bin/shutdown.sh
-        fi
-        ;;
- *)
-        echo $"Usage: $0 {start|stop}"
-        exit 1
-        ;;
-esac
+# Start multicast for ecache
+/usr/local/topaz/bin/multicast
 
-exit $RETVAL
+# Start/stop/etc tomcat
+/usr/local/topaz/bin/tomcat --basename $(basename `readlink -f $0`) $*
