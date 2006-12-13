@@ -50,9 +50,9 @@ public abstract class BaseAnnotation {
   public String getEscapedTruncatedComment() throws ApplicationException {
     String comment = getComment();
     if (comment.length() > TRUNCATED_COMMENT_LENGTH) {
-      return TextUtils.hyperlink(comment.substring(0, TRUNCATED_COMMENT_LENGTH));
+      return TextUtils.hyperlink(comment.substring(0, TRUNCATED_COMMENT_LENGTH) + "...");
     } else { 
-      return null;
+      return TextUtils.hyperlink(comment);
     }
   }
   
