@@ -90,7 +90,7 @@ public class HomePageAction extends BaseActionSupport {
             log.debug("retrieving last week's articles from TOPAZ");
           }
           lastWeeksArticles = articleWebService.getArticleInfos(weekAgo.toString(), null, null,
-                              null, new int[]{ST_DISABLED/*ST_ACTIVE*/}, false);
+                              null, new int[]{ST_ACTIVE}, false);
           
           // Store in the cache
           articleCacheAdministrator.putInCache(WEEK_ARTICLE_CACHE_KEY, lastWeeksArticles);
