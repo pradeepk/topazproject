@@ -9,4 +9,4 @@
 		<li><a href="${siteMapURL}" title="PLoS ONE Site Map" tabindex="204">Site Map</a></li>
 		<li><a href="http://www.plos.org" title="PLoS.org" tabindex="205">PLoS.org</a></li>
 	</ul>
-<div class="powered">Colocation services provided by <a href="http://www.unitedlayer.com/" title="United Layer: Built on IP Services">United Layer</a></div>
+<div class="powered">Managed Colocation provided by <a href="http://www.unitedlayer.com/" title="United Layer: Built on IP Services">United Layer</a></div>
