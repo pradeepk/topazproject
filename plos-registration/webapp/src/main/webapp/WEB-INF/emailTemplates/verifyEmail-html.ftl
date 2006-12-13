@@ -11,6 +11,5 @@ or cut and paste the link below if you have problems:
 ${url}?loginName=${user.loginName}&emailVerificationToken=${user.emailVerificationToken}
 
 </body>
-ä
 </html>
 
