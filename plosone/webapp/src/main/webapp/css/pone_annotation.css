@@ -88,7 +88,7 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .dialog .text label,
 .dialog legend,
 .post legend	{ display: none; }
-.flag .error	{background-color: #fff; }
+.pane .error	{ background-color: #fff; font-style: normal; }
 
 .dialog input,
 .post input	{ display: block; margin: 10px 0;}
