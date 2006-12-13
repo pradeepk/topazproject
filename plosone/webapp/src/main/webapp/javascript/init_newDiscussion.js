@@ -35,34 +35,46 @@
     );    
        
     dojo.event.connect(responseTitle, "onblur", function(e) {
+        var fldResponseTitle = dcr.form.commentTitle;
         if(responseTitle.value != "" && responseTitle.value != dcr.responseCue) {
-          var fldResponseTitle = dcr.form.commentTitle;
           fldResponseTitle.value = responseTitle.value;
+        }
+        else {
+          fldResponseTitle.value = "";
         }
         topaz.formUtil.textCues.on(responseTitle, dcr.responseTitleCue);
       }
     );    
 
     dojo.event.connect(responseArea, "onblur", function(e) {
+        var fldResponse = dcr.form.comment;
         if(responseArea.value != "" && responseArea.value != dcr.responseCue) {
-          var fldResponse = dcr.form.comment;
           fldResponse.value = responseArea.value;
+        }
+        else {
+          fldResponse.value = "";
         }
         topaz.formUtil.textCues.on(responseArea, dcr.responseCue);
       }
     );    
        
     dojo.event.connect(responseTitle, "onchange", function(e) {
+        var fldResponseTitle = dcr.form.commentTitle;
         if(responseTitle.value != "" && responseTitle.value != dcr.responseCue) {
-          var fldResponseTitle = dcr.form.commentTitle;
           fldResponseTitle.value = responseTitle.value;
+        }
+        else {
+          fldResponseTitle.value = "";
         }
       }
     );    
        
     dojo.event.connect(responseArea, "onchange", function(e) {
+        var fldResponse = dcr.form.comment;
         if(responseArea.value != "" && responseArea.value != dcr.responseCue) {
-          var fldResponse = dcr.form.comment;
+          fldResponse.value = responseArea.value;
+        }
+        else {
           fldResponse.value = responseArea.value;
         }
       }
