@@ -26,7 +26,7 @@
     </file>
     <!-- Copy over webassp specific log4j.properties file -->
     <file>
-      <source>src/main/resources/log4j.properties</source>
+      <source>src/main/resources/log4j.xml</source>
       <outputDirectory>common/classes</outputDirectory>
     </file>
   </files>
