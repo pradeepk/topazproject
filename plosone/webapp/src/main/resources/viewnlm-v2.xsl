@@ -461,9 +461,10 @@
 				<xsl:text>report bugs</xsl:text>
 			</xsl:element><xsl:text>.</xsl:text>
 		</div>
-
+	<span id="oa">Open Access</span>
 		<xsl:apply-templates/>
 	</div>
+
 <!--    </body>-->
 
 <!--  </html>-->
