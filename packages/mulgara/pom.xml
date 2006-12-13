@@ -131,6 +131,11 @@
               </sources>
             </mapping>
           </mappings>
+
+          <requires>
+            <require>topaz-tools</require>
+          </requires>
+
           <preinstallScript>src/main/scripts/preinstall</preinstallScript>
           <postinstallScript>src/main/scripts/postinstall</postinstallScript>
           <preremoveScript>src/main/scripts/preremove</preremoveScript>
