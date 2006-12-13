@@ -12,9 +12,9 @@
       <source>src/main/resources/server.xml</source>
       <outputDirectory>conf</outputDirectory>
     </file>
-    <!-- Copy over webassp specific log4j.xml file -->
+    <!-- Copy over webassp specific log4j.properties file -->
     <file>
-      <source>src/main/resources/log4j.xml</source>
+      <source>src/main/resources/log4j.properties</source>
       <outputDirectory>common/classes</outputDirectory>
     </file>
   </files>

@@ -31,11 +31,11 @@
       <outputDirectory>webapps/cas/WEB-INF</outputDirectory>
       <destName>LoggerConf.xml</destName>
     </file>
-    <!-- Copy over webapp specific log4j.xml file -->
+    <!-- Copy over webapp specific log4j.properties file -->
     <file>
-      <source>src/main/resources/plos-registration-log4j.xml</source>
+      <source>src/main/resources/plos-registration-log4j.properties</source>
       <outputDirectory>common/classes</outputDirectory>
-      <destName>log4j.xml</destName>
+      <destName>log4j.properties</destName>
     </file>
   </files>
 
