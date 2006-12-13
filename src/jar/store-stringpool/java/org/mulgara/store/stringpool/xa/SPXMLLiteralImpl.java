@@ -119,7 +119,7 @@ public class SPXMLLiteralImpl extends AbstractSPTypedLiteral
           toString());
     }
     catch (Exception e) {
-      throw new IllegalArgumentException("Failed to validate: " + str);
+      throw new IllegalArgumentException("Failed to validate: " + str, e);
     }
   }
 
