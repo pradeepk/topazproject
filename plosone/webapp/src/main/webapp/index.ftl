@@ -26,7 +26,7 @@ Submit Today</a></li>
 				<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="${freemarker_config.context}/images/pone_home_moore.gif" alt="Moore Foundation"/></a>
 						</div>					
 						<div class="block banner">
-							<img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF" />
+							<a href="http://www.plosjournals.org/perlserv/?request=clickthru&id=296&filename=v_pod_plo_01.GIF"><img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF" /></a>
 						</div> 
 
 													   
@@ -51,10 +51,13 @@ Submit Today</a></li>
 	<@ww.url namespace="/article" includeParams="none" id="articleURL4" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000045"/>
 	<@ww.url namespace="/article" includeParams="none" id="articleURL5" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000051"/>
 	<@ww.url namespace="/article" includeParams="none" id="articleURL6" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000039"/>
+	<@ww.url namespace="/article" includeParams="none" id="articleURL7" action="fetchArticle" articleURI="info:doi/10.1371/journal.pone.0000079"/>
 
 <a href="${articleURL1}" title="Read Open-Access Article">Wnt and Hedgehog Are Critical Mediators of Cigarette Smoke-Induced Lung Cancer</a><p>The molecular basis of cigarette-induced lung cancer is poorly understood. This paper shows that genes more normally associated with the patterning of embryos may be involved. This may open new avenues for the development of therapies.</p>
 
 <a href="${articleURL2}" title="Read Open-Access Article">The Syntax and Meaning of Wild Gibbon Songs</a><p>Human languages are subtle. Identical words can mean different things when spoken in a different order. This paper shows that the same is true for gibbons. When threatened they change the structure of their calls, warning individuals within earshot of the danger.</p>
+
+<a href="${articleURL7}" title="Read Open-Access Article">Mesenchymal Stem Cell-Mediated Functional Tooth Regeneration in Swine</a><p>Much discussion surrounds the use of stem cells for regenerating organs as a possible treatment for a diverse spectrum of diseases. This paper explores the potential of human stem cells isolated from dental papillae to regenerate functional teeth.</p>
 
 <h3>Also of Note</h3>
 <ul class="articles">

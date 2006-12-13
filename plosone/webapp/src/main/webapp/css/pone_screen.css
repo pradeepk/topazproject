@@ -150,7 +150,7 @@ div.pane div.post a:hover	{ background-color: #393; }
 
 */
 #container 			{ position: relative; }
-#container, #hdr	{ margin: 0 auto; min-width: 675px; max-width: 940px; }
+#container, #hdr	{ margin: 0 auto; min-width: 675px; max-width: 930px; }
 #content 			{ margin: 50px 4px 50px 22px; line-height: 1.8em; font-size: .9em; }
 
 /* Horizontal Advertising Banners : Top & Bottom Slots
