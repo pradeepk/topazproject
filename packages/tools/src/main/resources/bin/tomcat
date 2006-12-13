@@ -183,7 +183,7 @@ jsvc_stop() {
 su_cmd() {
   if [ -n "$USER" ]; then
     # Must use EOF rubbish here to properly capture PID wanted for status below
-    su $USER <<EOF
+    su $USER -s /bin/bash <<EOF
 $* >>$STDLOG 2>&1 &
 echo \$! >$PIDFILE
 EOF
