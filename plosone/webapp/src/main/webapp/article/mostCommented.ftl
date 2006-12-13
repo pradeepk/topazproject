@@ -3,7 +3,8 @@
 							<ul class="articles">
 								<#list commentedArticles as commented>
 								<li>
-									<a href="article/fetchArticle.action?articleURI=${commented.uri?url}" title="Read Open Access Article">${commented.title}</a>
+  								<@ww.url id="articleURL" includeParams="none" namespace="/article" action="fetchArticle" articleURI="${commented.uri?url}"/>
+									<a href="${articleURL}" title="Read Open Access Article">${commented.title}</a>
 								</li>
 								</#list>
 							</ul>
