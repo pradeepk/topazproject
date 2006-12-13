@@ -58,8 +58,12 @@ IE PC fixes
 * html #home { height: 1% }
 html>body #home { height: auto }
 
+* html #db input.searchField input { background-attachment: fixed; }
+
 /* IE 7 hax */
 *:first-child+html ul#tabsContainer 	{ }
 *:first-child+html ul#tabsContainer li 	{ padding-top: 0; padding-bottom: 0; }
 *:first-child+html ul#tabsContainer li span { padding-top: 14px; padding-bottom: 14px;}
+*:first-child+html .multiple .contentwrap { margin-top: -2px;}
+
 
