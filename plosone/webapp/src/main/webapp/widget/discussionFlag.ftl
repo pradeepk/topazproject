@@ -1,7 +1,7 @@
 <!-- begin : post response -->
 <div class="flag pane" id="FlaggingPanel" >
 	<div id="flagForm">
-		<h5 class="flag icon">Flag This Response</h5>
+		<h5 class="flag icon">Why should this posting be reviewed? <a href="${freemarker_config.getContext()}/static/commentGuidelines.action#identifying">(See also guidelines for commenting.)</a></h5>
 		<div class="close btn" id="btnCloseFlag"><a href="#" title="Close this dialogue box">Cancel</a></div>
 		<form name="discussionFlag" method="post" action="">
 			<input type="hidden" name="urlParam" value="" />
@@ -26,6 +26,8 @@
 				<label for="reponse"><span class="none">Enter your response</span><!-- error message style <em>Please enter your response</em> --></label>
 	
 				<textarea id="responseArea" title="Add any additional information here..." class="response" name="response" >Add any additional information here...</textarea>
+				
+				
 				
 				<div class="btnwrap"><input name="submit" value="Submit" type="button" id="btnSubmit" title="Click to Submit Your Response"/></div>
 				
