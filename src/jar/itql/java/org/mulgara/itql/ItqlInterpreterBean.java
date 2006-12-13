@@ -950,8 +950,12 @@ public class ItqlInterpreterBean {
           }
           else if (object instanceof LiteralImpl) {
 
-            variable.appendChild(doc.createTextNode(
-                ( (LiteralImpl) object).getLexicalForm()));
+            LiteralImpl lit = (LiteralImpl) object;
+            if (lit.getDatatypeURI() != null)
+              variable.setAttribute("datatype", lit.getDatatypeURI().toString());
+            if (lit.getLanguage() != null)
+              variable.setAttribute("language", lit.getLanguage());
+            variable.appendChild(doc.createTextNode(lit.getLexicalForm()));
           }
           else if (object instanceof URIReference) {
 
