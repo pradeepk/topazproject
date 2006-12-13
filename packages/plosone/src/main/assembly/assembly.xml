@@ -29,8 +29,8 @@
   <dependencySets>
     <dependencySet>
       <outputDirectory>/webapps/</outputDirectory>
-      <outputFileNameMapping>${artifactId}.${extension}</outputFileNameMapping>
-      <unpack>false</unpack>
+      <outputFileNameMapping>${artifactId}</outputFileNameMapping>
+      <unpack>true</unpack>
       <includes>
         <include>*:war</include>
       </includes>
