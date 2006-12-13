@@ -60,7 +60,7 @@
               <@ww.textfield name="endOffset" label="End offset" value="%{'39'}" required="true"/>
               <@ww.textfield name="commentTitle" label="Title" value="%{'title1'}"/>
               <@ww.textfield name="supercedes" label="Older Annotation to supersede" value="%{'doi:anOlderAnnotation'}" size="50"/>
-              <@ww.checkbox name="public" label="Is it Public?" fieldValue="true"/>
+              <@ww.checkbox name="isPublic" label="Is it Public?" fieldValue="true"/>
               <@ww.textarea name="comment" label="Annotation text" value="%{'This article seems to cover the same grounds as this ...'}" rows="'3'" cols="'30'" required="true"/>
               <@ww.submit value="create annotation" />
             </@ww.form>

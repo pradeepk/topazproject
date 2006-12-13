@@ -45,7 +45,20 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
    * Also does some profanity check for commentTitle and comment before creating the annotation.
    */
   public String execute() throws Exception {
-    if (!checkIfValid()) return INPUT;
+    return createAnnotation();
+  }
+
+  /**
+   * Save the discussion
+   * @return webwork status
+   * @throws Exception Exception
+   */
+  public String executeSaveDiscussion() throws Exception {
+    return createAnnotation();
+  }
+
+  private String createAnnotation() {
+    if (isInvalid()) return INPUT;
 
     try {
       final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(commentTitle);
@@ -70,17 +83,18 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
     return SUCCESS;
   }
 
-  /**
-   * Save the discussion
-   * @return webwork status
-   * @throws Exception Exception
-   */
-  public String executeSaveDiscussion() throws Exception {
-    if (StringUtils.isBlank(commentTitle)) {
-      addFieldError("commentTitle", "A title is required for a discussion");
-      return INPUT;
+  private boolean isInvalid() {
+    boolean invalid = false;
+    if (isPublic && StringUtils.isEmpty(commentTitle)) {
+      addFieldError("commentTitle", "A title is required for a public comment.");
+      invalid = true;
     }
-    return execute();
+
+    if (StringUtils.isEmpty(comment)) {
+      addFieldError("comment", "You must say something in your comment");
+      invalid = true;
+    }
+    return invalid;
   }
 
   private void addMessages(final List<String> messages, final String checkType, final String fieldName) {
@@ -91,18 +105,6 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
       }
       addFieldError(fieldName, "Annotation creation failed " + checkType + " with following messages: " + sb.toString().trim());
     }
-  }
-
-  /**
-   * Validation method
-   * @return if the validation succeeded
-   */
-  private boolean checkIfValid() {
-    if (isPublic && StringUtils.isEmpty(commentTitle)) {
-      addFieldError("commentTitle", "A title is required for a public comment.");
-      return false;
-    }
-    return true;
   }
 
   /**
@@ -205,7 +207,6 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   /**
    * @return the annotation content
    */
-  @RequiredStringValidator(message="You must say something in your annotation")
   public String getComment() {
     return comment;
   }
