@@ -76,6 +76,9 @@
           </mappings>
 
           <preinstallScript>src/main/scripts/preinstall</preinstallScript>
+          <requires>
+            <require>/bin/bash</require>
+          </requires>
         </configuration>
       </plugin>
     </plugins>
