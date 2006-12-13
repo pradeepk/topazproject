@@ -33,6 +33,7 @@
 	<url>
 	    <base>https://${plos-registration.hostname}:${cas.port.https}${plos-registration.app-context}</base>
 	    <registration>${plos-registration.url.base}/register.action</registration>
+			<change-password>${plos-registration.url.base}/changePassword.action</change-password>
 	</url>
     </plos-registration>
 </config>
