@@ -50,7 +50,7 @@
 	<ol>
 	    <li><p><em>Your E-mail address will always be kept private. See the the <a href="http://www.plos.org/privacy.html" title="PLoS Privacy Statement">PLoS Privacy Statement</a> for more information.</em></p>
 		<strong>${email}</strong><br />
-<!--	Forgot your password? Change it <a href="#" title="Click here to change your password">here</a>.--></li>
+Forgot your password? Change it <a href="${freemarker_config.changePasswordURL}" title="Click here to change your password">here</a>.
     </li>
 	</ol>
 	</fieldset>
