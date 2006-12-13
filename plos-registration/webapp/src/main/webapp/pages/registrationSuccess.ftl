@@ -7,14 +7,7 @@
 	<p>
 		<strong>Thanks for registering!</strong>
 		Please check your e-mail inbox to confirm your registration.
- 
-		<!--
-		<@ww.url includeParams="none" id="emailVerificationURL" action="emailVerification">
-    	<@ww.param name="loginName" value="user.loginName"/>
-      <@ww.param name="emailVerificationToken" value="user.emailVerificationToken"/>
-    </@ww.url>
-    <@ww.a href="%{emailVerificationURL}"  >${emailVerificationURL}</@ww.a>
-		-->
+
 	</p>
 	<br/>
 	<p>Continue to <a href="http://www.plosjournals.org" title="PLoS Journals: Peer-reviewed open-access journals from the Public Library of Science">PLoS Journals</a> or to <a href="${plosOneUrl}${plosOneContext}">PLoS ONE</a>.</p>
