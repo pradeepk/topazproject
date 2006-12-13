@@ -64,8 +64,9 @@ public class PermissionsImpl implements Permissions {
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
 
   //
-  private static final String GRANTS_MODEL  = "<" + CONF.getString("topaz.models.grants") + ">";
-  private static final String REVOKES_MODEL = "<" + CONF.getString("topaz.models.revokes") + ">";
+  private static final String GRANTS_MODEL      = "<" + CONF.getString("topaz.models.grants") + ">";
+  private static final String REVOKES_MODEL     =
+    "<" + CONF.getString("topaz.models.revokes") + ">";
   private static final String PP_MODEL          = "<" + CONF.getString("topaz.models.pp") + ">";
   private static final String GRANTS_MODEL_TYPE =
     "<" + CONF.getString("topaz.models.grants[@type]", "tucana:Model") + ">";
@@ -117,18 +118,21 @@ public class PermissionsImpl implements Permissions {
 
   private static Ehcache initCache(String name) {
     Ehcache cache;
+
     try {
       cache = CacheManager.getInstance().getEhcache(name);
     } catch (CacheException ce) {
       log.error("Error getting cache-manager", ce);
+
       return null;
     } catch (IllegalStateException ise) {
       log.error("Error getting cache", ise);
+
       return null;
     }
 
     if (cache == null) {
-      log.warn("No cache configuration found for " + name + ".");
+      log.info("No cache configuration found for " + name + ".");
 
       return cache;
     }
@@ -138,7 +142,7 @@ public class PermissionsImpl implements Permissions {
       CacheManager.getInstance().replaceCacheWithDecoratedCache(cache, newBlockingCache);
     }
 
-    log.warn("Cache configuration found for " + name + ".");
+    log.info("Cache configuration found for " + name + ".");
 
     return CacheManager.getInstance().getEhcache(name);
   }
@@ -330,11 +334,17 @@ public class PermissionsImpl implements Permissions {
     HashMap map;
     Element element = grantsCache.get(resource);
 
-    if (element != null)
+    if (element != null) {
       map = (HashMap) element.getValue();
-    else {
+
+      if (log.isDebugEnabled())
+        log.debug("grants-cache: cache hit for " + resource);
+    } else {
       map = createPermissionMap(resource, GRANTS_MODEL);
       grantsCache.put(new Element(resource, map));
+
+      if (log.isDebugEnabled())
+        log.debug("grants-cache: cache miss for " + resource);
     }
 
     ArrayList list = (ArrayList) map.get(permission);
@@ -356,11 +366,17 @@ public class PermissionsImpl implements Permissions {
     HashMap map;
     Element element = revokesCache.get(resource);
 
-    if (element != null)
+    if (element != null) {
       map = (HashMap) element.getValue();
-    else {
+
+      if (log.isDebugEnabled())
+        log.debug("revokes-cache: cache hit for " + resource);
+    } else {
       map = createPermissionMap(resource, REVOKES_MODEL);
       revokesCache.put(new Element(resource, map));
+
+      if (log.isDebugEnabled())
+        log.debug("grants-cache: cache miss for " + resource);
     }
 
     ArrayList list = (ArrayList) map.get(permission);
