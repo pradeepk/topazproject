@@ -91,6 +91,7 @@ function initAnnotationForm() {
 	dojo.event.connect(btn_cancel, "onclick", function(e) {
     dojo.dom.removeChildren(submitMsg);
     dlg.hide();
+    topaz.formUtil.enableFormFields(annotationForm);
 	  getArticle();
     topaz.displayComment.processBugCount();
     e.preventDefault();
