@@ -28,8 +28,6 @@
     <dependency>
       <groupId>org.mulgara</groupId>
       <artifactId>mulgara-lite</artifactId>
-      <version>1.0.1-SNAPSHOT</version>
-      <scope>provided</scope>
     </dependency>
     <dependency>
       <groupId>org.mulgara</groupId>
