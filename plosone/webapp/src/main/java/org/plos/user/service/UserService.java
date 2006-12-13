@@ -117,12 +117,21 @@ public class UserService extends BaseConfigurableService {
         log.debug("retrieved user from cache: " + topazUserId);
       }
     } catch (NeedsRefreshException nre) {
+      boolean updated = false;
       if (log.isDebugEnabled()) {
-        log.debug("trying to get from Fedora:" + topazUserId);
+        log.debug("trying to get from TOPAZ:" + topazUserId);
       }
-        
-      PlosOneUser pou = getUserWithProfileLoaded(topazUserId);
-      retVal = pou.getDisplayName();
+      try {
+        PlosOneUser pou = getUserWithProfileLoaded(topazUserId);
+        if (pou != null) {
+          userCacheAdministrator.putInCache(topazUserId, pou.getDisplayName());
+          updated = true;
+        }
+        retVal = pou.getDisplayName();
+      } finally {
+        if (!updated)
+          userCacheAdministrator.cancelUpdate(topazUserId);
+      }
     }
     return retVal;
   }
@@ -142,7 +151,7 @@ public class UserService extends BaseConfigurableService {
     if (null != userPrefs) {
       pou.setUserPrefs(userPrefs);
     }
-    userCacheAdministrator.putInCache(topazUserId, pou.getDisplayName());
+
     return pou;
   }
 
