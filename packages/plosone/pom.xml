@@ -70,6 +70,18 @@
               <groupname>topaz</groupname>
             </mapping>
             <mapping>
+              <directory>/var/spool/plosone</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+            </mapping>
+            <mapping>
+              <directory>/var/cache/plosone</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+            </mapping>
+            <mapping>
               <directory>/usr/local/topaz/${project.build.finalName}-tomcat</directory>
               <filemode>755</filemode>
               <username>topaz</username>
