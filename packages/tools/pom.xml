@@ -74,6 +74,8 @@
               </sources>
             </mapping>
           </mappings>
+
+          <preinstallScript>src/main/scripts/preinstall</preinstallScript>
         </configuration>
       </plugin>
     </plugins>
