@@ -1,8 +1,10 @@
 #!/bin/bash
+# $HeadURL::                                                                   $
+# $Id$
 #
 # fedora        
 #
-# chkconfig: 345 63 37
+# chkconfig: 345 93 13
 # description:  Start up the fedora app.
 
 # Source function library.
@@ -11,7 +13,15 @@
 # Start multicast for ecache
 /usr/local/topaz/bin/multicast
 
-FEDORA_HOME="/usr/local/topaz/fedora-0.5-SNAPSHOT"
+# Try to set JAVA_HOME if not set
+[ -z "$JAVA_HOME" ] && JAVA_HOME=`find /opt -name 'jdk*' -maxdepth 1 | head -1`
+export JAVA_HOME
+
+# Verify that JAVA_HOME is set and exists
+[ -z "$JAVA_HOME" ] && echo "JAVA_HOME must be set" && exit 1
+[ ! -d "$JAVA_HOME" ] && echo "JAVA_HOME ($JAVA_HOME) invalid" && exit 1
+
+FEDORA_HOME="/usr/local/topaz/fedora"
 export FEDORA_HOME
 
 FEDORA_SH="$FEDORA_HOME/server/bin/fedora.sh"
