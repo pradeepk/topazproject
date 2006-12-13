@@ -852,7 +852,8 @@ class DatabaseSession implements Session, LocalSession {
       throw new QueryException("Unable to mark transaction for rollback", e);
     }
 
-    rollbackCause = throwable;
+    if (rollbackCause == null)
+      rollbackCause = throwable;
   }
 
   /**
