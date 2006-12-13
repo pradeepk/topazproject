@@ -8,6 +8,9 @@
 # Source function library.
 . /etc/init.d/functions
 
+# Start multicast for ecache
+/usr/local/topaz/bin/multicast
+
 FEDORA_HOME="/usr/local/topaz/fedora-0.5-SNAPSHOT"
 export FEDORA_HOME
 
