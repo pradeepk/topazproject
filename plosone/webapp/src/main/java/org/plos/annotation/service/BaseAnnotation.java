@@ -52,7 +52,7 @@ public abstract class BaseAnnotation {
     if (comment.length() > TRUNCATED_COMMENT_LENGTH) {
       return TextUtils.hyperlink(comment.substring(0, TRUNCATED_COMMENT_LENGTH));
     } else { 
-      return TextUtils.hyperlink(comment);
+      return null;
     }
   }
   
