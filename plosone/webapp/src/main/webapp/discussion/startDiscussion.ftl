@@ -20,7 +20,8 @@
 					<input type="hidden" name="target" value="${articleInfo.uri}" />	
 					<input type="hidden" name="commentTitle" value="" />
 					<input type="hidden" name="comment" value="" />
-			
+          <input type="hidden" name="isPublic" value="true" />
+					
 					<div id="responseSubmitMsg" class="error"></div>
 					
 					<fieldset>
