@@ -1,7 +1,7 @@
 	<ul id="nav">
-		<li><a href="http://${freemarker_config.plosOneHost}${freemarker_config.context}">Home</a></li>
+		<li><a href="http://${freemarker_config.plosOneHost}${freemarker_config.context}" tabindex="1">Home</a></li>
 		
-		<li><a href="#">About</a>
+		<li><a href="#" tabindex="2">About</a>
 				<ul>
 				<@ww.url action="information.action" namespace="/static" includeParams="none" id="info"/>
 				<@ww.url action="edboard.action" namespace="/static" includeParams="none" id="edboard"/>
@@ -9,26 +9,22 @@
 				<@ww.url action="license.action" namespace="/static" includeParams="none" id="license"/>
 					<li><a href="${info}">Journal Information</a></li>
 					<li><a href="${edboard}">Editorial Board</a></li>
-					<li><a href="http://www.plos.org/journals/embargopolicy.html">Media Inquiries</a></li>
-<!--					<li><a href="http://www.plos.org/journals/print.html">PLoS in Print</a></li>-->
 					<li><a href="${license}">License</a></li>
 				</ul>
 			</li>			
-		<li><a href="#">For Users</a>
+		<li><a href="#" tabindex="3">For Users</a>
 				<ul>
-				<@ww.url action="faq.action" namespace="/static" includeParams="none" id="faq"/>
 				<@ww.url action="commentGuidelines.action" namespace="/static" includeParams="none" id="comment"/>
 				<@ww.url action="help.action" namespace="/static" includeParams="none" id="help"/>
 				<@ww.url action="sitemap.action" namespace="/static" includeParams="none" id="site"/>				
-  			<@ww.url action="contact.action" namespace="/static" includeParams="none" id="contact"/>				
-					<li><a href="${faq}">Frequently Asked Questions</a></li>
+	  			<@ww.url action="contact.action" namespace="/static" includeParams="none" id="contact"/>				
 					<li><a href="${comment}">Commenting Guidelines</a></li>
 					<li><a href="${help}">Help Using this Site</a></li>
 					<li><a href="${site}">Site Map</a></li>
 					<li><a href="${contact}">Contact Us</a></li>
 				</ul>
 			</li>
-		<li><a href="#">For Authors and Reviewers</a>
+		<li><a href="#" tabindex="4">For Authors and Reviewers</a>
 				<ul>
 				<@ww.url action="whypublish.action" namespace="/static" includeParams="none" id="why"/>
 				<@ww.url action="policies.action" namespace="/static" includeParams="none" id="policies"/>
