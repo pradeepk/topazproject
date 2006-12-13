@@ -5,7 +5,8 @@
 	
 		<div class="source">
 			<span>On the Article</span>
-			<a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=${articleInfo.uri}" title="Back to original article" class="article icon">${articleInfo.title}</a>
+      <@ww.url id="articlePageURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.uri}" includeParams="none"/>
+      <@ww.a href="%{articlePageURL}" title="Back to original article" cssClass="article icon">${articleInfo.title}</@ww.a>
 		</div>
 	
 		<div class="original response">
@@ -14,7 +15,7 @@
 	<!-- begin : posting response -->
 			<div class="posting pane" id="DiscussionPanel">
 				<h5>Post Your Discussion Comment</h5>
-				<div class="close btn" id="btnCancelResponse"><a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=${articleInfo.uri}" title="Cancel and go back to original article">Cancel</a></div>
+				<div class="close btn" id="btnCancelResponse"><@ww.a href="%{articlePageURL}" title="Cancel and go back to original article">Cancel</@ww.a></div>
 				<form name="discussionResponse" method="post" action="">
 					<input type="hidden" name="target" value="${articleInfo.uri}" />	
 					<input type="hidden" name="commentTitle" value="" />
@@ -28,7 +29,7 @@
 						<label for="responseTitle"><span class="none">Enter your comment title</span><!-- error message text <em>A title is required for all public annotations</em>--></label>
 						<input type="text" name="responseTitle" id="responseTitle" value="Enter your comment title..." class="title" alt="Enter your comment title..." />
 						
-						<label for="reponseArea"><span class="none">Enter your comment</span><!-- error message style <em>Please enter your response</em>--></label>
+						<label for="responseArea"><span class="none">Enter your comment</span><!-- error message style <em>Please enter your response</em>--></label>
 						<textarea id="responseArea" title="Enter your comment..." class="response" name="responseArea" >Enter your comment...</textarea>
 						
 						<div class="btnwrap"><input name="post" value="Post" type="button" id="btnPostResponse" title="Click to Post Your Response"/></div>
