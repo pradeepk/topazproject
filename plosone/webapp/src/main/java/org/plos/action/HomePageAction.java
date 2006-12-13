@@ -125,7 +125,7 @@ public class HomePageAction extends BaseActionSupport {
     try {
       // Get from the cache
       retArray= (ObjectInfo[]) 
-        articleCacheAdministrator.getFromCache(MOST_COMMENTED_CACHE_KEY+maxArticles, MOST_COMMENTED_CACHE_DURATION);
+        articleCacheAdministrator.getFromCache(MOST_COMMENTED_CACHE_KEY + maxArticles, MOST_COMMENTED_CACHE_DURATION);
       if (log.isDebugEnabled()) {
         log.debug("retrieved most commented from cache");
       }
@@ -139,7 +139,7 @@ public class HomePageAction extends BaseActionSupport {
         }
         retArray = articleWebService.getCommentedArticles(maxArticles);        
         // Store in the cache
-        articleCacheAdministrator.putInCache(MOST_COMMENTED_CACHE_KEY+maxArticles, retArray);
+        articleCacheAdministrator.putInCache(MOST_COMMENTED_CACHE_KEY + maxArticles, retArray);
         updated = true;
       } catch (RemoteException re) {
         log.error("Could not retrieve most commented on Articles", re);
@@ -147,7 +147,7 @@ public class HomePageAction extends BaseActionSupport {
         if (!updated) {
             // It is essential that cancelUpdate is called if the
             // cached content could not be rebuilt
-            articleCacheAdministrator.cancelUpdate(MOST_COMMENTED_CACHE_KEY);
+            articleCacheAdministrator.cancelUpdate(MOST_COMMENTED_CACHE_KEY + maxArticles);
         }
       }
     }
