@@ -29,7 +29,7 @@ body		{ background-color: transparent }
 div.feature h2	{ background-image: url(../images/pone_home_newnoted_bg.gif); }
 div.subject h2 	{ background-image: url(../images/pone_home_subject_bg.gif); }
 div.info h2		{ background-image: url(../images/pone_home_info_bg.gif); }
-#home h3		{ font-size: 1.6em; border-top: 1px solid #ccc; padding-top: 8px; color: #444;}
+#home h3		{ font-size: 1.6em; border-top: 1px solid #ccc; margin-top: 10px;padding-top: 8px; color: #444;}
 /* Homepage : Layout : Structure
 ----------------------------------------------------------
 This layout has been adapted from the Yahoo Developer's Interface Library
