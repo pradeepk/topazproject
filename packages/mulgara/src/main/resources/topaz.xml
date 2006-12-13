@@ -4,5 +4,13 @@
     <mulgara>
       <databaseDir>/var/lib/topaz/data/mulgara</databaseDir>
     </mulgara>
+
+    <fr>
+      <transactionLogger>
+        <log>
+          <fileName>/var/lib/topaz/mulgara.tx.log</fileName>
+        </log>
+      </transactionLogger>
+    </fr>
   </topaz>
 </config>

@@ -13,7 +13,7 @@
 # description: mulgara rdf database
 
 # Validate valid configuration files
-[ -e /etc/topaz/mulgara.xml ] && ! xmllint --noout /etc/topaz/mulgara.xml && exit 1
+[ -e /etc/topaz/topaz.xml ] && ! xmllint --noout /etc/topaz/topaz.xml && exit 1
 
 # Source function library (not really used but seems standard on redhat)
 . /etc/init.d/functions
