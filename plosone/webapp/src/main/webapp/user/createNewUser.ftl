@@ -1,6 +1,6 @@
 <!-- begin : main content wrapper -->
-<div id="content">
-<h2>Create a Profile</h2>
+<div id="content" class="static">
+<h1>Create a Profile</h1>
 
 
 <#include "user.ftl">
