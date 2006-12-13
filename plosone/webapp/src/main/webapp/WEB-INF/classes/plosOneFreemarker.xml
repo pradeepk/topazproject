@@ -37,7 +37,7 @@
      	<!-- <file>/javascript/topaz/tooltipExtend.js</file> -->
       <file>/javascript/dojoRequire_article.ftl</file>
       <file>/javascript/formSetup_article.js</file>   
-      <!-- <!-- <file>/javascript/topaz/errorConsole.js</file>    -->    -->
+      <!-- <file>/javascript/topaz/errorConsole.js</file>    -->  
       <file>/javascript/init_global.js</file>  
       <file>/javascript/init_navigation.js</file>   
       <file>/javascript/init_article.js</file>   
@@ -56,7 +56,7 @@
       <file>/javascript/topaz/domUtil.js</file>
       <file>/javascript/dojoRequire_discussion.ftl</file>
       <file>/javascript/topaz/responsePanel.js</file>   
-      <!-- <!-- <file>/javascript/topaz/errorConsole.js</file>    -->    -->   
+      <!-- <file>/javascript/topaz/errorConsole.js</file>    --> 
       <file>/javascript/init_global.js</file>  
       <file>/javascript/init_navigation.js</file>   
       <file>/javascript/init_discussion.js</file>   
@@ -75,7 +75,7 @@
       <file>/javascript/topaz/domUtil.js</file>
       <file>/javascript/dojoRequire_discussion.ftl</file>
       <file>/javascript/topaz/responsePanel.js</file>   
-      <!-- <!-- <file>/javascript/topaz/errorConsole.js</file>    -->    -->   
+      <!-- <file>/javascript/topaz/errorConsole.js</file>    -->
       <file>/javascript/init_global.js</file>  
       <file>/javascript/init_navigation.js</file>   
       <file>/javascript/init_newDiscussion.js</file>   
@@ -98,7 +98,7 @@
       <file>/javascript/topaz/domUtil.js</file>
       <file>/javascript/dojoRequire_slideshow.ftl</file>
       <file>/javascript/topaz/slideshow.js</file>   
-      <!-- <!-- <file>/javascript/topaz/errorConsole.js</file>    -->    -->  
+   <!-- <file>/javascript/topaz/errorConsole.js</file>    -->  
       <file>/javascript/init_slideshow.js</file>   
     </javascript>
   </page>
@@ -108,6 +108,13 @@
     <css>
       <file>/css/pone_images.css</file>
     </css>
+    <javascript>
+      <file>/javascript/prototype.js</file>
+      <file>/javascript/browserDetection.js</file>
+      <file>/javascript/dojo/dojo.js</file>
+      <file>/javascript/topaz/topaz.js</file>      
+      <file>/javascript/dojoRequire_slideshow.ftl</file>
+    </javascript>
   </page>
 
   <page>
@@ -133,7 +140,7 @@
       <file>/javascript/topaz/topaz.js</file>      
       <file>/javascript/topaz/formUtil.js</file>   
       <file>/javascript/topaz/domUtil.js</file>
-      <!-- <!-- <file>/javascript/topaz/errorConsole.js</file>    -->    -->   
+       <!-- <file>/javascript/topaz/errorConsole.js</file>    --> 
       <file>/javascript/init_global.js</file>  
       <file>/javascript/init_navigation.js</file>   
     </javascript>
@@ -150,7 +157,7 @@
       <file>/javascript/topaz/domUtil.js</file>
       <file>/javascript/topaz/htmlUtil.js</file>
       <file>/javascript/dojoRequire_profile.ftl</file>
-      <!-- <!-- <file>/javascript/topaz/errorConsole.js</file>    -->    -->   
+      <!-- <file>/javascript/topaz/errorConsole.js</file>    --> 
       <file>/javascript/init_global.js</file>  
       <file>/javascript/init_navigation.js</file>   
       <file>/javascript/init_newProfile.js</file>

@@ -28,6 +28,7 @@
 
 	</div>
 	<div id="figure-window-container">
+	    <@ww.url id="currentImageViewLarger" includeParams="none"  namespace="/article" action="showImageLarge" uri="${currentImage.uri}"/>
 	    <@ww.url id="currentImageUrl" includeParams="none"  action="fetchObject" uri="${currentImage.uri}"/>
  	    <@ww.url id="currentImageAttachmentUrl" includeParams="none"  action="fetchObjectAttachment" uri="${currentImage.uri}"/>
 		<div id="figure-window-hdr">
@@ -35,7 +36,7 @@
 				<a href="#" id="previous" onclick="return topaz.slideshow.showPrevious(this);" class="previous icon<#if currentImage == secondaryObjects?first> hidden</#if>">Previous</a> | <a href="#" id="next" onclick="return topaz.slideshow.showNext(this);" class="next icon<#if currentImage == secondaryObjects?last> hidden</#if>">Next</a>
 			</div>
 			<div id="figure-window-hdr-links">
-				<a href="${currentImageUrl}&representation=${currentImage.repLarge}" id="viewL" class="larger icon" title="Click to view a larger version of this image">View Larger Image</a> 
+				<a href="${currentImageViewLarger}" id="viewL" class="larger icon" title="Click to view a larger version of this image">View Larger Image</a> 
 				<a href="${currentImageAttachmentUrl}&representation=TIF" id="downloadTiff" class="image icon" title="Click to download the original TIFF">		Download original TIFF</a> 
 				<a href="${currentImageAttachmentUrl}&representation=${currentImage.repMedium}" id="downloadPpt" class="ppt icon" title="Click to download a PowerPoint friendly version">Download PowerPoint Friendly Image</a>		
 			</div>
