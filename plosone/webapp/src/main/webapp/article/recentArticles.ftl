@@ -9,7 +9,7 @@
 									<#else>
 								<li>
 									</#if>
-									<@ww.url id="articleURL" includeParams="none" namespace="/article" action="fetchArticle" articleURI="${article.uri?url}"/>
+									<@ww.url id="articleURL" includeParams="none" namespace="/article" action="fetchArticle" articleURI="${article.uri}"/>
 									<a href="${articleURL}" title="Read Open Access Article">${article.title}</a>
 								</li>
 								</#list>
