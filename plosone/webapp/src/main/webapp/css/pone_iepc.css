@@ -62,3 +62,5 @@ html>body #home { height: auto }
 *:first-child+html ul#tabsContainer 	{ }
 *:first-child+html ul#tabsContainer li 	{ padding-top: 0; padding-bottom: 0; }
 *:first-child+html ul#tabsContainer li span { padding-top: 14px; padding-bottom: 14px;}
+
+* html input { background-attachment: fixed; }
