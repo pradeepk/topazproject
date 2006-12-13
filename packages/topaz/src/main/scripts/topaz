@@ -33,4 +33,4 @@ export JAVA_HOME
 /usr/local/topaz/bin/multicast
 
 # Start/stop/etc tomcat
-/usr/local/topaz/bin/tomcat --basename $(basename `readlink -f $0`) $*
+/usr/local/topaz/bin/tomcat --basename $(basename `readlink -f $0`) "$@"

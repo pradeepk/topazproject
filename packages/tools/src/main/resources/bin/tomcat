@@ -165,7 +165,7 @@ jsvc() {
   fi
   # It seems important to start from CATALINA_HOME to read server.xml
   cd ${CATALINA_HOME}
-  ${JSVC} ${JSVC_OPTS} $* org.apache.catalina.startup.Bootstrap
+  ${JSVC} ${JSVC_OPTS} "$@" org.apache.catalina.startup.Bootstrap
 }
 
 jsvc_start() {
@@ -184,11 +184,11 @@ su_cmd() {
   if [ -n "$USER" ]; then
     # Must use EOF rubbish here to properly capture PID wanted for status below
     su $USER -s /bin/bash <<EOF
-$* >>$STDLOG 2>&1 &
+"$@" >>$STDLOG 2>&1 &
 echo \$! >$PIDFILE
 EOF
   else
-    $* >>$STDLOG 2>&1 &
+    "$@" >>$STDLOG 2>&1 &
     echo $! >$PIDFILE
   fi
 }
