@@ -657,6 +657,19 @@
 	</xsl:attribute>
 </xsl:template>
 
+<xsl:template name="makeXpathLocationParam">
+    <xsl:param name="node" select="."/>
+	<xsl:variable name="xpathLocation">
+	  <xsl:call-template name="createXpath">
+			<xsl:with-param name="theNode" select="$node"/>
+	  </xsl:call-template>
+	</xsl:variable>
+	<xsl:attribute name="xpathLocation">
+		<xsl:value-of select="$xpathLocation"/>
+	</xsl:attribute>
+</xsl:template>
+
+
 <xsl:template name="createXpath">
 	<xsl:param name="theNode" select="."/>
     <xsl:choose>
@@ -793,10 +806,7 @@
 												 'directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=850',
 												$apos,');return false;')"/>
 	</xsl:variable>
-	<div class="figure">
-		<xsl:call-template name="makeXpathLocation" >
-		<xsl:with-param name="node" select="."/>
-		</xsl:call-template>
+	<div class="figure"  xpathLocation="noSelect">
 		<xsl:element name="a">
 			<xsl:attribute name="name"><xsl:value-of select="$figId"/></xsl:attribute>
 			<xsl:attribute name="id"><xsl:value-of select="$figId"/></xsl:attribute>
@@ -812,21 +822,21 @@
 			</xsl:element>
 		</xsl:element>
 		<h5>
-			<xsl:call-template name="makeXpathLocation"/>
+			<!--<xsl:call-template name="makeXpathLocation"/>-->
 			<xsl:element name="a">
 				<xsl:attribute name="href"><xsl:value-of select="$slideshowURL"/></xsl:attribute>
 				<xsl:attribute name="onclick"><xsl:value-of select="$jsWindow"/></xsl:attribute>
 				<strong>
 					<span>
-						<xsl:call-template name="makeXpathLocation" >
-							<xsl:with-param name="node" select="."/>
+						<xsl:call-template name="makeXpathLocationParam" >
+							<xsl:with-param name="node" select="label"/>
 						</xsl:call-template>
 						<xsl:apply-templates select="label"/></span>
 				</strong>
 			</xsl:element>
 			<span>
-				<xsl:call-template name="makeXpathLocation" >
-					<xsl:with-param name="node" select="."/>
+				<xsl:call-template name="makeXpathLocationParam" >
+					<xsl:with-param name="node" select="caption/title"/>
 				</xsl:call-template>
 				<xsl:text> </xsl:text>
 				<xsl:apply-templates select="caption/title"/>
