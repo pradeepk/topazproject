@@ -70,6 +70,19 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
     return SUCCESS;
   }
 
+  /**
+   * Save the discussion
+   * @return webwork status
+   * @throws Exception Exception
+   */
+  public String executeSaveDiscussion() throws Exception {
+    if (StringUtils.isBlank(commentTitle)) {
+      addFieldError("commentTitle", "A title is required for a discussion");
+      return INPUT;
+    }
+    return execute();
+  }
+
   private void addMessages(final List<String> messages, final String checkType, final String fieldName) {
     if (!messages.isEmpty()) {
       final StringBuilder sb = new StringBuilder();

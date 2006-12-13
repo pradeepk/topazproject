@@ -444,6 +444,12 @@
       <result name="success" type="ajaxJSON"/>
     </action>
 
+    <action name="createDiscussionSubmit" class="org.plos.annotation.action.CreateAnnotationAction" method="executeSaveDiscussion">
+      <result name="input" type="ajaxJSON"/>
+      <result name="error" type="ajaxJSON"/>
+      <result name="success" type="ajaxJSON"/>
+    </action>
+
     <action name="setAnnotationPublic" class="org.plos.annotation.action.SetAnnotationPublicAction" method="executeSetAnnotationPublic">
       <result name="input">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
       <result name="error">/WEB-INF/pages/annotation/listAnnotation.ftl</result>
