@@ -70,7 +70,7 @@
               <groupname>topaz</groupname>
             </mapping>
             <mapping>
-              <directory>/var/lib/topaz/data/mulgara</directory>
+              <directory>/var/lib/topaz</directory>
               <filemode>755</filemode>
               <username>topaz</username>
               <groupname>topaz</groupname>
