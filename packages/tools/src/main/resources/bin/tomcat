@@ -25,16 +25,17 @@
 # Defaults:
 USER="topaz"
 TOPAZ_LOCAL="/usr/local/topaz"
+TOPAZ_CONFIG="/etc/topaz"
+[ -z "$TRUST_STORE" ] && TRUST_STORE=$TOPAZ_CONFIG/keystore.jks
 [ -z "$CATALINA_HOME" ] && CATALINA_HOME=
 [ -z "$JAVA_HOME" ] && [ -d $TOPAZ_LOCAL/java ] && JAVA_HOME="$TOPAZ_LOCAL/java"
-[ -z "$TOMCAT_OPTS" ] && TOMCAT_OPTS="-Xmx400m -XX:MaxPermSize=256m"
+[ -z "$TOMCAT_OPTS" ] && TOMCAT_OPTS="-Xmx400m -XX:MaxPermSize=256m -Djavax.net.ssl.trustStore=${TRUST_STORE} -Djavax.net.ssl.trustStorePassword='changeit'"
 [ -z "$STARTUP" ] && STARTUP="jsvc"
 VARDIR="/var"
 LOGDIR="${VARDIR}/log/topaz"
 PIDDIR="${VARDIR}/run/topaz"
 JSVC="jsvc"
 JVM="server"
-[ -z "$TRUST_STORE" ] && TRUST_STORE=$TOPAZ_LOCAL/cacerts
 
 # Overrides: basename_CATALINA_HOME, basename_TOMCAT_OPTS, basename_USER
 SERVERS="cas mulgara fedora topaz plosone"
