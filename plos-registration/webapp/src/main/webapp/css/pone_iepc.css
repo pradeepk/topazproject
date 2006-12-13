@@ -9,19 +9,6 @@ IE PC fixes
 * html ul, ol, dl	{ position: relative; } /* fixes disappearing background list ie bug */
 
 
-/************ jocelyn - will you fix to fake : #container, #hdr	{ min-width: 675px; max-width: 910px; } */
-* html #container, * html #footer 	{
-	width: expression((document.body.clientWidth < 910) ?
-	'910px' : '80%');
-	\width: expression((document.documentElement.clientWidth < 910) ?
-	'910px' : '80%');
-	}
-* html #topBanner { 
-	width: expression((document.body.clientWidth < 944) ?
-	'944px' : '100%');
-	\width: expression((document.documentElement.clientWidth < 944) ?
-	'944px' : '100%');
-}
 * html #nav li a, *html #nav li a:visited { /*width:12em; w\idth:7.6em; /* hack for IE5.5 */ overflow: visible;}
 * html #nav li a:hover ul li a {
 	width:16em; w\idth:16em; /* hack for IE5.5 */
@@ -58,6 +45,8 @@ IE PC fixes
 /* ensures positioning of dropdowns in front of content */
 * html #content { position: relative; z-index: -1; }
 
+* html div.response div.close a	{ top: 20px;}
+
 /* fixes figure block height bug */
 /* Hides from IE-mac \*/
 * html div.figure { height: 1%;}
@@ -73,3 +62,5 @@ html>body #home { height: auto }
 *:first-child+html ul#tabsContainer 	{ }
 *:first-child+html ul#tabsContainer li 	{ padding-top: 0; padding-bottom: 0; }
 *:first-child+html ul#tabsContainer li span { padding-top: 14px; padding-bottom: 14px;}
+
+* html input { background-attachment: fixed; }
