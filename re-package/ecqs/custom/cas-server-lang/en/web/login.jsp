@@ -25,7 +25,7 @@
                 <% } else if (request.getAttribute("edu.yale.its.tp.cas.service") == null) { %>
                 <li><em>You may login now in order to access protected services later.</em></li>
                 <% } else if (request.getAttribute("edu.yale.its.tp.cas.badLoginTicket") != null) { %>
-                <li><em>Bad Login Ticket: Please check to make sure you are coming form a PLoS site.</em></li>
+                <li><em>Bad Login Ticket: Please check to make sure you are coming from a PLoS site.</em></li>
                 <% } else { %>                        
                 <!-- <em>You have requested access to a site that requires authentication.</em> -->               
                 <% } %>
