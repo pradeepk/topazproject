@@ -116,6 +116,7 @@ public class UserService extends BaseConfigurableService {
       if (log.isDebugEnabled()) {
         log.debug("retrieved user from cache: " + topazUserId);
       }
+//      throw new NeedsRefreshException("forced");
     } catch (NeedsRefreshException nre) {
       boolean updated = false;
       if (log.isDebugEnabled()) {
@@ -126,8 +127,8 @@ public class UserService extends BaseConfigurableService {
         if (pou != null) {
           userCacheAdministrator.putInCache(topazUserId, pou.getDisplayName());
           updated = true;
+          retVal = pou.getDisplayName();
         }
-        retVal = pou.getDisplayName();
       } finally {
         if (!updated)
           userCacheAdministrator.cancelUpdate(topazUserId);
@@ -399,13 +400,14 @@ public class UserService extends BaseConfigurableService {
   private void setProfileFieldsPublic(final String topazId, final String[] grants) throws ApplicationException {
     if (grants.length > 0) {
       try {
+        final String[] publicGrants = permissionWebService.listGrants(topazId, ALL_PRINCIPALS[0]);
         if (log.isDebugEnabled()) {
           log.debug("TopazId:" + topazId);
-          log.debug("Cancelling grants:" + ArrayUtils.toString(allUserProfileFieldGrants));
+          log.debug("Cancelling grants:" + publicGrants);
           log.debug("Adding grants:" + ArrayUtils.toString(grants));
         }
-        //Cancel all grants first
-        permissionWebService.cancelGrants(topazId, allUserProfileFieldGrants, ALL_PRINCIPALS);
+        //Cancel all previous grants first
+        permissionWebService.cancelGrants(topazId, publicGrants, ALL_PRINCIPALS);
         //Now add the grants as requested
         permissionWebService.grant(topazId, grants, ALL_PRINCIPALS);
       } catch (RemoteException e) {
