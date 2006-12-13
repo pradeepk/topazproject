@@ -27,7 +27,7 @@ em			{ font-style: italic; }
 
 img			{ border: 0; }
 label em 	{ display: block; color: #c00; } /* em wraps all error messages within labels */
-.error 		{ display: block; color: #F63; font-style: italic; } /* em wraps all error messages within labels */
+.error 		{ display: block; color: #F63; font-style: normal; } /* em wraps all error messages within labels */
 strong		{ font-weight: bold; }
 h1 sup		{ font-size: .75em; }
 ul, ol, dl	{ margin: 20px; position: relative; }
@@ -473,10 +473,10 @@ div.profile #submit, .pone-form #cancel {margin-top: 15px; margin-left: 10px; }
 
 div.horizontalTabs		{ position: relative; border-width: 0;}
 .horizontalTabs ul,
-.horizontalTabs ul li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; }
+.horizontalTabs ul li	{ list-style-type: none; margin: 0; padding: 0; font-weight: bold; color: #069;}
 .horizontalTabs ul		{ display: block; margin-bottom: 5px; z-index: 10; border-bottom: 2px solid #ACF1FF; }
-.horizontalTabs ul li	{ cursor: pointer; padding: 6px; background-color: transparent; font-weight: normal; margin: 5px 2px 3px 2px; display: inline; }
-.horizontalTabs ul li.active	{ font-weight: bold;background: url(../images/pone_forms_bg.gif) repeat-x bottom; border-bottom-color: #fff; text-decoration: none;}
+.horizontalTabs ul li	{ cursor: pointer; padding: 6px; background-color: transparent; margin: 5px 2px 3px 2px; display: inline; }
+.horizontalTabs ul li.active	{ font-weight: bold;background: url(../images/pone_forms_bg.gif) repeat-x bottom; border-bottom-color: #fff; text-decoration: none; color: #000;}
 .horizontalTabs .contentwrap {margin: 0; border: 2px solid #fff; padding: 0;position: relative; }
 
 /* ------ EdBoard Styles ----*/

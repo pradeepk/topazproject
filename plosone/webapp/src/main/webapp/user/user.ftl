@@ -6,14 +6,13 @@
 </#if>
 
 
-	<p><strong>Create or Update Your Profile</strong></p>
-	<p>Fields marked with <span class="required">*</span> are required. </p>
 
 <@ww.form name="userForm" id="userForm"  method="post" title="User Information Form" cssClass="pone-form">
 
 <fieldset>
   <legend>Your Public Profile</legend>
   <ol>
+	<li>Fields marked with <span class="required">*</span> are required.</li>
   <li><em>The following required fields will always appear publicly.</em></li>
 
    	  <#if tabId?has_content>	
