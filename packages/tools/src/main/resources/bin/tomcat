@@ -75,7 +75,7 @@ touch ${STDLOG}
 [ `id -u` -eq 0 -a -n "$USER" ] && chown ${USER} $STDLOG
 STDLOG_LNK="${LOGDIR}/${BASENAME}.out"
 [ -h "${STDLOG_LNK}" ] && rm -f ${STDLOG_LNK}
-ln -s ${STDLOG} ${STDLOG_LNK}
+ln -s `basename ${STDLOG}` ${STDLOG_LNK}
 
 # Log stuff w/date as tomcat doesn't include dates when logging!
 log() { echo "`date` $*" >> $STDLOG; echo $*; }
