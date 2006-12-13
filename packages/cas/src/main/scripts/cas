@@ -26,8 +26,5 @@
 [ -z "$JAVA_HOME" ] && JAVA_HOME=`find /opt -name 'jdk*' -maxdepth 1 | head -1`
 export JAVA_HOME
 
-# Start multicast for ecache
-/usr/local/topaz/bin/multicast
-
 # Start/stop/etc tomcat
 /usr/local/topaz/bin/tomcat --basename $(basename `readlink -f $0`) $*
