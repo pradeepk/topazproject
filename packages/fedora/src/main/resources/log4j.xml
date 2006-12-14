@@ -10,7 +10,7 @@
   </appender>
 
   <appender name="rolling" class="org.apache.log4j.DailyRollingFileAppender">
-    <param name="File" value="/var/log/topaz/topaz.log"/>
+    <param name="File" value="/var/log/topaz/access-service.log"/>
     <param name="DatePattern" value="'.'yyyy-MM-dd"/>
     <layout class="org.apache.log4j.PatternLayout">
       <param name="ConversionPattern" value="%d{ISO8601} %-5p %c{1}&gt; %m [%t %c.%m]%n"/>
