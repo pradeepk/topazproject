@@ -102,10 +102,6 @@ getjars () { echo `(cd /; find $1 -name '*.jar')` | tr ' ' ':'; }
 TC=${CATALINA_HOME}
 CLASSPATH="$TC/bin/bootstrap.jar:$TC/bin/commons-logging-api.jar"
 
-# Add /etc/topaz/container/<basename>/classes OR /etc/topaz/container/common/classes
-CLASS_OVERRIDES=common
-[ -d /etc/topaz/container/$BASENAME/classes ] && CLASS_OVERRIDES=$BASENAME
-CLASSPATH=/etc/topaz/container/$CLASS_OVERRIDES/classes:$CLASSPATH
 # Add the javac compiler - for jsp files (tomcat's catalina.sh does this too)
 CLASSPATH="$JAVA_HOME/lib/tools.jar:$CLASSPATH"
 
