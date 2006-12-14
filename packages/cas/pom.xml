@@ -122,13 +122,6 @@
             <mapping>
               <directory>/etc/topaz</directory>
               <configuration>true</configuration>
-              <filemode>755</filemode>
-              <username>topaz</username>
-              <groupname>topaz</groupname>
-            </mapping>
-            <mapping>
-              <directory>/etc/topaz</directory>
-              <configuration>true</configuration>
               <filemode>644</filemode>
               <username>topaz</username>
               <groupname>topaz</groupname>
@@ -137,6 +130,14 @@
                   <location>src/main/resources/nonJmxApplicationContext.xml</location>
                 </source>
               </sources>
+            </mapping>
+            <!-- warn: this should be after the file mapping -->
+            <mapping>
+              <directory>/etc/topaz</directory>
+              <configuration>true</configuration>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
             </mapping>
             <mapping>
               <directory>/var/log/topaz</directory>
