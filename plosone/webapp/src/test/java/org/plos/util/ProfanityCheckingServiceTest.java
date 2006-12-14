@@ -18,24 +18,25 @@ public class ProfanityCheckingServiceTest extends TestCase {
   public void testShouldCatchProfaneText() {
     final ProfanityCheckingService service = new ProfanityCheckingService();
     final Collection<String> profaneWordList = new ArrayList<String>();
-    profaneWordList.add("BUSH");
+    profaneWordList.add("ASS");
+    profaneWordList.add("bush");
     service.setProfaneWords(profaneWordList);
-    found("bush", service);
-    found(" bush", service);
-    found("  bush", service);
-    found("  \nbush", service);
-    found("bUSH", service);
-    found("am bush", service);
-    found(".bush", service);
-    found(" some bush", service);
-    found("+bush", service);
-    found("-bush", service);
-    found(" bush", service);
-    found(" some before Bush and some after", service);
-    found(" some /n before and some after/n before Bush and some after", service);
-    found("[Bushe ", service);
-    found(" (Bush ", service);
-    found("[Bush]", service);
+    found("ass", service);
+    found(" ass", service);
+    found("  ass", service);
+    found("  \nass", service);
+    found("aSS", service);
+    found("am ass", service);
+    found(".ass", service);
+    found(" some ass", service);
+    found("+ass", service);
+    found("-ass", service);
+    found(" ass", service);
+    found(" some before Ass and some after", service);
+    found(" some /n before and some after/n before Ass and some after", service);
+    found(" (Ass ", service);
+    found("[Ass]", service);
+    found("[Ass] and bush", 2, service);
   }
 
   public void testShouldAllowTextWhichIsNotProfane() {
@@ -55,6 +56,11 @@ public class ProfanityCheckingServiceTest extends TestCase {
   }
 
   private void found(final String content, final ProfanityCheckingService service) {
-    assertEquals("["+content+"]", 1, service.validate(content).size());
+    found(content, 1, service);
   }
+
+  private void found(final String content, final int total, final ProfanityCheckingService service) {
+    assertEquals("["+content+"]", total, service.validate(content).size());
+  }
+
 }

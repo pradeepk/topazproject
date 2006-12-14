@@ -13,7 +13,6 @@ import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import org.plos.util.FileUtils;
 import org.plos.util.ProfanityCheckingService;
 
 import java.util.List;
@@ -35,14 +34,14 @@ public class CreateReplyAction extends AnnotationActionSupport {
 
   public String execute() throws Exception {
     try {
-      final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(commentTitle);
-      final List<String> profanityValidationMessagesInBody = profanityCheckingService.validate(comment);
+      final List<String> profaneWordsInTitle = profanityCheckingService.validate(commentTitle);
+      final List<String> profaneWordsInBody = profanityCheckingService.validate(comment);
 
-      if (profanityValidationMessagesInBody.isEmpty() && profanityValidationMessagesInTitle.isEmpty()) {
+      if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty()) {
         replyId = getAnnotationService().createReply(root, inReplyTo, commentTitle, mimeType, comment);
       } else {
-        addMessages(profanityValidationMessagesInBody, "profanity check", "comment");
-        addMessages(profanityValidationMessagesInTitle, "profanity check", "commentTitle");
+        addProfaneMessages(profaneWordsInBody, "comment", "comment");
+        addProfaneMessages(profaneWordsInTitle, "commentTitle", "title");
         return INPUT;
       }
     } catch (final ApplicationException e) {
@@ -53,16 +52,6 @@ public class CreateReplyAction extends AnnotationActionSupport {
     addActionMessage("Reply created with id:" + replyId);
 
     return SUCCESS;
-  }
-
-  private void addMessages(final List<String> messages, final String checkType, final String fieldName) {
-    if (!messages.isEmpty()) {
-      final StringBuilder sb = new StringBuilder();
-      for (final String message : messages) {
-        sb.append(message).append(FileUtils.NEW_LINE);
-      }
-      addFieldError(fieldName, "Annotation creation failed " + checkType + " with following messages: " + sb.toString().trim());
-    }
   }
 
   public String getReplyId() {

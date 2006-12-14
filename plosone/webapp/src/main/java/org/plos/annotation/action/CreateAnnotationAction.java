@@ -14,7 +14,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.StringUtils;
 import org.plos.ApplicationException;
-import org.plos.util.FileUtils;
 import org.plos.util.ProfanityCheckingService;
 
 import java.io.UnsupportedEncodingException;
@@ -61,17 +60,17 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
     if (isInvalid()) return INPUT;
 
     try {
-      final List<String> profanityValidationMessagesInTitle = profanityCheckingService.validate(commentTitle);
-      final List<String> profanityValidationMessagesInBody = profanityCheckingService.validate(comment);
+      final List<String> profaneWordsInTitle = profanityCheckingService.validate(commentTitle);
+      final List<String> profaneWordsInBody = profanityCheckingService.validate(comment);
 
-      if (profanityValidationMessagesInBody.isEmpty() && profanityValidationMessagesInTitle.isEmpty()) {
+      if (profaneWordsInBody.isEmpty() && profaneWordsInTitle.isEmpty()) {
         annotationId = getAnnotationService().createAnnotation(target, getTargetContext(), supercedes, commentTitle, mimeType, comment, isPublic);
         if (log.isDebugEnabled()) {
           log.debug("CreateAnnotationAction called and annotation created with id: " + annotationId);
         }
       } else {
-        addMessages(profanityValidationMessagesInBody, "profanity check", "comment");
-        addMessages(profanityValidationMessagesInTitle, "profanity check", "commentTitle");
+        addProfaneMessages(profaneWordsInBody, "comment", "comment");
+        addProfaneMessages(profaneWordsInTitle, "commentTitle", "title");
         return INPUT;
       }
     } catch (final ApplicationException e) {
@@ -86,7 +85,7 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
   private boolean isInvalid() {
     boolean invalid = false;
     if (isPublic && StringUtils.isEmpty(commentTitle)) {
-      addFieldError("commentTitle", "A title is required for a public comment.");
+      addFieldError("commentTitle", "A title is required.");
       invalid = true;
     }
 
@@ -95,16 +94,6 @@ public class CreateAnnotationAction extends AnnotationActionSupport {
       invalid = true;
     }
     return invalid;
-  }
-
-  private void addMessages(final List<String> messages, final String checkType, final String fieldName) {
-    if (!messages.isEmpty()) {
-      final StringBuilder sb = new StringBuilder();
-      for (final String message : messages) {
-        sb.append(message).append(FileUtils.NEW_LINE);
-      }
-      addFieldError(fieldName, "Annotation creation failed " + checkType + " with following messages: " + sb.toString().trim());
-    }
   }
 
   /**

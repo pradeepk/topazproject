@@ -12,6 +12,9 @@ package org.plos.annotation.action;
 import org.plos.action.BaseActionSupport;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.user.service.UserService;
+import org.apache.commons.lang.StringUtils;
+
+import java.util.List;
 
 /**
  * To be subclassed by Action classes for Annotations and Replies that can use common stuff among them
@@ -50,5 +53,18 @@ public abstract class AnnotationActionSupport extends BaseActionSupport {
    */
   public void setUserService(final UserService userService) {
     this.userService = userService;
+  }
+
+  /**
+   * Add profane words together into a message.
+   * @param profaneWords profaneWords
+   * @param fieldName fieldName
+   * @param readableFieldName readableFieldName
+   */
+  protected void addProfaneMessages(final List<String> profaneWords, final String fieldName, final String readableFieldName) {
+    if (!profaneWords.isEmpty()) {
+      final String joinedWords = StringUtils.join(profaneWords.toArray(), ", ");
+      addFieldError(fieldName, "Profanity filter found: " + joinedWords + ". Please remove from your " + readableFieldName + ".");
+    }
   }
 }

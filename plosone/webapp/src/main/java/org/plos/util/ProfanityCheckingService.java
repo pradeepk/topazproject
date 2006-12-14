@@ -23,26 +23,29 @@ public class ProfanityCheckingService {
   private Map<String, Pattern> profanePatterns;
 
   /**
-   * Validate that the content is profane or not
+   * Validate that the content is profane or not and return the list of profane words found.
    * @param content content to check for profanity
-   * @return true if content is not profane
+   * @return list of profane words
    */
   public List<String> validate(final String content) {
-    final List<String> messages = new ArrayList<String>();
+    final List<String> profaneWordsFound = new ArrayList<String>();
     if (content != null) {
       final String contentLowerCase = content.toLowerCase();
 
       for (final Map.Entry<String,Pattern> patternEntry : profanePatterns.entrySet()) {
         final Pattern pattern = patternEntry.getValue();
         if (pattern.matcher(contentLowerCase).find()) {
-          messages.add("Found obscene word:" + patternEntry.getKey() + ".");
-          break;
+          profaneWordsFound.add(patternEntry.getKey());
         }
       }
     }
-    return messages;
+    return profaneWordsFound;
   }
 
+  /**
+   * Set the list of profane words.
+   * @param profaneWords profaneWords
+   */
   public void setProfaneWords(final Collection<String> profaneWords) {
     final Map<String, Pattern> patterns = new HashMap<String, Pattern>(profaneWords.size());
     for (final String profaneWord : profaneWords) {
