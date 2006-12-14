@@ -62,8 +62,18 @@
 
 		    <@ww.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
 				<li><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article
-				<ul><li>8 annotations</li>
-					<li>10 discussions</li></ul></li>
+				<ul>
+					<#if numAnnotations == 1>
+					<li>${numAnnotations} annotation</li>
+					<#else>
+					<li>${numAnnotations} annotations</li>
+					</#if>
+					<#if numDiscussions == 1>
+					<li>${numDiscussions} discussion</li>
+					<#else>
+			  	<li>${numDiscussions} discussions</li>
+			  	</#if>
+				</ul></li>
 				
 	<!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your annotation!</li> -->
 			</ol>

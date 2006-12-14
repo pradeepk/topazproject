@@ -371,7 +371,7 @@ div.commentview fieldset li	{ font-weight: bold; width: 100%; position: relative
 div.commentview label	{ font-weight: normal; }
 div.commentview div		{ display: inline; position: absolute; right: 40px;}
 div.commentview li ul 	{ margin: 0; padding: 0; list-style-type: none; }
-div.commentview li ul li	{ background: url(../images/pone_tools_li.gif) no-repeat 0 0; font-weight: bold; padding-left: 14px; margin-left: 20px; font-size: 1em; color: #666;}
+div.commentview li ul li	{ background: url(../images/pone_tools_li.gif) no-repeat 0 2px; font-weight: bold; padding-left: 14px; margin-left: 20px; font-size: 1em; color: #666;}
 
 
 #postcomment { width: 240px; top: 0; position: relative; }
