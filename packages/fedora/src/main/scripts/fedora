@@ -7,6 +7,12 @@
 # chkconfig: 345 93 13
 # description:  Start up the fedora app.
 
+# Validate fedora.fcfg
+FEDORA_FCFG=/usr/local/topaz/fedora/server/config/fedora.fcfg
+[ -e $FEDORA_FCFG ] && ! xmllint --noout $FEDORA_FCFG && exit 1
+LOG_XML=/usr/local/topaz/fedora/server/jakarta-tomcat-5.0.28/common/classes/log4j.xml
+[ -e $LOG_XML ] && ! xmllint --noout $LOG_XML && exit 1
+
 # Source function library.
 . /etc/init.d/functions
 
