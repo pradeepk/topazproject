@@ -48,7 +48,6 @@
       <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>axistools-maven-plugin</artifactId>
-        <version>1.0</version>
 
         <dependencies>
           <dependency>

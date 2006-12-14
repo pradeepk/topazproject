@@ -54,7 +54,6 @@
       <plugin>
         <groupId>org.topazproject.patch.plugin</groupId>
         <artifactId>axistools-maven-plugin</artifactId>
-        <version>1.0</version>
         <executions>
           <execution>
             <id>generate-server-binding</id>
