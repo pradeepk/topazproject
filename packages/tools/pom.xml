@@ -30,6 +30,23 @@
       </plugin>
 
       <plugin>
+        <groupId>org.topazproject.plugins</groupId>
+        <artifactId>ant-tasks</artifactId>
+        <executions>
+          <execution>
+            <phase>generate-resources</phase>
+            <goals>
+              <goal>get-artifacts</goal>
+            </goals>
+          </execution>
+        </executions>
+        <configuration>
+          <dependencies>org.topazproject:topaz-tools-alerts:0.5-SNAPSHOT,org.topazproject:topaz-tools-articles:0.5-SNAPSHOT,org.topazproject:topaz-tools-rss:0.5-SNAPSHOT</dependencies>
+        </configuration>
+        <inherited>false</inherited>
+      </plugin>
+
+      <plugin>
         <groupId>org.codehaus.mojo</groupId>
         <artifactId>rpm-maven-plugin</artifactId>
         <version>2.0-alpha-3-SNAPSHOT</version>
@@ -70,6 +87,20 @@
               <sources>
                 <source>
                   <location>src/main/resources/bin</location>
+                </source>
+              </sources>
+            </mapping>
+            <mapping>
+              <directory>/usr/local/topaz/lib</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+              <sources>
+                <source>
+                  <location>${project.build.directory}</location>
+                  <includes>
+                    <include>*.jar</include>
+                  </includes>
                 </source>
               </sources>
             </mapping>
