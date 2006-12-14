@@ -61,6 +61,8 @@ topaz.responsePanel = {
     this.targetForm.reasonCode[0].checked = true;
     this.targetForm.comment.value = "";
     this.targetForm.responseArea.value = targetObj.responseCue;
+    var submitMsg = targetObj.error;
+    dojo.dom.removeChildren(submitMsg);
   },
   
   getFlagConfirm: function() {
@@ -133,17 +135,20 @@ function submitResponseInfo(targetObj) {
      }
      else if (jsonObj.numFieldErrors > 0) {
        var fieldErrors = document.createDocumentFragment();
-       var brTag = document.createElement('br');
-       
+
        for (var item in jsonObj.fieldErrors.map) {
          var errorString = "";
          for (var ilist in jsonObj.fieldErrors.map[item]) {
            for (var i=0; i<jsonObj.numFieldErrors; i++) {
-             errorString += jsonObj.fieldErrors.map[item][ilist][i];
-             var error = document.createTextNode(errorString);
-             
-             fieldErrors.appendChild(error);
-             fieldErrors.appendChild(brTag);
+             var err = jsonObj.fieldErrors.map[item][ilist][i];
+             if (err) {
+               errorString += err;
+               var error = document.createTextNode(errorString.trim());
+               var brTag = document.createElement('br');
+               
+               fieldErrors.appendChild(error);
+               fieldErrors.appendChild(brTag);
+             }
            }
          }
        }

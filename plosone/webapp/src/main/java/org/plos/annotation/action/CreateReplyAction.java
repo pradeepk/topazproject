@@ -99,15 +99,16 @@ public class CreateReplyAction extends AnnotationActionSupport {
     return inReplyTo;
   }
 
+  @RequiredStringValidator(message = "A title is required")
   public String getCommentTitle() {
-    return commentTitle;
+  return commentTitle;
   }
 
-  @RequiredStringValidator(message = "The comment/comment is required")
+  @RequiredStringValidator(message = "A reply is required")
   public String getComment() {
-    return comment;
+  return comment;
   }
-
+  
   public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {
     this.profanityCheckingService = profanityCheckingService;
   }

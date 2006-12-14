@@ -18,7 +18,7 @@
 					<fieldset>
 						<legend>Compose Your Annotation</legend>
 
-						<div id="submitMsg" class="error"></div>
+						<span id="submitMsg" class="error"></span>
 					
 						<label for="cTitle" class="commentPublic"><span class="none">Enter your annotation title</span><!-- error message text <em>A title is required for all public annotations</em>--></label>
 						<input type="text" name="cTitle" id="cTitle" value="Enter your annotation title..." class="title commentPublic" alt="Enter your annotation title..." />

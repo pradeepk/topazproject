@@ -22,6 +22,8 @@
     
     dojo.event.connect(dcr.btnCancel, "onclick", function(e) {
         topaz.responsePanel.hide(dcr.widget);
+        var submitMsg = dcr.error;
+        dojo.dom.removeChildren(submitMsg);
       }
     );    
 
