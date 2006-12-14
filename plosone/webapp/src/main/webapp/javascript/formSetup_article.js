@@ -22,18 +22,23 @@ function initAnnotationForm() {
 	});
 	
 	dojo.event.connect(commentTitle, "onchange", function () {
+    var fldTitle = annotationForm.commentTitle;
     if(annotationForm.cTitle.value != "" && annotationForm.cTitle.value != titleCue) {
-      var fldTitle = annotationForm.commentTitle;
       fldTitle.value = annotationForm.cTitle.value;
+    }
+    else {
+      fldTitle.value = "";
     }
 	});
 
 	dojo.event.connect(commentTitle, "onblur", function () { 
+    var fldTitle = annotationForm.commentTitle;
     if(annotationForm.cTitle.value != "" && annotationForm.cTitle.value != titleCue) {
-      var fldTitle = annotationForm.commentTitle;
       fldTitle.value = annotationForm.cTitle.value;
     }
-
+    else {
+      fldTitle.value = "";
+    }
 	  topaz.formUtil.textCues.on(commentTitle, titleCue); 
 	});
 	
@@ -43,18 +48,23 @@ function initAnnotationForm() {
 	});
 
 	dojo.event.connect(comments, "onchange", function () {
+    var fldTitle = annotationForm.comment;
     if(annotationForm.cArea.value != "" && annotationForm.cArea.value != commentCue) {
-      var fldTitle = annotationForm.comment;
       fldTitle.value = annotationForm.cArea.value;
+    }
+    else {
+      fldTitle.value = "";
     }
 	});
 	
 	dojo.event.connect(comments, "onblur", function () {
+    var fldTitle = annotationForm.comment;
     if(annotationForm.cArea.value != "" && annotationForm.cArea.value != commentCue) {
-      var fldTitle = annotationForm.comment;
       fldTitle.value = annotationForm.cArea.value;
     }
-
+    else {
+      fldTitle.value = "";
+    }
 	  topaz.formUtil.textCues.on(comments, commentCue); 
 	  //topaz.formUtil.checkFieldStrLength(comments);
 	});
