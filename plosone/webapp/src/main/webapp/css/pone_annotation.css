@@ -60,8 +60,9 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .response fieldset .reply{ display: block; margin: 10px 0; padding: 2px; border: 1px solid #ccc}
 .posting .title{ width: 34em; }
 .flag textarea,
-.posting textarea{ width: 34em; height: 8em; display: block; overflow: auto; margin-bottom: 10px;}
+.posting textarea{ width: 34em; height: 8em; display: block; overflow: auto; margin-bottom: 10px; margin-left: 0; margin-top: 5px;}
 .response .body{ width: 46em; height: 12em; overflow: auto;}
+
 
 .dojoTooltip {
 	border: solid black 1px;
@@ -164,7 +165,12 @@ div.original blockquote * { background: #fff; }
 
 div.posting	{ background-color: #666; background-image: url(../images/pone_response_comment_bg.gif); }
 div.flag	{ background-color: #3C9544; background-image: url(../images/pone_response_flag_bg.gif); }
-div#flagForm { display:block; }
+div#flagForm { display:block; background: #3C9544;}
+div#flagForm form,
+div#flagForm fieldset { background: #3C9544; }
+div.posting form,
+div.posting fieldset { background: #666; }
+textarea #responseArea .response{ margin-left: 0!important; }
 div#flagConfirm { display: none; }
 
 .toolbar			{ background: url(../images/pone_toolbar_bg.gif) repeat-x 20px; padding: 5px; border: 1px solid #ccc; border-width: 0 0 2px 2px; margin: 0}
