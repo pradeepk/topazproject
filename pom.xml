@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?><project>
+<?xml version="1.0" encoding="UTF-8"?><project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <parent>
     <artifactId>mojo</artifactId>
     <groupId>org.codehaus.mojo</groupId>
@@ -9,8 +9,9 @@
   <artifactId>axistools-maven-plugin</artifactId>
   <packaging>maven-plugin</packaging>
   <name>Maven Axis Tools Plugin</name>
-  <version>1.1-SNAPSHOT</version>
+  <version>1.1-t1</version>
   <inceptionYear>2005</inceptionYear>
+  <description>Patched to add dependencies to classpath of java2wsdl</description>
   <dependencies>
     <dependency>
       <groupId>org.codehaus.plexus</groupId>
@@ -74,4 +75,21 @@
       <url>http://gandalf.topazproject.org/maven2/</url>
     </snapshotRepository>
   </distributionManagement>
+  <scm>
+    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/tags/axistools-maven-plugin-1.1-t1</developerConnection>
+    <connection>scm:svn:http://gandalf.topazproject.org/svn/tags/axistools-maven-plugin-1.1-t1</connection>
+    <url>http://gandalf.topazproject.org/svn/tags/axistools-maven-plugin-1.1-t1</url>
+  </scm>
+  <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <tagBase>http://gandalf.topazproject.org/svn/tags</tagBase>
+        </configuration>
+      </plugin>
+    </plugins>
+  </build>
+
 </project>
