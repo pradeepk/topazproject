@@ -4,6 +4,7 @@
 
 <link rel="shortcut icon" href="${freemarker_config.context}/images/pone_favicon.ico" type="image/x-icon" />
 <link rel="home" title="home" href="http://${freemarker_config.plosOneHost}${freemarker_config.context}"></link>
+<link rel="alternate" type="application/rss+xml" title="PLoS ONE: New Articles" href="http://${freemarker_config.plosOneHost}${freemarker_config.context}/rss/PLoSONE.xml" />
 
 <#include "../css/global_css.ftl">
 <#include "../javascript/global_js.ftl">
