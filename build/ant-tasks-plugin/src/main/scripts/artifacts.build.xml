@@ -21,7 +21,7 @@
   </taskdef>
 
 
-  <!-- Get Tomcat and unzip it and then copy the .war file over -->
+  <!-- Fetch the list of dependencies and copy to asked location -->
   <target name="get-artifacts">
     <!-- Get Tomcat and unjar it in classes -->
     <mkdir dir="${location}"/>
