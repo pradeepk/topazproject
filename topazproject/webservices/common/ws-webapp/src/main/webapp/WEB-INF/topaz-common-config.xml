@@ -47,7 +47,7 @@
         <password>fedoraAdmin</password>
       </fedoraUploader>
       <itql>
-        <uri>http://localhost:9091/mulgara-service-0.5-SNAPSHOT/services/ItqlBeanService</uri>
+        <uri>http://localhost:9091/mulgara-service/services/ItqlBeanService</uri>
         <auth-method>BASIC</auth-method>
         <userName>fedoraAdmin</userName>
         <password>fedoraAdmin</password>
@@ -75,7 +75,7 @@
     </life-cycle-listeners>
 
     <fedoragsearch>
-      <url>http://localhost:9092/ws-search-webapp-0.5-SNAPSHOT/services/FedoraGenericSearchServicePort</url>
+      <url>http://localhost:9092/ws-search-webapp/services/FedoraGenericSearchServicePort</url>
       <repository>Topaz</repository>
       <index>TopazIndex</index>
       <indexDocXslt>topazFoxmlToLucene</indexDocXslt>

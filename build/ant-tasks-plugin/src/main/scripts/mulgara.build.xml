@@ -119,7 +119,9 @@
         <property name="cargo.logging" value="high"/>
         <property name="cargo.jvmargs" value="-Xmx200m"/>
         <property name="cargo.rmi.port" value="${SHUTDOWN_PORT}"/>
-        <deployable type="war" file="${mulgara-war}"/>
+        <deployable type="war" file="${mulgara-war}">
+          <property name="context" value="mulgara-service"/>
+        </deployable>
       </configuration>
     </cargo>
 

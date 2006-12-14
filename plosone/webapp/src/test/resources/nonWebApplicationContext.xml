@@ -222,7 +222,7 @@
 
   <bean id="searchWebService" class="org.plos.search.service.SearchWebService" init-method="init">
     <property name="uri"
-              value="http://${server.search}/ws-search-webapp-0.5-SNAPSHOT/services/FedoraGenericSearchServicePort"/>
+              value="http://${server.search}/ws-search-webapp/services/FedoraGenericSearchServicePort"/>
   </bean>
 
   <!-- email configuration -->
