@@ -250,7 +250,6 @@
   <bean id="profanityCheckingService" class="org.plos.util.ProfanityCheckingService">
     <property name="profaneWords">
       <list>
-        <value>bush</value>
         <value>ass</value>
         <value>ass lick</value>
         <value>asses</value>
