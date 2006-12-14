@@ -4,7 +4,6 @@
  */
 package org.plos.web;
 
-import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.EmailValidator;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import com.opensymphony.xwork.validator.annotations.ValidatorType;
@@ -32,10 +31,8 @@ public class ConfirmationAction extends BaseAction {
       registrationService
               .verifyUser(loginName, emailVerificationToken);
     } catch (final UserAlreadyVerifiedException e) {
-      final String message = "User already verified:" + loginName;
-      addActionError(message);
-      log.trace(message, e);
-      return ERROR;
+      addActionMessage("User already verified:" + loginName);
+      return SUCCESS;
     } catch (final VerificationTokenInvalidException e) {
       final String message = "Verification token invalid:"+ emailVerificationToken+", e-mail:" + loginName;
       addActionError(message);
