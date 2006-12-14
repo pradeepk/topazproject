@@ -48,7 +48,7 @@
 
       <interceptor-stack name="plosAdminStack">
         <interceptor-ref name="plosUserStack" />
-        <!--<interceptor-ref name="ensureAdmin" />-->
+        <interceptor-ref name="ensureAdmin" />
       </interceptor-stack>
     </interceptors>
 
@@ -79,7 +79,7 @@
 
     <global-exception-mappings >
       <exception-mapping exception="org.plos.service.InvalidProxyTicketException" result="invalidProxyTicket"/>
-      <exception-mapping exception="java.lang.Exception" result="/static/error"/>
+      <exception-mapping exception="java.lang.Exception" result="error"/>
     </global-exception-mappings>
 
     <action name="logout" class="org.plos.action.LogoutAction">
