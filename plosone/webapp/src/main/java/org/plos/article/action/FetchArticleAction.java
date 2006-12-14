@@ -8,6 +8,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.FetchArticleService;
+import org.plos.annotation.service.Annotation;
+import org.plos.annotation.service.AnnotationService;
 import org.topazproject.common.NoSuchIdException;
 
 import java.io.IOException;
@@ -27,7 +29,10 @@ public class FetchArticleAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(FetchArticleAction.class);
   private FetchArticleService fetchArticleService;
   private String transformedArticle;
-
+  private AnnotationService annotationService;
+  private int numDiscussions = 0;
+  private int numAnnotations = 0;
+  
   public String execute() throws Exception {
     try {
       //final StringWriter stringWriter = new StringWriter(INITIAL_TRANSFORMED_FILE_SIZE);
@@ -35,6 +40,15 @@ public class FetchArticleAction extends BaseActionSupport {
 
       setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
       //log.debug("transformedArticle: " + transformedArticle);
+      Annotation[] articleAnnotations = annotationService.listAnnotations(articleURI);
+      for (Annotation a : articleAnnotations) {
+        if (a.getContext() == null) {
+          numDiscussions ++;
+        } else {
+          numAnnotations ++;
+        }
+      }
+      
     } catch (NoSuchIdException e) {
       messages.add("No article found for id: " + articleURI);
       log.info("Could not find article: "+ articleURI, e);
@@ -113,5 +127,33 @@ public class FetchArticleAction extends BaseActionSupport {
    */
   public void setAnnotationId(String annotationId) {
     this.annotationId = annotationId;
+  }
+
+  /**
+   * @return Returns the annotationService.
+   */
+  public AnnotationService getAnnotationService() {
+    return annotationService;
+  }
+
+  /**
+   * @param annotationService The annotationService to set.
+   */
+  public void setAnnotationService(AnnotationService annotationService) {
+    this.annotationService = annotationService;
+  }
+
+  /**
+   * @return Returns the numDiscussions.
+   */
+  public int getNumDiscussions() {
+    return numDiscussions;
+  }
+
+  /**
+   * @return Returns the numAnnotations.
+   */
+  public int getNumAnnotations() {
+    return numAnnotations;
   }
 }
