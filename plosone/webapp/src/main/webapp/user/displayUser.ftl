@@ -14,6 +14,11 @@
 <#else>
 	<#assign country = defaultValue>
 </#if>
+<#if pou.postalAddress?has_content>
+	<#assign postalAddress = pou.postalAddress>
+<#else>
+	<#assign postalAddress = defaultValue>
+</#if>
 <#if pou.title?has_content>
 	<#assign title = pou.title>
 <#else>
@@ -24,6 +29,17 @@
 <#else>
 	<#assign orgName = defaultValue>
 </#if>
+<#if pou.organizationType?has_content>
+	<#assign orgType = pou.organizationType>
+<#else>
+	<#assign orgType = defaultValue>
+</#if>
+<#if pou.positionType?has_content>
+	<#assign positionType = pou.positionType>
+<#else>
+	<#assign positionType = defaultValue>
+</#if>
+
 <#if pou.biographyText?has_content>
 	<#assign bio = pou.biographyText>
 <#else>
@@ -62,7 +78,12 @@
 
 <li><span class="heading">Location</span><span class="text">${city}, ${country}</span></li>
 
-<li><span class="heading">Affiliation</span><span class="text">${title}<br />${orgName}<br /></span></li>
+<li><span class="heading">Address</span><span class="text">${postalAddress}</span></li>
+
+<li><span class="heading">Organization Type</span><span class="text">${orgType}</span></li>
+<li><span class="heading">Organization Name</span><span class="text">${orgName}</span></li>
+<li><span class="heading">Title</span><span class="text">${title}</span></li>
+<li><span class="heading">Position Type</span><span class="text">${positionType}</span></li>
 
 <li><span class="heading">About Me</span><span class="text">${bio}</span></li>
 
