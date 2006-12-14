@@ -36,6 +36,7 @@
 
 # Defaults:
 [ -z "$USER" ] && USER="topaz"
+[ -z "$GROUP" ] && GROUP=$USER
 TOPAZ_LOCAL="/usr/local/topaz"
 TOPAZ_CONFIG="/etc/topaz"
 [ -z "$TRUST_STORE" ] && TRUST_STORE=$TOPAZ_CONFIG/keystore.jks
@@ -95,6 +96,7 @@ log() { echo "`date` $*" >> $STDLOG; echo $*; }
 
 # Setup TOMCAT_TRUST_OPTS properly
 if [ -n "$TRUST_STORE" -a "$TRUST_STORE" != "default" ]; then
+  [ -n "$USER" ] && chown $USER.$GROUP $TRUST_STORE
   TOMCAT_TRUST_OPTS="-Djavax.net.ssl.trustStore=${TRUST_STORE}"
   if [ -n "$TRUST_PASS" -a "$TRUST_PASS" != "default" ]; then
     TOMCAT_TRUST_OPTS="$TOMCAT_TRUST_OPTS -Djavax.net.ssl.trustStorePassword='$TRUST_PASS'"
