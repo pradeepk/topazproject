@@ -39,7 +39,8 @@ div.dialog div.detail{ padding: 5px; background-color: #fff; border: 2px solid #
 div.contentwrap{ padding: 10px; background-color: #fff; margin: 0; border: 2px solid #ccc; border-width: 0 2px 1px 2px;}
 
 div.dialog .posting.pane{ background: none; }
-
+div.pane a.instructions,
+div.pane a:visited.instructions { color: #eee;}
 div.comment div.comment{ margin: 10px 0; padding-left: 20px; border-left: 4px solid #999; background-color: #eee;}
 div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 0; }
 
@@ -59,8 +60,9 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .response fieldset .reply{ display: block; margin: 10px 0; padding: 2px; border: 1px solid #ccc}
 .posting .title{ width: 34em; }
 .flag textarea,
-.posting textarea{ width: 34em; height: 8em; display: block; overflow: auto; margin-bottom: 10px;}
+.posting textarea{ width: 34em; height: 8em; display: block; overflow: auto; margin-bottom: 10px; margin-left: 0; margin-top: 5px;}
 .response .body{ width: 46em; height: 12em; overflow: auto;}
+
 
 .dojoTooltip {
 	border: solid black 1px;
@@ -87,7 +89,8 @@ div.comment .comment h6{ background: transparent; color: #333; padding: 4px 0 0 
 .dialog .text label,
 .dialog legend,
 .post legend	{ display: none; }
-	
+.pane .error	{ background-color: #fff; font-style: normal; }
+
 .dialog input,
 .post input	{ display: block; margin: 10px 0;}
 
@@ -133,7 +136,7 @@ div.author blockquote{ background: #FFF; }
 div.author hd	{ background-color: #069; }
 
 div.response h3	{ margin: .15em 0 .25em 5px; padding: 0;letter-spacing: normal; font-family: Verdana, Arial, Helvetica, sans-serif; font-size: 1em; font-weight: bold;}
-div.response	{ padding: 0; margin: -2px 0 0 15px; border: 2px solid #ccc; border-width: 2px 2px 0 0;  /*  background-color: #ccc; */}
+div.response	{ padding: 0; margin: -2px 0 0 15px!important; border: 2px solid #ccc; border-width: 2px 2px 0 0;  /*  background-color: #ccc; */}
 
 
 div.response div.response { border: none; margin: -2px 0 0 20px; border-top: 2px solid #ccc; }
@@ -144,6 +147,7 @@ div.response div.detail		{ padding-left: 5px; }
 /* h5 for pane posting titles */
 div.response h5	 { margin: 20px 0 0 0; padding: 0; font-size: 1.1em;}
 
+div.pane		{ position: relative; }
 div.response div.close a	{ position: absolute; float: none; top: 20px; right: 20px; color: #333;}
 
 div.response .pane 					{ border: 2px solid #ccc; border-width: 2px 0 2px 2px; padding: 0 20px 20px 20px; margin: 0; background-repeat: repeat-x; background-position: top; color: #fff;}
@@ -161,7 +165,12 @@ div.original blockquote * { background: #fff; }
 
 div.posting	{ background-color: #666; background-image: url(../images/pone_response_comment_bg.gif); }
 div.flag	{ background-color: #3C9544; background-image: url(../images/pone_response_flag_bg.gif); }
-div#flagForm { display:block; }
+div#flagForm { display:block; background: #3C9544;}
+div#flagForm form,
+div#flagForm fieldset { background: #3C9544; }
+div.posting form,
+div.posting fieldset { background: #666; }
+textarea #responseArea .response{ margin-left: 0!important; }
 div#flagConfirm { display: none; }
 
 .toolbar			{ background: url(../images/pone_toolbar_bg.gif) repeat-x 20px; padding: 5px; border: 1px solid #ccc; border-width: 0 0 2px 2px; margin: 0}
