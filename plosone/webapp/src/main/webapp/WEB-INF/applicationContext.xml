@@ -77,8 +77,8 @@
        
   <bean id="documentManagementService" class="org.plos.admin.service.DocumentManagementService" scope="session">
   	<!-- These pathnames are absolute -->
-        <property name="documentDirectory" value="/var/spool/plosone/ingestion-queue"/>
-        <property name="ingestedDocumentDirectory" value="/var/spool/plosone/ingested"/>
+    <property name="documentDirectory" value="${ingest.source}"/>
+    <property name="ingestedDocumentDirectory" value="${ingest.destination}"/>
   	<!-- Whereas this is relative to webapp/src/main/resources  -->
     <property name="xslTemplate" value="/crossref.xsl"/>    	
     <aop:scoped-proxy/>    
