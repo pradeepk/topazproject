@@ -16,6 +16,7 @@ import org.apache.commons.validator.EmailValidator;
 import org.plos.ApplicationException;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.article.service.FetchArticleService;
+import org.plos.email.impl.FreemarkerTemplateMailer;
 import org.plos.service.PlosoneMailer;
 import org.plos.user.PlosOneUser;
 import org.plos.user.action.UserActionSupport;
@@ -65,6 +66,7 @@ public class EmailArticleAction extends UserActionSupport {
     final Map<String, String> mapFields = new HashMap<String, String>();
     mapFields.put("articleURI", articleURI);
     mapFields.put("senderName", senderName);
+    mapFields.put(FreemarkerTemplateMailer.USER_NAME_KEY, senderName);
     mapFields.put("note", note);
     mapFields.put("title", title);
     mapFields.put("description", description);

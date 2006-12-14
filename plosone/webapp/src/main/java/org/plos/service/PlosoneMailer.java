@@ -42,16 +42,16 @@ public class PlosoneMailer extends FreemarkerTemplateMailer {
    * @param mapFields mapFields to fill up the template with the right values
    */
   public void sendEmailThisArticleEmail(final String toEmailAddress, final String fromEmailAddress, final Map<String, String> mapFields) {
-    final Map<String, String> newMapFields = new HashMap<String, String>();
+    final HashMap<String, Object> newMapFields = new HashMap<String, Object>();
     newMapFields.putAll(emailThisArticleMap);
     newMapFields.putAll(mapFields);
     sendEmail(toEmailAddress, fromEmailAddress, newMapFields);
   }
 
-  public void sendFeedback(final String fromEmailAddress, final Map<String, String> mapFields) {
-    final Map<String, String> newMapFields = new HashMap<String, String>();
+  public void sendFeedback(final String fromEmailAddress, final Map<String, Object> mapFields) {
+    final Map<String, Object> newMapFields = new HashMap<String, Object>();
     newMapFields.putAll(feedbackEmailMap);
     newMapFields.putAll(mapFields);
-    sendEmail(feedbackEmailMap.get("toEmailAddress"), fromEmailAddress, newMapFields);
+    sendEmail(feedbackEmailMap.get(TO_EMAIL_ADDRESS), fromEmailAddress, newMapFields);
   }
 }

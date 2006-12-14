@@ -9,6 +9,8 @@
  */
 package org.plos.action;
 
+import com.opensymphony.webwork.ServletActionContext;
+import org.apache.commons.collections.EnumerationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.EmailValidator;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
@@ -16,7 +18,13 @@ import org.plos.service.PlosoneMailer;
 import org.plos.user.PlosOneUser;
 import org.plos.user.action.UserActionSupport;
 
+import javax.servlet.http.HttpServletRequest;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.LinkedHashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -29,6 +37,8 @@ public class FeedbackAction extends UserActionSupport {
   private String subject;
   private String name;
   private PlosoneMailer plosoneMailer;
+  private String topazId;
+  public final String FROM_EMAIL_ADDRESS_KEY = "fromEmailAddress";
 
   /**
    * Render the page with the values passed in
@@ -36,13 +46,17 @@ public class FeedbackAction extends UserActionSupport {
    * @throws Exception Exception
    */
   public String executeRender() throws Exception {
+    setUserDetailsFromSession();
+    return SUCCESS;
+  }
+
+  private void setUserDetailsFromSession() {
     final PlosOneUser plosOneUser = (PlosOneUser) getSessionMap().get(PLOS_ONE_USER_KEY);
     if (null != plosOneUser) {
       name = plosOneUser.getDisplayName();
       fromEmailAddress = plosOneUser.getEmail();
+      topazId = plosOneUser.getUserId();
     }
-
-    return SUCCESS;
   }
 
   /**
@@ -52,14 +66,57 @@ public class FeedbackAction extends UserActionSupport {
   public String executeSend() throws Exception {
     if (!validates()) return INPUT;
 
-    final Map<String, String> mapFields = new HashMap<String, String>();
+    final Map<String, Object> mapFields = new HashMap<String, Object>();
     mapFields.put("page", page);
     mapFields.put("subject", subject);
     mapFields.put("name", name);
-    mapFields.put("fromEmailAddress", fromEmailAddress);
+    mapFields.put(FROM_EMAIL_ADDRESS_KEY, fromEmailAddress);
     mapFields.put("note", note);
+    setUserDetailsFromSession();
+    mapFields.put("id", StringUtils.defaultString(topazId, "not found"));
+
+    final Map<String, String> attributes = getUserSessionAttributes();
+    final List<String> values = new ArrayList<String>();
+    for (final Iterator<String> iterator = attributes.keySet().iterator(); iterator.hasNext();) {
+      final String key = iterator.next();
+      values.add(key + " ---> " + attributes.get(key));
+    }
+
+    mapFields.put("userInfo", StringUtils.join(values.iterator(), "<br/>\n"));
     plosoneMailer.sendFeedback(fromEmailAddress, mapFields);
     return SUCCESS;
+  }
+
+  public Map<String, String> getUserSessionAttributes() {
+    final Map<String, String> headers = new LinkedHashMap<String, String>();
+    final HttpServletRequest request = ServletActionContext.getRequest();
+
+    {
+      final Enumeration headerNames = request.getHeaderNames();
+      while (headerNames.hasMoreElements()) {
+        final String headerName = (String) headerNames.nextElement();
+        final List<String> headerValues = EnumerationUtils.toList(request.getHeaders(headerName));
+        headers.put(headerName, StringUtils.join(headerValues.iterator(), ","));
+      }
+    }
+
+    headers.put("server-name", request.getServerName() + ":" + request.getServerPort());
+    headers.put("remote-addr", request.getRemoteAddr());
+   // headers.put("remote-host", request.getRemoteHost());
+    headers.put("local-addr", request.getLocalAddr() + ":" + request.getLocalPort());
+   // headers.put("local-name", request.getLocalName());
+
+    //Keeping this in case more values get passed from the client other than just the visible form fields
+    {
+      final Enumeration parameterNames = request.getParameterNames();
+      while (parameterNames.hasMoreElements()) {
+        final String paramName = (String) parameterNames.nextElement();
+        final String[] paramValues = request.getParameterValues(paramName);
+        headers.put(paramName, StringUtils.join(paramValues, ","));
+      }
+    }
+
+    return headers;
   }
 
   private boolean validates() {
@@ -73,10 +130,10 @@ public class FeedbackAction extends UserActionSupport {
       isValid = false;
     }
     if (StringUtils.isBlank(fromEmailAddress)) {
-      addFieldError("fromEmailAddress", "E-mail address cannot be empty");
+      addFieldError(FROM_EMAIL_ADDRESS_KEY, "E-mail address cannot be empty");
       isValid = false;
     } else if (!EmailValidator.getInstance().isValid(fromEmailAddress)) {
-      addFieldError("fromEmailAddress", "Invalid e-mail address");
+      addFieldError(FROM_EMAIL_ADDRESS_KEY, "Invalid e-mail address");
       isValid = false;
     }
     if (StringUtils.isBlank(note)) {

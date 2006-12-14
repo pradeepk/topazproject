@@ -1,6 +1,6 @@
 <div id="content">
 	<p>Fields marked with an <span class="required">*</span> are required. </p>
-	<@ww.form name="feedbackForm" cssClass="pone-form" action="feedback" method="post" title="Feedback">
+	<@ww.form name="feedbackForm" cssClass="pone-form" action="feedback" method="post" title="Feedback" enctype="multipart/form-data">
 	  <@ww.hidden name="page"/>
   	  <fieldset>
 			<legend>Feedback</legend>

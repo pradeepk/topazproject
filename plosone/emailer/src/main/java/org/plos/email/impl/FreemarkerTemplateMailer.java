@@ -11,27 +11,29 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.email.TemplateMailer;
 import org.springframework.mail.MailPreparationException;
 import org.springframework.mail.javamail.JavaMailSender;
+import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.mail.javamail.MimeMessagePreparator;
 import org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.mail.BodyPart;
-import javax.mail.Message;
 import javax.mail.MessagingException;
 import javax.mail.Multipart;
 import javax.mail.internet.InternetAddress;
 import javax.mail.internet.MimeBodyPart;
 import javax.mail.internet.MimeMessage;
 import javax.mail.internet.MimeMultipart;
+import java.io.BufferedWriter;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.StringBufferInputStream;
-import java.io.StringWriter;
+import java.io.OutputStreamWriter;
+import java.io.Writer;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Freemarker template based emailer.
@@ -49,13 +51,13 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
     mailContentTypes.put(MIME_TYPE_TEXT_HTML, "HTML");
   }
 
-  private Map<String, String> verifyEmailMap;
-  private Map<String, String> forgotPasswordVerificationEmailMap;
   private static final String TEXT = "text";
   private static final String HTML = "html";
   private static final String URL = "url";
   private static final String SUBJECT = "subject";
   
+  public static final String TO_EMAIL_ADDRESS = "toEmailAddress";
+  public static final String USER_NAME_KEY = "name";
   private static final Log log = LogFactory.getLog(FreemarkerTemplateMailer.class);
 
   /**
@@ -70,15 +72,16 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
   public void mail(final String toEmailAddress, final String fromEmailAddress, final String subject, final Map<String, Object> context, final String textTemplateFilename, final String htmlTemplateFilename) {
     final MimeMessagePreparator preparator = new MimeMessagePreparator() {
       public void prepare(final MimeMessage mimeMessage) throws MessagingException, IOException {
-        mimeMessage.setRecipient(Message.RecipientType.TO, new InternetAddress(toEmailAddress));
-        mimeMessage.setFrom(new InternetAddress(fromEmailAddress));
-        mimeMessage.setSubject(subject);
+        final MimeMessageHelper message = new MimeMessageHelper(mimeMessage, true, configuration.getDefaultEncoding());
+        message.setTo(new InternetAddress(toEmailAddress));
+        message.setFrom(new InternetAddress(fromEmailAddress, (String) context.get(USER_NAME_KEY)));
+        message.setSubject(subject);
 
         // Create a "text" Multipart message
-        final Multipart mp = createPartForMultipart(textTemplateFilename, context, "alternative", MIME_TYPE_TEXT_PLAIN);
+        final Multipart mp = createPartForMultipart(textTemplateFilename, context, "alternative", MIME_TYPE_TEXT_PLAIN + "; charset=" + configuration.getDefaultEncoding());
 
         // Create a "HTML" Multipart message
-        final Multipart htmlContent = createPartForMultipart(htmlTemplateFilename, context, "related", MIME_TYPE_TEXT_HTML);
+        final Multipart htmlContent = createPartForMultipart(htmlTemplateFilename, context, "related", MIME_TYPE_TEXT_HTML + "; charset=" + configuration.getDefaultEncoding());
 
         final BodyPart htmlPart = new MimeBodyPart();
         htmlPart.setContent(htmlContent);
@@ -100,14 +103,18 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
   private BodyPart createBodyPart(final String mimeType, final String htmlTemplateFilename, final Map<String, Object> context) throws IOException, MessagingException {
     final BodyPart htmlPage = new MimeBodyPart();
     final Template htmlTemplate = configuration.getTemplate(htmlTemplateFilename);
-    final StringWriter htmlWriter = new StringWriter();
+    final String encoding = configuration.getDefaultEncoding();
+    final ByteArrayOutputStream outputStream = new ByteArrayOutputStream(100);
+    final Writer writer = new BufferedWriter(new OutputStreamWriter(outputStream, encoding));
+    htmlTemplate.setOutputEncoding(encoding);
+    htmlTemplate.setEncoding(encoding);
     try {
-      htmlTemplate.process(context, htmlWriter);
+      htmlTemplate.process(context, writer);
     } catch (TemplateException e) {
       throw new MailPreparationException("Can't generate " + mailContentTypes.get(mimeType) + " subscription mail", e);
     }
 
-    htmlPage.setDataHandler(new BodyPartDataHandler(htmlWriter, mimeType));
+    htmlPage.setDataHandler(new BodyPartDataHandler(outputStream, mimeType));
     return htmlPage;
   }
 
@@ -158,7 +165,7 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
    * @param mapValues contains the url for verification and html + text template names
    */
   public void sendEmail(final String toEmailAddress, final Map<String, Object> mapValues) {
-    mail(toEmailAddress, getFromEmailAddress(), (String)mapValues.get(SUBJECT), mapValues, (String)mapValues.get(TEXT), (String)mapValues.get(HTML));
+    sendEmail(toEmailAddress, getFromEmailAddress(), mapValues);
   }
 
   /**
@@ -166,24 +173,17 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
    * @param fromEmailAddress fromEmailAddress
    * @param mapValues contains the url for verification and html + text template names
    */
-  public void sendEmail(final String toEmailAddress, final String fromEmailAddress, final Map<String, String> mapValues) {
-    final Map<String, Object> context = new HashMap<String, Object>();
-
-    final Set<Map.Entry<String,String>> mapIter = mapValues.entrySet();
-    for (final Map.Entry<String, String> entry : mapIter) {
-      context.put(entry.getKey(), entry.getValue());
-    }
-    
-    mail(toEmailAddress, fromEmailAddress, mapValues.get(SUBJECT), context, mapValues.get(TEXT), mapValues.get(HTML));
+  public void sendEmail(final String toEmailAddress, final String fromEmailAddress, final Map<String, Object> mapValues) {
+    mail(toEmailAddress, fromEmailAddress, (String)mapValues.get(SUBJECT), mapValues, (String)mapValues.get(TEXT), (String)mapValues.get(HTML));
   }
 
 }
 
 class BodyPartDataHandler extends DataHandler {
-  public BodyPartDataHandler(final StringWriter writer, final String contentType) {
+  public BodyPartDataHandler(final ByteArrayOutputStream outputStream, final String contentType) {
     super(new DataSource() {
       public InputStream getInputStream() throws IOException {
-        return new StringBufferInputStream(writer.toString());
+        return new ByteArrayInputStream(outputStream.toByteArray());
       }
 
       public OutputStream getOutputStream() throws IOException {
