@@ -15,7 +15,7 @@
     <dependency>
       <groupId>${pom.parent.groupId}</groupId>
       <artifactId>${pom.parent.artifactId}-api</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.parent.version}</version>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
