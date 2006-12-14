@@ -9,27 +9,40 @@
 # Licensed under the Educational Community License version 1.0
 # http://opensource.org/licenses/ecl1.php
 
-# What to customize/do:
-# - Define defaults and/or overrides (minimum is <basename>_CATALINA_HOME)
-# - Ensure the jsvc binary is somewhere
-
-# Notes:
-#  STARTUP = <jsvc|java> depending on how you want to start
-#  jsvc pretty much insists on being root
-#  jsvc must be in PATH (build it from $CATALINA_HOME/bin/jsvc.tar.gz)
-#    Recommend /usr/local/bin (and add this to root's path)
-#  We will run as USER
-#    (unless variable is undefined -- remove it AND undefine it before running)
-#  Tested with jakarta-tomcat-5.0.28 & 5.5
+# Environment:
+#  Variable      Default -- Description
+#  ------------- --------------------------------------------------------------
+#  USER          topaz -- The effective user to run tomcat as. This is
+#                important if using a privlidged port.
+#  TRUST_STORE   /etc/topaz/keystore.jks -- The value to set the
+#                javax.net.ssl.trustStore system property. Set to "default" to
+#                turn this off.
+#  TRUST_PASS    changeit -- The value for the javax.net.ssl.trustStorePassword
+#                system property. Set to "default" to turn this off.
+#  CATALINA_HOME This is where tomcat is installed. It is usually overridden
+#                by <basename>_CATALINA_HOME.
+#  JAVA_HOME     /usr/local/topaz/java -- This is where the JDK is installed.
+#                It really should be set before running this script.
+#  TOMCAT_OPTS   -Xmx400m -XX:MaxPermSize=256m -- These are the options to be
+#                used for starting tomcat. <basename>_TOMCAT_OPTS overrides
+#                these.
+#  STARTUP       jsvc -- This can be "jsvc" or "java". If set to jsvc and jsvc
+#                is not found, we revert ot running via java. If starting or
+#                stopping with jsvc, must be root
+#
+# TODO:
+# - Get rid of stopid <basename>_ENV_VAR override stuff (must do diags first)
+# - Move report/reportall diagnostics to a separate script
 
 # Defaults:
-USER="topaz"
+[ -z "$USER" ] && USER="topaz"
 TOPAZ_LOCAL="/usr/local/topaz"
 TOPAZ_CONFIG="/etc/topaz"
 [ -z "$TRUST_STORE" ] && TRUST_STORE=$TOPAZ_CONFIG/keystore.jks
+[ -z "$TRUST_PASS" ]  && TRUST_PASS=changeit
 [ -z "$CATALINA_HOME" ] && CATALINA_HOME=
 [ -z "$JAVA_HOME" ] && [ -d $TOPAZ_LOCAL/java ] && JAVA_HOME="$TOPAZ_LOCAL/java"
-[ -z "$TOMCAT_OPTS" ] && TOMCAT_OPTS="-Xmx400m -XX:MaxPermSize=256m -Djavax.net.ssl.trustStore=${TRUST_STORE} -Djavax.net.ssl.trustStorePassword='changeit'"
+[ -z "$TOMCAT_OPTS" ] && TOMCAT_OPTS="-Xmx400m -XX:MaxPermSize=256m"
 [ -z "$STARTUP" ] && STARTUP="jsvc"
 VARDIR="/var"
 LOGDIR="${VARDIR}/log/topaz"
@@ -80,6 +93,14 @@ ln -s `basename ${STDLOG}` ${STDLOG_LNK}
 # Log stuff w/date as tomcat doesn't include dates when logging!
 log() { echo "`date` $*" >> $STDLOG; echo $*; }
 
+# Setup TOMCAT_TRUST_OPTS properly
+if [ -n "$TRUST_STORE" -a "$TRUST_STORE" != "default" ]; then
+  TOMCAT_TRUST_OPTS="-Djavax.net.ssl.trustStore=${TRUST_STORE}"
+  if [ -n "$TRUST_PASS" -a "$TRUST_PASS" != "default" ]; then
+    TOMCAT_TRUST_OPTS="$TOMCAT_TRUST_OPTS -Djavax.net.ssl.trustStorePassword='$TRUST_PASS'"
+  fi
+fi
+
 # Expand configuration (use appropriate overrides or defaults if no overrides)
 expand () { eval "$1=\${${BASENAME}_$1:-\$$1}"; }
 expand CATALINA_HOME
@@ -115,8 +136,7 @@ JSVC_OPTS="${JSVC_OPTS} \
   -Dcatalina.home=${CATALINA_HOME}"
 #  -Djava.security.manager \
 #  -Djava.security.policy=${CATALINA_POLICY}
-#JSVC_OPTS="${JSVC_OPTS} -Djavax.net.ssl.trustStore=${TRUST_STORE}"
-JSVC_OPTS="${JSVC_OPTS} ${TOMCAT_OPTS}"
+JSVC_OPTS="${JSVC_OPTS} ${TOMCAT_OPTS} ${TOMCAT_TRUST_OPTS}"
 
 # Find jsvc (in case root's PATH) doesn't contain it
 if which ${JSVC} >/dev/null 2>&1; then
@@ -187,7 +207,7 @@ su_cmd() {
 }
 
 java_start() {
-  su_cmd $JAVA_HOME/bin/java -$JVM $TOMCAT_OPTS $CATALINA_OPTS start
+  su_cmd $JAVA_HOME/bin/java -$JVM $TOMCAT_OPTS $TOMCAT_TRUST_OPTS $CATALINA_OPTS start
   # TODO: Wait here until PID in $PIDFILE is listening on $PORT (or until some timeout)
 }
 
