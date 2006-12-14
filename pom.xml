@@ -66,39 +66,12 @@
 
   <repositories>
     <repository>
-      <id>central</id>
-      <name>Maven 2 Repository on ibibio</name>
-      <url>http://www.ibiblio.org/maven2</url>
-    </repository>
-    <repository>
-      <id>codehaus</id>
-      <name>Codehaus Repo</name>
-      <url>http://dist.codehaus.org</url>
-      <layout>legacy</layout>
-    </repository>
-    <repository>
       <id>topaz</id>
       <name>Maven 2 Repository for Topaz</name>
       <url>http://gandalf.topazproject.org/maven2</url>
     </repository>
-    <repository>
-      <id>rectang</id> <!-- maventrac integration -->
-      <name>Retang repository</name>
-      <url>http://maven.rectang.com/snapshot/</url>
-    </repository>
   </repositories>
   <pluginRepositories>
-    <pluginRepository>
-      <id>central</id>
-      <name>Maven 2 Repository on ibibio</name>
-      <url>http://www.ibiblio.org/maven2</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>codehaus</id>
-      <name>Codehaus Repo</name>
-      <url>http://dist.codehaus.org</url>
-      <layout>legacy</layout>
-    </pluginRepository>
     <pluginRepository>
       <id>topaz</id>
       <name>Maven 2 Repository for Topaz</name>
