@@ -1,4 +1,4 @@
-dojo.provide("topaz.domUtil");
+
 
 /**
   * topaz.commentDisplay
@@ -267,11 +267,10 @@ topaz.domUtil = {
   setContainerWidth: function (obj, minWidth, maxWidth, variableWidth /* if the container between min and max */) {
     var viewport = dojo.html.getViewport();
     
-    var containerMarginBox = dojo.html.getMarginBox(obj);
     // min-width: 675px; max-width: 910px;
     obj.style.width = (minWidth && viewport.width < minWidth) ? minWidth + "px" : 
                       (maxWidth && viewport.width > maxWidth) ? maxWidth + "px" :
-                      (!variableWidth && (viewport.width < maxWidth || (containerMarginBox.width/variableWidth) < maxWidth)) ? maxWidth + "px" : "auto" ;
+                      (!variableWidth && viewport.width < maxWidth) ? maxWidth + "px" : "auto" ;
     //alert("container.style.width = " + obj.style.width);
   },
   
