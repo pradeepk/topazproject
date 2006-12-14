@@ -85,6 +85,16 @@ public class AlertsImpl implements Alerts {
   private static final String GET_USER_TIMESTAMPS_ITQL =
     "select $user $date from ${ALERTS} where <${userId}> <topaz:timeStamp> $date " +
     " and $date <tucana:after> ${date} in ${XSD};";
+  private static final String GET_USER_ITQL =
+    "select $timestamp " +
+    "  subquery( select $user from ${PREFS} where " +
+    "   $user      <topaz:hasPreferences>  $pref and " +
+    "   $pref      <topaz:preference>      $prefn and " +
+    "   $prefn     <topaz:prefName>        'alertsEmailAddress' and " +
+    "   $prefn     <topaz:prefValue>       ${email} ) " +
+    " from ${ALERTS} where " +
+    "  $user       <topaz:timeStamp>       $timestamp and " +
+    "  $timestamp  <tucana:before>         '${stamp}'^^<xsd:date> in ${XSD};";
   private static final String GET_NEXT_USERS_ITQL =
     "select $timestamp $user " +
     "  subquery( select $email from ${PREFS} where " +
@@ -251,6 +261,29 @@ public class AlertsImpl implements Alerts {
   }
 
   // See Alerts.java interface
+  public boolean sendAlert(String endDate, String emailAddress) throws RemoteException {
+    checkAccess(pep.SEND_ALERTS, "dummy:dummy");
+    try {
+      UserData user = getUser(endDate, emailAddress);
+      if (user == null)
+        return false;
+
+      Email message = processUser(user, endDate);
+      if (message == null)
+        return false;
+
+      AlertsHelper.sendEmail(message);
+      return true;
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error talking to mulgara", ae);
+    } catch (EmailException ee) {
+      throw new RemoteException("Error sending alert", ee);
+    } catch (AlertsGenerationException age) {
+      throw new RemoteException("Error generating alert", age);
+    }
+  }
+
+  // See Alerts.java interface
   public boolean sendAllAlerts() {
     checkAccess(pep.SEND_ALERTS, "dummy:dummy");
     Calendar c = Calendar.getInstance();
@@ -293,29 +326,12 @@ public class AlertsImpl implements Alerts {
           return false;
 
         while (this.usersIt.hasNext()) {
-          // Get user and update user's timestamp
-          UserData user = (UserData)this.usersIt.next();
-          updateTimestamp(user.userId, this.endDate);
-
-          // Get articles we want a feed on for a specific user bounded by user.stamp and endDate
-          Collection articles = getUserArticles(user, this.endDate);
-          if (articles == null || articles.size() == 0)
-            continue; // No articles, so no alert for this user. Skip him.
-
-          this.message = AlertsHelper.getEmail(articles);
-          this.message.setSubject("PlOS-One Alert");
-          this.message.setFrom("DO-NOT-REPLY@plosone.org");
-          this.message.addTo(user.emailAddress);
-          this.message.addHeader("X-Topaz-Userid", user.userId);
-          this.message.addHeader("X-Topaz-endDate", this.endDate);
-          this.message.addHeader("X-Topaz-startDate", user.stamp);
-          this.message.addHeader("X-Topaz-Articles", articles.toString());
-          this.message.addHeader("X-Topaz-Categories", "N/A"); // iTQL hides these from us
-
-          if (log.isDebugEnabled())
-            log.debug("hasNext user " + user.userId + " " + user.stamp + "-" + this.endDate +
-                      " msg: " + articles.toString());
-          return true; // Okay, we found a user with articles
+          Email message = processUser((UserData) this.usersIt.next(), this.endDate);
+          if (message != null) {
+            this.message = message;
+            return true; // Okay, we found a user with articles
+          } else
+            continue;
         }
 
         // Have reached end of iterator, read more records
@@ -344,6 +360,31 @@ public class AlertsImpl implements Alerts {
     public void remove() { // thorws UnsupportedOperationException {
       throw new UnsupportedOperationException("Cannot manually remove messages");
     }
+  }
+
+  private Email processUser(UserData user, String endDate)
+      throws RemoteException, AlertsGenerationException, EmailException {
+    updateTimestamp(user.userId, endDate);
+
+    // Get articles we want a feed on for a specific user bounded by user.stamp and endDate
+    Collection articles = getUserArticles(user, endDate);
+    if (articles == null || articles.size() == 0)
+      return null; // No articles, so no alert for this user. Skip him.
+
+    Email message = AlertsHelper.getEmail(articles);
+    message.setSubject("PlOS-One Alert");
+    message.setFrom("DO-NOT-REPLY@plosone.org");
+    message.addTo(user.emailAddress);
+    message.addHeader("X-Topaz-Userid", user.userId);
+    message.addHeader("X-Topaz-endDate", endDate);
+    message.addHeader("X-Topaz-startDate", user.stamp);
+    message.addHeader("X-Topaz-Articles", articles.toString());
+    message.addHeader("X-Topaz-Categories", "N/A"); // iTQL hides these from us
+
+    if (log.isDebugEnabled())
+      log.debug("hasNext user " + user.userId + " " + user.stamp + "-" + endDate +
+                " msg: " + articles.toString());
+    return message; // Okay, we found a user with articles
   }
 
 
@@ -391,6 +432,47 @@ public class AlertsImpl implements Alerts {
     return users.values();
   }
 
+  /**
+   * Find a specific user (based on his alert's email address) that has alerts. If there is
+   * no user registered for this email address OR if the user has no alerts, null will be
+   * returned.
+   *
+   * @param endDate The date to get alerts until
+   * @param emailAddress The user's registered alert email address.
+   * @return The UserData or null.
+   */
+  private UserData getUser(String endDate, String emailAddress)
+      throws RemoteException, AnswerException {
+    Map values = new HashMap();
+    values.put("PREFS", MODEL_PREFS);
+    values.put("ALERTS", MODEL_ALERTS);
+    values.put("XSD", MODEL_XSD);
+    values.put("stamp", endDate);
+    values.put("email", emailAddress);
+    String query = ItqlHelper.bindValues(AlertsImpl.GET_USER_ITQL, values);
+    String response = ctx.getItqlHelper().doQuery(query, null);
+    Answer result = new Answer(response);
+    QueryAnswer  answer = (QueryAnswer)result.getAnswers().get(0);
+
+    // TODO: Should just check to see if we have one or zero results
+    for (Iterator rowIt = answer.getRows().iterator(); rowIt.hasNext(); ) {
+      Object[] row = (Object[])rowIt.next();
+
+      UserData user = new UserData();
+      user.stamp = ((Literal)row[0]).getLexicalForm();
+
+      QueryAnswer subAnswer = (QueryAnswer)row[1]; // from sub-query
+      Object[] subRow = (Object[])subAnswer.getRows().get(0);
+      user.userId = ((URIReference)subRow[0]).getURI().toString();
+      
+      user.emailAddress = emailAddress;
+      if (log.isDebugEnabled())
+        log.debug("Found user " + user.userId + " " + user.emailAddress + " " + user.stamp);
+      return user;
+    }
+
+    return null;
+  }
 
   /**
    * Get timestamp user last received update. (Unused?)

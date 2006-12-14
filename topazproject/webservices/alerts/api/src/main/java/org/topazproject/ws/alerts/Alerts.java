@@ -50,6 +50,21 @@ public interface Alerts extends Remote {
   public boolean sendAlerts(String endDate, int count) throws RemoteException;
 
   /**
+   * Send an alert for a speific user.
+   *
+   * The email address specified is the email address registered for alerts - possibly
+   * not the one the user logs in with. If there are no alerts for the user (no new
+   * articles for the categories registered), this will return false. If there is no
+   * user with the registered email address, this will return false.
+   *
+   * @param endDate is the date to send the last alert for
+   * @param emailAddress is the email address the user registered for the alert
+   * @return true if an email was generated for the user
+   * @throws RemoteException if there was a problem sending the alert for some rason
+   */
+  public boolean sendAlert(String endDate, String emailAddress) throws RemoteException;
+
+  /**
    * Send all the alerts as of yesterday.
    *
    * This is meant primarily for testing. It is actually run via
