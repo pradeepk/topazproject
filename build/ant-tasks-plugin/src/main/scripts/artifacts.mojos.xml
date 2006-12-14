@@ -44,7 +44,7 @@
           <name>location</name>
           <property>location</property>
           <required>true</required>
-          <defaultValue>${project.build.directory}/classes</defaultValue>
+          <defaultValue>${project.build.directory}</defaultValue>
         </parameter>
       </parameters>
     </mojo>

@@ -45,7 +45,7 @@
             version="${version}" type="${type}"/>
         </artifact:dependencies>
 
-        <copy todir="${location}">
+        <copy todir="${location}" flatten="true">
           <fileset refid="${fileSet}"/>
         </copy>
       </sequential>
