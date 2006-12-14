@@ -102,7 +102,7 @@
               <groupname>topaz</groupname>
               <sources>
                 <source>
-                  <location>src/main/resources/topaz.xml</location>
+                  <location>src/main/resources/mulgara.xml</location>
                 </source>
               </sources>
             </mapping>
