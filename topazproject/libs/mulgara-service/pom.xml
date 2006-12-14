@@ -93,44 +93,29 @@
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-dependency-plugin</artifactId>
-        <version>2.0-alpha-1-SNAPSHOT</version>
-        <executions>
-          <execution>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>copy</goal>
-            </goals>
-            <configuration>
-              <artifactItems>
-                <artifactItem>
-                  <groupId>org.mulgara</groupId>
-                  <artifactId>mulgara-lite</artifactId>
-                </artifactItem>
-              </artifactItems>
-              <stripVersion>true</stripVersion>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
+
         <executions>
           <execution>
             <id>unpack</id>
-            <phase>process-resources</phase>
+            <phase>generate-resources</phase>
             <goals>
               <goal>run</goal>
             </goals>
             <configuration>
               <tasks>
+                <taskdef resource="org/apache/maven/artifact/ant/antlib.xml"
+                  classpathref="maven.plugin.classpath"/>
+
+                <dependencies filesetId="mulgara-libs" useScope="runtime">
+                  <dependency groupId="org.mulgara" artifactId="mulgara-lite" version="1.0.1-t1"/>
+                </dependencies>
+
                 <property name="webinf"
                     location="${project.build.directory}/${project.build.finalName}/WEB-INF"/>
-                  <property name="mulgara-jar"
-                      location="${project.build.directory}/dependency/mulgara-lite.jar"/>
 
-                <unjar src="${mulgara-jar}" dest="${webinf}">
+                <unjar dest="${webinf}" overwrite="false">
+                  <fileset refid="mulgara-libs"/>
                   <patternset>
                     <include name="lib/*.jar"/>
                     <exclude name="lib/*rmi*"/>
@@ -143,7 +128,8 @@
                     <exclude name="lib/*jetty*"/>
                   </patternset>
                 </unjar>
-                <unjar src="${mulgara-jar}" dest="${webinf}/classes">
+                <unjar dest="${webinf}/classes" overwrite="false">
+                  <fileset refid="mulgara-libs"/>
                   <patternset>
                     <include name="org/**"/>
                     <include name="com/**"/>
@@ -154,6 +140,14 @@
             </configuration>
           </execution>
         </executions>
+
+        <dependencies>
+          <dependency>
+            <groupId>org.apache.maven</groupId>
+            <artifactId>maven-artifact-ant</artifactId>
+            <version>2.0.4</version>
+          </dependency>
+        </dependencies>
       </plugin>
     </plugins>
   </build>
