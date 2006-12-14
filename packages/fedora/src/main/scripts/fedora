@@ -10,6 +10,10 @@
 # Source function library.
 . /etc/init.d/functions
 
+# Read our configuration from sysconfig (a redhat convention)
+[ -e /etc/sysconfig/topaz-common ] && . /etc/sysconfig/topaz-common
+[ -e /etc/sysconfig/fedora ] && . /etc/sysconfig/fedora
+
 # Start multicast for ecache
 /usr/local/topaz/bin/multicast
 

@@ -19,6 +19,7 @@
 . /etc/init.d/functions
 
 # Read our configuration from sysconfig (a redhat convention)
+[ -e /etc/sysconfig/topaz-common ] && . /etc/sysconfig/topaz-common
 [ -e /etc/sysconfig/topaz ] && . /etc/sysconfig/topaz
 
 # If our system is setup incorrectly somehow, minimal attempt to clean up
