@@ -2,7 +2,7 @@
 # $Id$
 
 # Fixup perms
-chmod a+x /usr/local/topaz/fedora-0.5-SNAPSHOT/*/bin/*
+chmod a+x /usr/local/topaz/fedora-*/*/bin/*
 
 PKG=fedora
 
