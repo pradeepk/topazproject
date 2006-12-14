@@ -32,8 +32,7 @@ public class ${Svc}ServiceTest extends TestCase {
   }
 
   protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
-    String uri = 
-      "http://localhost:9997/ws-${service}-webapp-0.5-SNAPSHOT/services/${Svc}ServicePort";
+    String uri = "http://localhost:9997/ws-${service}/services/${Svc}ServicePort";
     service = ${Svc}ClientFactory.create(uri);
   }
 
