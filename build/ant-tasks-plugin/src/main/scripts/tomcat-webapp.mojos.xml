@@ -13,46 +13,30 @@
   <mojos>
 
     <mojo>
-      <goal>tomcat-webapp-install</goal>
+      <goal>get-artifacts</goal>
 
       <!-- this element refers to the Ant target we'll invoke -->
-      <call>tomcat-webapp-install</call>
+      <call>get-artifacts</call>
       <requiresProject>true</requiresProject>
 
       <description>
-        Package Mulgara with Tomcat for easy deployment
+        Fetch the list of artifacts
       </description>
 
       <parameters>
-        <!-- Group Id for the WAR file to pull in -->
+        <!-- List of artifacts separated by "," -->
         <parameter>
           <name>dependencies</name>
           <property>dependencies</property>
           <required>true</required>
         </parameter>
 
-        <!-- Name of Tomcat location -->
+        <!-- Type of artifact -->
         <parameter>
-          <name>tomcatLocation</name>
-          <property>tomcatLocation</property>
+          <name>type</name>
+          <property>type</property>
           <required>true</required>
-          <defaultValue>http://www.apache.org/dist/tomcat/tomcat-5/v5.5.16/bin</defaultValue>
-        </parameter>
-
-        <!-- Name of Tomcat file -->
-        <parameter>
-          <name>tomcatFile</name>
-          <property>tomcatFile</property>
-          <required>true</required>
-          <defaultValue>apache-tomcat-5.5.16</defaultValue>
-        </parameter>
-
-        <!-- Pass the root directory in as Ant task cannot access it -->
-        <parameter>
-          <name>root</name>
-          <property>root</property>
-          <required>true</required>
-          <defaultValue>${project.build.directory}</defaultValue>
+          <defaultValue>jar</defaultValue>
         </parameter>
 
         <!-- Pass the location directory in as Ant task cannot access it -->
@@ -63,7 +47,6 @@
           <defaultValue>${project.build.directory}/classes</defaultValue>
         </parameter>
       </parameters>
-
     </mojo>
   </mojos>
 </pluginMetadata>
