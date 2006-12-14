@@ -26,10 +26,24 @@ Submit Today</a></li>
 				<a href="http://www.moore.org" title="Gorden and Betty Moore Foundation"><img src="${freemarker_config.context}/images/pone_home_moore.gif" alt="Moore Foundation"/></a>
 						</div>					
 						<div class="block banner">
-							<a href="http://www.plosjournals.org/perlserv/?request=clickthru&id=296&filename=v_pod_plo_01.GIF"><img src="http://www.plosjournals.org/images/banners/v_pod_plo_01.GIF" /></a>
+							<script language='JavaScript' type='text/javascript' src='http://ads.plos.org/adx.js'></script>
+							<script language='JavaScript' type='text/javascript'>
+							<!--
+							   if (!document.phpAds_used) 
+							   		document.phpAds_used = ',';
+							   phpAds_random = new String (Math.random()); phpAds_random = phpAds_random.substring(2,11);
+							   document.write ("<" + "script language='JavaScript' type='text/javascript' src='");
+							   document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
+							   document.write ("&amp;what=plos_print_01");
+							   document.write ("&amp;exclude=" + document.phpAds_used);
+							   if (document.referrer)
+							      document.write ("&amp;referer=" + escape(document.referrer));
+							   document.write ("'><" + "/script>");
+							//-->
+							</script>
+							<noscript><a href='http://ads.plos.org/adclick.php?n=a73373f2' target='_blank'><img src='http://ads.plos.org/adview.php?what=plos_print_01&amp;n=a73373f2' border='0' alt=''></a></noscript>
 						</div> 
-
-													   
+												   
 					</div>			
 					
 					<div class="col last">		
