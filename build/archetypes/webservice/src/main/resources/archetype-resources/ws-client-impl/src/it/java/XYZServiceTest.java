@@ -27,13 +27,14 @@ import junit.framework.TestCase;
 public class ${Svc}ServiceTest extends TestCase {
   private ${Svc} service;
 
-  public ${Svc}ServiceTest(String testName) {
+  public ${Svc}ServiceTest(String testName) throws MalformedURLException, ServiceException {
     super(testName);
-  }
 
-  protected void setUp() throws MalformedURLException, ServiceException, RemoteException {
     String uri = "http://localhost:9997/ws-${service}/services/${Svc}ServicePort";
     service = ${Svc}ClientFactory.create(uri);
+  }
+
+  protected void setUp() {
   }
 
   public void testAll() throws RemoteException, IOException {
