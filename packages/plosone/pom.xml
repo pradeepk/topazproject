@@ -76,6 +76,18 @@
               <groupname>topaz</groupname>
             </mapping>
             <mapping>
+              <directory>/var/spool/plosone/ingestion-queue</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+            </mapping>
+            <mapping>
+              <directory>/var/spool/plosone/ingested</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+            </mapping>
+            <mapping>
               <directory>/var/cache/plosone</directory>
               <filemode>755</filemode>
               <username>topaz</username>
