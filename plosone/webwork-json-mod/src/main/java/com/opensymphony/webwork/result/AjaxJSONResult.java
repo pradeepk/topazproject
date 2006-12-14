@@ -31,6 +31,7 @@ public class AjaxJSONResult implements Result {
    * Log instance.
    */
   private static Log log = LogFactory.getLog(AjaxJSONResult.class);
+  private String contentType;
 
 
   /**
@@ -59,21 +60,27 @@ public class AjaxJSONResult implements Result {
         log.debug("\n\nJSON!! = " + json);
       }
     } catch (Exception e) {
-      e.printStackTrace();
+      log.error("Error while json serializing:", e);
     }
 
     // Write JSON to response.
     try {
       response.setContentLength(json.length());
       //Note: The content type is text so that it can be rendered directly on the browser.
-      response.setContentType("text/html");
+      response.setContentType(contentType);
 //      response.setContentType("application/json");
       PrintWriter out = response.getWriter();
       out.print(json);
     } catch (IOException ioe) {
-      ioe.printStackTrace();
+      log.error("Error while writing out the jso result", ioe);
     }
   } // End execute().
 
-  
+  /**
+   * Set the content type for the json result
+   * @param contentType contentType
+   */
+  public void setContentType(final String contentType) {
+    this.contentType = contentType;
+  }
 } // End class.

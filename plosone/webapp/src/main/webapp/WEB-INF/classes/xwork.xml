@@ -19,7 +19,9 @@
         <param name="location">/templates/main_template.ftl</param>
       </result-type>
       <result-type name="plosStream" class="org.plos.webwork.PlosStreamResult" />
-      <result-type name="ajaxJSON" class="com.opensymphony.webwork.result.AjaxJSONResult" />
+      <result-type name="ajaxJSON" class="com.opensymphony.webwork.result.AjaxJSONResult">
+        <param name="contentType">text/plain;charset=UTF-8</param>
+      </result-type>
     </result-types>
 
     <interceptors>
