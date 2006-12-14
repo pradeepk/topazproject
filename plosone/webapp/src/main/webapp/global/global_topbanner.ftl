@@ -1,25 +1,44 @@
 	<!-- begin : left banner slot -->
 	<div class="left">
-<script type="text/javascript"><!--
-google_ad_client = "pub-3431511166307937";
-google_ad_width = 468;
-google_ad_height = 60;
-google_ad_format = "468x60_as";
-google_ad_type = "text";
-google_ad_channel ="";
-google_color_border = "7F7F7F";
-google_color_bg = "4C4C4C";
-google_color_link = "FFFFFF";
-google_color_text = "E6E6E6";
-google_color_url = "FFFFFF";
-//--></script>
-<script type="text/javascript"
-  src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script>
+<script language='JavaScript' type='text/javascript'src='http://ads.plos.org/adx.js'></script>
+<script language='JavaScript' type='text/javascript'>
+<!--
+  if (!document.phpAds_used) document.phpAds_used = ',';
+  phpAds_random = new String (Math.random()); phpAds_random =
+phpAds_random.substring(2,11);
+
+  document.write ("<" + "script language='JavaScript'type='text/javascript' src='");
+  document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
+  document.write ("&amp;what=pathogens:2006-11");
+  document.write ("&amp;exclude=" + document.phpAds_used);
+  if (document.referrer)
+     document.write ("&amp;referer=" + escape(document.referrer));
+  document.write ("'><" + "/script>");
+//-->
+</script><noscript><a href='http://ads.plos.org/adclick.php?n=ab24f689'target='_blank'><img src='http://ads.plos.org/adview.php?
+
+what=pathogens:2006-11&amp;n=ab24f689' border='0' alt=''></a></noscript>
 	</div>
 	<!-- end : left banner slot -->
 	<!-- begin : right banner slot -->
 	<div class="right">
-		<img src="${freemarker_config.context}/images/temp_pone_banner.gif" />
+<script language='JavaScript' type='text/javascript'src='http://ads.plos.org/adx.js'></script>
+<script language='JavaScript' type='text/javascript'>
+<!--
+  if (!document.phpAds_used) document.phpAds_used = ',';
+  phpAds_random = new String (Math.random()); phpAds_random =
+phpAds_random.substring(2,11);
+
+  document.write ("<" + "script language='JavaScript'type='text/javascript' src='");
+  document.write ("http://ads.plos.org/adjs.php?n=" + phpAds_random);
+  document.write ("&amp;what=pathogens:2006-11");
+  document.write ("&amp;exclude=" + document.phpAds_used);
+  if (document.referrer)
+     document.write ("&amp;referer=" + escape(document.referrer));
+  document.write ("'><" + "/script>");
+//-->
+</script><noscript><a href='http://ads.plos.org/adclick.php?n=ab24f689'target='_blank'><img src='http://ads.plos.org/adview.php?
+
+what=pathogens:2006-11&amp;n=ab24f689' border='0' alt=''></a></noscript>
 	</div>
 	<!-- end : right banner slot -->
