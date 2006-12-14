@@ -75,6 +75,10 @@ public class AlertsServicePortSoapBindingImpl implements Alerts, ServiceLifecycl
     return impl.sendAlerts(endDate, count);
   }
 
+  public boolean sendAlert(String endDate, String emailAddress) throws RemoteException {
+    return impl.sendAlert(endDate, emailAddress);
+  }
+  
   public boolean sendAllAlerts() throws RemoteException {
     return impl.sendAllAlerts();
   }
