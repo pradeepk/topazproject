@@ -33,9 +33,9 @@
     </file>
     <!-- Copy over webapp specific log4j.properties file -->
     <file>
-      <source>src/main/resources/plos-registration-log4j.properties</source>
+      <source>src/main/resources/plos-registration-log4j.xml</source>
       <outputDirectory>common/classes</outputDirectory>
-      <destName>log4j.properties</destName>
+      <destName>log4j.xml</destName>
     </file>
   </files>
 
