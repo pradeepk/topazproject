@@ -28,6 +28,7 @@
     <module>alerts</module>
     <module>rss</module>
     <module>articles</module>
+    <module>users</module>
   </modules>
 
   <dependencyManagement>
