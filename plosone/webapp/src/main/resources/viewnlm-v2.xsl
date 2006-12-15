@@ -680,8 +680,8 @@
 					<xsl:text>/</xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:for-each select="$theNode[1]/ancestor-or-self::*">
-						<xsl:text/>/<xsl:value-of select="name()"/>
+					<xsl:for-each select="$theNode[1]/ancestor-or-self::*[not(self::aml:annotated)]">
+            <xsl:text/>/<xsl:value-of select="name()"/>
 						<xsl:text/>[<xsl:value-of select="count(preceding-sibling::*[name() = name(current())]) + 1"/>]<xsl:text/>
 					</xsl:for-each>
 				</xsl:otherwise>
@@ -693,7 +693,7 @@
 					<xsl:text>/</xsl:text>
 				</xsl:when>
 				<xsl:otherwise>
-					<xsl:for-each select="$theNode/ancestor-or-self::*">
+					<xsl:for-each select="$theNode/ancestor-or-self::*[not(self::aml:annotated)]">
 					  <xsl:text/>/<xsl:value-of select="name()"/>
 					  <xsl:text/>[<xsl:value-of select="count(preceding-sibling::*[name() = name(current())]) + 1"/>]<xsl:text/>
 					</xsl:for-each>
@@ -1665,7 +1665,7 @@ Make article meta data
 		<xsl:attribute name="id"><xsl:value-of select="@id"></xsl:value-of></xsl:attribute>
 		<xsl:attribute name="name"><xsl:value-of select="@id"></xsl:value-of></xsl:attribute>
 		<xsl:attribute name="toc"><xsl:value-of select="@id"></xsl:value-of></xsl:attribute>
-		<xsl:attribute name="title"><xsl:value-of select="title"></xsl:value-of></xsl:attribute>
+		<xsl:attribute name="title"><xsl:value-of select="descendant::title[1]"></xsl:value-of></xsl:attribute>
      </xsl:element>
 
     <xsl:apply-templates/>
