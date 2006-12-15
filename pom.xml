@@ -315,6 +315,7 @@
                 </goals>
                 <configuration>
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
+                  <fedora-version>2.1.1-t1-SNAPSHOT</fedora-version>
                 </configuration>
               </execution>
               <execution>

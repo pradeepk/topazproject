@@ -74,7 +74,7 @@
           <name>fedora-version</name>
           <property>fedora-version</property>
           <required>true</required>
-          <expression>${VERSION}</expression>
+          <expression>${fedora-version}</expression>
           <defaultValue>2.1.1-t1</defaultValue>
           <type>java.lang.String</type>
           <description>version of fedora.</description>
