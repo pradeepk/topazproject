@@ -1,7 +1,9 @@
 	<ul id="nav">
 		<li><a href="http://${freemarker_config.plosOneHost}${freemarker_config.context}" tabindex="1">Home</a></li>
 		
-		<li><a href="#" tabindex="2">About</a>
+		<@ww.url action="about" namespace="/static" includeParams="none" id="about"/>
+	
+		<li><a href="${about}" tabindex="2">About</a>
 				<ul>
 				<@ww.url action="information.action" namespace="/static" includeParams="none" id="info"/>
 				<@ww.url action="edboard.action" namespace="/static" includeParams="none" id="edboard"/>
@@ -12,7 +14,8 @@
 					<li><a href="${license}">License</a></li>
 				</ul>
 			</li>			
-		<li><a href="#" tabindex="3">For Users</a>
+                <@ww.url action="users" namespace="/static" includeParams="none" id="users"/>
+		<li><a href="${users}" tabindex="3">For Users</a>
 				<ul>
 				<@ww.url action="commentGuidelines.action" namespace="/static" includeParams="none" id="comment"/>
 				<@ww.url action="help.action" namespace="/static" includeParams="none" id="help"/>
@@ -24,7 +27,8 @@
 					<li><a href="${contact}">Contact Us</a></li>
 				</ul>
 			</li>
-		<li><a href="#" tabindex="4">For Authors and Reviewers</a>
+		<@ww.url action="authors" namespace="/static" includeParams="none" id="authors"/>
+		<li><a href="${authors}" tabindex="4">For Authors and Reviewers</a>
 				<ul>
 				<@ww.url action="whypublish.action" namespace="/static" includeParams="none" id="why"/>
 				<@ww.url action="policies.action" namespace="/static" includeParams="none" id="policies"/>

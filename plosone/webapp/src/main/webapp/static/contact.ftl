@@ -15,7 +15,15 @@
 <h2>Manuscript Submission</h2>
 <p><em>PLoS ONE</em> does not accept presubmission inquiries. Please submit manuscripts online at <a href="http://one.plosjms.org" title="PLoS ONE | Submit Manuscripts Online">http://one.plosjms.org</a></p>
 
-<p>For assistance with manuscript submission, please contact the Publications Assistants Lindsay King or Rebecca Walton by e-mail (<strong>lking [at] plos.org</strong>, <strong>rwalton [at] plos.org</strong>) or by telephone at +44(0)1223 463 334.</p>
+<p>For assistance with manuscript submission, please contact the Publications Assistants:</p>
+ 
+<p> Lindsay King<br>
+ <strong>lking [at] plos.org</strong><br>
+ +44(0)1223 463 334</p>
+ 
+<p> Rebecca Walton<br>
+ <strong>rwalton [at] plos.org</strong><br>
+  +44(0)1223 463 333</p>
 
 <h2>Advertising</h2>
 <p><p>Patric Donaghy<br />

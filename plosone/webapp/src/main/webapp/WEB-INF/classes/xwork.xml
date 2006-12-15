@@ -153,6 +153,18 @@
   </package>
 
   <package name="static" extends="default" namespace="/static">
+    <action name="about">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/about.ftl</param>
+      </result>
+    </action>
+
+    <action name="authors">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/authors.ftl</param>
+      </result>
+    </action>
+
     <action name="checklist">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/checklist.ftl</param>
@@ -264,6 +276,12 @@
     <action name="terms">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/terms.ftl</param>
+      </result>
+    </action>
+
+    <action name="users">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/users.ftl</param>
       </result>
     </action>
 
