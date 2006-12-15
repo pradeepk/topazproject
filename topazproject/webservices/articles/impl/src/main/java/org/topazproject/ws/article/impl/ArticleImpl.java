@@ -452,7 +452,13 @@ public class ArticleImpl implements Article {
         ObjectInfo info = new ObjectInfo();
         info.setUri(rows.getString("article"));
         parseObjectInfo((AnswerSet.QueryAnswerSet)rows.getSubQueryResults(2),info);
-        infos.add(info);
+        try {
+          pep.checkAccess(pep.GET_OBJECT_URL, URI.create(info.getUri()));
+          infos.add(info);
+        } catch (SecurityException se) {
+          if (log.isDebugEnabled())
+            log.debug("Not returning comments # on URI " + info.getUri() + " because of security permisssion", se);
+        }
       }
 
       return (ObjectInfo[]) infos.toArray(new ObjectInfo[infos.size()]);
