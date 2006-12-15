@@ -6,7 +6,6 @@
   <groupId>org.topazproject.packages</groupId>
   <artifactId>topaz-tools</artifactId>
   <packaging>pom</packaging>
-  <version>0.5-SNAPSHOT</version>
   <name>Topaz Tools</name>
 
   <parent>
@@ -16,6 +15,21 @@
   </parent>
 
   <dependencies>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>topaz-tools-alerts</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>topaz-tools-articles</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>topaz-tools-rss</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -27,23 +41,6 @@
             <descriptor>src/main/assembly/assembly.xml</descriptor>
           </descriptors>
         </configuration>
-      </plugin>
-
-      <plugin>
-        <groupId>org.topazproject.plugins</groupId>
-        <artifactId>ant-tasks</artifactId>
-        <executions>
-          <execution>
-            <phase>generate-resources</phase>
-            <goals>
-              <goal>get-artifacts</goal>
-            </goals>
-          </execution>
-        </executions>
-        <configuration>
-          <dependencies>org.topazproject:topaz-tools-alerts:0.5-SNAPSHOT,org.topazproject:topaz-tools-articles:0.5-SNAPSHOT,org.topazproject:topaz-tools-rss:0.5-SNAPSHOT</dependencies>
-        </configuration>
-        <inherited>false</inherited>
       </plugin>
 
       <plugin>
@@ -86,7 +83,7 @@
               <groupname>topaz</groupname>
               <sources>
                 <source>
-                  <location>src/main/resources/bin</location>
+                  <location>${project.build.directory}/${project.build.finalName}-tools.dir/bin</location>
                 </source>
               </sources>
             </mapping>
@@ -97,10 +94,7 @@
               <groupname>topaz</groupname>
               <sources>
                 <source>
-                  <location>${project.build.directory}</location>
-                  <includes>
-                    <include>*.jar</include>
-                  </includes>
+                  <location>${project.build.directory}/${project.build.finalName}-tools.dir/lib</location>
                 </source>
               </sources>
             </mapping>

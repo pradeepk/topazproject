@@ -1,8 +1,10 @@
 <assembly>
   <id>tools</id>
   <formats>
+    <format>dir</format>
     <format>tar.gz</format>
   </formats>
+  <includeBaseDirectory>false</includeBaseDirectory>
 
   <fileSets>
     <fileSet>
@@ -10,4 +12,13 @@
       <outputDirectory></outputDirectory>
     </fileSet>
   </fileSets>
+
+  <dependencySets>
+    <dependencySet>
+      <outputDirectory>/lib</outputDirectory>
+      <includes>
+        <include>*:jar</include>
+      </includes>
+    </dependencySet>
+  </dependencySets>
 </assembly>
