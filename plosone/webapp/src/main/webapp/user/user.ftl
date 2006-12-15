@@ -5,22 +5,30 @@
    <#assign tabId = "">
 </#if>
 
+<@ww.form name="userForm" id="userForm"  method="post" title="User Information Form" cssClass="pone-form" enctype="multipart/form-data">
 
-
-<@ww.form name="userForm" id="userForm"  method="post" title="User Information Form" cssClass="pone-form">
-
-<fieldset>
+  <fieldset>
+  <legend>Your Private Information</legend>
+  <ol>
+      <li><p><em>Your E-mail address will always be kept private. See the the <a href="http://www.plos.org/privacy.html" title="PLoS Privacy Statement">PLoS Privacy Statement</a> for more information.</em></p>
+    <strong>${email}</strong><br />
+<a href="${freemarker_config.changePasswordURL}" title="Click here to change your password">Change your password</a>
+    </li>
+  </ol>
+  </fieldset>
+  <fieldset>
   <legend>Your Public Profile</legend>
   <ol>
 	<li>Fields marked with <span class="required">*</span> are required.</li>
   <li><em>The following required fields will always appear publicly.</em></li>
 
-   	  <#if tabId?has_content>	
+   	<#if tabId?has_content>
       	<@ww.textfield name="displayName" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="Username" required="true" tabindex="101" />
 	  <#else>
-      	<@ww.textfield name="displayName" label="Username" required="true" tabindex="101" />
+      <!--after="(Usernames are <strong>permanent</strong> and must be between 4 and 18 characters)"-->
+        <@ww.textfield name="displayName" label="Username" required="true" tabindex="101"  />
 	  </#if>
-   	  <#if tabId?has_content>	
+   	<#if tabId?has_content>
           <@ww.textfield name="givenNames" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="First/Given Name" required="true" tabindex="102" />
 	  <#else>
           <@ww.textfield name="givenNames" label="First/Given Name" required="true" tabindex="102" />
@@ -44,15 +52,6 @@
 
 			</li>
 		</ol>
-	</fieldset>
-	<fieldset>
-	<legend>Your Private Information</legend>
-	<ol>
-	    <li><p><em>Your E-mail address will always be kept private. See the the <a href="http://www.plos.org/privacy.html" title="PLoS Privacy Statement">PLoS Privacy Statement</a> for more information.</em></p>
-		<strong>${email}</strong><br />
-<a href="${freemarker_config.changePasswordURL}" title="Click here to change your password">Change your password</a>
-    </li>
-	</ol>
 	</fieldset>
 	<fieldset>
 	<legend>Your Extended Profile</legend>

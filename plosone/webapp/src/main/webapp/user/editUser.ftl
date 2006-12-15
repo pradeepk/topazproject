@@ -3,9 +3,15 @@
 <#else>
    <#assign tabId = "">
 </#if>
+<#if displayName?exists>
+   <#assign username = displayName>
+<#else>
+   <#assign username = "">
+</#if>
+
 
 <div id="content">
-	<h1>My PLoS Profile</h1>
+	<h1>PLoS Profile: ${username}</h1>
 	
 	<div class="horizontalTabs">
 		<ul id="tabsContainer">
