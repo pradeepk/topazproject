@@ -127,11 +127,16 @@ public class Annotator {
     Element aRoot = document.createElementNS(AML_NS, "aml:annotations");
     AnnotationModel.appendNSAttr(aRoot);
 
-    for (final AnnotationInfo annotation : annotations) {
-      Element a = document.createElementNS(AML_NS, "aml:annotation");
-      a.setAttributeNS(AML_NS, "aml:id", annotation.getId());
-      aRoot.appendChild(a);
-      AnnotationModel.appendToNode(a, annotation);
+    AnnotationInfo annotation;
+    
+    for (int i = 0; i < annotations.length; i++) {
+      annotation = annotations[i];
+      if ((lists[i] != null) && (annotation.getContext() != null)) { 
+        Element a = document.createElementNS(AML_NS, "aml:annotation");
+        a.setAttributeNS(AML_NS, "aml:id", annotation.getId());
+        aRoot.appendChild(a);
+        AnnotationModel.appendToNode(a, annotation);
+      }
     }
     return assembleResultDoc(document, rRoot, aRoot);
   }
@@ -219,8 +224,21 @@ public class Annotator {
           try {
             LocationList list = XPointerAPI.evalFullptr(document, expression);
             lists.add(list);
-          } catch (TransformerException e) {
-            throw new TransformerException(expression, e);
+          } catch (Exception e) {
+            StringBuilder errorMsg = new StringBuilder();
+            log.error ("Could not evaluate xPointer");
+            errorMsg.append("AnnotationID: ").append(annotations[i].getId()); 
+            errorMsg.append(" Context: ").append(annotations[i].getContext()); 
+            errorMsg.append(" Created: ").append(annotations[i].getCreated()); 
+            errorMsg.append(" Creator: ").append(annotations[i].getCreator()); 
+            errorMsg.append(" ID: ").append(annotations[i].getId()); 
+            errorMsg.append(" Annotates: ").append(annotations[i].getAnnotates()); 
+            errorMsg.append(" Title: ").append(annotations[i].getTitle()); 
+            log.error(errorMsg, e);
+            lists.add(null);
+            // Trap the error here and continue.  One bad annotation shouldn't
+            // cause the article to fail rendering.
+            //throw new TransformerException(expression, e);
           }
         } else {
           lists.add(null);
