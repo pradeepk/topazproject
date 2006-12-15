@@ -53,7 +53,8 @@
     will correspond to the directory name where the ant task will unzip the
     file to under {project.build.directory}
     -->
-    <tomcatFile>apache-tomcat-5.5.16</tomcatFile>
+    <tomcatFile>apache-tomcat-5.5.20</tomcatFile>
+    <tomcatLocation>http://www.apache.org/dist/tomcat/tomcat-5/v5.5.20/bin</tomcatLocation>
   </properties>
 
   <modules>
@@ -100,6 +101,7 @@
         </executions>
         <configuration>
           <tomcatFile>${tomcatFile}</tomcatFile>
+          <tomcatLocation>${tomcatLocation}</tomcatLocation>
         </configuration>
         <inherited>false</inherited>
       </plugin>

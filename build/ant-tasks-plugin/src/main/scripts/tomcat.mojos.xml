@@ -28,7 +28,6 @@
           <name>tomcatLocation</name>
           <property>tomcatLocation</property>
           <required>true</required>
-          <defaultValue>http://www.apache.org/dist/tomcat/tomcat-5/v5.5.16/bin</defaultValue>
         </parameter>
 
         <!-- Name of Tomcat file -->
