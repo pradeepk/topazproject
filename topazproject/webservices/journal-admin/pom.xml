@@ -12,7 +12,6 @@
     <groupId>org.topazproject</groupId>
     <artifactId>topazproject</artifactId>
     <version>0.5-SNAPSHOT</version>
-    <relativePath>../../pom.xml</relativePath>
   </parent>
 
   <reporting>
