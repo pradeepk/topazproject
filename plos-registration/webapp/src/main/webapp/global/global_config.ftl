@@ -1,3 +1,3 @@
 <#assign context="/plos-registration">
-<#assign plosOneUrl="http://FQHN:9080">
+<#assign plosOneUrl="http://FQHN:8080">
 <#assign plosOneContext="">
