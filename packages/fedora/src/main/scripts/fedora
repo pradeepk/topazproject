@@ -13,6 +13,10 @@ FEDORA_FCFG=/usr/local/topaz/fedora/server/config/fedora.fcfg
 LOG_XML=/usr/local/topaz/fedora/server/jakarta-tomcat-5.0.28/common/classes/log4j.xml
 [ -e $LOG_XML ] && ! xmllint --noout $LOG_XML && exit 1
 
+# Chown keystore
+TRUST_STORE=/etc/topaz/keystore.jks
+[ -e "$TRUST_STORE" ] && chown topaz.topaz $TRUST_STORE
+
 # Source function library.
 . /etc/init.d/functions
 
