@@ -53,8 +53,6 @@
   <target name="fedora-install" depends="exec-ext,keytool">
     <property name="FEDORA_JAR"
       value="${localRepository}/${fedora-groupId}/${fedora-artifactId}/${fedora-version}/${fedora-artifactId}-${fedora-version}.jar"/>
-    <property name="FEDORA_HOME"
-      value="${FEDORA_INSTALL_DIR}/fedora-${fedora-version}"/>
 
     <mkdir dir="${FEDORA_INSTALL_DIR}"/>
     <unjar src="${FEDORA_JAR}" dest="${FEDORA_INSTALL_DIR}"/>
@@ -254,14 +252,15 @@
       file="${FEDORA_SECURITY}"/>
 
     <!-- copy fedora patches -->
-    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/classes" overwrite="true">
-      <fileset dir="target/classes"/>
-    </copy> 
+    <unjar src="${FEDORA_PATCHES}" 
+      dest="${TOMCAT_HOME}/webapps/fedora/WEB-INF/classes" overwrite="true">
+      <patternset>
+        <exclude name="META-INF/**/*"/>
+      </patternset>
+    </unjar> 
     
     <!-- Install access-service -->
     <unjar src="${ACCESS_WAR}" dest="${TOMCAT_HOME}/webapps/access"/>
-    
-    <!-- jar everything up and overwrite the package target created by maven -->
-    <jar destfile="${DEST_DIR}.jar" basedir="${DEST_DIR}"/>
+
   </target>
 </project>

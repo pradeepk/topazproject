@@ -33,6 +33,15 @@
           <type>java.lang.String</type>
           <description>The name of the input file.</description>
         </parameter>
+        
+        <parameter>
+          <name>FEDORA_HOME</name>
+          <property>FEDORA_HOME</property>
+          <required>true</required>
+          <defaultValue>${topazproject.install.dir}/fedora-2.1.1</defaultValue>
+          <type>java.lang.String</type>
+          <description>Fedora Home directory</description>
+        </parameter>
 
         <parameter>
           <name>localRepository</name>
@@ -65,6 +74,7 @@
           <name>fedora-version</name>
           <property>fedora-version</property>
           <required>true</required>
+          <expression>${VERSION}</expression>
           <defaultValue>2.1.1</defaultValue>
           <type>java.lang.String</type>
           <description>version of fedora.</description>
@@ -186,77 +196,66 @@
           <name>VERSION</name>
           <property>VERSION</property>
           <required>true</required>
-          <defaultValue>2.1.1</defaultValue>
         </parameter>
 
         <parameter>
           <name>DEST_DIR</name>
           <property>DEST_DIR</property>
           <required>true</required>
-          <defaultValue>${project.build.directory}/${project.build.finalName}</defaultValue>
         </parameter>
 
         <parameter>
           <name>SRC_CLIENT_TAR</name>
           <property>SRC_CLIENT_TAR</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/info/fedora/client-distribution/2.1.1/client-distribution-2.1.1.tar</defaultValue>
         </parameter>
 
         <parameter>
           <name>SRC_SERVER_TAR</name>
           <property>SRC_SERVER_TAR</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/info/fedora/server-distribution/2.1.1/server-distribution-2.1.1.tar</defaultValue>
         </parameter>
 
         <parameter>
           <name>TOMCAT</name>
           <property>TOMCAT</property>
           <required>true</required>
-          <defaultValue>jakarta-tomcat-5.0.28</defaultValue>
         </parameter>
 
         <parameter>
           <name>CAS_AUTHENTICATOR</name>
           <property>CAS_AUTHENTICATOR</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/org/topazproject/tomcat-jaas-cas/0.5-SNAPSHOT/tomcat-jaas-cas-0.5-SNAPSHOT.jar</defaultValue>
         </parameter>
 
         <parameter>
           <name>CAS_CLIENT</name>
           <property>CAS_CLIENT</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/cas/casclient/2.1.1/casclient-2.1.1.jar</defaultValue>
         </parameter>
 
         <parameter>
           <name>WS_ACCESS_CLIENT</name>
           <property>WS_ACCESS_CLIENT</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/org/topazproject/ws/ws-access-client-impl/0.5-SNAPSHOT/ws-access-client-impl-0.5-SNAPSHOT.jar</defaultValue>
         </parameter>
         
         <parameter>
           <name>WS_ACCESS_API</name>
           <property>WS_ACCESS_API</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/org/topazproject/ws/ws-access-api/0.5-SNAPSHOT/ws-access-api-0.5-SNAPSHOT.jar</defaultValue>
         </parameter>
         
         <parameter>
           <name>WS_COMMON_API</name>
           <property>WS_COMMON_API</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/org/topazproject/ws/ws-common-api/0.5-SNAPSHOT/ws-common-api-0.5-SNAPSHOT.jar</defaultValue>
         </parameter>
         
         <parameter>
           <name>AUTH_HELPER</name>
           <property>AUTH_HELPER</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/org/topazproject/auth-helper/0.5-SNAPSHOT/auth-helper-0.5-SNAPSHOT.jar</defaultValue>
         </parameter>
         
         <parameter>
@@ -270,16 +269,20 @@
           <name>FEDORA_SECURITY</name>
           <property>FEDORA_SECURITY</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/org/topazproject/fedora-security/0.5-SNAPSHOT/fedora-security-0.5-SNAPSHOT.jar</defaultValue>
         </parameter>
         
         <parameter>
           <name>ACCESS_WAR</name>
           <property>ACCESS_WAR</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/org/topazproject/ws/ws-access-webapp/0.5-SNAPSHOT/ws-access-webapp-0.5-SNAPSHOT.war</defaultValue>
         </parameter>
       
+        <parameter>
+          <name>FEDORA_PATCHES</name>
+          <property>FEDORA_PATCHES</property>
+          <required>true</required>
+        </parameter>
+        
       </parameters>
 
     </mojo>
