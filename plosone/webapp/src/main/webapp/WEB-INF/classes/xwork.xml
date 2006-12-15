@@ -33,12 +33,28 @@
       <interceptor-stack name="plosBaseStack">
         <interceptor-ref name="exception">
           <param name="logEnabled">true</param>
-          <param name="logCategory">org.plos.unhandled</param>
-          <param name="logLevel">DEBUG</param>                               
+          <param name="logCategory">org.plos.UnhandledException</param>
+          <param name="logLevel">WARN</param>                               
         </interceptor-ref>  
         <interceptor-ref name="timer" />
         <interceptor-ref name="logger"/>
-        <interceptor-ref name="defaultStack" />
+        <interceptor-ref name="alias"/>
+        <interceptor-ref name="servlet-config"/>
+        <interceptor-ref name="prepare"/>
+        <interceptor-ref name="i18n"/>
+        <interceptor-ref name="chain"/>
+        <interceptor-ref name="debugging"/>
+        <interceptor-ref name="model-driven"/>
+        <interceptor-ref name="fileUpload"/>
+        <interceptor-ref name="static-params"/>
+        <interceptor-ref name="params"/>
+        <interceptor-ref name="conversionError"/>
+        <interceptor-ref name="validation">
+          <param name="excludeMethods">input,back,cancel,browse</param>
+        </interceptor-ref>
+        <interceptor-ref name="workflow">
+           <param name="excludeMethods">input,back,cancel,browse</param>
+        </interceptor-ref>
       </interceptor-stack>
 
       <interceptor-stack name="plosUserStack">
@@ -104,7 +120,7 @@
       <result>/WEB-INF/pages/todo.ftl</result>
     </action>
 
-	  <action name="testFreemarker">
+    <action name="testFreemarker">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/WEB-INF/pages/include.ftl</param>
       </result>
