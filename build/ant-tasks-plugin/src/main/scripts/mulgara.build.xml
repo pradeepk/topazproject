@@ -16,11 +16,6 @@
     <dependency groupId="org.codehaus.cargo" artifactId="cargo-core-uberjar" version="0.8"/>
   </artifact:dependencies>
 
-  <artifact:dependencies filesetId="mulgara.fileset" useScope="runtime">
-    <dependency groupId="org.topazproject" artifactId="mulgara-service" version="0.5-SNAPSHOT"
-                type="war"/>
-  </artifact:dependencies>
-
   <artifact:dependencies filesetId="antcontrib.fileset" useScope="runtime">
     <dependency groupId="ant-contrib" artifactId="ant-contrib" version="1.0b2"/>
   </artifact:dependencies>
@@ -42,7 +37,6 @@
     <property name="tomcatconfig.dir"   location="${home}/tomcat/config"/>
     <property name="tomcatlog.dir"      location="${home}/tomcat/log"/>
     <property name="port"               value="${PORT}"/>
-    <pathconvert property="mulgara-war" refid="mulgara.fileset"/>
 
     <condition property="tomcat.url" value="${TOMCAT_URL}"
         else="http://www.apache.org/dist/tomcat/tomcat-5/v5.5.16/bin/apache-tomcat-5.5.16.zip">
@@ -73,6 +67,12 @@
   <!-- Start mulgara -->
   <target name="mulgara-start" depends="init">
     <echo>Starting Mulgara (spawn=${SPAWN})</echo>
+
+    <artifact:dependencies filesetId="mulgara.fileset" useScope="runtime">
+      <dependency groupId="org.topazproject" artifactId="mulgara-service"
+                  version="${webappVersion}" type="war"/>
+    </artifact:dependencies>
+    <pathconvert property="mulgara-war" refid="mulgara.fileset"/>
 
     <condition property="wait" value="true" else="false">
       <isfalse value="${SPAWN}"/>

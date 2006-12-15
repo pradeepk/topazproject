@@ -112,6 +112,15 @@
           <description>The location of the tomcat 5.x installation</description>
         </parameter>
 
+        <parameter>
+          <name>webappVersion</name>
+          <property>webappVersion</property>
+          <required>true</required>
+          <expression>${version}</expression>
+          <defaultValue>${project.version}</defaultValue>
+          <description>The version of the mulgara webapp to run.</description>
+        </parameter>
+
       </parameters>
     </mojo>
 
