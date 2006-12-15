@@ -90,6 +90,10 @@
     <echo message="Using port    = ${port}"/>
     <echo message="Shutdown port = ${SHUTDOWN_PORT}"/>
 
+    <delete>
+      <fileset dir="${home}" includes="mulgara*.properties"/>
+    </delete>
+
     <tempfile property="temp.file" prefix="mulgara" suffix=".properties" destDir="${home}"/>
     <echo file="${temp.file}" message=""/>
     <propertyselector property="prop.list" delimiter="," match="(topaz|log4j)\..*"
