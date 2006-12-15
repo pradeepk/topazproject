@@ -36,7 +36,7 @@
         <li>
           <fieldset>
               <legend>Create an reply</legend>
-              <@ww.form name="createReplyForm" action="createReplySubmit" namespace="/annotation/secure">
+              <@ww.form name="createReplyForm" action="createReplySubmit" method="post" namespace="/annotation/secure" enctype="multipart/form-data">
                 <@ww.textfield name="root" label="What is the root of this reply" value="${annotation.id}" required="true" size="50"/>
                 <@ww.textfield name="inReplyTo" label="What is it in reply to" value="${annotation.id}" required="true" size="50"/>
                 <@ww.textfield name="commentTitle" label="Title"/>
@@ -52,7 +52,7 @@
         <li>
           <fieldset>
               <legend>Create a flag</legend>
-              <@ww.form name="createFlagForm" action="createAnnotationFlagSubmit" method="get" namespace="/annotation/secure">
+              <@ww.form name="createFlagForm" action="createAnnotationFlagSubmit" method="post" namespace="/annotation/secure" enctype="multipart/form-data">
                 <@ww.textfield name="target" label="What does it flag" value="${annotation.id}" required="true" size="50"/>
                 <@ww.select name="reasonCode" label="Reason"
                             list="{'spam', 'Offensive', 'Inappropriate'}"/>

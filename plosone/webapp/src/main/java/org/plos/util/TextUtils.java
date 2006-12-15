@@ -11,6 +11,7 @@ package org.plos.util;
 
 import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
+import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Node;
 
 import javax.xml.transform.Transformer;
@@ -31,17 +32,29 @@ public class TextUtils {
   private static final Pattern maliciousContentPattern = Pattern.compile("[<>\"\'%;()&+]");
 
   /**
+   * Linkify any possible web links excepting email addresses and enclosed with <p> tags
+   * @param text text
+   * @return hyperlinked text
+   */
+  public static String hyperlinkEnclosedWithPTags(final String text) {
+    final StringBuilder retStr = new StringBuilder("<p>");
+    retStr.append(hyperlink(text));
+    retStr.append("</p>");
+    return (retStr.toString());
+  }
+
+  /**
    * Linkify any possible web links excepting email addresses
    * @param text text
    * @return hyperlinked text
    */
   public static String hyperlink(final String text) {
-    String notNullText = (null == text)?"": text;
-    notNullText =  com.opensymphony.util.TextUtils.plainTextToHtml(notNullText);
-    StringBuilder retStr = new StringBuilder("<p>");
-    retStr.append(notNullText);
-    retStr.append("</p>");
-    return (retStr.toString());
+    if (StringUtils.isBlank(text)) {
+      return text;
+//      return "";
+    } else {
+      return com.opensymphony.util.TextUtils.linkURL(text);
+    }
   }
 
   /**
@@ -58,7 +71,7 @@ public class TextUtils {
    * @return Return escaped and hyperlinked text
    */
   public static String escapeAndHyperlink(final String bodyContent) {
-    return hyperlink(escapeHtml(bodyContent));
+    return hyperlinkEnclosedWithPTags(escapeHtml(bodyContent));
   }
 
   

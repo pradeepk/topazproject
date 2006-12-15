@@ -49,8 +49,16 @@ public class TextUtilsTest extends TestCase {
     assertTrue(TextUtils.isPotentiallyMalicious("(something"));
     assertTrue(TextUtils.isPotentiallyMalicious("someth'ing+"));
     assertTrue(TextUtils.isPotentiallyMalicious("somethin\"g"));
-
     assertFalse(TextUtils.isPotentiallyMalicious("something."));
+  }
 
+  public void testHyperLink() {
+    assertEquals("Ï<a href=\"http://www.google.com\">www.google.com</a>" , TextUtils.hyperlink("Ïwww.google.com"));
+    assertEquals("Ï" , TextUtils.hyperlink("Ï"));
+  }
+
+  public void testEscapeAndHyperlink() {
+    assertEquals("<p>&Iuml;<a href=\"http://www.google.com\">www.google.com</a></p>" , TextUtils.escapeAndHyperlink("Ïwww.google.com"));
+    assertEquals("<p>&Iuml;</p>" , TextUtils.escapeAndHyperlink("Ï"));
   }
 }

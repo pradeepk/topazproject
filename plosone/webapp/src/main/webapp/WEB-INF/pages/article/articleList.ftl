@@ -52,7 +52,8 @@
           <li>
             <fieldset>
               <legend>Create an annotation</legend>
-            <@ww.form name="createAnnotationForm" action="createAnnotationSubmit" method="post" namespace="/annotation/secure">
+            <@ww.form name="createAnnotationForm" action="createAnnotationSubmit" method="post" namespace="/annotation/secure" enctype="multipart/form-data">
+              <!--enctype="multipart/form-data"-->
               <@ww.textfield name="target" label="What does it annotate" value="${article}" required="true" size="50"/>
               <@ww.textfield name="startPath" label="Start path" value="%{'id(\"x20060728a\")/p[1]'}" required="true"/>
               <@ww.textfield name="startOffset" label="Start offset" value="%{'288'}" required="true"/>

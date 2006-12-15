@@ -102,7 +102,7 @@ public class FileUtils {
    * @throws IOException IOException
    */
   public static String getTextFromCharStream(final InputStream inputStream) throws IOException {
-    final BufferedReader in = new BufferedReader(new InputStreamReader(inputStream));
+    final BufferedReader in = new BufferedReader(new InputStreamReader(inputStream, "UTF-8"));
 
     final StringBuilder sb = new StringBuilder();
     final char[] cbuf = new char[1024];

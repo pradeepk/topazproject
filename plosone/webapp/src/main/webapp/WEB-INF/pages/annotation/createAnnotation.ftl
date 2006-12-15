@@ -16,7 +16,7 @@
     <p>
       <fieldset>
           <legend>Create an annotation</legend>
-          <@ww.form name="createAnnotationForm" action="createAnnotationSubmit" method="get">
+          <@ww.form name="createAnnotationForm" action="createAnnotationSubmit" method="post" enctype="multipart/form-data">
             <@ww.textfield name="target" label="What does it annotate" required="true"/>
             <@ww.textfield name="startPath" label="Start path" value="%{'id(\"x20060728a\")/p[1]'}" required="true"/>
             <@ww.textfield name="startOffset" label="Start offset" value="%{'288'}" required="true"/>
