@@ -6,7 +6,6 @@
   <groupId>org.topazproject.packages</groupId>
   <artifactId>topaz</artifactId>
   <packaging>pom</packaging>
-  <version>0.5-SNAPSHOT</version>
   <name>topaz</name>
 
   <parent>
@@ -19,55 +18,55 @@
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-pap-webapp</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-ratings-webapp</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-alerts-webapp</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-users-webapp</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-permissions-webapp</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-articles-webapp</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-annotation-webapp</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-search-webapp</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.topazproject.packages</groupId>
       <artifactId>packages</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>tar.gz</type>
       <classifier>tomcat-common</classifier>
     </dependency>

@@ -6,7 +6,6 @@
   <groupId>org.topazproject.packages</groupId>
   <artifactId>cas</artifactId>
   <packaging>pom</packaging>
-  <version>0.5-SNAPSHOT</version>
   <name>cas</name>
 
   <parent>
@@ -19,7 +18,7 @@
     <dependency>
       <groupId>org.plos</groupId>
       <artifactId>plos-registration-webapp</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>war</type>
     </dependency>
 
@@ -33,7 +32,7 @@
     <dependency>
       <groupId>org.topazproject.packages</groupId>
       <artifactId>packages</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>tar.gz</type>
       <classifier>tomcat-common</classifier>
     </dependency>

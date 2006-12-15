@@ -6,7 +6,6 @@
   <groupId>org.topazproject.packages</groupId>
   <artifactId>topaz-mulgara</artifactId>
   <packaging>pom</packaging>
-  <version>0.5-SNAPSHOT</version>
   <name>mulgara</name>
 
   <parent>
@@ -19,13 +18,13 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>mulgara-service</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>war</type>
     </dependency>
     <dependency>
       <groupId>org.topazproject.packages</groupId>
       <artifactId>packages</artifactId>
-      <version>0.5-SNAPSHOT</version>
+      <version>${pom.version}</version>
       <type>tar.gz</type>
       <classifier>tomcat-common</classifier>
     </dependency>
