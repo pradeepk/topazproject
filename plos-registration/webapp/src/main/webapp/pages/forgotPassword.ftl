@@ -5,7 +5,7 @@
 <div id="content">
 <h1>Forgot Your Password?</h1>
 	<!--<p><strong>Instruction Title   Text.</strong> Additional Instructoins here.</p>-->
-	<p>Field marked with an <span class="required">*</span> are required. </p>
+	<p>Fields marked with <span class="required">*</span> are required. </p>
   <@ww.form cssClass="pone-form" method="post" name="forgotPasswordForm" id="forgotPasswordForm" action="forgotPasswordSubmit" title="Forgot Password Form">
 		
 	<fieldset>

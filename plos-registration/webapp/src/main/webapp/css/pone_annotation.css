@@ -168,8 +168,8 @@ div.flag	{ background-color: #3C9544; background-image: url(../images/pone_respo
 div#flagForm { display:block; background: #3C9544;}
 div#flagForm form,
 div#flagForm fieldset { background: #3C9544; }
-div.posting form,
-div.posting fieldset { background: #666; }
+div.response div.posting form,
+div.response div.posting fieldset { background: #666; }
 textarea #responseArea .response{ margin-left: 0!important; }
 div#flagConfirm { display: none; }
 

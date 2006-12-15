@@ -7,8 +7,22 @@
 
 <#include "../css/global_css.ftl">
 
-<script type="text/javascript" src="javascript/dojo/dojo.js"></script>	
-<script type="text/javascript" src="javascript/init_navigation.js"></script>	
+<script type="text/javascript" src="javascript/prototype.js"></script>	
+<script type="text/javascript" src="javascript/browserDetection.js"></script>	
+<script type="text/javascript" src="javascript/config_default.js"></script>
+<script type="text/javascript" src="javascript/dojo/dojo.js"></script>
+<script type="text/javascript" src="javascript/topaz/topaz.js"></script>
+<script type="text/javascript">  
+  dojo.registerModulePath("topaz", "../topaz");
+  dojo.require("topaz.topaz");
+  dojo.require("dojo.html.*");
+  dojo.require("dojo.io.*");
+  dojo.require("dojo.event.*");
+</script>
+<script type="text/javascript" src="javascript/topaz/formUtil.js"></script>   
+<script type="text/javascript" src="javascript/topaz/domUtil.js"></script>
+<script type="text/javascript" src="javascript/init_global.js"></script>  
+<script type="text/javascript" src="javascript/init_navigation.js"></script>  
 
 
 <meta name="description" content="PLoS ONE: an inclusive, peer-reviewed, open-access resource from the PUBLIC LIBRARY OF SCIENCE. Reports of well-performed scientific studies from all disciplines freely available to the whole world. " />

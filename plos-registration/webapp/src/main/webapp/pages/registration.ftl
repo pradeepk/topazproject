@@ -5,7 +5,7 @@
 <div id="content">
 <h1>Sign Up for a PLoS Journals Profile</h1>
 	<!--<p><strong>Instruction Title   Text.</strong> Additional Instructoins here.</p>-->
-	<p>Fields marked with an <span class="required">*</span> are required. </p>
+	<p>Fields marked with <span class="required">*</span> are required. </p>
 
 
   <@ww.form cssClass="pone-form" method="post" name="registrationFormPart1" action="registerSubmit" title="Registration Form">
