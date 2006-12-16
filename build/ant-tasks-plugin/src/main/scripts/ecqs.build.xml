@@ -37,13 +37,6 @@
     <property name="patch-keytool-string" value=""/>
   </target>
 
-  <!--
-  <artifact:dependencies pathId="cas-mod.dependencies"
-      xmlns:artifact="antlib:org.apache.maven.artifact.ant">
-    <dependency groupId="org.plosone" artifactId="plosone-cas-mod" version="0.5-SNAPSHOT"/>
-  </artifact:dependencies>
--->
-  
   <target name="ecqs-package" depends="patch-keytool">
     <!-- unzip the package -->
     <unzip src="${SRC_ZIP}" dest="${DEST_DIR}"/>
