@@ -486,6 +486,7 @@
      <constructor-arg index="0">
        <props>
          <prop key="cache.memory">true</prop>
+         <prop key="cache.event.listeners">com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener</prop>
  <!--    <prop key="cache.capacity">500</prop>-->
        </props>
      </constructor-arg>
