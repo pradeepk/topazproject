@@ -33,7 +33,7 @@
       </transactionLogger>
 
       <cacheInvalidator>
-        <invalidationInterval>2000</invalidationInterval>
+        <invalidationInterval>100</invalidationInterval>
         <rulesFile>/conf/cache_invalidator.xml</rulesFile>
       </cacheInvalidator>
     </fr>
