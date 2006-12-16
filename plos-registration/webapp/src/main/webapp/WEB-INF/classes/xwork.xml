@@ -17,7 +17,11 @@
 
       <interceptors>
         <interceptor-stack name="defaultPlosStack">
-          <interceptor-ref name="exception"/>
+          <interceptor-ref name="exception">
+            <param name="logEnabled">true</param>
+            <param name="logCategory">org.plos.UnhandledException</param>
+            <param name="logLevel">WARN</param>                               
+          </interceptor-ref>
           <interceptor-ref name="alias"/>
           <interceptor-ref name="servlet-config"/>
           <interceptor-ref name="prepare"/>
@@ -46,22 +50,28 @@
 
       <default-action-ref name="register" />
 
+      <global-results>
+        <result name="error">/pages/serverError.ftl</result>
+      </global-results>
+
+      <global-exception-mappings >
+        <exception-mapping exception="java.lang.Exception" result="error"/>
+      </global-exception-mappings>
+
       <action name="home" class="org.plos.web.NoOpAction">
-          <result>/WEB-INF/pages/home.ftl</result>
+        <result>/WEB-INF/pages/home.ftl</result>
       </action>
 
       <action name="register" class="org.plos.web.NoOpAction">
-          <result>/pages/registration.ftl</result>
+        <result>/pages/registration.ftl</result>
       </action>
 
       <action name="registerSubmit" class="org.plos.web.RegisterAction">
         <result name="input">/pages/registration.ftl</result>
-        <result name="error">/pages/registration.ftl</result>
         <result name="success">/pages/registrationSuccess.ftl</result>
       </action>
 
       <action name="emailVerification" class="org.plos.web.ConfirmationAction">
-        <result name="error">/WEB-INF/pages/registration/error.ftl</result>
         <result name="success">/pages/emailConfirmationSuccess.ftl</result>
       </action>
 
@@ -71,19 +81,16 @@
 
       <action name="forgotPasswordSubmit" class="org.plos.web.ForgotPasswordAction">
         <result name="input">/pages/forgotPassword.ftl</result>
-        <result name="error">/pages/forgotPassword.ftl</result>
         <result name="success">/pages/forgotPasswordSuccess.ftl</result>
       </action>
 
       <action name="forgotPasswordVerify" class="org.plos.web.ForgotPasswordChangePasswordAction" method="validateResetPasswordRequest">
-        <result name="input">/WEB-INF/pages/registration/error.ftl</result>
-        <result name="error">/WEB-INF/pages/registration/error.ftl</result>
+        <result name="input">/pages/forgotPasswordChange.ftl</result>
         <result name="success">/pages/forgotPasswordChange.ftl</result>
       </action>
 
       <action name="forgotPasswordChangeSubmit" class="org.plos.web.ForgotPasswordChangePasswordAction">
         <result name="input">/pages/forgotPasswordChange.ftl</result>
-        <result name="error">/pages/forgotPasswordChange.ftl</result>
         <result name="success">/pages/changePasswordSuccess.ftl</result>
       </action>
  
@@ -93,7 +100,6 @@
 
       <action name="changePasswordSubmit" class="org.plos.web.ChangePasswordAction">
         <result name="input">/pages/changePassword.ftl</result>
-        <result name="error">/pages/changePassword.ftl</result>
         <result name="success">/pages/changePasswordSuccess.ftl</result>
       </action>
 
