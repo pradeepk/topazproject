@@ -49,7 +49,7 @@
         <groupId>org.topazproject.plugins</groupId>
         <artifactId>ant-tasks</artifactId>
         <configuration>
-          <DEST_DIR>${project.build.directory}</DEST_DIR>
+          <ECQS_INSTALL_DIR>${project.build.directory}</ECQS_INSTALL_DIR>
           <ecqs-version>2.0.6-1-t1-SNAPSHOT</ecqs-version>
         </configuration>
 
