@@ -262,7 +262,6 @@
           <name>CONF_HELPER</name>
           <property>CONF_HELPER</property>
           <required>true</required>
-          <defaultValue>${settings.localRepository}/org/topazproject/conf-helper/0.5-SNAPSHOT/conf-helper-0.5-SNAPSHOT.jar</defaultValue>
         </parameter>
         
         <parameter>
