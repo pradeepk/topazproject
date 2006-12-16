@@ -4,7 +4,7 @@
   <xsl:param name="rssLink">http://www.plosone.org</xsl:param>
   <xsl:param name="rssImage">http://www.plosone.org/images/pone_favicon.ico</xsl:param>
   <xsl:param name="rssDescription">PLoS ONE Journal</xsl:param>
-  <xsl:param name="linkPrefix">http://www.plosone.org/getArticle?article=</xsl:param>
+  <xsl:param name="linkPrefix">http://www.plosone.org/article/fetchArticle.action?articleURI=</xsl:param>
 
   <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
 
