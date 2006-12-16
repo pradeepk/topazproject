@@ -218,7 +218,7 @@ function validateNewComment() {
 }  
 
 function getArticle() {
-  var refreshArea = dojo.byId(djConfig.articleContainer);
+  var refreshArea = dojo.byId(annotationConfig.articleContainer);
   var targetUri = annotationForm.target.value;
 
   ldc.show();
@@ -247,7 +247,7 @@ function getArticle() {
       refreshArea.innerHTML = docFragment;
       //dojo.dom.removeChildren(refreshArea);
       //refreshArea.appendChild(docFragment);
-      
+      getAnnotationCount();
       topaz.displayComment.processBugCount();
       
       ldc.hide();
@@ -261,6 +261,37 @@ function getArticle() {
   
 }
 
+function getAnnotationCount() {
+  var refreshArea = dojo.byId(annotationConfig.rhcCount);
+  var targetUri = annotationForm.target.value;
+
+  var bindArgs = {
+    url: namespace + "/article/fetchArticleRhc.action?articleURI=" + targetUri,
+    method: "get",
+    error: function(type, error, evt){
+     var err = document.createTextNode("ERROR [AJAX]:" + error.toSource());
+     //topaz.errorConsole.writeToConsole(err);
+     //topaz.errorConsole.show();
+     alert("ERROR:" + error.toSource());
+     return false;
+    },
+    load: function(type, data, evt){
+      var docFragment = document.createDocumentFragment();
+      docFragment = data;
+      //alert(data);
+
+      refreshArea.innerHTML = docFragment;
+      //dojo.dom.removeChildren(refreshArea);
+      //refreshArea.appendChild(docFragment);
+
+      return false;
+    },
+    mimetype: "text/html",
+    transport: "XMLHTTPTransport"
+   };
+   dojo.io.bind(bindArgs);
+  
+}
 
 
 

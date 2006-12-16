@@ -405,6 +405,14 @@
         <param name="noCache">true</param>
       </result>
     </action>
+
+    <action name="fetchArticleRhc" class="org.plos.article.action.FetchArticleAction">
+      <result name="success" type="plosOneFreemarker">
+        <param name="location">/article/article_rhc_count.ftl</param>
+        <param name="noCache">true</param>
+      </result>
+    </action>
+
   </package>
 
   <package name="annotation" extends="default" namespace="/annotation">
