@@ -19,17 +19,10 @@
     </file>
   </files>
 
-  <fileSets>
-    <fileSet>
-      <directory>src/main/webapps/</directory>
-      <outputDirectory>/webapps/</outputDirectory>
-    </fileSet>
-  </fileSets>
-
   <dependencySets>
     <dependencySet>
-      <outputDirectory>/webapps/</outputDirectory>
-      <outputFileNameMapping>${artifactId}</outputFileNameMapping>
+      <outputDirectory>/webapps/ROOT</outputDirectory>
+      <outputFileNameMapping></outputFileNameMapping>
       <unpack>true</unpack>
       <includes>
         <include>*:war</include>
