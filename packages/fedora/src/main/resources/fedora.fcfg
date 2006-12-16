@@ -125,8 +125,8 @@
 				correctly store and retrieve filepaths from the registry 
 				tables, if running under Windows/DOS.</comment>
 			       <param name="object_store_base"
-				value="/var/lib/topaz/fedora/data/objects" isFilePath="true"/>
-			       <param name="datastream_store_base" value="/var/lib/topaz/fedora/data/datastreams" isFilePath="true"/>
+				value="/var/lib/topaz/data/fedora/objects" isFilePath="true"/>
+			       <param name="datastream_store_base" value="/var/lib/topaz/data/fedora/datastreams" isFilePath="true"/>
     <param name="path_registry" value="fedora.server.storage.lowlevel.DBPathRegistry"/>
     <param name="path_algorithm" value="fedora.server.storage.lowlevel.TimestampPathAlgorithm"/>
     <param name="file_system" value="fedora.server.storage.lowlevel.GenericFileSystem"/>
