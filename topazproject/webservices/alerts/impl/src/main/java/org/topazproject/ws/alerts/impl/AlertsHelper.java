@@ -28,10 +28,12 @@ import javax.xml.transform.stream.StreamResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.mail.Email;
 import org.apache.commons.mail.SimpleEmail;
 import org.apache.commons.mail.EmailException;
 
+import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.feed.ArticleFeed;
 
 /**
@@ -40,9 +42,11 @@ import org.topazproject.feed.ArticleFeed;
  * @author Eric Brown
  */
 abstract class AlertsHelper {
-  private static final String TRANSFORM_RESOURCE = "/email.xsl";
-  private static final String SMTP_HOSTNAME = "localhost"; // our smtp relay
-  private static final int    SMTP_PORT = 2525;
+  private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
+  
+  private static final String TRANSFORM_RESOURCE = CONF.getString("topaz.alerts.xsl", "/email.xsl");
+  private static final String SMTP_HOSTNAME = CONF.getString("topaz.alerts.relayhost", "localhost");
+  private static final int    SMTP_PORT = CONF.getInt("topaz.alerts.relayport", 2525);
 
   private static final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
   private static final Log log = LogFactory.getLog(AlertsImpl.class);

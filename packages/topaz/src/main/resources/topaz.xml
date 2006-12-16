@@ -59,6 +59,12 @@
       </fgsrepository>
     </fedoragsearch>
 
+    <!-- Set host and port of smtp relay -->
+    <alerts>
+      <relayhost>localhost</relayhost>
+      <relayport>25</relayport>
+    </alerts>
+    
     <!-- Schedule alerts -->
     <scheduler>
       <jobs>

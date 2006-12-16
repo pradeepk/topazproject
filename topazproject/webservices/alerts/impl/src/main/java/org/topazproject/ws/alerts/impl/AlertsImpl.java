@@ -62,10 +62,10 @@ import org.topazproject.feed.ArticleFeed;
  * @author Eric Brown
  */
 public class AlertsImpl implements Alerts {
-  private static final int    FETCH_SIZE     = 10; // TODO: Set to 100, test with 2
-  private static final Log    log            = LogFactory.getLog(AlertsImpl.class);
-
   private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
+
+  private static final int    FETCH_SIZE     = CONF.getInt("topaz.alerts.fetchsize", 100);
+  private static final Log    log            = LogFactory.getLog(AlertsImpl.class);
 
   private static final String MODEL_ALERTS   = "<" + CONF.getString("topaz.models.alerts") + ">";
   private static final String ALERTS_TYPE    =
