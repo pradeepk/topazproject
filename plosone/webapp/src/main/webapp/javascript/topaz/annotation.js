@@ -174,7 +174,7 @@ topaz.annotation = {
      // alert("parentArray = " + parentArray);
     //}
     
-  	var marker = dojo.byId(djConfig.regionalDialogMarker);
+  	var marker = dojo.byId(annotationConfig.regionalDialogMarker);
   	dlg.setMarker(marker);
     dlg.show();
   },
@@ -739,7 +739,7 @@ topaz.annotation = {
   	var noteTitle = (annotationConfig.isAuthor ? "Author" : annotationConfig.isPublic ? "User" : "My") + 
           					" Annotation " + 
           					(annotationConfig.isPublic ? "(Public)" : "(Private)");
-  	var spanId    = annotationConfig.dialogMarker;
+  	var markerId     = annotationConfig.regionalDialogMarker;
   	var noteImg   = djConfig.namespace + "/images/" + "pone_note_" + (annotationConfig.isAuthor ? "author" : "private") + "_active.gif";
   	var noteImgClass = annotationConfig.annotationImgMarker;
   	  
@@ -748,10 +748,9 @@ topaz.annotation = {
       var html = rangeObj.range.htmlText;
       rangeObj.range.pasteHTML('<span class="' + noteClass + 
           								     '" title="'     + noteTitle +
-          							        '" id="'       + spanId + 
           							        '"  annotationId=""' +
           							       '">' + 
-                               '<a href="#"" class="bug public" displayId=""  onclick="topaz.displayComment.show(this);" onmouseover="topaz.displayComment.mouseoverComment(this);" onmouseout="topaz.displayComment.mouseoutComment(this);" title="Click to preview this annotation">&nbsp;</a>' +
+                               '<a href="#" class="bug public" id="' + markerId + '"  onclick="topaz.displayComment.show(this);" onmouseover="topaz.displayComment.mouseoverComment(this);" onmouseout="topaz.displayComment.mouseoutComment(this);" title="Click to preview this annotation">1</a>' +
           							       html + '</span>');
     }
     else {
@@ -762,7 +761,7 @@ topaz.annotation = {
       var newSpan = document.createElement('span');
       newSpan.className = noteClass;
       newSpan.title     = noteTitle;
-      newSpan.id        = spanId;
+      newSpan.id        = markerId;
       newSpan.annotationId = "";
 
   	  var newImg = document.createElement('img');

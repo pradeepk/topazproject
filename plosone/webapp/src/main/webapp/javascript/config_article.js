@@ -1,18 +1,19 @@
 var djConfig = {
 	isDebug: false,
 	debugContainerId : "dojoDebug",
-	regionalDialogMarker : "rdm",
-	articleContainer: "articleContainer",
-	debugAtAllCosts: false
+	debugAtAllCosts: false,
+  bindEncoding: "UTF-8"
 };
 
 var annotationConfig = {
+	articleContainer: "articleContainer",
+  rhcCount: "dcCount",
 	trigger: "addAnnotation",
   lastAncestor: "researchArticle",
   xpointerMarker: "xpt",
   annotationMarker: "note",
   annotationImgMarker: "noteImg",
-  dialogMarker: "rdm",
+	regionalDialogMarker : "rdm",
   tipDownDiv: "dTip",
   tipUpDiv: "dTipu",
   isAuthor: false,  //TODO: *** Default to false when the hidden input is hooked up.

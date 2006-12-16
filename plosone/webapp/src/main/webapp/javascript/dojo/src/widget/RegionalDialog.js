@@ -209,7 +209,7 @@ dojo.declare(
 		placeModalDialog: function() {
 			var scroll_offset = dojo.html.getScroll().offset;
 			var viewport_size = dojo.html.getViewport();
-			//var dialog_marker = dojo.byId(djConfig.regionalDialogMarker);
+			//var dialog_marker = dojo.byId(annotationConfig.regionalDialogMarker);
 			var dialog_marker = this.markerNode;
 			
 			var markerOffset = topaz.domUtil.getCurrentOffset(dialog_marker);
@@ -271,6 +271,15 @@ dojo.declare(
         // big error. Do something about it!
       }
 			
+/*      dojo.byId(djConfig.debugContainerId).innerHTML = "markerOffset.top = " + markerOffset.top
+      															  + "<br/>" + "markerOffset.left = "  + markerOffset.left
+      															  + "<br/>" + "mbWidth = " + mbWidth
+      															  + "<br/>" + "mbHeight = " + mbHeight
+      															  + "<br/>" + "vpWidth = " + vpWidth
+      															  + "<br/>" + "vpHeight = " + vpHeight
+      															  + "<br/>" + "scrollX = " + scrollX
+      															  + "<br/>" + "scrollY = " + scrollY;
+*/      															 
 			// Default values put the box generally above and to the right of the annotation "bug"
       var xTip = markerOffset.left - (tipWidth / 2);
       var yTip = markerOffset.top - tipHeight - (tipHeight/4);
@@ -297,7 +306,7 @@ dojo.declare(
       if (y < yMin) {
         tipDown = false; // flip the tip
 
-        yTip = curtop + bugHeight - (tipHeight/4);
+        yTip = markerOffset.top + bugHeight - (tipHeight/4);
         y = yTip + tipHeight;
         
         if (y > yMax) {
@@ -323,7 +332,9 @@ dojo.declare(
 				top = y + "px";
 			}
 
-		},
+/*      dojo.byId(djConfig.debugContainerId).innerHTML += "<br/>" + "left = " + this.domNode.style.left
+      															                  + "<br/>" + "top = "  + this.domNode.style.top;
+*/		},
 		
 		showModalDialog: function() {
 			// summary
