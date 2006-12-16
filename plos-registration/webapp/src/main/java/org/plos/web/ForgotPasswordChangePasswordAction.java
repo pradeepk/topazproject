@@ -42,7 +42,7 @@ public class ForgotPasswordChangePasswordAction extends BaseAction {
       }
     } catch (final NoUserFoundWithGivenLoginNameException e) {
       addActionError("No user found with the login name");
-      return ERROR;
+      return INPUT;
     } catch (final VerificationTokenInvalidException e) {
       addActionError("Verification token is invalid");
       return ERROR;

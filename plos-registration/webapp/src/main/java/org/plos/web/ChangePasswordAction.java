@@ -38,17 +38,17 @@ public class ChangePasswordAction extends BaseAction {
       final String message = "No user found with given e-mail:"+ loginName;
       addFieldError("loginName", message);
       log.trace(message, e);
-      return ERROR;
+      return INPUT;
     } catch (final PasswordInvalidException e) {
       final String message = "Invalid password entered";
       addFieldError("oldPassword", message);
       log.trace(message + "for loginName" + loginName, e);
-      return ERROR;
+      return INPUT;
     } catch (final UserNotVerifiedException e) {
       final String message = "User not verified:" + loginName;
       addFieldError("loginName", message);
       log.trace(message, e);
-      return ERROR;
+      return INPUT;
     } catch (final ApplicationException e) {
       addFieldError("loginName", e.getMessage());
       addActionError(e.getMessage());

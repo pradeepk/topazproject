@@ -47,7 +47,7 @@ public class ForgotPasswordAction extends BaseAction {
       addActionError(noUserEx.getMessage());
       log.trace(message, noUserEx);
       addFieldError("loginName", message);
-      return ERROR;
+      return INPUT;
     } catch (final ApplicationException e) {
       addActionError(e.getMessage());
       log.error(e, e);

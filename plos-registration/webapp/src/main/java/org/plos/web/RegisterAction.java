@@ -52,7 +52,7 @@ public class RegisterAction extends BaseAction {
     } catch (final UserAlreadyExistsException e) {
       log.debug("UserAlreadyExists:"+loginName1, e);
       addFieldError("loginName1", "User already exists for the given e-mail address");
-      return ERROR;
+      return INPUT;
     } catch (final ApplicationException e) {
       log.error("Application error", e);
       addFieldError("loginName1", e.getMessage());
