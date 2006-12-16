@@ -22,11 +22,9 @@
 	<li>Fields marked with <span class="required">*</span> are required.</li>
   <li><em>The following required fields will always appear publicly.</em></li>
 
-   	<#if tabId?has_content>
-      	<@ww.textfield name="displayName" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="Username" required="true" tabindex="101" />
-	  <#else>
+   	<#if !isDisplayNameSet>
       <!--after="(Usernames are <strong>permanent</strong> and must be between 4 and 18 characters)"-->
-        <@ww.textfield name="displayName" label="Username" required="true" tabindex="101"  />
+        <@ww.textfield name="displayName" label="Username" required="true" tabindex="101" after="(Usernames are <strong>permanent</strong> and must be between 4 and 18 characters)" />
 	  </#if>
    	<#if tabId?has_content>
           <@ww.textfield name="givenNames" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="First/Given Name" required="true" tabindex="102" />

@@ -31,6 +31,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Pattern;
 
 /**
  * Creates a new user in Topaz and sets come Profile properties.  User must be logged in via CAS.
@@ -75,6 +76,8 @@ public class UserProfileAction extends UserActionSupport {
   private static final String EXTENDED_GROUP = "extended";
   private static final String ORG_GROUP = "org";
   private final String HTTP_PREFIX = "http://";
+  private static final Pattern spacePattern = Pattern.compile("\\s");
+  boolean isDisplayNameSet = true;
 
   static {
     visibilityMapping.put(NAME_GROUP,
@@ -105,6 +108,9 @@ public class UserProfileAction extends UserActionSupport {
   public String executeSaveUser() throws Exception {
     if (!validates()) {
       email = fetchUserEmailAddress();
+      if (null == getPlosOneUserFromSession()) {
+        isDisplayNameSet = false;
+      }
       return INPUT;
     }
     final Map<String, Object> sessionMap = getSessionMap();
@@ -112,6 +118,7 @@ public class UserProfileAction extends UserActionSupport {
 
     topazId = getUserService().lookUpUserByAuthId(authId);
     if (topazId == null) {
+      isDisplayNameSet = false;
       topazId = getUserService().createUser(authId);
     }
     if (log.isDebugEnabled()) {
@@ -120,7 +127,12 @@ public class UserProfileAction extends UserActionSupport {
 
     homePage = makeValidUrl(homePage);
     weblog = makeValidUrl(weblog);
+    
     final PlosOneUser newUser = createPlosOneUser();
+    if (!isDisplayNameSet) {
+      //if new user then capture the displayname
+      newUser.setDisplayName(this.displayName);
+    }
 
     try {
       //If a field is not among the private fields, it is saved as public
@@ -180,11 +192,14 @@ public class UserProfileAction extends UserActionSupport {
     final Map<String, Object> sessionMap = getSessionMap();
     final PlosOneUser plosOneUser = (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
 
+    isDisplayNameSet = false;
+    //If the user has no topaz id
     if (null == plosOneUser) {
       email = fetchUserEmailAddress();
       log.debug("new profile with email: " + email);
       return NEW_PROFILE;
-    } else {
+    } else if (null == plosOneUser.getDisplayName()) {
+      // if the user has no display name, possibly getting migrated from an old system
       try {
         log.debug("this is an existing user with email: " + plosOneUser.getEmail());
         email = plosOneUser.getEmail();
@@ -194,6 +209,9 @@ public class UserProfileAction extends UserActionSupport {
       }
       return UPDATE_PROFILE;
     }
+    //else just forward the user to a success page, which might be the home page.
+    isDisplayNameSet = true;
+    return SUCCESS;
   }
 
   private PlosOneUser createPlosOneUser() throws ApplicationException {
@@ -204,7 +222,6 @@ public class UserProfileAction extends UserActionSupport {
     }
 
     plosOneUser.setUserId(this.topazId);
-    plosOneUser.setDisplayName(this.displayName);
     plosOneUser.setRealName(this.realName);
     plosOneUser.setTitle(this.title);
     plosOneUser.setSurnames(this.surnames);
@@ -258,10 +275,19 @@ public class UserProfileAction extends UserActionSupport {
   private boolean validates() {
     boolean isValid = true;
     final int usernameLength = StringUtils.stripToEmpty(displayName).length();
-    if (usernameLength < Integer.parseInt(Length.DISPLAY_NAME_MIN)
-            || usernameLength > Integer.parseInt(Length.DISPLAY_NAME_MAX)) {
-      addFieldError("displayName", "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters");
-      isValid = false;
+
+    //Don't validate displayName if the user already has a display name
+    if (null == getPlosOneUserFromSession()) {
+      if (!spacePattern.matcher(displayName).find()) {
+        if (usernameLength < Integer.parseInt(Length.DISPLAY_NAME_MIN)
+              || usernameLength > Integer.parseInt(Length.DISPLAY_NAME_MAX)) {
+          addFieldError("displayName", "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters");
+          isValid = false;
+        }
+      } else {
+        addFieldError("displayName", "Username may not contain spaces");
+        isValid = false;
+      }
     }
     if (StringUtils.isBlank(givenNames)) {
       addFieldError("givenNames", "First/Given Name cannot be empty");
@@ -293,7 +319,8 @@ public class UserProfileAction extends UserActionSupport {
       isValid = false;
     }
 
-    if (maliciousContentFound()) {
+    //Displayname may be null if the user is just editing the profile and so can't change it 
+    if (null != displayName && maliciousContentFound()) {
       isValid = false;
     }
 
@@ -774,5 +801,13 @@ public class UserProfileAction extends UserActionSupport {
    */
   public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {
     this.profanityCheckingService = profanityCheckingService;
+  }
+
+  /**
+   * Getter for isDisplayNameSet.
+   * @return Value of isDisplayNameSet.
+   */
+  public boolean getIsDisplayNameSet() {
+    return isDisplayNameSet;
   }
 }

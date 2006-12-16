@@ -695,6 +695,7 @@
       <result name="update-profile" type="plosOneFreemarker">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
+      <result name="success" type="redirect">/</result>
     </action>
 
     <action name="createNewUser" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">

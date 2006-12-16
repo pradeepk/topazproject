@@ -33,6 +33,7 @@ import org.plos.user.service.PreferencesWebService;
 import org.plos.user.service.ProfileWebService;
 import org.plos.user.service.UserService;
 import org.plos.user.service.UserWebService;
+import org.plos.util.ProfanityCheckingService;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
 import javax.xml.rpc.ServiceException;
@@ -61,6 +62,7 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private GetFlagAction getFlagAction;
 
   private FetchArticleService fetchArticleService;
+  private ProfanityCheckingService profanityCheckingService;
   private ArticleWebService articleWebService;
   private PermissionWebService permissionWebService;
   private AnnotationService annotationService;
@@ -416,5 +418,21 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
    */
   public void setSearchAction(final SearchAction searchAction) {
     this.searchAction = searchAction;
+  }
+
+  /**
+   * Getter for profanityCheckingService.
+   * @return Value of profanityCheckingService.
+   */
+  public ProfanityCheckingService getProfanityCheckingService() {
+    return profanityCheckingService;
+  }
+
+  /**
+   * Setter for profanityCheckingService.
+   * @param profanityCheckingService Value to set for profanityCheckingService.
+   */
+  public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {
+    this.profanityCheckingService = profanityCheckingService;
   }
 }
