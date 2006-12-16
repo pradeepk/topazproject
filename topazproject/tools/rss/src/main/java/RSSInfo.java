@@ -72,9 +72,15 @@ public class RSSInfo {
   // Set up the command line options
   static {
     options = new Options();
-    options.addOption(OptionBuilder.withArgName("Topaz article uri").hasArg().
+
+    OptionGroup urlOption = new OptionGroup();
+    urlOption.addOption(OptionBuilder.withArgName("Topaz article uri").hasArg().
         isRequired(true).withValueSeparator(' ').
         withDescription("URI to access article service").create("uri"));
+    urlOption.addOption(OptionBuilder.withArgName("Topaz base uri").hasArg().
+        withValueSeparator(' ').withDescription("Base URL to access Topaz").
+        create("baseURL"));
+    options.addOptionGroup(urlOption);
 
     OptionGroup xform = new OptionGroup();
     xform.addOption(new Option("rss","Transform using inbuilt RSS stylesheet"));
@@ -180,7 +186,15 @@ public class RSSInfo {
     try {
         // parse the command line arguments
       CommandLine line = parser.parse(options, args);
-      RSSInfo rss = new RSSInfo(line.getOptionValue("uri"));
+      String uri = null;
+      if (line.hasOption("uri")) {
+        uri = line.getOptionValue("uri");
+      } else if (line.hasOption("baseURL")) {
+        uri = line.getOptionValue("baseURL") + ":8008/ws-articles-webapp/services/ArticleServicePort";
+      } else {
+        help();
+      }
+      RSSInfo rss = new RSSInfo(uri);
 
       // Grab various parameters
       String startDate = line.getOptionValue("startDate");
