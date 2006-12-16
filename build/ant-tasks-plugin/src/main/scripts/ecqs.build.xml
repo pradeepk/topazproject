@@ -68,17 +68,13 @@
 
     <!-- Remove endorsed libs to avoid Java 1.5 and Tomcat 5.0
     problem of not being able to pick up default TransformerFactory.
-
-    Also add in the PLoS registration app
     -->
     <unzip src="${DEST_DIR}/${ROOT}/packages/jakarta-tomcat-5.0.28.zip"
       dest = "${DEST_DIR}/${ROOT}/packages/tmp"/>
-    <unjar dest="${DEST_DIR}/${ROOT}/packages/tmp/jakarta-tomcat-5.0.28/webapps/plos-registration"
-        src="${PLOS_REG}"/> 
     
     <zip destfile="${DEST_DIR}/${ROOT}/packages/jakarta-tomcat-5.0.28.zip"
       basedir="${DEST_DIR}/${ROOT}/packages/tmp"
-      excludes="jakarta-tomcat-5.0.28/common/endorsed/*.jar,jakarta-tomcat-5.0.28/webapps/plos-registration/META-INF/**"/>
+      excludes="jakarta-tomcat-5.0.28/common/endorsed/*.jar"/>
 
     <delete dir="${DEST_DIR}/${ROOT}/packages/tmp"/>
     

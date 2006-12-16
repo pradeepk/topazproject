@@ -93,12 +93,6 @@
           <required>true</required>
         </parameter>
         
-        <parameter>
-          <name>PLOS_REG</name>
-          <property>PLOS_REG</property>
-          <required>true</required>
-        </parameter>
-
       </parameters>
     </mojo>
     
