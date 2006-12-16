@@ -50,6 +50,7 @@
         <artifactId>ant-tasks</artifactId>
         <configuration>
           <DEST_DIR>${project.build.directory}</DEST_DIR>
+          <ecqs-version>2.0.6-1-t1-SNAPSHOT</ecqs-version>
         </configuration>
 
         <executions>
