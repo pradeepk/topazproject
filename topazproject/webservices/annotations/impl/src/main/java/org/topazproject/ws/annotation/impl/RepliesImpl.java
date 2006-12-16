@@ -98,7 +98,7 @@ public class RepliesImpl implements Replies {
   //
   private static final String ITQL_GET_DELETE_LIST_FOR_ID =
     ("select $s $b from ${MODEL} where $s <a:body> $b and "
-    + " (walk ($c <tr:inReplyTo> <${id}> and $s <tr:inReplyTo> $c) or $s <tucanaL:is> <${id}>) "
+    + " (walk ($c <tr:inReplyTo> <${id}> and $s <tr:inReplyTo> $c) or $s <tucana:is> <${id}>) "
     + " and $s <tr:root> $r and <${id}> <tr:root> $r;").replaceAll("\\Q${MODEL}", MODEL);
 
   //
