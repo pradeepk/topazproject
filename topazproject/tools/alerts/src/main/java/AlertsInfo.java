@@ -25,6 +25,7 @@ import org.topazproject.mulgara.itql.service.ItqlInterpreterException;
 import org.apache.commons.cli.GnuParser;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.Option;
+import org.apache.commons.cli.OptionGroup;
 import org.apache.commons.cli.OptionBuilder;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -77,9 +78,13 @@ public class AlertsInfo {
   // Set up the command line options
   static {
     options = new Options();
-    options.addOption(OptionBuilder.withArgName("mulgara uri").hasArg().
-        isRequired(true).  withValueSeparator(' ').
-        withDescription("URI to access Mulgara").  create("uri"));
+    OptionGroup urlOption = new OptionGroup();
+    urlOption.addOption(OptionBuilder.withArgName("mulgara uri").hasArg().
+        withValueSeparator(' ').withDescription("URI to access Mulgara").create("uri"));
+    urlOption.addOption(OptionBuilder.withArgName("mulgara base uri").hasArg().
+        withValueSeparator(' ').withDescription("Base URL to access Mulgara").
+        create("baseURL"));
+    options.addOptionGroup(urlOption);
   }
 
   /**
@@ -182,7 +187,15 @@ public class AlertsInfo {
     try {
         // parse the command line arguments
       CommandLine line = parser.parse(options, args);
-      AlertsInfo alerts = new AlertsInfo(new URI(line.getOptionValue("uri")));
+      String uri = null;
+      if (line.hasOption("uri")) {
+        uri = line.getOptionValue("uri");
+      } else if (line.hasOption("baseURL")) {
+        uri = line.getOptionValue("baseURL") + ":9091/mulgara-service/services/ItqlBeanService";
+      } else {
+        help();
+      }
+      AlertsInfo alerts = new AlertsInfo(new URI(uri));
       String[] values = alerts.getValues();
       for (int idx = 0; idx < values.length; idx++) {
         System.out.println(values[idx]);
