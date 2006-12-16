@@ -74,50 +74,49 @@
     </copy>
 
     <!-- Remove endorsed libs to avoid Java 1.5 and Tomcat 5.0
-    problem of not being able to pick up default TransformerFactory
+    problem of not being able to pick up default TransformerFactory.
+
+    Also add in the PLoS registration app
     -->
-    <zip destfile="${DEST_DIR}/${ROOT}/packages/newTomcat.zip">
-      <zipfileset src="${DEST_DIR}/${ROOT}/packages/jakarta-tomcat-5.0.28.zip"
-        excludes="jakarta-tomcat-5.0.28/common/endorsed/*.jar"/>
-    </zip>
-    <move file="${DEST_DIR}/${ROOT}/packages/newTomcat.zip"
-      tofile="${DEST_DIR}/${ROOT}/packages/jakarta-tomcat-5.0.28.zip"/>
+    <unzip src="${DEST_DIR}/${ROOT}/packages/jakarta-tomcat-5.0.28.zip"
+      dest = "${DEST_DIR}/${ROOT}/packages/tmp"/>
+    <unjar dest="${DEST_DIR}/${ROOT}/packages/tmp/jakarta-tomcat-5.0.28/webapps/plos-registration"
+        src="${PLOS_REG}"/> 
     
-    <!-- jar it up -->
-    <jar destfile="${DEST_DIR}.jar" basedir="${DEST_DIR}"/>
+    <zip destfile="${DEST_DIR}/${ROOT}/packages/jakarta-tomcat-5.0.28.zip"
+      basedir="${DEST_DIR}/${ROOT}/packages/tmp"
+      excludes="jakarta-tomcat-5.0.28/common/endorsed/*.jar,jakarta-tomcat-5.0.28/webapps/plos-registration/META-INF/**"/>
+
+    <delete dir="${DEST_DIR}/${ROOT}/packages/tmp"/>
+    
   </target>
   
   <target name="ecqs-install" depends="exec-ext">
-    <unjar src="${SRC_JAR}" dest="${DEST_DIR}"/>
-    <!--
-     Bloody maven; javac task won't execute 
-     <ant dir="${DEST_DIR}/${ROOT}" target="install"/> 
-     -->
-    <exec dir="${DEST_DIR}/${ROOT}" executable="ant${ext}">
+    <property name="SRC_JAR"
+      value="${localRepository}/${ecqs-groupId}/${ecqs-artifactId}/${ecqs-version}/${ecqs-artifactId}-${ecqs-version}.jar"/>
+    <unjar src="${SRC_JAR}" dest="${ECQS_INSTALL_DIR}"/>
+    
+    <exec dir="${ECQS_INSTALL_DIR}/${ROOT}" executable="ant${ext}">
       <arg line="install"/>
     </exec>
-    
-    <!-- install the plos-registration-app -->
-    <unjar src="${PLOS_REG}"
-	    dest="${DEST_DIR}/${ROOT}/jakarta-tomcat-5.0.28/webapps/plos-registration"/>
   </target>
 
   <target name="ecqs-uninstall">
-    <delete dir="${DEST_DIR}/${ROOT}"/>
+    <delete dir="${ECQS_HOME}"/>
   </target>
 
   <target name="ecqs-start">
     <echo>Starting CAS (spawn=${SPAWN})</echo>
     <java classname="org.apache.tools.ant.Main"
-          dir="${DEST_DIR}/${ROOT}"
+      dir="${ECQS_HOME}"
           fork="true" spawn="${SPAWN}">
       <classpath refid="dependency.classpath" />
-      <arg line="-f ${DEST_DIR}/${ROOT}/build.xml tomcat-start"/>
+      <arg line="-f ${ECQS_HOME}/build.xml tomcat-start"/>
     </java>
   </target>
 
   <target name="ecqs-stop" depends="exec-ext">
-    <exec dir="${DEST_DIR}/${ROOT}" executable="ant${ext}">
+    <exec dir="${ECQS_HOME}" executable="ant${ext}">
       <arg line="tomcat-stop"/>
     </exec>
   </target>

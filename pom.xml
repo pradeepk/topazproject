@@ -316,6 +316,7 @@
                 <configuration>
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
                   <fedora-version>2.1.1-t1-SNAPSHOT</fedora-version>
+                  <ecqs-version>2.0.6-1-t1-SNAPSHOT</ecqs-version>
                 </configuration>
               </execution>
               <execution>
