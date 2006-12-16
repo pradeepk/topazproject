@@ -40,9 +40,16 @@
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-alerts-client-impl</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
   </dependencies>
 
   <profiles>
+    
     <profile>
       <activation>
         <property>
@@ -65,5 +72,25 @@
         </plugins>
       </build>
     </profile>
+
+    <profile>
+      <id>AlertsClient</id>
+      <build>
+        <defaultGoal>exec:java</defaultGoal>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>AlertsClient</mainClass>
+              <arguments>
+                <argument>${args}</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
   </profiles>
 </project>
