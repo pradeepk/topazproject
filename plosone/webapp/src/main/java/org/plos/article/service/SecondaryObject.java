@@ -25,6 +25,7 @@ public class SecondaryObject {
   private String transformedDescription;
   private String transformedCaptionTitle;
   private String plainCaptionTitle;
+  
 
   private static final Log log = LogFactory.getLog(SecondaryObject.class);
   
@@ -75,6 +76,13 @@ public class SecondaryObject {
     return objectInfo.getRepresentations();
   }
 
+  /**
+   * @see org.topazproject.ws.article.ObjectInfo#getDoi()
+   */
+  public String getDoi() {
+    return objectInfo.getDoi();
+  }
+  
   /**
    * @return the thumbnail representation for the images
    */

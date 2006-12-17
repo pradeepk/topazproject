@@ -64,6 +64,8 @@ public class SecondaryObjectAction extends BaseActionSupport {
       String contextElem;
       String allTransformed;
       String[] elems;
+      StringBuilder desc;
+      String doi;
       
       for (SecondaryObject s: secondaryObjects) {
         contextElem = s.getContextElement();
@@ -76,12 +78,22 @@ public class SecondaryObjectAction extends BaseActionSupport {
               log.debug(allTransformed);              
             }
             elems = allTransformed.split("END_TITLE");
+            desc = new StringBuilder();
+            doi = s.getDoi();
             if (elems.length > 1) {
               s.setTransformedCaptionTitle(elems[0]);
               s.setPlainCaptionTitle(elems[0].replaceAll("<.*>",""));
-              s.setTransformedDescription(elems[1]);
+              desc.append(elems[1]);
+              if ((doi != null) && (doi.length() > 0)) {
+                desc.append("doi:").append(doi);
+              }
+              s.setTransformedDescription(desc.toString());
             } else if (elems.length == 1) {
-              s.setTransformedDescription(elems[0]);              
+              desc.append(elems[0]);
+              if ((doi != null) && (doi.length() > 0)) {
+                desc.append("doi:").append(doi);
+              }
+              s.setTransformedDescription(desc.toString());              
             }
           } catch (Exception e) {
             log.warn("Could not transform description for Object: " + getUri(), e);
