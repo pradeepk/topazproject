@@ -42,6 +42,7 @@ public class HomePageAction extends BaseActionSupport {
   private ArticleWebService articleWebService;
   private ArticleInfo[] lastWeeksArticles;
   private static final long ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
+  private static final long FIFTEEN_DAYS = 15 * 24 * 60 * 60 * 1000;
   private String[] categoryNames;
   private ArticleInfo[][] articlesByCategory;
   private boolean categoriesAreInitialized = false;
@@ -84,8 +85,7 @@ public class HomePageAction extends BaseActionSupport {
         try {
           //  Get the value from TOPAZ
           Date weekAgo = new Date();
-          weekAgo.setTime(weekAgo.getTime() - ONE_WEEK);
-          //TODO: need to change the state to 0 once admin app is in place
+          weekAgo.setTime(weekAgo.getTime() - FIFTEEN_DAYS);
           if (log.isDebugEnabled()){
             log.debug("retrieving last week's articles from TOPAZ");
           }
@@ -115,7 +115,7 @@ public class HomePageAction extends BaseActionSupport {
    * Return an array of ObjectInfos representing the maxArticles most commented on articles
    * 
    * @param maxArticles
-   * @return 
+   * @return ObjectInfo[] of maxArticles maximum size
    */
   public ObjectInfo[] getCommentedOnArticles(int maxArticles) {
     if (log.isDebugEnabled()){
