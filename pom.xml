@@ -346,6 +346,7 @@
           <goals>deploy</goals>                           <!-- disable site deploy -->
           <useReleaseProfile>false</useReleaseProfile>    <!-- no javadoc and source jars -->
           <tagBase>http://gandalf.topazproject.org/svn/tags</tagBase>
+          <preparationGoals>clean install</preparationGoals>
         </configuration>
       </plugin>
     </plugins>
