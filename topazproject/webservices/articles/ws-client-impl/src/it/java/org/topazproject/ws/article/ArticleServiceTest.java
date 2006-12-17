@@ -110,6 +110,7 @@ public class ArticleServiceTest extends TestCase {
     ingestErrorTest("/test.ap.invalid.file.zip",     "does not have same prefix as article");
     ingestErrorTest("/test.ap.invalid.id.zip",       "does not reference an existing id");
     ingestErrorTest("/test.ap.invalid.id2.zip",      "does not reference an existing id");
+    ingestErrorTest("/test.ap.invalid.obj_id.zip",   "Found mismatched DOI in object-id");
   }
 
   private void ingestErrorTest(String zip, String expMsg) throws Exception {
@@ -146,6 +147,7 @@ public class ArticleServiceTest extends TestCase {
 
     ObjectInfo oi = service.getObjectInfo(uri);
     assertEquals("wrong uri", uri, oi.getUri());
+    assertEquals("wrong doi", "10.1371/journal.pbio.0020294", oi.getDoi());
     assertEquals("wrong title",
                  "Regulation of Muscle Fiber Type and Running Endurance by PPAR\u00A0",
                  oi.getTitle());
@@ -179,6 +181,7 @@ public class ArticleServiceTest extends TestCase {
     String secUri = uri + ".g001";
     oi = service.getObjectInfo(secUri);
     assertEquals("wrong uri", secUri, oi.getUri());
+    assertEquals("wrong doi", "10.1371/journal.pbio.0020294.g001", oi.getDoi());
     assertEquals("wrong title", "Figure 1", oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
     assertNull("unexpected superseded-by", oi.getSupersededBy());
@@ -205,6 +208,7 @@ public class ArticleServiceTest extends TestCase {
     secUri = uri + ".sv001";
     oi = service.getObjectInfo(secUri);
     assertEquals("wrong uri", secUri, oi.getUri());
+    assertEquals("wrong doi", "10.1371/journal.pbio.0020294.sv001", oi.getDoi());
     assertEquals("wrong title", "Video S1", oi.getTitle());
     assertNotNull("missing description", oi.getDescription());
     assertNull("unexpected superseded-by", oi.getSupersededBy());
@@ -243,6 +247,7 @@ public class ArticleServiceTest extends TestCase {
 
     ObjectInfo oi = service.getObjectInfo(art);
     assertEquals("wrong uri", art, oi.getUri());
+    assertEquals("wrong doi", "10.1371/journal.pbio.0020294", oi.getDoi());
     assertEquals("wrong title",
                  "Regulation of Muscle Fiber Type and Running Endurance by PPAR\u00A0",
                  oi.getTitle());
@@ -411,6 +416,15 @@ public class ArticleServiceTest extends TestCase {
     assertEquals("uri mismatch", "info:doi/10.1371/journal.pbio.0020294.g006",  oi[5].getUri());
     assertEquals("uri mismatch", "info:doi/10.1371/journal.pbio.0020294.sv001", oi[6].getUri());
     assertEquals("uri mismatch", "info:doi/10.1371/journal.pbio.0020294.sv002", oi[7].getUri());
+
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g001",  oi[0].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g002",  oi[1].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g003",  oi[2].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g004",  oi[3].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g005",  oi[4].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.g006",  oi[5].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.sv001", oi[6].getDoi());
+    assertEquals("doi mismatch", "10.1371/journal.pbio.0020294.sv002", oi[7].getDoi());
 
     assertEquals("label mismatch", "Figure 1", oi[0].getTitle());
     assertEquals("label mismatch", "Figure 2", oi[1].getTitle());

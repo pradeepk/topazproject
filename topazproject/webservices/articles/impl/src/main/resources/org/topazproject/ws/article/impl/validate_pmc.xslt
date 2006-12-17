@@ -19,6 +19,8 @@
      -    representations)
      -  * if the zip-format is 'AP', then all entries must have the same prefix with the
      -    article being named prefix.xml; otherwise the entries must be DOI's
+     -  * if a secondary object has an <object-id> with a DOI then that must match the
+     -    DOI we think it must have.
     -->
 
   <!-- Main entry point for validation. This invokes the individual checks. -->
@@ -28,6 +30,8 @@
     <xsl:call-template name="validate-links"/>
 
     <xsl:call-template name="validate-entries"/>
+
+    <xsl:call-template name="validate-dois"/>
   </xsl:template>
 
   <!-- validate the structure of the zip:
@@ -145,6 +149,21 @@
       <xsl:if test="$edoi != $article-doi and not($edoi = $refs)">
         <xsl:message>Found unreferenced entry in zip file: '<xsl:value-of select="@name"/>'</xsl:message>
       </xsl:if>
+    </xsl:for-each>
+  </xsl:template>
+
+  <!-- validate doi's of secondary objects: if the reference's context contains an
+     - <object-id> with a DOI id, then it must match our calculated DOI.
+     -->
+  <xsl:template name="validate-dois" as="empty-sequence()">
+    <xsl:for-each select="$fixed-article//*[@xlink:href and my:is-internal-link(@xlink:href)]">
+      <xsl:variable name="ctxt-obj" as="element()?"
+          select="(parent::* | self::supplementary-material)[last()]"/>
+        <xsl:if test="$ctxt-obj/object-id[@pub-id-type = 'doi']">
+          <xsl:if test="$ctxt-obj/object-id[@pub-id-type = 'doi'] != my:uri-to-doi(@xlink:href)">
+            <xsl:message>Found mismatched DOI in object-id in zip file: '<xsl:value-of select="$ctxt-obj/object-id[@pub-id-type = 'doi']"/>' != <xsl:value-of select="my:uri-to-doi(@xlink:href)"/></xsl:message>
+          </xsl:if>
+        </xsl:if>
     </xsl:for-each>
   </xsl:template>
 
