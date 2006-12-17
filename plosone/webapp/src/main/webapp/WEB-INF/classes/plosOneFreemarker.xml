@@ -119,11 +119,42 @@
   </page>
 
   <page>
+    <name>/article/emailArticle.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_forms.css</file>
+      <file>/css/pone_static.css</file>
+    </css>
+  </page>
+
+  <page>
+    <name>/article/emailSuccess.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_forms.css</file>
+      <file>/css/pone_static.css</file>
+    </css>
+  </page>
+
+  <page>
     <name>/feedback/feedbackEntry.ftl</name>
     <css>
       <file>/css/pone_screen.css</file>
       <file>/css/pone_iepc.css</file>
       <file>/css/pone_forms.css</file>
+      <file>/css/pone_static.css</file>
+    </css>
+  </page>
+
+  <page>
+    <name>/feedback/feedbackSuccess.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_forms.css</file>
+      <file>/css/pone_static.css</file>
     </css>
   </page>
   
@@ -133,6 +164,7 @@
       <file>/css/pone_screen.css</file>
       <file>/css/pone_iepc.css</file>
       <file>/css/pone_forms.css</file>
+      <file>/css/pone_static.css</file>      
     </css>
     <javascript>
       <file>/javascript/prototype.js</file>
@@ -167,6 +199,12 @@
 
   <page>
     <name>/user/editPlosAlerts.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_forms.css</file>
+      <file>/css/pone_static.css</file>      
+    </css>
     <javascript>
       <file>/javascript/prototype.js</file>
       <file>/javascript/browserDetection.js</file>
@@ -189,6 +227,7 @@
       <file>/css/pone_screen.css</file>
       <file>/css/pone_iepc.css</file>
       <file>/css/pone_forms.css</file>
+      <file>/css/pone_static.css</file>
     </css>
     <javascript>
       <file>/javascript/prototype.js</file>
