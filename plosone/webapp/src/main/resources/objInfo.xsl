@@ -4,7 +4,7 @@
 
 <xsl:output 
 			method="html"
-            indent="yes"
+            indent="no"
             encoding="UTF-8"
             omit-xml-declaration="yes"/>
 
@@ -132,10 +132,13 @@
 </xsl:template>
 
 <xsl:template match="inline-graphic">
-  <img>
-    <xsl:call-template name="make-src"/>
-    <xsl:call-template name="make-id"/>
-  </img>
+	<xsl:element name="img">
+	  <xsl:if test="@xlink:href">
+		<xsl:variable name="graphicDOI"><xsl:value-of select="@xlink:href"/></xsl:variable>
+		<xsl:attribute name="src"><xsl:value-of select="concat('fetchObject.action?uri=',$graphicDOI,'&amp;representation=PNG')"/></xsl:attribute>
+		<xsl:attribute name="border">0</xsl:attribute>
+	  </xsl:if>
+  </xsl:element>
 </xsl:template>
 
 <xsl:template match="inline-formula">
@@ -208,7 +211,7 @@
 </xsl:template>
 
 <xsl:template match="text()">
-	<xsl:value-of select="translate(., '&#x200A;', ' ') "/>
+	<xsl:value-of select="translate(., '&#x200A;&#8764;', ' ~') "/>
 </xsl:template>
 
 </xsl:stylesheet>
