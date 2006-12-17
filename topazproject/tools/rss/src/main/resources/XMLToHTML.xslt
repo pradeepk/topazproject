@@ -6,7 +6,7 @@
     doctype-public="-//W3C//DTD XHTML 1.0 Strict//EN" indent="yes" encoding="UTF-8"/>
 
   <xsl:template match="/">
-    <html xmlns="http://www.w3.org/TR/xhtml1">
+    <html>
       <head>
         <title>PLoS ONE List of Articles</title>
       </head>
@@ -19,8 +19,9 @@
   <xsl:template match="article">
     <a>
       <xsl:attribute name="href"><xsl:value-of select="$linkPrefix"/><xsl:value-of select="uri"/></xsl:attribute> 
-      <guid><xsl:value-of select="uri"/></guid>
+      <xsl:value-of select="uri"/>
     </a>
+    <p/>
   </xsl:template>
 
 </xsl:stylesheet>
