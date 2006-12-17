@@ -164,8 +164,32 @@
               <groupname>topaz</groupname>
             </mapping>
             <mapping>
+              <directory>/var/log/topaz/fedora</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+            </mapping>
+            <mapping>
               <directory>/usr/share/doc/topaz</directory>
               <documentation>true</documentation>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+            </mapping>
+            <mapping>
+              <directory>/var/lib/topaz</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+            </mapping>
+            <mapping>
+              <directory>/var/lib/topaz/data</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
+            </mapping>
+            <mapping>
+              <directory>/var/lib/topaz/data/fedora</directory>
               <filemode>755</filemode>
               <username>topaz</username>
               <groupname>topaz</groupname>
