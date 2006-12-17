@@ -29,5 +29,21 @@
   <logger name="tomcat">
     <level value="warn" />
   </logger>
+
+  <logger name="com.opensymphony.xwork.interceptor.TimerInterceptor">
+    <level value="info"/>
+  </logger>
+
+  <logger name="org.plos">
+    <level value="debug"/>
+  </logger>
+
+  <logger name="edu.yale">
+    <level value="debug"/>
+  </logger>
+  
+  <logger name="org.topazproject">
+    <level value="info"/>
+  </logger>
     
 </log4j:configuration>
