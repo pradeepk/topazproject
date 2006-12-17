@@ -1,3 +1,13 @@
+/* $$HeadURL::                                                                            $$
+ * $$Id$$
+ *
+ * Copyright (c) 2006 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
+
 package org.plos.admin.action;
 
 import java.io.File;
@@ -17,15 +27,15 @@ import org.plos.admin.service.DocumentManagementService;
 import com.opensymphony.webwork.interceptor.ParameterAware;
 
 public class PublishArchivesAction extends BaseAdminActionSupport {
-
-	private static final Log log = LogFactory.getLog(PublishArchivesAction.class);
-	private String[] articlesToPublish;
-	private String[] articlesToDelete;
-
+  
+  private static final Log log = LogFactory.getLog(PublishArchivesAction.class);
+  private String[] articlesToPublish;
+  private String[] articlesToDelete;
+  
   public void setArticlesToPublish(String[] articles) {
-		articlesToPublish = articles;
-	}
-
+    articlesToPublish = articles;
+  }
+  
   public void setArticlesToDelete(String[] articles) {
     articlesToDelete= articles;
   }
@@ -34,7 +44,7 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
     deleteArticles();
     publishArticles();
     return base();
-	}
+  }
   
   public void publishArticles () throws RemoteException, ApplicationException  {
     if (articlesToPublish != null){

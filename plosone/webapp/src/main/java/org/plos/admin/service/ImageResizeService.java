@@ -1,3 +1,13 @@
+/* $$HeadURL::                                                                            $$
+ * $$Id$$
+ *
+ * Copyright (c) 2006 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
+
 package org.plos.admin.service;
 
 import java.awt.RenderingHints;
@@ -28,22 +38,22 @@ import org.apache.commons.logging.LogFactory;
 import com.sun.media.jai.codec.PNGEncodeParam;
 
 public class ImageResizeService {
-
+  
   private static final Log log = LogFactory.getLog(ImageResizeService.class);
-
+  
   // private BufferedImage image;
   private RenderedOp srcImage;
-
+  
   private PNGEncodeParam encodeParam;
-
+  
   private boolean isCMYK = false;
-
+  
   private RenderingHints hints;
-
+  
   public ImageResizeService() {
     // ImageIO.setUseCache(true);
     // ImageIO.setCacheDirectory(null);
-
+    
     hints = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
         RenderingHints.VALUE_INTERPOLATION_BICUBIC);
     hints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
@@ -55,7 +65,7 @@ public class ImageResizeService {
     hints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
     // hints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
   }
-
+  
   /**
    * Store the contents of the image located by the url parameter into the object
    * 
@@ -75,13 +85,13 @@ public class ImageResizeService {
       }
     }
   }
-
+  
   private RenderedOp createScaledImage(float widthPercent, float heightPercent) {
     RenderedOp transformedImage;
-
+    
     // Scale the image to half its size in each direction
     ParameterBlock pb;
-
+    
     if ((isCMYK)
         && ((srcImage.getWidth() * widthPercent > 512) || (srcImage.getHeight() * heightPercent > 512))) {
       pb = new ParameterBlock();
@@ -92,7 +102,7 @@ public class ImageResizeService {
         log.debug("Applying BoxFilter");
       }
       transformedImage = JAI.create("BoxFilter", pb);
-
+      
       pb = new ParameterBlock();
       pb.addSource(transformedImage);
       pb.add(widthPercent);
@@ -118,15 +128,15 @@ public class ImageResizeService {
     }
     return transformedImage;
   }
-
+  
   private byte[] renderedOpToPNGByteArray(RenderedOp inImage) {
     byte[] array = new byte[inImage.getHeight() * inImage.getWidth()];
     ByteArrayOutputStream stream = new ByteArrayOutputStream(array.length);
     JAI.create("encode", inImage, stream, "PNG");
     return stream.toByteArray();
-
+    
   }
-
+  
   private byte[] scaleFixHeight(float fixHeight) {
     int height = srcImage.getHeight();
     float scale;
@@ -143,7 +153,7 @@ public class ImageResizeService {
     }
     return renderedOpToPNGByteArray(newImage);
   }
-
+  
   private byte[] scaleFixWidth(float fixWidth) {
     int width = srcImage.getWidth();
     float scale;
@@ -160,15 +170,15 @@ public class ImageResizeService {
     }
     return renderedOpToPNGByteArray(newImage);
   }
-
+  
   private byte[] scaleLargestDim(float oneSide) {
     if (log.isDebugEnabled()) {
       log.debug("oneSide = " + oneSide);
     }
-
+    
     int height = srcImage.getHeight();
     int width = srcImage.getWidth();
-
+    
     float scale;
     if ((height > width) && (height > oneSide)) {
       scale = oneSide / height;
@@ -185,7 +195,7 @@ public class ImageResizeService {
     }
     return renderedOpToPNGByteArray(newImage);
   }
-
+  
   /**
    * Scale the image to 70 pixels in width into PNG
    * 
@@ -196,7 +206,7 @@ public class ImageResizeService {
   public byte[] getSmallImage() throws FileNotFoundException, IOException {
     return scaleFixWidth(70.0f);
   }
-
+  
   /**
    * Scale the image to at most 600 pixels in either direction into a PNG
    * 
@@ -207,7 +217,7 @@ public class ImageResizeService {
   public byte[] getMediumImage() throws FileNotFoundException, IOException {
     return scaleLargestDim(600.0f);
   }
-
+  
   /**
    * Don't scale the image, just return a PNG version of it
    * 
@@ -218,7 +228,7 @@ public class ImageResizeService {
   public byte[] getLargeImage() throws FileNotFoundException, IOException {
     return renderedOpToPNGByteArray(srcImage);
   }
-
+  
   /**
    * 
    * 
@@ -229,20 +239,20 @@ public class ImageResizeService {
   public byte[] getPageWidthImage() throws FileNotFoundException, IOException {
     return scaleFixWidth(400.0f);
   }
-
+  
   public byte[] getInlineImage() throws FileNotFoundException, IOException {
     return scaleFixHeight(21.0f);
   }
-
+  
   private RenderedOp convertCMYKtoRGB(RenderedOp op) {
     try {
       ParameterBlockJAI pb;
       ICC_Profile cmyk_profile = ICC_Profile.getInstance("CMYK.pf"); // CMYK.pf
-
+      
       ICC_ColorSpace cmyk_icp = new ICC_ColorSpace(cmyk_profile);
       ColorModel cmyk_cm = RasterFactory.createComponentColorModel(op.getSampleModel()
           .getDataType(), cmyk_icp, false, false, Transparency.OPAQUE);
-
+      
       ImageLayout cmyk_il = new ImageLayout();
       cmyk_il.setColorModel(cmyk_cm);
       RenderingHints cmyk_hints = new RenderingHints(JAI.KEY_IMAGE_LAYOUT, cmyk_il);
@@ -264,6 +274,6 @@ public class ImageResizeService {
       ex.printStackTrace();
     }
     return op;
-
+    
   }
 }
