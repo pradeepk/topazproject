@@ -11,4 +11,4 @@
 # Load the common functions
 . /usr/local/topaz/bin/tools
 
-java -cp `getJars` AlertsInfo
+java -cp `getJars` AlertsInfo $@
