@@ -32,18 +32,19 @@ topaz.responsePanel = {
     
     dojo.dom.insertAfter(this.newPanel, this.upperContainer, false);
 
+    if (this.previousUpperContainer) this.previousUpperContainer.style.display = "block";
+
     if (targetObj.requestType == "flag"){
-      if (this.previousUpperContainer) this.previousUpperContainer.style.display = "block";
       this.resetFlaggingForm(targetObj);
     }
     
     this.newPanel.style.display = "block";
-    
+
     if (threadTitle) {
       this.targetForm.responseTitle.value = 'RE: ' + threadTitle;
       this.targetForm.commentTitle.value = 'RE: ' + threadTitle;
     }
-    
+        
     this.previousUpperContainer = this.upperContainer;
   },
   
@@ -106,7 +107,6 @@ function submitResponseInfo(targetObj) {
      //topaz.errorConsole.writeToConsole(err);
      //topaz.errorConsole.show();
      topaz.formUtil.enableFormFields(targetForm);
-     //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
      ldc.hide();
      
      return false;
@@ -174,6 +174,7 @@ function submitResponseInfo(targetObj) {
          window.location.href = namespace + "/annotation/listThread.action?inReplyTo=" + rootId +"&root=" + rootId;
        }
        else {
+         dojo.dom.insertAfter(togglePanel.newPanel, document.lastChild, false);
          getDiscussion(targetObj);
          topaz.responsePanel.hide();
          topaz.formUtil.textCues.reset(targetForm.responseArea, targetObj.responseCue);
