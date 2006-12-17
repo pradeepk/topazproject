@@ -1,29 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-  $HeadURL::                                                                                       $
-  $Id$
-
-  Copyright (c) 2006 by Topaz, Inc.
-  http://topazproject.org
-
-  Licensed under the Educational Community License version 1.0
-  http://opensource.org/licenses/ecl1.php
-
-
-  This is a wrapper around the FedoraGenericSearch source distribution. The primary
-  purpose of wroapping the source was because the binary distribution was soley as
-  a WAR file and topaz needs this stuff separated (as it is in the source dist)
-  into a useable JAR file. Doing it as a source-level module also  makes it easier
-  to have consistent dependencies.
--->
-<project
-  xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>info.fedora</groupId>
   <artifactId>fedoragsearch-server</artifactId>
   <packaging>jar</packaging>
-  <version>2.1.1-t1-SNAPSHOT</version>
+  <version>2.1.1-t1</version>
   <name>fedoragsearch server implementation</name>
   <url>http://defxws2006.cvt.dk/fedoragsearch/</url>
 
@@ -148,8 +128,7 @@
             <phase>process-classes</phase>
             <configuration>
               <tasks>
-                <copy todir="${project.build.directory}/classes" 
-                  file="${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}"/>
+                <copy todir="${project.build.directory}/classes" file="${project.build.directory}/generated-sources/axistools/java2wsdl/${wsdl.filename}" />
               </tasks>
             </configuration>
             <goals>

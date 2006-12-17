@@ -1,17 +1,4 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-  $HeadURL::                                                                              $
-  $Id$
-
-  Copyright (c) 2006 by Topaz, Inc.
-  http://topazproject.org
-
-  Licensed under the Educational Community License version 1.0
-  http://opensource.org/licenses/ecl1.php
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <artifactId>mulgara-service</artifactId>
@@ -21,7 +8,7 @@
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topazproject-libs</artifactId>
-    <version>0.5-SNAPSHOT</version>
+    <version>0.5-rc1</version>
   </parent>
 
   <dependencies>
@@ -91,36 +78,34 @@
             </goals>
             <configuration>
               <tasks>
-                <taskdef resource="org/apache/maven/artifact/ant/antlib.xml"
-                  classpathref="maven.plugin.classpath"/>
+                <taskdef resource="org/apache/maven/artifact/ant/antlib.xml" classpathref="maven.plugin.classpath" />
 
                 <dependencies filesetId="mulgara-libs" useScope="runtime">
-                  <dependency groupId="org.mulgara" artifactId="mulgara-lite" version="1.0.1-t1"/>
+                  <dependency groupId="org.mulgara" artifactId="mulgara-lite" version="1.0.1-t1" />
                 </dependencies>
 
-                <property name="webinf"
-                    location="${project.build.directory}/${project.build.finalName}/WEB-INF"/>
+                <property name="webinf" location="${project.build.directory}/${project.build.finalName}/WEB-INF" />
 
                 <unjar dest="${webinf}" overwrite="false">
-                  <fileset refid="mulgara-libs"/>
+                  <fileset refid="mulgara-libs" />
                   <patternset>
-                    <include name="lib/*.jar"/>
-                    <exclude name="lib/*rmi*"/>
-                    <exclude name="lib/*beep*"/>
-                    <exclude name="lib/*axis*"/>
-                    <exclude name="lib/dtd-base*"/>
-                    <exclude name="lib/log4j*"/>
-                    <exclude name="lib/commons-logging*"/>
-                    <exclude name="lib/javax.servlet*"/>
-                    <exclude name="lib/*jetty*"/>
+                    <include name="lib/*.jar" />
+                    <exclude name="lib/*rmi*" />
+                    <exclude name="lib/*beep*" />
+                    <exclude name="lib/*axis*" />
+                    <exclude name="lib/dtd-base*" />
+                    <exclude name="lib/log4j*" />
+                    <exclude name="lib/commons-logging*" />
+                    <exclude name="lib/javax.servlet*" />
+                    <exclude name="lib/*jetty*" />
                   </patternset>
                 </unjar>
                 <unjar dest="${webinf}/classes" overwrite="false">
-                  <fileset refid="mulgara-libs"/>
+                  <fileset refid="mulgara-libs" />
                   <patternset>
-                    <include name="org/**"/>
-                    <include name="com/**"/>
-                    <include name="javax/**"/>
+                    <include name="org/**" />
+                    <include name="com/**" />
+                    <include name="javax/**" />
                   </patternset>
                 </unjar>
               </tasks>
