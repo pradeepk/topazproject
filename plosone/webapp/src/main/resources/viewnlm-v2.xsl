@@ -844,6 +844,10 @@
 			</span>
 		</h5>
 		<xsl:apply-templates select="caption/node()[not(self::title)]"/>
+    <xsl:if test="object-id[@pub-id-type='doi']">
+      <xsl:apply-templates select="object-id[@pub-id-type='doi']"/>
+    </xsl:if>
+		
 	</div>
 </xsl:template>
 
@@ -1036,13 +1040,14 @@ Make article meta data
 				<xsl:apply-templates select="*[not(self::name)
 										   and not(self::collab)
 										   and not(self::xref)
-										   and not(self::degrees)]"
+										   and not(self::degrees)
+										   and not(self::role)]"
 									 mode="front"/>
 				<xsl:variable name="matchto" select="xref/@rid"/>
-				<xsl:for-each select="../following-sibling::aff[@id=$matchto]">
+        <xsl:apply-templates select="../following-sibling::aff[@id=$matchto]" mode="editor"/>
+<!--
 					<xsl:apply-templates select="institution" mode="aff-outside-contrib"/><xsl:text>, </xsl:text>
-					<xsl:apply-templates select="addr-line" mode="aff-outside-contrib"/>
-				 </xsl:for-each>
+					<xsl:apply-templates select="addr-line" mode="aff-outside-contrib"/>-->
 			</xsl:for-each> <!-- end of contrib -->
 		</p>	
 		<p>
@@ -2183,27 +2188,31 @@ Make article meta data
 
     <!-- element-specific handling before content: -->
     <xsl:choose>
-
-      <!-- alt-text gets a generated label-->
-      <xsl:when test="self::alt-text">
-        <xsl:if test="not(ancestor::fig)
+      <xsl:when test="ancestor::disp-formula">
+        (<xsl:apply-templates/>)
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:choose>
+          <!-- alt-text gets a generated label-->
+          <xsl:when test="self::alt-text">
+            <xsl:if test="not(ancestor::fig)
                   and not(ancestor::table)"><br/></xsl:if>
 
-        <span class="gen">
-          <xsl:call-template name="make-id"/>
-          <xsl:text>Alternate Text: </xsl:text>
-        </span>
-      </xsl:when>
+            <span class="gen">
+              <xsl:call-template name="make-id"/>
+              <xsl:text>Alternate Text: </xsl:text>
+            </span>
+          </xsl:when>
 
-      <!-- attrib is preceded by spaces plus em-dash -->
-      <xsl:when test="self::attrib">
-        <xsl:text>&#8194;&#8194;&#8212;</xsl:text>
-      </xsl:when>
+          <!-- attrib is preceded by spaces plus em-dash -->
+          <xsl:when test="self::attrib">
+            <xsl:text>&#8194;&#8194;&#8212;</xsl:text>
+          </xsl:when>
+        </xsl:choose>
+        <xsl:apply-templates/>
+        <xsl:text>. </xsl:text>
+      </xsl:otherwise>
     </xsl:choose>
-
-    <xsl:apply-templates/>
-    <xsl:text>. </xsl:text>
-
     <!-- element-specific handling after content: -->
     <xsl:choose>
 
@@ -2211,6 +2220,7 @@ Make article meta data
       <xsl:when test="self::alt-text | self::long-desc"><br/></xsl:when>
 
     </xsl:choose>
+    
 
 </xsl:template>
 
@@ -2245,11 +2255,9 @@ Make article meta data
     </xsl:otherwise>
   </xsl:choose>
 
-  <xsl:text>: </xsl:text>
+  <xsl:text>:</xsl:text>
   <xsl:apply-templates/>
-  <xsl:text>. </xsl:text>
-  <br/>
-</xsl:template>
+ </xsl:template>
 
 
 <!-- ============================================================= -->
@@ -3847,6 +3855,10 @@ Make article meta data
  </xsl:choose>
 </xsl:template>
 
+<xsl:template match="aff" mode="editor">
+    <xsl:apply-templates/>
+</xsl:template>
+
 <xsl:template match="aff">
   <xsl:variable name="nodetotal" select="count(../*)"/>
   <xsl:variable name="position" select="position()"/>
@@ -5359,7 +5371,7 @@ Make article meta data
 </xsl:template>
 
 <xsl:template match="text()">
-	<xsl:value-of select="translate(., '&#x200A;', ' ') "/>
+	<xsl:value-of select="translate(., '&#x200A;&#8764;', ' ~') "/>
 </xsl:template>
 
 <!-- ============================================================= -->
