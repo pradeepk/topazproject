@@ -1,4 +1,6 @@
-<#include "/discussion/threaded_replies.ftl">
+<div id="discussionContainer">
+	<#include "/discussion/threaded_replies.ftl">
+</div>
 
 <#include "/widget/discussionResponse.ftl">
 <#include "/widget/discussionFlag.ftl">

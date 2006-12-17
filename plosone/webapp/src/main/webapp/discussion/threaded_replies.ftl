@@ -3,7 +3,6 @@
 <#else>
 	<#assign loginURL = "${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}">
 </#if>
-<div id="discussionContainer">
 	<#macro writeReplyDetails reply replyToAuthorId replyToAuthorName>
   	<@ww.url namespace="/user" includeParams="none" id="showUserURL" action="showUser" userId="${reply.creator}"/>
   	<@ww.url namespace="/user" includeParams="none" id="authorURL" action="showUser" userId="${replyToAuthorId}"/>
@@ -104,7 +103,7 @@
 				<p><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article</p>
 	
 	<!-- end : main contents -->
-</div>
+
 
 
 
