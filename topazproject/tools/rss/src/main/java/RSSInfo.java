@@ -62,6 +62,12 @@ import javax.xml.transform.TransformerConfigurationException;
  *        mvn -o -f topazproject/tools/rss/pom.xml -DRSSInfo \
  *                 -Dargs="-uri <Topaz article uri> -xslt <xlst file name>"
  *
+ * To generate a pseudo crawl page
+ *
+ *        mvn -o -f topazproject/tools/rss/pom.xml -DRSSInfo \
+ *                 -Dargs="-uri <Topaz article uri> -crawl"
+ *
+ *
  * @author Amit Kapoor
  */
 public class RSSInfo {
@@ -84,6 +90,7 @@ public class RSSInfo {
 
     OptionGroup xform = new OptionGroup();
     xform.addOption(new Option("rss","Transform using inbuilt RSS stylesheet"));
+    xform.addOption(new Option("crawl","Create HTML output page for crawler"));
     xform.addOption(OptionBuilder.withArgName("XSLT stylesheet file").hasArg().
         withValueSeparator(' ').withDescription("Transform the received XML with XSLT").
         create("xslt"));
@@ -215,6 +222,8 @@ public class RSSInfo {
       String xslt = null;
       if (line.hasOption("rss")) {
         xslt = rss.getClass().getResource("XMLToRSS.xslt").toString();
+      } else if (line.hasOption("crawl")) {
+        xslt = rss.getClass().getResource("XMLToHTML.xslt").toString();
       } else if (line.hasOption("xslt")) {
         xslt = line.getOptionValue("xslt");
       }
