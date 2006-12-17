@@ -68,7 +68,7 @@ public class AlertsInfo {
     "             $prefn <topaz:prefValue> $alertsCategories) " +
     " from ${PREFS} " +
     "   where $user <topaz:hasPreferences> $pref " +
-    "   and $pref <dc_terms:mediator> 'alerts' " +
+    "   and $pref <dc_terms:mediator> 'topaz-plosone' " +
     " order by $user;";
 
   private ItqlHelper itql;
