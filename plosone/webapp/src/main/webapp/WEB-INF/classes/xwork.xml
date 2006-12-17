@@ -449,6 +449,7 @@
     <action name="getCommentary" class="org.plos.annotation.action.GetCommentaryAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/discussion/commentary.ftl</param>
+        <param name="noCache">true</param>
       </result>
     </action>
 
