@@ -1,6 +1,7 @@
-var djConfig = {
+/*var djConfig = {
 	isDebug: true,
 	debugContainerId : "dojoDebug",
-	debugAtAllCosts: false
-};
+	debugAtAllCosts: false,
+  bindEncoding: "UTF-8"
+};*/
 

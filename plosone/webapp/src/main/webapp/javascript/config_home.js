@@ -1,3 +1,10 @@
+/*var djConfig = {
+	isDebug: true,
+	debugContainerId : "dojoDebug",
+	debugAtAllCosts: false,
+  bindEncoding: "UTF-8"
+};*/
+
 var tabsListMap = new Array();
 
 tabsListMap[tabsListMap.length] = {tabKey:    "recentlyPublished",

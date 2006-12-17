@@ -1,9 +1,9 @@
-var djConfig = {
+/*var djConfig = {
 	isDebug: false,
 	debugContainerId : "dojoDebug",
 	debugAtAllCosts: false,
   bindEncoding: "UTF-8"
-};
+};*/
 
 var annotationConfig = {
 	articleContainer: "articleContainer",

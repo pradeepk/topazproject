@@ -5,6 +5,13 @@
 	<#else>
   	var loggedIn = false;
 	</#if>
+
+	var djConfig = {
+		isDebug: false,
+		debugContainerId : "dojoDebug",
+		debugAtAllCosts: false,
+	  	bindEncoding: "UTF-8"
+	};
 </script>
 <#list freemarker_config.getJavaScript(templateFile) as x>
 	<#if x?ends_with(".ftl")>
