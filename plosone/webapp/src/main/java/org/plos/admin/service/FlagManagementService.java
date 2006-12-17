@@ -3,6 +3,8 @@ package org.plos.admin.service;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
@@ -38,9 +40,9 @@ public class FlagManagementService {
 		ReplyInfo[] replyinfos;
 		Flag flags[] = null;
 		String creatorUserName;					
-
+    
 		annotationinfos = annotationWebService.listAnnotations(null, FLAG_MASK| PUBLIC_MASK);
-		replyinfos = replyWebService.listReplies(null, FLAG_MASK ); // Bug - not marked with public flag for now
+		replyinfos = replyWebService.listReplies(null, FLAG_MASK| PUBLIC_MASK ); // Bug - not marked with public flag for now
 		log.debug("There are " + annotationinfos.length + " annotations with flags");
 		log.debug("There are " + replyinfos.length + " replies with flags");		
 		for (AnnotationInfo annotationinfo : annotationinfos) {
@@ -52,8 +54,7 @@ public class FlagManagementService {
 					continue;
 				}
 				try {
-					creatorUserName = userService.getUsernameByTopazId(flag
-							.getCreator());
+					creatorUserName = userService.getUsernameByTopazId(flag.getCreator());
 				} catch (ApplicationException ae) { // Bug ?
 					creatorUserName = "anonymous";
 				}
@@ -100,8 +101,9 @@ public class FlagManagementService {
 				commentrecords.add(fcr);
 			}
 		}
-		return commentrecords;		
-	}
+		Collections.sort(commentrecords);		
+		return commentrecords;
+  }
 
 	public void setAnnotationWebService(
 			AnnotationWebService annotationWebService) {

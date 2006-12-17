@@ -1,24 +1,23 @@
 package org.plos.admin.action;
 
 import java.rmi.RemoteException;
-import java.util.Iterator;
 
-import org.apache.commons.collections.iterators.ArrayIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.annotation.service.AnnotationService;
-import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Flag;
-import org.plos.annotation.service.Reply;
 import org.plos.annotation.service.ReplyWebService;
 import org.topazproject.ws.annotation.NoSuchAnnotationIdException;
+import org.topazproject.ws.annotation.ReplyInfo;
+
+import com.opensymphony.webwork.components.If;
 
 public class ProcessFlagsAction extends BaseAdminActionSupport {
 
 	private static final Log log = LogFactory.getLog(ProcessFlagsAction.class);
-	private String commentsToUnflag = "";
-	private String commentsToDelete = "";
+	private String[] commentsToUnflag;
+	private String[] commentsToDelete;
 	private AnnotationService annotationService;	
 	private ReplyWebService replyWebService;
 	
@@ -27,34 +26,36 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
 		this.annotationService = annotationService;
 	}
 
-	public void setCommentsToUnflag(String comments) {
+	public void setCommentsToUnflag(String[] comments) {
 		commentsToUnflag = comments;
 	}
 	
-	public void setCommentsToDelete(String comments) {
+	public void setCommentsToDelete(String[] comments) {
 		commentsToDelete = comments;
 	}
 
 	public String execute() throws RemoteException, ApplicationException, NoSuchAnnotationIdException  {
-		Iterator deletes = new ArrayIterator(commentsToDelete.split(","));
-		Iterator unflags = new ArrayIterator(commentsToUnflag.split(","));
-		String target;
+		String[] segments;
 		
-		while (unflags.hasNext()) {
-			target = ((String) unflags.next());
-			if (target.length() > 0) { //Stupid ArrayIterator
-				String segments[] = target.split("_");
-				deleteFlag(segments[0], segments[1]);
-			}
-		}
-		
-		while (deletes.hasNext()) {
-			target = ((String) deletes.next());
-			if (target.length() > 0) {
-				String segments[] = target.split("_");
-				deleteTarget(segments[0], segments[1]);
-			}
-		}
+    if (commentsToUnflag != null){
+      for (String toUnFlag : commentsToUnflag){
+        if (log.isDebugEnabled()){
+          log.debug("Found comment to unflag: " + toUnFlag);
+        }
+        segments = toUnFlag.split("_");
+        deleteFlag(segments[0], segments[1]);
+      }
+    }
+    
+    if (commentsToDelete != null) {
+      for (String toDelete : commentsToDelete) {
+        if (log.isDebugEnabled()) {
+          log.debug("Found comment to delete: " + toDelete);
+        }
+        segments = toDelete.split("_");
+        deleteTarget(segments[0], segments[1]);
+      }
+    }
 		return base();
 	}
 
@@ -86,30 +87,39 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
 	 * @throws RemoteException 
 	 */
 	private void deleteTarget(String root, String target) throws ApplicationException, RemoteException, NoSuchAnnotationIdException {
-		Reply[] replies;		
+		ReplyInfo[] replies;		
 		Flag[] flags = annotationService.listFlags(target);
 		boolean isReply = root.length() > 0;
 		
-		log.debug("Deleting " + target + " Root is " + root);
-		log.debug(target + " has " + flags.length + " flags - deleting them");
-		for (Flag flag: flags) {
-			if (flag.isDeleted()) // A bug in infrastructure ?
-				continue;
-			deleteFlag(target, flag.getId());
+    if (log.isDebugEnabled()) {
+      log.debug("Deleting Target" + target + " Root is " + root);
+      log.debug(target + " has " + flags.length + " flags - deleting them");
+    }
+   for (Flag flag: flags) {
+     try {
+       deleteFlag(target, flag.getId());
+     } catch (Exception e) {
+       //keep going through the list even if there is an exception
+       if (log.isWarnEnabled()) {
+         log.warn("Couldn't delete flag: " + flag.getId(), e);
+       }
+     }
 		}
 
 		if (isReply) { // it's a reply
-			replies = annotationService.listReplies(root, target);
+			replies = annotationService.listAllRepliesFlattened(root, target);
 		} else {
-			replies = annotationService.listReplies(target, target);
+			replies = annotationService.listAllRepliesFlattened(target, target);
 		}
 		
-		log.debug(target + " has " + replies.length + " replies. Removing their flags");
-		for (Reply reply : replies) {
-			if (reply.isDeleted())
-					continue;
+    if (log.isDebugEnabled()) {
+      log.debug(target + " has " + replies.length + " replies. Removing their flags");
+    }
+		for (ReplyInfo reply : replies) {
 			flags = annotationService.listFlags(reply.getId());
-			log.debug(">>>>>>>> reply " + reply.getId() + " has " + flags.length + " flags");
+			if (log.isDebugEnabled()) {
+			  log.debug("Reply " + reply.getId() + " has " + flags.length + " flags");
+      }
 			for (Flag flag: flags) {
 				if (flag.isDeleted())
 					continue;
@@ -119,12 +129,16 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
 		
 		if (isReply) {
 			replyWebService.deleteReplies(target); // Bulk delete
-			annotationService.deleteReply(target);
-			log.debug("Deleted reply: " + target);			
+			//annotationService.deleteReply(target);
+			if (log.isDebugEnabled()) {
+			  log.debug("Deleted reply: " + target);
+      }
 		} else {
 			replyWebService.deleteReplies(target, target);
 			annotationService.deletePublicAnnotation(target);
-			log.debug("Deleted annotation: " + target);			
+			if (log.isDebugEnabled()) {
+			  log.debug("Deleted annotation: " + target);
+      }
 		}
 	}
 
@@ -133,10 +147,14 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
 		annotationService.deleteFlag(flag);
 		// Deal with 'flagged' status
 		Flag[] flags = annotationService.listFlags(target);
-		log.debug(">>>>> deleting flag: " + flag + " on target: " + target);
-		log.debug("Checking for flags on target: " + target + " There are " + flags.length + " flags remaining");
+		if (log.isDebugEnabled()) {
+		  log.debug("Deleting flag: " + flag + " on target: " + target);
+		  log.debug("Checking for flags on target: " + target + ". There are " + flags.length + " flags remaining");
+    }
 		if (0 == flags.length) {
-			log.debug("Setting status to unflagged");
+			if (log.isDebugEnabled()) {
+			  log.debug("Setting status to unflagged");
+      }
 			if (isAnnotation(target)) {
 				annotationService.unflagAnnotation(target);
 			} else if (isReply(target)) {
@@ -146,9 +164,10 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
 				log.error(msg);
 				throw new ApplicationException(msg);
 			}
-		} else
+		} else {
 			log.debug("Flags exist. Target will remain marked as flagged");
-	}
+    }
+  }
 	
 	private boolean isReply(String target) {
 		String segments[] = target.split("/");

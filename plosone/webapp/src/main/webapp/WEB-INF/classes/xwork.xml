@@ -116,9 +116,6 @@
       <result name="success">/article/mostCommented.ftl</result>
     </action>
 
-    <action name="oldMenu">
-      <result>/WEB-INF/pages/todo.ftl</result>
-    </action>
 
     <action name="testFreemarker">
       <result name="success" type="plosOneFreemarker">
@@ -445,6 +442,7 @@
     <action name="listThread" class="org.plos.annotation.action.ListReplyAction" method="listAllReplies">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/discussion/discussion.ftl</param>
+        <param name="noCache">true</param>
       </result>
     </action>
 
@@ -455,7 +453,10 @@
     </action>
 
     <action name="listThreadRefresh" class="org.plos.annotation.action.ListReplyAction" method="listAllReplies">
-      <result name="success">/discussion/threaded_replies.ftl</result>
+      <result name="success" type="plosOneFreemarker">
+        <param name="location">/discussion/threaded_replies.ftl</param>
+        <param name="noCache">true</param>
+      </result>
     </action>
 
     <action name="getReply" class="org.plos.annotation.action.GetReplyAction">
@@ -741,9 +742,16 @@
   
   <package name="admin" extends="default" namespace="/admin">
     <default-interceptor-ref name="plosAdminStack" />
+
+    <action name="oldMenu">
+      <result>/WEB-INF/pages/todo.ftl</result>
+    </action>            
                                
   	<action name="adminTop" class="org.plos.admin.action.AdminTopAction">
-  	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
+      <result name="success" type="plosOneFreemarker">
+        <param name="location">/WEB-INF/pages/admin/adminTop.ftl</param>
+        <param name="noCache">true</param>
+      </result>
   	</action> 	
 
   	<action name="ingestArchives" class="org.plos.admin.action.IngestArchivesAction">
@@ -753,7 +761,7 @@
   	<action name="publishArchives" class="org.plos.admin.action.PublishArchivesAction">
   	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
   	</action> 
-  	
+ 	
   	<action name="processFlags" class="org.plos.admin.action.ProcessFlagsAction">
   	  	<result name="success">/WEB-INF/pages/admin/adminTop.ftl</result>
   	</action> 

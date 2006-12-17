@@ -32,6 +32,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import static org.plos.action.HomePageAction.WEEK_ARTICLE_CACHE_KEY;
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.SecondaryObject;
@@ -44,6 +45,8 @@ import org.topazproject.ws.article.NoSuchArticleIdException;
 import org.topazproject.ws.article.NoSuchObjectIdException;
 import org.topazproject.ws.article.ObjectInfo;
 import org.topazproject.ws.article.RepresentationInfo;
+
+import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
 /**
  * 
@@ -64,7 +67,9 @@ public class DocumentManagementService {
   private CrossRefPosterService crossRefPosterService;
 
   private File xslTemplate;
-
+  
+  private GeneralCacheAdministrator articleCacheAdministrator;
+  
   public DocumentManagementService() {
   }
 
@@ -373,6 +378,7 @@ public class DocumentManagementService {
       throw new Exception("CrossRef status returned " + new Integer(200).toString());
     }
     articleWebService.setState(uri, Article.ST_ACTIVE);
+    articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
   }
 
   private static class PngDataSource implements DataSource {
@@ -405,5 +411,19 @@ public class DocumentManagementService {
     public String getName() {
       return "png";
     }
+  }
+
+  /**
+   * @return Returns the articleCacheAdministrator.
+   */
+  public GeneralCacheAdministrator getArticleCacheAdministrator() {
+    return articleCacheAdministrator;
+  }
+
+  /**
+   * @param articleCacheAdministrator The articleCacheAdministrator to set.
+   */
+  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
+    this.articleCacheAdministrator = articleCacheAdministrator;
   }
 }

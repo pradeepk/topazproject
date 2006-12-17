@@ -310,6 +310,24 @@ public class AnnotationService extends BaseConfigurableService {
     return listAllReplies(root, inReplyTo, null);
   }
   
+  /**
+   * Get a list of all replies in a flat array
+   * @param root the discussion thread this resource is part of
+   * @param inReplyTo the resource whose replies are to be listed
+   * @throws ApplicationException ApplicationException
+   * @return a list of all replies
+   */
+  public ReplyInfo[] listAllRepliesFlattened(final String root, final String inReplyTo)throws ApplicationException {
+    try {
+      return replyWebService.listAllReplies(root, inReplyTo);
+    } catch (RemoteException e) {
+      throw new ApplicationException(e);
+    } catch (NoSuchIdException e) {
+      throw new ApplicationException(e);
+    }
+  }
+  
+  
   
   /**
    * Get a list of all replies

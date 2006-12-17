@@ -46,8 +46,8 @@ public class HomePageAction extends BaseActionSupport {
   private ArticleInfo[][] articlesByCategory;
   private boolean categoriesAreInitialized = false;
   private GeneralCacheAdministrator articleCacheAdministrator;
-  private static final String WEEK_ARTICLE_CACHE_KEY = "WEEK_ARTICLE_LIST";
-  private static final int WEEK_ARTICLE_CACHE_DURATION = 7200; //2hrs  
+  public static final String WEEK_ARTICLE_CACHE_KEY = "WEEK_ARTICLE_LIST";
+  private static final int WEEK_ARTICLE_CACHE_DURATION = 43200; //12hrs  
   private static final String MOST_COMMENTED_CACHE_KEY = "MOST_COMMENTED_LIST";
   private static final int MOST_COMMENTED_CACHE_DURATION = 3600;  //1 hr
   

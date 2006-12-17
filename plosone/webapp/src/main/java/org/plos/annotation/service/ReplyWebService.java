@@ -10,10 +10,13 @@
 package org.plos.annotation.service;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
-import com.opensymphony.oscache.base.NeedsRefreshException;
 
 import static org.plos.annotation.service.BaseAnnotation.DELETE_MASK;
 import static org.plos.annotation.service.BaseAnnotation.FLAG_MASK;
+import static org.plos.annotation.service.BaseAnnotation.PUBLIC_MASK;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.ws.annotation.NoSuchAnnotationIdException;
 import org.topazproject.ws.annotation.Replies;
@@ -32,7 +35,8 @@ import java.rmi.RemoteException;
 public class ReplyWebService extends BaseAnnotationService {
   private Replies replyService;
   private GeneralCacheAdministrator articleCacheAdministrator;
-
+  private static final Log log = LogFactory.getLog(ReplyWebService.class);
+  
   public void init() throws IOException, URISyntaxException, ServiceException {
     final ProtectedService protectedService = getProtectedService();
     replyService = RepliesClientFactory.create(protectedService);
@@ -86,6 +90,9 @@ public class ReplyWebService extends BaseAnnotationService {
 
   public void deleteReplies(final String target) throws RemoteException, NoSuchAnnotationIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
+    if (log.isDebugEnabled()) {
+	    log.debug("deleting reply and descendants with id: " + target);
+	    }
     replyService.deleteReplies(target);
   }
   
@@ -144,7 +151,7 @@ public class ReplyWebService extends BaseAnnotationService {
    */
   public void setFlagged(final String replyId) throws NoSuchAnnotationIdException, RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    replyService.setReplyState(replyId, FLAG_MASK);
+    replyService.setReplyState(replyId, FLAG_MASK | PUBLIC_MASK);
   }
 
   /**

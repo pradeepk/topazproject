@@ -1,6 +1,6 @@
 package org.plos.admin.service;
 
-public class FlaggedCommentRecord {
+public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
 
 	private String root;
 	private String creator;
@@ -72,4 +72,18 @@ public class FlaggedCommentRecord {
 	public String getCreatorid() {
 		return creatorid;
 	}
+  
+  public int compareTo (FlaggedCommentRecord o) {
+    if (created == null) {
+      if ((o == null) || (o.getCreated() == null)) {
+        return 0;
+      } else {
+        return -1;
+      }
+    }
+    if ((o == null) || (o.getCreated() == null)) {
+      return 1;
+    }
+    return created.compareTo(o.getCreated());
+  }
 }

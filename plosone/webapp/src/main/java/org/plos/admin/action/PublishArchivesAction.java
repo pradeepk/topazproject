@@ -19,24 +19,54 @@ import com.opensymphony.webwork.interceptor.ParameterAware;
 public class PublishArchivesAction extends BaseAdminActionSupport {
 
 	private static final Log log = LogFactory.getLog(PublishArchivesAction.class);
-	private String articlesToPublish;
-	
-	public void setArticlesToPublish(String articles) {
+	private String[] articlesToPublish;
+	private String[] articlesToDelete;
+
+  public void setArticlesToPublish(String[] articles) {
 		articlesToPublish = articles;
 	}
-	
-	public String execute() throws RemoteException, ApplicationException  {
-		Iterator articles = new ArrayIterator(articlesToPublish.split(","));
-		while (articles.hasNext()) {
-			String article = ((String) articles.next()).trim();
-			try {
-				getDocumentManagementService().publish(article);
-				addActionMessage("Published: " + article);
-			} catch (Exception e) {
-				addActionMessage("Error publishing: " + article + " - " + e.toString());
-				e.printStackTrace();
-			}
-		}
-		return base();
+
+  public void setArticlesToDelete(String[] articles) {
+    articlesToDelete= articles;
+  }
+  
+  public String execute() throws RemoteException, ApplicationException  {
+    deleteArticles();
+    publishArticles();
+    return base();
 	}
+  
+  public void publishArticles () throws RemoteException, ApplicationException  {
+    if (articlesToPublish != null){
+      for (String article : articlesToPublish) {
+        try {
+          getDocumentManagementService().publish(article);
+          if (log.isDebugEnabled()) {
+            log.debug("published article: " + article);
+          }
+          addActionMessage("Published: " + article);
+        } catch (Exception e) {
+          addActionMessage("Error publishing: " + article + " - " + e.toString());
+          log.warn ("Could not publish article: " + article, e);
+        }
+      }
+    }
+  }
+  
+  public void deleteArticles() throws RemoteException, ApplicationException  {
+    if (articlesToDelete != null) {
+      for (String article : articlesToDelete) {
+        try {
+          getDocumentManagementService().delete(article);
+          if (log.isDebugEnabled()) {
+            log.debug("deleted article: " + article);
+          }
+          addActionMessage("Deleted: " + article);
+        } catch (Exception e) {
+          addActionMessage("Error deleting: " + article + " - " + e.toString());
+          log.warn ("Could not delete article: " + article, e);        
+        }
+      } 
+    }
+  }
 }

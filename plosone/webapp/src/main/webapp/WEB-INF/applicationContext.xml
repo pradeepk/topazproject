@@ -81,6 +81,7 @@
     <property name="ingestedDocumentDirectory" value="${ingest.destination}"/>
   	<!-- Whereas this is relative to webapp/src/main/resources  -->
     <property name="xslTemplate" value="/crossref.xsl"/>    	
+    <property name="articleCacheAdministrator" ref="articleCacheAdministrator"/>
     <aop:scoped-proxy/>    
   </bean>
   
