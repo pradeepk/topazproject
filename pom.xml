@@ -1,22 +1,9 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<!--
-  $HeadURL::                                                                             $
-  $Id$
-
-  Copyright (c) 2006 by Topaz, Inc.
-  http://topazproject.org
-
-  Licensed under the Educational Community License version 1.0
-  http://opensource.org/licenses/ecl1.php
--->
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
-  <version>0.5-SNAPSHOT</version>
+  <version>0.5-rc1</version>
   <packaging>pom</packaging>
   <name>All Plos and Topaz stuff</name>
   <!-- description is encouraged to take HTML embeded in CDATA -->
@@ -80,9 +67,9 @@
   </pluginRepositories>
 
   <scm>
-    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/head/</developerConnection>
-    <connection>scm:svn:http://gandalf.topazproject.org/svn/head/</connection>
-    <url>http://gandalf.topazproject.org/svn/</url>
+    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.5-rc1</developerConnection>
+    <connection>scm:svn:http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.5-rc1</connection>
+    <url>http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.5-rc1</url>
   </scm>
 
   <distributionManagement>
@@ -99,6 +86,7 @@
     <module>plosone</module>
     <module>plos-registration</module>
     <module>re-package</module>
+    <module>packages</module>
   </modules>
 
   <properties>
@@ -203,7 +191,7 @@
                 <goals><goal>run</goal></goals>
                 <configuration>
                   <tasks>
-                    <delete dir="${project.build.directory}/test-classes"/>
+                    <delete dir="${project.build.directory}/test-classes" />
                   </tasks>
                 </configuration>
               </execution>
@@ -315,8 +303,8 @@
                 </goals>
                 <configuration>
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
-                  <fedora-version>2.1.1-t1-SNAPSHOT</fedora-version>
-                  <ecqs-version>2.0.6-1-t1-SNAPSHOT</ecqs-version>
+                  <fedora-version>2.1.1-t1</fedora-version>
+                  <ecqs-version>2.0.6-1-t1</ecqs-version>
                 </configuration>
               </execution>
               <execution>
