@@ -588,11 +588,11 @@
         <param name="location">/user/alerts.ftl</param>   
         <param name="noCache">true</param>   
       </result> 
-      <result name="input">type="plosOneFreemarker">
+      <result name="input" type="plosOneFreemarker">
         <param name="location">/user/alerts.ftl</param>   
         <param name="noCache">true</param>   
       </result> 
-      <result name="error">type="plosOneFreemarker">
+      <result name="error" type="plosOneFreemarker">
         <param name="location">/user/alerts.ftl</param>   
         <param name="noCache">true</param>   
       </result> 
