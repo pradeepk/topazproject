@@ -3,6 +3,21 @@
 
 <p class="intro">Need help using this site? Here are some answers to common support questions.</p>
 
+<a id="browsers" name="browsers"></a>
+<h2>Supported Web Browsers</h2>
+<p>As of December 20, 2006, <em>PLoS ONE</em> is suporting the following Web
+browsers:</p>
+<ul>
+	<li>Internet Explorer 6+ for Windows XP</li>
+	<li>Internet Explorer 7+ for Windows XP</li>
+	<li>Firefox 1.5+ for Windows XP and Mac OS X</li>
+	<li>Firefox 2+ for Windows XP</li>
+</ul>
+
+<p>Full-functionality for Safari for Mac OS X is coming soon. Currently,
+Safari users are not able to create annotations, but may view and
+respond to annotations.</p>
+
 <a id="printing" name="printing"></a>
 <h2>Printing PDFs</h2>
 					
