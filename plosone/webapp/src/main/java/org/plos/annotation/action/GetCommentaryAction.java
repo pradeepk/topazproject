@@ -56,15 +56,15 @@ public class GetCommentaryAction extends AnnotationActionSupport {
       allCommentary = new Commentary[annotations.length];
       Commentary com = null;
       if (annotations.length > 0) {
-        Reply[] replies;
         for (int i = 0; i < annotations.length; i++) {
           com = new Commentary();
           com.setAnnotation(annotations[i]);
           try {
             getAnnotationService().listAllReplies(annotations[i].getId(), annotations[i].getId(), com);
           } catch (ApplicationException ae) {
-            if (ae.getCause() instanceof NoSuchIdException) {
-              replies = null;
+            Throwable t = ae.getCause();
+            if ((t instanceof NoSuchIdException) || (t instanceof java.lang.SecurityException)) {
+              // don't error if that id is gone or if you can't list the replies
               com.setNumReplies(0);
               com.setReplies(null);
             } else {
