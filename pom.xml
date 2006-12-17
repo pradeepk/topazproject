@@ -338,6 +338,18 @@
   </profiles>
         
   <build>
+    <plugins>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-release-plugin</artifactId>
+        <configuration>
+          <goals>deploy</goals>                           <!-- disable site deploy -->
+          <useReleaseProfile>false</useReleaseProfile>    <!-- no javadoc and source jars -->
+          <tagBase>http://gandalf.topazproject.org/svn/tags</tagBase>
+        </configuration>
+      </plugin>
+    </plugins>
+
     <defaultGoal>install</defaultGoal>
   </build>
 </project>
