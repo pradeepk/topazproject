@@ -18,7 +18,9 @@ import java.awt.color.ICC_Profile;
 import java.awt.image.ColorModel;
 import java.awt.image.renderable.ParameterBlock;
 
+import javax.media.jai.BorderExtender;
 import javax.media.jai.ImageLayout;
+import javax.media.jai.Interpolation;
 import javax.media.jai.InterpolationBicubic2;
 import javax.media.jai.JAI;
 import javax.media.jai.ParameterBlockJAI;
@@ -54,16 +56,16 @@ public class ImageResizeService {
     // ImageIO.setUseCache(true);
     // ImageIO.setCacheDirectory(null);
     
-    hints = new RenderingHints(RenderingHints.KEY_INTERPOLATION,
-        RenderingHints.VALUE_INTERPOLATION_BICUBIC);
-    hints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
+    hints = new RenderingHints(null);//RenderingHints.KEY_INTERPOLATION,RenderingHints.VALUE_INTERPOLATION_BICUBIC);
+    //hints.put(RenderingHints.KEY_COLOR_RENDERING, RenderingHints.VALUE_COLOR_RENDER_QUALITY);
     hints.put(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
     hints.put(RenderingHints.KEY_TEXT_ANTIALIASING, RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-    hints.put(RenderingHints.KEY_ALPHA_INTERPOLATION,
-        RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);
+    /*hints.put(RenderingHints.KEY_ALPHA_INTERPOLATION,
+        RenderingHints.VALUE_ALPHA_INTERPOLATION_QUALITY);*/
     hints.put(RenderingHints.KEY_RENDERING, RenderingHints.VALUE_RENDER_QUALITY);
-    hints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
-    // hints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
+    /*hints.put(RenderingHints.KEY_STROKE_CONTROL, RenderingHints.VALUE_STROKE_PURE);
+    hints.put(JAI.KEY_BORDER_EXTENDER, BorderExtender.createInstance(BorderExtender.BORDER_ZERO));*/
+    //hints.put(RenderingHints.KEY_DITHERING, RenderingHints.VALUE_DITHER_ENABLE);
   }
   
   /**
@@ -86,13 +88,69 @@ public class ImageResizeService {
     }
   }
   
-  private RenderedOp createScaledImage(float widthPercent, float heightPercent) {
+  private RenderedOp createBoxFilterScaledImage (float widthPercent, float heightPercent) {
     RenderedOp transformedImage;
     
     // Scale the image to half its size in each direction
     ParameterBlock pb;
     
-    if ((isCMYK)
+    pb = new ParameterBlock();
+    pb.addSource(srcImage);
+    pb.add(3);
+    pb.add(3);
+    pb.add(3/2);
+    pb.add(3/2);
+    pb.add(hints);
+    if (log.isDebugEnabled()) {
+      log.debug("Applying BoxFilter");
+    }
+    transformedImage = JAI.create("BoxFilter", pb);
+     
+    pb = new ParameterBlock();
+    pb.addSource(transformedImage);
+    pb.add(widthPercent);
+    pb.add(heightPercent);
+    pb.add(0.0f);
+    pb.add(0.0f);
+    pb.add(Interpolation.getInstance(Interpolation.INTERP_BICUBIC_2));
+    pb.add(hints);
+    if (log.isDebugEnabled()) {
+      log.debug("Applying Scaling");
+    }
+    transformedImage = JAI.create("scale", pb);
+
+    /*    } else {
+      pb = new ParameterBlock();
+      pb.addSource(srcImage);
+      pb.add((double) widthPercent);
+      pb.add((double) heightPercent);
+      pb.add(hints);
+      if (log.isDebugEnabled()) {
+        log.debug("SubsampleAverage");
+      }
+      transformedImage = JAI.create("SubsampleAverage", pb);
+    //}
+      
+      /*pb = new ParameterBlock();
+      pb.addSource(srcImage);
+      pb.add((int)1 / widthPercent);
+      pb.add((int) 1/ heightPercent);
+      pb.add(hints);
+      if (log.isDebugEnabled()) {
+        log.debug("SubsampleAverage");
+      }
+      transformedImage = JAI.create("FilteredSubsample", pb);*/
+      
+    return transformedImage;
+  }
+  
+  private RenderedOp createSubsampleAverageScaledImage (double widthPercent, double heightPercent) {
+    RenderedOp transformedImage;
+    
+    // Scale the image to half its size in each direction
+    ParameterBlock pb;
+    
+    /*if ((isCMYK)
         && ((srcImage.getWidth() * widthPercent > 512) || (srcImage.getHeight() * heightPercent > 512))) {
       pb = new ParameterBlock();
       pb.addSource(srcImage);
@@ -115,19 +173,32 @@ public class ImageResizeService {
         log.debug("Applying Scaling");
       }
       transformedImage = JAI.create("Scale", pb);
-    } else {
+    } else {*/
       pb = new ParameterBlock();
       pb.addSource(srcImage);
-      pb.add((double) widthPercent);
-      pb.add((double) heightPercent);
+      pb.add(widthPercent);
+      pb.add(heightPercent);
       pb.add(hints);
       if (log.isDebugEnabled()) {
         log.debug("SubsampleAverage");
       }
       transformedImage = JAI.create("SubsampleAverage", pb);
-    }
+    //}
+      
+      /*pb = new ParameterBlock();
+      pb.addSource(srcImage);
+      pb.add((int)1 / widthPercent);
+      pb.add((int) 1/ heightPercent);
+      pb.add(hints);
+      if (log.isDebugEnabled()) {
+        log.debug("SubsampleAverage");
+      }
+      transformedImage = JAI.create("FilteredSubsample", pb);*/
+      
     return transformedImage;
   }
+  
+  
   
   private byte[] renderedOpToPNGByteArray(RenderedOp inImage) {
     byte[] array = new byte[inImage.getHeight() * inImage.getWidth()];
@@ -137,7 +208,7 @@ public class ImageResizeService {
     
   }
   
-  private byte[] scaleFixHeight(float fixHeight) {
+  private byte[] scaleFixHeight(float fixHeight, boolean isSubsample) {
     int height = srcImage.getHeight();
     float scale;
     if (height > fixHeight) {
@@ -149,12 +220,16 @@ public class ImageResizeService {
     if (scale == 1) {
       newImage = srcImage;
     } else {
-      newImage = createScaledImage(scale, scale);
+      if (isSubsample) {
+        newImage = createSubsampleAverageScaledImage(scale, scale);
+      } else {
+        newImage = createBoxFilterScaledImage(scale, scale);
+      }
     }
     return renderedOpToPNGByteArray(newImage);
   }
   
-  private byte[] scaleFixWidth(float fixWidth) {
+  private byte[] scaleFixWidth(float fixWidth, boolean isSubsample) {
     int width = srcImage.getWidth();
     float scale;
     if (width > fixWidth) {
@@ -166,12 +241,16 @@ public class ImageResizeService {
     if (scale == 1) {
       newImage = srcImage;
     } else {
-      newImage = createScaledImage(scale, scale);
+      if (isSubsample) {
+        newImage = createSubsampleAverageScaledImage(scale, scale);
+      } else {
+        newImage = createBoxFilterScaledImage(scale, scale);
+      }
     }
     return renderedOpToPNGByteArray(newImage);
   }
   
-  private byte[] scaleLargestDim(float oneSide) {
+  private byte[] scaleLargestDim(float oneSide, boolean isSubsample) {
     if (log.isDebugEnabled()) {
       log.debug("oneSide = " + oneSide);
     }
@@ -191,8 +270,11 @@ public class ImageResizeService {
     if (scale == 1) {
       newImage = srcImage;
     } else {
-      newImage = createScaledImage(scale, scale);
-    }
+      if (isSubsample) {
+        newImage = createSubsampleAverageScaledImage(scale, scale);
+      } else {
+        newImage = createBoxFilterScaledImage(scale, scale);
+      }    }
     return renderedOpToPNGByteArray(newImage);
   }
   
@@ -203,9 +285,21 @@ public class ImageResizeService {
    * @throws FileNotFoundException
    * @throws IOException
    */
-  public byte[] getSmallImage() throws FileNotFoundException, IOException {
-    return scaleFixWidth(70.0f);
+  public byte[] getSmallImageBoxScaled() throws FileNotFoundException, IOException {
+    return scaleFixWidth(70.0f, false);
   }
+
+  /**
+   * Scale the image to 70 pixels in width into PNG
+   * 
+   * @return byte array of the new small image
+   * @throws FileNotFoundException
+   * @throws IOException
+   */
+  public byte[] getSmallImageSubsample() throws FileNotFoundException, IOException {
+    return scaleFixWidth(70.0f, true);
+  }
+  
   
   /**
    * Scale the image to at most 600 pixels in either direction into a PNG
@@ -214,9 +308,21 @@ public class ImageResizeService {
    * @throws FileNotFoundException
    * @throws IOException
    */
-  public byte[] getMediumImage() throws FileNotFoundException, IOException {
-    return scaleLargestDim(600.0f);
+  public byte[] getMediumImageBoxScaled() throws FileNotFoundException, IOException {
+    return scaleLargestDim(600.0f, false);
   }
+
+  /**
+   * Scale the image to at most 600 pixels in either direction into a PNG
+   * 
+   * @return byte array of the new medium size image
+   * @throws FileNotFoundException
+   * @throws IOException
+   */
+  public byte[] getMediumImageSubsample() throws FileNotFoundException, IOException {
+    return scaleLargestDim(600.0f, true);
+  }
+  
   
   /**
    * Don't scale the image, just return a PNG version of it
@@ -225,7 +331,18 @@ public class ImageResizeService {
    * @throws FileNotFoundException
    * @throws IOException
    */
-  public byte[] getLargeImage() throws FileNotFoundException, IOException {
+  public byte[] getLargeImageBoxScaled() throws FileNotFoundException, IOException {
+    return renderedOpToPNGByteArray(srcImage);
+  }
+
+  /**
+   * Don't scale the image, just return a PNG version of it
+   * 
+   * @return byte array of the new PNG version of the image
+   * @throws FileNotFoundException
+   * @throws IOException
+   */
+  public byte[] getLargeImageSubsample() throws FileNotFoundException, IOException {
     return renderedOpToPNGByteArray(srcImage);
   }
   
@@ -236,13 +353,13 @@ public class ImageResizeService {
    * @throws FileNotFoundException
    * @throws IOException
    */
-  public byte[] getPageWidthImage() throws FileNotFoundException, IOException {
+ /* public byte[] getPageWidthImage() throws FileNotFoundException, IOException {
     return scaleFixWidth(400.0f);
   }
   
   public byte[] getInlineImage() throws FileNotFoundException, IOException {
     return scaleFixHeight(21.0f);
-  }
+  }*/
   
   private RenderedOp convertCMYKtoRGB(RenderedOp op) {
     try {

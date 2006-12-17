@@ -242,7 +242,7 @@ public class DocumentManagementService {
       String context = info.getContextElement();
       if (context != null) {
         context = context.trim();
-        if (context.equalsIgnoreCase("fig") || context.equalsIgnoreCase("table-wrap")) {
+        if (context.equalsIgnoreCase("fig")) {
           RepresentationInfo rep = object.getRepresentations()[0];
           if (log.isDebugEnabled()) {
             log.debug("Found image to resize: " + rep.getURL() + " repsize-" + rep.getSize());
@@ -250,13 +250,29 @@ public class DocumentManagementService {
           irs.captureImage(rep.getURL());
           log.debug("Captured image");
           articleWebService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
-              new PngDataSource(irs.getSmallImage())));
+              new PngDataSource(irs.getSmallImageBoxScaled())));
           log.debug("Set small");
           articleWebService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
-              new PngDataSource(irs.getMediumImage())));
+              new PngDataSource(irs.getMediumImageBoxScaled())));
           log.debug("Set medium");
           articleWebService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
-              new PngDataSource(irs.getLargeImage())));
+              new PngDataSource(irs.getLargeImageBoxScaled())));
+          log.debug("Set large");
+        } else if (context.equalsIgnoreCase("table-wrap")) { 
+          RepresentationInfo rep = object.getRepresentations()[0];
+          if (log.isDebugEnabled()) {
+            log.debug("Found image to resize: " + rep.getURL() + " repsize-" + rep.getSize());
+          }
+          irs.captureImage(rep.getURL());
+          log.debug("Captured image");
+          articleWebService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
+              new PngDataSource(irs.getSmallImageSubsample())));
+          log.debug("Set small");
+          articleWebService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
+              new PngDataSource(irs.getMediumImageSubsample())));
+          log.debug("Set medium");
+          articleWebService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
+              new PngDataSource(irs.getLargeImageSubsample())));
           log.debug("Set large");
         } else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
           RepresentationInfo rep = object.getRepresentations()[0];
@@ -266,7 +282,7 @@ public class DocumentManagementService {
           irs.captureImage(rep.getURL());
           log.debug("Captured image");
           articleWebService.setRepresentation(object.getUri(), "PNG", new DataHandler(
-              new PngDataSource(irs.getPageWidthImage())));
+              new PngDataSource(irs.getLargeImageSubsample())));
         } else if (context.equals("inline-formula")) {
           RepresentationInfo rep = object.getRepresentations()[0];
           if (log.isDebugEnabled()) {
@@ -275,7 +291,7 @@ public class DocumentManagementService {
           irs.captureImage(rep.getURL());
           log.debug("Captured image");
           articleWebService.setRepresentation(object.getUri(), "PNG", new DataHandler(
-              new PngDataSource(irs.getInlineImage())));
+              new PngDataSource(irs.getLargeImageSubsample())));
         }
         // Don't continue trying to process images if one of them failed
         /*
