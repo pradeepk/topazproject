@@ -521,7 +521,7 @@
   <!-- DOI to fedora-URI mapping -->
   <xsl:function name="my:doi-to-fedora-uri" as="xs:string">
     <xsl:param name="doi" as="xs:string"/>
-    <xsl:value-of select="concat('info:fedora/', $doi)"/>
+    <xsl:value-of select="concat('info:fedora/', my:doi-to-pid($doi))"/>
   </xsl:function>
 
   <!-- test for doi-URI's -->

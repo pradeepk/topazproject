@@ -12,7 +12,6 @@ package org.topazproject.fedoragsearch.topazlucene;
 import java.security.Guard;
 import java.net.URI;
 import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.io.IOException;
 
 import org.apache.lucene.search.Hit;
@@ -54,27 +53,17 @@ public class TopazHitGuard implements Guard {
      * and handle that in the XML we return when searching.
      */
 
-    String uri = null;
     String pid = doc.get("PID");
+    String uri = "info:fedora/" + pid;
+    AbstractSimplePEP pep = SearchContext.getPEP();
     try {
-      uri = pidToURI(pid);
-      AbstractSimplePEP pep = SearchContext.getPEP();
       pep.checkAccess(Article.Permissions.READ_META_DATA, new URI(uri));
-      
+
       if (log.isDebugEnabled())
-        log.debug("Returnging unguarded uri '" + uri + "'");
+        log.debug("Returning unguarded uri '" + uri + "'");
     } catch (URISyntaxException us) {
       throw (SecurityException)
         new SecurityException("Unable to create URI '" + uri + "'").initCause(us);
-    } catch (IOException ioe) {
-      log.warn("Unable to convert PID '" + pid + "' to URI");
-      throw (SecurityException)
-        new SecurityException("Unable to convert PID '" + pid + "' to URI").initCause(ioe);
     }
-  }
-  
-  private static final String pidToURI(String pid) throws IOException {
-    String doi = URLDecoder.decode(pid.substring(pid.indexOf(":") + 1), "UTF-8");
-    return "info:doi/" + doi;
   }
 }
