@@ -372,7 +372,7 @@ public class DocumentManagementService {
   TransformerFactoryConfigurationError, TransformerException {
     
     Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(xslTemplate));
-    
+    t.setParameter("dxPLoSURL", "http://dx.plos.org/");
     StreamSource s_source = new StreamSource(src);
     StreamResult s_result = new StreamResult(dest);
     t.transform(s_source, s_result);

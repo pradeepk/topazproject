@@ -1,77 +1,154 @@
-<?xml version='1.0' ?>
-<xsl:stylesheet version="1.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
-	<xsl:template match="/">
-		<doi_batch xmlns="http://www.crossref.org/schema/3.0.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" version="3.0.3" xsi:schemaLocation="http://www.crossref.org/schema/3.0.3 crossref3.0.3.xsd">
-			<head>
-				<depositor>
-					<name>Plos</name>
-				</depositor>
-			</head>
-			<body>
-				<book>
-					<book_metadata>
-						<titles>
-							<title>
-								<xsl:value-of select="article/front/journal-meta/journal-title"/>
-							</title>
-						</titles>
-						<volume>
-							<xsl:value-of select="article/front/article-meta/volume"/>
-						</volume>
-						<publication_date>
-							<month>
-								<xsl:value-of select="article/front/article-meta/pub-date/month"/>
-							</month>
-							<year>
-								<xsl:value-of select="article/front/article-meta/pub-date/year"/>
-							</year>
-						</publication_date>
-						<isbn>
-							<xsl:value-of select="article/front/journal-meta/issn"/>
-						</isbn>
-						<publisher>
-							<publisher_name>
-								<xsl:value-of select="article/front/journal-meta/publisher/publisher-name"/>
-							</publisher_name>
-							<publisher_place>
-								<xsl:value-of select="article/front/journal-meta/publisher/publisher-loc"/>
-							</publisher_place>
-						</publisher>
-					</book_metadata>
-					<content_item>
-						<titles>
-							<title>
-								<xsl:value-of select="article/front/article-meta/title-group/article-title"/>
-							</title>
-						</titles>
-						<doi_data>
-							<xsl:value-of select="article/front/article-meta/article-id/@pub-id-type"/>
-						</doi_data>
-						<contributors>
-							<person_name>
-								<given_name>
-									<xsl:value-of select="article/front/article-meta/contrib-group/contrib/name/given-names"/>
-								</given_name>
-								<surname>
-									<xsl:value-of select="article/front/article-meta/contrib-group/contrib/name/surname"/>
-								</surname>
-							</person_name>
-						</contributors>
-						<pages>
-							<first_page>
-								<xsl:value-of select="article/front/article-meta/fpage"/>
-							</first_page>
-							<last_page>
-								<xsl:value-of select="article/front/article-meta/lpage"/>
-							</last_page>
-						</pages>
-					</content_item>
-				</book>
-			</body>
-		</doi_batch>
-	</xsl:template>
-</xsl:stylesheet><!-- Stylus Studio meta-information - (c) 2004-2006. Progress Software Corporation. All rights reserved.
-<metaInformation>
-<scenarios ><scenario default="yes" name="pone.0000011.xml" userelativepaths="yes" externalpreview="no" url="..\..\..\..\..\..\install\pone.0000011.xml" htmlbaseurl="" outputurl="" processortype="internal" useresolver="yes" profilemode="0" profiledepth="" profilelength="" urlprofilexml="" commandline="" additionalpath="" additionalclasspath="" postprocessortype="none" postprocesscommandline="" postprocessadditionalpath="" postprocessgeneratedext="" validateoutput="no" validator="internal" customvalidator=""/></scenarios><MapperMetaTag><MapperInfo srcSchemaPathIsRelative="yes" srcSchemaInterpretAsXML="no" destSchemaPath="..\..\..\..\..\..\docs\book303.xml" destSchemaRoot="doi_batch" destSchemaPathIsRelative="yes" destSchemaInterpretAsXML="no" ><SourceSchema srcSchemaPath="..\..\..\..\..\..\install\pone.0000011.xml" srcSchemaRoot="article" AssociatedInstance="" loaderFunction="document" loaderFunctionUsesURI="no"/></MapperInfo><MapperBlockPosition><template match="/"></template></MapperBlockPosition><TemplateContext></TemplateContext><MapperFilter side="source"></MapperFilter></MapperMetaTag>
-</metaInformation>
--->
+<?xml version="1.0" encoding="UTF-8"?>
+<xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
+    <xsl:output method="xml" indent="no" encoding="UTF-8" omit-xml-declaration="no"/>
+    <xsl:param name="dxPLoSURL"/>
+    <xsl:template match="/">
+        <xsl:variable name="currentDateTime" select="current-dateTime()"/>
+        <xsl:variable name="timestamp" select="format-dateTime($currentDateTime, '[Y0001][M01][D01][H01][m01][s01]')"/>
+        <xsl:variable name="article_doi" select="//article-id[@pub-id-type='doi'][1]"/>
+        <doi_batch version="3.0.3" xmlns="http://www.crossref.org/schema/3.0.3" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.crossref.org/schema/3.0.3 http://www.crossref.org/schema/3.0.3/crossref3.0.3.xsd">
+            <head>
+                <doi_batch_id>
+                    <xsl:value-of select="$article_doi"/>
+                </doi_batch_id>
+                <timestamp>
+                    <xsl:value-of select="${timestamp}"/>
+                </timestamp>
+                <depositor>
+                    <name>Public Library of Science</name>
+                    <email_address>doi@plos.org</email_address>
+                </depositor>
+                <registrant>Public Library of Science</registrant>
+            </head>
+            <body>
+                <journal>
+                    <journal_metadata language="en">
+                        <full_title>
+                            <xsl:value-of select="//journal-title[1]"/>
+                        </full_title>
+                        <abbrev_title>
+                            <xsl:value-of select="//journal-title[1]"/>
+                        </abbrev_title>
+                        <issn media_type="electronic">
+                            <xsl:value-of select="//issn[@pub-type='epub'][1]"/>
+                        </issn>
+                    </journal_metadata>
+                    <journal_issue>
+                        <publication_date media_type="online">
+                            <month>
+                                <xsl:value-of select="article/front/article-meta/pub-date[@pub-type='epub']/month"/>
+                            </month>
+                            <day>
+                                <xsl:value-of select="article/front/article-meta/pub-date[@pub-type='epub']/day"/>
+                            </day>
+                            <year>
+                                <xsl:value-of select="article/front/article-meta/pub-date[@pub-type='epub']/year"/>
+                            </year>
+                        </publication_date>
+                        <journal_volume>
+                            <volume>
+                                <xsl:value-of select="article/front/article-meta/volume"/>
+                            </volume>
+                        </journal_volume>
+                        <issue>
+                            <xsl:value-of select="article/front/article-meta/issue"/>
+                        </issue>
+                    </journal_issue>
+                    <journal_article publication_type="full_text">
+                        <titles>
+                            <title>
+                                <xsl:value-of select="article/front/article-meta/title-group/article-title"/>
+                            </title>
+                        </titles>
+                        <contributors>
+                            <xsl:for-each select="article/front/article-meta/contrib-group/contrib[@contrib-type='author']">
+                                <person_name contributor_role="author">
+                                    <xsl:choose>
+                                        <xsl:when test="position() = 1 or @equal-contrib='yes'">
+                                            <xsl:attribute name="sequence">first</xsl:attribute>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:attribute name="sequence">additional</xsl:attribute>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                    <given_name><xsl:value-of select="name/given-names"/></given_name>
+                                    <surname><xsl:value-of select="name/surname"/></surname>
+                                </person_name>
+                            </xsl:for-each>
+                            <xsl:for-each select="article/front/article-meta/contrib-group/contrib[@contrib-type='editor']">
+                                <person_name contributor_role="editor">
+                                    <xsl:choose>
+                                        <xsl:when test="position() = 1">
+                                            <xsl:attribute name="sequence">first</xsl:attribute>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:attribute name="sequence">additional</xsl:attribute>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                    <given_name><xsl:value-of select="name/given-names"/></given_name>
+                                    <surname><xsl:value-of select="name/surname"/></surname>
+                                </person_name>
+                            </xsl:for-each>
+                            <xsl:for-each select="article/front/article-meta/contrib-group/contrib[@contrib-type='translator']">
+                                <person_name contributor_role="translator">
+                                    <xsl:choose>
+                                        <xsl:when test="position() = 1">
+                                            <xsl:attribute name="sequence">first</xsl:attribute>
+                                        </xsl:when>
+                                        <xsl:otherwise>
+                                            <xsl:attribute name="sequence">additional</xsl:attribute>
+                                        </xsl:otherwise>
+                                    </xsl:choose>
+                                    <given_name><xsl:value-of select="name/given-names"/></given_name>
+                                    <surname><xsl:value-of select="name/surname"/></surname>
+                                </person_name>
+                            </xsl:for-each>
+                        </contributors>
+                        <publication_date media_type="online">
+                            <month>
+                                <xsl:value-of select="article/front/article-meta/pub-date[@pub-type='epub']/month"/>
+                            </month>
+                            <day>
+                                <xsl:value-of select="article/front/article-meta/pub-date[@pub-type='epub']/day"/>
+                            </day>
+                            <year>
+                                <xsl:value-of select="article/front/article-meta/pub-date[@pub-type='epub']/year"/>
+                            </year>                            
+                        </publication_date> 
+                        <pages>
+                            <first_page><xsl:value-of select="article/front/article-meta/elocation-id"/></first_page>
+                        </pages>
+                        <publisher_item>
+                            <item_number><xsl:value-of select="$article_doi"/></item_number>
+                        </publisher_item>                        
+                        <doi_data>
+                            <doi><xsl:value-of select="$article_doi"/></doi>
+                            <timestamp> <xsl:value-of select="${timestamp}"/></timestamp>
+                            <resource><xsl:value-of select="$dxPLoSURL"/><xsl:value-of select="$article_doi"/></resource>
+                        </doi_data>
+                        <component_list>
+                            <xsl:for-each select="//fig">
+                                <component parent_relation="isPartOf">
+                                    <description><xsl:for-each select="caption"/></description>
+                                    <doi_data>
+                                        <doi><xsl:value-of select="object-id[@pub-id-type='doi']"/></doi>
+                                        <resource><xsl:value-of select="$dxPLoSURL"/><xsl:value-of select="object-id[@pub-id-type='doi']"/></resource>
+                                    </doi_data>
+                                </component>
+                            </xsl:for-each>
+                            <xsl:for-each select="//table-wrap">
+                                <component parent_relation="isPartOf">
+                                    <description><xsl:for-each select="caption/title"/></description>
+                                    <doi_data>
+                                        <doi><xsl:value-of select="object-id[@pub-id-type='doi']"/></doi>
+                                        <resource><xsl:value-of select="$dxPLoSURL"/><xsl:value-of select="object-id[@pub-id-type='doi']"/></resource>
+                                    </doi_data>
+                                </component>
+                            </xsl:for-each>
+                        </component_list>                    
+                    </journal_article>
+                </journal>
+            </body>
+        </doi_batch>
+    </xsl:template>
+</xsl:stylesheet>
