@@ -14,6 +14,7 @@ import java.io.InputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
+import java.net.URLDecoder;
 import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -778,6 +779,15 @@ public class ArticleImpl implements Article {
 
   private void parseObjectInfo(AnswerSet.QueryAnswerSet info, ObjectInfo oi)
       throws AnswerException {
+    try {
+      if (oi.getUri().startsWith("info:doi/"))
+        oi.setDoi(URLDecoder.decode(oi.getUri().substring(9), "UTF-8"));
+      else if (oi.getUri().startsWith("doi:"))
+        oi.setDoi(URLDecoder.decode(oi.getUri().substring(4), "UTF-8"));
+    } catch (UnsupportedEncodingException uee) {
+      throw new RuntimeException("Unexpected exception", uee);  // can't really happen
+    }
+
     int predCol = info.indexOf("p");
     int objCol  = info.indexOf("o");
 

@@ -22,6 +22,8 @@ package org.topazproject.ws.article;
 public class ObjectInfo {
   /** The uri of the object. */
   private String uri;
+  /** The doi of the object, if it has one. */
+  private String doi;
   /** The object's state. */
   private int state;
   /** The object's title. */
@@ -53,6 +55,24 @@ public class ObjectInfo {
    */
   public void setUri(String uri) {
     this.uri = uri;
+  }
+
+  /**
+   * Get the doi.
+   *
+   * @return the doi.
+   */
+  public String getDoi() {
+    return doi;
+  }
+
+  /**
+   * Set the doi.
+   *
+   * @param doi the doi.
+   */
+  public void setDoi(String doi) {
+    this.doi = doi;
   }
 
   /**
