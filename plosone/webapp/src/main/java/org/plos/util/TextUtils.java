@@ -23,6 +23,7 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Pattern;
+import java.util.regex.Matcher;
 
 /**
  * Provides some useful text manipulation functions.
@@ -30,7 +31,22 @@ import java.util.regex.Pattern;
 public class TextUtils {
   public static final String HTTP_PREFIX = "http://";
   private static final Pattern maliciousContentPattern = Pattern.compile("[<>\"\'%;()&+]");
-
+  private static final Pattern lineBreakPattern = Pattern.compile("\\p{Zl}|\r\n|\n|\u0085|\\p{Zp}");
+  
+  /**
+   * Takes in a String and returns it with all line separators replaced by <br/> tags suitable
+   * for display as HTML.
+   * 
+   * @param input
+   * @return String with line separators replaced with <br/>
+   */
+  public static String makeHtmlLineBreaks (final String input) {
+    if (StringUtils.isBlank(input)) {
+      return input;
+    }
+    return lineBreakPattern.matcher(input).replaceAll("<br/>");
+  }
+  
   /**
    * Linkify any possible web links excepting email addresses and enclosed with <p> tags
    * @param text text
@@ -63,7 +79,7 @@ public class TextUtils {
    * @return escaped html text
    */
   public static String escapeHtml(final String bodyContent) {
-    return StringEscapeUtils.escapeHtml(bodyContent);
+    return makeHtmlLineBreaks(StringEscapeUtils.escapeHtml(bodyContent));
   }
 
   /**
