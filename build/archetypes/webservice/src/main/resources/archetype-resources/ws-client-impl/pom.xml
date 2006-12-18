@@ -23,7 +23,7 @@
   <parent>
     <groupId>${groupId}</groupId>
     <artifactId>ws-${artifactId}</artifactId>
-    <version>0.5-rc3-SNAPSHOT</version>
+    <version>0.5-rc2</version>
   </parent>
 
   <licenses>
