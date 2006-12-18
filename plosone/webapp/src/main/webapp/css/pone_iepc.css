@@ -65,5 +65,6 @@ html>body #home { height: auto }
 *:first-child+html .multiple .contentwrap { margin-top: -2px;}
 *:first-child+html input#responseTitle	{ margin-left: 22px; }
 
+*:first-child+html div.figure { overflow : hidden; _height : 1%; } /* float clearing for ie7 */
 
 
