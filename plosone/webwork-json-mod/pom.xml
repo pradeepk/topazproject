@@ -3,14 +3,14 @@
   <groupId>${pom.parent.groupId}</groupId>
   <artifactId>webwork-json-mod</artifactId>
   <packaging>jar</packaging>
-  <version>0.5-rc2</version>
+  <version>0.5-rc3-SNAPSHOT</version>
   <name>JSON mod for Webwork</name>
 
   <parent>
     <groupId>org.plosone</groupId>
     <artifactId>plosone</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>0.5-rc2</version>
+    <version>0.5-rc3-SNAPSHOT</version>
   </parent>
 	
   <dependencies>
