@@ -17,11 +17,6 @@
     </layout>
   </appender>
 
-  <root>
-    <priority value ="info" />
-    <appender-ref ref="rolling" />
-  </root>
-
   <logger name="org.apache">
     <level value="warn" />
   </logger>
@@ -45,5 +40,10 @@
   <logger name="org.topazproject">
     <level value="info"/>
   </logger>
+
+  <root>
+    <priority value ="info" />
+    <appender-ref ref="rolling" />
+  </root>
     
 </log4j:configuration>

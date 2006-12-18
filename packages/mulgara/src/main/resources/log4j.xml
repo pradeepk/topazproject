@@ -17,11 +17,6 @@
     </layout>
   </appender>
 
-  <root>
-    <priority value ="info" />
-    <appender-ref ref="rolling" />
-  </root>
-
   <logger name="org.apache">
     <level value="warn" />
   </logger>
@@ -33,5 +28,10 @@
   <logger name="org.mulgara.store.xa.FreeList">
     <level value="warn" />
   </logger>
+
+  <root>
+    <priority value ="info" />
+    <appender-ref ref="rolling" />
+  </root>
     
 </log4j:configuration>
