@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 public class ResolverServlet extends HttpServlet{
   private static final Log log = LogFactory.getLog(ResolverServlet.class);
   private static final Configuration myConfig = ConfigurationStore.getInstance().getConfiguration();
-  private static final Pattern journalRegEx = Pattern.compile("/10\\.1371/journal\\.pone\\." + "\\d{7}+$");
-  private static final Pattern figureRegEx = Pattern.compile("/10\\.1371/journal\\.pone\\." + "\\d{7}+\\.[gt]{1}+\\d{3}+$");
+  private static final Pattern journalRegEx = Pattern.compile("/10\\.1371/journal\\.pone\\.\\d{7}+$");
+  private static final Pattern figureRegEx = Pattern.compile("/10\\.1371/journal\\.pone\\.\\d{7}+\\.[gt]{1}+\\d{3}+$");
   private static final String RDF_TYPE_ARTICLE = "http://rdf.topazproject.org/RDF/Article";
   
 
@@ -92,7 +92,7 @@ public class ResolverServlet extends HttpServlet{
     StringBuilder redirectURL = new StringBuilder(myConfig.getString("plosone.webserver-url")); 
     String[] rdfTypes;
     
-    if (journalRegEx.matcher(doi).find()) {
+    if (journalRegEx.matcher(doi).matches()) {
       rdfTypes = lookupDOI(doi);
       if (rdfTypes.length > 0) {
         Arrays.sort(rdfTypes);
@@ -101,7 +101,7 @@ public class ResolverServlet extends HttpServlet{
                             .append("info:doi").append(doi).toString();
         }
       }
-    } else if (figureRegEx.matcher(doi).find()) {
+    } else if (figureRegEx.matcher(doi).matches()) {
       String possibleArticleDOI = doi.substring(0, doi.length()-5);
       rdfTypes = lookupDOI(possibleArticleDOI);
       if (rdfTypes.length > 0) {
