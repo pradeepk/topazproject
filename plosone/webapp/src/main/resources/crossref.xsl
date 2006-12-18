@@ -12,7 +12,7 @@
                     <xsl:value-of select="$article_doi"/>
                 </doi_batch_id>
                 <timestamp>
-                    <xsl:value-of select="${timestamp}"/>
+                    <xsl:value-of select="$timestamp"/>
                 </timestamp>
                 <depositor>
                     <name>Public Library of Science</name>
@@ -123,7 +123,7 @@
                         </publisher_item>                        
                         <doi_data>
                             <doi><xsl:value-of select="$article_doi"/></doi>
-                            <timestamp> <xsl:value-of select="${timestamp}"/></timestamp>
+                            <timestamp> <xsl:value-of select="$timestamp"/></timestamp>
                             <resource><xsl:value-of select="$dxPLoSURL"/><xsl:value-of select="$article_doi"/></resource>
                         </doi_data>
                         <component_list>
