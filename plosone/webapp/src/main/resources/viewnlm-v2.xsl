@@ -1886,10 +1886,7 @@ Make article meta data
 
 <!-- both are grouping elements to keep parts together -->
 <xsl:template match="disp-formula | chem-struct-wrapper">
-  <div class="capture-id">
-    <xsl:call-template name="make-id"/>
-    <xsl:call-template name="display-id"/>
-    <br/>
+  <div class="equation">
     <xsl:apply-templates/>
   </div>
 </xsl:template>
@@ -2189,7 +2186,7 @@ Make article meta data
     <!-- element-specific handling before content: -->
     <xsl:choose>
       <xsl:when test="ancestor::disp-formula">
-        (<xsl:apply-templates/>)
+        <span>(<xsl:apply-templates/>)</span>
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>
