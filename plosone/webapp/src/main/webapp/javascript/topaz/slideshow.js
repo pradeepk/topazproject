@@ -227,10 +227,6 @@ topaz.slideshow = {
         
       this.activeItemIndex = newIndex;
     }
-
-    var imageMarginBox = dojo.html.getMarginBox(topaz.slideshow.figureImg);
-    imageWidth = imageMarginBox.width;
-    topaz.domUtil.setContainerWidth(figureWindow, imageWidth, 910, 1);
   },
   
   showNext: function(obj) {
@@ -250,10 +246,6 @@ topaz.slideshow = {
         
       this.activeItemIndex = newIndex;
     }
-    
-    var imageMarginBox = dojo.html.getMarginBox(topaz.slideshow.figureImg);
-    imageWidth = imageMarginBox.width;
-    topaz.domUtil.setContainerWidth(figureWindow, imageWidth, 910, 1);
   },
   
   openViewer: function(url) {
