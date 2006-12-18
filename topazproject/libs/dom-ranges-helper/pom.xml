@@ -4,14 +4,14 @@
   <parent>
     <artifactId>topazproject-libs</artifactId>
     <groupId>org.topazproject</groupId>
-    <version>0.5-rc2-SNAPSHOT</version>
+    <version>0.5-rc2</version>
   </parent>
 
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>dom-ranges-helper</artifactId>
   <name>DOM ranges helper</name>
-  <version>0.5-rc2-SNAPSHOT</version>
+  <version>0.5-rc2</version>
 
   <dependencies>
     <dependency>
