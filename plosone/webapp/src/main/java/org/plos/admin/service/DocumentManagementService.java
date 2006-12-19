@@ -80,6 +80,10 @@ public class DocumentManagementService {
   
   private GeneralCacheAdministrator articleCacheAdministrator;
   
+  private String plosDoiUrl;
+  
+  private boolean sendToXref;
+  
   public DocumentManagementService() {
   }
   
@@ -372,7 +376,7 @@ public class DocumentManagementService {
   TransformerFactoryConfigurationError, TransformerException {
     
     Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(xslTemplate));
-    t.setParameter("dxPLoSURL", "http://dx.plos.org/");
+    t.setParameter("plosDoiUrl", plosDoiUrl);
     StreamSource s_source = new StreamSource(src);
     StreamResult s_result = new StreamResult(dest);
     t.transform(s_source, s_result);
@@ -394,14 +398,16 @@ public class DocumentManagementService {
    * @throws Exception
    */
   public void publish(String uri) throws Exception {
-    File xref = new File(ingestedDocumentDirectory, uriToFilename(uri) + ".xml");
-    int stat;
-    if (!xref.exists()) {
-      throw new IOException("Cannot find CrossRef xml");
-    }
-    stat = crossRefPosterService.post(xref);
-    if (200 != stat) {
-      throw new Exception("CrossRef status returned " + new Integer(200).toString());
+    if (sendToXref) {
+      File xref = new File(ingestedDocumentDirectory, uriToFilename(uri) + ".xml");
+      int stat;
+      if (!xref.exists()) {
+        throw new IOException("Cannot find CrossRef xml:" + uriToFilename(uri) + ".xml");
+      }
+      stat = crossRefPosterService.post(xref);
+      if (200 != stat) {
+        throw new Exception("CrossRef status returned " + stat);
+      }
     }
     articleWebService.setState(uri, Article.ST_ACTIVE);
     articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
@@ -451,5 +457,19 @@ public class DocumentManagementService {
    */
   public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
     this.articleCacheAdministrator = articleCacheAdministrator;
+  }
+
+  /**
+   * @param plosDxUrl The plosDxUrl to set.
+   */
+  public void setPlosDoiUrl(String plosDoiUrl) {
+    this.plosDoiUrl = plosDoiUrl;
+  }
+
+  /**
+   * @param sendToXref The sendToXref to set.
+   */
+  public void setSendToXref(boolean sendToXref) {
+    this.sendToXref = sendToXref;
   }
 }

@@ -66,11 +66,7 @@
     	* login_id=crossref user name
     	* login_passwd=crossref user password
     -->
-    <property 
-    	name="doiXrefUrl" 
-    	value="http://doi.crossref.org/servlet/deposit?operation=doMDUpload&amp;login_id=atypon&amp;login_passwd=_atypon_&amp;area=test"
-    />      
-  
+    <property name="doiXrefUrl" value="${crossref.post.url}"/>      
   </bean>
 
   <bean id="flagManagementService" class="org.plos.admin.service.FlagManagementService"/>
@@ -80,8 +76,11 @@
     <property name="documentDirectory" value="${ingest.source}"/>
     <property name="ingestedDocumentDirectory" value="${ingest.destination}"/>
   	<!-- Whereas this is relative to webapp/src/main/resources  -->
-    <property name="xslTemplate" value="/crossref.xsl"/>    	
+    <property name="xslTemplate" value="/crossref.xsl"/>      
     <property name="articleCacheAdministrator" ref="articleCacheAdministrator"/>
+    <property name="plosDoiUrl" value="${crossref.plos.doiurl}"/>      
+    <property name="sendToXref" value="${crossref.sendToXref}"/>      
+<!--  <property name="crossrefEmail" value="${crossref.plos.email}"/>      -->
     <aop:scoped-proxy/>    
   </bean>
   

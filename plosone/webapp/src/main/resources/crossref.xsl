@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output method="xml" indent="no" encoding="UTF-8" omit-xml-declaration="no"/>
-    <xsl:param name="dxPLoSURL"/>
+    <xsl:param name="plosDoiUrl"/>
     <xsl:template match="/">
         <xsl:variable name="currentDateTime" select="current-dateTime()"/>
         <xsl:variable name="timestamp" select="format-dateTime($currentDateTime, '[Y0001][M01][D01][H01][m01][s01]')"/>
@@ -124,7 +124,7 @@
                         <doi_data>
                             <doi><xsl:value-of select="$article_doi"/></doi>
                             <timestamp> <xsl:value-of select="$timestamp"/></timestamp>
-                            <resource><xsl:value-of select="$dxPLoSURL"/><xsl:value-of select="$article_doi"/></resource>
+                            <resource><xsl:value-of select="$plosDoiUrl"/><xsl:value-of select="$article_doi"/></resource>
                         </doi_data>
                         <component_list>
                             <xsl:for-each select="//fig">
@@ -132,7 +132,7 @@
                                     <description><xsl:for-each select="caption"/></description>
                                     <doi_data>
                                         <doi><xsl:value-of select="object-id[@pub-id-type='doi']"/></doi>
-                                        <resource><xsl:value-of select="$dxPLoSURL"/><xsl:value-of select="object-id[@pub-id-type='doi']"/></resource>
+                                        <resource><xsl:value-of select="$plosDoiUrl"/><xsl:value-of select="object-id[@pub-id-type='doi']"/></resource>
                                     </doi_data>
                                 </component>
                             </xsl:for-each>
@@ -141,7 +141,7 @@
                                     <description><xsl:for-each select="caption/title"/></description>
                                     <doi_data>
                                         <doi><xsl:value-of select="object-id[@pub-id-type='doi']"/></doi>
-                                        <resource><xsl:value-of select="$dxPLoSURL"/><xsl:value-of select="object-id[@pub-id-type='doi']"/></resource>
+                                        <resource><xsl:value-of select="$plosDoiUrl"/><xsl:value-of select="object-id[@pub-id-type='doi']"/></resource>
                                     </doi_data>
                                 </component>
                             </xsl:for-each>
