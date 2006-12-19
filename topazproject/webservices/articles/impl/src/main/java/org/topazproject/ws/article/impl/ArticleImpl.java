@@ -316,17 +316,22 @@ public class ArticleImpl implements Article {
 
         // Remove article from full-text index first
         String result = "";
-        int i = 0;
-        try {
-          for (i = 0; i < fgs.length; i++)
+        RemoteException firstRE = null;
+        for (int i = 0; i < fgs.length; i++) {
+          try {
             result = fgs[i].updateIndex("deletePid", pid, FGS_REPO, null, null, null);
-        } catch (RemoteException re) {
-          if (i != 0)
-            log.error("Deleted pid '" + pid + "' from servers 0 to " + i +
-                      " but not from servers " + (i+1) + " to " + fgs.length +
-                      ". Clean up required.", re);
-          throw re;
+          } catch (RemoteException re) {
+            if (i == 0)
+              throw re;
+            if (firstRE == null)
+              firstRE = re;
+            log.error("Deleted pid '" + pid + "' from some server(s). But not from server " +
+                      i + ". Cleanup required.", re);
+          }
         }
+        if (firstRE != null)
+          throw firstRE;
+        
         if (log.isDebugEnabled())
           log.debug("Removed '" + pid + "' from full-text index:\n" + result);
 
