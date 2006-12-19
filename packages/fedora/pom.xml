@@ -107,13 +107,7 @@
               </sources>
             </mapping>
             <mapping>
-              <directory>/usr/local/topaz/${project.build.finalName}</directory>
-              <filemode>755</filemode>
-              <username>topaz</username>
-              <groupname>topaz</groupname>
-            </mapping>
-            <mapping>
-              <directory>/etc/topaz/</directory>
+              <directory>/usr/local/topaz/${project.build.finalName}/server/jakarta-tomcat-5.0.28/common/classes</directory>
               <configuration>true</configuration>
               <filemode>644</filemode>
               <username>topaz</username>
@@ -122,10 +116,13 @@
                 <source>
                   <location>src/main/resources/log4j.xml</location>
                 </source>
-                <source>
-                  <location>src/main/resources/fedora.fcfg</location>
-                </source>
               </sources>
+            </mapping>
+            <mapping>
+              <directory>/usr/local/topaz/${project.build.finalName}</directory>
+              <filemode>755</filemode>
+              <username>topaz</username>
+              <groupname>topaz</groupname>
             </mapping>
             <mapping>
               <directory>/etc/topaz</directory>
@@ -136,6 +133,9 @@
               <sources>
                 <source>
                   <location>src/main/resources/topaz.xml</location>
+                </source>
+                <source>
+                  <location>src/main/resources/fedora.fcfg</location>
                 </source>
               </sources>
             </mapping>
