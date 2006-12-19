@@ -174,7 +174,8 @@ function submitResponseInfo(targetObj) {
          window.location.href = namespace + "/annotation/listThread.action?inReplyTo=" + rootId +"&root=" + rootId;
        }
        else {
-         dojo.dom.insertAfter(togglePanel.newPanel, document.lastChild, false);
+         if (dojo.render.html.ie)
+           dojo.dom.insertAfter(togglePanel.newPanel, document.lastChild, false);
          getDiscussion(targetObj);
          topaz.responsePanel.hide();
          topaz.formUtil.textCues.reset(targetForm.responseArea, targetObj.responseCue);
