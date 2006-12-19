@@ -126,18 +126,6 @@ CLASSPATH="$TC/bin/bootstrap.jar:$TC/bin/commons-logging-api.jar"
 # Add the javac compiler - for jsp files (tomcat's catalina.sh does this too)
 CLASSPATH="$JAVA_HOME/lib/tools.jar:$CLASSPATH"
 
-# Define options for JSVC
-JSVC_OPTS="-outfile ${STDLOG} -pidfile ${PIDFILE} -cp ${CLASSPATH}"
-[ -n "$JVM" ] && JSVC_OPTS="${JSVC_OPTS} -jvm ${JVM}"
-[ -n "$USER" ] && JSVC_OPTS="$JSVC_OPTS -user ${USER}"
-JSVC_OPTS="${JSVC_OPTS} \
-  -Djava.endorsed.dirs=${CATALINA_ENDORSED_DIRS} \
-  -Dcatalina.base=${CATALINA_HOME} \
-  -Dcatalina.home=${CATALINA_HOME}"
-#  -Djava.security.manager \
-#  -Djava.security.policy=${CATALINA_POLICY}
-JSVC_OPTS="${JSVC_OPTS} ${TOMCAT_OPTS} ${TOMCAT_TRUST_OPTS}"
-
 # Find jsvc (in case root's PATH) doesn't contain it
 if which ${JSVC} >/dev/null 2>&1; then
   # For some reason, jsvc has trouble starting if it is not an absolute path
@@ -149,6 +137,18 @@ else STARTUP="java"
 fi
 
 PIDFILE="${PIDDIR}/${BASENAME}-${STARTUP}.pid"
+
+# Define options for JSVC
+JSVC_OPTS="-outfile ${STDLOG} -pidfile ${PIDFILE} -cp ${CLASSPATH}"
+[ -n "$JVM" ] && JSVC_OPTS="${JSVC_OPTS} -jvm ${JVM}"
+[ -n "$USER" ] && JSVC_OPTS="$JSVC_OPTS -user ${USER}"
+JSVC_OPTS="${JSVC_OPTS} \
+  -Djava.endorsed.dirs=${CATALINA_ENDORSED_DIRS} \
+  -Dcatalina.base=${CATALINA_HOME} \
+  -Dcatalina.home=${CATALINA_HOME}"
+#  -Djava.security.manager \
+#  -Djava.security.policy=${CATALINA_POLICY}
+JSVC_OPTS="${JSVC_OPTS} ${TOMCAT_OPTS} ${TOMCAT_TRUST_OPTS}"
 
 # Find lsof (in case root's PATH doesn't contain it)
 LSOF=`which lsof`
