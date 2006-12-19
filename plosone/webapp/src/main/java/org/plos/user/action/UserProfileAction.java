@@ -76,7 +76,8 @@ public class UserProfileAction extends UserActionSupport {
   private static final String EXTENDED_GROUP = "extended";
   private static final String ORG_GROUP = "org";
   private final String HTTP_PREFIX = "http://";
-  private static final Pattern spacePattern = Pattern.compile("\\s");
+  private static final Pattern spacePattern = Pattern.compile("[\\p{L}\\p{N}\\p{Pc}\\p{Pd}]*");
+//  private static final Pattern spacePattern = Pattern.compile("\\s");
   boolean isDisplayNameSet = true;
 
   static {
@@ -106,33 +107,37 @@ public class UserProfileAction extends UserActionSupport {
    * @return status code for webwork
    */
   public String executeSaveUser() throws Exception {
+    final PlosOneUser userFromSession = getPlosOneUserFromSession();
+    //if new user then capture the displayname and if display name is blank (when user has been migrated)
+    if ((null == userFromSession) || (StringUtils.isBlank(userFromSession.getDisplayName()))) {
+        isDisplayNameSet = false;
+    }
+
     if (!validates()) {
       email = fetchUserEmailAddress();
-      if (null == getPlosOneUserFromSession()) {
-        isDisplayNameSet = false;
-      }
       return INPUT;
     }
+    
     final Map<String, Object> sessionMap = getSessionMap();
     authId = getUserId(sessionMap);
 
     topazId = getUserService().lookUpUserByAuthId(authId);
     if (topazId == null) {
-      isDisplayNameSet = false;
       topazId = getUserService().createUser(authId);
     }
+
+    final PlosOneUser newUser = createPlosOneUser();
+    //if new or migrated user then capture the displayname
+    if (!isDisplayNameSet) {
+      newUser.setDisplayName(this.displayName);
+    }
+
     if (log.isDebugEnabled()) {
       log.debug("Topaz ID: " + topazId + " with authID: " + authId);
     }
 
     homePage = makeValidUrl(homePage);
     weblog = makeValidUrl(weblog);
-    
-    final PlosOneUser newUser = createPlosOneUser();
-    if (!isDisplayNameSet) {
-      //if new user then capture the displayname
-      newUser.setDisplayName(this.displayName);
-    }
 
     try {
       //If a field is not among the private fields, it is saved as public
@@ -198,12 +203,14 @@ public class UserProfileAction extends UserActionSupport {
       email = fetchUserEmailAddress();
       log.debug("new profile with email: " + email);
       return NEW_PROFILE;
-    } else if (null == plosOneUser.getDisplayName()) {
+    } else if (StringUtils.isBlank(plosOneUser.getDisplayName())) {
       // if the user has no display name, possibly getting migrated from an old system
       try {
         log.debug("this is an existing user with email: " + plosOneUser.getEmail());
         email = plosOneUser.getEmail();
         realName = plosOneUser.getRealName();
+        givenNames = plosOneUser.getGivenNames();
+        surnames = plosOneUser.getSurnames();
       } catch(NullPointerException  ex) {
         log.debug("Profile was not found");
       }
@@ -277,15 +284,15 @@ public class UserProfileAction extends UserActionSupport {
     final int usernameLength = StringUtils.stripToEmpty(displayName).length();
 
     //Don't validate displayName if the user already has a display name
-    if (null == getPlosOneUserFromSession()) {
-      if (!spacePattern.matcher(displayName).find()) {
+    if (!isDisplayNameSet) {
+      if (spacePattern.matcher(displayName).matches()) {
         if (usernameLength < Integer.parseInt(Length.DISPLAY_NAME_MIN)
               || usernameLength > Integer.parseInt(Length.DISPLAY_NAME_MAX)) {
           addFieldError("displayName", "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters");
           isValid = false;
         }
       } else {
-        addFieldError("displayName", "Username may not contain spaces");
+        addFieldError("displayName", "Usernames may only contain letters, numbers, dashes, and underscores");
         isValid = false;
       }
     }
@@ -319,20 +326,7 @@ public class UserProfileAction extends UserActionSupport {
       isValid = false;
     }
 
-    //Displayname may be null if the user is just editing the profile and so can't change it 
-    if (null != displayName && maliciousContentFound()) {
-      isValid = false;
-    }
-
     return isValid;
-  }
-
-  private boolean maliciousContentFound() {
-    if (TextUtils.isPotentiallyMalicious(displayName)) {
-      addFieldError("displayName", "Invalid characters found in field");
-      return true;
-    }
-    return false;
   }
 
   private boolean isInvalidUrl(final String url) {
