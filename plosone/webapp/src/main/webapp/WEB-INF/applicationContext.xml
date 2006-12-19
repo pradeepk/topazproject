@@ -453,16 +453,23 @@
     </property>
   </bean>
 
-  <bean id="searchService" class="org.plos.search.service.SearchService">
+  <bean id="searchService" class="org.plos.search.service.SearchService" scope="session">
     <property name="snippetsMax" value="3"/>
     <property name="fieldMaxLength" value="50"/>
     <property name="indexName" value="TopazIndex"/>
     <property name="resultPageXslt" value="copyXml"/>
     <property name="searchWebService" ref="searchWebService"/>
+    <aop:scoped-proxy/>
   </bean>
 
-  <bean id="searchWebService" class="org.plos.search.service.SearchWebService" init-method="init">
-    <property name="uri" value="${service.search}"/>
+  <bean id="searchWebService" class="org.plos.search.service.SearchWebService" scope="session">
+    <property name="configurationMap">
+      <map>
+        <entry key="uri" value="${service.search}"/>
+        <entry key="auth-method" value-ref="auth-method"/>
+      </map>
+    </property>
+    <aop:scoped-proxy/>
   </bean>
 
   <bean id="plosOneFreemarkerManager" class="org.plos.webwork.PlosOneFreemarkerManager">
