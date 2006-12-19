@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>topazproject</artifactId>
-  <version>0.5-rc4</version>
+  <version>0.5-rc5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>All Topaz Project stuff</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
-    <version>0.5-rc4</version>
+    <version>0.5-rc5-SNAPSHOT</version>
   </parent>
 
   <modules>

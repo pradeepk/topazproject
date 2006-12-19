@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
-  <version>0.5-rc4</version>
+  <version>0.5-rc5-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>All Plos and Topaz stuff</name>
   <!-- description is encouraged to take HTML embeded in CDATA -->
@@ -67,9 +67,9 @@
   </pluginRepositories>
 
   <scm>
-    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.5-rc4</developerConnection>
-    <connection>scm:svn:http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.5-rc4</connection>
-    <url>http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.5-rc4</url>
+    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/head/</developerConnection>
+    <connection>scm:svn:http://gandalf.topazproject.org/svn/head/</connection>
+    <url>http://gandalf.topazproject.org/svn/</url>
   </scm>
 
   <distributionManagement>
