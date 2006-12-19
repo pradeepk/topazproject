@@ -15,6 +15,12 @@
   <dependencies>
     <dependency>
       <groupId>org.plosone</groupId>
+      <artifactId>plosone-doi-resolver</artifactId>
+      <version>${pom.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
+      <groupId>org.plosone</groupId>
       <artifactId>plosone-webapp</artifactId>
       <version>${pom.version}</version>
       <type>war</type>
@@ -120,6 +126,9 @@
                 </source>
                 <source>
                   <location>src/main/resources/plosone.properties</location>
+                </source>
+                <source>
+                  <location>src/main/resources/plosOneDoi.xml</location>
                 </source>
               </sources>
             </mapping>
