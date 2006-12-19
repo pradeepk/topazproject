@@ -18,4 +18,8 @@ DIR=`ls -td /usr/local/topaz/*"$PKG"-* 2>/dev/null | head -1`
 # Create link to the configuration file
 rm /usr/local/topaz/fedora/server/config/fedora.fcfg
 ln -s /etc/topaz/fedora.fcfg /usr/local/topaz/fedora/server/config/fedora.fcfg
+
+# Change directory permissions
+find $DIR -type d -exec chmod 755 {} \;
+
 exit 0
