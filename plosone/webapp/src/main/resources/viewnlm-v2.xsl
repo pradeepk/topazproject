@@ -1229,8 +1229,14 @@ Make article meta data
 		</p>
 		<p class="affiliations" xpathLocation="noSelect">
 			<xsl:for-each select="contrib-group/aff | contrib-group/contrib[@contrib-type='author']/aff">
-				<xsl:apply-templates select="label"/><xsl:text> </xsl:text>
-				<xsl:apply-templates select="institution" /><xsl:text>, </xsl:text>
+				<xsl:apply-templates select="label"/>
+				<xsl:if test="label">
+                    <xsl:text> </xsl:text>                
+                </xsl:if>
+				<xsl:apply-templates select="institution" />
+				<xsl:if test="institution">
+                    <xsl:text>, </xsl:text>				
+				</xsl:if>
 				<xsl:apply-templates select="addr-line" />
 				<xsl:if test="position() != last()">
 					  <xsl:text>, </xsl:text>
@@ -1246,11 +1252,20 @@ Make article meta data
 					<xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
 					<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
 				</xsl:element>
-				<xsl:apply-templates select="label"/><xsl:text> </xsl:text>
-				<xsl:apply-templates select="institution" /><xsl:text>, </xsl:text>
+				<xsl:apply-templates select="label"/>
+                <xsl:if test="label">
+                    <xsl:text> </xsl:text>                
+                </xsl:if>
+				<xsl:apply-templates select="institution" />
+				<xsl:if test="institution">
+                    <xsl:text>, </xsl:text>				
+				</xsl:if>
 				<xsl:apply-templates select="addr-line" />
-				<xsl:if test="position() != last()">
+				<xsl:if test="following-sibling::aff">
+                    <xsl:variable name="nextId"><xsl:value-of select="following-sibling::aff/@id"/></xsl:variable>
+                    <xsl:if test="../contrib-group/contrib[@contrib-type='author']/xref[@ref-type='aff' and @rid=$nextId]">
 					  <xsl:text>, </xsl:text>
+					</xsl:if>
 				</xsl:if>    
 			</xsl:if>
 		</xsl:for-each>
