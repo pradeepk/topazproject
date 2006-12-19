@@ -18,7 +18,7 @@
 				</div>
 				<!-- begin : response body text -->
 				<blockquote>
-					<p>${reply.commentWithUrlLinking}</p>
+					${reply.commentWithUrlLinking}
 				</blockquote>
 				<!-- end : response body text -->
 				<!-- begin : toolbar options -->
@@ -33,7 +33,7 @@
 						</li>
 						<li>
 						<#if Session.PLOS_ONE_USER?exists>
-							<a href="${loginURL}" onclick="topaz.responsePanel.show(this, dcr, 'toolbar', '${baseAnnotation.id}', '${reply.id}', '${reply.commentTitle}'); return false;" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
+							<a href="${loginURL}" onclick="topaz.responsePanel.show(this, dcr, 'toolbar', '${baseAnnotation.id}', '${reply.id}', '${reply.commentTitle?js_string}'); return false;" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
 						<#else>
 							<a href="${loginURL}" class="respond tooltip" title="Click to respond">Respond to this Posting</a>						
 						</#if>
@@ -68,7 +68,7 @@
 			</div>
 			<!-- begin : response body text -->
 			<blockquote>
-				<p>${baseAnnotation.commentWithUrlLinking}</p>
+				${baseAnnotation.commentWithUrlLinking}
 			</blockquote>
 			<!-- end : response body text -->
 			<!-- begin : toolbar options -->
@@ -83,7 +83,7 @@
 					</li>
 					<li>
 					<#if Session.PLOS_ONE_USER?exists>
-						<a href="${loginURL}" onclick="topaz.responsePanel.show(this, dcr, 'toolbar', '${baseAnnotation.id}', '${baseAnnotation.id}', '${baseAnnotation.commentTitle}'); return false;" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
+						<a href="${loginURL}" onclick="topaz.responsePanel.show(this, dcr, 'toolbar', '${baseAnnotation.id}', '${baseAnnotation.id}', '${baseAnnotation.commentTitle?js_string}'); return false;" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
 					<#else>
 						<a href="${loginURL}" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
 					</#if>
