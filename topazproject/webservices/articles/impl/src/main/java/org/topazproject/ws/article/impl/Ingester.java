@@ -721,14 +721,14 @@ public class Ingester {
       log.debug("Rolling back fgs index");
       for (Iterator iter = fgsObjects.iterator(); iter.hasNext(); ) {
         String pid = (String) iter.next();
-        int i = 0;
-        try {
-          for (i = 0; i < fgs.length; i++)
+        for (int i = 0; i < fgs.length; i++) {
+          try {
             fgs[i].updateIndex("deletePid", pid, FGS_REPO, null, null, null);
-        } catch (Exception e) {
-          log.error("Error while rolling back failed ingest: fgs deletePid failed for pid '" +
-                    pid + "' on repo '" + FGS_REPO + "' on server " + i +
-                    " (topaz.xml:<fedoragsearch><urls><url>)", e);
+          } catch (Exception e) {
+            log.error("Error while rolling back failed ingest: fgs deletePid failed for pid '" +
+                      pid + "' on repo '" + FGS_REPO + "' on server " + i +
+                      " (topaz.xml:<fedoragsearch><urls><url>)", e);
+          }
         }
       }
 
