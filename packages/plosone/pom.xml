@@ -59,7 +59,7 @@
         </executions>
 
         <configuration>
-          <release>SNAPSHOT</release>
+          <release>rc3</release>
           <copyright>Educational Community License version 1.0</copyright>
           <distribution>Topaz Repository Framework</distribution>
           <group>Applications/Internet</group>
