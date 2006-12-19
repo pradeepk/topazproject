@@ -27,6 +27,9 @@
       <includes>
         <include>*plos*:war</include>
       </includes>
+      <excludes>
+	<exclude>*doi*:war</exclude>
+      </excludes>
     </dependencySet>
     <dependencySet>
       <outputDirectory>/webapps/</outputDirectory>

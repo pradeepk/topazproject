@@ -19,6 +19,7 @@
     <module>cas-mod</module>
     <module>webwork-json-mod</module>
     <module>emailer</module>
+    <module>doi-resolver</module>
   </modules>
 
 </project>
