@@ -5,12 +5,12 @@
   <artifactId>ws-common</artifactId>
   <packaging>pom</packaging>
   <name>Webservices Common</name>
-  <version>0.5-rc3-SNAPSHOT</version>
+  <version>0.5-rc3</version>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>webservices</artifactId>
-    <version>0.5-rc3-SNAPSHOT</version>
+    <version>0.5-rc3</version>
   </parent>
 
   <licenses>
