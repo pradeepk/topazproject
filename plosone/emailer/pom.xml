@@ -4,14 +4,14 @@
   <groupId>${pom.parent.groupId}</groupId>
   <artifactId>${pom.parent.artifactId}-emailer</artifactId>
   <packaging>jar</packaging>
-  <version>0.5-rc4-SNAPSHOT</version>
+  <version>0.5-rc4</version>
   <name>PLoS module for Email</name>
 
   <parent>
     <groupId>org.plosone</groupId>
     <artifactId>plosone</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>0.5-rc4-SNAPSHOT</version>
+    <version>0.5-rc4</version>
   </parent>
 
   <dependencies>

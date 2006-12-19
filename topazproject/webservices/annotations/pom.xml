@@ -6,12 +6,12 @@
   <artifactId>ws-annotation</artifactId>
   <packaging>pom</packaging>
   <name>Annotations Webservice</name>
-  <version>0.5-rc4-SNAPSHOT</version>
+  <version>0.5-rc4</version>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>webservices</artifactId>
-    <version>0.5-rc4-SNAPSHOT</version>
+    <version>0.5-rc4</version>
   </parent>
 
   <reporting>
