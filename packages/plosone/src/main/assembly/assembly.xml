@@ -25,7 +25,15 @@
       <outputFileNameMapping></outputFileNameMapping>
       <unpack>true</unpack>
       <includes>
-        <include>*:war</include>
+        <include>*plos*:war</include>
+      </includes>
+    </dependencySet>
+    <dependencySet>
+      <outputDirectory>/webapps/</outputDirectory>
+      <outputFileNameMapping>${artifactId}</outputFileNameMapping>
+      <unpack>true</unpack>
+      <includes>
+        <include>*doi*:war</include>
       </includes>
     </dependencySet>
     <dependencySet>
