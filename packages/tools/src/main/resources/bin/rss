@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 # $HeadURL::                                                                   $
-# $Id:                                             $
+# $Id$
 #
 # Copyright (c) 2006 by Topaz, Inc.
 # http://topazproject.org
@@ -11,4 +11,4 @@
 # Load the common functions
 . /usr/local/topaz/bin/tools
 
-java -cp `getJars` RSSInfo $@
+java -cp `getJars` RSSInfo "$@"
