@@ -135,14 +135,6 @@ public class Statement {
       Results results = getResults(queryString);
 
       StringBuffer resultXml = new StringBuffer();
-      resultXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
-        .append("<lucenesearch ")
-        .append("   xmlns:dc=\"http://purl.org/dc/elements/1.1/")
-        .append("\" query=\"").append(URLEncoder.encode(queryString, "UTF-8"))
-        .append("\" indexName=\"").append(INDEX_NAME)
-        .append("\" hitPageStart=\"").append(startRecord)
-        .append("\" hitPageSize=\"").append(maxResults)
-        .append("\" hitTotal=\"").append(results.size).append("\">"); // unreliable
 
       results.iter.gotoRecord((int)startRecord);
       int cnt = 0;
@@ -193,6 +185,26 @@ public class Statement {
       }
       resultXml.append("</lucenesearch>");
 
+      /* results.size is inaccurate due to xacml, so see if we have everything.
+       * if so shring size to the number we found
+       */
+      int size = results.size;
+      if (cnt < size)
+        size = cnt;
+      
+      StringBuffer preXml = new StringBuffer();
+      preXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
+        .append("<lucenesearch ")
+        .append("   xmlns:dc=\"http://purl.org/dc/elements/1.1/")
+        .append("\" query=\"").append(URLEncoder.encode(queryString, "UTF-8"))
+        .append("\" indexName=\"").append(INDEX_NAME)
+        .append("\" hitPageStart=\"").append(startRecord)
+        .append("\" hitPageSize=\"").append(maxResults)
+        .append("\" hitTotal=\"").append(size).append("\">");
+
+      // Stuff the preXml into our results
+      resultXml.insert(0, preXml.toString());
+      
       if (log.isDebugEnabled())
         log.debug(queryString + ":found " + cnt + " of " + (cnt + maxResults)
                   + " hits starting at " + startRecord);
