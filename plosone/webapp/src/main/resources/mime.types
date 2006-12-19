@@ -148,7 +148,7 @@ x-conference/x-cooltalk			ice
 # TEXT-RELATED
 
 # PostScript
-application/postscript			ai eps ps
+application/postscript	ps ai eps 
 # Microsoft Rich Text Format
 application/rtf				rtf
 # Adobe Acrobat PDF
