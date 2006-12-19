@@ -75,7 +75,9 @@
     </life-cycle-listeners>
 
     <fedoragsearch>
-      <url>http://localhost:9092/ws-search-webapp/services/FedoraGenericSearchServicePort</url>
+      <urls>
+        <url>http://localhost:9092/ws-search-webapp/services/FedoraGenericSearchServicePort</url>
+      </urls>
       <repository>Topaz</repository>
       <index>TopazIndex</index>
       <indexDocXslt>topazFoxmlToLucene</indexDocXslt>

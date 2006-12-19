@@ -78,7 +78,7 @@ public class ArticleImpl implements Article {
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
   private static final String        MODEL = "<" + CONF.getString("topaz.models.articles") + ">";
 
-  private static final String        FGS_URL   = CONF.getString("topaz.fedoragsearch.url");
+  private static final List          FGS_URLS  = CONF.getList("topaz.fedoragsearch.urls.url");
   private static final String        FGS_REPO  = CONF.getString("topaz.fedoragsearch.repository");
 
   private static final String ITQL_DELETE_OBJ =
@@ -156,7 +156,7 @@ public class ArticleImpl implements Article {
   private final Ingester   ingester;
   private final ArticlePEP pep;
   private final TopazContext ctx;
-  private final FgsOperations fgs;
+  private final FgsOperations[] fgs;
 
   /**
    * Creates a new ArticleImpl object.
@@ -201,15 +201,19 @@ public class ArticleImpl implements Article {
     this.pep = pep;
   }
 
-  private static FgsOperations getFgsOperations() throws ServiceException {
-    try {
-      FgsOperations ops = new FgsOperationsServiceLocator().getOperations(new URL(FGS_URL));
-      if (ops == null)
-        throw new ServiceException("Unable to create fedoragsearch service at " + FGS_URL);
-      return ops;
-    } catch (MalformedURLException mue) {
-      throw new ServiceException("Invalid fedoragsearch URL - " + FGS_URL, mue);
+  private static FgsOperations[] getFgsOperations() throws ServiceException {
+    FgsOperations ops[] = new FgsOperations[FGS_URLS.size()];
+    for (int i = 0; i < ops.length; i++) {
+      String url = FGS_URLS.get(i).toString();
+      try {
+        ops[i] = new FgsOperationsServiceLocator().getOperations(new URL(url));
+      } catch (MalformedURLException mue) {
+        throw new ServiceException("Invalid fedoragsearch URL '" + url + "'", mue);
+      }
+      if (ops[i] == null)
+        throw new ServiceException("Unable to create fedoragsearch service at '" + url + "'");
     }
+    return ops;
   }
 
   private static URI getRemoteFedoraURI(URI fedoraURI, String hostname) {
@@ -311,9 +315,20 @@ public class ArticleImpl implements Article {
           log.debug("deleting uri '" + uri + "'");
 
         // Remove article from full-text index first
-        String result = fgs.updateIndex("deletePid", pid, FGS_REPO, null, null, null);
+        String result = "";
+        int i = 0;
+        try {
+          for (i = 0; i < fgs.length; i++)
+            result = fgs[i].updateIndex("deletePid", pid, FGS_REPO, null, null, null);
+        } catch (RemoteException re) {
+          if (i != 0)
+            log.error("Deleted pid '" + pid + "' from servers 0 to " + i +
+                      " but not from servers " + (i+1) + " to " + fgs.length +
+                      ". Clean up required.", re);
+          throw re;
+        }
         if (log.isDebugEnabled())
-          log.debug("Removed " + pid + " from full-text index:\n" + result);
+          log.debug("Removed '" + pid + "' from full-text index:\n" + result);
 
         // remove object and meta-data
         try {

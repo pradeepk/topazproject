@@ -122,16 +122,16 @@ public class Ingester {
   private final TransformerFactory tFactory;
   private final TopazContext       ctx;
   private final ArticlePEP         pep;
-  private final FgsOperations      fgs;
+  private final FgsOperations[]    fgs;
 
   /** 
    * Create a new ingester pointing to the given fedora server.
    * 
    * @param pep      the policy-enforcer to use for access-control
    * @param ctx      the topaz context containing apim, uploader and itql
-   * @param fgs      the fedoragsearch client
+   * @param fgs      an array of fedoragsearch clients
    */
-  public Ingester(ArticlePEP pep, TopazContext ctx, FgsOperations fgs) {
+  public Ingester(ArticlePEP pep, TopazContext ctx, FgsOperations[] fgs) {
     this.ctx = ctx;
     this.pep = pep;
     this.fgs = fgs;
@@ -521,9 +521,28 @@ public class Ingester {
   }
 
   private void fgsIndex(String pid) throws RemoteException {
-    String result = fgs.updateIndex("fromPid", pid, FGS_REPO, null, null, null);
-    if (log.isDebugEnabled())
-      log.debug("Indexed " + pid + ":\n" + result);
+    String result = "";
+    int i = 0;
+    try {
+      for (i = 0; i < fgs.length; i++)
+        result = fgs[i].updateIndex("fromPid", pid, FGS_REPO, null, null, null);
+      if (log.isDebugEnabled())
+        log.debug("Indexed '" + pid + "':\n" + result);
+    } catch (RemoteException re) {
+      log.info("Error ingesting to fgs server " + i + " unwinding ingests to servers 0-" + i +
+               " (topaz.xml:<fedoragsearch><urls><url>)");
+      for (int j = 0; j < i; j++) {
+        try {
+          result = fgs[j].updateIndex("deletePid", pid, FGS_REPO, null, null, null);
+          log.info("Deleted pid '" + pid + "' from fgs server " + j + ":\n" + result);
+        } catch (RemoteException re2) {
+          log.warn("Unable to delete pid '" + pid + "' from fgs server " + j +
+                   " after indexing failed on server " + i +
+                   " (topaz.xml:<fedoragsearch><urls><url>)", re2);
+        }
+      }
+      throw re;
+    }
   }
 
   private String dom2String(Node dom) {
@@ -680,7 +699,7 @@ public class Ingester {
       s.add(statements);
     }
 
-    void doRollback(ItqlHelper itql, FedoraAPIM apim, FgsOperations fgs, Permissions perms) {
+    void doRollback(ItqlHelper itql, FedoraAPIM apim, FgsOperations[] fgs, Permissions perms) {
       // clear out RDF statements
       log.debug("Rolling back RDF statements");
       for (Iterator iter = rdfStmts.keySet().iterator(); iter.hasNext(); ) {
@@ -702,11 +721,14 @@ public class Ingester {
       log.debug("Rolling back fgs index");
       for (Iterator iter = fgsObjects.iterator(); iter.hasNext(); ) {
         String pid = (String) iter.next();
+        int i = 0;
         try {
-          fgs.updateIndex("deletePid", pid, FGS_REPO, null, null, null);
+          for (i = 0; i < fgs.length; i++)
+            fgs[i].updateIndex("deletePid", pid, FGS_REPO, null, null, null);
         } catch (Exception e) {
           log.error("Error while rolling back failed ingest: fgs deletePid failed for pid '" +
-                    pid + "' on repo '" + FGS_REPO + "'", e);
+                    pid + "' on repo '" + FGS_REPO + "' on server " + i +
+                    " (topaz.xml:<fedoragsearch><urls><url>)", e);
         }
       }
 
