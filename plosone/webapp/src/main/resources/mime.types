@@ -13,7 +13,7 @@ image/ief				ief
 image/jpeg				jpeg jpg jpe JPG
 image/tiff				tiff tif
 image/x-xwindowdump			xwd
-application/postscript			ai eps ps
+application/postscript	ps ai eps
 application/rtf				rtf
 application/x-tex			tex
 application/x-texinfo			texinfo texi
@@ -201,9 +201,9 @@ application/x-stuffit			sit sea
 # Fractal Image Format
 application/fractals			fif
 # "Binary UUencoded"
-application/octet-stream		bin uu
+# application/octet-stream		bin uu
 # PC executable
-application/octet-stream		exe
+# application/octet-stream		exe
 # "WAIS ""sources"""
 application/x-wais-source		src wsrc
 # NCSA HDF data format
@@ -260,7 +260,7 @@ x-script/x-wfxclient			wfx
 # GENERAL APPLICATIONS
 
 # Undefined binary data (often executable progs)
-application/octet-stream		exe com
+# application/octet-stream		exe com
 # Pointcast news data (Pointcast)
 application/x-pcn			pcn
 # Excel spreadsheet (Microsoft)
