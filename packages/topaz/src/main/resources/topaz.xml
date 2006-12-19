@@ -65,18 +65,6 @@
       <relayport>25</relayport>
     </alerts>
     
-    <!-- Schedule alerts -->
-    <scheduler>
-      <jobs>
-        <job name="sendalerts" group="topaz">
-          <class>org.topazproject.ws.alerts.impl.SendAlertsJob</class>
-          <!-- See http://www.opensymphony.com/quartz/api/org/quartz/CronExpression.html -->
-          <!-- The 4th of every month -->
-          <cron>0 0 2 4 * ?</cron>
-        </job>
-      </jobs>
-    </scheduler>
-
     <articles>
       <pdpName>standard-pdp</pdpName>
     </articles>

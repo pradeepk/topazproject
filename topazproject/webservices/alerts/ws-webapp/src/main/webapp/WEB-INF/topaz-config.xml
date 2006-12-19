@@ -31,13 +31,16 @@
         <property>org.quartz.jobStore.class = org.quartz.simpl.RAMJobStore</property>
         <property>org.quartz.jobStore.misfireThreshold = 5000</property>
       </config>
+      
+      <!-- Example: 2am Fridays: 0 0 2 ? * FRI - OR, for testing, once per min: 0 * * * * ? -->
       <jobs>
         <job name="sendalerts" group="topaz">
           <class>org.topazproject.ws.alerts.impl.SendAlertsJob</class>
-          <cron>0 0 2 ? * FRI</cron> <!-- 2am Fridays -->
-          <!-- For testing / once per minute: 0 * * * * ? -->
+          <cron>0 0 2 ? * FRI</cron>
         </job>
       </jobs>
+      -->
+      
     </scheduler>
 
   </topaz>
