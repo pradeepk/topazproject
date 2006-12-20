@@ -139,8 +139,7 @@ public class Statement {
       results.iter.gotoRecord((int)startRecord);
       int cnt = 0;
       
-      while (maxResults-- > 0 && results.iter.hasNext()) {
-        cnt++;
+      while (cnt++ < maxResults && results.iter.hasNext()) {
         Hit hit = (Hit) results.iter.next();
         Document doc = hit.getDocument();
         resultXml.append("<hit no=\"").append(cnt)
@@ -206,9 +205,10 @@ public class Statement {
       resultXml.insert(0, preXml.toString());
       
       if (log.isDebugEnabled())
-        log.debug(queryString + ":found " + cnt + " of " + (cnt + maxResults)
-                  + " hits starting at " + startRecord);
-      
+        log.debug(queryString + ":found " + cnt + " starting at record " + startRecord +
+                  " of " + maxResults + " requested records : total indexed " + results.size +
+                  " records, returning " + size + " records");
+
       // Wrap resultXml String in an object to return it
       return new ResultSet(resultXml);
     } catch (IOException e) {
