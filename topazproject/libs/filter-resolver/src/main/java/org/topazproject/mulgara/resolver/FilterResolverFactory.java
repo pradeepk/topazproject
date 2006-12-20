@@ -153,6 +153,8 @@ public class FilterResolverFactory implements ResolverFactory {
   public void close() throws ResolverFactoryException {
     for (int idx = 0; idx < handlers.length; idx++)
       handlers[idx].close();
+
+    logger.info("All handlers closed");
   }
 
   /**
