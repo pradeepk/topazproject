@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.topazproject.ws</groupId>
     <artifactId>ws-alerts</artifactId>
-    <version>0.5-rc5</version>
+    <version>0.5-rc6-SNAPSHOT</version>
   </parent>
 
   <licenses>
