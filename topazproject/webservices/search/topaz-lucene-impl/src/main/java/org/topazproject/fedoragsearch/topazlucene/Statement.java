@@ -189,7 +189,7 @@ public class Statement {
        * if so shring size to the number we found
        */
       int size = results.size;
-      if (cnt < size)
+      if (cnt < size && cnt < maxResults && startRecord == 0)
         size = cnt;
       
       StringBuffer preXml = new StringBuffer();
