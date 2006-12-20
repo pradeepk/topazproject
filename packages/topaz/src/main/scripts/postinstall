@@ -16,7 +16,7 @@ DIR=`ls -td /usr/local/topaz/*"$PKG"-* 2>/dev/null | head -1`
 if [ ! -e /etc/sysconfig/$PKG ]; then
   MEM=`free -mo | grep Mem | awk '{print $2-128}'`
   cat >/etc/sysconfig/$PKG <<EOF
-${PKG}_TOMCAT_OPTS="-Xmx${MEM}m -XX:MaxPermSize=256m"
+export ${PKG}_TOMCAT_OPTS="-Xmx${MEM}m -XX:MaxPermSize=256m"
 EOF
   chmod 755 /etc/sysconfig/$PKG
 fi
