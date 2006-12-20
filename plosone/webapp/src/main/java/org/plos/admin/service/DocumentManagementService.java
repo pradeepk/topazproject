@@ -82,6 +82,8 @@ public class DocumentManagementService {
   
   private String plosDoiUrl;
   
+  private String plosEmail;
+  
   private boolean sendToXref;
   
   public DocumentManagementService() {
@@ -377,6 +379,7 @@ public class DocumentManagementService {
     
     Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(xslTemplate));
     t.setParameter("plosDoiUrl", plosDoiUrl);
+    t.setParameter("plosEmail", plosEmail);
     StreamSource s_source = new StreamSource(src);
     StreamResult s_result = new StreamResult(dest);
     t.transform(s_source, s_result);
@@ -471,5 +474,12 @@ public class DocumentManagementService {
    */
   public void setSendToXref(boolean sendToXref) {
     this.sendToXref = sendToXref;
+  }
+
+  /**
+   * @param plosEmail The plosEmail to set.
+   */
+  public void setPlosEmail(String plosEmail) {
+    this.plosEmail = plosEmail;
   }
 }

@@ -2,6 +2,7 @@
 <xsl:stylesheet version="2.0" xmlns:xsl="http://www.w3.org/1999/XSL/Transform">
     <xsl:output method="xml" indent="yes" encoding="UTF-8" omit-xml-declaration="no"/>
     <xsl:param name="plosDoiUrl"/>
+    <xsl:param name="plosEmail"/>
     <xsl:template match="/">
         <xsl:variable name="currentDateTime" select="current-dateTime()"/>
         <xsl:variable name="timestamp" select="format-dateTime($currentDateTime, '[Y0001][M01][D01][H01][m01][s01]')"/>
@@ -16,7 +17,7 @@
                 </timestamp>
                 <depositor>
                     <name>Public Library of Science</name>
-                    <email_address>doi@plos.org</email_address>
+                    <email_address><xsl:value-of select="$plosEmail"/></email_address>
                 </depositor>
                 <registrant>Public Library of Science</registrant>
             </head>
