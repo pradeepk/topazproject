@@ -21,7 +21,7 @@
   			<#list uploadableFiles as file>
   				<@ww.checkbox name="filesToIngest" label="${file}" fieldValue="${file}"/><br/>
   			</#list>
-  			<br/>
+ 			<br/>
             <@ww.submit value="Ingest Selected Archives" />
          </@ww.form>
 	</fieldset>
@@ -55,11 +55,17 @@
 				<tr><td><b>Time</b></td><td><b>Comment</b></td><td><b>By</b></td><td><b>Refers To</b></td><td><b>Reason</b></td><td><b>Action</b></td></tr>
 				<tr><td colspan="6"><hr/></td></tr>				
 				<#list flaggedComments as flaggedComment>
+					<#if flaggedComment.isAnnotation>
+						<@ww.url id="flagURL" namespace="/admin" action="viewAnnotation" annotationId="${flaggedComment.target}"/>
+					<#else>
+						<@ww.url id="flagURL" namespace="/admin" action="viewReply" replyId="${flaggedComment.target}"/>
+					</#if>
 				<tr>
 					 <td>${flaggedComment.created}</td>				
 					 <td width="20%">${flaggedComment.flagComment}</td>
 					 <td><a href="../user/displayUser.action?userId=${flaggedComment.creatorid}"/>${flaggedComment.creator}</a></td>
-					 <td width="20%"><a href="${flaggedComment.targetDisplayURL}">${flaggedComment.targetTitle}</a></td>
+					 <td width="20%"><a href="${flagURL}">${flaggedComment.targetTitle}</a>
+					 </td>
 					 <td>${flaggedComment.reasonCode}</td>
 					 <td>
 					   	<@ww.checkbox name="commentsToDelete" label="Delete Sub-thread" fieldValue="${flaggedComment.root}_${flaggedComment.target}"/><br/>

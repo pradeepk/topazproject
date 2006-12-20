@@ -44,6 +44,10 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
     }
   }
   
+  public boolean getIsAnnotation () {
+    return (null==root);
+  }
+  
   public String getRoot() {
     return (null == root) ? "" : root;
   }

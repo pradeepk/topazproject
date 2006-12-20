@@ -11,7 +11,7 @@
 				<tr><td width="100px">&nbsp;</td><td/></tr>
 				<tr><td>Id</td><td>${annotation.id}</td></tr>
 	          	<tr><td>Title</td><td>${annotation.commentTitle}</td></tr>
-	          	<tr><td>Created</td><td>${annotation.created}</td></tr>
+	          	<tr><td>Created</td><td>${annotation.createdAsDate?datetime}</td></tr>
 	          	<tr><td>Creator</td><td><a href="../user/showUser.action?userId=${annotation.creator}">${annotation.creator}</a></td></tr>
 			  	<tr/>
 			  	<tr/>

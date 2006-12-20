@@ -771,7 +771,7 @@
   	  	<result name="success">/WEB-INF/pages/admin/viewAnnotation.ftl</result>
   	</action>   
   	
-  	<action name="viewReply" class="org.plos.admin.action.ViewReplyAction">
+  	<action name="viewReply" class="org.plos.annotation.action.GetReplyAction">
   	  	<result name="success">/WEB-INF/pages/admin/viewReply.ftl</result>
   	</action>    		
   </package>
