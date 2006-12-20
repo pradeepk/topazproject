@@ -5383,7 +5383,7 @@ Make article meta data
 </xsl:template>
 
 <xsl:template match="text()">
-	<xsl:value-of select="translate(., '&#x200A;&#8764;', ' ~') "/>
+	<xsl:value-of select="translate(., '&#x200A;&#8764;&#x02236;&#x02208;', ' ~:&#x404;') "/>
 </xsl:template>
 
 <!-- ============================================================= -->
