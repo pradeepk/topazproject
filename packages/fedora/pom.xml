@@ -126,9 +126,6 @@
               <groupname>topaz</groupname>
               <sources>
                 <source>
-                  <location>src/main/resources/topaz.xml</location>
-                </source>
-                <source>
                   <location>src/main/resources/fedora.fcfg</location>
                 </source>
               </sources>
