@@ -494,7 +494,6 @@
        <props>
          <prop key="cache.memory">true</prop>
          <prop key="cache.event.listeners">com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener</prop>
-         <prop key="cache.cluster.properties">UDP(mcast_addr=231.12.21.131;mcast_port=45566;ip_ttl=1;mcast_send_buf_size=150000;mcast_recv_buf_size=80000):PING(timeout=2000;num_initial_members=3;):MERGE2(min_interval=5000;max_interval=10000):FD_SOCK:VERIFY_SUSPECT(timeout=1500):pbcast.NAKACK(gc_lag=50;retransmit_timeout=300,600,1200,2400,4800;max_xmit_size=8192):UNICAST(timeout=300,600,1200,2400):pbcast.STABLE(desired_avg_gossip=20000):FRAG(frag_size=8096;down_thread=false;up_thread=false):pbcast.GMS(join_timeout=5000;join_retry_timeout=2000;shun=false;print_local_addr=true)</prop>
  <!--    <prop key="cache.capacity">500</prop>-->
        </props>
      </constructor-arg>
@@ -503,7 +502,6 @@
   <!-- email configuration -->
   <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
     <property name="host" value="${mailhost}"/>
-    <property name="port" value="${mailport}"/>
   </bean>
 
   <bean id="freemarkerConfig" class="org.springframework.web.servlet.view.freemarker.FreeMarkerConfigurer">
