@@ -306,12 +306,12 @@ public class UserService extends BaseConfigurableService {
   protected void setProfile(final String topazUserId, final UserProfile profile)
       throws ApplicationException, DisplayNameAlreadyExistsException {
     try {
-      userCacheAdministrator.flushEntry(topazUserId);
       final String userId = profileWebService.getUserWithDisplayName(profile.getDisplayName());
       if ((null != userId) && !userId.equals(topazUserId)) {
         throw new DisplayNameAlreadyExistsException();
       }
       profileWebService.setProfile(topazUserId, profile);
+      userCacheAdministrator.flushEntry(topazUserId);
     } catch (NoSuchIdException ne) {
       throw new ApplicationException(ne);
     } catch (RemoteException re) {
@@ -490,7 +490,6 @@ public class UserService extends BaseConfigurableService {
   protected void setPreferences(final String appId, final String topazUserId, UserPreference[] prefs)
       throws ApplicationException {
     try {
-      userCacheAdministrator.flushEntry(topazUserId);
       preferencesWebService.setPreferences(appId, topazUserId, prefs);
     } catch (NoSuchIdException ne) {
       throw new ApplicationException(ne);

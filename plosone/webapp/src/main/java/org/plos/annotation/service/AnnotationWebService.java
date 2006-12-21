@@ -96,8 +96,8 @@ public class AnnotationWebService extends BaseAnnotationService {
   public void deletePrivateAnnotation(final String annotationId, final boolean deletePreceding) throws RemoteException, NoSuchAnnotationIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     AnnotationInfo ai = getAnnotation(annotationId);
-    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
     annotationService.deleteAnnotation(annotationId, deletePreceding);
+    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
   }
 
   /**
@@ -111,8 +111,8 @@ public class AnnotationWebService extends BaseAnnotationService {
     ensureInitGetsCalledWithUsersSessionAttributes();
     //annotationService.setAnnotationState(annotationId, PUBLIC_MASK | DELETE_MASK);  
     AnnotationInfo ai = getAnnotation(annotationId);
-    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
     annotationService.deleteAnnotation(annotationId, true);  
+    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
   }
 
   
@@ -126,8 +126,8 @@ public class AnnotationWebService extends BaseAnnotationService {
     ensureInitGetsCalledWithUsersSessionAttributes();
     //annotationService.setAnnotationState(flagId, DELETE_MASK);
     AnnotationInfo ai = getAnnotation(flagId);
-    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
     annotationService.deleteAnnotation(flagId, true);
+    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(ai.getAnnotates()));
   }
 
   /**
@@ -161,7 +161,7 @@ public class AnnotationWebService extends BaseAnnotationService {
         throw (e);
       } finally {
         if (!updated)
-          articleCacheAdministrator.cancelUpdate(target);
+          articleCacheAdministrator.cancelUpdate(target + CACHE_KEY_ANNOTATION);
       }
     }
     return annotations;
