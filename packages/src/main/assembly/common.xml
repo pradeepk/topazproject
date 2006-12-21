@@ -17,6 +17,7 @@
       <outputDirectory>/</outputDirectory>
       <excludes>
         <exclude>conf/server.xml</exclude>
+        <exclude>conf/context.xml</exclude>
         <exclude>webapps/**</exclude>
       </excludes>
     </fileSet>

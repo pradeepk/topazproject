@@ -25,6 +25,11 @@
       <outputDirectory>conf</outputDirectory>
       <destName>server.xml</destName>
     </file>
+    <!-- Copy over webapp specific context.xml file -->
+    <file>
+      <source>src/main/resources/context.xml</source>
+      <outputDirectory>conf</outputDirectory>
+    </file>
     <!-- Copy over webapp specific log4j.xml file -->
     <file>
       <source>src/main/resources/LoggerConf.xml</source>
