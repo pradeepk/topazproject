@@ -86,6 +86,7 @@
     <module>plosone</module>
     <module>plos-registration</module>
     <module>re-package</module>
+    <module>packages</module>
   </modules>
 
   <properties>
