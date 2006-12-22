@@ -653,11 +653,11 @@
         <param name="location">/user/user.ftl</param>   
         <param name="noCache">true</param>   
       </result> 
-      <result name="input">type="plosOneFreemarker">
+      <result name="input" type="plosOneFreemarker">
         <param name="location">/user/user.ftl</param>   
         <param name="noCache">true</param>   
       </result> 
-      <result name="error">type="plosOneFreemarker">
+      <result name="error" type="plosOneFreemarker">
         <param name="location">/user/user.ftl</param>   
         <param name="noCache">true</param>   
       </result> 
@@ -665,14 +665,18 @@
     
     <action name="saveAjaxProfile" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect-action">editAjaxProfile.action</result>
-      <result name="input">/user/user.ftl</result>
+      <result name="input" type="plosOneFreemarker">
+        <param name="location">/user/user.ftl</param>   
+        <param name="noCache">true</param>   
+      </result> 
       <result name="error" type="plosOneFreemarker">
-        <param name="templateFile">/editProfile/newUser.ftl</param>
-      </result>
+        <param name="location">/static/serverError.ftl</param>   
+        <param name="noCache">true</param>   
+      </result> 
     </action>
     
     <action name="saveProfile" class="org.plos.user.action.UserProfileAction" method="executeSaveUser">
-			<result name="success" type="redirect">/user/secure/retrieveUserProfile.action </result>
+      <result name="success" type="redirect">/user/secure/retrieveUserProfile.action </result>
       <result name="input" type="plosOneFreemarker">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
