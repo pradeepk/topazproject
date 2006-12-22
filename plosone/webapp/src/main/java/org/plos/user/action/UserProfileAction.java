@@ -15,7 +15,6 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.ApplicationException;
 import static org.plos.Constants.Length;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import static org.plos.Constants.ReturnCode.NEW_PROFILE;
@@ -25,7 +24,9 @@ import org.plos.user.UserProfileGrant;
 import org.plos.user.service.DisplayNameAlreadyExistsException;
 import org.plos.util.ProfanityCheckingService;
 import org.plos.util.TextUtils;
+import org.topazproject.ws.pap.UserProfile;
 
+import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -108,7 +109,7 @@ public class UserProfileAction extends UserActionSupport {
    */
   public String executeSaveUser() throws Exception {
     final PlosOneUser userFromSession = getPlosOneUserFromSession();
-    //if new user then capture the displayname and if display name is blank (when user has been migrated)
+    //if new user then capture the displayname or if display name is blank (when user has been migrated)
     if ((null == userFromSession) || (StringUtils.isBlank(userFromSession.getDisplayName()))) {
         isDisplayNameSet = false;
     }
@@ -136,27 +137,28 @@ public class UserProfileAction extends UserActionSupport {
       log.debug("Topaz ID: " + topazId + " with authID: " + authId);
     }
 
-    homePage = makeValidUrl(homePage);
-    weblog = makeValidUrl(weblog);
-
     try {
       //If a field is not among the private fields, it is saved as public
       getUserService().setProfile(newUser, getPrivateFields());
     } catch (DisplayNameAlreadyExistsException ex) {
       email = fetchUserEmailAddress();
+      newUser.setDisplayName(StringUtils.EMPTY);  //Empty out the display name from the newUser object
+      isDisplayNameSet = false;
       addFieldError("displayName", "Username is already in use. Please select a different username");
       return INPUT;
     }
 
+    isDisplayNameSet = true;
     sessionMap.put(PLOS_ONE_USER_KEY, newUser);
     return SUCCESS;
   }
 
-  private String makeValidUrl(final String url) throws Exception {
-    if (StringUtils.isEmpty(url) || url.equalsIgnoreCase(HTTP_PREFIX)) {
+  private String makeValidUrl(final String url) throws MalformedURLException {
+    final String newUrl = StringUtils.stripToEmpty(url);
+    if (StringUtils.isEmpty(newUrl) || newUrl.equalsIgnoreCase(HTTP_PREFIX)) {
       return StringUtils.EMPTY;
     }
-    return TextUtils.makeValidUrl(url);
+    return TextUtils.makeValidUrl(newUrl);
   }
 
   public String executeRetrieveUserProfile() throws Exception {
@@ -212,7 +214,14 @@ public class UserProfileAction extends UserActionSupport {
         givenNames = plosOneUser.getGivenNames();
         surnames = plosOneUser.getSurnames();
       } catch(NullPointerException  ex) {
-        log.debug("Profile was not found");
+        //fetching email in the case where profile creation failed and so email did not get saved.
+        //Will not be needed when all the user accounts with a profile have a email set up
+        //This is to display the email address to the user on the profile page, not required for saving
+        email = fetchUserEmailAddress();
+        plosOneUser.setUserProfile(new UserProfile());
+        if (log.isDebugEnabled()) {
+          log.debug("Profile was not found, so creating one for user's email:" + email);
+        }
       }
       return UPDATE_PROFILE;
     }
@@ -221,10 +230,13 @@ public class UserProfileAction extends UserActionSupport {
     return SUCCESS;
   }
 
-  private PlosOneUser createPlosOneUser() throws ApplicationException {
+  private PlosOneUser createPlosOneUser() throws Exception {
     PlosOneUser plosOneUser = getPlosOneUserFromSession();
-    if (plosOneUser == null) {
-      plosOneUser = new PlosOneUser(this.authId);
+    if (null == plosOneUser || StringUtils.isEmpty(plosOneUser.getEmail())) {
+      if (plosOneUser == null) {
+        plosOneUser = new PlosOneUser(this.authId);
+      }
+      //Set the email address if the email address did not get saved during profile creation 
       plosOneUser.setEmail(fetchUserEmailAddress());
     }
 
@@ -240,8 +252,10 @@ public class UserProfileAction extends UserActionSupport {
     plosOneUser.setBiographyText(this.biographyText);
     plosOneUser.setInterestsText(this.interestsText);
     plosOneUser.setResearchAreasText(this.researchAreasText);
-    plosOneUser.setHomePage(StringUtils.stripToNull(this.homePage));
-    plosOneUser.setWeblog(StringUtils.stripToNull(this.weblog));
+    final String homePageUrl = StringUtils.stripToNull(makeValidUrl(homePage));
+    plosOneUser.setHomePage(homePageUrl);
+    final String weblogUrl = StringUtils.stripToNull(makeValidUrl(weblog));
+    plosOneUser.setWeblog(weblogUrl);
     plosOneUser.setCity(this.city);
     plosOneUser.setCountry(this.country);
     return plosOneUser;

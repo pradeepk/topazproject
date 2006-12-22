@@ -23,7 +23,6 @@ import java.io.StringWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.regex.Pattern;
-import java.util.regex.Matcher;
 
 /**
  * Provides some useful text manipulation functions.
@@ -124,12 +123,18 @@ public class TextUtils {
 //    return com.opensymphony.util.TextUtils.verifyUrl(url);
   }
 
-  public static String makeValidUrl(final String url) throws Exception {
+  /**
+   * Make a valid url from the given input url or url fragment
+   * @param url url
+   * @return valid url
+   * @throws MalformedURLException MalformedURLException
+   */
+  public static String makeValidUrl(final String url) throws MalformedURLException {
     String finalUrl = url;
     if (!verifyUrl(finalUrl)) {
       finalUrl = HTTP_PREFIX + finalUrl;
       if (!verifyUrl(finalUrl)) {
-        throw new Exception("Invalid url:" + url);
+        throw new MalformedURLException("Invalid url:" + url);
       }
     }
     return finalUrl;
