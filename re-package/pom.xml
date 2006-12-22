@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>topazproject-repackage</artifactId>
-  <version>0.5-rc6</version>
+  <version>0.5-rc7-SNAPSHOT</version>
   <packaging>pom</packaging>
   <name>Re-packaged 3rd party distributions</name>
   
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
-    <version>0.5-rc6</version>
+    <version>0.5-rc7-SNAPSHOT</version>
   </parent>
 
   <modules>
