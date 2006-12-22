@@ -32,5 +32,6 @@ public class FileUtilsTest extends TestCase {
     assertEquals("tiff", FileUtils.getDefaultFileExtByMimeType("image/tiff"));
     assertEquals("html", FileUtils.getDefaultFileExtByMimeType("text/html"));
     assertEquals("xml", FileUtils.getDefaultFileExtByMimeType("text/xml"));
+    assertEquals("ps", FileUtils.getDefaultFileExtByMimeType("application/postscript"));
   }
 }

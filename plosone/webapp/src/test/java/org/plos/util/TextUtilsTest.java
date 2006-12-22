@@ -14,10 +14,15 @@ import junit.framework.TestCase;
 public class TextUtilsTest extends TestCase {
   public void testValidatesUrl() {
     assertFalse(TextUtils.verifyUrl("http://"));
+    assertFalse(TextUtils.verifyUrl("ftp://"));
     assertFalse(TextUtils.verifyUrl("..."));
+    assertFalse(TextUtils.verifyUrl("\\"));
+    assertFalse(TextUtils.verifyUrl("http://google.com\\"));
+    assertFalse(TextUtils.verifyUrl("http://www.google.com\\"));
+    assertFalse(TextUtils.verifyUrl("google.com\\"));
     assertFalse(TextUtils.verifyUrl("--"));
-    assertFalse(TextUtils.verifyUrl("htt://..."));
-    assertFalse(TextUtils.verifyUrl("ftps://..."));
+    assertFalse(TextUtils.verifyUrl("httpss:\\..."));
+    assertFalse(TextUtils.verifyUrl("ftps://www.google.com"));
     assertFalse(TextUtils.verifyUrl("asdasdasd"));
     assertFalse(TextUtils.verifyUrl("123123"));
     assertFalse(TextUtils.verifyUrl("http://www.yahoo.com:asas"));
@@ -28,6 +33,8 @@ public class TextUtilsTest extends TestCase {
     assertTrue(TextUtils.verifyUrl("http://www.yahoo.com/"));
     assertTrue(TextUtils.verifyUrl("https://www.yahoo.com/"));
     assertTrue(TextUtils.verifyUrl("ftp://www.yahoo.com/"));
+    assertTrue(TextUtils.verifyUrl("http://www.google.com//something#somewhere"));
+    assertTrue(TextUtils.verifyUrl("ftp://..."));
   }
 
   public void testMakeUrl() throws Exception {
