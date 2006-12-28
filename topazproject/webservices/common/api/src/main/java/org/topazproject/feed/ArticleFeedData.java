@@ -9,8 +9,9 @@
  */
 package org.topazproject.feed;
 
-import java.util.List;
+import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 
 /**
  * Article meta data.
@@ -22,9 +23,9 @@ public class ArticleFeedData {
   String   title;
   String   description;
   Date     date;
-  List     authors;
-  List     subjects;
-  List     categories;
+  List     authors = new ArrayList();
+  List     subjects = new ArrayList();
+  List     categories = new ArrayList();
   int      state;
 
   /** Return the article's URI */
