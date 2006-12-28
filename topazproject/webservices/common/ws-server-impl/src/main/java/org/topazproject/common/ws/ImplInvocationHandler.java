@@ -66,7 +66,7 @@ public class ImplInvocationHandler implements InvocationHandler {
       if (t instanceof Error)
         log.error("method " + method.getName() + " threw an error", t);
       else
-        log.debug("method " + method.getName() + " threw an exception", t);
+        log.info("method " + method.getName() + " threw an exception", t);
 
       Throwable nt;
 
