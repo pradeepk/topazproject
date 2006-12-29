@@ -7,6 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
+
 package org.topazproject.ws.article.impl;
 
 import java.io.FilterInputStream;
@@ -21,7 +22,6 @@ import java.net.URISyntaxException;
 import java.rmi.RemoteException;
 import java.util.Collection;
 import java.util.ArrayList;
-import java.util.BitSet;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,8 +30,6 @@ import java.util.Map;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
-import org.apache.commons.codec.DecoderException;
-import org.apache.commons.codec.net.URLCodec;
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -331,7 +329,7 @@ public class ArticleImpl implements Article {
         }
         if (firstRE != null)
           throw firstRE;
-        
+
         if (log.isDebugEnabled())
           log.debug("Removed '" + pid + "' from full-text index:\n" + result);
 
@@ -416,7 +414,7 @@ public class ArticleImpl implements Article {
                                              categories, authors, states, ascending);
     return ArticleFeed.buildXml(articles);
   }
-  
+
   public ArticleInfo[] getArticleInfos(String startDate, String endDate,
                                        String[] categories, String[] authors, int[] states,
                                        boolean ascending) throws RemoteException {
@@ -432,7 +430,7 @@ public class ArticleImpl implements Article {
       info.setDescription(data.getDescription());
       info.setArticleDate(data.getArticleDate());
       info.setState(data.getState());
-      
+
       List authorList = data.getAuthors();
       String[] authorArr = new String[authorList.size()];
       authorList.toArray(authorArr);
