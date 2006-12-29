@@ -198,6 +198,7 @@ public class Ingester {
         }
       }
 
+      log.info("Successfully ingested '" + uri + "'");
       return uri;
     } catch (RemoteException re) {
       throw new IngestException("Error ingesting into fedora or mulgara", re);
