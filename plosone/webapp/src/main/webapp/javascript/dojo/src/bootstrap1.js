@@ -8,7 +8,7 @@
 * TODOC: should the copyright be changed to Dojo Foundation?
 * @license Licensed under the Academic Free License 2.1 http://www.opensource.org/licenses/afl-2.1.php
 *
-* $Id: bootstrap1.js 6425 2006-11-06 01:00:29Z alex $
+* $Id$
 */
 
 // TODOC: HOW TO DOC THE BELOW?
@@ -101,7 +101,7 @@ dojo.locale  = djConfig.locale;
 dojo.version = {
 	// summary: version number of this instance of dojo.
 	major: 0, minor: 4, patch: 0, flag: "+",
-	revision: Number("$Rev: 6425 $".match(/[0-9]+/)[0]),
+	revision: Number("$Rev$".match(/[0-9]+/)[0]),
 	toString: function(){
 		with(dojo.version){
 			return major + "." + minor + "." + patch + flag + " (" + revision + ")";	// String
