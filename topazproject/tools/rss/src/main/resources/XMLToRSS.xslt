@@ -10,11 +10,11 @@
 
   <xsl:template match="/">
     <rss version="2.0">
-      <title><xsl:value-of select="$rssTitle"/></title>
-      <link><xsl:value-of select="$rssLink"/></link>
-      <image><xsl:value-of select="$rssImage"/></image>
-      <description><xsl:value-of select="$rssDescription"/></description>
       <channel>
+        <title><xsl:value-of select="$rssTitle"/></title>
+        <link><xsl:value-of select="$rssLink"/></link>
+        <image><xsl:value-of select="$rssImage"/></image>
+        <description><xsl:value-of select="$rssDescription"/></description>
         <xsl:apply-templates select="articles/article"/>
       </channel>
     </rss>
