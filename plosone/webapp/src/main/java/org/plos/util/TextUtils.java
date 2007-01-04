@@ -9,7 +9,6 @@
  */
 package org.plos.util;
 
-import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringEscapeUtils;
 import org.apache.commons.lang.StringUtils;
 import org.w3c.dom.Node;
@@ -21,6 +20,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import java.io.StringWriter;
 import java.net.MalformedURLException;
+import java.net.URI;
 import java.net.URL;
 import java.util.regex.Pattern;
 
@@ -109,18 +109,15 @@ public class TextUtils {
    * @return whether the url is a valid address
    */
   public static boolean verifyUrl(final String url) {
-    final String lowercaseUrl = url.toLowerCase();
     try {
-      new URL(lowercaseUrl);
-      //False if it only matches the protocol names.
-      if (ArrayUtils.contains(new String[]{HTTP_PREFIX, "ftp://", "https://"}, url)) {
-        return false;
-      }
-    } catch (MalformedURLException e) {
+      URI u = new URI(url);
+
+      //To see if we can get a valid url or if we get an exception
+      final URL urlFromUri = u.toURL();
+      return true;
+    } catch (Exception e) {
       return false;
     }
-    return true;
-//    return com.opensymphony.util.TextUtils.verifyUrl(url);
   }
 
   /**
