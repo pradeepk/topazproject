@@ -5,12 +5,12 @@
   <artifactId>ws-alerts</artifactId>
   <packaging>pom</packaging>
   <name>Alerts Webservice</name>
-  <version>0.5-rc7-SNAPSHOT</version>
+  <version>0.5-rc7</version>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>webservices</artifactId>
-    <version>0.5-rc7-SNAPSHOT</version>
+    <version>0.5-rc7</version>
   </parent>
 
   <licenses>
