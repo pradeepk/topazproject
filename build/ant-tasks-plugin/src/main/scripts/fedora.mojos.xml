@@ -75,7 +75,7 @@
           <property>fedora-version</property>
           <required>true</required>
           <expression>${fedora-version}</expression>
-          <defaultValue>2.1.1-t7</defaultValue>
+          <defaultValue>2.1.1-t8-SNAPSHOT</defaultValue>
           <type>java.lang.String</type>
           <description>version of fedora.</description>
         </parameter>

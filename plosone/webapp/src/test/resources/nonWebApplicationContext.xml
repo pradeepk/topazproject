@@ -40,7 +40,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-articles-webapp-0.5-rc7/services/ArticleServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-articles-webapp-0.5-rc8-SNAPSHOT/services/ArticleServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -73,7 +73,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-permissions-webapp-0.5-rc7/services/PermissionsServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-permissions-webapp-0.5-rc8-SNAPSHOT/services/PermissionsServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -92,7 +92,7 @@
     <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-annotation-webapp-0.5-rc7/services/ReplyServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-annotation-webapp-0.5-rc8-SNAPSHOT/services/ReplyServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -105,7 +105,7 @@
     <property name="defaultType" value="http://www.w3.org/2000/10/annotationType#Annotation"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-annotation-webapp-0.5-rc7/services/AnnotationServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-annotation-webapp-0.5-rc8-SNAPSHOT/services/AnnotationServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -124,7 +124,7 @@
     <property name="applicationId" ref="applicationId"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-users-webapp-0.5-rc7/services/UserAccountsServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-users-webapp-0.5-rc8-SNAPSHOT/services/UserAccountsServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -134,7 +134,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-users-webapp-0.5-rc7/services/UserRolesServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-users-webapp-0.5-rc8-SNAPSHOT/services/UserRolesServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -144,7 +144,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-pap-webapp-0.5-rc7/services/PreferencesServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-pap-webapp-0.5-rc8-SNAPSHOT/services/PreferencesServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
@@ -154,7 +154,7 @@
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>
-        <entry key="uri" value="http://${server.topaz}/ws-pap-webapp-0.5-rc7/services/ProfilesServicePort"/>
+        <entry key="uri" value="http://${server.topaz}/ws-pap-webapp-0.5-rc8-SNAPSHOT/services/ProfilesServicePort"/>
         <entry key="auth-method" value-ref="auth-method"/>
       </map>
     </property>
