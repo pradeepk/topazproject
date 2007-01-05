@@ -41,6 +41,7 @@ public class HomePageAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(HomePageAction.class);
   private ArticleWebService articleWebService;
   private ArticleInfo[] lastWeeksArticles;
+  private ArticleInfo[] allArticles;
   private static final long ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
   private static final long FIFTEEN_DAYS = 15 * 24 * 60 * 60 * 1000;
   private String[] categoryNames;
@@ -48,6 +49,7 @@ public class HomePageAction extends BaseActionSupport {
   private boolean categoriesAreInitialized = false;
   private GeneralCacheAdministrator articleCacheAdministrator;
   public static final String WEEK_ARTICLE_CACHE_KEY = "WEEK_ARTICLE_LIST";
+  public static final String ALL_ARTICLE_CACHE_KEY = "ALL_ARTICLE_LIST";
   private static final int WEEK_ARTICLE_CACHE_DURATION = 43200; //12hrs  
   private static final String MOST_COMMENTED_CACHE_KEY = "MOST_COMMENTED_LIST";
   private static final int MOST_COMMENTED_CACHE_DURATION = 3600;  //1 hr
@@ -69,6 +71,45 @@ public class HomePageAction extends BaseActionSupport {
   public ArticleInfo[] getRecentArticles() {
     return getLastWeeksArticles();
   }
+  
+  private ArticleInfo[] getAllArticles() {
+    if (allArticles == null) {
+      try {
+        // Get from the cache
+
+        allArticles= (ArticleInfo[]) 
+          articleCacheAdministrator.getFromCache(ALL_ARTICLE_CACHE_KEY, WEEK_ARTICLE_CACHE_DURATION);
+        if (log.isDebugEnabled()) {
+          log.debug("retrieved all articles from cache");
+        }
+      } catch (NeedsRefreshException nre) {
+        boolean updated = false;
+        if (log.isDebugEnabled()){
+          log.debug("retrieving all articles from TOPAZ");
+        }
+        try {
+          //  Get the value from TOPAZ
+          allArticles = articleWebService.getArticleInfos(null, null, null,
+                              null, new int[]{ST_ACTIVE}, false);
+          
+          // Store in the cache
+          articleCacheAdministrator.putInCache(ALL_ARTICLE_CACHE_KEY, allArticles);
+          updated = true;
+        } catch (RemoteException re) {
+          log.error("Could not retrieve the all articles", re);
+          allArticles = new ArticleInfo[0];
+        } finally {
+          if (!updated) {
+              // It is essential that cancelUpdate is called if the
+              // cached content could not be rebuilt
+              articleCacheAdministrator.cancelUpdate(ALL_ARTICLE_CACHE_KEY);
+          }
+        }
+      }
+    }    
+    return allArticles;
+  }
+  
   
   private ArticleInfo[] getLastWeeksArticles() {
     if (lastWeeksArticles == null) {
@@ -96,7 +137,7 @@ public class HomePageAction extends BaseActionSupport {
           articleCacheAdministrator.putInCache(WEEK_ARTICLE_CACHE_KEY, lastWeeksArticles);
           updated = true;
         } catch (RemoteException re) {
-          log.error("Could not retrive the most recent articles", re);
+          log.error("Could not retrieve the most recent articles", re);
           lastWeeksArticles = new ArticleInfo[0];
         } finally {
           if (!updated) {
@@ -161,23 +202,23 @@ public class HomePageAction extends BaseActionSupport {
    *
    */
   private void populateArticlesAndCategories() {
-    ArticleInfo[] weeksArticles = getLastWeeksArticles();
-    if (weeksArticles.length > 0){
-      TreeMap<String, ArrayList<ArticleInfo>> allArticles = new TreeMap<String, ArrayList<ArticleInfo>>();
+    ArticleInfo[] allArticleList = getAllArticles();
+    if (allArticleList.length > 0){
+      TreeMap<String, ArrayList<ArticleInfo>> allArticlesMap = new TreeMap<String, ArrayList<ArticleInfo>>();
       String[] categories;
       ArrayList<ArticleInfo> theList;
-      for (ArticleInfo art : weeksArticles) {
+      for (ArticleInfo art : allArticleList) {
         categories = art.getCategories();
         for (String cat : categories) {
-          theList = allArticles.get(cat);
+          theList = allArticlesMap.get(cat);
           if (theList == null) {
             theList = new ArrayList<ArticleInfo>();
-            allArticles.put(cat, theList);
+            allArticlesMap.put(cat, theList);
           }
           theList.add(art);
         }
       }
-      Set<Map.Entry<String, ArrayList<ArticleInfo>>> allEntries = allArticles.entrySet();  
+      Set<Map.Entry<String, ArrayList<ArticleInfo>>> allEntries = allArticlesMap.entrySet();  
       Iterator<Map.Entry<String, ArrayList<ArticleInfo>>> iter = allEntries.iterator();
       Map.Entry<String, ArrayList<ArticleInfo>> entry;
       categoryNames = new String[allEntries.size()];

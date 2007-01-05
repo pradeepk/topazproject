@@ -43,6 +43,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import static org.plos.action.HomePageAction.WEEK_ARTICLE_CACHE_KEY;
+import static org.plos.action.HomePageAction.ALL_ARTICLE_CACHE_KEY;
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.SecondaryObject;
@@ -414,6 +415,7 @@ public class DocumentManagementService {
     }
     articleWebService.setState(uri, Article.ST_ACTIVE);
     articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
+    articleCacheAdministrator.flushEntry(ALL_ARTICLE_CACHE_KEY);
   }
   
   private static class PngDataSource implements DataSource {
