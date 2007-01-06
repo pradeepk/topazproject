@@ -1,3 +1,5 @@
+<#include "initForEditedBy.ftl">
+
 <#function isFound collection value>
   <#list collection as element>
     <#if element = value>
@@ -14,8 +16,14 @@
 <strong>Select which E-mail content alerts you would like to receive.</strong>
 	<p>Fields marked with <span class="required">*</span> are required. </p>
 
-  <@ww.form action="saveUserAlerts" namespace="/user/secure" method="post" cssClass="pone-form" method="post" title="Alert Form" name="userAlerts">
-
+<#if editedByAdmin>
+  <#assign actionValue="saveAlertsByAdmin"/>
+  <#assign namespaceValue="/admin"/>
+<#else>
+  <#assign actionValue="saveUserAlerts"/>
+  <#assign namespaceValue="/user/secure"/>
+</#if>
+  <@ww.form action="${actionValue}" namespace="${namespaceValue}" method="post" cssClass="pone-form" method="post" title="Alert Form" name="userAlerts">
   <fieldset id="alert-form">
 		<legend>Choose your alerts</legend>
 		<ol>
@@ -77,7 +85,9 @@
 
 		</ol>
 		<br clear="all" />
-      <div class="btnwrap"><input type="button" id="formSubmit" name="formSubmit" value="Save" tabindex="200"/></div>
+
+<#include "submit.ftl">
+
 	</fieldset>
   </@ww.form>
 

@@ -25,10 +25,13 @@ import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.search.action.SearchAction;
+import org.plos.user.action.AdminUserAlertsAction;
+import org.plos.user.action.AdminUserProfileAction;
 import org.plos.user.action.AssignAdminRoleAction;
 import org.plos.user.action.DisplayUserAction;
-import org.plos.user.action.UserAlertsAction;
-import org.plos.user.action.UserProfileAction;
+import org.plos.user.action.MemberUserAlertsAction;
+import org.plos.user.action.MemberUserProfileAction;
+import org.plos.user.action.SearchUserAction;
 import org.plos.user.service.PreferencesWebService;
 import org.plos.user.service.ProfileWebService;
 import org.plos.user.service.UserService;
@@ -52,8 +55,10 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private BodyFetchAction bodyFetchAction;
   private GetAnnotationAction getAnnotationAction;
   private GetReplyAction getReplyAction;
-  private UserProfileAction userProfileAction;
-  private UserAlertsAction userAlertsAction;
+  private MemberUserProfileAction memberUserProfileAction;
+  private AdminUserProfileAction adminUserProfileAction;
+  private MemberUserAlertsAction memberUserAlertsAction;
+  private AdminUserAlertsAction adminUserAlertsAction;
   private AssignAdminRoleAction assignAdminRoleAction;
   private FetchObjectAction fetchObjectAction;
   private SecondaryObjectAction secondaryObjectAction;
@@ -74,9 +79,10 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private UnflagAnnotationAction unflagAnnotationAction;
   private ListFlagAction listFlagAction;
   private SearchAction searchAction;
+  private SearchUserAction searchUserAction;
 
   protected String[] getConfigLocations() {
-    return new String[]{"testApplicationContext.xml"};
+    return new String[]{"nonWebApplicationContext.xml", "testApplicationContext.xml", "propertyConfigurer.xml", "countryList.xml", "profaneWords.xml"};
   }
 
   protected PermissionWebService getPermissionWebService() {
@@ -214,17 +220,33 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   }
 
   /**
-   * @return Returns the userProfileAction.
+   * @return Returns the memberUserProfileAction.
    */
-  public UserProfileAction getUserProfileAction() {
-    return userProfileAction;
+  public MemberUserProfileAction getMemberUserProfileAction() {
+    return memberUserProfileAction;
   }
 
   /**
-   * @param userProfileAction The userProfileAction to set.
+   * @param memberUserProfileAction The memberUserProfileAction to set.
    */
-  public void setUserProfileAction(UserProfileAction userProfileAction) {
-    this.userProfileAction = userProfileAction;
+  public void setMemberUserProfileAction(MemberUserProfileAction memberUserProfileAction) {
+    this.memberUserProfileAction = memberUserProfileAction;
+  }
+
+  /**
+   * Getter for adminUserProfileAction.
+   * @return Value of adminUserProfileAction.
+   */
+  public AdminUserProfileAction getAdminUserProfileAction() {
+    return adminUserProfileAction;
+  }
+
+  /**
+   * Setter for adminUserProfileAction.
+   * @param adminUserProfileAction Value to set for adminUserProfileAction.
+   */
+  public void setAdminUserProfileAction(final AdminUserProfileAction adminUserProfileAction) {
+    this.adminUserProfileAction = adminUserProfileAction;
   }
 
   /**
@@ -393,16 +415,32 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   }
 
   /**
-   * Setter for property 'userAlertsAction'.
-   * @param userAlertsAction Value to set for property 'userAlertsAction'.
+   * Setter for property 'memberUserAlertsAction'.
+   * @param memberUserAlertsAction Value to set for property 'memberUserAlertsAction'.
    */
-  public void setUserAlertsAction(final UserAlertsAction userAlertsAction) {
-    this.userAlertsAction = userAlertsAction;
+  public void setMemberUserAlertsAction(final MemberUserAlertsAction memberUserAlertsAction) {
+    this.memberUserAlertsAction = memberUserAlertsAction;
   }
 
-  /** @return Value for property 'userAlertsAction'. */
-  public UserAlertsAction getUserAlertsAction() {
-    return userAlertsAction;
+  /** @return Value for property 'memberUserAlertsAction'. */
+  public MemberUserAlertsAction getMemberUserAlertsAction() {
+    return memberUserAlertsAction;
+  }
+
+  /**
+   * Getter for adminUserAlertsAction.
+   * @return Value of adminUserAlertsAction.
+   */
+  public AdminUserAlertsAction getAdminUserAlertsAction() {
+    return adminUserAlertsAction;
+  }
+
+  /**
+   * Setter for adminUserAlertsAction.
+   * @param adminUserAlertsAction Value to set for adminUserAlertsAction.
+   */
+  public void setAdminUserAlertsAction(final AdminUserAlertsAction adminUserAlertsAction) {
+    this.adminUserAlertsAction = adminUserAlertsAction;
   }
 
   /**
@@ -434,5 +472,15 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
    */
   public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {
     this.profanityCheckingService = profanityCheckingService;
+  }
+
+  /** return SearchUserAction */
+  public SearchUserAction getSearchUserAction() {
+    return searchUserAction;
+  }
+
+  /** set SearchUserAction */
+  public void setSearchUserAction(final SearchUserAction searchUserAction) {
+    this.searchUserAction = searchUserAction;
   }
 }

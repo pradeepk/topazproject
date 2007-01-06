@@ -22,9 +22,10 @@ import java.util.Map;
 public class UserActionsTest extends BasePlosoneTestCase {
   private static final String TEST_EMAIL = "testcase@topazproject.org";
   private static final String REAL_NAME = "Test User";
-  private static final String AUTH_ID = "Test AuthID";
+  private static final String AUTH_ID = "92L6RFPMZZ0NKDSJH8T9S1E2589EWQRK";
   private static final String USERNAME= "TEST_USERNAME";
   private static final String GIVENNAMES = "my GIVENNAMES";
+  private static final String SURNAMES = "my Surnames";
   private static final String POSITION_TYPE = "my POSITION_TYPE";
   private static final String ORGANIZATION_TYPE = "my organizationType";
   private static final String POSTAL_ADDRESS = "my postalAddress";
@@ -41,6 +42,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
     createUserAction.setAuthId(AUTH_ID);
     createUserAction.setDisplayName(USERNAME);
     createUserAction.setGivenNames(GIVENNAMES);
+    createUserAction.setSurnames(SURNAMES);
     createUserAction.setPositionType(POSITION_TYPE);
     createUserAction.setOrganizationType(ORGANIZATION_TYPE);
     createUserAction.setPostalAddress(POSTAL_ADDRESS);
@@ -59,9 +61,9 @@ public class UserActionsTest extends BasePlosoneTestCase {
     assertEquals(SUCCESS, displayUserAction.execute());
 
     final PlosOneUser pou = displayUserAction.getPou();
-    assertEquals (TEST_EMAIL, pou.getEmail());
-    assertEquals (REAL_NAME, pou.getRealName());
-    assertEquals (USERNAME, pou.getDisplayName());
+    assertEquals(REAL_NAME, pou.getRealName());
+    assertEquals(USERNAME, pou.getDisplayName());
+    assertEquals(TEST_EMAIL, pou.getEmail());
     assertEquals(GIVENNAMES, pou.getGivenNames());
     assertEquals(POSITION_TYPE, pou.getPositionType());
 		assertEquals(ORGANIZATION_TYPE, pou.getOrganizationType());
@@ -78,9 +80,13 @@ public class UserActionsTest extends BasePlosoneTestCase {
   public void testCreateUserWithRightVisibilityOfFields() throws Exception {
     final UserProfileAction createUserAction = getMockCreateUserAction(AUTH_ID);
     createUserAction.setEmail(TEST_EMAIL);
-    createUserAction.setRealName(REAL_NAME);
+    createUserAction.setGivenNames(GIVENNAMES);
+    createUserAction.setSurnames(SURNAMES);
+    createUserAction.setCity(CITY);
+    createUserAction.setCountry(COUNTRY);
     createUserAction.setAuthId(AUTH_ID);
     createUserAction.setDisplayName(USERNAME);
+    createUserAction.setPositionType(POSITION_TYPE);
     createUserAction.setOrganizationType(ORGANIZATION_TYPE);
     createUserAction.setPostalAddress(POSTAL_ADDRESS);
 
@@ -101,15 +107,12 @@ public class UserActionsTest extends BasePlosoneTestCase {
 
     final PlosOneUser pou = displayUserAction.getPou();
     assertEquals(TEST_EMAIL, pou.getEmail());
-    assertEquals(REAL_NAME, pou.getRealName());
     assertEquals(USERNAME, pou.getDisplayName());
     assertEquals(GIVENNAMES, pou.getGivenNames());
+    assertEquals(SURNAMES, pou.getSurnames());
     assertEquals(POSITION_TYPE, pou.getPositionType());
 		assertEquals(ORGANIZATION_TYPE, pou.getOrganizationType());
 		assertEquals(POSTAL_ADDRESS, pou.getPostalAddress());
-		assertEquals(BIOGRAPHY_TEXT, pou.getBiographyText());
-		assertEquals(INTERESTS_TEXT, pou.getInterestsText());
-		assertEquals(RESEARCH_AREAS_TEXT, pou.getResearchAreasText());
 		assertEquals(CITY, pou.getCity());
 		assertEquals(COUNTRY, pou.getCountry());
 
@@ -119,7 +122,10 @@ public class UserActionsTest extends BasePlosoneTestCase {
   public void testCreateAdminUser() throws Exception {
     final UserProfileAction createUserAction = getMockCreateUserAction(AUTH_ID);
     createUserAction.setEmail(TEST_EMAIL);
-    createUserAction.setRealName(REAL_NAME);
+    createUserAction.setGivenNames(GIVENNAMES);
+    createUserAction.setSurnames(SURNAMES);
+    createUserAction.setCity(CITY);
+    createUserAction.setCountry(COUNTRY);
     createUserAction.setAuthId(AUTH_ID);
     createUserAction.setDisplayName(USERNAME);
     assertEquals(SUCCESS, createUserAction.executeSaveUser());
@@ -130,6 +136,75 @@ public class UserActionsTest extends BasePlosoneTestCase {
     assignAdminRoleAction.setTopazId(topazId);
     assertEquals(SUCCESS, assignAdminRoleAction.execute());
 
+    getUserWebService().deleteUser(topazId);
+  }
+
+  public void testSearchUserByUID() throws Exception {
+    final String authId = AUTH_ID;
+    final UserProfileAction createUserAction = getMockCreateUserAction(authId);
+    createUserAction.setEmail(TEST_EMAIL);
+    createUserAction.setGivenNames(GIVENNAMES);
+    createUserAction.setSurnames(SURNAMES);
+    createUserAction.setCity(CITY);
+    createUserAction.setCountry(COUNTRY);
+    createUserAction.setAuthId(AUTH_ID);
+    createUserAction.setDisplayName(USERNAME);
+    assertEquals(SUCCESS, createUserAction.executeSaveUser());
+    final String topazId = createUserAction.getTopazId();
+    
+    final SearchUserAction searchUserAction = getSearchUserAction();
+    searchUserAction.setAuthId(authId);
+    assertEquals(SUCCESS, searchUserAction.executeFindUserByAuthId());
+
+    final String[] topazUserIdList = searchUserAction.getTopazUserIdList();
+    assertTrue(topazUserIdList.length == 1);
+
+    final AdminUserProfileAction adminUserProfileAction = getAdminUserProfileAction();
+    adminUserProfileAction.setTopazId(topazUserIdList[0]);
+    assertEquals(SUCCESS, adminUserProfileAction.executeRetrieveUserProfile());
+
+    final PlosOneUser pou = adminUserProfileAction.getPlosOneUserToUse();
+    assertEquals(USERNAME, pou.getDisplayName());
+    assertEquals(TEST_EMAIL, pou.getEmail());
+    assertEquals(GIVENNAMES, pou.getGivenNames());
+		assertEquals(SURNAMES, pou.getSurnames());
+		assertEquals(authId, pou.getAuthId());
+		assertEquals(CITY, pou.getCity());
+		assertEquals(COUNTRY, pou.getCountry());
+    getUserWebService().deleteUser(topazId);
+  }
+
+  public void testSearchUserByEmail() throws Exception {
+    final String authId = AUTH_ID;
+    final UserProfileAction createUserAction = getMockCreateUserAction(authId);
+    createUserAction.setEmail(TEST_EMAIL);
+    createUserAction.setGivenNames(GIVENNAMES);
+    createUserAction.setSurnames(SURNAMES);
+    createUserAction.setCity(CITY);
+    createUserAction.setCountry(COUNTRY);
+    createUserAction.setAuthId(AUTH_ID);
+    createUserAction.setDisplayName(USERNAME);
+    assertEquals(SUCCESS, createUserAction.executeSaveUser());
+    final String topazId = createUserAction.getTopazId();
+
+    final SearchUserAction searchUserAction = getSearchUserAction();
+    searchUserAction.setEmailAddress(TEST_EMAIL);
+    assertEquals(SUCCESS, searchUserAction.executeFindUserByEmailAddress());
+
+    final String[] topazUserIdList = searchUserAction.getTopazUserIdList();
+    assertTrue(topazUserIdList.length == 1);
+
+    final AdminUserProfileAction adminUserProfileAction = getAdminUserProfileAction();
+    adminUserProfileAction.setTopazId(topazUserIdList[0]);
+    assertEquals(SUCCESS, adminUserProfileAction.executeRetrieveUserProfile());
+
+    final PlosOneUser pou = adminUserProfileAction.getPlosOneUserToUse();
+    assertEquals(USERNAME, pou.getDisplayName());
+    assertEquals(TEST_EMAIL, pou.getEmail());
+    assertEquals(GIVENNAMES, pou.getGivenNames());
+		assertEquals(SURNAMES, pou.getSurnames());
+		assertEquals(CITY, pou.getCity());
+		assertEquals(COUNTRY, pou.getCountry());
     getUserWebService().deleteUser(topazId);
   }
 
@@ -147,14 +222,15 @@ public class UserActionsTest extends BasePlosoneTestCase {
   }
 
   protected UserProfileAction getMockCreateUserAction(final String authId) {
-    final UserProfileAction createUserAction = super.getUserProfileAction();
-    final UserProfileAction newCreateUserAction = new UserProfileAction() {
+    final UserProfileAction createUserAction = super.getMemberUserProfileAction();
+    final UserProfileAction newCreateUserAction = new MemberUserProfileAction() {
       protected Map<String, Object> getSessionMap() {
         return createMockSessionMap(authId, null);
       }
     };
 
     newCreateUserAction.setUserService(createUserAction.getUserService());
+    newCreateUserAction.setProfanityCheckingService(createUserAction.getProfanityCheckingService());
 
     return newCreateUserAction;
   }

@@ -48,7 +48,14 @@
          </@ww.form>	
 	</fieldset>
 	<br/>
-	<fieldset>	
+  <fieldset>
+    <legend><b>Other links</b></legend>
+        <@ww.url id="findUserURL" namespace="/admin" action="findUser" />
+        <@ww.a href="%{findUserURL}">Find user</@ww.a>
+    <br/>
+  </fieldset>
+  <br/>
+	<fieldset>
 	<legend><b>Flagged Comments</b></legend>
 			<@ww.form name="processFlags" action="processFlags" method="post" namespace="/admin">
 				<table width="100%">
@@ -77,6 +84,6 @@
 				<@ww.submit value="Process Selected Flags" /> 
 				</@ww.form>
   			<br/>
-	</fieldset>	
+    </fieldset>	
   </body>
 </html>

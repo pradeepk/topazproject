@@ -165,7 +165,7 @@ public class UserServiceTest extends BasePlosoneTestCase {
     newUser.setDisplayName(USERNAME);
     newUser.setRealName(REAL_NAME);
 
-    getUserService().setProfile(newUser, new String[]{});
+    getUserService().setProfile(newUser, new String[]{}, true);
     return topazId;
   }
 }

@@ -62,8 +62,8 @@ public class UserAlertsTest extends BasePlosoneTestCase {
   }
 
   protected UserAlertsAction getMockUserAlertsAction(final String authId, final String topazId) {
-    final UserAlertsAction userAlertsAction = super.getUserAlertsAction();
-    final UserAlertsAction newUserAlertsAction = new UserAlertsAction() {
+    final UserAlertsAction userAlertsAction = super.getMemberUserAlertsAction();
+    final UserAlertsAction newUserAlertsAction = new MemberUserAlertsAction() {
       private final Map<String, Object> mockSessionMap = createMockSessionMap(authId, topazId);
       protected Map<String, Object> getSessionMap() {
         return mockSessionMap;
@@ -89,8 +89,8 @@ public class UserAlertsTest extends BasePlosoneTestCase {
   }
 
   protected UserProfileAction getMockCreateUserAction(final String authId) {
-    final UserProfileAction createUserAction = super.getUserProfileAction();
-    final UserProfileAction newCreateUserAction = new UserProfileAction() {
+    final UserProfileAction createUserAction = super.getMemberUserProfileAction();
+    final UserProfileAction newCreateUserAction = new MemberUserProfileAction() {
       private Map<String,Object> mockSessionMap = createMockSessionMap(authId, null);
       protected Map<String, Object> getSessionMap() {
         return mockSessionMap;

@@ -5,13 +5,6 @@
   <body>
     <p>
       <fieldset>
-          <legend>Assign a admin role</legend>
-          <@ww.form name="assignAdminRoleSubmitForm" action="assignAdminRoleSubmit" namespace="/user/secure" method="post">
-            <@ww.submit value="assign admin role to me" />
-          </@ww.form>
-      </fieldset>
-
-      <fieldset>
           <legend>Assign a admin role to a topaz user</legend>
           <@ww.form name="assignAdminRoleToSubmitForm" action="assignAdminRoleToSubmit" namespace="/user/secure" method="post">
             <@ww.textfield name="topazId" label="Topaz Id" required="true"/>

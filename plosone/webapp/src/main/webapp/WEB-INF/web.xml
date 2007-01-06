@@ -6,12 +6,10 @@
 
   <display-name>PLoS ONE</display-name>
 
-<!--
   <context-param>
     <param-name>contextConfigLocation</param-name>
-    <param-value>file:D:/etc/applicationContext.xml </param-value>
+    <param-value>/WEB-INF/propertyConfigurer.xml /WEB-INF/countryList.xml /WEB-INF/profaneWords.xml /WEB-INF/applicationContext.xml</param-value>
   </context-param>
--->
 
   <filter>
     <filter-name>Member Session</filter-name>

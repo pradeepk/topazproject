@@ -1,13 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans default-autowire="autodetect"
+<beans default-autowire="byName"
        xmlns="http://www.springframework.org/schema/beans"
        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
        xmlns:util="http://www.springframework.org/schema/util"
        xsi:schemaLocation="
         http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-2.0.xsd
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd">
-
-  <import resource="nonWebApplicationContext.xml"/>
 
   <!-- creating all actions with the right injections -->
   <bean class="org.plos.article.action.FetchArticleAction" />
@@ -34,9 +32,13 @@
 
   <bean class="org.plos.annotation.action.GetReplyAction"/>
   
-  <bean class="org.plos.user.action.UserProfileAction"/>
+  <bean class="org.plos.user.action.MemberUserProfileAction"/>
 
-  <bean class="org.plos.user.action.UserAlertsAction"/>
+  <bean class="org.plos.user.action.AdminUserProfileAction"/>
+
+  <bean class="org.plos.user.action.MemberUserAlertsAction"/>
+
+  <bean class="org.plos.user.action.AdminUserAlertsAction"/>
 
   <bean class="org.plos.user.action.AssignAdminRoleAction"/>
 
@@ -53,5 +55,7 @@
   <bean class="org.plos.annotation.action.ListFlagAction" />
 
   <bean class="org.plos.search.action.SearchAction" />
+
+  <bean class="org.plos.user.action.SearchUserAction" />
 
 </beans>

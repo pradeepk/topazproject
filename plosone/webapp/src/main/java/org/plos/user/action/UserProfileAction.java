@@ -15,17 +15,20 @@ import org.apache.commons.lang.ArrayUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.plos.ApplicationException;
+import org.plos.Constants;
 import static org.plos.Constants.Length;
-import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import static org.plos.Constants.ReturnCode.NEW_PROFILE;
 import static org.plos.Constants.ReturnCode.UPDATE_PROFILE;
 import org.plos.user.PlosOneUser;
 import org.plos.user.UserProfileGrant;
 import org.plos.user.service.DisplayNameAlreadyExistsException;
+import org.plos.util.FileUtils;
 import org.plos.util.ProfanityCheckingService;
 import org.plos.util.TextUtils;
 import org.topazproject.ws.pap.UserProfile;
 
+import java.io.IOException;
 import java.net.MalformedURLException;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -40,7 +43,7 @@ import java.util.regex.Pattern;
  * @author Stephen Cheng
  * 
  */
-public class UserProfileAction extends UserActionSupport {
+public abstract class UserProfileAction extends UserActionSupport {
 
   private String displayName, email, realName, topazId;
   private String authId;
@@ -69,35 +72,69 @@ public class UserProfileAction extends UserActionSupport {
   public static final String PUBLIC = "public";
   private static final Map<String, String[]> visibilityMapping = new HashMap<String, String[]>();
 
-  private static String GIVEN_NAMES = UserProfileGrant.GIVENNAMES.getFieldName();
+  private static final String GIVEN_NAMES = UserProfileGrant.GIVENNAMES.getFieldName();
+  private static final String REAL_NAME = UserProfileGrant.REAL_NAME.getFieldName();
   private static final String POSTAL_ADDRESS = UserProfileGrant.POSTAL_ADDRESS.getFieldName();
   private static final String ORGANIZATION_TYPE = UserProfileGrant.ORGANIZATION_TYPE.getFieldName();
+  private static final String ORGANIZATION_NAME = UserProfileGrant.ORGANIZATION_NAME.getFieldName();
+  private static final String TITLE = UserProfileGrant.TITLE.getFieldName();
+  private static final String POSITION_TYPE = UserProfileGrant.POSITION_TYPE.getFieldName();
+  private static final String DISPLAY_NAME = UserProfileGrant.DISPLAY_NAME.getFieldName();
+  private static final String SURNAMES = UserProfileGrant.SURNAMES.getFieldName();
+  private static final String CITY = UserProfileGrant.CITY.getFieldName();
+  private static final String COUNTRY = UserProfileGrant.COUNTRY.getFieldName();
+  private static final String BIOGRAPHY_TEXT = UserProfileGrant.BIOGRAPHY_TEXT.getFieldName();
+  private static final String INTERESTS_TEXT = UserProfileGrant.INTERESTS_TEXT.getFieldName();
+  private static final String RESEARCH_AREAS_TEXT = UserProfileGrant.RESEARCH_AREAS_TEXT.getFieldName();
+  private static final String HOME_PAGE = "homePage";
+  private static final String WEBLOG = "weblog";
 
   private static final String NAME_GROUP = "name";
   private static final String EXTENDED_GROUP = "extended";
   private static final String ORG_GROUP = "org";
-  private final String HTTP_PREFIX = "http://";
+  private static final String HTTP_PREFIX = "http://";
   private static final Pattern spacePattern = Pattern.compile("[\\p{L}\\p{N}\\p{Pc}\\p{Pd}]*");
-//  private static final Pattern spacePattern = Pattern.compile("\\s");
-  boolean isDisplayNameSet = true;
+  private boolean isDisplayNameSet = true;
+  private boolean displayNameRequired = true;
 
   static {
     visibilityMapping.put(NAME_GROUP,
                           new String[]{
                                   GIVEN_NAMES,
-                                  UserProfileGrant.DISPLAY_NAME.getFieldName(),
-                                  UserProfileGrant.SURNAMES.getFieldName(),
-                                  UserProfileGrant.CITY.getFieldName(),
-                                  UserProfileGrant.COUNTRY.getFieldName()});
+                                  DISPLAY_NAME,
+                                  SURNAMES,
+                                  CITY,
+                                  COUNTRY});
     visibilityMapping.put(EXTENDED_GROUP,
                           new String[]{
                                   POSTAL_ADDRESS});
     visibilityMapping.put(ORG_GROUP,
                           new String[]{
                                   ORGANIZATION_TYPE,
-                                  UserProfileGrant.ORGANIZATION_NAME.getFieldName(),
-                                  UserProfileGrant.TITLE.getFieldName(),
-                                  UserProfileGrant.POSITION_TYPE.getFieldName()});
+                                  ORGANIZATION_NAME,
+                                  TITLE,
+                                  POSITION_TYPE});
+  }
+
+  private static final Map fieldToUINameMapping = new HashMap<String, String>();
+  private PlosOneUser newUser;
+
+  static {
+    fieldToUINameMapping.put(DISPLAY_NAME, "Username");
+    fieldToUINameMapping.put(GIVEN_NAMES, "First/Given Name");
+    fieldToUINameMapping.put(SURNAMES, "Last/Family Name");
+    fieldToUINameMapping.put(CITY, "City");
+    fieldToUINameMapping.put(COUNTRY, "Country");
+    fieldToUINameMapping.put(POSTAL_ADDRESS, "Address");
+    fieldToUINameMapping.put(ORGANIZATION_TYPE, "Organization Type");
+    fieldToUINameMapping.put(ORGANIZATION_NAME, "Organization Name");
+    fieldToUINameMapping.put(TITLE, "Title");
+    fieldToUINameMapping.put(POSITION_TYPE, "Position Type");
+    fieldToUINameMapping.put(BIOGRAPHY_TEXT, "About Me");
+    fieldToUINameMapping.put(RESEARCH_AREAS_TEXT, "Research Areas");
+    fieldToUINameMapping.put(INTERESTS_TEXT, "Interests");
+    fieldToUINameMapping.put(HOME_PAGE, "Home page");
+    fieldToUINameMapping.put(WEBLOG, "Weblog");
   }
 
   /**
@@ -108,9 +145,9 @@ public class UserProfileAction extends UserActionSupport {
    * @return status code for webwork
    */
   public String executeSaveUser() throws Exception {
-    final PlosOneUser userFromSession = getPlosOneUserFromSession();
+    final PlosOneUser plosOneUser = getPlosOneUserToUse();
     //if new user then capture the displayname or if display name is blank (when user has been migrated)
-    if ((null == userFromSession) || (StringUtils.isBlank(userFromSession.getDisplayName()))) {
+    if ((null == plosOneUser) || (displayNameRequired && StringUtils.isBlank(plosOneUser.getDisplayName()))) {
         isDisplayNameSet = false;
     }
 
@@ -119,15 +156,14 @@ public class UserProfileAction extends UserActionSupport {
       return INPUT;
     }
     
-    final Map<String, Object> sessionMap = getSessionMap();
-    authId = getUserId(sessionMap);
+    authId = getUserIdToFetchEmailAddressFor();
 
     topazId = getUserService().lookUpUserByAuthId(authId);
     if (topazId == null) {
       topazId = getUserService().createUser(authId);
     }
 
-    final PlosOneUser newUser = createPlosOneUser();
+    newUser = createPlosOneUser();
     //if new or migrated user then capture the displayname
     if (!isDisplayNameSet) {
       newUser.setDisplayName(this.displayName);
@@ -139,18 +175,25 @@ public class UserProfileAction extends UserActionSupport {
 
     try {
       //If a field is not among the private fields, it is saved as public
-      getUserService().setProfile(newUser, getPrivateFields());
+      getUserService().setProfile(newUser, getPrivateFields(), displayNameRequired);
     } catch (DisplayNameAlreadyExistsException ex) {
       email = fetchUserEmailAddress();
       newUser.setDisplayName(StringUtils.EMPTY);  //Empty out the display name from the newUser object
       isDisplayNameSet = false;
-      addFieldError("displayName", "Username is already in use. Please select a different username");
+      addErrorForField(DISPLAY_NAME, "is already in use. Please select a different username");
       return INPUT;
     }
 
     isDisplayNameSet = true;
-    sessionMap.put(PLOS_ONE_USER_KEY, newUser);
     return SUCCESS;
+  }
+
+  /**
+   * Getter for newUser.
+   * @return Value of newUser.
+   */
+  protected PlosOneUser getSavedPlosOneUser() {
+    return newUser;
   }
 
   private String makeValidUrl(final String url) throws MalformedURLException {
@@ -162,7 +205,7 @@ public class UserProfileAction extends UserActionSupport {
   }
 
   public String executeRetrieveUserProfile() throws Exception {
-    final PlosOneUser plosOneUser = getPlosOneUserFromSession();
+    final PlosOneUser plosOneUser = getPlosOneUserToUse();
 
     authId = plosOneUser.getAuthId();
     topazId = plosOneUser.getUserId();
@@ -196,8 +239,7 @@ public class UserProfileAction extends UserActionSupport {
    * @throws Exception Exception
    */
   public String prePopulateUserDetails() throws Exception {
-    final Map<String, Object> sessionMap = getSessionMap();
-    final PlosOneUser plosOneUser = (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
+    final PlosOneUser plosOneUser = getPlosOneUserToUse();
 
     isDisplayNameSet = false;
     //If the user has no topaz id
@@ -218,9 +260,9 @@ public class UserProfileAction extends UserActionSupport {
         //Will not be needed when all the user accounts with a profile have a email set up
         //This is to display the email address to the user on the profile page, not required for saving
         email = fetchUserEmailAddress();
-        plosOneUser.setUserProfile(new UserProfile());
+        assignUserProfileToPlosUser(plosOneUser);
         if (log.isDebugEnabled()) {
-          log.debug("Profile was not found, so creating one for user's email:" + email);
+          log.debug("Profile was not found, so creating one for user with email:" + email);
         }
       }
       return UPDATE_PROFILE;
@@ -230,8 +272,17 @@ public class UserProfileAction extends UserActionSupport {
     return SUCCESS;
   }
 
+  /**
+   * Assign a user profile to the PlosOneUse.
+   * To be used only in the case where a topaz user has been created but the profile creation failed.
+   * @param plosOneUser plosOneUser
+   */
+  protected void assignUserProfileToPlosUser(final PlosOneUser plosOneUser) {
+    plosOneUser.setUserProfile(new UserProfile());
+  }
+
   private PlosOneUser createPlosOneUser() throws Exception {
-    PlosOneUser plosOneUser = getPlosOneUserFromSession();
+    PlosOneUser plosOneUser = getPlosOneUserToUse();
     if (null == plosOneUser || StringUtils.isEmpty(plosOneUser.getEmail())) {
       if (plosOneUser == null) {
         plosOneUser = new PlosOneUser(this.authId);
@@ -261,10 +312,12 @@ public class UserProfileAction extends UserActionSupport {
     return plosOneUser;
   }
 
-  private PlosOneUser getPlosOneUserFromSession() {
-    final Map<String, Object> sessionMap = getSessionMap();
-    return (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
-  }
+  /**
+   * Provides a way to get the PlosOneUser to edit
+   * @return the PlosOneUser to edit
+   * @throws org.plos.ApplicationException ApplicationException
+   */
+  protected abstract PlosOneUser getPlosOneUserToUse() throws ApplicationException;
 
   public String getEmail() {
     return email;
@@ -295,44 +348,44 @@ public class UserProfileAction extends UserActionSupport {
 
   private boolean validates() {
     boolean isValid = true;
-    final int usernameLength = StringUtils.stripToEmpty(displayName).length();
 
     //Don't validate displayName if the user already has a display name
-    if (!isDisplayNameSet) {
+    if (!isDisplayNameSet && displayNameRequired) {
       if (spacePattern.matcher(displayName).matches()) {
+        final int usernameLength = displayName.length();
         if (usernameLength < Integer.parseInt(Length.DISPLAY_NAME_MIN)
               || usernameLength > Integer.parseInt(Length.DISPLAY_NAME_MAX)) {
-          addFieldError("displayName", "Username must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters");
+          addErrorForField(DISPLAY_NAME, "must be between " + Constants.Length.DISPLAY_NAME_MIN + " and " + Constants.Length.DISPLAY_NAME_MAX + " characters");
           isValid = false;
         }
       } else {
-        addFieldError("displayName", "Usernames may only contain letters, numbers, dashes, and underscores");
+        addErrorForField(DISPLAY_NAME, "may only contain letters, numbers, dashes, and underscores");
         isValid = false;
       }
     }
     if (StringUtils.isBlank(givenNames)) {
-      addFieldError("givenNames", "First/Given Name cannot be empty");
+      addErrorForField(GIVEN_NAMES, "cannot be empty");
       isValid = false;
     }
     if (StringUtils.isBlank(surnames)) {
-      addFieldError("surnames", "Last/Family Name cannot be empty");
+      addErrorForField(SURNAMES, "cannot be empty");
       isValid = false;
     }
     //TODO: does everyone live in a city?
     if (StringUtils.isBlank(city)) {
-      addFieldError("city", "City cannot be empty");
+      addErrorForField(CITY, "cannot be empty");
       isValid = false;
     }
     if (StringUtils.isBlank(country)) {
-      addFieldError("country", "Country cannot be empty");
+      addErrorForField(COUNTRY, "cannot be empty");
       isValid = false;
     }
     if (isInvalidUrl(homePage)) {
-      addFieldError("homePage", "Home page URL is not valid");
+      addErrorForField(HOME_PAGE, "URL is not valid");
       isValid = false;
     }
     if (isInvalidUrl(weblog)) {
-      addFieldError("weblog", "Weblog URL is not valid");
+      addErrorForField(WEBLOG, "URL is not valid");
       isValid = false;
     }
 
@@ -341,6 +394,10 @@ public class UserProfileAction extends UserActionSupport {
     }
 
     return isValid;
+  }
+
+  private void addErrorForField(final String fieldName, final String messageSuffix) {
+    addFieldError(fieldName, fieldToUINameMapping.get(fieldName) +  " " + messageSuffix);
   }
 
   private boolean isInvalidUrl(final String url) {
@@ -365,29 +422,30 @@ public class UserProfileAction extends UserActionSupport {
 
   private String[][] getFieldMappings() {
     final String[][] toValidateArray = new String[][]{
-            {"displayName", displayName},
-            {"realName", realName},
-            {"title", title},
-            {"surnames", surnames},
-            {"givenNames", givenNames},
-            {"positionType", positionType},
-            {"organizationName", organizationName},
-            {"postalAddress", postalAddress},
-            {"biographyText", biographyText},
-            {"interestsText", interestsText},
-            {"researchAreasText", researchAreasText},
-            {"homePage", homePage},
-            {"weblog", weblog},
-            {"city", city},
-            {"country", country},
+            {DISPLAY_NAME, displayName},
+            {REAL_NAME, realName},
+            {TITLE, title},
+            {SURNAMES, surnames},
+            {GIVEN_NAMES, givenNames},
+            {POSITION_TYPE, positionType},
+            {ORGANIZATION_NAME, organizationName},
+            {ORGANIZATION_TYPE, organizationType},
+            {POSTAL_ADDRESS, postalAddress},
+            {BIOGRAPHY_TEXT, biographyText},
+            {INTERESTS_TEXT, interestsText},
+            {RESEARCH_AREAS_TEXT, researchAreasText},
+            {HOME_PAGE, homePage},
+            {WEBLOG, weblog},
+            {CITY, city},
+            {COUNTRY, country},
     };
     return toValidateArray;
   }
 
   private boolean isProfane(final String fieldName, final String fieldValue) {
-    final List<String> profanityValidationMessages = profanityCheckingService.validate(fieldValue);
-    if (profanityValidationMessages.size() > 0 ) {
-      addFieldError(fieldName, StringUtils.join(profanityValidationMessages.toArray(), ", "));
+    final List<String> profaneWords = profanityCheckingService.validate(fieldValue);
+    if (profaneWords.size() > 0 ) {
+      addProfaneMessages(profaneWords, fieldName, (String) fieldToUINameMapping.get(fieldName));
       return true;
     }
     return false;
@@ -776,7 +834,7 @@ public class UserProfileAction extends UserActionSupport {
    * @param homePage Value to set for homePage.
    */
   public void setHomePage(final String homePage) {
-    this.homePage = homePage;
+    this.homePage = homePage.trim();
   }
 
   /**
@@ -792,7 +850,7 @@ public class UserProfileAction extends UserActionSupport {
    * @param weblog Value to set for weblog.
    */
   public void setWeblog(final String weblog) {
-    this.weblog = weblog;
+    this.weblog = weblog.trim();
   }
 
   /**
@@ -817,5 +875,37 @@ public class UserProfileAction extends UserActionSupport {
    */
   public boolean getIsDisplayNameSet() {
     return isDisplayNameSet;
+  }
+
+  /**
+   * Get the user id(guid) of the user for which we want to get the email address for.
+   * @return user id
+   */
+  protected abstract String getUserIdToFetchEmailAddressFor() throws ApplicationException;
+
+  protected String fetchUserEmailAddress() throws ApplicationException {
+    final String emailAddressUrl = getEmailAddressUrl();
+    final String userId = getUserIdToFetchEmailAddressFor();
+    final String url = emailAddressUrl + userId;
+    try {
+      return FileUtils.getTextFromUrl(url);
+    } catch (IOException ex) {
+      final String errorMessage = "Failed to fetch the email address using the url:" + url;
+      log.error(errorMessage, ex);
+      throw new ApplicationException(errorMessage, ex);
+    }
+  }
+
+  private String getEmailAddressUrl() {
+    return getUserService().getEmailAddressUrl();
+  }
+
+  /**
+   * Setter for displayNameRequired. To be used only if the display name is not required to be set,
+   * for example when the administrator is creating the account for a user.
+   * @param displayNameRequired Value to set for displayNameRequired.
+   */
+  public void setDisplayNameRequired(final boolean displayNameRequired) {
+    this.displayNameRequired = displayNameRequired;
   }
 }

@@ -20,6 +20,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -91,5 +92,24 @@ public abstract class BaseActionSupport extends ActionSupport {
 
   private HttpServletRequest getRequest() {
     return ServletActionContext.getRequest();
+  }
+
+  /**
+   * Add profane words together into a message.
+   * @param profaneWords profaneWords
+   * @param fieldName fieldName
+   * @param readableFieldName readableFieldName
+   */
+  protected void addProfaneMessages(final List<String> profaneWords, final String fieldName, final String readableFieldName) {
+    if (!profaneWords.isEmpty()) {
+      final String joinedWords = StringUtils.join(profaneWords.toArray(), ", ");
+      String  msg;
+      if (profaneWords.size() > 1) {
+        msg = "these words";
+      } else {
+        msg = "this word";
+      }
+      addFieldError(fieldName, "Profanity filter found: " + joinedWords + ". Please remove " + msg + ".");
+    }
   }
 }

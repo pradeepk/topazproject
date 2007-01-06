@@ -223,15 +223,19 @@ public class UserService extends BaseConfigurableService {
   /**
    * Retrieves all authentication IDs for a given Topaz userID
    * 
-   * @param userId
+   * @param topazId
    *          Topaz userID
-   * @return array of all authentiation IDs associated with the Topaz userID
+   * @return first authentiation ID associated with the Topaz userID
    * @throws ApplicationException ApplicationException
    */
-  public String[] getAuthenticationIds(final String userId) throws ApplicationException {
+  public String getAuthenticationId(final String topazId) throws ApplicationException {
     try {
-      return userWebService.getAuthenticationIds(userId);
-    } catch (NoSuchIdException ne) {
+      final String[] authenticationIds = userWebService.getAuthenticationIds(topazId);
+      if (authenticationIds.length < 1) {
+        throw new NoSuchUserIdException("No auth id's found for topazId:" + topazId);
+      }
+      return authenticationIds[0];
+    } catch (NoSuchUserIdException ne) {
       throw new ApplicationException(ne);
     } catch (RemoteException re) {
       throw new ApplicationException(re);
@@ -255,6 +259,20 @@ public class UserService extends BaseConfigurableService {
   }
 
   /**
+   * Lookup the topaz id of the user with a given email address
+   * @param emailAddress emailAddress
+   * @return topaz id of the user
+   * @throws org.plos.ApplicationException ApplicationException
+   */
+  public String lookUpUserByEmailAddress(final String emailAddress) throws ApplicationException {
+    try {
+      return profileWebService.getUserWithEmailAddress(emailAddress);
+    } catch (RemoteException re) {
+      throw new ApplicationException("Error occured while fetching profile with email:" + emailAddress, re);
+    }
+  }
+
+  /**
    * Retrieves the profile for the given Topaz User ID
    * 
    * @param topazUserId
@@ -266,7 +284,7 @@ public class UserService extends BaseConfigurableService {
     try {
       return profileWebService.getProfile(topazUserId);
     } catch (NoSuchIdException ne) {
-      throw new ApplicationException(ne);
+      throw new ApplicationException("No user found with topazId:" + topazUserId, ne);
     } catch (RemoteException re) {
       throw new ApplicationException(re);
     }
@@ -279,12 +297,13 @@ public class UserService extends BaseConfigurableService {
    * @param inUser
    *          write profile of this user to the store
    * @param privateFields fields marked private by the user
+   * @param userNameIsRequired whether userNameIsRequired
    * @throws org.plos.ApplicationException ApplicationException
-   * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
+   * @throws org.plos.user.service.DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
-  public void setProfile(final PlosOneUser inUser, final String[] privateFields) throws ApplicationException, DisplayNameAlreadyExistsException {
+  public void setProfile(final PlosOneUser inUser, final String[] privateFields, final boolean userNameIsRequired) throws ApplicationException, DisplayNameAlreadyExistsException {
     if (inUser != null) {
-      setProfile(inUser.getUserId(), inUser.getUserProfile());
+      setProfile(inUser.getUserId(), inUser.getUserProfile(), userNameIsRequired);
       final Collection<UserProfileGrant> profileGrantsList = UserProfileGrant.getProfileGrantsForFields(privateFields);
       final UserProfileGrant[] profileGrants = profileGrantsList.toArray(new UserProfileGrant[profileGrantsList.size()]);
       setProfileFieldsPrivate(inUser.getUserId(), profileGrants);
@@ -295,20 +314,23 @@ public class UserService extends BaseConfigurableService {
 
   /**
    * Write the specified user profile and associates it with the specified user ID
-   * 
+   *
    * @param topazUserId
    *          Topaz User ID
    * @param profile
    *          profile to be written
-   * @throws ApplicationException ApplicationException
-   * @throws DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
+   * @param userNameIsRequired whether userNameIsRequired
+   * @throws org.plos.ApplicationException ApplicationException
+   * @throws org.plos.user.service.DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
-  protected void setProfile(final String topazUserId, final UserProfile profile)
+  protected void setProfile(final String topazUserId, final UserProfile profile, final boolean userNameIsRequired)
       throws ApplicationException, DisplayNameAlreadyExistsException {
     try {
-      final String userId = profileWebService.getUserWithDisplayName(profile.getDisplayName());
-      if ((null != userId) && !userId.equals(topazUserId)) {
-        throw new DisplayNameAlreadyExistsException();
+      if (userNameIsRequired) {
+        final String userId = profileWebService.getUserWithDisplayName(profile.getDisplayName());
+        if ((null != userId) && !userId.equals(topazUserId)) {
+          throw new DisplayNameAlreadyExistsException();
+        }
       }
       profileWebService.setProfile(topazUserId, profile);
       userCacheAdministrator.flushEntry(topazUserId);

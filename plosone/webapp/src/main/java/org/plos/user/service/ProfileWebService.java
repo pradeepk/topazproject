@@ -78,9 +78,25 @@ public class ProfileWebService extends BaseConfigurableService {
    * @return the userId with the display name
    */
   public String getUserWithDisplayName(final String displayName) throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
     final UserProfile userTemplate = new UserProfile();
     userTemplate.setDisplayName(displayName);
+    return findFirstUserByProfile(userTemplate);
+  }
+
+  /**
+   * Find the user with a given email address.
+   * @param emailAddress emailAddress
+   * @return the userId with the email address
+   * @throws java.rmi.RemoteException RemoteException
+   */
+  public String getUserWithEmailAddress(final String emailAddress) throws RemoteException {
+    final UserProfile userTemplate = new UserProfile();
+    userTemplate.setEmail(emailAddress);
+    return findFirstUserByProfile(userTemplate);
+  }
+
+  private String findFirstUserByProfile(final UserProfile userTemplate) throws RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
     final String[] userIds = profileService.findUsersByProfile(new UserProfile[]{userTemplate}, new boolean[]{true});
     if ((null != userIds) && (userIds.length > 0)) {
       return userIds[0];

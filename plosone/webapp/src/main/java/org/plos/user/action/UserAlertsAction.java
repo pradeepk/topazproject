@@ -9,23 +9,19 @@
  */
 package org.plos.user.action;
 
-import com.opensymphony.webwork.ServletActionContext;
-
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.EmailValidator;
-import static org.plos.Constants.PLOS_ONE_USER_KEY;
+import org.plos.ApplicationException;
 import org.plos.user.PlosOneUser;
 import org.plos.user.service.CategoryBean;
 
 import java.util.ArrayList;
 import java.util.Collection;
 
-import javax.servlet.http.HttpServletResponse;
-
 /**
  * Update action for saving or getting alerts that the user subscribes to.
  */
-public class UserAlertsAction extends UserActionSupport {
+public abstract class UserAlertsAction extends UserActionSupport {
   private String[] monthlyAlerts = new String[]{""};
   private String[] weeklyAlerts = new String[]{""};
   private final String MONTHLY_ALERT_SUFFIX = "_monthly";
@@ -47,7 +43,7 @@ public class UserAlertsAction extends UserActionSupport {
       return INPUT;
     }
 
-    final PlosOneUser plosOneUser = (PlosOneUser) getSessionMap().get(PLOS_ONE_USER_KEY);
+    final PlosOneUser plosOneUser = getPlosOneUserToUse();
     final Collection<String> alertsList = new ArrayList<String>();
     for (final String alert : monthlyAlerts) {
       alertsList.add(alert + MONTHLY_ALERT_SUFFIX);
@@ -70,7 +66,7 @@ public class UserAlertsAction extends UserActionSupport {
    * @throws Exception Exception
    */
   public String retrieveAlerts() throws Exception {
-    final PlosOneUser plosOneUser = (PlosOneUser) getSessionMap().get(PLOS_ONE_USER_KEY);
+    final PlosOneUser plosOneUser = getPlosOneUserToUse();
     final Collection<String> monthlyAlertsList = new ArrayList<String>();
     final Collection<String> weeklyAlertsList = new ArrayList<String>();
 
@@ -95,6 +91,13 @@ public class UserAlertsAction extends UserActionSupport {
 
     return SUCCESS;
   }
+
+  /**
+   * Provides a way to get the PlosOneUser to edit
+   * @return the PlosOneUser to edit
+   * @throws org.plos.ApplicationException ApplicationException
+   */
+  protected abstract PlosOneUser getPlosOneUserToUse() throws ApplicationException;
 
   private String[] convertToArrayWithAtleastOneStringElement(final Collection<String> collection) {
     if (collection.size() == 0) return new String[]{""};

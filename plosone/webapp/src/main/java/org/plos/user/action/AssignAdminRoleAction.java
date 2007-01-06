@@ -14,10 +14,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.Constants;
-import static org.plos.Constants.PLOS_ONE_USER_KEY;
-import org.plos.user.PlosOneUser;
-
-import java.util.Map;
 
 /**
  * Creates a new admin user in Topaz. User must be logged in already.
@@ -25,24 +21,6 @@ import java.util.Map;
 public class AssignAdminRoleAction extends UserActionSupport {
   private static final Log log = LogFactory.getLog(AssignAdminRoleAction.class);
   private String topazId;
-
-  /**
-   * For a logged in user it will assign the admin role to it.
-   * @return status code from webwork
-   */
-  public String assignAdminRole() throws Exception {
-    final Map<String, Object> sessionMap = getSessionMap();
-
-    final PlosOneUser plosUser = (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
-
-    if (null == plosUser) {
-      addActionError("No user logged in yet");
-      return ERROR;
-    }
-
-    topazId = plosUser.getUserId();
-    return assignAdminRole(topazId);
-  }
 
   /**
    * Assign the given topazId an admin role.

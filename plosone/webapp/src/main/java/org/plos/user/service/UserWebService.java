@@ -18,6 +18,7 @@ import org.topazproject.common.NoSuchIdException;
 import org.topazproject.ws.users.DuplicateAuthIdException;
 import org.topazproject.ws.users.UserAccounts;
 import org.topazproject.ws.users.UserAccountsClientFactory;
+import org.topazproject.ws.users.NoSuchUserIdException;
 
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
@@ -115,10 +116,10 @@ public class UserWebService extends BaseConfigurableService {
    * @param topazUserId
    *          Topaz user ID
    * @return array of authentication ids
-   * @throws NoSuchIdException
+   * @throws NoSuchUserIdException
    * @throws RemoteException
    */
-  public String[] getAuthenticationIds(final String topazUserId) throws NoSuchIdException,
+  public String[] getAuthenticationIds(final String topazUserId) throws NoSuchUserIdException,
       RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     return userService.getAuthenticationIds(topazUserId);

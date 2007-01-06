@@ -1,3 +1,4 @@
+<#include "initForEditedBy.ftl">
 
 <#if Parameters.tabId?exists>
    <#assign tabId = Parameters.tabId>
@@ -5,10 +6,17 @@
    <#assign tabId = "">
 </#if>
 
-<@ww.form name="userForm" id="userForm"  method="post" title="User Information Form" cssClass="pone-form" enctype="multipart/form-data">
+<#if editedByAdmin>
+  <#assign actionValue="saveProfileByAdmin"/>
+  <#assign namespaceValue="/admin"/>
+<#else>
+  <#assign actionValue="saveProfile"/>
+  <#assign namespaceValue="/user/secure"/>
+</#if>
+<@ww.form name="userForm" id="userForm" action="${actionValue}" namespace="${namespaceValue}" method="post" title="User Information Form" cssClass="pone-form" enctype="multipart/form-data">
 
   <fieldset>
-  <legend>Your Private Information</legend>
+  <legend>${addressingUser} Private Information</legend>
   <ol>
       <li><p><em>Your E-mail address will always be kept private. See the the <a href="http://www.plos.org/privacy.html" title="PLoS Privacy Statement">PLoS Privacy Statement</a> for more information.</em></p>
     <strong>${email}</strong><br />
@@ -17,7 +25,7 @@
   </ol>
   </fieldset>
   <fieldset>
-  <legend>Your Public Profile</legend>
+  <legend>${addressingUser} Public Profile</legend>
   <ol>
 	<li>Fields marked with <span class="required">*</span> are required.</li>
   <li><em>The following required fields will always appear publicly.</em></li>
@@ -42,17 +50,20 @@
 	  <#else>
           <@ww.textfield name="city" label="City" required="true" tabindex="104"/>
 	  </#if>
-   	  <#if tabId?has_content>	
-          <@ww.textfield name="country" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="Country" required="true" tabindex="105"/>
+    <@ww.action name="selectList" namespace="" id="selectList"/>
+    <#if tabId?has_content>	
+          <@ww.select label="Country" onfocus="topaz.horizontalTabs.setTempValue(this);" onselect="topaz.horizontalTabs.checkValue(this);" name="country" value="country"
+          list="%{#selectList.get('countries')}" tabindex="105" required="true" />
 	  <#else>
-          <@ww.textfield name="country" label="Country" required="true" tabindex="105"/>
-	  </#if>
+          <@ww.select label="Country" name="country" value="country"
+          list="%{#selectList.get('countries')}" tabindex="105" required="true" />
+    </#if>
 
 			</li>
 		</ol>
 	</fieldset>
 	<fieldset>
-	<legend>Your Extended Profile</legend>
+	<legend>${addressingUser} Extended Profile</legend>
 		<ol>
    	  <#if tabId?has_content>	
         <@ww.textarea name="postalAddress" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="Address" cssClass="long-input"  rows="5" cols="50" tabindex="106" />
@@ -76,8 +87,7 @@
 			</li>
 			<li class="form-last-item">
 				<ol>
-          <@ww.action name="selectList" namespace="" id="selectList"/>
-   	  <#if tabId?has_content>	
+   	  <#if tabId?has_content>
           <@ww.select label="Organization Type" onfocus="topaz.horizontalTabs.setTempValue(this);" onselect="topaz.horizontalTabs.checkValue(this);" name="organizationType" value="organizationType"
           list="%{#selectList.allOrganizationTypes}" tabindex="109" />
 	  <#else>
@@ -144,7 +154,9 @@
 	  </#if>
 			</li>
 		</ol>
-      <div class="btnwrap"><input type="button" id="formSubmit" name="formSubmit" value="Save" tabindex="119"/></div>
+
+    <#include "submit.ftl">
+
 	</fieldset>
 
 </@ww.form>

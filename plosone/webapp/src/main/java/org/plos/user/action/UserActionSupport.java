@@ -12,13 +12,9 @@ package org.plos.user.action;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.ApplicationException;
-import org.plos.Constants;
 import org.plos.action.BaseActionSupport;
 import org.plos.user.service.UserService;
-import org.plos.util.FileUtils;
 
-import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -47,28 +43,7 @@ public class UserActionSupport extends BaseActionSupport {
     this.userService = userService;
   }
 
-  protected String getUserId(final Map<String, Object> sessionMap) {
-    return (String) sessionMap.get(Constants.SINGLE_SIGNON_USER_KEY);
-  }
-
   protected Map<String, Object> getSessionMap() {
     return userService.getUserContext().getSessionMap();
-  }
-
-  protected String fetchUserEmailAddress() throws ApplicationException {
-    final String emailAddressUrl = getEmailAddressUrl();
-    final String userId = getUserId(getSessionMap());
-    final String url = emailAddressUrl + userId;
-    try {
-      return FileUtils.getTextFromUrl(url);
-    } catch (IOException ex) {
-      final String errorMessage = "Failed to fetch the email address using the url:" + url;
-      log.error(errorMessage, ex);
-      throw new ApplicationException(errorMessage, ex);
-    }
-  }
-
-  private String getEmailAddressUrl() {
-    return userService.getEmailAddressUrl();
   }
 }
