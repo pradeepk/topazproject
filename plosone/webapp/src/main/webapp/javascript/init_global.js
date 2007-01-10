@@ -2,7 +2,7 @@ var container;
 var topBanner;
 
 function globalInit() {
-  if (BrowserDetect.browser == "Explorer") {
+  if (dojo.render.html.ie) {
     container = dojo.byId("container");
     topBanner = dojo.byId("topBanner");
     
