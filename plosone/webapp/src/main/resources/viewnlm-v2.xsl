@@ -1135,6 +1135,11 @@ Make article meta data
 			<a name="equal-contrib"></a><xsl:text>#</xsl:text> These authors contributed equally to this work.
 		</p>
 	</xsl:if>
+	<xsl:for-each select="author-notes/fn[@fn-type='deceased']">
+		<p>
+			<xsl:apply-templates select="." mode="front"/>
+		</p>
+	</xsl:for-each>
       <!-- that's it for article-meta; return to previous context -->
       </xsl:for-each>
 </xsl:template>
@@ -2864,14 +2869,11 @@ Make article meta data
      e.g., <sup><italic>a</italic></sup> -->
 <xsl:template match="xref[@ref-type='author-notes']" mode="contrib">
   <xsl:choose>
-    <xsl:when test="'*'">
-      <xsl:apply-templates/>
-    </xsl:when>
     <xsl:when test="not(.//italic) and not (.//sup)">
-      <sup><i><xsl:apply-templates/></i></sup>
+      <sup><i><xsl:element name="a"><xsl:attribute name="href">#<xsl:value-of select="@rid"/></xsl:attribute><xsl:apply-templates/></xsl:element></i></sup>
     </xsl:when>
     <xsl:when test="not(.//italic)">
-      <i><xsl:apply-templates/></i>
+      <i><xsl:element name="a"><xsl:attribute name="href">#<xsl:value-of select="@rid"/></xsl:attribute><xsl:attribute name="class">fnoteref</xsl:attribute> <xsl:value-of select="sup"/></xsl:element></i>
     </xsl:when>
     <xsl:otherwise>
       <xsl:apply-templates/>
@@ -3116,6 +3118,15 @@ Make article meta data
     <xsl:apply-templates/>
 </xsl:template>
 
+
+<xsl:template match="author-notes/fn[@fn-type='deceased']" mode="front">
+	<xsl:element name="a">
+		<xsl:attribute name="name"><xsl:value-of select="@id"/></xsl:attribute>
+	</xsl:element>
+    <xsl:apply-templates/>
+</xsl:template>
+
+
 <!-- author-notes/fn/label -->
 
 <xsl:template match="author-notes/fn/label">
@@ -3163,6 +3174,10 @@ Make article meta data
         <xsl:text>[</xsl:text>
         <xsl:value-of select="@fn-type"/>
         <xsl:text>]</xsl:text>
+        <xsl:text> </xsl:text>
+      </xsl:when>
+      <xsl:when test="parent::fn/@fn-type='deceased'">
+        <xsl:value-of select="@fn-type"/>
         <xsl:text> </xsl:text>
       </xsl:when>
       <xsl:otherwise>
