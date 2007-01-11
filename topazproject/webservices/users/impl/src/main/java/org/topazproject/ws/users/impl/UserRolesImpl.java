@@ -69,6 +69,12 @@ public class UserRolesImpl implements UserRoles {
        "  and $roles <topaz:role> $role;").
       replaceAll("\\Q${MODEL}", MODEL);
 
+  private static final String ITQL_LIST_USERS_IN_ROLE =
+      ("select $userId from ${MODEL} where " +
+       "  $userId <rdf:type> <foaf:OnlineAccount> and $userId <topaz:hasRoles> $roles " +
+       "  and $roles <topaz:role> '${role}';").
+      replaceAll("\\Q${MODEL}", MODEL);
+
   private static final String ITQL_CLEAR_ROLES =
       ("delete select $s $p $o from ${MODEL} where $s $p $o and " +
        "  ( $s <tucana:is> <${userId}> and $p <tucana:is> <topaz:hasRoles> or " +
@@ -243,6 +249,38 @@ public class UserRolesImpl implements UserRoles {
       } catch (Throwable t) {
         log.debug("Error rolling failed transaction", t);
       }
+    }
+  }
+
+  public String[] listUsersInRole(String role) throws RemoteException {
+    pep.checkAccess(pep.LIST_USERS_IN_ROLE, URI.create("dummy:dummy"));
+
+    if (log.isDebugEnabled())
+      log.debug("Listing users in role '" + role + "'");
+
+    ItqlHelper itql = ctx.getItqlHelper();
+    try {
+      String qry =
+          ItqlHelper.bindValues(ITQL_LIST_USERS_IN_ROLE, "role", ItqlHelper.escapeLiteral(role));
+      StringAnswer ans = new StringAnswer(itql.doQuery(qry, aliases));
+
+      List rows = ((StringAnswer.StringQueryAnswer) ans.getAnswers().get(0)).getRows();
+      if (rows.size() == 0) {
+        if (log.isDebugEnabled())
+          log.debug("No users found in role '" + role + "'");
+        return null;
+      }
+
+      String[] users = new String[rows.size()];
+      for (int idx = 0; idx < users.length; idx++)
+        users[idx] = ((String[]) rows.get(idx))[0];
+
+      if (log.isDebugEnabled())
+        log.debug("Users found in role '" + role + "': '" + StringUtils.join(users, "', '") + "'");
+
+      return users;
+    } catch (AnswerException ae) {
+      throw new RemoteException("Error getting users for role '" + role + "'", ae);
     }
   }
 

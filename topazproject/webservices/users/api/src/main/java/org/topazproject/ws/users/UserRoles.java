@@ -29,6 +29,9 @@ public interface UserRoles extends Remote {
 
     /** The action that represents a set-roles operation in XACML policies. */
     public static final String SET_ROLES = "userRoles:setRoles";
+
+    /** The action that represents a list-users-in-role operation in XACML policies. */
+    public static final String LIST_USERS_IN_ROLE = "userRoles:listUsersInRole";
   }
 
   /** 
@@ -51,4 +54,14 @@ public interface UserRoles extends Remote {
    * @throws RemoteException if some other error occured
    */
   public String[] getRoles(String userId) throws NoSuchUserIdException, RemoteException;
+
+  /** 
+   * Get the list of users who are currently assigned the specified security role.
+   * 
+   * @param role  the role
+   * @return the list of user ids; this may be null. Note that the order of the entries will be
+   *         arbitrary.
+   * @throws RemoteException if some error occured
+   */
+  public String[] listUsersInRole(String role) throws RemoteException;
 }

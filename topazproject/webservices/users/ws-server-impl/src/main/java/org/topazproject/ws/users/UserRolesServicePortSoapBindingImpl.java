@@ -83,6 +83,13 @@ public class UserRolesServicePortSoapBindingImpl implements UserRoles, ServiceLi
     impl.setRoles(userId, authIds);
   }
 
+  /**
+   * @see org.topazproject.ws.users.UserRoles#listUsersInRole
+   */
+  public String[] listUsersInRole(String role) throws RemoteException {
+    return impl.listUsersInRole(role);
+  }
+
   private static class WSUserRolesPEP extends UserRolesPEP {
     static {
       init(WSUserRolesPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);

@@ -34,10 +34,12 @@ public abstract class UserRolesPEP extends AbstractSimplePEP implements UserRole
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
                                                            GET_ROLES,
                                                            SET_ROLES,
+                                                           LIST_USERS_IN_ROLE,
                                                          };
 
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
+                                                           null,
                                                            null,
                                                            null,
                                                          };

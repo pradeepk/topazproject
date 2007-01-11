@@ -125,30 +125,54 @@ public class UserRolesServiceTest extends TestCase {
       throws RemoteException, NoSuchUserIdException, DuplicateAuthIdException, IOException {
     String[] got = service.getRoles(userId);
     assertNull("got non-null roles", got);
+    got = service.listUsersInRole("user");
+    assertNull("got non-null users", got);
+    got = service.listUsersInRole("admin");
+    assertNull("got non-null users", got);
 
     String[] roles = new String[] { "user", "admin" };
     service.setRoles(userId, roles);
     got = service.getRoles(userId);
     checkRoles(userId, got, roles);
+    got = service.listUsersInRole("user");
+    checkUsers("user", got, new String[] { userId });
+    got = service.listUsersInRole("admin");
+    checkUsers("admin", got, new String[] { userId });
 
     roles = new String[0];
     service.setRoles(userId, roles);
     got = service.getRoles(userId);
     assertNull("got non-null roles", got);
+    got = service.listUsersInRole("user");
+    assertNull("got non-null users", got);
+    got = service.listUsersInRole("admin");
+    assertNull("got non-null users", got);
 
     roles = null;
     service.setRoles(userId, roles);
     got = service.getRoles(userId);
     assertNull("got non-null roles", got);
+    got = service.listUsersInRole("user");
+    assertNull("got non-null users", got);
+    got = service.listUsersInRole("admin");
+    assertNull("got non-null users", got);
 
     roles = new String[] { "user" };
     service.setRoles(userId, roles);
     got = service.getRoles(userId);
     checkRoles(userId, got, roles);
+    got = service.listUsersInRole("user");
+    checkUsers("user", got, new String[] { userId });
+    got = service.listUsersInRole("admin");
+    assertNull("got non-null users", got);
 
     String user2Id = userService.createUser("musterAuth1");
     got = service.getRoles(user2Id);
     assertNull("got non-null roles", got);
+    got = service.listUsersInRole("user");
+    checkUsers("user", got, new String[] { userId });
+    got = service.listUsersInRole("admin");
+    assertNull("got non-null users", got);
 
     String[] roles2 = new String[] { "admin" };
     service.setRoles(user2Id, roles2);
@@ -156,6 +180,32 @@ public class UserRolesServiceTest extends TestCase {
     checkRoles(userId, got, roles);
     got = service.getRoles(user2Id);
     checkRoles(user2Id, got, roles2);
+    got = service.listUsersInRole("user");
+    checkUsers("user", got, new String[] { userId });
+    got = service.listUsersInRole("admin");
+    checkUsers("admin", got, new String[] { user2Id });
+
+    roles2 = new String[] { "admin", "user" };
+    service.setRoles(user2Id, roles2);
+    got = service.getRoles(userId);
+    checkRoles(userId, got, roles);
+    got = service.getRoles(user2Id);
+    checkRoles(user2Id, got, roles2);
+    got = service.listUsersInRole("user");
+    checkUsers("user", got, new String[] { userId, user2Id });
+    got = service.listUsersInRole("admin");
+    checkUsers("admin", got, new String[] { user2Id });
+
+    roles = new String[] { "admin", "user" };
+    service.setRoles(userId, roles);
+    got = service.getRoles(userId);
+    checkRoles(userId, got, roles);
+    got = service.getRoles(user2Id);
+    checkRoles(user2Id, got, roles2);
+    got = service.listUsersInRole("user");
+    checkUsers("user", got, new String[] { userId, user2Id });
+    got = service.listUsersInRole("admin");
+    checkUsers("admin", got, new String[] { userId, user2Id });
 
     userService.deleteUser(user2Id);
   }
@@ -169,5 +219,16 @@ public class UserRolesServiceTest extends TestCase {
 
     for (int idx = 0; idx < got.length; idx++)
       assertEquals("Role mismatch, ", exp[idx], got[idx]);
+  }
+
+  private void checkUsers(String role, String[] got, String[] exp) {
+    assertNotNull("got null users in role '" + role + "'", got);
+    assertEquals("Number of users mismatch;", exp.length, got.length);
+
+    Arrays.sort(got);
+    Arrays.sort(exp);
+
+    for (int idx = 0; idx < got.length; idx++)
+      assertEquals("User mismatch, ", exp[idx], got[idx]);
   }
 }
