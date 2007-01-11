@@ -29,6 +29,10 @@
     <level value="warn" />
   </logger>
 
+  <logger name="org.mulgara.store.tuples.UnorderedProjection">
+    <level value="warn" />
+  </logger>
+
   <root>
     <priority value ="info" />
     <appender-ref ref="rolling" />
