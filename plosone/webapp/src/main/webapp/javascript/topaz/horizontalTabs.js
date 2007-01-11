@@ -63,7 +63,6 @@ topaz.horizontalTabs = {
     
     this.buildTabs(targetObj);
     this.tabSetup(targetObj);
-    //topaz.formUtil.createHiddenFields(formObj);
     //this.attachFormEvents(formObj);
   },
   
@@ -86,6 +85,7 @@ topaz.horizontalTabs = {
     var formObj = document.forms[formName];
     
     this.setTargetFormObj(formObj);
+    //topaz.formUtil.createHiddenFields(this.targetFormObj);
     
     //alert("formObj.formSubmit = " + formObj.formSubmit.value);
     /*dojo.event.connect(formObj.formSubmit, "onclick", function() {
@@ -270,11 +270,11 @@ topaz.horizontalTabs = {
   },
   
   confirmChange: function (formObj) {
-    var isChanged = false;
-    isChanged = topaz.formUtil.hasFieldChange(topaz.horizontalTabs.targetFormObj);
+    //var isChanged = false;
+    //isChanged = topaz.formUtil.hasFieldChange(topaz.horizontalTabs.targetFormObj);
    
     //alert("[confirmChange] changeFlag = " + changeFlag);
-    if (changeFlag || isChanged) {
+    if (changeFlag) {
       var warning = confirm("You have made changes, are you sure you want to leave this tab without saving?  If you want to proceed, click \"OK\".  Otherwise click \"Cancel\" to go to save.");
       
       proceedFlag = warning;
@@ -445,7 +445,7 @@ function submitContent() {
       else
         jumpToElement(errorNodes);
         
-      //topaz.formUtil.createHiddenFields(targetObj.formName);
+      //topaz.formUtil.createHiddenFields(targetObj.targetFormObj);
       //topaz.horizontalTabs.attachFormEvents(document.forms[targetObj.formName]);
       //topaz.horizontalTabs.toggleTab(targetObj);
       

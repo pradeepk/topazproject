@@ -52,7 +52,7 @@
 	  </#if>
     <@ww.action name="selectList" namespace="" id="selectList"/>
     <#if tabId?has_content>	
-          <@ww.select label="Country" onfocus="topaz.horizontalTabs.setTempValue(this);" onselect="topaz.horizontalTabs.checkValue(this);" name="country" value="country"
+          <@ww.select label="Country" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" name="country" value="country"
           list="%{#selectList.get('countries')}" tabindex="105" required="true" />
 	  <#else>
           <@ww.select label="Country" name="country" value="country"
@@ -88,7 +88,7 @@
 			<li class="form-last-item">
 				<ol>
    	  <#if tabId?has_content>
-          <@ww.select label="Organization Type" onfocus="topaz.horizontalTabs.setTempValue(this);" onselect="topaz.horizontalTabs.checkValue(this);" name="organizationType" value="organizationType"
+          <@ww.select label="Organization Type" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" name="organizationType" value="organizationType"
           list="%{#selectList.allOrganizationTypes}" tabindex="109" />
 	  <#else>
           <@ww.select label="Organization Type" name="organizationType" value="organizationType"
@@ -97,11 +97,15 @@
           <@ww.textfield name="organizationName" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" label="Organization Name" tabindex="110" />
 				</ol>
 				<ol>
-            <@ww.select label="Title" name="title" value="title"
+   	  <#if tabId?has_content>	
+            <@ww.select label="Title" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);"  name="title" value="title"
             list="%{#selectList.allTitles}" tabindex="110" />
+	  <#else>
+            <@ww.select label="Title" name="title" value="title" list="%{#selectList.allTitles}" tabindex="110" />
+	  </#if>
 
    	  <#if tabId?has_content>	
-            <@ww.select label="Position Type" onfocus="topaz.horizontalTabs.setTempValue(this);" onselect="topaz.horizontalTabs.checkValue(this);" name="positionType" value="positionType"
+            <@ww.select label="Position Type" onfocus="topaz.horizontalTabs.setTempValue(this);" onchange="topaz.horizontalTabs.checkValue(this);" name="positionType" value="positionType"
             list="%{#selectList.allPositionTypes}" tabindex="111" />
 	  <#else>
             <@ww.select label="Position Type" name="positionType" value="positionType" list="%{#selectList.allPositionTypes}" tabindex="111" />
