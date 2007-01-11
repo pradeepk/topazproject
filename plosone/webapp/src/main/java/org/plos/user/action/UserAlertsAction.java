@@ -10,6 +10,8 @@
 package org.plos.user.action;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.EmailValidator;
 import org.plos.ApplicationException;
 import org.plos.user.PlosOneUser;
@@ -22,12 +24,13 @@ import java.util.Collection;
  * Update action for saving or getting alerts that the user subscribes to.
  */
 public abstract class UserAlertsAction extends UserActionSupport {
-  private String[] monthlyAlerts = new String[]{""};
-  private String[] weeklyAlerts = new String[]{""};
+  private String[] monthlyAlerts = new String[]{};
+  private String[] weeklyAlerts = new String[]{};
   private final String MONTHLY_ALERT_SUFFIX = "_monthly";
   private final String WEEKLY_ALERT_SUFFIX = "_weekly";
   private String alertEmailAddress;
-
+  private static final Log log = LogFactory.getLog(UserAlertsAction.class);
+  
   /**
    * Save the alerts.
    * @return webwork status
@@ -44,19 +47,34 @@ public abstract class UserAlertsAction extends UserActionSupport {
     }
 
     final PlosOneUser plosOneUser = getPlosOneUserToUse();
+    if (log.isDebugEnabled()) {
+      if (plosOneUser != null) {
+        log.debug("plosuser authID = " + plosOneUser.getAuthId());
+        log.debug("plosuser email = " + plosOneUser.getEmail());
+        log.debug("plosuser userID = " + plosOneUser.getUserId());
+      }
+    }
+
     final Collection<String> alertsList = new ArrayList<String>();
     for (final String alert : monthlyAlerts) {
+      if (log.isDebugEnabled()) {
+        log.debug("found monthly alert: " + alert);
+      }
       alertsList.add(alert + MONTHLY_ALERT_SUFFIX);
     }
     for (final String alert : weeklyAlerts) {
+      if (log.isDebugEnabled()) {
+        log.debug("found weekly alert: " + alert);
+      }
       alertsList.add(alert + WEEKLY_ALERT_SUFFIX);
     }
-
+    
     final String[] alerts = alertsList.toArray(new String[alertsList.size()]);
     plosOneUser.setAlerts(alerts);
     plosOneUser.setAlertsEmailAddress(alertEmailAddress);
 
     getUserService().setPreferences(plosOneUser);
+
     return SUCCESS;
   }
 
@@ -72,8 +90,17 @@ public abstract class UserAlertsAction extends UserActionSupport {
 
     final String[] alerts = plosOneUser.getAlerts();
 
+    if (log.isDebugEnabled()) {
+      log.debug("plosuser authID = " + plosOneUser.getAuthId());
+      log.debug("plosuser email = " + plosOneUser.getEmail());
+      log.debug("plosuser userID = " + plosOneUser.getUserId());
+    }
+    
     if (null != alerts) {
       for (final String alert : alerts) {
+        if (log.isDebugEnabled()) {
+          log.debug("Alert: " + alert);
+        }
         if (alert.endsWith(MONTHLY_ALERT_SUFFIX)) {
           monthlyAlertsList.add(alert.substring(0, alert.indexOf(MONTHLY_ALERT_SUFFIX)));
         } else if (alert.endsWith(WEEKLY_ALERT_SUFFIX)) {
@@ -82,8 +109,8 @@ public abstract class UserAlertsAction extends UserActionSupport {
       }
     }
 
-    monthlyAlerts = convertToArrayWithAtleastOneStringElement(monthlyAlertsList);
-    weeklyAlerts = convertToArrayWithAtleastOneStringElement(weeklyAlertsList);
+    monthlyAlerts = monthlyAlertsList.toArray(new String[monthlyAlertsList.size()]);
+    weeklyAlerts = weeklyAlertsList.toArray(new String[weeklyAlertsList.size()]);  
     alertEmailAddress = plosOneUser.getAlertsEmailAddress();
     if (StringUtils.isBlank(alertEmailAddress)) {
       alertEmailAddress = plosOneUser.getEmail();
@@ -98,11 +125,6 @@ public abstract class UserAlertsAction extends UserActionSupport {
    * @throws org.plos.ApplicationException ApplicationException
    */
   protected abstract PlosOneUser getPlosOneUserToUse() throws ApplicationException;
-
-  private String[] convertToArrayWithAtleastOneStringElement(final Collection<String> collection) {
-    if (collection.size() == 0) return new String[]{""};
-    return collection.toArray(new String[collection.size()]);
-  }
 
   /**
    * @return categories that have monthly alerts
