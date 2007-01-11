@@ -73,6 +73,7 @@ set +e
 # Run integration tests and generate documentation
 if [ ${N} -eq 0 ]; then
   echo "Running integration tests: mvn clean -Pit-startenv install --batch-mode"
+  export MAVEN_OPTS=-XX:MaxPermSize=128m
   (cd topazproject/integrationtests; ${MVN} ${MVNARGS} -Pit-startenv clean install --batch-mode)
   N=$?
 
