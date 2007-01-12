@@ -21,7 +21,6 @@ import org.apache.commons.cli.HelpFormatter;
 DEFAULT_HOST = "localhost"
 DEFAULT_PORT = 9091
 DEFAULT_LOC = "/mulgara-service/services/ItqlBeanService"
-DEFAULT_URI = "http://${DEFAULT_HOST}:${DEFAULT_PORT}${DEFAULT_LOC}"
 PREFS       = "<local:///topazproject#filter:model=preferences>"
 LIMIT       = 50000
 MAX         = 10000000
@@ -37,8 +36,8 @@ options.addOption("j", "journals", false, "Get journal information")
 options.addOption("c", "cats", false, "Get categories")
 options.addOption("?", "help", false, "usage information")
 cmd = new PosixParser().parse(options, args)
-uri = cmd.getOptionValue("U", DEFAULT_URI)
-if (!uri) uri = "http://${cmd.getOptionValue("h", DEFAULT_HOST)}:${DEFAULT_PORT}${DEFAULT_LOC}"
+uri = cmd.getOptionValue("U")
+if (!uri) uri = "http://${cmd.getOptionValue('h', DEFAULT_HOST)}:${DEFAULT_PORT}${DEFAULT_LOC}"
 if (cmd.hasOption("?")) {
   new HelpFormatter().printHelp("alerts", options)
   System.exit(1)
@@ -46,7 +45,8 @@ if (cmd.hasOption("?")) {
 
 // Globals
 itql = new ItqlHelper(new URI(uri))
-users = [:]
+users = [ : ]
+emails = [ : ]
 
 /**
  * Run a query over the suplied data set and populate users map
@@ -88,9 +88,20 @@ def getCsv(prefName) {
 
   users.values().each() {
     if (it[prefName]) {
-      values = it[prefName].toString()
-      println "${it[EMAIL][0]}, ${values[1..-2]}"
+      email = it[EMAIL][0].toString()
+      values = [ ]
+      it[prefName].each() { values += it.toString() }
+      if (emails[email] != null)
+        emails[email] += values
+      else
+        emails[email] = values
     }
+  }
+
+  sortedEmails = new LinkedList(emails.keySet()).sort()
+  sortedEmails.each() {
+    values = emails[it].sort()
+    println "${it}, ${values.toString()[1..-2]}" 
   }
 }
 
