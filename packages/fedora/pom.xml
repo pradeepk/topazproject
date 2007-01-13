@@ -16,7 +16,7 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>fedora</artifactId>
-      <version>2.1.1-t8</version>
+      <version>2.1.1-t9-SNAPSHOT</version>
     </dependency>
   </dependencies>
 
@@ -75,7 +75,7 @@
         </executions>
 
         <configuration>
-          <release>rc8</release>
+          <release>SNAPSHOT</release>
           <copyright>Educational Community License version 1.0</copyright>
           <distribution>Topaz Repository Framework</distribution>
           <group>Applications/Internet</group>
