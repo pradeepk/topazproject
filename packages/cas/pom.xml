@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.topazproject.packages</groupId>
     <artifactId>packages</artifactId>
-    <version>0.5-rc8-SNAPSHOT</version>
+    <version>0.5-rc8</version>
   </parent>
 
   <dependencies>
@@ -23,7 +23,7 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>ecqs</artifactId>
-      <version>2.0.6-1-t8-SNAPSHOT</version>
+      <version>2.0.6-1-t8</version>
       <type>jar</type>
     </dependency>
 
