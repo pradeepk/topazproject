@@ -68,18 +68,38 @@ fedora_PORT=9090
 # Should not need to modify stuff below here
 #
 
+BASENAME=$(basename $0)
+killsignal=0
+timeout=60
+
 # Verify that JAVA_HOME is set and exists
 [ -z "$JAVA_HOME" ] && echo "JAVA_HOME must be set" && exit 1
 [ ! -d "$JAVA_HOME" ] && echo "JAVA_HOME ($JAVA_HOME) invalid" && exit 1
-[ ! -e "$JAVA_HOME/lib/tools.jar" ] && echo "JAVA_HOME ($JAVA_HOME) is not JDK (no tools.jar)" && exit 1
-
-# Optionally change basename (used mostly for testing)
-if [ "--basename" == "$1" -o "-b" == "$1" ]; then
-  BASENAME=$2
-  shift 2
-else
-  BASENAME=$(basename $0)
+if [ "$OS" != "apple" -a ! -e "$JAVA_HOME/lib/tools.jar" ]; then
+  echo "JAVA_HOME ($JAVA_HOME) is not JDK (no tools.jar)" && exit 1
 fi
+
+# Deprecated:
+[ "--basename" == "$1" ] && BASENAME=$2 && shift 2
+
+# Parse command line options
+while getopts b:n:fF opt; do
+  case $opt in
+    b) # Change the basename (used mostly for testing)
+       BASENAME="$OPTARG"
+       ;;
+    f) # If we can't stop in timeout, send TERM signal
+       killsignal=15
+       ;;
+    F) # If we can't stop in timeout, send KILL signal
+       killsignal=9
+       ;;
+    n) # Number of seconds to wait for processes to start or stop
+       timeout="$OPTARG"
+       ;;
+  esac
+done
+shift `expr $OPTIND - 1`
 
 # Define log filename
 STDLOG="${LOGDIR}/${BASENAME}.out.`date +%Y-%m-%d`"
@@ -217,12 +237,20 @@ java_stop() {
   PID=`cat ${PIDFILE} 2>/dev/null`
   i=1
   while [ -n "$PID" ] ; do
-    PID=`ps -p $PID -o pid | tail -n +2`
     sleep 1
+    PID=`ps -p $PID -o pid | tail -n +2`
     i=$((i+1))
-    [ $i -gt 15 ] && break
+    [ $i -gt "$timeout" ] && break
   done
-  [ -z "$PID" ] && rm -f $PIDFILE
+  if [ -z "$PID" ]; then
+    rm -f $PIDFILE
+  elif [ "$killsignal" -ne 0 ]; then
+    echo "Killing $BASENAME (kill -$killsignal $PID)"
+    kill -$killsignal $PID
+    sleep 1
+    PID=`ps -p $PID -o pid | tail -n +2`
+    [ -z "$PID" ] && rm -f $PIDFILE
+  fi
 }
 
 case "$1" in
@@ -313,7 +341,7 @@ case "$1" in
     done
     ;;
   *)
-    echo "Usage: $0 [--basename name] {start|stop|restart|status}"
+    echo "Usage: $0 [-b name] [-f -F] {start|stop|restart|status}"
     exit 1
 esac
 
