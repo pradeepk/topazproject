@@ -3,13 +3,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>topaz-lucene-impl</artifactId>
   <packaging>jar</packaging>
-  <version>0.5-rc8-SNAPSHOT</version>
+  <version>0.5-rc8</version>
   <name>Fedoragsearch topaz search implementation</name>
   
   <parent>
     <groupId>org.topazproject.ws</groupId>
     <artifactId>ws-search</artifactId>
-    <version>0.5-rc8-SNAPSHOT</version>
+    <version>0.5-rc8</version>
   </parent>
 
   <dependencies>
@@ -17,7 +17,7 @@
     <dependency>
       <groupId>info.fedora</groupId>
       <artifactId>fedoragsearch-server</artifactId>
-      <version>2.1.1-t8-SNAPSHOT</version>
+      <version>2.1.1-t8</version>
     </dependency>
     <dependency>
       <groupId>lucene</groupId>

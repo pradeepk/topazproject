@@ -3,7 +3,7 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.topazproject</groupId>
   <artifactId>the-whole-shebang</artifactId>
-  <version>0.5-rc8-SNAPSHOT</version>
+  <version>0.5-rc8</version>
   <packaging>pom</packaging>
   <name>All Plos and Topaz stuff</name>
   <!-- description is encouraged to take HTML embeded in CDATA -->
@@ -67,9 +67,9 @@
   </pluginRepositories>
 
   <scm>
-    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/head/</developerConnection>
-    <connection>scm:svn:http://gandalf.topazproject.org/svn/head/</connection>
-    <url>http://gandalf.topazproject.org/svn/</url>
+    <developerConnection>scm:svn:http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.5-rc8</developerConnection>
+    <connection>scm:svn:http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.5-rc8</connection>
+    <url>http://gandalf.topazproject.org/svn/tags/the-whole-shebang-0.5-rc8</url>
   </scm>
 
   <distributionManagement>
@@ -86,6 +86,7 @@
     <module>plosone</module>
     <module>plos-registration</module>
     <module>re-package</module>
+    <module>packages</module>
   </modules>
 
   <properties>
@@ -302,8 +303,8 @@
                 </goals>
                 <configuration>
                   <SPAWN>true</SPAWN>      <!-- Spawn the start command -->
-                  <fedora-version>2.1.1-t8-SNAPSHOT</fedora-version>
-                  <ecqs-version>2.0.6-1-t8-SNAPSHOT</ecqs-version>
+                  <fedora-version>2.1.1-t8</fedora-version>
+                  <ecqs-version>2.0.6-1-t8</ecqs-version>
                 </configuration>
               </execution>
               <execution>
