@@ -48,7 +48,7 @@
         <artifactId>ant-tasks</artifactId>
         <configuration>
           <ECQS_INSTALL_DIR>${project.build.directory}</ECQS_INSTALL_DIR>
-          <ecqs-version>2.0.6-1-t8-SNAPSHOT</ecqs-version>
+          <ecqs-version>2.0.6-1-t8</ecqs-version>
         </configuration>
 
         <executions>
@@ -84,7 +84,7 @@
         </executions>
 
         <configuration>
-          <release>SNAPSHOT</release>
+          <release>rc8</release>
           <copyright>Educational Community License version 1.0</copyright>
           <distribution>Topaz Repository Framework</distribution>
           <group>Applications/Internet</group>
