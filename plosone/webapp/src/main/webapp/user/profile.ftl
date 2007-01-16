@@ -1,4 +1,4 @@
-<div id="contents">
+<div id="contents" class="static">
 	<h2>Profile</h2>
 	
 	<div class="horizontalTabs">

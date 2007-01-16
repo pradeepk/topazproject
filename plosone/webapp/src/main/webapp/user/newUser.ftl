@@ -1,5 +1,5 @@
 <!-- begin : main content wrapper -->
-<div id="content">
+<div id="content"  class="static">
 <h2>PLoS ONE Member Profiles: Create a Profile</h2>
 	<p><strong>Create or Update Your Profile</strong></p>
 	<p>Fields marked with an <span class="required">*</span> are required. </p>
