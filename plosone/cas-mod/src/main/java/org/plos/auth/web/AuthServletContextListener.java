@@ -1,5 +1,5 @@
-/* $HeadURL:: http://gandalf.topazproject.org/svn/head/plosone/cas-mod/src/main/java/org#$
- * $Id: AuthServletContextListener.java 649 2006-09-20 21:49:15Z viru $
+/* $HeadURL::                                                                            $
+ * $Id$
  *
  * Copyright (c) 2006 by Topaz, Inc.
  * http://topazproject.org
