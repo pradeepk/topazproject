@@ -27,7 +27,7 @@
     echo "WARN: Resetting Invalid JAVA_HOME ($JAVA_HOME)" && JAVA_HOME=
     
 # Try to set JAVA_HOME if not set above
-[ -z "$JAVA_HOME" ] && JAVA_HOME=`find /opt -maxdepth 1 -name 'jdk*' -a -type d | head -1`
+[ -z "$JAVA_HOME" ] && JAVA_HOME=`find /opt -maxdepth 1 -name 'jdk*' -a \! -type f | head -1`
 export JAVA_HOME
 
 # Start multicast for ecache
