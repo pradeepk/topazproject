@@ -381,6 +381,15 @@ public class ItqlHelper {
     }
   }
 
+  /**
+   * Returns the current transaction state.
+   * 
+   * @return true if a transaction is active, false otherwise
+   */
+  public boolean isInTransaction() {
+    return inTransaction;
+  }
+
   /** 
    * Close the session. 
    * 
