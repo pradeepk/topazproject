@@ -28,6 +28,13 @@
 MVN_REPOSITORY=$HOME/.m2/repository
 MVN_REPOSITORY_TOPAZ=${MVN_REPOSITORY}/org/topazproject
 
+MVN_FIRST_FAILURE=$HOME/.m2/first_failure
+MVN_LAST_SUCCESS=$HOME/.m2/last_success
+MVN_LAST_BUILD=$HOME/.m2/last_build
+FIRST_FAILURE=`cat ${MVN_FIRST_FAILURE} 2>/dev/null`
+LAST_SUCCESS=`cat ${MVN_LAST_SUCCESS} 2>/dev/null`
+LAST_BUILD=`cat ${MVN_LAST_BUILD} 2>/dev/null`
+
 # Don't exit if we get a meaningless error
 set +e
 
@@ -36,7 +43,8 @@ MVNARGS=-Dsvnversion=${SVNVERSION}
 
 java -version
 echo "pwd: "`pwd`
-echo "svnversion: $SVNVERSION"
+[ -e ${MVN_FIRST_FAILURE} ] && echo "Initial failure: ${FIRST_FAILURE}"
+echo "svnversion: r$SVNVERSION (last success: r$LAST_SUCCESS / last build: r$LAST_BUILD)"
 echo "svn info and recent changes"
 svn info
 svn log -rBASE:{`date "+%Y-%m-%d"`}
@@ -96,6 +104,21 @@ echo "Stopping mulgara"
 ${MVN} ${MVNARGS} ant-tasks:mulgara-stop > /dev/null 2>&1
 echo "Making sure search is stopped: mvn ant-tasks:search-stop"
 ${MVN} ${MVNARGS} ant-tasks:search-stop > /dev/null 2>&1
+
+# Update last build #
+echo ${SVNVERSION} > ${MVN_LAST_BUILD}
+
+# Update the last success
+if [ ${N} -eq 0 ]; then
+  echo "BUILD SUCCEED for r${SVNVERSION}"
+  [ -n "${FIRST_FAILURE}" ] && echo "Fixes failure in ${FIRST_FAILURE}"
+  echo ${SVNVERSION} > ${MVN_LAST_SUCCESS}
+  rm -f ${MVN_FIRST_FAILURE}
+else
+  echo "BUILD FAILED for r$SVNVERSION (last success: r$LAST_SUCCESS first fail: $FIRST_FAILURE)"
+  [ ! -e ${MVN_FIRST_FAILURE} ] && echo "r${SVNVERSION}:${LAST_BUILD}" > ${MVN_FIRST_FAILURE}
+fi
+echo "See http://gandalf.topazproject.org/trac/log/head?rev=${SVNVERSION}&verbose=on"
 
 # Return build result
 exit ${N}
