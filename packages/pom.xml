@@ -82,11 +82,6 @@
             <tarLongFileMode>gnu</tarLongFileMode>
           </configuration>
         </plugin>
-        <plugin>
-          <groupId>org.codehaus.mojo</groupId>
-          <artifactId>rpm-maven-plugin</artifactId>
-          <version>2.0-alpha-3-t1</version>
-        </plugin> 
       </plugins>
     </pluginManagement>
 
@@ -120,4 +115,47 @@
       </plugin>
     </plugins>
   </build>
+
+  <profiles>
+    <profile>
+      <id>rpm</id>
+      <build>
+        <pluginManagement>
+          <plugins>
+            <plugin>
+              <groupId>org.codehaus.mojo</groupId>
+              <artifactId>rpm-maven-plugin</artifactId>
+              <version>2.0-alpha-3-t1</version>
+            </plugin>
+            <!-- Put rpm into local repository and ~/.m2/rpms directory -->
+            <plugin>
+              <artifactId>maven-antrun-plugin</artifactId>
+              <executions>
+                <execution>
+                  <id>copy-rpm</id>
+                  <phase>install</phase>
+                  <configuration>
+                    <tasks>
+                      <copy flatten="true"
+                        todir="${settings.localRepository}/org/topazproject/packages/${project.name}/${version}">
+                        <fileset dir="${project.build.directory}/rpm/RPMs/noarch"/>
+                      </copy>
+                      <mkdir dir="${settings.localRepository}/../rpms"/>
+                      <copy todir="${settings.localRepository}/../rpms" flatten="true">
+                        <fileset dir="${project.build.directory}/rpm/RPMs/noarch"/>
+                      </copy>
+                    </tasks>
+                  </configuration>
+                  <goals><goal>run</goal></goals>
+                </execution>
+              </executions>
+            </plugin>
+
+          </plugins>
+        </pluginManagement>
+
+      </build>
+    </profile>
+  </profiles>
+
 </project>

@@ -105,6 +105,13 @@ ${MVN} ${MVNARGS} ant-tasks:mulgara-stop > /dev/null 2>&1
 echo "Making sure search is stopped: mvn ant-tasks:search-stop"
 ${MVN} ${MVNARGS} ant-tasks:search-stop > /dev/null 2>&1
 
+# Build RPMs if integration tests succeeded
+if [ ${N} -eq 0 -a -x /usr/bin/rpmbuild ]; then
+  echo "Build RPMs"
+  (cd packages; ${MVN} ${MVNARGS} -Prpm install --batch-mode)
+  N=$?
+fi
+
 # Update last build #
 echo ${SVNVERSION} > ${MVN_LAST_BUILD}
 
