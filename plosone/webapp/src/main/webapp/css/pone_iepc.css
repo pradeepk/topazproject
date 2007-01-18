@@ -58,6 +58,9 @@ IE PC fixes
 * html #home { height: 1% }
 html>body #home { height: auto }
 
+* html div.banner img,
+* html div.banner object { margin-top: 8px; }
+
 /* IE 7 hax */
 *:first-child+html ul#tabsContainer 	{ }
 *:first-child+html ul#tabsContainer li 	{ padding-top: 0; padding-bottom: 0; }

@@ -21,7 +21,8 @@ body		{ background-color: transparent }
 ----------------------------------------------------------
 */
 #home			{ position: relative; background:  url(../images/pone_home_bg.gif) no-repeat 0 9px!important; margin: 0; margin-top: -30px; border: 1px solid #fff;}
-#home img		{ display: inline; position: relative;}
+#home img,
+#home object		{ display: inline; position: relative;}
 #home a:link,
 #home a:visited	{ text-decoration: none; }	/* remove the underline from all homepage links to increase legibility */
 #home a:hover 	{ text-decoration: underline; } /* apply a border in hover state */
@@ -93,7 +94,9 @@ div.block 				{ margin: 0 3px 6px 3px; padding: 6px; clear: both; position: rela
 
 /* wraps banner ads and partner icons */
 div.banner				{ padding: 0; border: none; margin: 4px; }
-div.banner img 			{ float: none; margin: 4px; background: transparent; }
+div.banner img,
+div.banner object 			{ float: none; margin: 4px; background: transparent; }
+div.banner object			{ padding-top: 0; border: 1px solid #900;}
 div.partner 				{ text-align: center; margin-right: 0; padding-right: 0; padding-top: 0;border-right: 1px solic #ccc; position: relative; border-top: 1px solic #ccc;}
 div.partner h6			{ font-weight: normal; text-align: center; font-size: .85em; margin: 0 0 0 10px; color: #999;text-transform: uppercase; background: url(../images/pone_home_partner_h6.gif) no-repeat top left; padding-top: 8px;}
 #first div.partner img 			{ float: none; display: block; margin: 20px auto 30px auto; text-align: center;  }
