@@ -26,13 +26,13 @@
     
     topaz.formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate');
     
-  	dlg = dojo.widget.byId("AnnotationDialog");
+  	dlg = dojo.widget.manager.getWidgetById("AnnotationDialog");
   	var dlgCancel = dojo.byId('btn_cancel');
   	dlg.setCloseControl(dlgCancel);
   	dlg.setTipDown(dojo.byId(annotationConfig.tipDownDiv));
   	dlg.setTipUp(dojo.byId(annotationConfig.tipUpDiv));
 
-  	popup = dojo.widget.byId("CommentDialog");
+  	popup = dojo.widget.manager.getWidgetById("CommentDialog");
   	var popupClose = dojo.byId('btn_close');
     popup.setCloseControl(popupClose);
   	popup.setTipDown(dojo.byId(commentConfig.tipDownDiv));
@@ -46,7 +46,7 @@
       }
     );
   	
-  	popupm = dojo.widget.byId("CommentDialogMultiple");
+  	popupm = dojo.widget.manager.getWidgetById("CommentDialogMultiple");
   	var popupCloseMulti = dojo.byId('btn_close_multi');
     popupm.setCloseControl(popupCloseMulti);
   	popupm.setTipDown(dojo.byId(multiCommentConfig.tipDownDiv));
