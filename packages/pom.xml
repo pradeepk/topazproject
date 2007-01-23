@@ -140,10 +140,6 @@
                         todir="${settings.localRepository}/org/topazproject/packages/${project.name}/${version}">
                         <fileset dir="${project.build.directory}/rpm/RPMs/noarch"/>
                       </copy>
-                      <mkdir dir="${settings.localRepository}/../rpms"/>
-                      <copy todir="${settings.localRepository}/../rpms" flatten="true">
-                        <fileset dir="${project.build.directory}/rpm/RPMs/noarch"/>
-                      </copy>
                     </tasks>
                   </configuration>
                   <goals><goal>run</goal></goals>
