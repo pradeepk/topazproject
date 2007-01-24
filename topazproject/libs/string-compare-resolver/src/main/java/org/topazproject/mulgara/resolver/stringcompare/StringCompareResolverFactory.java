@@ -22,9 +22,9 @@ import org.mulgara.resolver.spi.ResolverFactoryException;
 import org.mulgara.resolver.spi.ResolverFactoryInitializer;
 import org.mulgara.resolver.spi.ResolverSession;
 
-/** 
+/**
  * The factory for {@link StringCompareResolver StringCompareResolver}s.
- * 
+ *
  * @author Ronald Tschalär
  */
 public class StringCompareResolverFactory implements ResolverFactory {
@@ -32,19 +32,21 @@ public class StringCompareResolverFactory implements ResolverFactory {
 
   /** the model type we handle */
   public static final URI MODEL_TYPE = URI.create("http://topazproject.org/models#StringCompare");
-  /** the ignore-case property we handle */
-  public static final URI EQ_IGNORE_CASE =
-      URI.create("http://rdf.topazproject.org/RDF/equalsIgnoreCase");
-
-  /** The preallocated local node representing the <code>topaz:equalsIgnoreCase</code> property. */
-  private long equalsIgnoreCaseNode;
 
   /** The preallocated local node representing models representing all non-blank nodes.  */
   private long modelType;
 
-  /** 
-   * Create a new string-compare-resolver-factory instance. 
-   * 
+  private StringCompareImpl impls[] = new StringCompareImpl[] {
+    new EqualsIgnoreCaseImpl(),
+    new LtImpl(),
+    new LeImpl(),
+    new GtImpl(),
+    new GeImpl()
+  };
+
+  /**
+   * Create a new string-compare-resolver-factory instance.
+   *
    * @param initializer the factory initializer
    * @return the new string-compare-resolver-factory instance
    */
@@ -66,8 +68,11 @@ public class StringCompareResolverFactory implements ResolverFactory {
     initializer.addModelType(MODEL_TYPE, this);
 
     // set up our data
-    equalsIgnoreCaseNode = initializer.preallocate(new URIReferenceImpl(EQ_IGNORE_CASE));
-    modelType            = initializer.preallocate(new URIReferenceImpl(MODEL_TYPE));
+    modelType = initializer.preallocate(new URIReferenceImpl(MODEL_TYPE));
+    for (StringCompareImpl impl: impls) {
+      URI uri = URI.create("http://rdf.topazproject.org/RDF/" + impl.getOp());
+      impl.setNode(initializer.preallocate(new URIReferenceImpl(uri)));
+    }
   }
 
   public void close() {
@@ -82,6 +87,6 @@ public class StringCompareResolverFactory implements ResolverFactory {
   public Resolver newResolver(boolean canWrite, ResolverSession resolverSession,
                               Resolver systemResolver)
       throws ResolverFactoryException {
-    return new StringCompareResolver(resolverSession, equalsIgnoreCaseNode, MODEL_TYPE);
+    return new StringCompareResolver(resolverSession, impls, MODEL_TYPE);
   }
 }

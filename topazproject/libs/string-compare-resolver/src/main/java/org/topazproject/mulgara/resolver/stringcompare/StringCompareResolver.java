@@ -56,19 +56,17 @@ public class StringCompareResolver implements Resolver {
   /** The URI of the type describing string compare models. */
   private URI modelTypeURI;
 
-  /** The preallocated local node representing the topaz:equalsIgnoreCase predicate. */
-  private long equalsIgnoreCaseNode;
-
+  private StringCompareImpl[] impls;
 
   /**
    * Construct a resolver.
    *
    * @param resolverSession      the session this resolver is associated with
-   * @param equalsIgnoreCaseNode the local node for the equalsIgnoreCase predicate
+   * @param impls                the StringCompareImpl-s we support
    * @param modelTypeURI         the URI of the model type we're handling
    * @throws IllegalArgumentException  if <var>resolverSession</var> is <code>null</code>
    */
-  StringCompareResolver(ResolverSession resolverSession, long equalsIgnoreCaseNode,
+  StringCompareResolver(ResolverSession resolverSession, StringCompareImpl[] impls,
                         URI modelTypeURI)
       throws IllegalArgumentException {
     if (resolverSession == null)
@@ -76,7 +74,7 @@ public class StringCompareResolver implements Resolver {
 
     this.resolverSession      = resolverSession;
     this.modelTypeURI         = modelTypeURI;
-    this.equalsIgnoreCaseNode = equalsIgnoreCaseNode;
+    this.impls                = impls;
   }
 
   /**
@@ -134,10 +132,15 @@ public class StringCompareResolver implements Resolver {
     try {
       // check the constraint for consistency and get predicate and object
       long predicate = ((LocalNode) constraint.getElement(1)).getValue();
-      if (predicate != equalsIgnoreCaseNode)
+      StringCompareImpl impl = null;
+      for (int i = 0; i < impls.length; i++)
+        if (predicate == impls[i].getNode()) {
+          impl = impls[i];
+          break;
+        }
+      if (impl == null)
         throw new QueryException("Predicate '" + resolverSession.globalize(predicate) + "' not " +
-                                 "supported by String Compare resolver; only 'equalsIgnoreCase' " +
-                                 "is supported");
+                                 "supported by String Compare resolver");
 
       if (constraint.getElement(2) instanceof Variable)
         throw new QueryException("Compare resolver does not support variables as the object: '" +
@@ -161,12 +164,12 @@ public class StringCompareResolver implements Resolver {
         throw new QueryException("Compare resolver only supports literals and URI's as the " +
                                  "object: '" + valueNode + "'");
 
-      // Evaluate 'equalsIgnoreCase'
+      // Evalute
       ConstraintElement subj = constraint.getElement(0);
       assert subj != null;
 
       if (logger.isDebugEnabled())
-        logger.debug("Evaluating " + subj + " equalsIgnoreCase '" + comp + "'");
+        logger.debug("Evaluating " + subj + " " + impl.getOp() + " '" + comp + "'");
 
       Tuples tuples;
 
@@ -176,24 +179,27 @@ public class StringCompareResolver implements Resolver {
 
         // convert the comparison string into a range
         SPObjectFactory spoFact = resolverSession.getSPObjectFactory();
+        String   lowValue  = impl.lowValue(comp);
+        String   highValue = impl.highValue(comp);
         SPObject begRangeObj;
         SPObject endRangeObj;
         if (compIsURI) {
-          begRangeObj = spoFact.newSPURI(URI.create(comp.toUpperCase()));
-          endRangeObj = spoFact.newSPURI(URI.create(comp.toLowerCase()));
+          begRangeObj = (lowValue == null ? null : spoFact.newSPURI(URI.create(lowValue)));
+          endRangeObj = (highValue == null ? null : spoFact.newSPURI(URI.create(highValue)));
         } else if (type != null) {
-          begRangeObj = spoFact.newSPTypedLiteral(comp.toUpperCase(), type);
-          endRangeObj = spoFact.newSPTypedLiteral(comp.toLowerCase(), type);
+          begRangeObj = (lowValue == null ? null : spoFact.newSPTypedLiteral(lowValue, type));
+          endRangeObj = (highValue == null ? null : spoFact.newSPTypedLiteral(highValue, type));
         } else {
-          begRangeObj = spoFact.newSPString(comp.toUpperCase());
-          endRangeObj = spoFact.newSPString(comp.toLowerCase());
+          begRangeObj = (lowValue == null ? null : spoFact.newSPString(lowValue));
+          endRangeObj = (highValue == null ? null : spoFact.newSPString(highValue));
         }
 
         // find the matching strings
         if (logger.isDebugEnabled())
           logger.debug("Finding string-pool-range from " + begRangeObj + " to " + endRangeObj);
 
-        tuples = resolverSession.findStringPoolRange(begRangeObj, true, endRangeObj, true);
+        tuples = resolverSession.findStringPoolRange(begRangeObj, impl.incLowValue(),
+                                                     endRangeObj, impl.incHighValue());
 
         tuples.renameVariables(constraint);
       } else {
@@ -206,21 +212,22 @@ public class StringCompareResolver implements Resolver {
           logger.debug("Comparing '" + spo + "' to '" + comp + "'");
 
         if (spo == null)
-          tuples = TuplesOperations.empty();
-        else if (spo.getLexicalForm().equalsIgnoreCase(comp))
-          tuples = TuplesOperations.unconstrained();
+          tuples = TuplesOperations.empty(); // false
+        else if (impl.test(spo, comp))
+          tuples = TuplesOperations.unconstrained(); // true
         else
-          tuples = TuplesOperations.empty();
+          tuples = TuplesOperations.empty(); // false
       }
 
       if (logger.isDebugEnabled())
-        logger.debug("Evaluated " + subj + " equalsIgnoreCase '" + comp + "': " + toString(tuples));
+        logger.debug("Evaluated " + subj + " " + impl.getOp() + " '" + comp +
+                     "': " + toString(tuples));
 
       // convert the tuples to a resolution
       if (tuples.isUnconstrained() || tuples.getRowCardinality() == tuples.ZERO)
         return new TuplesWrapperResolution(tuples, constraint);
       else
-        return new FilteredTuplesResolution(tuples, comp, constraint, resolverSession);
+        return new FilteredTuplesResolution(tuples, comp, constraint, resolverSession, impl);
 
     } catch (GlobalizeException ge) {
       throw new QueryException("Couldn't convert internal data into a string", ge);
@@ -247,16 +254,19 @@ public class StringCompareResolver implements Resolver {
   }
 
   /**
-   * Filter the tuples, allowing only those that pass the equalsIgnoreCase match.
+   * Filter the tuples, allowing only those that pass the test.
    */
   private static class FilteredTuplesResolution extends TuplesWrapperResolution {
-    private final String          comp;
-    private final ResolverSession rslvrSess;
+    private final String            comp;
+    private final ResolverSession   rslvrSess;
+    private final StringCompareImpl impl;
 
-    FilteredTuplesResolution(Tuples t, String comp, Constraint c, ResolverSession resolverSession) {
+    FilteredTuplesResolution(Tuples t, String comp, Constraint c,
+                             ResolverSession resolverSession, StringCompareImpl impl) {
       super(t, c);
       this.comp      = comp;
       this.rslvrSess = resolverSession;
+      this.impl      = impl;
     }
 
     public boolean equals(Object o) {
@@ -293,9 +303,9 @@ public class StringCompareResolver implements Resolver {
         }
 
         if (logger.isDebugEnabled())
-          logger.debug("Comparing '" + spo + "' to '" + comp + "'");
+          logger.debug(impl.getOp() + " Comparing '" + spo + "' to '" + comp + "'");
 
-        if (spo.getLexicalForm().equalsIgnoreCase(comp))
+        if (impl.test(spo, comp))
           return true;
       }
 

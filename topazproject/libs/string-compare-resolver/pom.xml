@@ -24,10 +24,28 @@
       <groupId>org.mulgara</groupId>
       <artifactId>mulgara</artifactId>
     </dependency>
+    
+    <dependency>
+      <groupId>groovy</groupId>
+      <artifactId>groovy-all</artifactId>
+      <version>1.0</version>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>junit</groupId>
+      <artifactId>junit</artifactId>
+      <scope>test</scope>
+    </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>mulgara-client</artifactId>
+      <scope>test</scope>
+    </dependency>
   </dependencies>
 
   <properties>
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
+    <forkMode>never</forkMode> <!-- Fixes annoying issue with surefire - see MSUREFIRE-121 -->
   </properties>
 </project>
