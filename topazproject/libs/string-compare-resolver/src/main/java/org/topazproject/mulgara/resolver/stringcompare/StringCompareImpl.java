@@ -35,8 +35,14 @@ abstract class StringCompareImpl {
 
   /**
    * The test to see if a value passed.
+   *
+   * @param spo  The new spo to check against
+   * @param comp The value from the query to compare against
    */
   abstract boolean test(SPObject spo, String comp);
+
+  /** Should we filter tuples returned by low/highValue stuff? */
+  boolean doFilter() { return false; }
 
   /** Return start of range of valid values (null means lowest possible value). */
   String  lowValue(String comp)  { return null; }

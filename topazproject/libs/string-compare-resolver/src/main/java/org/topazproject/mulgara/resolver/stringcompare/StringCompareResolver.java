@@ -224,7 +224,8 @@ public class StringCompareResolver implements Resolver {
                      "': " + toString(tuples));
 
       // convert the tuples to a resolution
-      if (tuples.isUnconstrained() || tuples.getRowCardinality() == tuples.ZERO)
+      if (tuples.isUnconstrained() || tuples.getRowCardinality() == tuples.ZERO ||
+          !impl.doFilter())
         return new TuplesWrapperResolution(tuples, constraint);
       else
         return new FilteredTuplesResolution(tuples, comp, constraint, resolverSession, impl);

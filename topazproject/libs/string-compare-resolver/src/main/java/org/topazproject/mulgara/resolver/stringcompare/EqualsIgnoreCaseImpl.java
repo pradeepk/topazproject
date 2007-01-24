@@ -23,6 +23,8 @@ class EqualsIgnoreCaseImpl extends StringCompareImpl {
     return spo.getLexicalForm().equalsIgnoreCase(comp);
   }
 
+  boolean doFilter() { return true; }
+
   String  lowValue (String comp) { return comp.toUpperCase(); }
   String  highValue(String comp) { return comp.toLowerCase(); }
 }
