@@ -33,6 +33,11 @@
       <artifactId>topaz-tools-users</artifactId>
       <version>${pom.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>topaz-tools-runscripts</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
   </dependencies>
 
   <build>
@@ -110,6 +115,17 @@
                   <sources>
                     <source>
                       <location>${project.build.directory}/${project.build.finalName}-tools.dir/lib</location>
+                    </source>
+                  </sources>
+                </mapping>
+                <mapping>
+                  <directory>/usr/local/topaz/scripts</directory>
+                  <filemode>755</filemode>
+                  <username>topaz</username>
+                  <groupname>topaz</groupname>
+                  <sources>
+                    <source>
+                      <location>src/main/resources/scripts</location>
                     </source>
                   </sources>
                 </mapping>

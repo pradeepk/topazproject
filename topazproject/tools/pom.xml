@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
   $HeadURL:: $
-  $Id: $
+  $Id$
 
   Copyright (c) 2006 by Topaz, Inc.
   http://topazproject.org
@@ -29,6 +29,7 @@
     <module>rss</module>
     <module>articles</module>
     <module>users</module>
+    <module>runscripts</module>
   </modules>
 
   <dependencyManagement>
