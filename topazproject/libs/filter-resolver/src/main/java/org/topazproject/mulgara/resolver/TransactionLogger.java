@@ -121,6 +121,9 @@ class TransactionLogger extends QueueingFilterHandler {
       throw new ResolverException("Error getting statements", te);
     }
 
+    if (sb.length() < 10)
+      return;                   // there were no statements
+
     sb.append(occurs ? "into <" : "from <").append(filterModel).append(">;\n");
     queue(sb.toString());
   }
