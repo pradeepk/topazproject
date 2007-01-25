@@ -147,11 +147,11 @@ class TransactionLogger extends QueueingFilterHandler {
       Literal l = (Literal) globalNode;
       String val = l.getLexicalForm().replaceAll("\\\\", "\\\\\\\\").replaceAll("'", "\\\\'");
       val = "'" + val + "'";
-        if (l.getDatatypeURI() != null)
-            val += "^^<" + l.getDatatypeURI() + ">";
-        else if (!l.getLanguage().equals(""))
-            val += "@" + l.getLanguage();
-        return val;
+      if (l.getDatatypeURI() != null)
+        val += "^^<" + l.getDatatypeURI() + ">";
+      else if (!l.getLanguage().equals(""))
+        val += "@" + l.getLanguage();
+      return val;
     }
 
     if (globalNode instanceof BlankNodeImpl)
