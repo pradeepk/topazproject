@@ -97,21 +97,6 @@
     <aggregate>true</aggregate>
   </properties>
 
-  <dependencies>
-    <dependency>
-      <groupId>ant-contrib</groupId>
-      <artifactId>ant-contrib</artifactId>
-      <version>1.0b2</version>
-      <scope>provided</scope>
-    </dependency>
-    <dependency>
-      <groupId>groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <version>1.0</version>
-      <scope>provided</scope>
-    </dependency>
-  </dependencies>
-
   <!-- Profiles Section: Define custom profiles here -->
   
   <profiles>
@@ -218,10 +203,8 @@
                   <tasks>
                     <taskdef resource="net/sf/antcontrib/antcontrib.properties"
                       classpathref="maven.compile.classpath"/>
-                    <available property="it.groovy.present"
-                      file="${basedir}/src/it/groovy" type="dir"/>
                     <if>
-                      <isset property="it.groovy.present"/>
+                      <available file="${basedir}/src/it/groovy" type="dir"/>
                       <then>
                         <mkdir dir="${project.build.testOutputDirectory}" />
                         <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
@@ -367,6 +350,33 @@
   </profiles>
         
   <build>
+    <pluginManagement>
+      <plugins>
+        <plugin>
+          <artifactId>maven-antrun-plugin</artifactId>
+          <dependencies>
+            <dependency>
+              <groupId>ant-contrib</groupId>
+              <artifactId>ant-contrib</artifactId>
+              <version>1.0b2</version>
+              <scope>provided</scope>
+            </dependency>
+            <dependency>
+              <groupId>groovy</groupId>
+              <artifactId>groovy-all</artifactId>
+              <version>1.0</version>
+              <scope>provided</scope>
+            </dependency>
+            <dependency>
+              <groupId>org.apache.maven</groupId>
+              <artifactId>maven-artifact-ant</artifactId>
+              <version>2.0.4</version>
+            </dependency>
+          </dependencies>
+        </plugin>
+      </plugins>
+    </pluginManagement>
+            
     <plugins>
       <plugin>
         <artifactId>maven-antrun-plugin</artifactId>
@@ -379,10 +389,8 @@
               <tasks>
                 <taskdef resource="net/sf/antcontrib/antcontrib.properties"
                   classpathref="maven.compile.classpath"/>
-                <available property="main.groovy.present"
-                  file="${basedir}/src/main/groovy" type="dir"/>
                 <if>
-                  <isset property="main.groovy.present"/>
+                  <available file="${basedir}/src/main/groovy" type="dir"/>
                   <then>
                     <mkdir dir="${project.build.outputDirectory}" />
                     <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
@@ -405,10 +413,8 @@
               <tasks>
                 <taskdef resource="net/sf/antcontrib/antcontrib.properties"
                   classpathref="maven.compile.classpath"/>
-                <available property="test.groovy.present"
-                  file="${basedir}/src/test/groovy" type="dir"/>
                 <if>
-                  <isset property="test.groovy.present"/>
+                  <available file="${basedir}/src/test/groovy" type="dir"/>
                   <then>
                     <mkdir dir="${project.build.testOutputDirectory}" />
                     <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
