@@ -138,7 +138,7 @@
                     <tasks>
                       <copy flatten="true"
                         todir="${settings.localRepository}/org/topazproject/packages/${project.name}/${version}">
-                        <fileset dir="${project.build.directory}/rpm/RPMs/noarch"/>
+                        <fileset dir="${project.build.directory}/rpm/RPMS/noarch"/>
                       </copy>
                     </tasks>
                   </configuration>
