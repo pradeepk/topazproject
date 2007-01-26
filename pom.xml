@@ -179,13 +179,13 @@
             </executions>
           </plugin>
 
+          <!-- Blow away the target/test-classes directory so non it-helper builds don't
+               get confused. (Would be better to build in it-classes (or move classes there
+               when testing, but maven is so f**king broken as to make that impossible). -->
           <plugin>
             <artifactId>maven-antrun-plugin</artifactId>
             <executions>
               <execution>
-                <!-- Blow away the target/test-classes directory so non it-helper builds don't
-                     get confused. (Would be better to build in it-classes (or move classes there
-                     when testing, but maven is so f**king broken as to make that impossible). -->
                 <phase>post-integration-test</phase>
                 <goals><goal>run</goal></goals>
                 <configuration>
@@ -194,34 +194,9 @@
                   </tasks>
                 </configuration>
               </execution>
-              
-              <execution>
-                <id>it-compile</id>
-                <phase>test-compile</phase>
-                <goals><goal>run</goal></goals>
-                <configuration>
-                  <tasks>
-                    <taskdef resource="net/sf/antcontrib/antcontrib.properties"
-                      classpathref="maven.compile.classpath"/>
-                    <if>
-                      <available file="${basedir}/src/it/groovy" type="dir"/>
-                      <then>
-                        <mkdir dir="${project.build.testOutputDirectory}" />
-                        <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
-                          <classpath refid="maven.test.classpath" />
-                        </taskdef>
-                        <groovyc destdir="${project.build.testOutputDirectory}"
-                          srcdir="${basedir}/src/it/groovy/" listfiles="true">
-                          <classpath refid="maven.test.classpath"/>
-                        </groovyc>
-                      </then>
-                    </if>
-                  </tasks>
-                </configuration>
-              </execution>
             </executions>
           </plugin>
-
+          
         </plugins>
 
         <!-- pluginManagement: Default plugin information to be made available for
@@ -350,88 +325,7 @@
   </profiles>
         
   <build>
-    <pluginManagement>
-      <plugins>
-        <plugin>
-          <artifactId>maven-antrun-plugin</artifactId>
-          <dependencies>
-            <dependency>
-              <groupId>ant-contrib</groupId>
-              <artifactId>ant-contrib</artifactId>
-              <version>1.0b2</version>
-              <scope>provided</scope>
-            </dependency>
-            <dependency>
-              <groupId>groovy</groupId>
-              <artifactId>groovy-all</artifactId>
-              <version>1.0</version>
-              <scope>provided</scope>
-            </dependency>
-            <dependency>
-              <groupId>org.apache.maven</groupId>
-              <artifactId>maven-artifact-ant</artifactId>
-              <version>2.0.4</version>
-            </dependency>
-          </dependencies>
-        </plugin>
-      </plugins>
-    </pluginManagement>
-            
     <plugins>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>compile</id>
-            <phase>compile</phase>
-            <goals><goal>run</goal></goals>
-            <configuration>
-              <tasks>
-                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
-                  classpathref="maven.compile.classpath"/>
-                <if>
-                  <available file="${basedir}/src/main/groovy" type="dir"/>
-                  <then>
-                    <mkdir dir="${project.build.outputDirectory}" />
-                    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
-                      <classpath refid="maven.compile.classpath" />
-                    </taskdef>
-                    <groovyc destdir="${project.build.outputDirectory}"
-                      srcdir="${basedir}/src/main/groovy/" listfiles="true">
-                      <classpath refid="maven.compile.classpath"/>
-                    </groovyc>
-                  </then>
-                </if>
-              </tasks>
-            </configuration>
-          </execution>
-          <execution>
-            <id>test-compile</id>
-            <phase>test-compile</phase>
-            <goals><goal>run</goal></goals>
-            <configuration>
-              <tasks>
-                <taskdef resource="net/sf/antcontrib/antcontrib.properties"
-                  classpathref="maven.compile.classpath"/>
-                <if>
-                  <available file="${basedir}/src/test/groovy" type="dir"/>
-                  <then>
-                    <mkdir dir="${project.build.testOutputDirectory}" />
-                    <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
-                      <classpath refid="maven.test.classpath" />
-                    </taskdef>
-                    <groovyc destdir="${project.build.testOutputDirectory}"
-                      srcdir="${basedir}/src/main/groovy/" listfiles="true">
-                      <classpath refid="maven.test.classpath"/>
-                    </groovyc>
-                  </then>
-                </if>
-              </tasks>
-            </configuration>
-          </execution>
-        </executions>
-      </plugin>
-
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-release-plugin</artifactId>
