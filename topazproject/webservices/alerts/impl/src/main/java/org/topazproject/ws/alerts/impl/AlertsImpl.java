@@ -53,6 +53,9 @@ import org.topazproject.mulgara.itql.Answer.QueryAnswer;
 import org.topazproject.fedora.client.APIMStubFactory;
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.ws.alerts.Alerts;
+import org.topazproject.ws.alerts.Alerts;
+import org.topazproject.ws.article.impl.ArticleImpl;
+import org.topazproject.ws.article.impl.ArticlePEP;
 
 import org.topazproject.feed.ArticleFeed;
 
@@ -130,6 +133,7 @@ public class AlertsImpl implements Alerts {
 
   private final AlertsPEP    pep;
   private final TopazContext ctx;
+  private ArticleImpl  articleImpl;
 
   /**
    * Class to stash user data while reading from Kowari.
@@ -156,10 +160,12 @@ public class AlertsImpl implements Alerts {
    * @param pep the policy-enforcer to use for access-control
    * @param ctx the topaz context
    */
-  public AlertsImpl(AlertsPEP pep, TopazContext ctx) {
+  public AlertsImpl(AlertsPEP pep, TopazContext ctx) throws ServiceException {
     this.ctx   = ctx;
     this.pep   = pep;
+    articleImpl = new ArticleImpl(new ArticlePEP.Proxy(pep), ctx);
   }
+
   /**
    * Create a new alerts service instance.
    *
@@ -176,6 +182,7 @@ public class AlertsImpl implements Alerts {
     ItqlHelper itql = new ItqlHelper(itqlService);
     FedoraAPIM apim = APIMStubFactory.create(fedoraService);
     ctx = new SimpleTopazContext(itql, apim, null);
+    articleImpl = new ArticleImpl(new ArticlePEP.Proxy(pep), ctx);
   }
 
   /**
@@ -192,6 +199,7 @@ public class AlertsImpl implements Alerts {
 
     ItqlHelper itql = new ItqlHelper(mulgaraUri);
     ctx = new SimpleTopazContext(itql, null, null);
+    articleImpl = new ArticleImpl(new ArticlePEP.Proxy(pep), ctx);
   }
 
 
@@ -539,30 +547,7 @@ public class AlertsImpl implements Alerts {
    */
   protected Collection getArticles(String query)
       throws RemoteException {
-    try {
-      Answer articlesAnswer = new Answer(ctx.getItqlHelper().doQuery(query, null));
-      Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
-
-      for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
-        String art = (String)it.next();
-        try {
-          checkAccess(pep.READ_META_DATA, art);
-        } catch (SecurityException se) {
-          articles.remove(art);
-          if (log.isDebugEnabled())
-            log.debug(art, se);
-        }
-      }
-
-      String detailsQuery = ArticleFeed.getDetailsQuery(articles.values());
-      StringAnswer detailsAnswer =
-          new StringAnswer(ctx.getItqlHelper().doQuery(detailsQuery, null));
-      ArticleFeed.addArticlesDetails(articles, detailsAnswer);
-
-      return articles.values();
-    } catch (AnswerException ae) {
-      throw new RemoteException("Error querying RDF", ae);
-    }
+    return articleImpl.getArticleFeedData(query);
   }
 
   protected void checkAccess(String action, String uri) {

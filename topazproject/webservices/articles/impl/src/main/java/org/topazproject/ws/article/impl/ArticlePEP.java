@@ -56,4 +56,21 @@ public abstract class ArticlePEP extends AbstractSimplePEP implements Article.Pe
       throws IOException, ParsingException, UnknownIdentifierException {
     super(pdp, subjAttrs);
   }
+
+  protected ArticlePEP(AbstractSimplePEP pep) {
+    super(pep);
+  }
+
+  /**
+   * An ArticlePEP that inherits its pdp and subject attrs from another.
+   */
+  public static class Proxy extends ArticlePEP {
+    static {
+      init(Proxy.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
+    }
+
+    public Proxy(AbstractSimplePEP pep) {
+      super(pep);
+    }
+  }
 }

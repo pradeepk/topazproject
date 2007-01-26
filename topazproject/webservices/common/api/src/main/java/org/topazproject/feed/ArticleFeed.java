@@ -21,6 +21,14 @@ import java.util.Map;
 import java.text.ParseException;
 import java.rmi.RemoteException;
 
+import javax.xml.XMLConstants;
+import javax.xml.namespace.NamespaceContext;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpression;
+import javax.xml.xpath.XPathFactory;
+import org.w3c.dom.NodeList;
+
 import org.jrdf.graph.Literal;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -43,11 +51,11 @@ import org.topazproject.mulgara.itql.Answer.QueryAnswer;
  */
 public class ArticleFeed {
   private static final Log    log            = LogFactory.getLog(ArticleFeed.class);
-  
+
   private static final Configuration CONF    = ConfigurationStore.getInstance().getConfiguration();
   private static final String MODEL_ARTICLES = "<" + CONF.getString("topaz.models.articles") + ">";
   private static final String MODEL_XSD      = "<" + CONF.getString("topaz.models.xsd") + ">";
-  
+
   private static final String FEED_ITQL =
     "select $obj $title $date $state " +
     " subquery(select $description from ${ARTICLES} where $obj <dc:description> $description) " +
@@ -71,7 +79,7 @@ public class ArticleFeed {
     "select '${obj}' $author from ${ARTICLES} where " +
     " <${obj}> <dc:creator> $author " +
     " order by $author;";
-  
+
   private static final String XML_RESPONSE =
     "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<articles>\n${articles}</articles>\n";
   private static final String XML_ARTICLE_TAG =
@@ -85,6 +93,8 @@ public class ArticleFeed {
     "    ${subjects}\n" +
     "  </article>\n";
 
+  private static XPathExpression dcCreatorXpath;
+  private static XPathExpression dcSubjectXpath;
   /**
    * Compute the iTQL to find a set of articles based on date, category and author criteria.
    *
@@ -172,14 +182,14 @@ public class ArticleFeed {
       article.title       = ((Literal) row[1]).getLexicalForm();
       article.date        = date;
       article.state       = Integer.parseInt(((Literal) row[3]).getLexicalForm());
-      
+
       List descriptions = ((QueryAnswer) row[4]).getRows();
       if (descriptions.size() > 0)
         article.description = ((Literal) ((Object[]) descriptions.get(0))[0]).getLexicalForm();
-      
+
       articles.put(article.uri, article);
     }
-  
+
     return articles;
   }
 
@@ -213,21 +223,22 @@ public class ArticleFeed {
    * Given a collection of articles and a response from kowari, add to the articles' meta-data.
    *
    * @param articles is the collection of articles to take more meta-data
+   * @param dcs      is the collection of DC stream uris for articles
    * @param detailsAnswer is the response from kowari.
    */
-  public static void addArticlesDetails(Map articles, StringAnswer detailsAnswer) {
+  public static void addArticlesDetails(Map articles, Map dcs, StringAnswer detailsAnswer) {
     List answers = detailsAnswer.getAnswers();
-    
+
     for (Iterator answersIt = answers.iterator(); answersIt.hasNext(); ) {
       Object ans = answersIt.next();
       if (ans instanceof String) {
         // This is Ronald trying to be helpful. It isn't something we're interested in!
         continue;
       }
-      
+
       QueryAnswer answer = (QueryAnswer)ans;
       List rows = answer.getRows();
-      
+
       // If the query returned nothing, just move on
       if (rows.size() == 0)
         continue;
@@ -249,7 +260,62 @@ public class ArticleFeed {
       if (column.equals("subject")) article.subjects = values;
       else if (column.equals("category")) article.categories = values;
       else if (column.equals("author")) article.authors = values;
+
+      Object dc = dcs.get(uri);
+      if (dc != null) {
+        try {
+          article.authors = getListFromDC(dc, getDcCreatorXpath());
+          article.subjects = getListFromDC(dc, getDcSubjectXpath());
+        } catch (Exception e) {
+          log.warn("Failed to get authors and subject from DC data-stream for " + uri, e);
+        }
+      }
     }
+  }
+
+  private static XPathExpression getDcCreatorXpath() throws Exception {
+    if (dcCreatorXpath != null)
+      return dcCreatorXpath;
+    dcCreatorXpath = getDcListXpath("//dc:creator/text()");
+    return dcCreatorXpath;
+  }
+
+  private static XPathExpression getDcSubjectXpath() throws Exception {
+    if (dcSubjectXpath != null)
+      return dcSubjectXpath;
+    dcSubjectXpath = getDcListXpath("//dc:subject/text()");
+    return dcSubjectXpath;
+  }
+
+  private static XPathExpression getDcListXpath(String xpathExpr) throws Exception {
+    XPathFactory factory = XPathFactory.newInstance();
+    XPath xpath = factory.newXPath();
+
+    xpath.setNamespaceContext(new NamespaceContext() {
+      public String getNamespaceURI(String prefix) {
+        if (prefix == null) throw new NullPointerException("Null prefix");
+        else if ("dc".equals(prefix)) return ItqlHelper.DC_URI;
+        else if ("xml".equals(prefix)) return XMLConstants.XML_NS_URI;
+        return XMLConstants.NULL_NS_URI;
+      }
+      public String getPrefix(String uri) {
+        throw new UnsupportedOperationException();
+      }
+      public Iterator getPrefixes(String uri) {
+        throw new UnsupportedOperationException();
+      }
+    });
+
+    return xpath.compile(xpathExpr);
+  }
+
+  private static List getListFromDC(Object dc, XPathExpression expression) throws Exception {
+    NodeList nodes = (NodeList)expression.evaluate(dc, XPathConstants.NODESET);
+    List list = new ArrayList(nodes.getLength());
+    for (int i = 0; i < nodes.getLength(); i++)
+      list.add(nodes.item(i).getNodeValue());
+
+    return list;
   }
 
   /**
@@ -329,7 +395,7 @@ public class ArticleFeed {
     // TODO: Replace with fedora.server.utilities.DateUtility some how?
     // XXX: Deal with ' ' instead of 'T'
     // XXX: Deal with timezone in iso8601 format (not java's idea)
-    
+
     return DateUtils.parseDate(iso8601date, defaultFormats);
   }
 
@@ -347,14 +413,14 @@ public class ArticleFeed {
 //    return DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(date); // XXX: Use in future?
     return DateFormatUtils.ISO_DATE_FORMAT.format(date);
   }
-  
+
   /**
    * Roll a Date instance days forward or backward.
    */
   static Date incDay(Date d, int count) {
     return new Date(d.getTime() + count * 1000 * 24 * 3600);
   }
-  
+
   /**
    * Convert a date pased in as a string to a Date object. Support both string representations
    * of the Date object and iso8601 formatted dates.

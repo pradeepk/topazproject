@@ -25,24 +25,24 @@
     <description><p>The Microarray Gene Expression Data Society believe that the time is right for journals to require that microarray data be deposited in public repositories, as a condition for publication</p></description>
     <date>2004-08-31</date>
     <authors>
-      <author>Alvis Brazma</author>
       <author>Catherine A Ball</author>
-      <author>Chris Stoeckert</author>
-      <author>Gavin Sherlock</author>
+      <author>Alvis Brazma</author>
       <author>Helen Causton</author>
-      <author>Helen Parkinson</author>
-      <author>John C Matese</author>
-      <author>John Quackenbush</author>
-      <author>Joseph White</author>
-      <author>Martin Ringwald</author>
-      <author>Neil Winegarden</author>
-      <author>Pascal Hingamp</author>
-      <author>Paul Spellman</author>
-      <author>Ron Edgar</author>
-      <author>Ronald Taylor</author>
       <author>Steve Chervitz</author>
+      <author>Ron Edgar</author>
+      <author>Pascal Hingamp</author>
+      <author>John C Matese</author>
+      <author>Helen Parkinson</author>
+      <author>John Quackenbush</author>
+      <author>Martin Ringwald</author>
       <author>Susanna-Assunta Sansone</author>
+      <author>Gavin Sherlock</author>
+      <author>Paul Spellman</author>
+      <author>Chris Stoeckert</author>
       <author>Yoshio Tateno</author>
+      <author>Ronald Taylor</author>
+      <author>Joseph White</author>
+      <author>Neil Winegarden</author>
     </authors>
     <categories>
       <category>Bioinformatics</category>
@@ -61,15 +61,15 @@
 			</description>
     <date>2004-08-24</date>
     <authors>
-      <author>Chun-Li Zhang</author>
-      <author>Corinne R Bayuga-Ocampo</author>
-      <author>Helen K Cho</author>
-      <author>Heonjoong Kang</author>
-      <author>Jungyeob Ham</author>
-      <author>Michael C Nelson</author>
-      <author>Ronald M Evans</author>
-      <author>Ruth T Yu</author>
       <author>Yong-Xu Wang</author>
+      <author>Chun-Li Zhang</author>
+      <author>Ruth T Yu</author>
+      <author>Helen K Cho</author>
+      <author>Michael C Nelson</author>
+      <author>Corinne R Bayuga-Ocampo</author>
+      <author>Jungyeob Ham</author>
+      <author>Heonjoong Kang</author>
+      <author>Ronald M Evans</author>
     </authors>
     <categories>
       <category>Bioengineering</category>

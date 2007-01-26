@@ -29,6 +29,8 @@ import java.util.List;
 import java.util.Map;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -378,28 +380,55 @@ public class ArticleImpl implements Article {
                                         boolean ascending) throws RemoteException {
     Date start = ArticleFeed.parseDateParam(startDate);
     Date end = ArticleFeed.parseDateParam(endDate);
+    String articlesQuery =
+          ArticleFeed.getQuery(start, end, categories, authors, states, ascending);
 
+    return getArticleFeedData(articlesQuery);
+  }
+
+  public Collection getArticleFeedData(String articlesQuery) throws RemoteException {
+    DocumentBuilder builder = null;
     ItqlHelper itql = ctx.getItqlHelper();
     try {
-      String articlesQuery =
-          ArticleFeed.getQuery(start, end, categories, authors, states, ascending);
       Answer articlesAnswer = new Answer(itql.doQuery(articlesQuery, null));
       Map articles = ArticleFeed.getArticlesSummary(articlesAnswer);
 
+      Map dcs = new HashMap(articles.size());
+
       for (Iterator it = articles.keySet().iterator(); it.hasNext(); ) {
         String uri = (String) it.next();
+        String dcUrl = null;
         try {
           pep.checkAccess(pep.READ_META_DATA, URI.create(uri));
+          dcUrl = getObjectURL(uri, "DC");
         } catch (SecurityException se) {
           it.remove();
           if (log.isDebugEnabled())
             log.debug(uri, se);
+        } catch (NoSuchObjectIdException nsoe) {
+          it.remove();
+          if (log.isDebugEnabled())
+            log.debug(uri, nsoe);
+        }
+
+        try {
+          if (dcUrl != null) {
+            if (builder == null) {
+              DocumentBuilderFactory domFactory = DocumentBuilderFactory.newInstance();
+              domFactory.setNamespaceAware(true);
+              builder = domFactory.newDocumentBuilder();
+            }
+            dcs.put(uri, builder.parse(dcUrl));
+          }
+        } catch (Exception e) {
+          it.remove();
+          log.warn("Failed to parse DC data-stream for " + uri, e);
         }
       }
 
       String detailsQuery = ArticleFeed.getDetailsQuery(articles.values());
       StringAnswer detailsAnswer = new StringAnswer(itql.doQuery(detailsQuery, null));
-      ArticleFeed.addArticlesDetails(articles, detailsAnswer);
+      ArticleFeed.addArticlesDetails(articles, dcs, detailsAnswer);
 
       return articles.values();
     } catch (AnswerException ae) {
