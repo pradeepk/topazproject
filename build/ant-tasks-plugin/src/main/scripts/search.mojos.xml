@@ -116,7 +116,7 @@
           <name>webappVersion</name>
           <property>webappVersion</property>
           <required>true</required>
-          <expression>${version}</expression>
+          <expression>${search-version}</expression>
           <defaultValue>${project.version}</defaultValue>
           <description>The version of the search webapp to run.</description>
         </parameter>
