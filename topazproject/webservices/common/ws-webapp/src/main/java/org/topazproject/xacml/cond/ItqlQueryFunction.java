@@ -48,7 +48,7 @@ public class ItqlQueryFunction extends DBQueryFunction {
   /**
    * The name of this function as it appears in XACML policies.
    */
-  public static String           FUNCTION_NAME = FUNCTION_BASE + "itql";
+  public static String FUNCTION_NAME = FUNCTION_BASE + "itql";
   private static KeyedObjectPool pool;
 
   static {
@@ -66,7 +66,8 @@ public class ItqlQueryFunction extends DBQueryFunction {
     poolConfig.timeBetweenEvictionRunsMillis   = 5 * 60 * 1000; // 5 min
     poolConfig.whenExhaustedAction             = GenericKeyedObjectPool.WHEN_EXHAUSTED_BLOCK;
 
-    pool = new GenericKeyedObjectPool(new ItqlHelperFactory(), poolConfig);
+    pool                                       = new GenericKeyedObjectPool(new ItqlHelperFactory(),
+                                                                            poolConfig);
   }
 
   /**
@@ -118,13 +119,19 @@ public class ItqlQueryFunction extends DBQueryFunction {
     StringAnswer answer;
 
     // Execute the query
+    boolean returnObject = false;
+
     try {
-      answer = new StringAnswer(itql.doQuery(query, null));
+      answer         = new StringAnswer(itql.doQuery(query, null));
+      returnObject   = true;
     } catch (Exception e) {
       throw new QueryException("query '" + query + "' execution failed.", e);
     } finally {
       try {
-        pool.returnObject(conf, itql);
+        if (returnObject)
+          pool.returnObject(conf, itql);
+        else
+          pool.invalidateObject(conf, itql);
       } catch (Throwable t) {
       }
     }
@@ -176,10 +183,12 @@ public class ItqlQueryFunction extends DBQueryFunction {
       s.append(parts[i]);
 
       char bracket = s.charAt(s.length() - 1);
+
       if (bracket == '<')
         ItqlHelper.validateUri(bindings[i], "xacml query parameter " + i);
       else if (bracket == '\'')
         bindings[i] = ItqlHelper.escapeLiteral(bindings[i]);
+
       s.append(bindings[i]);
     }
 
@@ -211,7 +220,7 @@ public class ItqlQueryFunction extends DBQueryFunction {
 
       // Create an ItqlHelper
       try {
-        itql = new ItqlHelper(service);
+        itql                = new ItqlHelper(service);
       } catch (Exception e) {
         throw new QueryException("Unable to initialize connector to ITQL interpreter bean service at "
                                  + serviceUri, e);
