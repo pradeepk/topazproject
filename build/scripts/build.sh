@@ -108,7 +108,7 @@ ${MVN} ${MVNARGS} ant-tasks:search-stop > /dev/null 2>&1
 # Build RPMs if integration tests succeeded
 if [ ${N} -eq 0 -a -x /usr/bin/rpmbuild ]; then
   echo "Build RPMs"
-  (cd packages; ${MVN} ${MVNARGS} -Prpm install --batch-mode)
+  (cd packages; ${MVN} ${MVNARGS} -Prpm clean install --batch-mode)
   N=$?
 fi
 
