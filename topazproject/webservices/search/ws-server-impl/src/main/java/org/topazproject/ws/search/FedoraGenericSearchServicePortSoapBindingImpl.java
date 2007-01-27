@@ -132,13 +132,13 @@ public class FedoraGenericSearchServicePortSoapBindingImpl implements Operations
   private static class WSSearchPEP extends AbstractSimplePEP implements Article.Permissions {
     protected static final String[] SUPPORTED_ACTIONS = new String[] { READ_META_DATA };
     protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] { null };
-    
+
     static {
       init(WSSearchPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
     }
 
     public WSSearchPEP(ServletEndpointContext context) throws Exception {
-      super(WSXacmlUtil.lookupPDP(context, "topaz.search.pdpName"), 
+      super(WSXacmlUtil.lookupPDP(context, "topaz.search.pdpName"),
             WSXacmlUtil.createSubjAttrs(context));
     }
   }

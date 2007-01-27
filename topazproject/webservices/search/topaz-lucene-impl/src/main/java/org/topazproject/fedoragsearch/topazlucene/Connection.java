@@ -23,7 +23,7 @@ import dk.defxws.fedoragsearch.server.errors.GenericSearchException;
  *
  * Used minimally by OperationsImpl and can probably be removed (unless used by some other
  * API that is not a part of this package).
- * 
+ *
  * @author  Eric Brown and <a href='mailto:gsp@dtv.dk'>Gert</a>
  * @version $Id$
  */

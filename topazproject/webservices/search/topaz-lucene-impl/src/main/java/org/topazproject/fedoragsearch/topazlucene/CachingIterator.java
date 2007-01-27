@@ -55,7 +55,7 @@ public class CachingIterator implements Iterator {
   public void gotoRecord(int index) {
     if (index > cache.size() && delegate.hasNext() && log.isDebugEnabled())
       log.debug("Skipping from " + cache.size() + " to index " + index);
-      
+
     while (index > cache.size() && delegate.hasNext()) {
       cache.add(delegate.next());
     }
@@ -84,7 +84,7 @@ public class CachingIterator implements Iterator {
       element = iter.next();
       return true;
     }
-    
+
     if (delegate.hasNext()) {
       element = delegate.next();
       iter.add(element);

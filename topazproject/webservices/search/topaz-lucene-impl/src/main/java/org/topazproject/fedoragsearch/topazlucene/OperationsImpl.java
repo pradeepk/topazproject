@@ -121,12 +121,12 @@ public class OperationsImpl extends GenericOperationsImpl {
     StringBuffer resultXml = new StringBuffer("<fields>");
     int termNo = 0;
     IndexReader ir = null;
-    
+
     try {
       ir = IndexReader.open(INDEX_PATH);
       Iterator fieldNames =
         (new TreeSet(ir.getFieldNames(IndexReader.FieldOption.INDEXED))).iterator();
-      
+
       while (fieldNames.hasNext()) {
         resultXml.append("<field>"+fieldNames.next()+"</field>");
       }
@@ -163,7 +163,7 @@ public class OperationsImpl extends GenericOperationsImpl {
     } catch (IOException e) {
       throw new GenericSearchException("IndexReader new error:\n" + e.toString());
     } finally {
-      if (ir!=null) 
+      if (ir!=null)
         try {
           ir.close();
         } catch (IOException e) {
@@ -179,19 +179,19 @@ public class OperationsImpl extends GenericOperationsImpl {
                      + "\" indexName=\"" + indexName
                      + "\" termTotal=\"" + termNo + "\">");
     resultXml.append("</lucenebrowseindex>");
-    
+
     if (log.isDebugEnabled())
       log.debug("resultXml="+resultXml);
-    
+
     params[10] = "RESULTPAGEXSLT";
     params[11] = resultPageXslt;
 
     // Transform "browse" API output -- probably just copyxml -- why are we doing this???
     StringBuffer sb = TopazTransformer.transform(BROWSE_XSLT, resultXml, params);
-    
+
     return sb.toString();
   }
-  
+
   public String getIndexInfo(String indexName,
                              String resultPageXslt) throws RemoteException {
     super.getIndexInfo(indexName, resultPageXslt);
@@ -208,7 +208,7 @@ public class OperationsImpl extends GenericOperationsImpl {
 
     // Transform "index info" API output -- probably just copyxml
     StringBuffer sb = TopazTransformer.transform(INDEXINFO_XSLT, infoStream, new String[] {});
-    
+
     return sb.toString();
   }
 

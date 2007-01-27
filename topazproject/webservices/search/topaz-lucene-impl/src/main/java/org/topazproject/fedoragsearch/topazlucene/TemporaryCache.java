@@ -28,7 +28,7 @@ import org.apache.commons.logging.LogFactory;
  */
 public class TemporaryCache implements Runnable {
   private static final Log log = LogFactory.getLog(TemporaryCache.class);
-  
+
   private static class Value {
     long lastAccess;
     Object data;
@@ -77,7 +77,7 @@ public class TemporaryCache implements Runnable {
    * the expiration configured in the constructor.
    *
    * @param key The key to add the object for.
-   * @param data The actual item to add. 
+   * @param data The actual item to add.
    */
   public synchronized void put(Object key, Object data) {
     Value value = new Value();
@@ -98,7 +98,7 @@ public class TemporaryCache implements Runnable {
       log.debug("Cache cleaner exiting");
       return; // we must be exiting -- no big deal, it is all SoftReferences anyway
     }
-    
+
     long now = System.currentTimeMillis();
 
     for (int i = 0; i < 20; i++) {

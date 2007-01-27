@@ -53,7 +53,7 @@ import dk.defxws.fedoragsearch.server.errors.GenericSearchException; // Wraps RM
  *
  * This is used by OperationsImpl to create xml to insert into lucene and to transform
  * results to xml for clients.
- * 
+ *
  * @author  Eric Brown and <a href='mailto:gsp@dtv.dk'>Gert</a>
  * @version $Id$
  */
@@ -131,7 +131,7 @@ public class TopazTransformer {
     // TODO: params should really be a HashMap!
     if (log.isDebugEnabled())
       log.debug("xsltName=" + xsltName);
-    
+
     Transformer transformer = getTransformer(xsltName);
     transformer.setParameter("DATETIME", new Date()); // Always there (not sure how this is used)
     for (int i = 0; i < params.length; i = i+2) {
@@ -142,7 +142,7 @@ public class TopazTransformer {
     }
 
     if (log.isDebugEnabled()) log.debug("Transform starting");
-    
+
     try {
       StringWriter result = new StringWriter();
       Source source = new CachedSource(new InputSource(is)); // new StreamSource(is);

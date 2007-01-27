@@ -1,4 +1,4 @@
-/* 
+/*
  * $HeadURL::                                                                                     $
  * $Id$
  *
@@ -20,7 +20,7 @@ import org.topazproject.fedoragsearch.service.FgsOperations;
  * Usage:
  *   java org.topazproject.fedoragsearch.UpdateIndex [Service URL] action [value] [repo]
  *
- * 
+ *
  *
  * @author Eric Brown
  */
@@ -30,7 +30,7 @@ public class UpdateIndex {
   protected static final String USAGE =
     "java org.topazproject.fedoragsearch.UpdateIndex [Service URL] action [value]\n" +
     "  where action = createEmpty|fromFoxmlFiles|fromPid|deletePid";
-  
+
   public static void main(String[] args) {
     // No args, display usage
     if (args.length == 0) {
@@ -49,16 +49,16 @@ public class UpdateIndex {
       System.out.println(USAGE);
       return;
     }
-    
+
     String action = args[argn++];
     String value = null;
     String repositoryName = "Topaz";
-    
+
     if (args.length > argn)
       value = args[argn++];
     if (args.length > argn)
       repositoryName = args[argn++];
-    
+
     try {
       // Create fedoragsearch service
       FgsOperations fgs = new FgsOperationsServiceLocator().getOperations(new URL(url));

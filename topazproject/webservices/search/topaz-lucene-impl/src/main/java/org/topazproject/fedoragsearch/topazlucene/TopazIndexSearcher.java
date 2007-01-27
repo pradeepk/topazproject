@@ -29,7 +29,7 @@ class TopazIndexSearcher extends IndexSearcher {
     super(indexPath);
     log.info("Created: " + this);
   }
-  
+
   /**
    * Ensure that the underlying index is closed.
    */

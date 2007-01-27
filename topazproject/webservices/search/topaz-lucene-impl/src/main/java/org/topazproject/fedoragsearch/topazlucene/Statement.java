@@ -58,19 +58,19 @@ import org.apache.commons.logging.LogFactory;
 
 /**
  * This actually queries the lucene database.
- * 
+ *
  * @author  Eric Brown and <a href='mailto:gsp@dtv.dk'>Gert</a>
  * @version $Id$
  */
 public class Statement {
   private static final Log      log              = LogFactory.getLog(Statement.class);
-  
+
   private static final String   INDEX_PATH       = TopazConfig.INDEX_PATH;
   private static final String   INDEX_NAME       = TopazConfig.INDEX_NAME;
   private static final long     CACHE_EXPIRATION = TopazConfig.CACHE_EXPIRATION;
   private static final List     DEFAULT_FIELDS   = TopazConfig.DEFAULT_FIELDS;
   private static       String[] DEFAULT_FIELD_ARRAY;
-  
+
   private static TopazIndexSearcher searcher;
 
   /** Map of open queries to hits */
@@ -79,7 +79,7 @@ public class Statement {
   static {
     // Get initial searcher object
     allocateNewSearcher();
-    
+
     // Copy DEFAULT_FIELDS to DEFAULT_FIELD_ARRAY -- ONCE
     DEFAULT_FIELD_ARRAY = new String[DEFAULT_FIELDS.size()];
     for (int i = 0; i < DEFAULT_FIELD_ARRAY.length; i++)
@@ -110,7 +110,7 @@ public class Statement {
    * Most of these parameters are from configuration. The parameters that usually change
    * are the first 3: queryString, startRecord and maxResults.
    *
-   * Builds up a list of hits that are available to be returned. 
+   * Builds up a list of hits that are available to be returned.
    *
    * @param queryString the lucene query
    * @param startRecord the first record to return
@@ -121,8 +121,8 @@ public class Statement {
    * @returns an xml document with a list of hits
    * @throws GenericSearchException if the is a problem getting the results
    */
-  ResultSet executeQuery(String   queryString, 
-                         long     startRecord, 
+  ResultSet executeQuery(String   queryString,
+                         long     startRecord,
                          int      maxResults,
                          int      snippetsMax,
                          int      fieldMaxLength) throws GenericSearchException {
@@ -138,13 +138,13 @@ public class Statement {
 
       results.iter.gotoRecord((int)startRecord);
       int cnt = 0;
-      
+
       while (cnt++ < maxResults && results.iter.hasNext()) {
         Hit hit = (Hit) results.iter.next();
         Document doc = hit.getDocument();
         resultXml.append("<hit no=\"").append(cnt)
                  .append("\" score=\"").append(hit.getScore()).append("\">");
-        
+
         for (Enumeration e = doc.fields(); e.hasMoreElements(); ) {
           Field f = (Field) e.nextElement();
           resultXml.append("<field name=\"").append(f.name()).append("\"");
@@ -177,7 +177,7 @@ public class Statement {
             resultXml.append(">").append(snippet).append(" ... ");
           } else // Just add the entire field value
             resultXml.append(">").append(f.stringValue()); // Just add field value
-          
+
           resultXml.append("</field>"); // Close this field tag
         }
         resultXml.append("</hit>");
@@ -190,7 +190,7 @@ public class Statement {
       int size = results.size;
       if (cnt < size && cnt < maxResults && startRecord == 0)
         size = cnt;
-      
+
       StringBuffer preXml = new StringBuffer();
       preXml.append("<?xml version=\"1.0\" encoding=\"UTF-8\"?>")
         .append("<lucenesearch ")
@@ -203,7 +203,7 @@ public class Statement {
 
       // Stuff the preXml into our results
       resultXml.insert(0, preXml.toString());
-      
+
       if (log.isDebugEnabled())
         log.debug(queryString + ":found " + cnt + " starting at record " + startRecord +
                   " of " + maxResults + " requested records : total indexed " + results.size +
@@ -217,11 +217,11 @@ public class Statement {
       throw new GenericSearchException("Some ParseException", e);
     }
   }
-    
+
   void close() throws GenericSearchException {
   }
 
-  
+
   /** Return stuff from cache */
   private static class Results {
     Query           query;
@@ -253,13 +253,13 @@ public class Statement {
 
     if (log.isDebugEnabled())
       log.debug(cacheKey + ": " + results.size + " hit(s)");
-    
+
     return results;
   }
 
   private Query getQuery(String queryString) throws ParseException {
     Analyzer analyzer = TopazConfig.getAnalyzer();
-    
+
     // Build QueryParser or MultiFieldQueryParser based on # of default fields
     if (DEFAULT_FIELD_ARRAY.length == 0)
       throw new ParseException("No default fields. Must have at least 1.");

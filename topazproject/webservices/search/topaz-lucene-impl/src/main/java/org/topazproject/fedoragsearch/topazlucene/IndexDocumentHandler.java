@@ -44,15 +44,15 @@ import fedora.server.utilities.StreamUtility;
 /**
  * Parses the IndexDocument and generates the Lucene document.
  * Used by OperationsImpl#indexDoc when indexing (or re-indexing) a document.
- * 
+ *
  * @author  Eric Brown and <a href='mailto:gsp@dtv.dk'>Gert</a>
  * @version $Id$
  */
 public class IndexDocumentHandler extends DefaultHandler {
   private static final Log log = LogFactory.getLog(IndexDocumentHandler.class);
-    
+
   private Document indexDocument;
-    
+
   private OperationsImpl owner;
   private String repositoryName;
   private StringBuffer elementBuffer;
@@ -69,9 +69,9 @@ public class IndexDocumentHandler extends DefaultHandler {
   private String methodName;
   private String parameters;
   private String asOfDateTime;
-    
-  public IndexDocumentHandler(OperationsImpl owner, 
-                              String repositoryName, 
+
+  public IndexDocumentHandler(OperationsImpl owner,
+                              String repositoryName,
                               String pidOrFilename,
                               StringBuffer indexDoc) throws GenericSearchException {
     this.owner = owner;
@@ -98,11 +98,11 @@ public class IndexDocumentHandler extends DefaultHandler {
       throw new GenericSearchException("Parser error: " + pidOrFilename, e);
     }
   }
-  
+
   public void startDocument() throws SAXException {
     indexDocument = new Document();
   }
-    
+
   public void startElement(String namespaceURI, String localName,
                            String qualifiedName, Attributes attrs) throws SAXException {
     fieldName = "NoFieldName";
@@ -148,16 +148,16 @@ public class IndexDocumentHandler extends DefaultHandler {
         if (aName=="methodName") methodName = val;
         if (aName=="parameters") parameters = val;
         if (aName=="asOfDateTime") asOfDateTime = val;
-        if (aName=="index") 
+        if (aName=="index")
           if ("TOKENIZED".equals(val)) index = Field.Index.TOKENIZED;
           else if ("UN_TOKENIZED".equals(val)) index = Field.Index.UN_TOKENIZED;
           else if ("NO".equals(val)) index = Field.Index.NO;
           else if ("NO_NORMS".equals(val)) index = Field.Index.NO_NORMS;
-        if (aName=="store") 
+        if (aName=="store")
           if ("YES".equals(val)) store = Field.Store.YES;
           else if ("NO".equals(val)) store = Field.Store.NO;
           else if ("COMPRESS".equals(val)) store = Field.Store.COMPRESS;
-        if (aName=="termVector") 
+        if (aName=="termVector")
           if ("NO".equals(val)) termVector = Field.TermVector.NO;
           else if ("YES".equals(val)) termVector = Field.TermVector.YES;
           else if ("WITH_OFFSETS".equals(val)) termVector = Field.TermVector.WITH_OFFSETS;
@@ -175,12 +175,12 @@ public class IndexDocumentHandler extends DefaultHandler {
     // Initialize instance variable so we can start collecting data
     elementBuffer.setLength(0);
   }
-  
+
   public void characters(char[] text, int start, int length)
       throws SAXException {
     elementBuffer.append(text, start, length);
   }
-    
+
   public void endElement(String namespaceURI, String simpleName,
                          String qualifiedName)  throws SAXException {
     String ebs = elementBuffer.toString().trim();
