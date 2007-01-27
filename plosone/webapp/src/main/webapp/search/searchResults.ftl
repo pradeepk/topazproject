@@ -2,14 +2,14 @@
 <#macro renderSearchPaginationLinks totalPages>
   <#if (totalPages > 1) >
     <#list 1..totalPages as pageNumber>
-      &lt;
+      
       <#if (startPage == (pageNumber-1))>
         ${pageNumber}
       <#else>
         <@ww.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
         <@ww.a href="%{searchPageURL}">${pageNumber}</@ww.a>
       </#if>
-      &gt;&nbsp;
+      |
     </#list>
   </#if>
 </#macro>
@@ -31,13 +31,15 @@
       <#else>
         are <strong>${totalNoOfResults}</strong> results, sorted by relevance,
       </#if>
-      for <strong>&quot;${query}&quot;</strong>.</p>
+      for <strong>${query}</strong>.</p>
+	 <div class="resultsTab">
     <@renderSearchPaginationLinks totalPages/>
   	<#if totalNoOfResults gt 0>
+	</div>
 	<ul>
 			<#list searchResults as hit>
 			<li>
-				<span class="date">Published ${hit.date?string("dd MMM yyyy")}</td>
+				<span class="date">Published ${hit.date?string("dd MMM yyyy")}</span>
 				<span class="article">
             <#if hit.contentModel == "PlosArticle">
               <@ww.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${hit.pid}" includeParams="none"/>
@@ -45,15 +47,18 @@
             <#else>
               <a href="#">${hit.title}</a>
             </#if>
-        </span>
-		<span class="cite">${hit.highlight}</span>
-       
+        </span>       
 	   <span class="authors"> <!-- hitScore: ${hit.hitScore} -->
-${hit.creator}</span></li>
+${hit.creator}</span>
+		<span class="cite">${hit.highlight}</span>
+
+</li>
 			</#list>
 		</ul>
+	<div class="resultsTab">
     <@renderSearchPaginationLinks totalPages/>
-		</#if>
+	</div>
+	</#if>
 	</div>
 </div>
 <!-- end : main content wrapper -->
