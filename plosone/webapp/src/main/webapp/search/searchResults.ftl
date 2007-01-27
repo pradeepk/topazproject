@@ -14,7 +14,7 @@
   </#if>
 </#macro>
 
-<div id="content">
+<div id="content" class="static">
  
 <#assign totalPages=(totalNoOfResults/pageSize)?int>
   <#if (totalNoOfResults%pageSize > 0) >
