@@ -160,8 +160,17 @@ public class Statement {
             highlighter.setTextFragmenter(fragmenter);
             TokenStream tokenStream =
               TopazConfig.getAnalyzer().tokenStream(f.name(), new StringReader(f.stringValue()));
-            snippets =
-              highlighter.getBestFragments(tokenStream, f.stringValue(), snippetsMax, " ... ");
+            String[] fragments =
+              highlighter.getBestFragments(tokenStream, f.stringValue(), snippetsMax);
+            if (fragments != null && fragments.length > 0) {
+              StringBuffer sb = new StringBuffer(snippetsMax * (fieldMaxLength + 25));
+              for (int i = 0; i < fragments.length; i++) {
+                sb.append(stripTrailingEntity(fragments[0]));
+                if (i < (fragments.length - 1))
+                  sb.append(" ... ");
+              }
+              snippets = sb.toString();
+            }
           }
 
           // Finish build resultXml for this field
@@ -169,11 +178,7 @@ public class Statement {
             resultXml.append(" snippet=\"yes\">").append(snippets);
           else if (fieldMaxLength > 0 && f.stringValue().length() > fieldMaxLength) {
             // Add portion of field to resultXml
-            String snippet = f.stringValue().substring(0, fieldMaxLength);
-             // Cut out any html entities
-            int iamp = snippet.lastIndexOf("&");
-            if (iamp > -1 && iamp > fieldMaxLength-8)
-              snippet = snippet.substring(0, iamp);
+            String snippet = stripTrailingEntity(f.stringValue().substring(0, fieldMaxLength));
             resultXml.append(">").append(snippet).append(" ... ");
           } else // Just add the entire field value
             resultXml.append(">").append(f.stringValue()); // Just add field value
@@ -221,6 +226,24 @@ public class Statement {
   void close() throws GenericSearchException {
   }
 
+
+  private static String stripTrailingEntity(String src) {
+    // Walk the string looking for matching &, ; pairs
+    int pos = 0;
+    while (true) {
+      int iamp = src.indexOf("&", pos);
+      if (iamp == -1)
+        return src;
+      pos = src.indexOf(";", iamp);
+      if (pos == -1)
+        return src.substring(0, iamp);
+      /* See if entity contains any invalid characters (if so, strip entire thing)
+       * Okay, not invalid characters, just any entity that is too long
+       */
+      if (pos - iamp > 7)
+        src = src.substring(0, iamp) + src.substring(pos + 1);
+    }
+  }
 
   /** Return stuff from cache */
   private static class Results {
