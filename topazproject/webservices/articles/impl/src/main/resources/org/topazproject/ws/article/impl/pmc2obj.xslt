@@ -685,7 +685,10 @@
       <xsl:when test="$contrib/name">
         <xsl:value-of select="
           if ($contrib/name/given-names) then
-            concat($contrib/name/given-names, ' ', $contrib/name/surname)
+            if ($contrib/name/@name-style = 'eastern') then
+              concat($contrib/name/surname, ' ', $contrib/name/given-names)
+            else
+              concat($contrib/name/given-names, ' ', $contrib/name/surname)
           else
             $contrib/name/surname
           "/>
