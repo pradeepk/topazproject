@@ -14,6 +14,7 @@
     -->
 
   <xsl:include href="validate_pmc.xslt"/>
+  <xsl:preserve-space elements="article"/>
 
   <xsl:output method="xml" omit-xml-declaration="yes" indent="yes"/>
 
@@ -200,8 +201,7 @@
     <xsl:variable name="loc"     as="xs:string"
         select="concat($output-loc, encode-for-uri(my:basename($article-entry/@name)))"/>
 
-    <xsl:result-document href="{$loc}" method="xml" indent="yes"
-        format="pmc-{$fixed-article/@dtd-version}">
+    <xsl:result-document href="{$loc}" method="xml" format="pmc-{$fixed-article/@dtd-version}">
       <xsl:sequence select="$fixed-article"/>
     </xsl:result-document>
 
