@@ -7,12 +7,7 @@
 <ul>
 	<li><a href="/" title="PLoS ONE | Home page">Home page</a></li>
 	<li><a href="http://www.plos.org/oa/index.html" title="PLoS.org | Open Access">Open Access</a></li>
-	<li><a href="rssFeeds.action" title="PLoS ONE | RSS Feeds">List of PLoS ONE RSS Feeds</a>	
-	<ul>
-		<li><a href="rssInfo.action" title="PLoS ONE | About PLoS RSS Feeds">About PLoS RSS Feeds</a></li>
-
-	</ul>
-	</li>
+	<li><a href="rssFeeds.action" title="PLoS ONE | RSS Feeds">PLoS RSS Feeds</a></li>
 	
 	<@ww.url namespace="/" includeParams="none" id="feedbackURL" action="feedbackCreate" page="${thisPageURL?url}"/>
 	<@ww.url namespace="/user/secure" includeParams="none" id="loginURL" action="secureRedirect" goTo="${thisPage}"/>
