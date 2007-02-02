@@ -13,7 +13,11 @@
       <channel>
         <title><xsl:value-of select="$rssTitle"/></title>
         <link><xsl:value-of select="$rssLink"/></link>
-        <image><xsl:value-of select="$rssImage"/></image>
+        <image>
+          <url><xsl:value-of select="$rssImage"/></url>
+          <title><xsl:value-of select="$rssTitle"/></title>
+          <link><xsl:value-of select="$rssLink"/></link>
+        </image>
         <description><xsl:value-of select="$rssDescription"/></description>
         <xsl:apply-templates select="articles/article"/>
       </channel>
@@ -29,7 +33,6 @@
       <link><xsl:value-of select="$linkPrefix"/><xsl:value-of select="uri"/></link>
       <description><xsl:value-of select="description"/></description>
       <xsl:apply-templates select="authors/author"/>
-      <guid><xsl:value-of select="uri"/></guid>
     </item>
   </xsl:template>
 
