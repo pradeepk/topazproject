@@ -30,6 +30,9 @@ public class SearchUserAction extends UserActionSupport {
    */
   public String executeFindUserByAuthId() throws Exception {
     try {
+      if (log.isDebugEnabled()) {
+        log.debug("Finding user with AuthID: " + authId);
+      }
       final String topazUserId = getUserService().lookUpUserByAuthId(authId);
       if (null == topazUserId) {
         throw new ApplicationException("No user found with the authid:" + authId);
@@ -50,6 +53,9 @@ public class SearchUserAction extends UserActionSupport {
    */
   public String executeFindUserByEmailAddress() throws Exception {
     try {
+      if (log.isDebugEnabled()) {
+        log.debug("Finding user with email: " + emailAddress);
+      }
       final String topazUserId = getUserService().lookUpUserByEmailAddress(emailAddress);
       if (null == topazUserId) {
         throw new ApplicationException("No user found with the email address:" + emailAddress);
