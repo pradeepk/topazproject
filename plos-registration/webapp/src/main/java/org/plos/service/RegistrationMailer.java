@@ -9,6 +9,9 @@
  */
 package org.plos.service;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.plos.email.impl.FreemarkerTemplateMailer;
 import org.plos.registration.User;
 
@@ -19,7 +22,9 @@ import java.util.HashMap;
 public class RegistrationMailer extends FreemarkerTemplateMailer {
   private Map<String, String> verifyEmailMap;
   private Map<String, String> forgotPasswordVerificationEmailMap;
+  private static final Log log = LogFactory.getLog(RegistrationMailer.class);
 
+  
   /**
    * Setter for verifyEmailMap.
    * @param verifyEmailMap verifyEmailMap
@@ -44,6 +49,10 @@ public class RegistrationMailer extends FreemarkerTemplateMailer {
     final Map<String, Object> newMapFields = new HashMap<String, Object>();
     newMapFields.putAll(verifyEmailMap);
     newMapFields.put("user", user);
+    newMapFields.put("name", getFromEmailName());
+    if (log.isDebugEnabled()) {
+      log.debug("sending email address verification for " + ((user != null) ? user.getLoginName() : null));
+    }
     sendEmail(user.getLoginName(), newMapFields);
   }
 
@@ -55,6 +64,10 @@ public class RegistrationMailer extends FreemarkerTemplateMailer {
     final Map<String, Object> newMapFields = new HashMap<String, Object>();
     newMapFields.putAll(forgotPasswordVerificationEmailMap);
     newMapFields.put("user", user);
+    newMapFields.put("name", getFromEmailName());
+    if (log.isDebugEnabled()) {
+      log.debug("sending forgot password email for " + ((user != null) ? user.getLoginName() : null));
+    }
     sendEmail(user.getLoginName(), newMapFields);
   }
 }

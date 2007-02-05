@@ -42,7 +42,8 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
   private JavaMailSender mailSender;
   private Configuration configuration;
   private String fromEmailAddress;
-
+  private String fromEmailName;
+  
   private final String MIME_TYPE_TEXT_PLAIN = "text/plain";
   private final String MIME_TYPE_TEXT_HTML = "text/html";
   private final Map<String, String> mailContentTypes = new HashMap<String, String>();
@@ -132,12 +133,30 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
     }
   }
 
+
+
+
   /**
    * Set the free marker configurer
    * @param freeMarkerConfigurer freeMarkerConfigurer
    */
   public void setFreeMarkerConfigurer(final FreeMarkerConfigurer freeMarkerConfigurer) {
     this.configuration = freeMarkerConfigurer.getConfiguration();
+  }
+
+  protected String getFromEmailName() {
+    if (fromEmailName == null) {
+      return "";
+    }
+    return fromEmailName;
+  }
+
+  /**
+   * Set the from email name
+   * @param fromEmailName fromEmailName
+   */
+  public void setFromEmailName(final String fromEmailName) {
+    this.fromEmailName = fromEmailName;
   }
 
   private String getFromEmailAddress() {

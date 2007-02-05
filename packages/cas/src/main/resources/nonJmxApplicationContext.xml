@@ -65,6 +65,7 @@
   <bean id="registrationVerificationMailer" class="org.plos.service.RegistrationMailer">
     <property name="mailSender" ref="mailSender"/>
     <property name="fromEmailAddress" value="registration@plosone.org"/>
+    <property name="fromEmailName" value="PLoS Registration"/>
     <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>
     <property name="verifyEmailMap">
       <map>
