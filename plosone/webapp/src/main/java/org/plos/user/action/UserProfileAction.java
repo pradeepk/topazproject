@@ -153,6 +153,10 @@ public abstract class UserProfileAction extends UserActionSupport {
 
     if (!validates()) {
       email = fetchUserEmailAddress();
+
+      if (log.isDebugEnabled()) {
+        log.debug("Topaz ID: " + topazId + " with authID: " + authId + " did not validate");
+      }
       return INPUT;
     }
     
@@ -206,7 +210,15 @@ public abstract class UserProfileAction extends UserActionSupport {
 
   public String executeRetrieveUserProfile() throws Exception {
     final PlosOneUser plosOneUser = getPlosOneUserToUse();
+    assignUserFields (plosOneUser);
 
+    final Collection<UserProfileGrant> grants = getUserService().getProfileFieldsThatArePrivate(topazId);
+    setVisibility(grants);
+
+    return SUCCESS;
+  }
+
+  private void assignUserFields (PlosOneUser plosOneUser){
     authId = plosOneUser.getAuthId();
     topazId = plosOneUser.getUserId();
     email = plosOneUser.getEmail();
@@ -226,13 +238,9 @@ public abstract class UserProfileAction extends UserActionSupport {
     weblog = plosOneUser.getWeblog();
     city = plosOneUser.getCity();
     country = plosOneUser.getCountry();
-
-    final Collection<UserProfileGrant> grants = getUserService().getProfileFieldsThatArePrivate(topazId);
-    setVisibility(grants);
-    
-    return SUCCESS;
   }
-
+  
+  
   /**
    * Prepopulate the user profile data as available
    * @return return code for webwork
@@ -251,10 +259,8 @@ public abstract class UserProfileAction extends UserActionSupport {
       // if the user has no display name, possibly getting migrated from an old system
       try {
         log.debug("this is an existing user with email: " + plosOneUser.getEmail());
-        email = plosOneUser.getEmail();
-        realName = plosOneUser.getRealName();
-        givenNames = plosOneUser.getGivenNames();
-        surnames = plosOneUser.getSurnames();
+        
+        assignUserFields (plosOneUser);
       } catch(NullPointerException  ex) {
         //fetching email in the case where profile creation failed and so email did not get saved.
         //Will not be needed when all the user accounts with a profile have a email set up
@@ -869,6 +875,15 @@ public abstract class UserProfileAction extends UserActionSupport {
     this.profanityCheckingService = profanityCheckingService;
   }
 
+  
+  /**
+   * Getter for isDisplayNameSet.
+   * @return Value of isDisplayNameSet.
+   */
+  protected void setIsDisplayNameSet(final boolean inIsDisplayNameSet) {
+    isDisplayNameSet = inIsDisplayNameSet;
+  }
+  
   /**
    * Getter for isDisplayNameSet.
    * @return Value of isDisplayNameSet.

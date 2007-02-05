@@ -28,7 +28,11 @@ public class AdminUserProfileAction extends UserProfileAction {
       assignUserProfileToPlosUser(plosOneUser);
       setDisplayNameRequired(false);
       userIsHalfCreated = true;
+    } else if ("".equals(plosOneUser.getDisplayName())) {
+      setDisplayNameRequired(false);
+      setIsDisplayNameSet(false);
     }
+      
 
     return plosOneUser;
   }
