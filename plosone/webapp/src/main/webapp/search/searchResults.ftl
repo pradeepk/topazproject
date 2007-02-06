@@ -1,16 +1,24 @@
 <!-- begin : main content wrapper -->
 <#macro renderSearchPaginationLinks totalPages>
   <#if (totalPages > 1) >
+    <#if (startPage gt 0)>
+     	<@ww.url id="prevPageURL" action="simpleSearch" namespace="/search" startPage="${startPage - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
+      <@ww.a href="%{prevPageURL}">&lt; Prev</@ww.a> |
+    </#if>
     <#list 1..totalPages as pageNumber>
-      
       <#if (startPage == (pageNumber-1))>
-        ${pageNumber}
+      	${pageNumber}
       <#else>
-        <@ww.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
-        <@ww.a href="%{searchPageURL}">${pageNumber}</@ww.a>
+      	<@ww.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
+      	<@ww.a href="%{searchPageURL}">${pageNumber}</@ww.a>
       </#if>
-      |
+      <#if pageNumber != totalPages>|</#if>
     </#list>
+    <#if (startPage lt totalPages - 1 )>
+     	<@ww.url id="nextPageURL" action="simpleSearch" namespace="/search" startPage="${startPage + 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
+      | <@ww.a href="%{nextPageURL}">Next &gt;</@ww.a> 
+    </#if>
+    
   </#if>
 </#macro>
 
@@ -23,15 +31,27 @@
 	<h1>Search Results</h1>
 
 	<div id="search-results">
-		<p>There
+    <#if totalNoOfResults == 0>
+       There are no results for <strong>${query}</strong>.
+    <#else>
+		
+		<#assign startIndex = startPage * pageSize >
+		<p>
+    Viewing <strong>${startIndex + 1} - 
+    <#if startPage == totalPages - 1>
+	    ${totalNoOfResults}
+    <#else>
+      ${startIndex + pageSize}
+    </#if></strong> of
       <#if totalNoOfResults == 0>
-        are <strong>${totalNoOfResults}</strong> results,
+        <strong>${totalNoOfResults}</strong> results,
       <#elseif totalNoOfResults == 1>
-        is <strong>${totalNoOfResults}</strong> result,
+        <strong>${totalNoOfResults}</strong> result,
       <#else>
-        are <strong>${totalNoOfResults}</strong> results, sorted by relevance,
+        <strong>${totalNoOfResults}</strong> results, sorted by relevance,
       </#if>
       for <strong>${query}</strong>.</p>
+    </#if>
 	 <div class="resultsTab">
     <@renderSearchPaginationLinks totalPages/>
   	<#if totalNoOfResults gt 0>
