@@ -96,7 +96,7 @@
 
     <tempfile property="temp.file" prefix="mulgara" suffix=".properties" destDir="${home}"/>
     <echo file="${temp.file}" message=""/>
-    <propertyselector property="prop.list" delimiter="," match="(topaz|log4j)\..*"
+    <propertyselector property="prop.list" delimiter="," match="(topaz|log4j|com)\..*"
         casesensitive="false" />
     <if>
       <isset property="prop.list"/>
