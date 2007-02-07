@@ -28,7 +28,7 @@
   <parent>
     <groupId>${groupId}</groupId>
     <artifactId>ws-${artifactId}</artifactId>
-    <version>0.5-rc9-SNAPSHOT</version>
+    <version>0.5</version>
   </parent>
 
   <licenses>
