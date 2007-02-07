@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.topazproject.ws</groupId>
     <artifactId>ws-pap</artifactId>
-    <version>0.5-rc9-SNAPSHOT</version>
+    <version>0.5</version>
   </parent>
 
   <licenses>

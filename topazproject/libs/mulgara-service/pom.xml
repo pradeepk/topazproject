@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topazproject-libs</artifactId>
-    <version>0.5-rc9-SNAPSHOT</version>
+    <version>0.5</version>
   </parent>
 
   <dependencies>
@@ -78,15 +78,13 @@
             </goals>
             <configuration>
               <tasks>
-                <taskdef resource="org/apache/maven/artifact/ant/antlib.xml"
-                    classpathref="maven.plugin.classpath" />
+                <taskdef resource="org/apache/maven/artifact/ant/antlib.xml" classpathref="maven.plugin.classpath" />
 
                 <dependencies filesetId="mulgara-libs" useScope="runtime">
                   <dependency groupId="org.mulgara" artifactId="mulgara-lite" version="1.0.1-t1" />
                 </dependencies>
 
-                <property name="webinf"
-                    location="${project.build.directory}/${project.build.finalName}/WEB-INF" />
+                <property name="webinf" location="${project.build.directory}/${project.build.finalName}/WEB-INF" />
 
                 <unjar dest="${webinf}" overwrite="false">
                   <fileset refid="mulgara-libs" />

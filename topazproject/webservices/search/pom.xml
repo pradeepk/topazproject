@@ -5,12 +5,12 @@
   <artifactId>ws-search</artifactId>
   <packaging>pom</packaging>
   <name>Search Webservice</name>
-  <version>0.5-rc9-SNAPSHOT</version>
+  <version>0.5</version>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>webservices</artifactId>
-    <version>0.5-rc9-SNAPSHOT</version>
+    <version>0.5</version>
   </parent>
 
   <reporting>

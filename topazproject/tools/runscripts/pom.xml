@@ -8,7 +8,7 @@
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topazproject-tools</artifactId>
-    <version>0.5-rc9-SNAPSHOT</version>
+    <version>0.5</version>
   </parent>
 
   <dependencies>
@@ -64,8 +64,7 @@
                 <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
                   <classpath refid="maven.compile.classpath" />
                 </taskdef>
-                <groovyc destdir="${project.build.outputDirectory}"
-                         srcdir="${basedir}/src/main/groovy/" listfiles="true">
+                <groovyc destdir="${project.build.outputDirectory}" srcdir="${basedir}/src/main/groovy/" listfiles="true">
                   <classpath refid="maven.compile.classpath" />
                 </groovyc>
               </tasks>
