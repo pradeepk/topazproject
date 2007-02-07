@@ -5,12 +5,12 @@
   <artifactId>ws-ratings</artifactId>
   <packaging>pom</packaging>
   <name>Ratings Webservice</name>
-  <version>0.5</version>
+  <version>0.6-SNAPSHOT</version>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>webservices</artifactId>
-    <version>0.5</version>
+    <version>0.6-SNAPSHOT</version>
   </parent>
 
   <licenses>

@@ -6,12 +6,12 @@
   <artifactId>ws-pap</artifactId>
   <packaging>pom</packaging>
   <name>Pap Webservice</name>
-  <version>0.5</version>
+  <version>0.6-SNAPSHOT</version>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>webservices</artifactId>
-    <version>0.5</version>
+    <version>0.6-SNAPSHOT</version>
   </parent>
 
   <licenses>

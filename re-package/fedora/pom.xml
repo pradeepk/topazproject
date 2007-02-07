@@ -4,7 +4,7 @@
   <groupId>org.topazproject</groupId>
   <artifactId>fedora</artifactId>
   <packaging>jar</packaging>
-  <version>2.1.1-t00500</version>
+  <version>2.1.1-t00600-SNAPSHOT</version>
   <name>Fedora with Topaz config</name>
   <url>http://gandalf.topazproject.org/</url>
   <inceptionYear>2006</inceptionYear>
@@ -12,7 +12,7 @@
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topazproject-repackage</artifactId>
-    <version>0.5</version>
+    <version>0.6-SNAPSHOT</version>
   </parent>
 
   <properties>
