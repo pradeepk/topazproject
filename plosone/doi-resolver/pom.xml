@@ -4,13 +4,13 @@
   <groupId>${pom.parent.groupId}</groupId>
   <artifactId>${pom.parent.artifactId}-doi-resolver</artifactId>
   <packaging>war</packaging>
-  <version>0.5-rc9-SNAPSHOT</version>
+  <version>0.5</version>
   <name>PLoS ONE DOI Resolver</name>
 
   <parent>
     <groupId>org.plosone</groupId>
     <artifactId>plosone</artifactId>
-    <version>0.5-rc9-SNAPSHOT</version>
+    <version>0.5</version>
   </parent>
 
   <dependencies>

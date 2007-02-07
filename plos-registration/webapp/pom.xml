@@ -3,14 +3,14 @@
   <modelVersion>4.0.0</modelVersion>
   <groupId>org.plos</groupId>
   <artifactId>${pom.parent.artifactId}-webapp</artifactId>
-  <version>0.5-rc9-SNAPSHOT</version>
+  <version>0.5</version>
   <packaging>war</packaging>
   <name>Plos Registration Web Application</name>
 
   <parent>
     <groupId>org.plos</groupId>
     <artifactId>plos-registration</artifactId>
-    <version>0.5-rc9-SNAPSHOT</version>
+    <version>0.5</version>
     <relativePath>../pom.xml</relativePath>
   </parent>
 

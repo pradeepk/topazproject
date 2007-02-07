@@ -4,13 +4,13 @@
   <groupId>org.topazproject</groupId>
   <artifactId>string-compare-resolver</artifactId>
   <packaging>jar</packaging>
-  <version>0.5-rc9-SNAPSHOT</version>
+  <version>0.5</version>
   <name>Mulgara string-comparison resolver</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topazproject-libs</artifactId>
-    <version>0.5-rc9-SNAPSHOT</version>
+    <version>0.5</version>
   </parent>
 
   <dependencies>
@@ -68,9 +68,8 @@
                     <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
                       <classpath refid="maven.test.classpath" />
                     </taskdef>
-                    <groovyc destdir="${project.build.testOutputDirectory}"
-                      srcdir="${basedir}/src/it/groovy/" listfiles="true">
-                      <classpath refid="maven.test.classpath"/>
+                    <groovyc destdir="${project.build.testOutputDirectory}" srcdir="${basedir}/src/it/groovy/" listfiles="true">
+                      <classpath refid="maven.test.classpath" />
                     </groovyc>
                   </tasks>
                 </configuration>

@@ -9,14 +9,14 @@
   <parent>
     <groupId>org.topazproject.packages</groupId>
     <artifactId>packages</artifactId>
-    <version>0.5-rc9-SNAPSHOT</version>
+    <version>0.5</version>
   </parent>
 
   <dependencies>
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>fedora</artifactId>
-      <version>2.1.1-t9-SNAPSHOT</version>
+      <version>2.1.1-t00500</version>
     </dependency>
   </dependencies>
 

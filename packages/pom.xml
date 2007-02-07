@@ -4,13 +4,13 @@
   <groupId>org.topazproject.packages</groupId>
   <artifactId>packages</artifactId>
   <packaging>pom</packaging>
-  <version>0.5-rc9-SNAPSHOT</version>
+  <version>0.5</version>
   <name>packages</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
-    <version>0.5-rc9-SNAPSHOT</version>
+    <version>0.5</version>
   </parent>
 
   <pluginRepositories>
@@ -136,9 +136,8 @@
                   <phase>install</phase>
                   <configuration>
                     <tasks>
-                      <copy flatten="true"
-                        todir="${settings.localRepository}/org/topazproject/packages/${project.name}/${version}">
-                        <fileset dir="${project.build.directory}/rpm/RPMS/noarch"/>
+                      <copy flatten="true" todir="${settings.localRepository}/org/topazproject/packages/${project.name}/${version}">
+                        <fileset dir="${project.build.directory}/rpm/RPMS/noarch" />
                       </copy>
                     </tasks>
                   </configuration>
