@@ -60,7 +60,6 @@
     <module>topaz</module>
     <module>plosone</module>
     <module>cas</module>
-    <module>fedora</module>
     <module>tools</module>
   </modules>
 

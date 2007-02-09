@@ -660,8 +660,9 @@ public class ArticleImpl implements Article {
         ByteCounterInputStream bcis = new ByteCounterInputStream(content.getInputStream());
         String reLoc = ctx.getFedoraUploader().upload(bcis);
         try {
-          apim.modifyDatastreamByReference(pid, rep, null, null, false, ct,
-                                           null, reLoc, "A", "Updated datastream", false);
+          apim.modifyDatastreamByReference(pid, rep, null, null, ct,
+                                           null, reLoc, null, null, "Updated datastream", false);
+          apim.setDatastreamState(pid, rep, "A", "Updated datastream");
         } catch (RemoteException re) {
           if (!isNoSuchDatastream(re))
             throw re;
@@ -670,7 +671,7 @@ public class ArticleImpl implements Article {
             log.debug("representation '" + rep + "' for '" + obj + "' doesn't exist yet - " +
                       "creating it", re);
           apim.addDatastream(pid, rep, new String[0], "Represention", false, ct,
-                             null, reLoc, "M", "A", "New representation");
+                             null, reLoc, "M", "A", null, null, "New representation");
         }
 
         Map map = new HashMap();
@@ -681,7 +682,7 @@ public class ArticleImpl implements Article {
         itql.doUpdate(ItqlHelper.bindValues(ITQL_CREATE_REP, map), null);
       } else {
         try {
-          apim.purgeDatastream(pid, rep, null, "Purged datastream", false);
+          apim.purgeDatastream(pid, rep, null, null, "Purged datastream", false);
         } catch (RemoteException re) {
           if (!isNoSuchDatastream(re))
             throw re;

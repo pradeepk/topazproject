@@ -57,10 +57,10 @@
             <configuration>
               <packageSpace>org.topazproject.fedora.client</packageSpace>
               <sourceDependencies>
-                <sourceDependency>info.fedora:fedora-server:2.1.1:/wsdl/fedora-types.xsd</sourceDependency>
-                <sourceDependency>info.fedora:fedora-server:2.1.1:/wsdl/fedora-auditing.xsd</sourceDependency>
-                <sourceDependency>info.fedora:fedora-server:2.1.1:/wsdl/Fedora-API-M.wsdl</sourceDependency>
-                <sourceDependency>info.fedora:fedora-server:2.1.1:/wsdl/Fedora-API-A.wsdl</sourceDependency>
+                <sourceDependency>info.fedora:fedora-server:2.2:/wsdl/fedora-types.xsd</sourceDependency>
+                <sourceDependency>info.fedora:fedora-server:2.2:/wsdl/fedora-auditing.xsd</sourceDependency>
+                <sourceDependency>info.fedora:fedora-server:2.2:/wsdl/Fedora-API-M.wsdl</sourceDependency>
+                <sourceDependency>info.fedora:fedora-server:2.2:/wsdl/Fedora-API-A.wsdl</sourceDependency>
               </sourceDependencies>
               <outputDirectory>${project.build.directory}/generated-sources</outputDirectory>
               <serverSide>false</serverSide>

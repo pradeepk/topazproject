@@ -14,7 +14,6 @@
   </parent>
 
   <modules>
-    <module>fedora</module>
     <module>ecqs</module>
   </modules>
 </project>

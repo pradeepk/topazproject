@@ -37,7 +37,6 @@
     <module>jdk2log4j-proxy</module>
     <module>dom-ranges-helper</module>
     <module>fedora-security</module>
-    <module>fedora-patches</module>
     <module>entity-resolver</module>
   </modules>
 </project>
