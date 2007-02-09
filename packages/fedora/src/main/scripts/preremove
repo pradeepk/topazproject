@@ -1,0 +1,7 @@
+# $HeadURL::                                                                  $
+# $Id$
+# Stop fedora and remove it from startup list
+if [ $1 = 0 ]; then
+    service fedora stop > /dev/null 2>&1
+    /sbin/chkconfig --del fedora || :
+fi

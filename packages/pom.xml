@@ -61,6 +61,7 @@
     <module>plosone</module>
     <module>cas</module>
     <module>tools</module>
+    <module>fedora</module>
   </modules>
 
   <build>
