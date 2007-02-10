@@ -8,15 +8,15 @@
     <comment>Defines one or more email addresses for server administrators; 
 		list is space delimited.</comment>
   </param>
-  <param name="fedoraServerPort" value="8080">
+  <param name="fedoraServerPort" value="9090">
     <comment>Defines the port number on which the Fedora server runs; 
 		default is 8080.</comment>
   </param>
-  <param name="fedoraShutdownPort" value="8005">
+  <param name="fedoraShutdownPort" value="9005">
     <comment>Defines the port number used to shutdown the Fedora sever; 
 		default is 8005.</comment>
   </param>
-  <param name="fedoraRedirectPort" value="8443">
+  <param name="fedoraRedirectPort" value="9443">
     <comment>Defines the redirect port of the Fedora sever; default is 8443.</comment>
   </param>
   <param name="fedoraServerHost" value="localhost">
@@ -71,6 +71,12 @@
 			Postgresql, false for Oracle and McKoi.</comment>
     </param>
   </module>
+  <!-- May want to use org.topazproject.fedora.security.FedoraAuthorization in the future -->
+  <!--
+  <module role="fedora.server.security.Authorization" class="org.topazproject.fedora.security.FedoraAuthorization">
+    <param name="access-service-uri" value="http://localhost:9090/access/services/AccessServicePort"/>
+    <param name="access-service-pdp" value="_default_"/>
+  -->
   <module role="fedora.server.security.Authorization" class="fedora.server.security.DefaultAuthorization">
     <comment>Builds and manages Fedora's authorization structure.</comment>
     <param name="REPOSITORY-POLICIES-DIRECTORY" value="data/fedora-xacml-policies/repository-policies" isFilePath="true"/>
@@ -114,12 +120,12 @@
         of this module to "fedora.server.storage.GSearchDOManager", then
         populating the gSearchRESTURL, gSearchUsername, and gSearchPassword
         parameters as needed.</comment>
-    <param name="pidNamespace" value="changeme">
+    <param name="pidNamespace" value="PLoS">
       <comment>This is the namespace id for pids of newly-created objects. 
 	    	This should be unique for a repository. It can be from 1 to 17 
 	    	characters, and may only contain A-Z, a-z, 0-9, &apos;.&apos;, or &apos;-&apos; (dash).</comment>
     </param>
-    <param name="retainPIDs" value="demo test changeme fedora-bdef fedora-bmech tutorial">
+    <param name="retainPIDs" value="demo test PLoS doi fedora-bdef fedora-bmech tutorial">
       <comment>Namespaces of PIDs to retain during the ingest process. When an 
 	    	object is ingested, Fedora normally allocates a unique PID within 
 	    	pidNamespace for it regardless of what the object says its PID is. This 
@@ -128,7 +134,7 @@
 	    	namespaces that will be accepted in the object as-is. Default value is 
 	    	&quot;demo test&quot;.</comment>
     </param>
-    <param name="storagePool" value="localMcKoiPool">
+    <param name="storagePool" value="localPostgreSQLPool">
       <comment>The named connection pool from which read/write database 
 	    	connections are to be provided for the storage subsystem (see the 
 	    	ConnectionPoolManager module). Default is the default provided by the 
@@ -264,7 +270,7 @@
             number of results is greater than maxResults (as specified by the
             server [above] or the client [in the search request]).</comment>
     </param>
-    <param name="connectionPool" value="localMcKoiPool">
+    <param name="connectionPool" value="localPostgreSQLPool">
       <comment>(optional) To make unspecified, comment out or delete the 
 	    	whole param line as opposed to using an empty string,
             default=ConnectionPoolManager&apos;s default) The connectionPool
@@ -357,8 +363,8 @@
   </module>
   <module role="fedora.server.storage.ConnectionPoolManager" class="fedora.server.storage.ConnectionPoolManagerImpl">
     <comment>This module facilitates obtaining ConnectionPools</comment>
-    <param name="defaultPoolName" value="localMcKoiPool"/>
-    <param name="poolNames" value="localMcKoiPool"/>
+    <param name="defaultPoolName" value="localPostgreSQLPool"/>
+    <param name="poolNames" value="localPostgreSQLPool"/>
   </module>
   <module role="fedora.server.validation.DOValidator" class="fedora.server.validation.DOValidatorModule">
     <comment>Description: Supports validation of digital objects, including

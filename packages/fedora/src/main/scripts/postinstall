@@ -16,4 +16,7 @@ DIR=`ls -td /usr/local/topaz/*"$PKG"-* 2>/dev/null | head -1`
 rm /usr/local/topaz/fedora/fedora_home/server/config/fedora.fcfg
 ln -s /etc/topaz/fedora.fcfg /usr/local/topaz/fedora/fedora_home/server/config/fedora.fcfg
 
+# Fix up log4j.properties
+cp -f /usr/local/topaz/fedora/common/classes/log4j.properties /usr/local/topaz/fedora/fedora_home/server/config
+
 exit 0

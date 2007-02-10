@@ -18,7 +18,11 @@
     </file>
     <file>
       <source>src/main/resources/log4j.properties</source>
+      <!-- Bug in assembly plugin won't let this go where it should go - postinstall must move -->
+      <!--
       <outputDirectory>fedora_home/server/config</outputDirectory>
+      -->
+      <outputDirectory>common/classes</outputDirectory>
     </file>
   </files>
 

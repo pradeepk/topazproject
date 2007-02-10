@@ -1,1 +1,2 @@
-export fedora_TOMCAT_OPTS="-Dfedora.home=/usr/local/topaz/fedora/fedora_home/"
+export fedora_TOMCAT_OPTS="-Dfedora.home=/usr/local/topaz/fedora/fedora_home"
+export fedora_CATALINA_HOME=/usr/local/topaz/fedora
