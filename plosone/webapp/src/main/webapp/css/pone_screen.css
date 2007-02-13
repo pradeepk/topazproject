@@ -173,7 +173,6 @@ div#topBanner div 	{ padding-top: 4px; } /* sets top padding on all banner slots
 
 div#hdr 			{ height: 150px; position: relative; z-index: 997;}
 #hdr #logo			{ background: transparent url(../images/pone_hdr_logo.gif) no-repeat top left; color: #039; }
-#hdr #tagline 		{ background: transparent url(../images/pone_hdr_tagline.gif) no-repeat top left; color: #039; }
 #hdr #logo 			{ width: 312px; height: 90px; position: absolute; top: 20px; left: 8px; margin: 0; font-size: 1.6em; }
 #hdr #logo a 		{ width: 312px; height: 90px; display: block; }
 #hdr #logo span,
@@ -468,7 +467,7 @@ div.profile h2	{ background-image: none; clear: left; }
 
 
 div.profile ol { list-style-type: none; margin: 25px 0px 0px; padding: 0px; clear: left; padding-top: 20px; }
-div.profile ol li { list-style: none; display: block; padding: 0 20px 10px 20px; padding-left: 20px; border-bottom-color: #ACF1FF; border-bottom-style: solid;border-bottom-width: 2px; background-color: transparent; background-image: url(none); padding-top: 5px; clear: both; }
+div.profile ol li { list-style: none; display: block; padding: 0 20px 10px 20px; padding-left: 20px; border-bottom-color: #ACF1FF; border-bottom-style: solid;border-bottom-width: 2px; background-color: transparent; background-image: none; padding-top: 5px; clear: both; }
 div.profile li em{ color: #555; font-size: .9em;}
 div.profile ol li span.heading{ font-weight: bold; display: block; }
 div.profile ol li input { width: 200px; border: 1px solid #ACF1FF; padding: 2px; }
