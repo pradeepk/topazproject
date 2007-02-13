@@ -155,7 +155,7 @@ class TransactionLogger extends QueueingFilterHandler {
     }
 
     if (globalNode instanceof BlankNodeImpl)
-      return "$_" + ((BlankNodeImpl) globalNode).getNodeId();
+      return "$bn_" + ((BlankNodeImpl) globalNode).getNodeId();
 
     throw new ResolverException("Unsupported node type " + globalNode.getClass().getName());
   }
