@@ -31,6 +31,7 @@ import java.util.zip.ZipFile;
 
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
+import javax.servlet.ServletContext;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -58,6 +59,7 @@ import org.topazproject.ws.article.ObjectInfo;
 import org.topazproject.ws.article.RepresentationInfo;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
+import com.opensymphony.oscache.web.ServletCacheAdministrator;
 
 /**
  * 
@@ -149,15 +151,21 @@ public class DocumentManagementService {
   }
   
   /**
-   * Deletes an article from Topaz
+   * Deletes an article from Topaz and flushes the servlet image cache and article cache
    * 
    * @param objectURI -
    *          URI of the article to delete
+   * @param servletContext -
+   *          Servlet Context under which the image cache exists
    * @throws RemoteException
    * @throws NoSuchIdException
    */
-  public void delete(String objectURI) throws RemoteException, NoSuchIdException {
+  public void delete(String objectURI, ServletContext servletContext) throws RemoteException, NoSuchIdException {
     articleWebService.delete(objectURI);
+    articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
+    articleCacheAdministrator.flushEntry(ALL_ARTICLE_CACHE_KEY);
+    articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(objectURI));
+    ServletCacheAdministrator.getInstance(servletContext).flushAll();
   }
   
   /**

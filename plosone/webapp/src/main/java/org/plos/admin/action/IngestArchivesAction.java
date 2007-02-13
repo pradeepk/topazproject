@@ -17,6 +17,8 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
+
 import org.apache.commons.collections.iterators.ArrayIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -25,12 +27,16 @@ import org.plos.action.BaseActionSupport;
 import org.plos.admin.service.DocumentManagementService;
 import org.plos.admin.service.ImageResizeException;
 
-import com.opensymphony.webwork.interceptor.ParameterAware;
+import org.topazproject.common.DuplicateIdException;
 
-public class IngestArchivesAction extends BaseAdminActionSupport {
+import com.opensymphony.webwork.interceptor.ParameterAware;
+import com.opensymphony.webwork.util.ServletContextAware;
+
+public class IngestArchivesAction extends BaseAdminActionSupport implements ServletContextAware  {
   
   private static final Log log = LogFactory.getLog(IngestArchivesAction.class);
   private String[] filesToIngest;
+  private ServletContext servletContext;
   
   public void setFilesToIngest(String[] files) {
     filesToIngest = files;
@@ -48,13 +54,16 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
               getDocumentManagementService().getDocumentDirectory(),
               filename));
           addActionMessage("Ingested: " + filename);
+        } catch (DuplicateIdException de) {
+          addActionMessage("Error ingesting: " + filename + " - " + de.toString());
+          log.info("Error ingesting article: " + filename , de);
         } catch (ImageResizeException ire) {
           addActionMessage("Error ingesting: " + filename + " - " + ire.getCause().toString());
           log.error("Error ingesting articles: " + filename, ire);
           articleURI = ire.getArticleURI();
           log.debug("trying to delete: " + articleURI);
           try {
-            getDocumentManagementService().delete(articleURI);
+            getDocumentManagementService().delete(articleURI, getServletContext());
           } catch (Exception deleteException) {
             log.error("Could not delete article: " + articleURI, deleteException);
           }
@@ -65,6 +74,19 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
       }
     }
     return base();
+  }
+  
+  /**
+   * Sets the servlet context.  Needed in order to clear the image cache
+   * 
+   * @param context SerlvetContext to set
+   */
+  public void setServletContext (ServletContext context) {
+    this.servletContext = context;
+  }
+
+  private ServletContext getServletContext () {
+    return this.servletContext;
   }
   
 }

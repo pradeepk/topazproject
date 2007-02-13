@@ -17,6 +17,10 @@ import java.util.Collection;
 import java.util.Iterator;
 import java.util.Map;
 
+import javax.servlet.ServletContext;
+
+import com.opensymphony.webwork.util.ServletContextAware;
+
 import org.apache.commons.collections.iterators.ArrayIterator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,28 +28,33 @@ import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.admin.service.DocumentManagementService;
 
+
 import com.opensymphony.webwork.interceptor.ParameterAware;
 
-public class PublishArchivesAction extends BaseAdminActionSupport {
+public class PublishArchivesAction extends BaseAdminActionSupport implements ServletContextAware {
   
   private static final Log log = LogFactory.getLog(PublishArchivesAction.class);
   private String[] articlesToPublish;
   private String[] articlesToDelete;
+  private ServletContext servletContext;
   
-  public void setArticlesToPublish(String[] articles) {
-    articlesToPublish = articles;
-  }
-  
-  public void setArticlesToDelete(String[] articles) {
-    articlesToDelete= articles;
-  }
-  
+  /**
+   * Deletes and publishes checked articles from the admin console.  Note that delete has priority
+   * over publish.
+   * 
+   */
   public String execute() throws RemoteException, ApplicationException  {
     deleteArticles();
     publishArticles();
     return base();
   }
   
+  /**
+   * publishes articles from the admin console
+   * 
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
   public void publishArticles () throws RemoteException, ApplicationException  {
     if (articlesToPublish != null){
       for (String article : articlesToPublish) {
@@ -63,11 +72,18 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
     }
   }
   
+  
+  /**
+   * Deletes the checked articles from the admin console.
+   * 
+   * @throws RemoteException
+   * @throws ApplicationException
+   */
   public void deleteArticles() throws RemoteException, ApplicationException  {
     if (articlesToDelete != null) {
       for (String article : articlesToDelete) {
         try {
-          getDocumentManagementService().delete(article);
+          getDocumentManagementService().delete(article, getServletContext());
           if (log.isDebugEnabled()) {
             log.debug("deleted article: " + article);
           }
@@ -79,4 +95,34 @@ public class PublishArchivesAction extends BaseAdminActionSupport {
       } 
     }
   }
+  
+  /**
+   * 
+   * @param articles array of articles to publish
+   */
+  public void setArticlesToPublish(String[] articles) {
+    articlesToPublish = articles;
+  }
+  
+  /**
+   * 
+   * @param articles array of articles to delete
+   */
+  public void setArticlesToDelete(String[] articles) {
+    articlesToDelete= articles;
+  }
+  
+  /**
+   * Sets the servlet context.  Needed in order to clear the image cache
+   * 
+   * @param context SerlvetContext to set
+   */
+  public void setServletContext (ServletContext context) {
+    this.servletContext = context;
+  }
+
+  private ServletContext getServletContext () {
+    return this.servletContext;
+  }
+  
 }
