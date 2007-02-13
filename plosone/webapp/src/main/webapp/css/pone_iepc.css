@@ -63,6 +63,11 @@ html>body #home { height: auto }
 * html div.banner img,
 * html div.banner object { margin-top: 8px; }
 
+/* fixes positioning on header links */
+* html ul#links li { padding: 0; background-position: 100% 1px;}
+* html ul#links a,
+* html ul#links a:visited { display: inline; padding: 1px 0 3px 18px;}
+
 /* IE 7 hax */
 *:first-child+html ul#tabsContainer 	{ }
 *:first-child+html ul#tabsContainer li 	{ padding-top: 0; padding-bottom: 0; }

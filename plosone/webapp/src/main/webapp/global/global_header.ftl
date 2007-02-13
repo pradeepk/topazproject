@@ -8,10 +8,11 @@
 	<div id="user">
 		<div>
 		<@ww.url id="editProfileURL" includeParams="none" namespace="/user/secure" action="editProfile" tabId="preferences"/>
-			<p>Logged in as <a href="${freemarker_config.context}/user/showUser.action?userId=${Session.PLOS_ONE_USER.userId}" class="icon user" title="Logged in username">${Session.PLOS_ONE_USER.displayName}</a></p>
+				
+					<p>Welcome, <!--<a href="${freemarker_config.context}/user/showUser.action?userId=${Session.PLOS_ONE_USER.userId}" title="You are logged in as ${Session.PLOS_ONE_USER.displayName}">--><strong>${Session.PLOS_ONE_USER.displayName}</strong></a>!</p>
 				<ul>
-					<li><a href="${editProfileURL}" class="icon preferences" title="View and edit my account preferences and alerts">Preferences</a></li>
-					<li><a href="${freemarker_config.casLogoutURL}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action" class="icon logout" title="Logout of my PLoS ONE account">Logout</a></li>
+					<li><a href="${editProfileURL}" title="Edit your account preferences and alert settings">Preferences</a></li>
+					<li><a href="${freemarker_config.casLogoutURL}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action" title="Logout of PLoS ONE">Logout</a></li>
 				</ul>
 		</div>
 	</div>
@@ -21,9 +22,11 @@
 	<div id="user">
 		<div>
 			<ul>
-				<li><a href="${freemarker_config.registrationURL}">Create Account</a></li>
 				<@ww.url id="loginURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${thisPage}"/>
-				<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="feedback">Login</a></li>
+				<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="feedback"><strong>Login</strong></a></li>
+				<li><a href="${freemarker_config.registrationURL}">Create Account</a></li>
+	<@ww.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
+				<li class="feedback"><a href="${feedbackURL}" title="Send us your feedback">Feedback</a></li>
 			</ul>
 		</div>
 	</div>
@@ -33,11 +36,9 @@
 	<!-- end : user controls -->
 	<!-- begin search links -->
 	<ul id="links">
-<!--			<li><a href="#" title="Search PLoS ONE with advanced criteria" class="icon advanced">Advanced Search</a></li>-->
+			<li class="browse"><a href="#" title="Browse PLoS ONE Articles">Browse</a></li>
 			<@ww.url id="rssURL" includeParams="none" namespace="/static" action="rssFeeds"/>
-			<li><a href="${rssURL}" title="PLoS ONE RSS Feeds" class="icon rss">RSS</a></li>
-			<@ww.url id="feedbackURL" includeParams="none" namespace="/" action="feedbackCreate" page="${thisPageURL?url}"/>
-			<li><a href="${feedbackURL}" title="Send us your feedback" class="feedback">Feedback</a></li>
+			<li class="rss"><a href="${rssURL}" title="PLoS ONE RSS Feeds">RSS</a></li>
 	</ul>
 	<!-- end : search links -->
 	<!-- begin : dashboard -->
@@ -47,8 +48,8 @@
 			<fieldset>
 				<legend>Search PLoS ONE</legend>
 				<label for="search">Search</label>
-				<div class="wrap"><input type="text" name="query" value="Search PLoS ONE..." onfocus="if(this.value=='Search PLoS ONE...')value='';" onblur="if(this.value=='')value='Search PLoS ONE...';" class="searchField" alt="Search PLoS ONE..."/></div>
-				<input src="<@ww.url value='/images/pone_searchinput_btn.gif'/>" onclick="submit();" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
+				<div class="wrap"><input type="text" name="query" value="Search articles..." onfocus="if(this.value=='Search articles...')value='';" onblur="if(this.value=='')value='Search articles...';" class="searchField" alt="Search articles..."/></div>
+				<input src="<@ww.url value='/images/pone_search_btn1.gif'/>" onclick="submit();" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
 			</fieldset>
 		</form>
 	</div>

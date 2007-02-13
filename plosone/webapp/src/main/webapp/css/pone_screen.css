@@ -49,8 +49,6 @@ textarea	{ font-family: Verdana, Arial, Helvetica, sans-serif; color: #555; font
 /* Global : Styles
 ----------------------------------------------------------
 */
-span.new	{ font-weight: bold; font-size: .85em; text-transform: uppercase;}
-
 
 /* Global : Icons
 ----------------------------------------------------------
@@ -65,25 +63,18 @@ a.tooltip	/* use for any functional icon for on page actions */
 /* for user dashboard icons */
 #user a.icon		{ padding: 0 16px 0 0; background-repeat: no-repeat; background-position: 100% -14px; padding-top: 1px; padding-bottom: 1px;}
 
-/* for the advanced search, rss, and feedback links above search bar */
-#links a.icon,
-#links a.icon:hover,
-#links a.icon:visited,
-#hdr a.icon:hover	{ background-position: 100% 0; }
-a.button			{ padding: 4px 4px 4px 18px; background-repeat: no-repeat; background-position: 1% 50%; font-size: .85em;}
-
-div.topbar	{ background-color: #069; text-align: right; }
 
 /* portions of this icon set have been adapted Mark Jame's Silk icon set available under a Creative Commons Attribution 2.5 license at http://www.famfamfam.com/lab/icons/silk/ */
-a.new			{ background: #069; padding: 6px; text-decoration: none; }
+a.new			{ padding: 6px; }
 
 a.back			{ background-image: url(../images/pone_icon_back.gif);}
 a.logout		{ background-image: url(../images/pone_icon_user_logout.gif); }
 a.nomessage		{ background-image: url(../images/pone_icon_user_nomessage.gif); }
 a.user			{ background-image: url(../images/pone_icon_user.gif); font-weight: bold; /*username always appears bolded for emphasis*/}
 a.preferences 	{ background-image: url(../images/pone_icon_user_preferences.gif); }
-a.rss			{ background-image: url(../images/pone_icon_rss.gif); }
+a.rss			{ background-image: url(../images/pone_icon_rss1.gif); }
 a.advanced		{ background-image: url(../images/pone_icon_advanced.gif); }
+a.browse		{ background-image: url(../images/pone_icon_browse.gif); }
 
 /* Article Icons */
 a.yourfeedback
@@ -188,7 +179,7 @@ div#hdr 			{ height: 150px; position: relative; z-index: 997;}
 ----------------------------------------------------------
 */
 
-ul#nav 		{ font-size: .75em; height:1.9em; margin: 0; padding: 0; position: absolute; bottom: 0; left: 14px; list-style-type: none; z-index: 800;}
+ul#nav 		{ font-size: .75em; height:1.9em; margin: 0; padding: 0; position: absolute; bottom: 0; left: 14px; list-style-type: none; z-index: 800; width: 100%;}
 ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; padding: 0; }
 #nav li a, #nav li a:visited
 			{ font-weight: bold;display:block; text-decoration:none; width: auto; padding: 3px .6em 0 .6em; float:left; height: 1.6em; line-height:normal; color:#069; }
@@ -210,12 +201,12 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 #nav li.over ul li a:hover,
 #nav li:hover ul li a:hover,
 #nav li a:hover ul li a:hover 	{ border-top: 0; color: #069!important; background-color: #fff;text-decoration: underline;}
-#nav li.journalnav				{ float: right; }
+#nav li.journalnav				{ float: right; margin-right: 14px;}
 
 
 /* Search Dashboard */
 
-#db 			{ padding: 0; text-align: center; font-size: .8em; position: absolute; top: 26px; right: 0; padding: 0; border-width: 0; color: #888; }
+#db 			{ padding: 0; text-align: center; font-size: .8em; position: absolute; top: 44px; right: -20px; padding: 0; border-width: 0; color: #888; background: url(../images/pone_db_bg.gif) no-repeat top left; padding: 15px 15px 10px 15px;}
 #db fieldset 	{ padding: 0; margin: 0; background-color: transparent; vertical-align: top; width: 246px; border: none; }
 #db fieldset div{ position: relative; }
 #db fieldset legend,
@@ -227,7 +218,7 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 	background-color: transparent;
 	color: #666;
 	padding: 7px 7px 7px 27px;
-	width: 173px;
+	width: 190px;
 	margin: 0;
 	position: relative;
 	float: left;
@@ -236,43 +227,34 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 }
 #db fieldset input.button { float: left; position: relative; }
 
+/* new layout */
+#db fieldset input.button { padding: 0 5px; }
+#db input.searchField { background:#fff; font-size: 1.2em; padding: 4px; border: 1px solid #5FA6D0; color: #6398B7;}
+
 /*  user wraps logged in user controls */
-#user 		{ position: absolute; width: 25.1em; height: 6.1em; background: transparent url(../images/pone_user_bg.gif) no-repeat; top: 54px; right: 0; font-size: .75em; text-align: right; }
-
-#user div 	{ margin: 14px 18px 14px 0; } /* contains elements and applies padding */
-#user p 	{ margin: 0 0 12px 0; }
-#user ul 	{ margin: 0; padding: 0; display: inline;}
-#user ul li { display: inline; margin-left: 6px; text-indent: 0;}
+#user 		{ position: absolute; right: 0; font-size: .8em; text-align: right; top: 18px; color: #fff; list-style-type: none;}
+#user div 	{ } /* contains elements and applies padding */
+#user ul,
+#user p 	{ margin: 0; padding: 0; display: inline;}
+#user ul li { list-style-type: none;display: inline; }
+#user li a:link,
+#user li a:visited 	{ padding: 0; margin-left: 4px;}
 #user a:link,
-#user a:visited 	{ color: #004B70; }
-#user a:hover
-			{ color: #069; }
-#user a.user{ background-image: url(../images/pone_icon_user_user.gif); }
-#user a.icon{ padding-right: 18px; }
-/* styles for unlogged in state */
-.login #links	{ top: 25px; }
-.login #db		{ top: 55px; }
-.login #user	{ background: none; top: 75px; }
-.login #user div{ margin-right: 10px; }
-.login #user a:link,
-.login #user a:visited,
-.loging #user a:hover	{ color: #fff; padding-right: 0; font-size: 1.1em;}
+#user a:visited {  color: #F0FDFF!important; }
+#user a:hover { text-decoration: none; }
 
 
-
-/* links wraps Advanced Search, RSS, Feedback links */
-#links 		{ position: absolute; right: 12px; top: 6px;text-decoration: none; font-size: 1.1em!important;}
-ul#links 	{ margin: 0; padding: 0; }
-ul#links li { display: inline; margin: 0; padding: 0; }
+/* links wraps browse and RSS buttons */
+#links 		{ position: absolute; right: 0; padding: 0; right: 0;height: 38px; bottom: 8px;text-decoration: none; }
+ul#links 	{ margin: 0; padding: 0; list-style-type: none;}
+ul#links li { background: url(../images/pone_links_li_tr.gif) no-repeat 100% 0; list-style-type: none; display: block; padding: 0; margin: 0 0 0 4px; text-indent: 0; float: left;}
 ul#links a,
-ul#links a:visited	{ color: #fff; font-size: .75em; display: inline;;}
-ul#links a.icon,
-ul#links a:visited.icon,
-ul#links a:hover.icon { padding: 0 16px 0 0; background-position: 100% 50%;}
-
-
-
-
+ul#links a:visited	{ font-size: .85em; background: url(../images/pone_links_li_bg.gif) no-repeat 0 -15px;  padding: 1px 0 1px 0; padding-left: 18px; color: #fff; margin: 0 6px 0 0;text-decoration: none; display: block; }
+ul#links a:hover { color: #D2DBE1; background-position: 0 0; }
+ul#links li.browse a,
+ul#links li.browse a:visited { background-image: url(../images/pone_links_browse_bg.gif); }
+ul#links li.rss a,
+ul#links li.rss a:visited { background-image: url(../images/pone_links_rss_bg.gif); }
 /* Footer : Elements
 ----------------------------------------------------------=
 */
@@ -536,13 +518,13 @@ div#browseNav 		{ float: left; position: relative; z-index: 70; width: 240px;  p
 
 /*--- Browse Form ---- */
 
-div#browseNav .browseForm { margin: 0; background: #fff url(../images/pone_tools_bg.gif) no-repeat top left; padding: 8px 0 0 0; color: #666;}
-div#browseNav .browseForm fieldset { margin: 0; padding-bottom: 10px; border: none; background: #fff url(../images/pone_tools_bg.gif) no-repeat bottom left; width: 100%; }
+div#browseNav form.browseForm { margin: 0; background: #fff url(../images/pone_tools_bg.gif) no-repeat top left; padding: 10px 0 0 0; color: #666; position: relative; }
+div#browseNav form.browseForm fieldset { margin: 0; padding: 0 0 10px 0; border: none; background: #fff url(../images/pone_tools_bg.gif) no-repeat bottom left; width: 100%; position: relative;}
 
 div#browseNav div { padding-bottom: 18px; background-color: #fff; }
 div#browseNav .browseForm legend { display: none;}
 div#browseNav .browseForm li,
-div#browseNav .browseForm ol { list-style-type: none; margin: 10px; padding: 0;}
+div#browseNav .browseForm ol { list-style-type: none; margin: 10px; padding: 0; height: 100%;}
 
 div.resultsTab { border: 2px solid #ccc; padding: 5px; background: #eee; margin: 20px 0;}
 div.resultsTab a { margin-right:5px; }
@@ -551,3 +533,4 @@ div.resultsTab a { margin-right:5px; }
 li.current { list-style-type: none!important; background: url(../images/pone_li_current.gif) no-repeat 0 8px!important; font-size: 1em!important;}
 ol li.current { background: none!important; font-size: inherit;}
 ol li.current * { color: #000; text-decoration: none; background: none; cursor: default;}
+
