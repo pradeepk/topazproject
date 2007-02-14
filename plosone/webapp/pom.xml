@@ -49,7 +49,7 @@
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
       <artifactId>jetty</artifactId>
-      <version>6.0.2</version>
+      <version>6.1.1</version>
       <scope>provided</scope>
     </dependency>
     <dependency>
@@ -331,7 +331,7 @@
       <plugin>
         <groupId>org.mortbay.jetty</groupId>
         <artifactId>maven-jetty-plugin</artifactId>
-        <version>6.0.2</version>
+        <version>6.1.1</version>
         <configuration>
           <connectors>
             <connector implementation="org.mortbay.jetty.security.SslSocketConnector">
