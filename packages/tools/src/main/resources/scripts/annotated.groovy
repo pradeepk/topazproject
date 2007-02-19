@@ -65,7 +65,7 @@ if (opt.e)
 query = """
   select \$article
     subquery(select \$article \$title from ${RI_MODEL}
-             where \$article <dc:subject> \$title)
+             where \$article <dc:title> \$title)
     count(select \$ann from ${RI_MODEL}
           where \$ann <rdf:type> <a:Annotation>
             and \$ann <a:annotates> \$article
@@ -102,6 +102,13 @@ ans.query[0].solution.each() {
   def authorList = article.front.'article-meta'.'author-notes'.corresp.email.list()
   if (authorList) authors = authorList.toString()[1..-2] // String of comma-separated emails
 
+  // Get rid of HTML tags from title
+  def title = it.k0.solution.title.text()
+  title = title.replaceAll(/<.*?>/) { it = " " }
+  title = title.replaceAll(/\s{1,}/) { it = " " }
+  // TODO: Haven't seen any entities in title, but may need to deal with eventually
+
+  // TODO: May want to strip, replace or escape double-quotes (but haven't seen any)
   // Dump out one of the articles we found as a line of CSV data
-  println """\"${it.article.'@resource'}","${it.k0.solution.title.text()}","$authors", ${it.k1}"""
+  println """\"${it.article.'@resource'}","${title}","$authors", ${it.k1}"""
 }
