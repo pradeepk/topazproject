@@ -5,6 +5,7 @@
   <xsl:param name="rssImage">http://www.plosone.org/images/pone_favicon.ico</xsl:param>
   <xsl:param name="rssDescription">PLoS ONE Journal</xsl:param>
   <xsl:param name="linkPrefix">http://www.plosone.org/article/fetchArticle.action?articleURI=</xsl:param>
+  <xsl:param name="maxAuthors">5</xsl:param>
 
   <xsl:output method="xml" indent="yes" encoding="UTF-8"/>
 
@@ -32,12 +33,20 @@
       </pubDate>
       <link><xsl:value-of select="$linkPrefix"/><xsl:value-of select="uri"/></link>
       <description><xsl:value-of select="description"/></description>
-      <xsl:apply-templates select="authors/author"/>
+      <xsl:apply-templates select="authors"/>
     </item>
   </xsl:template>
 
-  <xsl:template match="author">
-    <author><xsl:value-of select="."/></author>
+  <xsl:template match="authors">
+    <author>
+      <xsl:value-of select="author[1]"/>
+      <xsl:for-each select="author[position() &gt; 1 and position() &lt;= $maxAuthors]">
+        <xsl:text>, </xsl:text><xsl:value-of select="."/>  
+      </xsl:for-each>
+      <xsl:if test="count(author) &gt; $maxAuthors">
+        <xsl:text>, et al.</xsl:text>
+      </xsl:if>
+    </author>
   </xsl:template>
 
 </xsl:stylesheet>

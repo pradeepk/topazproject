@@ -108,6 +108,9 @@ public class RSSInfo {
     options.addOption(OptionBuilder.withArgName("Prefix for link").hasArg().
         withValueSeparator(' ').withDescription("Prefix added to article URI").
         create("linkPrefix"));
+    options.addOption(OptionBuilder.withArgName("Max authors").hasArg().
+        withValueSeparator(' ').withDescription("Truncate author list at this max").
+        create("maxAuthors"));
 
     options.addOption(OptionBuilder.withArgName("File name").hasArg().
         withValueSeparator(' ').withDescription("Write output to file").
@@ -247,6 +250,9 @@ public class RSSInfo {
         }
         if (line.hasOption("linkPrefix")) {
           transformer.setParameter("linkPrefix",line.getOptionValue("linkPrefix"));
+        }
+        if (line.hasOption("maxAuthors")) {
+          transformer.setParameter("maxAuthors",new Integer(line.getOptionValue("maxAuthors")));
         }
 
         StringWriter out = new StringWriter();
