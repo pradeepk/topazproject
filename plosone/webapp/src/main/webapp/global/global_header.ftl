@@ -36,7 +36,8 @@
 	<!-- end : user controls -->
 	<!-- begin search links -->
 	<ul id="links">
-			<li class="browse"><a href="#" title="Browse PLoS ONE Articles">Browse</a></li>
+			<@ww.url id="browseURL" includeParams="none" namespace="/article" action="browse"/>
+			<li class="browse"><a href="${browseURL}" title="Browse PLoS ONE Articles">Browse</a></li>
 			<@ww.url id="rssURL" includeParams="none" namespace="/static" action="rssFeeds"/>
 			<li class="rss"><a href="${rssURL}" title="PLoS ONE RSS Feeds">RSS</a></li>
 	</ul>
@@ -48,7 +49,7 @@
 			<fieldset>
 				<legend>Search PLoS ONE</legend>
 				<label for="search">Search</label>
-				<div class="wrap"><input type="text" name="query" value="Search articles..." onfocus="if(this.value=='Search articles...')value='';" onblur="if(this.value=='')value='Search articles...';" class="searchField" alt="Search articles..."/></div>
+				<div class="wrap"><input id="search" type="text" name="query" value="Search articles..." onfocus="if(this.value=='Search articles...')value='';" onblur="if(this.value=='')value='Search articles...';" class="searchField" alt="Search articles..."/></div>
 				<input src="<@ww.url value='/images/pone_search_btn1.gif'/>" onclick="submit();" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
 			</fieldset>
 		</form>
