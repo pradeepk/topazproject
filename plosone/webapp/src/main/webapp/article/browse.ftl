@@ -41,7 +41,7 @@
 	<#if endIndex gte totalResults>
 		<#assign endIndex = totalResults - 1 >
 	</#if>
-	<div id="search-results">	<p><strong>${startIndex + 1} - ${endIndex + 1}</strong> of <strong>${totalResults}</strong> articles<!-- published in the <strong>past 7 days</strong>-->.</p>
+	<div id="search-results">	<p><strong>${startIndex + 1} - ${endIndex + 1}</strong> of <strong>${totalResults}</strong> article<#if totalResults != 1>s</#if> published ${infoText}.</p>
 		<div class="resultsTab">
 			<@pagination />
 		</div> <!-- results tab-->

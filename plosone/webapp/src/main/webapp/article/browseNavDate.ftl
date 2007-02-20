@@ -14,6 +14,7 @@
 
 		<ul>
 			<#if year == -1 &&  month == -1 && day == -1>
+			<#assign infoText = "in the <strong>past 7 days</strong>">
 			<li class="current">Past 7 days</li>
 			<#else>
 		  <@ww.url id="browseDateURL" action="browse" namespace="/article" field="${field}" includeParams="none"/>
@@ -21,12 +22,14 @@
 			</#if>
 			<#if month == -2>
 			<li class="current">Past 30 days</li>
+			<#assign infoText = "in the <strong>past 30 days</strong>">
 			<#else>
 		  <@ww.url id="browseDateURL" action="browse" namespace="/article" field="${field}" month="-2" includeParams="none"/>
 			<li><@ww.a href="%{browseDateURL}">Past 30 days</@ww.a></li>
 			</#if>
 			<#if month == -3>
 			<li class="current">Past 90 days</li>
+			<#assign infoText = "in the <strong>past 90 days</strong>">
 			<#else>
 		  <@ww.url id="browseDateURL" action="browse" namespace="/article" field="${field}" month="-3" includeParams="none"/>			
 			<li><@ww.a href="%{browseDateURL}">Past 90 days</@ww.a></li>
@@ -43,6 +46,7 @@
 				<#assign oneDay = oneMonth[0]>
 					<#if i == year && oneMonth_index == month && day == -1>
 						<li class="current">
+		  			<#assign infoText = "in <strong>" + oneDay?string("MMM") + " " + oneDay?string("yyyy") + "</strong>">
 					<#else>
 						<li>
 					</#if>						
@@ -51,11 +55,12 @@
 				<#list oneMonth as oneDay>
 					<#if i == year && oneMonth_index == month && oneDay_index == day>
 					<li class="current">
+	  			<#assign infoText = "on <strong>" + oneDay?string("dd") + " " + oneDay?string("MMM") + " " + oneDay?string("yyyy") + "</strong>">
 					<#else>
 					<li>
 					</#if>
 				  <@ww.url id="dayURL" action="browse" namespace="/article" field="${field}" year="${i}" month="${oneMonth_index}" day="${oneDay_index}" includeParams="none"/>													
-					<@ww.a href="%{monthURL}">${oneDay?string("dd")}</@ww.a></li>
+					<@ww.a href="%{dayURL}">${oneDay?string("dd")}</@ww.a></li>
 				</#list>
 				</ol>
 			</#list>

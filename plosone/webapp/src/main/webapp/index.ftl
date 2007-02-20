@@ -126,14 +126,8 @@ Submit Today</a></li>
 							  <#else>
   								<#assign index = 8>
 							  </#if>
-								<dt><a class="expand" id="widget${categoryId}" onclick="return singleExpand(this, '${categoryId}');">${category} (${articlesByCategory[category_index]?size})</a></dt>
-								<dd id="${categoryId}">
-									<ul class="articles">
-										<#list articlesByCategory[category_index] as article>
-										<li><a href="article/fetchArticle.action?articleURI=${article.uri?url}" title="Read Open Access Article">${article.title}</a></li>
-										</#list>
-									</ul>
-								</dd>
+							  <@ww.url id="browseURL" action="browse" namespace="/article"  catId="${category_index}" includeParams="none"/>
+								<dt><a class="expand" id="widget${categoryId}" href="${browseURL}">${category} (${articlesByCategory[category_index]?size})</a></dt>
 							</#list>
 							</dl>
 

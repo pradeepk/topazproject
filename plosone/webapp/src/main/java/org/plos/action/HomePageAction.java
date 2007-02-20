@@ -14,8 +14,8 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.article.service.ArticleWebService;
+import org.plos.article.service.BrowseService;
 import static org.topazproject.ws.article.Article.ST_ACTIVE;
-import static org.topazproject.ws.article.Article.ST_DISABLED;
 import org.topazproject.ws.article.ArticleInfo;
 import org.topazproject.ws.article.ObjectInfo;
 
@@ -40,16 +40,12 @@ public class HomePageAction extends BaseActionSupport {
   
   private static final Log log = LogFactory.getLog(HomePageAction.class);
   private ArticleWebService articleWebService;
+  private BrowseService browseService;
   private ArticleInfo[] lastWeeksArticles;
-  private ArticleInfo[] allArticles;
   private static final long ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
   private static final long FIFTEEN_DAYS = 15 * 24 * 60 * 60 * 1000;
-  private String[] categoryNames;
-  private ArticleInfo[][] articlesByCategory;
-  private boolean categoriesAreInitialized = false;
   private GeneralCacheAdministrator articleCacheAdministrator;
   public static final String WEEK_ARTICLE_CACHE_KEY = "WEEK_ARTICLE_LIST";
-  public static final String ALL_ARTICLE_CACHE_KEY = "ALL_ARTICLE_LIST";
   private static final int WEEK_ARTICLE_CACHE_DURATION = 43200; //12hrs  
   private static final String MOST_COMMENTED_CACHE_KEY = "MOST_COMMENTED_LIST";
   private static final int MOST_COMMENTED_CACHE_DURATION = 3600;  //1 hr
@@ -73,41 +69,7 @@ public class HomePageAction extends BaseActionSupport {
   }
   
   private ArticleInfo[] getAllArticles() {
-    if (allArticles == null) {
-      try {
-        // Get from the cache
-
-        allArticles= (ArticleInfo[]) 
-          articleCacheAdministrator.getFromCache(ALL_ARTICLE_CACHE_KEY, WEEK_ARTICLE_CACHE_DURATION);
-        if (log.isDebugEnabled()) {
-          log.debug("retrieved all articles from cache");
-        }
-      } catch (NeedsRefreshException nre) {
-        boolean updated = false;
-        if (log.isDebugEnabled()){
-          log.debug("retrieving all articles from TOPAZ");
-        }
-        try {
-          //  Get the value from TOPAZ
-          allArticles = articleWebService.getArticleInfos(null, null, null,
-                              null, new int[]{ST_ACTIVE}, false);
-          
-          // Store in the cache
-          articleCacheAdministrator.putInCache(ALL_ARTICLE_CACHE_KEY, allArticles);
-          updated = true;
-        } catch (RemoteException re) {
-          log.error("Could not retrieve the all articles", re);
-          allArticles = new ArticleInfo[0];
-        } finally {
-          if (!updated) {
-              // It is essential that cancelUpdate is called if the
-              // cached content could not be rebuilt
-              articleCacheAdministrator.cancelUpdate(ALL_ARTICLE_CACHE_KEY);
-          }
-        }
-      }
-    }    
-    return allArticles;
+    return browseService.getAllArticles();
   }
   
   
@@ -196,49 +158,6 @@ public class HomePageAction extends BaseActionSupport {
   }    
 
   /**
-   * Takes the articles for the last week and sets the categoryNames and
-   * articlesByCategory values.  
-   * 
-   *
-   */
-  private void populateArticlesAndCategories() {
-    ArticleInfo[] allArticleList = getAllArticles();
-    if (allArticleList.length > 0){
-      TreeMap<String, ArrayList<ArticleInfo>> allArticlesMap = new TreeMap<String, ArrayList<ArticleInfo>>();
-      String[] categories;
-      ArrayList<ArticleInfo> theList;
-      for (ArticleInfo art : allArticleList) {
-        categories = art.getCategories();
-        for (String cat : categories) {
-          theList = allArticlesMap.get(cat);
-          if (theList == null) {
-            theList = new ArrayList<ArticleInfo>();
-            allArticlesMap.put(cat, theList);
-          }
-          theList.add(art);
-        }
-      }
-      Set<Map.Entry<String, ArrayList<ArticleInfo>>> allEntries = allArticlesMap.entrySet();  
-      Iterator<Map.Entry<String, ArrayList<ArticleInfo>>> iter = allEntries.iterator();
-      Map.Entry<String, ArrayList<ArticleInfo>> entry;
-      categoryNames = new String[allEntries.size()];
-      articlesByCategory = new ArticleInfo[allEntries.size()][];
-      ArrayList<ArticleInfo> artInfoArrayList;
-      for (int i = 0; iter.hasNext(); i++) {
-        entry = iter.next();
-        categoryNames[i] = entry.getKey();
-        artInfoArrayList = entry.getValue();
-        articlesByCategory[i] = new ArticleInfo[artInfoArrayList.size()];
-        artInfoArrayList.toArray(articlesByCategory[i]);
-      }
-    } else {
-      categoryNames = new String[0];
-      articlesByCategory = new ArticleInfo[0][];
-    }
-  }
-  
-
-  /**
    * @return Returns the articleWebService.
    */
   protected ArticleWebService getArticleWebService() {
@@ -256,23 +175,15 @@ public class HomePageAction extends BaseActionSupport {
    * @return Returns the articlesByCategory - a two dimensional array of ArticleInfo
    *          objects to go along with getCategoryNames.
    */
-  public ArticleInfo[][] getArticlesByCategory() {
-    if (!categoriesAreInitialized) {
-      populateArticlesAndCategories();
-      categoriesAreInitialized = true;
-    }
-    return articlesByCategory;
+  public ArrayList<ArrayList<ArticleInfo>> getArticlesByCategory() {
+    return browseService.getArticlesByCategory();
   }
 
   /**
    * @return Returns the categoryNames for articles in the last week in a sorted array.
    */
   public String[] getCategoryNames() {
-    if (!categoriesAreInitialized) {
-      populateArticlesAndCategories();
-      categoriesAreInitialized = true;
-    }
-    return categoryNames;
+    return browseService.getCategoryNames();
   }
   
   /**
@@ -323,5 +234,12 @@ public class HomePageAction extends BaseActionSupport {
    */
   public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
     this.articleCacheAdministrator = articleCacheAdministrator;
+  }
+
+  /**
+   * @param browseService The browseService to set.
+   */
+  public void setBrowseService(BrowseService browseService) {
+    this.browseService = browseService;
   }
 }

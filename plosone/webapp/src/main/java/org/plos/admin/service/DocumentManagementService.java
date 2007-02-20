@@ -44,7 +44,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import static org.plos.action.HomePageAction.WEEK_ARTICLE_CACHE_KEY;
-import static org.plos.action.HomePageAction.ALL_ARTICLE_CACHE_KEY;
+import static org.plos.article.service.BrowseService.ALL_ARTICLE_CACHE_GROUP_KEY;
 import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.SecondaryObject;
@@ -163,7 +163,7 @@ public class DocumentManagementService {
   public void delete(String objectURI, ServletContext servletContext) throws RemoteException, NoSuchIdException {
     articleWebService.delete(objectURI);
     articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
-    articleCacheAdministrator.flushEntry(ALL_ARTICLE_CACHE_KEY);
+    articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);
     articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(objectURI));
     ServletCacheAdministrator.getInstance(servletContext).flushAll();
   }
@@ -423,7 +423,7 @@ public class DocumentManagementService {
     }
     articleWebService.setState(uri, Article.ST_ACTIVE);
     articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
-    articleCacheAdministrator.flushEntry(ALL_ARTICLE_CACHE_KEY);
+    articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);
   }
   
   private static class PngDataSource implements DataSource {
