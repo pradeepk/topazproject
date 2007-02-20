@@ -151,6 +151,19 @@ public class DocumentManagementService {
   }
   
   /**
+   * Deletes an article from Topaz, but does not flush the cache
+   * Useful for deleting a recently ingested article that hasn't been published
+   * 
+   * @param objectURI -
+   *          URI of the article to delete
+   * @throws RemoteException
+   * @throws NoSuchIdException
+   */
+  public void delete(String objectURI) throws RemoteException, NoSuchIdException {
+    articleWebService.delete(objectURI);
+  }
+  
+  /**
    * Deletes an article from Topaz and flushes the servlet image cache and article cache
    * 
    * @param objectURI -

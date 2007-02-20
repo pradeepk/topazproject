@@ -5,7 +5,7 @@
 				<fieldset>
 					<legend>How would you like to browse?</legend>
 					<ol>
-						<li><label for="date"><input type="radio" name="field" id="date" checked /> By Publication Date</label></li>
+						<li><label for="date"><input type="radio" name="field" id="date" checked="checked" /> By Publication Date</label></li>
 						<li><label for="subject"><input onclick="document.browseForm.submit();" type="radio" name="field" id="subject" /> By Subject</label></li>
 					</ol>
 				</fieldset>
@@ -17,21 +17,21 @@
 			<#assign infoText = "in the <strong>past 7 days</strong>">
 			<li class="current">Past 7 days</li>
 			<#else>
-		  <@ww.url id="browseDateURL" action="browse" namespace="/article" field="${field}" includeParams="none"/>
+		  	<@ww.url id="browseDateURL" action="browse" namespace="/article" field="${field}" includeParams="none"/>
 			<li><@ww.a href="%{browseDateURL}">Past 7 days</@ww.a></li>
 			</#if>
 			<#if month == -2>
 			<li class="current">Past 30 days</li>
 			<#assign infoText = "in the <strong>past 30 days</strong>">
 			<#else>
-		  <@ww.url id="browseDateURL" action="browse" namespace="/article" field="${field}" month="-2" includeParams="none"/>
+			  <@ww.url id="browseDateURL" action="browse" namespace="/article" field="${field}" month="-2" includeParams="none"/>
 			<li><@ww.a href="%{browseDateURL}">Past 30 days</@ww.a></li>
 			</#if>
 			<#if month == -3>
 			<li class="current">Past 90 days</li>
 			<#assign infoText = "in the <strong>past 90 days</strong>">
 			<#else>
-		  <@ww.url id="browseDateURL" action="browse" namespace="/article" field="${field}" month="-3" includeParams="none"/>			
+		  	<@ww.url id="browseDateURL" action="browse" namespace="/article" field="${field}" month="-3" includeParams="none"/>			
 			<li><@ww.a href="%{browseDateURL}">Past 90 days</@ww.a></li>
 			</#if>
 		</ul>

@@ -32,12 +32,11 @@ import org.topazproject.common.DuplicateIdException;
 import com.opensymphony.webwork.interceptor.ParameterAware;
 import com.opensymphony.webwork.util.ServletContextAware;
 
-public class IngestArchivesAction extends BaseAdminActionSupport implements ServletContextAware  {
+public class IngestArchivesAction extends BaseAdminActionSupport {
   
   private static final Log log = LogFactory.getLog(IngestArchivesAction.class);
   private String[] filesToIngest;
-  private ServletContext servletContext;
-  
+    
   public void setFilesToIngest(String[] files) {
     filesToIngest = files;
   }
@@ -63,7 +62,7 @@ public class IngestArchivesAction extends BaseAdminActionSupport implements Serv
           articleURI = ire.getArticleURI();
           log.debug("trying to delete: " + articleURI);
           try {
-            getDocumentManagementService().delete(articleURI, getServletContext());
+            getDocumentManagementService().delete(articleURI);
           } catch (Exception deleteException) {
             log.error("Could not delete article: " + articleURI, deleteException);
           }
@@ -75,18 +74,4 @@ public class IngestArchivesAction extends BaseAdminActionSupport implements Serv
     }
     return base();
   }
-  
-  /**
-   * Sets the servlet context.  Needed in order to clear the image cache
-   * 
-   * @param context SerlvetContext to set
-   */
-  public void setServletContext (ServletContext context) {
-    this.servletContext = context;
-  }
-
-  private ServletContext getServletContext () {
-    return this.servletContext;
-  }
-  
 }

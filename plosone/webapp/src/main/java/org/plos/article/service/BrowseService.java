@@ -23,7 +23,6 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.article.action.BrowseArticlesAction;
 import org.topazproject.ws.article.ArticleInfo;
 
 import com.opensymphony.oscache.base.CacheEntry;
@@ -31,6 +30,8 @@ import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
 /**
+ * Class to get all ArticleInfos in system and organize them by date and by category
+ * 
  * @author stevec
  *
  */
@@ -39,20 +40,19 @@ public class BrowseService {
 
   private GeneralCacheAdministrator articleCacheAdministrator;
   private ArticleWebService articleWebService;
-  private ArticleInfo[] allArticles;
-  private String[] categoryNames;
-  private ArrayList<ArrayList<ArticleInfo>> articlesByCategory;
-  private TreeMap<String, ArrayList<ArticleInfo>> articlesByCategoryMap;
-  private TreeMap<Date, ArrayList<ArticleInfo>> articlesByDateMap;  
-  private ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>> articlesByDate;
-  private ArrayList<ArrayList<ArrayList<Date>>> articleDates;
+
+  private Object[] allBrowseObjects;
+
+  private static final int DATES_INDEX= 0;
+  private static final int DATES_ARTICLES_INDEX= 1;
+  private static final int CAT_NAME_INDEX = 2;
+  private static final int CAT_ARTICLES_INDEX = 3;
   
-  private static final String CAT_NAME_CACHE_KEY = "CAT_NAME_CACHE_KEY";
-  private static final String CAT_ARTICLES_CACHE_KEY = "CAT_ARTICLES_CACHE_KEY";
-  private static final String DATES_CACHE_KEY = "DATES_CACHE_KEY";
-  private static final String DATES_ARTICLES_CACHE_KEY = "DATES_ARTICLES_CACHE_KEY";
-  public static final String ALL_ARTICLE_CACHE_GROUP_KEY = "ALL_ARTICLE_LIST_GROUP";
   private static final String ALL_ARTICLE_CACHE_KEY = "ALL_ARTICLE_LIST";
+  private static final String ALL_BROWSE_OBJECTS = "ALL_BROWSE_OBJECTS";
+  
+  public static final String ALL_ARTICLE_CACHE_GROUP_KEY = "ALL_ARTICLE_LIST_GROUP";
+
   
   
   /**
@@ -61,87 +61,79 @@ public class BrowseService {
    * @return all articles
    */
   public ArticleInfo[] getAllArticles() {
-    if (allArticles == null) {
+    ArticleInfo[] allArticles = null;
+    try {
+      // Get from the cache
+
+      allArticles = (ArticleInfo[]) 
+        articleCacheAdministrator.getFromCache(ALL_ARTICLE_CACHE_KEY, CacheEntry.INDEFINITE_EXPIRY);
+      if (log.isDebugEnabled()) {
+        log.debug("retrieved all articles from cache");
+      }
+    } catch (NeedsRefreshException nre) {
+      boolean updated = false;
+      if (log.isDebugEnabled()){
+        log.debug("retrieving all articles from TOPAZ");
+      }
       try {
-        // Get from the cache
-  
-        allArticles= (ArticleInfo[]) 
-          articleCacheAdministrator.getFromCache(ALL_ARTICLE_CACHE_KEY, CacheEntry.INDEFINITE_EXPIRY);
-        if (log.isDebugEnabled()) {
-          log.debug("retrieved all articles from cache");
-        }
-      } catch (NeedsRefreshException nre) {
-        boolean updated = false;
-        if (log.isDebugEnabled()){
-          log.debug("retrieving all articles from TOPAZ");
-        }
-        try {
-          //  Get the value from TOPAZ
-          allArticles = articleWebService.getArticleInfos(null, null, null, null, 
-                                                          new int[]{ST_ACTIVE}, false);
-          
-          // Store in the cache
-          articleCacheAdministrator.putInCache(ALL_ARTICLE_CACHE_KEY, allArticles, 
-                                               new String[]{ALL_ARTICLE_CACHE_GROUP_KEY});
-          //articleCacheAdministrator.putInCache(ALL_ARTICLE_CACHE_KEY, allArticles);
-          updated = true;
-        } catch (RemoteException re) {
-          log.error("Could not retrieve the all articles", re);
-          allArticles = new ArticleInfo[0];
-        } finally {
-          if (!updated) {
-              // It is essential that cancelUpdate is called if the
-              // cached content could not be rebuilt
-              articleCacheAdministrator.cancelUpdate(ALL_ARTICLE_CACHE_KEY);
-          }
+        //  Get the value from TOPAZ
+        allArticles = articleWebService.getArticleInfos(null, null, null, null, 
+                                                        new int[]{ST_ACTIVE}, false);
+        
+        // Store in the cache
+        articleCacheAdministrator.putInCache(ALL_ARTICLE_CACHE_KEY, allArticles, 
+                                             new String[]{ALL_ARTICLE_CACHE_GROUP_KEY});
+        //articleCacheAdministrator.putInCache(ALL_ARTICLE_CACHE_KEY, allArticles);
+        updated = true;
+      } catch (RemoteException re) {
+        log.error("Could not retrieve the all articles", re);
+        allArticles = new ArticleInfo[0];
+      } finally {
+        if (!updated) {
+            // It is essential that cancelUpdate is called if the
+            // cached content could not be rebuilt
+            articleCacheAdministrator.cancelUpdate(ALL_ARTICLE_CACHE_KEY);
         }
       }
-    }    
+    }
     return allArticles;
   }
   
   
   /**
-   * Takes the articles and sets the categoryNames and articlesByCategory values.  
-   * 
-   *
+   * Takes the articles and sets the categoryNames and articlesByCategory as well as the articleDates
+   * and articlesByDate values.  
    */
   private void populateArticlesAndCategories() {
     try {
-      articleDates = (ArrayList<ArrayList<ArrayList<Date>>>) 
-        articleCacheAdministrator.getFromCache(DATES_CACHE_KEY, CacheEntry.INDEFINITE_EXPIRY);
-      articlesByDate = (ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>>)
-        articleCacheAdministrator.getFromCache(DATES_ARTICLES_CACHE_KEY, CacheEntry.INDEFINITE_EXPIRY);;
-      categoryNames = (String[])articleCacheAdministrator.getFromCache(CAT_NAME_CACHE_KEY, CacheEntry.INDEFINITE_EXPIRY);;
-      articlesByCategory = (ArrayList<ArrayList<ArticleInfo>>)articleCacheAdministrator.getFromCache(CAT_ARTICLES_CACHE_KEY, CacheEntry.INDEFINITE_EXPIRY);;;
-    
+      allBrowseObjects = (Object[])articleCacheAdministrator.getFromCache (ALL_BROWSE_OBJECTS, CacheEntry.INDEFINITE_EXPIRY);
     } catch (NeedsRefreshException nre) {
       boolean updated = false;
       if (log.isDebugEnabled()){
         log.debug("constructing category and date browse objects");
       }      
       try {
-        createBrowseObjects();
-        String[] groupKeys = new String[] {ALL_ARTICLE_CACHE_GROUP_KEY};
-        articleCacheAdministrator.putInCache(DATES_CACHE_KEY, articleDates, groupKeys);
-        articleCacheAdministrator.putInCache(DATES_ARTICLES_CACHE_KEY, articlesByDate, groupKeys); 
-        articleCacheAdministrator.putInCache(CAT_NAME_CACHE_KEY, categoryNames, groupKeys); 
-        articleCacheAdministrator.putInCache(CAT_ARTICLES_CACHE_KEY, articlesByCategory, groupKeys); 
+        allBrowseObjects = createBrowseObjects();
+        articleCacheAdministrator.putInCache(ALL_BROWSE_OBJECTS, allBrowseObjects, new String[] {ALL_ARTICLE_CACHE_GROUP_KEY});
+        updated = true;
       } finally {
         if (!updated) {
           // It is essential that cancelUpdate is called if the
           // cached content could not be rebuilt
-          articleCacheAdministrator.cancelUpdate(DATES_CACHE_KEY);
-          articleCacheAdministrator.cancelUpdate(DATES_ARTICLES_CACHE_KEY);
-          articleCacheAdministrator.cancelUpdate(CAT_NAME_CACHE_KEY);
-          articleCacheAdministrator.cancelUpdate(CAT_ARTICLES_CACHE_KEY);
+          articleCacheAdministrator.cancelUpdate(ALL_BROWSE_OBJECTS);
         }
       }
     }
-    
   }
   
-  private void createBrowseObjects() {
+  private Object[] createBrowseObjects() {
+    ArrayList<ArrayList<ArticleInfo>> articlesByCategory;
+    TreeMap<String, ArrayList<ArticleInfo>> articlesByCategoryMap;
+    TreeMap<Date, ArrayList<ArticleInfo>> articlesByDateMap;  
+    ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>> articlesByDate;
+    ArrayList<ArrayList<ArrayList<Date>>> articleDates;
+    String[] categoryNames;
+    
     ArticleInfo[] allArticleList = getAllArticles();
     
     if (allArticleList.length > 0){
@@ -179,7 +171,6 @@ public class BrowseService {
         categoryNames[i] = entry.getKey();
         artInfoArrayList = entry.getValue();
         articlesByCategory.add(i, artInfoArrayList);
-        //artInfoArrayList.toArray(articlesByCategory[i]);
       }
       
       Set<Map.Entry<Date, ArrayList<ArticleInfo>>> allDateEntries = articlesByDateMap.entrySet();  
@@ -187,7 +178,7 @@ public class BrowseService {
       Map.Entry<Date, ArrayList<ArticleInfo>> dateEntry;
       articleDates = new ArrayList<ArrayList<ArrayList<Date>>>(2);
       articlesByDate = new ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>>(2);
-      //ArrayList<ArticleInfo> artInfoArrayList;
+
       int j = -1;
       int currentMonth = -1;
       int currentYear = -1;
@@ -219,6 +210,12 @@ public class BrowseService {
       categoryNames = new String[0];
       articlesByCategory = new ArrayList<ArrayList<ArticleInfo>>(0);
     }
+    Object[] cacheObjects = new Object[4];
+    cacheObjects[DATES_INDEX] = articleDates;
+    cacheObjects[DATES_ARTICLES_INDEX] = articlesByDate;
+    cacheObjects[CAT_NAME_INDEX] = categoryNames;
+    cacheObjects[CAT_ARTICLES_INDEX] = articlesByCategory;
+    return cacheObjects;
   }
 
 
@@ -226,10 +223,8 @@ public class BrowseService {
    * @return Returns the articleDates.
    */
   public ArrayList<ArrayList<ArrayList<Date>>> getArticleDates() {
-    if (articleDates == null) {
-      populateArticlesAndCategories();
-    }
-    return articleDates;
+    populateArticlesAndCategories();
+    return (ArrayList<ArrayList<ArrayList<Date>>>)allBrowseObjects[DATES_INDEX];
   }
 
 
@@ -237,10 +232,8 @@ public class BrowseService {
    * @return Returns the articlesByCategory.
    */
   public ArrayList<ArrayList<ArticleInfo>> getArticlesByCategory() {
-    if (articlesByCategory == null){
-      populateArticlesAndCategories();      
-    }
-    return articlesByCategory;
+    populateArticlesAndCategories();      
+    return (ArrayList<ArrayList<ArticleInfo>>) allBrowseObjects[CAT_ARTICLES_INDEX];
   }
 
 
@@ -248,11 +241,8 @@ public class BrowseService {
    * @return Returns the articlesByDate.
    */
   public ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>> getArticlesByDate() {
-    if (articlesByDate== null){
-      populateArticlesAndCategories();      
-    }
-    
-    return articlesByDate;
+    populateArticlesAndCategories();      
+    return (ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>>) allBrowseObjects[DATES_ARTICLES_INDEX];
   }
 
 
@@ -260,10 +250,8 @@ public class BrowseService {
    * @return Returns the categoryNames.
    */
   public String[] getCategoryNames() {
-    if (categoryNames == null){
-      populateArticlesAndCategories();      
-    }
-    return categoryNames;
+    populateArticlesAndCategories();      
+    return (String[]) allBrowseObjects[CAT_NAME_INDEX];
   }
 
 
