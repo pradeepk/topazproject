@@ -35,9 +35,8 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
  *
  */
 public class BrowseService {
-  private static final Log log = LogFactory.getLog(BrowseArticlesAction.class);
+  private static final Log log = LogFactory.getLog(BrowseService.class);
 
-  
   private GeneralCacheAdministrator articleCacheAdministrator;
   private ArticleWebService articleWebService;
   private ArticleInfo[] allArticles;
@@ -55,6 +54,12 @@ public class BrowseService {
   public static final String ALL_ARTICLE_CACHE_GROUP_KEY = "ALL_ARTICLE_LIST_GROUP";
   private static final String ALL_ARTICLE_CACHE_KEY = "ALL_ARTICLE_LIST";
   
+  
+  /**
+   * retrieve a listing of all articles in Topaz
+   * 
+   * @return all articles
+   */
   public ArticleInfo[] getAllArticles() {
     if (allArticles == null) {
       try {
