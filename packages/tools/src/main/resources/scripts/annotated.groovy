@@ -75,6 +75,7 @@ query = """
     where \$s <rdf:type> <a:Annotation>
       and \$s <a:annotates> \$article
       and \$s <a:created> \$created
+      and \$article <rdf:type> <topaz:Article>
       ${restrict}
 """
 
