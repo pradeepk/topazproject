@@ -329,6 +329,15 @@
   </page>
 
   <page>
+    <name>/static/latex.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_static.css</file>
+    </css>
+  </page>
+
+  <page>
     <name>/static/license.ftl</name>
     <css>
       <file>/css/pone_screen.css</file>

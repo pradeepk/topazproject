@@ -238,6 +238,12 @@
       </result>
     </action>
 
+    <action name="latex">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/latex.ftl</param>
+      </result>
+    </action>
+
     <action name="license">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/license.ftl</param>
