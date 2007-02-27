@@ -48,7 +48,7 @@
         <artifactId>ant-tasks</artifactId>
         <configuration>
           <ECQS_INSTALL_DIR>${project.build.directory}</ECQS_INSTALL_DIR>
-          <ecqs-version>2.0.6-1-t9-SNAPSHOT</ecqs-version>
+          <ecqs-version>2.0.6-1-t00600-SNAPSHOT</ecqs-version>
         </configuration>
 
         <executions>
