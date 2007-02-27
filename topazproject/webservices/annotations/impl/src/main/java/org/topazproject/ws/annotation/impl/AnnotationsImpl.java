@@ -478,7 +478,23 @@ public class AnnotationsImpl implements Annotations {
 
     String set = ItqlHelper.bindValues(SET_STATE_ITQL, "id", id, "state", "" + state);
 
-    ctx.getItqlHelper().doUpdate(set, aliases);
+    ItqlHelper itql = ctx.getItqlHelper();
+    String     txn  = "set-state:" + id;
+
+    try {
+      itql.beginTxn(txn);
+      itql.doUpdate(set, aliases);
+      itql.commitTxn(txn);
+      txn = null;
+    } finally {
+      try {
+        if (txn != null)
+          itql.rollbackTxn(txn);
+      } catch (Throwable t) {
+        if (log.isDebugEnabled())
+          log.debug("Error rolling failed transaction", t);
+      }
+    }
   }
 
   /*
