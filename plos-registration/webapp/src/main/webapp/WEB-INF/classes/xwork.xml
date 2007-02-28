@@ -58,11 +58,11 @@
         <exception-mapping exception="java.lang.Exception" result="error"/>
       </global-exception-mappings>
 
-      <action name="home" class="org.plos.web.NoOpAction">
+      <action name="home">
         <result>/WEB-INF/pages/home.ftl</result>
       </action>
 
-      <action name="register" class="org.plos.web.NoOpAction">
+      <action name="register">
         <result>/pages/registration.ftl</result>
       </action>
 
@@ -75,7 +75,7 @@
         <result name="success">/pages/emailConfirmationSuccess.ftl</result>
       </action>
 
-      <action name="forgotPassword" class="org.plos.web.NoOpAction">
+      <action name="forgotPassword">
         <result>/pages/forgotPassword.ftl</result>
       </action>
 
@@ -94,13 +94,22 @@
         <result name="success">/pages/changePasswordSuccess.ftl</result>
       </action>
  
-      <action name="changePassword" class="org.plos.web.NoOpAction">
+      <action name="changePassword">
         <result>/pages/changePassword.ftl</result>
       </action>
 
       <action name="changePasswordSubmit" class="org.plos.web.ChangePasswordAction">
         <result name="input">/pages/changePassword.ftl</result>
         <result name="success">/pages/changePasswordSuccess.ftl</result>
+      </action>
+
+      <action name="resendRegistration">
+        <result>/pages/resendRegistration.ftl</result>
+      </action>
+
+      <action name="resendRegistrationSubmit" class="org.plos.web.ResendRegistrationAction">
+        <result name="input">/pages/resendRegistration.ftl</result>
+        <result name="success">/pages/registrationSuccess.ftl</result>
       </action>
 
     </package>

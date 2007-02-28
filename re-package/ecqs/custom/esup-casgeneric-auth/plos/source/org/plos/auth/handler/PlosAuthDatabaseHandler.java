@@ -45,33 +45,31 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
   private String verifiedUserSqlQuery;
 
   /**
-	 * Analyse the XML configuration to set netId and adminPassword attributes (constructor).
-	 * 
-	 * @param handlerElement the XML element that declares the handler in the configuration file
-	 * @param configDebug debugging mode of the global configuration (set by default to the handler)
-	 *
-	 * @throws Exception when the handler not configured correctly
-	 */
-	public PlosAuthDatabaseHandler(final Element handlerElement, final Boolean configDebug)
-          throws Exception
-  {
-		super(handlerElement, configDebug);
-		traceBegin();
+   * Analyse the XML configuration to set netId and adminPassword attributes (constructor).
+   * 
+   * @param handlerElement the XML element that declares the handler in the configuration file
+   * @param configDebug debugging mode of the global configuration (set by default to the handler)
+   *
+   * @throws Exception when the handler not configured correctly
+   */
+  public PlosAuthDatabaseHandler(final Element handlerElement, final Boolean configDebug) throws Exception  {
+    super(handlerElement, configDebug);
+    traceBegin();
     trace("PlosAuthDatabaseHandler constructor called");
 
     // check that a config element is present
-		checkConfigElement(true);
-
+    checkConfigElement(true);
+    
     init();
-		traceEnd();
-	}
-
+    traceEnd();
+  }
+  
   private void init() throws Exception {
     passwordService = getPasswordService();
     passwordSqlQuery = getPasswordSqlQuery();
     verifiedUserSqlQuery = getVerifiedUserSqlQuery();
   }
-
+  
   private PasswordDigestService getPasswordService() throws Exception {
     final String encryption = getConfigSubElementContent("encryption");
     final String encodingCharset = getConfigSubElementContent("encoding_charset");
@@ -82,25 +80,25 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
   }
 
   /**
-	 * Try to authenticate a user (compare with the db password).
-	 *
-	 * @param userLogin the user's adminUser
-	 * @param userPassword the user's adminPassword
-	 *
-	 * @return BasicHandler.SUCCEDED on success,
-	 * BasicHandler.FAILED_CONTINUE or BasicHandler.FAILED_STOP otherwise.
-	 */
-	public int authenticate(final String userLogin, final String userPassword) {
-		traceBegin();
+   * Try to authenticate a user (compare with the db password).
+   *
+   * @param userLogin the user's adminUser
+   * @param userPassword the user's adminPassword
+   *
+   * @return BasicHandler.SUCCEDED on success,
+   * BasicHandler.FAILED_CONTINUE or BasicHandler.FAILED_STOP otherwise.
+   */
+  public int authenticate(final String userLogin, final String userPassword) {
+    traceBegin();
 
-		trace("Checking user's password...");
+    trace("Checking user's password...");
 
     try {
       final DatabaseContext databaseContext = getDatabaseContext();
       final String verificationStatus
               = databaseContext.getSingleStringValueFromDb(verifiedUserSqlQuery, userLogin);
       if (!isTrue(verificationStatus)) {
-        trace("User: " + userLogin + " is not yet verified");
+        trace("User: " + userLogin + " is not yet verified or is inactive");
       } else {
         final String savedDigestPassword
         = databaseContext.getSingleStringValueFromDb(passwordSqlQuery, userLogin);
@@ -120,7 +118,7 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
     } finally {
       traceEnd();
     }
-	}
+  }
 
   private boolean isTrue(final String verificationStatus) {
     final String booleanStr = verificationStatus.toLowerCase();
@@ -163,13 +161,15 @@ public class PlosAuthDatabaseHandler extends BasicHandler {
     final String table = getConfigSubElementContent("table");
     final String loginColumn = getConfigSubElementContent("login_column");
     final String verifyColumn = getConfigSubElementContent("verify_column");
+    final String isActiveColumn = getConfigSubElementContent("active_column");
+    
+    final StringBuilder query = new StringBuilder("SELECT ");
+    query.append(verifyColumn);
+    query.append(" FROM ").append(table);
+    query.append(" WHERE ").append(isActiveColumn).append (" = true AND ").append(loginColumn).append(" = ?");
 
-    final String query = "SELECT " + verifyColumn
-                        + " FROM " + table
-                        + " WHERE " + loginColumn + " = ?";
-
-    traceEnd(query);
-    return query;
+    traceEnd(query.toString());
+    return query.toString();
   }
 
   private String getConfigSubElementContent(final String elementName) throws Exception {

@@ -38,7 +38,7 @@ public class PlosRegistrationService implements RegistrationService {
 
       user.setEmailVerificationToken(TokenGenerator.getUniqueToken());
       user.setVerified(false);
-      user.setActive(false);
+      user.setActive(true);
 
       saveUser(user);
       mailer.sendEmailAddressVerificationEmail(user);
@@ -49,6 +49,23 @@ public class PlosRegistrationService implements RegistrationService {
     }
   }
 
+  
+  /**
+   * @see RegistrationService#sendRegistrationEmail(String)
+   */
+  public void sendRegistrationEmail (final String loginName) throws NoUserFoundWithGivenLoginNameException, UserAlreadyVerifiedException {
+    final User user = findExistingUser(loginName);
+    if (user.isVerified()) {
+      throw new UserAlreadyVerifiedException(loginName);
+    }
+    if ((user.getEmailVerificationToken() == null) || ("".equals(user.getEmailVerificationToken()))) {
+      user.setEmailVerificationToken(TokenGenerator.getUniqueToken());
+      saveUser(user);
+    }
+    mailer.sendEmailAddressVerificationEmail(user);
+  }
+  
+  
   /**
    * @see RegistrationService#getUserWithLoginName(String)
    */
@@ -61,8 +78,6 @@ public class PlosRegistrationService implements RegistrationService {
    */
   public void setVerified(final User user) {
     user.setVerified(true);
-    user.setActive(true);
-
     saveUser(user);
   }
 
@@ -70,9 +85,7 @@ public class PlosRegistrationService implements RegistrationService {
    * @see RegistrationService#deactivate(org.plos.registration.User)
    */
   public void deactivate(final User user) {
-    user.setVerified(false);
     user.setActive(false);
-
     saveUser(user);
   }
 

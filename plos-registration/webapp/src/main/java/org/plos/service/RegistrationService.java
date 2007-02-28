@@ -21,6 +21,16 @@ public interface RegistrationService {
    */
   User createUser(final String loginName, final String password) throws UserAlreadyExistsException, PasswordServiceException;
 
+  
+  /**
+   * Will send an email with an address verification link in it if the user has not already been verified
+   * 
+   * @param loginName username of the user for whom a registration mail should be sent
+   * @throws NoUserFoundWithGivenLoginNameException, UserAlreadyVerifiedException
+   */
+  void sendRegistrationEmail (final String loginName) throws NoUserFoundWithGivenLoginNameException, UserAlreadyVerifiedException;
+
+  
   /**
    * Get user with loginName
    * @param loginName loginName

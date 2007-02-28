@@ -21,27 +21,13 @@ import org.plos.service.RegistrationService;
 public class ForgotPasswordAction extends BaseAction {
 
   private RegistrationService registrationService;
-
   private String loginName;
 
   private static final Log log = LogFactory.getLog(ForgotPasswordAction.class);
 
-  /**
-   * @deprecated
-   * to be removed when we change the forgot-password-success.jsp so that it does not display the forgot password link
-   */
-  private User user;
-
   public String execute() throws Exception {
     try {
       registrationService.sendForgotPasswordMessage(loginName);
-
-      //TODO to be removed when we change the forgot-password-success.jsp so that it does not display the forgot password link
-      {
-        final User user = registrationService.getUserWithLoginName(loginName);
-        setUser(user);
-      }
-
     } catch (final NoUserFoundWithGivenLoginNameException noUserEx) {
       final String message = "No user found for the given e-mail address:" + loginName;
       addActionError(noUserEx.getMessage());
@@ -72,23 +58,6 @@ public class ForgotPasswordAction extends BaseAction {
    */
   public void setLoginName(final String loginName) {
     this.loginName = loginName;
-  }
-
-  /**
-   * Set the user.
-   * @param user user
-   */
-  // TODO to be removed when we change the forgot-password-success.jsp so that it does not display the forgot password link
-  private void setUser(final User user) {
-    this.user = user;
-  }
-
-  /**
-   * @return user
-   */
-  // TODO to be removed when we change the forgot-password-success.jsp so that it does not display the forgot password link
-  public User getUser() {
-    return user;
   }
 
   /**
