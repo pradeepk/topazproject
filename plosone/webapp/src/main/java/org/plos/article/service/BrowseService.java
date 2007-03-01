@@ -78,12 +78,11 @@ public class BrowseService {
       try {
         //  Get the value from TOPAZ
         allArticles = articleWebService.getArticleInfos(null, null, null, null, 
-                                                        new int[]{ST_ACTIVE}, false);
+                                                        new int[]{ST_ACTIVE}, true);
         
         // Store in the cache
         articleCacheAdministrator.putInCache(ALL_ARTICLE_CACHE_KEY, allArticles, 
                                              new String[]{ALL_ARTICLE_CACHE_GROUP_KEY});
-        //articleCacheAdministrator.putInCache(ALL_ARTICLE_CACHE_KEY, allArticles);
         updated = true;
       } catch (RemoteException re) {
         log.error("Could not retrieve the all articles", re);
@@ -150,7 +149,7 @@ public class BrowseService {
           theList = new ArrayList<ArticleInfo>();
           articlesByDateMap.put(theDate, theList);
         }
-        theList.add(art);
+        theList.add(0, art);
         for (String cat : categories) {
           theList = articlesByCategoryMap.get(cat);
           if (theList == null) {

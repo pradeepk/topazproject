@@ -36,12 +36,20 @@
 	</#if>
 
 	<#assign totalResults = articleList?size>
-	<#assign startIndex = startPage * pageSize>
-	<#assign endIndex = startIndex + pageSize - 1>
-	<#if endIndex gte totalResults>
-		<#assign endIndex = totalResults - 1 >
+
+	<#assign startIndex = totalResults - startPage * pageSize - 1>
+	<#assign endIndex = startIndex - pageSize + 1>
+	<#if endIndex lt 0>
+		<#assign endIndex = 0 >
 	</#if>
-	<div id="search-results">	<p><strong>${startIndex + 1} - ${endIndex + 1}</strong> of <strong>${totalResults}</strong> article<#if totalResults != 1>s</#if> published ${infoText}.</p>
+
+	<#assign startPgIndex = startPage * pageSize>
+	<#assign endPgIndex = startPgIndex + pageSize - 1>
+	<#if endPgIndex gte totalResults>
+		<#assign endPgIndex = totalResults - 1 >
+	</#if>
+
+	<div id="search-results">	<p><strong>${startPgIndex + 1} - ${endPgIndex + 1}</strong> of <strong>${totalResults}</strong> article<#if totalResults != 1>s</#if> published ${infoText}.</p>
 		<div class="resultsTab">
 			<@pagination />
 		</div> <!-- results tab-->

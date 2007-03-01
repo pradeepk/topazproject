@@ -113,9 +113,11 @@ public class BrowseArticlesAction extends BaseActionSupport  {
           break;
         }
         Iterator <ArrayList<ArticleInfo>> iter = articlesByDate.get(indexA).get(indexB).iterator();
+        ArrayList<ArticleInfo> tempArrayList = new ArrayList<ArticleInfo>();
         while (iter.hasNext()) {
-          articleList.addAll(iter.next());
+          tempArrayList.addAll(iter.next());
         }
+        articleList.addAll(0, tempArrayList);
         indexB--;
         i--;
       }
@@ -130,8 +132,6 @@ public class BrowseArticlesAction extends BaseActionSupport  {
 
   /**
    * return a set of the articleDates broken down by year, month, and day.
-   * Years are most recent first, then months and day are in chronological
-   * order
    * 
    * @return Collection of dates
    */
