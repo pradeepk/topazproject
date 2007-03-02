@@ -23,10 +23,24 @@ public interface RegistrationService {
 
   
   /**
+   * Change password.
+   * @param loginName loginName
+   * @param password password
+   * @param newLogin newLogin
+   * @throws PasswordInvalidException PasswordInvalidException
+   * @throws NoUserFoundWithGivenLoginNameException NoUserFoundWithGivenLoginNameException
+   * @throws org.plos.service.password.PasswordServiceException PasswordServiceException
+   * @throws UserAlreadyExistsException UserAlreadyExistsException
+   */
+  void changeLogin (final String loginName, final String password, final String newLogin) throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException, PasswordServiceException, UserAlreadyExistsException;
+
+    
+  /**
    * Will send an email with an address verification link in it if the user has not already been verified
    * 
    * @param loginName username of the user for whom a registration mail should be sent
-   * @throws NoUserFoundWithGivenLoginNameException, UserAlreadyVerifiedException
+   * @throws NoUserFoundWithGivenLoginNameException
+   * @throws UserAlreadyVerifiedException
    */
   void sendRegistrationEmail (final String loginName) throws NoUserFoundWithGivenLoginNameException, UserAlreadyVerifiedException;
 
@@ -59,6 +73,16 @@ public interface RegistrationService {
    * @throws NoUserFoundWithGivenLoginNameException NoUserFoundWithGivenLoginNameException
    */
   void verifyUser(final String loginName, final String emailVerificationToken) throws VerificationTokenInvalidException, UserAlreadyVerifiedException, NoUserFoundWithGivenLoginNameException;
+
+  /**
+   * Verify the users account and changes the login to newLoginName
+   * @param loginName loginName
+   * @param emailVerificationToken emailVerificationToken
+   * @throws VerificationTokenInvalidException VerificationTokenInvalidException
+   * @throws NoUserFoundWithGivenLoginNameException NoUserFoundWithGivenLoginNameException
+   * @throws UserAlreadyExistsException UserAlreadyExistsException
+   */
+  void verifyChangeUser(final String loginName, final String emailVerificationToken) throws VerificationTokenInvalidException, NoUserFoundWithGivenLoginNameException, UserAlreadyExistsException;
 
   /**
    * Send a forgot password message.

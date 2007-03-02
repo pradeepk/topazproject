@@ -29,6 +29,9 @@ public class UserImpl implements User {
   @Column  (unique = true, length = 256)
   private String loginName;
 
+  @Column  (unique = true, length = 256)
+  private String newLoginName;
+  
   @Column (nullable = false, length = 256)
   private String password;
 
@@ -206,5 +209,21 @@ public class UserImpl implements User {
   @Transactional(propagation= Propagation.MANDATORY)
   public void setResetPasswordToken(String resetPasswordToken) {
     this.resetPasswordToken = resetPasswordToken;
+  }
+
+  /**
+   * @return Returns the newLoginName.
+   */
+  @Transactional(readOnly=true)
+  public String getNewLoginName() {
+    return newLoginName;
+  }
+
+  /**
+   * @param newLoginName The newLoginName to set.
+   */
+  @Transactional(propagation= Propagation.MANDATORY)
+  public void setNewLoginName(String newLoginName) {
+    this.newLoginName = newLoginName;
   }
 }

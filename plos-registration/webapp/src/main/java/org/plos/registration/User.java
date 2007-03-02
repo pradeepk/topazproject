@@ -25,6 +25,19 @@ public interface User {
   void setLoginName(String email);
 
   /**
+   * Get the Login Name
+   * @return Login Name
+   */
+  String getNewLoginName();
+
+  /**
+    * Set the User's replacement Login Name
+    * @param email  Set User Login Name
+    */
+  void setNewLoginName(String email);
+  
+  
+  /**
    * Get the User Password
    * @return User Password
    */

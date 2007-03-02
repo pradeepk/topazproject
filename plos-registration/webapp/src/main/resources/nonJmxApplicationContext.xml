@@ -67,6 +67,14 @@
     <property name="fromEmailAddress" value="registration@plosone.org"/>
     <property name="fromEmailName" value="PLoS Registration"/>
     <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>
+    <property name="changeEmailMap">
+      <map>
+        <entry key="text" value="verifyChangeEmail-text.ftl"/>
+        <entry key="html" value="verifyChangeEmail-html.ftl"/>
+        <entry key="url" value="https://FQHN:7443/plos-registration/changeEmailVerification.action"/>
+        <entry key="subject" value="Please verify your request to change your PLoS login"/>
+      </map>
+    </property>
     <property name="verifyEmailMap">
       <map>
         <entry key="text" value="verifyEmail-text.ftl"/>

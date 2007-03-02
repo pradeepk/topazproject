@@ -75,6 +75,19 @@
         <result name="success">/pages/emailConfirmationSuccess.ftl</result>
       </action>
 
+      <action name="changeEmail">
+        <result name="success">/pages/changeEmail.ftl</result>
+      </action>
+
+      <action name="changeEmailSubmit" class="org.plos.web.ChangeEmailAction">
+        <result name="success">/pages/changeEmailSuccess.ftl</result>
+        <result name="input">/pages/changeEmail.ftl</result>
+      </action>
+
+      <action name="changeEmailVerification" class="org.plos.web.ChangeEmailConfirmAction">
+        <result name="success">/pages/changeEmailConfirmationSuccess.ftl</result>
+      </action>
+
       <action name="forgotPassword">
         <result>/pages/forgotPassword.ftl</result>
       </action>

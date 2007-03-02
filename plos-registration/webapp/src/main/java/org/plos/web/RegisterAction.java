@@ -33,22 +33,10 @@ public class RegisterAction extends BaseAction {
   private RegistrationService registrationService;
   private static final Log log = LogFactory.getLog(RegisterAction.class);
 
-  /**
-   * @deprecated remove when we drop the link from the web page
-   */
-  private User user;
-
   public String execute() throws Exception {
 
     try {
-      final User user
-              = registrationService.createUser(loginName1, password1);
-
-      //TODO remove when we drop the link from the web page 
-      {
-        setUser(user);
-      }
-
+      final User user = registrationService.createUser(loginName1, password1);
     } catch (final UserAlreadyExistsException e) {
       log.debug("UserAlreadyExists:"+loginName1, e);
       addFieldError("loginName1", "User already exists for the given e-mail address");
@@ -60,14 +48,6 @@ public class RegisterAction extends BaseAction {
     }
     return SUCCESS;
 
-  }
-
-  /**
-   * @deprecated The web pages should not need this after the email messaging service is integrated.
-   * @param user user
-   */
-  private void setUser(final User user) {
-    this.user = user;
   }
 
   /**
@@ -136,14 +116,6 @@ public class RegisterAction extends BaseAction {
    */
   public void setPassword2(String password2) {
     this.password2 = password2;
-  }
-
-  /**
-   * @deprecated The web pages should not need this after the email messaging service is integrated.
-   * @return User
-   */
-  public User getUser() {
-    return user;
   }
 
   /**

@@ -159,7 +159,7 @@ public class FreemarkerTemplateMailer implements TemplateMailer {
     this.fromEmailName = fromEmailName;
   }
 
-  private String getFromEmailAddress() {
+  public String getFromEmailAddress() {
     return fromEmailAddress;
   }
 

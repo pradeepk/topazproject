@@ -21,6 +21,7 @@ import java.util.HashMap;
 
 public class RegistrationMailer extends FreemarkerTemplateMailer {
   private Map<String, String> verifyEmailMap;
+  private Map<String, String> changeEmailMap;
   private Map<String, String> forgotPasswordVerificationEmailMap;
   private static final Log log = LogFactory.getLog(RegistrationMailer.class);
 
@@ -33,6 +34,14 @@ public class RegistrationMailer extends FreemarkerTemplateMailer {
     this.verifyEmailMap = Collections.unmodifiableMap(verifyEmailMap);
   }
 
+  /**
+   * Setter for changeEmailMap.
+   * @param changeEmailMap changeEmailMap
+   */
+  public void setChangeEmailMap(final Map<String, String> changeEmailMap) {
+    this.changeEmailMap = Collections.unmodifiableMap(changeEmailMap);
+  }
+  
   /**
    * Setter for forgotPasswordVerificationEmailMap.
    * @param forgotPasswordVerificationEmailMap Value to set for forgotPasswordVerificationEmailMap.
@@ -54,6 +63,21 @@ public class RegistrationMailer extends FreemarkerTemplateMailer {
       log.debug("sending email address verification for " + ((user != null) ? user.getLoginName() : null));
     }
     sendEmail(user.getLoginName(), newMapFields);
+  }
+  
+  /**
+   * Send a email address verification email to the user's new email address
+   * @param user user
+   */
+  public void sendNewLoginVerificationEmail(final User user) {
+    final Map<String, Object> newMapFields = new HashMap<String, Object>();
+    newMapFields.putAll(changeEmailMap);
+    newMapFields.put("user", user);
+    newMapFields.put("name", getFromEmailName());
+    if (log.isDebugEnabled()) {
+      log.debug("sending change email address verification for " + ((user != null) ? user.getNewLoginName() : null));
+    }
+    sendEmail(user.getNewLoginName(), newMapFields);
   }
 
   /**

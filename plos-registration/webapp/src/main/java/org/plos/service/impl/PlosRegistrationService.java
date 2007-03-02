@@ -4,6 +4,8 @@
  */
 package org.plos.service.impl;
 
+import java.sql.Timestamp;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.registration.User;
@@ -66,13 +68,36 @@ public class PlosRegistrationService implements RegistrationService {
   }
   
   
+  
+  /**
+   * @see RegistrationService#changeLogin(String, String, String)
+   */
+  public void changeLogin (final String loginName, final String password, final String newLogin) throws NoUserFoundWithGivenLoginNameException, PasswordInvalidException,  PasswordServiceException, UserAlreadyExistsException {
+    final User user = findExistingUser(loginName);
+
+    final boolean validPassword = passwordDigestService.verifyPassword(password, user.getPassword());
+    if (validPassword) {
+      if (null == getUserWithLoginName(newLogin)) {
+        user.setNewLoginName(newLogin);
+        user.setEmailVerificationToken(TokenGenerator.getUniqueToken());
+        saveUser(user); 
+      } else {
+        throw new UserAlreadyExistsException(newLogin);
+      }         
+    } else {
+      throw new PasswordInvalidException(loginName, password);
+    }
+    mailer.sendNewLoginVerificationEmail(user);
+  }
+
+  
   /**
    * @see RegistrationService#getUserWithLoginName(String)
    */
   public User getUserWithLoginName(final String loginName) {
     return getUserDAO().findUserWithLoginName(loginName);
   }
-
+  
   /**
    * @see RegistrationService#setVerified(org.plos.registration.User)
    */
@@ -110,10 +135,35 @@ public class PlosRegistrationService implements RegistrationService {
     saveUser(user);
   }
 
+  /**
+   * @see RegistrationService#verifyUser(String, String)
+   */
+  public void verifyChangeUser(final String loginName, final String emailVerificationToken) throws VerificationTokenInvalidException, NoUserFoundWithGivenLoginNameException, UserAlreadyExistsException {
+    final User user = getUserWithLoginName(loginName);
+    if (null == user) {
+      throw new NoUserFoundWithGivenLoginNameException(loginName);
+    }
+    
+    final String newLoginName = user.getNewLoginName();
+    
+    if (getUserWithLoginName(newLoginName) != null) {
+      throw new UserAlreadyExistsException (newLoginName);
+    }
+    
+    if (!user.getEmailVerificationToken().equals(emailVerificationToken)) {
+      throw new VerificationTokenInvalidException(loginName, emailVerificationToken);
+    }
+    
+    user.setEmailVerificationToken(null);
+    user.setLoginName(user.getNewLoginName());
+    user.setNewLoginName(null);
+    saveUser(user);
+  }
+  
   private void activateUser(final User user) {
     user.setVerified(true);
     user.setEmailVerificationToken(null);
-    user.setActive(true);
+    //user.setActive(true);
   }
 
   /**
