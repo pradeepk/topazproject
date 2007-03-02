@@ -291,6 +291,23 @@ public class UserService extends BaseConfigurableService {
 
   }
 
+  
+  /**
+   * Takes in a PLoS ONE user and write the profile to the store
+   *
+   * @param inUser
+   *          write profile of this user to the store
+   * @throws org.plos.ApplicationException ApplicationException
+   * @throws org.plos.user.service.DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
+   */
+  public void setProfile(final PlosOneUser inUser) throws ApplicationException, DisplayNameAlreadyExistsException {
+    if (inUser != null) {
+      setProfile(inUser.getUserId(), inUser.getUserProfile(), false);
+    } else {
+      throw new ApplicationException("User is null");
+    }
+  }
+  
   /**
    * Takes in a PLoS ONE user and write the profile to the store
    *

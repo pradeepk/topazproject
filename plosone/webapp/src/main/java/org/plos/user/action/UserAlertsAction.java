@@ -9,10 +9,9 @@
  */
 package org.plos.user.action;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.apache.commons.validator.EmailValidator;
+
 import org.plos.ApplicationException;
 import org.plos.user.PlosOneUser;
 import org.plos.user.service.CategoryBean;
@@ -28,7 +27,6 @@ public abstract class UserAlertsAction extends UserActionSupport {
   private String[] weeklyAlerts = new String[]{};
   private final String MONTHLY_ALERT_SUFFIX = "_monthly";
   private final String WEEKLY_ALERT_SUFFIX = "_weekly";
-  private String alertEmailAddress;
   private static final Log log = LogFactory.getLog(UserAlertsAction.class);
   
   /**
@@ -37,15 +35,6 @@ public abstract class UserAlertsAction extends UserActionSupport {
    * @throws Exception Exception
    */
   public String saveAlerts() throws Exception {
-    if (StringUtils.isEmpty(alertEmailAddress)) {
-      addFieldError("alertEmailAddress", "E-mail address for alerts is required.");
-      return INPUT;
-    }
-    if (!EmailValidator.getInstance().isValid(alertEmailAddress)) {
-      addFieldError("alertEmailAddress", "Invalid e-mail address");
-      return INPUT;
-    }
-
     final PlosOneUser plosOneUser = getPlosOneUserToUse();
     if (log.isDebugEnabled()) {
       if (plosOneUser != null) {
@@ -71,7 +60,6 @@ public abstract class UserAlertsAction extends UserActionSupport {
     
     final String[] alerts = alertsList.toArray(new String[alertsList.size()]);
     plosOneUser.setAlerts(alerts);
-    plosOneUser.setAlertsEmailAddress(alertEmailAddress);
 
     getUserService().setPreferences(plosOneUser);
 
@@ -111,10 +99,6 @@ public abstract class UserAlertsAction extends UserActionSupport {
 
     monthlyAlerts = monthlyAlertsList.toArray(new String[monthlyAlertsList.size()]);
     weeklyAlerts = weeklyAlertsList.toArray(new String[weeklyAlertsList.size()]);  
-    alertEmailAddress = plosOneUser.getAlertsEmailAddress();
-    if (StringUtils.isBlank(alertEmailAddress)) {
-      alertEmailAddress = plosOneUser.getEmail();
-    }
 
     return SUCCESS;
   }
@@ -154,22 +138,6 @@ public abstract class UserAlertsAction extends UserActionSupport {
    */
   public void setWeeklyAlerts(String[] weeklyAlerts) {
     this.weeklyAlerts = weeklyAlerts;
-  }
-
-  /**
-   * Set the alert email address
-   * @param alertEmailAddress alertEmailAddress
-   */
-  public void setAlertEmailAddress(final String alertEmailAddress) {
-    this.alertEmailAddress = alertEmailAddress;
-  }
-
-  /**
-   * Getter for alertEmailAddress.
-   * @return Value for property 'alertEmailAddress'.
-   */
-  public String getAlertEmailAddress() {
-    return alertEmailAddress;
   }
 
   /**

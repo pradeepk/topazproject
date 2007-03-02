@@ -28,7 +28,6 @@
 		<legend>Choose your alerts</legend>
 		<ol>
 			<li><em>Check back soon for more PLoS ONE alerts</em></li>
-      		<@ww.textfield name="alertEmailAddress" label="E-mail address for alerts" required="true"/>
         	<li><ol>
         		<li class="alerts-title">&nbsp;</li>
         		<li>

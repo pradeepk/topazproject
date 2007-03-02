@@ -44,9 +44,8 @@ public class UserAlertsTest extends BasePlosoneTestCase {
 
     alertsAction.setMonthlyAlerts(monthlyAlertCategories);
     alertsAction.setWeeklyAlerts(weeklyAlertCategories);
-    alertsAction.setAlertEmailAddress(ALERT_EMAIL);
-    assertEquals(SUCCESS, alertsAction.saveAlerts());
 
+    assertEquals(SUCCESS, alertsAction.saveAlerts());
     assertEquals(SUCCESS, alertsAction.retrieveAlerts());
 
     for (final String monthlyAlert : alertsAction.getMonthlyAlerts()) {
@@ -56,7 +55,6 @@ public class UserAlertsTest extends BasePlosoneTestCase {
     for (final String weeklyAlert : alertsAction.getWeeklyAlerts()) {
       assertTrue(ArrayUtils.contains(weeklyAlertCategories, weeklyAlert));
     }
-    assertEquals(ALERT_EMAIL, alertsAction.getAlertEmailAddress());
 
     getUserWebService().deleteUser(topazId);
   }

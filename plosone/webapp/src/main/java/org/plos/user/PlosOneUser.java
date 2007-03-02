@@ -41,7 +41,6 @@ public class PlosOneUser {
   private Map<String, String[]> userPrefs;
 
   // Constants for application specific User Preferences
-  private static final String ALERTS_EMAIL_ADDRESS = "alertsEmailAddress";
   private static final String ALERTS_CATEGORIES = "alertsJournals";
 
   /**
@@ -366,27 +365,6 @@ public class PlosOneUser {
    */
   public void setAlerts(String[] inAlerts) {
     userPrefs.put(PlosOneUser.ALERTS_CATEGORIES, inAlerts);
-  }
-
-  /**
-   *
-   * @return email address alerts are being sent to
-   */
-  public String getAlertsEmailAddress() {
-    final String[] emailAddresses = userPrefs.get(PlosOneUser.ALERTS_EMAIL_ADDRESS);
-    if (null == emailAddresses) {
-      return null;
-    }
-    return emailAddresses[0];
-  }
-
-  /**
-   *
-   * @param inEmail
-   *          the email to set
-   */
-  public void setAlertsEmailAddress(String inEmail) {
-    userPrefs.put(PlosOneUser.ALERTS_EMAIL_ADDRESS, new String[] { inEmail });
   }
 
   /**

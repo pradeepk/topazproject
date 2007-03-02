@@ -18,9 +18,14 @@ import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import static org.plos.Constants.ReturnCode;
 import static org.plos.Constants.SINGLE_SIGNON_USER_KEY;
 import static org.plos.Constants.SINGLE_SIGNON_RECEIPT;
+
+import org.plos.ApplicationException;
 import org.plos.user.service.UserService;
+import org.plos.util.FileUtils;
+import org.plos.user.service.DisplayNameAlreadyExistsException;
 import org.springframework.util.StringUtils;
 
+import java.io.IOException;
 import java.util.Map;
 
 /**
@@ -32,7 +37,7 @@ public class EnsureUserAccountInterceptor implements Interceptor {
   private static final Log log = LogFactory.getLog(EnsureUserAccountInterceptor.class);
 
   public String intercept(final ActionInvocation actionInvocation) throws Exception {
-     log.debug("ensure user account interceptor called");
+    log.debug("ensure user account interceptor called");
     final Map<String, Object> sessionMap = getUserSessionMap();
     final String userId = (String) sessionMap.get(SINGLE_SIGNON_USER_KEY);
 
@@ -46,7 +51,10 @@ public class EnsureUserAccountInterceptor implements Interceptor {
 
     PlosOneUser plosUser = (PlosOneUser) sessionMap.get(PLOS_ONE_USER_KEY);
     if (null != plosUser) {
-      log.debug ("A valid PlosOneUser exists, can a call to this interceptor be avoided in this case");
+      if (log.isDebugEnabled()) {
+        log.debug ("Retrieved user from session with userId: " + plosUser.getUserId());
+      }
+      updateUserEmailAddress(plosUser, userId);
       return getReturnCodeDependingOnDisplayName(plosUser, actionInvocation);
     } else {
       final UserService userService = getUserService();
@@ -61,6 +69,7 @@ public class EnsureUserAccountInterceptor implements Interceptor {
         log.debug("This is a new user with id: " + userId);
         return ReturnCode.NEW_PROFILE;
       } else {
+        updateUserEmailAddress(plosUser, userId);
         plosUser.setAuthId(userId);
         sessionMap.put(PLOS_ONE_USER_KEY, plosUser);
         log.debug("Existing user detected: " + userId);
@@ -91,6 +100,45 @@ public class EnsureUserAccountInterceptor implements Interceptor {
     this.userService = userService;
   }
 
+  private void updateUserEmailAddress (PlosOneUser user, String authId) throws ApplicationException {
+    String emailAddress = fetchUserEmailAddress (user, authId);
+    if (emailAddress != null) {
+      if (!emailAddress.equals (user.getEmail())) {
+        user.setEmail(emailAddress);
+        try {
+          userService.setProfile(user);
+        } catch (DisplayNameAlreadyExistsException de) {
+          if (log.isErrorEnabled()) {
+            log.error("Username: " + user.getDisplayName() + 
+                      " already exists while trying to update email address for user: " + 
+                      user.getUserId(), de);
+          }
+        }
+      } 
+    } else {
+      if (log.isErrorEnabled()) {
+        log.error("Retrieved a null email address from CAS for userId: " + user.getUserId());
+      }
+    }
+  }
+  
+  private String fetchUserEmailAddress(PlosOneUser user, String authId) throws ApplicationException {
+    final String emailAddressUrl = getEmailAddressUrl();
+    final String url = emailAddressUrl + authId;
+    try {
+      return FileUtils.getTextFromUrl(url);
+    } catch (IOException ex) {
+      final String errorMessage = "Failed to fetch the email address using the url:" + url;
+      log.error(errorMessage, ex);
+      throw new ApplicationException(errorMessage, ex);
+    }
+  }
+
+  private String getEmailAddressUrl() {
+    return getUserService().getEmailAddressUrl();
+  }
+  
+  
   public void destroy() {}
   public void init() {}
 }
