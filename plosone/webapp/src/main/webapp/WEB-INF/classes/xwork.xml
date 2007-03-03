@@ -720,12 +720,7 @@
     </action>
 
     <action name="createNewUser" class="org.plos.user.action.MemberUserProfileAction" method="executeSaveUser">
-      <result name="success" type="redirect">/home.action </result>
-     
-<!--         <param name="actionName">showUser</param>
-        <param name="namespace">/user</param>
-        <param name="userId">${topazId}</param>-->
-
+      <result name="success" type="redirect">/user/secure/editPrefsAlerts.action?tabId=alerts</result>
       <result name="input" type="plosOneFreemarker">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
