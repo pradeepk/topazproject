@@ -23,6 +23,7 @@ import java.util.Collection;
  * Update action for saving or getting alerts that the user subscribes to.
  */
 public abstract class UserAlertsAction extends UserActionSupport {
+  private String displayName;
   private String[] monthlyAlerts = new String[]{};
   private String[] weeklyAlerts = new String[]{};
   private final String MONTHLY_ALERT_SUFFIX = "_monthly";
@@ -100,6 +101,7 @@ public abstract class UserAlertsAction extends UserActionSupport {
     monthlyAlerts = monthlyAlertsList.toArray(new String[monthlyAlertsList.size()]);
     weeklyAlerts = weeklyAlertsList.toArray(new String[weeklyAlertsList.size()]);  
 
+    setDisplayName(plosOneUser.getDisplayName());
     return SUCCESS;
   }
 
@@ -145,6 +147,20 @@ public abstract class UserAlertsAction extends UserActionSupport {
    */
   public Collection<CategoryBean> getCategoryBeans() {
     return getUserService().getCategoryBeans();
+  }
+
+  /**
+   * @return Returns the displayName.
+   */
+  public String getDisplayName() {
+    return displayName;
+  }
+
+  /**
+   * @param displayName The displayName to set.
+   */
+  public void setDisplayName(String displayName) {
+    this.displayName = displayName;
   }
 
 }
