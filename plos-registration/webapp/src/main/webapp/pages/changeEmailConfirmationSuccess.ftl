@@ -4,9 +4,10 @@
 <!-- begin : main content -->
 <div id="content">
 <h1>Change Your E-mail Address</h1>
-	<p><strong>Your e-mail address has been successfully changed.</strong></p>
+	<p><strong>Thank you for confirming your new e-mail address.</strong></p>
 	<br/>
-	<p><a href="${plosOneUrl}${plosOneContext}/user/secure/secureRedirect.action?goTo=%2Fhome.action">Login to PLoS ONE</a>.</p>
+	<p>Please <a href="${plosOneUrl}${plosOneContext}/user/secure/secureRedirect.action?goTo=%2Fhome.action">Login to PLoS ONE</a> to
+	complete the change.</p>
 </div>
 <!-- end : main contents -->
 
