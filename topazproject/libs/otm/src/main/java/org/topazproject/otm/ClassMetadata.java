@@ -31,6 +31,7 @@ public class ClassMetadata {
   private String              ns       = null;
   private Mapper              idField  = null;
   private Map<String, Mapper> fieldMap = new HashMap<String, Mapper>();
+  private Map<String, Mapper> nameMap  = new HashMap<String, Mapper>();
   private Collection<Mapper>  fields;
   private Set<String>         uris;
 
@@ -66,8 +67,10 @@ public class ClassMetadata {
         types       = superMeta.getTypes();
         idField     = superMeta.getIdField();
 
-        for (Mapper m : superMeta.getFields())
+        for (Mapper m : superMeta.getFields()) {
           fieldMap.put(m.getUri(), m);
+          nameMap.put(m.getName(), m);
+        }
       } catch (RuntimeException e) {
         if (log.isDebugEnabled())
           log.debug("super class meta couldn't be created.", e);
@@ -116,6 +119,8 @@ public class ClassMetadata {
         } else {
           if (fieldMap.put(uri, m) != null)
             throw new RuntimeException("Duplicate @Rdf uri for " + f.toGenericString());
+
+          nameMap.put(m.getName(), m);
         }
       }
     }
@@ -179,14 +184,25 @@ public class ClassMetadata {
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets a field mapper by its predicate uri.
    *
-   * @param uri DOCUMENT ME!
+   * @param uri the predicate uri
    *
-   * @return DOCUMENT ME!
+   * @return the mapper or null
    */
-  public Mapper getMapper(String uri) {
+  public Mapper getMapperByUri(String uri) {
     return fieldMap.get(uri);
+  }
+
+  /**
+   * Gets a field mapper by its field name.
+   *
+   * @param name the field name.
+   *
+   * @return the mapper or null
+   */
+  public Mapper getMapperByName(String name) {
+    return nameMap.get(name);
   }
 
   /**

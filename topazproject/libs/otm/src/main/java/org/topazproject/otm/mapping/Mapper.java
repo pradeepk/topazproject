@@ -61,21 +61,28 @@ public interface Mapper {
   public Method getSetter();
 
   /**
-   * Gets the underlying object field.
+   * Gets the underlying field.
    *
    * @return the filed
    */
   public Field getField();
 
   /**
-   * Gets the type of the object field.
+   * Gets the name of the field.
+   *
+   * @return the name
+   */
+  public String getName();
+
+  /**
+   * Gets the type of the field.
    *
    * @return the field type
    */
   public Class getType();
 
   /**
-   * Gets the component type of this object field.
+   * Gets the component type of this field.
    *
    * @return component type for arrays; member type for collections; or same as type for simple
    *         fields

@@ -19,6 +19,7 @@ public abstract class AbstractMapper implements Mapper {
   private Method     getter;
   private Method     setter;
   private Field      field;
+  private String     name;
   private String     uri;
   private Class      type;
   private Class      componentType;
@@ -43,6 +44,7 @@ public abstract class AbstractMapper implements Mapper {
     this.getter               = getter;
     this.setter               = setter;
     this.serializer           = serializer;
+    this.name                 = field.getName();
     this.type                 = field.getType();
     this.componentType        = componentType;
     inverse                   = field.getAnnotation(Inverse.class) != null;
@@ -116,6 +118,13 @@ public abstract class AbstractMapper implements Mapper {
    */
   public Field getField() {
     return field;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public String getName() {
+    return name;
   }
 
   /*
