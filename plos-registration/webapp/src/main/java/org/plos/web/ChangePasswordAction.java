@@ -71,7 +71,10 @@ public class ChangePasswordAction extends BaseAction {
    * Set loginName
    * @param loginName loginName
    */
-  public void setLoginName(final String loginName) {
+  public void setLoginName(String loginName) {
+    if (loginName != null) {
+      loginName = loginName.trim();
+    }
     this.loginName = loginName;
   }
 

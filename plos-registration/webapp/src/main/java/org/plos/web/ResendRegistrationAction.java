@@ -11,6 +11,7 @@
 package org.plos.web;
 
 import org.plos.service.NoUserFoundWithGivenLoginNameException;
+import org.plos.service.RegistrationMailer;
 import org.plos.service.UserAlreadyVerifiedException;
 import org.plos.service.RegistrationService;
 
@@ -33,6 +34,7 @@ public class ResendRegistrationAction extends BaseAction {
   private String loginName;
   
   private RegistrationService registrationService;
+  private RegistrationMailer registrationVerificationMailer;
   private static final Log log = LogFactory.getLog(ResendRegistrationAction.class);
   
   public String execute() throws Exception {
@@ -74,6 +76,21 @@ public class ResendRegistrationAction extends BaseAction {
    */
   public void setRegistrationService(RegistrationService registrationService) {
     this.registrationService = registrationService;
+  }
+  
+  /**
+   * @return Returns the registrationMailer.
+   */
+  public RegistrationMailer getRegistrationVerificationMailer() {
+    return registrationVerificationMailer;
+  }
+
+
+  /**
+   * @param registrationMailer The registrationMailer to set.
+   */
+  public void setRegistrationVerificationMailer(RegistrationMailer registrationMailer) {
+    this.registrationVerificationMailer = registrationMailer;
   }
 
 }

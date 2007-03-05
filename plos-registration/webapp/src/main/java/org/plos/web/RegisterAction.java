@@ -6,17 +6,15 @@ package org.plos.web;
 
 import static org.plos.Constants.Length.PASSWORD_MAX;
 import static org.plos.Constants.Length.PASSWORD_MIN;
-import com.opensymphony.xwork.ActionSupport;
 import com.opensymphony.xwork.validator.annotations.EmailValidator;
 import com.opensymphony.xwork.validator.annotations.FieldExpressionValidator;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork.validator.annotations.ValidatorType;
 import com.opensymphony.xwork.validator.annotations.StringLengthFieldValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import org.plos.Constants;
 import org.plos.registration.User;
+import org.plos.service.RegistrationMailer;
 import org.plos.service.RegistrationService;
 import org.plos.service.UserAlreadyExistsException;
 
@@ -30,6 +28,7 @@ public class RegisterAction extends BaseAction {
   private String password1;
   private String password2;
 
+  private RegistrationMailer registrationVerificationMailer;
   private RegistrationService registrationService;
   private static final Log log = LogFactory.getLog(RegisterAction.class);
 
@@ -125,4 +124,20 @@ public class RegisterAction extends BaseAction {
   public void setRegistrationService(final RegistrationService registrationService) {
     this.registrationService = registrationService;
   }
+
+  /**
+   * @return Returns the registrationMailer.
+   */
+  public RegistrationMailer getRegistrationVerificationMailer() {
+    return registrationVerificationMailer;
+  }
+
+
+  /**
+   * @param registrationMailer The registrationMailer to set.
+   */
+  public void setRegistrationVerificationMailer(RegistrationMailer registrationMailer) {
+    this.registrationVerificationMailer = registrationMailer;
+  }
+
 }

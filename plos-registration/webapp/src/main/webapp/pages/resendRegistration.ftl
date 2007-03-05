@@ -3,7 +3,7 @@
 
 <!-- begin : main content -->
 <div id="content">
-<h1>Resend Confirmation E-mail</h1>
+<h1>Resend Registration E-mail</h1>
 	<!--<p><strong>Instruction Title   Text.</strong> Additional Instructoins here.</p>-->
 	<p>Fields marked with <span class="required">*</span> are required. </p>
   <@ww.form cssClass="pone-form" method="post" name="resendRegistrationForm" id="resendRegistrationForm" action="resendRegistrationSubmit" title="Resend Registration Form">
