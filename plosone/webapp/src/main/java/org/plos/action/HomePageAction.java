@@ -68,11 +68,6 @@ public class HomePageAction extends BaseActionSupport {
     return getLastWeeksArticles();
   }
   
-  private ArticleInfo[] getAllArticles() {
-    return browseService.getAllArticles();
-  }
-  
-  
   private ArticleInfo[] getLastWeeksArticles() {
     if (lastWeeksArticles == null) {
       try {
@@ -136,7 +131,6 @@ public class HomePageAction extends BaseActionSupport {
       boolean updated = false;
       try {
         //  Get the value from TOPAZ
-        //TODO: need to change the state to 0 once admin app is in place
         if (log.isDebugEnabled()){
           log.debug("retrieving most commented articles from TOPAZ");
         }
