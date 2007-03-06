@@ -33,50 +33,8 @@
       <artifactId>ws-alerts-client-impl</artifactId>
       <version>${pom.version}</version>
     </dependency>
-    
-    <dependency>
-      <groupId>groovy</groupId>
-      <artifactId>groovy-all</artifactId>
-      <version>1.0</version>
-    </dependency>
-
-    <!-- Not really required, but thing complains without it (a groovy issue/dependency?) -->
-    <dependency>
-      <groupId>javax.mail</groupId>
-      <artifactId>mail</artifactId>
-    </dependency>
   </dependencies>
 
-  <build>
-    <!-- TODO: Put in an ant-tasks plugin, check if src/{main,test}/grovvy exists -->
-    <!-- TODO: Add to head pom.xml -->
-    <plugins>
-      <plugin>
-        <artifactId>maven-antrun-plugin</artifactId>
-        <executions>
-          <execution>
-            <id>compile</id>
-            <phase>compile</phase>
-            <configuration>
-              <tasks>
-                <mkdir dir="${project.build.outputDirectory}" />
-                <taskdef name="groovyc" classname="org.codehaus.groovy.ant.Groovyc">
-                  <classpath refid="maven.compile.classpath" />
-                </taskdef>
-                <groovyc destdir="${project.build.outputDirectory}" srcdir="${basedir}/src/main/groovy/" listfiles="true">
-                  <classpath refid="maven.compile.classpath" />
-                </groovyc>
-              </tasks>
-            </configuration>
-            <goals>
-              <goal>run</goal>
-            </goals>
-          </execution>
-        </executions>
-      </plugin>
-    </plugins>
-  </build>
-    
   <profiles>
     
     <profile>
