@@ -13,10 +13,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
-import org.plos.registration.User;
 import org.plos.service.NoUserFoundWithGivenLoginNameException;
 import org.plos.service.RegistrationService;
-import org.plos.service.UserAlreadyVerifiedException;
 import org.plos.service.VerificationTokenInvalidException;
 
 import com.opensymphony.xwork.validator.annotations.EmailValidator;
@@ -48,7 +46,7 @@ public class ChangeEmailConfirmAction extends BaseAction {
       }
       return ERROR;
     } catch (final NoUserFoundWithGivenLoginNameException e) {
-      final String message = "No user found with given e-mail: "+ loginName;
+      final String message = "No user found with given e-mail address: "+ loginName;
       addActionError(message);
       addFieldError("login", message);
       if (log.isTraceEnabled()) {      
@@ -70,7 +68,7 @@ public class ChangeEmailConfirmAction extends BaseAction {
   
   /**
    * Get registrationService
-   * 
+   * @return registrationService
    */
   public RegistrationService getRegistrationService() {
     return this.registrationService;

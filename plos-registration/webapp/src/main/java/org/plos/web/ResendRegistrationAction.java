@@ -68,6 +68,9 @@ public class ResendRegistrationAction extends BaseAction {
    * @param loginName The loginName to set.
    */
   public void setLoginName(String loginName) {
+    if (loginName != null) {
+      loginName = loginName.trim();
+    }
     this.loginName = loginName;
   }
 

@@ -35,7 +35,7 @@ public class ChangePasswordAction extends BaseAction {
       registrationService.changePassword(loginName, oldPassword, newPassword1);
 
     } catch (final NoUserFoundWithGivenLoginNameException e) {
-      final String message = "No user found with given e-mail:"+ loginName;
+      final String message = "No user found with given e-mail address:"+ loginName;
       addFieldError("loginName", message);
       log.trace(message, e);
       return INPUT;
@@ -127,6 +127,11 @@ public class ChangePasswordAction extends BaseAction {
     this.newPassword2 = newPassword2;
   }
 
+  /**
+   * sets the registration service.  used by Spring
+   * 
+   * @param registrationService
+   */
   public void setRegistrationService(final RegistrationService registrationService) {
     this.registrationService = registrationService;
   }

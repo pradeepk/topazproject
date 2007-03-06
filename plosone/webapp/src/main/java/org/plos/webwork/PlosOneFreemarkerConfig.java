@@ -47,6 +47,7 @@ public class PlosOneFreemarkerConfig {
   private String casLogoutURL;
   private String registrationURL;
   private String changePasswordURL;
+  private String changeEmailURL;
 
   private static final String[] DEFAULT_CSS_FILES = {"/css/pone_iepc.css", "/css/pone_screen.css"};
   private static final String[] DEFAULT_JS_FILES = {"/javascript/all.js"};
@@ -66,7 +67,8 @@ public class PlosOneFreemarkerConfig {
     casLogoutURL = myConfig.getString("cas.url.logout");
     registrationURL = myConfig.getString("plos-registration.url.registration");
     changePasswordURL = myConfig.getString("plos-registration.url.change-password");
-
+    changeEmailURL = myConfig.getString("plos-registration.url.change-email");
+    
     String title = myConfig.getString("default.title");
     if (title != null) {
       defaultTitle = title;
@@ -343,5 +345,19 @@ public class PlosOneFreemarkerConfig {
    */
   public void setChangePasswordURL(final String changePasswordURL) {
     this.changePasswordURL = changePasswordURL;
+  }
+
+  /**
+   * @return Returns the changeEmailURL.
+   */
+  public String getChangeEmailURL() {
+    return changeEmailURL;
+  }
+
+  /**
+   * @param changeEmailURL The changeEmailURL to set.
+   */
+  public void setChangeEmailURL(String changeEmailURL) {
+    this.changeEmailURL = changeEmailURL;
   }
 }

@@ -21,7 +21,7 @@
             <input type="hidden" name="lt" value="<%= request.getAttribute("edu.yale.its.tp.cas.lt") %>" />
             <ol>
                 <% if (request.getAttribute("edu.yale.its.tp.cas.badUsernameOrPassword") != null) { %>
-		<li><em>Please enter a valid email and password</em></li>
+		<li><em>Please enter a valid e-mail and password</em></li>
                 <% } else if (request.getAttribute("edu.yale.its.tp.cas.service") == null) { %>
                 <li><em>You may login now in order to access protected services later.</em></li>
                 <% } else if (request.getAttribute("edu.yale.its.tp.cas.badLoginTicket") != null) { %>
@@ -49,6 +49,11 @@
           <li><a href="/plos-registration/forgotPassword.action" title="Click here if you forgot your password" tabindex="11">Forgotten Password?</a></li>
           <li><a href="/plos-registration/register.action" tabindex="12"><strong>Register for a New Account</strong></a></li>
         </ul> 
+        <% if (request.getAttribute("edu.yale.its.tp.cas.badUsernameOrPassword") != null) { %>
+	<ul class="links">
+	  <li><a href="/plos-registration/resendRegistration.action" title="Click here if you need to confirm your e-mail address" tabindex="11">Resend e-mail address confirmation</a></li>
+	</ul>
+	<% } %>
       </div>
 
       <div id="ftr">

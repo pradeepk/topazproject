@@ -51,13 +51,13 @@ public class ChangeEmailAction extends BaseAction {
       if (log.isDebugEnabled()) {
         log.debug ("No user found with login: " + login, noUserFoundEx);
       } 
-      addFieldError("login", "No user found for this email/password pair");
+      addFieldError("login", "No user found for this e-mail/password pair");
       return INPUT;
     } catch (PasswordInvalidException pie) {
       if (log.isDebugEnabled()) {
         log.debug ("No user found with login: " + login + " and password", pie);
       } 
-      addFieldError("login", "No user found for this email/password pair");
+      addFieldError("login", "No user found for this e-mail/password pair");
       return INPUT;
     } catch (PasswordServiceException pse) {
       if (log.isDebugEnabled()) {

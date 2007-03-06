@@ -54,7 +54,6 @@ public class EnsureUserAccountInterceptor implements Interceptor {
       if (log.isDebugEnabled()) {
         log.debug ("Retrieved user from session with userId: " + plosUser.getUserId());
       }
-      updateUserEmailAddress(plosUser, userId);
       return getReturnCodeDependingOnDisplayName(plosUser, actionInvocation);
     } else {
       final UserService userService = getUserService();

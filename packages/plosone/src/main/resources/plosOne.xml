@@ -38,6 +38,7 @@
       </base>
       <registration>${plos-registration.url.base}/register.action</registration>
       <change-password>${plos-registration.url.base}/changePassword.action</change-password>
+      <change-email>${plos-registration.url.base}/changeEmail.action</change-email>
     </url>
   </plos-registration>
 

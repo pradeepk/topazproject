@@ -6,7 +6,7 @@
 <h1>Change E-mail Address</h1>
 	An e-mail has been sent to <@ww.property value="newLogin1"/> with instructions on how to finish changing your e-mail address.
 	</p>
-	<p>If you don't receive the e-mail, please add <strong>${registrationVerificationMailer.fromEmailAddress}</strong> to your allowed 
+	<p>If you do not receive the e-mail, please add <strong>${registrationVerificationMailer.fromEmailAddress}</strong> to your allowed 
 	senders list and try again.</p>
 	<br/>
 		<p>Continue to <a href="${plosOneUrl}${plosOneContext}">PLoS ONE</a></p>
