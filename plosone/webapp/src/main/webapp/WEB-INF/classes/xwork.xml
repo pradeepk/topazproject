@@ -18,6 +18,11 @@
         class="org.plos.webwork.PlosOneFreemarkerResult">
         <param name="location">/templates/main_template.ftl</param>
       </result-type>
+      <result-type name="plosJournals"
+        class="org.plos.webwork.PlosOneFreemarkerResult">
+        <param name="location">/templates/plos_journals_template.ftl</param>
+      </result-type>
+
       <result-type name="plosStream" class="org.plos.webwork.PlosStreamResult" />
       <result-type name="ajaxJSON" class="com.opensymphony.webwork.result.AjaxJSONResult">
         <param name="contentType">text/plain;charset=UTF-8</param>
@@ -638,19 +643,19 @@
 
 
     <action name="editProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="plosJournals">
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="plosJournals">
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
     </action>
     
     <action name="editPrefsAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="plosJournals">
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="plosJournals">
         <param name="templateFile">/user/editUser.ftl</param>
       </result>
     </action>
@@ -684,17 +689,17 @@
     
     <action name="saveProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect">/user/secure/retrieveUserProfile.action </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="plosJournals">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
     </action>
 
     <action name="retrieveUserProfile" class="org.plos.user.action.MemberUserProfileAction" method="executeRetrieveUserProfile">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="plosJournals">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
       <result name="input">/user/newUser.ftl</result>
-      <result name="error" type="plosOneFreemarker">
+      <result name="error" type="plosJournals">
         <param name="templateFile">/user/newUser.ftl</param>
       </result>
     </action>
@@ -710,10 +715,10 @@
     <default-interceptor-ref name="plosBaseStack" />
 
     <action name="prePopulateNewUser" class="org.plos.user.action.MemberUserProfileAction" method="prePopulateUserDetails">
-      <result name="new-profile" type="plosOneFreemarker">
+      <result name="new-profile" type="plosJournals">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
-      <result name="update-profile" type="plosOneFreemarker">
+      <result name="update-profile" type="plosJournals">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
       <result name="success" type="redirect">/</result>
@@ -721,7 +726,7 @@
 
     <action name="createNewUser" class="org.plos.user.action.MemberUserProfileAction" method="executeSaveUser">
       <result name="success" type="redirect">/user/secure/editPrefsAlerts.action?tabId=alerts</result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="plosJournals">
         <param name="templateFile">/user/createNewUser.ftl</param>
       </result>
     </action>
