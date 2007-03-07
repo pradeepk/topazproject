@@ -9,7 +9,7 @@
   </topaz>
 
   <plosone>
-    <webserver-url>http://FQHN:8080/plosone-webapp/</webserver-url>
+    <webserver-url>http://FQHN:8080/</webserver-url>
     <article-action>article/fetchArticle.action?articleURI=</article-action>
     <figure-action1>article/slideshow.action?uri=</figure-action1>
     <figure-action2>&amp;imageURI=</figure-action2>
