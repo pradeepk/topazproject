@@ -148,6 +148,7 @@ public class Session {
       for (Mapper p : cm.getFields()) {
         if (p.getSerializer() != null)
           continue;
+
         for (Object ao : p.get(o))
           assocs.add(new Wrapper(checkObject(ao), ao));
       }
@@ -196,6 +197,7 @@ public class Session {
       for (Mapper p : cm.getFields()) {
         if (p.getSerializer() != null)
           continue;
+
         for (Object ao : p.get(o))
           assocs.add(new Wrapper(checkObject(ao), ao));
       }
@@ -436,25 +438,8 @@ public class Session {
         throw new RuntimeException("No class metadata found for " + clazz);
     }
 
-    Mapper idField = cm.getIdField();
-
-    if (idField == null)
-      throw new RuntimeException("No id-field found for " + clazz);
-
-    String modelId = cm.getModel();
-
-    if (modelId == null)
-      throw new RuntimeException("No graph/model found for " + clazz);
-
-    ModelConfig model = sessionFactory.getModel(modelId);
-
-    if (model == null)
-      throw new RuntimeException("No configuration for model " + modelId + " defined in " + clazz);
-
-    String type = cm.getType();
-
-    if (type == null)
-      throw new RuntimeException("No rdf:type found for " + clazz);
+    if (!cm.isEntity())
+      throw new RuntimeException("No id-field or rdf:type or graph/model found for " + clazz);
 
     return cm;
   }

@@ -32,6 +32,7 @@ public class ClassMetadata {
   private Mapper              idField  = null;
   private Map<String, Mapper> fieldMap = new HashMap<String, Mapper>();
   private Map<String, Mapper> nameMap  = new HashMap<String, Mapper>();
+  private Class               clazz;
   private Collection<Mapper>  fields;
   private Set<String>         uris;
 
@@ -55,6 +56,8 @@ public class ClassMetadata {
   }
 
   private ClassMetadata(Class clazz, Class top, String nsOfContainingClass) {
+    this.clazz                         = clazz;
+
     Class         s                    = clazz.getSuperclass();
     ClassMetadata superMeta            = null;
 
@@ -127,6 +130,15 @@ public class ClassMetadata {
 
     fields   = Collections.unmodifiableCollection(fieldMap.values());
     uris     = Collections.unmodifiableSet(fieldMap.keySet());
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public Class getSourceClass() {
+    return clazz;
   }
 
   /**
@@ -212,5 +224,24 @@ public class ClassMetadata {
    */
   public Set<String> getUris() {
     return uris;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public String toString() {
+    return clazz.toString();
+  }
+
+  /**
+   * Tests if this meta-data is for an entity class. Entity classes have an id field,
+   * rdf:type and graph/model
+   *
+   * @return true for entity type
+   */
+  public boolean isEntity() {
+    return (idField != null) && (type != null) && (model != null);
   }
 }
