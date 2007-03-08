@@ -3,6 +3,7 @@ package org.topazproject.otm.stores;
 import java.net.URI;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -12,6 +13,7 @@ import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.annotations.Rdf;
@@ -96,7 +98,7 @@ public class MemStore implements TripleStore {
    *
    * @throws RuntimeException DOCUMENT ME!
    */
-  public Map<String, Map<String, List<String>>> get(ClassMetadata cm, String id, Transaction txn) {
+  public ResultObject get(ClassMetadata cm, String id, Transaction txn) {
     MemStoreConnection                     msc     = (MemStoreConnection) txn.getConnection();
     Storage                                storage = msc.getStorage();
 
@@ -143,7 +145,7 @@ public class MemStore implements TripleStore {
       }
     }
 
-    return values;
+    return instantiate(txn.getSession().getSessionFactory(), cm.getSourceClass(), id, values);
   }
 
   /**
@@ -172,6 +174,44 @@ public class MemStore implements TripleStore {
      public T <Collection<T>> find(Class<T> clazz, List<Criteria> criteria,
          List<Field> orderBy, long offset, long size);
    */
+  private ResultObject instantiate(SessionFactory sessionFactory, Class clazz, String id,
+                                   Map<String, Map<String, List<String>>> triples) {
+    Map<String, List<String>> props = triples.get(id);
+    List<String>              types = props.get(Rdf.rdf + "type");
+
+    if (types.size() == 0)
+      return null;
+
+    clazz = sessionFactory.mostSpecificSubClass(clazz, types);
+
+    ClassMetadata cm = sessionFactory.getClassMetadata(clazz);
+    ResultObject  ro;
+
+    try {
+      ro             = new ResultObject(clazz.newInstance(), id);
+    } catch (Exception e) {
+      throw new RuntimeException("instantiation failed", e);
+    }
+
+    cm.getIdField().set(ro.o, Collections.singletonList(id));
+
+    // A field could be of rdf:type. So remove the values used in class identification
+    // from the set of rdf:type values before running through and setting field values. 
+    types.removeAll(cm.getTypes());
+
+    for (Mapper p : cm.getFields()) {
+      if (p.getSerializer() != null)
+        p.set(ro.o, props.get(p.getUri()));
+      else
+        ro.unresolvedAssocs.put(p, props.get(p.getUri()));
+    }
+
+    // Put back what we removed
+    types.addAll(cm.getTypes());
+
+    return ro;
+  }
+
   private static class PropertyId {
     private String model;
     private String id;

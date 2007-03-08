@@ -132,41 +132,7 @@ public class Session {
    */
   public String saveOrUpdate(Object o) {
     String id = checkObject(o);
-
-    if (currentIds.contains(id))
-      return id; // loop
-
-    try {
-      currentIds.add(id);
-      cleanMap.remove(id);
-      dirtyMap.put(id, o);
-      deleteMap.remove(id);
-
-      ClassMetadata cm     = sessionFactory.getClassMetadata(o.getClass());
-      Set<Wrapper>  assocs = new HashSet<Wrapper>();
-
-      for (Mapper p : cm.getFields()) {
-        if (p.getSerializer() != null)
-          continue;
-
-        for (Object ao : p.get(o))
-          assocs.add(new Wrapper(checkObject(ao), ao));
-      }
-
-      Set<Wrapper> old = associations.put(id, assocs);
-
-      if (old != null) {
-        old.removeAll(assocs);
-
-        for (Wrapper ao : old)
-          delete(ao.get());
-      }
-
-      for (Wrapper ao : assocs)
-        saveOrUpdate(ao.get());
-    } finally {
-      currentIds.remove(id);
-    }
+    sync(o, id, false, true, true);
 
     return id;
   }
@@ -275,10 +241,6 @@ public class Session {
     return clazz.cast(o);
   }
 
-  /*
-     public T <Collection<T>> find(Class<T> clazz, List<Criteria> criteria,
-         List<Field> orderBy, long offset, long size);
-   */
   /**
    * Gets the ids for a list of objects.
    *
@@ -319,64 +281,129 @@ public class Session {
     if (txn == null)
       throw new RuntimeException("No transaction active");
 
-    TripleStore store = sessionFactory.getTripleStore();
+    TripleStore              store = sessionFactory.getTripleStore();
 
-    return instantiate(clazz, id, store.get(cm, id, txn));
+    TripleStore.ResultObject ro    = store.get(cm, id, txn);
+
+    return (ro == null) ? null : instantiate(ro);
   }
 
-  private Object instantiate(Class clazz, String id, Map<String, Map<String, List<String>>> triples) {
-    if (log.isDebugEnabled())
-      log.debug("Got from store for " + id + " : \n" + triples);
-
-    Map<String, List<String>> props = triples.get(id);
-    List<String>              types = props.get(Rdf.rdf + "type");
-
-    if (types.size() == 0)
-      return null;
-
-    clazz = sessionFactory.mostSpecificSubClass(clazz, types);
-
-    ClassMetadata cm = sessionFactory.getClassMetadata(clazz);
-    Object        o;
-
-    try {
-      o              = clazz.newInstance();
-    } catch (Exception e) {
-      throw new RuntimeException("instantiation failed", e);
-    }
-
-    cm.getIdField().set(o, Collections.singletonList(id));
-
-    // A field could be of rdf:type. So remove the values used in class identification
-    // from the set of rdf:type values before running through and setting field values. 
-    types.removeAll(cm.getTypes());
-
+  private Object instantiate(TripleStore.ResultObject ro) {
     Set<Wrapper> allAssocs = new HashSet<Wrapper>();
 
-    for (Mapper p : cm.getFields()) {
-      if (p.getSerializer() != null)
-        p.set(o, props.get(p.getUri()));
-      else {
-        List assocs = new ArrayList();
+    for (Mapper p : ro.unresolvedAssocs.keySet()) {
+      List assocs = new ArrayList();
 
-        for (String val : props.get(p.getUri())) {
-          // lazy load
-          Object a = load(p.getComponentType(), val);
+      for (String val : ro.unresolvedAssocs.get(p)) {
+        // lazy load
+        Object a = load(p.getComponentType(), val);
 
-          if (a != null) {
-            assocs.add(a);
-            allAssocs.add(new Wrapper(val, a));
-          }
+        if (a != null) {
+          assocs.add(a);
+          allAssocs.add(new Wrapper(val, a));
         }
-
-        p.set(o, assocs);
       }
+
+      p.set(ro.o, assocs);
     }
 
-    // Put back what we removed
-    types.addAll(cm.getTypes());
+    for (Mapper p : ro.resolvedAssocs.keySet()) {
+      List assocs = new ArrayList();
 
-    associations.put(id, allAssocs);
+      for (TripleStore.ResultObject val : ro.resolvedAssocs.get(p)) {
+        Object a = sync(instantiate(val), val.id, true, false, false);
+
+        if (a != null) {
+          assocs.add(a);
+          allAssocs.add(new Wrapper(val.id, a));
+        }
+      }
+
+      p.set(ro.o, assocs);
+    }
+
+    associations.put(ro.id, allAssocs);
+
+    return ro.o;
+  }
+
+  private Object sync(final Object other, final String id, final boolean merge,
+                      final boolean update, final boolean cascade) {
+    if (currentIds.contains(id))
+      return null; // loop and hence the return value is unused
+
+    Object o = null;
+
+    try {
+      currentIds.add(id);
+      o = deleteMap.remove(id);
+
+      if (o == null)
+        o = dirtyMap.get(id);
+
+      boolean dirtyExists = o != null;
+
+      if (!dirtyExists)
+        o = cleanMap.get(id);
+
+      if (merge && (o != null) && (other != o))
+        copy(o, other);
+      else
+        o = other;
+
+      if (update || dirtyExists) {
+        dirtyMap.put(id, o); // re-put since it may have been deleted
+        cleanMap.remove(id);
+      } else {
+        cleanMap.put(id, o);
+      }
+
+      if (cascade) {
+        ClassMetadata cm     = sessionFactory.getClassMetadata(o.getClass());
+        Set<Wrapper>  assocs = new HashSet<Wrapper>();
+
+        for (Mapper p : cm.getFields()) {
+          if (p.getSerializer() != null)
+            continue;
+
+          for (Object ao : p.get(o))
+            assocs.add(new Wrapper(checkObject(ao), ao));
+        }
+
+        Set<Wrapper> old = associations.put(id, assocs);
+
+        if (old != null) {
+          old.removeAll(assocs);
+
+          for (Wrapper ao : old)
+            delete(ao.get());
+        }
+
+        for (Wrapper ao : assocs)
+          sync(ao.get(), ao.id(), merge, update, cascade);
+      }
+    } finally {
+      currentIds.remove(id);
+    }
+
+    return o;
+  }
+
+  private Object copy(Object o, Object other) {
+    ClassMetadata ocm = checkClass(other.getClass());
+    ClassMetadata cm  = checkClass(o.getClass());
+
+    if (!cm.getSourceClass().isAssignableFrom(ocm.getSourceClass()))
+      throw new RuntimeException(cm.toString() + " is not assignable from " + ocm);
+
+    for (Mapper p : cm.getFields()) {
+      Mapper op = ocm.getMapperByUri(p.getUri());
+
+      if (op == null)
+        continue;
+
+      p.setRawValue(o, op.getRawValue(other, false));
+    }
 
     return o;
   }
