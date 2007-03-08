@@ -13,6 +13,7 @@ import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
+import org.topazproject.otm.Criteria;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.TripleStore;
@@ -146,6 +147,18 @@ public class MemStore implements TripleStore {
     }
 
     return instantiate(txn.getSession().getSessionFactory(), cm.getSourceClass(), id, values);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param criteria DOCUMENT ME!
+   * @param txn DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public List<ResultObject> list(Criteria criteria, Transaction txn) {
+    return new ArrayList<ResultObject>(); // xxx: to do
   }
 
   /**

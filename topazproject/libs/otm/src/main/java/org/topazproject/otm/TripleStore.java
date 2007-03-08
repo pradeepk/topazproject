@@ -59,10 +59,16 @@ public interface TripleStore {
    */
   public ResultObject get(ClassMetadata cm, String id, Transaction txn);
 
-  /*
-     public T <Collection<T>> find(Class<T> clazz, List<Criteria> criteria,
-         List<Field> orderBy, long offset, long size);
+  /**
+   * DOCUMENT ME!
+   *
+   * @param criteria DOCUMENT ME!
+   * @param txn DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
    */
+  public List<ResultObject> list(Criteria criteria, Transaction txn);
+
   public static class ResultObject {
     public Object                          o;
     public String                          id;
@@ -71,8 +77,8 @@ public interface TripleStore {
       new HashMap<Mapper, List<ResultObject>>();
 
     public ResultObject(Object o, String id) {
-      this.o = o;
-      this.id = id;
+      this.o    = o;
+      this.id   = id;
     }
   }
 }

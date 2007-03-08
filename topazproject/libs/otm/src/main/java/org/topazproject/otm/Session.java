@@ -242,6 +242,66 @@ public class Session {
   }
 
   /**
+   * Creates the 'criteria' for retrieving a set of objects of a class.
+   *
+   * @param clazz the class
+   *
+   * @return a newly created Criteria object
+   */
+  public Criteria createCriteria(Class clazz) {
+    return new Criteria(this, null, null, checkClass(clazz));
+  }
+
+  /**
+   * Creates a 'sub-criteria' for retrieving a set of objects for an association in a parent
+   * class. Usually called by {@link
+   * org.topazproject.otm.Criteria#createCriteria(java.lang.String) Criteria#createCriteria}
+   *
+   * @param criteria the parent class criteria
+   * @param path path to the associatyion field
+   *
+   * @return a newly created Criteria.
+   *
+   * @throws RuntimeException on an error
+   */
+  public Criteria createCriteria(Criteria criteria, String path) {
+    ClassMetadata cm = criteria.getClassMetadata();
+    Mapper        m  = cm.getMapperByName(path);
+
+    if (m == null)
+      throw new RuntimeException(path + " is not a valid field name for " + cm);
+
+    return new Criteria(this, criteria, m, checkClass(m.getComponentType()));
+  }
+
+  /**
+   * Gets a list of objects based on a criteria.
+   *
+   * @param criteria the criteria
+   *
+   * @return the results list
+   *
+   * @throws RuntimeException on an error
+   */
+  public List list(Criteria criteria) {
+    if (txn == null)
+      throw new RuntimeException("No transaction active");
+
+    TripleStore store  = sessionFactory.getTripleStore();
+
+    List        result = new ArrayList();
+
+    for (TripleStore.ResultObject ro : store.list(criteria, txn)) {
+      Object r = sync(instantiate(ro), ro.id, true, false, false);
+
+      if (r != null)
+        result.add(r);
+    }
+
+    return result;
+  }
+
+  /**
    * Gets the ids for a list of objects.
    *
    * @param objs list of objects
