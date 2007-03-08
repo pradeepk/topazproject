@@ -41,6 +41,7 @@ set +e
 SVNVERSION=`svnversion`
 MVNARGS=-Dsvnversion=${SVNVERSION}
 
+mvn --version
 java -version
 echo "pwd: "`pwd`
 [ -e ${MVN_FIRST_FAILURE} ] && echo "Initial failure: ${FIRST_FAILURE}"
