@@ -31,7 +31,8 @@ SOFTWARE.
 This version has been changed to generate iTQL triples instead of N3 triples.
 This involves not writing a period (.) at the end of a statement, using single
 quotes (') instead of double quotes (") for the literals, escaping quotes (')
-and backslashes (\), and not writing out any comments.
+and backslashes (\), using $bn_XXX for blank-nodes, and not writing out any
+comments.
 
 Also fixed what appears to be a bug: the literal-escapes for CR and LF were
 causing all literals to be replaced with \r. So those have been commented out.
@@ -201,7 +202,7 @@ there should be an attribute to use as the object instead -->
 
 <!-- For collections, generate an ID for the first element of the collection -->
 <template match="*[@rdf:parseType='Collection']" mode="object-string">
-	<value-of select="concat('_:',translate(generate-id(*[1]),':',''))"/>
+	<value-of select="concat('\$bn_',translate(generate-id(*[1]),':',''))"/>
 </template>
 
 <!-- #######################################################################
@@ -222,7 +223,7 @@ there should be an attribute to use as the object instead -->
 ####################################################################### -->
 <!-- Unspecified node: use the XSLT unique identifier for the node in the document -->
 <template match="*" mode="resource-string">
-	<text>_:</text><value-of select="translate(generate-id(),':','')"/>
+	<text>$bn_</text><value-of select="translate(generate-id(),':','')"/>
 </template>
 
 <!-- String literal objects -->
@@ -248,7 +249,7 @@ there should be an attribute to use as the object instead -->
 
 <!-- Blank node resource -->
 <template match="*[@rdf:nodeID]" mode="resource-string">
-	<text>_:</text><value-of select="@rdf:nodeID"/>
+	<text>$bn_</text><value-of select="@rdf:nodeID"/>
 </template>
 
 <!-- Node identifier -->
@@ -260,10 +261,10 @@ there should be an attribute to use as the object instead -->
 		<when test="$previousMode = 'predicate'">
 			<choose>
 				<when test="@rdf:nodeID">
-					<text>_:</text><value-of select="@rdf:nodeID"/>
+					<text>$bn_</text><value-of select="@rdf:nodeID"/>
 				</when>
 				<otherwise>
-					<text>_:</text><value-of select="translate(generate-id(),':','')"/>
+					<text>$bn_</text><value-of select="translate(generate-id(),':','')"/>
 				</otherwise>
 			</choose>
 		</when>
@@ -318,7 +319,7 @@ there should be an attribute to use as the object instead -->
 				<text>&lt;</text><apply-templates select="." mode="base"/><text>#</text><value-of select="@rdf:ID"/><text>&gt;</text>
 			</when>
 			<otherwise>
-				<text>_:t</text><value-of select="translate(generate-id(),':','')"/>
+				<text>$bn_</text><value-of select="translate(generate-id(),':','')"/>
 			</otherwise>
 		</choose>
 	</variable>
@@ -367,7 +368,7 @@ there should be an attribute to use as the object instead -->
 	<param name="subjectString"/>
 	<param name="predicateString"/>
 	<!-- Generate ID of first element of the collection-->
-	<variable name="objectString" select="concat('_:',translate(generate-id(.),':',''))"/>
+	<variable name="objectString" select="concat('\$bn_',translate(generate-id(.),':',''))"/>
 	<!-- Point to the first -->
 	<value-of select="$objectString"/>
 	<text> &lt;</text>
@@ -383,7 +384,7 @@ there should be an attribute to use as the object instead -->
 	<!-- Allow for a null termination -->
 	<choose>
 		<when test="following-sibling::*">
-			<text>_:</text><value-of select="translate(generate-id(following-sibling::*[1]),':','')"/>
+			<text>$bn_</text><value-of select="translate(generate-id(following-sibling::*[1]),':','')"/>
 		</when>
 		<otherwise>
 			<text>&lt;</text><apply-templates select="." mode="rdf-namespace-uri"/>
