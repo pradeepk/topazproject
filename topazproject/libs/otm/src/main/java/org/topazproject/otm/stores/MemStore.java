@@ -18,6 +18,9 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.annotations.Rdf;
+import org.topazproject.otm.criterion.Criterion;
+import org.topazproject.otm.criterion.PredicateCriterion;
+import org.topazproject.otm.criterion.SubjectCriterion;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
@@ -156,9 +159,50 @@ public class MemStore implements TripleStore {
    * @param txn DOCUMENT ME!
    *
    * @return DOCUMENT ME!
+   *
+   * @throws RuntimeException DOCUMENT ME!
    */
   public List<ResultObject> list(Criteria criteria, Transaction txn) {
-    return new ArrayList<ResultObject>(); // xxx: to do
+    MemStoreConnection msc      = (MemStoreConnection) txn.getConnection();
+    Storage            storage  = msc.getStorage();
+    ClassMetadata      cm       = criteria.getClassMetadata();
+    String             model    = cm.getModel();
+    Set<String>        subjects = new HashSet<String>();
+    boolean            first    = true;
+
+    for (Criterion c : criteria.getCriterionList()) {
+      Set<String> ids;
+
+      if (c instanceof PredicateCriterion) {
+        String name  = ((PredicateCriterion) c).getName();
+        String value = ((PredicateCriterion) c).getValue();
+        String uri   = cm.getMapperByName(name).getUri();
+        ids          = storage.getIds(model, uri, value);
+      } else if (c instanceof SubjectCriterion) {
+        String id = ((SubjectCriterion) c).getId();
+
+        if (storage.getProperty(model, id, Rdf.rdf + "type").size() == 0)
+          ids = Collections.emptySet();
+        else
+          ids = Collections.singleton(id);
+      } else {
+        throw new RuntimeException("MemStore can't handle " + c.getClass());
+      }
+
+      if (!first)
+        subjects.retainAll(ids);
+      else {
+        subjects.addAll(ids);
+        first = false;
+      }
+    }
+
+    List<ResultObject> results = new ArrayList<ResultObject>();
+
+    for (String id : subjects)
+      results.add(get(cm, id, txn));
+
+    return results;
   }
 
   /**
@@ -342,6 +386,33 @@ public class MemStore implements TripleStore {
       if (backingStore != null) {
         synchronized (backingStore) {
           results.addAll(backingStore.getInverseProperty(model, id, uri));
+        }
+
+        for (Iterator<String> it = results.iterator(); it.hasNext();) {
+          if (pendingDeletes.contains(new PropertyId(model, it.next(), uri)))
+            it.remove();
+        }
+      }
+
+      return results;
+    }
+
+    public Set<String> getIds(String model, String uri, String val) {
+      Set<String>                           results   = new HashSet<String>();
+      Map<String, Map<String, Set<String>>> modelData = data.get(model);
+
+      if (modelData != null) {
+        for (Map.Entry<String, Map<String, Set<String>>> e : modelData.entrySet()) {
+          Set<String> objs = e.getValue().get(uri);
+
+          if ((objs != null) && objs.contains(val))
+            results.add(e.getKey());
+        }
+      }
+
+      if (backingStore != null) {
+        synchronized (backingStore) {
+          results.addAll(backingStore.getIds(model, uri, val));
         }
 
         for (Iterator<String> it = results.iterator(); it.hasNext();) {

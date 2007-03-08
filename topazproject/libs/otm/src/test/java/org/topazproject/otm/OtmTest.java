@@ -4,6 +4,7 @@ import java.net.URI;
 
 import java.util.List;
 
+import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.PrivateAnnotation;
@@ -266,6 +267,94 @@ public class OtmTest extends TestCase {
       r = replies.get(0);
       assertNotNull(r);
       assertEquals("http://localhost/reply/1/1", r.getId());
+
+      tx.commit(); // Flush happens automatically
+    } catch (RuntimeException e) {
+      if (tx != null)
+        tx.rollback();
+
+      throw e; // or display error message
+    } finally {
+      session.close();
+    }
+  }
+
+  /**
+   * DOCUMENT ME!
+   */
+  public void test04() {
+    Session     session = factory.openSession();
+    Transaction tx      = null;
+
+    String      id1     = "http://localhost/annotation/1";
+    String      id2     = "http://localhost/annotation/2";
+    String      id3     = "http://localhost/annotation/3";
+
+    try {
+      tx = session.beginTransaction();
+
+      Annotation a1 = new PublicAnnotation(id1);
+      Annotation a2 = new PublicAnnotation(id2);
+      Annotation a3 = new PublicAnnotation(id3);
+
+      a1.setAnnotates("foo:1");
+      a2.setAnnotates("foo:1");
+      a3.setAnnotates("bar:1");
+
+      session.saveOrUpdate(a1);
+      session.saveOrUpdate(a2);
+      session.saveOrUpdate(a3);
+
+      tx.commit(); // Flush happens automatically
+    } catch (RuntimeException e) {
+      if (tx != null)
+        tx.rollback();
+
+      throw e; // or display error message
+    } finally {
+      session.close();
+    }
+
+    session   = factory.openSession();
+    tx        = null;
+
+    try {
+      tx = session.beginTransaction();
+
+      List l =
+        session.createCriteria(Annotation.class).add(Restrictions.eq("annotates", "foo:1")).list();
+
+      assertEquals(2, l.size());
+
+      Annotation a1 = (Annotation) l.get(0);
+      Annotation a2 = (Annotation) l.get(1);
+
+      assertEquals("foo:1", a1.getAnnotates());
+      assertEquals("foo:1", a2.getAnnotates());
+
+      assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
+      assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
+
+      l = session.createCriteria(Annotation.class).add(Restrictions.id(id3)).list();
+
+      assertEquals(1, l.size());
+
+      a1 = (Annotation) l.get(0);
+      assertEquals("bar:1", a1.getAnnotates());
+      assertTrue(id3.equals(a1.getId()));
+
+      l = session.createCriteria(Annotation.class).add(Restrictions.eq("annotates", "foo:1"))
+                  .add(Restrictions.id(id3)).list();
+
+      assertEquals(0, l.size());
+
+      l = session.createCriteria(Annotation.class).add(Restrictions.eq("annotates", "foo:1"))
+                  .add(Restrictions.id(id1)).list();
+
+      assertEquals(1, l.size());
+      a1 = (Annotation) l.get(0);
+      assertEquals("foo:1", a1.getAnnotates());
+      assertTrue(id1.equals(a1.getId()));
 
       tx.commit(); // Flush happens automatically
     } catch (RuntimeException e) {
