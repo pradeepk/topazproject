@@ -92,14 +92,14 @@ public interface Constants {
     public static Map<String, String> getAllOrganizationTypes() {
       final Map<String, String> allOrgTypes = new ListOrderedMap();
       allOrgTypes.put("", "Choose One");
-      allOrgTypes.put("University", "University");
-      allOrgTypes.put("Hospital", "Hospital");
-      allOrgTypes.put("Industry", "Industry (Research)");
-      allOrgTypes.put("Industry Non-research", "Industry (Non-research)");
-      allOrgTypes.put("Government Non-research", "Government (Non-Research)");
+      allOrgTypes.put("University/College", "University/College");
+      allOrgTypes.put("Governmental", "Governmental");
+      allOrgTypes.put("Hospital/Healthcare", "Hospital/Healthcare");
+      allOrgTypes.put("Industry or Private Sector", "Industry or Private Sector");
       allOrgTypes.put("Library", "Library");
-      allOrgTypes.put("School", "School");
-      allOrgTypes.put("Private Address", "Private Address");
+      allOrgTypes.put("Media/Communications", "Media/Communications");
+      allOrgTypes.put("Research Institute", "Research Institute");
+      allOrgTypes.put("Other", "Other");
       return allOrgTypes;
     }
 
