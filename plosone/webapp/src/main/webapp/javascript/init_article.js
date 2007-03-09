@@ -9,7 +9,7 @@
     ldc = dojo.widget.byId("LoadingCycle");
     ldc.show();
     
-    if (loggedIn) {    
+/*    if (loggedIn) {    
       var triggerNode = dojo.byId(annotationConfig.trigger);
     	dojo.event.connect(triggerNode, 'onmousedown', function(e) {
   	     topaz.annotation.createAnnotationOnMouseDown();
@@ -17,10 +17,15 @@
   	   }
     	);
     }
-    
+*/    
     var tocObj = dojo.byId('sectionNavTop');
     topaz.navigation.buildTOC(tocObj);
     
+    if (dojo.render.html.safari) {
+      var tocObj = dojo.byId('sectionNavTopFloat');
+      topaz.navigation.buildTOC(tocObj);
+    }
+        
  		annotationForm = document.createAnnotation;
     initAnnotationForm();
     
@@ -61,6 +66,14 @@
     );
     
     dojo.event.connect(window, "onload", function() {
+        if (dojo.render.html.safari) {
+    //      var origDiv = dojo.byId("postcomment");
+    //      var newDiv = origDiv.cloneNode(true);
+    //      newDiv.id = "postcommentfloat";
+    //      dojo.dom.insertAfter(newDiv, origDiv, true);
+          var newDiv = dojo.byId("postcommentfloat");
+          newDiv.style.display = "none";
+        }
         floatMenu();
       }  
     );

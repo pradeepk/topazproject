@@ -293,5 +293,59 @@ topaz.domUtil = {
       dojo.dom.insertBefore(srcNode, refNode[0]);
     else
       refNode.appendChild(srcNode);
+  },
+  
+  modifyNodeChildClassname: function(/* Object */node, /* String */targetNodeName, /* String */className, /* Boolean */isAdd) {
+    if (node.hasChildNodes) {
+      var nodeChildren = node.childNodes;
+  
+      for (var i=0; i<nodeChildren.length; i++) {
+        if (nodeChildren[i].nodeName == targetNodeName) {
+          if (isAdd) {
+            dojo.html.addClass(nodeChildren[i], className);
+          }
+          else {
+            dojo.html.removeClass(nodeChildren[i], className);
+          }
+        }
+        
+        if (nodeChildren[i].hasChildNodes) {
+          this.modifyNodeChildClassname(nodeChildren[i], refNodeName, className, isAdd);
+        }
+      }
+      
+      return true;
+    }
+    else {
+      return false;
+    }
+  },
+  
+  isClassNameExist: function(node, className) {
+    var classArray = new Array();
+    classArray = node.className.split(" ");
+    
+    for (var i=0; i<classArray.length; i++) {
+      if (classArray[i] == className) 
+        return true;
+    }
+    
+    return false;
+  },
+  
+  isChildContainAttributeValue: function (node, attributeName, attributeValue) {
+    var childlist = node.childNodes;
+    var itemsFound = 0;
+    
+    for (var i=0; i<childlist; i++) {
+      if (attributeValue && childlist[i].getAttribute(attributeName) == attributeValue) {
+        ++itemsFound;
+      }
+      else if (childlist[i].getAttribute(attributeName)){
+        ++itemsFound;
+      }
+    }
+    
+    return itemsFound;
   }
 }

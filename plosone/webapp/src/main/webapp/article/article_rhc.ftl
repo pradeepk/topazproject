@@ -20,12 +20,13 @@
 	</div>
 
 	<div id="floatMarker"></div>
+	
 	<div id="postcomment">
 		<div class="commentview">
 			<h6>Commentary</h6>
 			<ol>
 				<#if Session.PLOS_ONE_USER?exists>
-						<li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here">Add your annotation</a>
+						<li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here" onmousedown="topaz.annotation.createAnnotationOnMouseDown();">Add your annotation</a>
 			  <#else>
 						<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>
 			  </#if>
@@ -73,6 +74,62 @@
 		<div id="sectionNavTop" class="tools">
 		</div>
 		<!--<div id="dojoDebug"></div>-->
+	</div>
+	
+	
+	<!-- This extra container is for Safari who has a really broken javascript engine. -->
+	<div id="postcommentfloat">
+		<div class="commentview">
+			<h6>Commentary</h6>
+			<ol>
+				<#if Session.PLOS_ONE_USER?exists>
+						<li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here" onmousedown="topaz.annotation.createAnnotationOnMouseDown();">Add your annotation</a>
+			  <#else>
+						<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>
+			  </#if>
+				<li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn annotations on/off">Hide annotations</a>
+				<!--<li><a href="#" onclick="return topaz.domUtil.swapDisplayMode('toggleAnnotations');" class="expand tooltip" title="Click to turn annotations on/off">Turn annotations on/off</a>-->
+				<!-- begin : expanded block -->
+				<!--	<fieldset>
+						<form>
+						<ol id="toggleAnnotations">
+							<li>Yours  <div><input class="input" type="radio" title="Choose from one of the options" name="yours" value="On" checked>
+										<label for="yours">On</label>
+										<input class="input" type="radio" title="Choose from one of the options" name="yours" value="Off">
+										<label for="yours">Off</label></div>
+							</li>
+							<li>Authors	<div><input class="input" type="radio" title="Choose from one of the options" name="authors" value="On" checked>
+										<label for="authors">On</label>
+										<input class="input" type="radio" title="Choose from one of the options" name="authors" value="Off">
+										<label for="authors">Off</label></div>
+							</li>
+							<li>All Public
+										<div><input class="input" type="radio" title="Choose from one of the options" name="public" value="On" checked>
+										<label for="public">On</label>
+										<input class="input" type="radio" title="Choose from one of the options" name="public" value="Off">
+										<label for="public">Off</label></div>
+							</li>
+						</ol>
+						</form>
+					</fieldset>-->
+				<!-- end : expanded block -->
+				</li>
+		    <@ww.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
+
+				<li><a href="${createDiscussionURL}" class="discuss icon">Start a discussion</a> about this article</li>
+
+		    <@ww.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
+				<li><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article
+					<ul id="dcCount">
+					  <#include "/article/article_rhc_count.ftl">
+					</ul>
+				</li>
+				
+	<!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your annotation!</li> -->
+			</ol>
+		</div> 
+		<div id="sectionNavTopFloat" class="tools">
+		</div>
 	</div>
 	
 	

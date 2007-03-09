@@ -13,11 +13,29 @@ function floatMenu() {
   var scrollY = scrollOffset.y;
   
   var y = 0;
-  dojo.html.removeClass(el, 'fixed');
+  if (dojo.render.html.safari) {
+    var floatDiv = dojo.byId("postcommentfloat");
+    if (el.style.display == "none") {
+      floatDiv.style.display = "none";
+      el.style.display = "block";
+    }
+  }
+  else {
+    dojo.html.removeClass(el, 'fixed');
+  }
   
   if (scrollY > mOffset.top) {
     y = scrollY - mpOffset.top;
-    dojo.html.addClass(el, 'fixed');
+    if (dojo.render.html.safari) {
+      var floatDiv = dojo.byId("postcommentfloat");
+      if (floatDiv.style.display = "none") {
+        floatDiv.style.display = "block";
+        el.style.display = "none";
+      }
+    }
+    else {
+      dojo.html.addClass(el, 'fixed');
+    }
   }
   
   if (BrowserDetect.browser == "Explorer" && BrowserDetect.version < 7 && ((document.body.offsetHeight-scrollY) >= vpOffset.height)) {

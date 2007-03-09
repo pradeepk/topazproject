@@ -47,6 +47,28 @@ document.getElementsByTagAndAttributeName = function(tagName, attributeName) {
   return elements;
 }
 
+document.getElementsByAttributeValue = function(tagName, attributeName, attributeValue) {
+  if ( tagName == null )
+    tagName = '*';
+  else if ( attributeName == null )
+    return "[getElementsByAttributeValue] attributeName is required.";
+  else if ( attributeValue == null )
+    return "[getElementsByAttributeValue] attributeValue is required.";
+
+  var elements = document.getElementsByTagAndAttributeName(tagName, attributeName);
+  var elValue = new Array();
+  
+  for (var i = 0; i < elements.length; i++) {
+    var element = elements[i];
+    if (element.getAttributeNode(attributeName).nodeValue == attributeValue) {
+      elValue.push(element);
+    }
+  }
+
+  return elValue;
+}
+
+
 /**
  * Extending the String object
  *
