@@ -3,6 +3,8 @@ package org.topazproject.otm.criterion;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.topazproject.otm.Criteria;
+
 /**
  * Base class for junctions on Criterions.
  *
@@ -50,5 +52,24 @@ public class Junction implements Criterion {
    */
   public String getOp() {
     return op;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public String toItql(Criteria criteria, String subjectVar, String varPrefix) {
+    String sep   = "(";
+    String query = "";
+    int    i     = 0;
+
+    for (Criterion c : getCriterions()) {
+      query += (sep + c.toItql(criteria, subjectVar, varPrefix + "j" + i++) + " ");
+      sep = getOp();
+    }
+
+    if (i > 0)
+      query += ") ";
+
+    return query;
   }
 }

@@ -1,5 +1,7 @@
 package org.topazproject.otm.criterion;
 
+import org.topazproject.otm.Criteria;
+
 /**
  * A criterion for a triple pattern where the subject value is known.
  *
@@ -24,5 +26,12 @@ public class SubjectCriterion implements Criterion {
    */
   public String getId() {
     return id;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public String toItql(Criteria criteria, String subjectVar, String varPrefix) {
+    return subjectVar + " <mulgara:is> <" + id + "> ";
   }
 }
