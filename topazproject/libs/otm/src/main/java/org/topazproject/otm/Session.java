@@ -235,7 +235,7 @@ public class Session {
       o = getFromStore(clazz, id, checkClass(clazz));
 
       if (o != null)
-        cleanMap.put(id, o);
+        sync(o, id, false, false, false);
     }
 
     return clazz.cast(o);
@@ -349,40 +349,34 @@ public class Session {
   }
 
   private Object instantiate(TripleStore.ResultObject ro) {
-    Set<Wrapper> allAssocs = new HashSet<Wrapper>();
+    for (Map.Entry<Mapper, List<String>> e : ro.unresolvedAssocs.entrySet()) {
+      List   assocs = new ArrayList();
+      Mapper p      = e.getKey();
 
-    for (Mapper p : ro.unresolvedAssocs.keySet()) {
-      List assocs = new ArrayList();
-
-      for (String val : ro.unresolvedAssocs.get(p)) {
+      for (String val : e.getValue()) {
         // lazy load
         Object a = load(p.getComponentType(), val);
 
-        if (a != null) {
+        if (a != null)
           assocs.add(a);
-          allAssocs.add(new Wrapper(val, a));
-        }
       }
 
       p.set(ro.o, assocs);
     }
 
-    for (Mapper p : ro.resolvedAssocs.keySet()) {
-      List assocs = new ArrayList();
+    for (Map.Entry<Mapper, List<TripleStore.ResultObject>> e : ro.resolvedAssocs.entrySet()) {
+      List   assocs = new ArrayList();
+      Mapper p      = e.getKey();
 
-      for (TripleStore.ResultObject val : ro.resolvedAssocs.get(p)) {
+      for (TripleStore.ResultObject val : e.getValue()) {
         Object a = sync(instantiate(val), val.id, true, false, false);
 
-        if (a != null) {
+        if (a != null)
           assocs.add(a);
-          allAssocs.add(new Wrapper(val.id, a));
-        }
       }
 
       p.set(ro.o, assocs);
     }
-
-    associations.put(ro.id, allAssocs);
 
     return ro.o;
   }
@@ -418,29 +412,31 @@ public class Session {
         cleanMap.put(id, o);
       }
 
-      if (cascade) {
-        ClassMetadata cm     = sessionFactory.getClassMetadata(o.getClass());
-        Set<Wrapper>  assocs = new HashSet<Wrapper>();
+      ClassMetadata cm     = checkClass(o.getClass());
+      Set<Wrapper>  assocs = new HashSet<Wrapper>();
 
-        for (Mapper p : cm.getFields()) {
-          if (p.getSerializer() != null)
-            continue;
+      for (Mapper p : cm.getFields()) {
+        if (p.getSerializer() != null)
+          continue;
 
-          for (Object ao : p.get(o))
-            assocs.add(new Wrapper(checkObject(ao), ao));
+        for (Object ao : p.get(o)) {
+          String aid = checkObject(ao);
+
+          // note: sync() here will not return a merged object. see copy()
+          if (cascade)
+            sync(ao, aid, merge, update, cascade);
+
+          assocs.add(new Wrapper(aid, ao));
         }
+      }
 
-        Set<Wrapper> old = associations.put(id, assocs);
+      Set<Wrapper> old = associations.put(id, assocs);
 
-        if (old != null) {
-          old.removeAll(assocs);
+      if (update && (old != null)) {
+        old.removeAll(assocs);
 
-          for (Wrapper ao : old)
-            delete(ao.get());
-        }
-
-        for (Wrapper ao : assocs)
-          sync(ao.get(), ao.id(), merge, update, cascade);
+        for (Wrapper ao : old)
+          delete(ao.get());
       }
     } finally {
       currentIds.remove(id);
@@ -462,7 +458,8 @@ public class Session {
       if (op == null)
         continue;
 
-      p.setRawValue(o, op.getRawValue(other, false));
+      // note: associations are copied also.
+      p.set(o, op.get(other));
     }
 
     return o;
@@ -477,7 +474,7 @@ public class Session {
                       throws Throwable {
           if (loaded == null) {
             log.info(m.getName() + " on " + id + " is forcing a load from store");
-            loaded = getFromStore(clazz, id, cm);
+            loaded = getFromStore(clazz, id, cm); // xxx: associations? sub-classes?
             pristineProxies.remove(id);
           }
 
