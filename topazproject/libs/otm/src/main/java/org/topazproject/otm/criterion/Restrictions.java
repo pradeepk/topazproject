@@ -28,4 +28,22 @@ public class Restrictions {
   public static Criterion eq(String name, String value) {
     return new PredicateCriterion(name, value);
   }
+
+  /**
+   * Group expressions together in a single conjunction (A and B and C...)
+   *
+   * @return Conjunction
+   */
+  public static Conjunction conjunction() {
+    return new Conjunction();
+  }
+
+  /**
+   * Group expressions together in a single disjunction (A or B or C...)
+   *
+   * @return Conjunction
+   */
+  public static Disjunction disjunction() {
+    return new Disjunction();
+  }
 }

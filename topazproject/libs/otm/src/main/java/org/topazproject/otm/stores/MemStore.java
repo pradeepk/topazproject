@@ -18,7 +18,10 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.annotations.Rdf;
+import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.Criterion;
+import org.topazproject.otm.criterion.Disjunction;
+import org.topazproject.otm.criterion.Junction;
 import org.topazproject.otm.criterion.PredicateCriterion;
 import org.topazproject.otm.criterion.SubjectCriterion;
 import org.topazproject.otm.mapping.Mapper;
@@ -159,35 +162,26 @@ public class MemStore implements TripleStore {
    * @param txn DOCUMENT ME!
    *
    * @return DOCUMENT ME!
-   *
-   * @throws RuntimeException DOCUMENT ME!
    */
   public List<ResultObject> list(Criteria criteria, Transaction txn) {
     MemStoreConnection msc      = (MemStoreConnection) txn.getConnection();
     Storage            storage  = msc.getStorage();
     ClassMetadata      cm       = criteria.getClassMetadata();
-    String             model    = cm.getModel();
-    Set<String>        subjects = new HashSet<String>();
-    boolean            first    = true;
+    Set<String>        subjects = conjunction(criteria.getCriterionList(), criteria, storage);
+    List<ResultObject> results  = new ArrayList<ResultObject>();
 
-    for (Criterion c : criteria.getCriterionList()) {
-      Set<String> ids;
+    for (String id : subjects)
+      results.add(get(cm, id, txn));
 
-      if (c instanceof PredicateCriterion) {
-        String name  = ((PredicateCriterion) c).getName();
-        String value = ((PredicateCriterion) c).getValue();
-        String uri   = cm.getMapperByName(name).getUri();
-        ids          = storage.getIds(model, uri, value);
-      } else if (c instanceof SubjectCriterion) {
-        String id = ((SubjectCriterion) c).getId();
+    return results;
+  }
 
-        if (storage.getProperty(model, id, Rdf.rdf + "type").size() == 0)
-          ids = Collections.emptySet();
-        else
-          ids = Collections.singleton(id);
-      } else {
-        throw new RuntimeException("MemStore can't handle " + c.getClass());
-      }
+  private Set<String> conjunction(List<Criterion> criterions, Criteria criteria, Storage storage) {
+    Set<String> subjects = new HashSet<String>();
+    boolean     first    = true;
+
+    for (Criterion c : criterions) {
+      Set<String> ids = evaluate(c, criteria, storage);
 
       if (!first)
         subjects.retainAll(ids);
@@ -197,12 +191,44 @@ public class MemStore implements TripleStore {
       }
     }
 
-    List<ResultObject> results = new ArrayList<ResultObject>();
+    return subjects;
+  }
 
-    for (String id : subjects)
-      results.add(get(cm, id, txn));
+  private Set<String> disjunction(List<Criterion> criterions, Criteria criteria, Storage storage) {
+    Set<String> subjects = new HashSet<String>();
 
-    return results;
+    for (Criterion c : criterions)
+      subjects.addAll(evaluate(c, criteria, storage));
+
+    return subjects;
+  }
+
+  private Set<String> evaluate(Criterion c, Criteria criteria, Storage storage) {
+    ClassMetadata cm    = criteria.getClassMetadata();
+    String        model = cm.getModel();
+    Set<String>   ids;
+
+    if (c instanceof PredicateCriterion) {
+      String name       = ((PredicateCriterion) c).getName();
+      String value      = ((PredicateCriterion) c).getValue();
+      String uri        = cm.getMapperByName(name).getUri();
+      ids               = storage.getIds(model, uri, value);
+    } else if (c instanceof SubjectCriterion) {
+      String id = ((SubjectCriterion) c).getId();
+
+      if (storage.getProperty(model, id, Rdf.rdf + "type").size() == 0)
+        ids = Collections.emptySet();
+      else
+        ids = Collections.singleton(id);
+    } else if (c instanceof Conjunction) {
+      ids = conjunction(((Junction) c).getCriterions(), criteria, storage);
+    } else if (c instanceof Disjunction) {
+      ids = disjunction(((Junction) c).getCriterions(), criteria, storage);
+    } else {
+      throw new RuntimeException("MemStor can't handle " + c.getClass());
+    }
+
+    return ids;
   }
 
   /**

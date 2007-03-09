@@ -356,6 +356,30 @@ public class OtmTest extends TestCase {
       assertEquals("foo:1", a1.getAnnotates());
       assertTrue(id1.equals(a1.getId()));
 
+      l = session.createCriteria(Annotation.class)
+                  .add(Restrictions.conjunction().add(Restrictions.eq("annotates", "foo:1"))
+                                    .add(Restrictions.id(id1))).list();
+
+      assertEquals(1, l.size());
+      a1 = (Annotation) l.get(0);
+      assertEquals("foo:1", a1.getAnnotates());
+      assertTrue(id1.equals(a1.getId()));
+
+      l = session.createCriteria(Annotation.class)
+                  .add(Restrictions.disjunction().add(Restrictions.eq("annotates", "foo:1"))
+                                    .add(Restrictions.id(id1))).list();
+
+      assertEquals(2, l.size());
+
+      a1   = (Annotation) l.get(0);
+      a2   = (Annotation) l.get(1);
+
+      assertEquals("foo:1", a1.getAnnotates());
+      assertEquals("foo:1", a2.getAnnotates());
+
+      assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
+      assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
+
       tx.commit(); // Flush happens automatically
     } catch (RuntimeException e) {
       if (tx != null)
