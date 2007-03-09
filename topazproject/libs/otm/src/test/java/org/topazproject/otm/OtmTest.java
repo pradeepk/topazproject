@@ -32,12 +32,13 @@ public class OtmTest extends TestCase {
    * DOCUMENT ME!
    */
   protected void setUp() {
-    MemStore store = new MemStore();
-    store.setInverseUri(Reply.NS + "hasReply", Reply.NS + "inReplyTo");
-    store.setInverseUri(Annotation.NS + "hasAnnotation", Reply.NS + "annotates");
+    factory.setTripleStore(new MemStore());
 
-    factory.setTripleStore(store);
+    factory.setInverseUri(Reply.NS + "hasReply", Reply.NS + "inReplyTo");
+    factory.setInverseUri(Annotation.NS + "hasAnnotation", Reply.NS + "annotates");
+
     factory.addModel(new ModelConfig("ri", URI.create("local:///topazproject#ri"), null));
+
     factory.preload(ReplyThread.class);
     factory.preload(PublicAnnotation.class);
     factory.preload(PrivateAnnotation.class);

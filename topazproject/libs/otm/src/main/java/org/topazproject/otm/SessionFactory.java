@@ -45,6 +45,11 @@ public class SessionFactory {
    * Model to config mapping (uris, types etc.)
    */
   private final Map<String, ModelConfig> models = new HashMap<String, ModelConfig>();
+
+  /**
+   * predicate uris and there inverse.
+   */
+  private Map<String, String> inverseMap = new HashMap<String, String>();
   private TripleStore store;
 
   /**
@@ -189,6 +194,28 @@ public class SessionFactory {
    */
   public void setTripleStore(TripleStore store) {
     this.store = store;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param uri DOCUMENT ME!
+   * @param inverse DOCUMENT ME!
+   */
+  public void setInverseUri(String uri, String inverse) {
+    inverseMap.put(uri, inverse);
+    inverseMap.put(inverse, uri);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param uri DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public String getInverseUri(String uri) {
+    return inverseMap.get(uri);
   }
 
   private boolean isInstantiable(Class clazz) {

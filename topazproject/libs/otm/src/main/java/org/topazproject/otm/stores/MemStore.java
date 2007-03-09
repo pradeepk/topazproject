@@ -32,8 +32,7 @@ import org.topazproject.otm.mapping.Mapper;
  * @author Pradeep Krishnan
  */
 public class MemStore implements TripleStore {
-  private Storage             storage    = new Storage();
-  private Map<String, String> inverseMap = new HashMap<String, String>();
+  private Storage storage = new Storage();
 
   /**
    * DOCUMENT ME!
@@ -123,7 +122,7 @@ public class MemStore implements TripleStore {
       if (!p.hasInverseUri())
         value.put(uri, new ArrayList<String>(storage.getProperty(model, id, uri)));
       else {
-        String inverseUri = inverseMap.get(uri);
+        String inverseUri = txn.getSession().getSessionFactory().getInverseUri(uri);
 
         if (inverseUri == null)
           throw new RuntimeException("No inverse uri defined for " + uri);
@@ -229,28 +228,6 @@ public class MemStore implements TripleStore {
     }
 
     return ids;
-  }
-
-  /**
-   * DOCUMENT ME!
-   *
-   * @param uri DOCUMENT ME!
-   * @param inverse DOCUMENT ME!
-   */
-  public void setInverseUri(String uri, String inverse) {
-    inverseMap.put(uri, inverse);
-    inverseMap.put(inverse, uri);
-  }
-
-  /**
-   * DOCUMENT ME!
-   *
-   * @param uri DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
-   */
-  public String getInverseUri(String uri) {
-    return inverseMap.get(uri);
   }
 
   /*
