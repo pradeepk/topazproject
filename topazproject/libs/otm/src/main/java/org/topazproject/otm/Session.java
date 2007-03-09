@@ -242,6 +242,58 @@ public class Session {
   }
 
   /**
+   * Merges the given object. The returned object in all cases is an attached object with the
+   * state info merged. If the  supplied object is a detached object, it will remain detached even
+   * after the call.
+   *
+   * @param <T> the type of object
+   * @param o the detached object
+   *
+   * @return an attached object with merged values
+   *
+   * @throws RuntimeException DOCUMENT ME!
+   */
+  public <T> T merge(T o) {
+    String id = checkObject(o);
+
+    // make sure it is loaded
+    T ao = (T) get(o.getClass(), id);
+
+    if (ao == null) {
+      // does not exist; so make a copy first
+      try {
+        ao = (T) o.getClass().newInstance();
+      } catch (Exception e) {
+        throw new RuntimeException("instantiation failed", e);
+      }
+
+      Map<String, Object> loopDetect = new HashMap<String, Object>();
+      loopDetect.put(id, ao);
+      copy(ao, o, loopDetect); // deep copy
+      o = ao;
+    }
+
+    ao = (T) sync(o, id, true, true, true);
+
+    return ao;
+  }
+
+  /**
+   * Refreshes an attached object with values from the database.
+   *
+   * @param o the attached object to refresh
+   */
+  public void refresh(Object o) {
+    String id = checkObject(o);
+
+    if (dirtyMap.containsKey(id) || cleanMap.containsKey(id)) {
+      Class clazz = o.getClass();
+      o = getFromStore(clazz, id, checkClass(clazz));
+      sync(o, id, true, false, false);
+    }
+  }
+
+  /**
    * Creates the 'criteria' for retrieving a set of objects of a class.
    *
    * @param clazz the class
@@ -401,7 +453,7 @@ public class Session {
         o = cleanMap.get(id);
 
       if (merge && (o != null) && (other != o))
-        copy(o, other);
+        copy(o, other, null); // shallow copy
       else
         o = other;
 
@@ -445,7 +497,7 @@ public class Session {
     return o;
   }
 
-  private Object copy(Object o, Object other) {
+  private Object copy(Object o, Object other, Map<String, Object> loopDetect) {
     ClassMetadata ocm = checkClass(other.getClass());
     ClassMetadata cm  = checkClass(o.getClass());
 
@@ -458,8 +510,31 @@ public class Session {
       if (op == null)
         continue;
 
-      // note: associations are copied also.
-      p.set(o, op.get(other));
+      if ((loopDetect == null) || (p.getSerializer() != null))
+        p.set(o, op.get(other));
+      else {
+        List cc = new ArrayList();
+
+        for (Object ao : op.get(other)) {
+          String id  = checkObject(ao);
+          Object aoc = loopDetect.get(id);
+
+          if (aoc == null) {
+            try {
+              aoc = ao.getClass().newInstance();
+            } catch (Exception e) {
+              throw new RuntimeException("instantiation failed", e);
+            }
+
+            loopDetect.put(id, aoc);
+            copy(aoc, ao, loopDetect);
+          }
+
+          cc.add(aoc);
+        }
+
+        p.set(o, cc);
+      }
     }
 
     return o;
