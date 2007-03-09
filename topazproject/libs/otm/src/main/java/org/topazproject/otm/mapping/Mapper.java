@@ -82,6 +82,13 @@ public interface Mapper {
   public Class getType();
 
   /**
+   * Checks if the type is an rdf resource and not a literal.
+   *
+   * @return true if this field is persisted as a uri
+   */
+  public boolean typeIsUri();
+
+  /**
    * Gets the component type of this field.
    *
    * @return component type for arrays; member type for collections; or same as type for simple

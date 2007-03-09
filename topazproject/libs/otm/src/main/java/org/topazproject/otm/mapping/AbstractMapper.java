@@ -3,6 +3,9 @@ package org.topazproject.otm.mapping;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import java.net.URI;
+import java.net.URL;
+
 import java.util.List;
 
 import org.topazproject.otm.ClassMetadata;
@@ -132,6 +135,16 @@ public abstract class AbstractMapper implements Mapper {
    */
   public Class getType() {
     return type;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public boolean typeIsUri() {
+    Class clazz = getComponentType();
+
+    return URI.class.isAssignableFrom(clazz) || URL.class.isAssignableFrom(clazz)
+            || (String.class.isAssignableFrom(clazz) && hasInverseUri());
   }
 
   /*

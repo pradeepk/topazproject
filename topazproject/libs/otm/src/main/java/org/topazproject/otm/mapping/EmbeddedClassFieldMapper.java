@@ -98,6 +98,13 @@ public class EmbeddedClassFieldMapper implements Mapper {
   /*
    * inherited javadoc
    */
+  public boolean typeIsUri() {
+    return field.typeIsUri();
+  }
+
+  /*
+   * inherited javadoc
+   */
   public Class getComponentType() {
     return field.getComponentType();
   }
