@@ -121,6 +121,15 @@
           <description>The version of the mulgara webapp to run.</description>
         </parameter>
 
+        <parameter>
+          <name>jvmargs</name>
+          <property>jvmargs</property>
+          <required>false</required>
+          <expression>${jvmargs}</expression>
+          <defaultValue>-server -Xmx200m</defaultValue>
+          <description>The jvm arguments to pass to the tomcat container.</description>
+        </parameter>
+
       </parameters>
     </mojo>
 
