@@ -43,12 +43,12 @@
     <property name="port"               value="${PORT}"/>
 
     <condition property="tomcat.url" value="${TOMCAT_URL}"
-        else="http://www.apache.org/dist/tomcat/tomcat-5/v5.5.16/bin/apache-tomcat-5.5.16.zip">
+        else="http://www.apache.org/dist/tomcat/tomcat-5/v5.5.23/bin/apache-tomcat-5.5.23.zip">
       <isset property="TOMCAT_URL"/>
     </condition>
 
     <condition property="tomcathome" value="${TOMCAT_HOME}"
-        else="${tomcatinstall.dir}/apache-tomcat-5.5.16/apache-tomcat-5.5.16">
+        else="${tomcatinstall.dir}/apache-tomcat-5.5.23/apache-tomcat-5.5.23">
       <isset property="TOMCAT_HOME"/>
     </condition>
   </target>
