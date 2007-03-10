@@ -240,7 +240,7 @@ ul#nav li	{ float: left; position: relative; list-style-type: none; margin: 0; p
 #user li a:link,
 #user li a:visited 	{ padding: 0; margin-left: 4px;}
 #user a:link,
-#user a:visited {  color: #F0FDFF!important; }
+#user a:visited {  color: #FFF!important; }
 #user a:hover { text-decoration: none; }
 
 
@@ -255,6 +255,8 @@ ul#links li.browse a,
 ul#links li.browse a:visited { background-image: url(../images/pone_links_browse_bg.gif); }
 ul#links li.rss a,
 ul#links li.rss a:visited { background-image: url(../images/pone_links_rss_bg.gif); }
+
+span.new { color: #fff; float: left; display: block; }
 /* Footer : Elements
 ----------------------------------------------------------=
 */
@@ -498,8 +500,8 @@ div.source a:hover	{ color: #000; background-color: #ddd; border-color: #999;}
 div.source span		{ color: #999; padding: 4px 0 4px 14px; }
 
 /* ------ Browse Styles ----*/
-div.browse h1 		{ margin-bottom: 20px; }
-div.browse #search-results { margin-left: 0; padding-left: 20px; border-left: 240px solid #eee;}
+div.browse h1 		{ margin-bottom: 20px; margin-right: 140px;}
+div.browse #search-results { margin-left: 0; margin-right: 140px; padding-left: 20px; border-left: 240px solid #eee;}
 div#browseNav 		{ float: left; position: relative; z-index: 70; width: 240px;  padding: 0; }
 #browseNav li 		{ font-size: .9em; font-weight: bold; padding: 0;margin: 0;text-indent: 0;}
 #browseNav ul		{ padding: 0; }
@@ -534,3 +536,4 @@ li.current { list-style-type: none!important; background: url(../images/pone_li_
 ol li.current { background: none!important; font-size: inherit;}
 ol li.current * { color: #000; text-decoration: none; background: none; cursor: default;}
 
+#bannerRight { float: right; }
