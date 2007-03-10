@@ -50,7 +50,7 @@
 				<legend>Search PLoS ONE</legend>
 				<label for="search">Search</label>
 				<div class="wrap"><input id="search" type="text" name="query" value="Search articles..." onfocus="if(this.value=='Search articles...')value='';" onblur="if(this.value=='')value='Search articles...';" class="searchField" alt="Search articles..."/></div>
-				<input src="<@ww.url value='/images/pone_search_btn1.gif'/>" onclick="submit();" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
+				<input src="${freemarker_config.context}/images/pone_search_btn1.gif" onclick="submit();" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
 			</fieldset>
 		</form>
 	</div>

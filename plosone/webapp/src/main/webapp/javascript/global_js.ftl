@@ -11,7 +11,7 @@
 		debugContainerId : "dojoDebug",
 		debugAtAllCosts: false,
   	bindEncoding: "UTF-8",
-  	baseScriptUri: "<@ww.url includeParams="none" value='/javascript/dojo/'/>"
+  	baseScriptUri: "${freemarker_config.context}/javascript/dojo/"
 	};
 </script>
 <#list freemarker_config.getJavaScript(templateFile) as x>
