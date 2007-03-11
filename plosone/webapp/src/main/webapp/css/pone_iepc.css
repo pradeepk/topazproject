@@ -69,6 +69,8 @@ html>body #home { height: auto }
 * html ul#links a:visited { display: inline; padding: 1px 0 3px 18px;}
 
 * html div#browseNav { width: 220px;}
+* html #browseNav li { float: none; }
+* html #browseNav li li { float: left; }
 
 /* IE 7 hax */
 *:first-child+html ul#tabsContainer 	{ }
