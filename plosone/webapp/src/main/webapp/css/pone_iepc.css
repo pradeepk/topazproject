@@ -68,6 +68,8 @@ html>body #home { height: auto }
 * html ul#links a,
 * html ul#links a:visited { display: inline; padding: 1px 0 3px 18px;}
 
+* html div#browseNav { width: 220px;}
+
 /* IE 7 hax */
 *:first-child+html ul#tabsContainer 	{ }
 *:first-child+html ul#tabsContainer li 	{ padding-top: 0; padding-bottom: 0; }
@@ -78,3 +80,4 @@ html>body #home { height: auto }
 *:first-child+html #first div.feature * { position: relative; height: 1%;} /* fixes overlapping content upon page shift */
 *:first-child+html div.banner img,
 *:first-child+html div.banner object { margin-top: 8px; }
+
