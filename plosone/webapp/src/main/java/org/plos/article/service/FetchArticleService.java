@@ -73,6 +73,8 @@ public class FetchArticleService {
 
   private GeneralCacheAdministrator articleCacheAdministrator;
   
+  private static final String CACHE_KEY_ARTICLE_INFO = "CACHE_KEY_ARTICLE_INFO";
+  
   public void init() {
     // Set the TransformerFactory system property.
     for (Map.Entry<String, String> entry : xmlFactoryProperty.entrySet()) {
@@ -505,11 +507,40 @@ public class FetchArticleService {
    * @throws ApplicationException ApplicationException
    */
   public ObjectInfo getArticleInfo(final String articleURI) throws ApplicationException {
+    // do caching here rather than at articleWebService level because we want the cache key
+    // and group to be article specific
+    ObjectInfo artInfo;
+    
     try {
-      return articleService.getObjectInfo(articleURI);
-    } catch (Exception e) {
-      log.error("Failed to get object info", e);
-      throw new ApplicationException("Failed to get object info", e);
+      artInfo = (ObjectInfo)articleCacheAdministrator.getFromCache(articleURI + CACHE_KEY_ARTICLE_INFO); 
+      if (log.isDebugEnabled()) {
+        log.debug("retrieved objectInfo from cache for: " + articleURI);
+      }
+    } catch (NeedsRefreshException nre) {
+      boolean updated = false;
+      try {
+        artInfo = articleService.getObjectInfo(articleURI);
+        articleCacheAdministrator.putInCache(articleURI + CACHE_KEY_ARTICLE_INFO, artInfo, 
+                                             new String[]{FileUtils.escapeURIAsPath(articleURI)});
+        updated = true;
+        if (log.isDebugEnabled()) {
+          log.debug("retrieved objectInfo from TOPAZ for article URI: " + articleURI);
+        }        
+      } catch (RemoteException e) {
+        if (log.isErrorEnabled()) {  
+          log.error("Failed to get object info for article URI: " + articleURI, e);
+        }
+        throw new ApplicationException("Failed to get object info " + articleURI, e);
+      } catch (NoSuchIdException nsie) {
+        if (log.isErrorEnabled()) {  
+          log.error("Failed to get object info for article URI: " + articleURI, nsie);
+        }
+        throw new ApplicationException("Failed to get object info " + articleURI, nsie);
+      } finally {
+        if (!updated)
+          articleCacheAdministrator.cancelUpdate(articleURI + CACHE_KEY_ARTICLE_INFO);
+      } 
     }
+    return artInfo;
   }
 }

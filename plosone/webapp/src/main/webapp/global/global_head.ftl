@@ -1,4 +1,9 @@
-<title>${freemarker_config.getTitle(templateFile)}</title>
+<#assign pgTitle = freemarker_config.getTitle(templateFile)>
+<#if pgTitle = "CODE_ARTICLE_TITLE"> <#--to get article title in w/o a new template for now-->
+	<#assign pgTitle = articleInfo.title?replace('</?[a-z]*>', '', 'r')>
+</#if>
+	<title>${pgTitle}</title
+
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
@@ -13,11 +18,14 @@
 
 <meta name="keywords" content="PLoS, Public Library of Science, Open Access, Open-Access, Science, Medicine, Biology, Research, Peer-review, Inclusive, Interdisciplinary, Ante-disciplinary, Physics, Chemistry, Engineering" />
 
+<@ww.url id="pgURL" includeParams="get" includeContext="true" encode="false"/>
+<#assign rdfPgURL = pgURL?replace("&amp;", "&")>
+
 <!--
 <rdf:RDF xmlns="http://web.resource.org/cc/"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-<Work rdf:about="http://www.plosone.org">
+<Work rdf:about="http://${freemarker_config.plosOneHost}${rdfPgURL}">
    <license rdf:resource="http://creativecommons.org/licenses/by/2.5/" />
 </Work>
 <License rdf:about="http://creativecommons.org/licenses/by/2.5/">
