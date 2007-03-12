@@ -522,12 +522,12 @@ div.browse div#search-results	{ z-index: 69; position: relative;}
 /*--- Browse Form ---- */
 
 div#browseNav form.browseForm { margin: 0; background: #fff url(../images/pone_tools_bg.gif) no-repeat top left; padding: 10px 0 0 0; color: #666; position: relative; }
-div#browseNav form.browseForm fieldset { margin: 0; padding: 0 0 10px 0; border: none; background: #fff url(../images/pone_tools_bg.gif) no-repeat bottom left; width: 100%; position: relative;}
+div#browseNav form.browseForm fieldset { margin: 0; padding: 0 0 10px 0; border: none; background: #fff url(../images/pone_tools_bg.gif) no-repeat bottom left; width: 100%; position: relative; }
 
 div#browseNav div { padding-bottom: 18px; background-color: #fff; }
 div#browseNav .browseForm legend { display: none;}
 div#browseNav .browseForm li,
-div#browseNav .browseForm ol { list-style-type: none; margin: 10px; padding: 0; height: 100%;}
+div#browseNav .browseForm ol { clear: none;float: none;list-style-type: none; margin: 10px; background: #fff;padding: 0; height: 100%;}
 
 div.resultsTab { border: 2px solid #ccc; padding: 5px; background: #eee; margin: 20px 0;}
 div.resultsTab a { margin: 0 4px; padding: 0 2px;}

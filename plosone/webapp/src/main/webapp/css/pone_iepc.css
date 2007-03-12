@@ -76,6 +76,8 @@ html>body #home { height: auto }
 * html #browseNav li { float: none; }
 * html #browseNav li li { float: left; }
 
+* html div#browseNav form.browseForm { width: 240px; }
+
 *:first-child+html ul#links { height: 1%; bottom: 45px;z-index: 8000; }
 /* IE 7 hax */
 *:first-child+html ul#tabsContainer 	{ }
