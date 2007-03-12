@@ -5,6 +5,8 @@
 		<#assign totalPages = totalPages + 1>
 	</#if>
   <#if (totalPages gt 1) >
+		<div class="resultsTab">
+  
     <#if (startPage gt 0)>
      	<@ww.url id="prevPageURL" action="browse" namespace="/article" startPage="${startPage - 1}" pageSize="${pageSize}" includeParams="get"/>
       <@ww.a href="%{prevPageURL}">&lt; Prev</@ww.a> |
@@ -22,6 +24,7 @@
      	<@ww.url id="nextPageURL" action="browse" namespace="/article" startPage="${startPage + 1}" pageSize="${pageSize}" field="${field}" includeParams="get"/>
        <@ww.a href="%{nextPageURL}">Next &gt;</@ww.a> 
     </#if>
+		</div> <!-- results tab-->
     
   </#if>
 </#macro>
@@ -69,9 +72,7 @@
 	</#if>
 
 	<div id="search-results">	<p><strong>${startPgIndex + 1} - ${endPgIndex + 1}</strong> of <strong>${totalResults}</strong> article<#if totalResults != 1>s</#if> published ${infoText}.</p>
-		<div class="resultsTab">
-			<@pagination />
-		</div> <!-- results tab-->
+		<@pagination />
 		<ul>
 
 		  <#list startIndex .. endIndex as idx>
@@ -86,9 +87,6 @@
 				</li>
 			</#list>
 		</ul>
-
-		<div class="resultsTab">
-			<@pagination />
-		</div> <!-- results tab-->
+		<@pagination />
 	</div> <!-- search results -->
 </div> <!--content-->
