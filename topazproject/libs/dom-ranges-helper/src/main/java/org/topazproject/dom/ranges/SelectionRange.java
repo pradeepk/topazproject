@@ -218,7 +218,8 @@ public class SelectionRange {
       }
 
       // Rule 2: all other complete nodes can be appended to previous
-      if ((type != Node.TEXT_NODE) && !start && !end && (prev != null)) {
+      if ((type != Node.TEXT_NODE) && !start && !end && (prev != null)
+          && (n.getParentNode() == prev.getParentNode())) {
         last.setEnd(r.getEndContainer(), r.getEndOffset());
 
         continue;
