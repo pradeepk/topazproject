@@ -502,7 +502,7 @@ div.source span		{ color: #999; padding: 4px 0 4px 14px; }
 /* ------ Browse Styles ----*/
 div.browse h1 		{ margin-bottom: 20px; margin-right: 140px;}
 div.browse #search-results { margin-left: 0; margin-right: 140px; padding-left: 20px; border-left: 240px solid #eee;}
-div#browseNav 		{ float: left; position: relative; z-index: 70; width: 240px;  padding: 0; background: #eee; margin-bottom: 20px; padding-bottom: 20px;}
+div#browseNav 		{ float: left; position: relative; z-index: 70; width: 240px;  padding: 0; background: #eee; margin-bottom: 20px; padding-bottom: 20px; min-height: 480px;}
 #browseNav li 		{ font-size: .9em; font-weight: bold; padding: 0;margin: 0; }
 #browseNav li input { position: relative; }
 #browseNav ul		{ padding: 0; }
@@ -530,7 +530,7 @@ div#browseNav .browseForm li,
 div#browseNav .browseForm ol { list-style-type: none; margin: 10px; padding: 0; height: 100%;}
 
 div.resultsTab { border: 2px solid #ccc; padding: 5px; background: #eee; margin: 20px 0;}
-div.resultsTab a { margin-right:5px; }
+div.resultsTab a { margin: 0 4px; padding: 0 2px;}
 
 
 li.current { list-style-type: none!important; background: url(../images/pone_li_current.gif) no-repeat 0 8px!important; font-size: 1em!important;}
