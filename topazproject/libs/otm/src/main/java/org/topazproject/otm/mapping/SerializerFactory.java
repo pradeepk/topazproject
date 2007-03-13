@@ -65,6 +65,10 @@ public class SerializerFactory {
     public T deserialize(String o) throws Exception {
       return constructor.newInstance(o);
     }
+
+    public String toString() {
+      return "SimpleSerializer[" + constructor.getDeclaringClass().getName() + "]";
+    }
   }
 
   private SerializerFactory() {

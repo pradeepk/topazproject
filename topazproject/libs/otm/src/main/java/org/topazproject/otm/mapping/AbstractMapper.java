@@ -228,4 +228,10 @@ public abstract class AbstractMapper implements Mapper {
       throw new RuntimeException("Deserialization error", e);
     }
   }
+
+  public String toString() {
+    return getClass().getName() + "[field=" + name + ", pred=" + uri + ", type=" + type.getName() +
+           ", componentType=" + componentType.getName() + ", inverse=" + inverse + ", serializer=" +
+           serializer + "]";
+  }
 }
