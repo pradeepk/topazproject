@@ -44,7 +44,7 @@ public class Criteria {
    *
    * @return the newly created sub-criteria
    */
-  public Criteria createCriteria(String path) {
+  public Criteria createCriteria(String path) throws OtmException {
     Criteria c = session.createCriteria(parent, path);
     children.add(c);
 
@@ -118,7 +118,7 @@ public class Criteria {
    *
    * @return DOCUMENT ME!
    */
-  public List list() {
+  public List list() throws OtmException {
     return (parent != null) ? parent.list() : session.list(this);
   }
 

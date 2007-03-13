@@ -5,6 +5,8 @@ import java.lang.reflect.Method;
 
 import java.util.List;
 
+import org.topazproject.otm.OtmException;
+
 /**
  * Mapper for a java class field to rdf triples having a specific predicate.
  *
@@ -18,7 +20,7 @@ public interface Mapper {
    *
    * @return the list containing the field's values (may be serialized)
    */
-  public List get(Object o);
+  public List get(Object o) throws OtmException;
 
   /**
    * Set a value for an object field.
@@ -26,7 +28,7 @@ public interface Mapper {
    * @param o the object
    * @param vals the list of values to set (may be deserialized)
    */
-  public void set(Object o, List vals);
+  public void set(Object o, List vals) throws OtmException;
 
   /**
    * Get the raw object field value.
@@ -36,7 +38,7 @@ public interface Mapper {
    *
    * @return the raw field value
    */
-  public Object getRawValue(Object o, boolean create);
+  public Object getRawValue(Object o, boolean create) throws OtmException;
 
   /**
    * Set the raw object field value
@@ -44,7 +46,7 @@ public interface Mapper {
    * @param o the object
    * @param value the value to set
    */
-  public void setRawValue(Object o, Object value);
+  public void setRawValue(Object o, Object value) throws OtmException;
 
   /**
    * Gets the get method used.

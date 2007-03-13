@@ -41,7 +41,7 @@ public class ClassMetadata {
    *
    * @param clazz DOCUMENT ME!
    */
-  public ClassMetadata(Class clazz) {
+  public ClassMetadata(Class clazz) throws OtmException {
     this(clazz, null);
   }
 
@@ -51,11 +51,11 @@ public class ClassMetadata {
    * @param clazz DOCUMENT ME!
    * @param nsOfContainingClass DOCUMENT ME!
    */
-  public ClassMetadata(Class clazz, String nsOfContainingClass) {
+  public ClassMetadata(Class clazz, String nsOfContainingClass) throws OtmException {
     this(clazz, clazz, nsOfContainingClass);
   }
 
-  private ClassMetadata(Class clazz, Class top, String nsOfContainingClass) {
+  private ClassMetadata(Class clazz, Class top, String nsOfContainingClass) throws OtmException {
     this.clazz                         = clazz;
 
     Class         s                    = clazz.getSuperclass();
@@ -74,7 +74,7 @@ public class ClassMetadata {
           fieldMap.put(m.getUri(), m);
           nameMap.put(m.getName(), m);
         }
-      } catch (RuntimeException e) {
+      } catch (OtmException e) {
         if (log.isDebugEnabled())
           log.debug("super class meta couldn't be created.", e);
       }
@@ -100,7 +100,7 @@ public class ClassMetadata {
       types   = new HashSet<String>(types);
 
       if (!types.add(type))
-        throw new RuntimeException("Duplicate rdf:type in class heirarchy " + clazz);
+        throw new OtmException("Duplicate rdf:type in class hierarchy " + clazz);
 
       types = Collections.unmodifiableSet(types);
     }
@@ -116,12 +116,12 @@ public class ClassMetadata {
 
         if (uri == null) {
           if (idField != null)
-            throw new RuntimeException("Duplicate @Id field " + f.toGenericString());
+            throw new OtmException("Duplicate @Id field " + f.toGenericString());
 
           idField = m;
         } else {
           if (fieldMap.put(uri, m) != null)
-            throw new RuntimeException("Duplicate @Rdf uri for " + f.toGenericString());
+            throw new OtmException("Duplicate @Rdf uri for " + f.toGenericString());
 
           nameMap.put(m.getName(), m);
         }

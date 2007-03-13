@@ -66,7 +66,7 @@ public class SessionFactory {
    *
    * @param classes the classes to load
    */
-  public void preload(Class[] classes) {
+  public void preload(Class[] classes) throws OtmException {
     for (Class c : classes)
       preload(c);
   }
@@ -76,7 +76,7 @@ public class SessionFactory {
    *
    * @param c the class to load
    */
-  public void preload(Class c) {
+  public void preload(Class c) throws OtmException {
     if ((c == null) || Object.class.equals(c))
       return;
 

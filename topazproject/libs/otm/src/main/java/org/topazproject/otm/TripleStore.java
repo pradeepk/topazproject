@@ -20,14 +20,14 @@ public interface TripleStore {
    *
    * @return DOCUMENT ME!
    */
-  public Connection openConnection();
+  public Connection openConnection() throws OtmException;
 
   /**
    * DOCUMENT ME!
    *
    * @param con DOCUMENT ME!
    */
-  public void closeConnection(Connection con);
+  public void closeConnection(Connection con) throws OtmException;
 
   /**
    * DOCUMENT ME!
@@ -37,7 +37,7 @@ public interface TripleStore {
    * @param o DOCUMENT ME!
    * @param txn DOCUMENT ME!
    */
-  public void insert(ClassMetadata cm, String id, Object o, Transaction txn);
+  public void insert(ClassMetadata cm, String id, Object o, Transaction txn) throws OtmException;
 
   /**
    * DOCUMENT ME!
@@ -46,7 +46,7 @@ public interface TripleStore {
    * @param id DOCUMENT ME!
    * @param txn DOCUMENT ME!
    */
-  public void delete(ClassMetadata cm, String id, Transaction txn);
+  public void delete(ClassMetadata cm, String id, Transaction txn) throws OtmException;
 
   /**
    * DOCUMENT ME!
@@ -57,7 +57,7 @@ public interface TripleStore {
    *
    * @return DOCUMENT ME!
    */
-  public ResultObject get(ClassMetadata cm, String id, Transaction txn);
+  public ResultObject get(ClassMetadata cm, String id, Transaction txn) throws OtmException;
 
   /**
    * DOCUMENT ME!
@@ -67,7 +67,7 @@ public interface TripleStore {
    *
    * @return DOCUMENT ME!
    */
-  public List<ResultObject> list(Criteria criteria, Transaction txn);
+  public List<ResultObject> list(Criteria criteria, Transaction txn) throws OtmException;
 
   public static class ResultObject {
     public Object                          o;

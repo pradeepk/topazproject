@@ -63,7 +63,7 @@ public class Session {
    *
    * @return the transaction
    */
-  public Transaction beginTransaction() {
+  public Transaction beginTransaction() throws OtmException {
     if (txn == null)
       txn = new Transaction(this);
 
@@ -82,7 +82,7 @@ public class Session {
   /**
    * Close and release all resources.
    */
-  public void close() {
+  public void close() throws OtmException {
     clear();
 
     if (txn != null)
@@ -95,11 +95,11 @@ public class Session {
    * Flushes all modified objects to the triple-store. Usually called automatically on a
    * transaction commit.
    *
-   * @throws RuntimeException on an error
+   * @throws OtmException on an error
    */
-  public void flush() {
+  public void flush() throws OtmException {
     if (txn == null)
-      throw new RuntimeException("No active transaction");
+      throw new OtmException("No active transaction");
 
     for (Map.Entry<String, Object> e : deleteMap.entrySet())
       write(e.getKey(), e.getValue(), true);
@@ -130,7 +130,7 @@ public class Session {
    *
    * @return the object id
    */
-  public String saveOrUpdate(Object o) {
+  public String saveOrUpdate(Object o) throws OtmException {
     String id = checkObject(o);
     sync(o, id, false, true, true);
 
@@ -144,7 +144,7 @@ public class Session {
    *
    * @return the object id.
    */
-  public String delete(Object o) {
+  public String delete(Object o) throws OtmException {
     String id = checkObject(o);
 
     if (currentIds.contains(id))
@@ -192,7 +192,7 @@ public class Session {
    *
    * @return the object or null if deleted from session
    */
-  public <T> T load(Class<T> clazz, String id) {
+  public <T> T load(Class<T> clazz, String id) throws OtmException {
     Object o = deleteMap.get(id);
 
     if (o != null)
@@ -220,7 +220,7 @@ public class Session {
    *
    * @return the object or null if deleted or does not exist in store
    */
-  public <T> T get(Class<T> clazz, String id) {
+  public <T> T get(Class<T> clazz, String id) throws OtmException {
     Object o = deleteMap.get(id);
 
     if (o != null)
@@ -251,9 +251,9 @@ public class Session {
    *
    * @return an attached object with merged values
    *
-   * @throws RuntimeException DOCUMENT ME!
+   * @throws OtmException DOCUMENT ME!
    */
-  public <T> T merge(T o) {
+  public <T> T merge(T o) throws OtmException {
     String id = checkObject(o);
 
     // make sure it is loaded
@@ -264,7 +264,7 @@ public class Session {
       try {
         ao = (T) o.getClass().newInstance();
       } catch (Exception e) {
-        throw new RuntimeException("instantiation failed", e);
+        throw new OtmException("instantiation failed", e);
       }
 
       Map<String, Object> loopDetect = new HashMap<String, Object>();
@@ -283,7 +283,7 @@ public class Session {
    *
    * @param o the attached object to refresh
    */
-  public void refresh(Object o) {
+  public void refresh(Object o) throws OtmException {
     String id = checkObject(o);
 
     if (dirtyMap.containsKey(id) || cleanMap.containsKey(id)) {
@@ -300,7 +300,7 @@ public class Session {
    *
    * @return a newly created Criteria object
    */
-  public Criteria createCriteria(Class clazz) {
+  public Criteria createCriteria(Class clazz) throws OtmException {
     return new Criteria(this, null, null, checkClass(clazz));
   }
 
@@ -314,14 +314,14 @@ public class Session {
    *
    * @return a newly created Criteria.
    *
-   * @throws RuntimeException on an error
+   * @throws OtmException on an error
    */
-  public Criteria createCriteria(Criteria criteria, String path) {
+  public Criteria createCriteria(Criteria criteria, String path) throws OtmException {
     ClassMetadata cm = criteria.getClassMetadata();
     Mapper        m  = cm.getMapperByName(path);
 
     if (m == null)
-      throw new RuntimeException(path + " is not a valid field name for " + cm);
+      throw new OtmException(path + " is not a valid field name for " + cm);
 
     return new Criteria(this, criteria, m, checkClass(m.getComponentType()));
   }
@@ -333,11 +333,11 @@ public class Session {
    *
    * @return the results list
    *
-   * @throws RuntimeException on an error
+   * @throws OtmException on an error
    */
-  public List list(Criteria criteria) {
+  public List list(Criteria criteria) throws OtmException {
     if (txn == null)
-      throw new RuntimeException("No transaction active");
+      throw new OtmException("No transaction active");
 
     TripleStore store  = sessionFactory.getTripleStore();
 
@@ -360,7 +360,7 @@ public class Session {
    *
    * @return the list of ids
    */
-  public List<String> getIds(List objs) {
+  public List<String> getIds(List objs) throws OtmException {
     List<String> results = new ArrayList<String>(objs.size());
 
     for (Object o : objs)
@@ -369,7 +369,7 @@ public class Session {
     return results;
   }
 
-  private void write(String id, Object o, boolean delete) {
+  private void write(String id, Object o, boolean delete) throws OtmException {
     boolean       pristineProxy = pristineProxies.contains(id);
     ClassMetadata cm            = sessionFactory.getClassMetadata(o.getClass());
     TripleStore   store         = sessionFactory.getTripleStore();
@@ -389,9 +389,9 @@ public class Session {
     }
   }
 
-  private Object getFromStore(Class clazz, String id, ClassMetadata cm) {
+  private Object getFromStore(Class clazz, String id, ClassMetadata cm) throws OtmException {
     if (txn == null)
-      throw new RuntimeException("No transaction active");
+      throw new OtmException("No transaction active");
 
     TripleStore              store = sessionFactory.getTripleStore();
 
@@ -400,7 +400,7 @@ public class Session {
     return (ro == null) ? null : instantiate(ro);
   }
 
-  private Object instantiate(TripleStore.ResultObject ro) {
+  private Object instantiate(TripleStore.ResultObject ro) throws OtmException {
     for (Map.Entry<Mapper, List<String>> e : ro.unresolvedAssocs.entrySet()) {
       List   assocs = new ArrayList();
       Mapper p      = e.getKey();
@@ -434,7 +434,7 @@ public class Session {
   }
 
   private Object sync(final Object other, final String id, final boolean merge,
-                      final boolean update, final boolean cascade) {
+                      final boolean update, final boolean cascade) throws OtmException {
     if (currentIds.contains(id))
       return null; // loop and hence the return value is unused
 
@@ -497,12 +497,12 @@ public class Session {
     return o;
   }
 
-  private Object copy(Object o, Object other, Map<String, Object> loopDetect) {
+  private Object copy(Object o, Object other, Map<String, Object> loopDetect) throws OtmException {
     ClassMetadata ocm = checkClass(other.getClass());
     ClassMetadata cm  = checkClass(o.getClass());
 
     if (!cm.getSourceClass().isAssignableFrom(ocm.getSourceClass()))
-      throw new RuntimeException(cm.toString() + " is not assignable from " + ocm);
+      throw new OtmException(cm.toString() + " is not assignable from " + ocm);
 
     for (Mapper p : cm.getFields()) {
       Mapper op = ocm.getMapperByUri(p.getUri());
@@ -523,7 +523,7 @@ public class Session {
             try {
               aoc = ao.getClass().newInstance();
             } catch (Exception e) {
-              throw new RuntimeException("instantiation failed", e);
+              throw new OtmException("instantiation failed", e);
             }
 
             loopDetect.put(id, aoc);
@@ -540,7 +540,8 @@ public class Session {
     return o;
   }
 
-  private Object newDynamicProxy(final Class clazz, final String id, final ClassMetadata cm) {
+  private Object newDynamicProxy(final Class clazz, final String id, final ClassMetadata cm)
+      throws OtmException {
     MethodHandler mi =
       new MethodHandler() {
         private Object loaded = null;
@@ -565,13 +566,13 @@ public class Session {
 
       return o;
     } catch (Exception e) {
-      throw new RuntimeException("Dynamic proxy instantiation failed", e);
+      throw new OtmException("Dynamic proxy instantiation failed", e);
     }
   }
 
-  private String checkObject(Object o) {
+  private String checkObject(Object o) throws OtmException {
     if (o == null)
-      throw new RuntimeException("Null object");
+      throw new NullPointerException("Null object");
 
     ClassMetadata cm      = checkClass(o.getClass());
 
@@ -579,12 +580,12 @@ public class Session {
     List          ids     = idField.get(o);
 
     if (ids.size() == 0)
-      throw new RuntimeException("No id generation support yet " + o.getClass());
+      throw new OtmException("No id generation support yet " + o.getClass());
 
     return (String) ids.get(0);
   }
 
-  private ClassMetadata checkClass(Class clazz) {
+  private ClassMetadata checkClass(Class clazz) throws OtmException {
     ClassMetadata cm = sessionFactory.getClassMetadata(clazz);
 
     if (cm == null) {
@@ -594,11 +595,11 @@ public class Session {
         cm = sessionFactory.getClassMetadata(c);
 
       if (cm == null)
-        throw new RuntimeException("No class metadata found for " + clazz);
+        throw new OtmException("No class metadata found for " + clazz);
     }
 
     if (!cm.isEntity())
-      throw new RuntimeException("No id-field or rdf:type or graph/model found for " + clazz);
+      throw new OtmException("No id-field or rdf:type or graph/model found for " + clazz);
 
     return cm;
   }

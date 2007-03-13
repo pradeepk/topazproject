@@ -9,6 +9,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.topazproject.otm.OtmException;
+
 /**
  * Mapper for array type fileds.
  *
@@ -37,7 +39,7 @@ public class ArrayMapper extends AbstractMapper {
    *
    * @return the list of array elements (may be serialized)
    */
-  public List get(Object o) {
+  public List get(Object o) throws OtmException {
     Object value = getRawValue(o, false);
 
     if (value == null)
@@ -62,7 +64,7 @@ public class ArrayMapper extends AbstractMapper {
    * @param o the object
    * @param vals the values to be set (may be deserialized)
    */
-  public void set(Object o, List vals) {
+  public void set(Object o, List vals) throws OtmException {
     Object value;
 
     if (vals.size() == 0)

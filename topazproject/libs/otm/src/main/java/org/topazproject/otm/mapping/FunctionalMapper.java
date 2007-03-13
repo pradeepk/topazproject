@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.topazproject.otm.OtmException;
+
 /**
  * Mapper for a functional property field.
  *
@@ -34,7 +36,7 @@ public class FunctionalMapper extends AbstractMapper {
    *
    * @return a singelton or empty list (may be serialized)
    */
-  public List get(Object o) {
+  public List get(Object o) throws OtmException {
     Object value = getRawValue(o, false);
 
     return (value == null) ? Collections.emptyList() : Collections.singletonList(serialize(value));
@@ -46,13 +48,13 @@ public class FunctionalMapper extends AbstractMapper {
    * @param o the object
    * @param vals a singelton or empty list (may be deserialized)
    *
-   * @throws RuntimeException if too many values to set
+   * @throws OtmException if too many values to set
    */
-  public void set(Object o, List vals) {
+  public void set(Object o, List vals) throws OtmException {
     int size = vals.size();
 
     if (size > 1) // xxx: should be optional
-      throw new RuntimeException("Too many values for '" + getField().toGenericString() + "'");
+      throw new OtmException("Too many values for '" + getField().toGenericString() + "'");
 
     Object value = (size == 0) ? null : deserialize(vals.get(0));
     setRawValue(o, value);

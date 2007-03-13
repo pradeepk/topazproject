@@ -7,6 +7,8 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.topazproject.otm.OtmException;
+
 /**
  * A wrapping mapper that projects fields of an embedded class on to the embedding class. This
  * makes it possible for treating embedded class fields the same way as regular class fields.
@@ -31,7 +33,7 @@ public class EmbeddedClassFieldMapper implements Mapper {
   /*
    * inherited javadoc
    */
-  public Object getRawValue(Object o, boolean create) {
+  public Object getRawValue(Object o, boolean create) throws OtmException {
     Object co = container.getRawValue(o, create);
 
     return (co == null) ? null : field.getRawValue(co, create);
@@ -40,14 +42,14 @@ public class EmbeddedClassFieldMapper implements Mapper {
   /*
    * inherited javadoc
    */
-  public void setRawValue(Object o, Object value) {
+  public void setRawValue(Object o, Object value) throws OtmException {
     field.setRawValue(container.getRawValue(o, true), value);
   }
 
   /*
    * inherited javadoc
    */
-  public List get(Object o) {
+  public List get(Object o) throws OtmException {
     Object co = container.getRawValue(o, false);
 
     return (co == null) ? Collections.emptyList() : field.get(co);
@@ -56,7 +58,7 @@ public class EmbeddedClassFieldMapper implements Mapper {
   /*
    * inherited javadoc
    */
-  public void set(Object o, List vals) {
+  public void set(Object o, List vals) throws OtmException {
     field.set(container.getRawValue(o, true), vals);
   }
 

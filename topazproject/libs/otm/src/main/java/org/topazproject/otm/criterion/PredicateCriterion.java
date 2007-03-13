@@ -5,6 +5,7 @@ import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
@@ -48,12 +49,12 @@ public class PredicateCriterion implements Criterion {
   /*
    * inherited javadoc
    */
-  public String toItql(Criteria criteria, String subjectVar, String varPrefix) {
+  public String toItql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
     ClassMetadata cm = criteria.getClassMetadata();
     Mapper        m  = cm.getMapperByName(getName());
 
     if (m == null)
-      throw new RuntimeException("'" + getName() + "' does not exist in " + cm);
+      throw new OtmException("'" + getName() + "' does not exist in " + cm);
 
     String val;
 
@@ -71,8 +72,7 @@ public class PredicateCriterion implements Criterion {
       ModelConfig conf = criteria.getSession().getSessionFactory().getModel(model);
 
       if (conf == null)
-        throw new RuntimeException("Model/Graph '" + model
-                                   + "' is not configured in SessionFactory");
+        throw new OtmException("Model/Graph '" + model + "' is not configured in SessionFactory");
 
       model = " in <" + conf.getUri() + "> ";
     }
@@ -80,8 +80,8 @@ public class PredicateCriterion implements Criterion {
     String uri = criteria.getSession().getSessionFactory().getInverseUri(m.getUri());
 
     if (uri == null)
-      throw new RuntimeException("No inverse uri for '" + m.getUri()
-                                 + "' configured in SessionFactory");
+      throw new OtmException("No inverse uri for '" + m.getUri()
+                             + "' configured in SessionFactory");
 
     String query = val + " <" + uri + "> " + subjectVar;
 

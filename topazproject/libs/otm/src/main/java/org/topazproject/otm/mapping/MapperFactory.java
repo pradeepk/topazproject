@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Id;
@@ -47,9 +48,10 @@ public class MapperFactory {
    *
    * @return a mapper or null if the field is static or transient
    *
-   * @throws RuntimeException if a mapper can't be created
+   * @throws OtmException if a mapper can't be created
    */
-  public static Collection<?extends Mapper> create(Field f, Class top, String ns) {
+  public static Collection<?extends Mapper> create(Field f, Class top, String ns)
+      throws OtmException {
     Class type = f.getType();
     int   mod  = f.getModifiers();
 
@@ -61,7 +63,7 @@ public class MapperFactory {
     }
 
     if (Modifier.isFinal(mod))
-      throw new RuntimeException("'final' field '" + f.toGenericString() + "' can't be persisted.");
+      throw new OtmException("'final' field '" + f.toGenericString() + "' can't be persisted.");
 
     String n = f.getName();
     n = n.substring(0, 1).toUpperCase() + n.substring(1);
@@ -86,8 +88,8 @@ public class MapperFactory {
     }
 
     if (((getMethod == null) || (setMethod == null)) && !Modifier.isPublic(mod))
-      throw new RuntimeException("The field '" + f.toGenericString()
-                                 + "' is inaccessible and can't be persisted.");
+      throw new OtmException("The field '" + f.toGenericString()
+                             + "' is inaccessible and can't be persisted.");
 
     // xxx: The above get/set determination is based on 'preload' polymorphic info.
     // xxx: Does not account for run time sub classing. 
@@ -103,8 +105,8 @@ public class MapperFactory {
 
     if (id != null) {
       if (!type.equals(String.class) && !type.equals(URI.class) && !type.equals(URL.class))
-        throw new RuntimeException("@Id field '" + f.toGenericString()
-                                   + "' must be a String, URI or URL.");
+        throw new OtmException("@Id field '" + f.toGenericString()
+                               + "' must be a String, URI or URL.");
 
       Serializer serializer = SerializerFactory.getSerializer(type);
 
@@ -113,8 +115,8 @@ public class MapperFactory {
     }
 
     if (!embedded && (uri == null))
-      throw new RuntimeException("Missing @Rdf for field '" + f.toGenericString() + "' in "
-                                 + f.getDeclaringClass());
+      throw new OtmException("Missing @Rdf for field '" + f.toGenericString() + "' in "
+                             + f.getDeclaringClass());
 
     boolean isArray      = type.isArray();
     boolean isCollection = Collection.class.isAssignableFrom(type);
@@ -141,23 +143,22 @@ public class MapperFactory {
     }
 
     if (isArray || isCollection || (serializer != null))
-      throw new RuntimeException("@Embedded class field '" + f.toGenericString()
-                                 + "' can't be an array, collection or a simple field");
+      throw new OtmException("@Embedded class field '" + f.toGenericString()
+                             + "' can't be an array, collection or a simple field");
 
     ClassMetadata cm;
 
     try {
       cm = new ClassMetadata(type, ns);
-    } catch (RuntimeException e) {
-      throw new RuntimeException("Could not generate metadata for @Embedded class field '"
-                                 + f.toGenericString() + "'", e);
+    } catch (OtmException e) {
+      throw new OtmException("Could not generate metadata for @Embedded class field '"
+                             + f.toGenericString() + "'", e);
     }
 
     // xxx: this is a restriction on this API. revisit to allow this case too.
     if (cm.getType() != null)
-      throw new RuntimeException("@Embedded class '" + type + "' embedded at '"
-                                 + f.toGenericString()
-                                 + "' should not declare an rdf:type of its own. (fix me)");
+      throw new OtmException("@Embedded class '" + type + "' embedded at '" + f.toGenericString()
+                             + "' should not declare an rdf:type of its own. (fix me)");
 
     EmbeddedClassMapper ecp     = new EmbeddedClassMapper(f, getMethod, setMethod);
 

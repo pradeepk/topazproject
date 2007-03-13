@@ -10,6 +10,7 @@ import java.net.URL;
 import java.util.List;
 
 import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Inverse;
 import org.topazproject.otm.annotations.Model;
 
@@ -59,7 +60,7 @@ public abstract class AbstractMapper implements Mapper {
   /*
    * inherited javadoc
    */
-  public Object getRawValue(Object o, boolean create) {
+  public Object getRawValue(Object o, boolean create) throws OtmException {
     Object value;
 
     try {
@@ -73,7 +74,7 @@ public abstract class AbstractMapper implements Mapper {
         setRawValue(o, value);
       }
     } catch (Exception e) {
-      throw new RuntimeException("Failed to get a value from '" + field.toGenericString() + "'", e);
+      throw new OtmException("Failed to get a value from '" + field.toGenericString() + "'", e);
     }
 
     return value;
@@ -82,7 +83,7 @@ public abstract class AbstractMapper implements Mapper {
   /*
    * inherited javadoc
    */
-  public void setRawValue(Object o, Object value) {
+  public void setRawValue(Object o, Object value) throws OtmException {
     try {
       if (setter != null)
         setter.invoke(o, value);
@@ -92,7 +93,7 @@ public abstract class AbstractMapper implements Mapper {
       if ((value == null) && type.isPrimitive())
         setRawValue(o, 0);
       else
-        throw new RuntimeException("Failed to set a value for '" + field.toGenericString() + "'", e);
+        throw new OtmException("Failed to set a value for '" + field.toGenericString() + "'", e);
     }
   }
 
@@ -182,8 +183,12 @@ public abstract class AbstractMapper implements Mapper {
           if (m != null)
             inverseModel = m.value();
         } else {
-          ClassMetadata cm = new ClassMetadata(componentType);
-          inverseModel = cm.getModel();
+          try {
+            ClassMetadata cm = new ClassMetadata(componentType);
+            inverseModel = cm.getModel();
+          } catch (OtmException oe) {
+            throw new Error("Unexpected error creating class-metadata for " + componentType, oe);
+          }
         }
       }
 
@@ -201,13 +206,13 @@ public abstract class AbstractMapper implements Mapper {
    *
    * @return the returned value
    *
-   * @throws RuntimeException DOCUMENT ME!
+   * @throws OtmException DOCUMENT ME!
    */
-  protected Object serialize(Object o) {
+  protected Object serialize(Object o) throws OtmException {
     try {
       return (serializer != null) ? serializer.serialize(o) : o;
     } catch (Exception e) {
-      throw new RuntimeException("Serialization error", e);
+      throw new OtmException("Serialization error", e);
     }
   }
 
@@ -219,13 +224,13 @@ public abstract class AbstractMapper implements Mapper {
    *
    * @return the returned value
    *
-   * @throws RuntimeException DOCUMENT ME!
+   * @throws OtmException DOCUMENT ME!
    */
-  protected Object deserialize(Object o) {
+  protected Object deserialize(Object o) throws OtmException {
     try {
       return (serializer != null) ? serializer.deserialize((String) o) : o;
     } catch (Exception e) {
-      throw new RuntimeException("Deserialization error", e);
+      throw new OtmException("Deserialization error", e);
     }
   }
 

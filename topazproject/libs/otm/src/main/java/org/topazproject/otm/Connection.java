@@ -9,20 +9,20 @@ public interface Connection {
   /**
    * Begin a transaction on this connection.
    */
-  public void beginTransaction();
+  public void beginTransaction() throws OtmException;
 
   /**
    * End a transaction on this connection.
    */
-  public void endTransaction();
+  public void endTransaction() throws OtmException;
 
   /**
    * Commit the current transaction and end it.
    */
-  public void commit();
+  public void commit() throws OtmException;
 
   /**
    * Rollback the current transaction and end it.
    */
-  public void rollback();
+  public void rollback() throws OtmException;
 }

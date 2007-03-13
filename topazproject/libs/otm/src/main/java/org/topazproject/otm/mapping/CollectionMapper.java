@@ -10,13 +10,15 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
+import org.topazproject.otm.OtmException;
+
 /**
  * Mapper for {@link java.util.Collection collection} fields.
  *
  * @author Pradeep Krishnan
  */
 public class CollectionMapper extends AbstractMapper {
-/**
+  /**
    * Creates a new CollectionMapper object.
    *
    * @param uri the rdf predicate
@@ -38,7 +40,7 @@ public class CollectionMapper extends AbstractMapper {
    *
    * @return the list of array elements (may be serialized)
    */
-  public List get(Object o) {
+  public List get(Object o) throws OtmException {
     Collection value = (Collection) getRawValue(o, false);
 
     if (value == null)
@@ -59,7 +61,7 @@ public class CollectionMapper extends AbstractMapper {
    * @param o the object
    * @param vals the values to be set (may be deserialized)
    */
-  public void set(Object o, List vals) {
+  public void set(Object o, List vals) throws OtmException {
     Collection value  = (Collection) getRawValue(o, false);
 
     boolean    create = (value == null);
@@ -76,12 +78,12 @@ public class CollectionMapper extends AbstractMapper {
       setRawValue(o, value);
   }
 
-  private Collection newInstance() {
+  private Collection newInstance() throws OtmException {
     try {
       // xxx: handle interfaces and abstract collections
       return (Collection) getType().newInstance();
     } catch (Exception e) {
-      throw new RuntimeException("Can't instantiate " + getType(), e);
+      throw new OtmException("Can't instantiate " + getType(), e);
     }
   }
 }

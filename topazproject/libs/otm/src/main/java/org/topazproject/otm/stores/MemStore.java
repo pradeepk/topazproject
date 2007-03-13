@@ -15,6 +15,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.annotations.Rdf;
@@ -59,7 +60,7 @@ public class MemStore implements TripleStore {
    * @param o DOCUMENT ME!
    * @param txn DOCUMENT ME!
    */
-  public void insert(ClassMetadata cm, String id, Object o, Transaction txn) {
+  public void insert(ClassMetadata cm, String id, Object o, Transaction txn) throws OtmException {
     MemStoreConnection msc     = (MemStoreConnection) txn.getConnection();
     Storage            storage = msc.getStorage();
 
@@ -84,7 +85,7 @@ public class MemStore implements TripleStore {
    * @param id DOCUMENT ME!
    * @param txn DOCUMENT ME!
    */
-  public void delete(ClassMetadata cm, String id, Transaction txn) {
+  public void delete(ClassMetadata cm, String id, Transaction txn) throws OtmException {
     MemStoreConnection msc     = (MemStoreConnection) txn.getConnection();
     Storage            storage = msc.getStorage();
     String             model   = cm.getModel();
@@ -102,9 +103,9 @@ public class MemStore implements TripleStore {
    *
    * @return DOCUMENT ME!
    *
-   * @throws RuntimeException DOCUMENT ME!
+   * @throws OtmException DOCUMENT ME!
    */
-  public ResultObject get(ClassMetadata cm, String id, Transaction txn) {
+  public ResultObject get(ClassMetadata cm, String id, Transaction txn) throws OtmException {
     MemStoreConnection                     msc     = (MemStoreConnection) txn.getConnection();
     Storage                                storage = msc.getStorage();
 
@@ -125,7 +126,7 @@ public class MemStore implements TripleStore {
         String inverseUri = txn.getSession().getSessionFactory().getInverseUri(uri);
 
         if (inverseUri == null)
-          throw new RuntimeException("No inverse uri defined for " + uri);
+          throw new OtmException("No inverse uri defined for " + uri);
 
         String inverseModel = p.getInverseModel();
 
@@ -162,7 +163,7 @@ public class MemStore implements TripleStore {
    *
    * @return DOCUMENT ME!
    */
-  public List<ResultObject> list(Criteria criteria, Transaction txn) {
+  public List<ResultObject> list(Criteria criteria, Transaction txn) throws OtmException {
     MemStoreConnection msc      = (MemStoreConnection) txn.getConnection();
     Storage            storage  = msc.getStorage();
     ClassMetadata      cm       = criteria.getClassMetadata();
@@ -175,7 +176,8 @@ public class MemStore implements TripleStore {
     return results;
   }
 
-  private Set<String> conjunction(List<Criterion> criterions, Criteria criteria, Storage storage) {
+  private Set<String> conjunction(List<Criterion> criterions, Criteria criteria, Storage storage)
+      throws OtmException {
     Set<String> subjects = new HashSet<String>();
     boolean     first    = true;
 
@@ -193,7 +195,8 @@ public class MemStore implements TripleStore {
     return subjects;
   }
 
-  private Set<String> disjunction(List<Criterion> criterions, Criteria criteria, Storage storage) {
+  private Set<String> disjunction(List<Criterion> criterions, Criteria criteria, Storage storage)
+      throws OtmException {
     Set<String> subjects = new HashSet<String>();
 
     for (Criterion c : criterions)
@@ -202,7 +205,8 @@ public class MemStore implements TripleStore {
     return subjects;
   }
 
-  private Set<String> evaluate(Criterion c, Criteria criteria, Storage storage) {
+  private Set<String> evaluate(Criterion c, Criteria criteria, Storage storage)
+      throws OtmException {
     ClassMetadata cm    = criteria.getClassMetadata();
     String        model = cm.getModel();
     Set<String>   ids;
@@ -224,7 +228,7 @@ public class MemStore implements TripleStore {
     } else if (c instanceof Disjunction) {
       ids = disjunction(((Junction) c).getCriterions(), criteria, storage);
     } else {
-      throw new RuntimeException("MemStor can't handle " + c.getClass());
+      throw new OtmException("MemStor can't handle " + c.getClass());
     }
 
     return ids;
@@ -235,7 +239,8 @@ public class MemStore implements TripleStore {
          List<Field> orderBy, long offset, long size);
    */
   private ResultObject instantiate(SessionFactory sessionFactory, Class clazz, String id,
-                                   Map<String, Map<String, List<String>>> triples) {
+                                   Map<String, Map<String, List<String>>> triples)
+      throws OtmException {
     Map<String, List<String>> props = triples.get(id);
     List<String>              types = props.get(Rdf.rdf + "type");
 
@@ -250,7 +255,7 @@ public class MemStore implements TripleStore {
     try {
       ro             = new ResultObject(clazz.newInstance(), id);
     } catch (Exception e) {
-      throw new RuntimeException("instantiation failed", e);
+      throw new OtmException("instantiation failed", e);
     }
 
     cm.getIdField().set(ro.o, Collections.singletonList(id));

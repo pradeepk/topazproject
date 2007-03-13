@@ -31,7 +31,7 @@ public class OtmTest extends TestCase {
   /**
    * DOCUMENT ME!
    */
-  protected void setUp() {
+  protected void setUp() throws OtmException {
     factory.setTripleStore(new MemStore());
 
     factory.setInverseUri(Reply.NS + "hasReply", Reply.NS + "inReplyTo");
@@ -48,7 +48,7 @@ public class OtmTest extends TestCase {
   /**
    * DOCUMENT ME!
    */
-  public void test01() {
+  public void test01() throws OtmException {
     Session     session = factory.openSession();
     Transaction tx      = null;
 
@@ -58,7 +58,7 @@ public class OtmTest extends TestCase {
       session.saveOrUpdate(new PublicAnnotation(URI.create("http://localhost/annotation/1")));
 
       tx.commit(); // Flush happens automatically
-    } catch (RuntimeException e) {
+    } catch (OtmException e) {
       if (tx != null)
         tx.rollback();
 
@@ -90,7 +90,7 @@ public class OtmTest extends TestCase {
       session.saveOrUpdate(a);
 
       tx.commit();
-    } catch (RuntimeException e) {
+    } catch (OtmException e) {
       if (tx != null)
         tx.rollback();
 
@@ -125,7 +125,7 @@ public class OtmTest extends TestCase {
       assertNull(a);
 
       tx.commit();
-    } catch (RuntimeException e) {
+    } catch (OtmException e) {
       if (tx != null)
         tx.rollback();
 
@@ -145,7 +145,7 @@ public class OtmTest extends TestCase {
       assertNull(a);
 
       tx.commit();
-    } catch (RuntimeException e) {
+    } catch (OtmException e) {
       if (tx != null)
         tx.rollback();
 
@@ -158,7 +158,7 @@ public class OtmTest extends TestCase {
   /**
    * DOCUMENT ME!
    */
-  public void test02() {
+  public void test02() throws OtmException {
     Session     session = factory.openSession();
     Transaction tx      = null;
 
@@ -177,7 +177,7 @@ public class OtmTest extends TestCase {
       session.saveOrUpdate(a);
 
       tx.commit(); // Flush happens automatically
-    } catch (RuntimeException e) {
+    } catch (OtmException e) {
       if (tx != null)
         tx.rollback();
 
@@ -204,7 +204,7 @@ public class OtmTest extends TestCase {
       assertEquals(URI.create("http://www.plosone.org"), a.getAnnotates());
 
       tx.commit(); // Flush happens automatically
-    } catch (RuntimeException e) {
+    } catch (OtmException e) {
       if (tx != null)
         tx.rollback();
 
@@ -217,7 +217,7 @@ public class OtmTest extends TestCase {
   /**
    * DOCUMENT ME!
    */
-  public void test03() {
+  public void test03() throws OtmException {
     Session     session = factory.openSession();
     Transaction tx      = null;
 
@@ -234,7 +234,7 @@ public class OtmTest extends TestCase {
       session.saveOrUpdate(a);
 
       tx.commit(); // Flush happens automatically
-    } catch (RuntimeException e) {
+    } catch (OtmException e) {
       if (tx != null)
         tx.rollback();
 
@@ -270,7 +270,7 @@ public class OtmTest extends TestCase {
       assertEquals(URI.create("http://localhost/reply/1/1"), r.getId());
 
       tx.commit(); // Flush happens automatically
-    } catch (RuntimeException e) {
+    } catch (OtmException e) {
       if (tx != null)
         tx.rollback();
 
@@ -283,7 +283,7 @@ public class OtmTest extends TestCase {
   /**
    * DOCUMENT ME!
    */
-  public void test04() {
+  public void test04() throws OtmException {
     Session     session = factory.openSession();
     Transaction tx      = null;
 
@@ -307,7 +307,7 @@ public class OtmTest extends TestCase {
       session.saveOrUpdate(a3);
 
       tx.commit(); // Flush happens automatically
-    } catch (RuntimeException e) {
+    } catch (OtmException e) {
       if (tx != null)
         tx.rollback();
 
@@ -382,7 +382,7 @@ public class OtmTest extends TestCase {
       assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
 
       tx.commit(); // Flush happens automatically
-    } catch (RuntimeException e) {
+    } catch (OtmException e) {
       if (tx != null)
         tx.rollback();
 

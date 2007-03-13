@@ -39,7 +39,7 @@ public class Transaction {
    *
    * @return the connection
    */
-  public Connection getConnection() {
+  public Connection getConnection() throws OtmException {
     if (conn != null)
       return conn;
 
@@ -52,7 +52,7 @@ public class Transaction {
   /**
    * Flush the session, commit and close the connection.
    */
-  public void commit() {
+  public void commit() throws OtmException {
     session.flush();
 
     if (conn != null) {
@@ -64,7 +64,7 @@ public class Transaction {
   /**
    * Rollback the transaction and close the connection. Session data is left alone.
    */
-  public void rollback() {
+  public void rollback() throws OtmException {
     if (conn != null) {
       conn.rollback();
       close();
@@ -74,14 +74,14 @@ public class Transaction {
   /**
    * End a transaction and close the connection. Session data is left alone.
    */
-  public void endTransaction() {
+  public void endTransaction() throws OtmException {
     if (conn != null) {
       conn.endTransaction();
       close();
     }
   }
 
-  private void close() {
+  private void close() throws OtmException {
     if (conn != null) {
       session.getSessionFactory().getTripleStore().closeConnection(conn);
       conn = null;

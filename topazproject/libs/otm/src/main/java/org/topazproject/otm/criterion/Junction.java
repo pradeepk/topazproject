@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.OtmException;
 
 /**
  * Base class for junctions on Criterions.
@@ -57,7 +58,7 @@ public class Junction implements Criterion {
   /*
    * inherited javadoc
    */
-  public String toItql(Criteria criteria, String subjectVar, String varPrefix) {
+  public String toItql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
     String sep   = "(";
     String query = "";
     int    i     = 0;

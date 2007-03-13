@@ -1,6 +1,7 @@
 package org.topazproject.otm.criterion;
 
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.OtmException;
 
 /**
  * An interface for all query criterion used as restrictions in a 
@@ -17,6 +18,7 @@ public interface Criterion {
    * @param varPrefix namespace for internal variables (ie. not visible on select list)
    *
    * @return the itql query fragment
+   * @throws OtmException if an error occurred
    */
-  public String toItql(Criteria criteria, String subjectVar, String varPrefix);
+  public String toItql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException;
 }
