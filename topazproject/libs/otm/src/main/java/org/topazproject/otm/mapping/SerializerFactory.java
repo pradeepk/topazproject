@@ -54,7 +54,7 @@ public class SerializerFactory {
       try {
         constructor = clazz.getConstructor(String.class);
       } catch (NoSuchMethodException t) {
-        throw new RuntimeException("Must have a constructor that takes a String", t);
+        throw new IllegalArgumentException("Must have a constructor that takes a String", t);
       }
     }
 
