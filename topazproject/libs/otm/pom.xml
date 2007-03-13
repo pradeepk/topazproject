@@ -29,7 +29,13 @@
       <artifactId>javassist</artifactId>
       <version>3.4.ga</version>
     </dependency>
+    <dependency>
+      <groupId>commons-logging</groupId>
+      <artifactId>commons-logging</artifactId>
+      <version>1.1</version>
+    </dependency>
   </dependencies>
+
   <properties>
     <maven.compiler.source>1.5</maven.compiler.source>
     <maven.compiler.target>1.5</maven.compiler.target>
@@ -37,4 +43,8 @@
     <!-- aggregate some documentation - javadocs & jxr -->
     <aggregate>true</aggregate>
   </properties>
+
+  <build>
+    <defaultGoal>install</defaultGoal>
+  </build>
 </project>
