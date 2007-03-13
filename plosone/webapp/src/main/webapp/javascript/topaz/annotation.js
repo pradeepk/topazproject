@@ -204,13 +204,13 @@ topaz.annotation = {
       if (startPoint == "noSelect")
         return startPoint;
       
-      //startRange.pasteHTML("<span id=\"tempStartPoint\">========== START HERE =====================</span>");
+      startRange.pasteHTML("<span id=\"tempStartPoint\">========== START HERE =====================</span>");
 
       var endPoint = this.getRangePoint(endRange);
       if (endPoint == "noSelect")
         return endPoint;
         
-      //endRange.pasteHTML("<span id=\"tempEndPoint\">========== END HERE =====================</span>");
+      endRange.pasteHTML("<span id=\"tempEndPoint\">========== END HERE =====================</span>");
         
       var isAncestor = this.isAncestorOf(startPoint.element, endPoint.element, "xpathLocation", endPoint.xpathLocation);
       
@@ -805,7 +805,7 @@ topaz.annotation = {
     // Insertion for IE
     if (rangeObj.range.pasteHTML) {
       var html = rangeObj.range.htmlText;
-      rangeObj.range.pasteHTML('<span class="' + noteClass + 
+/*      rangeObj.range.pasteHTML('<span class="' + noteClass + 
           								     '" title="'     + noteTitle +
           							        '"  annotationId=""' +
           							       '">' + 
@@ -815,25 +815,41 @@ topaz.annotation = {
                                ' onmouseout="topaz.displayComment.mouseoutComment(this);"' + 
                                ' title="Click to preview this annotation">1</a>' +
           							       html + '</span>');
-
-/*      var tempNode = document.createElement("div");
+*/
+      var tempNode = document.createElement("div");
       tempNode.innerHTML = html;
       dojo.dom.copyChildren(tempNode, contents);
   
-      //rangeObj.range.pasteHTML("");
         
       var modContents = this.modifySelection(rangeObj, contents, newSpan, link, markerId);
-      dojo.dom.removeChildren(tempNode);
-      dojo.dom.copyChildren(modContents, tempNode);
-      
-      if (modContents.hasChildNodes) {  
-        //alert("modContents.hasChildNodes() = " + modContents.hasChildNodes());
+
+      dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>============================ Modified Content ==================" 
+      dojo.byId(djConfig.debugContainerId).appendChild(modContents.cloneNode(true));
+
+      if (modContents.hasChildNodes()) {  
+        dojo.dom.removeChildren(tempNode);
+        dojo.dom.copyChildren(modContents, tempNode);
         rangeObj.range.pasteHTML(tempNode.innerHTML);
       }
       
-      dojo.dom.removeNode(dojo.byId("tempStartPoint"));
-      dojo.dom.removeNode(dojo.byId("tempEndPoint"));
-*/    }
+      var startPoint = dojo.byId("tempStartPoint");
+      if (!modContents.hasChildNodes()) {
+        for (var currentNode = startPoint.nextSibling; currentNode != null; currentNode = currentNode.nextSibling) {
+          dojo.dom.removeNode(currentNode);
+        }
+      }
+      dojo.dom.removeNode(startPoint);
+      
+      var endPoint = dojo.byId("tempEndPoint");
+      if (!modContents.hasChildNodes()) {
+        for (var currentNode = endPoint.previousSibling; currentNode != null; currentNode = currentNode.previousSibling) {
+          dojo.dom.removeNode(currentNode);
+        }
+        
+        document.selection.empty();
+      }
+      dojo.dom.removeNode(endPoint);
+    }
     else {
       if (dojo.render.html.safari) {  //Insertion for Safari
           contents = rangeObj.range.cloneContents();
@@ -843,14 +859,14 @@ topaz.annotation = {
         contents = rangeObj.range.extractContents();
       }
 
-      //dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>======================== Calling modifySelection ===========================";
+      dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>======================== Calling modifySelection ===========================";
       var modContents = this.modifySelection(rangeObj, contents, newSpan, link, markerId);
       rangeObj.range.insertNode(modContents);
     }
   },
   
   modifySelection: function(rangeObj, contents, newSpan, link, markerId) {
-    //dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>=========== Inside modifySelelection ============================";
+    dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>=========== Inside modifySelelection ============================";
     var modContents = document.createDocumentFragment();
 
     if (rangeObj.startXpath == rangeObj.endXpath) {
@@ -864,11 +880,11 @@ topaz.annotation = {
         var xpathloc = (multiContent[i].getAttribute) ? multiContent[i].getAttribute("xpathlocation") : null;
         var insertMode = 0;
         
-/*        dojo.byId(djConfig.debugContainerId).innerHTML +=
+        dojo.byId(djConfig.debugContainerId).innerHTML +=
               "<br><br>=============== MODIFYSELECTION ================================="
               + "<br>" + "node = " + multiContent[i].nodeName + ", " + xpathloc + ", " + multiContent[i].nodeValue 
               ;
-*/                      
+                      
         if (xpathloc != null && (i == 0 || i == multiContent.length-1)) {
           var xpathMatch = document.getElementsByAttributeValue(null, "xpathlocation", xpathloc);
 
@@ -889,14 +905,15 @@ topaz.annotation = {
             modContents.appendChild(modFragment);
             --i;
           }
-          else if (multiContent.length == 2) {
-            modContents.appendChild(document.createDocumentFragment("</p><p xpathlocation=\"" + rangeObj.endXpath + "\">"));
-          }
         }
         else {
           modContents.appendChild(modFragment);
         }
       }
+      
+      //if (dojo.render.html.ie && multiContent.length == 2)
+        //modContents = null;
+      
     }
     
     return modContents;
@@ -927,15 +944,24 @@ topaz.annotation = {
   */ 
   insertWrapper: function(rangeObject, rangeContent, refWrapperNode, linkObject, markerId, multiPosition, elXpathValue) {
     var childContents = rangeContent.childNodes;
-    var nodelistLength = /*(dojo.render.html.safari) ? (childContents.length - 1) :*/ childContents.length;
+    var nodelistLength = childContents.length;
     var insertIndex = 0;
     var nodesToRemove = new Array();
     var indexFound = null;
     
+    if (dojo.render.html.safari) {
+      if (multiPosition == null) {
+        nodelistLength = childContents.length - 1;
+      }
+      else if (multiPosition == 1) {
+        //nodelistLength = childContents.length + 1;
+      } 
+    }
+    
     // populate the span with the content extracted from the range
     for (var i = 0; i < nodelistLength; i++) {
       var xpathloc = (childContents[i].getAttribute) ? childContents[i].getAttribute("xpathlocation") : null;
-/*      dojo.byId(djConfig.debugContainerId).innerHTML +=
+      dojo.byId(djConfig.debugContainerId).innerHTML +=
             "<br><br>=============== INSERTWRAPPER ================================="
             + "<br>" + "node = " + childContents[i].nodeName + ", " + xpathloc + ", " + childContents[i].nodeValue 
             + "<br>" + "multiPosition = " + multiPosition
@@ -946,7 +972,7 @@ topaz.annotation = {
             + "<br>" + "childContents[" + i + "].hasChildNodes = " + childContents[i].hasChildNodes()
             + "<br>"
            ;
-*/      
+      
       // If the node is a text node and the value is either a linefeed and/or carriage return, skip this loop
       if (childContents[i].nodeName == "#text" && (childContents[i].nodeValue.match(new RegExp("\n")) || childContents[i].nodeValue.match(new RegExp("\r")))) {
         continue;
@@ -958,7 +984,7 @@ topaz.annotation = {
       // modify the existing span
       if (existingNode.nodeName == "SPAN" && topaz.domUtil.isClassNameExist(existingNode, "note")) {
         spanToInsert = existingNode.cloneNode(true);
-        spanToInsert.setAttribute("class", refWrapperNode.getAttributeNode("class").nodeValue);
+        spanToInsert.className = refWrapperNode.getAttributeNode("class").nodeValue;
       }
       // wrap in a new span
       else {
@@ -1024,7 +1050,8 @@ topaz.annotation = {
                 }
               }
            }
-            
+            //alert("elToInsert = " + elToInsert 
+            //      + "\ninsertIndex = " + insertIndex);
             elements[elements.length-1].insertBefore(elToInsert, elements[elements.length-1].childNodes[insertIndex]);
             ++insertIndex;
           }
@@ -1033,15 +1060,20 @@ topaz.annotation = {
         nodesToRemove.push(existingNode);
       } 
       
-   }    
+    }    
    
-   // remove the existing node from the range content
-   if (nodesToRemove.length > 0) {
-     for (var i = 0; i < nodesToRemove.length; i++) {
-       dojo.dom.removeNode(nodesToRemove[i]);
-     }
-   }   
+    // remove the existing node from the range content
+    if (nodesToRemove.length > 0) {
+      for (var i = 0; i < nodesToRemove.length; i++) {
+        dojo.dom.removeNode(nodesToRemove[i]);
+      }
+    }   
    
+    if (multiPosition == 1) {
+      dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>============================ element added ==================" 
+      dojo.byId(djConfig.debugContainerId).appendChild(elements[elements.length-1].cloneNode(true));
+    }
+    
     return rangeContent;
   },
 
