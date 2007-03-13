@@ -1,5 +1,6 @@
 package org.topazproject.otm.mapping;
 
+
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -144,6 +145,7 @@ public abstract class AbstractMapper implements Mapper {
     Class clazz = getComponentType();
 
     return URI.class.isAssignableFrom(clazz) || URL.class.isAssignableFrom(clazz)
+            || (getSerializer() == null)
             || (String.class.isAssignableFrom(clazz) && hasInverseUri());
   }
 
