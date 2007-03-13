@@ -9,6 +9,7 @@
  */
 package org.topazproject.otm.samples;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -37,7 +38,7 @@ public class ReplyThread extends Reply {
    *
    * @param id DOCUMENT ME!
    */
-  public ReplyThread(String id) {
+  public ReplyThread(URI id) {
     super(id);
   }
 

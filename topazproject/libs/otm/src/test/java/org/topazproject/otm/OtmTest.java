@@ -55,7 +55,7 @@ public class OtmTest extends TestCase {
     try {
       tx = session.beginTransaction();
 
-      session.saveOrUpdate(new PublicAnnotation("http://localhost/annotation/1"));
+      session.saveOrUpdate(new PublicAnnotation(URI.create("http://localhost/annotation/1")));
 
       tx.commit(); // Flush happens automatically
     } catch (RuntimeException e) {
@@ -165,11 +165,11 @@ public class OtmTest extends TestCase {
     try {
       tx = session.beginTransaction();
 
-      Annotation a = new PublicAnnotation("http://localhost/annotation/1");
-      a.setAnnotates("http://www.plosone.org");
+      Annotation a = new PublicAnnotation(URI.create("http://localhost/annotation/1"));
+      a.setAnnotates(URI.create("http://www.plosone.org"));
 
-      Annotation sa = new PublicAnnotation("http://localhost/annotation/1/1");
-      sa.setAnnotates("http://www.plosone.org");
+      Annotation sa = new PublicAnnotation(URI.create("http://localhost/annotation/1/1"));
+      sa.setAnnotates(URI.create("http://www.plosone.org"));
 
       a.setSupersededBy(sa);
       sa.setSupersedes(a);
@@ -199,9 +199,9 @@ public class OtmTest extends TestCase {
       Annotation old = a.getSupersedes();
       assertNotNull(old);
 
-      assertEquals("http://localhost/annotation/1", old.getId());
-      assertEquals("http://www.plosone.org", old.getAnnotates());
-      assertEquals("http://www.plosone.org", a.getAnnotates());
+      assertEquals(URI.create("http://localhost/annotation/1"), old.getId());
+      assertEquals(URI.create("http://www.plosone.org"), old.getAnnotates());
+      assertEquals(URI.create("http://www.plosone.org"), a.getAnnotates());
 
       tx.commit(); // Flush happens automatically
     } catch (RuntimeException e) {
@@ -224,9 +224,9 @@ public class OtmTest extends TestCase {
     try {
       tx = session.beginTransaction();
 
-      Annotation  a  = new PublicAnnotation("http://localhost/annotation/1");
-      ReplyThread r  = new ReplyThread("http://localhost/reply/1");
-      ReplyThread rr = new ReplyThread("http://localhost/reply/1/1");
+      Annotation  a  = new PublicAnnotation(URI.create("http://localhost/annotation/1"));
+      ReplyThread r  = new ReplyThread(URI.create("http://localhost/reply/1"));
+      ReplyThread rr = new ReplyThread(URI.create("http://localhost/reply/1/1"));
 
       a.addReply(r);
       r.addReply(rr);
@@ -259,7 +259,7 @@ public class OtmTest extends TestCase {
 
       ReplyThread r = replies.get(0);
       assertNotNull(r);
-      assertEquals("http://localhost/reply/1", r.getId());
+      assertEquals(URI.create("http://localhost/reply/1"), r.getId());
 
       replies = r.getReplies();
       assertNotNull(replies);
@@ -267,7 +267,7 @@ public class OtmTest extends TestCase {
 
       r = replies.get(0);
       assertNotNull(r);
-      assertEquals("http://localhost/reply/1/1", r.getId());
+      assertEquals(URI.create("http://localhost/reply/1/1"), r.getId());
 
       tx.commit(); // Flush happens automatically
     } catch (RuntimeException e) {
@@ -287,9 +287,9 @@ public class OtmTest extends TestCase {
     Session     session = factory.openSession();
     Transaction tx      = null;
 
-    String      id1     = "http://localhost/annotation/1";
-    String      id2     = "http://localhost/annotation/2";
-    String      id3     = "http://localhost/annotation/3";
+    URI         id1     = URI.create("http://localhost/annotation/1");
+    URI         id2     = URI.create("http://localhost/annotation/2");
+    URI         id3     = URI.create("http://localhost/annotation/3");
 
     try {
       tx = session.beginTransaction();
@@ -298,9 +298,9 @@ public class OtmTest extends TestCase {
       Annotation a2 = new PublicAnnotation(id2);
       Annotation a3 = new PublicAnnotation(id3);
 
-      a1.setAnnotates("foo:1");
-      a2.setAnnotates("foo:1");
-      a3.setAnnotates("bar:1");
+      a1.setAnnotates(URI.create("foo:1"));
+      a2.setAnnotates(URI.create("foo:1"));
+      a3.setAnnotates(URI.create("bar:1"));
 
       session.saveOrUpdate(a1);
       session.saveOrUpdate(a2);
@@ -330,53 +330,53 @@ public class OtmTest extends TestCase {
       Annotation a1 = (Annotation) l.get(0);
       Annotation a2 = (Annotation) l.get(1);
 
-      assertEquals("foo:1", a1.getAnnotates());
-      assertEquals("foo:1", a2.getAnnotates());
+      assertEquals(URI.create("foo:1"), a1.getAnnotates());
+      assertEquals(URI.create("foo:1"), a2.getAnnotates());
 
       assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
       assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
 
-      l = session.createCriteria(Annotation.class).add(Restrictions.id(id3)).list();
+      l = session.createCriteria(Annotation.class).add(Restrictions.id(id3.toString())).list();
 
       assertEquals(1, l.size());
 
       a1 = (Annotation) l.get(0);
-      assertEquals("bar:1", a1.getAnnotates());
+      assertEquals(URI.create("bar:1"), a1.getAnnotates());
       assertTrue(id3.equals(a1.getId()));
 
       l = session.createCriteria(Annotation.class).add(Restrictions.eq("annotates", "foo:1"))
-                  .add(Restrictions.id(id3)).list();
+                  .add(Restrictions.id(id3.toString())).list();
 
       assertEquals(0, l.size());
 
       l = session.createCriteria(Annotation.class).add(Restrictions.eq("annotates", "foo:1"))
-                  .add(Restrictions.id(id1)).list();
+                  .add(Restrictions.id(id1.toString())).list();
 
       assertEquals(1, l.size());
       a1 = (Annotation) l.get(0);
-      assertEquals("foo:1", a1.getAnnotates());
+      assertEquals(URI.create("foo:1"), a1.getAnnotates());
       assertTrue(id1.equals(a1.getId()));
 
       l = session.createCriteria(Annotation.class)
                   .add(Restrictions.conjunction().add(Restrictions.eq("annotates", "foo:1"))
-                                    .add(Restrictions.id(id1))).list();
+                                    .add(Restrictions.id(id1.toString()))).list();
 
       assertEquals(1, l.size());
       a1 = (Annotation) l.get(0);
-      assertEquals("foo:1", a1.getAnnotates());
+      assertEquals(URI.create("foo:1"), a1.getAnnotates());
       assertTrue(id1.equals(a1.getId()));
 
       l = session.createCriteria(Annotation.class)
                   .add(Restrictions.disjunction().add(Restrictions.eq("annotates", "foo:1"))
-                                    .add(Restrictions.id(id1))).list();
+                                    .add(Restrictions.id(id1.toString()))).list();
 
       assertEquals(2, l.size());
 
       a1   = (Annotation) l.get(0);
       a2   = (Annotation) l.get(1);
 
-      assertEquals("foo:1", a1.getAnnotates());
-      assertEquals("foo:1", a2.getAnnotates());
+      assertEquals(URI.create("foo:1"), a1.getAnnotates());
+      assertEquals(URI.create("foo:1"), a2.getAnnotates());
 
       assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
       assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));

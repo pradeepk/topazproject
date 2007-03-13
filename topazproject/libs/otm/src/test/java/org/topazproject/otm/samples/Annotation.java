@@ -9,6 +9,7 @@
  */
 package org.topazproject.otm.samples;
 
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -24,7 +25,7 @@ import org.topazproject.otm.annotations.Rdf;
  */
 @Rdf(Annotia.NS + "Annotation")
 public abstract class Annotation extends Annotia {
-  private String                                               annotates;
+  private URI                                                  annotates;
   private String                                               context;
   @Rdf(Rdf.dc_terms + "replaces")
   private Annotation                                           supersedes;
@@ -35,25 +36,25 @@ public abstract class Annotation extends Annotia {
   private List<ReplyThread>                                    replies =
     new ArrayList<ReplyThread>();
 
-/**
+  /**
    * Creates a new Annotation object.
    */
   public Annotation() {
   }
 
-/**
+  /**
    * Creates a new Annotation object.
    */
-  public Annotation(String id) {
+  public Annotation(URI id) {
     super(id);
   }
 
   /**
    * Get annotates.
    *
-   * @return annotates as String.
+   * @return annotates as Uri.
    */
-  public String getAnnotates() {
+  public URI getAnnotates() {
     return annotates;
   }
 
@@ -62,7 +63,7 @@ public abstract class Annotation extends Annotia {
    *
    * @param annotates the value to set.
    */
-  public void setAnnotates(String annotates) {
+  public void setAnnotates(URI annotates) {
     this.annotates = annotates;
   }
 

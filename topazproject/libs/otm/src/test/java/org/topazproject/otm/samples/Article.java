@@ -9,6 +9,7 @@
  */
 package org.topazproject.otm.samples;
 
+import java.net.URI;
 import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
@@ -29,7 +30,7 @@ import org.topazproject.otm.annotations.Model;
 @Rdf(Rdf.topaz + "Article")
 public class Article {
   @Id
-  private String   uri;
+  private URI      uri;
   @Rdf(Rdf.dc + "title")
   private String   title;
   @Rdf(Rdf.dc + "description")
@@ -56,7 +57,7 @@ public class Article {
    *
    * @return the URI.
    */
-  public String getUri() {
+  public URI getUri() {
     return uri;
   }
 
@@ -65,7 +66,7 @@ public class Article {
    *
    * @param uri the URI.
    */
-  public void setUri(String uri) {
+  public void setUri(URI uri) {
     this.uri = uri;
   }
 

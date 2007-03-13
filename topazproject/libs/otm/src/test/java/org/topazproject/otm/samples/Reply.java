@@ -9,7 +9,7 @@
  */
 package org.topazproject.otm.samples;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
+import java.net.URI;
 
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Model;
@@ -25,8 +25,8 @@ import org.topazproject.otm.annotations.Rdf;
 @Ns(Reply.NS)
 public class Reply extends Annotia {
   public static final String NS = "http://www.w3.org/2001/03/thread#";
-  private String                                   root;
-  private String                                   inReplyTo;
+  private URI  root;
+  private URI  inReplyTo;
 
   /**
    * Creates a new Reply object.
@@ -34,15 +34,15 @@ public class Reply extends Annotia {
   public Reply() {
   }
 
-  public Reply(String id) {
+  public Reply(URI id) {
     super(id);
   }
   /**
    * Get root.
    *
-   * @return root as String.
+   * @return root as URI.
    */
-  public String getRoot() {
+  public URI getRoot() {
     return root;
   }
 
@@ -51,16 +51,16 @@ public class Reply extends Annotia {
    *
    * @param root the value to set.
    */
-  public void setRoot(String root) {
+  public void setRoot(URI root) {
     this.root = root;
   }
 
   /**
    * Get inReplyTo.
    *
-   * @return inReplyTo as String.
+   * @return inReplyTo as URI.
    */
-  public String getInReplyTo() {
+  public URI getInReplyTo() {
     return inReplyTo;
   }
 
@@ -69,8 +69,7 @@ public class Reply extends Annotia {
    *
    * @param inReplyTo the value to set.
    */
-  public void setInReplyTo(String inReplyTo) {
+  public void setInReplyTo(URI inReplyTo) {
     this.inReplyTo = inReplyTo;
   }
-
 }

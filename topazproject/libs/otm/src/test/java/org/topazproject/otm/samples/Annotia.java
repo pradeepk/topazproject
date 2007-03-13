@@ -9,6 +9,7 @@
  */
 package org.topazproject.otm.samples;
 
+import java.net.URI;
 import java.util.Date;
 
 import org.topazproject.otm.annotations.Id;
@@ -29,7 +30,7 @@ public class Annotia {
    */
   public static final String NS = "http://www.w3.org/2000/10/annotation-ns#";
   @Id
-  private String                                id;
+  private URI                                   id;
   private Date                                  created;
   private String                                body;
   @Rdf(Rdf.rdf + "type")
@@ -49,16 +50,16 @@ public class Annotia {
    */
   public SampleEmbeddable foobar;
 
-/**
+  /**
    * Creates a new Annotia object.
    */
   public Annotia() {
   }
 
-/**
+  /**
    * Creates a new Annotia object.
    */
-  public Annotia(String id) {
+  public Annotia(URI id) {
     this.id = id;
   }
 
@@ -137,9 +138,9 @@ public class Annotia {
   /**
    * Get id.
    *
-   * @return id as String.
+   * @return id as URI.
    */
-  public String getId() {
+  public URI getId() {
     return id;
   }
 
@@ -148,7 +149,7 @@ public class Annotia {
    *
    * @param id the value to set.
    */
-  public void setId(String id) {
+  public void setId(URI id) {
     this.id = id;
   }
 
