@@ -495,9 +495,6 @@ public class MemStore implements TripleStore {
     public void beginTransaction() {
     }
 
-    public void endTransaction() {
-    }
-
     public void commit() {
       storage.commit();
     }

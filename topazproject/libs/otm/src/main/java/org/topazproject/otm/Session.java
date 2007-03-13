@@ -86,7 +86,7 @@ public class Session {
     clear();
 
     if (txn != null)
-      txn.endTransaction();
+      txn.rollback();
 
     txn = null;
   }

@@ -12,11 +12,6 @@ public interface Connection {
   public void beginTransaction() throws OtmException;
 
   /**
-   * End a transaction on this connection.
-   */
-  public void endTransaction() throws OtmException;
-
-  /**
    * Commit the current transaction and end it.
    */
   public void commit() throws OtmException;

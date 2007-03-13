@@ -71,16 +71,6 @@ public class Transaction {
     }
   }
 
-  /**
-   * End a transaction and close the connection. Session data is left alone.
-   */
-  public void endTransaction() throws OtmException {
-    if (conn != null) {
-      conn.endTransaction();
-      close();
-    }
-  }
-
   private void close() throws OtmException {
     if (conn != null) {
       session.getSessionFactory().getTripleStore().closeConnection(conn);
