@@ -4,6 +4,9 @@ import java.net.URI;
 
 import java.util.List;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
@@ -24,6 +27,8 @@ import junit.framework.TestCase;
  * @version $Revision$
  */
 public class OtmTest extends TestCase {
+  private static final Log log = LogFactory.getLog(OtmTest.class);
+
   /**
    * DOCUMENT ME!
    */
@@ -31,11 +36,12 @@ public class OtmTest extends TestCase {
 
   /**
    * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   protected void setUp() throws OtmException {
     factory.setTripleStore(new ItqlStore(URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService")));
     //factory.setTripleStore(new MemStore());
-
     factory.setInverseUri(Reply.NS + "hasReply", Reply.NS + "inReplyTo");
     factory.setInverseUri(Annotation.NS + "hasAnnotation", Reply.NS + "annotates");
 
@@ -49,10 +55,12 @@ public class OtmTest extends TestCase {
 
   /**
    * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void test01() throws OtmException {
-    Session     session = factory.openSession();
-    Transaction tx      = null;
+    Session     session        = factory.openSession();
+    Transaction tx             = null;
 
     try {
       tx = session.beginTransaction();
@@ -61,12 +69,20 @@ public class OtmTest extends TestCase {
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
-      if (tx != null)
-        tx.rollback();
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
 
       throw e; // or display error message
     } finally {
-      session.close();
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
     }
 
     session   = factory.openSession();
@@ -93,12 +109,20 @@ public class OtmTest extends TestCase {
 
       tx.commit();
     } catch (OtmException e) {
-      if (tx != null)
-        tx.rollback();
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
 
       throw e; // or display error message
     } finally {
-      session.close();
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
     }
 
     session   = factory.openSession();
@@ -128,12 +152,20 @@ public class OtmTest extends TestCase {
 
       tx.commit();
     } catch (OtmException e) {
-      if (tx != null)
-        tx.rollback();
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
 
       throw e; // or display error message
     } finally {
-      session.close();
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
     }
 
     session   = factory.openSession();
@@ -148,17 +180,27 @@ public class OtmTest extends TestCase {
 
       tx.commit();
     } catch (OtmException e) {
-      if (tx != null)
-        tx.rollback();
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
 
       throw e; // or display error message
     } finally {
-      session.close();
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
     }
   }
 
   /**
    * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void test02() throws OtmException {
     Session     session = factory.openSession();
@@ -180,12 +222,20 @@ public class OtmTest extends TestCase {
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
-      if (tx != null)
-        tx.rollback();
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
 
       throw e; // or display error message
     } finally {
-      session.close();
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
     }
 
     session   = factory.openSession();
@@ -207,17 +257,27 @@ public class OtmTest extends TestCase {
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
-      if (tx != null)
-        tx.rollback();
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
 
       throw e; // or display error message
     } finally {
-      session.close();
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
     }
   }
 
   /**
    * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void test03() throws OtmException {
     Session     session = factory.openSession();
@@ -237,12 +297,20 @@ public class OtmTest extends TestCase {
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
-      if (tx != null)
-        tx.rollback();
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
 
       throw e; // or display error message
     } finally {
-      session.close();
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
     }
 
     session   = factory.openSession();
@@ -273,17 +341,27 @@ public class OtmTest extends TestCase {
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
-      if (tx != null)
-        tx.rollback();
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
 
       throw e; // or display error message
     } finally {
-      session.close();
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
     }
   }
 
   /**
    * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void test04() throws OtmException {
     Session     session = factory.openSession();
@@ -310,12 +388,20 @@ public class OtmTest extends TestCase {
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
-      if (tx != null)
-        tx.rollback();
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
 
       throw e; // or display error message
     } finally {
-      session.close();
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
     }
 
     session   = factory.openSession();
@@ -385,12 +471,20 @@ public class OtmTest extends TestCase {
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
-      if (tx != null)
-        tx.rollback();
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
 
       throw e; // or display error message
     } finally {
-      session.close();
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
     }
   }
 }
