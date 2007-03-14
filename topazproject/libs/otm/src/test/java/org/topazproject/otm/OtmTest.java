@@ -12,6 +12,7 @@ import org.topazproject.otm.samples.PublicAnnotation;
 import org.topazproject.otm.samples.Reply;
 import org.topazproject.otm.samples.ReplyThread;
 import org.topazproject.otm.samples.SampleEmbeddable;
+import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.stores.MemStore;
 
 import junit.framework.TestCase;
@@ -32,7 +33,8 @@ public class OtmTest extends TestCase {
    * DOCUMENT ME!
    */
   protected void setUp() throws OtmException {
-    factory.setTripleStore(new MemStore());
+    factory.setTripleStore(new ItqlStore(URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService")));
+    //factory.setTripleStore(new MemStore());
 
     factory.setInverseUri(Reply.NS + "hasReply", Reply.NS + "inReplyTo");
     factory.setInverseUri(Annotation.NS + "hasAnnotation", Reply.NS + "annotates");
