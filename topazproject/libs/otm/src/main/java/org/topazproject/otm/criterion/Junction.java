@@ -64,12 +64,12 @@ public class Junction implements Criterion {
     int    i     = 0;
 
     for (Criterion c : getCriterions()) {
-      query += (sep + c.toItql(criteria, subjectVar, varPrefix + "j" + i++) + " ");
-      sep = getOp();
+      query += sep + c.toItql(criteria, subjectVar, varPrefix + "j" + i++);
+      sep = " " + getOp() + " ";
     }
 
     if (i > 0)
-      query += ") ";
+      query += ")";
 
     return query;
   }

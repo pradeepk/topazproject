@@ -32,6 +32,6 @@ public class SubjectCriterion implements Criterion {
    * inherited javadoc
    */
   public String toItql(Criteria criteria, String subjectVar, String varPrefix) {
-    return subjectVar + " <mulgara:is> <" + id + "> ";
+    return subjectVar + " <mulgara:is> <" + id + ">";
   }
 }

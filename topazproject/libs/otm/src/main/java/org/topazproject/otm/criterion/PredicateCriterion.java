@@ -59,9 +59,9 @@ public class PredicateCriterion implements Criterion {
     String val;
 
     if (m.typeIsUri())
-      val = "<" + ItqlHelper.validateUri(getValue(), getName()) + "> ";
+      val = "<" + ItqlHelper.validateUri(getValue(), getName()) + ">";
     else
-      val = "'" + ItqlHelper.escapeLiteral(getValue()) + "' ";
+      val = "'" + ItqlHelper.escapeLiteral(getValue()) + "'";
 
     if (!m.hasInverseUri())
       return subjectVar + " <" + m.getUri() + "> " + val;
@@ -74,7 +74,7 @@ public class PredicateCriterion implements Criterion {
       if (conf == null)
         throw new OtmException("Model/Graph '" + model + "' is not configured in SessionFactory");
 
-      model = " in <" + conf.getUri() + "> ";
+      model = " in <" + conf.getUri() + ">";
     }
 
     String uri = criteria.getSession().getSessionFactory().getInverseUri(m.getUri());
