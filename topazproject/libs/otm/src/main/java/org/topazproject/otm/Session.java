@@ -598,9 +598,6 @@ public class Session {
         throw new OtmException("No class metadata found for " + clazz);
     }
 
-    if (!cm.isEntity())
-      throw new OtmException("No id-field or rdf:type or graph/model found for " + clazz);
-
     return cm;
   }
 

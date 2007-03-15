@@ -65,6 +65,8 @@ public class SessionFactory {
    * Preload some classes. Must be called as part of the factory initialization.
    *
    * @param classes the classes to load
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void preload(Class[] classes) throws OtmException {
     for (Class c : classes)
@@ -75,6 +77,8 @@ public class SessionFactory {
    * Preload a class. Must be called as part of the factory initialization.
    *
    * @param c the class to load
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void preload(Class c) throws OtmException {
     if ((c == null) || Object.class.equals(c))
@@ -83,7 +87,16 @@ public class SessionFactory {
     preload(c.getSuperclass());
 
     ClassMetadata cm           = new ClassMetadata(c);
+
+    if (!cm.isEntity()) {
+      if (log.isDebugEnabled())
+        log.debug("Preload: skipping '" + cm + "' because it is not an entity");
+
+      return;
+    }
+
     metadata.put(c, cm);
+    createProxy(c, cm);
 
     String type = cm.getType();
 
@@ -96,12 +109,10 @@ public class SessionFactory {
       }
 
       set.add(c);
-
-      createProxy(c, cm);
-
-      if (log.isDebugEnabled())
-        log.debug("Preload: " + type + " ==> " + c.getName());
     }
+
+    if (log.isDebugEnabled())
+      log.debug("Preload: type(" + type + ") ==> " + c.getName());
   }
 
   /**

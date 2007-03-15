@@ -14,8 +14,8 @@ import java.util.Set;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
-import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.annotations.Rdf;
@@ -59,8 +59,11 @@ public class MemStore implements TripleStore {
    * @param id DOCUMENT ME!
    * @param o DOCUMENT ME!
    * @param txn DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
-  public void insert(ClassMetadata cm, String id, Object o, Transaction txn) throws OtmException {
+  public void insert(ClassMetadata cm, String id, Object o, Transaction txn)
+              throws OtmException {
     MemStoreConnection msc     = (MemStoreConnection) txn.getConnection();
     Storage            storage = msc.getStorage();
 
@@ -84,8 +87,11 @@ public class MemStore implements TripleStore {
    * @param cm DOCUMENT ME!
    * @param id DOCUMENT ME!
    * @param txn DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
-  public void delete(ClassMetadata cm, String id, Transaction txn) throws OtmException {
+  public void delete(ClassMetadata cm, String id, Transaction txn)
+              throws OtmException {
     MemStoreConnection msc     = (MemStoreConnection) txn.getConnection();
     Storage            storage = msc.getStorage();
     String             model   = cm.getModel();
@@ -105,17 +111,19 @@ public class MemStore implements TripleStore {
    *
    * @throws OtmException DOCUMENT ME!
    */
-  public ResultObject get(ClassMetadata cm, String id, Transaction txn) throws OtmException {
+  public ResultObject get(ClassMetadata cm, String id, Transaction txn)
+                   throws OtmException {
     MemStoreConnection                     msc     = (MemStoreConnection) txn.getConnection();
     Storage                                storage = msc.getStorage();
+    String                                 model   = cm.getModel();
 
     Map<String, Map<String, List<String>>> values  =
       new HashMap<String, Map<String, List<String>>>();
     Map<String, List<String>>              value   = new HashMap<String, List<String>>();
 
     values.put(id, value);
-
-    String model = cm.getModel();
+    value.put(Rdf.rdf + "type",
+              new ArrayList<String>(storage.getProperty(model, id, Rdf.rdf + "type")));
 
     for (Mapper p : cm.getFields()) {
       String uri = p.getUri();
@@ -162,8 +170,11 @@ public class MemStore implements TripleStore {
    * @param txn DOCUMENT ME!
    *
    * @return DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
-  public List<ResultObject> list(Criteria criteria, Transaction txn) throws OtmException {
+  public List<ResultObject> list(Criteria criteria, Transaction txn)
+                          throws OtmException {
     MemStoreConnection msc      = (MemStoreConnection) txn.getConnection();
     Storage            storage  = msc.getStorage();
     ClassMetadata      cm       = criteria.getClassMetadata();
@@ -177,7 +188,7 @@ public class MemStore implements TripleStore {
   }
 
   private Set<String> conjunction(List<Criterion> criterions, Criteria criteria, Storage storage)
-      throws OtmException {
+                           throws OtmException {
     Set<String> subjects = new HashSet<String>();
     boolean     first    = true;
 
@@ -196,7 +207,7 @@ public class MemStore implements TripleStore {
   }
 
   private Set<String> disjunction(List<Criterion> criterions, Criteria criteria, Storage storage)
-      throws OtmException {
+                           throws OtmException {
     Set<String> subjects = new HashSet<String>();
 
     for (Criterion c : criterions)
@@ -206,7 +217,7 @@ public class MemStore implements TripleStore {
   }
 
   private Set<String> evaluate(Criterion c, Criteria criteria, Storage storage)
-      throws OtmException {
+                        throws OtmException {
     ClassMetadata cm    = criteria.getClassMetadata();
     String        model = cm.getModel();
     Set<String>   ids;
@@ -217,9 +228,12 @@ public class MemStore implements TripleStore {
       String uri        = cm.getMapperByName(name).getUri();
       ids               = storage.getIds(model, uri, value);
     } else if (c instanceof SubjectCriterion) {
-      String id = ((SubjectCriterion) c).getId();
+      String  id     = ((SubjectCriterion) c).getId();
+      boolean exists =
+        (cm.getType() != null) ? (storage.getProperty(model, id, Rdf.rdf + "type").size() != 0)
+        : storage.exists(model, id);
 
-      if (storage.getProperty(model, id, Rdf.rdf + "type").size() == 0)
+      if (!exists)
         ids = Collections.emptySet();
       else
         ids = Collections.singleton(id);
@@ -240,20 +254,21 @@ public class MemStore implements TripleStore {
    */
   private ResultObject instantiate(SessionFactory sessionFactory, Class clazz, String id,
                                    Map<String, Map<String, List<String>>> triples)
-      throws OtmException {
+                            throws OtmException {
     Map<String, List<String>> props = triples.get(id);
     List<String>              types = props.get(Rdf.rdf + "type");
 
-    if (types.size() == 0)
+    clazz                           = sessionFactory.mostSpecificSubClass(clazz, types);
+
+    ClassMetadata cm                = sessionFactory.getClassMetadata(clazz);
+
+    if ((types.size() == 0) && (cm.getType() != null))
       return null;
 
-    clazz = sessionFactory.mostSpecificSubClass(clazz, types);
-
-    ClassMetadata cm = sessionFactory.getClassMetadata(clazz);
-    ResultObject  ro;
+    ResultObject ro;
 
     try {
-      ro             = new ResultObject(clazz.newInstance(), id);
+      ro = new ResultObject(clazz.newInstance(), id);
     } catch (Exception e) {
       throw new OtmException("instantiation failed", e);
     }
@@ -430,6 +445,22 @@ public class MemStore implements TripleStore {
       }
 
       return results;
+    }
+
+    public boolean exists(String model, String id) {
+      boolean                               found     = false;
+      Map<String, Map<String, Set<String>>> modelData = data.get(model);
+
+      if (modelData != null)
+        found = (modelData.get(id) != null);
+
+      if (!found && (backingStore != null)) {
+        synchronized (backingStore) {
+          found = backingStore.exists(model, id);
+        }
+      }
+
+      return found;
     }
 
     public void commit() {

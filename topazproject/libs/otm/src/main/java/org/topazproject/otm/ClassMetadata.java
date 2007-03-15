@@ -237,11 +237,11 @@ public class ClassMetadata {
 
   /**
    * Tests if this meta-data is for an entity class. Entity classes have an id field,
-   * rdf:type and graph/model
+   * and graph/model
    *
    * @return true for entity type
    */
   public boolean isEntity() {
-    return (idField != null) && (type != null) && (model != null);
+    return (idField != null) && (model != null);
   }
 }

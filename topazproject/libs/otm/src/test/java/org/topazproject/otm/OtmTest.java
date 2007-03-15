@@ -10,6 +10,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
+import org.topazproject.otm.samples.NoRdfType;
 import org.topazproject.otm.samples.PrivateAnnotation;
 import org.topazproject.otm.samples.PublicAnnotation;
 import org.topazproject.otm.samples.Reply;
@@ -51,6 +52,7 @@ public class OtmTest extends TestCase {
     factory.preload(PublicAnnotation.class);
     factory.preload(PrivateAnnotation.class);
     factory.preload(Article.class);
+    factory.preload(NoRdfType.class);
   }
 
   /**
@@ -66,6 +68,7 @@ public class OtmTest extends TestCase {
       tx = session.beginTransaction();
 
       session.saveOrUpdate(new PublicAnnotation(URI.create("http://localhost/annotation/1")));
+      session.saveOrUpdate(new NoRdfType("http://localhost/noRdfType/1"));
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
@@ -92,8 +95,10 @@ public class OtmTest extends TestCase {
       tx = session.beginTransaction();
 
       Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
-
       assertNotNull(a);
+
+      NoRdfType n = session.get(NoRdfType.class, "http://localhost/noRdfType/1");
+      assertNotNull(n);
 
       a.setCreator("Pradeep");
       a.setState(42);
