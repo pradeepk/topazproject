@@ -42,8 +42,19 @@ public class OtmTest extends TestCase {
    */
   protected void setUp() throws OtmException {
     factory.setTripleStore(new ItqlStore(URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService")));
+
     //factory.setTripleStore(new MemStore());
-    factory.addModel(new ModelConfig("ri", URI.create("local:///topazproject#ri"), null));
+    ModelConfig ri = new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null);
+    factory.addModel(ri);
+
+    try {
+      factory.getTripleStore().dropModel(ri);
+    } catch (Throwable t) {
+      if (log.isDebugEnabled())
+        log.debug("Failed to drop model '" + ri.getId() + "'", t);
+    }
+
+    factory.getTripleStore().createModel(ri);
 
     factory.preload(ReplyThread.class);
     factory.preload(PublicAnnotation.class);
@@ -58,8 +69,8 @@ public class OtmTest extends TestCase {
    * @throws OtmException DOCUMENT ME!
    */
   public void test01() throws OtmException {
-    Session     session        = factory.openSession();
-    Transaction tx             = null;
+    Session     session = factory.openSession();
+    Transaction tx      = null;
 
     try {
       tx = session.beginTransaction();
