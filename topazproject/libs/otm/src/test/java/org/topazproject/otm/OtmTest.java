@@ -100,6 +100,9 @@ public class OtmTest extends TestCase {
       NoRdfType n = session.get(NoRdfType.class, "http://localhost/noRdfType/1");
       assertNotNull(n);
 
+      n = session.get(NoRdfType.class, "http://localhost/noRdfType/2");
+      assertNull(n);
+
       a.setCreator("Pradeep");
       a.setState(42);
       a.setType(Annotation.NS + "Comment");

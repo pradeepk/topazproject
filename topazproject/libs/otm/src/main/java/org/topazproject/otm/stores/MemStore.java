@@ -279,17 +279,22 @@ public class MemStore implements TripleStore {
     // from the set of rdf:type values before running through and setting field values. 
     types.removeAll(cm.getTypes());
 
+    int count = types.size();
+
     for (Mapper p : cm.getFields()) {
+      List<String> vals = props.get(p.getUri());
+      count += vals.size();
+
       if (p.getSerializer() != null)
-        p.set(ro.o, props.get(p.getUri()));
+        p.set(ro.o, vals);
       else
-        ro.unresolvedAssocs.put(p, props.get(p.getUri()));
+        ro.unresolvedAssocs.put(p, vals);
     }
 
     // Put back what we removed
     types.addAll(cm.getTypes());
 
-    return ro;
+    return (count > 0) ? ro : null;
   }
 
   private static class PropertyId {

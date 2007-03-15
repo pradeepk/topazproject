@@ -11,8 +11,8 @@ import org.topazproject.otm.annotations.Rdf;
 public class NoRdfType {
   @Id
   public String id;
-  public String foo;
-  public String bar;
+  public String foo = "foo";
+  public String bar = "bar";
 
   public NoRdfType() {
   }
