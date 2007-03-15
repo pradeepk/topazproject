@@ -113,15 +113,13 @@ public class MemStore implements TripleStore {
    */
   public ResultObject get(ClassMetadata cm, String id, Transaction txn)
                    throws OtmException {
-    MemStoreConnection                     msc     = (MemStoreConnection) txn.getConnection();
-    Storage                                storage = msc.getStorage();
-    String                                 model   = cm.getModel();
+    MemStoreConnection        msc     = (MemStoreConnection) txn.getConnection();
+    Storage                   storage = msc.getStorage();
+    String                    model   = cm.getModel();
 
-    Map<String, Map<String, List<String>>> values  =
-      new HashMap<String, Map<String, List<String>>>();
-    Map<String, List<String>>              value   = new HashMap<String, List<String>>();
+    Map<String, List<String>> value   = new HashMap<String, List<String>>();
+    Map<String, List<String>> rvalue  = new HashMap<String, List<String>>();
 
-    values.put(id, value);
     value.put(Rdf.rdf + "type",
               new ArrayList<String>(storage.getProperty(model, id, Rdf.rdf + "type")));
 
@@ -131,36 +129,17 @@ public class MemStore implements TripleStore {
       if (!p.hasInverseUri())
         value.put(uri, new ArrayList<String>(storage.getProperty(model, id, uri)));
       else {
-        String inverseUri = txn.getSession().getSessionFactory().getInverseUri(uri);
-
-        if (inverseUri == null)
-          throw new OtmException("No inverse uri defined for " + uri);
-
         String inverseModel = p.getInverseModel();
 
         if (inverseModel == null)
           inverseModel = model;
 
-        Set<String> invProps = storage.getInverseProperty(inverseModel, id, inverseUri);
-        value.put(uri, new ArrayList<String>(invProps));
-
-        for (String subj : invProps) {
-          Map<String, List<String>> v = values.get(subj);
-
-          if (v == null)
-            values.put(subj, v = new HashMap<String, List<String>>());
-
-          List<String> objs = v.get(inverseUri);
-
-          if (objs == null)
-            v.put(inverseUri, objs = new ArrayList<String>());
-
-          objs.add(id);
-        }
+        Set<String> invProps = storage.getInverseProperty(inverseModel, id, uri);
+        rvalue.put(uri, new ArrayList<String>(invProps));
       }
     }
 
-    return instantiate(txn.getSession().getSessionFactory(), cm.getSourceClass(), id, values);
+    return instantiate(txn.getSession().getSessionFactory(), cm.getSourceClass(), id, value, rvalue);
   }
 
   /**
@@ -253,14 +232,13 @@ public class MemStore implements TripleStore {
          List<Field> orderBy, long offset, long size);
    */
   private ResultObject instantiate(SessionFactory sessionFactory, Class clazz, String id,
-                                   Map<String, Map<String, List<String>>> triples)
+                                   Map<String, List<String>> props, Map<String, List<String>> rprops)
                             throws OtmException {
-    Map<String, List<String>> props = triples.get(id);
-    List<String>              types = props.get(Rdf.rdf + "type");
+    List<String> types = props.get(Rdf.rdf + "type");
 
-    clazz                           = sessionFactory.mostSpecificSubClass(clazz, types);
+    clazz = sessionFactory.mostSpecificSubClass(clazz, types);
 
-    ClassMetadata cm                = sessionFactory.getClassMetadata(clazz);
+    ClassMetadata cm = sessionFactory.getClassMetadata(clazz);
 
     if ((types.size() == 0) && (cm.getType() != null))
       return null;
@@ -282,7 +260,7 @@ public class MemStore implements TripleStore {
     int count = types.size();
 
     for (Mapper p : cm.getFields()) {
-      List<String> vals = props.get(p.getUri());
+      List<String> vals = p.hasInverseUri() ? rprops.get(p.getUri()) : props.get(p.getUri());
       count += vals.size();
 
       if (p.getSerializer() != null)

@@ -77,13 +77,7 @@ public class PredicateCriterion implements Criterion {
       model = " in <" + conf.getUri() + ">";
     }
 
-    String uri = criteria.getSession().getSessionFactory().getInverseUri(m.getUri());
-
-    if (uri == null)
-      throw new OtmException("No inverse uri for '" + m.getUri()
-                             + "' configured in SessionFactory");
-
-    String query = val + " <" + uri + "> " + subjectVar;
+    String query = val + " <" + m.getUri() + "> " + subjectVar;
 
     if (model != null)
       query += model;

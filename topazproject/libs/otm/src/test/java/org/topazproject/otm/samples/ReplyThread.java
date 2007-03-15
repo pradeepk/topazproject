@@ -24,7 +24,7 @@ import org.topazproject.otm.annotations.Rdf;
  */
 public class ReplyThread extends Reply {
   @Inverse
-  @Rdf(Reply.NS + "hasReply")
+  @Rdf(Reply.NS + "inReplyTo")
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
 
   /**

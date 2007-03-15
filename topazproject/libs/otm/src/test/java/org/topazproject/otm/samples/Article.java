@@ -45,10 +45,10 @@ public class Article {
   private String[] categories;
   @Rdf(Rdf.topaz + "articleState")
   private int      state;
-  @Rdf(Annotation.NS + "hasAnnotation")
+  @Rdf(Annotation.NS + "annotates")
   @Inverse
   private List<PublicAnnotation> publicAnnotations = new ArrayList<PublicAnnotation>();
-  @Rdf(Reply.NS + "hasReply")
+  @Rdf(Reply.NS + "inReplyTo")
   @Inverse
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
 

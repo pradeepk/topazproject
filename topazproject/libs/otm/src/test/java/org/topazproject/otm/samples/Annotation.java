@@ -32,7 +32,7 @@ public abstract class Annotation extends Annotia {
   @Rdf(Rdf.dc_terms + "isReplacedBy")
   private Annotation                                           supersededBy;
   @Inverse
-  @Rdf(Reply.NS + "hasReply")
+  @Rdf(Reply.NS + "inReplyTo")
   private List<ReplyThread>                                    replies =
     new ArrayList<ReplyThread>();
 

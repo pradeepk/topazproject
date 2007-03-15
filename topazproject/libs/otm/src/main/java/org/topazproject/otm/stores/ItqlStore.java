@@ -170,9 +170,7 @@ public class ItqlStore implements TripleStore {
       qry.append("or (");
       for (Mapper p : cm.getFields()) {
         if (p.hasInverseUri()) {
-          String invP = txn.getSession().getSessionFactory().getInverseUri(p.getUri());
-          if (invP == null)
-            throw new OtmException("No inverse uri defined for " + p.getUri());
+          String invP = p.getUri();
 
           qry.append("($s $p $o ");
 
@@ -227,12 +225,7 @@ public class ItqlStore implements TripleStore {
       qa.beforeFirst();
       while (qa.next()) {
         String p = qa.getString("p");
-        boolean inverse = false;
-        if (!qa.getString("s").equals(id) ||
-            qa.getString("o").equals(id) && cm.getMapperByUri(p,false) == null) {
-          p = sf.getInverseUri(p);
-          inverse = true;
-        }
+        boolean inverse = (!qa.getString("s").equals(id) || qa.getString("o").equals(id));
 
         Mapper m = cm.getMapperByUri(p, inverse);
         if (m != null) {

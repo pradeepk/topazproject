@@ -43,9 +43,6 @@ public class OtmTest extends TestCase {
   protected void setUp() throws OtmException {
     factory.setTripleStore(new ItqlStore(URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService")));
     //factory.setTripleStore(new MemStore());
-    factory.setInverseUri(Reply.NS + "hasReply", Reply.NS + "inReplyTo");
-    factory.setInverseUri(Annotation.NS + "hasAnnotation", Reply.NS + "annotates");
-
     factory.addModel(new ModelConfig("ri", URI.create("local:///topazproject#ri"), null));
 
     factory.preload(ReplyThread.class);
