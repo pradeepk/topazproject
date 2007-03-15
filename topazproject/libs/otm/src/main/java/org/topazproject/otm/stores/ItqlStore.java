@@ -391,6 +391,38 @@ public class ItqlStore implements TripleStore {
     }
   }
 
+  public void createModel(ModelConfig conf) throws OtmException {
+    ItqlHelper itql = ItqlStore.getItqlHelper(serverUri);
+    try {
+      String type = (conf.getType() == null) ? "mulgara:Model" : conf.getType().toString();
+      itql.doUpdate("create <" + conf.getUri() + "> <" + type + ">;", null);
+      returnItqlHelper(serverUri, itql);
+    } catch (Exception e) {
+      throw new OtmException("Failed to create model <" + conf.getUri() + ">", e);
+    }finally {
+      try {
+        //closeConnection(con);
+      } catch (Throwable t) {
+        log.warn("Close connection failed", t);
+      }
+    }
+  }
+
+  public void dropModel(ModelConfig conf) throws OtmException {
+    ItqlHelper itql = ItqlStore.getItqlHelper(serverUri);
+    try {
+      itql.doUpdate("drop <" + conf.getUri() + ">;", null);
+      returnItqlHelper(serverUri, itql);
+    } catch (Exception e) {
+      throw new OtmException("Failed to drop model <" + conf.getUri() + ">", e);
+    } finally {
+      try {
+      } catch (Throwable t) {
+        log.warn("Close connection failed", t);
+      }
+    }
+  }
+
   private static class ItqlStoreConnection implements Connection {
     private final URI  serverUri;
     private ItqlHelper itql;

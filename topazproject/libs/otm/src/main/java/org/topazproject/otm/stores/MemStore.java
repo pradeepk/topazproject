@@ -14,6 +14,7 @@ import java.util.Set;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
@@ -164,6 +165,26 @@ public class MemStore implements TripleStore {
       results.add(get(cm, id, txn));
 
     return results;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param conf DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public void createModel(ModelConfig conf) throws OtmException {
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param conf DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public void dropModel(ModelConfig conf) throws OtmException {
   }
 
   private Set<String> conjunction(List<Criterion> criterions, Criteria criteria, Storage storage)

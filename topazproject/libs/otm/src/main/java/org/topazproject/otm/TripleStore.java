@@ -19,6 +19,8 @@ public interface TripleStore {
    * DOCUMENT ME!
    *
    * @return DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public Connection openConnection() throws OtmException;
 
@@ -26,6 +28,8 @@ public interface TripleStore {
    * DOCUMENT ME!
    *
    * @param con DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void closeConnection(Connection con) throws OtmException;
 
@@ -36,8 +40,11 @@ public interface TripleStore {
    * @param id DOCUMENT ME!
    * @param o DOCUMENT ME!
    * @param txn DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
-  public void insert(ClassMetadata cm, String id, Object o, Transaction txn) throws OtmException;
+  public void insert(ClassMetadata cm, String id, Object o, Transaction txn)
+              throws OtmException;
 
   /**
    * DOCUMENT ME!
@@ -45,8 +52,11 @@ public interface TripleStore {
    * @param cm DOCUMENT ME!
    * @param id DOCUMENT ME!
    * @param txn DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
-  public void delete(ClassMetadata cm, String id, Transaction txn) throws OtmException;
+  public void delete(ClassMetadata cm, String id, Transaction txn)
+              throws OtmException;
 
   /**
    * DOCUMENT ME!
@@ -56,8 +66,11 @@ public interface TripleStore {
    * @param txn DOCUMENT ME!
    *
    * @return DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
-  public ResultObject get(ClassMetadata cm, String id, Transaction txn) throws OtmException;
+  public ResultObject get(ClassMetadata cm, String id, Transaction txn)
+                   throws OtmException;
 
   /**
    * DOCUMENT ME!
@@ -66,8 +79,29 @@ public interface TripleStore {
    * @param txn DOCUMENT ME!
    *
    * @return DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
    */
-  public List<ResultObject> list(Criteria criteria, Transaction txn) throws OtmException;
+  public List<ResultObject> list(Criteria criteria, Transaction txn)
+                          throws OtmException;
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param conf DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public void createModel(ModelConfig conf) throws OtmException;
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param conf DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public void dropModel(ModelConfig conf) throws OtmException;
 
   public static class ResultObject {
     public Object                          o;
