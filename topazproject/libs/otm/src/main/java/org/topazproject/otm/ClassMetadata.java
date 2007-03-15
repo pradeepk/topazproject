@@ -31,10 +31,10 @@ public class ClassMetadata {
   private String              ns       = null;
   private Mapper              idField  = null;
   private Map<String, Mapper> fieldMap = new HashMap<String, Mapper>();
+  private Map<String, Mapper> inverseMap = new HashMap<String, Mapper>();
   private Map<String, Mapper> nameMap  = new HashMap<String, Mapper>();
   private Class               clazz;
   private Collection<Mapper>  fields;
-  private Set<String>         uris;
 
 /**
    * Creates a new ClassMetadata object.
@@ -71,7 +71,10 @@ public class ClassMetadata {
         idField     = superMeta.getIdField();
 
         for (Mapper m : superMeta.getFields()) {
-          fieldMap.put(m.getUri(), m);
+          if (m.hasInverseUri())
+            inverseMap.put(m.getUri(), m);
+          else
+            fieldMap.put(m.getUri(), m);
           nameMap.put(m.getName(), m);
         }
       } catch (OtmException e) {
@@ -120,7 +123,8 @@ public class ClassMetadata {
 
           idField = m;
         } else {
-          if (fieldMap.put(uri, m) != null)
+          Map<String, Mapper> map = m.hasInverseUri() ? inverseMap : fieldMap;
+          if (map.put(uri, m) != null)
             throw new OtmException("Duplicate @Rdf uri for " + f.toGenericString());
 
           nameMap.put(m.getName(), m);
@@ -128,8 +132,7 @@ public class ClassMetadata {
       }
     }
 
-    fields   = Collections.unmodifiableCollection(fieldMap.values());
-    uris     = Collections.unmodifiableSet(fieldMap.keySet());
+    fields   = Collections.unmodifiableCollection(nameMap.values());
   }
 
   /**
@@ -202,8 +205,8 @@ public class ClassMetadata {
    *
    * @return the mapper or null
    */
-  public Mapper getMapperByUri(String uri) {
-    return fieldMap.get(uri);
+  public Mapper getMapperByUri(String uri, boolean inverse) {
+    return inverse ? inverseMap.get(uri) : fieldMap.get(uri);
   }
 
   /**
@@ -215,15 +218,6 @@ public class ClassMetadata {
    */
   public Mapper getMapperByName(String name) {
     return nameMap.get(name);
-  }
-
-  /**
-   * DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
-   */
-  public Set<String> getUris() {
-    return uris;
   }
 
   /**

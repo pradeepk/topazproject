@@ -227,11 +227,14 @@ public class ItqlStore implements TripleStore {
       qa.beforeFirst();
       while (qa.next()) {
         String p = qa.getString("p");
+        boolean inverse = false;
         if (!qa.getString("s").equals(id) ||
-            qa.getString("o").equals(id) && cm.getMapperByUri(p) == null)
+            qa.getString("o").equals(id) && cm.getMapperByUri(p,false) == null) {
           p = sf.getInverseUri(p);
+          inverse = true;
+        }
 
-        Mapper m = cm.getMapperByUri(p);
+        Mapper m = cm.getMapperByUri(p, inverse);
         if (m != null) {
           if (!m.hasInverseUri()) {
             List<String> v = fvalues.get(p);
@@ -272,14 +275,16 @@ public class ItqlStore implements TripleStore {
 
     cm.getIdField().set(ro.o, Collections.singletonList(id));
 
+    boolean inverse = false;
     for (Map<String, List<String>> values : new Map[] { fvalues, rvalues }) {
       for (String p : values.keySet()) {
-        Mapper m = cm.getMapperByUri(p);
+        Mapper m = cm.getMapperByUri(p, inverse);
         if (m.getSerializer() != null)
           m.set(ro.o, values.get(p));
         else
           ro.unresolvedAssocs.put(m, values.get(p));
       }
+      inverse = true;
     }
 
     // done

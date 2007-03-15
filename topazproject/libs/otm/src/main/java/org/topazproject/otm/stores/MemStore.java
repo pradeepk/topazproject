@@ -96,8 +96,8 @@ public class MemStore implements TripleStore {
     Storage            storage = msc.getStorage();
     String             model   = cm.getModel();
 
-    for (String uri : cm.getUris())
-      storage.remove(model, id, uri);
+    for (Mapper m : cm.getFields())
+      storage.remove(model, id, m.getUri());
   }
 
   /**
