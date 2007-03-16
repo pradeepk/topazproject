@@ -262,7 +262,8 @@ topaz.annotation = {
     //alert(rangeSelection.toString());
 
     if (rangeSelection != "" && rangeSelection != null) {
-      dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>Inside findMozillaRange";
+      if (djConfig.isDebug) 
+        dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>Inside findMozillaRange";
       var startRange;
       
       if (typeof rangeSelection.getRangeAt != "undefined") {
@@ -823,9 +824,11 @@ topaz.annotation = {
         
       var modContents = this.modifySelection(rangeObj, contents, newSpan, link, markerId);
 
-      dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>============================ Modified Content ==================" 
-      dojo.byId(djConfig.debugContainerId).appendChild(modContents.cloneNode(true));
-
+      if (djConfig.isDebug) {
+        dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>============================ Modified Content ==================" 
+        dojo.byId(djConfig.debugContainerId).appendChild(modContents.cloneNode(true));
+      }
+      
       if (modContents.hasChildNodes()) {  
         dojo.dom.removeChildren(tempNode);
         dojo.dom.copyChildren(modContents, tempNode);
@@ -859,14 +862,16 @@ topaz.annotation = {
         contents = rangeObj.range.extractContents();
       }
 
-      dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>======================== Calling modifySelection ===========================";
+      if (djConfig.isDebug) 
+        dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>======================== Calling modifySelection ===========================";
       var modContents = this.modifySelection(rangeObj, contents, newSpan, link, markerId);
       rangeObj.range.insertNode(modContents);
     }
   },
   
   modifySelection: function(rangeObj, contents, newSpan, link, markerId) {
-    dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>=========== Inside modifySelelection ============================";
+    if (djConfig.isDebug) 
+        dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>=========== Inside modifySelelection ============================";
     var modContents = document.createDocumentFragment();
 
     if (rangeObj.startXpath == rangeObj.endXpath) {
@@ -880,11 +885,13 @@ topaz.annotation = {
         var xpathloc = (multiContent[i].getAttribute) ? multiContent[i].getAttribute("xpathlocation") : null;
         var insertMode = 0;
         
-        dojo.byId(djConfig.debugContainerId).innerHTML +=
-              "<br><br>=============== MODIFYSELECTION ================================="
-              + "<br>" + "node = " + multiContent[i].nodeName + ", " + xpathloc + ", " + multiContent[i].nodeValue 
-              ;
-                      
+        if (djConfig.isDebug) {
+          dojo.byId(djConfig.debugContainerId).innerHTML +=
+                "<br><br>=============== MODIFYSELECTION ================================="
+                + "<br>" + "node = " + multiContent[i].nodeName + ", " + xpathloc + ", " + multiContent[i].nodeValue 
+                ;
+        }
+                    
         if (xpathloc != null && (i == 0 || i == multiContent.length-1)) {
           var xpathMatch = document.getElementsByAttributeValue(null, "xpathlocation", xpathloc);
 
@@ -948,6 +955,7 @@ topaz.annotation = {
     var insertIndex = 0;
     var nodesToRemove = new Array();
     var indexFound = null;
+    var startTime = new Date();
     
     if (dojo.render.html.safari) {
       if (multiPosition == null) {
@@ -961,17 +969,19 @@ topaz.annotation = {
     // populate the span with the content extracted from the range
     for (var i = 0; i < nodelistLength; i++) {
       var xpathloc = (childContents[i].getAttribute) ? childContents[i].getAttribute("xpathlocation") : null;
-      dojo.byId(djConfig.debugContainerId).innerHTML +=
-            "<br><br>=============== INSERTWRAPPER ================================="
-            + "<br>" + "node = " + childContents[i].nodeName + ", " + xpathloc + ", " + childContents[i].nodeValue 
-            + "<br>" + "multiPosition = " + multiPosition
-            + "<br>" + "i = " + i
-            + "<br>" + "childContents[" + i + "].nodeName = " + childContents[i].nodeName
-            + "<br>" + "childContents[" + i + "].nodeType = " + childContents[i].nodeType
-            + "<br>" + "childContents[" + i + "].className = " + childContents[i].className
-            + "<br>" + "childContents[" + i + "].hasChildNodes = " + childContents[i].hasChildNodes()
-            + "<br>"
-           ;
+      if (djConfig.isDebug) {
+        dojo.byId(djConfig.debugContainerId).innerHTML +=
+              "<br><br>=============== INSERTWRAPPER ================================="
+              + "<br>" + "node = " + childContents[i].nodeName + ", " + xpathloc + ", " + childContents[i].nodeValue 
+              + "<br>" + "multiPosition = " + multiPosition
+              + "<br>" + "i = " + i
+              + "<br>" + "childContents[" + i + "].nodeName = " + childContents[i].nodeName
+              + "<br>" + "childContents[" + i + "].nodeType = " + childContents[i].nodeType
+              + "<br>" + "childContents[" + i + "].className = " + childContents[i].className
+              + "<br>" + "childContents[" + i + "].hasChildNodes = " + childContents[i].hasChildNodes()
+              + "<br>"
+             ;
+      }
       
       // If the node is a text node and the value is either a linefeed and/or carriage return, skip this loop
       if (childContents[i].nodeName == "#text" && (childContents[i].nodeValue.match(new RegExp("\n")) || childContents[i].nodeValue.match(new RegExp("\r")))) {
@@ -1069,11 +1079,18 @@ topaz.annotation = {
       }
     }   
    
-    if (multiPosition == 1) {
-      dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>============================ element added ==================" 
-      dojo.byId(djConfig.debugContainerId).appendChild(elements[elements.length-1].cloneNode(true));
-    }
+
+    var endTime = new Date();
     
+    if (djConfig.isDebug) {
+      dojo.byId(djConfig.debugContainerId).innerHTML += 
+        "<br><br>" 
+  //      + "Start time: " + startTime.getTime()
+  //      + "<br>End Time: " + endTime.getTime()
+        + "<br>Duration: " + (endTime.getTime() - startTime.getTime() + "ms");
+      ;
+    } 
+       
     return rangeContent;
   },
 
