@@ -32,13 +32,12 @@ public class Session {
   private SessionFactory   sessionFactory;
   private Transaction      txn            = null;
 
-  // xxx: revisit. taking advantage of subject-uri ==> Object one-to-one association.
-  private Map<String, Object>       cleanMap        = new HashMap<String, Object>();
-  private Map<String, Object>       dirtyMap        = new HashMap<String, Object>();
-  private Map<String, Object>       deleteMap       = new HashMap<String, Object>();
-  private Set<String>               pristineProxies = new HashSet<String>();
-  private Map<String, Set<Wrapper>> associations    = new HashMap<String, Set<Wrapper>>();
-  private Set<String>               currentIds      = new HashSet<String>();
+  private Map<Id, Object>       cleanMap        = new HashMap<Id, Object>();
+  private Map<Id, Object>       dirtyMap        = new HashMap<Id, Object>();
+  private Map<Id, Object>       deleteMap       = new HashMap<Id, Object>();
+  private Set<Id>               pristineProxies = new HashSet<Id>();
+  private Map<Id, Set<Wrapper>> associations    = new HashMap<Id, Set<Wrapper>>();
+  private Set<Id>               currentIds      = new HashSet<Id>();
 
 /**
    * Creates a new Session object.
@@ -62,6 +61,8 @@ public class Session {
    * Begins a new transaction. All session usage is within transaction scope.
    *
    * @return the transaction
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public Transaction beginTransaction() throws OtmException {
     if (txn == null)
@@ -81,6 +82,8 @@ public class Session {
 
   /**
    * Close and release all resources.
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void close() throws OtmException {
     clear();
@@ -101,10 +104,10 @@ public class Session {
     if (txn == null)
       throw new OtmException("No active transaction");
 
-    for (Map.Entry<String, Object> e : deleteMap.entrySet())
+    for (Map.Entry<Id, Object> e : deleteMap.entrySet())
       write(e.getKey(), e.getValue(), true);
 
-    for (Map.Entry<String, Object> e : dirtyMap.entrySet())
+    for (Map.Entry<Id, Object> e : dirtyMap.entrySet())
       write(e.getKey(), e.getValue(), false);
 
     deleteMap.clear();
@@ -129,12 +132,14 @@ public class Session {
    * @param o the object to store
    *
    * @return the object id
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public String saveOrUpdate(Object o) throws OtmException {
-    String id = checkObject(o);
+    Id id = checkObject(o);
     sync(o, id, false, true, true);
 
-    return id;
+    return id.getId();
   }
 
   /**
@@ -143,12 +148,14 @@ public class Session {
    * @param o the object to delete
    *
    * @return the object id.
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public String delete(Object o) throws OtmException {
-    String id = checkObject(o);
+    Id id = checkObject(o);
 
     if (currentIds.contains(id))
-      return id; // loop
+      return id.getId(); // loop
 
     try {
       currentIds.add(id);
@@ -179,7 +186,7 @@ public class Session {
       currentIds.remove(id);
     }
 
-    return id;
+    return id.getId();
   }
 
   /**
@@ -188,12 +195,15 @@ public class Session {
    *
    * @param <T> the type of object
    * @param clazz the class of the object
-   * @param id the id of the object
+   * @param oid the id of the object
    *
    * @return the object or null if deleted from session
+   *
+   * @throws OtmException DOCUMENT ME!
    */
-  public <T> T load(Class<T> clazz, String id) throws OtmException {
-    Object o = deleteMap.get(id);
+  public <T> T load(Class<T> clazz, String oid) throws OtmException {
+    Id     id = new Id(clazz, oid);
+    Object o  = deleteMap.get(id);
 
     if (o != null)
       return null;
@@ -216,12 +226,15 @@ public class Session {
    *
    * @param <T> the type of the object
    * @param clazz the class of the object
-   * @param id the id of the object
+   * @param oid the id of the object
    *
    * @return the object or null if deleted or does not exist in store
+   *
+   * @throws OtmException DOCUMENT ME!
    */
-  public <T> T get(Class<T> clazz, String id) throws OtmException {
-    Object o = deleteMap.get(id);
+  public <T> T get(Class<T> clazz, String oid) throws OtmException {
+    Id     id = new Id(clazz, oid);
+    Object o  = deleteMap.get(id);
 
     if (o != null)
       return null;
@@ -254,10 +267,10 @@ public class Session {
    * @throws OtmException DOCUMENT ME!
    */
   public <T> T merge(T o) throws OtmException {
-    String id = checkObject(o);
+    Id id = checkObject(o);
 
     // make sure it is loaded
-    T ao = (T) get(o.getClass(), id);
+    T ao = (T) get(o.getClass(), id.getId());
 
     if (ao == null) {
       // does not exist; so make a copy first
@@ -267,7 +280,7 @@ public class Session {
         throw new OtmException("instantiation failed", e);
       }
 
-      Map<String, Object> loopDetect = new HashMap<String, Object>();
+      Map<Id, Object> loopDetect = new HashMap<Id, Object>();
       loopDetect.put(id, ao);
       copy(ao, o, loopDetect); // deep copy
       o = ao;
@@ -282,9 +295,11 @@ public class Session {
    * Refreshes an attached object with values from the database.
    *
    * @param o the attached object to refresh
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void refresh(Object o) throws OtmException {
-    String id = checkObject(o);
+    Id id = checkObject(o);
 
     if (dirtyMap.containsKey(id) || cleanMap.containsKey(id)) {
       Class clazz = o.getClass();
@@ -299,6 +314,8 @@ public class Session {
    * @param clazz the class
    *
    * @return a newly created Criteria object
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public Criteria createCriteria(Class clazz) throws OtmException {
     return new Criteria(this, null, null, checkClass(clazz));
@@ -316,7 +333,8 @@ public class Session {
    *
    * @throws OtmException on an error
    */
-  public Criteria createCriteria(Criteria criteria, String path) throws OtmException {
+  public Criteria createCriteria(Criteria criteria, String path)
+                          throws OtmException {
     ClassMetadata cm = criteria.getClassMetadata();
     Mapper        m  = cm.getMapperByName(path);
 
@@ -344,7 +362,8 @@ public class Session {
     List        result = new ArrayList();
 
     for (TripleStore.ResultObject ro : store.list(criteria, txn)) {
-      Object r = sync(instantiate(ro), ro.id, true, false, false);
+      Object io = instantiate(ro);
+      Object r  = sync(io, new Id(io.getClass(), ro.id), true, false, false);
 
       if (r != null)
         result.add(r);
@@ -359,17 +378,19 @@ public class Session {
    * @param objs list of objects
    *
    * @return the list of ids
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public List<String> getIds(List objs) throws OtmException {
     List<String> results = new ArrayList<String>(objs.size());
 
     for (Object o : objs)
-      results.add(checkObject(o));
+      results.add(checkObject(o).getId());
 
     return results;
   }
 
-  private void write(String id, Object o, boolean delete) throws OtmException {
+  private void write(Id id, Object o, boolean delete) throws OtmException {
     boolean       pristineProxy = pristineProxies.contains(id);
     ClassMetadata cm            = sessionFactory.getClassMetadata(o.getClass());
     TripleStore   store         = sessionFactory.getTripleStore();
@@ -378,29 +399,31 @@ public class Session {
       if (log.isDebugEnabled())
         log.debug("deleting from store: " + id);
 
-      store.delete(cm, id, txn);
+      store.delete(cm, id.getId(), txn);
     }
 
     if (!delete && !pristineProxy) {
       if (log.isDebugEnabled())
         log.debug("inserting into store: " + id);
 
-      store.insert(cm, id, o, txn);
+      store.insert(cm, id.getId(), o, txn);
     }
   }
 
-  private Object getFromStore(Class clazz, String id, ClassMetadata cm) throws OtmException {
+  private Object getFromStore(Class clazz, Id id, ClassMetadata cm)
+                       throws OtmException {
     if (txn == null)
       throw new OtmException("No transaction active");
 
     TripleStore              store = sessionFactory.getTripleStore();
 
-    TripleStore.ResultObject ro    = store.get(cm, id, txn);
+    TripleStore.ResultObject ro    = store.get(cm, id.getId(), txn);
 
     return (ro == null) ? null : instantiate(ro);
   }
 
-  private Object instantiate(TripleStore.ResultObject ro) throws OtmException {
+  private Object instantiate(TripleStore.ResultObject ro)
+                      throws OtmException {
     for (Map.Entry<Mapper, List<String>> e : ro.unresolvedAssocs.entrySet()) {
       List   assocs = new ArrayList();
       Mapper p      = e.getKey();
@@ -421,7 +444,8 @@ public class Session {
       Mapper p      = e.getKey();
 
       for (TripleStore.ResultObject val : e.getValue()) {
-        Object a = sync(instantiate(val), val.id, true, false, false);
+        Object io = instantiate(val);
+        Object a  = sync(io, new Id(io.getClass(), val.id), true, false, false);
 
         if (a != null)
           assocs.add(a);
@@ -433,8 +457,8 @@ public class Session {
     return ro.o;
   }
 
-  private Object sync(final Object other, final String id, final boolean merge,
-                      final boolean update, final boolean cascade) throws OtmException {
+  private Object sync(final Object other, final Id id, final boolean merge, final boolean update,
+                      final boolean cascade) throws OtmException {
     if (currentIds.contains(id))
       return null; // loop and hence the return value is unused
 
@@ -472,7 +496,7 @@ public class Session {
           continue;
 
         for (Object ao : p.get(o)) {
-          String aid = checkObject(ao);
+          Id aid = checkObject(ao);
 
           // note: sync() here will not return a merged object. see copy()
           if (cascade)
@@ -497,7 +521,8 @@ public class Session {
     return o;
   }
 
-  private Object copy(Object o, Object other, Map<String, Object> loopDetect) throws OtmException {
+  private Object copy(Object o, Object other, Map<Id, Object> loopDetect)
+               throws OtmException {
     ClassMetadata ocm = checkClass(other.getClass());
     ClassMetadata cm  = checkClass(o.getClass());
 
@@ -516,7 +541,7 @@ public class Session {
         List cc = new ArrayList();
 
         for (Object ao : op.get(other)) {
-          String id  = checkObject(ao);
+          Id     id  = checkObject(ao);
           Object aoc = loopDetect.get(id);
 
           if (aoc == null) {
@@ -540,8 +565,8 @@ public class Session {
     return o;
   }
 
-  private Object newDynamicProxy(final Class clazz, final String id, final ClassMetadata cm)
-      throws OtmException {
+  private Object newDynamicProxy(final Class clazz, final Id id, final ClassMetadata cm)
+                          throws OtmException {
     MethodHandler mi =
       new MethodHandler() {
         private Object loaded = null;
@@ -560,7 +585,7 @@ public class Session {
 
     try {
       Object o = sessionFactory.getProxyMapping(clazz).newInstance();
-      cm.getIdField().set(o, Collections.singletonList(id));
+      cm.getIdField().set(o, Collections.singletonList(id.getId()));
       ((ProxyObject) o).setHandler(mi);
       pristineProxies.add(id);
 
@@ -570,7 +595,7 @@ public class Session {
     }
   }
 
-  private String checkObject(Object o) throws OtmException {
+  private Id checkObject(Object o) throws OtmException {
     if (o == null)
       throw new NullPointerException("Null object");
 
@@ -582,7 +607,7 @@ public class Session {
     if (ids.size() == 0)
       throw new OtmException("No id generation support yet " + o.getClass());
 
-    return (String) ids.get(0);
+    return new Id(o.getClass(), (String) ids.get(0));
   }
 
   private ClassMetadata checkClass(Class clazz) throws OtmException {
@@ -604,28 +629,60 @@ public class Session {
   // For use in sets where we want id equality rather than object equality.
   // eg. associations that are yet to be loaded from the triplestore
   private static class Wrapper {
-    private String idy;
+    private Id     id;
     private Object o;
 
-    public Wrapper(String id, Object o) {
-      this.idy   = id;
-      this.o     = o;
+    public Wrapper(Id id, Object o) {
+      this.id   = id;
+      this.o    = o;
     }
 
     public Object get() {
       return o;
     }
 
-    public String id() {
-      return idy;
+    public Id getId() {
+      return id;
     }
 
     public int hashCode() {
-      return idy.hashCode();
+      return id.hashCode();
     }
 
     public boolean equals(Object other) {
-      return (other instanceof Wrapper) ? idy.equals(((Wrapper) other).idy) : false;
+      return (other instanceof Wrapper) ? id.equals(((Wrapper) other).id) : false;
+    }
+  }
+
+  private static class Id {
+    private String id;
+    private Class  clazz;
+
+    public Id(Class clazz, String id) {
+      this.id      = id;
+      this.clazz   = clazz;
+    }
+
+    public String getId() {
+      return id;
+    }
+
+    public Class getClazz() {
+      return clazz;
+    }
+
+    public int hashCode() {
+      return id.hashCode();
+    }
+
+    public boolean equals(Object other) {
+      if (!(other instanceof Id))
+        return false;
+
+      Id o = (Id) other;
+
+      return id.equals(o.id)
+              && (clazz.isAssignableFrom(o.clazz) || o.clazz.isAssignableFrom(clazz));
     }
   }
 }
