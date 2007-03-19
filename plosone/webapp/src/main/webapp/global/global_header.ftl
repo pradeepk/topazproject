@@ -35,12 +35,7 @@
 	
 	<!-- end : user controls -->
 	<!-- begin search links -->
-	<ul id="links">
-			<@ww.url id="browseURL" includeParams="none" namespace="/article" action="browse"/>
-			<li class="browse"><a href="${browseURL}" title="Browse PLoS ONE Articles">Browse</a></li>
-			<@ww.url id="rssURL" includeParams="none" namespace="/static" action="rssFeeds"/>
-			<li class="rss"><a href="${rssURL}" title="PLoS ONE RSS Feeds">RSS</a></li>
-	</ul>
+	<ul id="links"><@ww.url id="browseURL" includeParams="none" namespace="/article" action="browse"/><li class="browse"><a href="${browseURL}" title="Browse PLoS ONE Articles">Browse</a></li><@ww.url id="rssURL" includeParams="none" namespace="/static" action="rssFeeds"/><li class="rss"><a href="${rssURL}" title="PLoS ONE RSS Feeds">RSS</a></li></ul>
 	<!-- end : search links -->
 	<!-- begin : dashboard -->
 	<div id="db">
