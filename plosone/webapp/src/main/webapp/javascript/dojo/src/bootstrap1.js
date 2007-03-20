@@ -1,16 +1,3 @@
-/**
-* @file bootstrap1.js
-*
-* summary: First file that is loaded that 'bootstraps' the entire dojo library suite.
-* note:  Must run before hostenv_*.js file.
-*
-* @author  Copyright 2004 Mark D. Anderson (mda@discerning.com)
-* TODOC: should the copyright be changed to Dojo Foundation?
-* @license Licensed under the Academic Free License 2.1 http://www.opensource.org/licenses/afl-2.1.php
-*
-* $Id$
-*/
-
 // TODOC: HOW TO DOC THE BELOW?
 // @global: djConfig
 // summary:
@@ -100,7 +87,7 @@ dojo.locale  = djConfig.locale;
 //TODOC:  HOW TO DOC THIS?
 dojo.version = {
 	// summary: version number of this instance of dojo.
-	major: 0, minor: 4, patch: 0, flag: "+",
+	major: 0, minor: 4, patch: 2, flag: "",
 	revision: Number("$Rev$".match(/[0-9]+/)[0]),
 	toString: function(){
 		with(dojo.version){

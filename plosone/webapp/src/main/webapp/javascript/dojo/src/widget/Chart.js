@@ -243,5 +243,5 @@ dojo.declare(
 	}
 });
 
-dojo["requireIf"](dojo.render.svg.capable, "dojo.widget.svg.Chart");
-dojo["requireIf"](!dojo.render.svg.capable && dojo.render.vml.capable, "dojo.widget.vml.Chart");
+dojo.requireIf(dojo.render.svg.capable, "dojo.widget.svg.Chart");
+dojo.requireIf(!dojo.render.svg.capable && dojo.render.vml.capable, "dojo.widget.vml.Chart");

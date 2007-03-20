@@ -2,8 +2,6 @@ dojo.provide("dojo.widget.ResizableTextarea");
 dojo.require("dojo.widget.*");
 dojo.require("dojo.widget.LayoutContainer");
 dojo.require("dojo.widget.ResizeHandle");
-dojo.require("dojo.i18n.common");
-dojo.requireLocalization("dojo.widget", "ResizableTextarea");
 
 dojo.widget.defineWidget(
 	"dojo.widget.ResizableTextarea",
@@ -15,13 +13,8 @@ dojo.widget.defineWidget(
 	// usage
 	//	<textarea dojoType="ResizableTextArea">...</textarea>
 
-	templatePath: dojo.uri.dojoUri("src/widget/templates/ResizableTextarea.html"),
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/ResizableTextarea.css"),
-
-	postMixInProperties: function(){
-		dojo.widget.HtmlWidget.superclass.postMixInProperties.apply(this, arguments);
-		this.messages = dojo.i18n.getLocalization("dojo.widget", "ResizableTextarea", this.lang);
-	},
+	templatePath: dojo.uri.moduleUri("dojo.widget", "templates/ResizableTextarea.html"),
+	templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/ResizableTextarea.css"),
 
 	fillInTemplate: function(args, frag){
 		this.textAreaNode = this.getFragNodeRef(frag).cloneNode(true);

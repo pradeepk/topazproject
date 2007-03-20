@@ -426,7 +426,7 @@ dojo.lang.extend(dojo.widget.Editor, {
 		if(cmd == "|") {
 			return cmd;
 		} else {
-			return dojo.uri.dojoUri("src/widget/templates/buttons/" + cmd + ".gif");
+			return dojo.uri.moduleUri("dojo.widget", "templates/buttons/" + cmd + ".gif");
 		}
 	},
 

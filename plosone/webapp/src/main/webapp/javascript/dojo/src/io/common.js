@@ -114,7 +114,7 @@ dojo.lang.extend(dojo.io.Request, {
 	preventCache: false,
 	
 	// events stuff
-	load: function(type, data, transportImplementation, kwArgs){
+	load: function(/*String*/type, /*Object*/data, /*Object*/transportImplementation, /*Object*/kwArgs){
 		// summary:
 		//		Called on successful completion of a bind.
 		//		type: String
@@ -132,7 +132,7 @@ dojo.lang.extend(dojo.io.Request, {
 		//				bind call. Useful for storing and retrieving state from when bind
 		//				was called.
 	},
-	error: function(type, error, transportImplementation, kwArgs){
+	error: function(/*String*/type, /*Object*/error, /*Object*/transportImplementation, /*Object*/kwArgs){
 		// summary:
 		//		Called when there is an error with a bind.
 		//		type: String
@@ -148,7 +148,7 @@ dojo.lang.extend(dojo.io.Request, {
 		//				bind call. Useful for storing and retrieving state from when bind
 		//				was called.
 	},
-	timeout: function(type, empty, transportImplementation, kwArgs){
+	timeout: function(/*String*/type, /*Object*/empty, /*Object*/transportImplementation, /*Object*/kwArgs){
 		// summary:
 		//		Called when there is an error with a bind. Only implemented in certain transports at this time.
 		//		type: String
@@ -166,7 +166,7 @@ dojo.lang.extend(dojo.io.Request, {
 		//				bind call. Useful for storing and retrieving state from when bind
 		//				was called.
 	},
-	handle: function(type, data, transportImplementation, kwArgs){
+	handle: function(/*String*/type, /*Object*/data, /*Object*/transportImplementation, /*Object*/kwArgs){
 		// summary:
 		//		The handle method can be defined instead of defining separate load, error and timeout
 		//		callbacks.
@@ -244,7 +244,7 @@ dojo.io.Error = function(/*String*/ msg, /*String*/ type, /*Number*/num){
 	this.number = num || 0; // per-substrate error number, not normalized
 }
 
-dojo.io.transports.addTransport = function(name){
+dojo.io.transports.addTransport = function(/*String*/name){
 	// summary:
 	//		Used to register transports that can support bind calls.
 	this.push(name);
@@ -255,7 +255,7 @@ dojo.io.transports.addTransport = function(name){
 
 // binding interface, the various implementations register their capabilities
 // and the bind() method dispatches
-dojo.io.bind = function(request){
+dojo.io.bind = function(/*dojo.io.Request or Object*/request){
 	// summary:
 	//		Binding interface for IO. Loading different IO transports, like
 	//		dojo.io.BrowserIO or dojo.io.IframeIO, will register with bind
@@ -305,7 +305,7 @@ dojo.io.bind = function(request){
 	return request; //dojo.io.Request
 }
 
-dojo.io.sendBindError = function(request /* Object */, message /* String */){
+dojo.io.sendBindError = function(/* Object */request, /* String */message){
 	// summary:
 	//		Used internally by dojo.io.bind() to return/raise a bind error.
 
@@ -321,7 +321,7 @@ dojo.io.sendBindError = function(request /* Object */, message /* String */){
 	}
 }
 
-dojo.io.queueBind = function(request){
+dojo.io.queueBind = function(/*dojo.io.Request or Object*/request){
 	// summary:
 	//		queueBind will use dojo.io.bind() but guarantee that only one bind
 	//		call is handled at a time.
@@ -374,17 +374,17 @@ dojo.io._dispatchNextQueueBind = function(){
 dojo.io._bindQueue = [];
 dojo.io._queueBindInFlight = false;
 
-dojo.io.argsFromMap = function(map, encoding, last){
+dojo.io.argsFromMap = function(/*Object*/map, /*String?*/encoding, /*String?*/last){
 	// summary:
 	//		Converts name/values pairs in the map object to an URL-encoded string
 	//		with format of name1=value1&name2=value2...
 	//		map: Object
 	//			Object that has the contains the names and values.
-	//		encoding: String
+	//		encoding: String?
 	//			String to specify how to encode the name and value. If the encoding string
 	//			contains "utf" (case-insensitive), then encodeURIComponent is used. Otherwise
 	//			dojo.string.encodeAscii is used.
-	//		last: String
+	//		last: String?
 	//			The last parameter in the list. Helps with final string formatting?
 	var enc = /utf/i.test(encoding||"") ? encodeURIComponent : dojo.string.encodeAscii;
 	var mapped = [];

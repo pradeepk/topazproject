@@ -33,6 +33,10 @@ dojo.widget.defineWidget(
 				<input dojoType="DropdownTimePicker">
 		*/
 
+		// iconURL: URL
+		//	path of icon for button to display time picker widget
+		iconURL: dojo.uri.moduleUri("dojo.widget", "templates/images/timeIcon.gif"),
+		
 		// formatLength: String
 		//	Type of formatting used for visual display, appropriate to locale (choice of long, short, medium or full)
 		//	See dojo.date.format for details.

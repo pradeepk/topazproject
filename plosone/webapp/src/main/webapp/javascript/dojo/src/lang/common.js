@@ -1,8 +1,8 @@
 dojo.provide("dojo.lang.common");
 
-dojo.lang.inherits = function(/*Function*/ subclass, /*Function*/ superclass){
+dojo.lang.inherits = function(/*Function*/subclass, /*Function*/superclass){
 	// summary: Set up inheritance between two classes.
-	if(typeof superclass != 'function'){ 
+	if(!dojo.lang.isFunction(superclass)){ 
 		dojo.raise("dojo.inherits: superclass argument ["+superclass+"] must be a function (subclass: ["+subclass+"']");
 	}
 	subclass.prototype = new superclass();
@@ -13,7 +13,10 @@ dojo.lang.inherits = function(/*Function*/ subclass, /*Function*/ superclass){
 }
 
 dojo.lang._mixin = function(/*Object*/ obj, /*Object*/ props){
-	// summary:	Adds all properties and methods of props to obj.
+	// summary:
+	//		Adds all properties and methods of props to obj. This addition is
+	//		"prototype extension safe", so that instances of objects will not
+	//		pass along prototype defaults.
 	var tobj = {};
 	for(var x in props){
 		// the "tobj" condition avoid copying properties in "props"
@@ -35,8 +38,8 @@ dojo.lang._mixin = function(/*Object*/ obj, /*Object*/ props){
 	return obj; // Object
 }
 
-dojo.lang.mixin = function(/*Object*/ obj, /*Object...*/props){
-	// summary:	Adds all properties and methods of props to obj.
+dojo.lang.mixin = function(/*Object*/obj, /*Object...*/props){
+	// summary:	Adds all properties and methods of props to obj. 
 	for(var i=1, l=arguments.length; i<l; i++){
 		dojo.lang._mixin(obj, arguments[i]);
 	}
@@ -44,19 +47,14 @@ dojo.lang.mixin = function(/*Object*/ obj, /*Object...*/props){
 }
 
 dojo.lang.extend = function(/*Object*/ constructor, /*Object...*/ props){
-	// summary:	Adds all properties and methods of props to constructor's prototype,
-	//			making them available to all instances created with constructor.
+	// summary:
+	//		Adds all properties and methods of props to constructor's
+	//		prototype, making them available to all instances created with
+	//		constructor.
 	for(var i=1, l=arguments.length; i<l; i++){
 		dojo.lang._mixin(constructor.prototype, arguments[i]);
 	}
 	return constructor; // Object
-}
-
-dojo.lang._delegate = function(obj){
-	// crockford delegation
-	function TMP(){};
-	TMP.prototype = obj;
-	return new TMP();
 }
 
 // Promote to dojo module
@@ -69,14 +67,18 @@ dojo.lang.find = function(	/*Array*/		array,
 							/*Object*/		value,
 							/*Boolean?*/	identity,
 							/*Boolean?*/	findLast){
-	// summary:	Return the index of value in array, returning -1 if not found.
-	// identity: If true, matches with identity comparison (===).  
-	//					 If false, uses normal comparison (==).
-	// findLast: If true, returns index of last instance of value.
-	
+	// summary:	
+	//		Return the index of value in array, returning -1 if not found.
+	// array: just what you think
+	// value: the value to locate
+	// identity: 
+	//		If true, matches with identity comparison (===). If false, uses
+	//		normal comparison (==).
+	// findLast: 
+	//		If true, returns index of last instance of value.
 	// examples:
-	//  find(array, value[, identity [findLast]]) // recommended
- 	//  find(value, array[, identity [findLast]]) // deprecated
+	//		find(array, value[, identity [findLast]]) // recommended
+ 	//		find(value, array[, identity [findLast]]) // deprecated
 							
 	// support both (array, value) and (value, array)
 	if(!dojo.lang.isArrayLike(array) && dojo.lang.isArrayLike(value)) {
@@ -113,9 +115,14 @@ dojo.lang.find = function(	/*Array*/		array,
 
 dojo.lang.indexOf = dojo.lang.find;
 
-dojo.lang.findLast = function(/*Array*/ array, /*Object*/ value, /*boolean?*/ identity){
-	// summary:	Return index of last occurance of value in array, returning -1 if not found.
-	// identity: If true, matches with identity comparison (===). If false, uses normal comparison (==).
+dojo.lang.findLast = function(/*Array*/array, /*Object*/value, /*boolean?*/identity){
+	// summary:
+	//		Return index of last occurance of value in array, returning -1 if
+	//		not found. This is a shortcut for dojo.lang.find() with a true
+	//		value for its "findLast" parameter.
+	// identity:
+	//		If true, matches with identity comparison (===). If false, uses
+	//		normal comparison (==).
 	return dojo.lang.find(array, value, identity, true); // number
 }
 
@@ -148,7 +155,9 @@ dojo.lang.isArray = function(/*anything*/ it){
 }
 
 dojo.lang.isArrayLike = function(/*anything*/ it){
-	// summary:	Return true if it can be used as an array (i.e. is an object with an integer length property).
+	// summary:	
+	//		Return true if it can be used as an array (i.e. is an object with
+	//		an integer length property).
 	if((!it)||(dojo.lang.isUndefined(it))){ return false; }
 	if(dojo.lang.isString(it)){ return false; }
 	if(dojo.lang.isFunction(it)){ return false; } // keeps out built-in constructors (Number, String, ...) which have length properties
@@ -180,7 +189,7 @@ dojo.lang.isString = function(/*anything*/ it){
 }
 
 dojo.lang.isAlien = function(/*anything*/ it){
-	// summary:	Return true if it is not a built-in function.
+	// summary: Return true if it is not a built-in function. False if not.
 	if(!it){ return false; }
 	return !dojo.lang.isFunction(it) && /\{\s*\[native code\]\s*\}/.test(String(it)); // Boolean
 }

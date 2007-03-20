@@ -36,7 +36,7 @@ dojo.widget.defineWidget(
 				<input dojoType="DropdownDatePicker">
 		*/
 
-		iconURL: dojo.uri.dojoUri("src/widget/templates/images/dateIcon.gif"),
+		iconURL: dojo.uri.moduleUri("dojo.widget", "templates/images/dateIcon.gif"),
 
 		// formatLength: String
 		// 	Type of formatting used for visual display, appropriate to locale (choice of long, short, medium or full)
@@ -123,6 +123,7 @@ dojo.widget.defineWidget(
 			//build the args for DatePicker based on the public attributes of DropdownDatePicker
 			this.datePicker = dojo.widget.createWidget("DatePicker", dpArgs, this.containerNode, "child");
 			dojo.event.connect(this.datePicker, "onValueChanged", this, "_updateText");
+			dojo.event.connect(this.inputNode, "onChange", this, "_updateText");
 
 			if(this.value){
 				this._updateText();
@@ -177,10 +178,12 @@ dojo.widget.defineWidget(
 			if(input){
 				var inputDate = dojo.date.parse(input,
 						{formatLength:this.formatLength, datePattern:this.displayFormat, selector:'dateOnly', locale:this.lang});			
-				if(inputDate){
+				// if inputDate is in a valid range, we call setDate
+				if(!this.datePicker._isDisabledDate(inputDate)){
 					this.setDate(inputDate);
 				}
 			} else {
+				if(input=="") { this.datePicker.setDate(""); }
 				this.valueNode.value = input;
 			}
 

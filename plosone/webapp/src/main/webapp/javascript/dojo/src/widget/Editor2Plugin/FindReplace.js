@@ -40,6 +40,7 @@ dojo.declare("dojo.widget.Editor2Plugin.FindCommand", dojo.widget.Editor2DialogC
 
 dojo.widget.Editor2Plugin.FindReplace ={
 	getCommand: function(editor, name){
+		var name = name.toLowerCase();
 		var command;
 		if(name == 'find'){
 			command = new dojo.widget.Editor2Plugin.FindCommand(editor, 'find', 
@@ -50,13 +51,15 @@ dojo.widget.Editor2Plugin.FindReplace ={
 			command = new dojo.widget.Editor2DialogCommand(editor, 'replace', 
 				{contentFile: "dojo.widget.Editor2Plugin.FindReplaceDialog", 
 				contentClass: "Editor2ReplaceDialog",
-				href: dojo.uri.dojoUri("src/widget/templates/Editor2/Dialog/replace.html"), 
+				href: dojo.uri.cache.allow(dojo.uri.moduleUri("dojo.widget", "templates/Editor2/Dialog/replace.html")), 
 				title: "Replace", width: "350px", height: "200px", modal: false});
 		}
 	
 		return command;
 	},
 	getToolbarItem: function(name){
+		var name = name.toLowerCase();
+	
 		var item;
 		if(name == 'replace'){
 			item = new dojo.widget.Editor2ToolbarButton('Replace');

@@ -6,18 +6,12 @@ dojo.require("dojo.widget.demoEngine.DemoItem");
 dojo.require("dojo.io.*");
 dojo.require("dojo.lfx.*");
 dojo.require("dojo.lang.common");
-dojo.require("dojo.i18n.common");
-dojo.requireLocalization("dojo.widget", "DemoEngine");
 
 dojo.widget.defineWidget("my.widget.demoEngine.DemoNavigator", 
 	dojo.widget.HtmlWidget, 
 	{
-		templatePath: dojo.uri.dojoUri("src/widget/demoEngine/templates/DemoNavigator.html"),
-		templateCssPath: dojo.uri.dojoUri("src/widget/demoEngine/templates/DemoNavigator.css"),
-		postMixInProperties: function(){
-			dojo.widget.HtmlWidget.superclass.postMixInProperties.apply(this, arguments);
-			this.messages = dojo.i18n.getLocalization("dojo.widget", "DemoEngine", this.lang);
-		},
+		templatePath: dojo.uri.moduleUri("dojo.widget", "demoEngine/templates/DemoNavigator.html"),
+		templateCssPath: dojo.uri.moduleUri("dojo.widget", "demoEngine/templates/DemoNavigator.css"),
 		postCreate: function() {
 			dojo.html.addClass(this.domNode,this.domNodeClass);
 			dojo.html.addClass(this.demoListWrapperNode,this.demoListWrapperClass);

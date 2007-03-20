@@ -59,8 +59,7 @@ dojo.declare("dojo.widget.HtmlWidget", dojo.widget.DomWidget, {
 			if(!finalize && this.domNode){
 				dojo.event.browser.clean(this.domNode);
 			}
-			dojo.dom.removeNode(this.domNode);
-			delete this.domNode;
+			dojo.widget.HtmlWidget.superclass.destroyRendering.call(this);
 		}catch(e){ /* squelch! */ }
 	},
 

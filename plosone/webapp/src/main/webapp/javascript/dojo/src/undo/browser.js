@@ -3,41 +3,13 @@ dojo.require("dojo.io.common");
 
 try{
 	if((!djConfig["preventBackButtonFix"])&&(!dojo.hostenv.post_load_)){
-		document.write("<iframe style='border: 0px; width: 1px; height: 1px; position: absolute; bottom: 0px; right: 0px; visibility: visible;' name='djhistory' id='djhistory' src='"+(dojo.hostenv.getBaseScriptUri()+'iframe_history.html')+"'></iframe>");
+		document.write("<iframe style='border: 0px; width: 1px; height: 1px; position: absolute; bottom: 0px; right: 0px; visibility: visible;' name='djhistory' id='djhistory' src='" + (djConfig["dojoIframeHistoryUrl"] || dojo.hostenv.getBaseScriptUri()+'iframe_history.html') + "'></iframe>");
 	}
 }catch(e){/* squelch */}
 
 if(dojo.render.html.opera){
 	dojo.debug("Opera is not supported with dojo.undo.browser, so back/forward detection will not work.");
 }
-
-/* NOTES:
- *  Safari 1.2: 
- *	back button "works" fine, however it's not possible to actually
- *	DETECT that you've moved backwards by inspecting window.location.
- *	Unless there is some other means of locating.
- *	FIXME: perhaps we can poll on history.length?
- *  Safari 2.0.3+ (and probably 1.3.2+):
- *	works fine, except when changeUrl is used. When changeUrl is used,
- *	Safari jumps all the way back to whatever page was shown before
- *	the page that uses dojo.undo.browser support.
- *  IE 5.5 SP2:
- *	back button behavior is macro. It does not move back to the
- *	previous hash value, but to the last full page load. This suggests
- *	that the iframe is the correct way to capture the back button in
- *	these cases.
- *	Don't test this page using local disk for MSIE. MSIE will not create 
- *	a history list for iframe_history.html if served from a file: URL. 
- *	The XML served back from the XHR tests will also not be properly 
- *	created if served from local disk. Serve the test pages from a web 
- *	server to test in that browser.
- *  IE 6.0:
- *	same behavior as IE 5.5 SP2
- * Firefox 1.0+:
- *	the back button will return us to the previous hash on the same
- *	page, thereby not requiring an iframe hack, although we do then
- *	need to run a timer to detect inter-page movement.
- */
 
 dojo.undo.browser = {
 	initialHref: (!dj_undef("window")) ? window.location.href : "",
@@ -51,40 +23,71 @@ dojo.undo.browser = {
 	locationTimer: null,
 
 	/**
-	 * setInitialState sets the state object and back callback for the very first page that is loaded.
-	 * It is recommended that you call this method as part of an event listener that is registered via
-	 * dojo.addOnLoad().
+	 * 
 	 */
-	setInitialState: function(args){
+	setInitialState: function(/*Object*/args){
+		//summary: Sets the state object and back callback for the very first page that is loaded.
+		//description: It is recommended that you call this method as part of an event listener that is registered via
+		//dojo.addOnLoad().
+		//args: Object
+		//		See the addToHistory() function for the list of valid args properties.
 		this.initialState = this._createState(this.initialHref, args, this.initialHash);
 	},
 
 	//FIXME: Would like to support arbitrary back/forward jumps. Have to rework iframeLoaded among other things.
 	//FIXME: is there a slight race condition in moz using change URL with the timer check and when
 	//       the hash gets set? I think I have seen a back/forward call in quick succession, but not consistent.
-	/**
-	 * addToHistory takes one argument, and it is an object that defines the following functions:
-	 * - To support getting back button notifications, the object argument should implement a
-	 *   function called either "back", "backButton", or "handle". The string "back" will be
-	 *   passed as the first and only argument to this callback.
-	 * - To support getting forward button notifications, the object argument should implement a
-	 *   function called either "forward", "forwardButton", or "handle". The string "forward" will be
-	 *   passed as the first and only argument to this callback.
-	 * - If you want the browser location string to change, define "changeUrl" on the object. If the
-	 *   value of "changeUrl" is true, then a unique number will be appended to the URL as a fragment
-	 *   identifier (http://some.domain.com/path#uniquenumber). If it is any other value that does
-	 *   not evaluate to false, that value will be used as the fragment identifier. For example,
-	 *   if changeUrl: 'page1', then the URL will look like: http://some.domain.com/path#page1
-	 *   
-	 * Full example:
-	 * 
-	 * dojo.undo.browser.addToHistory({
-	 *   back: function() { alert('back pressed'); },
-	 *   forward: function() { alert('forward pressed'); },
-	 *   changeUrl: true
-	 * });
-	 */
 	addToHistory: function(args){
+		//summary: adds a state object (args) to the history list. You must set
+		//djConfig.preventBackButtonFix = false to use dojo.undo.browser.
+
+		//args: Object
+		//		args can have the following properties:
+		//		To support getting back button notifications, the object argument should implement a
+		//		function called either "back", "backButton", or "handle". The string "back" will be
+		//		passed as the first and only argument to this callback.
+		//		- To support getting forward button notifications, the object argument should implement a
+		//		function called either "forward", "forwardButton", or "handle". The string "forward" will be
+		//		passed as the first and only argument to this callback.
+		//		- If you want the browser location string to change, define "changeUrl" on the object. If the
+		//		value of "changeUrl" is true, then a unique number will be appended to the URL as a fragment
+		//		identifier (http://some.domain.com/path#uniquenumber). If it is any other value that does
+		//		not evaluate to false, that value will be used as the fragment identifier. For example,
+		//		if changeUrl: 'page1', then the URL will look like: http://some.domain.com/path#page1
+	 	//		Full example:
+		//		dojo.undo.browser.addToHistory({
+		//		  back: function() { alert('back pressed'); },
+		//		  forward: function() { alert('forward pressed'); },
+		//		  changeUrl: true
+		//		});
+		//
+		//	BROWSER NOTES:
+		//  Safari 1.2: 
+		//	back button "works" fine, however it's not possible to actually
+		//	DETECT that you've moved backwards by inspecting window.location.
+		//	Unless there is some other means of locating.
+		//	FIXME: perhaps we can poll on history.length?
+		//	Safari 2.0.3+ (and probably 1.3.2+):
+		//	works fine, except when changeUrl is used. When changeUrl is used,
+		//	Safari jumps all the way back to whatever page was shown before
+		//	the page that uses dojo.undo.browser support.
+		//	IE 5.5 SP2:
+		//	back button behavior is macro. It does not move back to the
+		//	previous hash value, but to the last full page load. This suggests
+		//	that the iframe is the correct way to capture the back button in
+		//	these cases.
+		//	Don't test this page using local disk for MSIE. MSIE will not create 
+		//	a history list for iframe_history.html if served from a file: URL. 
+		//	The XML served back from the XHR tests will also not be properly 
+		//	created if served from local disk. Serve the test pages from a web 
+		//	server to test in that browser.
+		//	IE 6.0:
+		//	same behavior as IE 5.5 SP2
+		//	Firefox 1.0+:
+		//	the back button will return us to the previous hash on the same
+		//	page, thereby not requiring an iframe hack, although we do then
+		//	need to run a timer to detect inter-page movement.
+
 		//If addToHistory is called, then that means we prune the
 		//forward stack -- the user went back, then wanted to
 		//start a new forward path.
@@ -93,6 +96,11 @@ dojo.undo.browser = {
 		var hash = null;
 		var url = null;
 		if(!this.historyIframe){
+			if(djConfig["useXDomain"] && !djConfig["dojoIframeHistoryUrl"]){
+				dojo.debug("dojo.undo.browser: When using cross-domain Dojo builds,"
+					+ " please save iframe_history.html to your domain and set djConfig.dojoIframeHistoryUrl"
+					+ " to the path on your domain to iframe_history.html");
+			}
 			this.historyIframe = window.frames["djhistory"];
 		}
 		if(!this.bookmarkAnchor){
@@ -185,6 +193,7 @@ dojo.undo.browser = {
 	},
 
 	checkLocation: function(){
+		//summary: private method. Do not call this directly.
 		if (!this.changingUrl){
 			var hsl = this.historyStack.length;
 
@@ -216,6 +225,7 @@ dojo.undo.browser = {
 	},
 
 	iframeLoaded: function(evt, ifrLoc){
+		//summary: private method. Do not call this directly.
 		if(!dojo.render.html.opera){
 			var query = this._getUrlQuery(ifrLoc.href);
 			if(query == null){ 
@@ -244,6 +254,8 @@ dojo.undo.browser = {
 	},
 
 	handleBackButton: function(){
+		//summary: private method. Do not call this directly.
+
 		//The "current" page is always at the top of the history stack.
 		var current = this.historyStack.pop();
 		if(!current){ return; }
@@ -264,6 +276,8 @@ dojo.undo.browser = {
 	},
 
 	handleForwardButton: function(){
+		//summary: private method. Do not call this directly.
+
 		var last = this.forwardStack.pop();
 		if(!last){ return; }
 		if(last.kwArgs["forward"]){
@@ -277,23 +291,28 @@ dojo.undo.browser = {
 	},
 
 	_createState: function(url, args, hash){
-		return {"url": url, "kwArgs": args, "urlHash": hash};	
+		//summary: private method. Do not call this directly.
+
+		return {"url": url, "kwArgs": args, "urlHash": hash};	//Object
 	},
 
 	_getUrlQuery: function(url){
+		//summary: private method. Do not call this directly.
 		var segments = url.split("?");
 		if (segments.length < 2){
-			return null;
+			return null; //null
 		}
 		else{
-			return segments[1];
+			return segments[1]; //String
 		}
 	},
 	
 	_loadIframeHistory: function(){
-		var url = dojo.hostenv.getBaseScriptUri()+"iframe_history.html?"+(new Date()).getTime();
+		//summary: private method. Do not call this directly.
+		var url = (djConfig["dojoIframeHistoryUrl"] || dojo.hostenv.getBaseScriptUri()+'iframe_history.html')
+			+ "?" + (new Date()).getTime();
 		this.moveForward = true;
 		dojo.io.setIFrameSrc(this.historyIframe, url, false);	
-		return url;
+		return url; //String
 	}
 }

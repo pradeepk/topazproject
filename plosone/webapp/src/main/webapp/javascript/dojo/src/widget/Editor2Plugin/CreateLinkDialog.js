@@ -1,12 +1,10 @@
 dojo.provide("dojo.widget.Editor2Plugin.CreateLinkDialog");
-dojo.require("dojo.i18n.common");
-dojo.requireLocalization("dojo.widget", "Editor2");
 
 dojo.widget.defineWidget(
 	"dojo.widget.Editor2CreateLinkDialog",
 	dojo.widget.Editor2DialogContent,
 {
-	templatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/Dialog/createlink.html"),
+	templatePath: dojo.uri.moduleUri("dojo.widget", "templates/Editor2/Dialog/createlink.html"),
 
 	editableAttributes: ['href', 'target', 'class'],
 	loadContent: function(){
@@ -32,8 +30,7 @@ dojo.widget.defineWidget(
 		}else{
 			var html = dojo.withGlobal(curInst.window, "getSelectedText", dojo.html.selection);
 			if(html == null || html.length == 0){
-				var resource = dojo.i18n.getLocalization("dojo.widget", "Editor2", this.lang);
-				alert(resource.createLinkDialogSelectError);
+				alert("Please select some text to create a link.");
 				return false;//do not show the dialog
 			}
 		}

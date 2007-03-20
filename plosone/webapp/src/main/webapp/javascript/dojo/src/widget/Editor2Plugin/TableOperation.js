@@ -1,6 +1,6 @@
 dojo.provide("dojo.widget.Editor2Plugin.TableOperation");
 
-dojo.require("dojo.widget.Editor2Plugin.DialogCommands");
+dojo.require("dojo.widget.Editor2");
 
 //subscribe to dojo.widget.RichText::init, not onLoad because after onLoad
 //the stylesheets for the editing areas are already applied and the prefilters
@@ -47,35 +47,31 @@ dojo.lang.declare("dojo.widget.Editor2Plugin.toggleTableBorderCommand", dojo.wid
 		if(this._showTableBorder){
 			this._showTableBorder = false;
 			if(dojo.render.html.moz){
-				this._editor.removeStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
+				this._editor.removeStyleSheet(dojo.uri.moduleUri("dojo.widget", "templates/Editor2/showtableborder_gecko.css"));
 			}else if(dojo.render.html.ie){
-				this._editor.removeStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
+				this._editor.removeStyleSheet(dojo.uri.moduleUri("dojo.widget", "templates/Editor2/showtableborder_ie.css"));
 			}
 		}else{
 			this._showTableBorder = true;
 			if(dojo.render.html.moz){
-				this._editor.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_gecko.css"));
+				this._editor.addStyleSheet(dojo.uri.moduleUri("dojo.widget", "templates/Editor2/showtableborder_gecko.css"));
 			}else if(dojo.render.html.ie){
-				this._editor.addStyleSheet(dojo.uri.dojoUri("src/widget/templates/Editor2/showtableborder_ie.css"));
+				this._editor.addStyleSheet(dojo.uri.moduleUri("dojo.widget", "templates/Editor2/showtableborder_ie.css"));
 			}
 		}
+		
 	},
 	getText: function(){
 		return 'Toggle Table Border';
 	},
 	getState: function(){
-		if(this._editor._lastStateTimestamp > this._updateTime || this._state == undefined){
-			this._updateTime = this._editor._lastStateTimestamp;
-			var table = dojo.withGlobal(this._editor.window, "hasAncestorElement", dojo.html.selection, ['table']);
-			this._state = this._showTableBorder ? dojo.widget.Editor2Manager.commandState.Latched : dojo.widget.Editor2Manager.commandState.Enabled;
-		}
-		return this._state;
+		return this._showTableBorder ? dojo.widget.Editor2Manager.commandState.Latched : dojo.widget.Editor2Manager.commandState.Enabled;
 	}
 });
 
 dojo.widget.Editor2Plugin.TableOperation = {
 	getCommand: function(editor, name){
-		switch(name){
+		switch(name.toLowerCase()){
 			case 'toggletableborder':
 				return new dojo.widget.Editor2Plugin.toggleTableBorderCommand(editor, name);
 			case 'inserttable':
@@ -88,6 +84,8 @@ dojo.widget.Editor2Plugin.TableOperation = {
 		}
 	},
 	getToolbarItem: function(name){
+		var name = name.toLowerCase();
+
 		var item;
 		switch(name){
 			case 'inserttable':

@@ -58,6 +58,8 @@ dojo.declare("dojo.dnd.HtmlDragManager", dojo.dnd.DragManager, {
 
 	selectedSources: [],
 	dragObjects: [],
+	dragSources: [],
+	dropTargets: [],
 
 	// mouse position properties
 	currentX: null,
@@ -318,7 +320,7 @@ dojo.declare("dojo.dnd.HtmlDragManager", dojo.dnd.DragManager, {
 		dojo.lang.forEach(this.dropTargets, function(tempTarget){
 			var tn = tempTarget.domNode;
 			//only cache dropTarget which can accept current dragSource
-			if(!tn || !tempTarget.accepts(this.dragSource)){ return; }
+			if(!tn || !tempTarget.accepts([this.dragSource])){ return; }
 			var abs = dojo.html.getAbsolutePosition(tn, true);
 			var bb = dojo.html.getBorderBox(tn);
 			this.dropTargetDimensions.push([

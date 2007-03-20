@@ -23,7 +23,6 @@ dojo.dnd.TreeDragSourceV3 = function(node, syncController, type, treeNode){
 
 	dojo.dnd.HtmlDragSource.call(this, node, type);
 	//dojo.profile.end("TreeDragSourceV3 "+treeNode);
-
 }
 
 dojo.inherits(dojo.dnd.TreeDragSourceV3, dojo.dnd.HtmlDragSource);
@@ -131,7 +130,7 @@ dojo.lang.extend(dojo.dnd.TreeDropTargetV3, {
 
 		for(var i=0; i<dragObjects.length; i++) {
 			// there may be NO treeNode
-			var sourceTreeNode = dragObjects[i].dragSource.treeNode;
+			var sourceTreeNode = dragObjects[i].treeNode;
 			
 			if (sourceTreeNode === this.treeNode) return false;
 		}

@@ -25,24 +25,21 @@ dojo.widget.defineWidget(
 	
 	open: function(node) {
 		
-		var self = this;
-		var selectFunc = function(){
-			if (self.selectOnOpen && self.richText.isLoaded) {
-				self.richText.execCommand("selectall");
-			}
-		};
-			
 		if (!this.richText) {
 			this.richText = dojo.widget.createWidget("RichText", this.richTextParams, node.labelNode);
 
 			dojo.event.connect("around", this.richText, "onKeyDown", this, "richText_onKeyDown" );
 			dojo.event.connect(this.richText, "onBlur", this, "richText_onBlur" );
 			
-			dojo.event.connect(this.richText, "onLoad", selectFunc );
+			var self = this;
+			dojo.event.connect(this.richText, "onLoad", function(){
+				if (self.selectOnOpen) {
+					self.richText.execCommand("selectall");
+				}
+			});
 		} else {
 			this.richText.open(node.labelNode);
 		}
-		selectFunc();
 		
 		this.node = node;		
 	},

@@ -59,12 +59,17 @@ dojo.widget.defineWidget(
 		//		"none", "left", or "right".  CSS float attribute applied to generated dom node.
 		htmlfloat: "none",
 
-		templatePath: dojo.uri.dojoUri("src/widget/templates/Textbox.html"),
+		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/Textbox.html"),
 	
 		// textbox DomNode:
 		//		our DOM node
 		textbox: null,
-	
+
+		fillInTemplate: function() {
+			// assign value programatically in case it has a quote in it
+			this.textbox.value = this.value;
+		},
+
 		filter: function() {
 			// summary: Apply various filters to textbox value
 			if (this.trim) {

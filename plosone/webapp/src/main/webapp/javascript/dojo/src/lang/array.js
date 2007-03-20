@@ -7,9 +7,10 @@ dojo.require("dojo.lang.common");
 
 dojo.lang.mixin(dojo.lang, {
 	has: function(/*Object*/obj, /*String*/name){
+		// summary: is there a property with the passed name in obj?
 		try{
-			return typeof obj[name] != "undefined";
-		}catch(e){ return false; }
+			return typeof obj[name] != "undefined"; // Boolean
+		}catch(e){ return false; } // Boolean
 	},
 
 	isEmpty: function(/*Object*/obj){
@@ -36,7 +37,17 @@ dojo.lang.mixin(dojo.lang, {
 	},
 
 	map: function(/*Array*/arr, /*Object|Function*/obj, /*Function?*/unary_func){
-		// http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:map
+		// summary:
+		//		returns a new array constituded from the return values of
+		//		passing each element of arr into unary_func. The obj parameter
+		//		may be passed to enable the passed function to be called in
+		//		that scope. In environments that support JavaScript 1.6, this
+		//		function is a passthrough to the built-in map() function
+		//		provided by Array instances. For details on this, see:
+		// 			http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:map
+		// examples:
+		//		dojo.lang.map([1, 2, 3, 4], function(item){ return item+1 });
+		//		// returns [2, 3, 4, 5]
 		var isString = dojo.lang.isString(arr);
 		if(isString){
 			// arr: String
@@ -66,9 +77,44 @@ dojo.lang.mixin(dojo.lang, {
 		}
 	},
 
-	reduce: function(/*Array*/arr, initialValue, /*Object|null*/obj, /*Function*/binary_func){
+	reduce: function(/*Array*/arr, initialValue, /*Object|Function*/obj, /*Function*/binary_func){
+		// summary:
+		// 		similar to Python's builtin reduce() function. The result of
+		// 		the previous computation is passed as the first argument to
+		// 		binary_func along with the next value from arr. The result of
+		// 		this call is used along with the subsequent value from arr, and
+		// 		this continues until arr is exhausted. The return value is the
+		// 		last result. The "obj" and "initialValue" parameters may be
+		// 		safely omitted and the order of obj and binary_func may be
+		// 		reversed. The default order of the obj and binary_func argument
+		// 		will probably be reversed in a future release, and this call
+		// 		order is supported today.
+		// examples:
+		//		dojo.lang.reduce([1, 2, 3, 4], function(last, next){ return last+next});
+		//		returns 10
 		var reducedValue = initialValue;
-		var ob = obj ? obj : dj_global;
+		if(arguments.length == 2){
+			binary_func = initialValue;
+			reducedValue = arr[0];
+			arr = arr.slice(1);
+		}else if(arguments.length == 3){
+			if(dojo.lang.isFunction(obj)){
+				binary_func = obj;
+				obj = null;
+			}
+		}else{
+			// un-fsck the default order
+			// FIXME:
+			//		could be wrong for some strange function object cases. Not
+			//		sure how to test for them.
+			if(dojo.lang.isFunction(obj)){
+				var tmp = binary_func;
+				binary_func = obj;
+				obj = tmp;
+			}
+		}
+
+		var ob = obj || dj_global;
 		dojo.lang.map(arr, 
 			function(val){
 				reducedValue = binary_func.call(ob, reducedValue, val);
@@ -78,7 +124,12 @@ dojo.lang.mixin(dojo.lang, {
 	},
 
 	forEach: function(/*Array*/anArray, /*Function*/callback, /*Object?*/thisObject){
-		// http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:forEach
+		// summary:
+		//		for every item in anArray, call callback with that item as its
+		//		only parameter. Return values are ignored. This funciton
+		//		corresponds (and wraps) the JavaScript 1.6 forEach method. For
+		//		more details, see:
+		//			http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:forEach
 		if(dojo.lang.isString(anArray)){
 			// anArray: String
 			anArray = anArray.split(""); 
@@ -120,20 +171,55 @@ dojo.lang.mixin(dojo.lang, {
 	},
 
 	every: function(/*Array*/arr, /*Function*/callback, /*Object?*/thisObject){
+		// summary:
+		//		determines whether or not every item in the array satisfies the
+		//		condition implemented by callback. thisObject may be used to
+		//		scope the call to callback. The function signature is derived
+		//		from the JavaScript 1.6 Array.every() function. More
+		//		information on this can be found here:
+		//			http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:every
+		// examples:
+		//		dojo.lang.every([1, 2, 3, 4], function(item){ return item>1; });
+		//		// returns false
+		//		dojo.lang.every([1, 2, 3, 4], function(item){ return item>0; });
+		//		// returns true 
 		return this._everyOrSome(true, arr, callback, thisObject); // Boolean
 	},
 
 	some: function(/*Array*/arr, /*Function*/callback, /*Object?*/thisObject){
+		// summary:
+		//		determines whether or not any item in the array satisfies the
+		//		condition implemented by callback. thisObject may be used to
+		//		scope the call to callback. The function signature is derived
+		//		from the JavaScript 1.6 Array.some() function. More
+		//		information on this can be found here:
+		//			http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:some
+		// examples:
+		//		dojo.lang.some([1, 2, 3, 4], function(item){ return item>1; });
+		//		// returns true
+		//		dojo.lang.some([1, 2, 3, 4], function(item){ return item<1; });
+		//		// returns false
 		return this._everyOrSome(false, arr, callback, thisObject); // Boolean
 	},
 
 	filter: function(/*Array*/arr, /*Function*/callback, /*Object?*/thisObject){
+		// summary:
+		//		returns a new Array with those items from arr that match the
+		//		condition implemented by callback.thisObject may be used to
+		//		scope the call to callback. The function signature is derived
+		//		from the JavaScript 1.6 Array.filter() function, although
+		//		special accomidation is made in our implementation for strings.
+		//		More information on the JS 1.6 API can be found here:
+		//			http://developer.mozilla.org/en/docs/Core_JavaScript_1.5_Reference:Global_Objects:Array:filter
+		// examples:
+		//		dojo.lang.some([1, 2, 3, 4], function(item){ return item>1; });
+		//		// returns [2, 3, 4]
 		var isString = dojo.lang.isString(arr);
 		if(isString){ /*arr: String*/arr = arr.split(""); }
 		var outArr;
 		if(Array.filter){
 			outArr = Array.filter(arr, callback, thisObject);
-		} else {
+		}else{
 			if(!thisObject){
 				if(arguments.length >= 3){ dojo.raise("thisObject doesn't exist!"); }
 				thisObject = dj_global;
@@ -155,12 +241,11 @@ dojo.lang.mixin(dojo.lang, {
 
 	unnest: function(/* ... */){
 		// summary:
-		//	Creates a 1-D array out of all the arguments passed,
-		//	unravelling any array-like objects in the process
-		//
+		//		Creates a 1-D array out of all the arguments passed,
+		//		unravelling any array-like objects in the process
 		// usage:
-		//	unnest(1, 2, 3) ==> [1, 2, 3]
-		//	unnest(1, [2, [3], [[[4]]]]) ==> [1, 2, 3, 4]
+		//		unnest(1, 2, 3) ==> [1, 2, 3]
+		//		unnest(1, [2, [3], [[[4]]]]) ==> [1, 2, 3, 4]
 
 		var out = [];
 		for(var i = 0; i < arguments.length; i++){
@@ -176,8 +261,8 @@ dojo.lang.mixin(dojo.lang, {
 
 	toArray: function(/*Object*/arrayLike, /*Number*/startOffset){
 		// summary:
-		//	Converts an array-like object (i.e. arguments, DOMCollection)
-		//	to an array
+		//		Converts an array-like object (i.e. arguments, DOMCollection)
+		//		to an array. Returns a new Array object.
 		var array = [];
 		for(var i = startOffset||0; i < arrayLike.length; i++){
 			array.push(arrayLike[i]);

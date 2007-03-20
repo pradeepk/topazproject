@@ -1,4 +1,5 @@
 dojo.provide("dojo.string.Builder");
+dojo.require("dojo.string");
 dojo.require("dojo.lang.common");
 
 // NOTE: testing shows that direct "+=" concatenation is *much* faster on
@@ -44,12 +45,6 @@ dojo.string.Builder = function(/* string? */str){
 			}
 		}
 		return this;	//	dojo.string.Builder
-	};
-
-	this.concat = function(){
-		//	summary
-		//	Alias for the append method.
-		return this.append.apply(this, arguments);	//	dojo.string.Builder
 	};
 
 	this.clear = function(){

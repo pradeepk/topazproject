@@ -11,19 +11,25 @@ dojo.require("dojo.uri.Uri");
 dojo.require("dojo.Deferred");
 
 // used to save content
-if(dojo.hostenv.post_load_){
-	(function(){
-		var savetextarea = dojo.doc().createElement('textarea');
-		savetextarea.id = "dojo.widget.RichText.savedContent";
-		savetextarea.style = "display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;";
-		dojo.body().appendChild(savetextarea);
-	})();
-}else{
-	//dojo.body() is not available before onLoad is fired
-	try {
-		dojo.doc().write('<textarea id="dojo.widget.RichText.savedContent" ' +
-			'style="display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;"></textarea>');
-	}catch(e){ }
+// but do not try doing document.write if we are using xd loading.
+// document.write will only work if RichText.js is included in the dojo.js
+// file. If it is included in dojo.js and you want to allow rich text saving
+// for back/forward actions, then set djConfig.allowXdRichTextSave = true.
+if(!djConfig["useXDomain"] || djConfig["allowXdRichTextSave"]){
+	if(dojo.hostenv.post_load_){
+		(function(){
+			var savetextarea = dojo.doc().createElement('textarea');
+			savetextarea.id = "dojo.widget.RichText.savedContent";
+			savetextarea.style = "display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;";
+			dojo.body().appendChild(savetextarea);
+		})();
+	}else{
+		//dojo.body() is not available before onLoad is fired
+		try {
+			dojo.doc().write('<textarea id="dojo.widget.RichText.savedContent" ' +
+				'style="display:none;position:absolute;top:-100px;left:-100px;height:3px;width:3px;overflow:hidden;"></textarea>');
+		}catch(e){ }
+	}
 }
 
 dojo.widget.defineWidget(
@@ -199,7 +205,7 @@ dojo.widget.defineWidget(
 			if(	(this.domNode["nodeName"])&&
 				(this.domNode.nodeName.toLowerCase() == "textarea")){
 				this.textarea = this.domNode;
-				var html = dojo.string.trim(this.textarea.value);
+				var html = this._preFilterContent(this.textarea.value);
 				this.domNode = dojo.doc().createElement("div");
 				dojo.html.copyStyle(this.domNode, this.textarea);
 				var tmpFunc = dojo.lang.hitch(this, function(){
@@ -230,7 +236,7 @@ dojo.widget.defineWidget(
 				// this.domNode.innerHTML = html;
 
 				if(this.textarea.form){
-					dojo.event.connect(this.textarea.form, "onsubmit",
+					dojo.event.connect('before', this.textarea.form, "onsubmit",
 						// FIXME: should we be calling close() here instead?
 						dojo.lang.hitch(this, function(){
 							this.textarea.value = this.getEditorContent();
@@ -255,8 +261,11 @@ dojo.widget.defineWidget(
 			this._firstChildContributingMargin = this._getContributingMargin(this.domNode, "top");
 			this._lastChildContributingMargin = this._getContributingMargin(this.domNode, "bottom");
 
-			this.savedContent = this.domNode.innerHTML;
+			this.savedContent = html;
 			this.domNode.innerHTML = '';
+
+			this.editingArea = dojo.doc().createElement("div");
+			this.domNode.appendChild(this.editingArea);
 
 			// If we're a list item we have to put in a blank line to force the
 			// bullet to nicely align at the top of text
@@ -265,10 +274,7 @@ dojo.widget.defineWidget(
 				this.domNode.innerHTML = " <br>";
 			}
 
-			this.editingArea = dojo.doc().createElement("div");
-			this.domNode.appendChild(this.editingArea);
-
-			if(this.saveName != ""){
+			if(this.saveName != "" && (!djConfig["useXDomain"] || djConfig["allowXdRichTextSave"])){
 				var saveTextarea = dojo.doc().getElementById("dojo.widget.RichText.savedContent");
 				if (saveTextarea.value != "") {
 					var datas = saveTextarea.value.split(this._SEPARATOR);
@@ -298,7 +304,7 @@ dojo.widget.defineWidget(
 				//won't work: no content is shown. However, add a delay
 				//can workaround this. No clue why.
 				setTimeout(function(){self._drawObject(html);}, 0);
-			}else if(h.ie){ // contentEditable, easy
+			}else if(h.ie || this._safariIsLeopard() || h.opera){ // contentEditable, easy
 				this.iframe = dojo.doc().createElement( 'iframe' ) ;
 				this.iframe.src = 'javascript:void(0)';
 				this.editorObject = this.iframe;
@@ -338,38 +344,37 @@ dojo.widget.defineWidget(
 				// elements have margins set in CSS :-(
 
 				//if the normal way fails, we try the hard way to get the list
-				if(!this._cacheLocalBlockFormatNames()){
-					//in the array below, ul can not come directly after ol, otherwise the queryCommandValue returns Normal for it
-					var formats = ['p', 'pre', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'div', 'ul'];
-					var localhtml = "";
-					for(var i in formats){
-						if(formats[i].charAt(1) != 'l'){
-							localhtml += "<"+formats[i]+"><span>content</span></"+formats[i]+">";
-						}else{
-							localhtml += "<"+formats[i]+"><li>content</li></"+formats[i]+">";
-						}
+				//do not use _cacheLocalBlockFormatNames here, as it will trigger security warning in IE7
+				//in the array below, ul can not come directly after ol, otherwise the queryCommandValue returns Normal for it
+				var formats = ['p', 'pre', 'address', 'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'ol', 'div', 'ul'];
+				var localhtml = "";
+				for(var i in formats){
+					if(formats[i].charAt(1) != 'l'){
+						localhtml += "<"+formats[i]+"><span>content</span></"+formats[i]+">";
+					}else{
+						localhtml += "<"+formats[i]+"><li>content</li></"+formats[i]+">";
 					}
-					//queryCommandValue returns empty if we hide editNode, so move it out of screen temporary
-					with(this.editNode.style){
-						position = "absolute";
-						left = "-2000px";
-						top = "-2000px";
-					}
-					this.editNode.innerHTML = localhtml;
-					var node = this.editNode.firstChild;
-					while(node){
-						dojo.withGlobal(this.window, "selectElement", dojo.html.selection, [node.firstChild]);
-						var nativename = node.tagName.toLowerCase();
-						this._local2NativeFormatNames[nativename] = this.queryCommandValue("formatblock");
+				}
+				//queryCommandValue returns empty if we hide editNode, so move it out of screen temporary
+				with(this.editNode.style){
+					position = "absolute";
+					left = "-2000px";
+					top = "-2000px";
+				}
+				this.editNode.innerHTML = localhtml;
+				var node = this.editNode.firstChild;
+				while(node){
+					dojo.withGlobal(this.window, "selectElement", dojo.html.selection, [node.firstChild]);
+					var nativename = node.tagName.toLowerCase();
+					this._local2NativeFormatNames[nativename] = this.queryCommandValue("formatblock");
 //						dojo.debug([nativename,this._local2NativeFormatNames[nativename]]);
-						this._native2LocalFormatNames[this._local2NativeFormatNames[nativename]] = nativename;
-						node = node.nextSibling;
-					}
-					with(this.editNode.style){
-						position = "";
-						left = "";
-						top = "";
-					}
+					this._native2LocalFormatNames[this._local2NativeFormatNames[nativename]] = nativename;
+					node = node.nextSibling;
+				}
+				with(this.editNode.style){
+					position = "";
+					left = "";
+					top = "";
 				}
 
 				this.editNode.innerHTML = html;
@@ -505,7 +510,13 @@ dojo.widget.defineWidget(
 				}
 			}
 			// opera likes this to be outside the with block
-			this.iframe.src = dojo.uri.dojoUri("src/widget/templates/richtextframe.html") + ((dojo.doc().domain != currentDomain) ? ("#"+dojo.doc().domain) : "");
+			if(djConfig["useXDomain"] && !djConfig["dojoRichTextFrameUrl"]){
+				dojo.debug("dojo.widget.RichText: When using cross-domain Dojo builds,"
+					+ " please save src/widget/templates/richtextframe.html to your domain and set djConfig.dojoRichTextFrameUrl"
+					+ " to the path on your domain to richtextframe.html");
+			}
+			this.iframe.src = (djConfig["dojoRichTextFrameUrl"] || dojo.uri.moduleUri("dojo.widget", "templates/richtextframe.html")) 
+				+ ((dojo.doc().domain != currentDomain) ? ("#"+dojo.doc().domain) : "");
 			this.iframe.width = this.inheritWidth ? this._oldWidth : "100%";
 			if(this.height){
 				this.iframe.style.height = this.height;
@@ -649,6 +660,7 @@ dojo.widget.defineWidget(
 				for(var i=0;i<files.length;i++){
 					var url = files[i];
 					if(url){
+						//Use dojoUri, since we want paths relative to baseScriptUri.
 						this.addStyleSheet(dojo.uri.dojoUri(url));
 	 				}
 	 			}
@@ -784,7 +796,7 @@ dojo.widget.defineWidget(
 						}
 					}
 				}catch(e){ error = true; }
-				if(obj){
+				if(obj && !this.object){
 					//delete the temporary obj
 					dojo.body().removeChild(obj);
 				}
@@ -923,8 +935,8 @@ dojo.widget.defineWidget(
 				var handlers = this._keyHandlers[e.key], i = 0, handler;
 				while (handler = handlers[i++]) {
 					if (modifiers == handler.modifiers) {
-						handler.handler.call(this);
 						e.preventDefault();
+						handler.handler.call(this);
 						break;
 					}
 				}
@@ -985,6 +997,29 @@ dojo.widget.defineWidget(
 //					this.window.getSelection().collapseToStart();
 				}
 			}
+			/*
+			// FIXME: attempted (but ultimately unworkable) solution for #2066
+			if(dojo.render.html.safari){
+				var sel = this.window.getSelection();
+				dojo.debug(dojo.dom.isDescendantOf(sel.focusNode, this.document.body));
+
+				var isLastNode = (sel.focusNode == this.document.body.lastChild);
+				if(!isLastNode){ return; }
+				var isText = (sel.focusNode.nodeType == 3); 
+				if(!isText){ return; }
+				var isLastChar = (sel.focusOffset == sel.focusNode.nodeValue.length);
+				if(!isLastChar){ return; }
+				dojo.debug(sel.focusOffset, sel.focusNode.nodeValue.length);
+				if(isLastNode && isText && isLastChar){
+					this.document.body.appendChild(this.document.createTextNode(" "));
+					this.document.body.appendChild(this.document.createElement("br"));
+					this.document.body.appendChild(this.document.createElement("p"));
+					this.document.body.appendChild(this.document.createElement("p"));
+					sel.collapse(sel.focusNode, sel.focusOffset-1);
+					sel.collapse(sel.focusNode, sel.focusOffset+1);
+				}
+			}
+			*/
 		},
 
 		blur: function () {
@@ -1136,6 +1171,16 @@ dojo.widget.defineWidget(
 			return command;
 		},
 
+		_safariIsLeopard: function(){
+			var gt420 = false;
+			if(dojo.render.html.safari){
+				var tmp = dojo.render.html.UA.split("AppleWebKit/")[1];
+				var ver = parseFloat(tmp.split(" ")[0]);
+				if(ver >= 420){ gt420 = true; }
+			}
+			return gt420;
+		},
+
 		queryCommandAvailable: function (/*String*/command) {
 			// summary:
 			//		Tests whether a command is supported by the host. Clients SHOULD check
@@ -1148,12 +1193,7 @@ dojo.widget.defineWidget(
 			var opera = 1 << 3;
 			var safari420 = 1 << 4;
 
-			var gt420 = false;
-			if(dojo.render.html.safari){
-				var tmp = dojo.render.html.UA.split("AppleWebKit/")[1];
-				var ver = parseFloat(tmp.split(" ")[0]);
-				if(ver >= 420){ gt420 = true; }
-			}
+			var gt420 = this._safariIsLeopard();
 
 			function isSupportedBy (browsers) {
 				return {
@@ -1501,6 +1541,7 @@ dojo.widget.defineWidget(
 				this.editNode.innerHTML = html;
 			}else if((this.window && this.window.getSelection) || (this.document && this.document.selection)){ // Moz/IE
 				this.execCommand("selectall");
+				if(dojo.render.html.moz && !html){ html = "&nbsp;" }
 				this.execCommand("inserthtml", html);
 			}
 		},

@@ -316,7 +316,7 @@ dojo.lfx.html.wipeIn = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Functi
 			top="-9999px"; left="-9999px"; position="absolute";
 			display="";
 		}
-		var height = dojo.html.getBorderBox(node).height;
+		var nodeHeight = dojo.html.getBorderBox(node).height;
 		with(node.style){
 			top=origTop; left=origLeft; position=origPosition;
 			display="none";
@@ -325,7 +325,7 @@ dojo.lfx.html.wipeIn = function(/*DOMNode[]*/ nodes, /*int?*/ duration, /*Functi
 		var anim = dojo.lfx.propertyAnimation(node,
 			{	"height": {
 					start: 1, // 0 causes IE to display the whole panel
-					end: function(){ return height; } 
+					end: function(){ return nodeHeight; } 
 				}
 			}, 
 			duration, 
@@ -415,6 +415,12 @@ dojo.lfx.html.slideTo = function(/*DOMNode*/ nodes,
 	var anims = [];
 	var compute = dojo.html.getComputedStyle;
 	
+	if(dojo.lang.isArray(coords)){
+		/* coords: Array
+		   pId: a */
+		dojo.deprecated('dojo.lfx.html.slideTo(node, array)', 'use dojo.lfx.html.slideTo(node, {top: value, left: value});', '0.5');
+		coords = { top: coords[0], left: coords[1] };
+	}
 	dojo.lang.forEach(nodes, function(node){
 		var top = null;
 		var left = null;
@@ -466,6 +472,13 @@ dojo.lfx.html.slideBy = function(/*DOMNode*/ nodes, /*Object*/ coords, /*int?*/ 
 	nodes = dojo.lfx.html._byId(nodes);
 	var anims = [];
 	var compute = dojo.html.getComputedStyle;
+
+	if(dojo.lang.isArray(coords)){
+		/* coords: Array
+		   pId: a */
+		dojo.deprecated('dojo.lfx.html.slideBy(node, array)', 'use dojo.lfx.html.slideBy(node, {top: value, left: value});', '0.5');
+		coords = { top: coords[0], left: coords[1] };
+	}
 
 	dojo.lang.forEach(nodes, function(node){
 		var top = null;

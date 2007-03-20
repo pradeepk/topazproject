@@ -74,8 +74,8 @@ dojo.declare(
 		_max_taskBarConnectAttempts: 5,
 		_taskBarConnectAttempts: 0,
 
-		templatePath: dojo.uri.dojoUri("src/widget/templates/FloatingPane.html"),
-		templateCssPath: dojo.uri.dojoUri("src/widget/templates/FloatingPane.css"),
+		templatePath: dojo.uri.moduleUri("dojo.widget", "templates/FloatingPane.html"),
+		templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/FloatingPane.css"),
 
 		fillInFloatingPaneTemplate: function(args, frag){
 			// summary: this should be called by fillInTemplate() of the widget that I'm mixed into
@@ -426,10 +426,10 @@ dojo.widget.defineWidget(
 			dojo.widget.ModalFloatingPane.superclass.postCreate.call(this);
 		},
 		show: function(){
-			dojo.widget.ModalFloatingPane.superclass.show.apply(this, arguments);
 			this.showModalDialog();
+			dojo.widget.ModalFloatingPane.superclass.show.apply(this, arguments);
 			//place the background div under this modal pane
-			this.shared.bg.style.zIndex = this.domNode.style.zIndex-1;
+			this.bg.style.zIndex = this.domNode.style.zIndex-1;
 		},
 		hide: function(){
 			this.hideModalDialog();

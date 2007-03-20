@@ -277,6 +277,7 @@ dojo.event = new function(){
 		}else{
 			var ao = interpolateArgs(arguments, true);
 		}
+		/*
 		if(dojo.lang.isString(ao.srcFunc) && (ao.srcFunc.toLowerCase() == "onkey") ){
 			if(dojo.render.html.ie){
 				ao.srcFunc = "onkeydown";
@@ -284,7 +285,7 @@ dojo.event = new function(){
 			}
 			ao.srcFunc = "onkeypress";
 		}
-
+		*/
 
 		if(dojo.lang.isArray(ao.srcObj) && ao.srcObj!=""){
 			var tmpAO = {};
@@ -343,7 +344,7 @@ dojo.event = new function(){
 				argsStr.push(arguments[x]);
 			}
 			dojo.debug("("+kwArgs.srcObj+")."+kwArgs.srcFunc, ":", argsStr.join(", "));
-		}
+		};
 		this.kwConnect(kwArgs);
 	}
 
@@ -509,6 +510,7 @@ dojo.event.MethodJoinPoint = function(/*Object*/obj, /*String*/funcName){
 	this.object = obj||dj_global;
 	this.methodname = funcName;
 	this.methodfunc = this.object[funcName];
+	this.squelch = false;
 	// this.before = [];
 	// this.after = [];
 	// this.around = [];
@@ -553,7 +555,7 @@ dojo.event.MethodJoinPoint.getForMethod = function(/*Object*/obj, /*String*/func
 		obj[jpfuncname] = ofn;
 		// joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, funcName);
 		joinpoint = obj[jpname] = new dojo.event.MethodJoinPoint(obj, jpfuncname);
-		// joinpoint = obj[jpname] = { kwAddAdvice: function(){} };
+
 		if(!isNode){
 			obj[funcName] = function(){ 
 				// var args = [];
@@ -720,7 +722,7 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 					}
 				}
 			}
-		}
+		};
 
 		var unRollSquelch = function(){
 			if(this.squelch){
@@ -732,7 +734,7 @@ dojo.lang.extend(dojo.event.MethodJoinPoint, {
 			}else{
 				return unrollAdvice.apply(this, arguments);
 			}
-		}
+		};
 
 		if((this["before"])&&(this.before.length>0)){
 			// pass a cloned array, if this event disconnects this event forEach on this.before wont work

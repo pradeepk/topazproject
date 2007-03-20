@@ -168,15 +168,27 @@ dojo.dom.copyChildren = function(/*Element*/srcNode, /*Element*/destNode, /*bool
 
 dojo.dom.replaceChildren = function(/*Element*/node, /*Node*/newChild){
 	//	summary:
-	//		Removes all children of node and appends newChild
+	//		Removes all children of node and appends newChild. All the existing
+	//		children will be destroyed.
 	// FIXME: what if newChild is an array-like object?
+	var nodes = [];
+	if(dojo.render.html.ie){
+		for(var i=0;i<node.childNodes.length;i++){
+			nodes.push(node.childNodes[i]);
+		}
+	}
 	dojo.dom.removeChildren(node);
 	node.appendChild(newChild);
+	for(var i=0;i<nodes.length;i++){
+		dojo.dom.destroyNode(nodes[i]);
+	}
 }
 
 dojo.dom.removeChildren = function(/*Element*/node){
 	//	summary:
 	//		removes all children from node and returns the count of children removed.
+	//		The children nodes are not destroyed. Be sure to call destroyNode on them
+	//		after they are not used anymore.
 	var count = node.childNodes.length;
 	while(node.hasChildNodes()){ dojo.dom.removeNode(node.firstChild); }
 	return count; // int
@@ -184,66 +196,43 @@ dojo.dom.removeChildren = function(/*Element*/node){
 
 dojo.dom.replaceNode = function(/*Element*/node, /*Element*/newNode){
 	//	summary:
-	//		replaces node with newNode and returns a reference to the removed node
-	if(dojo.render.html.ie){
-		node.parentNode.insertBefore(newNode, node);
-		return dojo.dom.removeNode(node); // Node
-	}else{
-		return node.parentNode.replaceChild(newNode, node); // Node
+	//		replaces node with newNode and returns a reference to the removed node.
+	//		To prevent IE memory leak, call destroyNode on the returned node when
+	//		it is no longer needed.
+	return node.parentNode.replaceChild(newNode, node); // Node
+}
+
+dojo.dom.destroyNode = function(/*Node*/node){
+	// summary:
+	//		destroy a node (it can not be used any more). For IE, this is the
+	//		right function to call to prevent memory leaks. While for other
+	//		browsers, this is identical to dojo.dom.removeNode
+	if(node.parentNode){
+		node = dojo.dom.removeNode(node);
+	}
+	if(node.nodeType != 3){ // ingore TEXT_NODE
+		if(dojo.evalObjPath("dojo.event.browser.clean", false)){
+			dojo.event.browser.clean(node);
+		}
+		if(dojo.render.html.ie){
+			node.outerHTML=''; //prevent ugly IE mem leak associated with Node.removeChild (ticket #1727)
+		}
 	}
 }
 
-dojo.dom._ieRemovedNodes = [];
-
-dojo.dom.removeNode = function(/*Node*/node, /*Boolean*/clobber){
-	//	summary:
+dojo.dom.removeNode = function(/*Node*/node){
+	// summary:
 	//		if node has a parent, removes node from parent and returns a
 	//		reference to the removed child.
+	//		To prevent IE memory leak, call destroyNode on the returned node when
+	//		it is no longer needed.
 	//	node:
 	//		the node to remove from its parent.
-	//	clobber:
-	//		if in an HTML environment and true, this variable ensures that
-	//		potential leaks are handled correctly.  The node may no longer
-	//		be usable and a value of 'null' will be returned.
 
 	if(node && node.parentNode){
-		try{
-			if(clobber && dojo.evalObjPath("dojo.event.browser.clean", false)){
-				dojo.event.browser.clean(node);
-			}
-		}catch(e){ /* squelch */ }
-
-		if(dojo.render.html.ie){
-			if(clobber){
-				dojo.dom._discardElement(node);
-			}else{
-				// defer until page unload so that we can continue to use 'node'
-				dojo.dom._ieRemovedNodes.push(node);
-			}
-		}
-
-		if(clobber){
-			return null; // null
-		}
-
 		// return a ref to the removed child
-		return node.parentNode.removeChild(node); // Node
+		return node.parentNode.removeChild(node); //Node
 	}
-}
-
-dojo.dom._discardElement = function(element){
-	// summary: workaround for IE leak recommended in ticket #1727 by schallm
-	var garbageBin = document.getElementById('IELeakGarbageBin');
-	if (!garbageBin){
-		garbageBin = document.createElement('DIV');
-		garbageBin.id = 'IELeakGarbageBin';
-		garbageBin.style.display = 'none';
-		document.body.appendChild(garbageBin);
-	}
-
-	// move the element to the garbage bin
-	garbageBin.appendChild(element);
-	garbageBin.innerHTML = '';
 }
 
 dojo.dom.getAncestors = function(/*Node*/node, /*function?*/filterFunction, /*boolean?*/returnFirstHit){
@@ -449,37 +438,27 @@ dojo.dom.insertAtPosition = function(/*Node*/node, /*Node*/ref, /*string*/positi
 dojo.dom.insertAtIndex = function(/*Node*/node, /*Element*/containingNode, /*number*/insertionIndex){
 	//	summary:
 	//		insert node into child nodes nodelist of containingNode at
-	//		insertionIndex.
+	//		insertionIndex. insertionIndex should be between 0 and 
+	//		the number of the childNodes in containingNode. insertionIndex
+	//		specifys after how many childNodes in containingNode the node
+	//		shall be inserted. If 0 is given, node will be appended to 
+	//		containingNode.
 	var siblingNodes = containingNode.childNodes;
 
 	// if there aren't any kids yet, just add it to the beginning
 
-	if (!siblingNodes.length){
+	if (!siblingNodes.length || siblingNodes.length == insertionIndex){
 		containingNode.appendChild(node);
 		return true;	//	boolean
 	}
 
+	if(insertionIndex == 0){
+		return dojo.dom.prependChild(node, containingNode);	//	boolean
+	}
 	// otherwise we need to walk the childNodes
 	// and find our spot
 
-	var after = null;
-
-	for(var i=0; i<siblingNodes.length; i++){
-
-		var sibling_index = siblingNodes.item(i)["getAttribute"] ? parseInt(siblingNodes.item(i).getAttribute("dojoinsertionindex")) : -1;
-
-		if (sibling_index < insertionIndex){
-			after = siblingNodes.item(i);
-		}
-	}
-
-	if (after){
-		// add it after the node in {after}
-		return dojo.dom.insertAfter(node, after);	//	boolean
-	}else{
-		// add it to the start
-		return dojo.dom.insertBefore(node, siblingNodes.item(0));	//	boolean
-	}
+	return dojo.dom.insertAfter(node, siblingNodes[insertionIndex-1]);	//	boolean
 }
 	
 dojo.dom.textContent = function(/*Node*/node, /*string*/text){

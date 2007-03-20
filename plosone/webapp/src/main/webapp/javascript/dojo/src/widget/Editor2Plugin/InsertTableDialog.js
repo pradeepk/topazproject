@@ -4,14 +4,15 @@ dojo.widget.defineWidget(
 	"dojo.widget.Editor2InsertTableDialog",
 	dojo.widget.Editor2DialogContent,
 {
-	templatePath: dojo.uri.dojoUri("src/widget/templates/Editor2/Dialog/inserttable.html"),
+	templatePath: dojo.uri.moduleUri("dojo.widget", "templates/Editor2/Dialog/inserttable.html"),
 
 	editableAttributes: ['summary', 'height', 'cellspacing', 'cellpadding', 'border', 'align'],
 
 	loadContent: function(){
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
+		curInst.saveSelection(); //save selection (none-activeX IE)
 		this.tableNode = dojo.withGlobal(curInst.window, "getSelectedElement", dojo.html.selection);
-		if(!this.tableNode || this.tableNode.tagName.toUpperCase() != 'TABLE'){
+		if(!this.tableNode || this.tableNode.tagName.toLowerCase() != 'table'){
 			this.tableNode = dojo.withGlobal(curInst.window, "getAncestorElement", dojo.html.selection, ['table']);
 		}
 
@@ -130,6 +131,7 @@ dojo.widget.defineWidget(
 			outertbody += "</tbody>";
 		}
 		html += outertbody+"</table>";
+		curInst.restoreSelection(); //restore previous selection, required for none-activeX IE
 		curInst.execCommand("inserthtml", html);
 
 		this.cancel();

@@ -30,7 +30,7 @@ dojo.widget.defineWidget(
 
 	isContainer: true,
 
-	templateCssPath: dojo.uri.dojoUri("src/widget/templates/SplitContainer.css"),
+	templateCssPath: dojo.uri.moduleUri("dojo.widget", "templates/SplitContainer.css"),
 
 	// activeSizing: Boolean
 	//		If true, the children's size changes as you drag the bar;
@@ -226,37 +226,45 @@ dojo.widget.defineWidget(
 
 		var pos = 0;
 		var size = this.children[0].sizeActual;
-		this._movePanel(this.children[0].domNode, pos, size);
+		this._movePanel(this.children[0], pos, size);
 		this.children[0].position = pos;
-		this.children[0].checkSize();
 		pos += size;
 
 		for(var i=1; i<this.children.length; i++){
 
 			// first we position the sizing handle before this pane
-			this._movePanel(this.sizers[i-1], pos, this.sizerWidth);
+			this._moveSlider(this.sizers[i-1], pos, this.sizerWidth);
 			this.sizers[i-1].position = pos;
 			pos += this.sizerWidth;
 
 			size = this.children[i].sizeActual;
-			this._movePanel(this.children[i].domNode, pos, size);
+			this._movePanel(this.children[i], pos, size);
 			this.children[i].position = pos;
-			this.children[i].checkSize();
 			pos += size;
 		}
 	},
 
-	_movePanel: function(panel, pos, size){
+	_movePanel: function(/*Widget*/ panel, pos, size){
 		if (this.isHorizontal){
-			panel.style.left = pos + 'px';
-			panel.style.top = 0;
-
-			dojo.html.setMarginBox(panel, { width: size, height: this.paneHeight });
+			panel.domNode.style.left = pos + 'px';
+			panel.domNode.style.top = 0;
+			panel.resizeTo(size, this.paneHeight);
 		}else{
-			panel.style.left = 0;
-			panel.style.top = pos + 'px';
+			panel.domNode.style.left = 0;
+			panel.domNode.style.top = pos + 'px';
+			panel.resizeTo(this.paneWidth, size);
+		}
+	},
 
-			dojo.html.setMarginBox(panel, { width: this.paneWidth, height: size });
+	_moveSlider: function(/*DomNode*/ slider, pos, size){
+		if (this.isHorizontal){
+			slider.style.left = pos + 'px';
+			slider.style.top = 0;
+			dojo.html.setMarginBox(slider, { width: size, height: this.paneHeight });
+		}else{
+			slider.style.left = 0;
+			slider.style.top = pos + 'px';
+			dojo.html.setMarginBox(slider, { width: this.paneWidth, height: size });
 		}
 	},
 

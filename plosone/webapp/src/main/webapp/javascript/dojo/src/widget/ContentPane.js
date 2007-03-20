@@ -531,17 +531,13 @@ dojo.widget.defineWidget(
 				}
 			}
 			this._styleNodes = [];
-	
-			var node = this.containerNode || this.domNode;
-			while(node.firstChild){
-				try{
-					dojo.event.browser.clean(node.firstChild);
-				}catch(e){}
-				node.removeChild(node.firstChild);
-			}
+
 			try{
+				var node = this.containerNode || this.domNode;
+				while(node.firstChild){
+					dojo.html.destroyNode(node.firstChild);
+				}
 				if(typeof cont != "string"){
-					node.innerHTML = "";
 					node.appendChild(cont);
 				}else{
 					node.innerHTML = cont;

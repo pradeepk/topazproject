@@ -36,16 +36,16 @@ if(dojo.widget.Editor2Plugin['SimpleSignalCommands']){
 dojo.widget.Editor2Plugin.SimpleSignalCommands = {
 	signals: ['save', 'insertImage'],
 	Handler: function(name){
-		if(name == 'save'){
+		if(name.toLowerCase() == 'save'){
 			return new dojo.widget.Editor2ToolbarButton('Save');
-		}else if(name == 'insertimage'){
+		}else if(name.toLowerCase() == 'insertimage'){
 			return new dojo.widget.Editor2ToolbarButton('InsertImage');
 		}
 	},
 	getCommand: function(editor, name){
 		var signal;
 		dojo.lang.every(this.signals,function(s){
-			if(s.toLowerCase() == name){
+			if(s.toLowerCase() == name.toLowerCase()){
 				signal = s;
 				return false;
 			}

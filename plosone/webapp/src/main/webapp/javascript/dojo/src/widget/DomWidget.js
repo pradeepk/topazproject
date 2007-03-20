@@ -16,6 +16,7 @@ dojo.widget._templateCache = {};
 dojo.widget.defaultStrings = {
 	// summary: a mapping of strings that are used in template variable replacement
 	dojoRoot: dojo.hostenv.getBaseScriptUri(),
+	dojoWidgetModuleUri: dojo.uri.moduleUri("dojo.widget"),
 	baseScriptUri: dojo.hostenv.getBaseScriptUri()
 };
 
@@ -54,27 +55,21 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateString, 
 			ts = tmplts[wt];
 		}
 	}
+
 	if((!obj.templateString)&&(!avoidCache)){
 		obj.templateString = templateString || ts["string"];
 	}
+	if(obj.templateString){
+		obj.templateString = this._sanitizeTemplateString(obj.templateString);
+	}
+
 	if((!obj.templateNode)&&(!avoidCache)){
 		obj.templateNode = ts["node"];
 	}
 	if((!obj.templateNode)&&(!obj.templateString)&&(tpath)){
 		// fetch a text fragment and assign it to templateString
 		// NOTE: we rely on blocking IO here!
-		var tstring = dojo.hostenv.getText(tpath);
-		if(tstring){
-			// strip <?xml ...?> declarations so that external SVG and XML
-			// documents can be added to a document without worry
-			tstring = tstring.replace(/^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im, "");
-			var matches = tstring.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
-			if(matches){
-				tstring = matches[1];
-			}
-		}else{
-			tstring = "";
-		}
+		var tstring = this._sanitizeTemplateString(dojo.hostenv.getText(tpath));
 
 		obj.templateString = tstring;
 		if(!avoidCache){
@@ -85,6 +80,23 @@ dojo.widget.fillFromTemplateCache = function(obj, templatePath, templateString, 
 		ts.string = obj.templateString;
 	}
 }
+
+dojo.widget._sanitizeTemplateString = function(/*String*/tString){
+	//summary: Strips <?xml ...?> declarations so that external SVG and XML
+	//documents can be added to a document without worry. Also, if the string
+	//is an HTML document, only the part inside the body tag is returned.
+	if(tString){
+		tString = tString.replace(/^\s*<\?xml(\s)+version=[\'\"](\d)*.(\d)*[\'\"](\s)*\?>/im, "");
+		var matches = tString.match(/<body[^>]*>\s*([\s\S]+)\s*<\/body>/im);
+		if(matches){
+			tString = matches[1];
+		}
+	}else{
+		tString = "";
+	}
+	return tString; //String
+}
+
 dojo.widget._templateCache.dummyCount = 0;
 
 // Array: list of properties to search for node-to-property mappings
@@ -557,7 +569,7 @@ dojo.declare("dojo.widget.DomWidget",
 			} else if (sourceNodeRef){
 				// Do in-place replacement of the my source node with my generated dom
 				if(this.domNode && (this.domNode !== sourceNodeRef)){
-					dojo.dom.replaceNode(sourceNodeRef, this.domNode);
+					this._sourceNodeRef = dojo.dom.replaceNode(sourceNodeRef, this.domNode);
 				}
 			}
 
@@ -583,7 +595,7 @@ dojo.declare("dojo.widget.DomWidget",
 //						break;
 					}
 					if(subnodes[i].getAttribute('dojoType')){
-						subnodes[i].setAttribute('_isSubWidget', true);
+						subnodes[i].setAttribute('isSubWidget', true);
 					}
 				}
 				if (this.isContainer && !this.containerNode){
@@ -614,7 +626,7 @@ dojo.declare("dojo.widget.DomWidget",
 				while((w = stack.pop())){
 					for(var i = 0; i < w.children.length; i++){
 						var cwidget = w.children[i];
-						if(cwidget._processedSubWidgets || !cwidget.extraArgs['_issubwidget']){ continue; }
+						if(cwidget._processedSubWidgets || !cwidget.extraArgs['issubwidget']){ continue; }
 						subwidgets.push(cwidget);
 						if(cwidget.isContainer){
 							stack.push(cwidget);
@@ -711,10 +723,9 @@ dojo.declare("dojo.widget.DomWidget",
 				dojo.widget._cssFiles[cpath.toString()] = true;
 			}
 		
-			if((this["templateCssString"])&&(!this.templateCssString["loaded"])){
+			if((this["templateCssString"])&&(!dojo.widget._cssStrings[this.templateCssString])){
 				dojo.html.insertCssText(this.templateCssString, null, cpath);
-				if(!this.templateCssString){ this.templateCssString = ""; }
-				this.templateCssString.loaded = true;
+				dojo.widget._cssStrings[this.templateCssString] = true;
 			}
 			if(	
 				(!this.preventClobber)&&(
@@ -873,8 +884,14 @@ dojo.declare("dojo.widget.DomWidget",
 		destroyRendering: function(){
 			// summary: UI destructor.  Destroy the dom nodes associated w/this widget.
 			try{
+				dojo.dom.destroyNode(this.domNode);
 				delete this.domNode;
 			}catch(e){ /* squelch! */ }
+			if(this._sourceNodeRef){
+				try{
+					dojo.dom.destroyNode(this._sourceNodeRef);
+				}catch(e){ /* squelch! */ }
+			}
 		},
 
 		createNodesFromText: function(){

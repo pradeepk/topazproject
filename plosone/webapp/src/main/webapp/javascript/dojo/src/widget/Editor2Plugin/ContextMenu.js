@@ -257,7 +257,7 @@ dojo.declare("dojo.widget.Editor2Plugin.ImageContextMenuGroup",
 		var curInst = dojo.widget.Editor2Manager.getCurrentInstance();
 		var img = dojo.withGlobal(curInst.window, "getSelectedElement", dojo.html.selection);
 
-		if(img && img.tagName.toUpperCase() == 'IMG'){
+		if(img && img.tagName.toLowerCase() == 'img'){
 			this.items[0].show();
 			return true;
 		}else{

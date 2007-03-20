@@ -73,6 +73,10 @@ dojo.widget.defineWidget("dojo.widget.PageContainer", dojo.widget.HtmlWidget, {
 		// Summary: Add the given child to this page container
 
 		page.hide();
+		
+		// since we are setting the width/height of the child elements, they need
+		// to be position:relative, or IE has problems (See bug #2033)
+		page.domNode.style.position="relative";
 
 		// publish the addChild event for panes added via addChild(), and the original panes too
 		dojo.event.topic.publish(this.widgetId+"-addChild", page);

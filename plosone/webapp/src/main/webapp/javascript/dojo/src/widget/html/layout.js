@@ -80,10 +80,22 @@ dojo.widget.html.layout = function(/*DomNode*/ container, /*Object[]*/ children,
 			}else{
 				elm.style.top = f.top + f.height + "px";
 			}
+			// TODO: for widgets I want to call resizeTo(), but I can't because
+			// I only want to set the width, and have the height determined
+			// dynamically.  (The thinner you make a div, the more height it consumes.)
+			if(child.onResized){
+				child.onResized();
+			}
 		}else if(pos=="left" || pos=="right"){
 			var w = dojo.html.getMarginBox(elm).width;
-			// width needs to be set for Firefox (#941)
-			dojo.html.setMarginBox(elm, { width: w, height: f.height });
+
+			// TODO: I only want to set the height, not the width, but see bug#941 (FF),
+			// and also the resizeTo() function demands both height and width arguments
+			if(child.resizeTo){
+				child.resizeTo(w, f.height);
+			}else{
+				dojo.html.setMarginBox(elm, { width: w, height: f.height });
+			}	
 
 			f.width -= w;
 			if(pos=="left"){
@@ -92,14 +104,11 @@ dojo.widget.html.layout = function(/*DomNode*/ container, /*Object[]*/ children,
 				elm.style.left = f.left + f.width + "px";
 			}
 		} else if(pos=="flood" || pos=="client"){
-			dojo.html.setMarginBox(elm, { width: f.width, height: f.height });
-		}
-		
-		// TODO: for widgets I want to call resizeTo(), but for top/bottom
-		// alignment I only want to set the width, and have the size determined
-		// dynamically.  (The thinner you make a div, the more height it consumes.)
-		if(child.onResized){
-			child.onResized();
+			if(child.resizeTo){
+				child.resizeTo(f.width, f.height);
+			}else{
+				dojo.html.setMarginBox(elm, { width: f.width, height: f.height });
+			}
 		}
 	});
 };
@@ -107,7 +116,7 @@ dojo.widget.html.layout = function(/*DomNode*/ container, /*Object[]*/ children,
 // This is essential CSS to make layout work (it isn't "styling" CSS)
 // make sure that the position:absolute in dojoAlign* overrides other classes
 dojo.html.insertCssText(
-	".dojoLayoutContainer{ position: relative; display: block; }\n" +
+	".dojoLayoutContainer{ position: relative; display: block; overflow: hidden; }\n" +
 	"body .dojoAlignTop, body .dojoAlignBottom, body .dojoAlignLeft, body .dojoAlignRight { position: absolute; overflow: hidden; }\n" +
 	"body .dojoAlignClient { position: absolute }\n" +
 	".dojoAlignClient { overflow: auto; }\n"

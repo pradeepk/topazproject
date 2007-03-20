@@ -130,7 +130,8 @@ dojo.xml.Parse = function(){
 		if(isIE && tagName.indexOf("/")==0){ return null; }
 
 		try{
-			if(node.getAttribute("parseWidgets").toLowerCase() == "false"){
+			var attr = node.getAttribute("parseWidgets");
+			if(attr && attr.toLowerCase() == "false"){
 				return {};
 			}
 		}catch(e){/*continue*/}
@@ -176,7 +177,6 @@ dojo.xml.Parse = function(){
 			var tcn = node.childNodes.item(i);
 			switch(tcn.nodeType){
 				case  dojo.dom.ELEMENT_NODE: // element nodes, call this function recursively
-					count++;
 					var ctn = getDojoTagName(tcn) || getTagName(tcn);
 					if(!parsedNodeSet[ctn]){
 						parsedNodeSet[ctn] = [];
@@ -186,6 +186,7 @@ dojo.xml.Parse = function(){
 						(tcn.childNodes.item(0).nodeType == dojo.dom.TEXT_NODE)){
 						parsedNodeSet[ctn][parsedNodeSet[ctn].length-1].value = tcn.childNodes.item(0).nodeValue;
 					}
+					count++;
 					break;
 				case  dojo.dom.TEXT_NODE: // if a single text node is the child, treat it as an attribute
 					if(node.childNodes.length == 1){

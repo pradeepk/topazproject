@@ -11,12 +11,13 @@ dojo.html.getDocumentWindow = function(doc){
 	//	summary
 	// 	Get window object associated with document doc
 
-	// With Safari, there is not way to retrieve the window from the document, so we must fix it.
+	// With Safari, there is not wa to retrieve the window from the document, so we must fix it.
 	if(dojo.render.html.safari && !doc._parentWindow){
 		/*
 			This is a Safari specific function that fix the reference to the parent
 			window from the document object.
 		*/
+
 		var fix=function(win){
 			win.document._parentWindow=win;
 			for(var i=0; i<win.frames.length; i++){
@@ -44,46 +45,6 @@ dojo.html.getDocumentWindow = function(doc){
 	}
 
 	return doc._parentWindow || doc.parentWindow || doc.defaultView;	//	Window
-}
-
-dojo.html.getAbsolutePositionExt = function(/* HTMLElement*/node, /* boolean?*/includeScroll, /* string?*/boxType, /* Window?*/topwin){
-	// summary: 
-	//		the same as dojo.html.getAbsolutePosition (see full description/parameter
-	//		list there) except this one accepts an additional parameter to specify
-	//		which window the resulting coordinate should be against.
-	//	description:
-	//		this function is useful when the absolute position (with regards to the 
-	//		top window) of a node in an iframe is wanted
-	var curwin = dojo.html.getElementWindow(node);
-	var ret = dojo.withGlobal(curwin, 'getAbsolutePosition', dojo.html, arguments);
-	var win = dojo.html.getElementWindow(node);
-	if(topwin != win && win.frameElement){
-		var ext = dojo.html.getAbsolutePositionExt(win.frameElement,includeScroll,boxType,topwin);
-		ret.x += ext.x;
-		ret.y += ext.y;
-	}
-	ret.top = ret.y;
-	ret.left = ret.x;
-	
-//	var stack = [];
-//	var args = [null];
-//	dojo.lang.forEach(arguments,function(a, i){
-//		if(i>0){ args.push(a); }
-//	});
-//	var ret = {x:0,y:0};
-//	var curnode = node;
-//	while(curnode){
-//		var curwin = dojo.html.getElementWindow(curnode);
-//		args[0] = curnode;
-//		var ext = dojo.withGlobal(curwin, 'getAbsolutePosition', dojo.html, args);
-//		ret.x += ext.x;
-//		ret.y += ext.y;
-//		if(topwin != curwin && curwin.frameElement){
-//			stack.push(curwin.frameElement);
-//		}
-//		curnode = stack.pop();
-//	}
-	return ret;	//	object
 }
 
 dojo.html.gravity = function(/* HTMLElement */node, /* DOMEvent */e){
@@ -278,7 +239,7 @@ dojo.html.createNodesFromText = function(/* string */txt, /* boolean? */trim){
 		nodes.push(parent.childNodes[x].cloneNode(true));
 	}
 	tn.style.display = "none"; // FIXME: why do we do this?
-	dojo.dom.removeNode(tn);
+	dojo.html.destroyNode(tn);
 	return nodes;	//	array
 }
 
@@ -421,6 +382,11 @@ dojo.html.placeOnScreen = function(
 	}
 
 	return { left: bestx, top: besty, x: bestx, y: besty, dist: bestDistance, corner:  bestCorner};	//	object
+}
+
+dojo.html.placeOnScreenPoint = function(node, desiredX, desiredY, padding, hasScroll) {
+	dojo.deprecated("dojo.html.placeOnScreenPoint", "use dojo.html.placeOnScreen() instead", "0.5");
+	return dojo.html.placeOnScreen(node, desiredX, desiredY, padding, hasScroll, ['TL', 'TR', 'BL', 'BR']);
 }
 
 dojo.html.placeOnScreenAroundElement = function(

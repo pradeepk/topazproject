@@ -34,3 +34,5 @@ dojo.hostenv.getText = function(fpath){
 }
 
 dojo.hostenv.exit = function(exitcode){ WScript.Quit(exitcode); }
+
+dojo.requireIf((djConfig["isDebug"] || djConfig["debugAtAllCosts"]), "dojo.debug");

@@ -24,9 +24,7 @@ if(typeof dojo == "undefined"){
 		if(hostEnv == "dashboard"){
 			tmps.splice(1, 0, "hostenv_browser.js");
 		}
-	
-		tmps.push("bootstrap2.js");
-	
+
 		if((this["djConfig"])&&(djConfig["baseScriptUri"])){
 			var root = djConfig["baseScriptUri"];
 		}else if((this["djConfig"])&&(djConfig["baseRelativePath"])){
@@ -57,21 +55,6 @@ if(typeof dojo == "undefined"){
 					}
 				}
 			}
-		}
-	
-		if((this["djConfig"])&&((djConfig["isDebug"])||(djConfig["debugAtAllCosts"]))){
-			tmps.push("debug.js");
-		}
-	
-		if((this["djConfig"])&&(djConfig["debugAtAllCosts"])&&(!isRhino)&&(!isDashboard)){
-			tmps.push("browser_debug.js");
-		}
-	
-		//Support compatibility packages. Right now this only allows setting one
-		//compatibility package. Might need to revisit later down the line to support
-		//more than one.
-		if((this["djConfig"])&&(djConfig["compat"])){
-			tmps.push("compat/" + djConfig["compat"] + ".js");
 		}
 	
 		var loaderRoot = root;
