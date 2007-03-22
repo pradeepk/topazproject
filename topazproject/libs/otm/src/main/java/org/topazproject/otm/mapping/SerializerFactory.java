@@ -5,9 +5,13 @@ import java.lang.reflect.Constructor;
 import java.net.URI;
 import java.net.URL;
 
+import java.text.SimpleDateFormat;
+
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.SimpleTimeZone;
+import java.util.TimeZone;
 
 /**
  * A factory for creating serializers for basic java types.
@@ -33,7 +37,7 @@ public class SerializerFactory {
     serializers.put(Byte.TYPE, new SimpleSerializer<Byte>(Byte.class));
     serializers.put(URI.class, new SimpleSerializer<URI>(URI.class));
     serializers.put(URL.class, new SimpleSerializer<URL>(URL.class));
-    serializers.put(Date.class, new SimpleSerializer<Date>(Date.class));
+    serializers.put(Date.class, new XsdDateTimeSerializer());
   }
 
   /**
@@ -68,6 +72,42 @@ public class SerializerFactory {
 
     public String toString() {
       return "SimpleSerializer[" + constructor.getDeclaringClass().getName() + "]";
+    }
+  }
+
+  private static class XsdDateTimeSerializer implements Serializer {
+    private SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
+    private SimpleDateFormat fmt    = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+
+    public XsdDateTimeSerializer() {
+      fmt.setTimeZone(new SimpleTimeZone(0, "UTC"));
+      parser.setLenient(false);
+    }
+
+    public String serialize(Object o) throws Exception {
+      synchronized (fmt) {
+        return (o == null) ? null : fmt.format((Date) o);
+      }
+    }
+
+    public Object deserialize(String o) throws Exception {
+      if (o == null)
+        return null;
+
+      int len = o.length();
+
+      if (o.endsWith("Z"))
+        o = o.substring(0, len - 1) + "+0000";
+      else
+        o = o.substring(0, len - 3) + o.substring(len - 2, len);
+
+      synchronized (parser) {
+        return parser.parse(o);
+      }
+    }
+
+    public String toString() {
+      return "XsdDateTimeSerializer";
     }
   }
 
