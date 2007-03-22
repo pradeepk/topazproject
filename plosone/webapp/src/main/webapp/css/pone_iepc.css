@@ -90,3 +90,5 @@ html>body #home { height: auto }
 *:first-child+html div.banner img,
 *:first-child+html div.banner object { margin-top: 8px; }
 
+*:first-child+html a.bug,
+*:first-child+html a:visited.bug, { margin-bottom: -20px!important; }
