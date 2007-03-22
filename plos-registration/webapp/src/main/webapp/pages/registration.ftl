@@ -23,8 +23,8 @@
 	</fieldset>
   </@ww.form>
   <ul>
-      <li>Already registered? <a href="http://www.plosone.org/profile">Login</a>.</li>
-      <li><a href="http://www.plosone.org/static/help.action#account">Help</a></li>
+      <li>Already registered? <a href="${plosOneUrl}${plosOneContext}/profile">Login</a>.</li>
+      <li><a href="${plosOneUrl}${plosOneContext}/static/help.action#account">Help</a></li>
   </ul>
 </div>
 <!-- end : main contents -->
