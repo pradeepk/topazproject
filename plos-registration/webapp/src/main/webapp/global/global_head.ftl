@@ -1,9 +1,17 @@
-<title>PLoS Registration</title>
+<title>PLoS Journals : A Peer-Reviewed, Open-Access Journal</title>
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<link rel="shortcut icon" href="images/pone_favicon.ico" type="image/x-icon" />
-<link rel="home" title="home" href="${plosOneUrl}${plosOneContext}"></link>
+<meta name="keywords" content="clinical trials, clinical trial, clinical trials journal, trials journal, medical publishing, plos, public library of science, open access, open-access, science, medical research, clinical research, trial results, human studies, experimental treatment, disease, drug, drugs, device, devices, vaccine, vaccines, phase I, phase II, phase III, phase IV, clinical trials database, clinical trials databank"/>
+<meta name="description" content="PLoS ONE: an inclusive, peer-reviewed, open access resource from the PUBLIC LIBRARY OF SCIENCE. Reports of well-performed scientific studies from all disciplines freely available to the whole World. " />
+
+<link rel="alternate" type="application/rss+xml" title="PLoS Journals: New Articles" href="/?request=get-rss&issn=&type=new-articles" />
+<link rel="alternate" type="application/rss+xml" title="PLoS Journals: Table of Contents" href="/?request=get-rss&issn=&type=toc-articles" />
+<link rel="alternate" type="application/rss+xml" title="PLoS Journals: Top Articles" href="/?request=get-rss&issn=&type=top-articles" />
+
+<link rel="shortcut icon" href="images/pjou_favicon.ico" type="image/x-icon" />
+
+<link rel="home" title="home" href="http://www.plosjournals.org"></link>
 
 <#include "../css/global_css.ftl">
 
@@ -23,11 +31,6 @@
 <script type="text/javascript" src="javascript/topaz/domUtil.js"></script>
 <script type="text/javascript" src="javascript/init_global.js"></script>  
 <script type="text/javascript" src="javascript/init_navigation.js"></script>  
-
-
-<meta name="description" content="PLoS ONE: an inclusive, peer-reviewed, open-access resource from the PUBLIC LIBRARY OF SCIENCE. Reports of well-performed scientific studies from all disciplines freely available to the whole world. " />
-
-<meta name="keywords" content="PLoS, Public Library of Science, Open Access, Open-Access, Science, Medicine, Biology, Research, Peer-review, Inclusive, Interdisciplinary, Ante-disciplinary, Physics, Chemistry, Engineering" />
 
 <!--
 <rdf:RDF xmlns="http://web.resource.org/cc/"
