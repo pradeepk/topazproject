@@ -47,7 +47,7 @@ public class SerializerFactory {
     return serializers.get(clazz);
   }
 
-  private static class SimpleSerializer<T> implements Serializer<T> {
+  private static class SimpleSerializer<T> implements Serializer {
     private Constructor<T> constructor;
 
     public SimpleSerializer(Class<T> clazz) {
@@ -58,11 +58,11 @@ public class SerializerFactory {
       }
     }
 
-    public String serialize(T o) throws Exception {
+    public String serialize(Object o) throws Exception {
       return (o == null) ? null : o.toString();
     }
 
-    public T deserialize(String o) throws Exception {
+    public Object deserialize(String o) throws Exception {
       return constructor.newInstance(o);
     }
 
