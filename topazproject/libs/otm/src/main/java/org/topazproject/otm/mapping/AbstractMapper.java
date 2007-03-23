@@ -151,7 +151,7 @@ public abstract class AbstractMapper implements Mapper {
     return URI.class.isAssignableFrom(clazz) || URL.class.isAssignableFrom(clazz)
             || (getSerializer() == null)
             || (String.class.isAssignableFrom(clazz) && hasInverseUri())
-            || (Rdf.xsd + "anyUri").equals(getDataType());
+            || (Rdf.xsd + "anyURI").equals(getDataType());
   }
 
   /*
