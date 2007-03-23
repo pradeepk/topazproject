@@ -43,6 +43,8 @@ public class MapperFactory {
 
   static {
     typeMap.put(String.class, null);
+    typeMap.put(Boolean.class, Rdf.xsd + "boolean");
+    typeMap.put(Boolean.TYPE, Rdf.xsd + "boolean");
     typeMap.put(Integer.class, Rdf.xsd + "int");
     typeMap.put(Integer.TYPE, Rdf.xsd + "int");
     typeMap.put(Long.class, Rdf.xsd + "long");

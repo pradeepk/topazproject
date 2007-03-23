@@ -50,6 +50,8 @@ public class SerializerFactory {
       };
 
     serializers.put(String.class, new SimpleSerializer<String>(String.class));
+    serializers.put(Boolean.class, new XsdBooleanSerializer());
+    serializers.put(Boolean.TYPE, new XsdBooleanSerializer());
     serializers.put(Integer.class, new SimpleSerializer<Integer>(Integer.class));
     serializers.put(Integer.TYPE, new SimpleSerializer<Integer>(Integer.class));
     serializers.put(Long.class, new SimpleSerializer<Long>(Long.class));
@@ -204,6 +206,7 @@ public class SerializerFactory {
       }
 
       o = o.substring(0, pos) + mss + o.substring(endPos, len);
+
       SimpleDateFormat parser = hasTimeZone ? zparser : sparser;
 
       synchronized (parser) {
@@ -213,6 +216,22 @@ public class SerializerFactory {
 
     public String toString() {
       return "XsdDateTimeSerializer";
+    }
+  }
+
+  private static class XsdBooleanSerializer implements Serializer<Boolean> {
+    public String serialize(Boolean o) throws Exception {
+      return o.toString();
+    }
+
+    public Boolean deserialize(String o) throws Exception {
+      if ("1".equals(o) || "true".equals(o))
+        return Boolean.TRUE;
+
+      if ("0".equals(o) || "false".equals(o))
+        return Boolean.FALSE;
+
+      throw new IllegalArgumentException("invalid xsd:boolean '" + o + "'");
     }
   }
 
