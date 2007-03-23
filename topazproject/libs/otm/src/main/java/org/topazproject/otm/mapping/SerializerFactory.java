@@ -51,7 +51,7 @@ public class SerializerFactory {
     return serializers.get(clazz);
   }
 
-  private static class SimpleSerializer<T> implements Serializer {
+  private static class SimpleSerializer<T> implements Serializer<T> {
     private Constructor<T> constructor;
 
     public SimpleSerializer(Class<T> clazz) {
@@ -62,11 +62,11 @@ public class SerializerFactory {
       }
     }
 
-    public String serialize(Object o) throws Exception {
+    public String serialize(T o) throws Exception {
       return (o == null) ? null : o.toString();
     }
 
-    public Object deserialize(String o) throws Exception {
+    public T deserialize(String o) throws Exception {
       return constructor.newInstance(o);
     }
 
@@ -75,7 +75,7 @@ public class SerializerFactory {
     }
   }
 
-  private static class XsdDateTimeSerializer implements Serializer {
+  private static class XsdDateTimeSerializer implements Serializer<Date> {
     private SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
     private SimpleDateFormat fmt    = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -84,13 +84,13 @@ public class SerializerFactory {
       parser.setLenient(false);
     }
 
-    public String serialize(Object o) throws Exception {
+    public String serialize(Date o) throws Exception {
       synchronized (fmt) {
-        return (o == null) ? null : fmt.format((Date) o);
+        return (o == null) ? null : fmt.format(o);
       }
     }
 
-    public Object deserialize(String o) throws Exception {
+    public Date deserialize(String o) throws Exception {
       if (o == null)
         return null;
 

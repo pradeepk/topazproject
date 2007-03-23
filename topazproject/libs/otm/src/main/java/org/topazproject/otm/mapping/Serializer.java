@@ -10,7 +10,7 @@ import java.util.List;
  *
  * @author Pradeep Krishnan
   */
-public interface Serializer {
+public interface Serializer<T> {
   /**
    * Convert to triple store value.
    *
@@ -20,7 +20,7 @@ public interface Serializer {
    *
    * @throws Exception on a conversion error
    */
-  public String serialize(Object o) throws Exception;
+  public String serialize(T o) throws Exception;
 
   /**
    * Convert from a triple store value
@@ -31,5 +31,5 @@ public interface Serializer {
    *
    * @throws Exception on a conversion error
    */
-  public Object deserialize(String o) throws Exception;
+  public T deserialize(String o) throws Exception;
 }
