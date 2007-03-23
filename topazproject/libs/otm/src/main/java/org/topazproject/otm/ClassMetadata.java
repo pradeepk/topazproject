@@ -24,15 +24,15 @@ import org.topazproject.otm.mapping.MapperFactory;
  * @author Pradeep Krishnan
  */
 public class ClassMetadata {
-  private static final Log    log      = LogFactory.getLog(ClassMetadata.class);
-  private Set<String>         types    = Collections.emptySet();
-  private String              type     = null;
-  private String              model    = null;
-  private String              ns       = null;
-  private Mapper              idField  = null;
-  private Map<String, Mapper> fieldMap = new HashMap<String, Mapper>();
+  private static final Log    log        = LogFactory.getLog(ClassMetadata.class);
+  private Set<String>         types      = Collections.emptySet();
+  private String              type       = null;
+  private String              model      = null;
+  private String              ns         = null;
+  private Mapper              idField    = null;
+  private Map<String, Mapper> fieldMap   = new HashMap<String, Mapper>();
   private Map<String, Mapper> inverseMap = new HashMap<String, Mapper>();
-  private Map<String, Mapper> nameMap  = new HashMap<String, Mapper>();
+  private Map<String, Mapper> nameMap    = new HashMap<String, Mapper>();
   private Class               clazz;
   private Collection<Mapper>  fields;
 
@@ -51,15 +51,17 @@ public class ClassMetadata {
    * @param clazz DOCUMENT ME!
    * @param nsOfContainingClass DOCUMENT ME!
    */
-  public ClassMetadata(Class clazz, String nsOfContainingClass) throws OtmException {
+  public ClassMetadata(Class clazz, String nsOfContainingClass)
+                throws OtmException {
     this(clazz, clazz, nsOfContainingClass);
   }
 
-  private ClassMetadata(Class clazz, Class top, String nsOfContainingClass) throws OtmException {
-    this.clazz                         = clazz;
+  private ClassMetadata(Class clazz, Class top, String nsOfContainingClass)
+                 throws OtmException {
+    this.clazz                           = clazz;
 
-    Class         s                    = clazz.getSuperclass();
-    ClassMetadata superMeta            = null;
+    Class         s                      = clazz.getSuperclass();
+    ClassMetadata superMeta              = null;
 
     if (!Object.class.equals(s) && (s != null)) {
       try {
@@ -75,6 +77,7 @@ public class ClassMetadata {
             inverseMap.put(m.getUri(), m);
           else
             fieldMap.put(m.getUri(), m);
+
           nameMap.put(m.getName(), m);
         }
       } catch (OtmException e) {
@@ -124,6 +127,7 @@ public class ClassMetadata {
           idField = m;
         } else {
           Map<String, Mapper> map = m.hasInverseUri() ? inverseMap : fieldMap;
+
           if (map.put(uri, m) != null)
             throw new OtmException("Duplicate @Rdf uri for " + f.toGenericString());
 
@@ -132,7 +136,7 @@ public class ClassMetadata {
       }
     }
 
-    fields   = Collections.unmodifiableCollection(nameMap.values());
+    fields = Collections.unmodifiableCollection(nameMap.values());
   }
 
   /**
@@ -202,6 +206,7 @@ public class ClassMetadata {
    * Gets a field mapper by its predicate uri.
    *
    * @param uri the predicate uri
+   * @param inverse DOCUMENT ME!
    *
    * @return the mapper or null
    */
@@ -230,8 +235,8 @@ public class ClassMetadata {
   }
 
   /**
-   * Tests if this meta-data is for an entity class. Entity classes have an id field,
-   * and graph/model
+   * Tests if this meta-data is for an entity class. Entity classes have an id field, and
+   * graph/model
    *
    * @return true for entity type
    */
