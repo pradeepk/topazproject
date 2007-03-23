@@ -23,10 +23,11 @@ public class FunctionalMapper extends AbstractMapper {
    * @param getter the field get method or null
    * @param setter the field set method or null
    * @param serializer the serializer or null
+   * @param dataType of literals or null for un-typed
    */
   public FunctionalMapper(String uri, Field field, Method getter, Method setter,
-                          Serializer serializer) {
-    super(uri, field, getter, setter, serializer, field.getType());
+                          Serializer serializer, String dataType) {
+    super(uri, field, getter, setter, serializer, field.getType(), dataType);
   }
 
   /**
@@ -35,6 +36,8 @@ public class FunctionalMapper extends AbstractMapper {
    * @param o the object
    *
    * @return a singelton or empty list (may be serialized)
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public List get(Object o) throws OtmException {
     Object value = getRawValue(o, false);

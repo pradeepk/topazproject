@@ -26,10 +26,11 @@ public class ArrayMapper extends AbstractMapper {
    * @param setter the field set method or null
    * @param serializer the serializer or null
    * @param componentType the array component type
+   * @param dataType of literals or null for un-typed
    */
   public ArrayMapper(String uri, Field field, Method getter, Method setter, Serializer serializer,
-                     Class componentType) {
-    super(uri, field, getter, setter, serializer, componentType);
+                     Class componentType, String dataType) {
+    super(uri, field, getter, setter, serializer, componentType, dataType);
   }
 
   /**
@@ -38,6 +39,8 @@ public class ArrayMapper extends AbstractMapper {
    * @param o the object
    *
    * @return the list of array elements (may be serialized)
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public List get(Object o) throws OtmException {
     Object value = getRawValue(o, false);
@@ -63,6 +66,8 @@ public class ArrayMapper extends AbstractMapper {
    *
    * @param o the object
    * @param vals the values to be set (may be deserialized)
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void set(Object o, List vals) throws OtmException {
     Object value;

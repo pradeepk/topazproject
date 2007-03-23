@@ -94,7 +94,7 @@ public class ItqlStore implements TripleStore {
 
       if (p.getSerializer() != null) {
         for (String obj : (List<String>) p.get(o))
-          addStmt(buf, id, p.getUri(), obj, null /* XXX */, p.typeIsUri());
+          addStmt(buf, id, p.getUri(), obj, p.getDataType(), p.typeIsUri());
       } else {
         for (String obj : sess.getIds(p.get(o)))
           addStmt(buf, id, p.getUri(), obj, null, true);

@@ -1,6 +1,5 @@
 package org.topazproject.otm.mapping;
 
-
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -13,6 +12,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Inverse;
 import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Rdf;
 
 /**
  * A convenient base class for all mappers.
@@ -31,6 +31,7 @@ public abstract class AbstractMapper implements Mapper {
   private boolean    inverse;
   private String     inverseModel;
   private boolean    inverseModelInitialized;
+  private String     dataType;
 
 /**
    * Creates a new AbstractMapper object.
@@ -41,9 +42,10 @@ public abstract class AbstractMapper implements Mapper {
    * @param setter the field set method or null
    * @param serializer the serializer or null
    * @param componentType of arrays and collections or type of functional properties
+   * @param dataType of literals or null for un-typed
    */
   public AbstractMapper(String uri, Field field, Method getter, Method setter,
-                        Serializer serializer, Class componentType) {
+                        Serializer serializer, Class componentType, String dataType) {
     this.uri                  = uri;
     this.field                = field;
     this.getter               = getter;
@@ -55,6 +57,7 @@ public abstract class AbstractMapper implements Mapper {
     inverse                   = field.getAnnotation(Inverse.class) != null;
     inverseModel              = null;
     inverseModelInitialized   = false;
+    this.dataType             = dataType;
   }
 
   /*
@@ -147,7 +150,15 @@ public abstract class AbstractMapper implements Mapper {
 
     return URI.class.isAssignableFrom(clazz) || URL.class.isAssignableFrom(clazz)
             || (getSerializer() == null)
-            || (String.class.isAssignableFrom(clazz) && hasInverseUri());
+            || (String.class.isAssignableFrom(clazz) && hasInverseUri())
+            || (Rdf.xsd + "anyUri").equals(getDataType());
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public String getDataType() {
+    return dataType;
   }
 
   /*
@@ -234,10 +245,15 @@ public abstract class AbstractMapper implements Mapper {
     }
   }
 
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
   public String toString() {
-    return getClass().getName() + "[field=" + name + ", pred=" + uri + ", type=" +
-           (type != null ? type.getName() : "-null-") + ", componentType=" +
-           (componentType != null ? componentType.getName() : "-null-") + ", inverse=" + inverse +
-           ", serializer=" + serializer + "]";
+    return getClass().getName() + "[field=" + name + ", pred=" + uri + ", type="
+           + ((type != null) ? type.getName() : "-null-") + ", componentType="
+           + ((componentType != null) ? componentType.getName() : "-null-") + ", inverse="
+           + inverse + ", serializer=" + serializer + "]";
   }
 }

@@ -19,6 +19,8 @@ public interface Mapper {
    * @param o the object
    *
    * @return the list containing the field's values (may be serialized)
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public List get(Object o) throws OtmException;
 
@@ -27,6 +29,8 @@ public interface Mapper {
    *
    * @param o the object
    * @param vals the list of values to set (may be deserialized)
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void set(Object o, List vals) throws OtmException;
 
@@ -37,6 +41,8 @@ public interface Mapper {
    * @param create whether to create an instance
    *
    * @return the raw field value
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public Object getRawValue(Object o, boolean create) throws OtmException;
 
@@ -45,6 +51,8 @@ public interface Mapper {
    *
    * @param o the object
    * @param value the value to set
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void setRawValue(Object o, Object value) throws OtmException;
 
@@ -89,6 +97,13 @@ public interface Mapper {
    * @return true if this field is persisted as a uri
    */
   public boolean typeIsUri();
+
+  /**
+   * Gets the dataType for a literal field.
+   *
+   * @return the dataType or null for un-typed literal
+   */
+  public String getDataType();
 
   /**
    * Gets the component type of this field.

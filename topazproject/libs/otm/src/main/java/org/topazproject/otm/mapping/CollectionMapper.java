@@ -18,7 +18,7 @@ import org.topazproject.otm.OtmException;
  * @author Pradeep Krishnan
  */
 public class CollectionMapper extends AbstractMapper {
-  /**
+/**
    * Creates a new CollectionMapper object.
    *
    * @param uri the rdf predicate
@@ -27,10 +27,11 @@ public class CollectionMapper extends AbstractMapper {
    * @param setter the field set method or null
    * @param serializer the serializer or null
    * @param componentType the collection component type
+   * @param dataType of literals or null for un-typed
    */
   public CollectionMapper(String uri, Field field, Method getter, Method setter,
-                          Serializer serializer, Class componentType) {
-    super(uri, field, getter, setter, serializer, componentType);
+                          Serializer serializer, Class componentType, String dataType) {
+    super(uri, field, getter, setter, serializer, componentType, dataType);
   }
 
   /**
@@ -39,6 +40,8 @@ public class CollectionMapper extends AbstractMapper {
    * @param o the object
    *
    * @return the list of array elements (may be serialized)
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public List get(Object o) throws OtmException {
     Collection value = (Collection) getRawValue(o, false);
@@ -60,6 +63,8 @@ public class CollectionMapper extends AbstractMapper {
    *
    * @param o the object
    * @param vals the values to be set (may be deserialized)
+   *
+   * @throws OtmException DOCUMENT ME!
    */
   public void set(Object o, List vals) throws OtmException {
     Collection value  = (Collection) getRawValue(o, false);

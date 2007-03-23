@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.annotations.DataType;
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Id;
@@ -37,7 +38,27 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Pradeep Krishnan
  */
 public class MapperFactory {
-  private static final Log log = LogFactory.getLog(MapperFactory.class);
+  private static final Log          log     = LogFactory.getLog(MapperFactory.class);
+  private static Map<Class, String> typeMap = new HashMap<Class, String>();
+
+  static {
+    typeMap.put(String.class, null);
+    typeMap.put(Integer.class, Rdf.xsd + "int");
+    typeMap.put(Integer.TYPE, Rdf.xsd + "int");
+    typeMap.put(Long.class, Rdf.xsd + "long");
+    typeMap.put(Long.TYPE, Rdf.xsd + "long");
+    typeMap.put(Short.class, Rdf.xsd + "short");
+    typeMap.put(Short.TYPE, Rdf.xsd + "short");
+    typeMap.put(Float.class, Rdf.xsd + "float");
+    typeMap.put(Float.TYPE, Rdf.xsd + "float");
+    typeMap.put(Double.class, Rdf.xsd + "double");
+    typeMap.put(Double.TYPE, Rdf.xsd + "double");
+    typeMap.put(Byte.class, Rdf.xsd + "byte");
+    typeMap.put(Byte.TYPE, Rdf.xsd + "byte");
+    typeMap.put(URI.class, Rdf.xsd + "anyURI");
+    typeMap.put(URL.class, Rdf.xsd + "anyURI");
+    typeMap.put(Date.class, Rdf.xsd + "dateTime");
+  }
 
   /**
    * Create an appropriate mapper for the given java field.
@@ -51,7 +72,7 @@ public class MapperFactory {
    * @throws OtmException if a mapper can't be created
    */
   public static Collection<?extends Mapper> create(Field f, Class top, String ns)
-      throws OtmException {
+                                            throws OtmException {
     Class type = f.getType();
     int   mod  = f.getModifiers();
 
@@ -108,10 +129,10 @@ public class MapperFactory {
         throw new OtmException("@Id field '" + f.toGenericString()
                                + "' must be a String, URI or URL.");
 
-      Serializer serializer = SerializerFactory.getSerializer(type);
+      Serializer serializer = SerializerFactory.getSerializer(type, null);
 
       return Collections.singletonList(new FunctionalMapper(null, f, getMethod, setMethod,
-                                                            serializer));
+                                                            serializer, null));
     }
 
     if (!embedded && (uri == null))
@@ -124,7 +145,13 @@ public class MapperFactory {
     type                 = isArray ? type.getComponentType() : (isCollection ? collectionType(f)
                                                                 : type);
 
-    Serializer serializer = SerializerFactory.getSerializer(type);
+    DataType dta         = f.getAnnotation(DataType.class);
+    String   dt          = (dta == null) ? typeMap.get(type) : dta.value();
+
+    if (DataType.UNTYPED.equals(dt))
+      dt = null;
+
+    Serializer serializer = SerializerFactory.getSerializer(type, dt);
 
     if (log.isDebugEnabled() && (serializer == null))
       log.debug("No serializer found for " + type);
@@ -133,11 +160,11 @@ public class MapperFactory {
       Mapper p;
 
       if (isArray)
-        p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type);
+        p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt);
       else if (isCollection)
-        p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type);
+        p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt);
       else
-        p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer);
+        p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt);
 
       return Collections.singletonList(p);
     }

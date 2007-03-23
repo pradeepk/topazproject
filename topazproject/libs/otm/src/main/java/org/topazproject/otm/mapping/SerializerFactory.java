@@ -13,15 +13,42 @@ import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
+import org.topazproject.otm.annotations.Rdf;
+
 /**
  * A factory for creating serializers for basic java types.
  *
  * @author Pradeep Krishnan
  */
 public class SerializerFactory {
-  private static Map<Class, Serializer> serializers = new HashMap<Class, Serializer>();
+  private static Map<Class, Serializer>              serializers      =
+    new HashMap<Class, Serializer>();
+  private static Map<Class, Map<String, Serializer>> typedSerializers =
+    new HashMap<Class, Map<String, Serializer>>();
 
   static {
+    DateBuilder<Date> dateDateBuilder =
+      new DateBuilder<Date>() {
+        public Date toDate(Date o) {
+          return o;
+        }
+
+        public Date fromDate(Date d) {
+          return d;
+        }
+      };
+
+    DateBuilder<Long> longDateBuilder =
+      new DateBuilder<Long>() {
+        public Date toDate(Long o) {
+          return new Date(o.longValue());
+        }
+
+        public Long fromDate(Date d) {
+          return new Long(d.getTime());
+        }
+      };
+
     serializers.put(String.class, new SimpleSerializer<String>(String.class));
     serializers.put(Integer.class, new SimpleSerializer<Integer>(Integer.class));
     serializers.put(Integer.TYPE, new SimpleSerializer<Integer>(Integer.class));
@@ -37,18 +64,46 @@ public class SerializerFactory {
     serializers.put(Byte.TYPE, new SimpleSerializer<Byte>(Byte.class));
     serializers.put(URI.class, new SimpleSerializer<URI>(URI.class));
     serializers.put(URL.class, new SimpleSerializer<URL>(URL.class));
-    serializers.put(Date.class, new XsdDateTimeSerializer());
+    serializers.put(Date.class,
+                    new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "dateTime"));
+
+    Map<String, Serializer> m = new HashMap<String, Serializer>();
+    m.put(Rdf.xsd + "dateTime",
+          new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "dateTime"));
+    m.put(Rdf.xsd + "date", new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "date"));
+    m.put(Rdf.xsd + "time", new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "time"));
+
+    typedSerializers.put(Date.class, m);
+
+    m = new HashMap<String, Serializer>();
+    m.put(Rdf.xsd + "dateTime",
+          new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "dateTime"));
+    m.put(Rdf.xsd + "date", new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "date"));
+    m.put(Rdf.xsd + "time", new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "time"));
+
+    typedSerializers.put(Long.class, m);
+    typedSerializers.put(Long.TYPE, m);
   }
 
   /**
    * Get the serializer for a class.
    *
    * @param clazz the class
+   * @param dataType DOCUMENT ME!
    *
    * @return a serializer or null
    */
-  public static Serializer getSerializer(Class clazz) {
-    return serializers.get(clazz);
+  public static Serializer getSerializer(Class clazz, String dataType) {
+    Serializer              s = null;
+    Map<String, Serializer> m = (dataType == null) ? null : typedSerializers.get(clazz);
+
+    if (m != null)
+      s = m.get(dataType);
+
+    if (s == null)
+      s = serializers.get(clazz);
+
+    return s;
   }
 
   private static class SimpleSerializer<T> implements Serializer<T> {
@@ -75,34 +130,84 @@ public class SerializerFactory {
     }
   }
 
-  private static class XsdDateTimeSerializer implements Serializer<Date> {
-    private SimpleDateFormat parser = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssZ");
-    private SimpleDateFormat fmt    = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+  private static interface DateBuilder<T> {
+    public Date toDate(T o);
 
-    public XsdDateTimeSerializer() {
+    public T fromDate(Date d);
+  }
+
+  private static class XsdDateTimeSerializer<T> implements Serializer<T> {
+    private SimpleDateFormat sparser;
+    private SimpleDateFormat zparser;
+    private SimpleDateFormat fmt;
+    private DateBuilder<T>   dateBuilder;
+
+    public XsdDateTimeSerializer(DateBuilder dateBuilder, String dataType) {
+      this.dateBuilder = dateBuilder;
+
+      if ((Rdf.xsd + "date").equals(dataType)) {
+        zparser   = new SimpleDateFormat("yyyy-MM-ddZ");
+        sparser   = new SimpleDateFormat("yyyy-MM-dd");
+        fmt       = new SimpleDateFormat("yyyy-MM-dd'Z'");
+      } else if ((Rdf.xsd + "dateTime").equals(dataType)) {
+        zparser   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSSZ");
+        sparser   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS");
+        fmt       = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
+      } else if ((Rdf.xsd + "time").equals(dataType)) {
+        zparser   = new SimpleDateFormat("HH:mm:ss'.'SSSZ");
+        sparser   = new SimpleDateFormat("HH:mm:ss'.'SSS");
+        fmt       = new SimpleDateFormat("HH:mm:ss'.'SSS'Z'");
+      } else {
+        throw new IllegalArgumentException("Data type must be an xsd:date, xsd:time or xsd:dateTime");
+      }
+
       fmt.setTimeZone(new SimpleTimeZone(0, "UTC"));
-      parser.setLenient(false);
+      sparser.setLenient(false);
+      zparser.setLenient(false);
     }
 
-    public String serialize(Date o) throws Exception {
+    public String serialize(T o) throws Exception {
       synchronized (fmt) {
-        return (o == null) ? null : fmt.format(o);
+        return (o == null) ? null : fmt.format(dateBuilder.toDate(o));
       }
     }
 
-    public Date deserialize(String o) throws Exception {
+    public T deserialize(String o) throws Exception {
       if (o == null)
         return null;
 
-      int len = o.length();
-
       if (o.endsWith("Z"))
-        o = o.substring(0, len - 1) + "+0000";
-      else
-        o = o.substring(0, len - 3) + o.substring(len - 2, len);
+        o = o.substring(0, o.length() - 1) + "+00:00";
+
+      int     len         = o.length();
+      boolean hasTimeZone =
+        ((o.charAt(len - 3) == ':') && ((o.charAt(len - 6) == '-') || (o.charAt(len - 6) == '+')));
+
+      int     pos         = o.indexOf('.');
+      String  mss;
+      int     endPos;
+
+      if (pos == -1) {
+        mss               = ".000";
+        pos               = hasTimeZone ? (len - 6) : len;
+        endPos            = pos;
+      } else {
+        // convert fractional seconds to number of milliseconds
+        endPos   = hasTimeZone ? (len - 6) : len;
+        mss      = o.substring(pos, endPos);
+
+        while (mss.length() < 4)
+          mss += "0";
+
+        if (mss.length() > 4)
+          mss = mss.substring(0, 4);
+      }
+
+      o = o.substring(0, pos) + mss + o.substring(endPos, len);
+      SimpleDateFormat parser = hasTimeZone ? zparser : sparser;
 
       synchronized (parser) {
-        return parser.parse(o);
+        return dateBuilder.fromDate(parser.parse(o));
       }
     }
 

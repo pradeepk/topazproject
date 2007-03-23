@@ -19,7 +19,7 @@ public class EmbeddedClassFieldMapper implements Mapper {
   private Mapper container;
   private Mapper field;
 
-  /**
+/**
    * Creates a new EmbeddedClassFieldMapper object.
    *
    * @param container the mapper for the embedded class field in the embedding class
@@ -107,6 +107,13 @@ public class EmbeddedClassFieldMapper implements Mapper {
   /*
    * inherited javadoc
    */
+  public String getDataType() {
+    return field.getDataType();
+  }
+
+  /*
+   * inherited javadoc
+   */
   public Class getComponentType() {
     return field.getComponentType();
   }
@@ -139,6 +146,11 @@ public class EmbeddedClassFieldMapper implements Mapper {
     return field.getInverseModel();
   }
 
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
   public String toString() {
     return "EmbeddedClassFieldMapper[container=" + container + ", field=" + field + "]";
   }
