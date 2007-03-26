@@ -50,7 +50,7 @@
       <#else>
         <strong>${totalNoOfResults}</strong> results, sorted by relevance,
       </#if>
-      for <strong>${query}</strong>.</p>
+      for <strong>${query?html}</strong>.</p>
     </#if>
 	 <div class="resultsTab">
     <@renderSearchPaginationLinks totalPages/>
