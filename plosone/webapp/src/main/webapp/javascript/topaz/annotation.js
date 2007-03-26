@@ -204,13 +204,13 @@ topaz.annotation = {
       if (startPoint == "noSelect")
         return startPoint;
       
-      startRange.pasteHTML("<span id=\"tempStartPoint\">========== START HERE =====================</span>");
+      startRange.pasteHTML("<span id=\"tempStartPoint\" class=\"temp\">========== START HERE =====================</span>");
 
       var endPoint = this.getRangePoint(endRange);
       if (endPoint == "noSelect")
         return endPoint;
         
-      endRange.pasteHTML("<span id=\"tempEndPoint\">========== END HERE =====================</span>");
+      endRange.pasteHTML("<span id=\"tempEndPoint\" class=\"temp\">========== END HERE =====================</span>");
         
       var isAncestor = this.isAncestorOf(startPoint.element, endPoint.element, "xpathLocation", endPoint.xpathLocation);
       
@@ -380,7 +380,7 @@ topaz.annotation = {
     
     for (var currentNode = node.previousSibling; currentNode != null; currentNode = currentNode.previousSibling) {
       if (currentNode.nodeType == 1) { // element
-        if (currentNode.className.match('bug')) {
+        if (currentNode.className.match('bug') || (dojo.render.html.ie && currentNode.className.match('temp'))) {
           // skip this
         }
         else {
@@ -1061,12 +1061,6 @@ topaz.annotation = {
             }
           }
           else {
-/*            if (tempPointEnd && tempPointEnd != null) {
-              for (var currentNode = tempPointEnd.previousSibling; currentNode != null; currentNode = currentNode.previousSibling) {
-                dojo.dom.removeNode(currentNode);
-              }
-            }
-*/                
             var elToInsert = document.createDocumentFragment();
             if (dojo.render.html.safari && multiPosition == 1 && i == (childContents.length-1)) {
               dojo.dom.copyChildren(spanToInsert, elToInsert);
@@ -1115,12 +1109,7 @@ topaz.annotation = {
       ;
     } 
     
-/*    if (dojo.render.html.ie && multiPosition == -1 || multiPosition == 1) {
-      return;
-    }
-    else {   
-*/      return rangeContent;
-//    }
+      return rangeContent;
   },
 
   normalizeText: function ( documentObj, resultStr ) {
