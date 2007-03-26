@@ -32,7 +32,7 @@
 
 	<div id="search-results">
     <#if totalNoOfResults == 0>
-       There are no results for <strong>${query}</strong>.
+       There are no results for <strong>${query?html}</strong>.
     <#else>
 		
 		<#assign startIndex = startPage * pageSize >
