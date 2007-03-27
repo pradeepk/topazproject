@@ -27,10 +27,12 @@ public class ArrayMapper extends AbstractMapper {
    * @param serializer the serializer or null
    * @param componentType the array component type
    * @param dataType of literals or null for un-typed
+   * @param inverse if this field is persisted with an inverse predicate
+   * @param inverseModel the model where this field is persisted if different from class model
    */
   public ArrayMapper(String uri, Field field, Method getter, Method setter, Serializer serializer,
-                     Class componentType, String dataType) {
-    super(uri, field, getter, setter, serializer, componentType, dataType);
+                     Class componentType, String dataType, boolean inverse, String inverseModel) {
+    super(uri, field, getter, setter, serializer, componentType, dataType, inverse, inverseModel);
   }
 
   /**

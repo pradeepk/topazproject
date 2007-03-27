@@ -10,8 +10,6 @@ import java.util.List;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.annotations.Inverse;
-import org.topazproject.otm.annotations.Model;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
@@ -30,7 +28,6 @@ public abstract class AbstractMapper implements Mapper {
   private Class      componentType;
   private boolean    inverse;
   private String     inverseModel;
-  private boolean    inverseModelInitialized;
   private String     dataType;
 
 /**
@@ -43,21 +40,23 @@ public abstract class AbstractMapper implements Mapper {
    * @param serializer the serializer or null
    * @param componentType of arrays and collections or type of functional properties
    * @param dataType of literals or null for un-typed
+   * @param inverse if this field is persisted with an inverse predicate
+   * @param inverseModel the model where this field is persisted if different from class model
    */
   public AbstractMapper(String uri, Field field, Method getter, Method setter,
-                        Serializer serializer, Class componentType, String dataType) {
-    this.uri                  = uri;
-    this.field                = field;
-    this.getter               = getter;
-    this.setter               = setter;
-    this.serializer           = serializer;
-    this.name                 = field.getName();
-    this.type                 = field.getType();
-    this.componentType        = componentType;
-    inverse                   = field.getAnnotation(Inverse.class) != null;
-    inverseModel              = null;
-    inverseModelInitialized   = false;
-    this.dataType             = dataType;
+                        Serializer serializer, Class componentType, String dataType,
+                        boolean inverse, String inverseModel) {
+    this.uri             = uri;
+    this.field           = field;
+    this.getter          = getter;
+    this.setter          = setter;
+    this.serializer      = serializer;
+    this.name            = field.getName();
+    this.type            = field.getType();
+    this.componentType   = componentType;
+    this.dataType        = dataType;
+    this.inverse         = inverse;
+    this.inverseModel    = inverseModel;
   }
 
   /*
@@ -186,26 +185,6 @@ public abstract class AbstractMapper implements Mapper {
    * inherited javadoc
    */
   public String getInverseModel() {
-    if (!inverseModelInitialized) {
-      if (inverse) {
-        if (serializer != null) {
-          Model m = (Model) field.getAnnotation(Model.class);
-
-          if (m != null)
-            inverseModel = m.value();
-        } else {
-          try {
-            ClassMetadata cm = new ClassMetadata(componentType);
-            inverseModel = cm.getModel();
-          } catch (OtmException oe) {
-            throw new Error("Unexpected error creating class-metadata for " + componentType, oe);
-          }
-        }
-      }
-
-      inverseModelInitialized = true;
-    }
-
     return inverseModel;
   }
 

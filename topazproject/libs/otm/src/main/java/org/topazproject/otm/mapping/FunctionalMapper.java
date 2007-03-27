@@ -24,10 +24,13 @@ public class FunctionalMapper extends AbstractMapper {
    * @param setter the field set method or null
    * @param serializer the serializer or null
    * @param dataType of literals or null for un-typed
+   * @param inverse if this field is persisted with an inverse predicate
+   * @param inverseModel the model where this field is persisted if different from class model
    */
   public FunctionalMapper(String uri, Field field, Method getter, Method setter,
-                          Serializer serializer, String dataType) {
-    super(uri, field, getter, setter, serializer, field.getType(), dataType);
+                          Serializer serializer, String dataType, boolean inverse,
+                          String inverseModel) {
+    super(uri, field, getter, setter, serializer, field.getType(), dataType, inverse, inverseModel);
   }
 
   /**

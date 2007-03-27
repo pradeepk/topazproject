@@ -28,6 +28,7 @@ import org.topazproject.otm.annotations.DataType;
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Inverse;
 import org.topazproject.otm.annotations.Model;
 import org.topazproject.otm.annotations.Ns;
 import org.topazproject.otm.annotations.Rdf;
@@ -68,12 +69,14 @@ public class MapperFactory {
    * @param f the field
    * @param top the class where this field belongs (may not be the declaring class)
    * @param ns the rdf name space or null to use to build an rdf predicate uri
+   * @param loopDetect to avoid loops in following associations
    *
    * @return a mapper or null if the field is static or transient
    *
    * @throws OtmException if a mapper can't be created
    */
-  public static Collection<?extends Mapper> create(Field f, Class top, String ns)
+  public static Collection<?extends Mapper> create(Field f, Class top, String ns,
+                                                   Map<Class, ClassMetadata> loopDetect)
                                             throws OtmException {
     Class type = f.getType();
     int   mod  = f.getModifiers();
@@ -134,7 +137,7 @@ public class MapperFactory {
       Serializer serializer = SerializerFactory.getSerializer(type, null);
 
       return Collections.singletonList(new FunctionalMapper(null, f, getMethod, setMethod,
-                                                            serializer, null));
+                                                            serializer, null, false, null));
     }
 
     if (!embedded && (uri == null))
@@ -159,14 +162,35 @@ public class MapperFactory {
       log.debug("No serializer found for " + type);
 
     if (!embedded) {
+      boolean inverse      = f.getAnnotation(Inverse.class) != null;
+      String  inverseModel = null;
+
+      if (inverse) {
+        if (serializer != null) {
+          Model m = (Model) f.getAnnotation(Model.class);
+
+          if (m != null)
+            inverseModel = m.value();
+        } else {
+          ClassMetadata cm = loopDetect.get(type);
+
+          if (cm == null)
+            cm = new ClassMetadata(type, type, null, loopDetect);
+
+          inverseModel = cm.getModel();
+        }
+      }
+
       Mapper p;
 
       if (isArray)
-        p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt);
+        p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
+                            inverseModel);
       else if (isCollection)
-        p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt);
+        p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
+                                 inverseModel);
       else
-        p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt);
+        p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, inverse, inverseModel);
 
       return Collections.singletonList(p);
     }
@@ -178,7 +202,7 @@ public class MapperFactory {
     ClassMetadata cm;
 
     try {
-      cm = new ClassMetadata(type, ns);
+      cm = new ClassMetadata(type, type, ns, loopDetect);
     } catch (OtmException e) {
       throw new OtmException("Could not generate metadata for @Embedded class field '"
                              + f.toGenericString() + "'", e);

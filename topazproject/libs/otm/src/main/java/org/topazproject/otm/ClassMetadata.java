@@ -53,19 +53,31 @@ public class ClassMetadata {
    */
   public ClassMetadata(Class clazz, String nsOfContainingClass)
                 throws OtmException {
-    this(clazz, clazz, nsOfContainingClass);
+    this(clazz, clazz, nsOfContainingClass, new HashMap<Class, ClassMetadata>());
   }
 
-  private ClassMetadata(Class clazz, Class top, String nsOfContainingClass)
-                 throws OtmException {
+/**
+   * Creates a new ClassMetadata object.
+   *
+   * @param clazz DOCUMENT ME!
+   * @param top DOCUMENT ME!
+   * @param nsOfContainingClass DOCUMENT ME!
+   * @param loopDetect DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public ClassMetadata(Class clazz, Class top, String nsOfContainingClass,
+                       Map<Class, ClassMetadata> loopDetect)
+                throws OtmException {
     this.clazz                           = clazz;
+    loopDetect.put(clazz, this);
 
-    Class         s                      = clazz.getSuperclass();
-    ClassMetadata superMeta              = null;
+    Class         s         = clazz.getSuperclass();
+    ClassMetadata superMeta = null;
 
     if (!Object.class.equals(s) && (s != null)) {
       try {
-        superMeta   = new ClassMetadata(s, top, nsOfContainingClass);
+        superMeta   = new ClassMetadata(s, top, nsOfContainingClass, loopDetect);
         model       = superMeta.getModel();
         ns          = superMeta.getNs();
         type        = superMeta.getType();
@@ -112,7 +124,7 @@ public class ClassMetadata {
     }
 
     for (Field f : clazz.getDeclaredFields()) {
-      Collection<?extends Mapper> mappers = MapperFactory.create(f, top, ns);
+      Collection<?extends Mapper> mappers = MapperFactory.create(f, top, ns, loopDetect);
 
       if (mappers == null)
         continue;
