@@ -2,7 +2,7 @@
 <#if pgTitle = "CODE_ARTICLE_TITLE"> <#--to get article title in w/o a new template for now-->
 	<#assign pgTitle = "PLoS ONE: " + articleInfo.title?replace('</?[a-z]*>', '', 'r')>
 </#if>
-	<title>${pgTitle}</title
+	<title>${pgTitle}</title>
 
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
