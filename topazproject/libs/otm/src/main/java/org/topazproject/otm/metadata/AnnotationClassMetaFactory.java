@@ -1,4 +1,4 @@
-package org.topazproject.otm.mapping;
+package org.topazproject.otm.metadata;
 
 import java.lang.reflect.Array;
 import java.lang.reflect.Field;
@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.annotations.DataType;
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
@@ -32,14 +33,22 @@ import org.topazproject.otm.annotations.Inverse;
 import org.topazproject.otm.annotations.Model;
 import org.topazproject.otm.annotations.Ns;
 import org.topazproject.otm.annotations.Rdf;
+import org.topazproject.otm.mapping.ArrayMapper;
+import org.topazproject.otm.mapping.CollectionMapper;
+import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
+import org.topazproject.otm.mapping.EmbeddedClassMapper;
+import org.topazproject.otm.mapping.FunctionalMapper;
+import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.Serializer;
+import org.topazproject.otm.mapping.SerializerFactory;
 
 /**
- * A factory for creating mappers for java class fields.
+ * Meta information for mapping a class to a set of triples.
  *
  * @author Pradeep Krishnan
  */
-public class MapperFactory {
-  private static final Log          log     = LogFactory.getLog(MapperFactory.class);
+public class AnnotationClassMetaFactory {
+  private static final Log          log     = LogFactory.getLog(AnnotationClassMetaFactory.class);
   private static Map<Class, String> typeMap = new HashMap<Class, String>();
 
   static {
@@ -63,6 +72,131 @@ public class MapperFactory {
     typeMap.put(Date.class, Rdf.xsd + "dateTime");
   }
 
+  private SessionFactory sf;
+
+/**
+   * Creates a new AnnotationClassMetaFactory object.
+   *
+   * @param sf DOCUMENT ME!
+   */
+  public AnnotationClassMetaFactory(SessionFactory sf) {
+    this.sf = sf;
+  }
+
+  /**
+   * Creates a new ClassMetadata object.
+   *
+   * @param clazz DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public ClassMetadata create(Class clazz) throws OtmException {
+    return create(clazz, null);
+  }
+
+  /**
+   * Creates a new ClassMetadata object.
+   *
+   * @param clazz DOCUMENT ME!
+   * @param nsOfContainingClass DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public ClassMetadata create(Class clazz, String nsOfContainingClass)
+                       throws OtmException {
+    return create(clazz, clazz, nsOfContainingClass, new HashMap<Class, ClassMetadata>());
+  }
+
+  /**
+   * Creates a new ClassMetadata object.
+   *
+   * @param clazz DOCUMENT ME!
+   * @param top DOCUMENT ME!
+   * @param nsOfContainingClass DOCUMENT ME!
+   * @param loopDetect DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public ClassMetadata create(Class clazz, Class top, String nsOfContainingClass,
+                              Map<Class, ClassMetadata> loopDetect)
+                       throws OtmException {
+    Set<String>        types   = Collections.emptySet();
+    String             type    = null;
+    String             model   = null;
+    String             ns      = null;
+    Mapper             idField = null;
+    Collection<Mapper> fields  = new ArrayList<Mapper>();
+
+    Class              s       = clazz.getSuperclass();
+
+    if (!Object.class.equals(s) && (s != null)) {
+      ClassMetadata superMeta = create(s, top, nsOfContainingClass, loopDetect);
+      model     = superMeta.getModel();
+      ns        = superMeta.getNs();
+      type      = superMeta.getType();
+      types     = superMeta.getTypes();
+      idField   = superMeta.getIdField();
+      fields.addAll(superMeta.getFields());
+    }
+
+    Model modelAnn = (Model) clazz.getAnnotation(Model.class);
+
+    if (modelAnn != null)
+      model = modelAnn.value();
+
+    Ns nsAnn = (Ns) clazz.getAnnotation(Ns.class);
+
+    if (nsAnn != null)
+      ns = nsAnn.value();
+
+    if (ns == null)
+      ns = nsOfContainingClass;
+
+    Rdf rdfAnn = (Rdf) clazz.getAnnotation(Rdf.class);
+
+    if (rdfAnn != null) {
+      type    = rdfAnn.value();
+      types   = new HashSet<String>(types);
+
+      if (!types.add(type))
+        throw new OtmException("Duplicate rdf:type in class hierarchy " + clazz);
+    }
+
+    ClassMetadata cm = new ClassMetadata(clazz, type, types, model, ns, idField, fields);
+    loopDetect.put(clazz, cm);
+
+    for (Field f : clazz.getDeclaredFields()) {
+      Collection<?extends Mapper> mappers = createMapper(f, top, ns, loopDetect);
+
+      if (mappers == null)
+        continue;
+
+      for (Mapper m : mappers) {
+        String uri = m.getUri();
+
+        if (uri != null)
+          fields.add(m);
+        else {
+          if (idField != null)
+            throw new OtmException("Duplicate @Id field " + f.toGenericString());
+
+          idField = m;
+        }
+      }
+    }
+
+    cm = new ClassMetadata(clazz, type, types, model, ns, idField, fields);
+    loopDetect.put(clazz, cm);
+
+    return cm;
+  }
+
   /**
    * Create an appropriate mapper for the given java field.
    *
@@ -75,9 +209,9 @@ public class MapperFactory {
    *
    * @throws OtmException if a mapper can't be created
    */
-  public static Collection<?extends Mapper> create(Field f, Class top, String ns,
-                                                   Map<Class, ClassMetadata> loopDetect)
-                                            throws OtmException {
+  public Collection<?extends Mapper> createMapper(Field f, Class top, String ns,
+                                                  Map<Class, ClassMetadata> loopDetect)
+                                           throws OtmException {
     Class type = f.getType();
     int   mod  = f.getModifiers();
 
@@ -175,7 +309,7 @@ public class MapperFactory {
           ClassMetadata cm = loopDetect.get(type);
 
           if (cm == null)
-            cm = new ClassMetadata(type, type, null, loopDetect);
+            cm = create(type, type, null, loopDetect);
 
           inverseModel = cm.getModel();
         }
@@ -202,7 +336,7 @@ public class MapperFactory {
     ClassMetadata cm;
 
     try {
-      cm = new ClassMetadata(type, type, ns, loopDetect);
+      cm = create(type, type, ns, loopDetect);
     } catch (OtmException e) {
       throw new OtmException("Could not generate metadata for @Embedded class field '"
                              + f.toGenericString() + "'", e);

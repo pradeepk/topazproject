@@ -16,6 +16,8 @@ import javassist.util.proxy.ProxyFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
+
 /**
  * A factory for otm sessions. It should be preloaded with the classes that would be persisted.
  * Also it holds the triple store and model/graph configurations. This class is multi-thread safe,
@@ -45,8 +47,8 @@ public class SessionFactory {
    * Model to config mapping (uris, types etc.)
    */
   private final Map<String, ModelConfig> models = new HashMap<String, ModelConfig>();
-
-  private TripleStore store;
+  private AnnotationClassMetaFactory cmf = new AnnotationClassMetaFactory(this);
+  private TripleStore                store;
 
   /**
    * Open a new otm session.
@@ -82,33 +84,12 @@ public class SessionFactory {
 
     preload(c.getSuperclass());
 
-    ClassMetadata cm           = new ClassMetadata(c);
+    ClassMetadata cm           = cmf.create(c);
 
-    if (!cm.isEntity()) {
-      if (log.isDebugEnabled())
-        log.debug("Preload: skipping '" + cm + "' because it is not an entity");
-
-      return;
-    }
-
-    metadata.put(c, cm);
-    createProxy(c, cm);
-
-    String type = cm.getType();
-
-    if (type != null) {
-      Set<Class> set = classmap.get(type);
-
-      if (set == null) {
-        set = new HashSet<Class>();
-        classmap.put(type, set);
-      }
-
-      set.add(c);
-    }
+    setClassMetadata(cm);
 
     if (log.isDebugEnabled())
-      log.debug("Preload: type(" + type + ") ==> " + c.getName());
+      log.debug("Preload: type(" + cm.getType() + ") ==> " + cm);
   }
 
   /**
@@ -141,6 +122,35 @@ public class SessionFactory {
     }
 
     return solution;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param cm DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public void setClassMetadata(ClassMetadata cm) throws OtmException {
+    if (!cm.isEntity())
+      throw new OtmException(cm.toString() + " is not an entity");
+
+    Class c = cm.getSourceClass();
+    metadata.put(c, cm);
+    createProxy(c, cm);
+
+    String type = cm.getType();
+
+    if (type != null) {
+      Set<Class> set = classmap.get(type);
+
+      if (set == null) {
+        set = new HashSet<Class>();
+        classmap.put(type, set);
+      }
+
+      set.add(c);
+    }
   }
 
   /**

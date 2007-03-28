@@ -2,6 +2,7 @@ package org.topazproject.otm;
 
 import java.lang.reflect.Field;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -12,11 +13,7 @@ import java.util.Set;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.otm.annotations.Model;
-import org.topazproject.otm.annotations.Ns;
-import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.MapperFactory;
 
 /**
  * Meta information for mapping a class to a set of triples.
@@ -25,14 +22,14 @@ import org.topazproject.otm.mapping.MapperFactory;
  */
 public class ClassMetadata {
   private static final Log    log        = LogFactory.getLog(ClassMetadata.class);
-  private Set<String>         types      = Collections.emptySet();
-  private String              type       = null;
-  private String              model      = null;
-  private String              ns         = null;
-  private Mapper              idField    = null;
-  private Map<String, Mapper> fieldMap   = new HashMap<String, Mapper>();
-  private Map<String, Mapper> inverseMap = new HashMap<String, Mapper>();
-  private Map<String, Mapper> nameMap    = new HashMap<String, Mapper>();
+  private Set<String>         types;
+  private String              type;
+  private String              model;
+  private String              ns;
+  private Mapper              idField;
+  private Map<String, Mapper> fieldMap;
+  private Map<String, Mapper> inverseMap;
+  private Map<String, Mapper> nameMap;
   private Class               clazz;
   private Collection<Mapper>  fields;
 
@@ -40,115 +37,42 @@ public class ClassMetadata {
    * Creates a new ClassMetadata object.
    *
    * @param clazz DOCUMENT ME!
+   * @param types DOCUMENT ME!
+   * @param type DOCUMENT ME!
+   * @param model DOCUMENT ME!
+   * @param ns DOCUMENT ME!
+   * @param idField DOCUMENT ME!
+   * @param fields DOCUMENT ME!
    */
-  public ClassMetadata(Class clazz) throws OtmException {
-    this(clazz, null);
-  }
-
-/**
-   * Creates a new ClassMetadata object.
-   *
-   * @param clazz DOCUMENT ME!
-   * @param nsOfContainingClass DOCUMENT ME!
-   */
-  public ClassMetadata(Class clazz, String nsOfContainingClass)
-                throws OtmException {
-    this(clazz, clazz, nsOfContainingClass, new HashMap<Class, ClassMetadata>());
-  }
-
-/**
-   * Creates a new ClassMetadata object.
-   *
-   * @param clazz DOCUMENT ME!
-   * @param top DOCUMENT ME!
-   * @param nsOfContainingClass DOCUMENT ME!
-   * @param loopDetect DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
-  public ClassMetadata(Class clazz, Class top, String nsOfContainingClass,
-                       Map<Class, ClassMetadata> loopDetect)
+  public ClassMetadata(Class clazz, String type, Set<String> types, String model, String ns,
+                       Mapper idField, Collection<Mapper> fields)
                 throws OtmException {
     this.clazz                           = clazz;
-    loopDetect.put(clazz, this);
+    this.type                            = type;
+    this.model                           = model;
+    this.ns                              = ns;
+    this.idField                         = idField;
 
-    Class         s         = clazz.getSuperclass();
-    ClassMetadata superMeta = null;
+    this.types                           = Collections.unmodifiableSet(new HashSet<String>(types));
+    this.fields                          = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
 
-    if (!Object.class.equals(s) && (s != null)) {
-      try {
-        superMeta   = new ClassMetadata(s, top, nsOfContainingClass, loopDetect);
-        model       = superMeta.getModel();
-        ns          = superMeta.getNs();
-        type        = superMeta.getType();
-        types       = superMeta.getTypes();
-        idField     = superMeta.getIdField();
+    fieldMap                             = new HashMap<String, Mapper>();
+    inverseMap                           = new HashMap<String, Mapper>();
+    nameMap                              = new HashMap<String, Mapper>();
 
-        for (Mapper m : superMeta.getFields()) {
-          if (m.hasInverseUri())
-            inverseMap.put(m.getUri(), m);
-          else
-            fieldMap.put(m.getUri(), m);
+    for (Mapper m : fields) {
+      Map<String, Mapper> map = m.hasInverseUri() ? inverseMap : fieldMap;
 
-          nameMap.put(m.getName(), m);
-        }
-      } catch (OtmException e) {
-        if (log.isDebugEnabled())
-          log.debug("super class meta couldn't be created.", e);
-      }
+      if (map.put(m.getUri(), m) != null)
+        throw new OtmException("Duplicate Rdf uri for " + m.getField().toGenericString());
+
+      if (nameMap.put(m.getName(), m) != null)
+        throw new OtmException("Duplicate field name for " + m.getField().toGenericString());
     }
 
-    Model modelAnn = (Model) clazz.getAnnotation(Model.class);
-
-    if (modelAnn != null)
-      model = modelAnn.value();
-
-    Ns nsAnn = (Ns) clazz.getAnnotation(Ns.class);
-
-    if (nsAnn != null)
-      ns = nsAnn.value();
-
-    if (ns == null)
-      ns = nsOfContainingClass;
-
-    Rdf rdfAnn = (Rdf) clazz.getAnnotation(Rdf.class);
-
-    if (rdfAnn != null) {
-      type    = rdfAnn.value();
-      types   = new HashSet<String>(types);
-
-      if (!types.add(type))
-        throw new OtmException("Duplicate rdf:type in class hierarchy " + clazz);
-
-      types = Collections.unmodifiableSet(types);
-    }
-
-    for (Field f : clazz.getDeclaredFields()) {
-      Collection<?extends Mapper> mappers = MapperFactory.create(f, top, ns, loopDetect);
-
-      if (mappers == null)
-        continue;
-
-      for (Mapper m : mappers) {
-        String uri = m.getUri();
-
-        if (uri == null) {
-          if (idField != null)
-            throw new OtmException("Duplicate @Id field " + f.toGenericString());
-
-          idField = m;
-        } else {
-          Map<String, Mapper> map = m.hasInverseUri() ? inverseMap : fieldMap;
-
-          if (map.put(uri, m) != null)
-            throw new OtmException("Duplicate @Rdf uri for " + f.toGenericString());
-
-          nameMap.put(m.getName(), m);
-        }
-      }
-    }
-
-    fields = Collections.unmodifiableCollection(nameMap.values());
+    fieldMap     = Collections.unmodifiableMap(fieldMap);
+    inverseMap   = Collections.unmodifiableMap(inverseMap);
+    nameMap      = Collections.unmodifiableMap(nameMap);
   }
 
   /**
