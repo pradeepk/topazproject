@@ -48,31 +48,8 @@ import org.topazproject.otm.mapping.SerializerFactory;
  * @author Pradeep Krishnan
  */
 public class AnnotationClassMetaFactory {
-  private static final Log          log     = LogFactory.getLog(AnnotationClassMetaFactory.class);
-  private static Map<Class, String> typeMap = new HashMap<Class, String>();
-
-  static {
-    typeMap.put(String.class, null);
-    typeMap.put(Boolean.class, Rdf.xsd + "boolean");
-    typeMap.put(Boolean.TYPE, Rdf.xsd + "boolean");
-    typeMap.put(Integer.class, Rdf.xsd + "int");
-    typeMap.put(Integer.TYPE, Rdf.xsd + "int");
-    typeMap.put(Long.class, Rdf.xsd + "long");
-    typeMap.put(Long.TYPE, Rdf.xsd + "long");
-    typeMap.put(Short.class, Rdf.xsd + "short");
-    typeMap.put(Short.TYPE, Rdf.xsd + "short");
-    typeMap.put(Float.class, Rdf.xsd + "float");
-    typeMap.put(Float.TYPE, Rdf.xsd + "float");
-    typeMap.put(Double.class, Rdf.xsd + "double");
-    typeMap.put(Double.TYPE, Rdf.xsd + "double");
-    typeMap.put(Byte.class, Rdf.xsd + "byte");
-    typeMap.put(Byte.TYPE, Rdf.xsd + "byte");
-    typeMap.put(URI.class, Rdf.xsd + "anyURI");
-    typeMap.put(URL.class, Rdf.xsd + "anyURI");
-    typeMap.put(Date.class, Rdf.xsd + "dateTime");
-  }
-
-  private SessionFactory sf;
+  private static final Log log = LogFactory.getLog(AnnotationClassMetaFactory.class);
+  private SessionFactory   sf;
 
 /**
    * Creates a new AnnotationClassMetaFactory object.
@@ -80,7 +57,7 @@ public class AnnotationClassMetaFactory {
    * @param sf DOCUMENT ME!
    */
   public AnnotationClassMetaFactory(SessionFactory sf) {
-    this.sf = sf;
+    this.sf                    = sf;
   }
 
   /**
@@ -268,7 +245,7 @@ public class AnnotationClassMetaFactory {
         throw new OtmException("@Id field '" + f.toGenericString()
                                + "' must be a String, URI or URL.");
 
-      Serializer serializer = SerializerFactory.getSerializer(type, null);
+      Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
       return Collections.singletonList(new FunctionalMapper(null, f, getMethod, setMethod,
                                                             serializer, null, false, null));
@@ -285,12 +262,13 @@ public class AnnotationClassMetaFactory {
                                                                 : type);
 
     DataType dta         = f.getAnnotation(DataType.class);
-    String   dt          = (dta == null) ? typeMap.get(type) : dta.value();
+    String   dt          =
+      (dta == null) ? sf.getSerializerFactory().getDefaultDataType(type) : dta.value();
 
     if (DataType.UNTYPED.equals(dt))
       dt = null;
 
-    Serializer serializer = SerializerFactory.getSerializer(type, dt);
+    Serializer serializer = sf.getSerializerFactory().getSerializer(type, dt);
 
     if (log.isDebugEnabled() && (serializer == null))
       log.debug("No serializer found for " + type);

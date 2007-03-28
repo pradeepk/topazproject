@@ -16,6 +16,7 @@ import javassist.util.proxy.ProxyFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.mapping.SerializerFactory;
 import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
 
 /**
@@ -48,6 +49,7 @@ public class SessionFactory {
    */
   private final Map<String, ModelConfig> models = new HashMap<String, ModelConfig>();
   private AnnotationClassMetaFactory cmf = new AnnotationClassMetaFactory(this);
+  private SerializerFactory          serializerFactory = new SerializerFactory(this);
   private TripleStore                store;
 
   /**
@@ -211,6 +213,15 @@ public class SessionFactory {
    */
   public void setTripleStore(TripleStore store) {
     this.store = store;
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public SerializerFactory getSerializerFactory() {
+    return serializerFactory;
   }
 
   private boolean isInstantiable(Class clazz) {

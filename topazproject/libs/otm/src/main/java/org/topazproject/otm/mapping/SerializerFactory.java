@@ -13,6 +13,8 @@ import java.util.Map;
 import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
+import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.annotations.DataType;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
@@ -21,12 +23,44 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Pradeep Krishnan
  */
 public class SerializerFactory {
-  private static Map<Class, Serializer>              serializers      =
-    new HashMap<Class, Serializer>();
-  private static Map<Class, Map<String, Serializer>> typedSerializers =
-    new HashMap<Class, Map<String, Serializer>>();
+  private Map<Class, Map<String, Serializer>> serializers;
+  private SessionFactory                      sf;
+  private static Map<Class, String>           typeMap = new HashMap<Class, String>();
 
   static {
+    typeMap.put(String.class, null);
+    typeMap.put(Boolean.class, Rdf.xsd + "boolean");
+    typeMap.put(Boolean.TYPE, Rdf.xsd + "boolean");
+    typeMap.put(Integer.class, Rdf.xsd + "int");
+    typeMap.put(Integer.TYPE, Rdf.xsd + "int");
+    typeMap.put(Long.class, Rdf.xsd + "long");
+    typeMap.put(Long.TYPE, Rdf.xsd + "long");
+    typeMap.put(Short.class, Rdf.xsd + "short");
+    typeMap.put(Short.TYPE, Rdf.xsd + "short");
+    typeMap.put(Float.class, Rdf.xsd + "float");
+    typeMap.put(Float.TYPE, Rdf.xsd + "float");
+    typeMap.put(Double.class, Rdf.xsd + "double");
+    typeMap.put(Double.TYPE, Rdf.xsd + "double");
+    typeMap.put(Byte.class, Rdf.xsd + "byte");
+    typeMap.put(Byte.TYPE, Rdf.xsd + "byte");
+    typeMap.put(URI.class, Rdf.xsd + "anyURI");
+    typeMap.put(URL.class, Rdf.xsd + "anyURI");
+    typeMap.put(Date.class, Rdf.xsd + "dateTime");
+  }
+
+/**
+   * Creates a new SerializerFactory object.
+   *
+   * @param sf DOCUMENT ME!
+   */
+  public SerializerFactory(SessionFactory sf) {
+    this.sf       = sf;
+    serializers   = new HashMap<Class, Map<String, Serializer>>();
+
+    initDefaults();
+  }
+
+  private void initDefaults() {
     DateBuilder<Date> dateDateBuilder =
       new DateBuilder<Date>() {
         public Date toDate(Date o) {
@@ -49,42 +83,56 @@ public class SerializerFactory {
         }
       };
 
-    serializers.put(String.class, new SimpleSerializer<String>(String.class));
-    serializers.put(Boolean.class, new XsdBooleanSerializer());
-    serializers.put(Boolean.TYPE, new XsdBooleanSerializer());
-    serializers.put(Integer.class, new SimpleSerializer<Integer>(Integer.class));
-    serializers.put(Integer.TYPE, new SimpleSerializer<Integer>(Integer.class));
-    serializers.put(Long.class, new SimpleSerializer<Long>(Long.class));
-    serializers.put(Long.TYPE, new SimpleSerializer<Long>(Long.class));
-    serializers.put(Short.class, new SimpleSerializer<Short>(Short.class));
-    serializers.put(Short.TYPE, new SimpleSerializer<Short>(Short.class));
-    serializers.put(Float.class, new SimpleSerializer<Float>(Float.class));
-    serializers.put(Float.TYPE, new SimpleSerializer<Float>(Float.class));
-    serializers.put(Double.class, new SimpleSerializer<Double>(Double.class));
-    serializers.put(Double.TYPE, new SimpleSerializer<Double>(Double.class));
-    serializers.put(Byte.class, new SimpleSerializer<Byte>(Byte.class));
-    serializers.put(Byte.TYPE, new SimpleSerializer<Byte>(Byte.class));
-    serializers.put(URI.class, new SimpleSerializer<URI>(URI.class));
-    serializers.put(URL.class, new SimpleSerializer<URL>(URL.class));
-    serializers.put(Date.class,
-                    new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "dateTime"));
+    setSerializer(String.class, new SimpleSerializer<String>(String.class));
+    setSerializer(Boolean.class, new XsdBooleanSerializer());
+    setSerializer(Boolean.TYPE, new XsdBooleanSerializer());
+    setSerializer(Integer.class, new SimpleSerializer<Integer>(Integer.class));
+    setSerializer(Integer.TYPE, new SimpleSerializer<Integer>(Integer.class));
+    setSerializer(Long.class, new SimpleSerializer<Long>(Long.class));
+    setSerializer(Long.TYPE, new SimpleSerializer<Long>(Long.class));
+    setSerializer(Short.class, new SimpleSerializer<Short>(Short.class));
+    setSerializer(Short.TYPE, new SimpleSerializer<Short>(Short.class));
+    setSerializer(Float.class, new SimpleSerializer<Float>(Float.class));
+    setSerializer(Float.TYPE, new SimpleSerializer<Float>(Float.class));
+    setSerializer(Double.class, new SimpleSerializer<Double>(Double.class));
+    setSerializer(Double.TYPE, new SimpleSerializer<Double>(Double.class));
+    setSerializer(Byte.class, new SimpleSerializer<Byte>(Byte.class));
+    setSerializer(Byte.TYPE, new SimpleSerializer<Byte>(Byte.class));
+    setSerializer(URI.class, new SimpleSerializer<URI>(URI.class));
+    setSerializer(URL.class, new SimpleSerializer<URL>(URL.class));
+    setSerializer(Date.class, new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "dateTime"));
 
-    Map<String, Serializer> m = new HashMap<String, Serializer>();
-    m.put(Rdf.xsd + "dateTime",
-          new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "dateTime"));
-    m.put(Rdf.xsd + "date", new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "date"));
-    m.put(Rdf.xsd + "time", new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "time"));
+    setSerializer(Date.class, Rdf.xsd + "dateTime",
+                  new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "dateTime"));
+    setSerializer(Date.class, Rdf.xsd + "date",
+                  new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "date"));
+    setSerializer(Date.class, Rdf.xsd + "time",
+                  new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "time"));
 
-    typedSerializers.put(Date.class, m);
+    setSerializer(Long.class, Rdf.xsd + "dateTime",
+                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "dateTime"));
+    setSerializer(Long.class, Rdf.xsd + "date",
+                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "date"));
+    setSerializer(Long.class, Rdf.xsd + "time",
+                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "time"));
 
-    m = new HashMap<String, Serializer>();
-    m.put(Rdf.xsd + "dateTime",
-          new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "dateTime"));
-    m.put(Rdf.xsd + "date", new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "date"));
-    m.put(Rdf.xsd + "time", new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "time"));
+    setSerializer(Long.TYPE, Rdf.xsd + "dateTime",
+                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "dateTime"));
+    setSerializer(Long.TYPE, Rdf.xsd + "date",
+                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "date"));
+    setSerializer(Long.TYPE, Rdf.xsd + "time",
+                  new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "time"));
+  }
 
-    typedSerializers.put(Long.class, m);
-    typedSerializers.put(Long.TYPE, m);
+  /**
+   * DOCUMENT ME!
+   *
+   * @param clazz DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public static String getDefaultDataType(Class clazz) {
+    return typeMap.get(clazz);
   }
 
   /**
@@ -95,20 +143,52 @@ public class SerializerFactory {
    *
    * @return a serializer or null
    */
-  public static Serializer getSerializer(Class clazz, String dataType) {
-    Serializer              s = null;
-    Map<String, Serializer> m = (dataType == null) ? null : typedSerializers.get(clazz);
+  public Serializer getSerializer(Class clazz, String dataType) {
+    if (dataType == null)
+      dataType = DataType.UNTYPED;
 
-    if (m != null)
-      s = m.get(dataType);
+    Map<String, Serializer> m = serializers.get(clazz);
 
-    if (s == null)
-      s = serializers.get(clazz);
-
-    return s;
+    return (m != null) ? m.get(dataType) : null;
   }
 
-  private static class SimpleSerializer<T> implements Serializer<T> {
+  /**
+   * DOCUMENT ME!
+   *
+   * @param clazz DOCUMENT ME!
+   * @param dataType DOCUMENT ME!
+   * @param serializer DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
+  public Serializer setSerializer(Class clazz, String dataType, Serializer serializer) {
+    if (dataType == null)
+      dataType = DataType.UNTYPED;
+
+    Map<String, Serializer> m = serializers.get(clazz);
+
+    if (m == null)
+      serializers.put(clazz, m = new HashMap<String, Serializer>());
+
+    return m.put(dataType, serializer);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @param clazz DOCUMENT ME!
+   * @param serializer DOCUMENT ME!
+   */
+  public void setSerializer(Class clazz, Serializer serializer) {
+    String dataType = typeMap.get(clazz);
+
+    if (dataType != null)
+      setSerializer(clazz, dataType, serializer);
+
+    setSerializer(clazz, null, serializer);
+  }
+
+  private class SimpleSerializer<T> implements Serializer<T> {
     private Constructor<T> constructor;
 
     public SimpleSerializer(Class<T> clazz) {
@@ -233,8 +313,5 @@ public class SerializerFactory {
 
       throw new IllegalArgumentException("invalid xsd:boolean '" + o + "'");
     }
-  }
-
-  private SerializerFactory() {
   }
 }
