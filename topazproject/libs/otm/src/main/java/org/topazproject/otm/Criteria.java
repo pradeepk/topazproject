@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm;
 
 import java.util.ArrayList;
@@ -40,9 +49,11 @@ public class Criteria {
   /**
    * Creates a new sub-criteria for an association.
    *
-   * @param path DOCUMENT ME!
+   * @param path to the association
    *
    * @return the newly created sub-criteria
+   *
+   * @throws OtmException on an error
    */
   public Criteria createCriteria(String path) throws OtmException {
     Criteria c = session.createCriteria(parent, path);
@@ -79,20 +90,20 @@ public class Criteria {
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the mapping of the association field in parent.
    *
-   * @return DOCUMENT ME!
+   * @return the mapper
    */
   public Mapper getMapping() {
     return mapping;
   }
 
   /**
-   * DOCUMENT ME!
+   * Adds a Criterion.
    *
-   * @param criterion DOCUMENT ME!
+   * @param criterion the criterion to add
    *
-   * @return DOCUMENT ME!
+   * @return this for method call chaining
    */
   public Criteria add(Criterion criterion) {
     criterions.add(criterion);
@@ -101,11 +112,11 @@ public class Criteria {
   }
 
   /**
-   * DOCUMENT ME!
+   * Adds an ordering criterion.
    *
-   * @param order DOCUMENT ME!
+   * @param order the order definition
    *
-   * @return DOCUMENT ME!
+   * @return this for method call chaining
    */
   public Criteria addOrder(Order order) {
     orders.add(order);
@@ -114,36 +125,38 @@ public class Criteria {
   }
 
   /**
-   * DOCUMENT ME!
+   * Lists the objects satisfying this Criteria.
    *
-   * @return DOCUMENT ME!
+   * @return the list of objects.
+   *
+   * @throws OtmException on an error
    */
   public List list() throws OtmException {
     return (parent != null) ? parent.list() : session.list(this);
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the list of child Criteria.
    *
-   * @return DOCUMENT ME!
+   * @return list of child Criteria
    */
   public List<Criteria> getChildren() {
     return children;
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the list of Criterions.
    *
-   * @return DOCUMENT ME!
+   * @return list of Criterions
    */
   public List<Criterion> getCriterionList() {
     return criterions;
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the list of Order definitions.
    *
-   * @return DOCUMENT ME!
+   * @return lis of Order dedinitions
    */
   public List<Order> getOrderList() {
     return orders;

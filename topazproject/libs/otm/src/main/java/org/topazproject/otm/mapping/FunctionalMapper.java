@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm.mapping;
 
 import java.lang.reflect.Field;
@@ -40,7 +49,7 @@ public class FunctionalMapper extends AbstractMapper {
    *
    * @return a singelton or empty list (may be serialized)
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException if a field's value cannot be retrieved and serialized
    */
   public List get(Object o) throws OtmException {
     Object value = getRawValue(o, false);
@@ -54,7 +63,7 @@ public class FunctionalMapper extends AbstractMapper {
    * @param o the object
    * @param vals a singelton or empty list (may be deserialized)
    *
-   * @throws OtmException if too many values to set
+   * @throws OtmException if too many values to set or the value cannot be de-serialized and set
    */
   public void set(Object o, List vals) throws OtmException {
     int size = vals.size();

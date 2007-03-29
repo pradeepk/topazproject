@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm.criterion;
 
 import org.topazproject.otm.Criteria;
@@ -13,16 +22,16 @@ public class SubjectCriterion implements Criterion {
 /**
    * Creates a new SubjectCriterion object.
    *
-   * @param id DOCUMENT ME!
+   * @param id the id/subject-uri
    */
   public SubjectCriterion(String id) {
     this.id = id;
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the id/subject-uri.
    *
-   * @return DOCUMENT ME!
+   * @return the id/subject-uri
    */
   public String getId() {
     return id;

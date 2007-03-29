@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm.mapping;
 
 import java.lang.reflect.Field;
@@ -196,7 +205,7 @@ public abstract class AbstractMapper implements Mapper {
    *
    * @return the returned value
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error in serialize
    */
   protected Object serialize(Object o) throws OtmException {
     try {
@@ -214,7 +223,7 @@ public abstract class AbstractMapper implements Mapper {
    *
    * @return the returned value
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error in serialize
    */
   protected Object deserialize(Object o) throws OtmException {
     try {
@@ -224,10 +233,8 @@ public abstract class AbstractMapper implements Mapper {
     }
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
+  /*
+   * inherited javadoc
    */
   public String toString() {
     return getClass().getName() + "[field=" + name + ", pred=" + uri + ", type="

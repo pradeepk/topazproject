@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm;
 
 import java.lang.reflect.Field;
@@ -36,13 +45,13 @@ public class ClassMetadata {
 /**
    * Creates a new ClassMetadata object.
    *
-   * @param clazz DOCUMENT ME!
-   * @param types DOCUMENT ME!
-   * @param type DOCUMENT ME!
-   * @param model DOCUMENT ME!
-   * @param ns DOCUMENT ME!
-   * @param idField DOCUMENT ME!
-   * @param fields DOCUMENT ME!
+   * @param clazz the class 
+   * @param types set of rdf:type values that identify this class
+   * @param type the most specific rdf:type that identify this class
+   * @param model the graph/model where this class is persisted
+   * @param ns the default namespace for fields/predicates
+   * @param idField the mapper for the id field
+   * @param fields mappers for all persistable fields (includes embedded class fields)
    */
   public ClassMetadata(Class clazz, String type, Set<String> types, String model, String ns,
                        Mapper idField, Collection<Mapper> fields)
@@ -76,63 +85,63 @@ public class ClassMetadata {
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the class that this meta info pertains to.
    *
-   * @return DOCUMENT ME!
+   * @return the class
    */
   public Class getSourceClass() {
     return clazz;
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the graph/model where this class is persisted.
    *
-   * @return DOCUMENT ME!
+   * @return the model identifier
    */
   public String getModel() {
     return model;
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the default namespace for all fields/predicates in this class.
    *
-   * @return DOCUMENT ME!
+   * @return the namespace uri
    */
   public String getNs() {
     return ns;
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the most specific rdf:type that describes this class.
    *
-   * @return DOCUMENT ME!
+   * @return the rdf:type uri or null
    */
   public String getType() {
     return type;
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the set of rdf:type values that describe this class.
    *
-   * @return DOCUMENT ME!
+   * @return set of rdf:type uri values or an empty set
    */
   public Set<String> getTypes() {
     return types;
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the persistable fields of this class. Includes embedded class fields.
    *
-   * @return DOCUMENT ME!
+   * @return collection of field mappers.
    */
   public Collection<Mapper> getFields() {
     return fields;
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the mapper for the id/subject-uri field.
    *
-   * @return DOCUMENT ME!
+   * @return the id field or null for embeddable classes
    */
   public Mapper getIdField() {
     return idField;
@@ -142,7 +151,7 @@ public class ClassMetadata {
    * Gets a field mapper by its predicate uri.
    *
    * @param uri the predicate uri
-   * @param inverse DOCUMENT ME!
+   * @param inverse if the mapping is reverse (ie. o,p,s instead of s,p,o))
    *
    * @return the mapper or null
    */
@@ -161,10 +170,8 @@ public class ClassMetadata {
     return nameMap.get(name);
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
+  /*
+   * inherited javadoc
    */
   public String toString() {
     return clazz.toString();

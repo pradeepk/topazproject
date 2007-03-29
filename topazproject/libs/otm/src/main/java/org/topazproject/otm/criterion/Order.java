@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm.criterion;
 
 /**
@@ -12,8 +21,8 @@ public class Order {
 /**
    * Creates a new Order object.
    *
-   * @param name DOCUMENT ME!
-   * @param ascending DOCUMENT ME!
+   * @param name the field name to order by
+   * @param ascending ascending/descending order
    */
   public Order(String name, boolean ascending) {
     this.name        = name;
@@ -21,40 +30,40 @@ public class Order {
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the name of the field to order by.
    *
-   * @return DOCUMENT ME!
+   * @return the name
    */
   public String getName() {
     return name;
   }
 
   /**
-   * DOCUMENT ME!
+   * Tests if ascending order.
    *
-   * @return DOCUMENT ME!
+   * @return ascending or descending
    */
   public boolean isAscending() {
     return ascending;
   }
 
   /**
-   * DOCUMENT ME!
+   * Creates a new ascending order object.
    *
-   * @param name DOCUMENT ME!
+   * @param name the field name to order by
    *
-   * @return DOCUMENT ME!
+   * @return the newly created Order object
    */
   public static Order asc(String name) {
     return new Order(name, true);
   }
 
   /**
-   * DOCUMENT ME!
+   * Creates a new descending order object.
    *
-   * @param name DOCUMENT ME!
+   * @param name the field name to order by
    *
-   * @return DOCUMENT ME!
+   * @return the newly created Order object
    */
   public static Order desc(String name) {
     return new Order(name, false);

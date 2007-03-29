@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm;
 
 import java.lang.reflect.Method;
@@ -28,10 +37,9 @@ import org.topazproject.otm.mapping.Mapper;
  * @author Pradeep Krishnan
  */
 public class Session {
-  private static final Log log            = LogFactory.getLog(Session.class);
-  private SessionFactory   sessionFactory;
-  private Transaction      txn            = null;
-
+  private static final Log      log             = LogFactory.getLog(Session.class);
+  private SessionFactory        sessionFactory;
+  private Transaction           txn             = null;
   private Map<Id, Object>       cleanMap        = new HashMap<Id, Object>();
   private Map<Id, Object>       dirtyMap        = new HashMap<Id, Object>();
   private Map<Id, Object>       deleteMap       = new HashMap<Id, Object>();
@@ -62,7 +70,7 @@ public class Session {
    *
    * @return the transaction
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public Transaction beginTransaction() throws OtmException {
     if (txn == null)
@@ -83,7 +91,7 @@ public class Session {
   /**
    * Close and release all resources.
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public void close() throws OtmException {
     clear();
@@ -133,7 +141,7 @@ public class Session {
    *
    * @return the object id
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public String saveOrUpdate(Object o) throws OtmException {
     Id id = checkObject(o);
@@ -149,7 +157,7 @@ public class Session {
    *
    * @return the object id.
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public String delete(Object o) throws OtmException {
     Id id = checkObject(o);
@@ -199,7 +207,7 @@ public class Session {
    *
    * @return the object or null if deleted from session
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public <T> T load(Class<T> clazz, String oid) throws OtmException {
     Id     id = new Id(clazz, oid);
@@ -230,7 +238,7 @@ public class Session {
    *
    * @return the object or null if deleted or does not exist in store
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public <T> T get(Class<T> clazz, String oid) throws OtmException {
     Id     id = new Id(clazz, oid);
@@ -264,7 +272,7 @@ public class Session {
    *
    * @return an attached object with merged values
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public <T> T merge(T o) throws OtmException {
     Id id = checkObject(o);
@@ -296,7 +304,7 @@ public class Session {
    *
    * @param o the attached object to refresh
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public void refresh(Object o) throws OtmException {
     Id id = checkObject(o);
@@ -315,7 +323,7 @@ public class Session {
    *
    * @return a newly created Criteria object
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public Criteria createCriteria(Class clazz) throws OtmException {
     return new Criteria(this, null, null, checkClass(clazz));
@@ -379,7 +387,7 @@ public class Session {
    *
    * @return the list of ids
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public List<String> getIds(List objs) throws OtmException {
     List<String> results = new ArrayList<String>(objs.size());

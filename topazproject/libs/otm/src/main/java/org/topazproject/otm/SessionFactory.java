@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm;
 
 import java.lang.reflect.Method;
@@ -66,7 +75,7 @@ public class SessionFactory {
    *
    * @param classes the classes to load
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public void preload(Class[] classes) throws OtmException {
     for (Class c : classes)
@@ -78,7 +87,7 @@ public class SessionFactory {
    *
    * @param c the class to load
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public void preload(Class c) throws OtmException {
     if ((c == null) || Object.class.equals(c))
@@ -127,11 +136,11 @@ public class SessionFactory {
   }
 
   /**
-   * DOCUMENT ME!
+   * Sets/registers a ClassMetadata.
    *
-   * @param cm DOCUMENT ME!
+   * @param cm the class metadata
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public void setClassMetadata(ClassMetadata cm) throws OtmException {
     if (!cm.isEntity())
@@ -156,7 +165,7 @@ public class SessionFactory {
   }
 
   /**
-   * Gets the class metadata of a preloaded class.
+   * Gets the class metadata of a pre-registered class.
    *
    * @param clazz the class.
    *
@@ -191,7 +200,7 @@ public class SessionFactory {
   /**
    * Adds a model configuration.
    *
-   * @param model DOCUMENT ME!
+   * @param model the model configuration
    */
   public void addModel(ModelConfig model) {
     models.put(model.getId(), model);
@@ -216,9 +225,9 @@ public class SessionFactory {
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the serializer factory used.
    *
-   * @return DOCUMENT ME!
+   * @return the serializer factory
    */
   public SerializerFactory getSerializerFactory() {
     return serializerFactory;

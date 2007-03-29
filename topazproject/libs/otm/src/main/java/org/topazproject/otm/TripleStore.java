@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm;
 
 import java.net.URI;
@@ -16,90 +25,90 @@ import org.topazproject.otm.mapping.Mapper;
   */
 public interface TripleStore {
   /**
-   * DOCUMENT ME!
+   * Opens a connection to the store.
    *
-   * @return DOCUMENT ME!
+   * @return the connection
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public Connection openConnection() throws OtmException;
 
   /**
-   * DOCUMENT ME!
+   * Closes a previously opened connection.
    *
-   * @param con DOCUMENT ME!
+   * @param con the connection
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException error
    */
   public void closeConnection(Connection con) throws OtmException;
 
   /**
-   * DOCUMENT ME!
+   * Persists an object in the triple store.
    *
-   * @param cm DOCUMENT ME!
-   * @param id DOCUMENT ME!
-   * @param o DOCUMENT ME!
-   * @param txn DOCUMENT ME!
+   * @param cm the class metadata for the object
+   * @param id the id/subject-uri for the object
+   * @param o the object
+   * @param txn the transaction context
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public void insert(ClassMetadata cm, String id, Object o, Transaction txn)
               throws OtmException;
 
   /**
-   * DOCUMENT ME!
+   * Removes an object from the triple store.
    *
-   * @param cm DOCUMENT ME!
-   * @param id DOCUMENT ME!
-   * @param txn DOCUMENT ME!
+   * @param cm the class metadata for the object
+   * @param id the id/subject-uri for the object
+   * @param txn the transaction context
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public void delete(ClassMetadata cm, String id, Transaction txn)
               throws OtmException;
 
   /**
-   * DOCUMENT ME!
+   * Gets an object from the triple store.
    *
-   * @param cm DOCUMENT ME!
-   * @param id DOCUMENT ME!
-   * @param txn DOCUMENT ME!
+   * @param cm the class metadata for the object
+   * @param id the id/subject-uri for the object
+   * @param txn the transaction context
    *
-   * @return DOCUMENT ME!
+   * @return the result that may contain a partially created object
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public ResultObject get(ClassMetadata cm, String id, Transaction txn)
                    throws OtmException;
 
   /**
-   * DOCUMENT ME!
+   * Lists objects matching the given Criteria.
    *
-   * @param criteria DOCUMENT ME!
-   * @param txn DOCUMENT ME!
+   * @param criteria the criteria
+   * @param txn the transaction context
    *
-   * @return DOCUMENT ME!
+   * @return list of results containing partially created objects
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public List<ResultObject> list(Criteria criteria, Transaction txn)
                           throws OtmException;
 
   /**
-   * DOCUMENT ME!
+   * Creates a new model/graph in the persistence store.
    *
-   * @param conf DOCUMENT ME!
+   * @param conf the configuration
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public void createModel(ModelConfig conf) throws OtmException;
 
   /**
-   * DOCUMENT ME!
+   * Drops a model/graph in the persistence store, deleting all triples.
    *
-   * @param conf DOCUMENT ME!
+   * @param conf the configuration
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public void dropModel(ModelConfig conf) throws OtmException;
 

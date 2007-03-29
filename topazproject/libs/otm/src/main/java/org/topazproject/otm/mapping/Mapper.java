@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm.mapping;
 
 import java.lang.reflect.Field;
@@ -20,7 +29,7 @@ public interface Mapper {
    *
    * @return the list containing the field's values (may be serialized)
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException if a field's value cannot be retrieved and serialized
    */
   public List get(Object o) throws OtmException;
 
@@ -30,7 +39,7 @@ public interface Mapper {
    * @param o the object
    * @param vals the list of values to set (may be deserialized)
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException if a field's value cannot be de-serialized and set
    */
   public void set(Object o, List vals) throws OtmException;
 
@@ -42,7 +51,7 @@ public interface Mapper {
    *
    * @return the raw field value
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException if a field's value cannot be retrieved
    */
   public Object getRawValue(Object o, boolean create) throws OtmException;
 
@@ -52,7 +61,7 @@ public interface Mapper {
    * @param o the object
    * @param value the value to set
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException if a field's value cannot be set
    */
   public void setRawValue(Object o, Object value) throws OtmException;
 

@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm.mapping;
 
 import java.lang.reflect.Array;
@@ -42,7 +51,7 @@ public class ArrayMapper extends AbstractMapper {
    *
    * @return the list of array elements (may be serialized)
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException if the field's value cannot be retrieved and serialized
    */
   public List get(Object o) throws OtmException {
     Object value = getRawValue(o, false);
@@ -69,7 +78,7 @@ public class ArrayMapper extends AbstractMapper {
    * @param o the object
    * @param vals the values to be set (may be deserialized)
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException if a field's value cannot be deserilized and set
    */
   public void set(Object o, List vals) throws OtmException {
     Object value;

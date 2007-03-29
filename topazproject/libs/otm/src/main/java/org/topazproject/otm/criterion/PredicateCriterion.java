@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm.criterion;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
@@ -20,8 +29,8 @@ public class PredicateCriterion implements Criterion {
 /**
    * Creates a new PredicateCriterion object.
    *
-   * @param name DOCUMENT ME!
-   * @param value DOCUMENT ME!
+   * @param name field/predicate name
+   * @param value field/predicate value
    */
   public PredicateCriterion(String name, String value) {
     this.name    = name;
@@ -29,18 +38,18 @@ public class PredicateCriterion implements Criterion {
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the field/predicate name.
    *
-   * @return DOCUMENT ME!
+   * @return field/predicate name
    */
   public String getName() {
     return name;
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the field/predicate value.
    *
-   * @return DOCUMENT ME!
+   * @return field/predicate value
    */
   public String getValue() {
     return value;
@@ -49,7 +58,8 @@ public class PredicateCriterion implements Criterion {
   /*
    * inherited javadoc
    */
-  public String toItql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+  public String toItql(Criteria criteria, String subjectVar, String varPrefix)
+                throws OtmException {
     ClassMetadata cm = criteria.getClassMetadata();
     Mapper        m  = cm.getMapperByName(getName());
 

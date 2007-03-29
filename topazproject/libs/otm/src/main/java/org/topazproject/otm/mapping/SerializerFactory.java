@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm.mapping;
 
 import java.lang.reflect.Constructor;
@@ -51,7 +60,7 @@ public class SerializerFactory {
 /**
    * Creates a new SerializerFactory object.
    *
-   * @param sf DOCUMENT ME!
+   * @param sf the session factory
    */
   public SerializerFactory(SessionFactory sf) {
     this.sf       = sf;
@@ -125,21 +134,21 @@ public class SerializerFactory {
   }
 
   /**
-   * DOCUMENT ME!
+   * Gets the default data type for a class (usually for basic java types).
    *
-   * @param clazz DOCUMENT ME!
+   * @param clazz the class
    *
-   * @return DOCUMENT ME!
+   * @return data type or null
    */
   public static String getDefaultDataType(Class clazz) {
     return typeMap.get(clazz);
   }
 
   /**
-   * Get the serializer for a class.
+   * Gets the serializer for a class.
    *
    * @param clazz the class
-   * @param dataType DOCUMENT ME!
+   * @param dataType the data type
    *
    * @return a serializer or null
    */
@@ -153,13 +162,13 @@ public class SerializerFactory {
   }
 
   /**
-   * DOCUMENT ME!
+   * Sets the serializer for a class and data type.
    *
-   * @param clazz DOCUMENT ME!
-   * @param dataType DOCUMENT ME!
-   * @param serializer DOCUMENT ME!
+   * @param clazz the class
+   * @param dataType the data type or null for un-typed
+   * @param serializer the serializer to set
    *
-   * @return DOCUMENT ME!
+   * @return previous serializer if any
    */
   public Serializer setSerializer(Class clazz, String dataType, Serializer serializer) {
     if (dataType == null)
@@ -174,10 +183,10 @@ public class SerializerFactory {
   }
 
   /**
-   * DOCUMENT ME!
+   * Sets the default and un-typed serializer for a class.
    *
-   * @param clazz DOCUMENT ME!
-   * @param serializer DOCUMENT ME!
+   * @param clazz the class
+   * @param serializer the serializer to set
    */
   public void setSerializer(Class clazz, Serializer serializer) {
     String dataType = typeMap.get(clazz);

@@ -1,3 +1,21 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm.metadata;
 
 import java.lang.reflect.Array;
@@ -54,7 +72,7 @@ public class AnnotationClassMetaFactory {
 /**
    * Creates a new AnnotationClassMetaFactory object.
    *
-   * @param sf DOCUMENT ME!
+   * @param sf the session factory
    */
   public AnnotationClassMetaFactory(SessionFactory sf) {
     this.sf                    = sf;
@@ -63,24 +81,19 @@ public class AnnotationClassMetaFactory {
   /**
    * Creates a new ClassMetadata object.
    *
-   * @param clazz DOCUMENT ME!
+   * @param clazz the class with annotations
    *
-   * @return DOCUMENT ME!
+   * @return a newly created ClassMetadata object
    *
-   * @throws OtmException DOCUMENT ME!
+   * @throws OtmException on an error
    */
   public ClassMetadata create(Class clazz) throws OtmException {
     return create(clazz, clazz, null, new HashMap<Class, ClassMetadata>());
   }
 
-  private ClassMetadata create(Class clazz, String nsOfContainingClass)
-                       throws OtmException {
-    return create(clazz, clazz, nsOfContainingClass, new HashMap<Class, ClassMetadata>());
-  }
-
   private ClassMetadata create(Class clazz, Class top, String nsOfContainingClass,
-                              Map<Class, ClassMetadata> loopDetect)
-                       throws OtmException {
+                               Map<Class, ClassMetadata> loopDetect)
+                        throws OtmException {
     Set<String>        types   = Collections.emptySet();
     String             type    = null;
     String             model   = null;

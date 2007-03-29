@@ -1,3 +1,12 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
 package org.topazproject.otm.stores;
 
 import java.net.URI;
@@ -36,32 +45,21 @@ import org.topazproject.otm.mapping.Mapper;
 public class MemStore implements TripleStore {
   private Storage storage = new Storage();
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
+  /*
+   * inherited javadoc
    */
   public Connection openConnection() {
     return new MemStoreConnection(storage);
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @param con DOCUMENT ME!
+  /*
+   * inherited javadoc
    */
   public void closeConnection(Connection con) {
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @param cm DOCUMENT ME!
-   * @param id DOCUMENT ME!
-   * @param o DOCUMENT ME!
-   * @param txn DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
+  /*
+   * inherited javadoc
    */
   public void insert(ClassMetadata cm, String id, Object o, Transaction txn)
               throws OtmException {
@@ -82,14 +80,8 @@ public class MemStore implements TripleStore {
     }
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @param cm DOCUMENT ME!
-   * @param id DOCUMENT ME!
-   * @param txn DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
+  /*
+   * inherited javadoc
    */
   public void delete(ClassMetadata cm, String id, Transaction txn)
               throws OtmException {
@@ -101,16 +93,8 @@ public class MemStore implements TripleStore {
       storage.remove(model, id, m.getUri());
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @param cm DOCUMENT ME!
-   * @param id DOCUMENT ME!
-   * @param txn DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
+  /*
+   * inherited javadoc
    */
   public ResultObject get(ClassMetadata cm, String id, Transaction txn)
                    throws OtmException {
@@ -143,15 +127,8 @@ public class MemStore implements TripleStore {
     return instantiate(txn.getSession().getSessionFactory(), cm.getSourceClass(), id, value, rvalue);
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @param criteria DOCUMENT ME!
-   * @param txn DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
+  /*
+   * inherited javadoc
    */
   public List<ResultObject> list(Criteria criteria, Transaction txn)
                           throws OtmException {
@@ -167,22 +144,14 @@ public class MemStore implements TripleStore {
     return results;
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @param conf DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
+  /*
+   * inherited javadoc
    */
   public void createModel(ModelConfig conf) throws OtmException {
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @param conf DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
+  /*
+   * inherited javadoc
    */
   public void dropModel(ModelConfig conf) throws OtmException {
   }
