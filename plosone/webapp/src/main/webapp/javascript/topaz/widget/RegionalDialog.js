@@ -122,7 +122,8 @@ dojo.declare(
         // big error. Do something about it!
       }
 			
-/*      dojo.byId(djConfig.debugContainerId).innerHTML = "markerOffset.top = " + markerOffset.top
+/*      if (djConfig.isDebug) {
+        dojo.byId(djConfig.debugContainerId).innerHTML = "markerOffset.top = " + markerOffset.top
       															  + "<br/>" + "markerOffset.left = "  + markerOffset.left
       															  + "<br/>" + "mbWidth = " + mbWidth
       															  + "<br/>" + "mbHeight = " + mbHeight
@@ -130,6 +131,7 @@ dojo.declare(
       															  + "<br/>" + "vpHeight = " + vpHeight
       															  + "<br/>" + "scrollX = " + scrollX
       															  + "<br/>" + "scrollY = " + scrollY;
+      }
 */      															 
 			// Default values put the box generally above and to the right of the annotation "bug"
       var xTip = markerOffset.left - (tipWidth / 2);
@@ -183,9 +185,12 @@ dojo.declare(
 				top = y + "px";
 			}
 
-/*      dojo.byId(djConfig.debugContainerId).innerHTML += "<br/>" + "left = " + this.domNode.style.left
+/*      if (djConfig.isDebug) {
+        dojo.byId(djConfig.debugContainerId).innerHTML += "<br/>" + "left = " + this.domNode.style.left
       															                  + "<br/>" + "top = "  + this.domNode.style.top;
-*/		}
+      }
+*/
+		}
 		
 	});
 

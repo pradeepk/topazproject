@@ -14,6 +14,7 @@ var annotationConfig = {
   annotationMarker: "note",
   annotationImgMarker: "noteImg",
 	regionalDialogMarker : "rdm",
+	excludeSelection: "noSelect",
   tipDownDiv: "dTip",
   tipUpDiv: "dTipu",
   isAuthor: false,  //TODO: *** Default to false when the hidden input is hooked up.

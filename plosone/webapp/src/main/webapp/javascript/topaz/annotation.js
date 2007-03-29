@@ -59,12 +59,12 @@ topaz.annotation = {
 	  
     var captureText = this.createNewAnnotation();
 		
-    if ( captureText ) {
+/*    if ( captureText ) {
     	if (!event) var event = window.event;
     	event.cancelBubble = true;
     	if (event.stopPropagation) event.stopPropagation();
     }
-
+*/
     //dojo.event.browser.preventDefault();
 
     return false;
@@ -73,7 +73,7 @@ topaz.annotation = {
   createNewAnnotation: function () {
     annotationConfig.rangeInfoObj = this.getRangeOfSelection();
     
-    if (annotationConfig.rangeInfoObj == "noSelect") {
+    if (annotationConfig.rangeInfoObj == annotationConfig.excludeSelection) {
       alert("This area of text cannot be annotated.");
       getArticle();
       return false;
@@ -96,12 +96,20 @@ topaz.annotation = {
               "annotationConfig.rangeInfoObj.endXpath = "       + annotationConfig.rangeInfoObj.endXpath;
       }
       
-     annotationForm.startPath.value = annotationConfig.rangeInfoObj.startXpath;
-     annotationForm.startOffset.value = annotationConfig.rangeInfoObj.startPoint + 1;
-     annotationForm.endPath.value = annotationConfig.rangeInfoObj.endXpath;
-     annotationForm.endOffset.value = annotationConfig.rangeInfoObj.endPoint + 1;
+      annotationForm.startPath.value = annotationConfig.rangeInfoObj.startXpath;
+      annotationForm.startOffset.value = annotationConfig.rangeInfoObj.startPoint + 1;
+      annotationForm.endPath.value = annotationConfig.rangeInfoObj.endXpath;
+      annotationForm.endOffset.value = annotationConfig.rangeInfoObj.endPoint + 1;
      
-     this.analyzeRange(annotationConfig.rangeInfoObj, 'span');
+      var mod = this.analyzeRange(annotationConfig.rangeInfoObj, 'span');
+     
+      if (mod == annotationConfig.excludeSelection) {
+        alert("This area of text cannot be annotated.");
+        getArticle();
+        return false;
+      }
+
+      return true;
     }
   },
   
@@ -165,27 +173,16 @@ topaz.annotation = {
     var childList   = new Array();
     var html        = this.getHTMLOfSelection();
     
-    //alert("rangeInfo.range.htmlText = " + rangeInfo.range.htmlText + "\n" + 
-    //      "startParent.id = " + startParent.id + "\n" +
-    //      "endParent.id = " + endParent.id);
-    
-    //if (rangeInfo.startXpath == rangeInfo.endXpath) {
-      if (startParent.hasChildNodes) {
-        childList = this.getChildList(startParent, element); 
-      }
+    if (startParent.hasChildNodes) {
+      childList = this.getChildList(startParent, element); 
+    }
   
-      if (childList.length > 0) {
-        //this.promoteChild(startParent, 'span', annotationConfig.annotationMarker);
-        //this.promoteChild(startParent, 'img', annotationConfig.annotationImgMarker);
-      }
-      
-      this.insertHighlightWrapper(rangeInfo);
-    //}
-    //else {
-      //var parentArray = this.findXptElementsInRange(startParent, endParent);
-     // alert("parentArray = " + parentArray);
-    //}
+    var mod = this.insertHighlightWrapper(rangeInfo);
     
+    if (mod == annotationConfig.excludeSelection) {
+      return annotationConfig.excludeSelection;
+    }
+
   	var marker = dojo.byId(annotationConfig.regionalDialogMarker);
   	dlg.setMarker(marker);
     dlg.show();
@@ -201,16 +198,16 @@ topaz.annotation = {
       endRange.collapse(false);
   
       var startPoint = this.getRangePoint(startRange);
-      if (startPoint == "noSelect")
-        return startPoint;
+      if (startPoint == annotationConfig.excludeSelection)
+        return annotationConfig.excludeSelection;
       
-      startRange.pasteHTML("<span id=\"tempStartPoint\" class=\"temp\">========== START HERE =====================</span>");
+      startRange.pasteHTML("<span id=\"tempStartPoint\" class=\"temp\"></span>");
 
       var endPoint = this.getRangePoint(endRange);
-      if (endPoint == "noSelect")
-        return endPoint;
+      if (endPoint == annotationConfig.excludeSelection)
+        return annotationConfig.excludeSelection;
         
-      endRange.pasteHTML("<span id=\"tempEndPoint\" class=\"temp\">========== END HERE =====================</span>");
+      endRange.pasteHTML("<span id=\"tempEndPoint\" class=\"temp\"></span>");
         
       var isAncestor = this.isAncestorOf(startPoint.element, endPoint.element, "xpathLocation", endPoint.xpathLocation);
       
@@ -220,8 +217,8 @@ topaz.annotation = {
         endRange.collapse(false);
         
         endPoint = this.getRangePoint(endRange);
-        if (endPoint == "noSelect")
-          return endPoint;
+        if (endPoint == annotationConfig.excludeSelection)
+          return annotationConfig.excludeSelection;
       }
   
       if ( startPoint.element == null || endPoint.element == null ) {
@@ -259,8 +256,6 @@ topaz.annotation = {
     var rangeSelection = window.getSelection ? window.getSelection() : 
                          document.getSelection ? document.getSelection() : 0;
                          
-    //alert(rangeSelection.toString());
-
     if (rangeSelection != "" && rangeSelection != null) {
       if (djConfig.isDebug) 
         dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>Inside findMozillaRange";
@@ -272,9 +267,9 @@ topaz.annotation = {
       else if (typeof rangeSelection.baseNode != "undefined") {
         if (djConfig.isDebug) {
           dojo.byId(djConfig.debugContainerId).innerHTML += 
-                "rangeSelection.baseNode = '"     + rangeSelection.baseNode + "'\n" +
-                "rangeSelection.baseOffset = '"   + rangeSelection.baseOffset + "'\n" +
-                "rangeSelection.extentNode = '"   + rangeSelection.extentNode + "'\n" +
+                "rangeSelection.baseNode = '"     + rangeSelection.baseNode + "'<br>" +
+                "rangeSelection.baseOffset = '"   + rangeSelection.baseOffset + "'<br>" +
+                "rangeSelection.extentNode = '"   + rangeSelection.extentNode + "'<br>" +
                 "rangeSelection.extentOffset  = " + rangeSelection.extentOffset ;
         }
         
@@ -300,13 +295,13 @@ topaz.annotation = {
 
       var endPoint       = this.getRangePoint(endRange);
       
-      if (endPoint == "noSelect")
-        return endPoint;
+      if (endPoint == annotationConfig.excludeSelection)
+        return annotationConfig.excludeSelection;
       
       var startPoint     = this.getRangePoint(startRange);
       
-      if (startPoint == "noSelect")
-        return startPoint;
+      if (startPoint == annotationConfig.excludeSelection)
+        return annotationConfig.excludeSelection;
       
       range.setEndAfter(tempNode);
       tempNode.parentNode.removeChild(tempNode);
@@ -359,8 +354,8 @@ topaz.annotation = {
     var pointEl = this.getFirstAncestorByXpath(pointSpan);
     //alert("pointEl = " + pointEl.element.nodeName + ", " + pointEl.xpathLocation);
     
-    if (pointEl == "noSelect") 
-      return pointEl;
+    if (pointEl == annotationConfig.excludeSelection) 
+      return annotationConfig.excludeSelection;
     
    
     var point = new Object();
@@ -460,19 +455,19 @@ topaz.annotation = {
         //alert("parentalNode [after] = " + parentalNode.nodeName);
         
         //alert("parentalNode.nodeName = " + parentalNode.nodeType);
-        if (parentalNode.getAttributeNode('xpathLocation') != null && parentalNode.getAttributeNode('xpathLocation').nodeValue == 'noSelect') {
+        if (parentalNode.getAttributeNode('xpathLocation') != null && parentalNode.getAttributeNode('xpathLocation').nodeValue == annotationConfig.excludeSelection) {
           //alert("getFirstAncestorByXpath: noSelect");
-          return "noSelect";
+          return annotationConfig.excludeSelection;
         }
         else if (parentalNode.nodeName == 'BODY') {
-          return "noSelect";
+          return annotationConfig.excludeSelection;
         }
       }
           
       //alert("parentalNode.getAttributeNode('xpathLocation').nodeValue = " + parentalNode.getAttributeNode('xpathLocation').nodeValue + ", " + parentalNode.getAttributeNode('xpathLocation').nodeValue.length);
 
       var parentObj = new Object();
-      parentObj.element = ( parentalNode.getAttributeNode('xpathLocation')!= null & parentalNode.getAttributeNode('xpathLocation').nodeValue  == "noSelect" ) ? null : parentalNode;
+      parentObj.element = ( parentalNode.getAttributeNode('xpathLocation')!= null & parentalNode.getAttributeNode('xpathLocation').nodeValue  == annotationConfig.excludeSelection ) ? null : parentalNode;
       parentObj.xpathLocation = (parentalNode.getAttributeNode('xpathLocation') != null) ? parentalNode.getAttributeNode('xpathLocation').nodeValue : "";
       return parentObj;
     }
@@ -508,263 +503,7 @@ topaz.annotation = {
     return childList;
     
   },
-  
-  promoteChild: function (obj, element, elName) {
-    var childSearch = document.getElementsByTagAndClassName(element, elName);
-    
-    for (var i=0; i<childSearch.length; i++) {
-      this.replaceChild(childSearch[i]);
-    }
-  },
-  
-  promoteChildOfObject: function (obj, element, elName) {
-    var childSearch = obj.childNodes;
-    
-    for (var i=0; i<childSearch.length; i++) {
-      if (childSearch[i].nodeType == 1) {
-        if (childSearch[i].nodeName == element 
-            && childSearch[i].className.match(elName) == elName){
-          if (!childSearch[i].hasChildNodes) {
-            dojo.dom.removeNode(childSearch[i]);
-          }
-          else {
-            this.promoteChildOfObject(obj, element, elName);
-          }
-      } 
-        this.promoteChildOfObject(obj, element, elName);
-      }
-      else {
-        return;
-      }
-      
-      if (childSearch[i].nodeName == element && childSearch[i].className.match(elName) == elName){
-        this.replaceChild(childSearch[i]);
-      }
-    }
-  },
-  
-  replaceChild: function (obj) {
-    var temp = document.createDocumentFragment();
-    dojo.dom.moveChildren(obj, temp, false);
-    dojo.dom.replaceNode(obj, temp);
-  },
-  
-  
-  getChildrenInRange: function (elNode, elClassName, endId) {
-    var objArray = new Array();
-    var temp = new Array();
-    var isEnd = false;
-    
-    for (var i=0; i<elNode.childNodes.length; i++) {
-      var obj = elNode.childNodes[i];
-      
-      if (obj.id == endId || isEnd) {
-        isEnd = true;
-        //alert("isEnd = " + isEnd);
-        break;
-      }
-      else if (obj.className && obj.className.match(elClassName) != null && obj.className.match(elClassName) != "") {
-        //alert("obj.id = " + obj.id + "\n" +
-        //      "obj.className = " + obj.className);
 
-        if (obj.hasChildNodes) {
-          //alert("going into getChildrenInRange again");
-          temp = this.getChildrenInRange(obj, elClassName, endId);
-        }
-        else 
-          break;
-        
-        if (temp.length <= 0) 
-          objArray.push(obj.id);
-        else {
-          //alert("[getChildrenInRange] temp = " + temp);
-          objArray.concat(temp); 
-        }
-         
-      }
-    }
-    
-    alert("[getChildrenInRange] objArray = " + objArray);
-    return objArray;
-  },
-  
-  getAllParentsInRange: function (startId, endId) {
-    var objArray = new Array();
-    var temp = new Array();
-    var triggerNode = document.getElementById(startId);
-    var targetNode = document.getElementById(endId);
-    var isEnd = false;
-    
-    for (var currentNode = triggerNode.nextSibling; currentNode != null; currentNode = currentNode.nextSibling) {
-        //alert("isEnd = " + isEnd);
-      
-      if (targetNode.id == currentNode.id || isEnd) {
-        isEnd = true;
-        break;
-      }
-      else if (currentNode.nodeType == 1) {
-        //alert("triggerNode = " + triggerNode.id + "\n" +
-        //      "currentNode = " + currentNode.id + "\n" +
-        //      "targetNode = " + targetNode.id);
-        if (currentNode.hasChildNodes) {
-          temp = new Array( this.getChildrenInRange(currentNode, annotationConfig.xpointerMarker, targetNode.id) );
-          
-          //alert("objArray = " + objArray + "\n" +
-          //      "temp = " + temp);
-          if (temp.length > 0)
-            objArray.concat(temp);
-          else if (currentNode.id != null && currentNode.id != "")
-            objArray.push(currentNode.id);
-        }
-      }
-    }
-    
-    //alert("Outer objArray = " + objArray);
-    
-    return objArray;
-  },
-  
-  getParentIdArray: function(startRange, startEl, endRange, endEl) {
-      var parentArray = new Array();
-      
-      parentArray.push(startEl.id);
-      
-      var temp = new Array( this.getAllParentsInRange(startEl.id, endEl.id) );
-      
-      //alert("parentArray = " + parentArray + "\n" +
-      //      "temp = " + temp);
-  
-      if (temp.length > 0)
-        parentArray.concat(temp);
-      
-      //alert("Did it concat? " + parentArray);
-      parentArray.push(endEl.id);
-
-      return parentArray;  
-  },
-
-  contains: function(array, object) {
-    if (array == null) {
-      return false;
-    }
-
-    for (var i = 0; i < array.length; i++) {
-      if (array[i] == object) {
-        return true;
-      }
-    }
-    return false;
-  },
-
-  findXptElementsInRange: function(startNode, endNode) {
-    var startPath = this.getNodePath(startNode);
-    var endPath   = this.getNodePath(endNode);
-    var rootNode  = this.findLowestCommonNode(startPath, endPath);
-
-//    this.setMultiBorder(startPath, "blue");
-//    this.setMultiBorder(endPath, "red");
-    //this.setBorder(rootNode, "yellow");
-
-    return this.accumulateLeafNodes(rootNode, startPath, endPath, new Array(1), new Array(annotationConfig.xpointerMarker));
-  },
-
-  getNodePath: function(node) {
-    var path = new Array();
-    for (var c = node; c != null; c = c.parentNode) {
-      path.push(c);
-    }
-    return path;
-  },
-
-  findLowestCommonNode: function(startPath, endPath) {
-    for (var i = 0; i < startPath.length; i++) {
-      if (this.contains(endPath, startPath[i])) {
-        return startPath[i];
-      }
-    }
-  },
-
-  accumulateLeafNodes: function (rootNode, startPath, endPath) {
-    var nodeList = new Array();
-    nodeList = this.depthFirstTraversal(rootNode, startPath, endPath, true, false);
-    return nodeList;
-  },
-
-  setMultiBorder: function(nodeList, color) {
-    for (var i = 0; i < nodeList.length; i++) {
-      this.setBorder(nodeList[i], color);
-    }
-  },
-
-  /**
-   * Traverse a tree, accumulating those nodes in a subtree defined as being between a start path and an end path (inclusive).
-   * All nodes that are to the right of the start path and to the left of the end path will be included.
-   * nodeList is a list of all the nodes traversed so far, in order.
-   * rootNode is the node to start traversing from. It may be added to the list, along with its descendents.
-   * startPath is a list of all the nodes comprising the start path, in any order.
-   * endPath is a list of all the nodes comprising the end path, in any order.
-   * startPathPosition and endPathPosition tell us where we currently are in the tree relative to these two paths. This is a performance optimization for use when this method is called recursively.
-   * A value of -1 indicates that we are to the left of the path, 0 indicates that we are on the path, 1 indicates that we are to the right of the path.
-   * The first time the function is called, you should specify positions of -1 for both start and end paths, since the traversal starts from the left side of the tree.
-   * includeLeaves should be true if you want leaf nodes to be accumulated.
-   * includeNonLeaves should be true if you want non-leaf nodes to be accumulated.
-   * If neither one is true, then this function won't do much.
-   */
-  depthFirstTraversal: function (node, startPath, endPath, includeLeaves, includeNonLeaves) 
-  {
-    var nodeList = new Array();
-    var onStartPath = this.contains(startPath, node);
-    var onEndPath   = this.contains(endPath,   node);
-
-    var childTraversed = false;
-    var onPath = !onStartPath; // if this node is on the start path, then we assume the children are not on the path until the start path is encountered
-
-//    this.setBorder(node, "blue");
-
-    for (var i = 0; i < node.childNodes.length; i++) {
-      var childNode = node.childNodes[i];
-
-      if (!onPath) {
-        onPath = this.contains(startPath, childNode);
-      }
-
-      if (!onPath) {
-        //this.setBorder(childNode, "red");
-      }
-
-      if (onPath) {
-        if (this.isTypeAndClassOK(childNode)) {
-          this.depthFirstTraversal(nodeList, node.childNodes[i], startPath, endPath, includeLeaves, includeNonLeaves);
-          childTraversed = true;
-        }
-
-        if (onEndPath) {  // this check is not needed, but improves performance by skipping the block when we know we aren't going to encounter an end path.
-          onPath = !this.contains(endPath, childNode);
-        }
-      }
-    }
-
-    if ( this.isTypeAndClassOK(node) &&
-         ( (!childTraversed && includeLeaves) || 
-           (childTraversed && includeNonLeaves) ) ) 
-    {
-      nodeList.push(node);
-    }
-    
-    alert("nodeList = " + nodeList);
-    return nodeList;
-  },
-
-  isTypeAndClassOK: function(node) {
-    return node.nodeType == 1 && node.className && node.className.indexOf(annotationConfig.xpointerMarker) != -1;
-  },
-
-  setBorder: function(node, color) {
-    if (node.style) {
-      node.style.border = color? "1px solid " + color : "none";  
-    }
-  },
-    
   insertHighlightWrapper: function (rangeObj) {
   	var noteClass = annotationConfig.annotationMarker + " " + 
     //      					(annotationConfig.isAuthor ? "author-" : "self-") +
@@ -823,6 +562,10 @@ topaz.annotation = {
   
         
       var modContents = this.modifySelection(rangeObj, contents, newSpan, link, markerId);
+      
+      if (modContents == annotationConfig.excludeSelection) {
+        return annotationConfig.excludeSelection;
+      }
 
       if (djConfig.isDebug) {
         dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>============================ Modified Content ==================" 
@@ -868,47 +611,76 @@ topaz.annotation = {
         contents = rangeObj.range.extractContents();
       }
 
-      if (djConfig.isDebug) 
-        dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>======================== Calling modifySelection ===========================";
+      //if (djConfig.isDebug) 
+      //  dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>======================== Calling modifySelection ===========================";
+      
       var modContents = this.modifySelection(rangeObj, contents, newSpan, link, markerId);
+
+      if (modContents == annotationConfig.excludeSelection) {
+        return annotationConfig.excludeSelection;
+      }
+
       rangeObj.range.insertNode(modContents);
+      return;
     }
   },
   
   modifySelection: function(rangeObj, contents, newSpan, link, markerId) {
-    if (djConfig.isDebug) 
+    if (djConfig.isDebug) {
         dojo.byId(djConfig.debugContainerId).innerHTML += "<br><br>=========== Inside modifySelelection ============================";
+    }
+        
     var modContents = document.createDocumentFragment();
 
     if (rangeObj.startXpath == rangeObj.endXpath) {
       modContents.appendChild(this.insertWrapper(rangeObj, contents, newSpan, link, markerId, null));
     }
     else {
-      var multiContent = contents.childNodes;
-      
-      //var xpathloc;
-      for (var i=0; i < multiContent.length; i++) {
-        var xpathloc = (multiContent[i].getAttribute) ? multiContent[i].getAttribute("xpathlocation") : null;
-        var insertMode = 0;
-        
-        if (djConfig.isDebug) {
-          dojo.byId(djConfig.debugContainerId).innerHTML +=
-                "<br><br>=============== MODIFYSELECTION ================================="
-                + "<br>" + "node = " + multiContent[i].nodeName + ", " + xpathloc + ", " + multiContent[i].nodeValue 
-                ;
-        }
-                    
-        if (xpathloc != null && (i == 0 || i == multiContent.length-1)) {
-					var parentEl = null;
-				
-					if (i == 0) {
-						parentEl = rangeObj.startParent.nodeName;
-					}
-					else if (i == multiContent.length - 1) {
-						parentEl = rangeObj.endParent.nodeName;
-					}
-          var xpathMatch = document.getElementsByAttributeValue(parentEl, "xpathlocation", xpathloc);
+      modContents = this.modifyMultiSelection(rangeObj, contents, newSpan, link, markerId);    
+    }
+    
+    return modContents;
+  },
+  
+  modifyMultiSelection: function(rangeObj, contents, newSpan, link, markerId) {
+    var modContents = document.createDocumentFragment();
+    var multiContent = contents.childNodes;
+    
+    //var xpathloc;
+    for (var i=0; i < multiContent.length; i++) {
+      // If the node is a text node and the value is either a linefeed and/or carriage return, skip this loop
+      if (multiContent[i].nodeName == "#text" && (multiContent[i].nodeValue.match(new RegExp("\n")) || multiContent[i].nodeValue.match(new RegExp("\r")))) {
+        continue;
+      }
 
+
+      var xpathloc = (multiContent[i].getAttribute) ? multiContent[i].getAttribute("xpathlocation") : null;
+      var insertMode = 0;
+      
+      if (djConfig.isDebug) {
+        dojo.byId(djConfig.debugContainerId).innerHTML +=
+              "<br><br>=============== MODIFYMULTISELECTION ================================="
+              + "<br>" + "[MODIFYMULTISELECTION] i = " + i
+              + "<br>" + "node = " + multiContent[i].nodeName + ", " + xpathloc + ", " + multiContent[i].nodeValue 
+              + "<br>" + "multiContent.length = " + multiContent.length
+              ;
+      }
+                  
+      if (xpathloc != null) {
+        if (xpathloc == annotationConfig.excludeSelection) {
+          return annotationConfig.excludeSelection;  
+        }
+        else if (xpathloc == rangeObj.startXpath || xpathloc == rangeObj.endXpath) {
+  				var parentEl = null;
+  			
+  				if (xpathloc == rangeObj.startXpath) {
+  					parentEl = rangeObj.startParent.nodeName;
+  				}
+  				else if (xpathloc == rangeObj.endXpath) {
+  					parentEl = rangeObj.endParent.nodeName;
+  				}
+          var xpathMatch = document.getElementsByAttributeValue(parentEl, "xpathlocation", xpathloc);
+  
           if (xpathMatch != null && xpathMatch.length > 0) {
             if (i == 0) {
               insertMode = -1;
@@ -918,7 +690,28 @@ topaz.annotation = {
             }
           }
         }
-  
+      }
+
+      var doesChildrenContainXpath = this.isContainXpath(multiContent[i], insertMode);
+      if (djConfig.isDebug) {
+        dojo.byId(djConfig.debugContainerId).innerHTML +=
+              "<br>" + "doesChildrenContainXpath = " + doesChildrenContainXpath 
+              ;
+      }
+      
+      if (doesChildrenContainXpath == annotationConfig.excludeSelection) {
+        return annotationConfig.excludeSelection;
+      }
+      else if (doesChildrenContainXpath == "true") {
+        var newContent = this.modifyMultiSelection(rangeObj, multiContent[i], newSpan, link, markerId);
+        
+        if (newContent == annotationConfig.excludeSelection) {
+          return annotationConfig.excludeSelection;
+        }
+        
+        modContents.appendChild(newContent);
+      }
+      else if (multiContent[i].hasChildNodes()){
         var modFragment = this.insertWrapper(rangeObj, multiContent[i], newSpan, link, markerId, insertMode);
         
         if (dojo.render.html.ie) {
@@ -929,15 +722,48 @@ topaz.annotation = {
         }
         else {
           modContents.appendChild(modFragment);
+          --i;
+        }
+      }
+    }
+    
+    //if (dojo.render.html.ie && multiContent.length == 2)
+      //modContents = null;
+    
+    return modContents;
+  },
+  
+  isContainXpath: function(node, multiPosition) {
+    var xpathAttr = topaz.domUtil.isChildContainAttributeValue(node, "xpathlocation", null);
+    if (djConfig.isDebug) {
+      dojo.byId(djConfig.debugContainerId).innerHTML +=
+            "<br>" + "xpathAttr.length = " + xpathAttr.length 
+            ;
+    }
+    
+    
+    if (xpathAttr.length == 0) {
+      return "false";
+    }
+    else {
+      var start = 0;
+      var arrayLength = xpathAttr.length;
+      
+      if (multiPosition == -1) {
+        start = 1;
+      }
+      else if (multiPosition == 1) {
+        arrayLength -= 1;
+      }
+      
+      for (var i=start; i<arrayLength; i++) {  //exclude first and last node
+        if (xpathAttr[i].value == annotationConfig.excludeSelection) {
+          return annotationConfig.excludeSelection;
         }
       }
       
-      //if (dojo.render.html.ie && multiContent.length == 2)
-        //modContents = null;
-      
+      return "true";
     }
-    
-    return modContents;
   },
       
   /** 
@@ -947,7 +773,8 @@ topaz.annotation = {
    *  highlight and annotation dialog box.
    *  
    *  @param rangeObject      Range object         Range object containing the range and additional xpath information.
-   *  @param rangeContent     Document fragment    Document fragment of extracted html from the selection.
+   *  @param rangeContent     Document fragment    Extracted html from the selection contained in either a block node
+   *                                               or a document fragment.
    *  @param refWrapperNode   Node object          Reference to the node object, which contains the correct 
    *                                                attributes, that will contain the selection.
    *  @param linkObject       Node oject           Link node object containing the annotation bug and the marker used
@@ -964,7 +791,7 @@ topaz.annotation = {
    *  @return rangeContent
   */ 
   insertWrapper: function(rangeObject, rangeContent, refWrapperNode, linkObject, markerId, multiPosition, elXpathValue) {
-    var childContents = rangeContent.childNodes;
+    var childContents = rangeContent.childNodes;  
     var nodelistLength = childContents.length;
     var insertIndex = 0;
     var nodesToRemove = new Array();
@@ -1130,46 +957,7 @@ topaz.annotation = {
     }
     
     return tempStr;
-  },
-  
-  alertMembers: function (obj, text) {
-    if (obj) {
-      var members = "";
-      if (text) {
-        members += text + ":\n";
-      }
-      
-      for (var member in obj) {
-        members += typeof obj[member];
-        members += " ";
-        members += member;
-        members += ": ";
-        members += (typeof obj[member] == 'function' ? '...' : obj[member]);
-        members += "\n";
-      }
-      alert(members);
-    } 
-    else {
-      alert("Object is not defined.");
-    }
-  },
-  
-  alertList: function (list) {
-    var contents = "Contents of: " + list;
-    for (var i = 0; i < list.length; i++) {
-      contents += "\n";
-      contents += typeof list[i];
-      if (list[i].nodeType) {
-        contents += " (";
-        contents += list[i].nodeType;
-        contents += ")";
-      }
-      contents += ": ";
-      contents += list[i];
-    }
-    alert(contents);
   }
-  
 }
 
 

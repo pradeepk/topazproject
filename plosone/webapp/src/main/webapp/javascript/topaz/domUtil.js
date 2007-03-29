@@ -335,15 +335,44 @@ topaz.domUtil = {
   
   isChildContainAttributeValue: function (node, attributeName, attributeValue) {
     var childlist = node.childNodes;
-    var itemsFound = 0;
+    var itemsFound = new Array();
     
-    for (var i=0; i<childlist; i++) {
-      if (attributeValue && childlist[i].getAttribute(attributeName) == attributeValue) {
-        ++itemsFound;
+    if (djConfig.isDebug) {
+      dojo.byId(djConfig.debugContainerId).innerHTML +=
+            "<br><br>" + "[topaz.domUtil.isChildContainAttributeValue]"
+            ;
+    }
+    
+    for (var i=0; i<=childlist.length-1; i++) {
+      var attrObj = new Object();
+
+      if (djConfig.isDebug) {
+        dojo.byId(djConfig.debugContainerId).innerHTML +=
+              "<br>" + "attributeValue = " + attributeValue 
+              + "<br>" + "childlist[" + i + "].nodeName = " + childlist[i].nodeName 
+              ;
       }
-      else if (childlist[i].getAttribute(attributeName)){
-        ++itemsFound;
+      
+      if (childlist[i].nodeType == 1 &&
+          (((attributeValue || attributeValue !=null) && childlist[i].getAttribute(attributeName) == attributeValue) ||
+          ((!attributeValue || attributeValue == null) && childlist[i].getAttributeNode(attributeName) != null))) {
+
+        if (djConfig.isDebug) {
+          dojo.byId(djConfig.debugContainerId).innerHTML +=
+                "<br>" + "childlist[" + i + "].getAttribute(" + attributeName + ") = " + childlist[i].getAttribute(attributeName) 
+                ;
+        }
+        
+        attrObj.node = childlist[i];
+        attrObj.value = childlist[i].getAttribute(attributeName);
+        itemsFound.push(attrObj);
       }
+    }
+    
+    if (djConfig.isDebug) {
+      dojo.byId(djConfig.debugContainerId).innerHTML +=
+            "<br>" + "-----------------------------------------------<br>"
+            ;
     }
     
     return itemsFound;
