@@ -70,37 +70,15 @@ public class AnnotationClassMetaFactory {
    * @throws OtmException DOCUMENT ME!
    */
   public ClassMetadata create(Class clazz) throws OtmException {
-    return create(clazz, null);
+    return create(clazz, clazz, null, new HashMap<Class, ClassMetadata>());
   }
 
-  /**
-   * Creates a new ClassMetadata object.
-   *
-   * @param clazz DOCUMENT ME!
-   * @param nsOfContainingClass DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
-  public ClassMetadata create(Class clazz, String nsOfContainingClass)
+  private ClassMetadata create(Class clazz, String nsOfContainingClass)
                        throws OtmException {
     return create(clazz, clazz, nsOfContainingClass, new HashMap<Class, ClassMetadata>());
   }
 
-  /**
-   * Creates a new ClassMetadata object.
-   *
-   * @param clazz DOCUMENT ME!
-   * @param top DOCUMENT ME!
-   * @param nsOfContainingClass DOCUMENT ME!
-   * @param loopDetect DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
-  public ClassMetadata create(Class clazz, Class top, String nsOfContainingClass,
+  private ClassMetadata create(Class clazz, Class top, String nsOfContainingClass,
                               Map<Class, ClassMetadata> loopDetect)
                        throws OtmException {
     Set<String>        types   = Collections.emptySet();
