@@ -16,6 +16,7 @@ import java.net.URL;
 
 import java.text.SimpleDateFormat;
 
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
@@ -55,6 +56,7 @@ public class SerializerFactory {
     typeMap.put(URI.class, Rdf.xsd + "anyURI");
     typeMap.put(URL.class, Rdf.xsd + "anyURI");
     typeMap.put(Date.class, Rdf.xsd + "dateTime");
+    typeMap.put(Calendar.class, Rdf.xsd + "dateTime");
   }
 
 /**
@@ -70,7 +72,7 @@ public class SerializerFactory {
   }
 
   private void initDefaults() {
-    DateBuilder<Date> dateDateBuilder =
+    DateBuilder<Date>     dateDateBuilder     =
       new DateBuilder<Date>() {
         public Date toDate(Date o) {
           return o;
@@ -81,7 +83,7 @@ public class SerializerFactory {
         }
       };
 
-    DateBuilder<Long> longDateBuilder =
+    DateBuilder<Long>     longDateBuilder     =
       new DateBuilder<Long>() {
         public Date toDate(Long o) {
           return new Date(o.longValue());
@@ -89,6 +91,20 @@ public class SerializerFactory {
 
         public Long fromDate(Date d) {
           return new Long(d.getTime());
+        }
+      };
+
+    DateBuilder<Calendar> calendarDateBuilder =
+      new DateBuilder<Calendar>() {
+        public Date toDate(Calendar o) {
+          return o.getTime();
+        }
+
+        public Calendar fromDate(Date d) {
+          Calendar c = Calendar.getInstance();
+          c.setTime(d);
+
+          return c;
         }
       };
 
@@ -110,6 +126,8 @@ public class SerializerFactory {
     setSerializer(URI.class, new SimpleSerializer<URI>(URI.class));
     setSerializer(URL.class, new SimpleSerializer<URL>(URL.class));
     setSerializer(Date.class, new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "dateTime"));
+    setSerializer(Calendar.class,
+                  new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "dateTime"));
 
     setSerializer(Date.class, Rdf.xsd + "dateTime",
                   new XsdDateTimeSerializer<Date>(dateDateBuilder, Rdf.xsd + "dateTime"));
@@ -131,6 +149,13 @@ public class SerializerFactory {
                   new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "date"));
     setSerializer(Long.TYPE, Rdf.xsd + "time",
                   new XsdDateTimeSerializer<Long>(longDateBuilder, Rdf.xsd + "time"));
+
+    setSerializer(Calendar.class, Rdf.xsd + "dateTime",
+                  new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "dateTime"));
+    setSerializer(Calendar.class, Rdf.xsd + "date",
+                  new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "date"));
+    setSerializer(Calendar.class, Rdf.xsd + "time",
+                  new XsdDateTimeSerializer<Calendar>(calendarDateBuilder, Rdf.xsd + "time"));
   }
 
   /**
