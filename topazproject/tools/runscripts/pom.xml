@@ -41,6 +41,12 @@
       <version>1.0</version>
     </dependency>
 
+    <dependency>
+      <groupId>jline</groupId>
+      <artifactId>jline</artifactId>
+      <version>0.9.9</version>
+    </dependency>
+
     <!-- Not really required, but thing complains without it (a groovy issue/dependency?) -->
     <dependency>
       <groupId>javax.mail</groupId>
