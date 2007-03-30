@@ -365,6 +365,8 @@ public class Session {
     if (txn == null)
       throw new OtmException("No transaction active");
 
+    flush(); // so that mods are visible to queries
+
     TripleStore store  = sessionFactory.getTripleStore();
 
     List        result = new ArrayList();
