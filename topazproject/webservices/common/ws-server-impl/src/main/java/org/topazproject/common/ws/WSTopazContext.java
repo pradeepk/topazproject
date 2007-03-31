@@ -409,5 +409,11 @@ public class WSTopazContext implements TopazContext {
       ItqlHelper itql = (ItqlHelper) obj;
       itql.close();
     }
+
+    public boolean validateObject(Object obj) {
+      ItqlHelper itql = (ItqlHelper) obj;
+      return (itql.getLastError() == null);
+    }
+
   }
 }
