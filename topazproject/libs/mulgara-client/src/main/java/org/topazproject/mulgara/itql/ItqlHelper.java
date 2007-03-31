@@ -91,6 +91,7 @@ public class ItqlHelper {
   private final ItqlInterpreterBean interpreter;
   private       BeanReference       cleanupRef;
   private       boolean             inTransaction = false;
+  private       Exception           lastError = null;
 
   static {
     defaultAliases.put("rdf",      RDF_URI);
@@ -276,22 +277,30 @@ public class ItqlHelper {
    * @throws RemoteException if an exception occurred talking to the service
    */
   public String doQuery(String itql, Map aliases) throws ItqlInterpreterException, RemoteException {
-    if (aliases == null)
-      aliases = defaultAliases;
+    try {
+      if (aliases == null)
+        aliases = defaultAliases;
 
-    itql = unalias(itql, aliases);
-    if (!itql.trim().endsWith(";"))
-      itql += ";";
+      itql = unalias(itql, aliases);
+      if (!itql.trim().endsWith(";"))
+        itql += ";";
 
-    if (log.isDebugEnabled())
-      log.debug("sending query '" + itql + "'");
+      if (log.isDebugEnabled())
+        log.debug("sending query '" + itql + "'");
 
-    String xml = interpreter.executeQueryToString(itql);
+      String xml = interpreter.executeQueryToString(itql);
 
-    if (log.isDebugEnabled())
-      log.debug("got result '" + xml + "'");
+      if (log.isDebugEnabled())
+        log.debug("got result '" + xml + "'");
 
-    return xml;
+      return xml;
+    } catch (ItqlInterpreterException e) {
+      lastError = e;
+      throw e;
+    } catch (RemoteException e) {
+      lastError = e;
+      throw e;
+    }
   }
 
   /** 
@@ -304,17 +313,25 @@ public class ItqlHelper {
    * @throws RemoteException if an exception occurred talking to the service
    */
   public void doUpdate(String itql, Map aliases) throws ItqlInterpreterException, RemoteException {
-    if (aliases == null)
-      aliases = defaultAliases;
+    try {
+      if (aliases == null)
+        aliases = defaultAliases;
 
-    itql = unalias(itql, aliases);
-    if (!itql.trim().endsWith(";"))
-      itql += ";";
+      itql = unalias(itql, aliases);
+      if (!itql.trim().endsWith(";"))
+        itql += ";";
 
-    if (log.isDebugEnabled())
-      log.debug("sending update '" + itql + "'");
+      if (log.isDebugEnabled())
+        log.debug("sending update '" + itql + "'");
 
-    interpreter.executeUpdate(itql);
+      interpreter.executeUpdate(itql);
+    } catch (ItqlInterpreterException e) {
+      lastError = e;
+      throw e;
+    } catch (RemoteException e) {
+      lastError = e;
+      throw e;
+    }
   }
 
   /** 
@@ -330,8 +347,16 @@ public class ItqlHelper {
     if (log.isDebugEnabled())
       log.debug("sending beginTransaction '" + txnName + "'");
 
-    interpreter.beginTransaction(txnName);
-    inTransaction = true;
+    try {
+      interpreter.beginTransaction(txnName);
+      inTransaction = true;
+    } catch (QueryException e) {
+      lastError = e;
+      throw e;
+    } catch (RemoteException e) {
+      lastError = e;
+      throw e;
+    }
   }
 
   /** 
@@ -347,6 +372,12 @@ public class ItqlHelper {
 
     try {
       interpreter.commit(txnName);
+    } catch (QueryException e) {
+      lastError = e;
+      throw e;
+    } catch (RemoteException e) {
+      lastError = e;
+      throw e;
     } finally {
       // hmm, this may not be true if we failed to talk to the server
       inTransaction = false;
@@ -367,6 +398,12 @@ public class ItqlHelper {
     try {
       interpreter.rollback(txnName);
       inTransaction = false;
+    } catch (QueryException e) {
+      lastError = e;
+      throw e;
+    } catch (RemoteException e) {
+      lastError = e;
+      throw e;
     } finally {
       if (inTransaction) {
         try {
@@ -388,6 +425,23 @@ public class ItqlHelper {
    */
   public boolean isInTransaction() {
     return inTransaction;
+  }
+
+  /**
+   * Returns the last error from a mulgara operation.
+   * 
+   * @return the error or null
+   */
+  public Exception getLastError() {
+    return lastError;
+  }
+
+  /**
+   * Clear the error status from a mulgara operation.
+   * 
+   */
+  public void clearLastError() {
+    lastError = null;
   }
 
   /** 
