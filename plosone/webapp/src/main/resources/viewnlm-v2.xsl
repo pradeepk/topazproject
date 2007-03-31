@@ -3458,7 +3458,7 @@ Make article meta data
       <xsl:if test="local-name(preceding-sibling::node()[1])='xref'">
         <xsl:text>,</xsl:text>
       </xsl:if>
-      <a href="#{@rid}"><xsl:value-of select="."/></a>
+      <a href="#{@rid}"><xsl:apply-templates/></a>
 <!--    </sup>-->
 <!--	<xsl:if test="following-sibling::node()[1]!=','">
 		<xsl:if test="local-name(following-sibling::node()[1])!='xref'">
