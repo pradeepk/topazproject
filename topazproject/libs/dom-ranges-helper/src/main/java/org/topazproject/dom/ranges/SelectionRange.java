@@ -211,9 +211,8 @@ public class SelectionRange {
         }
 
         list.add(last = r);
+        prev = n;
       }
-
-      prev = n;
     }
 
     return (Range[]) list.toArray(new Range[0]);
