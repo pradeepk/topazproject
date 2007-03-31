@@ -29,14 +29,14 @@ public class SelectionRange {
   private List  userDataList = new ArrayList();
   private Range range;
 
-  /**
+/**
    * Creates a new SelectionRange object.
    *
    * @param range the selected range
    * @param userData corresponding user data or <code>null</code>
    */
   public SelectionRange(Range range, Object userData) {
-    this.range = range;
+    this.range               = range;
 
     if (userData != null)
       userDataList.add(userData);
@@ -152,8 +152,8 @@ public class SelectionRange {
   }
 
   /**
-   * Move the start of this range to the end of the other so that this will become a continutation
-   * of the other node.
+   * Move the start of this range to the end of the other so that this will become a
+   * continutation of the other node.
    *
    * @param other the other node
    */
@@ -175,7 +175,7 @@ public class SelectionRange {
     Document document = cac.getOwnerDocument();
 
     // Select all top level nodes and descendants inside the range.
-    NodeIterator it =
+    NodeIterator it   =
       ((DocumentTraversal) document).createNodeIterator(cac, NodeFilter.SHOW_ALL,
                                                         new RangeNodeFilter(range, false), false);
 
@@ -189,16 +189,16 @@ public class SelectionRange {
       boolean start = (n == range.getStartContainer());
       boolean end   = (n == range.getEndContainer());
       short   type  = n.getNodeType();
-      
+
       if (type == Node.TEXT_NODE) {
         r.selectNode(n);
-  
+
         if (start)
           r.setStart(n, range.getStartOffset());
-  
+
         if (end)
           r.setEnd(n, range.getEndOffset());
-  
+
         // Optimization rule
         //
         // Rule 1: text nodes of same parent can be appended to previous range
@@ -206,12 +206,13 @@ public class SelectionRange {
              && (n.getParentNode() == prev.getParentNode())) {
           // Note: we may have appended complete non-text nodes before; but that is fine
           last.setEnd(r.getEndContainer(), r.getEndOffset());
-  
+
           continue;
         }
-  
+
         list.add(last = r);
-      }      
+      }
+
       prev = n;
     }
 
