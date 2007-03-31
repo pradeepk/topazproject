@@ -16,20 +16,16 @@ import java.util.List;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.FactoryConfigurationError;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.TransformerException;
 
-import org.w3c.dom.DOMException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ranges.DocumentRange;
 import org.w3c.dom.ranges.Range;
 
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
-import org.xml.sax.SAXParseException;
 
 import junit.framework.TestCase;
 
@@ -255,16 +251,16 @@ public class SelectionRangeListTest extends TestCase {
   }
 
   /**
-   * Tests skipping of child nodes of a fully selected range.
+   * Tests regions of child nodes of a fully selected range.
    */
   public void test10() {
     String[] expressions = { "xpointer(string-range(/,'indeed, wonderful world'))" };
     String[] userData = { "test10/0" };
     int[][]  regions  = {
-                          { 0 },
+                          { 0 }
                         };
     String[][] surrounds = {
-                             { "indeed, wonderful world" },
+                             { "indeed, ", "wonderful", " world" }
                            };
 
     doit(expressions, userData, regions, surrounds);
@@ -277,10 +273,10 @@ public class SelectionRangeListTest extends TestCase {
     String[] expressions = { "xpointer(string-range(/,'test for skipped child nodes'))" };
     String[] userData = { "test11/0" };
     int[][]  regions  = {
-                          { 0 },
+                          { 0 }
                         };
     String[][] surrounds = {
-                             { "test for skipped child nodes" },
+                             { "test ", "for ", "skipped", " child", " nodes" }
                            };
 
     doit(expressions, userData, regions, surrounds);
@@ -293,10 +289,10 @@ public class SelectionRangeListTest extends TestCase {
     String[] expressions = { "xpointer(string-range(/,'for skipped child'))" };
     String[] userData = { "test12/0" };
     int[][]  regions  = {
-                          { 0 },
+                          { 0 }
                         };
     String[][] surrounds = {
-                             { "for skipped child" },
+                             { "for ", "skipped", " child" }
                            };
 
     doit(expressions, userData, regions, surrounds);

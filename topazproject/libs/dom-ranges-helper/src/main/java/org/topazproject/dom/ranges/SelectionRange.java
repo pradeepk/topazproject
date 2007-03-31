@@ -13,11 +13,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.ranges.DocumentRange;
 import org.w3c.dom.ranges.Range;
-import org.w3c.dom.ranges.RangeException;
 import org.w3c.dom.traversal.DocumentTraversal;
 import org.w3c.dom.traversal.NodeFilter;
 import org.w3c.dom.traversal.NodeIterator;
@@ -176,10 +174,10 @@ public class SelectionRange {
     Node     cac      = range.getCommonAncestorContainer();
     Document document = cac.getOwnerDocument();
 
-    // Select all top level nodes inside the range. (skips descendants of already selected)
+    // Select all top level nodes and descendants inside the range.
     NodeIterator it =
       ((DocumentTraversal) document).createNodeIterator(cac, NodeFilter.SHOW_ALL,
-                                                        new RangeNodeFilter(range, true), false);
+                                                        new RangeNodeFilter(range, false), false);
 
     Node         n;
     ArrayList    list = new ArrayList();
@@ -191,41 +189,29 @@ public class SelectionRange {
       boolean start = (n == range.getStartContainer());
       boolean end   = (n == range.getEndContainer());
       short   type  = n.getNodeType();
-
-      // hmm. selectNodeContents() should have worked without the additional check of hasChildNodes()
-      // This seems like a bug in the xerces Range implementation used by Sun 1.5 JDK at least.
-      // But it does not hurt to do this additoonal check any way.
-      if ((start || end) && n.hasChildNodes())
-        r.selectNodeContents(n);
-      else
+      
+      if (type == Node.TEXT_NODE) {
         r.selectNode(n);
-
-      if (start)
-        r.setStart(n, range.getStartOffset());
-
-      if (end)
-        r.setEnd(n, range.getEndOffset());
-
-      // Now couple of optimization rules.
-      //
-      // Rule 1: text nodes of same parent can be appended to previous range
-      if ((type == Node.TEXT_NODE) && (prev != null) && (prev.getNodeType() == Node.TEXT_NODE)
-           && (n.getParentNode() == prev.getParentNode())) {
-        // Note: we may have appended complete non-text nodes before; but that is fine
-        last.setEnd(r.getEndContainer(), r.getEndOffset());
-
-        continue;
-      }
-
-      // Rule 2: all other complete nodes can be appended to previous
-      if ((type != Node.TEXT_NODE) && !start && !end && (prev != null)
-          && (n.getParentNode() == prev.getParentNode())) {
-        last.setEnd(r.getEndContainer(), r.getEndOffset());
-
-        continue;
-      }
-
-      list.add(last = r);
+  
+        if (start)
+          r.setStart(n, range.getStartOffset());
+  
+        if (end)
+          r.setEnd(n, range.getEndOffset());
+  
+        // Optimization rule
+        //
+        // Rule 1: text nodes of same parent can be appended to previous range
+        if ((type == Node.TEXT_NODE) && (prev != null) && (prev.getNodeType() == Node.TEXT_NODE)
+             && (n.getParentNode() == prev.getParentNode())) {
+          // Note: we may have appended complete non-text nodes before; but that is fine
+          last.setEnd(r.getEndContainer(), r.getEndOffset());
+  
+          continue;
+        }
+  
+        list.add(last = r);
+      }      
       prev = n;
     }
 
