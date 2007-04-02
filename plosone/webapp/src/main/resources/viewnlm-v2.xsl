@@ -807,7 +807,8 @@
 												 'directories=no,location=no,menubar=no,resizable=yes,status=no,scrollbars=yes,toolbar=no,height=600,width=850',
 												$apos,');return false;')"/>
 	</xsl:variable>
-	<div class="figure"  xpathLocation="noSelect">
+	<div class="figure">
+		<xsl:call-template name="makeXpathLocation"/>
 		<xsl:element name="a">
 			<xsl:attribute name="name"><xsl:value-of select="$figId"/></xsl:attribute>
 			<xsl:attribute name="id"><xsl:value-of select="$figId"/></xsl:attribute>
@@ -815,6 +816,7 @@
 			<xsl:attribute name="href"><xsl:value-of select="$slideshowURL"/></xsl:attribute>
 			<xsl:attribute name="onclick"><xsl:value-of select="$jsWindow"/></xsl:attribute>
 			<xsl:element name="img">
+        <xsl:attribute name="xpathLocation">noSelect</xsl:attribute>
 				<xsl:attribute name="border">1</xsl:attribute>
 				<xsl:attribute name="src"><xsl:value-of select="concat('fetchObject.action?uri=',$imageURI,'&amp;representation=PNG_S')"/></xsl:attribute>
 				<xsl:attribute name="align">left</xsl:attribute>
@@ -823,7 +825,9 @@
 			</xsl:element>
 		</xsl:element>
 		<h5>
-			<!--<xsl:call-template name="makeXpathLocation"/>-->
+				<xsl:call-template name="makeXpathLocationParam" >
+						<xsl:with-param name="node" select="label"/>
+				</xsl:call-template>
 			<xsl:element name="a">
 				<xsl:attribute name="href"><xsl:value-of select="$slideshowURL"/></xsl:attribute>
 				<xsl:attribute name="onclick"><xsl:value-of select="$jsWindow"/></xsl:attribute>
@@ -835,6 +839,8 @@
 						<xsl:apply-templates select="label"/></span>
 				</strong>
 			</xsl:element>
+      <xsl:if test="caption/title">
+
 			<span>
 				<xsl:call-template name="makeXpathLocationParam" >
 					<xsl:with-param name="node" select="caption/title"/>
@@ -842,10 +848,14 @@
 				<xsl:text> </xsl:text>
 				<xsl:apply-templates select="caption/title"/>
 			</span>
+			</xsl:if>
 		</h5>
 		<xsl:apply-templates select="caption/node()[not(self::title)]"/>
     <xsl:if test="object-id[@pub-id-type='doi']">
-      <xsl:apply-templates select="object-id[@pub-id-type='doi']"/>
+      <span><xsl:call-template name="makeXpathLocationParam" >
+		  <xsl:with-param name="node" select="object-id[@pub-id-type='doi']"/>
+		</xsl:call-template>
+		<xsl:apply-templates select="object-id[@pub-id-type='doi']"/></span>
     </xsl:if>
 		
 	</div>
@@ -1889,7 +1899,7 @@ Make article meta data
 	<xsl:attribute name="id"><xsl:value-of select="@id"/></xsl:attribute>
   </xsl:element>
 
- <h5>
+ <h5 xpathLocation="noSelect">
    <xsl:element name="a">
      <xsl:variable name="objURI"><xsl:value-of select="@xlink:href"/></xsl:variable>
      <xsl:attribute name="href"><xsl:value-of select="concat('fetchFirstRepresentation.action?uri=',$objURI)"/></xsl:attribute>
@@ -1906,7 +1916,7 @@ Make article meta data
 
 <!-- both are grouping elements to keep parts together -->
 <xsl:template match="disp-formula | chem-struct-wrapper">
-  <div class="equation">
+  <div class="equation" xpathLocation="noSelect">
     <xsl:apply-templates/>
   </div>
 </xsl:template>
@@ -3215,7 +3225,7 @@ Make article meta data
   <xsl:call-template name="nl-1"/>
 
 <!--  <div class="capture-id">-->
-	<div>
+	<div xpathLocation="noSelect" >
     <xsl:call-template name="make-id"/>
     <xsl:if test="not(title)">
 		<a id="ack" name="ack" toc="ack" title="Acknowledgments"><h3 xpathLocation="noSelect">Acknowledgments</h3></a>
@@ -3652,7 +3662,10 @@ Make article meta data
 
 <xsl:template match="ref-list/title">
   <a id="refs" name="refs" toc="refs" title="References"></a>
-  <h3><xsl:apply-templates/></h3>
+  <h3>
+    <xsl:call-template name="makeXpathLocation"/>
+    <xsl:apply-templates/>
+  </h3>
 </xsl:template>
 
 
@@ -3944,7 +3957,7 @@ Make article meta data
 <!-- ============================================================= -->
 
 <xsl:template match="ref-list">
-<div>
+<div xpathLocation="noSelect">
 <!--
   <xsl:if test="position()>1">
     <hr class="section-rule"/>
@@ -3953,7 +3966,7 @@ Make article meta data
   <xsl:choose>
     <xsl:when test="not(title)">
    	  <a id="refs" name="refs" toc="refs" title="References"></a>
-      <h3>References</h3>
+      <h3 xpathLocation="noSelect">References</h3>
       <xsl:call-template name="nl-1"/>
     </xsl:when>
     <xsl:otherwise>
