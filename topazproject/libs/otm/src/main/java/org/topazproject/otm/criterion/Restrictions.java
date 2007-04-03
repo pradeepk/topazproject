@@ -39,6 +39,43 @@ public class Restrictions {
   }
 
   /**
+   * Apply a "not equals" criterion.
+   *
+   * @param name the property name
+   * @param value its value
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion ne(String name, String value) {
+    return new MinusCriterion(name, value);
+  }
+
+  /**
+   * Creates a criterion that finds the objects that match the property value transitively.
+   *
+   * @param name the property name
+   * @param value its value
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion trans(String name, String value) {
+    return new TransCriterion(name, value);
+  }
+
+  /**
+   * Creates a Criterion that walks a property chain and finds the objects matching the
+   * property value.
+   *
+   * @param name the property name
+   * @param value its value
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion walk(String name, String value) {
+    return new WalkCriterion(name, value);
+  }
+
+  /**
    * Group expressions together in a single conjunction (A and B and C...)
    *
    * @return Conjunction

@@ -398,6 +398,11 @@ public class OtmTest extends TestCase {
       a2.setAnnotates(URI.create("foo:1"));
       a3.setAnnotates(URI.create("bar:1"));
 
+      a1.setSupersededBy(a2);
+      a2.setSupersedes(a1);
+      a2.setSupersededBy(a3);
+      a3.setSupersedes(a2);
+
       session.saveOrUpdate(a1);
       session.saveOrUpdate(a2);
       session.saveOrUpdate(a3);
@@ -484,6 +489,51 @@ public class OtmTest extends TestCase {
 
       assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
       assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
+
+
+      l = session.createCriteria(Annotation.class).add(Restrictions.walk("supersededBy", id3.toString())).list();
+
+      assertEquals(2, l.size());
+
+      a1   = (Annotation) l.get(0);
+      a2   = (Annotation) l.get(1);
+
+      assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
+      assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
+
+      l = session.createCriteria(Annotation.class).add(Restrictions.walk("supersedes", id2.toString())).list();
+
+      assertEquals(1, l.size());
+
+      Annotation a3   = (Annotation) l.get(0);
+
+      assertTrue(id3.equals(a3.getId()));
+
+      l = session.createCriteria(Annotation.class).add(Restrictions.trans("supersededBy", id3.toString())).list();
+
+      assertEquals(2, l.size());
+
+      a1   = (Annotation) l.get(0);
+      a2   = (Annotation) l.get(1);
+
+      assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
+      assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
+
+      l = session.createCriteria(Annotation.class).add(Restrictions.trans("supersedes", id2.toString())).list();
+
+      assertEquals(1, l.size());
+
+      a3   = (Annotation) l.get(0);
+
+      assertTrue(id3.equals(a3.getId()));
+
+      l = session.createCriteria(Annotation.class).add(Restrictions.ne("annotates","foo:1")).list();
+
+      assertEquals(1, l.size());
+
+      a3   = (Annotation) l.get(0);
+
+      assertTrue(id3.equals(a3.getId()));
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
