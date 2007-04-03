@@ -24,7 +24,7 @@ import org.topazproject.otm.mapping.Mapper;
  */
 public class MinusCriterion implements Criterion {
   private String name;
-  private String value;
+  private Object value;
 
 /**
    * Creates a new MinusCriterion object.
@@ -32,7 +32,7 @@ public class MinusCriterion implements Criterion {
    * @param name field/predicate name
    * @param value field/predicate value
    */
-  public MinusCriterion(String name, String value) {
+  public MinusCriterion(String name, Object value) {
     this.name    = name;
     this.value   = value;
   }
@@ -51,7 +51,7 @@ public class MinusCriterion implements Criterion {
    *
    * @return field/predicate value
    */
-  public String getValue() {
+  public Object getValue() {
     return value;
   }
 
@@ -68,10 +68,21 @@ public class MinusCriterion implements Criterion {
 
     String val;
 
+    try {
+      val = (m.getSerializer() != null) ? m.getSerializer().serialize(getValue())
+            : getValue().toString();
+    } catch (Exception e) {
+      throw new OtmException("Serializer exception", e);
+    }
+
     if (m.typeIsUri())
-      val = "<" + ItqlHelper.validateUri(getValue(), getName()) + ">";
-    else
-      val = "'" + ItqlHelper.escapeLiteral(getValue()) + "'";
+      val = "<" + ItqlHelper.validateUri(val, getName()) + ">";
+    else {
+      val = "'" + ItqlHelper.escapeLiteral(val) + "'";
+
+      if (m.getDataType() != null)
+        val += ("^^" + m.getDataType());
+    }
 
     if (!m.hasInverseUri())
       return "(" + subjectVar + " <" + m.getUri() + "> " + varPrefix + " minus " + subjectVar

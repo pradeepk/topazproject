@@ -34,7 +34,7 @@ public class Restrictions {
    *
    * @return a newly created Criterion object
    */
-  public static Criterion eq(String name, String value) {
+  public static Criterion eq(String name, Object value) {
     return new PredicateCriterion(name, value);
   }
 
@@ -46,7 +46,7 @@ public class Restrictions {
    *
    * @return a newly created Criterion object
    */
-  public static Criterion ne(String name, String value) {
+  public static Criterion ne(String name, Object value) {
     return new MinusCriterion(name, value);
   }
 
@@ -58,7 +58,7 @@ public class Restrictions {
    *
    * @return a newly created Criterion object
    */
-  public static Criterion trans(String name, String value) {
+  public static Criterion trans(String name, Object value) {
     return new TransCriterion(name, value);
   }
 
@@ -71,7 +71,7 @@ public class Restrictions {
    *
    * @return a newly created Criterion object
    */
-  public static Criterion walk(String name, String value) {
+  public static Criterion walk(String name, Object value) {
     return new WalkCriterion(name, value);
   }
 

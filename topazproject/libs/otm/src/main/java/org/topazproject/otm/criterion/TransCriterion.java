@@ -24,7 +24,7 @@ import org.topazproject.otm.mapping.Mapper;
  */
 public class TransCriterion implements Criterion {
   private String name;
-  private String value;
+  private Object value;
 
 /**
    * Creates a new TransCriterion object.
@@ -32,7 +32,7 @@ public class TransCriterion implements Criterion {
    * @param name field/predicate name
    * @param value field/predicate value
    */
-  public TransCriterion(String name, String value) {
+  public TransCriterion(String name, Object value) {
     this.name    = name;
     this.value   = value;
   }
@@ -51,7 +51,7 @@ public class TransCriterion implements Criterion {
    *
    * @return field/predicate value
    */
-  public String getValue() {
+  public Object getValue() {
     return value;
   }
 
@@ -69,14 +69,14 @@ public class TransCriterion implements Criterion {
     String val;
 
     if (m.typeIsUri())
-      val = "<" + ItqlHelper.validateUri(getValue(), getName()) + ">";
+      val = "<" + ItqlHelper.validateUri(getValue().toString(), getName()) + ">";
     else
       throw new OtmException("Value must be a uri for trans(): field is "
                              + m.getField().toGenericString());
 
     if (!m.hasInverseUri())
-      return "(trans(" + subjectVar + " <" + m.getUri() + "> " + val + ") or " +
-        subjectVar + " <" + m.getUri() + "> " + val + ")";
+      return "(trans(" + subjectVar + " <" + m.getUri() + "> " + val + ") or " + subjectVar + " <"
+             + m.getUri() + "> " + val + ")";
 
     String model = m.getInverseModel();
 
@@ -94,7 +94,7 @@ public class TransCriterion implements Criterion {
     if (model != null)
       query += model;
 
-    query += " or " + val + " <" + m.getUri() + "> " + subjectVar;
+    query += (" or " + val + " <" + m.getUri() + "> " + subjectVar);
 
     if (model != null)
       query += model;

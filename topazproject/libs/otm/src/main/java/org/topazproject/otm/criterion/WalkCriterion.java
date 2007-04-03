@@ -25,7 +25,7 @@ import org.topazproject.otm.mapping.Mapper;
  */
 public class WalkCriterion implements Criterion {
   private String name;
-  private String value;
+  private Object value;
 
 /**
    * Creates a new WalkCriterion object.
@@ -34,7 +34,7 @@ public class WalkCriterion implements Criterion {
    * @param value field/predicate value
    *
    */
-  public WalkCriterion(String name, String value) {
+  public WalkCriterion(String name, Object value) {
     this.name    = name;
     this.value   = value;
   }
@@ -53,7 +53,7 @@ public class WalkCriterion implements Criterion {
    *
    * @return field/predicate value
    */
-  public String getValue() {
+  public Object getValue() {
     return value;
   }
 
@@ -76,7 +76,7 @@ public class WalkCriterion implements Criterion {
     String val;
 
     if (m.typeIsUri())
-      val = "<" + ItqlHelper.validateUri(getValue(), getName()) + ">";
+      val = "<" + ItqlHelper.validateUri(getValue().toString(), getName()) + ">";
     else
       throw new OtmException("Value must be a uri for walk(): field is "
                              + m.getField().toGenericString());

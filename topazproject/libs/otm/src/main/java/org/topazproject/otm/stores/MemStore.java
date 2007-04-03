@@ -193,9 +193,18 @@ public class MemStore implements TripleStore {
 
     if (c instanceof PredicateCriterion) {
       String name       = ((PredicateCriterion) c).getName();
-      String value      = ((PredicateCriterion) c).getValue();
-      String uri        = cm.getMapperByName(name).getUri();
-      ids               = storage.getIds(model, uri, value);
+      Object o          = ((PredicateCriterion) c).getValue();
+      String value;
+
+      try {
+        Mapper m        = cm.getMapperByName(name);
+        value           = (m.getSerializer() != null) ? m.getSerializer().serialize(o) : o.toString();
+      } catch (Exception e) {
+        throw new OtmException("Serializer exception", e);
+      }
+
+      String uri = cm.getMapperByName(name).getUri();
+      ids = storage.getIds(model, uri, value);
     } else if (c instanceof SubjectCriterion) {
       String  id     = ((SubjectCriterion) c).getId();
       boolean exists =
