@@ -1916,9 +1916,11 @@ Make article meta data
 
 <!-- both are grouping elements to keep parts together -->
 <xsl:template match="disp-formula | chem-struct-wrapper">
-  <div class="equation" xpathLocation="noSelect">
+  <br/>
+  <span class="equation">
     <xsl:apply-templates/>
-  </div>
+  </span>
+  <br/>
 </xsl:template>
 
 
@@ -2216,7 +2218,7 @@ Make article meta data
     <!-- element-specific handling before content: -->
     <xsl:choose>
       <xsl:when test="ancestor::disp-formula">
-        <span>(<xsl:apply-templates/>)</span>
+        <span><xsl:call-template name="makeXpathLocation" /><xsl:apply-templates/></span>
       </xsl:when>
       <xsl:otherwise>
         <xsl:choose>

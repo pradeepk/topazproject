@@ -392,9 +392,11 @@ div.figure p			{ margin: 5px 0; }
 div.figure a img 		{ border: 2px solid #FFF; }
 div.figure a:hover img 	{ border: 2px solid #069; }
 
-div.equation			{ width: 100%; margin: 20px 0; font-weight: bold; font-size: .85em; text-align: right;}
-div.equation span		{ margin-top: -30px; display: block; margin-right: 10px;}
-div.equation img		{ margin: 0 auto; display: block; padding-bottom: 10px;}
+span.equation          { width: 100%; margin: 20px 0; font-weight: bold; font-size: .85em; text-align: right; padding: 0 10px; }
+span.equation span     { margin-top: -30px; display: block; margin-right: 10px; text-align: right;}
+span.equation span.note { margin-top: 5px;}
+span.equation span span.note { display:inline; margin: 0;}
+span.equation img       { margin: 0 auto; display: block; padding-bottom: 10px;}
 
 /* ------ Inline Annotation Styles ------- */
 span.active				{ color: #000; } /* apply to all spans during hover state on the bug */
