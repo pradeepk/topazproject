@@ -67,12 +67,11 @@
    <form method="post" name="login_form" class="pone-form">
         <fieldset>
           <legend>Login</legend>
-	  
-	  
+          <% boolean loginError = (request.getAttribute("edu.yale.its.tp.cas.badUsernameOrPassword") != null);%>
             <input type="hidden" name="lt" value="<%= request.getAttribute("edu.yale.its.tp.cas.lt") %>" />
             <ol>
-                <% if (request.getAttribute("edu.yale.its.tp.cas.badUsernameOrPassword") != null) { %>
-		<li><em>Please enter a valid e-mail and password</em></li>
+                <% if (loginError) { %>
+                <li class="form-error"><p class="required">Please correct the error below.</p></li>
                 <% } else if (request.getAttribute("edu.yale.its.tp.cas.service") == null) { %>
                 <li><em>You may login now in order to access protected services later.</em></li>
                 <% } else if (request.getAttribute("edu.yale.its.tp.cas.badLoginTicket") != null) { %>
@@ -81,9 +80,10 @@
                 <!-- <em>You have requested access to a site that requires authentication.</em> -->               
                 <% } %>
 
-              <li>
+              <li<%=(loginError?" class=form-error":"")%>>
                 <label for="username">E-mail</label>
                 <input type="text" name="username" tabindex="1"/>
+		<%=loginError?" Please enter a valid e-mail address and password":""%>
               </li>
               <li>
                 <label for="password">Password</label>
