@@ -210,6 +210,9 @@ public class Session {
    * @throws OtmException on an error
    */
   public <T> T load(Class<T> clazz, String oid) throws OtmException {
+    if ((oid == null) || oid.equals(Rdf.rdf + "nil"))
+      return null;
+
     Id     id = new Id(clazz, oid);
     Object o  = deleteMap.get(id);
 
@@ -241,6 +244,9 @@ public class Session {
    * @throws OtmException on an error
    */
   public <T> T get(Class<T> clazz, String oid) throws OtmException {
+    if ((oid == null) || oid.equals(Rdf.rdf + "nil"))
+      return null;
+
     Id     id = new Id(clazz, oid);
     Object o  = deleteMap.get(id);
 
