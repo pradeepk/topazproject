@@ -62,7 +62,7 @@ def showResults(result) {
   def ans = new XmlSlurper().parseText(result)
   if (ans.query.message.text()) {
     if (echo) println ans.query.message
-  } else if (mode == "csv" && ans.query[0].solution) {
+  } else if (mode && mode == "csv" && ans.query[0].solution) {
     def vars = [ ]
     ans.query[0].variables.children().each() { vars.add(it.name()) }
 //    println vars.toString()[1..-2]
