@@ -351,8 +351,10 @@ public class ItqlStore implements TripleStore {
 
     qry.append("select $s from <").append(model).append("> where ");
 
+    int i = 0;
     for (Criterion c : criteria.getCriterionList())
-      qry.append(c.toItql(criteria, "$s", "$t")).append(" and ");
+      qry.append(c.toItql(criteria, "$s", "$t"+i++)).append(" and ");
+
     if (criteria.getCriterionList().size() > 0)
       qry.setLength(qry.length() - 4);
 
