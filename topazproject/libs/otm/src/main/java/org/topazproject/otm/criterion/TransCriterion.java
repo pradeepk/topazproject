@@ -71,7 +71,8 @@ public class TransCriterion implements Criterion {
     if (m.typeIsUri())
       val = "<" + ItqlHelper.validateUri(getValue(), getName()) + ">";
     else
-      val = "'" + ItqlHelper.escapeLiteral(getValue()) + "'";
+      throw new OtmException("Value must be a uri for trans(): field is "
+                             + m.getField().toGenericString());
 
     if (!m.hasInverseUri())
       return "(trans(" + subjectVar + " <" + m.getUri() + "> " + val + ") or " +
