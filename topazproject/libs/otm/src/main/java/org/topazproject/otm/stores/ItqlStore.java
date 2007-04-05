@@ -311,7 +311,7 @@ public class ItqlStore implements TripleStore {
       ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
       a = isc.getItqlHelper().doQuery(qry, null);
     } catch (RemoteException re) {
-      throw new OtmException("error performing query", re);
+      throw new OtmException("error performing query: " + qry, re);
     }
 
     // parse
@@ -363,6 +363,12 @@ public class ItqlStore implements TripleStore {
       for (Order o : criteria.getOrderList())
         qry.append(o.getName()).append(o.isAscending() ? " asc " : " desc ");
     }
+
+    if (criteria.getMaxResults() > 0)
+      qry.append(" limit " + criteria.getMaxResults());
+
+    if (criteria.getFirstResult() >= 0)
+      qry.append(" offset " + criteria.getFirstResult());
 
     // XXX: handle criteria.getChildren()
 

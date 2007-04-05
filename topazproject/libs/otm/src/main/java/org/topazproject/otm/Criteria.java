@@ -27,9 +27,11 @@ public class Criteria {
   private ClassMetadata   classMetadata;
   private Criteria        parent;
   private Mapper          mapping;
-  private List<Criterion> criterions = new ArrayList<Criterion>();
-  private List<Order>     orders     = new ArrayList<Order>();
-  private List<Criteria>  children   = new ArrayList<Criteria>();
+  private int             maxResults  = -1;
+  private int             firstResult = -1;
+  private List<Criterion> criterions  = new ArrayList<Criterion>();
+  private List<Order>     orders      = new ArrayList<Order>();
+  private List<Criteria>  children    = new ArrayList<Criteria>();
 
 /**
    * Creates a new Criteria object. Called by {@link Session#createCriteria}.
@@ -160,5 +162,49 @@ public class Criteria {
    */
   public List<Order> getOrderList() {
     return orders;
+  }
+
+  /**
+   * Set a limit upon the number of objects to be retrieved.
+   *
+   * @param maxResults the maximum number of results
+   *
+   * @return this (for method chaining)
+   */
+  public Criteria setMaxResults(int maxResults) {
+    this.maxResults = maxResults;
+
+    return this;
+  }
+
+  /**
+   * Set the first result to be retrieved.
+   *
+   * @param firstResult the first result to retrieve, numbered from <tt>0</tt>
+   *
+   * @return this (for method chaining)
+   */
+  public Criteria setFirstResult(int firstResult) {
+    this.firstResult = firstResult;
+
+    return this;
+  }
+
+  /**
+   * Get a limit upon the number of objects to be retrieved.
+   *
+   * @return the maximum number of results
+   */
+  public int getMaxResults() {
+    return maxResults;
+  }
+
+  /**
+   * Get the first result to be retrieved.
+   *
+   * @return the first result to retrieve, numbered from <tt>0</tt>
+   */
+  public int getFirstResult() {
+    return firstResult;
   }
 }
