@@ -81,7 +81,7 @@ public class PredicateCriterion implements Criterion {
       val = "'" + ItqlHelper.escapeLiteral(val) + "'";
 
       if (m.getDataType() != null)
-        val += ("^^" + m.getDataType());
+        val += (("^^<" + m.getDataType()) + ">");
     }
 
     if (!m.hasInverseUri())
