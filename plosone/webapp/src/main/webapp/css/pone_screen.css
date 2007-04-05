@@ -2,7 +2,7 @@
 
 	GLOBAL STYLE SHEET FOR : www.plosone.org
 	
-	CREATED ON 	: 08-26-2006
+	CREATED ON  : 08-26-2006
 	MODIFIED ON : 11-10-2006
 	
 	CREATED BY	: MARGARET SHEAR
@@ -23,6 +23,7 @@ a:active	{ }
 blockquote	{ font-style: italic; font-size: .9em; margin: 0 20px;}
 cite		{ font-style: italic; }
 code		{ font-family: "Courier New", Courier, monospace; }
+.monospace      { font-family: "Courier New", Courier, monospace; } /* added 04-02-2007 */
 em			{ font-style: italic; }
 
 img			{ border: 0; }
@@ -388,8 +389,8 @@ div.figure				{ background-color: #D2F7FF; padding: 10px; font-size: .85em; marg
 div.figure:after		{ content: ".";  display: block;  height: 0; clear: both; visibility: hidden; }
 div.figure h5			{ margin: 0; color: #000;}
 div.figure p			{ margin: 5px 0; }
-#content div.figure img	{ margin: 0 10px 10px 0; float: left;}
-div.figure a img 		{ border: 2px solid #FFF; }
+#content div.figure img.thumbnail	{ margin: 0 10px 10px 0; float: left;} /* only thumbnails will float, not in-line images */
+div.figure a img.thumbnail 		{ border: 2px solid #FFF; } /* only thumbnails will float, not in-line images */
 div.figure a:hover img 	{ border: 2px solid #069; }
 
 span.equation          { width: 100%; margin: 20px 0; font-weight: bold; font-size: .85em; text-align: right; padding: 0 10px; }
