@@ -7,6 +7,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
@@ -548,7 +549,7 @@ public class OtmTest extends TestCase {
       assertTrue(id1.equals(a1.getId()) || id2.equals(a1.getId()));
 
       l = session.createCriteria(Annotation.class).add(Restrictions.ne("annotates", "bar:1"))
-                  .setFirstResult(1).setMaxResults(1).list();
+                  .setFirstResult(1).setMaxResults(1).addOrder(Order.asc("annotates")).list();
 
       assertEquals(1, l.size());
 

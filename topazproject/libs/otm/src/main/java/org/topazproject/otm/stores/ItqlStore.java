@@ -349,9 +349,29 @@ public class ItqlStore implements TripleStore {
     ClassMetadata cm = criteria.getClassMetadata();
     String model = getModelUri(cm.getModel(), txn);
 
-    qry.append("select $s from <").append(model).append("> where ");
+    qry.append("select $s");
+    for (int i = 0; i < criteria.getOrderList().size(); i++)
+      qry.append(" $o" + i);
 
+    qry.append(" from <").append(model).append("> where ");
+
+    //xxx: there is problem with this auto generated where clause
+    //xxx: it could potentially limit the result set returned by a trans() criteriom
     int i = 0;
+    for (Order o: criteria.getOrderList()) {
+      Mapper m = cm.getMapperByName(o.getName());
+      if (m == null)
+        throw new OtmException("Order by: No field with the name '" + o.getName() + "' in " + cm);
+      if (m.hasInverseUri())
+        qry.append("$o" + i++).append(" <").append(m.getUri()).append("> $s and ");
+      else
+        qry.append("$s <").append(m.getUri()).append("> $o" + i++).append(" and ");
+    }
+
+    if ((i > 0) && (criteria.getCriterionList().size() == 0))
+      qry.setLength(qry.length() - 4);
+
+    i = 0;
     for (Criterion c : criteria.getCriterionList())
       qry.append(c.toItql(criteria, "$s", "$t"+i++)).append(" and ");
 
@@ -360,8 +380,9 @@ public class ItqlStore implements TripleStore {
 
     if (criteria.getOrderList().size() > 0) {
       qry.append("order by ");
+      i = 0;
       for (Order o : criteria.getOrderList())
-        qry.append(o.getName()).append(o.isAscending() ? " asc " : " desc ");
+        qry.append("$o" + i++).append(o.isAscending() ? " asc " : " desc ");
     }
 
     if (criteria.getMaxResults() > 0)
