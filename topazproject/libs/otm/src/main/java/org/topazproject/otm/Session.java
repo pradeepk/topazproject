@@ -700,5 +700,9 @@ public class Session {
       return id.equals(o.id)
               && (clazz.isAssignableFrom(o.clazz) || o.clazz.isAssignableFrom(clazz));
     }
+
+    public String toString() {
+      return id;
+    }
   }
 }
