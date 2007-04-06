@@ -28,10 +28,10 @@
 	<fieldset>
 		<legend>Change your password</legend>
 		<ol class="field-list">
-      <@ww.password name="password1" label="New password " required="true" id="newPassword1" tabindex="101" maxlength="255" after=" (Password must be at least 6 characters)"/>
-      <@ww.password name="password2" label="Please re-type your new password " required="true" id="newPassword2" tabindex="102" maxlength="255" />
+      <@ww.password name="password1" label="New password " required="true" id="newPassword1" tabindex="1" maxlength="255" after=" (Password must be at least 6 characters)"/>
+      <@ww.password name="password2" label="Please re-type your new password " required="true" id="newPassword2" tabindex="2" maxlength="255" />
 		</ol>
-	  <@ww.submit name="submit" id="submit" value="Submit" tabindex="103"/>
+	  <@ww.submit name="submit" id="submit" value="Submit" tabindex="3"/>
 	</fieldset>
 	
 	</@ww.form>

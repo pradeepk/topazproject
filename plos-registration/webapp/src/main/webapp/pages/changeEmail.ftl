@@ -10,13 +10,13 @@
 	<fieldset>
 		<legend>Change your e-mail address</legend>
 		<ol class="field-list">
-    	<@ww.textfield name="login" label="E-mail address " required="true" id="email" tabindex="101" maxlength="256"/>
-      <@ww.password name="password" label="Password " required="true" id="password" tabindex="102" maxlength="255"/>
-      <@ww.textfield name="newLogin1" label="New e-mail address " required="true" id="newLogin1" tabindex="103" maxlength="256" />
-      <@ww.textfield name="newLogin2" label="Please re-type your new e-mail address " required="true" id="newLogin2" tabindex="104" maxlength="256" />
+    	<@ww.textfield name="login" label="E-mail address " required="true" id="email" tabindex="1" maxlength="256"/>
+      <@ww.password name="password" label="Password " required="true" id="password" tabindex="2" maxlength="255"/>
+      <@ww.textfield name="newLogin1" label="New e-mail address " required="true" id="newLogin1" tabindex="3" maxlength="256" />
+      <@ww.textfield name="newLogin2" label="Please re-type your new e-mail address " required="true" id="newLogin2" tabindex="4" maxlength="256" />
 		</ol>
 	<div class="btnwrap">
-	  <@ww.submit name="submit" id="submit" value="Submit" tabindex="105"/>
+	  <@ww.submit name="submit" id="submit" value="Submit" tabindex="5"/>
 	</div>
 	</fieldset>
 	

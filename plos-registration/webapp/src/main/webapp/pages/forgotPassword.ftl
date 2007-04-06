@@ -11,10 +11,10 @@
 	<fieldset>
 		<legend>Recover password</legend>
 		<ol class="field-list">
-    	<@ww.textfield name="loginName" label="E-mail " required="true" id="email" tabindex="101" maxlength="256"/>
+    	<@ww.textfield name="loginName" label="E-mail " required="true" id="email" tabindex="1" maxlength="256"/>
 		</ol>
   	<div class="btnwrap">
-	  <@ww.submit name="submit" id="submit" value="Submit" tabindex="102"/>
+	  <@ww.submit name="submit" id="submit" value="Submit" tabindex="2"/>
 	</div>
 	</fieldset>
 	

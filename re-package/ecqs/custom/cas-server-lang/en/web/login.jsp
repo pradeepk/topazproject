@@ -91,7 +91,7 @@
               </li>
             </ol>
               <div class="btnwrap">
-                 <input type="submit" name="login" value="Login" />
+                 <input type="submit" name="login" value="Login" tabindex="3"/>
               </div>
           </form>
         </fieldset>
