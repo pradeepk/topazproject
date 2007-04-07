@@ -9,7 +9,7 @@
   <parent>
     <groupId>org.topazproject.packages</groupId>
     <artifactId>packages</artifactId>
-    <version>0.6-SNAPSHOT</version>
+    <version>0.6</version>
   </parent>
 
   <dependencies>
@@ -108,7 +108,7 @@
             </executions>
 
             <configuration>
-              <release>SNAPSHOT</release>
+              <release>1</release>
               <copyright>Educational Community License version 1.0</copyright>
               <distribution>Topaz Repository Framework</distribution>
               <group>Applications/Internet</group>
