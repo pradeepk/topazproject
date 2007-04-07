@@ -4,13 +4,13 @@
   <groupId>org.topazproject.packages</groupId>
   <artifactId>packages</artifactId>
   <packaging>pom</packaging>
-  <version>0.6-SNAPSHOT</version>
+  <version>0.6</version>
   <name>packages</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
-    <version>0.6-SNAPSHOT</version>
+    <version>0.6</version>
   </parent>
 
   <pluginRepositories>

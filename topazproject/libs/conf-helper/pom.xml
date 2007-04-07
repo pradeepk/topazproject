@@ -2,13 +2,13 @@
   <modelVersion>4.0.0</modelVersion>
   <artifactId>conf-helper</artifactId>
   <packaging>jar</packaging>
-  <version>0.6-SNAPSHOT</version>
+  <version>0.6</version>
   <name>Configuration Helper</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>topazproject-libs</artifactId>
-    <version>0.6-SNAPSHOT</version>
+    <version>0.6</version>
   </parent>
 
   <dependencies>
