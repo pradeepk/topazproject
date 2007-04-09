@@ -176,7 +176,18 @@ public class SessionFactory {
   }
 
   /**
-   * Gets the proxy mapping. class --> proxy or proxy --> class
+   * Lists all registered ClassMetadata objects. The returned collection is a snapshot at the
+   * time of the call. New changes made via {@link #setClassMetadata} will not be reflected in the
+   * returned collection.
+   *
+   * @return the collection of ClassMetadata
+   */
+  public Collection<ClassMetadata> listClassMetadata() {
+    return new ArrayList<ClassMetadata>(metadata.values());
+  }
+
+  /**
+   * Gets the proxy mapping. class to proxy or proxy to class.
    *
    * @param clazz the class or proxy
    *
