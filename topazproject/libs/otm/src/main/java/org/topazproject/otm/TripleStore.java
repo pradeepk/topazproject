@@ -16,6 +16,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
@@ -111,6 +112,29 @@ public interface TripleStore {
    * @throws OtmException on an error
    */
   public void dropModel(ModelConfig conf) throws OtmException;
+
+  /**
+   * Gets a store specific criterion builder.
+   *
+   * @param func the function name
+   *
+   * @return the criterion builder
+   *
+   * @throws OtmException on an error
+   */
+  public CriterionBuilder getCriterionBuilder(String func)
+                                       throws OtmException;
+
+  /**
+   * Sets a store specific criterion builder.
+   *
+   * @param func the function name
+   * @param builder the builder
+   *
+   * @throws OtmException on an error
+   */
+  public void setCriterionBuilder(String func, CriterionBuilder builder)
+                           throws OtmException;
 
   public static class ResultObject {
     public Object                          o;

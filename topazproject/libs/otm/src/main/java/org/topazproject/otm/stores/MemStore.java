@@ -31,6 +31,7 @@ import org.topazproject.otm.TripleStore;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.criterion.Conjunction;
 import org.topazproject.otm.criterion.Criterion;
+import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.criterion.Disjunction;
 import org.topazproject.otm.criterion.Junction;
 import org.topazproject.otm.criterion.PredicateCriterion;
@@ -154,6 +155,21 @@ public class MemStore implements TripleStore {
    * inherited javadoc
    */
   public void dropModel(ModelConfig conf) throws OtmException {
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public CriterionBuilder getCriterionBuilder(String func)
+                                       throws OtmException {
+    return null;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public void setCriterionBuilder(String func, CriterionBuilder builder)
+                           throws OtmException {
   }
 
   private Set<String> conjunction(List<Criterion> criterions, Criteria criteria, Storage storage)

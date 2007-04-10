@@ -76,6 +76,19 @@ public class Restrictions {
   }
 
   /**
+   * Creates a Criterion that walks a property chain and finds the objects matching the
+   * property value.
+   *
+   * @param name the property name
+   * @param value its value
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion func(String func, Object ...args) {
+    return new ProxyCriterion(func, args);
+  }
+
+  /**
    * Group expressions together in a single conjunction (A and B and C...)
    *
    * @return Conjunction
