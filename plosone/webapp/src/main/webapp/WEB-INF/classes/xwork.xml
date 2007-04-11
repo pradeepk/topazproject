@@ -588,10 +588,10 @@
     </action>
 
     <action name="editAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="retrieveAlerts">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="plosJournals">
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="plosJournals">
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
     </action>
@@ -618,10 +618,10 @@
     </action>
 
     <action name="saveAlerts" class="org.plos.user.action.MemberUserAlertsAction" method="saveAlerts">
-      <result name="success" type="plosOneFreemarker">
+      <result name="success" type="plosJournals">
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
-      <result name="input" type="plosOneFreemarker">
+      <result name="input" type="plosJournals">
         <param name="templateFile">/user/editPlosAlerts.ftl</param>
       </result>
     </action>
