@@ -34,7 +34,7 @@ public class ClassMetadata {
   private Set<String>         types;
   private String              type;
   private String              model;
-  private String              ns;
+  private String              baseUri;
   private Mapper              idField;
   private Map<String, Mapper> fieldMap;
   private Map<String, Mapper> inverseMap;
@@ -49,17 +49,17 @@ public class ClassMetadata {
    * @param types set of rdf:type values that identify this class
    * @param type the most specific rdf:type that identify this class
    * @param model the graph/model where this class is persisted
-   * @param ns the default namespace for fields/predicates
+   * @param baseUri the baseUri for constructing predicate-uris for fields from their names 
    * @param idField the mapper for the id field
    * @param fields mappers for all persistable fields (includes embedded class fields)
    */
-  public ClassMetadata(Class clazz, String type, Set<String> types, String model, String ns,
+  public ClassMetadata(Class clazz, String type, Set<String> types, String model, String baseUri,
                        Mapper idField, Collection<Mapper> fields)
                 throws OtmException {
     this.clazz                           = clazz;
     this.type                            = type;
     this.model                           = model;
-    this.ns                              = ns;
+    this.baseUri                         = baseUri;
     this.idField                         = idField;
 
     this.types                           = Collections.unmodifiableSet(new HashSet<String>(types));
@@ -103,12 +103,13 @@ public class ClassMetadata {
   }
 
   /**
-   * Gets the default namespace for all fields/predicates in this class.
+   * Gets the base-uri used to build the predicate-uri for all fields in this class without
+   * an explicit predicate uri defined.
    *
-   * @return the namespace uri
+   * @return the base uri
    */
-  public String getNs() {
-    return ns;
+  public String getBaseUri() {
+    return baseUri;
   }
 
   /**

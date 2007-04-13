@@ -14,7 +14,7 @@ import java.util.Date;
 
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Model;
-import org.topazproject.otm.annotations.Ns;
+import org.topazproject.otm.annotations.BaseUri;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
@@ -23,7 +23,7 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Pradeep Krishnan
  */
 @Model("ri")
-@Ns(Annotia.NS)
+@BaseUri(Annotia.NS)
 public class Annotia {
   /**
    * DOCUMENT ME!

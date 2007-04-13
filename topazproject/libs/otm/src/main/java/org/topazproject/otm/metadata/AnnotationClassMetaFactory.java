@@ -7,6 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
+
 /* $HeadURL::                                                                            $
  * $Id$
  *
@@ -43,13 +44,13 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.annotations.BaseUri;
 import org.topazproject.otm.annotations.DataType;
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Inverse;
 import org.topazproject.otm.annotations.Model;
-import org.topazproject.otm.annotations.Ns;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.mapping.ArrayMapper;
 import org.topazproject.otm.mapping.CollectionMapper;
@@ -91,22 +92,22 @@ public class AnnotationClassMetaFactory {
     return create(clazz, clazz, null, new HashMap<Class, ClassMetadata>());
   }
 
-  private ClassMetadata create(Class clazz, Class top, String nsOfContainingClass,
+  private ClassMetadata create(Class clazz, Class top, String baseUriOfContainingClass,
                                Map<Class, ClassMetadata> loopDetect)
                         throws OtmException {
     Set<String>        types   = Collections.emptySet();
     String             type    = null;
     String             model   = null;
-    String             ns      = null;
+    String             baseUri = null;
     Mapper             idField = null;
     Collection<Mapper> fields  = new ArrayList<Mapper>();
 
     Class              s       = clazz.getSuperclass();
 
     if (!Object.class.equals(s) && (s != null)) {
-      ClassMetadata superMeta = create(s, top, nsOfContainingClass, loopDetect);
+      ClassMetadata superMeta = create(s, top, baseUriOfContainingClass, loopDetect);
       model     = superMeta.getModel();
-      ns        = superMeta.getNs();
+      baseUri   = superMeta.getBaseUri();
       type      = superMeta.getType();
       types     = superMeta.getTypes();
       idField   = superMeta.getIdField();
@@ -118,13 +119,13 @@ public class AnnotationClassMetaFactory {
     if (modelAnn != null)
       model = modelAnn.value();
 
-    Ns nsAnn = (Ns) clazz.getAnnotation(Ns.class);
+    BaseUri baseUriAnn = (BaseUri) clazz.getAnnotation(BaseUri.class);
 
-    if (nsAnn != null)
-      ns = nsAnn.value();
+    if (baseUriAnn != null)
+      baseUri = baseUriAnn.value();
 
-    if (ns == null)
-      ns = nsOfContainingClass;
+    if (baseUri == null)
+      baseUri = baseUriOfContainingClass;
 
     Rdf rdfAnn = (Rdf) clazz.getAnnotation(Rdf.class);
 
@@ -136,11 +137,11 @@ public class AnnotationClassMetaFactory {
         throw new OtmException("Duplicate rdf:type in class hierarchy " + clazz);
     }
 
-    ClassMetadata cm = new ClassMetadata(clazz, type, types, model, ns, idField, fields);
+    ClassMetadata cm = new ClassMetadata(clazz, type, types, model, baseUri, idField, fields);
     loopDetect.put(clazz, cm);
 
     for (Field f : clazz.getDeclaredFields()) {
-      Collection<?extends Mapper> mappers = createMapper(f, top, ns, loopDetect);
+      Collection<?extends Mapper> mappers = createMapper(f, top, baseUri, loopDetect);
 
       if (mappers == null)
         continue;
@@ -159,7 +160,7 @@ public class AnnotationClassMetaFactory {
       }
     }
 
-    cm = new ClassMetadata(clazz, type, types, model, ns, idField, fields);
+    cm = new ClassMetadata(clazz, type, types, model, baseUri, idField, fields);
     loopDetect.put(clazz, cm);
 
     return cm;

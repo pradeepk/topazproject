@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.topazproject.otm.annotations.Inverse;
-import org.topazproject.otm.annotations.Ns;
 import org.topazproject.otm.annotations.Rdf;
 
 /**

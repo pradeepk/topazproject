@@ -16,13 +16,13 @@ import java.lang.annotation.Target;
 
 /**
  * An annotation to annotate classes with an id which is meant to be interpreted
- * as the default namespace for fields that does not have an {@link Rdf} annotation.
+ * as the base-uri for fields that does not have an {@link Rdf} annotation.
  *
  * @author Pradeep Krishnan
  */
 @Retention(RUNTIME)
 @Target({TYPE})
-public @interface Ns {
+public @interface BaseUri {
 
     /** the String is a namespace uri. **/
     String value() default "";

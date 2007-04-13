@@ -13,7 +13,7 @@ import java.net.URI;
 
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Model;
-import org.topazproject.otm.annotations.Ns;
+import org.topazproject.otm.annotations.BaseUri;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
@@ -22,7 +22,7 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Pradeep Krishnan
  */
 @Rdf(Reply.NS + "Reply")
-@Ns(Reply.NS)
+@BaseUri(Reply.NS)
 public class Reply extends Annotia {
   public static final String NS = "http://www.w3.org/2001/03/thread#";
   private URI  root;
