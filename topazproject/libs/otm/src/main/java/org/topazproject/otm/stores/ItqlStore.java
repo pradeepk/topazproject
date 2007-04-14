@@ -238,19 +238,16 @@ public class ItqlStore implements TripleStore {
         String p = qa.getString("p");
         boolean inverse = (!qa.getString("s").equals(id) || qa.getString("o").equals(id));
 
-        Mapper m = cm.getMapperByUri(p, inverse);
-        if (m != null) {
-          if (!m.hasInverseUri()) {
-            List<String> v = fvalues.get(p);
-            if (v == null)
-              fvalues.put(p, v = new ArrayList<String>());
-            v.add(qa.getString("o"));
-          } else {
-            List<String> v = rvalues.get(p);
-            if (v == null)
-              rvalues.put(p, v = new ArrayList<String>());
-            v.add(qa.getString("s"));
-          }
+        if (!inverse) {
+          List<String> v = fvalues.get(p);
+          if (v == null)
+            fvalues.put(p, v = new ArrayList<String>());
+          v.add(qa.getString("o"));
+        } else {
+          List<String> v = rvalues.get(p);
+          if (v == null)
+            rvalues.put(p, v = new ArrayList<String>());
+          v.add(qa.getString("s"));
         }
       }
     } catch (AnswerException ae) {
@@ -283,10 +280,12 @@ public class ItqlStore implements TripleStore {
     for (Map<String, List<String>> values : new Map[] { fvalues, rvalues }) {
       for (String p : values.keySet()) {
         Mapper m = cm.getMapperByUri(p, inverse);
-        if (m.getSerializer() != null)
-          m.set(ro.o, values.get(p));
-        else
-          ro.unresolvedAssocs.put(m, values.get(p));
+        if (m != null) {
+          if (m.getSerializer() != null)
+            m.set(ro.o, values.get(p));
+          else
+            ro.unresolvedAssocs.put(m, values.get(p));
+        }
       }
       inverse = true;
     }
