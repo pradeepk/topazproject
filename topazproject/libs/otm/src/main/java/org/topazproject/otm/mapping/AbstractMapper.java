@@ -38,6 +38,7 @@ public abstract class AbstractMapper implements Mapper {
   private boolean    inverse;
   private String     inverseModel;
   private String     dataType;
+  private MapperType mapperType;
 
 /**
    * Creates a new AbstractMapper object.
@@ -51,10 +52,11 @@ public abstract class AbstractMapper implements Mapper {
    * @param dataType of literals or null for un-typed
    * @param inverse if this field is persisted with an inverse predicate
    * @param inverseModel the model where this field is persisted if different from class model
+   * @param mapperType the mapper type of this field
    */
   public AbstractMapper(String uri, Field field, Method getter, Method setter,
                         Serializer serializer, Class componentType, String dataType,
-                        boolean inverse, String inverseModel) {
+                        boolean inverse, String inverseModel, MapperType mapperType) {
     this.uri             = uri;
     this.field           = field;
     this.getter          = getter;
@@ -66,6 +68,7 @@ public abstract class AbstractMapper implements Mapper {
     this.dataType        = dataType;
     this.inverse         = inverse;
     this.inverseModel    = inverseModel;
+    this.mapperType      = mapperType;
   }
 
   /*
@@ -195,6 +198,13 @@ public abstract class AbstractMapper implements Mapper {
    */
   public String getInverseModel() {
     return inverseModel;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public MapperType getMapperType() {
+    return mapperType;
   }
 
   /**

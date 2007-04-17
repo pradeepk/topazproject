@@ -158,6 +158,13 @@ public class EmbeddedClassFieldMapper implements Mapper {
   /*
    * inherited javadoc
    */
+  public MapperType getMapperType() {
+    return field.getMapperType();
+  }
+
+  /*
+   * inherited javadoc
+   */
   public String toString() {
     return "EmbeddedClassFieldMapper[container=" + container + ", field=" + field + "]";
   }

@@ -52,6 +52,10 @@ import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Inverse;
 import org.topazproject.otm.annotations.Model;
 import org.topazproject.otm.annotations.Rdf;
+import org.topazproject.otm.annotations.RdfList;
+import org.topazproject.otm.annotations.RdfBag;
+import org.topazproject.otm.annotations.RdfSeq;
+import org.topazproject.otm.annotations.RdfAlt;
 import org.topazproject.otm.mapping.ArrayMapper;
 import org.topazproject.otm.mapping.CollectionMapper;
 import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
@@ -240,7 +244,8 @@ public class AnnotationClassMetaFactory {
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
       return Collections.singletonList(new FunctionalMapper(null, f, getMethod, setMethod,
-                                                            serializer, null, false, null));
+                                                            serializer, null, false, null,
+                                                            Mapper.MapperType.PREDICATE));
     }
 
     if (!embedded && (uri == null))
@@ -285,16 +290,18 @@ public class AnnotationClassMetaFactory {
         }
       }
 
-      Mapper p;
+      Mapper.MapperType mt = getMapperType(f);
+      Mapper            p;
 
       if (isArray)
         p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
-                            inverseModel);
+                            inverseModel, mt);
       else if (isCollection)
         p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
-                                 inverseModel);
+                                 inverseModel, mt);
       else
-        p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, inverse, inverseModel);
+        p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, inverse,
+                                 inverseModel, mt);
 
       return Collections.singletonList(p);
     }
@@ -306,7 +313,7 @@ public class AnnotationClassMetaFactory {
     ClassMetadata cm;
 
     try {
-      cm = create(type, type, ns, loopDetect);
+      cm                   = create(type, type, ns, loopDetect);
     } catch (OtmException e) {
       throw new OtmException("Could not generate metadata for @Embedded class field '"
                              + f.toGenericString() + "'", e);
@@ -352,5 +359,41 @@ public class AnnotationClassMetaFactory {
     }
 
     return result;
+  }
+
+  private Mapper.MapperType getMapperType(Field f) {
+    Mapper.MapperType mt = null;
+
+    if (f.getAnnotation(RdfList.class) != null)
+      mt = Mapper.MapperType.RDFLIST;
+
+    if (f.getAnnotation(RdfBag.class) != null) {
+      if (mt != null)
+        throw new OtmException("@RdfBag and @RdfList both cannot be set on '" + f.toGenericString()
+                               + "'");
+
+      mt = Mapper.MapperType.RDFBAG;
+    }
+
+    if (f.getAnnotation(RdfSeq.class) != null) {
+      if (mt != null)
+        throw new OtmException("@RdfSeq and (@RdfList or @RdfBag) both cannot be set on '"
+                               + f.toGenericString() + "'");
+
+      mt = Mapper.MapperType.RDFSEQ;
+    }
+
+    if (f.getAnnotation(RdfAlt.class) != null) {
+      if (mt != null)
+        throw new OtmException("@RdfAlt and (@RdfList or @RdfBag or @RdfSeq) both cannot be set on '"
+                               + f.toGenericString() + "'");
+
+      mt = Mapper.MapperType.RDFALT;
+    }
+
+    if (mt == null)
+      mt = Mapper.MapperType.PREDICATE;
+
+    return mt;
   }
 }

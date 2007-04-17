@@ -99,23 +99,66 @@ public class ItqlStore implements TripleStore {
     for (String type : cm.getTypes())
       addStmt(buf, id, Rdf.rdf + "type", type, null, true);
 
+    int i = 0;
     for (Mapper p : cm.getFields()) {
       if (p.hasInverseUri())
         continue;
 
-      if (p.getSerializer() != null) {
-        for (String obj : (List<String>) p.get(o))
-          addStmt(buf, id, p.getUri(), obj, p.getDataType(), p.typeIsUri());
-      } else {
-        for (String obj : sess.getIds(p.get(o)))
-          addStmt(buf, id, p.getUri(), obj, null, true);
+      if (p.getSerializer() != null)
+        addStmts(buf, id, p.getUri(), (List<String>) p.get(o) , p.getDataType(), p.typeIsUri(), 
+                 p.getMapperType(), "$s" + i++ + "i");
+      else
+        addStmts(buf, id, p.getUri(), sess.getIds(p.get(o)) , null,true, p.getMapperType(), 
+                 "$s" + i++ + "i");
+    }
+  }
+
+  private static void addStmts(StringBuilder buf, String subj, String pred, List<String> objs, 
+      String dt, boolean objIsUri, Mapper.MapperType mt, String prefix) {
+    int i = 0;
+    switch (mt) {
+    case PREDICATE:
+      for (String obj : objs)
+          addStmt(buf, subj, pred, obj, dt, objIsUri);
+      break;
+    case RDFLIST:
+      if (objs.size() > 0)
+        buf.append("<").append(subj).append("> <").append(pred).append("> ")
+           .append(prefix).append("0 ");
+      for (String obj : objs) {
+          addStmt(buf, prefix+i, "rdf:type", "rdf:List", null, true);
+          addStmt(buf, prefix+i, "rdf:first", obj, dt, objIsUri);
+          if (i > 0)
+            buf.append(prefix).append(i-1).append(" <rdf:rest> ")
+                .append(prefix).append(i).append(" ");
+          i++;
       }
+      if (i > 0)
+        addStmt(buf, prefix+(i-1), "rdf:rest", "rdf:nil", null, true);
+      break;
+    case RDFBAG:
+    case RDFSEQ:
+    case RDFALT:
+      String rdfType = (Mapper.MapperType.RDFBAG == mt) ? "<rdf:Bag> " :
+                       ((Mapper.MapperType.RDFSEQ == mt) ? "<rdf:Seq> " : "<rdf:Alt> ");
+      if (objs.size() > 0) {
+        buf.append("<").append(subj).append("> <").append(pred).append("> ")
+           .append(prefix).append(" ");
+        buf.append(prefix).append(" <rdf:type> ").append(rdfType);
+      }
+      for (String obj : objs)
+        addStmt(buf, prefix, "rdf:_" + ++i, obj, dt, objIsUri);
+      break;
     }
   }
 
   private static void addStmt(StringBuilder buf, String subj, String pred, String obj, String dt,
                               boolean objIsUri) {
-    buf.append("<").append(subj).append("> <").append(pred);
+    if (!subj.startsWith("$"))
+      buf.append("<").append(subj).append("> <").append(pred);
+    else
+      buf.append(subj).append(" <").append(pred);
+
     if (objIsUri) {
       buf.append("> <").append(obj).append("> ");
     } else {
@@ -196,6 +239,26 @@ public class ItqlStore implements TripleStore {
       qry.setLength(qry.length() - 4);
       qry.append(") ");
     }
+
+    // build rdf:List, rdf:Bag, rdf:Seq or rdf:Alt statements
+    found = false;
+    for (Mapper p : cm.getFields()) {
+      if ((p.getMapperType() == Mapper.MapperType.RDFLIST) ||
+          (p.getMapperType() == Mapper.MapperType.RDFBAG) || 
+          (p.getMapperType() == Mapper.MapperType.RDFSEQ) ||
+          (p.getMapperType() == Mapper.MapperType.RDFALT)) {
+        found = true;
+        break;
+      }
+    }
+
+    if (found) {
+      qry.append("or ($s $p $o and <").append(id).append("> $x $c ")
+        .append("and (trans($c <rdf:rest> $s) or $c <rdf:rest> $s or <").append(id).append("> $x $s)")
+        .append(" and ($s <rdf:type> <rdf:List> or $s <rdf:type> <rdf:Bag> ")
+        .append("or $s <rdf:type> <rdf:Seq> or $s <rdf:type> <rdf:Alt>) )");
+    }
+
   }
 
   public ResultObject get(ClassMetadata cm, String id, Transaction txn) throws OtmException {
@@ -236,7 +299,7 @@ public class ItqlStore implements TripleStore {
       qa.beforeFirst();
       while (qa.next()) {
         String p = qa.getString("p");
-        boolean inverse = (!qa.getString("s").equals(id) || qa.getString("o").equals(id));
+        boolean inverse = (!id.equals(qa.getString("s")) && id.equals(qa.getString("o")));
 
         if (!inverse) {
           List<String> v = fvalues.get(p);
@@ -264,6 +327,20 @@ public class ItqlStore implements TripleStore {
       cm    = sf.getClassMetadata(clazz);
 
       fvalues.get(Rdf.rdf + "type").removeAll(cm.getTypes());
+    }
+
+    // pre-process for special constructs (rdf:List, rdf:bag, rdf:Seq, rdf:Alt)
+    String modelUri = getModelUri(cm.getModel(), txn);
+    for (String p : fvalues.keySet()) {
+      Mapper m = cm.getMapperByUri(p, false);
+      if (m == null)
+        continue;
+      if (Mapper.MapperType.RDFLIST == m.getMapperType())
+        fvalues.put(p, getRdfList(id, p, modelUri, txn));
+      else if (Mapper.MapperType.RDFBAG == m.getMapperType() ||
+          Mapper.MapperType.RDFSEQ == m.getMapperType() || 
+          Mapper.MapperType.RDFALT == m.getMapperType())
+        fvalues.put(p, getRdfBag(id, p, modelUri, txn));
     }
 
     // create result
@@ -301,6 +378,77 @@ public class ItqlStore implements TripleStore {
     qry.append("select $s $p $o from <").append(model).append("> where ");
     qry.append("($s $p $o and $s <mulgara:is> <").append(id).append(">)");
     qry.append("or ($s $p $o and $o <mulgara:is> <").append(id).append(">)");
+  }
+
+  private List<String> getRdfList(String sub, String pred, String modelUri, Transaction txn)
+      throws OtmException {
+    StringBuilder qry = new StringBuilder(500);
+    qry.append("select $o from <").append(modelUri).append("> where ")
+       .append("(trans($c <rdf:rest> $s) or $c <rdf:rest> $s or <")
+       .append(sub).append("> <").append(pred).append("> $s) and <")
+       .append(sub).append("> <").append(pred).append("> $c and $s <rdf:first> $o;");
+
+    return execCollectionsQry(qry.toString(), txn);
+  }
+
+  private List<String> getRdfBag(String sub, String pred, String modelUri, Transaction txn)
+      throws OtmException {
+    StringBuilder qry = new StringBuilder(500);
+    qry.append("select $o $p from <").append(modelUri).append("> where ")
+       .append("($s $p $o minus $s <rdf:type> $o) and <")
+       .append(sub).append("> <").append(pred).append("> $s;");
+
+    return execCollectionsQry(qry.toString(), txn);
+  }
+
+  private List<String> execCollectionsQry(String qry, Transaction txn) throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
+    SessionFactory      sf  = txn.getSession().getSessionFactory();
+
+    log.debug("rdf:List/rdf:Bag query : " + qry);
+    String a;
+    try {
+      a = isc.getItqlHelper().doQuery(qry, null);
+    } catch (RemoteException re) {
+      throw new OtmException("error performing rdf:List/rdf:Bag query", re);
+    }
+
+    List<String> res = new ArrayList();
+
+    try {
+      AnswerSet ans = new AnswerSet(a);
+
+      // check if we got something useful
+      ans.beforeFirst();
+      if (!ans.next())
+        return res;
+      if (!ans.isQueryResult())
+        throw new OtmException("query failed: " + ans.getMessage());
+
+      AnswerSet.QueryAnswerSet qa = ans.getQueryResults();
+
+      // collect the results,
+      qa.beforeFirst();
+      boolean sort = qa.indexOf("p") != -1;
+      if (!sort) {
+        while (qa.next())
+          res.add(qa.getString("o"));
+      } else {
+        while (qa.next()) {
+          String p = qa.getString("p");
+          if (!p.startsWith(Rdf.rdf + "_"))
+            continue; // an un-recognized predicate
+          int i = Integer.decode(p.substring(Rdf.rdf.length() + 1)) - 1;
+          while (i >= res.size())
+            res.add(null);
+          res.set(i, qa.getString("o"));
+        }
+      }
+
+    } catch (AnswerException ae) {
+      throw new OtmException("Error parsing answer", ae);
+    }
+    return res;
   }
 
   public List<ResultObject> list(Criteria criteria, Transaction txn) throws OtmException {

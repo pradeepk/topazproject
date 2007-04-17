@@ -22,6 +22,8 @@ import org.topazproject.otm.OtmException;
  * @author Pradeep Krishnan
  */
 public interface Mapper {
+  public static enum MapperType {PREDICATE, RDFLIST, RDFBAG, RDFSEQ, RDFALT};
+
   /**
    * Get a value from a field of an object.
    *
@@ -150,4 +152,11 @@ public interface Mapper {
    * @return the inverse association's model
    */
   public String getInverseModel();
+
+  /**
+   * Gets the mapper type of this mapper.
+   *
+   * @return the mapper type
+   */
+  public MapperType getMapperType();
 }

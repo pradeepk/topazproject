@@ -17,6 +17,7 @@ import org.topazproject.otm.samples.PublicAnnotation;
 import org.topazproject.otm.samples.Reply;
 import org.topazproject.otm.samples.ReplyThread;
 import org.topazproject.otm.samples.SampleEmbeddable;
+import org.topazproject.otm.samples.SpecialMappers;
 import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.stores.MemStore;
 
@@ -62,6 +63,7 @@ public class OtmTest extends TestCase {
     factory.preload(PrivateAnnotation.class);
     factory.preload(Article.class);
     factory.preload(NoRdfType.class);
+    factory.preload(SpecialMappers.class);
   }
 
   /**
@@ -558,6 +560,113 @@ public class OtmTest extends TestCase {
       assertTrue(id1.equals(a1.getId()) || id2.equals(a1.getId()));
 
       tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public void test05() throws OtmException {
+    Session     session = factory.openSession();
+    Transaction tx      = null;
+
+    try {
+      tx = session.beginTransaction();
+
+      SpecialMappers m = new SpecialMappers("http://localhost/sm/1");
+      m.list.add("l1");
+      m.list.add("l2");
+
+      m.bag.add("b1");
+      m.bag.add("b2");
+
+      m.seq.add("s1");
+      m.seq.add("s2");
+      m.seq.add("s3");
+      m.seq.add("s4");
+      m.seq.add("s5");
+      m.seq.add("s6");
+      m.seq.add("s7");
+      m.seq.add("s8");
+      m.seq.add("s9");
+      m.seq.add("s10");
+      m.seq.add("s11");
+
+      m.alt.add("a1");
+      m.alt.add("a2");
+
+      session.saveOrUpdate(m);
+
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+
+    session   = factory.openSession();
+    tx        = null;
+
+    try {
+      tx = session.beginTransaction();
+
+      SpecialMappers m = session.get(SpecialMappers.class, "http://localhost/sm/1");
+      assertNotNull(m);
+
+      assertEquals(2, m.list.size());
+      assertTrue(m.list.contains("l1") && m.list.contains("l2"));
+
+      assertEquals(2, m.bag.size());
+      assertTrue(m.bag.contains("b1") && m.bag.contains("b2"));
+
+      assertEquals(11, m.seq.size());
+      assertTrue(m.seq.contains("s1") && m.seq.contains("s2"));
+
+      assertEquals(2, m.alt.size());
+      assertTrue(m.alt.contains("a1") && m.alt.contains("a2"));
+
+      assertTrue(m.alt.get(0).equals("a1") && m.alt.get(1).equals("a2"));
+      assertTrue(m.seq.get(0).equals("s1"));
+      assertTrue(m.seq.get(1).equals("s2"));
+      assertTrue(m.seq.get(2).equals("s3"));
+      assertTrue(m.seq.get(3).equals("s4"));
+      assertTrue(m.seq.get(4).equals("s5"));
+      assertTrue(m.seq.get(5).equals("s6"));
+      assertTrue(m.seq.get(6).equals("s7"));
+      assertTrue(m.seq.get(7).equals("s8"));
+      assertTrue(m.seq.get(8).equals("s9"));
+      assertTrue(m.seq.get(9).equals("s10"));
+      assertTrue(m.seq.get(10).equals("s11"));
+
+      tx.commit();
     } catch (OtmException e) {
       try {
         if (tx != null)
