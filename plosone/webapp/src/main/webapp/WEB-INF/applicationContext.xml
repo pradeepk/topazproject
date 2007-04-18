@@ -233,7 +233,7 @@
     </property>
     <property name="categoryNames">
       <map>
-        <entry key="plosone" value="PLoS One"/>
+        <entry key="plosone" value="PLoS ONE"/>
         <entry key="biology" value="PLoS Biology"/>
         <entry key="computational_biology" value="PLoS Computational Biology"/>
         <entry key="clinical_trials" value="PLoS Clinical Trials"/>
