@@ -52,10 +52,10 @@ import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Inverse;
 import org.topazproject.otm.annotations.Model;
 import org.topazproject.otm.annotations.Rdf;
-import org.topazproject.otm.annotations.RdfList;
-import org.topazproject.otm.annotations.RdfBag;
-import org.topazproject.otm.annotations.RdfSeq;
 import org.topazproject.otm.annotations.RdfAlt;
+import org.topazproject.otm.annotations.RdfBag;
+import org.topazproject.otm.annotations.RdfList;
+import org.topazproject.otm.annotations.RdfSeq;
 import org.topazproject.otm.mapping.ArrayMapper;
 import org.topazproject.otm.mapping.CollectionMapper;
 import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
@@ -361,7 +361,7 @@ public class AnnotationClassMetaFactory {
     return result;
   }
 
-  private Mapper.MapperType getMapperType(Field f) {
+  private Mapper.MapperType getMapperType(Field f) throws OtmException {
     Mapper.MapperType mt = null;
 
     if (f.getAnnotation(RdfList.class) != null)
