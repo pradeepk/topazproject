@@ -70,6 +70,12 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
+        <!--
+          Extract relevant jars and classes from mulgara jars and put into our war.
+          Note that mulgara consists of many jars representing its various modules.
+          None have the format "*mulgara*.jar" in them - many have the form
+          "*resolver*.jar". See also MulgaraMavenPackage wiki page.
+        -->
 
         <executions>
           <execution>

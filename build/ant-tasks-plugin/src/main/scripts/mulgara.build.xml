@@ -8,6 +8,10 @@
 
   Licensed under the Educational Community License version 1.0
   http://opensource.org/licenses/ecl1.php
+
+  Note that mulgara-install only installs the tomcat container, not the mulgara war file.
+  mulgara-start expands the mulgara war file into the container.
+  The mulgara war file is actually built by topazproject/libs/mulgara-service.
 -->
 <project xmlns:artifact="antlib:org.apache.maven.artifact.ant">
 
@@ -89,6 +93,8 @@
     <echo message="Using war     = ${mulgara-war}"/>
     <echo message="Using port    = ${port}"/>
     <echo message="Shutdown port = ${SHUTDOWN_PORT}"/>
+    <echo message="Use -Dtopaz.mulgara.databaseDir to specify specific DB"/>
+    <echo message="Use -Dlog4j.configuration=file:///..location.. to specify log4j config"/>
 
     <delete>
       <fileset dir="${home}" includes="mulgara*.properties"/>
