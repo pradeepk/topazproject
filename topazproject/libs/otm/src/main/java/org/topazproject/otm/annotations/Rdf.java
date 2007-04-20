@@ -30,6 +30,8 @@ public @interface Rdf {
     String xsd="http://www.w3.org/2001/XMLSchema#";
     /** help compose rdf defined URIs */
     String rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#";
+    /** help compose rdfs defined URIs */
+    String rdfs="http://www.w3.org/2000/01/rdf-schema#";
     /** help compose owl defined URIs */
     String owl="http://www.w3.org/2002/07/owl#";
     /** help compose mulgara defined URIs */

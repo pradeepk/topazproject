@@ -182,7 +182,7 @@ public class ItqlStore implements TripleStore {
     try {
       isc.getItqlHelper().doUpdate(delete.toString(), null);
     } catch (RemoteException re) {
-      throw new OtmException("error performing update", re);
+      throw new OtmException("error performing update: " + delete.toString(), re);
     }
   }
 
@@ -547,8 +547,10 @@ public class ItqlStore implements TripleStore {
     return qry.toString();
   }
 
-  private static String getModelUri(String modelId, Transaction txn) {
+  private static String getModelUri(String modelId, Transaction txn) throws OtmException {
     ModelConfig mc = txn.getSession().getSessionFactory().getModel(modelId);
+    if (mc == null) // Happens if using a Class but the model was not added
+      throw new OtmException("Unable to find model '" + modelId + "'");
     return mc.getUri().toString();
   }
 
