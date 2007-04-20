@@ -18,7 +18,6 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.criterion.Order;
-import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
@@ -35,7 +34,6 @@ import org.topazproject.otm.mapping.FunctionalMapper;
 
 import org.topazproject.otm.owl.OwlClass;
 import org.topazproject.otm.owl.ObjectProperty;
-import org.topazproject.otm.owl.Restriction;
 import org.topazproject.otm.owl.OwlHelper;
 
 import org.testng.annotations.BeforeClass;
@@ -93,7 +91,6 @@ public class OwlTest {
 
     metaFactory.preload(OwlClass.class);
     metaFactory.preload(ObjectProperty.class);
-    metaFactory.preload(Restriction.class);
   }
 
   @Test

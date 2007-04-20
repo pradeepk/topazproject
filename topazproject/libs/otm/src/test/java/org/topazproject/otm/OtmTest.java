@@ -9,7 +9,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
-import org.topazproject.otm.Criteria;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.NoRdfType;
@@ -50,11 +49,6 @@ public class OtmTest extends TestCase {
     ModelConfig ri = new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null);
     factory.addModel(ri);
 
-    ModelConfig sc = new ModelConfig("str",
-                                     URI.create("local:///topazproject#str"),
-                                     URI.create("http://topazproject.org/models#StringCompare"));
-    factory.addModel(sc);
-
     try {
       factory.getTripleStore().dropModel(ri);
     } catch (Throwable t) {
@@ -63,7 +57,6 @@ public class OtmTest extends TestCase {
     }
 
     factory.getTripleStore().createModel(ri);
-    factory.getTripleStore().createModel(sc);
 
     factory.preload(ReplyThread.class);
     factory.preload(PublicAnnotation.class);
@@ -407,7 +400,6 @@ public class OtmTest extends TestCase {
       a1.setAnnotates(URI.create("foo:1"));
       a2.setAnnotates(URI.create("foo:1"));
       a3.setAnnotates(URI.create("bar:1"));
-      a1.setCreator("Eric");
 
       a1.setSupersededBy(a2);
       a2.setSupersedes(a1);
@@ -566,22 +558,6 @@ public class OtmTest extends TestCase {
       a1 = (Annotation) l.get(0);
 
       assertTrue(id1.equals(a1.getId()) || id2.equals(a1.getId()));
-
-      // Eric:
-      Criteria c = session.createCriteria(Annotation.class);
-      System.out.println(Restrictions.eq("annotates", "foo:1").toItql(c, "x", "eric"));
-      c = session.createCriteria(Annotation.class);
-      System.out.println(Restrictions.eq("creator", "Fudge").toItql(c, "$x", "eric"));
-
-      l = session.createCriteria(Annotation.class).add(Restrictions.eq("creator", "Eric")).list();
-      assertEquals(1, l.size());
-
-      l = session.createCriteria(Annotation.class).add(Restrictions.gt("creator", "Dave")).list();
-      assertEquals(1, l.size());
-
-      l = session.createCriteria(Annotation.class).add(Restrictions.gt("creator", "Fred")).list();
-      assertEquals(0, l.size());
-      //
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
