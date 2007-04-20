@@ -6,6 +6,12 @@
   <packaging>jar</packaging>
   <version>1.0-SNAPSHOT</version>
   <name>Object/Triple Mapping</name>
+  <parent>
+    <groupId>org.topazproject</groupId>
+    <artifactId>topazproject-libs</artifactId>
+    <version>0.7-SNAPSHOT</version>
+  </parent>
+  
   <distributionManagement>
     <repository>
       <id>topaz</id>
