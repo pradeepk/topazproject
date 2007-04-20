@@ -38,6 +38,10 @@ public class Restrictions {
     return new PredicateCriterion(name, value);
   }
 
+  public static Criterion gt(String name, Object value) {
+    return new StringCompareCriterion(name, value, StringCompareCriterion.Operator.GT);
+  }
+
   /**
    * Apply a "not equals" criterion.
    *

@@ -6,6 +6,8 @@ import org.topazproject.otm.annotations.Rdf;
 
 @Rdf(Annotia.NS + "Public")
 public class PublicAnnotation extends Annotation {
+  @Rdf(Rdf.topaz + "hasNote")
+  public String note;
 
   public PublicAnnotation() {
   }
