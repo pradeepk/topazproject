@@ -14,7 +14,7 @@ import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
 
 // Constants
-MULGARA_BASE = "localhost:9090"
+MULGARA_BASE = "localhost:9091"
 MULGARA_LOC = "/mulgara-service/services/ItqlBeanService"
 FEDORA_BASE = "localhost:9090"
 PREFS       = "<local:///topazproject#filter:model=preferences>"
