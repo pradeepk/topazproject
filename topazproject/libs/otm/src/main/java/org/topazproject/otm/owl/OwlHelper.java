@@ -182,7 +182,6 @@ public class OwlHelper {
 
     metaFactory.preload(OwlClass.class);
     metaFactory.preload(ObjectProperty.class);
-    metaFactory.preload(Restriction.class);
     metaFactory.preload(Alias.class);
     metaFactory.preload(DomainUnion.class);
 
