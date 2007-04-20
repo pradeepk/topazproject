@@ -66,7 +66,7 @@ public class ArrayMapper extends AbstractMapper {
     List res = new ArrayList(len);
 
     for (int i = 0; i < len; i++) {
-      Object v = Array.get(o, i);
+      Object v = Array.get(value, i);
 
       if (v != null)
         res.add(serialize(v));
