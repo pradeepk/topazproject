@@ -11,6 +11,8 @@ package org.topazproject.otm.owl;
 
 import java.net.URI;
 import java.util.Arrays;
+import java.util.List;
+import java.util.LinkedList;
 import java.lang.reflect.Field;
 import java.lang.reflect.Modifier;
 
@@ -85,12 +87,45 @@ public class OwlHelper {
           session.saveOrUpdate(oc);
         }
 
+        // Build a list of super-classes (for use below)
+        List<Class> superClasses = new LinkedList<Class>();
+        Class clazz = cm.getSourceClass();
+        while (clazz != Object.class) {
+          clazz = clazz.getSuperclass();
+          if (clazz != Object.class)
+            superClasses.add(0, clazz);
+        }
+
         // Now let's iterate over the fields
         for (Mapper m: cm.getFields()) {
           // See if this field really belongs to our class/type
           Field f = m.getField();
-          if (f.getDeclaringClass() != cm.getSourceClass()) {
-            continue;
+          clazz = f.getDeclaringClass();
+          if (clazz != cm.getSourceClass()) {
+            /* Now, we need to walk up the chain until we find a non-anonymous class that
+             * does have metadata. If that class is not us, that we can continue
+             */
+            boolean bFoundDeclaringClass = false;
+            boolean bFoundOwlClass = false;
+            for (Class c: superClasses) {
+              // Don't do anything until we find the declaring class
+              if (!bFoundDeclaringClass) {
+                if (c == clazz)
+                  bFoundDeclaringClass = true;
+                else
+                  continue;
+              }
+
+              ClassMetadata fCm = factory.getClassMetadata(c);
+              if (fCm != null && fCm.getType() != null) {
+                bFoundOwlClass = true;
+                break;
+              }
+            }
+
+            // We found an owl class that defines this property, so don't redefine it below
+            if (bFoundOwlClass)
+              continue;
           }
 
           // See if we've already created this property
@@ -103,8 +138,6 @@ public class OwlHelper {
 
           // Add to
           if (oc != null) {
-//            op.setDomains(new URI[] { URI.create(type) });
-
             DomainUnion union = op.getDomains();
             if (union == null)
               union = new DomainUnion();
