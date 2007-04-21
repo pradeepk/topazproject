@@ -4,7 +4,7 @@ import java.net.URI;
 
 import org.topazproject.otm.annotations.Rdf;
 
-@Rdf(Annotia.NS + "Public")
+@Rdf(Annotea.NS + "Public")
 public class PublicAnnotation extends Annotation {
   @Rdf(Rdf.topaz + "hasNote")
   public String note;

@@ -23,7 +23,7 @@ import org.topazproject.otm.annotations.Rdf;
  */
 @Rdf(Reply.NS + "Reply")
 @BaseUri(Reply.NS)
-public class Reply extends Annotia {
+public class Reply extends Annotea {
   public static final String NS = "http://www.w3.org/2001/03/thread#";
   private URI  root;
   private URI  inReplyTo;

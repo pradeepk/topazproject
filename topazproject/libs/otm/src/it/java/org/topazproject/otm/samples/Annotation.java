@@ -23,8 +23,8 @@ import org.topazproject.otm.annotations.Rdf;
  *
  * @author Pradeep Krishnan
  */
-@Rdf(Annotia.NS + "Annotation")
-public abstract class Annotation extends Annotia {
+@Rdf(Annotea.NS + "Annotation")
+public abstract class Annotation extends Annotea {
   private URI                                                  annotates;
   private String                                               context;
   @Rdf(Rdf.dc_terms + "replaces")

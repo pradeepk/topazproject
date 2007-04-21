@@ -18,13 +18,13 @@ import org.topazproject.otm.annotations.BaseUri;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
- * Annotia meta-data.
+ * Annotea meta-data.
  *
  * @author Pradeep Krishnan
  */
 @Model("ri")
-@BaseUri(Annotia.NS)
-public class Annotia {
+@BaseUri(Annotea.NS)
+public class Annotea {
   /**
    * DOCUMENT ME!
    */
@@ -51,15 +51,15 @@ public class Annotia {
   public SampleEmbeddable foobar;
 
   /**
-   * Creates a new Annotia object.
+   * Creates a new Annotea object.
    */
-  public Annotia() {
+  public Annotea() {
   }
 
   /**
-   * Creates a new Annotia object.
+   * Creates a new Annotea object.
    */
-  public Annotia(URI id) {
+  public Annotea(URI id) {
     this.id = id;
   }
 
