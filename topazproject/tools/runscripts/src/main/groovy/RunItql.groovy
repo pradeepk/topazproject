@@ -76,7 +76,6 @@ factory.addModel(new ModelConfig("metadata", URI.create(metamodel), null))
 factory.preload(OwlClass.class)
 factory.preload(ObjectProperty.class)
 session = factory.openSession()
-tx = session.beginTransaction()
 
 help = new HashMap()
 help[null] = '''All commands are sent to mulgara once a semicolon (;) is found except for
@@ -141,8 +140,13 @@ def showClasses() {
 def showClass(cls) {
   if (cls.startsWith("<")) cls = cls[1..-1]
   if (cls.endsWith(">")) cls = cls[0..-2]
+  def desc = ''
+  def tx = session.beginTransaction()
+  desc = reduce(session.get(OwlClass.class, expand(cls)).toString())
+  tx.commit()
+
   println "Full URI: <${expand(cls)}>"
-  println "Details: ${reduce(session.get(OwlClass.class, expand(cls)).toString())}"
+  println "Details: ${desc}"
   def q = """
     select \$prop
            subquery(select \$type from <$metamodel> 
