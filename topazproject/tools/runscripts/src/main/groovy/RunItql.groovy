@@ -142,8 +142,11 @@ def showClass(cls) {
   if (cls.endsWith(">")) cls = cls[0..-2]
   def desc = ''
   def tx = session.beginTransaction()
-  desc = reduce(session.get(OwlClass.class, expand(cls)).toString())
-  tx.commit()
+  try {
+    desc = reduce(session.get(OwlClass.class, expand(cls)).toString())
+  } finally {
+    tx.commit()
+  }
 
   println "Full URI: <${expand(cls)}>"
   println "Details: ${desc}"
