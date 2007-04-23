@@ -183,7 +183,7 @@ public class OwlHelper {
    *
    * TODO: Update this when this info is available in the SessionFactory or ClassMetadata
    */
-  private static void createRdfAliases(Session session) {
+  private static void createRdfAliases(Session session) throws OtmException {
     for (Field f: Rdf.class.getFields()) {
       if (Modifier.isStatic(f.getModifiers())) {
         try {

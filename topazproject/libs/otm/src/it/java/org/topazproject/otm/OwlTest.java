@@ -50,7 +50,7 @@ public class OwlTest {
   private SessionFactory factory = new SessionFactory();
   private SessionFactory metaFactory = new SessionFactory();
 
-  private static void clearModel(SessionFactory fac, ModelConfig model) {
+  private static void clearModel(SessionFactory fac, ModelConfig model) throws OtmException {
     try {
       fac.getTripleStore().dropModel(model);
     } catch (Throwable t) {
@@ -94,7 +94,7 @@ public class OwlTest {
   }
 
   @Test
-  public void wineTest() {
+  public void wineTest() throws OtmException {
     // Test raw OWL classes
 
     Session session = metaFactory.openSession();
@@ -126,7 +126,7 @@ public class OwlTest {
   }
 
   @Test
-  public void helperTest() {
+  public void helperTest() throws OtmException {
     OwlHelper.addFactory(factory);
   }
 }
