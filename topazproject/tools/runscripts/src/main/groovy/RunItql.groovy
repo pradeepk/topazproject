@@ -13,6 +13,7 @@ import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.owl.OwlClass;
 import org.topazproject.otm.owl.ObjectProperty;
+import org.topazproject.otm.owl.Metadata;
 import org.apache.commons.lang.text.StrMatcher;
 import org.apache.commons.lang.text.StrTokenizer;
 import jline.ConsoleReader;
@@ -97,7 +98,8 @@ help[".alias"] = """.alias [load|list|save|set alias uri]
   set alias uri - adds an alias to the interpreter (but doesn't save it)"""
 help[".meta"]  = """.meta [classes|show type]
   classes - Shows all the classes defined in <$metamodel>
-  show type - Shows information about a specific OWL class"""
+  show type - Shows information about a specific OWL class
+  load jar-files|dirs ... - Load owl metadata for supplied classes"""
 help["variables"] = '''Variables can be used for a number of things:
   - Controlling features of the interpreter (see list of variables below)
   - As place holders in itql. 
@@ -128,6 +130,7 @@ def meta(args) {
   switch(args[0]) {
   case 'classes': showClasses();      break
   case 'show':    showClass(args[1]); break
+  case 'load':    Metadata.addClasses(args[1..-1]); break
   }
 }
 

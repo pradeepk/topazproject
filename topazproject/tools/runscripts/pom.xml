@@ -130,5 +130,24 @@
       </build>
     </profile>
     
+    <profile>
+      <id>runmeta</id>
+      <build>
+        <defaultGoal>exec:java</defaultGoal>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <configuration>
+              <mainClass>org.topazproject.otm.owl.Metadata</mainClass>
+              <arguments>
+                <argument>${args}</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+    
   </profiles>
 </project>
