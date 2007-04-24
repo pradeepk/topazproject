@@ -49,6 +49,9 @@ import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.PredicateCriterion;
 import org.topazproject.otm.criterion.SubjectCriterion;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.query.QueryException;
+import org.topazproject.otm.query.QueryInfo;
+import org.topazproject.otm.query.Results;
 
 /** 
  * An iTQL based store.
@@ -545,6 +548,21 @@ public class ItqlStore implements TripleStore {
     qry.append(";");
 
     return qry.toString();
+  }
+
+  public Results doQuery(String query, Transaction txn) throws OtmException {
+    ItqlQuery iq = new ItqlQuery();
+    QueryInfo qi = iq.parseItqlQuery(txn.getSession(), query);
+
+    ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
+    String a;
+    try {
+      a = isc.getItqlHelper().doQuery(qi.getQuery(), null);
+    } catch (RemoteException re) {
+      throw new QueryException("error performing query '" + query + "'", re);
+    }
+
+    return new ItqlResults(a, qi, iq.getWarnings().toArray(new String[0]), txn.getSession());
   }
 
   private static String getModelUri(String modelId, Transaction txn) throws OtmException {

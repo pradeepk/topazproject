@@ -18,6 +18,7 @@ import java.util.Map;
 
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.query.Results;
 
 /**
  * An abstraction to represent triple stores.
@@ -94,6 +95,16 @@ public interface TripleStore {
    */
   public List<ResultObject> list(Criteria criteria, Transaction txn)
                           throws OtmException;
+
+  /**
+   * Execute an OQL query.
+   *
+   * @param query the OQL query string
+   * @param txn   the transaction context
+   * @return the query results
+   * @throws OtmException on an error
+   */
+  public Results doQuery(String query, Transaction txn) throws OtmException;
 
   /**
    * Creates a new model/graph in the persistence store.

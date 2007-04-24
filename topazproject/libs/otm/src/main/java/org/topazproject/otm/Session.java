@@ -29,6 +29,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.query.Results;
 
 /**
  * An otm session (similar to hibernate session). And similar to hibernate session, not thread
@@ -386,6 +387,23 @@ public class Session {
     }
 
     return result;
+  }
+
+  /**
+   * Run an OQL query.
+   *
+   * @param query the OQL query
+   * @return the results
+   * @throws OtmException on an error
+   */
+  public Results doQuery(String query) throws OtmException {
+    if (txn == null)
+      throw new OtmException("No transaction active");
+
+    flush(); // so that mods are visible to queries
+
+    TripleStore store  = sessionFactory.getTripleStore();
+    return store.doQuery(query, txn);
   }
 
   /**

@@ -170,10 +170,26 @@ public class SessionFactory {
    *
    * @param clazz the class.
    *
-   * @return metadata for the class
+   * @return metadata for the class, or null if not found
    */
   public ClassMetadata getClassMetadata(Class clazz) {
     return metadata.get(clazz);
+  }
+
+  /**
+   * Gets the class metadata of a pre-registered class. This finds the first class with
+   * given name.
+   *
+   * @param clsName the fully-qualified name of the class.
+   *
+   * @return metadata for the class, or null if not found
+   */
+  public ClassMetadata getClassMetadata(String clsName) {
+    for (Class c : metadata.keySet()) {
+      if (c.getName().equals(clsName))
+        return metadata.get(c);
+    }
+    return null;
   }
 
   /**

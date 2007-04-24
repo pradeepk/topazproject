@@ -37,6 +37,7 @@ import org.topazproject.otm.criterion.Junction;
 import org.topazproject.otm.criterion.PredicateCriterion;
 import org.topazproject.otm.criterion.SubjectCriterion;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.query.Results;
 
 /**
  * An abstraction to represent triple stores.
@@ -143,6 +144,10 @@ public class MemStore implements TripleStore {
       results.add(get(cm, id, txn));
 
     return results;
+  }
+
+  public Results doQuery(String query, Transaction txn) throws OtmException {
+    throw new OtmException("OQL queries not supported");
   }
 
   /*
