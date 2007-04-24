@@ -14,7 +14,6 @@
    <#assign tabId = "">
 </#if>
 <strong>Select which E-mail content alerts you would like to receive.</strong>
-	<p>Fields marked with <span class="required">*</span> are required. </p>
 
 <#if editedByAdmin>
   <#assign actionValue="saveAlertsByAdmin"/>

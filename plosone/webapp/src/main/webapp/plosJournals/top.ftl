@@ -8,20 +8,4 @@
 <!-- begin : container -->
 <div id="container">
 	
-	<!-- begin : top banner external ad space -->
-	<div id="topBanner">
-	<#include "topbanner.ftl">
-	</div>
-	<!-- end : top banner external ad space -->
-	
-	<#if Session.PLOS_ONE_USER?exists>
-	<!-- begin : header -->
-	<div id="hdr">
-  <#else>	
-	<!-- begin : header -->
-	<div id="hdr" class="login">
-	</#if>
-	
-	<#include "header.ftl">
-	</div>
-	<!-- end : header -->
+<#include "header.ftl">

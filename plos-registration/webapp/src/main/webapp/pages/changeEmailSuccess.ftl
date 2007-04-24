@@ -9,7 +9,7 @@
 	<p>If you do not receive the e-mail, please add <strong>${registrationVerificationMailer.fromEmailAddress}</strong> to your allowed 
 	senders list and try again.</p>
 	<br/>
-		<p>Continue to <a href="${plosOneUrl}${plosOneContext}">PLoS ONE</a></p>
+	<p>Return to <a href="${plosOneUrl}${plosOneContext}/user/secure/editProfile.action">your profile</a> or <a href="${plosOneUrl}${plosOneContext}">PLoS ONE</a></p>
 </div>
 <!-- end : main contents -->
 

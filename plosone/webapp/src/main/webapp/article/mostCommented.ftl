@@ -1,8 +1,22 @@
 <!-- Recently Annotated -->
-						<ul class="articles">
-								<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000286" title="Read Open Access Article">A Practical Genome Scan for Population-Specific Strong Selective Sweeps That Have Reached Fixation</a></li>
-								<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000315" title="Read Open Access Article">A Glimpse of Streptococcal Toxic Shock Syndrome from Comparative Genomics of <em>S. suis</em> 2 Chinese Isolates</a></li>
-								<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000227" title="Read Open Access Article">Conflict between Translation Initiation and Elongation in Vertebrate Mitochondrial Genomes</a></li>
-								<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000299" title="Read Open Access Article">Multiple-Color Optical Activation, Silencing, and Desynchronization of Neural Activity, with Single-Spike Temporal Resolution</a></li>
-								<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000058" title="Read Open Access Article">Novel Acetylcholinesterase Target Site for Malaria Mosquito Control</a></li>
-							</ul>
+<ul class="articles">
+	<li><a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000266" title="Read Open Access Article">
+	Plasmids and Rickettsial Evolution: Insight from <em>Rickettsia felis</em>
+	</a></li>
+	
+	<li><a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000041" title="Read Open Access Article">
+	Association and Host Selectivity in Multi-Host Pathogens
+	</a></li>
+	
+	<li><a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000383" title="Read Open Access Article">
+	Assessing Perfomance of Orthology Detection Strategies Applied to Eukaryotic Genomes
+	</a></li>
+	
+	<li><a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000017" title="Read Open Access Article">
+	Multilocus Sequence Typing Breathes Life into a Microbial Metagenome
+	</a></li>
+	
+	<li><a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000230 " title="Read Open Access Article">
+	High Reinforcing Efficacy of Nicotine in Non-Human Primates
+	</a></li>
+</ul>

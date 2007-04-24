@@ -183,6 +183,12 @@
       </result>
     </action>
 
+    <action name="browse">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/static/browse.ftl</param>
+      </result>
+    </action>
+
     <action name="checklist">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/static/checklist.ftl</param>

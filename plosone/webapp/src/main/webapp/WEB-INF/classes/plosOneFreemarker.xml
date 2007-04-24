@@ -249,6 +249,15 @@
   </page>
 
   <page>
+    <name>/static/browse.ftl</name>
+    <css>
+      <file>/css/pone_screen.css</file>
+      <file>/css/pone_iepc.css</file>
+      <file>/css/pone_static.css</file>
+    </css>
+  </page>
+  
+  <page>
     <name>/static/comment_guidelines.ftl</name>
     <css>
       <file>/css/pone_screen.css</file>

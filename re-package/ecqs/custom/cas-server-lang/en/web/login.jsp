@@ -7,13 +7,6 @@
 
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
 
-<meta name="keywords" content="clinical trials, clinical trial, clinical trials journal, trials journal, medical publishing, plos, public library of science, open access, open-access, science, medical research, clinical research, trial results, human studies, experimental treatment, disease, drug, drugs, device, devices, vaccine, vaccines, phase I, phase II, phase III, phase IV, clinical trials database, clinical trials databank"/>
-<meta name="description" content="PLoS ONE: an inclusive, peer-reviewed, open access resource from the PUBLIC LIBRARY OF SCIENCE. Reports of well-performed scientific studies from all disciplines freely available to the whole World. " />
-
-<link rel="alternate" type="application/rss+xml" title="PLoS Journals: New Articles" href="/?request=get-rss&issn=&type=new-articles" />
-<link rel="alternate" type="application/rss+xml" title="PLoS Journals: Table of Contents" href="/?request=get-rss&issn=&type=toc-articles" />
-<link rel="alternate" type="application/rss+xml" title="PLoS Journals: Top Articles" href="/?request=get-rss&issn=&type=top-articles" />
-
 <link rel="shortcut icon" href="images/pjou_favicon.ico" type="image/x-icon" />
 
 <link rel="home" title="home" href="http://www.plosjournals.org"></link>
@@ -28,7 +21,7 @@
 <rdf:RDF xmlns="http://web.resource.org/cc/"
    xmlns:dc="http://purl.org/dc/elements/1.1/"
    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#">
-<Work rdf:about="http://www.plosone.org">
+<Work rdf:about="http://register.plos.org">
    <license rdf:resource="http://creativecommons.org/licenses/by/2.5/" />
 </Work>
 <License rdf:about="http://creativecommons.org/licenses/by/2.5/">
@@ -53,12 +46,22 @@
 <!-- end : header -->
 
 <!-- begin : navigation -->
-	<ul id="nav">
-	<li class="none"><a href="http://www.plosjournals.org" title="PLoS Journals Home">Home</a></li>
-	<li class="none"><a href="http://www.plosone.org/profile" title="My E-mail Alert Settings">My Profile</a></li>
-	<li class="none"><a href="http://www.plosjournals.org/perlserv/?request=advanced-search">Search the Journals</a></li>
-	<li class="none"><a href="http://www.plos.org" title="PLoS.org">PLoS.org</a></li>
-	</ul>
+<ul id="nav">
+	<li class="none"><a href="http://www.plosjournals.org" title="PLoS Journals Home Page" tabindex="101">Home</a></li>
+	<li class="none"><a href="http://www.plosone.org/profile" title="My Profile" tabindex="102">My Profile</a></li>
+	<li class="journalnav"><a href="http://www.plos.org" title="Public Library of Science" tabindex="110">PLoS.org</a></li>
+	<li class="journalnav"><a href="http://www.plosjournals.org" title="PLoS Journals" tabindex="109" class="drop">PLoS Journals</a>
+	<ul>
+			<li><a href="http://medicine.plosjournals.org" title="PLoSMedicine.org">PLoS Medicine</a></li>
+			<li><a href="http://compbiol.plosjournals.org" title="PLoSCompBiol.org">PLoS Computational Biology</a></li>
+			<li><a href="http://genetics.plosjournals.org" title="PLoSGenetics.org">PLoS Genetics</a></li>
+			<li><a href="http://pathogens.plosjournals.org" title="PLoSPathogens.org">PLoS Pathogens</a></li>
+			<li><a href="http://clinicaltrials.plosjournals.org" title="PLoSClinicalTrials.org">PLoS Clinical Trials</a></li>
+			<li><a href="http://www.plosone.org/" title="PLoSONE.org">PLoS ONE</a></li>
+			<li><a href="http://www.plosntds.org/" title="PLoSNTDs.org">PLoS Neglected Tropical Diseases</a></li>
+		</ul>
+	</li>
+</ul>	
 <!-- end : navigation -->
 
 <div id="content">
@@ -97,12 +100,10 @@
         </fieldset>
 
         <ul>
+          <li><a href="http://journals.plos.org/help.php#account">Help</a></li>
+          <li><a href="/plos-registration/register.action" tabindex="12">Register for a New Account</a></li>
           <li><a href="/plos-registration/forgotPassword.action" title="Click here if you forgot your password" tabindex="11">Forgotten Password?</a></li>
-          <li><a href="/plos-registration/register.action" tabindex="12"><strong>Register for a New Account</strong></a></li>
-          <li><a href="http://www.plosone.org/static/help.action#account">Help</a></li>
-        <% if (request.getAttribute("edu.yale.its.tp.cas.badUsernameOrPassword") != null) { %>
 	  <li><a href="/plos-registration/resendRegistration.action" title="Click here if you need to confirm your e-mail address" tabindex="11">Resend e-mail address confirmation</a></li>
-	<% } %>
 	</ul>
       </div>
 </div>
@@ -115,16 +116,6 @@
 <li><a href="http://www.plos.org/terms.html" title="PLoS Terms of Use" tabindex="52">Terms of Use</a></li>
 <li><a href="http://www.plos.org/advertise/" title="Advertise with PLoS" tabindex="53">Advertise</a></li>
 <li><a href="http://www.plos.org" title="PLoS.org" tabindex="54">PLoS.org</a></li>
-</ul>
-<ul class="journals">
-<li><a href="http://www.plosbiology.org" title="PLoS Biology" tabindex="101">PLoS Biology</a></li>
-<li><a href="http://www.plosmedicine.org" title="PLoS Medicine" tabindex="102">PLoS Medicine</a></li>
-<li><a href="http://www.ploscompbiol.org" title="PLoS Medicine" tabindex="103">PLoS Computational Biology</a></li>
-<li><a href="http://www.plosgenetics.org" title="PLoS Genetics" tabindex="104">PLoS Genetics</a></li>
-<li><a href="http://www.plospathogens.org" title="PLoS Pathogens" tabindex="105">PLoS Pathogens</a></li>
-<li><a href="http://www.plosclinicaltrials.org" title="PLoS Clinical Trials" tabindex="106">PLoS Clinical Trials</a></li>
-<li><a href="http://www.plosone.org" title="PLoS ONE" tabindex="107">PLoS ONE</a></li>
-<li><a href="http://www.plosntds.org" title="PLoS Neglected Tropical Diseases" tabindex="108"style="border: none;">PLoS Neglected Tropical Diseases</a></li>
 </ul>
 
 </div>

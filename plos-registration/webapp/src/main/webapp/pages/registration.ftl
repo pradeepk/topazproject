@@ -23,9 +23,11 @@
 	</fieldset>
   </@ww.form>
   <ul>
+      <li><a href="http://journals.plos.org/help.php#account">Help</a></li>
       <li>Already registered? <a href="${plosOneUrl}${plosOneContext}/profile">Login</a>.</li>
-      <li><a href="${plosOneUrl}${plosOneContext}/static/help.action#account">Help</a></li>
-  </ul>
+      <li><a href="/plos-registration/forgotPassword.action" title="Click here if you forgot your password" tabindex="11">Forgotten Password?</a></li>
+      <li><a href="/plos-registration/resendRegistration.action" title="Click here if you need to confirm your e-mail address" tabindex="11">Resend e-mail address confirmation</a></li>  
+   </ul>
 </div>
 <!-- end : main contents -->
 

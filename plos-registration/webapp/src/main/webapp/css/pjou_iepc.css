@@ -65,5 +65,7 @@ html>body #home { height: auto }
 *:first-child+html .multiple .contentwrap { margin-top: -2px;}
 *:first-child+html input#responseTitle	{ margin-left: 22px; }
 
-
-
+/* fixes placement of tabs above rule */
+* html .horizontalTabs ul	{ 
+	padding-bottom: 1px;
+}
