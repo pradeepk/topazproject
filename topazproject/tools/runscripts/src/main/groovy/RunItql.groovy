@@ -7,6 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
+import org.topazproject.interpreter.Answer;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.ModelConfig;
@@ -26,7 +27,7 @@ csv = "csv" // In case somebody runs %mode = csv instead of %mode = "csv"
 table = "table reduce quote" // Allows %mode = table
 
 // Parse command line
-def cli = new CliBuilder(usage: 'runitql [-M mulgarahost:port] [-f script] [-ipvN]')
+def cli = new CliBuilder(usage: 'runitql [-M mulgarahost:port] [-f script] [-itpvN]')
 cli.h(longOpt:'help', 'usage information')
 cli.v(longOpt:'verbose', 'turn on verbose mode')
 cli.e(longOpt:'echo', 'echo script file when running')
@@ -36,6 +37,7 @@ cli.p(longOpt:'prompt', 'show the prompt even for a script file')
 cli.N(longOpt:'noprettyprint', 'Do not pretty-print results')
 cli.i(longOpt:'runinit', 'Run ~/.runitql even if running a script')
 cli.m(args:1, 'mode')
+cli.t(args:1, 'number of characters to truncate literals to')
 
 // Fix crap with maven sometimes passing args of [ null ] (an array of one null)
 if (args[0] == null)
@@ -57,6 +59,7 @@ bInit   = (opt.i || !opt.f)
 pp = !opt.N
 mode = opt.m
 echo = opt.v || opt.e || !opt.f
+trunc = opt.t
 def writer = echo ? new OutputStreamWriter(System.out) : new StringWriter()
 def mulgaraBase = (opt.M) ? opt.M : MULGARA_BASE
 def mulgaraUri  = "http://${mulgaraBase}${MULGARA_LOC}"
@@ -112,10 +115,12 @@ because bar is not in quotes. '%println mode' will printout the value of the
 variable mode.
 
 Special variables:
-  mode (str) - Sets dispaly output. General format options are: xml, csv, table
+  mode (str) - Sets dispaly output. General options are: xml, csv, tsv, table
                You can also append sub-modes: quote reduce
                These quote literals and uris appropriately and/or reduce uris 
                via aliases for easier viewing. eg. %mode="table quote reduce"
+  trunc (int)- If set to an integer, literals are truncated to this number of
+               characters
   verbose    - If set to true, will output more information'''
 help["init"] = "On startup, ~/.runitql is loaded."
 
@@ -229,121 +234,63 @@ def showResults(result) {
   def ans = new XmlSlurper().parseText(result)
   if (ans.query.message.text()) {
     if (echo) println ans.query.message
-  } else if (mode && mode =~ "csv" && ans.query[0].solution) {
-    showCsv(ans)
-  } else if (mode && mode =~ "tab" && ans.query[0].solution) {
-    showTable(ans)
+  } else if (ans.query[0].solution) {
+    switch (mode) {
+      case ~/.*csv.*/: showCsv(ans); break
+      case ~/.*tsv.*/: showTsv(ans); break
+      case ~/.*tab.*/: showTable(ans); break
+      default:
+        if (mode =~ "red") result = reduce(result)
+        if (pp)
+          new XmlNodePrinter().print(new XmlParser().parseText(result))
+        else
+          print "$result\n"
+    }
   } else {
-    if (pp)
-      new XmlNodePrinter().print(new XmlParser().parseText(result))
-    else
-      print "$result\n"
+    print "$result\n"
   }
 }
 
-def showCsv(ans) {
-  def vars = [ ]
-  ans.query[0].variables.children().each() { vars.add(it.name()) }
-  ans.query[0].solution.each() { sol ->
-    def vals = [ ]
-    vars.each() { var ->
-      def val = sol."$var"."@resource".toString()
-      if (val) {
-        if (mode =~ "red")   val = reduceUri(val)
-        if (mode =~ "quote") val = "<$val>"
-      } else {
-        val = sol."$var"."@blank-node".toString()
-        if (!val) {
-          val = sol."$var".toString()
-          if (mode =~ "quote")
-            val = '"' + val.replace('"', '""') + '"'
-        }
-      }
-      vals.add(val)
+def showCsv(xmlResult) {
+  def ans = new Answer(xmlResult.query[0])
+  ans.flatten()
+  def ops = [ ]
+  if (mode =~ "red") ops.add(ans.createReduceClosure(aliases))
+  if (mode =~ "quote") ops.add(ans.csvQuoteClosure)
+  ans.quote(ops)
+  ans.each() { println it.toString()[1..-2] }
+}
+
+def showTsv(xmlResult) {
+  def ans = new Answer(xmlResult.query[0])
+  ans.flatten()
+  def ops = [ ]
+  if (mode =~ "red") ops.add(ans.createReduceClosure(aliases))
+  if (mode =~ "quote") ops.add(ans.rdfQuoteClosure)
+  ans.quote(ops)
+  ans.each() { row ->
+    int cols = row.size()
+    int col = 0
+    row.each() {
+      print it
+      if (++col < cols) print "\t"
     }
-    println vals.toString()[1..-2]
+    print "\n"
   }
 }
 
-def getVar(sol, var) {
-  def val = sol."$var"."@resource".toString()
-  if (val) {
-    if (mode =~ "red")   val = reduceUri(val)
-    if (mode =~ "quote") val = "<$val>"
-  } else {
-    val = sol."$var"."@blank-node".toString()
-    if (!val) {
-      val = sol."$var".toString()
-      if (val) {
-        if (mode =~ "quote")
-          val = "'" + val.replace("'", "\\'") + "'"
-      } else {
-        // See if there is a subquery
-        def subsol = sol."$var".solution
-        subsol.childNodes().each() {
-          val = it.attributes()["resource"]
-        }
-        val = sol."$var".solution.type."@resource".toString()
-      }
-    }
-  }
-  return val
-}
-
-def showTable(ans) {
-  // TODO: refactor... this should be recursive (but dealing with different types)
-  def vars = [ ]
-  def hdrs = [ ]
-  ans.query[0].variables.children().each() { vars.add(it.name()) }
-  vars.each() { hdrs.add(it) }
-  def lengths = vars*.size()
-  def data = [ ]
-  ans.query[0].solution.each() { sol ->
-    def vals = [ ]
-    def col = 0
-    vars.each() { var ->
-      def val = sol."$var"."@resource".toString()
-      if (val) {
-        if (mode =~ "red")   val = reduceUri(val)
-        if (mode =~ "quote") val = "<$val>"
-      } else {
-        val = sol."$var"."@blank-node".toString()
-        if (!val) {
-          val = sol."$var".toString()
-          if (val) {
-            if (mode =~ "quote")
-              val = "'" + val.replace("'", "\\'") + "'"
-          } else {
-            // See if there is a subquery
-            def subsol = sol."$var".solution
-            def subvals = [ ]
-            subsol.childNodes().each() {
-              // TODO: Support multiple variables in a subquery
-              hdrs[col] = it.name.toString() + "(s)"
-              val = it.attributes()["resource"]
-              if (val) {
-                if (mode =~ "red")   val = reduceUri(val)
-                if (mode =~ "quote") val = "<$val>"
-              } else {
-                // TODO: support blank nodes?
-                val = it.value
-                if (mode =~ "quote") 
-                  val = "'" + val.replace("'", "\\'") + "'"
-              }
-              subvals.add(val)
-            }
-            val = (subvals ? subvals.toString()[1..-2] : "")
-          }
-        }
-      }
-      vals.add(val)
-      lengths[col] = [ lengths[col++], val.size() ].max()
-    }
-    data.add(vals)
-  }
+def showTable(xmlResult) {
+  def ans = new Answer(xmlResult.query[0])
+  ans.flatten()
+  def ops = [ ]
+  if (trunc instanceof Integer && trunc > 3) ops.add(ans.createTruncateClosure(trunc))
+  if (mode =~ "red") ops.add(ans.createReduceClosure(aliases))
+  if (mode =~ "quote") ops.add(ans.rdfQuoteClosure)
+  ans.quote(ops)
+  def lengths = ans.getLengths()
   def seps = [ ]
   lengths.each() { seps += "-"*it }
-  ([ hdrs, seps ] + data).each() { row ->
+  ([ ans.getHeaders(), seps ] + ans.data).each() { row ->
     def col = 0
     def line = ""
     row.each() { val ->
