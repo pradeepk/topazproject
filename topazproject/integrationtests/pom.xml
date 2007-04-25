@@ -111,6 +111,10 @@
       <groupId>org.topazproject</groupId>
       <artifactId>resource-indexer</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>otm</artifactId>
+    </dependency>
 
     <!-- topazproject/webservices -->
     <!-- annotation -->
@@ -460,9 +464,8 @@
               
               <tasks>
                 <copy todir="${project.build.directory}/generated-sources">
-                  <fileset dir="..">
-                  </fileset>
-                  <regexpmapper from="^(.*)/src/it/(.*)" to="src/it/\2"/>
+                  <fileset dir=".."/>
+                  <regexpmapper from="^(.*)/src/(it|test)/(.*)" to="src/\1/\2"/>
                 </copy>
               </tasks>
               
