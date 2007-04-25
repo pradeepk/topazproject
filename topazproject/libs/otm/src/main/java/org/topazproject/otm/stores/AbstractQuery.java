@@ -18,12 +18,12 @@ import org.apache.commons.logging.Log;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.query.ErrorCollector;
 import org.topazproject.otm.query.FieldTranslator;
 import org.topazproject.otm.query.QueryException;
 import org.topazproject.otm.query.QueryLexer;
 import org.topazproject.otm.query.QueryParser;
 
-import antlr.ANTLRException;
 import antlr.collections.AST;
 
 /** 
@@ -53,20 +53,29 @@ abstract class AbstractQuery {
    * @throws OtmException if an error occurred
    */
   protected AST parseQuery(Session sess, String query) throws OtmException {
+    ErrorCollector curParser = null;
+
     try {
       QueryLexer  lexer  = new QueryLexer(new StringReader(query));
 
       QueryParser parser = new QueryParser(lexer);
+      curParser = parser;
       parser.query();
       checkMessages(parser.getErrors(), parser.getWarnings());
 
       FieldTranslator ft = new FieldTranslator(sess);
+      curParser = ft;
       ft.query(parser.getAST());
       checkMessages(ft.getErrors(), ft.getWarnings());
 
       return ft.getAST();
-    } catch (ANTLRException ae) {
-      throw new QueryException("error parsing query '" + query + "'", ae);
+    } catch (Exception e) {
+      if (curParser != null && curParser.getErrors().size() > 0) {
+        // exceptions are usually the result of aborted parsing due to errors
+        log.debug("error parsing query: " + curParser.getErrors(null), e);
+        throw new QueryException("error parsing query '" + query + "'", curParser.getErrors());
+      } else
+        throw new QueryException("error parsing query '" + query + "'", e);
     }
   }
 

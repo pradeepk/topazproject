@@ -27,18 +27,36 @@ import org.apache.commons.lang.StringUtils;
  * 
  * @author Ronald Tschalär
  */
-public abstract class OqlParser extends LLkParser {
+public abstract class OqlParser extends LLkParser implements ErrorCollector {
   private final List<String> errs = new ArrayList<String>();
   private final List<String> wrns = new ArrayList<String>();
 
+  /** 
+   * Create a new parser instance. 
+   * 
+   * @param state the parser state to read from
+   * @param k     how far to look ahead
+   */
   protected OqlParser(ParserSharedInputState state, int k) {
     super(state, k);
   }
 
+  /** 
+   * Create a new parser instance. 
+   * 
+   * @param tokenBuf the token buffer to read from
+   * @param k        how far to look ahead
+   */
   protected OqlParser(TokenBuffer tokenBuf, int k) {
     super(tokenBuf, k);
   }
 
+  /** 
+   * Create a new parser instance. 
+   * 
+   * @param lexer the lexer to read from
+   * @param k     how far to look ahead
+   */
   protected OqlParser(TokenStream lexer, int k) {
     super(lexer, k);
   }
@@ -67,10 +85,10 @@ public abstract class OqlParser extends LLkParser {
   }
 
   public String getErrors(String join) {
-    return StringUtils.join(errs, (join != null ? join : System.getProperty("line.separator")));
+    return StringUtils.join(errs, (join != null ? join : NL));
   }
 
   public String getWarnings(String join) {
-    return StringUtils.join(wrns, (join != null ? join : System.getProperty("line.separator")));
+    return StringUtils.join(wrns, (join != null ? join : NL));
   }
 }

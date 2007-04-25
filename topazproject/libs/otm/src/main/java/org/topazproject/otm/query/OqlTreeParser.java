@@ -24,10 +24,13 @@ import org.apache.commons.lang.StringUtils;
  * 
  * @author Ronald Tschalär
  */
-public abstract class OqlTreeParser extends TreeParser {
+public abstract class OqlTreeParser extends TreeParser implements ErrorCollector {
   private final List<String> errs = new ArrayList<String>();
   private final List<String> wrns = new ArrayList<String>();
 
+  /** 
+   * Create a new tree-parser instance. 
+   */
   protected OqlTreeParser() {
     astFactory.setASTNodeClass(OqlAST.class);
   }
@@ -56,10 +59,10 @@ public abstract class OqlTreeParser extends TreeParser {
   }
 
   public String getErrors(String join) {
-    return StringUtils.join(errs, (join != null ? join : System.getProperty("line.separator")));
+    return StringUtils.join(errs, (join != null ? join : NL));
   }
 
   public String getWarnings(String join) {
-    return StringUtils.join(wrns, (join != null ? join : System.getProperty("line.separator")));
+    return StringUtils.join(wrns, (join != null ? join : NL));
   }
 }

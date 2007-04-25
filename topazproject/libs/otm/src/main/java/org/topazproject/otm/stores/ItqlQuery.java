@@ -15,13 +15,13 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.query.ErrorCollector;
 import org.topazproject.otm.query.ItqlConstraintGenerator;
 import org.topazproject.otm.query.ItqlRedux;
 import org.topazproject.otm.query.ItqlWriter;
 import org.topazproject.otm.query.QueryException;
 import org.topazproject.otm.query.QueryInfo;
 
-import antlr.ANTLRException;
 import antlr.collections.AST;
 
 /** 
@@ -43,18 +43,23 @@ class ItqlQuery extends AbstractQuery {
     if (log.isDebugEnabled())
       log.debug("parsing query '" + query + "'");
 
+    ErrorCollector curParser = null;
+
     try {
       AST a1 = parseQuery(sess, query);
 
       ItqlConstraintGenerator cg = new ItqlConstraintGenerator();
+      curParser = cg;
       cg.query(a1);
       checkMessages(cg.getErrors(), cg.getWarnings());
 
       ItqlRedux ir = new ItqlRedux();
+      curParser = ir;
       ir.query(cg.getAST());
       checkMessages(ir.getErrors(), ir.getWarnings());
 
       ItqlWriter wr = new ItqlWriter();
+      curParser = wr;
       QueryInfo qi = wr.query(ir.getAST());
       checkMessages(wr.getErrors(), wr.getWarnings());
 
@@ -63,8 +68,13 @@ class ItqlQuery extends AbstractQuery {
                   qi.getVars() + "', types='" + qi.getTypes() + "'");
 
       return qi;
-    } catch (ANTLRException ae) {
-      throw new QueryException("error parsing query '" + query + "'", ae);
+    } catch (Exception e) {
+      if (curParser != null && curParser.getErrors().size() > 0) {
+        // exceptions are usually the result of aborted parsing due to errors
+        log.debug("error parsing query: " + curParser.getErrors(null), e);
+        throw new QueryException("error parsing query '" + query + "'", curParser.getErrors());
+      } else
+        throw new QueryException("error parsing query '" + query + "'", e);
     }
   }
 }

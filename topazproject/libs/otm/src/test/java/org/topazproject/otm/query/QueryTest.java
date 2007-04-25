@@ -224,7 +224,7 @@ public class QueryTest extends TestCase {
 
     ItqlWriter wr = new ItqlWriter();
     QueryInfo qi = wr.query(ir.getAST());
-    printErrorsAndWarnings(cg, "writing query");
+    printErrorsAndWarnings(wr, "writing query");
 
     /*
     if (qi != null)
@@ -252,20 +252,10 @@ public class QueryTest extends TestCase {
     assertTrue(qi != null);
   }
 
-  private static void printErrorsAndWarnings(Object o, String op) {
-    String errs, wrns;
-    AST ast;
-    if (o instanceof OqlParser) {
-      OqlParser p = (OqlParser) o;
-      errs = p.getErrors(null);
-      wrns = p.getWarnings(null);
-      ast  = p.getAST();
-    } else {
-      OqlTreeParser p = (OqlTreeParser) o;
-      errs = p.getErrors(null);
-      wrns = p.getWarnings(null);
-      ast  = p.getAST();
-    }
+  private static void printErrorsAndWarnings(ErrorCollector ec, String op) {
+    String errs = ec.getErrors(null);
+    String wrns = ec.getWarnings(null);
+    AST ast = (ec instanceof OqlParser) ? ((OqlParser) ec).getAST() : ((OqlTreeParser) ec).getAST();
 
     if (errs.length() > 0)
       System.out.println("Error " + op + ": '" + errs + "';\n" + ast);
