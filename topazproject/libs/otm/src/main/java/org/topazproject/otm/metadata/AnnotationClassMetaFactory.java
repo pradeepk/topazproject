@@ -35,6 +35,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -51,6 +52,7 @@ import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Inverse;
 import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.PredicateMap;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.annotations.RdfAlt;
 import org.topazproject.otm.annotations.RdfBag;
@@ -62,6 +64,7 @@ import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
 import org.topazproject.otm.mapping.EmbeddedClassMapper;
 import org.topazproject.otm.mapping.FunctionalMapper;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.PredicateMapMapper;
 import org.topazproject.otm.mapping.Serializer;
 import org.topazproject.otm.mapping.SerializerFactory;
 
@@ -153,7 +156,7 @@ public class AnnotationClassMetaFactory {
       for (Mapper m : mappers) {
         String uri = m.getUri();
 
-        if (uri != null)
+        if ((uri != null) || (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP))
           fields.add(m);
         else {
           if (idField != null)
@@ -247,6 +250,9 @@ public class AnnotationClassMetaFactory {
                                                             serializer, null, false, null,
                                                             Mapper.MapperType.PREDICATE));
     }
+
+    if (f.getAnnotation(PredicateMap.class) != null)
+      return Collections.singletonList(createPredicateMap(f, getMethod, setMethod));
 
     if (!embedded && (uri == null))
       throw new OtmException("Missing @Rdf for field '" + f.toGenericString() + "' in "
@@ -395,5 +401,33 @@ public class AnnotationClassMetaFactory {
       mt = Mapper.MapperType.PREDICATE;
 
     return mt;
+  }
+
+  private Mapper createPredicateMap(Field field, Method getter, Method setter)
+                             throws OtmException {
+    Type type = field.getGenericType();
+
+    if (Map.class.isAssignableFrom(field.getType()) && (type instanceof ParameterizedType)) {
+      ParameterizedType ptype = (ParameterizedType) type;
+      Type[]            targs = ptype.getActualTypeArguments();
+
+      if ((targs.length == 2) && (targs[0] instanceof Class)
+           && String.class.isAssignableFrom((Class) targs[0])
+           && (targs[1] instanceof ParameterizedType)) {
+        ptype   = (ParameterizedType) targs[1];
+        type    = ptype.getRawType();
+
+        if ((type instanceof Class) && (List.class.isAssignableFrom((Class) type))) {
+          targs = ptype.getActualTypeArguments();
+
+          if ((targs.length == 1) && (targs[0] instanceof Class)
+               && String.class.isAssignableFrom((Class) targs[0]))
+            return new PredicateMapMapper(field, getter, setter);
+        }
+      }
+    }
+
+    throw new OtmException("@PredicateMap can be applied to a Map<String, List<String>> field only."
+                           + "It cannot be applied to '" + field.toGenericString() + "'");
   }
 }

@@ -177,7 +177,7 @@ public class Session {
       Set<Wrapper>  assocs = new HashSet<Wrapper>();
 
       for (Mapper p : cm.getFields()) {
-        if (p.getSerializer() != null)
+        if ((p.getSerializer() != null) || (p.getUri() == null))
           continue;
 
         for (Object ao : p.get(o))
@@ -526,7 +526,7 @@ public class Session {
       Set<Wrapper>  assocs = new HashSet<Wrapper>();
 
       for (Mapper p : cm.getFields()) {
-        if (p.getSerializer() != null)
+        if ((p.getSerializer() != null) || (p.getUri() == null))
           continue;
 
         for (Object ao : p.get(o)) {

@@ -2,6 +2,7 @@ package org.topazproject.otm;
 
 import java.net.URI;
 
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -13,11 +14,14 @@ import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
+import org.topazproject.otm.samples.Grants;
 import org.topazproject.otm.samples.NoRdfType;
+import org.topazproject.otm.samples.Permissions;
 import org.topazproject.otm.samples.PrivateAnnotation;
 import org.topazproject.otm.samples.PublicAnnotation;
 import org.topazproject.otm.samples.Reply;
 import org.topazproject.otm.samples.ReplyThread;
+import org.topazproject.otm.samples.Revokes;
 import org.topazproject.otm.samples.SampleEmbeddable;
 import org.topazproject.otm.samples.SpecialMappers;
 import org.topazproject.otm.stores.ItqlStore;
@@ -49,7 +53,14 @@ public class OtmTest extends TestCase {
 
     //factory.setTripleStore(new MemStore());
     ModelConfig ri = new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null);
+    ModelConfig grants  =
+      new ModelConfig("grants", URI.create("local:///topazproject#otmtest2"), null);
+    ModelConfig revokes =
+      new ModelConfig("revokes", URI.create("local:///topazproject#otmtest2"), null);
+
     factory.addModel(ri);
+    factory.addModel(grants);
+    factory.addModel(revokes);
 
     try {
       factory.getTripleStore().dropModel(ri);
@@ -58,7 +69,23 @@ public class OtmTest extends TestCase {
         log.debug("Failed to drop model '" + ri.getId() + "'", t);
     }
 
+    try {
+      factory.getTripleStore().dropModel(grants);
+    } catch (Throwable t) {
+      if (log.isDebugEnabled())
+        log.debug("Failed to drop model '" + grants.getId() + "'", t);
+    }
+
+    try {
+      factory.getTripleStore().dropModel(revokes);
+    } catch (Throwable t) {
+      if (log.isDebugEnabled())
+        log.debug("Failed to drop model '" + revokes.getId() + "'", t);
+    }
+
     factory.getTripleStore().createModel(ri);
+    factory.getTripleStore().createModel(grants);
+    factory.getTripleStore().createModel(revokes);
 
     factory.preload(ReplyThread.class);
     factory.preload(PublicAnnotation.class);
@@ -66,6 +93,8 @@ public class OtmTest extends TestCase {
     factory.preload(Article.class);
     factory.preload(NoRdfType.class);
     factory.preload(SpecialMappers.class);
+    factory.preload(Grants.class);
+    factory.preload(Revokes.class);
   }
 
   /**
@@ -669,6 +698,83 @@ public class OtmTest extends TestCase {
       assertTrue(m.seq.get(10).equals("s11"));
 
       tx.commit();
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public void test06() throws OtmException {
+    Session     session = factory.openSession();
+    Transaction tx      = null;
+
+    try {
+      tx = session.beginTransaction();
+
+      Grants g = new Grants();
+      g.resource = "http://localhost/articles/1";
+      g.permissions.put("perm:1", Collections.singletonList("user:1"));
+      g.permissions.put("perm:2", Collections.singletonList("user:1"));
+
+      session.saveOrUpdate(g);
+
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+
+    session   = factory.openSession();
+    tx        = null;
+
+    try {
+      tx = session.beginTransaction();
+
+      Grants g = session.get(Grants.class, "http://localhost/articles/1");
+      assertNotNull(g);
+
+      assertEquals(2, g.permissions.size());
+
+      List<String> u = g.permissions.get("perm:1");
+      assertNotNull(u);
+      assertEquals(1, u.size());
+      assertEquals("user:1", u.get(0));
+
+      u = g.permissions.get("perm:2");
+      assertNotNull(u);
+      assertEquals(1, u.size());
+      assertEquals("user:1", u.get(0));
+
+      tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       try {
         if (tx != null)

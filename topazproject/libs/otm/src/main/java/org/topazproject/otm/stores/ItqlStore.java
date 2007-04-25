@@ -106,8 +106,12 @@ public class ItqlStore implements TripleStore {
     for (Mapper p : cm.getFields()) {
       if (p.hasInverseUri())
         continue;
-
-      if (p.getSerializer() != null)
+      if (p.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
+        Map<String, List<String>> pMap = (Map<String, List<String>>) p.getRawValue(o, true);
+        for (String k : pMap.keySet())
+          for (String v : pMap.get(k))
+            addStmt(buf, id, k, v, null, true);
+      } else if (p.getSerializer() != null)
         addStmts(buf, id, p.getUri(), (List<String>) p.get(o) , p.getDataType(), p.typeIsUri(), 
                  p.getMapperType(), "$s" + i++ + "i");
       else
@@ -197,12 +201,20 @@ public class ItqlStore implements TripleStore {
 
     // build forward statements
     boolean found = false;
+    boolean predicateMap = false;
     for (Mapper p : cm.getFields()) {
       if (!p.hasInverseUri()) {
+        if (p.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
+          predicateMap = true;
+          found = false;
+          break;
+        }
         found = true;
-        break;
       }
     }
+
+    if (predicateMap) 
+      qry.append("($s $p $o and $s <mulgara:is> <").append(id).append(">) ");
 
     if (found) {
       qry.append("($s $p $o and $s <mulgara:is> <").append(id).append("> and (");
@@ -368,6 +380,30 @@ public class ItqlStore implements TripleStore {
         }
       }
       inverse = true;
+    }
+
+    boolean found = false;
+    for (Mapper m : cm.getFields()) {
+      if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
+        found = true;
+        break;
+      }
+    }
+
+    if (found) {
+      Map<String, List<String>> map = new HashMap<String, List<String>>();
+      map.putAll(fvalues);
+      for (Mapper m : cm.getFields()) {
+        if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP)
+          continue;
+        if (m.hasInverseUri())
+          continue;
+        map.remove(m.getUri());
+      }
+      for (Mapper m : cm.getFields()) {
+        if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP)
+          m.setRawValue(ro.o, map);
+      }
     }
 
     // done

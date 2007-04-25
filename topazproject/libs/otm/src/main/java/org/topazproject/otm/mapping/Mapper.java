@@ -22,7 +22,7 @@ import org.topazproject.otm.OtmException;
  * @author Pradeep Krishnan
  */
 public interface Mapper {
-  public static enum MapperType {PREDICATE, RDFLIST, RDFBAG, RDFSEQ, RDFALT};
+  public static enum MapperType {PREDICATE, RDFLIST, RDFBAG, RDFSEQ, RDFALT, PREDICATE_MAP};
 
   /**
    * Get a value from a field of an object.
