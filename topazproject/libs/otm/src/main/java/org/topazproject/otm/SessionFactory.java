@@ -94,7 +94,12 @@ public class SessionFactory {
     if ((c == null) || Object.class.equals(c))
       return;
 
-    preload(c.getSuperclass());
+    try {
+      preload(c.getSuperclass());
+    } catch (Exception e) {
+      if (log.isDebugEnabled())
+        log.debug("Preload: skipped for " + c.getSuperclass(), e);
+    }
 
     ClassMetadata cm           = cmf.create(c);
 
@@ -177,8 +182,8 @@ public class SessionFactory {
   }
 
   /**
-   * Gets the class metadata of a pre-registered class. This finds the first class with
-   * given name.
+   * Gets the class metadata of a pre-registered class. This finds the first class with given
+   * name.
    *
    * @param clsName the fully-qualified name of the class.
    *
@@ -189,6 +194,7 @@ public class SessionFactory {
       if (c.getName().equals(clsName))
         return metadata.get(c);
     }
+
     return null;
   }
 
