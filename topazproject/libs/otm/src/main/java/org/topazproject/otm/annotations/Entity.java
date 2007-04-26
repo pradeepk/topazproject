@@ -15,12 +15,26 @@ import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * An annotation to mark a class as embeddable. All members of this class 
- * will have the same subject as the embedding class.
+ * Annotation for classes to specify the necessary config for controlling persistence to an RDF
+ * triplestore.
  *
  * @author Pradeep Krishnan
  */
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.TYPE})
-public @interface Embeddable {
+public @interface Entity {
+  /**
+   * Entity name. Defaults to class name (without the package prefix).
+   */
+  String name() default "";
+
+  /**
+   * The rdf:type for this entity. Defaults to super-class.
+   */
+  String type() default "";
+
+  /**
+   * The graph/model where this entity is to be persisted. Defaults to super-class.
+   */
+  String model() default "";
 }

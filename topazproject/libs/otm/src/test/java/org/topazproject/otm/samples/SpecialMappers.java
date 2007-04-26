@@ -13,26 +13,23 @@ import java.util.List;
 import java.util.ArrayList;
 
 import org.topazproject.otm.annotations.Id;
-import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.BaseUri;
 import org.topazproject.otm.annotations.Rdf;
-import org.topazproject.otm.annotations.RdfList;
-import org.topazproject.otm.annotations.RdfBag;
-import org.topazproject.otm.annotations.RdfAlt;
-import org.topazproject.otm.annotations.RdfSeq;
+import org.topazproject.otm.annotations.Predicate;
 
 @BaseUri(Rdf.topaz)
-@Model("ri")
+@Entity(model = "ri")
 public class SpecialMappers {
   @Id
   public String id;
-  @RdfList
+  @Predicate(storeAs=Predicate.StoreAs.rdfList)
   public List<String> list = new ArrayList<String>();
-  @RdfBag
+  @Predicate(storeAs=Predicate.StoreAs.rdfBag)
   public List<String> bag = new ArrayList<String>();
-  @RdfAlt
+  @Predicate(storeAs=Predicate.StoreAs.rdfAlt)
   public List<String> alt = new ArrayList<String>();
-  @RdfSeq
+  @Predicate(storeAs=Predicate.StoreAs.rdfSeq)
   public List<String> seq = new ArrayList<String>();
 
   public SpecialMappers() {

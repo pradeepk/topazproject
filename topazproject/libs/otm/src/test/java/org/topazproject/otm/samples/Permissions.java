@@ -16,9 +16,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.topazproject.otm.annotations.Id;
-import org.topazproject.otm.annotations.Model;
 import org.topazproject.otm.annotations.PredicateMap;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * DOCUMENT ME!

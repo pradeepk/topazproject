@@ -13,7 +13,8 @@ import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.annotations.Id;
 
@@ -22,11 +23,11 @@ import org.topazproject.otm.annotations.Id;
  *
  * @author Eric Brown
  */
-@Model("metadata")
+@Entity(model="metadata")
 public class Alias {
   @Id
   private URI prefix;
-  @Rdf(Rdf.topaz + "hasAlias")
+  @Predicate(uri=Rdf.topaz + "hasAlias")
   private List<String> aliases = new ArrayList<String>();
 
   /**

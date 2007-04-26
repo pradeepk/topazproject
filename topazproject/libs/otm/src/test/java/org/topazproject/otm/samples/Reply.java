@@ -12,7 +12,7 @@ package org.topazproject.otm.samples;
 import java.net.URI;
 
 import org.topazproject.otm.annotations.Id;
-import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.BaseUri;
 import org.topazproject.otm.annotations.Rdf;
 
@@ -21,7 +21,7 @@ import org.topazproject.otm.annotations.Rdf;
  *
  * @author Pradeep Krishnan
  */
-@Rdf(Reply.NS + "Reply")
+@Entity(type = Reply.NS + "Reply")
 @BaseUri(Reply.NS)
 public class Reply extends Annotea {
   public static final String NS = "http://www.w3.org/2001/03/thread#";

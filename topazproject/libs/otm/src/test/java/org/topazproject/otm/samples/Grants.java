@@ -10,7 +10,7 @@
  */
 package org.topazproject.otm.samples;
 
-import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Entity;
 
 /**
  * DOCUMENT ME!
@@ -18,6 +18,6 @@ import org.topazproject.otm.annotations.Model;
  * @author $author$
  * @version $Revision$
   */
-@Model("grants")
+@Entity(model="grants")
 public class Grants extends Permissions {
 }

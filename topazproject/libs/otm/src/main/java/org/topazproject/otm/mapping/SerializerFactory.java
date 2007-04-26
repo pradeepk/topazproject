@@ -24,7 +24,7 @@ import java.util.SimpleTimeZone;
 import java.util.TimeZone;
 
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.annotations.DataType;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
@@ -179,7 +179,7 @@ public class SerializerFactory {
    */
   public Serializer getSerializer(Class clazz, String dataType) {
     if (dataType == null)
-      dataType = DataType.UNTYPED;
+      dataType = Predicate.UNTYPED;
 
     Map<String, Serializer> m = serializers.get(clazz);
 
@@ -197,7 +197,7 @@ public class SerializerFactory {
    */
   public Serializer setSerializer(Class clazz, String dataType, Serializer serializer) {
     if (dataType == null)
-      dataType = DataType.UNTYPED;
+      dataType = Predicate.UNTYPED;
 
     Map<String, Serializer> m = serializers.get(clazz);
 

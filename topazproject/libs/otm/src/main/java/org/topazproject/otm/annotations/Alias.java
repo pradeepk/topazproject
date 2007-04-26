@@ -9,17 +9,23 @@
  */
 package org.topazproject.otm.annotations;
 
-import static java.lang.annotation.ElementType.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Retention;
-import static java.lang.annotation.RetentionPolicy.*;
 import java.lang.annotation.Target;
 
 /**
- * An annotation to mark an inverse association. 
- * Instead of x p y, load/save y inverse(p) x from/to the triple store.
+ * An annotation for configuring an alias for a uri.
+ *
  * @author Pradeep Krishnan
  */
-@Retention(RUNTIME)
-@Target({FIELD})
-public @interface Inverse {
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE, ElementType.PACKAGE})
+public @interface Alias {
+
+    /** the String is a uri. **/
+    String value();
+
+    /** the String is an alias. **/
+    String alias();
 }

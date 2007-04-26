@@ -46,18 +46,13 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.annotations.BaseUri;
-import org.topazproject.otm.annotations.DataType;
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
-import org.topazproject.otm.annotations.Inverse;
-import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.PredicateMap;
 import org.topazproject.otm.annotations.Rdf;
-import org.topazproject.otm.annotations.RdfAlt;
-import org.topazproject.otm.annotations.RdfBag;
-import org.topazproject.otm.annotations.RdfList;
-import org.topazproject.otm.annotations.RdfSeq;
 import org.topazproject.otm.mapping.ArrayMapper;
 import org.topazproject.otm.mapping.CollectionMapper;
 import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
@@ -121,10 +116,10 @@ public class AnnotationClassMetaFactory {
       fields.addAll(superMeta.getFields());
     }
 
-    Model modelAnn = (Model) clazz.getAnnotation(Model.class);
+    Entity entity = (Entity) clazz.getAnnotation(Entity.class);
 
-    if (modelAnn != null)
-      model = modelAnn.value();
+    if ((entity != null) && !"".equals(entity.model()))
+      model = entity.model();
 
     BaseUri baseUriAnn = (BaseUri) clazz.getAnnotation(BaseUri.class);
 
@@ -134,10 +129,8 @@ public class AnnotationClassMetaFactory {
     if (baseUri == null)
       baseUri = baseUriOfContainingClass;
 
-    Rdf rdfAnn = (Rdf) clazz.getAnnotation(Rdf.class);
-
-    if (rdfAnn != null) {
-      type    = rdfAnn.value();
+    if ((entity != null) && !"".equals(entity.type())) {
+      type    = entity.type();
       types   = new HashSet<String>(types);
 
       if (!types.add(type))
@@ -232,12 +225,13 @@ public class AnnotationClassMetaFactory {
     // xxx: But then again, that is 'bad coding style' anyway.  
     // xxx: So exception thrown above in those cases is somewhat justifiable.
     //
-    Rdf     rdf      = (Rdf) f.getAnnotation(Rdf.class);
-    Id      id       = (Id) f.getAnnotation(Id.class);
-    boolean embedded =
+    Predicate rdf      = (Predicate) f.getAnnotation(Predicate.class);
+    Id        id       = (Id) f.getAnnotation(Id.class);
+    boolean   embedded =
       (f.getAnnotation(Embedded.class) != null) || (type.getAnnotation(Embeddable.class) != null);
 
-    String  uri      = (rdf != null) ? rdf.value() : ((ns != null) ? (ns + f.getName()) : null);
+    String    uri      =
+      ((rdf != null) && !"".equals(rdf.uri())) ? rdf.uri() : ((ns != null) ? (ns + f.getName()) : null);
 
     if (id != null) {
       if (!type.equals(String.class) && !type.equals(URI.class) && !type.equals(URL.class))
@@ -264,11 +258,11 @@ public class AnnotationClassMetaFactory {
     type                 = isArray ? type.getComponentType() : (isCollection ? collectionType(f)
                                                                 : type);
 
-    DataType dta         = f.getAnnotation(DataType.class);
-    String   dt          =
-      (dta == null) ? sf.getSerializerFactory().getDefaultDataType(type) : dta.value();
+    String dt            =
+      ((rdf == null) || "".equals(rdf.dataType()))
+      ? sf.getSerializerFactory().getDefaultDataType(type) : rdf.dataType();
 
-    if (DataType.UNTYPED.equals(dt))
+    if (Predicate.UNTYPED.equals(dt))
       dt = null;
 
     Serializer serializer = sf.getSerializerFactory().getSerializer(type, dt);
@@ -277,15 +271,13 @@ public class AnnotationClassMetaFactory {
       log.debug("No serializer found for " + type);
 
     if (!embedded) {
-      boolean inverse      = f.getAnnotation(Inverse.class) != null;
+      boolean inverse      = (rdf != null) && rdf.inverse();
       String  inverseModel = null;
 
       if (inverse) {
         if (serializer != null) {
-          Model m = (Model) f.getAnnotation(Model.class);
-
-          if (m != null)
-            inverseModel = m.value();
+          if (!"".equals(rdf.model()))
+            inverseModel = rdf.model();
         } else {
           ClassMetadata cm = loopDetect.get(type);
 
@@ -296,7 +288,7 @@ public class AnnotationClassMetaFactory {
         }
       }
 
-      Mapper.MapperType mt = getMapperType(f);
+      Mapper.MapperType mt = getMapperType(f, rdf, isArray);
       Mapper            p;
 
       if (isArray)
@@ -367,40 +359,34 @@ public class AnnotationClassMetaFactory {
     return result;
   }
 
-  private Mapper.MapperType getMapperType(Field f) throws OtmException {
-    Mapper.MapperType mt = null;
+  private Mapper.MapperType getMapperType(Field f, Predicate rdf, boolean isArray)
+                                   throws OtmException {
+    Predicate.StoreAs storeAs = (rdf == null) ? Predicate.StoreAs.undefined : rdf.storeAs();
 
-    if (f.getAnnotation(RdfList.class) != null)
-      mt = Mapper.MapperType.RDFLIST;
+    switch (storeAs) {
+    case rdfList:
+      return Mapper.MapperType.RDFLIST;
 
-    if (f.getAnnotation(RdfBag.class) != null) {
-      if (mt != null)
-        throw new OtmException("@RdfBag and @RdfList both cannot be set on '" + f.toGenericString()
-                               + "'");
+    case rdfBag:
+      return Mapper.MapperType.RDFBAG;
 
-      mt = Mapper.MapperType.RDFBAG;
+    case rdfAlt:
+      return Mapper.MapperType.RDFALT;
+
+    case rdfSeq:
+      return Mapper.MapperType.RDFSEQ;
+
+    case predicate:
+      return Mapper.MapperType.PREDICATE;
+
+    case undefined:
+
+      //if (isArray || List.class.isAssignableFrom(field.getType()))
+      //  return Mapper.MapperType.RDFSEQ;
+      return Mapper.MapperType.PREDICATE;
     }
 
-    if (f.getAnnotation(RdfSeq.class) != null) {
-      if (mt != null)
-        throw new OtmException("@RdfSeq and (@RdfList or @RdfBag) both cannot be set on '"
-                               + f.toGenericString() + "'");
-
-      mt = Mapper.MapperType.RDFSEQ;
-    }
-
-    if (f.getAnnotation(RdfAlt.class) != null) {
-      if (mt != null)
-        throw new OtmException("@RdfAlt and (@RdfList or @RdfBag or @RdfSeq) both cannot be set on '"
-                               + f.toGenericString() + "'");
-
-      mt = Mapper.MapperType.RDFALT;
-    }
-
-    if (mt == null)
-      mt = Mapper.MapperType.PREDICATE;
-
-    return mt;
+    return Mapper.MapperType.PREDICATE;
   }
 
   private Mapper createPredicateMap(Field field, Method getter, Method setter)

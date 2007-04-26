@@ -14,10 +14,10 @@ import java.util.Date;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.topazproject.otm.annotations.Inverse;
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.annotations.Id;
-import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Predicate;
 
 /**
  * This returns meta-data about an article.
@@ -25,30 +25,27 @@ import org.topazproject.otm.annotations.Model;
  * @author Eric Brown
  * @version $Id$
  */
-@Model("ri")
-@Rdf(Rdf.topaz + "Article")
+@Entity(type = Rdf.topaz + "Article", model = "ri")
 public class Article {
   @Id
   private URI      uri;
-  @Rdf(Rdf.dc + "title")
+  @Predicate(uri = Rdf.dc + "title")
   private String   title;
-  @Rdf(Rdf.dc + "description")
+  @Predicate(uri = Rdf.dc + "description")
   private String   description;
-  @Rdf(Rdf.dc_terms + "available")
+  @Predicate(uri = Rdf.dc_terms + "available")
   private Date     articleDate;
-  @Rdf(Rdf.dc + "creator")
+  @Predicate(uri = Rdf.dc + "creator")
   private String[] authors;
-  @Rdf(Rdf.dc + "subject")
+  @Predicate(uri = Rdf.dc + "subject")
   private String[] subjects;
-  @Rdf(Rdf.topaz + "hasCategory")
+  @Predicate(uri = Rdf.topaz + "hasCategory")
   private String[] categories;
-  @Rdf(Rdf.topaz + "articleState")
+  @Predicate(uri = Rdf.topaz + "articleState")
   private int      state;
-  @Rdf(Annotation.NS + "annotates")
-  @Inverse
+  @Predicate(uri = Annotation.NS + "annotates", inverse=true)
   private List<PublicAnnotation> publicAnnotations = new ArrayList<PublicAnnotation>();
-  @Rdf(Reply.NS + "inReplyTo")
-  @Inverse
+  @Predicate(uri = Reply.NS + "inReplyTo", inverse=true)
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
 
   /**

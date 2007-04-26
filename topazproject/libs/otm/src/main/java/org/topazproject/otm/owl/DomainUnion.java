@@ -13,9 +13,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Rdf;
-import org.topazproject.otm.annotations.RdfList;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Id;
 
 /**
@@ -23,14 +23,13 @@ import org.topazproject.otm.annotations.Id;
  *
  * @author Eric Brown
  */
-@Model("metadata")
+@Entity(model="metadata")
 public class DomainUnion {
   /** The id of this domain union -- this should really be generated */
   @Id
   public URI id;
   /** The list of possible owl classes for this union */
-  @Rdf(Rdf.owl + "unionOf")
-  @RdfList
+  @Predicate(uri=Rdf.owl + "unionOf",storeAs=Predicate.StoreAs.rdfList)
   public List<OwlClass> domains = new ArrayList<OwlClass>();
 }
 

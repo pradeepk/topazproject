@@ -9,23 +9,24 @@
  */
 package org.topazproject.otm.annotations;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
 /**
- * An annotation to annotate classes with an id which is meant to be interpreted
- * as the base-uri for fields that does not have an {@link Rdf} annotation.
+ * An annotation for configuring the default base-uri for predicate uris that are 
+ * auto-generated from the field name.
  *
  * @author Pradeep Krishnan
  */
-@Retention(RUNTIME)
-@Target({TYPE})
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.TYPE})
 public @interface BaseUri {
 
-    /** the String is a namespace uri. **/
-    String value() default "";
+    /** the String is a uri. **/
+    String value();
 
-
+    /** the String is an alias. **/
+    String alias() default "";
 }

@@ -14,7 +14,8 @@ import java.util.List;
 import java.util.ArrayList;
 import java.util.Collection;
 
-import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.annotations.Id;
 
@@ -23,14 +24,13 @@ import org.topazproject.otm.annotations.Id;
  *
  * @author Eric Brown
  */
-@Model("metadata")
-@Rdf(Rdf.owl + "Class")
+@Entity(model="metadata", type=Rdf.owl + "Class")
 public class OwlClass {
   @Id
   private URI owlClass;
-  @Rdf(Rdf.rdfs + "subClassOf")
+  @Predicate(uri = Rdf.rdfs + "subClassOf")
   private List<URI> superClasses = new ArrayList<URI>();
-  @Rdf(Rdf.topaz + "inModel")
+  @Predicate(uri = Rdf.topaz + "inModel")
   private URI model;
 
   /**

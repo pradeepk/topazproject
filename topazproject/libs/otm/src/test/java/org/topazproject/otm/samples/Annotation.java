@@ -10,12 +10,13 @@
 package org.topazproject.otm.samples;
 
 import java.net.URI;
+
 import java.util.ArrayList;
 import java.util.List;
 
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
-import org.topazproject.otm.annotations.Inverse;
-import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
@@ -23,26 +24,25 @@ import org.topazproject.otm.annotations.Rdf;
  *
  * @author Pradeep Krishnan
  */
-@Rdf(Annotea.NS + "Annotation")
+@Entity(type = Annotea.NS + "Annotation")
 public abstract class Annotation extends Annotea {
-  private URI                                                  annotates;
-  private String                                               context;
-  @Rdf(Rdf.dc_terms + "replaces")
-  private Annotation                                           supersedes;
-  @Rdf(Rdf.dc_terms + "isReplacedBy")
-  private Annotation                                           supersededBy;
-  @Inverse
-  @Rdf(Reply.NS + "inReplyTo")
-  private List<ReplyThread>                                    replies =
+  private URI                                                                       annotates;
+  private String                                                                    context;
+  @Predicate(uri = Rdf.dc_terms + "replaces")
+  private Annotation                                                                supersedes;
+  @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
+  private Annotation                                                                supersededBy;
+  @Predicate(uri = Reply.NS + "inReplyTo", inverse = true)
+  private List<ReplyThread>                                                         replies =
     new ArrayList<ReplyThread>();
 
-  /**
+/**
    * Creates a new Annotation object.
    */
   public Annotation() {
   }
 
-  /**
+/**
    * Creates a new Annotation object.
    */
   public Annotation(URI id) {

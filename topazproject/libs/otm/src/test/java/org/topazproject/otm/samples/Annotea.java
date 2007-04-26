@@ -10,11 +10,13 @@
 package org.topazproject.otm.samples;
 
 import java.net.URI;
+
 import java.util.Date;
 
-import org.topazproject.otm.annotations.Id;
-import org.topazproject.otm.annotations.Model;
 import org.topazproject.otm.annotations.BaseUri;
+import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
@@ -22,7 +24,7 @@ import org.topazproject.otm.annotations.Rdf;
  *
  * @author Pradeep Krishnan
  */
-@Model("ri")
+@Entity(model = "ri")
 @BaseUri(Annotea.NS)
 public class Annotea {
   /**
@@ -30,19 +32,19 @@ public class Annotea {
    */
   public static final String NS = "http://www.w3.org/2000/10/annotation-ns#";
   @Id
-  private URI                                   id;
-  private Date                                  created;
-  private String                                body;
-  @Rdf(Rdf.rdf + "type")
-  private String                                type;
-  @Rdf(Rdf.dc + "creator")
-  private String                                creator;
-  @Rdf(Rdf.dc + "title")
-  private String                                title;
-  @Rdf(Rdf.dc_terms + "mediator")
-  private String                                mediator;
-  @Rdf(Rdf.topaz + "state")
-  private int                                   state;
+  private URI                                               id;
+  private Date                                              created;
+  private String                                            body;
+  @Predicate(uri = Rdf.rdf + "type")
+  private String                                            type;
+  @Predicate(uri = Rdf.dc + "creator")
+  private String                                            creator;
+  @Predicate(uri = Rdf.dc + "title")
+  private String                                            title;
+  @Predicate(uri = Rdf.dc_terms + "mediator")
+  private String                                            mediator;
+  @Predicate(uri = Rdf.topaz + "state")
+  private int                                               state;
 
   // Embedding example
   /**
@@ -50,13 +52,13 @@ public class Annotea {
    */
   public SampleEmbeddable foobar;
 
-  /**
+/**
    * Creates a new Annotea object.
    */
   public Annotea() {
   }
 
-  /**
+/**
    * Creates a new Annotea object.
    */
   public Annotea(URI id) {

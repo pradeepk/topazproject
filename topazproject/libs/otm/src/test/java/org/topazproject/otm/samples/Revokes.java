@@ -9,7 +9,7 @@
  */
 package org.topazproject.otm.samples;
 
-import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Entity;
 
 /**
  * DOCUMENT ME!
@@ -17,6 +17,6 @@ import org.topazproject.otm.annotations.Model;
  * @author $author$
  * @version $Revision$
   */
-@Model("revokes")
+@Entity(model = "revokes")
 public class Revokes extends Permissions {
 }

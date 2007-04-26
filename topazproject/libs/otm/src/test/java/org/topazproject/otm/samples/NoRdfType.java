@@ -2,12 +2,12 @@ package org.topazproject.otm.samples;
 
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Id;
-import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.BaseUri;
 import org.topazproject.otm.annotations.Rdf;
 
 @BaseUri(Rdf.topaz)
-@Model("ri")
+@Entity(model="ri")
 public class NoRdfType {
   @Id
   public String id;

@@ -13,9 +13,9 @@ import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
 
-import org.topazproject.otm.annotations.Model;
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Rdf;
-import org.topazproject.otm.annotations.RdfList;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Id;
 
 /**
@@ -23,14 +23,13 @@ import org.topazproject.otm.annotations.Id;
  *
  * @author Eric Brown
  */
-@Model("metadata")
-@Rdf(Rdf.owl + "ObjectProperty")
+@Entity(model="metadata", type=Rdf.owl + "ObjectProperty")
 public class ObjectProperty {
   @Id
   private URI property;
-  @Rdf(Rdf.rdfs + "range")
+  @Predicate(uri=Rdf.rdfs + "range")
   private URI[] ranges;
-  @Rdf(Rdf.rdfs + "domain")
+  @Predicate(uri=Rdf.rdfs + "domain")
   private DomainUnion domains;
 
   /**

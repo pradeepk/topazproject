@@ -9,8 +9,8 @@
  */
 package org.topazproject.otm.annotations;
 
-import static java.lang.annotation.ElementType.*;
-import static java.lang.annotation.RetentionPolicy.*;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Retention;
 import java.lang.annotation.Target;
 
@@ -20,7 +20,7 @@ import java.lang.annotation.Target;
  *
  * @author Pradeep Krishnan
  */
-@Retention(RUNTIME)
-@Target({FIELD})
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.FIELD})
 public @interface Embedded {
 }

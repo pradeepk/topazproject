@@ -13,7 +13,7 @@ import java.net.URI;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.topazproject.otm.annotations.Inverse;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
@@ -22,8 +22,7 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Pradeep Krishnan
  */
 public class ReplyThread extends Reply {
-  @Inverse
-  @Rdf(Reply.NS + "inReplyTo")
+  @Predicate(uri=Reply.NS + "inReplyTo", inverse=true)
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
 
   /**
