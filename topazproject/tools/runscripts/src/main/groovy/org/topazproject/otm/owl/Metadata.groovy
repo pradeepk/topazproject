@@ -110,7 +110,7 @@ class Metadata {
     }
 
     try {
-      ClassMetadata cm = factory.getMetadata(clazz);
+      ClassMetadata cm = factory.getClassMetadata(clazz);
       String model = (cm != null) ? cm.getModel() : null
       if (model != null) {
         factory.addModel(new ModelConfig(model, URI.create(MODEL_PREFIX + model), null))
