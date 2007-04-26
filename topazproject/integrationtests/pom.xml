@@ -41,6 +41,11 @@
       <groupId>junit</groupId>
       <artifactId>junit</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.testng</groupId>
+      <artifactId>testng</artifactId>
+      <classifier>jdk15</classifier>
+    </dependency>
 
     <!-- dependencies for building javadocs (or they fail) -->
     <dependency>
@@ -465,7 +470,11 @@
               <tasks>
                 <copy todir="${project.build.directory}/generated-sources">
                   <fileset dir=".."/>
-                  <regexpmapper from="^(.*)/src/(it|test)/(.*)" to="src/\1/\2"/>
+                  <compositemapper>
+                    <regexpmapper from="^(.*)/src/it/(.*)" to="src/it/\2"/>
+                    <regexpmapper
+                      from="^(.*)/src/test/(java/org/topazproject/otm/samples/.*)" to="src/it/\2"/>
+                  </compositemapper>
                 </copy>
               </tasks>
               
