@@ -192,6 +192,13 @@
         <version>3.8.1</version>
         <scope>test</scope>
       </dependency>
+      <dependency>
+        <groupId>org.testng</groupId>
+        <artifactId>testng</artifactId>
+        <version>5.1</version>
+        <scope>test</scope>
+        <classifier>jdk15</classifier>
+      </dependency>
 
       <!-- Topaz Dependencies -->
       <dependency>
