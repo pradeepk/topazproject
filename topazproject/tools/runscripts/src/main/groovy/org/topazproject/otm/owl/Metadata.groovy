@@ -13,6 +13,9 @@ import java.util.jar.JarFile
 import org.apache.commons.lang.text.StrMatcher
 import org.apache.commons.lang.text.StrTokenizer
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.otm.SessionFactory
 import org.topazproject.otm.ModelConfig
 import org.topazproject.otm.stores.ItqlStore
@@ -27,6 +30,7 @@ import org.topazproject.otm.ClassMetadata
  * @author Eric Brown
  */
 class Metadata {
+  private static final Log log = LogFactory.getLog(Metadata.class);
   static GroovyClassLoader gcl = new GroovyClassLoader()
   static SessionFactory factory = new SessionFactory()
   static String MODEL_PREFIX = "local:///topazproject#"
@@ -102,6 +106,7 @@ class Metadata {
     try {
       factory.preload(clazz)
     } catch (OtmException o) {
+      log.debug("Unable to load '$clazz'", o)
     }
 
     try {
