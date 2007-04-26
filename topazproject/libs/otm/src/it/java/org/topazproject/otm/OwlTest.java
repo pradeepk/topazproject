@@ -67,7 +67,7 @@ public class OwlTest {
 
     ModelConfig otm = new ModelConfig(VINModel, VINModelUri, null);
     factory.addModel(otm);
-    ModelConfig ri = new ModelConfig("ri", URI.create("local:///topazproject#ri"), null);
+    ModelConfig ri = new ModelConfig("ri", URI.create("local:///topazproject#otmtest-ri"), null);
     factory.addModel(ri);
 
     clearModel(factory, otm);
@@ -127,6 +127,6 @@ public class OwlTest {
 
   @Test
   public void helperTest() throws OtmException {
-    OwlHelper.addFactory(factory);
+    OwlHelper.addFactory(factory, metaFactory.getModel("metadata"));
   }
 }

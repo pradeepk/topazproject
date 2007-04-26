@@ -36,8 +36,6 @@ import org.topazproject.otm.annotations.Rdf;
 public class OwlHelper {
   private static final Log log = LogFactory.getLog(OwlHelper.class);
 
-  public static final String METADATA_MODEL  = "metadata";
-  public static final URI METADATA_MODEL_URI = URI.create("local:///topazproject#" + METADATA_MODEL);
   public static final URI HAS_ALIAS_PRED     = URI.create(Rdf.topaz + "hasAlias");
 
   /**
@@ -45,9 +43,10 @@ public class OwlHelper {
    * #metadata in owl form.
    *
    * @param factory where MetaClassdata exists
+   * @param mc Model where owl metadata is to be stored
    */
-  public static void addFactory(SessionFactory factory) throws OtmException {
-    SessionFactory metaFactory = createMetaSessionFactory(factory);
+  public static void addFactory(SessionFactory factory, ModelConfig mc) throws OtmException {
+    SessionFactory metaFactory = createMetaSessionFactory(factory, mc);
 
     Session session = metaFactory.openSession();
     Transaction tx = null;
@@ -75,13 +74,9 @@ public class OwlHelper {
 
           // Set model
           if (cm.getModel() != null) {
-            /* TODO: Get following to work (but models need to be added to factory)
-             *   Problem is that OwlHelper doesn't know what models to add --
-             *   maybe make the prefix a parameter
-             * ModelConfig mc = metaFactory.getModel(cm.getModel());
-             * oc.setModel(mc.getUri());
-             */
-            oc.setModel(URI.create("local:///topazproject#" + cm.getModel()));
+             ModelConfig c = factory.getModel(cm.getModel());
+             if (c != null)
+               oc.setModel(c.getUri());
           }
 
           session.saveOrUpdate(oc);
@@ -204,12 +199,11 @@ public class OwlHelper {
   /**
    * Setup our model and session. DON'T forget to close the session!
    */
-  private static SessionFactory createMetaSessionFactory(SessionFactory factory)
+  private static SessionFactory createMetaSessionFactory(SessionFactory factory, ModelConfig mc)
       throws OtmException {
     SessionFactory metaFactory = new SessionFactory();
     metaFactory.setTripleStore(factory.getTripleStore());
 
-    ModelConfig mc = new ModelConfig(METADATA_MODEL, METADATA_MODEL_URI, null);
     metaFactory.addModel(mc);
     metaFactory.getTripleStore().createModel(mc);
 
