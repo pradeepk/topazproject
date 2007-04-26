@@ -33,6 +33,7 @@ public class ClassMetadata {
   private static final Log    log        = LogFactory.getLog(ClassMetadata.class);
   private Set<String>         types;
   private String              type;
+  private String              name;
   private String              model;
   private String              baseUri;
   private Mapper              idField;
@@ -46,6 +47,7 @@ public class ClassMetadata {
    * Creates a new ClassMetadata object.
    *
    * @param clazz the class 
+   * @param name the entity name for use in queries
    * @param types set of rdf:type values that identify this class
    * @param type the most specific rdf:type that identify this class
    * @param model the graph/model where this class is persisted
@@ -53,10 +55,11 @@ public class ClassMetadata {
    * @param idField the mapper for the id field
    * @param fields mappers for all persistable fields (includes embedded class fields)
    */
-  public ClassMetadata(Class clazz, String type, Set<String> types, String model, String baseUri,
-                       Mapper idField, Collection<Mapper> fields)
+  public ClassMetadata(Class clazz, String name, String type, Set<String> types, String model,
+                       String baseUri, Mapper idField, Collection<Mapper> fields)
                 throws OtmException {
     this.clazz                           = clazz;
+    this.name                            = name;
     this.type                            = type;
     this.model                           = model;
     this.baseUri                         = baseUri;
@@ -110,6 +113,15 @@ public class ClassMetadata {
    */
   public String getBaseUri() {
     return baseUri;
+  }
+
+  /**
+   * Gets the entity name for this ClassMetadata
+   *
+   * @return the entity name
+   */
+  public String getName() {
+    return name;
   }
 
   /**

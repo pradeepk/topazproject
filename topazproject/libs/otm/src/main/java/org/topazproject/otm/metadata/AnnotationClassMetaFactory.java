@@ -137,7 +137,11 @@ public class AnnotationClassMetaFactory {
         throw new OtmException("Duplicate rdf:type in class hierarchy " + clazz);
     }
 
-    ClassMetadata cm = new ClassMetadata(clazz, type, types, model, baseUri, idField, fields);
+    String        name =
+      ((entity != null) && !"".equals(entity.name())) ? entity.name() : getName(clazz);
+
+    ClassMetadata cm   =
+      new ClassMetadata(clazz, name, type, types, model, baseUri, idField, fields);
     loopDetect.put(clazz, cm);
 
     for (Field f : clazz.getDeclaredFields()) {
@@ -160,7 +164,7 @@ public class AnnotationClassMetaFactory {
       }
     }
 
-    cm = new ClassMetadata(clazz, type, types, model, baseUri, idField, fields);
+    cm = new ClassMetadata(clazz, name, type, types, model, baseUri, idField, fields);
     loopDetect.put(clazz, cm);
 
     return cm;
@@ -415,5 +419,15 @@ public class AnnotationClassMetaFactory {
 
     throw new OtmException("@PredicateMap can be applied to a Map<String, List<String>> field only."
                            + "It cannot be applied to '" + field.toGenericString() + "'");
+  }
+
+  private static String getName(Class clazz) {
+    String  name = clazz.getName();
+    Package p    = clazz.getPackage();
+
+    if (p != null)
+      name = name.substring(p.getName().length() + 1);
+
+    return name;
   }
 }

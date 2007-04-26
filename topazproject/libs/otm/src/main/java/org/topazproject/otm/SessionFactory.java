@@ -50,6 +50,11 @@ public class SessionFactory {
   private final Map<Class, ClassMetadata> metadata = new HashMap<Class, ClassMetadata>();
 
   /**
+   * Entity name to metadata mapping.
+   */
+  private final Map<String, ClassMetadata> entitymap = new HashMap<String, ClassMetadata>();
+
+  /**
    * Class to proxy class mapping.
    */
   private final Map<Class, Class> proxyClasses = new HashMap<Class, Class>();
@@ -152,6 +157,12 @@ public class SessionFactory {
     if (!cm.isEntity())
       throw new OtmException(cm.toString() + " is not an entity");
 
+    if (entitymap.containsKey(cm.getName())
+         && !entitymap.get(cm.getName()).getSourceClass().equals(cm.getSourceClass()))
+      throw new OtmException("An entity with name '" + cm.getName() + "' already exists.");
+
+    entitymap.put(cm.getName(), cm);
+
     Class c = cm.getSourceClass();
     metadata.put(c, cm);
     createProxy(c, cm);
@@ -182,26 +193,14 @@ public class SessionFactory {
   }
 
   /**
-   * Finds the class metadata of a pre-registered class. This returns the first class whose
-   * fully-qualified name exactly matches given name, or if none exists the first class whose
-   * fully-qualified name ends with ".&lt;clsName&gt;'. This allows the use of class-names without
-   * any or with only partial package specifiers.
+   * Gets the class metadata of a pre-registered entity.
    *
-   * @param clsName the fully- or partially-qualified name of the class.
+   * @param entity the entity.
+   *
    * @return metadata for the class, or null if not found
    */
-  public ClassMetadata findClassMetadata(String clsName) {
-    String dotName   = "." + clsName;
-    Class  partMatch = null;
-
-    for (Class c : metadata.keySet()) {
-      if (c.getName().equals(clsName))
-        return metadata.get(c);
-      else if (partMatch == null && c.getName().endsWith(dotName))
-        partMatch = c;
-    }
-
-    return metadata.get(partMatch);
+  public ClassMetadata getClassMetadata(String entity) {
+    return entitymap.get(entity);
   }
 
   /**
