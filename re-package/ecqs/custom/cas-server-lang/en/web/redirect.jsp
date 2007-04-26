@@ -91,10 +91,10 @@
 <!-- begin : footer -->
 <div id="ftr">
 <ul>
-<li><a href="http://www.plos.org/privacy.html" title="PLoS Privacy Statement">Privacy Statement</a></li>
-<li><a href="http://www.plos.org/terms.html" title="PLoS Terms of Use">Terms of Use</a></li>
-<li><a href="http://www.plos.org/advertise/" title="Advertise with PLoS">Advertise</a></li>
-<li><a href="http://www.plos.org" title="PLoS.org" tabindex="104">PLoS.org</a></li>
+<li><a href="http://journals.plos.org/privacy.phpx" title="PLoS Privacy Statement" tabindex="501">Privacy Statement</a></li>
+<li><a href="http://journals.plos.org/terms.php" title="PLoS Terms of Use" tabindex="502">Terms of Use</a></li>
+<li><a href="http://www.plos.org/advertise/" title="Advertise with PLoS" tabindex="503">Advertise</a></li>
+<li><a href="http://www.plos.org" title="PLoS.org" tabindex="504">PLoS.org</a></li>
 </ul>
 
 </div>
