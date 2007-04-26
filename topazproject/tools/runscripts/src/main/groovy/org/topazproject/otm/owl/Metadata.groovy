@@ -16,10 +16,9 @@ import org.apache.commons.lang.text.StrTokenizer
 import org.topazproject.otm.SessionFactory
 import org.topazproject.otm.ModelConfig
 import org.topazproject.otm.stores.ItqlStore
-import org.topazproject.otm.annotations.Rdf
-import org.topazproject.otm.annotations.Model
 import org.topazproject.otm.owl.OwlHelper
 import org.topazproject.otm.OtmException
+import org.topazproject.otm.ClassMetadata
 
 /**
  * Utility class that uses otm-s OwlHelper class to generate owl metadata into
@@ -101,27 +100,21 @@ class Metadata {
   /** See if a class is otm annotated and add it to our factory. */
   static void processClass(Class clazz) {
     try {
-      Rdf rdfAnn = (Rdf)clazz.getAnnotation(Rdf.class)
-      String model = findModel(clazz)
-      if (rdfAnn != null && model != null) {
+      factory.preload(clazz)
+    } catch (OtmException o) {
+    }
+
+    try {
+      ClassMetadata cm = factory.getMetadata(clazz);
+      String model = (cm != null) ? cm.getModel() : null
+      if (model != null) {
         factory.addModel(new ModelConfig(model, URI.create(MODEL_PREFIX + model), null))
-        factory.preload(clazz)
         println "Loaded ${clazz.getName()} into ${MODEL_PREFIX}${model}"
       }
     } catch (Throwable t) {
       println "error processing '${clazz.getName()}' " + t
       t.printStackTrace()
     }
-  }
-
-  /** Find the model for a given otm class (it may be in a superclass) */
-  static String findModel(Class clazz) {
-    Model modelAnn = (Model)clazz.getAnnotation(Model.class)
-    if (modelAnn != null)
-      return modelAnn.value()
-    else if (modelAnn == null && clazz == Object.class)
-      return null
-    return findModel(clazz.getSuperclass())
   }
 
   /** Convert a filename to a classname and load it via our GroovyClassLoader */
