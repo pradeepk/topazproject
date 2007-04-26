@@ -867,7 +867,7 @@ public class OtmTest extends TestCase {
 
       // test1
       Results r = session.doQuery(
-            "select a from org.topazproject.otm.samples.Article a where a.title = 'Yo ho ho';");
+            "select a from Article a where a.title = 'Yo ho ho';");
       if (r.getWarnings() != null)
         log.error("Got warnings: " +
                   StringUtils.join(r.getWarnings(), System.getProperty("line.separator")));
@@ -884,7 +884,7 @@ public class OtmTest extends TestCase {
 
       // test2
       r = session.doQuery(
-            "select art a, ann n from org.topazproject.otm.samples.Article art, org.topazproject.otm.samples.Annotation ann where ann.annotates = art order by n;");
+          "select art a, ann n from Article art, Annotation ann where ann.annotates = art order by n;");
       if (r.getWarnings() != null)
         log.error("Got warnings: " +
                   StringUtils.join(r.getWarnings(), System.getProperty("line.separator")));
@@ -912,7 +912,7 @@ public class OtmTest extends TestCase {
 
       // test3
       r = session.doQuery(
-            "select art.publicAnnotations.note n from org.topazproject.otm.samples.Article art where art.title = 'Yo ho ho' order by n;");
+            "select art.publicAnnotations.note n from Article art where art.title = 'Yo ho ho' order by n;");
       if (r.getWarnings() != null)
         log.error("Got warnings: " +
                   StringUtils.join(r.getWarnings(), System.getProperty("line.separator")));
@@ -922,8 +922,8 @@ public class OtmTest extends TestCase {
 
       // test4
       r = session.doQuery(
-            "select ann n from org.topazproject.otm.samples.Annotation ann " +
-            "where cast(ann.annotates, org.topazproject.otm.samples.Article).title != 'Yo ho ho' " +
+            "select ann n from Annotation ann " +
+            "where cast(ann.annotates, Article).title != 'Yo ho ho' " +
             "order by n;");
       if (r.getWarnings() != null)
         log.error("Got warnings: " +
@@ -934,8 +934,7 @@ public class OtmTest extends TestCase {
 
       // test5
       r = session.doQuery(
-            "select ann n from org.topazproject.otm.samples.Annotation ann " +
-            "where ann.annotates != <foo:1> order by n;");
+            "select ann n from Annotation ann where ann.annotates != <foo:1> order by n;");
       if (r.getWarnings() != null)
         log.error("Got warnings: " +
                   StringUtils.join(r.getWarnings(), System.getProperty("line.separator")));
@@ -950,7 +949,7 @@ public class OtmTest extends TestCase {
       // test6
       /* FIXME
       r = session.doQuery(
-            "select art a, (select pa pa from org.topazproject.otm.samples.Article a2 where pa := art.publicAnnotations order by pa) from org.topazproject.otm.samples.Article art " +
+            "select art a, (select pa pa from Article a2 where pa := art.publicAnnotations order by pa) from Article art " +
             "where p := art.publicAnnotations order by a;");
       if (r.getWarnings() != null)
         log.error("Got warnings: " +
@@ -989,7 +988,7 @@ public class OtmTest extends TestCase {
       // test7
       /* FIXME
       r = session.doQuery(
-            "select art a, count(art.publicAnnotations) from org.topazproject.otm.samples.Article art " +
+            "select art a, count(art.publicAnnotations) from Article art " +
             "where p := art.publicAnnotations order by a;");
       if (r.getWarnings() != null)
         log.error("Got warnings: " +

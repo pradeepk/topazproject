@@ -197,11 +197,11 @@ public class QueryTest extends TestCase {
   }
 
   public void testPredTransformer() throws Exception {
-    //String qry = "select a.categories.* cat, count(pp.creator) from org.topazproject.otm.samples.Article a where a.title = '42' or foobar(a) and pp := a.replies and x:foobar(cast(a.categories, org.topazproject.otm.samples.Reply).type, a.<topaz:hasCategory>, blah(a.replies.creator, pp.creator)) and a.{p: p = a.replies or foo(p) and cast(p, org.topazproject.otm.samples.Reply).title = <foo:bar>} = '42';";
-    String qry = "select a.categories.* cat, count(pp.creator) from org.topazproject.otm.samples.Article a where a.title = '42' or pp := a.replies and cast(a.categories, org.topazproject.otm.samples.Reply).type = pp and a.{p: p = a.replies or cast(p, org.topazproject.otm.samples.Reply).title = <foo:bar>} = '42';";
-    //String qry = "select a from org.topazproject.otm.samples.Article a where a = <42> or a = <52>;";
-    //String qry = "select ann n from org.topazproject.otm.samples.Annotation ann where cast(ann.annotates, org.topazproject.otm.samples.Article).title != 'Yo ho ho' order by n;";
-    //String qry = "select art a, count(art.publicAnnotations) from org.topazproject.otm.samples.Article art where p := art.publicAnnotations order by a;";
+    //String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = '42' or foobar(a) and pp := a.replies and x:foobar(cast(a.categories, org.topazproject.otm.samples.Reply).type, a.<topaz:hasCategory>, blah(a.replies.creator, pp.creator)) and a.{p: p = a.replies or foo(p) and cast(p, org.topazproject.otm.samples.Reply).title = <foo:bar>} = '42';";
+    String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = '42' or pp := a.replies and cast(a.categories, Reply).type = pp and a.{p: p = a.replies or cast(p, Reply).title = <foo:bar>} = '42';";
+    //String qry = "select a from Article a where a = <42> or a = <52>;";
+    //String qry = "select ann n from Annotation ann where cast(ann.annotates, Article).title != 'Yo ho ho' order by n;";
+    //String qry = "select art a, count(art.publicAnnotations) from Article art where p := art.publicAnnotations order by a;";
 
     Session sess = getSession();
 

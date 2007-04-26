@@ -182,20 +182,26 @@ public class SessionFactory {
   }
 
   /**
-   * Gets the class metadata of a pre-registered class. This finds the first class with given
-   * name.
+   * Finds the class metadata of a pre-registered class. This returns the first class whose
+   * fully-qualified name exactly matches given name, or if none exists the first class whose
+   * fully-qualified name ends with ".&lt;clsName&gt;'. This allows the use of class-names without
+   * any or with only partial package specifiers.
    *
-   * @param clsName the fully-qualified name of the class.
-   *
+   * @param clsName the fully- or partially-qualified name of the class.
    * @return metadata for the class, or null if not found
    */
-  public ClassMetadata getClassMetadata(String clsName) {
+  public ClassMetadata findClassMetadata(String clsName) {
+    String dotName   = "." + clsName;
+    Class  partMatch = null;
+
     for (Class c : metadata.keySet()) {
       if (c.getName().equals(clsName))
         return metadata.get(c);
+      else if (partMatch == null && c.getName().endsWith(dotName))
+        partMatch = c;
     }
 
-    return null;
+    return metadata.get(partMatch);
   }
 
   /**

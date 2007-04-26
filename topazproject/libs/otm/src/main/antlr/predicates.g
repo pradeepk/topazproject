@@ -73,7 +73,7 @@ options {
     }
 
     private ExprType getTypeForClass(AST clazz, String loc) throws RecognitionException {
-      ClassMetadata md = sess.getSessionFactory().getClassMetadata(#clazz.getText());
+      ClassMetadata md = sess.getSessionFactory().findClassMetadata(#clazz.getText());
       if (md == null && loc != null)
         throw new RecognitionException("unknown class '" + #clazz.getText() + "' in " + loc);
       return ExprType.classType(md);
