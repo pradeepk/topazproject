@@ -121,11 +121,11 @@ public class SessionFactory {
    * from one of the available ones.
    *
    * @param clazz the super class
-   * @param typeUris list of type uris
+   * @param typeUris collection of type uris
    *
    * @return the most specific sub class
    */
-  public Class mostSpecificSubClass(Class clazz, List<String> typeUris) {
+  public Class mostSpecificSubClass(Class clazz, Collection<String> typeUris) {
     Set<Class> mappedClasses = new HashSet<Class>();
 
     for (String uri : typeUris) {
@@ -134,6 +134,9 @@ public class SessionFactory {
       if (classes != null)
         mappedClasses.addAll(classes);
     }
+
+    if (!mappedClasses.contains(clazz) && (typeUris.size() > 0))
+      return null;
 
     Class solution = clazz;
 

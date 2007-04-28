@@ -292,40 +292,53 @@ public class ItqlStore implements TripleStore {
     try {
       a = isc.getItqlHelper().doQuery(get.toString(), null);
     } catch (RemoteException re) {
-      throw new OtmException("error performing query", re);
+      throw new OtmException("error performing query: " + get.toString(), re);
     }
 
     // parse
     Map<String, List<String>> fvalues = new HashMap<String, List<String>>();
     Map<String, List<String>> rvalues = new HashMap<String, List<String>>();
+    Map<String, Set<String>> types = new HashMap<String, Set<String>>();
     try {
       AnswerSet ans = new AnswerSet(a);
 
       // check if we got something useful
       ans.beforeFirst();
-      if (!ans.next())
-        return null;
-      if (!ans.isQueryResult())
-        throw new OtmException("query failed: " + ans.getMessage());
+      while (ans.next()) {
+        if (!ans.isQueryResult())
+          throw new OtmException("query failed: " + ans.getMessage());
 
-      AnswerSet.QueryAnswerSet qa = ans.getQueryResults();
+        AnswerSet.QueryAnswerSet qa = ans.getQueryResults();
 
-      // collect the results, grouping by predicate
-      qa.beforeFirst();
-      while (qa.next()) {
-        String p = qa.getString("p");
-        boolean inverse = (!id.equals(qa.getString("s")) && id.equals(qa.getString("o")));
+        // collect the results, grouping by predicate
+        qa.beforeFirst();
+        while (qa.next()) {
+          String s = qa.getString("s");
+          String p = qa.getString("p");
+          String o = qa.getString("o");
+          boolean inverse = (!id.equals(s) && id.equals(o));
 
-        if (!inverse) {
-          List<String> v = fvalues.get(p);
-          if (v == null)
-            fvalues.put(p, v = new ArrayList<String>());
-          v.add(qa.getString("o"));
-        } else {
-          List<String> v = rvalues.get(p);
-          if (v == null)
-            rvalues.put(p, v = new ArrayList<String>());
-          v.add(qa.getString("s"));
+          if (!inverse) {
+            List<String> v = fvalues.get(p);
+            if (v == null)
+              fvalues.put(p, v = new ArrayList<String>());
+            v.add(o);
+          } else {
+            List<String> v = rvalues.get(p);
+            if (v == null)
+              rvalues.put(p, v = new ArrayList<String>());
+            v.add(s);
+          }
+
+          AnswerSet.QueryAnswerSet sqa = qa.getSubQueryResults(3);
+          sqa.beforeFirst();
+          while (sqa.next()) {
+            String assoc = inverse ? s : o;
+            Set<String> v = types.get(assoc);
+            if (v == null)
+              types.put(assoc, v = new HashSet<String>());
+            v.add(sqa.getString("t"));
+          }
         }
       }
     } catch (AnswerException ae) {
@@ -339,6 +352,8 @@ public class ItqlStore implements TripleStore {
     Class clazz = cm.getSourceClass();
     if (fvalues.get(Rdf.rdf + "type") != null) {
       clazz = sf.mostSpecificSubClass(clazz, fvalues.get(Rdf.rdf + "type"));
+      if (clazz == null)
+        return null;
       cm    = sf.getClassMetadata(clazz);
 
       fvalues.get(Rdf.rdf + "type").removeAll(cm.getTypes());
@@ -382,6 +397,8 @@ public class ItqlStore implements TripleStore {
       inverse = true;
     }
 
+    ro.types = types;
+
     boolean found = false;
     for (Mapper m : cm.getFields()) {
       if (m.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
@@ -413,10 +430,15 @@ public class ItqlStore implements TripleStore {
   private void buildGetSelect(StringBuilder qry, ClassMetadata cm, String id, Transaction txn)
       throws OtmException {
     String model = getModelUri(cm.getModel(), txn);
+    qry.append("select $s $p $o subquery (select $t from <").append(model).append("> where ");
+    qry.append("$o <rdf:type> $t) ");
+    qry.append("from <").append(model).append("> where ");
+    qry.append("$s $p $o and $s <mulgara:is> <").append(id).append(">;");
 
-    qry.append("select $s $p $o from <").append(model).append("> where ");
-    qry.append("($s $p $o and $s <mulgara:is> <").append(id).append(">)");
-    qry.append("or ($s $p $o and $o <mulgara:is> <").append(id).append(">)");
+    qry.append("select $s $p $o subquery (select $t from <").append(model).append("> where ");
+    qry.append("$s <rdf:type> $t) ");
+    qry.append("from <").append(model).append("> where ");
+    qry.append("$s $p $o and $o <mulgara:is> <").append(id).append(">");
   }
 
   private List<String> getRdfList(String sub, String pred, String modelUri, Transaction txn)

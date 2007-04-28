@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.mapping.Mapper;
@@ -153,6 +154,7 @@ public interface TripleStore {
     public Map<Mapper, List<String>>       unresolvedAssocs = new HashMap<Mapper, List<String>>();
     public Map<Mapper, List<ResultObject>> resolvedAssocs   =
       new HashMap<Mapper, List<ResultObject>>();
+    public Map<String, Set<String>> types;
 
     public ResultObject(Object o, String id) {
       this.o    = o;

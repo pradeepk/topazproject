@@ -393,7 +393,9 @@ public class Session {
    * Run an OQL query.
    *
    * @param query the OQL query
+   *
    * @return the results
+   *
    * @throws OtmException on an error
    */
   public Results doQuery(String query) throws OtmException {
@@ -402,7 +404,8 @@ public class Session {
 
     flush(); // so that mods are visible to queries
 
-    TripleStore store  = sessionFactory.getTripleStore();
+    TripleStore store = sessionFactory.getTripleStore();
+
     return store.doQuery(query, txn);
   }
 
@@ -464,10 +467,18 @@ public class Session {
 
       for (String val : e.getValue()) {
         // lazy load
-        Object a = load(p.getComponentType(), val);
+        Class       clazz = p.getComponentType();
+        Set<String> types = ro.types.get(val);
 
-        if (a != null)
-          assocs.add(a);
+        if (types != null)
+          clazz = sessionFactory.mostSpecificSubClass(clazz, types);
+
+        if (clazz != null) {
+          Object a = load(clazz, val);
+
+          if (a != null)
+            assocs.add(a);
+        }
       }
 
       p.set(ro.o, assocs);
