@@ -40,7 +40,7 @@ public abstract class AbstractMapper implements Mapper {
   private String     dataType;
   private MapperType mapperType;
 
-/**
+  /**
    * Creates a new AbstractMapper object.
    *
    * @param uri the rdf predicate
@@ -208,7 +208,7 @@ public abstract class AbstractMapper implements Mapper {
   }
 
   /**
-   * Run a value throug the serializer. If no serializer is defined, the value is returned as
+   * Run a value through the serializer. If no serializer is defined, the value is returned as
    * is.
    *
    * @param o the object to serialize.
@@ -226,7 +226,7 @@ public abstract class AbstractMapper implements Mapper {
   }
 
   /**
-   * Run a value throug the serializer. If no serializer is defined, the value is returned as
+   * Run a value through the serializer. If no serializer is defined, the value is returned as
    * is.
    *
    * @param o the object to serialize.

@@ -24,7 +24,7 @@ import org.topazproject.otm.OtmException;
  * @author Pradeep Krishnan
  */
 public class FunctionalMapper extends AbstractMapper {
-/**
+  /**
    * Creates a new FunctionalMapper object.
    *
    * @param uri the rdf predicate

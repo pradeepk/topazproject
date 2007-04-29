@@ -43,7 +43,7 @@ public class ClassMetadata {
   private Class               clazz;
   private Collection<Mapper>  fields;
 
-/**
+  /**
    * Creates a new ClassMetadata object.
    *
    * @param clazz the class 
