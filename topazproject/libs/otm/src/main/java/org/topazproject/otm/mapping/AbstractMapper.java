@@ -249,7 +249,8 @@ public abstract class AbstractMapper implements Mapper {
   public String toString() {
     return getClass().getName() + "[field=" + name + ", pred=" + uri + ", type="
            + ((type != null) ? type.getName() : "-null-") + ", componentType="
-           + ((componentType != null) ? componentType.getName() : "-null-") + ", inverse="
-           + inverse + ", serializer=" + serializer + "]";
+           + ((componentType != null) ? componentType.getName() : "-null-") + ", dataType="
+           + dataType + ", mapperType=" + mapperType + ", inverse=" + inverse + ", serializer="
+           + serializer + "]";
   }
 }
