@@ -13,11 +13,19 @@ import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import java.util.AbstractList;
+import java.util.AbstractSet;
+import java.util.AbstractSequentialList;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.SortedSet;
+import java.util.TreeSet;
 
 import org.topazproject.otm.OtmException;
 
@@ -97,10 +105,47 @@ public class CollectionMapper extends AbstractMapper {
       setRawValue(o, value);
   }
 
-  private Collection newInstance() throws OtmException {
+  /**
+   * Create a new collection instance. The current implementation will instantiate classes for
+   * various field types as follows:
+   * <dl>
+   *   <dt>Collection, List, AbstractList
+   *   <dd>ArrayList
+   *   <dt>Set, AbstractSet
+   *   <dd>HashSet
+   *   <dt>SortedSet
+   *   <dd>TreeSet
+   *   <dt>AbstractSequentialList
+   *   <dd>LinkedList
+   *   <dt>anything else
+   *   <dd>assumed to be a concrete implementation and instantiated directly
+   * </dl>
+   *
+   * <p>Override this method in order to fine tune the instance creation.
+   *
+   * @return an empty collection instance
+   */
+  protected Collection newInstance() throws OtmException {
     try {
-      // xxx: handle interfaces and abstract collections
-      return (Collection) getType().newInstance();
+      Class t = getType();
+      if (t == Collection.class)
+        return new ArrayList();
+
+      if (t == List.class)
+        return new ArrayList();
+      if (t == Set.class)
+        return new HashSet();
+      if (t == SortedSet.class)
+        return new TreeSet();
+
+      if (t == AbstractList.class)
+        return new ArrayList();
+      if (t == AbstractSequentialList.class)
+        return new LinkedList();
+      if (t == AbstractSet.class)
+        return new HashSet();
+
+      return (Collection) t.newInstance();
     } catch (Exception e) {
       throw new OtmException("Can't instantiate " + getType(), e);
     }
