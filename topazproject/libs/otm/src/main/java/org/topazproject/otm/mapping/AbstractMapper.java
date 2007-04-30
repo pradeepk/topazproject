@@ -39,6 +39,7 @@ public abstract class AbstractMapper implements Mapper {
   private String     inverseModel;
   private String     dataType;
   private MapperType mapperType;
+  private boolean    entityOwned;
 
   /**
    * Creates a new AbstractMapper object.
@@ -53,10 +54,12 @@ public abstract class AbstractMapper implements Mapper {
    * @param inverse if this field is persisted with an inverse predicate
    * @param inverseModel the model where this field is persisted if different from class model
    * @param mapperType the mapper type of this field
+   * @param entityOwned if the triples for this field is owned by the containing entity
    */
   public AbstractMapper(String uri, Field field, Method getter, Method setter,
                         Serializer serializer, Class componentType, String dataType,
-                        boolean inverse, String inverseModel, MapperType mapperType) {
+                        boolean inverse, String inverseModel, MapperType mapperType,
+                        boolean entityOwned) {
     this.uri             = uri;
     this.field           = field;
     this.getter          = getter;
@@ -69,6 +72,7 @@ public abstract class AbstractMapper implements Mapper {
     this.inverse         = inverse;
     this.inverseModel    = inverseModel;
     this.mapperType      = mapperType;
+    this.entityOwned     = entityOwned;
   }
 
   /*
@@ -207,9 +211,16 @@ public abstract class AbstractMapper implements Mapper {
     return mapperType;
   }
 
+  /*
+   * inherited javadoc
+   */
+  public boolean isEntityOwned() {
+    return entityOwned;
+  }
+
   /**
-   * Run a value through the serializer. If no serializer is defined, the value is returned as
-   * is.
+   * Run a value through the serializer. If no serializer is defined, the value is returned
+   * as is.
    *
    * @param o the object to serialize.
    *
@@ -226,8 +237,8 @@ public abstract class AbstractMapper implements Mapper {
   }
 
   /**
-   * Run a value through the serializer. If no serializer is defined, the value is returned as
-   * is.
+   * Run a value through the serializer. If no serializer is defined, the value is returned
+   * as is.
    *
    * @param o the object to serialize.
    *

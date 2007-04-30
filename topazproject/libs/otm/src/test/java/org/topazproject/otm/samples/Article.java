@@ -43,9 +43,9 @@ public class Article {
   private String[] categories;
   @Predicate(uri = Rdf.topaz + "articleState")
   private int      state;
-  @Predicate(uri = Annotation.NS + "annotates", inverse=true)
+  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true)
   private List<PublicAnnotation> publicAnnotations = new ArrayList<PublicAnnotation>();
-  @Predicate(uri = Reply.NS + "inReplyTo", inverse=true)
+  @Predicate(uri = Reply.NS + "inReplyTo", inverse=true, notOwned=true)
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
 
   /**

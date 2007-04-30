@@ -36,12 +36,13 @@ public class FunctionalMapper extends AbstractMapper {
    * @param inverse if this field is persisted with an inverse predicate
    * @param inverseModel the model where this field is persisted if different from class model
    * @param mapperType the mapper type of this field
+   * @param entityOwned if the triples for this field is owned by the containing entity
    */
   public FunctionalMapper(String uri, Field field, Method getter, Method setter,
                           Serializer serializer, String dataType, boolean inverse,
-                          String inverseModel, MapperType mapperType) {
+                          String inverseModel, MapperType mapperType, boolean entityOwned) {
     super(uri, field, getter, setter, serializer, field.getType(), dataType, inverse, inverseModel,
-          mapperType);
+          mapperType, entityOwned);
   }
 
   /**

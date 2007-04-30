@@ -104,7 +104,7 @@ public class ItqlStore implements TripleStore {
 
     int i = 0;
     for (Mapper p : cm.getFields()) {
-      if (p.hasInverseUri())
+      if (!p.isEntityOwned())
         continue;
       if (p.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
         Map<String, List<String>> pMap = (Map<String, List<String>>) p.getRawValue(o, true);
@@ -113,32 +113,35 @@ public class ItqlStore implements TripleStore {
             addStmt(buf, id, k, v, null, true);
       } else if (p.getSerializer() != null)
         addStmts(buf, id, p.getUri(), (List<String>) p.get(o) , p.getDataType(), p.typeIsUri(), 
-                 p.getMapperType(), "$s" + i++ + "i");
+                 p.getMapperType(), "$s" + i++ + "i", p.hasInverseUri());
       else
         addStmts(buf, id, p.getUri(), sess.getIds(p.get(o)) , null,true, p.getMapperType(), 
-                 "$s" + i++ + "i");
+                 "$s" + i++ + "i", p.hasInverseUri());
     }
   }
 
   private static void addStmts(StringBuilder buf, String subj, String pred, List<String> objs, 
-      String dt, boolean objIsUri, Mapper.MapperType mt, String prefix) {
+      String dt, boolean objIsUri, Mapper.MapperType mt, String prefix, boolean inverse) {
     int i = 0;
     switch (mt) {
     case PREDICATE:
       for (String obj : objs)
+        if (!inverse)
           addStmt(buf, subj, pred, obj, dt, objIsUri);
+        else
+          addStmt(buf, obj, pred, subj, dt, true);
       break;
     case RDFLIST:
       if (objs.size() > 0)
         buf.append("<").append(subj).append("> <").append(pred).append("> ")
            .append(prefix).append("0 ");
       for (String obj : objs) {
-          addStmt(buf, prefix+i, "rdf:type", "rdf:List", null, true);
-          addStmt(buf, prefix+i, "rdf:first", obj, dt, objIsUri);
-          if (i > 0)
-            buf.append(prefix).append(i-1).append(" <rdf:rest> ")
-                .append(prefix).append(i).append(" ");
-          i++;
+        addStmt(buf, prefix+i, "rdf:type", "rdf:List", null, true);
+        addStmt(buf, prefix+i, "rdf:first", obj, dt, objIsUri);
+        if (i > 0)
+          buf.append(prefix).append(i-1).append(" <rdf:rest> ")
+              .append(prefix).append(i).append(" ");
+        i++;
       }
       if (i > 0)
         addStmt(buf, prefix+(i-1), "rdf:rest", "rdf:nil", null, true);
@@ -203,7 +206,7 @@ public class ItqlStore implements TripleStore {
     boolean found = false;
     boolean predicateMap = false;
     for (Mapper p : cm.getFields()) {
-      if (!p.hasInverseUri()) {
+      if (!p.hasInverseUri() && p.isEntityOwned()) {
         if (p.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
           predicateMap = true;
           found = false;
@@ -219,7 +222,7 @@ public class ItqlStore implements TripleStore {
     if (found) {
       qry.append("($s $p $o and $s <mulgara:is> <").append(id).append("> and (");
       for (Mapper p : cm.getFields()) {
-        if (!p.hasInverseUri())
+        if (!p.hasInverseUri() && p.isEntityOwned())
           qry.append("$p <mulgara:is> <").append(p.getUri()).append("> or ");
       }
       qry.setLength(qry.length() - 4);
@@ -229,7 +232,7 @@ public class ItqlStore implements TripleStore {
     // build reverse statements
     found = false;
     for (Mapper p : cm.getFields()) {
-      if (p.hasInverseUri()) {
+      if (p.hasInverseUri() && p.isEntityOwned()) {
         found = true;
         break;
       }
@@ -238,7 +241,7 @@ public class ItqlStore implements TripleStore {
     if (found) {
       qry.append("or (");
       for (Mapper p : cm.getFields()) {
-        if (p.hasInverseUri()) {
+        if (p.hasInverseUri() && p.isEntityOwned()) {
           String invP = p.getUri();
 
           qry.append("($s $p $o ");

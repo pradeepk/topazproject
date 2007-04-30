@@ -32,7 +32,7 @@ public abstract class Annotation extends Annotea {
   private Annotation                                                                supersedes;
   @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
   private Annotation                                                                supersededBy;
-  @Predicate(uri = Reply.NS + "inReplyTo", inverse = true)
+  @Predicate(uri = Reply.NS + "inReplyTo", inverse = true, notOwned = true)
   private List<ReplyThread>                                                         replies =
     new ArrayList<ReplyThread>();
 

@@ -45,16 +45,18 @@ public @interface Predicate {
   String model() default "";
 
   /**
-   * Marks this field as mutable and therefore updates must write this out always.
-   */
-  boolean mutable() default true;
-
-  /**
    * Marks an inverse association. Instead of s p o, load/save as o p s where 
    * s is the Id for the containing Entity and p is the uri for this predicate and o the
    * value of this field..
    */
   boolean inverse() default false;
+
+  /**
+   * Marks the backing triples for this field as not owned by this entity and is therefore used
+   * only for load. Updates of the entity will skip the rdf statements corresponding to this fied. 
+   * By default all triples for a field are owned by the entity. 
+   */
+  boolean notOwned() default false;
 
   /**
    * Enum defining various storage types.

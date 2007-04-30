@@ -159,4 +159,11 @@ public interface Mapper {
    * @return the mapper type
    */
   public MapperType getMapperType();
+
+  /**
+   * Tests if the triples for this field are owned by the containing entity.
+   *
+   * @return true if owned, 
+   */
+  public boolean isEntityOwned();
 }

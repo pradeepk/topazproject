@@ -237,14 +237,14 @@ public class AnnotationClassMetaFactory {
 
       return Collections.singletonList(new FunctionalMapper(null, f, getMethod, setMethod,
                                                             serializer, null, false, null,
-                                                            Mapper.MapperType.PREDICATE));
+                                                            Mapper.MapperType.PREDICATE, true));
     }
 
     if (f.getAnnotation(PredicateMap.class) != null)
       return Collections.singletonList(createPredicateMap(f, getMethod, setMethod));
 
     if (!embedded && (uri == null))
-      throw new OtmException("Missing @Rdf for field '" + f.toGenericString() + "' in "
+      throw new OtmException("Missing @Predicate for field '" + f.toGenericString() + "' in "
                              + f.getDeclaringClass());
 
     boolean isArray      = type.isArray();
@@ -283,18 +283,20 @@ public class AnnotationClassMetaFactory {
         }
       }
 
+      boolean notOwned = (rdf != null) && rdf.notOwned();
+
       Mapper.MapperType mt = getMapperType(f, rdf, isArray);
       Mapper            p;
 
       if (isArray)
         p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
-                            inverseModel, mt);
+                            inverseModel, mt, !notOwned);
       else if (isCollection)
         p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
-                                 inverseModel, mt);
+                                 inverseModel, mt, !notOwned);
       else
         p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, inverse,
-                                 inverseModel, mt);
+                                 inverseModel, mt, !notOwned);
 
       return Collections.singletonList(p);
     }

@@ -22,7 +22,7 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Pradeep Krishnan
  */
 public class ReplyThread extends Reply {
-  @Predicate(uri=Reply.NS + "inReplyTo", inverse=true)
+  @Predicate(uri=Reply.NS + "inReplyTo", inverse=true, notOwned=true)
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
 
   /**

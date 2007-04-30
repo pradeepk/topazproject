@@ -26,7 +26,7 @@ import org.topazproject.otm.OtmException;
  * @author Pradeep Krishnan
  */
 public class ArrayMapper extends AbstractMapper {
-/**
+  /**
    * Creates a new ArrayMapper object.
    *
    * @param uri the rdf predicate
@@ -39,12 +39,13 @@ public class ArrayMapper extends AbstractMapper {
    * @param inverse if this field is persisted with an inverse predicate
    * @param inverseModel the model where this field is persisted if different from class model
    * @param mapperType the mapper type of this field
+   * @param entityOwned if the triples for this field is owned by the containing entity
    */
   public ArrayMapper(String uri, Field field, Method getter, Method setter, Serializer serializer,
                      Class componentType, String dataType, boolean inverse, String inverseModel,
-                     MapperType mapperType) {
+                     MapperType mapperType, boolean entityOwned) {
     super(uri, field, getter, setter, serializer, componentType, dataType, inverse, inverseModel,
-          mapperType);
+          mapperType, entityOwned);
   }
 
   /**
