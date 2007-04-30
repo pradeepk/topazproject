@@ -52,13 +52,13 @@ public class Annotea {
    */
   public SampleEmbeddable foobar;
 
-/**
+  /**
    * Creates a new Annotea object.
    */
   public Annotea() {
   }
 
-/**
+  /**
    * Creates a new Annotea object.
    */
   public Annotea(URI id) {

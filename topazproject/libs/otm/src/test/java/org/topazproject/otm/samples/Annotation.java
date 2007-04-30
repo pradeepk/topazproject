@@ -36,13 +36,13 @@ public abstract class Annotation extends Annotea {
   private List<ReplyThread>                                                         replies =
     new ArrayList<ReplyThread>();
 
-/**
+  /**
    * Creates a new Annotation object.
    */
   public Annotation() {
   }
 
-/**
+  /**
    * Creates a new Annotation object.
    */
   public Annotation(URI id) {
