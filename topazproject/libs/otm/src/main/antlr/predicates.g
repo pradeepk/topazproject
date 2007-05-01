@@ -286,10 +286,15 @@ cast returns [ExprType type = null]
     ;
 
 oclause
-    : #(ORDER (var:ID (ASC|DESC)?)+) {
+    : #(ORDER (oitem)+)
+    ;
+
+oitem
+    : var:ID (ASC|DESC)? {
         if (!prjs.contains(#var.getText()))
           throw new RecognitionException("Order item '" + #var.getText() + "' is not defined in " +
                                          "the select clause");
+        ((OqlAST) #var).setIsVar(true);
       }
     ;
 
