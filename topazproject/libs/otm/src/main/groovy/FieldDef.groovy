@@ -1,0 +1,250 @@
+/* $HeadURL::                                                                            $
+ * $Id$
+ *
+ * Copyright (c) 2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
+ */
+
+package org.topazproject.otm.metadata;
+
+import java.lang.reflect.Field;
+import java.lang.reflect.Method;
+
+import org.topazproject.otm.OtmException;
+import org.topazproject.otm.mapping.ArrayMapper;
+import org.topazproject.otm.mapping.CollectionMapper;
+import org.topazproject.otm.mapping.FunctionalMapper;
+import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.Serializer;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+/**
+ * Describes a field in a class.
+ */
+public class FieldDef {
+  private static final Log    log    = LogFactory.getLog(FieldDef.class)
+  private static final String xsdURI = "http://www.w3.org/2001/XMLSchema#";
+
+  /** the field name */
+  String   name
+  /** the rdf predicate to store this under; if not specified, defaults to baseUri + name  */
+  String   pred
+  /**
+   * if null, this is an untyped literal; if it's an xsd type, this is a typed literal; else
+   * this is a class type, and interpreted as baseUri + type if not absolute
+   */
+  String   type
+  /** true if this is the id-field */
+  boolean  isId        = false
+  /** max cardinality; use -1 for unbound */
+  int      maxCard     = 1
+  /** true if the predicate is an "inverse" predicate */
+  boolean  inverse     = false
+  /** true if the value should be unique among all values in all instances */
+  boolean  unique      = false
+  /** true if this field should be not be persisted (or loaded) */
+  boolean  isTransient = false
+  /** if maxCard &gt; 1, the field's type - must be one of 'Set', 'List', or 'Array' */
+  String   colType
+  /**
+   * if maxCard &gt; 1, how the collection is stored in rdf - must be one of 'Predicate',
+   * 'RdfList', 'RdfSeq', 'RdfBag', or 'RdfAlt'.
+   */
+  String   colMapping
+  /** if false this field is never saved, only loaded */
+  boolean  owned       = true
+
+  protected ClassDef classType          // the class-def if this has a class type
+  protected Map      classAttrs = [:]   // save class attributes for later
+  protected String   defaultValue
+
+  /**
+   * This explicit constructor is so we can "split" the attributes into the per-class and
+   * the per-field ones. Needed because we don't know whether this is a nested class definition
+   * or not at this time.
+   */
+  FieldDef(Map attrs) {
+    attrs.each{ k, v ->
+      boolean inCls = ClassDef.class.declaredFields.any{it.name == k}
+      if (inCls)
+        classAttrs[k] = v
+      if (!inCls || FieldDef.class.declaredFields.any{it.name == k})
+        setProperty(k, v)
+    }
+  }
+
+  def call(String f) {
+    defaultValue = f
+  }
+
+  /**
+   * Resolve any defaults
+   */
+  protected init(RdfBuilder rdf, ClassDef clsDef, def classDefsByType) {
+    // fix up predicate if needed
+    if (!pred && !isId)
+      pred = name;
+    if (pred && !pred.toURI().isAbsolute()) {
+      if (!clsDef.baseUri)
+        throw new OtmException("field '${name}' has non-absolute predicate '${pred}' but no " +
+                               "base-uri has been configured")
+      // should really use baseUri.resolve(pred), but that doesn't work for 'foo:/bar#'
+      pred = clsDef.baseUri + pred
+    } else
+      pred = rdf.expandAliases(pred)
+
+    // fix up type if needed
+    if (type && !type.toURI().isAbsolute()) {
+      if (!clsDef.baseUri)
+        throw new OtmException("field '${name}' has type '${type}' which is not an absolute uri, " +
+                               "but no base-uri has been configured")
+      // should really use baseUri.resolve(pred), but that doesn't work for 'foo:/bar#'
+      type = clsDef.baseUri + type
+    } else
+      type = rdf.expandAliases(type)
+
+    // and resolve any references to classes defined earlier
+    if (!classType)
+      classType = classDefsByType[type]
+    if (classType)
+      type = classType.type
+  }
+
+  /**
+   * Generate a mapper for this field.
+   */
+  protected Mapper toMapper(RdfBuilder rdf, Class cls) {
+    Field  f   = cls.getDeclaredField(name)
+    Method get = cls.getMethod('get' + RdfBuilder.capitalize(name))
+    Method set = cls.getMethod('set' + RdfBuilder.capitalize(name), f.getType())
+    Mapper.MapperType mt = getMapperType(rdf)
+
+    String dtype = (type?.startsWith(xsdURI) && type != xsdURI + 'anyURI') ? type : null
+
+    // generate the mapper
+    Mapper m;
+    if (maxCard == 1) {
+      Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
+      m = new FunctionalMapper(pred, f, get, set, ser, dtype, inverse, null, mt, owned)
+    } else {
+      String     collType = colType ? colType : rdf.defColType
+      Class      compType = toJavaClass(getBaseJavaType(), rdf);
+      Serializer ser      = rdf.sessFactory.getSerializerFactory().getSerializer(compType, dtype)
+
+      if (collType.toLowerCase() == 'array')
+        m = new ArrayMapper(pred, f, get, set, ser, compType, dtype, inverse, null, mt, owned)
+      else
+        m = new CollectionMapper(pred, f, get, set, ser, compType, dtype, inverse, null, mt, owned)
+    }
+
+    // done
+    if (log.debugEnabled)
+      log.debug "created mapper for field '${name}' in class '${cls.name}': ${m}"
+
+    return m;
+  }
+
+  protected String getJavaType(RdfBuilder rdf) {
+    if (maxCard > 1 || maxCard < 0) {
+      String ct = colType ? colType : rdf.defColType
+      switch (ct?.toLowerCase()) {
+        case null:
+        case 'list':
+          return 'List'
+        case 'set':
+          return 'Set'
+        case 'array':
+          return getBaseJavaType() + '[]'
+        default:
+          throw new OtmException("Unknown collection type '${ct}' - must be one of 'List', " + 
+                                 "'Set', or 'Array'");
+      }
+    } else
+      return getBaseJavaType();
+  }
+
+  protected String getBaseJavaType() {
+    if (classType)
+      return classType.className
+    else
+      return xsdToJava()
+  }
+
+  private String xsdToJava() {
+    switch (type) {
+      case null:
+        return 'String'
+      case xsdURI + 'string':
+        return 'String'
+      case xsdURI + 'anyURI':
+        return 'java.net.URI'
+      case xsdURI + 'byte':
+        return 'byte'
+      case xsdURI + 'short':
+        return 'short'
+      case xsdURI + 'int':
+        return 'int'
+      case xsdURI + 'long':
+        return 'long'
+      case xsdURI + 'float':
+        return 'float'
+      case xsdURI + 'double':
+        return 'double'
+      case xsdURI + 'dateTime':
+        return 'java.util.Date'
+      default:
+        return 'String'
+    }
+  }
+
+  private Class toJavaClass(String name, RdfBuilder rdf) {
+    switch (name) {
+      case 'String':
+        return String.class
+      case 'byte':
+        return Byte.TYPE
+      case 'char':
+        return Character.TYPE
+      case 'short':
+        return Short.TYPE
+      case 'int':
+        return Integer.TYPE
+      case 'long':
+        return Long.TYPE
+      case 'float':
+        return Float.TYPE
+      case 'double':
+        return Double.TYPE
+      default:
+        /* Note: we do the lookup in the class-metadata instead of in Class.forName() because
+         * groovy creates a new classloader for each script, i.e. each class we generate.
+         */
+        return rdf.sessFactory.getClassMetadata(name)?.sourceClass
+    }
+  }
+
+  private Mapper.MapperType getMapperType(RdfBuilder rdf) {
+    String cm = colMapping ? colMapping : rdf.defColMapping
+    switch (cm?.toLowerCase()) {
+      case null:
+      case 'predicate':
+        return Mapper.MapperType.PREDICATE
+      case 'rdflist':
+        return Mapper.MapperType.RDFLIST
+      case 'rdfbag':
+        return Mapper.MapperType.RDFBAG
+      case 'rdfseq':
+        return Mapper.MapperType.RDFSEQ
+      case 'rdfalt':
+        return Mapper.MapperType.RDFALT
+      default:
+        throw new OtmException("Unknown collection-mapping type '${cm}' - must be one of " +
+                               "'Predicate', 'RdfList', 'RdfBag', 'RdfSeq', or 'RdfAlt'");
+    }
+  }
+}
