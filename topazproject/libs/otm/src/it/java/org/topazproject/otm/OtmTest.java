@@ -956,7 +956,6 @@ public class OtmTest extends TestCase {
       assertFalse(r.next());
 
       // test6
-      /* FIXME
       r = session.doQuery(
             "select art a, (select pa pa from Article a2 where pa := art.publicAnnotations order by pa) from Article art " +
             "where p := art.publicAnnotations order by a;");
@@ -992,10 +991,8 @@ public class OtmTest extends TestCase {
       assertFalse(sub.next());
 
       assertFalse(r.next());
-      */
 
       // test7
-      /* FIXME
       r = session.doQuery(
             "select art a, count(art.publicAnnotations) from Article art " +
             "where p := art.publicAnnotations order by a;");
@@ -1017,7 +1014,23 @@ public class OtmTest extends TestCase {
       assertEquals(2, c);
 
       assertFalse(r.next());
-      */
+
+      // test8
+      r = session.doQuery(
+            "select art a, foo f from Article art " +
+            "where art.<rdf:type> = <topaz:Article> and foo := 'yellow' order by a, f;");
+      if (r.getWarnings() != null)
+        log.error("Got warnings: " +
+                  StringUtils.join(r.getWarnings(), System.getProperty("line.separator")));
+      assertNull(r.getWarnings());
+
+      assertTrue(r.next());
+      a = (Article) r.get(0);
+      String f = r.getString(1);
+      assertEquals(id4, a.getUri());
+      assertEquals("yellow", f);
+
+      assertFalse(r.next());
 
       // done
       tx.commit();

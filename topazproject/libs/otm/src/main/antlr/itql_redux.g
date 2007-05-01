@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
 }
 
 /**
- * This tries to simplify the where clause by expanding the &lt;mulgara:is&gt; and
+ * This tries to simplify the where clauses by expanding the &lt;mulgara:is&gt; and
  * &lt;mulgara:equals&gt; constraints. Most of these are unnecessary, but are generated
  * because doing so greatly simplifies the previous step.
  *
@@ -51,9 +51,173 @@ options {
 {
     private static final Log log = LogFactory.getLog(ItqlRedux.class);
 
-    private final Stack<Set<String>> projVars = new Stack<Set<String>>();
+    /**
+     * Simplifying a query works as follows. First, the where clause is simplified; then
+     * subqueries in the projections are simplified, recursively.
+     *
+     * <p>When simplifying a where clause, variables that are bound from the "outside" (e.g.
+     * variables specified in the from clause) can't be replaced; these variables form the
+     * context-variables. Additionally, while processing the where clause, any time a non-AND is
+     * encountered (e.g. an OR, MINUS, etc) the variables "above" and the variables in the other
+     * branches are also part of the context for each branch. Furthermore, when simplifying
+     * subqueries all variables from the main query (recursively up) are part of the context
+     * too.</p>
+     *
+     * <p>Once a set of replacements has been determined, these replacements are applied to
+     * the current subtree in the where clause, all variables in the projections, as well as in
+     * all the projections and where clauses of subqueries (recursively).</p>
+     *
+     * <p>Fun, isn't it?</p>
+     */
+    private void simplifyQuery(AST select, Set<String> ctxtVars) {
+      // #(SELECT #(FROM fclause) #(WHERE wclause) #(PROJ sclause) (oclause)? (lclause)? (tclause)?)
+      assert select.getType() == SELECT;
 
-    private void simplify(AST node, Set<String> ctxtVars) {
+      AST f = select.getFirstChild();
+      AST w = f.getNextSibling();
+      AST p = w.getNextSibling();
+      AST o = p.getNextSibling();
+
+      assert f.getType() == FROM;
+      assert w.getType() == WHERE;
+      assert p.getType() == PROJ;
+
+      AST fc = f.getFirstChild();
+      AST wc = w.getFirstChild();
+      AST pc = p.getFirstChild();
+
+      // 0: clone the context
+      ctxtVars = new HashSet<String>(ctxtVars);
+
+      // 1: extend the context with all the from vars
+      addFromVars(fc, ctxtVars);
+
+      // 2: find all replaceable vars and where clauses in subqueries, recursively
+      List<AST> vars = new ArrayList<AST>();
+      List<AST> wcls = new ArrayList<AST>();
+      findVarsAndWClausesInProj(pc, vars, wcls);
+      if (o != null && o.getType() == ORDER)
+        findVarsInOrder(o.getFirstChild(), vars);
+
+      // 3: simplify the where clause
+      simplify(wc, ctxtVars, vars, wcls);
+
+      // 4: create dummy constraint if wclause otherwise empty
+      if (!hasConstraints(wc))
+        wc.addChild(#([TRIPLE,"triple"], #([ID,"$t$1"]), #([ID,"$t$2"]), #([ID,"$t$3"])));
+
+      // 5: clean out constants from order
+      if (o != null && o.getType() == ORDER) {
+        removeConstFromOrder(o);
+        if (o.getFirstChild() == null)
+          p.setNextSibling(o.getNextSibling());
+      }
+
+      // 6: simplify subqueries, recursively
+      simplifySubQueries(pc, ctxtVars);
+    }
+
+    private int addFromVars(AST fclause, Set<String> ctxtVars) {
+      // #(COMMA fclause fclause) | cls:ID var:ID
+      if (fclause.getType() == COMMA) {
+        for (AST n = fclause.getFirstChild(); n != null; n = n.getNextSibling()) {
+          int skip = addFromVars(n, ctxtVars);
+          while (skip-- > 0)
+            n = n.getNextSibling();
+        }
+        return 0;
+      } else {
+        AST var = fclause.getNextSibling();
+        assert var.getType() == ID;
+
+        if (((OqlAST) var).isVar())
+          ctxtVars.add(var.getText());
+
+        return 1;
+      }
+    }
+
+    private int findVarsAndWClausesInProj(AST sclause, List<AST> vars, List<AST> wcls) {
+      // #(COMMA sclause sclause) | ID pexpr
+      if (sclause.getType() == COMMA) {
+        for (AST n = sclause.getFirstChild(); n != null; n = n.getNextSibling()) {
+          int skip = findVarsAndWClausesInProj(n, vars, wcls);
+          while (skip-- > 0)
+            n = n.getNextSibling();
+        }
+        return 0;
+      } else {
+        // ID
+        AST id = sclause;
+        assert id.getType() == ID;
+
+        // #(SUBQ query) | #(COUNT query) | (QSTRING|URIREF) | ID
+        AST pexpr = id.getNextSibling();
+        switch (pexpr.getType()) {
+          case SUBQ:
+          case COUNT:
+            findQueryVarsAndWClauses(pexpr.getFirstChild(), vars, wcls);
+            break;
+
+          case ID:
+            if (((OqlAST) pexpr).isVar())
+              vars.add(pexpr);
+            break;
+        }
+
+        return 1;
+      }
+    }
+
+    private void findQueryVarsAndWClauses(AST select, List<AST> vars, List<AST> wcls) {
+      // #(SELECT #(FROM fclause) #(WHERE wclause) #(PROJ sclause) (oclause)? (lclause)? (tclause)?)
+      assert select.getType() == SELECT;
+
+      AST f = select.getFirstChild();
+      AST w = f.getNextSibling();
+      AST p = w.getNextSibling();
+      AST o = p.getNextSibling();
+
+      assert f.getType() == FROM;
+      assert w.getType() == WHERE;
+      assert p.getType() == PROJ;
+
+      wcls.add(w.getFirstChild());
+      findVarsAndWClausesInProj(p.getFirstChild(), vars, wcls);
+      if (o != null && o.getType() == ORDER)
+        findVarsInOrder(o.getFirstChild(), vars);
+    }
+
+    private void findVarsInOrder(AST oitem, List<AST> vars) {
+      // (ID (ASC|DESC)?)+
+      for (; oitem != null; oitem = oitem.getNextSibling()) {
+        if (oitem.getType() == ID && ((OqlAST) oitem).isVar())
+          vars.add(oitem);
+      }
+    }
+
+    private int simplifySubQueries(AST sclause, Set<String> ctxtVars) {
+      // #(COMMA sclause sclause) | ID pexpr
+      if (sclause.getType() == COMMA) {
+        for (AST n = sclause.getFirstChild(); n != null; n = n.getNextSibling()) {
+          int skip = simplifySubQueries(n, ctxtVars);
+          while (skip-- > 0)
+            n = n.getNextSibling();
+        }
+        return 0;
+      } else {
+        // #(SUBQ query) | #(COUNT query) | (QSTRING|URIREF) | ID
+        AST pexpr = sclause.getNextSibling();
+        switch (pexpr.getType()) {
+          case SUBQ:
+          case COUNT:
+            simplifyQuery(pexpr.getFirstChild(), ctxtVars);
+        }
+        return 1;
+      }
+    }
+
+    private void simplify(AST node, Set<String> ctxtVars, List<AST> extVars, List<AST> extWcls) {
       if (node.getType() == AND) {
         if (log.isTraceEnabled())
           log.trace("simplifying: " + node.toStringTree());
@@ -73,24 +237,30 @@ options {
         }
 
         // rewrite our expression tree
-        if (repl.size() > 0 || is.size() > 0)
+        if (repl.size() > 0 || is.size() > 0) {
           applyReplacements(node, null, null, repl, is);
+          for (AST n : extWcls)
+            applyReplacements(n, null, null, repl, is);
+          for (AST var : extVars)
+            applyReplacements(var, repl, is);
+        }
 
         if (log.isTraceEnabled())
           log.trace("done simplifying: " + node.toStringTree());
       }
 
       // process subtrees
-      simplifySubTree(node, ctxtVars);
+      simplifySubTree(node, ctxtVars, extVars, extWcls);
     }
 
-    private void simplifySubTree(AST node, Set<String> ctxtVars) {
+    private void simplifySubTree(AST node, Set<String> ctxtVars, List<AST> extVars,
+                                 List<AST> extWcls) {
       if (node.getType() == TRIPLE)
         ;
       else if (node.getType() == AND) {
         // equality can only be propagated up past an AND
         for (AST n = node.getFirstChild(); n != null; n = n.getNextSibling())
-            simplifySubTree(n, ctxtVars);
+            simplifySubTree(n, ctxtVars, extVars, extWcls);
       } else {
         /* collect variables in each branch - variables in other branches will be part of
          * the untouchable context for any given branch.
@@ -111,7 +281,7 @@ options {
               locCtxtVars.addAll(branchVars.get(idx));
           }
 
-          simplify(n, locCtxtVars);
+          simplify(n, locCtxtVars, extVars, extWcls);
         }
       }
     }
@@ -268,6 +438,35 @@ options {
       }
     }
 
+    private void applyReplacements(AST var, Map<String, String> repl, Map<String, String> is) {
+      String r = repl.get(var.getText());
+      if (r != null)
+        var.setText(r);
+
+      r = is.get(var.getText());
+      if (r != null) {
+        var.setText(r);
+        ((OqlAST) var).setIsVar(false);
+      }
+    }
+
+    private void removeConstFromOrder(AST order) {
+      // (ID (ASC|DESC)?)+
+      for (AST oitem = order.getFirstChild(), prev = null; oitem != null;
+           prev = oitem, oitem = oitem.getNextSibling()) {
+        if (oitem.getType() == ID && !((OqlAST) oitem).isVar()) {
+          AST nxt = oitem.getNextSibling();
+          if (nxt != null && nxt.getType() != ID)
+            nxt = nxt.getNextSibling();
+
+          if (prev != null)
+            prev.setNextSibling(nxt);
+          else
+            order.setFirstChild(nxt);
+        }
+      }
+    }
+
     private boolean hasConstraints(AST node) {
       for (AST n = node.getFirstChild(); n != null; n = n.getNextSibling()) {
         switch (n.getType()) {
@@ -288,62 +487,10 @@ options {
 
 
 query
-{ projVars.push(new HashSet<String>()); }
-    : #(SELECT #(FROM fclause) #(WHERE w:wclause) #(PROJ sclause) (oclause)? (lclause)? (tclause)?) {
-        // expand/remove mulgara:equals and mulgara:is where possible
-        for (w = #w; w != null; w = w.getNextSibling())
-          simplify(w, projVars.peek());
-
-        // create dummy constraint if wclause otherwise empty
-        if (!hasConstraints(#w))
-          #w.addChild(#([TRIPLE,"triple"], #([ID,"$t$1"]), #([ID,"$t$2"]), #([ID,"$t$3"])));
-
-        projVars.pop();
-      }
-    ;
-
-
-fclause
-    : #(COMMA fclause fclause)
-    | ID ID
-    ;
-
-
-sclause
-    : #(COMMA sclause sclause)
-    | v:ID pexpr  { projVars.peek().add(#v.getText()); }
-    ;
-
-pexpr
-    : #(SUBQ query)
-    | #(COUNT query)
-    | (QSTRING|URIREF)
-    | ID
-    ;
-
-
-wclause
-    : (any)+
+    : (any)+ { simplifyQuery(#query, new HashSet<String>()); }
     ;
 
 any
     : #(. (any)*)
-    ;
-
-
-oclause
-    : #(ORDER (oitem)+)
-    ;
-
-oitem
-    : ID (ASC|DESC)?
-    ;
-
-lclause
-    : #(LIMIT NUM)
-    ;
-
-tclause
-    : #(OFFSET NUM)
     ;
 

@@ -143,7 +143,7 @@ tokens {
       // create subquery
       AST from  = #([FROM, "from"], #([ID, "dummy"]), #([ID, "dummy"]));
       AST where = #([WHERE, "where"], pexpr);
-      AST proj  = #([PROJ, "projection"], astFactory.dup(resVar), #([ID, "dummy"]));
+      AST proj  = #([PROJ, "projection"], astFactory.dup(resVar), astFactory.dup(resVar));
 
       return #([COUNT, "count"], #([SELECT, "select"], from, where, proj));
     }
@@ -174,10 +174,10 @@ pexpr[AST var, AST where]
             #pexpr = #f;
           else {
             where.addChild(#f);
-            #pexpr = #([ID, "dummy"]);
+            #pexpr = astFactory.dup(var);
           }
         }
-    ;
+    ;   // pexpr is now either a subquery or the variable
 
 
 wclause
@@ -224,7 +224,7 @@ constant[AST var]
     ;
 
 fcall[AST var, boolean isProj]
-{ AST args = #([ID, "dummy"]), va; }
+{ AST args = #([COMMA]), va; }
     : ! #(FUNC ns:ID (COLON fn:ID)?
                (arg:factor[va = nextVar(), isProj] { args.addChild(#va); args.addChild(#arg); })*) {
           if (#fn == null) {

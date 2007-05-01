@@ -144,9 +144,9 @@ pexpr[QueryBuilder qb, AST var]
         qb.prjTypes.add((#qs != null) ? String.class : URI.class);
       }
 
-    | ID {
-        qb.prjExprs.add("$" + var.getText());
-        ExprType type = ((OqlAST) var).getExprType();
+    | v:ID {
+        qb.prjExprs.add(toItqlStr(#v));
+        ExprType type = ((OqlAST) #v).getExprType();
         if (type == null)
           qb.prjTypes.add(String.class);
         else {
