@@ -52,9 +52,9 @@ public class IdGenTest {
   public static class C extends B {
   }
 
-  @Entity(type = Rdf.topaz + "D")
+  @Entity(type = Rdf.topaz + "D", model = "idtest")
   public static class D {
-    @Id(generator = "GUID")
+    @Id(generator = "org.topazproject.otm.id.GUIDGenerator", baseUri = Rdf.topaz + "D#")
     public URI uri;
     @Predicate(uri = Rdf.topaz + "data")
     public String data;
@@ -167,5 +167,10 @@ public class IdGenTest {
     C c = new C();
     session.saveOrUpdate(c);
     assert c.id != null;
+  }
+
+  @Test
+  public void dTest() throws OtmException {
+    factory.preload(D.class);
   }
 }
