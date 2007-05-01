@@ -20,6 +20,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Arrays;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyObject;
@@ -30,6 +31,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.Results;
+import org.topazproject.otm.id.IdentifierGenerator;
 
 /**
  * An otm session (similar to hibernate session). And similar to hibernate session, not thread
@@ -648,11 +650,23 @@ public class Session {
 
     Mapper        idField = cm.getIdField();
     List          ids     = idField.get(o);
+    String        id      = null;
 
-    if (ids.size() == 0)
-      throw new OtmException("No id generation support yet " + o.getClass());
+    if (ids.size() == 0) {
+      IdentifierGenerator generator = cm.getIdGenerator();
+      if (generator == null)
+        throw new OtmException("No id generation for " + o.getClass() + " on " + idField);
 
-    return new Id(o.getClass(), (String) ids.get(0));
+      id = generator.generate();
+      idField.set(o, Arrays.asList(new String[] { id })); // So user can get at it after saving
+      if (log.isDebugEnabled())
+        log.debug(generator.getClass().getSimpleName() + " generated '" + id + "' for " +
+                  o.getClass().getSimpleName());
+    } else {
+      id = (String) ids.get(0);
+    }
+
+    return new Id(o.getClass(), id);
   }
 
   private ClassMetadata checkClass(Class clazz) throws OtmException {

@@ -53,6 +53,7 @@ import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.PredicateMapMapper;
 import org.topazproject.otm.mapping.Serializer;
 import org.topazproject.otm.mapping.SerializerFactory;
+import org.topazproject.otm.id.IdentifierGenerator;
 
 /**
  * Meta information for mapping a class to a set of triples.
@@ -135,6 +136,8 @@ public class AnnotationClassMetaFactory {
       new ClassMetadata(clazz, name, type, types, model, baseUri, idField, fields);
     loopDetect.put(clazz, cm);
 
+    IdentifierGenerator generator = null;
+
     for (Field f : clazz.getDeclaredFields()) {
       Collection<?extends Mapper> mappers = createMapper(f, top, baseUri, loopDetect);
 
@@ -151,12 +154,47 @@ public class AnnotationClassMetaFactory {
             throw new OtmException("Duplicate @Id field " + f.toGenericString());
 
           idField = m;
+
+          // Get id generator if there is one
+          Id id = (Id) f.getAnnotation(Id.class);
+          String generatorName = id.generator();
+          if (!generatorName.equals("")) {
+            try {
+              Class generatorClazz =
+                Class.forName("org.topazproject.otm.id." + generatorName + "Generator");
+              generator = (IdentifierGenerator) generatorClazz.newInstance();
+            } catch (Throwable t) {
+              throw new OtmException("Unable to find implementation for '" + generatorName +
+                                     "' generator", t);
+            }
+
+            // Validate and set baseUri
+            if (generator != null) {
+              String idBaseUri = id.baseUri();
+              try {
+                URI.create(idBaseUri);
+              } catch (IllegalArgumentException iae) {
+                throw new OtmException("Illegal baseUri '" + idBaseUri + "' for id field of " +
+                                       clazz.getSimpleName());
+              }
+              generator.setBaseUri(idBaseUri);
+            }
+          }
         }
       }
     }
 
     cm = new ClassMetadata(clazz, name, type, types, model, baseUri, idField, fields);
     loopDetect.put(clazz, cm);
+
+    if (generator != null) {
+      cm.setIdGenerator(generator);
+    } else {
+      // Get generator from superclass in case id was declared there
+      ClassMetadata cmSuper = loopDetect.get(clazz.getSuperclass());
+      if (cmSuper != null)
+        cm.setIdGenerator(cmSuper.getIdGenerator());
+    }
 
     return cm;
   }

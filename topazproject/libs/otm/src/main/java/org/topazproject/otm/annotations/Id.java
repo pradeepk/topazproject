@@ -22,4 +22,13 @@ import java.lang.annotation.Target;
 @Retention(RetentionPolicy.RUNTIME)
 @Target({ElementType.FIELD})
 public @interface Id {
+  /**
+   * The name of the id generator to use.
+   */
+  String generator() default "";
+
+  /**
+   * The baseUri to use for the generated id.
+   */
+  String baseUri() default "";
 }

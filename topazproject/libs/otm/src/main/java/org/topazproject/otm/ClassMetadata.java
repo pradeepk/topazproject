@@ -23,6 +23,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.id.IdentifierGenerator;
 
 /**
  * Meta information for mapping a class to a set of triples.
@@ -42,6 +43,7 @@ public class ClassMetadata {
   private Map<String, Mapper> nameMap;
   private Class               clazz;
   private Collection<Mapper>  fields;
+  private IdentifierGenerator idGenerator;
 
   /**
    * Creates a new ClassMetadata object.
@@ -198,5 +200,19 @@ public class ClassMetadata {
    */
   public boolean isEntity() {
     return (idField != null) && (model != null);
+  }
+
+  /**
+   * Set the id generator for this class
+   */
+  public void setIdGenerator(IdentifierGenerator idGenerator) {
+    this.idGenerator = idGenerator;
+  }
+
+  /**
+   * Get the id generator for this class
+   */
+  public IdentifierGenerator getIdGenerator() {
+    return idGenerator;
   }
 }
