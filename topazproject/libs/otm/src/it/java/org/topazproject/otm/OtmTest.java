@@ -16,6 +16,7 @@ import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.Grants;
 import org.topazproject.otm.samples.NoRdfType;
+import org.topazproject.otm.samples.NoPredicate;
 import org.topazproject.otm.samples.Permissions;
 import org.topazproject.otm.samples.PrivateAnnotation;
 import org.topazproject.otm.samples.PublicAnnotation;
@@ -92,6 +93,7 @@ public class OtmTest extends TestCase {
     factory.preload(PrivateAnnotation.class);
     factory.preload(Article.class);
     factory.preload(NoRdfType.class);
+    factory.preload(NoPredicate.class);
     factory.preload(SpecialMappers.class);
     factory.preload(Grants.class);
     factory.preload(Revokes.class);
@@ -111,6 +113,7 @@ public class OtmTest extends TestCase {
 
       session.saveOrUpdate(new PublicAnnotation(URI.create("http://localhost/annotation/1")));
       session.saveOrUpdate(new NoRdfType("http://localhost/noRdfType/1"));
+      session.saveOrUpdate(new NoPredicate("http://localhost/noPredicate/1"));
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
@@ -144,6 +147,12 @@ public class OtmTest extends TestCase {
 
       n = session.get(NoRdfType.class, "http://localhost/noRdfType/2");
       assertNull(n);
+
+      NoPredicate np = session.get(NoPredicate.class, "http://localhost/noPredicate/1");
+      assertNotNull(np);
+
+      np = session.get(NoPredicate.class, "http://localhost/noPredicate/2");
+      assertNull(np);
 
       a.setCreator("Pradeep");
       a.setState(42);

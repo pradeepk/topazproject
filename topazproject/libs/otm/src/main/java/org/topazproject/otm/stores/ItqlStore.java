@@ -203,7 +203,7 @@ public class ItqlStore implements TripleStore {
     qry.append("select $s $p $o from <").append(model).append("> where ");
 
     // build forward statements
-    boolean found = false;
+    boolean found = cm.getTypes().size() > 0;
     boolean predicateMap = false;
     for (Mapper p : cm.getFields()) {
       if (!p.hasInverseUri() && p.isEntityOwned()) {
@@ -216,11 +216,13 @@ public class ItqlStore implements TripleStore {
       }
     }
 
-    if (predicateMap) 
+    if (predicateMap)
       qry.append("($s $p $o and $s <mulgara:is> <").append(id).append(">) ");
 
     if (found) {
       qry.append("($s $p $o and $s <mulgara:is> <").append(id).append("> and (");
+      if (cm.getTypes().size() > 0)
+        qry.append("$p <mulgara:is> <rdf:type> or ");
       for (Mapper p : cm.getFields()) {
         if (!p.hasInverseUri() && p.isEntityOwned())
           qry.append("$p <mulgara:is> <").append(p.getUri()).append("> or ");
