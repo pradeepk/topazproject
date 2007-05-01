@@ -141,7 +141,7 @@ expr
     ;
 
 cexpr
-    :   (var ASGN)         => var ASGN^ selector                // alias
+    :   (var ASGN)         => var ASGN^ (selector|constant)     // alias
     |   (selector (EQ|NE)) => selector (EQ^|NE^) (selector|constant)  // equality comparisons
     |                         constant (EQ^|NE^) selector       // equality comparisons, part 2
     |                         cfunc                             // boolean functions
