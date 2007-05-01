@@ -160,22 +160,9 @@ public class AnnotationClassMetaFactory {
           String generatorName = id.generator();
           if (!generatorName.equals("")) {
             try {
-              Class generatorClazz = null;
-              try {
-                // Try to find generator by using FQCN
-                generatorClazz = Class.forName(generatorName);
-              } catch (ClassNotFoundException cnfe) {
-                try {
-                  // Allow classname to default to our package
-                  generatorClazz = Class.forName("org.topazproject.otm.id." + generatorName);
-                } catch (ClassNotFoundException cnfe2) {
-                  // Allow classname to leave off the normal Generator suffix too
-                  generatorClazz =
-                    Class.forName("org.topazproject.otm.id." + generatorName + "Generator");
-                }
-              }
-              generator = (IdentifierGenerator) generatorClazz.newInstance();
+              generator = (IdentifierGenerator) Class.forName(generatorName).newInstance();
             } catch (Throwable t) {
+              // Between Class.forName() and newInstance() there are a half-dozen possible excps
               throw new OtmException("Unable to find implementation for '" + generatorName +
                                      "' generator", t);
             }
