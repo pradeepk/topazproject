@@ -37,7 +37,7 @@ public class PredicateMapMapper extends AbstractMapper {
    */
   public PredicateMapMapper(Field field, Method getter, Method setter) {
     super(null, field, getter, setter, null, null, null, false, null, 
-          Mapper.MapperType.PREDICATE_MAP, true);
+          Mapper.MapperType.PREDICATE_MAP, true, null);
   }
 
   /**

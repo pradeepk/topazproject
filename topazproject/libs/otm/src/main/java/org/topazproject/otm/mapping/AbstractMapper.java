@@ -20,6 +20,7 @@ import java.util.List;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Rdf;
+import org.topazproject.otm.id.IdentifierGenerator;
 
 /**
  * A convenient base class for all mappers.
@@ -40,6 +41,7 @@ public abstract class AbstractMapper implements Mapper {
   private String     dataType;
   private MapperType mapperType;
   private boolean    entityOwned;
+  private IdentifierGenerator generator;
 
   /**
    * Creates a new AbstractMapper object.
@@ -55,11 +57,12 @@ public abstract class AbstractMapper implements Mapper {
    * @param inverseModel the model where this field is persisted if different from class model
    * @param mapperType the mapper type of this field
    * @param entityOwned if the triples for this field is owned by the containing entity
+   * @param generator if there is a generator for this field
    */
   public AbstractMapper(String uri, Field field, Method getter, Method setter,
                         Serializer serializer, Class componentType, String dataType,
                         boolean inverse, String inverseModel, MapperType mapperType,
-                        boolean entityOwned) {
+                        boolean entityOwned, IdentifierGenerator generator) {
     this.uri             = uri;
     this.field           = field;
     this.getter          = getter;
@@ -73,6 +76,7 @@ public abstract class AbstractMapper implements Mapper {
     this.inverseModel    = inverseModel;
     this.mapperType      = mapperType;
     this.entityOwned     = entityOwned;
+    this.generator       = generator;
   }
 
   /*
@@ -254,6 +258,15 @@ public abstract class AbstractMapper implements Mapper {
     }
   }
 
+  /**
+   * Get the generator for this field
+   *
+   * @return the generator to use for this field (or null if there isn't one)
+   */
+  public IdentifierGenerator getGenerator() {
+    return generator;
+  }
+
   /*
    * inherited javadoc
    */
@@ -262,6 +275,7 @@ public abstract class AbstractMapper implements Mapper {
            + ((type != null) ? type.getName() : "-null-") + ", componentType="
            + ((componentType != null) ? componentType.getName() : "-null-") + ", dataType="
            + dataType + ", mapperType=" + mapperType + ", inverse=" + inverse + ", serializer="
-           + serializer + "]";
+      + serializer + ", generator=" + ((generator != null) ? generator.getClass() : "-null-") +
+           "]";
   }
 }

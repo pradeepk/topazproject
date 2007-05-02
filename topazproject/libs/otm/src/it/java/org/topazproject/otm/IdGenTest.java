@@ -20,6 +20,8 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.GeneratedValue;
+import org.topazproject.otm.id.GUIDGenerator;
 
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;
@@ -36,7 +38,8 @@ public class IdGenTest {
 
   @Entity(type = Rdf.topaz + "A", model = "idtest")
   public static class A {
-    @Id(generator = "GUID", baseUri = Rdf.topaz + "A#")
+    @Id @GeneratedValue(generatorClass = "org.topazproject.otm.id.GUIDGenerator",
+                        uriPrefix = Rdf.topaz + "A#")
     public String id;
     @Predicate(uri = Rdf.topaz + "name")
     public String name;
@@ -54,10 +57,16 @@ public class IdGenTest {
 
   @Entity(type = Rdf.topaz + "D", model = "idtest")
   public static class D {
-    @Id(generator = "org.topazproject.otm.id.GUIDGenerator", baseUri = Rdf.topaz + "D#")
+    @Id @GeneratedValue(generatorClass = "org.topazproject.otm.id.GUIDGenerator")
     public URI uri;
     @Predicate(uri = Rdf.topaz + "data")
     public String data;
+  }
+
+  @Entity(type = Rdf.topaz + "E", model = "idtest")
+  public static class E {
+    @Id @GeneratedValue
+    public String id;
   }
 
   @Entity(type = Rdf.topaz + "Kontrol", model = "idtest")
@@ -169,8 +178,22 @@ public class IdGenTest {
     assert c.id != null;
   }
 
-  @Test
-  public void dTest() throws OtmException {
+  @Test(groups = { "tx" })
+  public void dCreateTest() throws OtmException {
     factory.preload(D.class);
+    D d = new D();
+    session.saveOrUpdate(d);
+    assert d.uri != null;
+    assert d.uri.toString().startsWith(Rdf.topaz + D.class.getName() + "/uri/" +
+                                       GUIDGenerator.class.getName() + "#");
+  }
+
+  @Test(groups = { "tx" })
+  public void eCreateTest() throws OtmException {
+    factory.preload(E.class);
+    E e = new E();
+    session.saveOrUpdate(e);
+    assert e.id.startsWith(Rdf.topaz + E.class.getName() + "/id/" +
+                           GUIDGenerator.class.getName() + "#");
   }
 }

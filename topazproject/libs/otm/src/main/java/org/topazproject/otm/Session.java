@@ -30,6 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.mapping.AbstractMapper;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.id.IdentifierGenerator;
 
@@ -653,9 +654,13 @@ public class Session {
     String        id      = null;
 
     if (ids.size() == 0) {
-      IdentifierGenerator generator = cm.getIdGenerator();
+      if (!(idField instanceof AbstractMapper)) {
+        throw new OtmException("No id for " + o.getClass() + " on " + idField);
+      }
+
+      IdentifierGenerator generator = ((AbstractMapper) idField).getGenerator();
       if (generator == null)
-        throw new OtmException("No id generation for " + o.getClass() + " on " + idField);
+        throw new OtmException("No @GeneratedValue for " + o.getClass() + " on " + idField);
 
       id = generator.generate();
       idField.set(o, Arrays.asList(new String[] { id })); // So user can get at it after saving

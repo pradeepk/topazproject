@@ -29,11 +29,11 @@ public interface IdentifierGenerator {
   String generate() throws OtmException;
 
   /**
-   * Set the base-uri to use for the generated ids
+   * Set the uri-prefix to use for the generated ids
    *
    * Example: http://rdf.topazproject.org/MyClass/ids#
    *
-   * @param baseUri the uri prefix to use for id generation.
+   * @param uriPrefix the uri prefix to use for id generation.
    */
-  void setBaseUri(String baseUri);
+  void setUriPrefix(String uriPrefix);
 }

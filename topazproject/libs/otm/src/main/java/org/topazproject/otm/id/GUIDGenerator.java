@@ -23,13 +23,13 @@ import java.util.UUID; // Requires Java 1.5
  * @author Eric Brown
  */
 public class GUIDGenerator implements IdentifierGenerator {
-  private String baseUri;
+  private String uriPrefix;
 
   public String generate() {
-    return baseUri + UUID.randomUUID().toString();
+    return uriPrefix + UUID.randomUUID().toString();
   }
 
-  public void setBaseUri(String baseUri) {
-    this.baseUri = baseUri;
+  public void setUriPrefix(String uriPrefix) {
+    this.uriPrefix = uriPrefix;
   }
 }

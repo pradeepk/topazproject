@@ -41,6 +41,7 @@ import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.PredicateMap;
 import org.topazproject.otm.annotations.Rdf;
@@ -136,10 +137,8 @@ public class AnnotationClassMetaFactory {
       new ClassMetadata(clazz, name, type, types, model, baseUri, idField, fields);
     loopDetect.put(clazz, cm);
 
-    IdentifierGenerator generator = null;
-
     for (Field f : clazz.getDeclaredFields()) {
-      Collection<?extends Mapper> mappers = createMapper(f, top, baseUri, loopDetect);
+      Collection<?extends Mapper> mappers = createMapper(f, clazz, top, baseUri, loopDetect);
 
       if (mappers == null)
         continue;
@@ -154,46 +153,12 @@ public class AnnotationClassMetaFactory {
             throw new OtmException("Duplicate @Id field " + f.toGenericString());
 
           idField = m;
-
-          // Get id generator if there is one
-          Id id = (Id) f.getAnnotation(Id.class);
-          String generatorName = id.generator();
-          if (!generatorName.equals("")) {
-            try {
-              generator = (IdentifierGenerator) Class.forName(generatorName).newInstance();
-            } catch (Throwable t) {
-              // Between Class.forName() and newInstance() there are a half-dozen possible excps
-              throw new OtmException("Unable to find implementation for '" + generatorName +
-                                     "' generator", t);
-            }
-
-            // Validate and set baseUri
-            if (generator != null) {
-              String idBaseUri = id.baseUri();
-              try {
-                URI.create(idBaseUri);
-              } catch (IllegalArgumentException iae) {
-                throw new OtmException("Illegal baseUri '" + idBaseUri + "' for id field of " +
-                                       clazz.getSimpleName());
-              }
-              generator.setBaseUri(idBaseUri);
-            }
-          }
         }
       }
     }
 
     cm = new ClassMetadata(clazz, name, type, types, model, baseUri, idField, fields);
     loopDetect.put(clazz, cm);
-
-    if (generator != null) {
-      cm.setIdGenerator(generator);
-    } else {
-      // Get generator from superclass in case id was declared there
-      ClassMetadata cmSuper = loopDetect.get(clazz.getSuperclass());
-      if (cmSuper != null)
-        cm.setIdGenerator(cmSuper.getIdGenerator());
-    }
 
     return cm;
   }
@@ -210,7 +175,7 @@ public class AnnotationClassMetaFactory {
    *
    * @throws OtmException if a mapper can't be created
    */
-  public Collection<?extends Mapper> createMapper(Field f, Class top, String ns,
+  public Collection<?extends Mapper> createMapper(Field f, Class clazz, Class top, String ns,
                                                   Map<Class, ClassMetadata> loopDetect)
                                            throws OtmException {
     Class type = f.getType();
@@ -265,6 +230,38 @@ public class AnnotationClassMetaFactory {
     String    uri      =
       ((rdf != null) && !"".equals(rdf.uri())) ? rdf.uri() : ((ns != null) ? (ns + f.getName()) : null);
 
+    // See if there is an @GeneratedValue annotation... create a generator and set parameter(s)
+    IdentifierGenerator generator = null;
+    GeneratedValue gv = (GeneratedValue) f.getAnnotation(GeneratedValue.class);
+    if (gv != null) {
+      try {
+        generator = (IdentifierGenerator) Class.forName(gv.generatorClass()).newInstance();
+      } catch (Throwable t) {
+        // Between Class.forName() and newInstance() there are a half-dozen possible excps
+        throw new OtmException("Unable to find implementation of '" + gv.generatorClass() +
+                               "' generator for " + f.getName(), t);
+      }
+
+      String uriPrefix = gv.uriPrefix();
+      if (uriPrefix.equals("")) {
+        // Compute default uriPrefix: Rdf.topaz/clazz/f/generatorClass#
+        StringBuffer sb = new StringBuffer();
+        sb.append(Rdf.topaz).append(clazz.getName()).append('/')
+          .append(f.getName()).append('/')
+          .append(gv.generatorClass()).append('#');
+        uriPrefix = sb.toString();
+      }
+
+      try {
+        // Validate that we have a valid uri
+        URI.create(uriPrefix);
+      } catch (IllegalArgumentException iae) {
+        throw new OtmException("Illegal uriPrefix '" + gv.uriPrefix() + "' for for " +
+                               clazz.getName() + "." + f.getName(), iae);
+      }
+      generator.setUriPrefix(uriPrefix);
+    }
+
     if (id != null) {
       if (!type.equals(String.class) && !type.equals(URI.class) && !type.equals(URL.class))
         throw new OtmException("@Id field '" + f.toGenericString()
@@ -272,9 +269,11 @@ public class AnnotationClassMetaFactory {
 
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
-      return Collections.singletonList(new FunctionalMapper(null, f, getMethod, setMethod,
-                                                            serializer, null, false, null,
-                                                            Mapper.MapperType.PREDICATE, true));
+      Mapper p = new FunctionalMapper(null, f, getMethod, setMethod,
+                                      serializer, null, false, null,
+                                      Mapper.MapperType.PREDICATE, true, generator);
+
+      return Collections.singletonList(p);
     }
 
     if (f.getAnnotation(PredicateMap.class) != null)
@@ -327,13 +326,13 @@ public class AnnotationClassMetaFactory {
 
       if (isArray)
         p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
-                            inverseModel, mt, !notOwned);
+                            inverseModel, mt, !notOwned, generator);
       else if (isCollection)
         p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
-                                 inverseModel, mt, !notOwned);
+                                 inverseModel, mt, !notOwned, generator);
       else
         p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, inverse,
-                                 inverseModel, mt, !notOwned);
+                                 inverseModel, mt, !notOwned, generator);
 
       return Collections.singletonList(p);
     }

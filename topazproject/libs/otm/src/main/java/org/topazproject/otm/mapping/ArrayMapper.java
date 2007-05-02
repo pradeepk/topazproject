@@ -19,6 +19,7 @@ import java.util.Collections;
 import java.util.List;
 
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.id.IdentifierGenerator;
 
 /**
  * Mapper for array type fileds.
@@ -40,12 +41,13 @@ public class ArrayMapper extends AbstractMapper {
    * @param inverseModel the model where this field is persisted if different from class model
    * @param mapperType the mapper type of this field
    * @param entityOwned if the triples for this field is owned by the containing entity
+   * @param generator if there is a generator for this field
    */
   public ArrayMapper(String uri, Field field, Method getter, Method setter, Serializer serializer,
                      Class componentType, String dataType, boolean inverse, String inverseModel,
-                     MapperType mapperType, boolean entityOwned) {
+                     MapperType mapperType, boolean entityOwned, IdentifierGenerator generator) {
     super(uri, field, getter, setter, serializer, componentType, dataType, inverse, inverseModel,
-          mapperType, entityOwned);
+          mapperType, entityOwned, generator);
   }
 
   /**
