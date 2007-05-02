@@ -35,7 +35,10 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     def ri = new ModelConfig("ri", "local:///topazproject#otmtest1".toURI(), null)
     rdf.sessFactory.addModel(ri);
 
-    store.dropModel(ri)
+    try {
+      store.dropModel(ri)
+    } catch (Throwable t) {
+    }
     store.createModel(ri)
   }
 

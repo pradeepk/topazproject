@@ -39,7 +39,10 @@ public class OqlTest extends GroovyTestCase {
     rdf.sessFactory.preload(Article.class);
     rdf.sessFactory.preload(PublicAnnotation.class);
 
-    store.dropModel(ri)
+    try {
+      store.dropModel(ri);
+    } catch (Throwable t) {
+    }
     store.createModel(ri)
   }
 
