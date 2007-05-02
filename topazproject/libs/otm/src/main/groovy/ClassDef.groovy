@@ -183,8 +183,8 @@ public class ClassDef {
 
     // create class-metadata
     def mappers =
-        fields.findAll{it != idField && !it.isTransient}.collect{it.toMapper(rdf, clazz)}
-    def idmapper = fields.contains(idField) ? idField.toMapper(rdf, clazz) : null
+        fields.findAll{it != idField && !it.isTransient}.collect{it.toMapper(rdf, clazz, null)}
+    def idmapper = fields.contains(idField) ? idField.toMapper(rdf, clazz, getIdGen()) : null
 
     clsDef = classDefsByName[extendsClass]
     while (clsDef) {
@@ -196,8 +196,6 @@ public class ClassDef {
 
     metadata = new ClassMetadata(clazz, getShortName(clazz), type, allTypes, model, baseUri,
                                  idmapper, mappers)
-    if (idGenerator)
-      metadata.idGenerator = getIdGen()
 
     if (log.debugEnabled)
       log.debug "created metadata for class '${clazz.name}': ${metadata}"
@@ -269,6 +267,9 @@ public class ClassDef {
   }
 
   private def getIdGen() {
+    if (!idGenerator)
+      return null
+
     Class generatorClazz
     try {
       // Try to find generator by using FQCN
@@ -284,7 +285,7 @@ public class ClassDef {
     }
 
     def gen = generatorClazz.newInstance();
-    gen.baseUri = baseUri
+    gen.uriPrefix = baseUri
 
     return gen
   }

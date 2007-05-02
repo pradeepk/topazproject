@@ -14,6 +14,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.ArrayMapper;
 import org.topazproject.otm.mapping.CollectionMapper;
 import org.topazproject.otm.mapping.FunctionalMapper;
@@ -118,7 +119,7 @@ public class FieldDef {
   /**
    * Generate a mapper for this field.
    */
-  protected Mapper toMapper(RdfBuilder rdf, Class cls) {
+  protected Mapper toMapper(RdfBuilder rdf, Class cls, IdentifierGenerator idGen) {
     Field  f   = cls.getDeclaredField(name)
     Method get = cls.getMethod('get' + RdfBuilder.capitalize(name))
     Method set = cls.getMethod('set' + RdfBuilder.capitalize(name), f.getType())
@@ -130,16 +131,18 @@ public class FieldDef {
     Mapper m;
     if (maxCard == 1) {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
-      m = new FunctionalMapper(pred, f, get, set, ser, dtype, inverse, null, mt, owned)
+      m = new FunctionalMapper(pred, f, get, set, ser, dtype, inverse, null, mt, owned, idGen)
     } else {
       String     collType = colType ? colType : rdf.defColType
       Class      compType = toJavaClass(getBaseJavaType(), rdf);
       Serializer ser      = rdf.sessFactory.getSerializerFactory().getSerializer(compType, dtype)
 
       if (collType.toLowerCase() == 'array')
-        m = new ArrayMapper(pred, f, get, set, ser, compType, dtype, inverse, null, mt, owned)
+        m = new ArrayMapper(pred, f, get, set, ser, compType, dtype, inverse, null, mt, owned,
+                            idGen)
       else
-        m = new CollectionMapper(pred, f, get, set, ser, compType, dtype, inverse, null, mt, owned)
+        m = new CollectionMapper(pred, f, get, set, ser, compType, dtype, inverse, null, mt, owned,
+                                 idGen)
     }
 
     // done
