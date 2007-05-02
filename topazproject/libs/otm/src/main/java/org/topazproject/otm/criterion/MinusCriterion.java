@@ -26,7 +26,7 @@ public class MinusCriterion implements Criterion {
   private String name;
   private Object value;
 
-/**
+  /**
    * Creates a new MinusCriterion object.
    *
    * @param name field/predicate name

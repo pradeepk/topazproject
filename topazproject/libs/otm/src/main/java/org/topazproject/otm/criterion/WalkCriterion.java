@@ -27,7 +27,7 @@ public class WalkCriterion implements Criterion {
   private String name;
   private Object value;
 
-/**
+  /**
    * Creates a new WalkCriterion object.
    *
    * @param name field/predicate name

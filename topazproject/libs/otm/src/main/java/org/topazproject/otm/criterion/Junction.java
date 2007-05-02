@@ -24,7 +24,7 @@ public class Junction implements Criterion {
   private List<Criterion> criterions = new ArrayList<Criterion>();
   private String          op;
 
-/**
+  /**
    * Creates a new Junction object.
    *
    * @param op the operation

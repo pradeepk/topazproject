@@ -25,7 +25,7 @@ public class Transaction {
   private Session          session;
   private Connection       conn    = null;
 
-/**
+  /**
    * Creates a new Transaction object.
    *
    * @param session the owning session

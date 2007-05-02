@@ -59,7 +59,7 @@ public class SerializerFactory {
     typeMap.put(Calendar.class, Rdf.xsd + "dateTime");
   }
 
-/**
+  /**
    * Creates a new SerializerFactory object.
    *
    * @param sf the session factory

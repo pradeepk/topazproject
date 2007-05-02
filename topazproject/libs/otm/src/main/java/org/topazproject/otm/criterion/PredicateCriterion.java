@@ -26,7 +26,7 @@ public class PredicateCriterion implements Criterion {
   private String name;
   private Object value;
 
-/**
+  /**
    * Creates a new PredicateCriterion object.
    *
    * @param name field/predicate name

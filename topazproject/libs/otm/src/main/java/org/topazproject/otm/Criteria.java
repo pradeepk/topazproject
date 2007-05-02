@@ -33,7 +33,7 @@ public class Criteria {
   private List<Order>     orders      = new ArrayList<Order>();
   private List<Criteria>  children    = new ArrayList<Criteria>();
 
-/**
+  /**
    * Creates a new Criteria object. Called by {@link Session#createCriteria}.
    *
    * @param session The session that created it

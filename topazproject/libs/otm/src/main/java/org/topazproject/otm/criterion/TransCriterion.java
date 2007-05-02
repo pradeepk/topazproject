@@ -26,7 +26,7 @@ public class TransCriterion implements Criterion {
   private String name;
   private Object value;
 
-/**
+  /**
    * Creates a new TransCriterion object.
    *
    * @param name field/predicate name

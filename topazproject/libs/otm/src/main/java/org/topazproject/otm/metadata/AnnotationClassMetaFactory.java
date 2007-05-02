@@ -64,7 +64,7 @@ public class AnnotationClassMetaFactory {
   private static final Log log = LogFactory.getLog(AnnotationClassMetaFactory.class);
   private SessionFactory   sf;
 
-/**
+  /**
    * Creates a new AnnotationClassMetaFactory object.
    *
    * @param sf the session factory

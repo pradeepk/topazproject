@@ -19,7 +19,7 @@ import org.topazproject.otm.Criteria;
 public class SubjectCriterion implements Criterion {
   private String id;
 
-/**
+  /**
    * Creates a new SubjectCriterion object.
    *
    * @param id the id/subject-uri

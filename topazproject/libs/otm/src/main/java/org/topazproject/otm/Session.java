@@ -50,7 +50,7 @@ public class Session {
   private Map<Id, Set<Wrapper>> associations    = new HashMap<Id, Set<Wrapper>>();
   private Set<Id>               currentIds      = new HashSet<Id>();
 
-/**
+  /**
    * Creates a new Session object.
    *
    * @param sessionFactory the session factory that created this session

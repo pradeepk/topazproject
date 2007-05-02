@@ -21,7 +21,7 @@ public class ModelConfig {
   private URI    uri;
   private URI    type;
 
-/**
+  /**
    * Creates a new Model object.
    *
    * @param id the id of this model

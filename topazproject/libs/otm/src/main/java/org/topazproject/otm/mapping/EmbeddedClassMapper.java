@@ -24,7 +24,7 @@ import java.util.List;
  * @author Pradeep Krishnan
  */
 public class EmbeddedClassMapper extends AbstractMapper {
-/**
+  /**
    * Creates a new EmbeddedClassMapper object.
    *
    * @param field the field that is embedding this class

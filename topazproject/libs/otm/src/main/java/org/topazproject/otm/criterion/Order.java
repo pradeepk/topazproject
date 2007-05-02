@@ -18,7 +18,7 @@ public class Order {
   private String  name;
   private boolean ascending;
 
-/**
+  /**
    * Creates a new Order object.
    *
    * @param name the field name to order by

@@ -28,7 +28,7 @@ import org.topazproject.otm.OtmException;
  * @author Pradeep Krishnan
  */
 public class PredicateMapMapper extends AbstractMapper {
-/**
+  /**
    * Creates a new PredicateMapMapper object.
    *
    * @param field the java class field

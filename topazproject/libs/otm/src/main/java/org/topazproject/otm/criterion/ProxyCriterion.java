@@ -27,7 +27,7 @@ public class ProxyCriterion implements Criterion {
   private Object[]  args;
   private Criterion criterion = null;
 
-/**
+  /**
    * Creates a new ProxyCriterion object.
    *
    * @param func the function
