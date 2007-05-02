@@ -8,8 +8,10 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.topazproject.otm;
+package org.topazproject.otm.metadata;
 
+import org.topazproject.otm.ClassMetadata;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.metadata.RdfBuilder;
 import org.topazproject.otm.stores.ItqlStore;
 
