@@ -84,10 +84,11 @@ public class PredicateCriterion implements Criterion {
         val += (("^^<" + m.getDataType()) + ">");
     }
 
-    if (!m.hasInverseUri())
-      return subjectVar + " <" + m.getUri() + "> " + val;
+    String query =
+      m.hasInverseUri() ? (val + " <" + m.getUri() + "> " + subjectVar)
+      : (subjectVar + " <" + m.getUri() + "> " + val);
 
-    String model = m.getInverseModel();
+    String model = m.getModel();
 
     if (model != null) {
       ModelConfig conf = criteria.getSession().getSessionFactory().getModel(model);
@@ -97,8 +98,6 @@ public class PredicateCriterion implements Criterion {
 
       model = " in <" + conf.getUri() + ">";
     }
-
-    String query = val + " <" + m.getUri() + "> " + subjectVar;
 
     if (model != null)
       query += model;

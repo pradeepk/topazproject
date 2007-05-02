@@ -7,7 +7,6 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-
 package org.topazproject.otm.metadata;
 
 import java.lang.reflect.Array;
@@ -45,6 +44,7 @@ import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.PredicateMap;
 import org.topazproject.otm.annotations.Rdf;
+import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.ArrayMapper;
 import org.topazproject.otm.mapping.CollectionMapper;
 import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
@@ -54,7 +54,6 @@ import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.PredicateMapMapper;
 import org.topazproject.otm.mapping.Serializer;
 import org.topazproject.otm.mapping.SerializerFactory;
-import org.topazproject.otm.id.IdentifierGenerator;
 
 /**
  * Meta information for mapping a class to a set of triples.
@@ -302,37 +301,32 @@ public class AnnotationClassMetaFactory {
       log.debug("No serializer found for " + type);
 
     if (!embedded) {
-      boolean inverse      = (rdf != null) && rdf.inverse();
-      String  inverseModel = null;
+      boolean inverse = (rdf != null) && rdf.inverse();
+      String  model   = ((rdf != null) && !"".equals(rdf.model())) ? rdf.model() : null;
 
-      if (inverse) {
-        if (serializer != null) {
-          if (!"".equals(rdf.model()))
-            inverseModel = rdf.model();
-        } else {
-          ClassMetadata cm = loopDetect.get(type);
+      if (inverse && (model == null) && (serializer == null)) {
+        ClassMetadata cm = loopDetect.get(type);
 
-          if (cm == null)
-            cm = create(type, type, null, loopDetect);
+        if (cm == null)
+          cm = create(type, type, null, loopDetect);
 
-          inverseModel = cm.getModel();
-        }
+        model = cm.getModel();
       }
 
-      boolean notOwned = (rdf != null) && rdf.notOwned();
+      boolean           notOwned = (rdf != null) && rdf.notOwned();
 
-      Mapper.MapperType mt = getMapperType(f, rdf, isArray);
+      Mapper.MapperType mt       = getMapperType(f, rdf, isArray);
       Mapper            p;
 
       if (isArray)
         p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
-                            inverseModel, mt, !notOwned, generator);
+                            model, mt, !notOwned, generator);
       else if (isCollection)
         p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
-                                 inverseModel, mt, !notOwned, generator);
+                                 model, mt, !notOwned, generator);
       else
         p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, inverse,
-                                 inverseModel, mt, !notOwned, generator);
+                                 model, mt, !notOwned, generator);
 
       return Collections.singletonList(p);
     }
@@ -344,7 +338,7 @@ public class AnnotationClassMetaFactory {
     ClassMetadata cm;
 
     try {
-      cm                   = create(type, type, ns, loopDetect);
+      cm                         = create(type, type, ns, loopDetect);
     } catch (OtmException e) {
       throw new OtmException("Could not generate metadata for @Embedded class field '"
                              + f.toGenericString() + "'", e);

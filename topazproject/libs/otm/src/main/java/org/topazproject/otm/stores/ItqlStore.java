@@ -248,7 +248,7 @@ public class ItqlStore implements TripleStore {
 
           qry.append("($s $p $o ");
 
-          String inverseModel = p.getInverseModel();
+          String inverseModel = p.getModel();
           if (inverseModel != null)
             qry.append("in <").append(getModelUri(inverseModel, txn)).append("> ");
 

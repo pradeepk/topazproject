@@ -151,8 +151,8 @@ public class EmbeddedClassFieldMapper implements Mapper {
   /*
    * inherited javadoc
    */
-  public String getInverseModel() {
-    return field.getInverseModel();
+  public String getModel() {
+    return field.getModel();
   }
 
   /*

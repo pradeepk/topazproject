@@ -147,11 +147,11 @@ public interface Mapper {
   public boolean hasInverseUri();
 
   /**
-   * Gets the model where the other end of the 'inverse' related object is persisted.
+   * Gets the model where this field is persisted.
    *
-   * @return the inverse association's model
+   * @return the model name or null 
    */
-  public String getInverseModel();
+  public String getModel();
 
   /**
    * Gets the mapper type of this mapper.

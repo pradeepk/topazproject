@@ -74,13 +74,11 @@ public class TransCriterion implements Criterion {
       throw new OtmException("Value must be a uri for trans(): field is "
                              + m.getField().toGenericString());
 
-    if (!m.hasInverseUri())
-      return "(trans(" + subjectVar + " <" + m.getUri() + "> " + val + ") or " + subjectVar + " <"
-             + m.getUri() + "> " + val + ")";
+    String model = m.getModel();
 
-    String model = m.getInverseModel();
-
-    if (model != null) {
+    if (model == null)
+      model = "";
+    else {
       ModelConfig conf = criteria.getSession().getSessionFactory().getModel(model);
 
       if (conf == null)
@@ -89,18 +87,10 @@ public class TransCriterion implements Criterion {
       model = " in <" + conf.getUri() + ">";
     }
 
-    String query = "(trans(" + val + " <" + m.getUri() + "> " + subjectVar + ")";
+    String subj   = m.hasInverseUri() ? val : subjectVar;
+    String obj    = m.hasInverseUri() ? subjectVar : val;
+    String triple = subj + " <" + m.getUri() + "> " + obj;
 
-    if (model != null)
-      query += model;
-
-    query += (" or " + val + " <" + m.getUri() + "> " + subjectVar);
-
-    if (model != null)
-      query += model;
-
-    query += ")";
-
-    return query;
+    return "(trans(" + triple + ")" + model + " or " + triple + model + ")";
   }
 }

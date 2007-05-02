@@ -116,7 +116,7 @@ public class MemStore implements TripleStore {
       if (!p.hasInverseUri())
         value.put(uri, new ArrayList<String>(storage.getProperty(model, id, uri)));
       else {
-        String inverseModel = p.getInverseModel();
+        String inverseModel = p.getModel();
 
         if (inverseModel == null)
           inverseModel = model;

@@ -149,8 +149,8 @@ options {
 
       if (m != null && m.hasInverseUri()) {
         a.setIsInverse(true);
-        if (m.getInverseModel() != null)
-          a.setModel(getModelUri(m.getInverseModel()));
+        if (m.getModel() != null)
+          a.setModel(getModelUri(m.getModel()));
       }
 
       a.setIsVar(isVar);

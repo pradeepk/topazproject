@@ -37,7 +37,7 @@ public abstract class AbstractMapper implements Mapper {
   private Class      type;
   private Class      componentType;
   private boolean    inverse;
-  private String     inverseModel;
+  private String     model;
   private String     dataType;
   private MapperType mapperType;
   private boolean    entityOwned;
@@ -54,14 +54,14 @@ public abstract class AbstractMapper implements Mapper {
    * @param componentType of arrays and collections or type of functional properties
    * @param dataType of literals or null for un-typed
    * @param inverse if this field is persisted with an inverse predicate
-   * @param inverseModel the model where this field is persisted if different from class model
+   * @param model  the model where this field is persisted
    * @param mapperType the mapper type of this field
    * @param entityOwned if the triples for this field is owned by the containing entity
    * @param generator if there is a generator for this field
    */
   public AbstractMapper(String uri, Field field, Method getter, Method setter,
                         Serializer serializer, Class componentType, String dataType,
-                        boolean inverse, String inverseModel, MapperType mapperType,
+                        boolean inverse, String model, MapperType mapperType,
                         boolean entityOwned, IdentifierGenerator generator) {
     this.uri             = uri;
     this.field           = field;
@@ -73,7 +73,7 @@ public abstract class AbstractMapper implements Mapper {
     this.componentType   = componentType;
     this.dataType        = dataType;
     this.inverse         = inverse;
-    this.inverseModel    = inverseModel;
+    this.model           = model;
     this.mapperType      = mapperType;
     this.entityOwned     = entityOwned;
     this.generator       = generator;
@@ -204,8 +204,8 @@ public abstract class AbstractMapper implements Mapper {
   /*
    * inherited javadoc
    */
-  public String getInverseModel() {
-    return inverseModel;
+  public String getModel() {
+    return model;
   }
 
   /*

@@ -38,15 +38,15 @@ public class ArrayMapper extends AbstractMapper {
    * @param componentType the array component type
    * @param dataType of literals or null for un-typed
    * @param inverse if this field is persisted with an inverse predicate
-   * @param inverseModel the model where this field is persisted if different from class model
+   * @param model the model where this field is persisted
    * @param mapperType the mapper type of this field
    * @param entityOwned if the triples for this field is owned by the containing entity
    * @param generator if there is a generator for this field
    */
   public ArrayMapper(String uri, Field field, Method getter, Method setter, Serializer serializer,
-                     Class componentType, String dataType, boolean inverse, String inverseModel,
+                     Class componentType, String dataType, boolean inverse, String model,
                      MapperType mapperType, boolean entityOwned, IdentifierGenerator generator) {
-    super(uri, field, getter, setter, serializer, componentType, dataType, inverse, inverseModel,
+    super(uri, field, getter, setter, serializer, componentType, dataType, inverse, model,
           mapperType, entityOwned, generator);
   }
 
