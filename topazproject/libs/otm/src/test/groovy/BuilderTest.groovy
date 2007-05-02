@@ -23,7 +23,7 @@ public class BuilderTest extends GroovyTestCase {
   def rdf
 
   void setUp() {
-    rdf = new RdfBuilder(new SessionFactory(), defModel:'ri', defBaseUri:'topaz:')
+    rdf = new RdfBuilder(defModel:'ri', defBaseUri:'topaz:')
   }
 
   void testBuilderBasic() {

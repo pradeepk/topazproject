@@ -42,7 +42,7 @@ public class RdfBuilder extends BuilderSupport {
   private static final Log log = LogFactory.getLog(RdfBuilder.class)
 
   /** the session factory to use for looking up serializers and registering class-metadata */
-  SessionFactory sessFactory
+  SessionFactory sessFactory = new SessionFactory()
   /** the default collection type; defaults to 'List' */
   String         defColType = 'List'
   /** the default collection mapping type; defaults to 'Predicate' */
@@ -51,15 +51,6 @@ public class RdfBuilder extends BuilderSupport {
   String         defModel
   /** the default base-uri to use */
   String         defBaseUri
-
-  public RdfBuilder(SessionFactory sf) {
-    sessFactory = sf
-  }
-
-  public RdfBuilder(Map attributes, SessionFactory sf) {
-    this(sf)
-    attributes.each{ k, v -> setProperty(k, v) }
-  }
 
   protected static String capitalize(String str) {
     return str[0].toUpperCase() + (str.size() > 1 ? str[1..-1] : "")
@@ -99,6 +90,7 @@ public class RdfBuilder extends BuilderSupport {
       log.trace "doInvokeMethod called with methodName = '${methodName}', name = '${name}'"
 
     Object node = super.doInvokeMethod(methodName, name, args);
+
     if (node instanceof ClassDef) {
       ClassMetadata md = node.toClass(this)
       if (md.isEntity())
