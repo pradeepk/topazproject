@@ -51,6 +51,30 @@ public class Restrictions {
   }
 
   /**
+   * Apply a "greater than" criterion.
+   *
+   * @param name the property name
+   * @param value its value
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion gt(String name, Object value) {
+    return func("gt", name, value);
+  }
+
+  /**
+   * Apply a "less than" criterion.
+   *
+   * @param name the property name
+   * @param value its value
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion lt(String name, Object value) {
+    return func("lt", name, value);
+  }
+
+  /**
    * Creates a criterion that finds the objects that match the property value transitively.
    *
    * @param name the property name
@@ -79,12 +103,11 @@ public class Restrictions {
    * Creates a Criterion that walks a property chain and finds the objects matching the
    * property value.
    *
-   * @param name the property name
-   * @param value its value
+   * @param func the property name
    *
    * @return a newly created Criterion object
    */
-  public static Criterion func(String func, Object ...args) {
+  public static Criterion func(String func, Object... args) {
     return new ProxyCriterion(func, args);
   }
 

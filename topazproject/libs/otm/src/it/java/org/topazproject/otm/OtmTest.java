@@ -13,8 +13,8 @@ import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.Grants;
-import org.topazproject.otm.samples.NoRdfType;
 import org.topazproject.otm.samples.NoPredicate;
+import org.topazproject.otm.samples.NoRdfType;
 import org.topazproject.otm.samples.Permissions;
 import org.topazproject.otm.samples.PrivateAnnotation;
 import org.topazproject.otm.samples.PublicAnnotation;
@@ -51,7 +51,7 @@ public class OtmTest extends TestCase {
     factory.setTripleStore(new ItqlStore(URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService")));
 
     //factory.setTripleStore(new MemStore());
-    ModelConfig ri = new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null);
+    ModelConfig ri      = new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null);
     ModelConfig grants  =
       new ModelConfig("grants", URI.create("local:///topazproject#otmtest2"), null);
     ModelConfig revokes =
@@ -439,6 +439,10 @@ public class OtmTest extends TestCase {
       a2.setAnnotates(URI.create("foo:1"));
       a3.setAnnotates(URI.create("bar:1"));
 
+      a1.setCreator("aa");
+      a2.setCreator("bb");
+      a3.setCreator("cc");
+
       a1.setSupersededBy(a2);
       a2.setSupersedes(a1);
       a2.setSupersededBy(a3);
@@ -597,6 +601,17 @@ public class OtmTest extends TestCase {
 
       assertTrue(id1.equals(a1.getId()) || id2.equals(a1.getId()));
 
+/* resolver needs to be installed for these
+      l = session.createCriteria(Annotation.class).add(Restrictions.gt("creator", "bb")).list();
+      assertEquals(1, l.size());
+      a1 = (Annotation) l.get(0);
+      assertEquals(id3, a1.getId());
+
+      l = session.createCriteria(Annotation.class).add(Restrictions.lt("creator", "bb")).list();
+      assertEquals(1, l.size());
+      a1 = (Annotation) l.get(0);
+      assertEquals(id1, a1.getId());
+*/
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       try {

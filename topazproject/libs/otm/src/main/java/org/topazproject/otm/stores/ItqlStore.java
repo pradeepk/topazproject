@@ -48,6 +48,7 @@ import org.topazproject.otm.criterion.Junction;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.PredicateCriterion;
 import org.topazproject.otm.criterion.SubjectCriterion;
+import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.QueryException;
 import org.topazproject.otm.query.QueryInfo;
@@ -71,6 +72,11 @@ public class ItqlStore implements TripleStore {
    */
   public ItqlStore(URI server) {
     serverUri = server;
+
+    //xxx: configure these
+    ComparisonCriterionBuilder cc = new ComparisonCriterionBuilder("local:///topazproject#str");
+    critBuilders.put("gt", cc);
+    critBuilders.put("lt", cc);
   }
 
   public Connection openConnection() {
