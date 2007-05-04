@@ -258,11 +258,6 @@ public abstract class AbstractMapper implements Mapper {
     }
   }
 
-  /**
-   * Get the generator for this field
-   *
-   * @return the generator to use for this field (or null if there isn't one)
-   */
   public IdentifierGenerator getGenerator() {
     return generator;
   }

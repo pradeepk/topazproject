@@ -14,6 +14,7 @@ import java.lang.reflect.Method;
 
 import java.util.List;
 
+import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.OtmException;
 
 /**
@@ -166,4 +167,11 @@ public interface Mapper {
    * @return true if owned, 
    */
   public boolean isEntityOwned();
+
+  /**
+   * Get the generator for this field
+   *
+   * @return the generator to use for this field (or null if there isn't one)
+   */
+  public IdentifierGenerator getGenerator();
 }

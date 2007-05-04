@@ -20,6 +20,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.OtmException;
 
 /**
@@ -79,5 +80,9 @@ public class PredicateMapMapper extends AbstractMapper {
     Map m = (Map) getRawValue(o, true);
     m.clear();
     m.putAll(vals);
+  }
+
+  public IdentifierGenerator getGenerator() {
+    throw new UnsupportedOperationException("Generated values not supported for PredicateMaps");
   }
 }

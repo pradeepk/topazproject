@@ -20,7 +20,6 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Arrays;
 
 import javassist.util.proxy.MethodHandler;
 import javassist.util.proxy.ProxyObject;
@@ -654,16 +653,12 @@ public class Session {
     String        id      = null;
 
     if (ids.size() == 0) {
-      if (!(idField instanceof AbstractMapper)) {
-        throw new OtmException("No id for " + o.getClass() + " on " + idField);
-      }
-
-      IdentifierGenerator generator = ((AbstractMapper) idField).getGenerator();
+      IdentifierGenerator generator = idField.getGenerator();
       if (generator == null)
-        throw new OtmException("No @GeneratedValue for " + o.getClass() + " on " + idField);
+        throw new OtmException("No id generation for " + o.getClass() + " on " + idField);
 
       id = generator.generate();
-      idField.set(o, Arrays.asList(new String[] { id })); // So user can get at it after saving
+      idField.set(o, Collections.singletonList(id)); // So user can get at it after saving
       if (log.isDebugEnabled())
         log.debug(generator.getClass().getSimpleName() + " generated '" + id + "' for " +
                   o.getClass().getSimpleName());

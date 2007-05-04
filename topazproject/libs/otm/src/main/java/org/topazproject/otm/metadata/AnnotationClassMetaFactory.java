@@ -232,7 +232,8 @@ public class AnnotationClassMetaFactory {
 
     if (gv != null) {
       try {
-        generator = (IdentifierGenerator) Class.forName(gv.generatorClass()).newInstance();
+        generator = (IdentifierGenerator) Thread.currentThread().getContextClassLoader()
+                                            .loadClass(gv.generatorClass()).newInstance();
       } catch (Throwable t) {
         // Between Class.forName() and newInstance() there are a half-dozen possible excps
         throw new OtmException("Unable to find implementation of '" + gv.generatorClass()
@@ -244,8 +245,7 @@ public class AnnotationClassMetaFactory {
       if (uriPrefix.equals("")) {
         // Compute default uriPrefix: Rdf.topaz/clazz/f/generatorClass#
         StringBuffer sb = new StringBuffer();
-        sb.append(Rdf.topaz).append(clazz.getName()).append('/').append(f.getName()).append('/')
-           .append(gv.generatorClass()).append('#');
+        sb.append(Rdf.topaz).append(clazz.getName()).append('/').append(f.getName()).append('#');
         uriPrefix = sb.toString();
       }
 

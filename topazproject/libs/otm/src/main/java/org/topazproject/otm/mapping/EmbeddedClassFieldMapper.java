@@ -16,6 +16,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.OtmException;
 
 /**
@@ -167,6 +168,10 @@ public class EmbeddedClassFieldMapper implements Mapper {
    */
   public boolean isEntityOwned() {
     return field.isEntityOwned();
+  }
+
+  public IdentifierGenerator getGenerator() {
+    return field.getGenerator();
   }
 
   /*

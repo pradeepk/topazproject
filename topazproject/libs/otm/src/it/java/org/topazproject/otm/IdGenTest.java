@@ -184,8 +184,7 @@ public class IdGenTest {
     D d = new D();
     session.saveOrUpdate(d);
     assert d.uri != null;
-    assert d.uri.toString().startsWith(Rdf.topaz + D.class.getName() + "/uri/" +
-                                       GUIDGenerator.class.getName() + "#");
+    assert d.uri.toString().startsWith(Rdf.topaz + D.class.getName() + "/uri#");
   }
 
   @Test(groups = { "tx" })
@@ -193,7 +192,6 @@ public class IdGenTest {
     factory.preload(E.class);
     E e = new E();
     session.saveOrUpdate(e);
-    assert e.id.startsWith(Rdf.topaz + E.class.getName() + "/id/" +
-                           GUIDGenerator.class.getName() + "#");
+    assert e.id.startsWith(Rdf.topaz + E.class.getName() + "/id#");
   }
 }
