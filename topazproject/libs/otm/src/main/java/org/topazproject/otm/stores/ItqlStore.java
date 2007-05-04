@@ -555,7 +555,9 @@ public class ItqlStore implements TripleStore {
       qa.beforeFirst();
       while (qa.next()) {
         String s = qa.getString("s");
-        results.add(get(cm, s, txn));
+        ResultObject ro = get(cm, s, txn);
+        if (ro != null)
+          results.add(ro);
       }
     } catch (AnswerException ae) {
       throw new OtmException("Error parsing answer", ae);
