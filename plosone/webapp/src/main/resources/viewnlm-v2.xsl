@@ -1080,7 +1080,7 @@ Make article meta data
 				</xsl:choose>
 			</xsl:for-each>
 			<xsl:text> (</xsl:text>
-			<xsl:value-of select="copyright-year"/>
+			<xsl:value-of select="pub-date[@pub-type='collection']/year"/>
 			<xsl:text>) </xsl:text>
 			<xsl:apply-templates select="title-group/article-title"/><xsl:text>. </xsl:text>
 			<xsl:value-of select="../journal-meta/journal-title"/><xsl:text> </xsl:text>
@@ -1918,7 +1918,8 @@ Make article meta data
 <xsl:template match="disp-formula | chem-struct-wrapper">
   <br/>
   <span class="equation">
-    <xsl:apply-templates/>
+    <xsl:apply-templates select="*[not(self::label)]"/>
+    <xsl:apply-templates select="label"/>
   </span>
   <br/>
 </xsl:template>
