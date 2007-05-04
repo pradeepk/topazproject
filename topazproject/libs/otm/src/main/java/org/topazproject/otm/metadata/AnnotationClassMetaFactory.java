@@ -207,11 +207,7 @@ public class AnnotationClassMetaFactory {
       getMethod = null;
     }
 
-    try {
-      setMethod = invokedOn.getMethod("set" + n, type);
-    } catch (NoSuchMethodException e) {
-      setMethod = null;
-    }
+    setMethod = getSetter(invokedOn, "set" + n, type);
 
     if (((getMethod == null) || (setMethod == null)) && !Modifier.isPublic(mod))
       throw new OtmException("The field '" + f.toGenericString()
@@ -455,5 +451,23 @@ public class AnnotationClassMetaFactory {
       name = name.substring(p.getName().length() + 1);
 
     return name;
+  }
+
+  private static Method getSetter(Class invokedOn, String name, Class type) {
+    for (Class t = type; t != null; t = t.getSuperclass()) {
+      try {
+        return invokedOn.getMethod(name, t);
+      } catch (NoSuchMethodException e) {
+      }
+    }
+
+    for (Class t : type.getInterfaces()) {
+      try {
+        return invokedOn.getMethod(name, t);
+      } catch (NoSuchMethodException e) {
+      }
+    }
+
+    return null;
   }
 }
