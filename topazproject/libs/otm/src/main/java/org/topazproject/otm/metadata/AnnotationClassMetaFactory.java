@@ -39,8 +39,8 @@ import org.topazproject.otm.annotations.BaseUri;
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.GeneratedValue;
+import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.PredicateMap;
 import org.topazproject.otm.annotations.Rdf;
@@ -166,6 +166,7 @@ public class AnnotationClassMetaFactory {
    * Create an appropriate mapper for the given java field.
    *
    * @param f the field
+   * @param clazz the declaring class 
    * @param top the class where this field belongs (may not be the declaring class)
    * @param ns the rdf name space or null to use to build an rdf predicate uri
    * @param loopDetect to avoid loops in following associations
@@ -231,23 +232,24 @@ public class AnnotationClassMetaFactory {
 
     // See if there is an @GeneratedValue annotation... create a generator and set parameter(s)
     IdentifierGenerator generator = null;
-    GeneratedValue gv = (GeneratedValue) f.getAnnotation(GeneratedValue.class);
+    GeneratedValue      gv        = (GeneratedValue) f.getAnnotation(GeneratedValue.class);
+
     if (gv != null) {
       try {
         generator = (IdentifierGenerator) Class.forName(gv.generatorClass()).newInstance();
       } catch (Throwable t) {
         // Between Class.forName() and newInstance() there are a half-dozen possible excps
-        throw new OtmException("Unable to find implementation of '" + gv.generatorClass() +
-                               "' generator for " + f.getName(), t);
+        throw new OtmException("Unable to find implementation of '" + gv.generatorClass()
+                               + "' generator for " + f.getName(), t);
       }
 
       String uriPrefix = gv.uriPrefix();
+
       if (uriPrefix.equals("")) {
         // Compute default uriPrefix: Rdf.topaz/clazz/f/generatorClass#
         StringBuffer sb = new StringBuffer();
-        sb.append(Rdf.topaz).append(clazz.getName()).append('/')
-          .append(f.getName()).append('/')
-          .append(gv.generatorClass()).append('#');
+        sb.append(Rdf.topaz).append(clazz.getName()).append('/').append(f.getName()).append('/')
+           .append(gv.generatorClass()).append('#');
         uriPrefix = sb.toString();
       }
 
@@ -255,9 +257,10 @@ public class AnnotationClassMetaFactory {
         // Validate that we have a valid uri
         URI.create(uriPrefix);
       } catch (IllegalArgumentException iae) {
-        throw new OtmException("Illegal uriPrefix '" + gv.uriPrefix() + "' for for " +
-                               clazz.getName() + "." + f.getName(), iae);
+        throw new OtmException("Illegal uriPrefix '" + gv.uriPrefix() + "' for for "
+                               + clazz.getName() + "." + f.getName(), iae);
       }
+
       generator.setUriPrefix(uriPrefix);
     }
 
@@ -268,9 +271,9 @@ public class AnnotationClassMetaFactory {
 
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
-      Mapper p = new FunctionalMapper(null, f, getMethod, setMethod,
-                                      serializer, null, false, null,
-                                      Mapper.MapperType.PREDICATE, true, generator);
+      Mapper     p          =
+        new FunctionalMapper(null, f, getMethod, setMethod, serializer, null, false, null,
+                             Mapper.MapperType.PREDICATE, true, generator);
 
       return Collections.singletonList(p);
     }
@@ -319,14 +322,14 @@ public class AnnotationClassMetaFactory {
       Mapper            p;
 
       if (isArray)
-        p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
-                            model, mt, !notOwned, generator);
+        p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse, model, mt,
+                            !notOwned, generator);
       else if (isCollection)
         p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
                                  model, mt, !notOwned, generator);
       else
-        p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, inverse,
-                                 model, mt, !notOwned, generator);
+        p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, inverse, model, mt,
+                                 !notOwned, generator);
 
       return Collections.singletonList(p);
     }
