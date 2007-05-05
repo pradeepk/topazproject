@@ -138,7 +138,8 @@ tokens {
 
       // need to equate the expression's end var with the expected result var
       AST pexpr = astFactory.dupTree(arg);
-      pexpr.addChild(makeTripple(var, "<mulgara:equals>", resVar));
+      if (!var.equals(resVar))
+        pexpr.addChild(makeTripple(var, "<mulgara:equals>", resVar));
 
       // create subquery
       AST from  = #([FROM, "from"], #([ID, "dummy"]), #([ID, "dummy"]));
@@ -261,7 +262,7 @@ deref[AST var]
            res.addChild(makeTripple(prevVar, var, nextVar()));
          else if (prevPred != null)
            res.addChild(makeTripple(prevVar, prevPred, var));
-         else        // XXX
+         else if (!prevVar.equals(var))         // XXX
            res.addChild(makeTripple(prevVar, "<mulgara:equals>", var));
 
          #deref = res;
