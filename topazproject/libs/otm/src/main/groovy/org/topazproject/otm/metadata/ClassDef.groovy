@@ -22,9 +22,9 @@ import org.apache.commons.logging.LogFactory;
  * when done.
  */
 public class ClassDef {
-  private static final Log         log = LogFactory.getLog(ClassDef.class)
-  private static final Map         classDefsByName = [:]
-  private static final Map         classDefsByType = [:]
+  private static final Log log             = LogFactory.getLog(ClassDef.class)
+  private static final Map classDefsByName = [:]
+  private static final Map classDefsByType = [:]
 
   protected static final GroovyClassLoader gcl = new GroovyClassLoader()
 
