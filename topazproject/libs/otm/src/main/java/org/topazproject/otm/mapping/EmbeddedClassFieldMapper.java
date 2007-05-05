@@ -26,8 +26,8 @@ import org.topazproject.otm.OtmException;
  * @author Pradeep Krishnan
  */
 public class EmbeddedClassFieldMapper implements Mapper {
-  private Mapper container;
-  private Mapper field;
+  private EmbeddedClassMapper container;
+  private Mapper              field;
 
   /**
    * Creates a new EmbeddedClassFieldMapper object.
@@ -35,9 +35,27 @@ public class EmbeddedClassFieldMapper implements Mapper {
    * @param container the mapper for the embedded class field in the embedding class
    * @param field the mapper for a field in the embedded class
    */
-  public EmbeddedClassFieldMapper(Mapper container, Mapper field) {
+  public EmbeddedClassFieldMapper(EmbeddedClassMapper container, Mapper field) {
     this.container   = container;
     this.field       = field;
+  }
+
+  /** 
+   * Get the mapper for the embedded class field in the embedding class
+   * 
+   * @return the mapper
+   */
+  public EmbeddedClassMapper getContainer() {
+    return container;
+  }
+
+  /** 
+   * Get the mapper for the field in the embedded class
+   * 
+   * @return the mapper
+   */
+  public Mapper getFieldMapper() {
+    return field;
   }
 
   /*

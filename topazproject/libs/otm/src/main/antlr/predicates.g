@@ -22,12 +22,15 @@ package org.topazproject.otm.query;
 
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.mapping.EmbeddedClassMapper;
+import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
 import org.topazproject.otm.mapping.Mapper;
 
 import antlr.ASTPair;
@@ -81,12 +84,20 @@ options {
 
     private ExprType resolveField(ASTPair cur, ExprType type, AST field)
         throws RecognitionException {
-      if (type == null || type.getType() != ExprType.Type.CLASS)
+      if (type == null ||
+          type.getType() != ExprType.Type.CLASS && type.getType() != ExprType.Type.EMB_CLASS)
         throw new RecognitionException("can't dereference type '" + type + "'; " +
                                        "current node: '" + cur.root + "', field: '" + field +
                                        "'");
 
-      Mapper m = type.getMeta().getMapperByName(field.getText());
+      String fname = "";
+      if (type.getType() == ExprType.Type.EMB_CLASS) {
+        for (Mapper m : type.getEmbeddedFields())
+          fname += m.getName() + ".";
+      }
+      fname += field.getText();
+
+      Mapper m = type.getMeta().getMapperByName(fname);
       if (m != null) {
         String uri = "<" + m.getUri() + ">";
         AST ref = #([URIREF, uri]);
@@ -97,17 +108,61 @@ options {
       }
 
       m = type.getMeta().getIdField();
-      if (m != null && field.getText().equals(m.getName()))     // ignore id fields
+      if (m != null && fname.equals(m.getName()))       // ignore id fields
         return type;
 
-      throw new RecognitionException("no field '" + field.getText() + "' in " +
-                                     type.getMeta().getSourceClass());
+      m = findEmbeddedFieldMapper(type.getMeta(), fname);
+      if (m != null) {
+        if (type.getType() == ExprType.Type.EMB_CLASS)
+          type.getEmbeddedFields().add((EmbeddedClassMapper) m);
+        else {
+          type = ExprType.embeddedClassType(type.getMeta(), (EmbeddedClassMapper) m);
+
+          AST last = cur.child;
+          if (last == null)
+            last = cur.root;
+          ((OqlAST) last).setExprType(type);
+        }
+
+        return type;
+      }
+
+      throw new RecognitionException("no field '" + field.getText() + "' in " + getClass(type));
+    }
+
+    private static EmbeddedClassMapper findEmbeddedFieldMapper(ClassMetadata md, String field) {
+      String[] parts = field.split("\\.");
+      mappers: for (Mapper m : md.getFields()) {
+        for (int idx = 0; idx < parts.length; idx++) {
+          if (!(m instanceof EmbeddedClassFieldMapper))
+            continue mappers;
+          EmbeddedClassFieldMapper ecfm = (EmbeddedClassFieldMapper) m;
+          if (!ecfm.getContainer().getName().equals(parts[idx]))
+            continue mappers;
+          if (idx == parts.length - 1)
+            return ecfm.getContainer();
+          m = ecfm.getFieldMapper();
+        }
+      }
+      return null;
+    }
+
+    private static Class getClass(ExprType type) {
+      if (type.getType() == ExprType.Type.CLASS)
+        return type.getMeta().getSourceClass();
+
+      if (type.getType() == ExprType.Type.EMB_CLASS) {
+        List<EmbeddedClassMapper> ecm = type.getEmbeddedFields();
+        return ecm.get(ecm.size() - 1).getType();
+      }
+
+      return null;
     }
 
     private ExprType handlePredicate(ASTPair cur, ExprType type, AST ref)
         throws RecognitionException {
-      if (type != null && type.getType() != ExprType.Type.CLASS &&
-          type.getType() != ExprType.Type.URI)
+      if (type != null && type.getType() != ExprType.Type.URI &&
+          type.getType() != ExprType.Type.CLASS && type.getType() != ExprType.Type.EMB_CLASS)
         throw new RecognitionException("can't dereference type '" + type + "'; " +
                                        "current node: '" + cur.root + "', reference: '" + ref +
                                        "'");
@@ -197,12 +252,14 @@ options {
       if (t1 == t2 &&
             (t1 == ExprType.Type.URI || t1 == ExprType.Type.UNTYPED_LIT ||
              t1 == ExprType.Type.CLASS && et1.getMeta().equals(et2.getMeta()) ||
+             t1 == ExprType.Type.EMB_CLASS && et1.getMeta().equals(et2.getMeta()) &&
+               et1.getEmbeddedFields().equals(et2.getEmbeddedFields()) ||
              t1 == ExprType.Type.TYPED_LIT && et1.getDataType().equals(et2.getDataType())))
         return;
 
       // compatible type
-      if (t1 == ExprType.Type.URI   && t2 == ExprType.Type.CLASS ||
-          t1 == ExprType.Type.CLASS && t2 == ExprType.Type.URI)
+      if (t1 == ExprType.Type.URI && (t2 == ExprType.Type.CLASS || t2 == ExprType.Type.EMB_CLASS) ||
+          (t1 == ExprType.Type.CLASS || t1 == ExprType.Type.EMB_CLASS) && t2 == ExprType.Type.URI)
         return;
 
       // nope, they won't match

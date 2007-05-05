@@ -26,6 +26,8 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import org.topazproject.otm.mapping.EmbeddedClassMapper;
+
 import antlr.RecognitionException;
 import antlr.collections.AST;
 }
@@ -153,6 +155,11 @@ pexpr[QueryBuilder qb, AST var]
           switch (type.getType()) {
             case CLASS:
               qb.prjTypes.add(type.getMeta().getSourceClass());
+              break;
+
+            case EMB_CLASS:
+              List<EmbeddedClassMapper> ef = type.getEmbeddedFields();
+              qb.prjTypes.add(ef.get(ef.size() - 1).getType());
               break;
 
             case URI:

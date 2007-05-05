@@ -159,6 +159,69 @@ public class OqlTest extends GroovyTestCase {
     }
   }
 
+  void testEmbeddedClass() {
+    // create data
+    Class cls = rdf.class('Test1') {
+      state (type:'xsd:int')
+      info (embedded:true) {
+        personal (embedded:true) {
+          name (embedded:true) {
+            givenName ()
+            surname   ()
+          }
+          address ()
+        }
+        external (embedded:true) {
+          sig ()
+        }
+      }
+    }
+
+    URI id1 = "http://localhost/annotation/1".toURI()
+    URI id2 = "http://localhost/test/1".toURI()
+    URI id3 = "http://localhost/test/2".toURI()
+    doInTx { s ->
+      Annotation a1 = new PublicAnnotation(id:id1, foobar:[foo:'one', bar:'two'])
+      s.saveOrUpdate(a1)
+
+      def o1 = cls.newInstance(id:id2, state:4,
+                   info:[personal:[name:[givenName:'Bob', surname:'Cutter'], address:'easy st']])
+      s.saveOrUpdate(o1)
+      def o2 = cls.newInstance(id:id3, state:2,
+                   info:[personal:[name:[givenName:'Jack', surname:'Keller'], address:'skid row'],
+                         external:[sig:'hello']])
+      s.saveOrUpdate(o2)
+    }
+
+    // run tests
+    def checker = new ResultChecker(test:this)
+
+    doInTx { s ->
+      Results r = s.doQuery("select ann from Annotation ann where ann.foobar.bar = 'two';")
+      checker.verify(r) {
+        row { obj (class:Annotation.class, id:id1) }
+      }
+
+      r = s.doQuery("select obj from Test1 obj where obj.info.personal.name.givenName = 'Jack';")
+      checker.verify(r) {
+        row { obj (class:cls, id:id3) }
+      }
+
+      r = s.doQuery(
+            "select obj from Test1 obj where obj.info.personal.address != 'foo' order by obj;")
+      checker.verify(r) {
+        row { obj (class:cls, id:id2) }
+        row { obj (class:cls, id:id3) }
+      }
+
+      r = s.doQuery(
+            "select obj from Test1 obj where obj.info.external.sig != 'foo' order by obj;")
+      checker.verify(r) {
+        row { obj (class:cls, id:id3) }
+      }
+    }
+  }
+
   private def doInTx(Closure c) {
     Session s = rdf.sessFactory.openSession()
     s.beginTransaction()
