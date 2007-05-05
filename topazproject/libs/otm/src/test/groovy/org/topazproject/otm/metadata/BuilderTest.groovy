@@ -12,11 +12,6 @@ package org.topazproject.otm.metadata;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.metadata.RdfBuilder;
-import org.topazproject.otm.stores.ItqlStore;
-
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 
 /**
  * Groovy-builder offline tests.
