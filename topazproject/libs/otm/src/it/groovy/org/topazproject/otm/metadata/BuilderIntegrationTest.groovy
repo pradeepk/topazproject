@@ -54,13 +54,13 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     }
 
     def i1 = t1.newInstance(uri:'foo:1', state:1,
-                            name:[id:'foo:n1', givenName:'John', surname:'Muir'],
+                            name:[id:'foo:n1'.toURI(), givenName:'John', surname:'Muir'],
                             goals:['one', 'two'])
 
     doInTx { s -> s.saveOrUpdate(i1) }
     doInTx { s -> assert s.get(t1, "foo:1") == i1 }
 
-    i1 = t1.newInstance(uri:'foo:1', state:1, name:[id:'foo:n1'], goals:['one', 'two'])
+    i1 = t1.newInstance(uri:'foo:1', state:1, name:[id:'foo:n1'.toURI()], goals:['one', 'two'])
 
     doInTx { s -> s.saveOrUpdate(i1) }
     doInTx { s -> assert s.get(t1, "foo:1") == i1 }
@@ -75,9 +75,9 @@ public class BuilderIntegrationTest extends GroovyTestCase {
       state (type:'xsd:int')
     }
 
-    def obj = cls.newInstance(id:'foo:1', state:42)
+    def obj = cls.newInstance(id:'foo:1'.toURI(), state:42)
     doInTx { s -> s.saveOrUpdate(obj) }
-    assert obj.id == 'foo:1'
+    assert obj.id == 'foo:1'.toURI()
 
     obj = cls.newInstance(state:42)
     doInTx { s -> s.saveOrUpdate(obj) }
@@ -88,9 +88,9 @@ public class BuilderIntegrationTest extends GroovyTestCase {
       state (type:'xsd:int')
     }
 
-    obj = cls.newInstance(id:'foo:1', state:42)
+    obj = cls.newInstance(id:'foo:1'.toURI(), state:42)
     doInTx { s -> s.saveOrUpdate(obj) }
-    assert obj.id == 'foo:1'
+    assert obj.id == 'foo:1'.toURI()
 
     obj = cls.newInstance(state:42)
     doInTx { s -> s.saveOrUpdate(obj) }
@@ -101,9 +101,9 @@ public class BuilderIntegrationTest extends GroovyTestCase {
       state (type:'xsd:int')
     }
 
-    obj = cls.newInstance(id:'foo:1', state:42)
+    obj = cls.newInstance(id:'foo:1'.toURI(), state:42)
     doInTx { s -> s.saveOrUpdate(obj) }
-    assert obj.id == 'foo:1'
+    assert obj.id == 'foo:1'.toURI()
 
     obj = cls.newInstance(state:42)
     shouldFail(OtmException, { doInTx { s -> s.saveOrUpdate(obj) } })
@@ -116,9 +116,9 @@ public class BuilderIntegrationTest extends GroovyTestCase {
       state (type:'xsd:int')
     }
 
-    obj = cls.newInstance(id:'foo:1', state:42)
+    obj = cls.newInstance(id:'foo:1'.toURI(), state:42)
     doInTx { s -> s.saveOrUpdate(obj) }
-    assert obj.id == 'foo:1'
+    assert obj.id == 'foo:1'.toURI()
 
     obj = cls.newInstance(state:42)
     shouldFail(OtmException, { doInTx { s -> s.saveOrUpdate(obj) } })

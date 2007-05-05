@@ -111,7 +111,8 @@ public class ClassDef {
                              "already named 'id'");
 
     if (idFields.size() == 0 && !isAbstract) {
-      def idField = new FieldDef(name:'id', isId:true)
+      def idField = new FieldDef(name:'id', isId:true, type:'xsd:anyURI')
+      idField.init(rdf, this, classDefsByName)
       idFields  << idField
       fields    << idField
       allFields << idField

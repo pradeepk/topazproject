@@ -40,11 +40,12 @@ public class BuilderTest extends GroovyTestCase {
     }
 
     def obj = cls.newInstance(uri:'foo:1', state:1,
-                              name:[id:'foo:n1', givenName:'John', surname:'Muir'],
+                              name:[id:'foo:n1'.toURI(), givenName:'John', surname:'Muir'],
                               goals:['one', 'two'] as Set)
 
-    obj = cls.newInstance(uri:'foo:1', state:1, name:[id:'foo:n1'], goals:['one', 'two'] as Set)
-    assert obj.name == obj.name.class.newInstance(id:'foo:n1', givenName:'Peter')
+    obj = cls.newInstance(uri:'foo:1', state:1, name:[id:'foo:n1'.toURI()],
+                          goals:['one', 'two'] as Set)
+    assert obj.name == obj.name.class.newInstance(id:'foo:n1'.toURI(), givenName:'Peter')
   }
 
   void testBuilderFields() {
@@ -180,35 +181,35 @@ public class BuilderTest extends GroovyTestCase {
       goals (maxCard:-1, colType:'Set', colMapping:'RdfBag')
     }
 
-    def obj = cls.newInstance(id:'foo:1', goals:['one', 'two'] as Set)
+    def obj = cls.newInstance(id:'foo:1'.toURI(), goals:['one', 'two'] as Set)
     assert obj.goals instanceof Set
 
     // List, RdfSeq
     cls = rdf.class('Test2') {
       goals (maxCard:-1, colType:'List', colMapping:'RdfSeq')
     }
-    obj = cls.newInstance(id:'foo:1', goals:['one', 'two'])
+    obj = cls.newInstance(id:'foo:1'.toURI(), goals:['one', 'two'])
     assert obj.goals instanceof List
 
     // List, RdfList
     cls = rdf.class('Test3') {
       goals (maxCard:-1, colType:'List', colMapping:'RdfList')
     }
-    obj = cls.newInstance(id:'foo:1', goals:['one', 'two'])
+    obj = cls.newInstance(id:'foo:1'.toURI(), goals:['one', 'two'])
     assert obj.goals instanceof List
 
     // String[], RdfAlt
     cls = rdf.class('Test4') {
       goals (maxCard:-1, colType:'Array', colMapping:'RdfAlt')
     }
-    obj = cls.newInstance(id:'foo:1', goals:['one', 'two'])
+    obj = cls.newInstance(id:'foo:1'.toURI(), goals:['one', 'two'])
     assert obj.goals instanceof String[]
 
     // int[], predicate
     cls = rdf.class('Test5') {
       goals (maxCard:-1, colType:'Array', type:'xsd:int', colMapping:'Predicate')
     }
-    obj = cls.newInstance(id:'foo:1', goals:[1, 2])
+    obj = cls.newInstance(id:'foo:1'.toURI(), goals:[1, 2])
     assert obj.goals instanceof int[]
 
     // illegal collection type
@@ -239,7 +240,7 @@ public class BuilderTest extends GroovyTestCase {
     cls = rdf.class('Test2') {
       state (type:'xsd:int')
     }
-    obj = cls.newInstance(id:'foo:1', state:1)
+    obj = cls.newInstance(id:'foo:1'.toURI(), state:1)
 
     // id-field name collision
     assert shouldFail(OtmException, {
@@ -271,13 +272,13 @@ public class BuilderTest extends GroovyTestCase {
 
     shouldFail(NoSuchFieldException, { base.getDeclaredField('id') })
 
-    def obj  = ext.newInstance(id:'foo:1', state:42, color:'blue')
-    assert obj == ext.newInstance(id:'foo:1', state:42, color:'blue')
-    assert obj != ext.newInstance(id:'foo:2', state:42, color:'blue')
-    assert obj != ext.newInstance(id:'foo:1', state:43, color:'blue')
-    assert obj != ext.newInstance(id:'foo:1', state:42, color:'red')
+    def obj  = ext.newInstance(id:'foo:1'.toURI(), state:42, color:'blue')
+    assert obj == ext.newInstance(id:'foo:1'.toURI(), state:42, color:'blue')
+    assert obj != ext.newInstance(id:'foo:2'.toURI(), state:42, color:'blue')
+    assert obj != ext.newInstance(id:'foo:1'.toURI(), state:43, color:'blue')
+    assert obj != ext.newInstance(id:'foo:1'.toURI(), state:42, color:'red')
 
-    assert obj.hashCode() == 'foo:1'.hashCode()
+    assert obj.hashCode() == 'foo:1'.toURI().hashCode()
 
     // id inheritance
     base = rdf.class('Base2', isAbstract:true) {
