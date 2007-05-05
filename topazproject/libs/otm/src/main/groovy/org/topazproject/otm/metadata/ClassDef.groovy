@@ -183,9 +183,10 @@ public class ClassDef {
     Class clazz = gcl.parseClass(clsSrc.toString(), className)
 
     // create class-metadata
-    def mappers =
-        fields.findAll{it != idField && !it.isTransient}.collect{it.toMapper(rdf, clazz, null)}
-    def idmapper = fields.contains(idField) ? idField.toMapper(rdf, clazz, getIdGen()) : null
+    def mappers = []
+    for (m in fields.findAll{it != idField && !it.isTransient}*.toMapper(rdf, clazz, null))
+      mappers.addAll(m)
+    def idmapper = fields.contains(idField) ? idField.toMapper(rdf, clazz, getIdGen())[0] : null
 
     clsDef = classDefsByName[extendsClass]
     while (clsDef) {

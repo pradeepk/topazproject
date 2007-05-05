@@ -17,6 +17,8 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.ArrayMapper;
 import org.topazproject.otm.mapping.CollectionMapper;
+import org.topazproject.otm.mapping.EmbeddedClassMapper;
+import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
 import org.topazproject.otm.mapping.FunctionalMapper;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.Serializer;
@@ -59,6 +61,11 @@ public class FieldDef {
   String   colMapping
   /** if false this field is never saved, only loaded */
   boolean  owned       = true
+  /**
+   * true if the class instance this field points to should have it's fields stored as though they
+   * were part of this instance instead of as a separate instance. Only valid for class types.
+   */
+  boolean  embedded    = false
 
   protected ClassDef classType          // the class-def if this has a class type
   protected Map      classAttrs = [:]   // save class attributes for later
@@ -88,7 +95,7 @@ public class FieldDef {
    */
   protected init(RdfBuilder rdf, ClassDef clsDef, def classDefsByType) {
     // fix up predicate if needed
-    if (!pred && !isId)
+    if (!pred && !isId && !embedded)
       pred = name;
     if (pred && !pred.toURI().isAbsolute()) {
       if (!clsDef.baseUri)
@@ -114,12 +121,23 @@ public class FieldDef {
       classType = classDefsByType[type]
     if (classType)
       type = classType.type
+
+    // validity checks
+    if (embedded && (maxCard < 0 || maxCard > 1))
+      throw new OtmException("embedded fields must have max-cardinality 1; " +
+                             "class='${clsDef.className}', field='${name}', maxCard=${maxCard}")
+    if (embedded && !classType)
+      throw new OtmException("only class types may be embedded; class='${clsDef.className}', " +
+                             "field='${name}', type=${type}")
+    if (embedded && pred)
+      log.warn "predicate ignore for embedded field; class='${clsDef.className}', " +
+               "field='${name}', pred=${pred}"
   }
 
   /**
    * Generate a mapper for this field.
    */
-  protected Mapper toMapper(RdfBuilder rdf, Class cls, IdentifierGenerator idGen) {
+  protected List toMapper(RdfBuilder rdf, Class cls, IdentifierGenerator idGen) {
     Field  f   = cls.getDeclaredField(name)
     Method get = cls.getMethod('get' + RdfBuilder.capitalize(name))
     Method set = cls.getMethod('set' + RdfBuilder.capitalize(name), f.getType())
@@ -127,27 +145,30 @@ public class FieldDef {
 
     String dtype = (type?.startsWith(xsdURI) && type != xsdURI + 'anyURI') ? type : null
 
-    // generate the mapper
-    Mapper m;
-    if (maxCard == 1) {
+    // generate the mapper(s)
+    List m;
+    if (maxCard == 1 && embedded) {
+      def container = new EmbeddedClassMapper(f, get, set)
+      m = classType.toClass().fields.collect{ new EmbeddedClassFieldMapper(container, it) }
+    } else if (maxCard == 1) {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
-      m = new FunctionalMapper(pred, f, get, set, ser, dtype, inverse, null, mt, owned, idGen)
+      m = [new FunctionalMapper(pred, f, get, set, ser, dtype, inverse, null, mt, owned, idGen)]
     } else {
       String     collType = colType ? colType : rdf.defColType
       Class      compType = toJavaClass(getBaseJavaType(), rdf);
       Serializer ser      = rdf.sessFactory.getSerializerFactory().getSerializer(compType, dtype)
 
       if (collType.toLowerCase() == 'array')
-        m = new ArrayMapper(pred, f, get, set, ser, compType, dtype, inverse, null, mt, owned,
-                            idGen)
+        m = [new ArrayMapper(pred, f, get, set, ser, compType, dtype, inverse, null, mt, owned,
+                             idGen)]
       else
-        m = new CollectionMapper(pred, f, get, set, ser, compType, dtype, inverse, null, mt, owned,
-                                 idGen)
+        m = [new CollectionMapper(pred, f, get, set, ser, compType, dtype, inverse, null, mt, owned,
+                                  idGen)]
     }
 
     // done
     if (log.debugEnabled)
-      log.debug "created mapper for field '${name}' in class '${cls.name}': ${m}"
+      log.debug "created mapper(s) for field '${name}' in class '${cls.name}': ${m}"
 
     return m;
   }

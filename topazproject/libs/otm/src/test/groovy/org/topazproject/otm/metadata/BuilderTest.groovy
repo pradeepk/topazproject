@@ -12,6 +12,7 @@ package org.topazproject.otm.metadata;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.mapping.Mapper;
 
 /**
  * Groovy-builder offline tests.
@@ -302,5 +303,61 @@ public class BuilderTest extends GroovyTestCase {
     obj = ext.newInstance(uri:'foo:1', state:42, color:'blue')
     shouldFail(MissingPropertyException, { obj.id })
     assert obj.hashCode() == 'foo:1'.hashCode()
+  }
+
+  void testBuilderEmbeddedClass() {
+    // simple embedding
+    Class cls = rdf.class('Test1') {
+      state (type:'xsd:int')
+      name (embedded:true) {
+        givenName ()
+        surname   ()
+      }
+    }
+
+    def mappers = rdf.sessFactory.getClassMetadata(cls).fields
+    assert mappers.size() == 3
+    for (Mapper m : mappers)
+      assert m.serializer != null
+    assert mappers.name.sort() == [ 'name.givenName', 'name.surname', 'state' ]
+
+    // nested embeddings
+    cls = rdf.class('Test2') {
+      state (type:'xsd:int')
+      info (embedded:true) {
+        personal (embedded:true) {
+          name (embedded:true, className:'Name2') {
+            givenName ()
+            surname   ()
+          }
+        }
+      }
+    }
+
+    mappers = rdf.sessFactory.getClassMetadata(cls).fields
+    assert mappers.size() == 3
+    for (Mapper m : mappers)
+      assert m.serializer != null
+    assert mappers.name.sort() ==
+                      [ 'info.personal.name.givenName', 'info.personal.name.surname', 'state' ]
+
+    // incompatible attributes
+    shouldFail(OtmException, {
+      rdf.class('Test2') {
+        state (type:'xsd:int')
+        name (embedded:true, maxCard:-1) {
+          givenName ()
+          surname   ()
+        }
+      }
+    })
+
+    // embedding a non-class
+    shouldFail(OtmException, {
+      rdf.class('Test3') {
+        state (type:'xsd:int')
+        name (embedded:true)
+      }
+    })
   }
 }
