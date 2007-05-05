@@ -10,14 +10,12 @@
 
 package org.topazproject.otm;
 
-import java.io.IOException;
-
 /** 
  * The base exception class for all exceptions thrown by the OTM layer. 
  * 
  * @author Ronald Tschalär
  */
-public class OtmException extends IOException {
+public class OtmException extends RuntimeException {
   /** 
    * Create a new exception instance with a message. 
    * 
