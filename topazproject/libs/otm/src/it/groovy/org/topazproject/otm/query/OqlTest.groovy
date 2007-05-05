@@ -208,7 +208,7 @@ class ResultChecker extends BuilderSupport {
       case 'verify':
         res = value;
         if (res.warnings)
-          log.error("Got warnings: " + res.warnings.join(System.getProperty("line.separator")))
+          test.log.error "Got warnings: " + res.warnings.join(System.getProperty("line.separator"))
         test.assertNull(res.warnings);
         break;
 
@@ -232,7 +232,7 @@ class ResultChecker extends BuilderSupport {
         break;
 
       case 'uri':
-        test.assertEquals(res.getURI(col++), value.asURI());
+        test.assertEquals(res.getURI(col++), value.toURI());
         break;
 
       case 'subq':
