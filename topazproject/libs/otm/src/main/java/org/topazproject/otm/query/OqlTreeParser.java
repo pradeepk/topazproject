@@ -17,6 +17,8 @@ import antlr.RecognitionException;
 import antlr.TreeParser;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /** 
  * This holds some common stuff for Oql tree parsers, such as collecting error and warning
@@ -25,6 +27,8 @@ import org.apache.commons.lang.StringUtils;
  * @author Ronald Tschalär
  */
 public abstract class OqlTreeParser extends TreeParser implements ErrorCollector {
+  private static final Log log = LogFactory.getLog(OqlTreeParser.class);
+
   private final List<String> errs = new ArrayList<String>();
   private final List<String> wrns = new ArrayList<String>();
 
@@ -37,6 +41,7 @@ public abstract class OqlTreeParser extends TreeParser implements ErrorCollector
 
   @Override
   public void reportError(RecognitionException ex) {
+    log.debug("parse exception", ex);
     errs.add(ex.toString());
   }
 

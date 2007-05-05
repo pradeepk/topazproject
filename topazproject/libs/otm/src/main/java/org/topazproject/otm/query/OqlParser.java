@@ -20,6 +20,8 @@ import antlr.TokenBuffer;
 import antlr.TokenStream;
 
 import org.apache.commons.lang.StringUtils;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /** 
  * This holds some common stuff for Oql parsers, such as collecting error and warning
@@ -28,6 +30,8 @@ import org.apache.commons.lang.StringUtils;
  * @author Ronald Tschalär
  */
 public abstract class OqlParser extends LLkParser implements ErrorCollector {
+  private static final Log log = LogFactory.getLog(OqlParser.class);
+
   private final List<String> errs = new ArrayList<String>();
   private final List<String> wrns = new ArrayList<String>();
 
@@ -63,6 +67,7 @@ public abstract class OqlParser extends LLkParser implements ErrorCollector {
 
   @Override
   public void reportError(RecognitionException ex) {
+    log.debug("parse exception", ex);
     errs.add(ex.toString());
   }
 
