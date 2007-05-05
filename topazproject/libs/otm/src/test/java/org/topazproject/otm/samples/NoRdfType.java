@@ -3,10 +3,10 @@ package org.topazproject.otm.samples;
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.BaseUri;
+import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Rdf;
 
-@BaseUri(Rdf.topaz)
+@UriPrefix(Rdf.topaz)
 @Entity(model="ri")
 public class NoRdfType {
   @Id

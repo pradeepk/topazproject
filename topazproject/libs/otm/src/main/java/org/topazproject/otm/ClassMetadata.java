@@ -35,7 +35,7 @@ public class ClassMetadata {
   private String              type;
   private String              name;
   private String              model;
-  private String              baseUri;
+  private String              uriPrefix;
   private Mapper              idField;
   private Map<String, Mapper> fieldMap;
   private Map<String, Mapper> inverseMap;
@@ -51,18 +51,18 @@ public class ClassMetadata {
    * @param types set of rdf:type values that identify this class
    * @param type the most specific rdf:type that identify this class
    * @param model the graph/model where this class is persisted
-   * @param baseUri the baseUri for constructing predicate-uris for fields from their names 
+   * @param uriPrefix the uri-prefix for constructing predicate-uris for fields from their names 
    * @param idField the mapper for the id field
    * @param fields mappers for all persistable fields (includes embedded class fields)
    */
   public ClassMetadata(Class clazz, String name, String type, Set<String> types, String model,
-                       String baseUri, Mapper idField, Collection<Mapper> fields)
+                       String uriPrefix, Mapper idField, Collection<Mapper> fields)
                 throws OtmException {
     this.clazz                           = clazz;
     this.name                            = name;
     this.type                            = type;
     this.model                           = model;
-    this.baseUri                         = baseUri;
+    this.uriPrefix                       = uriPrefix;
     this.idField                         = idField;
 
     this.types                           = Collections.unmodifiableSet(new HashSet<String>(types));
@@ -106,13 +106,13 @@ public class ClassMetadata {
   }
 
   /**
-   * Gets the base-uri used to build the predicate-uri for all fields in this class without
+   * Gets the uri-prefix used to build the predicate-uri for all fields in this class without
    * an explicit predicate uri defined.
    *
-   * @return the base uri
+   * @return the uri prefix
    */
-  public String getBaseUri() {
-    return baseUri;
+  public String getUriPrefix() {
+    return uriPrefix;
   }
 
   /**

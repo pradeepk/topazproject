@@ -13,7 +13,7 @@ import java.net.URI;
 
 import java.util.Date;
 
-import org.topazproject.otm.annotations.BaseUri;
+import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
@@ -25,7 +25,7 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Pradeep Krishnan
  */
 @Entity(model = "ri")
-@BaseUri(Annotea.NS)
+@UriPrefix(Annotea.NS)
 public class Annotea {
   /**
    * DOCUMENT ME!

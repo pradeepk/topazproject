@@ -21,11 +21,11 @@ public class BuilderTest extends GroovyTestCase {
   def rdf
 
   void setUp() {
-    rdf = new RdfBuilder(defModel:'ri', defBaseUri:'topaz:')
+    rdf = new RdfBuilder(defModel:'ri', defUriPrefix:'topaz:')
   }
 
   void testBuilderBasic() {
-    Class cls = rdf.class('Test1', baseUri:'http://rdf.topazproject.org/RDF/') {
+    Class cls = rdf.class('Test1', uriPrefix:'http://rdf.topazproject.org/RDF/') {
       uri   (isId:true)
       state (pred:'accountState', type:'xsd:int')
       name {
@@ -99,7 +99,7 @@ public class BuilderTest extends GroovyTestCase {
 
     // nested class type
     cls = rdf.class('Test4', type:'foo:Test4', model:'m4') {
-      state (pred:'foo:p4', model:'m41', baseUri:'bar4:') {
+      state (pred:'foo:p4', model:'m41', uriPrefix:'bar4:') {
         value ()
         history (maxCard:-1) {
           value ()

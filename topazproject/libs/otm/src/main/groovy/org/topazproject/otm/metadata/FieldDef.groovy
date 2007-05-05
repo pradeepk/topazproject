@@ -35,11 +35,11 @@ public class FieldDef {
 
   /** the field name */
   String   name
-  /** the rdf predicate to store this under; if not specified, defaults to baseUri + name  */
+  /** the rdf predicate to store this under; if not specified, defaults to uriPrefix + name  */
   String   pred
   /**
    * if null, this is an untyped literal; if it's an xsd type, this is a typed literal; else
-   * this is a class type, and interpreted as baseUri + type if not absolute
+   * this is a class type, and interpreted as uriPrefix + type if not absolute
    */
   String   type
   /** true if this is the id-field */
@@ -98,21 +98,19 @@ public class FieldDef {
     if (!pred && !isId && !embedded)
       pred = name;
     if (pred && !pred.toURI().isAbsolute()) {
-      if (!clsDef.baseUri)
+      if (!clsDef.uriPrefix)
         throw new OtmException("field '${name}' has non-absolute predicate '${pred}' but no " +
-                               "base-uri has been configured")
-      // should really use baseUri.resolve(pred), but that doesn't work for 'foo:/bar#'
-      pred = clsDef.baseUri + pred
+                               "uri-prefix has been configured")
+      pred = clsDef.uriPrefix + pred
     } else
       pred = rdf.expandAliases(pred)
 
     // fix up type if needed
     if (type && !type.toURI().isAbsolute()) {
-      if (!clsDef.baseUri)
+      if (!clsDef.uriPrefix)
         throw new OtmException("field '${name}' has type '${type}' which is not an absolute uri, " +
-                               "but no base-uri has been configured")
-      // should really use baseUri.resolve(pred), but that doesn't work for 'foo:/bar#'
-      type = clsDef.baseUri + type
+                               "but no uri-prefix has been configured")
+      type = clsDef.uriPrefix + type
     } else
       type = rdf.expandAliases(type)
 

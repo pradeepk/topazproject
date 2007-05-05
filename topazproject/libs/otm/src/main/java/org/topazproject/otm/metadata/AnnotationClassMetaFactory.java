@@ -35,7 +35,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.annotations.BaseUri;
+import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
@@ -86,22 +86,22 @@ public class AnnotationClassMetaFactory {
     return create(clazz, clazz, null, new HashMap<Class, ClassMetadata>());
   }
 
-  private ClassMetadata create(Class clazz, Class top, String baseUriOfContainingClass,
+  private ClassMetadata create(Class clazz, Class top, String uriPrefixOfContainingClass,
                                Map<Class, ClassMetadata> loopDetect)
                         throws OtmException {
-    Set<String>        types   = Collections.emptySet();
-    String             type    = null;
-    String             model   = null;
-    String             baseUri = null;
-    Mapper             idField = null;
-    Collection<Mapper> fields  = new ArrayList<Mapper>();
+    Set<String>        types     = Collections.emptySet();
+    String             type      = null;
+    String             model     = null;
+    String             uriPrefix = null;
+    Mapper             idField   = null;
+    Collection<Mapper> fields    = new ArrayList<Mapper>();
 
     Class              s       = clazz.getSuperclass();
 
     if (!Object.class.equals(s) && (s != null)) {
-      ClassMetadata superMeta = create(s, top, baseUriOfContainingClass, loopDetect);
+      ClassMetadata superMeta = create(s, top, uriPrefixOfContainingClass, loopDetect);
       model     = superMeta.getModel();
-      baseUri   = superMeta.getBaseUri();
+      uriPrefix = superMeta.getUriPrefix();
       type      = superMeta.getType();
       types     = superMeta.getTypes();
       idField   = superMeta.getIdField();
@@ -113,13 +113,13 @@ public class AnnotationClassMetaFactory {
     if ((entity != null) && !"".equals(entity.model()))
       model = entity.model();
 
-    BaseUri baseUriAnn = (BaseUri) clazz.getAnnotation(BaseUri.class);
+    UriPrefix uriPrefixAnn = (UriPrefix) clazz.getAnnotation(UriPrefix.class);
 
-    if (baseUriAnn != null)
-      baseUri = baseUriAnn.value();
+    if (uriPrefixAnn != null)
+      uriPrefix = uriPrefixAnn.value();
 
-    if (baseUri == null)
-      baseUri = baseUriOfContainingClass;
+    if (uriPrefix == null)
+      uriPrefix = uriPrefixOfContainingClass;
 
     if ((entity != null) && !"".equals(entity.type())) {
       type    = entity.type();
@@ -133,11 +133,11 @@ public class AnnotationClassMetaFactory {
       ((entity != null) && !"".equals(entity.name())) ? entity.name() : getName(clazz);
 
     ClassMetadata cm   =
-      new ClassMetadata(clazz, name, type, types, model, baseUri, idField, fields);
+      new ClassMetadata(clazz, name, type, types, model, uriPrefix, idField, fields);
     loopDetect.put(clazz, cm);
 
     for (Field f : clazz.getDeclaredFields()) {
-      Collection<?extends Mapper> mappers = createMapper(f, clazz, top, baseUri, loopDetect);
+      Collection<?extends Mapper> mappers = createMapper(f, clazz, top, uriPrefix, loopDetect);
 
       if (mappers == null)
         continue;
@@ -156,7 +156,7 @@ public class AnnotationClassMetaFactory {
       }
     }
 
-    cm = new ClassMetadata(clazz, name, type, types, model, baseUri, idField, fields);
+    cm = new ClassMetadata(clazz, name, type, types, model, uriPrefix, idField, fields);
     loopDetect.put(clazz, cm);
 
     return cm;

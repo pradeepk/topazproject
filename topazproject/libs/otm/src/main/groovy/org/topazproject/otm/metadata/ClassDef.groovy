@@ -31,14 +31,14 @@ public class ClassDef {
   /** the name of the java class */
   String   className
   /**
-   * the rdf type; if relative, it's set to baseUri + type; if null, it's inherited from
-   * superclass; if still null and not abstract, it's set to baseUri + className
+   * the rdf type; if relative, it's set to uriPrefix + type; if null, it's inherited from
+   * superclass; if still null and not abstract, it's set to uriPrefix + className
    */
   String   type
   /** the default model for properties in this class */
   String   model
-  /** the base-uri to use when creating absolute uri's from names */
-  String   baseUri
+  /** the uri prefix to use to create absolute uri's from names */
+  String   uriPrefix
   /** the className of the class being extended */
   String   extendsClass
   /** true if this should be an abstract class; no id-field is generated if missing in this case */
@@ -55,24 +55,23 @@ public class ClassDef {
     if (metadata)
       return metadata
 
-    // set up baseUri
-    if (!baseUri)
-      baseUri = inheritField('baseUri', true, null)
-    if (!baseUri)
-      baseUri = rdf.defBaseUri
-    baseUri = rdf.expandAliases(baseUri)
+    // set up uriPrefix
+    if (!uriPrefix)
+      uriPrefix = inheritField('uriPrefix', true, null)
+    if (!uriPrefix)
+      uriPrefix = rdf.defUriPrefix
+    uriPrefix = rdf.expandAliases(uriPrefix)
 
     // fix up type if necessary
     if (type && !type.toURI().isAbsolute()) {
-      if (!baseUri)
+      if (!uriPrefix)
         throw new OtmException("class '${className}': type '${type}' is not an absolute uri, " +
-                               "but no base-uri has been configured")
-      // should really use baseUri.resolve(pred), but that doesn't work for 'foo:/bar#'
-      type = baseUri + type
+                               "but no uri-prefix has been configured")
+      type = uriPrefix + type
     } else
       type = rdf.expandAliases(type)
 
-    // initialize fields (needs baseUri and type to be set up)
+    // initialize fields (needs uriPrefix and type to be set up)
     for (f in fields)
       f.init(rdf, this, classDefsByType)
 
@@ -92,10 +91,10 @@ public class ClassDef {
 
     // default type if necessary
     if (!type && !isAbstract) {
-      if (!baseUri)
+      if (!uriPrefix)
         throw new OtmException("class '${className}': type is null, no type in superclass found, " +
-                               "and no base-uri has been configured")
-      type = baseUri + className
+                               "and no uri-prefix has been configured")
+      type = uriPrefix + className
     }
 
     // find the id-field and ensure there's only one; if there's none, create one
@@ -196,7 +195,7 @@ public class ClassDef {
       clsDef = classDefsByName[clsDef.extendsClass]
     }
 
-    metadata = new ClassMetadata(clazz, getShortName(clazz), type, allTypes, model, baseUri,
+    metadata = new ClassMetadata(clazz, getShortName(clazz), type, allTypes, model, uriPrefix,
                                  idmapper, mappers)
 
     if (log.debugEnabled)
@@ -287,7 +286,7 @@ public class ClassDef {
     }
 
     def gen = generatorClazz.newInstance();
-    gen.uriPrefix = baseUri
+    gen.uriPrefix = uriPrefix
 
     return gen
   }

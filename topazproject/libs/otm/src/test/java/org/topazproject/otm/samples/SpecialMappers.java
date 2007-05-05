@@ -14,11 +14,11 @@ import java.util.ArrayList;
 
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.BaseUri;
+import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.annotations.Predicate;
 
-@BaseUri(Rdf.topaz)
+@UriPrefix(Rdf.topaz)
 @Entity(model = "ri")
 public class SpecialMappers {
   @Id

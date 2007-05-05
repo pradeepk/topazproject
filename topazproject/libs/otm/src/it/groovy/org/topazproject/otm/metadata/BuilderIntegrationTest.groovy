@@ -26,7 +26,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     def store =
         new ItqlStore("http://localhost:9091/mulgara-service/services/ItqlBeanService".toURI())
     rdf = new RdfBuilder(
-        sessFactory:new SessionFactory(tripleStore:store), defModel:'ri', defBaseUri:'topaz:')
+        sessFactory:new SessionFactory(tripleStore:store), defModel:'ri', defUriPrefix:'topaz:')
 
     def ri = new ModelConfig("ri", "local:///topazproject#otmtest1".toURI(), null)
     rdf.sessFactory.addModel(ri);
@@ -39,7 +39,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
   }
 
   void testBuilderSimple() {
-    Class t1 = rdf.class("Test1", baseUri:'http://rdf.topazproject.org/RDF/') {
+    Class t1 = rdf.class("Test1", uriPrefix:'http://rdf.topazproject.org/RDF/') {
       uri   (isId:true)
       state (pred:'accountState', type:'xsd:int')
       name {

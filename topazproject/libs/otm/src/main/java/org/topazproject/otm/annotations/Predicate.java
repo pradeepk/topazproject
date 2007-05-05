@@ -24,7 +24,7 @@ import java.lang.annotation.Target;
 @Target({ElementType.FIELD})
 public @interface Predicate {
   /**
-   * Predicate uri. Defaults to @BaseUri + field name.
+   * Predicate uri. Defaults to @UriPrefix + field name.
    */
   String uri() default "";
 

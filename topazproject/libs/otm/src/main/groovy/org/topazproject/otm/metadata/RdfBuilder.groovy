@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
  * This is a groovy-builder for OTM. It allows for the definition of classes in groovy.
  * Example:
  * <pre>
- *  cls = rdf.class('UserId', type:'foaf:OnlineAccount', baseUri:'topaz:') {
+ *  cls = rdf.class('UserId', type:'foaf:OnlineAccount', uriPrefix:'topaz:') {
  *    authIds (pred:'topaz:hasAuthId', maxCard:-1, unique:true) {
  *      realm () 'local'
  *      value ()
@@ -36,7 +36,7 @@ import org.apache.commons.logging.LogFactory;
  * for fields defining nested classes is the union of the two.</p>
  *
  * <p>The builder can also be configured with a bunch of defaults to be used when creating
- * classes, such as the collection type, the model, and the base-uri.</p>
+ * classes, such as the collection type, the model, and the uri-prefix.</p>
  */
 public class RdfBuilder extends BuilderSupport {
   private static final Log log = LogFactory.getLog(RdfBuilder.class)
@@ -49,8 +49,8 @@ public class RdfBuilder extends BuilderSupport {
   String         defColMapping = 'Predicate'
   /** the default model to use */
   String         defModel
-  /** the default base-uri to use */
-  String         defBaseUri
+  /** the default uri-prefix to use */
+  String         defUriPrefix
 
   protected static String capitalize(String str) {
     return str[0].toUpperCase() + (str.size() > 1 ? str[1..-1] : "")

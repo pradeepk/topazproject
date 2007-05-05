@@ -32,7 +32,7 @@ public class OqlTest extends GroovyTestCase {
     def store =
         new ItqlStore("http://localhost:9091/mulgara-service/services/ItqlBeanService".toURI())
     rdf = new RdfBuilder(
-        sessFactory:new SessionFactory(tripleStore:store), defModel:'ri', defBaseUri:'topaz:')
+        sessFactory:new SessionFactory(tripleStore:store), defModel:'ri', defUriPrefix:'topaz:')
 
     def ri = new ModelConfig("ri", "local:///topazproject#otmtest1".toURI(), null)
     rdf.sessFactory.addModel(ri);
