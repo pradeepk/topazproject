@@ -24,6 +24,8 @@ import org.apache.commons.logging.LogFactory;
  * Integration tests for OQL.
  */
 public class OqlTest extends GroovyTestCase {
+  private static final Log log = LogFactory.getLog(OqlTest.class);
+
   def rdf;
 
   void setUp() {
@@ -82,7 +84,7 @@ public class OqlTest extends GroovyTestCase {
 
       // two classes, simple condition
       r = s.doQuery("""
-          select art a, ann n from Article art, Annotation ann where ann.annotates = art order by n;
+          select art, ann from Article art, Annotation ann where ann.annotates = art order by ann;
           """)
       checker.verify(r) {
         row { obj (class:Article.class, uri:id4); obj (class:PublicAnnotation.class, id:id1) }
@@ -100,25 +102,25 @@ public class OqlTest extends GroovyTestCase {
 
       // no results, cast, !=
       r = s.doQuery("""
-            select ann n from Annotation ann
+            select ann from Annotation ann
             where cast(ann.annotates, Article).title != 'Yo ho ho' 
-            order by n;
+            order by ann;
             """)
       checker.verify(r) {
       }
 
       // !=
-      r = s.doQuery("select ann n from Annotation ann where ann.annotates != <foo:1> order by n;")
+      r = s.doQuery("select ann from Annotation ann where ann.annotates != <foo:1> order by ann;")
       checker.verify(r) {
         row { obj (class:PublicAnnotation.class, id:id3) }
       }
 
       // subquery
       r = s.doQuery("""
-            select art a,
-              (select pa pa from Article a2 where pa := art.publicAnnotations order by pa)
+            select art,
+              (select pa from Article a2 where pa := art.publicAnnotations order by pa)
             from Article art 
-            where p := art.publicAnnotations order by a;
+            where p := art.publicAnnotations order by art;
             """)
       checker.verify(r) {
         row {
@@ -138,8 +140,8 @@ public class OqlTest extends GroovyTestCase {
 
       // count
       r = s.doQuery("""
-            select art a, count(art.publicAnnotations) from Article art 
-            where p := art.publicAnnotations order by a;
+            select art, count(art.publicAnnotations) from Article art 
+            where p := art.publicAnnotations order by art;
             """)
       checker.verify(r) {
         row { obj (class:Article.class, uri:id5); string ("1.0") }
@@ -148,8 +150,8 @@ public class OqlTest extends GroovyTestCase {
 
       // multiple orders, one by a constant
       r = s.doQuery("""
-            select art a, foo f from Article art 
-            where art.<rdf:type> = <topaz:Article> and foo := 'yellow' order by a, f;
+            select art, foo from Article art 
+            where art.<rdf:type> = <topaz:Article> and foo := 'yellow' order by art, foo;
             """)
       checker.verify(r) {
         row { obj (class:Article.class, uri:id4); string ('yellow') }

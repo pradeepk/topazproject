@@ -227,11 +227,14 @@ sclause
 { ExprType type; }
     :   #(COMMA sclause sclause)
     |   (var:ID)? type=e:pexpr! {
-          // check variable exists, or create one
+          // check user variable exists, or create one
           if (#var != null)
-            checkProjVar(#var.getText());
+            ;
+          else if (#e.getType() == REF && #e.getNumberOfChildren() == 1)
+            astFactory.addASTChild(currentAST, #var = astFactory.dup(#e.getFirstChild()));
           else
             astFactory.addASTChild(currentAST, #var = nextVar());
+          checkProjVar(#var.getText());
 
           // remember the variable's type
           updateAST(#var, type, null, true);
