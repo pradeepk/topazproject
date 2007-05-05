@@ -224,10 +224,7 @@ public class FieldDef {
       case 'double':
         return Double.TYPE
       default:
-        /* Note: we do the lookup in the class-metadata instead of in Class.forName() because
-         * groovy creates a new classloader for each script, i.e. each class we generate.
-         */
-        return rdf.sessFactory.getClassMetadata(name)?.sourceClass
+        return ClassDef.gcl.loadClass(name)
     }
   }
 

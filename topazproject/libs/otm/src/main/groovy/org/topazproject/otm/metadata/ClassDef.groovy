@@ -23,9 +23,10 @@ import org.apache.commons.logging.LogFactory;
  */
 public class ClassDef {
   private static final Log         log = LogFactory.getLog(ClassDef.class)
-  private static final GroovyShell gs  = new GroovyShell()
   private static final Map         classDefsByName = [:]
   private static final Map         classDefsByType = [:]
+
+  protected static final GroovyClassLoader gcl = new GroovyClassLoader()
 
   /** the name of the java class */
   String   className
@@ -173,13 +174,12 @@ public class ClassDef {
     clsSrc << "  }\n"
 
     clsSrc << "}\n"
-    clsSrc << "return ${className}.class"
 
     if (log.debugEnabled)
       log.debug "Class def: ${clsSrc}\n"
 
     // create class
-    Class clazz = gs.evaluate(clsSrc.toString())
+    Class clazz = gcl.parseClass(clsSrc.toString(), className)
 
     // create class-metadata
     def mappers =
