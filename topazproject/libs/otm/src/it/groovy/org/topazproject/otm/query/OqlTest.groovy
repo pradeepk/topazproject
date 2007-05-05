@@ -170,7 +170,7 @@ public class OqlTest extends GroovyTestCase {
       } catch (OtmException oe) {
         log.warn("rollback failed", oe);
       }
-      log.error("error: ${e}")
+      log.error("error: ${e}", e)
       throw e
     } finally {
       try {
