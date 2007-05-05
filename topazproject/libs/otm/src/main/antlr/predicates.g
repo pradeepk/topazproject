@@ -145,10 +145,10 @@ options {
         a.setExprType(type);
 
       if (type != null && type.getType() == ExprType.Type.CLASS)
-        a.setModel(getModelUri(type.getMeta().getModel()));     // FIXME: should come from Mapper
+        a.setModel(getModelUri(type.getMeta().getModel()));
 
-      if (m != null && m.hasInverseUri()) {
-        a.setIsInverse(true);
+      if (m != null) {
+        a.setIsInverse(m.hasInverseUri());
         if (m.getModel() != null)
           a.setModel(getModelUri(m.getModel()));
       }
