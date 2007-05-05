@@ -359,5 +359,42 @@ public class BuilderTest extends GroovyTestCase {
         name (embedded:true)
       }
     })
+
+    // duplicate field names
+    shouldFail(OtmException, {
+      cls = rdf.class('Test2') {
+        state (type:'xsd:int')
+        info (embedded:true) {
+          personal (embedded:true) {
+            name (embedded:true) {
+              givenName ()
+              surname   ()
+            }
+            address ()
+          }
+          external (embedded:true) {
+            address ()
+          }
+        }
+      }
+    })
+
+    shouldFail(OtmException, {
+      cls = rdf.class('Test3') {
+        state (type:'xsd:int')
+        info (embedded:true) {
+          personal (embedded:true) {
+            name (embedded:true) {
+              givenName ()
+              surname   ()
+            }
+            address ()
+          }
+          external (embedded:true) {
+            surname ()
+          }
+        }
+      }
+    })
   }
 }
