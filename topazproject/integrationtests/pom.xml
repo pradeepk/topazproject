@@ -120,6 +120,10 @@
       <groupId>org.topazproject</groupId>
       <artifactId>otm</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>object-collections</artifactId>
+    </dependency>
 
     <!-- topazproject/webservices -->
     <!-- annotation -->
