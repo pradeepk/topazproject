@@ -262,6 +262,11 @@
         <version>${pom.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.topazproject</groupId>
+        <artifactId>object-collections</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.topazproject.ws</groupId>
         <artifactId>ws-common-api</artifactId>
         <version>${pom.version}</version>
