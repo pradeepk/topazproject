@@ -103,7 +103,7 @@ public class ClassDef {
       throw new OtmException("more than one id-field defined for class '${className}': " +
                              "${idFields.collect{it.name}}");
     if (idFields.size() == 1 && idFields[0].maxCard != 1)
-      throw new OtmException("id-fields must may not be collections - class: '${className}', " +
+      throw new OtmException("id-fields may not be collections - class: '${className}', " +
                              "id-field: '${idFields[0].name}'");
     if (idFields.size() == 0 && allFields.any{it.name == 'id'} && !isAbstract)
       throw new OtmException("no id-fields defined for class '${className}', and one field is " +
