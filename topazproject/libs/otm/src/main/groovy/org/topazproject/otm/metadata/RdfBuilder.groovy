@@ -107,30 +107,29 @@ public class RdfBuilder extends BuilderSupport {
   }
 
   protected Object createNode(Object name) {
-    if (log.traceEnabled)
-      log.trace "createNode called with name = '${name}'"
-
-    if (name == 'class')
-      throw new OtmException("at least a class-name is required")
-
-    return createNode(name, [:])
+    return createNode(name, [:], null);
   }
 
   protected Object createNode(Object name, Object value) {
-    if (log.traceEnabled)
-      log.trace "createNode called with name = '${name}', value = '${value}'"
-
-    return createNode(name, [name:value])
+    return createNode(name, [:], value)
   }
 
   protected Object createNode(Object name, Map attributes) {
+    return createNode(name, attributes, null)
+  }
+
+  protected Object createNode(Object name, Map attributes, Object value) {
     if (log.traceEnabled)
-      log.trace "createNode called with name = '${name}', attributes = '${attributes}'"
+      log.trace "createNode called with name = '${name}', attributes = '${attributes}', " +
+                "value = '${value}'"
 
     switch (name) {
       case 'class':
         // create a class
-        attributes['className'] = attributes.remove('name')
+        if (!value && !attributes['className'])
+          throw new OtmException("at least a class-name is required")
+        if (value)
+          attributes['className'] = value
         return new ClassDef(attributes)
 
       default:
@@ -139,19 +138,6 @@ public class RdfBuilder extends BuilderSupport {
         return new FieldDef(attributes)
     }
   }
-
-  protected Object createNode(Object name, Map attributes, Object value) {
-    if (log.traceEnabled)
-      log.trace "createNode called with name = '${name}', attributes = '${attributes}', value = '${value}'"
-
-    if (name == 'class') {
-      attributes['name'] = value
-      return createNode(name, attributes)
-    }
-
-    throw new OtmException("method '${name}' not supported")
-  }
-
 
   private ClassDef getClassDef(Object node) {
     if (node instanceof ClassDef)
