@@ -284,7 +284,10 @@ public class BuilderTest extends GroovyTestCase {
                ['xsd:double', [3.28773d, 1.3333333333333d], [3.28773d, 1.3333333333333d]],
                ['xsd:anyURI', 'a:hello'.toURI(), ['a:hello'.toURI()]],
                ['xsd:anyURI', ['a:hello'.toURI(), 'b:bye'.toURI()],
-                              ['a:hello'.toURI(), 'b:bye'.toURI()]] ]) {
+                              ['a:hello'.toURI(), 'b:bye'.toURI()]],
+               ['xsd:dateTime', 'Jan 12 11:42:34 1999', [new Date('Jan 12 11:42:34 1999')]],
+               ['xsd:dateTime', ['Jan 12 11:42:34 1999', 'Aug 23 10:43:33 2001'],
+                        [new Date('Jan 12 11:42:34 1999'), new Date('Aug 23 10:43:33 2001')]] ]) {
       Class cls = rdf.class('Test' + cnt++) {
         foo (type:t[0], maxCard:-1) t[1]
       }

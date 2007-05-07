@@ -232,6 +232,8 @@ public class FieldDef {
         return String.class
       case 'URI':
         return URI.class
+      case 'Date':
+        return Date.class
       case 'boolean':
         return Boolean.TYPE
       case 'byte':
