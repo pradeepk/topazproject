@@ -230,6 +230,7 @@ public class BuilderTest extends GroovyTestCase {
   }
 
   void testBuilderDatatypes() {
+    // test valid
     int cnt = 0
     for (t in [['xsd:string', String.class, 'hello'], ['xsd:anyURI', URI.class, 'a:hello'.toURI()],
                ['xsd:byte', Byte.TYPE, 42], ['xsd:short', Short.TYPE, 4242],
@@ -244,6 +245,13 @@ public class BuilderTest extends GroovyTestCase {
       def obj = cls.newInstance(id:'foo:1'.toURI(), foo:t[2])
       assertEquals(t[1], obj.class.getDeclaredField('foo').type)
     }
+
+    // test invalid
+    assert shouldFail(OtmException, {
+      rdf.class('Test' + cnt++) {
+        foo (type:'xsd:NonNegativeInteger')
+      }
+    }).contains('Unsupported xsd type')
   }
 
   void testBuilderDefaultValues() {

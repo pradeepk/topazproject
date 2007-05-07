@@ -226,7 +226,10 @@ public class FieldDef {
       case xsdURI + 'time':
         return 'Date'
       default:
-        return 'String'
+        throw new OtmException("Unsupported xsd type '${type}' - must be one of " +
+                               "xsd:string, xsd:anyURI, xsd:boolean, xsd:byte, xsd:short, " +
+                               "xsd:int, xsd:long, xsd:float, xsd:double, xsd:date, xsd:time, " +
+                               "xsd:dateTime")
     }
   }
 
