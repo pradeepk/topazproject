@@ -77,10 +77,10 @@ tokens {
       return res;
     }
 
-    private AST addTripple(AST list, AST prevVar, AST prevPred) {
+    private AST addTriple(AST list, AST prevVar, AST prevPred) {
       if (prevPred != null) {
         AST obj = nextVar();
-        list.addChild(makeTripple(prevVar, prevPred, obj));
+        list.addChild(makeTriple(prevVar, prevPred, obj));
         prevVar = obj;
       }
       return prevVar;
@@ -98,7 +98,7 @@ tokens {
       return (OqlAST) #([ID, str]);
     }
 
-    private AST makeTripple(Object s, Object p, Object o) {
+    private AST makeTriple(Object s, Object p, Object o) {
       OqlAST sa = makeID(s);
       OqlAST pa = makeID(p);
       OqlAST oa = makeID(o);
@@ -139,7 +139,7 @@ tokens {
       // need to equate the expression's end var with the expected result var
       AST pexpr = astFactory.dupTree(arg);
       if (!var.equals(resVar))
-        pexpr.addChild(makeTripple(var, "<mulgara:equals>", resVar));
+        pexpr.addChild(makeTriple(var, "<mulgara:equals>", resVar));
 
       // create subquery
       AST from  = #([FROM, "from"], #([ID, "dummy"]), #([ID, "dummy"]));
@@ -216,11 +216,11 @@ constant[AST var]
             lit += "^^" + #type.getText();
           else if (#lang != null)
             lit += "@" + #lang.getText();
-          #constant = makeTripple(var, "<mulgara:is>", lit);
+          #constant = makeTriple(var, "<mulgara:is>", lit);
         }
 
     | ! URIREF {
-          #constant = makeTripple(var, "<mulgara:is>", #URIREF);
+          #constant = makeTriple(var, "<mulgara:is>", #URIREF);
         }
     ;
 
@@ -243,27 +243,27 @@ deref[AST var]
                | r:deref[prevVar = nextVar()] { res.addChild(#r); }
              )
              (   p:URIREF {
-                   prevVar  = addTripple(res, prevVar, prevPred);
+                   prevVar  = addTriple(res, prevVar, prevPred);
                    prevPred = #p;
                  }
                | #(EXPR pv:ID (e:expr)?) {
-                   prevVar  = addTripple(res, prevVar, prevPred);
+                   prevVar  = addTriple(res, prevVar, prevPred);
                    prevPred = #pv;
                    res.addChild(#e);
                  }
              )*
              (STAR {
-                 prevVar  = addTripple(res, prevVar, prevPred);
+                 prevVar  = addTriple(res, prevVar, prevPred);
                  wantPred = true;
              }
              )?
        ) {
          if (wantPred)
-           res.addChild(makeTripple(prevVar, var, nextVar()));
+           res.addChild(makeTriple(prevVar, var, nextVar()));
          else if (prevPred != null)
-           res.addChild(makeTripple(prevVar, prevPred, var));
+           res.addChild(makeTriple(prevVar, prevPred, var));
          else if (!prevVar.equals(var))         // XXX
-           res.addChild(makeTripple(prevVar, "<mulgara:equals>", var));
+           res.addChild(makeTriple(prevVar, "<mulgara:equals>", var));
 
          #deref = res;
       }
