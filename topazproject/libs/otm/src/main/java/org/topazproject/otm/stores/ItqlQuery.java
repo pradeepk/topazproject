@@ -48,7 +48,7 @@ class ItqlQuery extends AbstractQuery {
     try {
       AST a1 = parseQuery(sess, query);
 
-      ItqlConstraintGenerator cg = new ItqlConstraintGenerator();
+      ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess);
       curParser = cg;
       cg.query(a1);
       checkMessages(cg.getErrors(), cg.getWarnings());

@@ -65,7 +65,6 @@ options {
     public FieldTranslator(Session session) {
       this();
       sess = session;
-      astFactory.setASTNodeClass(OqlAST.class);
     }
 
     private ExprType getTypeForVar(AST id) throws RecognitionException {
@@ -79,7 +78,7 @@ options {
       ClassMetadata md = sess.getSessionFactory().getClassMetadata(#clazz.getText());
       if (md == null && loc != null)
         throw new RecognitionException("unknown class '" + #clazz.getText() + "' in " + loc);
-      return ExprType.classType(md);
+      return ExprType.classType(md, null);
     }
 
     private ExprType resolveField(ASTPair cur, ExprType type, AST field)
@@ -99,12 +98,14 @@ options {
 
       Mapper m = type.getMeta().getMapperByName(fname);
       if (m != null) {
+        ExprType cType = getTypeForMapper(m);
+
         String uri = "<" + m.getUri() + ">";
         AST ref = #([URIREF, uri]);
-        updateAST(ref, type, m, false);
+        updateAST(ref, type, cType, m, false);
         astFactory.addASTChild(cur, ref);
 
-        return getTypeForMapper(m);
+        return cType;
       }
 
       m = type.getMeta().getIdField();
@@ -171,9 +172,10 @@ options {
 
       String uri = ref.getText().substring(1, ref.getText().length() - 1);
       Mapper m = type.getMeta().getMapperByUri(uri, false);
-      updateAST(ref, type, m, false);
+      ExprType cType = getTypeForMapper(m);
+      updateAST(ref, type, cType, m, false);
 
-      return getTypeForMapper(m);
+      return cType;
     }
 
     private ExprType getTypeForMapper(Mapper m) {
@@ -182,25 +184,27 @@ options {
 
       ClassMetadata md;
       if ((md = sess.getSessionFactory().getClassMetadata(m.getComponentType())) != null)
-        return ExprType.classType(md);
+        return ExprType.classType(md, m.getMapperType());
 
       if (m.typeIsUri())
-        return ExprType.uriType();
+        return ExprType.uriType(m.getMapperType());
 
       if (m.getDataType() != null)
-        return ExprType.literalType(m.getDataType());
+        return ExprType.literalType(m.getDataType(), m.getMapperType());
 
-      return ExprType.literalType();
+      return ExprType.literalType(m.getMapperType());
     }
 
-    private void updateAST(AST ast, ExprType type, Mapper m, boolean isVar)
+    private void updateAST(AST ast, ExprType prntType, ExprType chldType, Mapper m, boolean isVar)
         throws RecognitionException {
       OqlAST a = (OqlAST) ast;
-      if (type != null)
-        a.setExprType(type);
+      if (chldType != null)
+        a.setExprType(chldType);
 
-      if (type != null && type.getType() == ExprType.Type.CLASS)
-        a.setModel(getModelUri(type.getMeta().getModel()));
+      if (prntType != null && prntType.getType() == ExprType.Type.CLASS)
+        a.setModel(getModelUri(prntType.getMeta().getModel()));
+      else if (prntType != null && prntType.getType() == ExprType.Type.EMB_CLASS)
+        a.setModel(getModelUri(findEmbModel(prntType)));
 
       if (m != null) {
         a.setIsInverse(m.hasInverseUri());
@@ -218,6 +222,16 @@ options {
       return mc.getUri().toString();
     }
 
+    private String findEmbModel(ExprType type) {
+      List<EmbeddedClassMapper> ecm = type.getEmbeddedFields();
+      for (int idx = ecm.size() - 1; idx >= 0; idx--) {
+        String m = ecm.get(idx).getModel();
+        if (m != null)
+          return m;
+      }
+      return type.getMeta().getModel();
+    }
+
     private void addVar(AST var, AST clazz) throws RecognitionException {
       ExprType type = (clazz != null) ? getTypeForClass(clazz, "from clause") : null;
       if (vars.containsKey(var.getText()))
@@ -225,7 +239,7 @@ options {
                                        "', prev type='" + vars.get(var.getText()) +
                                        "', new type='" + type + "'");
       vars.put(var.getText(), type);
-      updateAST(var, type, null, true);
+      updateAST(var, null, type, null, true);
     }
 
     private AST nextVar() {
@@ -294,7 +308,7 @@ sclause
           checkProjVar(#var.getText());
 
           // remember the variable's type
-          updateAST(#var, type, null, true);
+          updateAST(#var, null, type, null, true);
 
           // don't forget our expression
           astFactory.addASTChild(currentAST, #e);
@@ -315,7 +329,10 @@ expr
 { ExprType type, type2; }
     : #(AND (expr)+)
     | #(OR  (expr)+)
-    | #(ASGN ID type=factor) { vars.put(#ID.getText(), type); updateAST(#ID, type, null, true); }
+    | #(ASGN ID type=factor) {
+        vars.put(#ID.getText(), type);
+        updateAST(#ID, null, type, null, true);
+      }
     | #(EQ type=factor type2=factor) { checkTypeCompatibility(type, type2, #expr); }
     | #(NE type=factor type2=factor) { checkTypeCompatibility(type, type2, #expr); }
     | factor
@@ -323,12 +340,12 @@ expr
 
 factor returns [ExprType type = null]
     : QSTRING ((DHAT t:URIREF) | (AT ID))? {
-        type = (#t != null) ? ExprType.literalType(#t.getText()) : ExprType.literalType();
+        type = (#t != null) ? ExprType.literalType(#t.getText(), null) : ExprType.literalType(null);
       }
-    | URIREF                               { type = ExprType.uriType(); }
+    | URIREF                               { type = ExprType.uriType(null); }
     | #(FUNC ID (COLON ID)? (factor)*)
-    | #(REF (   v:ID         { updateAST(#v, type = getTypeForVar(#v), null, true); }
-              | type=c:cast  { updateAST(#c, type, null, ((OqlAST) #c).isVar()); }
+    | #(REF (   v:ID         { updateAST(#v, null, type = getTypeForVar(#v), null, true); }
+              | type=c:cast  { updateAST(#c, null, type, null, ((OqlAST) #c).isVar()); }
             )
             (   ! ID         { type = resolveField(currentAST, type, #ID); }
               | ! URIREF     { type = handlePredicate(currentAST, type, #URIREF); }

@@ -15,6 +15,7 @@ import java.util.List;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.mapping.EmbeddedClassMapper;
+import org.topazproject.otm.mapping.Mapper.MapperType;
 
 /** 
  * This describes the type of an expression. It can be an untyped literal, a typed literal,
@@ -30,26 +31,29 @@ public class ExprType {
   private final ClassMetadata             meta;
   private final List<EmbeddedClassMapper> embFields;
   private final String                    datatype;
+  private final MapperType                colType;
 
   private ExprType(Type type, ClassMetadata meta, List<EmbeddedClassMapper> embFields,
-                   String datatype) {
+                   String datatype, MapperType colType) {
     this.type      = type;
     this.meta      = meta;
     this.embFields = embFields;
     this.datatype  = datatype;
+    this.colType   = (colType != null) ? colType : MapperType.PREDICATE;
   }
 
   /** 
    * Create a new expression type representing a class. 
    * 
-   * @param meta the class metadata
+   * @param meta    the class metadata
+   * @param colType the collection type; if null it defaults to PREDICATE
    * @return the new type
    * @throws NullPointerException if <var>meta</var> is null
    */
-  public static ExprType classType(ClassMetadata meta) {
+  public static ExprType classType(ClassMetadata meta, MapperType colType) {
     if (meta == null)
       throw new NullPointerException("class metadata may not be null");
-    return new ExprType(Type.CLASS, meta, null, null);
+    return new ExprType(Type.CLASS, meta, null, null, colType);
   }
 
   /** 
@@ -68,38 +72,41 @@ public class ExprType {
 
     List<EmbeddedClassMapper> fields = new ArrayList<EmbeddedClassMapper>();
     fields.add(field);
-    return new ExprType(Type.EMB_CLASS, meta, fields, null);
+    return new ExprType(Type.EMB_CLASS, meta, fields, null, null);
   }
 
   /** 
    * Create a new expression type representing a URI. 
    * 
+   * @param colType the collection type; if null it defaults to PREDICATE
    * @return the new type
    */
-  public static ExprType uriType() {
-    return new ExprType(Type.URI, null, null, null);
+  public static ExprType uriType(MapperType colType) {
+    return new ExprType(Type.URI, null, null, null, colType);
   }
 
   /** 
    * Create a new expression type representing an untyped literal. 
    * 
+   * @param colType the collection type; if null it defaults to PREDICATE
    * @return the new type
    */
-  public static ExprType literalType() {
-    return new ExprType(Type.UNTYPED_LIT, null, null, null);
+  public static ExprType literalType(MapperType colType) {
+    return new ExprType(Type.UNTYPED_LIT, null, null, null, colType);
   }
 
   /** 
    * Create a new expression type representing a typed literal. 
    * 
    * @param datatype the literal's datatype
+   * @param colType the collection type; if null it defaults to PREDICATE
    * @return the new type
    * @throws NullPointerException if <var>datatype</var> is null
    */
-  public static ExprType literalType(String datatype) {
+  public static ExprType literalType(String datatype, MapperType colType) {
     if (datatype == null)
       throw new NullPointerException("datatype may not be null for a typed literal");
-    return new ExprType(Type.TYPED_LIT, null, null, datatype);
+    return new ExprType(Type.TYPED_LIT, null, null, datatype, colType);
   }
 
   /**
@@ -140,6 +147,16 @@ public class ExprType {
       return datatype;
   }
 
+  /**
+   * Get the collection type.
+   *
+   * @return the collection type
+   */
+  public MapperType getCollectionType()
+  {
+      return colType;
+  }
+
   @Override
   public boolean equals(Object other) {
     if (!(other instanceof ExprType))
@@ -148,6 +165,8 @@ public class ExprType {
     ExprType o = (ExprType) other;
 
     if (type != o.type)
+      return false;
+    if (colType != o.colType)
       return false;
 
     switch (type) {
@@ -165,11 +184,11 @@ public class ExprType {
 
   @Override
   public String toString() {
-    return type + (type == Type.CLASS ? "[" + meta.getSourceClass().getName() + "]" :
+    return type + (type == Type.CLASS ? "[" + meta.getSourceClass().getName() + colType() + "]" :
                    type == Type.EMB_CLASS ? "[" + meta.getSourceClass().getName() + 
-                                                  embFieldNames() + "]" :
-                   type == Type.TYPED_LIT ? "[" + datatype + "]" :
-                   "");
+                                                  embFieldNames() + colType() + "]" :
+                   type == Type.TYPED_LIT ? "[" + datatype + colType() + "]" :
+                   (colType != MapperType.PREDICATE) ? "[" + colType + "]" : "");
   }
 
   private String embFieldNames() {
@@ -177,5 +196,9 @@ public class ExprType {
     for (EmbeddedClassMapper m : embFields)
       res.append('.').append(m.getName());
     return res.toString();
+  }
+
+  private String colType() {
+    return (colType != MapperType.PREDICATE) ? ", " + colType : "";
   }
 }

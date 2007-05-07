@@ -214,7 +214,7 @@ public class QueryTest extends TestCase {
     ft.query(parser.getAST());
     printErrorsAndWarnings(ft, "transforming query");
 
-    ItqlConstraintGenerator cg = new ItqlConstraintGenerator();
+    ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess);
     cg.query(ft.getAST());
     printErrorsAndWarnings(cg, "transforming translated query");
 

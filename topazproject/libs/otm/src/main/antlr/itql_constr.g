@@ -20,6 +20,9 @@ header
 
 package org.topazproject.otm.query;
 
+import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.Session;
+
 import antlr.RecognitionException;
 import antlr.collections.AST;
 }
@@ -67,10 +70,16 @@ tokens {
 }
 
 {
-    private static final String TMP_VAR_PFX = "oqltmp2_";
-    private              int    varCnt = 0;
+    private static final String  TMP_VAR_PFX = "oqltmp2_";
+    private              Session sess;
+    private              int     varCnt = 0;
 
-    private AST nextVar() {
+    public ItqlConstraintGenerator(Session session) {
+      this();
+      sess = session;
+    }
+
+    private OqlAST nextVar() {
       String v = TMP_VAR_PFX + varCnt++;
       OqlAST res = (OqlAST) #([ID, v]);
       res.setIsVar(true);
@@ -86,6 +95,61 @@ tokens {
       return prevVar;
     }
 
+    private AST[] addColTriples(AST list, AST curVar, OqlAST curPred) throws RecognitionException {
+      ExprType type = curPred.getExprType();
+      if (type == null)
+        return new AST[] { curVar, curPred };
+
+      switch (type.getCollectionType()) {
+        case PREDICATE:
+          return new AST[] { curVar, curPred };
+
+        case RDFBAG:
+        case RDFSEQ:
+        case RDFALT:
+          curVar  = addTriple(list, curVar, curPred);
+
+          OqlAST listPred = nextVar();
+          listPred.setModel(curPred.getModel());
+
+          // FIXME: avoid hardcoded model-name
+          list.addChild(makeTriple(listPred, "<mulgara:prefix>", "<rdf:_>", getModelUri("prefix")));
+
+          return new AST[] { curVar, listPred };
+
+        case RDFLIST:
+          if (curVar != null)
+            throw new RecognitionException("RdfList not supported, pending Mulgara fix");
+
+          curVar  = addTriple(list, curVar, curPred);
+
+          listPred = nextVar();
+          listPred.setModel(curPred.getModel());
+
+          OqlAST s = nextVar();
+          OqlAST o = nextVar();
+          // XXX: doesn't work!!! Need to "fix" mulgara
+          AST walk = #([WALK,"walk"], makeTriple(curVar, "<rdf:rest>", o),
+                                      makeTriple(s, "<rdf:rest>", o));
+          list.addChild(walk);
+
+          return new AST[] { s, makeID("<rdf:first>") };
+
+        case PREDICATE_MAP:
+          throw new RecognitionException("Predicate-Map not supported (yet)");
+
+        default:
+          throw new RecognitionException("Unknown mapper-type '" + type.getCollectionType() + "'");
+      }
+    }
+
+    private String getModelUri(String modelId) throws RecognitionException {
+      ModelConfig mc = sess.getSessionFactory().getModel(modelId);
+      if (mc == null)
+        throw new RecognitionException("Unable to find model '" + modelId + "'");
+      return mc.getUri().toString();
+    }
+
     private OqlAST makeID(Object obj) {
       if (obj instanceof OqlAST) {
         OqlAST ast = (OqlAST) astFactory.dup((OqlAST) obj);
@@ -99,11 +163,13 @@ tokens {
     }
 
     private AST makeTriple(Object s, Object p, Object o) {
+      return makeTriple(s, p, o, (p instanceof OqlAST) ? ((OqlAST) p).getModel() : null);
+    }
+
+    private AST makeTriple(Object s, Object p, Object o, Object m) {
       OqlAST sa = makeID(s);
       OqlAST pa = makeID(p);
       OqlAST oa = makeID(o);
-
-      String m = (p instanceof OqlAST) ? ((OqlAST) p).getModel() : null;
       OqlAST ma = (m != null) ? makeID(m) : null;
 
       if (pa.isInverse())
@@ -244,7 +310,9 @@ deref[AST var]
              )
              (   p:URIREF {
                    prevVar  = addTriple(res, prevVar, prevPred);
-                   prevPred = #p;
+                   AST[] x  = addColTriples(res, prevVar, (OqlAST) #p);
+                   prevVar  = x[0];
+                   prevPred = x[1];
                  }
                | #(EXPR pv:ID (e:expr)?) {
                    prevVar  = addTriple(res, prevVar, prevPred);
