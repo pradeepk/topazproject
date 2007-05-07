@@ -24,8 +24,8 @@ import javax.servlet.http.HttpServletResponse;
 public class ResolverServlet extends HttpServlet{
   private static final Log log = LogFactory.getLog(ResolverServlet.class);
   private static final Configuration myConfig = ConfigurationStore.getInstance().getConfiguration();
-  private static final Pattern journalRegEx = Pattern.compile("/10\\.1371/journal\\.pone\\.\\d{7}+$");
-  private static final Pattern figureRegEx = Pattern.compile("/10\\.1371/journal\\.pone\\.\\d{7}+\\.[gt]{1}+\\d{3}+$");
+  private static final Pattern journalRegEx = Pattern.compile("/10\\.1371/journal\\.pone\\.\\d{7}");
+  private static final Pattern figureRegEx = Pattern.compile("/10\\.1371/journal\\.pone\\.\\d{7}\\.[gt]\\d{3}");
   private static final String RDF_TYPE_ARTICLE = "http://rdf.topazproject.org/RDF/Article";
   
 
