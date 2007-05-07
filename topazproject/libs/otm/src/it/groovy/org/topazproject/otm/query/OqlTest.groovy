@@ -48,7 +48,7 @@ public class OqlTest extends GroovyTestCase {
     store.createModel(ri)
   }
 
-  void testOqlBasic() {
+  void testBasic() {
     def checker = new ResultChecker(test:this)
 
     URI id1 = "http://localhost/annotation/1".toURI()

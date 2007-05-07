@@ -38,7 +38,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     store.createModel(ri)
   }
 
-  void testBuilderSimple() {
+  void testSimple() {
     Class t1 = rdf.class("Test1", uriPrefix:'http://rdf.topazproject.org/RDF/') {
       uri   (isId:true)
       state (pred:'accountState', type:'xsd:int')
@@ -65,7 +65,7 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     doInTx { s -> assert s.get(t1, "foo:1") == null }
   }
 
-  void testBuilderIdGenerator() {
+  void testIdGenerator() {
     // default gen
     Class cls = rdf.class('Test1') {
       state (type:'xsd:int')

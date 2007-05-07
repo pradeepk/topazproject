@@ -24,7 +24,7 @@ public class BuilderTest extends GroovyTestCase {
     rdf = new RdfBuilder(defModel:'ri', defUriPrefix:'topaz:')
   }
 
-  void testBuilderBasic() {
+  void testBasic() {
     Class cls = rdf.class('Test1', uriPrefix:'http://rdf.topazproject.org/RDF/') {
       uri   (isId:true)
       state (pred:'accountState', type:'xsd:int')
@@ -56,7 +56,7 @@ public class BuilderTest extends GroovyTestCase {
     }).contains('at least a class-name is required')
   }
 
-  void testBuilderFields() {
+  void testFields() {
     // all defaults, untyped literal
     Class cls = rdf.class('Test1') {
       state ()
@@ -229,7 +229,7 @@ public class BuilderTest extends GroovyTestCase {
     }).contains('No model has been set')
   }
 
-  void testBuilderDatatypes() {
+  void testDatatypes() {
     // test valid
     int cnt = 0
     for (t in [['xsd:string', String.class, 'hello'], ['xsd:anyURI', URI.class, 'a:hello'.toURI()],
@@ -254,7 +254,7 @@ public class BuilderTest extends GroovyTestCase {
     }).contains('Unsupported xsd type')
   }
 
-  void testBuilderDefaultValues() {
+  void testDefaultValues() {
     // non-collections
     int cnt = 0
     for (t in [['xsd:string', 'hello', 'hello'], ['xsd:byte', 42, 42], ['xsd:short', 4242, 4242],
@@ -357,7 +357,7 @@ public class BuilderTest extends GroovyTestCase {
       assertEquals("value[" + i + "] when " + message, expected[i], value[i])
   }
 
-  void testBuilderCollections() {
+  void testCollections() {
     // Set, RdfBag
     Class cls = rdf.class('Test1') {
       goals (maxCard:-1, colType:'Set', colMapping:'RdfBag')
@@ -409,7 +409,7 @@ public class BuilderTest extends GroovyTestCase {
     }).contains('Unknown collection-mapping type')
   }
 
-  void testBuilderIdField() {
+  void testIdField() {
     // explicit id-field
     Class cls = rdf.class('Test1') {
       uri (isId:true)
@@ -450,7 +450,7 @@ public class BuilderTest extends GroovyTestCase {
     }).contains('id-fields may not be collections')
   }
 
-  void testBuilderClassInheritance() {
+  void testClassInheritance() {
     // basic extending
     Class base = rdf.class('Base1', isAbstract:true) {
       state (type:'xsd:int')
@@ -499,7 +499,7 @@ public class BuilderTest extends GroovyTestCase {
     assert obj.hashCode() == 'foo:1'.hashCode()
   }
 
-  void testBuilderEmbeddedClass() {
+  void testEmbeddedClass() {
     // simple embedding
     Class cls = rdf.class('Test1') {
       state (type:'xsd:int')
