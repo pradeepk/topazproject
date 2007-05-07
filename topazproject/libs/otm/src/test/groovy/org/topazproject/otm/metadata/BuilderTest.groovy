@@ -235,7 +235,8 @@ public class BuilderTest extends GroovyTestCase {
                ['xsd:byte', Byte.TYPE, 42], ['xsd:short', Short.TYPE, 4242],
                ['xsd:int', Integer.TYPE, 42424242], ['xsd:long', Long.TYPE, 424242424242424242L],
                ['xsd:float', Float.TYPE, 1.42], ['xsd:double', Double.TYPE, 1.3333333333333],
-               ['xsd:boolean', Boolean.TYPE, true], ['xsd:dateTime', Date.class, new Date()]]) {
+               ['xsd:boolean', Boolean.TYPE, true], ['xsd:date', Date.class, new Date()],
+               ['xsd:time', Date.class, new Date()], ['xsd:dateTime', Date.class, new Date()]]) {
       Class cls = rdf.class('Test' + cnt++) {
         foo (type:t[0])
       }
@@ -254,9 +255,15 @@ public class BuilderTest extends GroovyTestCase {
                ['xsd:double', 1.3333333333333d, 1.3333333333333d], ['xsd:boolean', true, true],
                ['xsd:anyURI', 'a:hello'.toURI(), 'a:hello'.toURI()],
                ['xsd:anyURI', 'a:hello', 'a:hello'.toURI()],
-               ['xsd:dateTime', 'Jan 12 1999', new Date('Jan 12 1999')],
-               ['xsd:dateTime', new Date('Jan 12 1999'), new Date('Jan 12 1999')],
-               ['xsd:dateTime', 1178494705000L, new Date('Sun May 06 16:38:25 PDT 2007')]]) {
+               ['xsd:dateTime', 'Jan 12 11:42:34 1999', new Date('Jan 12 11:42:34 1999')],
+               ['xsd:dateTime', new Date('Jan 12 1999 11:42:34'), new Date('Jan 12 1999 11:42:34')],
+               ['xsd:dateTime', 1178494705000L, new Date('Sun May 06 16:38:25 PDT 2007')],
+               ['xsd:date', 'Jan 12 1999', new Date('Jan 12 1999')],
+               ['xsd:date', new Date('Jan 12 1999'), new Date('Jan 12 1999')],
+               ['xsd:date', 1178494705000L, new Date('Sun May 06 16:38:25 PDT 2007')],
+               ['xsd:time', 'Jan 12 1999 11:42:34', new Date('Jan 12 1999 11:42:34')],
+               ['xsd:time', new Date('Jan 12 1999 11:42:34'), new Date('Jan 12 1999 11:42:34')],
+               ['xsd:time', 1178494705000L, new Date('Sun May 06 16:38:25 PDT 2007')]]) {
       Class cls = rdf.class('Test' + cnt++) {
         foo (type:t[0]) t[1]
       }

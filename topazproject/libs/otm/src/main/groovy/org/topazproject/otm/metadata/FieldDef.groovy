@@ -221,6 +221,10 @@ public class FieldDef {
         return 'double'
       case xsdURI + 'dateTime':
         return 'Date'
+      case xsdURI + 'date':
+        return 'Date'
+      case xsdURI + 'time':
+        return 'Date'
       default:
         return 'String'
     }
