@@ -229,36 +229,54 @@ public class ClassDef {
   }
 
   private String javaConst(FieldDef f) {
-    if (f.maxCard < 0 || f.maxCard > 1)
-      throw new OtmException("default values for collections are not supported - " +
-                             "class '${className}', field '${f.name}'")
+    if (f.maxCard < 0 || f.maxCard > 1) {
+      if (f.defaultValue instanceof Collection) {
+        return '[' + f.defaultValue.collect{javaBaseConst(f, it)}.join(', ') + ']' +
+            (f.colType?.toLowerCase() == 'set' ? ' as Set' : '')
+      } else {
+        return '[' + javaBaseConst(f, f.defaultValue) + ']' +
+            (f.colType?.toLowerCase() == 'set' ? ' as Set' : '')
+      }
+    } else {
+      return javaBaseConst(f, f.defaultValue)
+    }
+  }
 
+  private String javaBaseConst(FieldDef f, def val) {
     switch (f.getBaseJavaType()) {
       case "String":
-        return "\"${f.defaultValue}\""
+        return "'${val}'"
 
-      case "char":
-        return "'${f.defaultValue}'"
-
+      case "boolean":
       case "byte":
+      case "short":
       case "int":
+        return val
+
       case "long":
+        return val + 'L'
+
       case "float":
+        return val + 'f'
+
       case "double":
-        return f.defaultValue
+        return val + 'd'
 
       case "URI":
-      case "java.net.URI":
-        new URI(f.defaultValue)   // verify it parses
-        return "java.net.URI.create(${f.defaultValue})"
+        if (!(val instanceof URI))
+          new URI(val)       // verify it parses
+        return "URI.create('${val}')"
 
       case "Date":
-      case "java.util.Date":
-        try {
-          f.defaultValue.toLong();
-          return "new java.util.Date(${f.defaultValue})"
-        } catch (NumberFormatException nfe) {
-          return "new java.util.Date(\"${f.defaultValue}\")"
+        if (val instanceof Date) {
+          return "new Date('${val}')"
+        } else {
+          try {
+            val.toLong();
+            return "new Date(${val}L)"
+          } catch (NumberFormatException nfe) {
+            return "new Date('${val}')"
+          }
         }
 
       default:

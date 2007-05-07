@@ -69,7 +69,7 @@ public class FieldDef {
 
   protected ClassDef classType          // the class-def if this has a class type
   protected Map      classAttrs = [:]   // save class attributes for later
-  protected String   defaultValue
+  protected def      defaultValue
 
   /**
    * This explicit constructor is so we can "split" the attributes into the per-class and
@@ -86,7 +86,7 @@ public class FieldDef {
     }
   }
 
-  def call(String f) {
+  def call(def f) {
     defaultValue = f
   }
 
@@ -128,7 +128,7 @@ public class FieldDef {
       throw new OtmException("only class types may be embedded; class='${clsDef.className}', " +
                              "field='${name}', type=${type}")
     if (embedded && pred)
-      log.warn "predicate ignore for embedded field; class='${clsDef.className}', " +
+      log.warn "predicate ignored for embedded field; class='${clsDef.className}', " +
                "field='${name}', pred=${pred}"
   }
 
@@ -204,7 +204,9 @@ public class FieldDef {
       case xsdURI + 'string':
         return 'String'
       case xsdURI + 'anyURI':
-        return 'java.net.URI'
+        return 'URI'
+      case xsdURI + 'boolean':
+        return 'boolean'
       case xsdURI + 'byte':
         return 'byte'
       case xsdURI + 'short':
@@ -218,7 +220,7 @@ public class FieldDef {
       case xsdURI + 'double':
         return 'double'
       case xsdURI + 'dateTime':
-        return 'java.util.Date'
+        return 'Date'
       default:
         return 'String'
     }
@@ -228,6 +230,10 @@ public class FieldDef {
     switch (name) {
       case 'String':
         return String.class
+      case 'URI':
+        return URI.class
+      case 'boolean':
+        return Boolean.TYPE
       case 'byte':
         return Byte.TYPE
       case 'char':

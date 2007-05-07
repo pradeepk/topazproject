@@ -42,6 +42,18 @@ public class BuilderTest extends GroovyTestCase {
     obj = cls.newInstance(uri:'foo:1', state:1, name:[id:'foo:n1'.toURI()],
                           goals:['one', 'two'] as Set)
     assert obj.name == obj.name.class.newInstance(id:'foo:n1'.toURI(), givenName:'Peter')
+
+    assert shouldFail(OtmException, {
+      rdf.class() {
+        state ()
+      }
+    }).contains('at least a class-name is required')
+
+    assert shouldFail(OtmException, {
+      rdf.class() {
+        state ()
+      }
+    }).contains('at least a class-name is required')
   }
 
   void testBuilderFields() {
@@ -169,6 +181,162 @@ public class BuilderTest extends GroovyTestCase {
     assert m.dataType == null
     assert m.uri      == 'foo:p5'
     assert m.hasInverseUri()
+
+    // no default prefix defined
+    rdf.defUriPrefix = null
+    cls = rdf.class('Test6', uriPrefix:'p6:') {
+      state (type:'xsd:anyURI')
+    }
+    cm = rdf.sessFactory.getClassMetadata(cls)
+
+    assert cm.type          == 'p6:Test6'
+    assert cm.model         == 'ri'
+    assert cm.fields.size() == 1
+
+    m = cm.fields.iterator().next()
+    assert m.name     == 'state'
+    assert m.type     == URI.class
+    assert m.dataType == null
+    assert m.uri      == 'p6:state'
+    assert !m.hasInverseUri()
+
+    // no prefix defined, default type
+    assert shouldFail(OtmException, {
+      rdf.class('Test7') {
+        state (pred:'foo:state')
+      }
+    }).contains('no uri-prefix has been configured')
+
+    // no prefix defined, simple type
+    assert shouldFail(OtmException, {
+      rdf.class('Test8', type:'Test8') {
+        state (pred:'foo:state')
+      }
+    }).contains('no uri-prefix has been configured')
+
+    assert shouldFail(OtmException, {
+      rdf.class('Test9', type:'foo:Test9') {
+        state (type:'anyURI', pred:'foo:state')
+      }
+    }).contains('no uri-prefix has been configured')
+
+    // no model defined
+    rdf.defModel = null
+    assert shouldFail(OtmException, {
+      rdf.class('foo:Test10', uriPrefix:'p6:') {
+        state ()
+      }
+    }).contains('No model has been set')
+  }
+
+  void testBuilderDatatypes() {
+    int cnt = 0
+    for (t in [['xsd:string', String.class, 'hello'], ['xsd:anyURI', URI.class, 'a:hello'.toURI()],
+               ['xsd:byte', Byte.TYPE, 42], ['xsd:short', Short.TYPE, 4242],
+               ['xsd:int', Integer.TYPE, 42424242], ['xsd:long', Long.TYPE, 424242424242424242L],
+               ['xsd:float', Float.TYPE, 1.42], ['xsd:double', Double.TYPE, 1.3333333333333],
+               ['xsd:boolean', Boolean.TYPE, true], ['xsd:dateTime', Date.class, new Date()]]) {
+      Class cls = rdf.class('Test' + cnt++) {
+        foo (type:t[0])
+      }
+
+      def obj = cls.newInstance(id:'foo:1'.toURI(), foo:t[2])
+      assertEquals(t[1], obj.class.getDeclaredField('foo').type)
+    }
+  }
+
+  void testBuilderDefaultValues() {
+    // non-collections
+    int cnt = 0
+    for (t in [['xsd:string', 'hello', 'hello'], ['xsd:byte', 42, 42], ['xsd:short', 4242, 4242],
+               ['xsd:int', 42424242, 42424242],
+               ['xsd:long', 424242424242424242L, 424242424242424242L], ['xsd:float', 1.42f, 1.42f],
+               ['xsd:double', 1.3333333333333d, 1.3333333333333d], ['xsd:boolean', true, true],
+               ['xsd:anyURI', 'a:hello'.toURI(), 'a:hello'.toURI()],
+               ['xsd:anyURI', 'a:hello', 'a:hello'.toURI()],
+               ['xsd:dateTime', 'Jan 12 1999', new Date('Jan 12 1999')],
+               ['xsd:dateTime', new Date('Jan 12 1999'), new Date('Jan 12 1999')],
+               ['xsd:dateTime', 1178494705000L, new Date('Sun May 06 16:38:25 PDT 2007')]]) {
+      Class cls = rdf.class('Test' + cnt++) {
+        foo (type:t[0]) t[1]
+      }
+
+      def obj = cls.newInstance()
+      assertEquals(t[2], obj.foo)
+    }
+
+    // lists
+    for (t in [['xsd:string', 'hello', ['hello']],
+               ['xsd:string', ['hello', 'bye'], ['hello', 'bye']],
+               ['xsd:boolean', true, [true]],
+               ['xsd:boolean', [true, false], [true, false]],
+               ['xsd:byte', 42, [42]],
+               ['xsd:byte', [124, 42], [124, 42]],
+               ['xsd:short', 4242, [4242]],
+               ['xsd:short', [12433, 4242], [12433, 4242]],
+               ['xsd:int', 42424242, [42424242]],
+               ['xsd:int', [124336789, 42424242], [124336789, 42424242]],
+               ['xsd:long', 4242424242424242L, [4242424242424242L]],
+               ['xsd:long', [124336789876L, 4242424242424242L], [124336789876L, 4242424242424242L]],
+               ['xsd:float', 1.74f, [1.74f]],
+               ['xsd:float', [3.28f, 1.74f], [3.28f, 1.74f]],
+               ['xsd:double', 1.3333333333333d, [1.3333333333333d]],
+               ['xsd:double', [3.28773d, 1.3333333333333d], [3.28773d, 1.3333333333333d]],
+               ['xsd:anyURI', 'a:hello'.toURI(), ['a:hello'.toURI()]],
+               ['xsd:anyURI', ['a:hello'.toURI(), 'b:bye'.toURI()],
+                              ['a:hello'.toURI(), 'b:bye'.toURI()]] ]) {
+      Class cls = rdf.class('Test' + cnt++) {
+        foo (type:t[0], maxCard:-1) t[1]
+      }
+
+      def obj = cls.newInstance()
+      assertEquals(t[2], obj.foo)
+    }
+
+    // sets
+    for (t in [['xsd:string', 'hello', ['hello'] as Set],
+               ['xsd:string', ['hello', 'bye'], ['hello', 'bye'] as Set],
+               ['xsd:string', ['hello', 'bye'] as Set, ['hello', 'bye'] as Set],
+               ['xsd:short', 4242, [4242] as Set],
+               ['xsd:short', [12433, 4242], [12433, 4242] as Set],
+               ['xsd:short', [12433, 4242] as Set, [12433, 4242] as Set],
+               ['xsd:anyURI', 'a:hello'.toURI(), ['a:hello'.toURI()] as Set],
+               ['xsd:anyURI', ['a:hello'.toURI(), 'b:bye'.toURI()],
+                              ['a:hello'.toURI(), 'b:bye'.toURI()] as Set],
+               ['xsd:anyURI', ['a:hello'.toURI(), 'b:bye'.toURI()] as Set,
+                              ['a:hello'.toURI(), 'b:bye'.toURI()] as Set] ]) {
+      Class cls = rdf.class('Test' + cnt++) {
+        foo (type:t[0], maxCard:-1, colType:'Set') t[1]
+      }
+
+      def obj = cls.newInstance()
+      assertEquals(t[2], obj.foo)
+    }
+
+    // arrays
+    for (t in [['xsd:string', 'hello', ['hello'] as String[]],
+               ['xsd:string', ['hello', 'bye'], ['hello', 'bye'] as String[]],
+               ['xsd:short', 4242, [4242] as short[]],
+               ['xsd:short', [12433, 4242], [12433, 4242] as short[]],
+               ['xsd:anyURI', 'a:hello'.toURI(), ['a:hello'.toURI()] as URI[]],
+               ['xsd:anyURI', ['a:hello'.toURI(), 'b:bye'.toURI()],
+                              ['a:hello'.toURI(), 'b:bye'.toURI()] as URI[]] ]) {
+      Class cls = rdf.class('Test' + cnt++) {
+        foo (type:t[0], maxCard:-1, colType:'Array') t[1]
+      }
+
+      def obj = cls.newInstance()
+      assertArrayEquals(t[2], obj.foo)
+    }
+  }
+
+  protected assertArrayEquals(short[] expected, short[] value) {
+    String message = "expected array: " + expected + " value array: " + value
+    assertNotNull(message + ": expected should not be null", expected)
+    assertNotNull(message + ": value should not be null", value)
+    assertEquals(message, expected.length, value.length)
+    for (int i in 0 ..< expected.length)
+      assertEquals("value[" + i + "] when " + message, expected[i], value[i])
   }
 
   void testBuilderCollections() {
@@ -254,6 +422,14 @@ public class BuilderTest extends GroovyTestCase {
         state (type:'xsd:int')
       }
     }).contains('more than one id-field defined')
+
+    // collection id-field
+    assert shouldFail(OtmException, {
+      cls = rdf.class('Test2') {
+        id1   (isId:true, maxCard:-1)
+        state (type:'xsd:int')
+      }
+    }).contains('id-fields may not be collections')
   }
 
   void testBuilderClassInheritance() {
@@ -341,60 +517,60 @@ public class BuilderTest extends GroovyTestCase {
     assert mappers.name.sort() ==
                       [ 'info.personal.name.givenName', 'info.personal.name.surname', 'state' ]
 
-    // incompatible attributes
-    shouldFail(OtmException, {
-      rdf.class('Test2') {
+    // embedded with max-card > 1
+    assert shouldFail(OtmException, {
+      rdf.class('Test3') {
         state (type:'xsd:int')
-        name (embedded:true, maxCard:-1) {
+        name (embedded:true, className:'Name4', maxCard:-1) {
           givenName ()
           surname   ()
         }
       }
-    })
+    }).contains('embedded fields must have max-cardinality 1')
 
     // embedding a non-class
-    shouldFail(OtmException, {
-      rdf.class('Test3') {
+    assert shouldFail(OtmException, {
+      rdf.class('Test4') {
         state (type:'xsd:int')
         name (embedded:true)
       }
-    })
+    }).contains('only class types may be embedded')
 
     // duplicate field names
-    shouldFail(OtmException, {
-      cls = rdf.class('Test2') {
+    assert shouldFail(OtmException, {
+      cls = rdf.class('Test5') {
         state (type:'xsd:int')
-        info (embedded:true) {
-          personal (embedded:true) {
-            name (embedded:true) {
+        info (embedded:true, className:'Info5') {
+          personal (embedded:true, className:'Personal5') {
+            name (embedded:true, className:'Name5') {
               givenName ()
               surname   ()
             }
             address ()
           }
-          external (embedded:true) {
+          external (embedded:true, className:'External5') {
             address ()
           }
         }
       }
-    })
+    }).contains('Duplicate Rdf uri')
 
-    shouldFail(OtmException, {
-      cls = rdf.class('Test3') {
+    assert shouldFail(OtmException, {
+      cls = rdf.class('Test6') {
         state (type:'xsd:int')
-        info (embedded:true) {
-          personal (embedded:true) {
-            name (embedded:true) {
+        info (embedded:true, className:'Info6') {
+          personal (embedded:true, className:'Personal6') {
+            name (embedded:true, className:'Name6') {
               givenName ()
               surname   ()
             }
             address ()
           }
-          external (embedded:true) {
+          external (embedded:true, className:'External6') {
             surname ()
           }
         }
       }
-    })
+    }).contains('Duplicate Rdf uri')
   }
 }
