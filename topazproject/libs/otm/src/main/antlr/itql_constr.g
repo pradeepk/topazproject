@@ -41,8 +41,8 @@ import antlr.collections.AST;
  *          | #(MINUS dterm oexpr)
  *   cfact:   clist
  *          | oexpr
- *          | #(TRANS clist clist? )
- *          | #(WALK  clist clist )
+ *          | #(TRANS cnstr cnstr? )
+ *          | #(WALK  cnstr cnstr )
  *   clist:   #(AND (cnstr)+)
  *          | cnstr
  *   cnstr: #(TRIPLE ID ID ID ID?)
