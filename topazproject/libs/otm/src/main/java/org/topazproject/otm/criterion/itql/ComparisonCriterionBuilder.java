@@ -136,11 +136,11 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
       }
 
       if (!m.hasInverseUri())
-        return subjectVar + " <" + m.getUri() + "> " + varPrefix + model + " and " + varPrefix
-               + " " + operator + " " + val + " in " + resolverModel;
+        return "(" + subjectVar + " <" + m.getUri() + "> " + varPrefix + model + " and "
+               + varPrefix + " " + operator + " " + val + " in " + resolverModel + ")";
 
-      return val + " <" + m.getUri() + "> " + varPrefix + model + " and " + varPrefix + " "
-             + operator + " " + subjectVar + " in " + resolverModel;
+      return "(" + val + " <" + m.getUri() + "> " + varPrefix + model + " and " + varPrefix + " "
+             + operator + " " + subjectVar + " in " + resolverModel + ")";
     }
   }
 }
