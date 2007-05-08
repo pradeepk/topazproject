@@ -23,8 +23,10 @@ import org.topazproject.otm.mapping.Mapper;
  * @author Pradeep Krishnan
  */
 public class PredicateCriterion implements Criterion {
-  private String name;
-  private Object value;
+  private String  name;
+  private Object  value;
+  private boolean unboundPredicate = false;
+  private boolean unboundValue     = false;
 
   /**
    * Creates a new PredicateCriterion object.
@@ -35,6 +37,26 @@ public class PredicateCriterion implements Criterion {
   public PredicateCriterion(String name, Object value) {
     this.name    = name;
     this.value   = value;
+  }
+
+  /**
+   * Creates a new PredicateCriterion object.
+   *
+   * @param name field/predicate name
+   */
+  public PredicateCriterion(String name) {
+    this.name      = name;
+    unboundValue   = true;
+  }
+
+  /**
+   * Creates a new PredicateCriterion object.
+   *
+   * @param name field/predicate name
+   */
+  public PredicateCriterion() {
+    unboundPredicate   = true;
+    unboundValue       = true;
   }
 
   /**
@@ -60,6 +82,9 @@ public class PredicateCriterion implements Criterion {
    */
   public String toItql(Criteria criteria, String subjectVar, String varPrefix)
                 throws OtmException {
+    if (unboundPredicate)
+      return subjectVar + " " + varPrefix + "p " + varPrefix + "v";
+
     ClassMetadata cm = criteria.getClassMetadata();
     Mapper        m  = cm.getMapperByName(getName());
 
@@ -68,20 +93,24 @@ public class PredicateCriterion implements Criterion {
 
     String val;
 
-    try {
-      val = (m.getSerializer() != null) ? m.getSerializer().serialize(getValue())
-            : getValue().toString();
-    } catch (Exception e) {
-      throw new OtmException("Serializer exception", e);
-    }
-
-    if (m.typeIsUri())
-      val = "<" + ItqlHelper.validateUri(val, getName()) + ">";
+    if (unboundValue)
+      val = varPrefix + "v";
     else {
-      val = "'" + ItqlHelper.escapeLiteral(val) + "'";
+      try {
+        val = (m.getSerializer() != null) ? m.getSerializer().serialize(getValue())
+              : getValue().toString();
+      } catch (Exception e) {
+        throw new OtmException("Serializer exception", e);
+      }
 
-      if (m.getDataType() != null)
-        val += (("^^<" + m.getDataType()) + ">");
+      if (m.typeIsUri())
+        val = "<" + ItqlHelper.validateUri(val, getName()) + ">";
+      else {
+        val = "'" + ItqlHelper.escapeLiteral(val) + "'";
+
+        if (m.getDataType() != null)
+          val += (("^^<" + m.getDataType()) + ">");
+      }
     }
 
     String query =

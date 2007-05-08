@@ -3,6 +3,7 @@ package org.topazproject.otm;
 import java.net.URI;
 
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
@@ -443,6 +444,8 @@ public class OtmTest extends TestCase {
       a2.setCreator("bb");
       a3.setCreator("cc");
 
+      a3.setCreated(new Date());
+
       a1.setSupersededBy(a2);
       a2.setSupersedes(a1);
       a2.setSupersededBy(a3);
@@ -612,8 +615,21 @@ public class OtmTest extends TestCase {
       a1 = (Annotation) l.get(0);
       assertEquals(id1, a1.getId());
 */
+
+      l = session.createCriteria(Annotation.class).add(Restrictions.exists("created")).list();
+      assertEquals(1, l.size());
+      a1 = (Annotation) l.get(0);
+      assertEquals(id3, a1.getId());
+
+      l = session.createCriteria(Annotation.class).add(Restrictions.notExists("created")).list();
+      assertEquals(2, l.size());
+      a1   = (Annotation) l.get(0);
+      a2   = (Annotation) l.get(1);
+      assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
+      assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
+      log.warn("test failed", e);
       try {
         if (tx != null)
           tx.rollback();

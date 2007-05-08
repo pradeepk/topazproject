@@ -18,41 +18,23 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
- * A criterion for a triple pattern where the predicate and value are a set minus.
+ * A criterion that performs a set minus.
  *
  * @author Pradeep Krishnan
  */
 public class MinusCriterion implements Criterion {
-  private String name;
-  private Object value;
+  private Criterion minuend;
+  private Criterion subtrahend;
 
-  /**
+/**
    * Creates a new MinusCriterion object.
    *
-   * @param name field/predicate name
-   * @param value field/predicate value
+   * @param minuend subtract from
+   * @param subtrahend subtract this
    */
-  public MinusCriterion(String name, Object value) {
-    this.name    = name;
-    this.value   = value;
-  }
-
-  /**
-   * Gets the field/predicate name.
-   *
-   * @return field/predicate name
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Gets the field/predicate value.
-   *
-   * @return field/predicate value
-   */
-  public Object getValue() {
-    return value;
+  public MinusCriterion(Criterion minuend, Criterion subtrahend) {
+    this.minuend      = minuend;
+    this.subtrahend   = subtrahend;
   }
 
   /*
@@ -60,51 +42,7 @@ public class MinusCriterion implements Criterion {
    */
   public String toItql(Criteria criteria, String subjectVar, String varPrefix)
                 throws OtmException {
-    ClassMetadata cm = criteria.getClassMetadata();
-    Mapper        m  = cm.getMapperByName(getName());
-
-    if (m == null)
-      throw new OtmException("'" + getName() + "' does not exist in " + cm);
-
-    String val;
-
-    try {
-      val = (m.getSerializer() != null) ? m.getSerializer().serialize(getValue())
-            : getValue().toString();
-    } catch (Exception e) {
-      throw new OtmException("Serializer exception", e);
-    }
-
-    if (m.typeIsUri())
-      val = "<" + ItqlHelper.validateUri(val, getName()) + ">";
-    else {
-      val = "'" + ItqlHelper.escapeLiteral(val) + "'";
-
-      if (m.getDataType() != null)
-        val += (("^^<" + m.getDataType()) + ">");
-    }
-
-    String query =
-      m.hasInverseUri()
-      ? ("(" + val + " <" + m.getUri() + "> " + varPrefix + " minus " + val + " <" + m.getUri()
-      + "> " + subjectVar + ")")
-      : ("(" + subjectVar + " <" + m.getUri() + "> " + varPrefix + " minus " + subjectVar + " <"
-      + m.getUri() + "> " + val + ")");
-
-    String model = m.getModel();
-
-    if (model != null) {
-      ModelConfig conf = criteria.getSession().getSessionFactory().getModel(model);
-
-      if (conf == null)
-        throw new OtmException("Model/Graph '" + model + "' is not configured in SessionFactory");
-
-      model = " in <" + conf.getUri() + ">";
-    }
-
-    if (model != null)
-      query += model;
-
-    return query;
+    return "(" + minuend.toItql(criteria, subjectVar, varPrefix + "m1") + " minus "
+           + subtrahend.toItql(criteria, subjectVar, varPrefix + "m2") + ")";
   }
 }
