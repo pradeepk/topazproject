@@ -321,6 +321,12 @@ public class SerializerFactory {
 
       o = o.substring(0, pos) + mss + o.substring(endPos, len);
 
+      if (hasTimeZone) {
+        // convert hh:mm to hhmm in timezone
+        len   = o.length();
+        o     = o.substring(0, len - 3) + o.substring(len - 2, len);
+      }
+
       SimpleDateFormat parser = hasTimeZone ? zparser : sparser;
 
       synchronized (parser) {
