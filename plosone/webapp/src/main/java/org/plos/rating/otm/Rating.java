@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Rdf;
 @Entity(type = Rdf.topaz + "RatingsAnnotation")
 public class Rating extends Annotation {
 
-  public static final String ELEGANCE_TYPE = Rdf.topaz + "EleganceRating";
+  public static final String STYLE_TYPE = Rdf.topaz + "StyleRating";
   public static final String INSIGHT_TYPE = Rdf.topaz + "InsightRating";
   public static final String RELIABILITY_TYPE = Rdf.topaz + "ReliabilityRating";
   

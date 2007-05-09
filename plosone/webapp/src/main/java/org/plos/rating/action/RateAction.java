@@ -49,7 +49,7 @@ public class RateAction extends BaseActionSupport {
 
   private double insight;
   private double reliability;
-  private double elegance;
+  private double style;
   private double overall;
 
   private String articleUri;
@@ -75,7 +75,7 @@ public class RateAction extends BaseActionSupport {
     PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
 
     Rating insightRating = null;
-    Rating eleganceRating = null;
+    Rating styleRating = null;
     Rating reliabilityRating = null;    
     CommentAnnotation ratingComment = null;
     URI annotatedArticle = null; 
@@ -101,8 +101,8 @@ public class RateAction extends BaseActionSupport {
         if (Rating.INSIGHT_TYPE.equals(rating.getType())) {
           insightRating = rating; 
         }
-        else if (Rating.ELEGANCE_TYPE.equals(rating.getType())) { 
-          eleganceRating = rating;
+        else if (Rating.STYLE_TYPE.equals(rating.getType())) { 
+          styleRating = rating;
         }
         else if (Rating.RELIABILITY_TYPE.equals(rating.getType())) {
           reliabilityRating = rating;
@@ -118,14 +118,14 @@ public class RateAction extends BaseActionSupport {
         insightRating.assignValue((int)insight);
         insightRating.setCreator(user.getUserId());
       }
-      if (elegance > 0) {
-        if (eleganceRating == null)
-          eleganceRating = new Rating();
-        eleganceRating.setType(Rating.ELEGANCE_TYPE);
-        eleganceRating.setContext("");
-        eleganceRating.setAnnotates(annotatedArticle);
-        eleganceRating.assignValue((int)elegance);
-        eleganceRating.setCreator(user.getUserId());     
+      if (style > 0) {
+        if (styleRating == null)
+          styleRating = new Rating();
+        styleRating.setType(Rating.STYLE_TYPE);
+        styleRating.setContext("");
+        styleRating.setAnnotates(annotatedArticle);
+        styleRating.assignValue((int)style);
+        styleRating.setCreator(user.getUserId());     
       }
       if (reliability > 0) {
         if (reliabilityRating == null)
@@ -154,18 +154,18 @@ public class RateAction extends BaseActionSupport {
         ratingComment.setCreator(user.getUserId());
       }
       
-      if (eleganceRating != null) {
-        if (elegance > 0)
-          session.saveOrUpdate(eleganceRating);
+      if (styleRating != null) {
+        if (style > 0)
+          session.saveOrUpdate(styleRating);
         else 
-          session.delete(eleganceRating);
+          session.delete(styleRating);
       }
       
       if (insightRating != null) {
         if (insight > 0)
           session.saveOrUpdate(insightRating);
         else 
-          session.delete(eleganceRating);
+          session.delete(insightRating);
       } 
       
       if (reliabilityRating != null) {
@@ -223,8 +223,8 @@ public class RateAction extends BaseActionSupport {
         Rating rating = iter.next();
         if (Rating.INSIGHT_TYPE.equals(rating.getType()))
           setInsight(rating.retrieveValue());  
-        else if (Rating.ELEGANCE_TYPE.equals(rating.getType())) 
-          setElegance(rating.retrieveValue());
+        else if (Rating.STYLE_TYPE.equals(rating.getType())) 
+          setStyle(rating.retrieveValue());
         else if (Rating.RELIABILITY_TYPE.equals(rating.getType()))
           setReliability(rating.retrieveValue());
       }
@@ -264,7 +264,7 @@ public class RateAction extends BaseActionSupport {
   public String retrieveAllAverageRatings() {
    
     setInsight(2);
-    setElegance(1);
+    setStyle(1);
     setReliability (4);
     setOverall(3);
    
@@ -291,18 +291,18 @@ public class RateAction extends BaseActionSupport {
   }
 
   /**
-   * @return Returns the elegance.
+   * @return Returns the style.
    */
   //@DoubleRangeFieldValidator(message = "Elegance must be <= 5 and greater than 0", key = "i18n.key", shortCircuit = true, minInclusive = "1.0", maxInclusive = "5.0")
-  public double getElegance() {
-    return elegance;
+  public double getStyle() {
+    return style;
   }
 
   /**
    * @param elegance The elegance to set.
    */
-  public void setElegance(double elegance) {
-    this.elegance = elegance;
+  public void setStyle(double style) {
+    this.style = style;
   }
 
   /**
