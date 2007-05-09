@@ -109,9 +109,6 @@ public class SessionFactory {
     ClassMetadata cm           = cmf.create(c);
 
     setClassMetadata(cm);
-
-    if (log.isDebugEnabled())
-      log.debug("Preload: type(" + cm.getType() + ") ==> " + cm);
   }
 
   /**
@@ -182,6 +179,9 @@ public class SessionFactory {
 
       set.add(c);
     }
+
+    if (log.isDebugEnabled())
+      log.debug("setClassMetadata: type(" + cm.getType() + ") ==> " + cm);
   }
 
   /**
