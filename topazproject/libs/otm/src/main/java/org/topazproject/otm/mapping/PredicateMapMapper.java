@@ -68,20 +68,6 @@ public class PredicateMapMapper extends AbstractMapper {
     throw new UnsupportedOperationException("Only raw get/set allowed");
   }
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @param o DOCUMENT ME!
-   * @param vals DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
-  public void set(Object o, Map vals) throws OtmException {
-    Map m = (Map) getRawValue(o, true);
-    m.clear();
-    m.putAll(vals);
-  }
-
   public IdentifierGenerator getGenerator() {
     throw new UnsupportedOperationException("Generated values not supported for PredicateMaps");
   }
