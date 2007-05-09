@@ -97,6 +97,8 @@ public class ClassDef {
       type = uriPrefix + className
     }
 
+    allTypes << type;
+
     // find the id-field and ensure there's only one; if there's none, create one
     def idFields = allFields.findAll{it.isId}
     if (idFields.size() > 1)
