@@ -28,10 +28,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.annotations.Rdf;
-import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.AbstractMapper;
-import org.topazproject.otm.query.Results;
 import org.topazproject.otm.id.IdentifierGenerator;
+import org.topazproject.otm.mapping.AbstractMapper;
+import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.query.Results;
 
 /**
  * An otm session (similar to hibernate session). And similar to hibernate session, not thread
@@ -654,14 +654,16 @@ public class Session {
 
     if (ids.size() == 0) {
       IdentifierGenerator generator = idField.getGenerator();
+
       if (generator == null)
         throw new OtmException("No id generation for " + o.getClass() + " on " + idField);
 
       id = generator.generate();
       idField.set(o, Collections.singletonList(id)); // So user can get at it after saving
+
       if (log.isDebugEnabled())
-        log.debug(generator.getClass().getSimpleName() + " generated '" + id + "' for " +
-                  o.getClass().getSimpleName());
+        log.debug(generator.getClass().getSimpleName() + " generated '" + id + "' for "
+                  + o.getClass().getSimpleName());
     } else {
       id = (String) ids.get(0);
     }
@@ -672,15 +674,8 @@ public class Session {
   private ClassMetadata checkClass(Class clazz) throws OtmException {
     ClassMetadata cm = sessionFactory.getClassMetadata(clazz);
 
-    if (cm == null) {
-      Class c = sessionFactory.getProxyMapping(clazz);
-
-      if (c != null)
-        cm = sessionFactory.getClassMetadata(c);
-
-      if (cm == null)
-        throw new OtmException("No class metadata found for " + clazz);
-    }
+    if (cm == null)
+      throw new OtmException("No class metadata found for " + clazz);
 
     return cm;
   }

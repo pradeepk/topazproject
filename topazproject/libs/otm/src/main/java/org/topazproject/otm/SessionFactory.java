@@ -192,7 +192,17 @@ public class SessionFactory {
    * @return metadata for the class, or null if not found
    */
   public ClassMetadata getClassMetadata(Class clazz) {
-    return metadata.get(clazz);
+    ClassMetadata cm = metadata.get(clazz);
+
+    if (cm != null)
+      return cm;
+
+    clazz = getProxyMapping(clazz);
+
+    if (clazz != null)
+      cm = metadata.get(clazz);
+
+    return cm;
   }
 
   /**
