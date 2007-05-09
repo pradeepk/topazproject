@@ -334,6 +334,42 @@
     </action>    
   
   </package>
+  
+  <package name="rate" extends="default" namespace="/rate">
+   
+    <action name="getAllAverageRatings" class="org.plos.rating.action.RateAction" method="getAllAverageRatings">
+      <result name="success" type="ajaxJSON"/>
+      <result name="input" type="ajaxJSON"/>
+      <result name="error" type="ajaxJSON"/>
+    </action>
+
+    <action name="getAverageRating" class="org.plos.rating.action.RateAction" method="getAverageRating">
+      <result name="success" type="ajaxJSON"/>
+      <result name="input" type="ajaxJSON"/>
+      <result name="error" type="ajaxJSON"/>
+    </action>
+
+  </package>
+
+  <package name="rate-secure" extends="default" namespace="/rate/secure">
+    <action name="rateArticle" class="org.plos.rating.action.RateAction" method="rateArticle">
+      <result name="input" type="ajaxJSON"/>
+      <result name="error" type="ajaxJSON"/>
+      <result name="success" type="ajaxJSON"/>
+    </action>
+
+    <action name="updateRating" class="org.plos.rating.action.RateAction" method="updateRating">
+      <result name="input" type="ajaxJSON"/>
+      <result name="error" type="ajaxJSON"/>
+      <result name="success" type="ajaxJSON"/>
+    </action>
+    
+    <action name="getRatingsForUser" class="org.plos.rating.action.RateAction" method="retrieveRatingsForUser">
+      <result name="input" type="ajaxJSON"/>
+      <result name="error" type="ajaxJSON"/>
+      <result name="success" type="ajaxJSON"/>
+    </action>
+  </package>
 
   <package name="article" extends="default" namespace="/article">
     <action name="articleList" class="org.plos.article.action.ArticleListAction">

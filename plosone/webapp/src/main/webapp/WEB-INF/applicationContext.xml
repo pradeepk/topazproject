@@ -273,7 +273,54 @@
     <aop:scoped-proxy/>
   </bean>
 
-  <bean id="browseService" class="org.plos.article.service.BrowseService"/>
+  <bean id="otmFactory" class="org.plos.configuration.OtmConfiguration" scope="singleton">
+    <constructor-arg index="0" value="${itql.uri}" />   
+    <property name="models">
+      <list>
+        <bean name="riModel" class="org.topazproject.otm.ModelConfig">
+          <constructor-arg index="0" value="ri" />
+          <constructor-arg index="1">
+            <bean class="java.net.URI">
+              <constructor-arg value="local:///topazproject#filter:model=ri"/>
+            </bean>
+          </constructor-arg>
+          <constructor-arg index="2">
+            <bean class="java.net.URI">
+              <constructor-arg value="http://topazproject.org/models#filter" />
+            </bean>
+          </constructor-arg> 
+        </bean>
+        <bean name="annotationsModel" class="org.topazproject.otm.ModelConfig">
+          <constructor-arg index="0" value="annotations" />
+          <constructor-arg index="1">
+            <bean class="java.net.URI">
+              <constructor-arg value="local:///topazproject#filter:model=ri"/>
+            </bean>
+          </constructor-arg>
+          <constructor-arg index="2">
+            <bean class="java.net.URI">
+              <constructor-arg value="http://topazproject.org/models#filter" />
+            </bean>
+          </constructor-arg> 
+        </bean>        
+      </list>
+    </property>
+    
+    <property name="preloadClasses">
+      <list>
+        <value>org.plos.annotation.otm.Annotation</value>
+        <value>org.plos.annotation.otm.Annotea</value>
+        <value>org.plos.annotation.otm.AnnotationWithStreamableBody</value>
+        <value>org.plos.annotation.otm.CommentAnnotation</value>
+        <value>org.plos.annotation.otm.Reply</value> 
+        <value>org.plos.annotation.otm.ReplyThread</value>
+        <value>org.plos.rating.otm.Rating</value>
+        <value>org.plos.rating.otm.RatingContent</value>
+      </list>
+    </property>
+  </bean>
+
+  <bean id="browseService" class="org.plos.article.service.BrowseService" />
 
   <bean id="plosOneFreemarkerManager" class="org.plos.webwork.PlosOneFreemarkerManager">
     <constructor-arg index="0">
@@ -297,7 +344,8 @@
        <props>
          <prop key="cache.memory">true</prop>
          <prop key="cache.event.listeners">com.opensymphony.oscache.plugins.clustersupport.JavaGroupsBroadcastingListener</prop>
- <!--    <prop key="cache.capacity">500</prop>-->
+<!--     <prop key="cache.cluster.properties">UDP(mcast_addr=231.12.21.135;mcast_port=45566;ip_ttl=1;mcast_send_buf_size=150000;mcast_recv_buf_size=80000):PING(timeout=2000;num_initial_members=3;):MERGE2(min_interval=5000;max_interval=10000):FD_SOCK:VERIFY_SUSPECT(timeout=1500):pbcast.NAKACK(gc_lag=50;retransmit_timeout=300,600,1200,2400,4800;max_xmit_size=8192):UNICAST(timeout=300,600,1200,2400):pbcast.STABLE(desired_avg_gossip=20000):FRAG(frag_size=8096;down_thread=false;up_thread=false):pbcast.GMS(join_timeout=5000;join_retry_timeout=2000;shun=false;print_local_addr=true)</prop> -->
+	   <!--    <prop key="cache.capacity">500</prop>-->
        </props>
      </constructor-arg>
   </bean>

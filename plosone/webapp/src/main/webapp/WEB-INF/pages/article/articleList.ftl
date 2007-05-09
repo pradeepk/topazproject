@@ -50,6 +50,10 @@
             <@ww.a href="%{feedbackURL}">Send Feedback</@ww.a>
           </li>
           <li>
+            <@ww.url id="getRatingsURL" action="getRatingsForUser" namespace="/rate/secure" articleUri="${article}"/>
+            <@ww.a href="%{getRatingsURL}">GetRatings</@ww.a>
+          </li>
+          <li>
             <fieldset>
               <legend>Create an annotation</legend>
             <@ww.form name="createAnnotationForm" action="createAnnotationSubmit" method="post" namespace="/annotation/secure" enctype="multipart/form-data">
@@ -64,6 +68,21 @@
               <@ww.checkbox name="isPublic" label="Is it Public?" fieldValue="true"/>
               <@ww.textarea name="comment" label="Annotation text" value="%{'This article seems to cover the same grounds as this ...'}" rows="'3'" cols="'30'" required="true"/>
               <@ww.submit value="create annotation" />
+            </@ww.form>
+            </fieldset>
+          </li>
+          <li>
+            <fieldset>
+              <legend>Rate the Article</legend>
+            <@ww.form name="rateArticle Form" action="rateArticle" method="post" namespace="/rate/secure" enctype="multipart/form-data">
+              <!--enctype="multipart/form-data"-->
+              <@ww.textfield name="insight" label="Insight Rating" size="1"/>
+              <@ww.textfield name="reliability" label="Reliability Rating" size="1"/>
+              <@ww.textfield name="elegance" label="Elegance Rating" size="1"/>
+							<@ww.textfield name="articleUri" label="Article URI" value="${article}"/>
+              <@ww.textfield name="commentTitle" label="Title" value="%{'title'}"/>
+              <@ww.textarea name="comment" label="Annotation text" value="%{'This article rocks'}" rows="'3'" cols="'30'" required="true"/>
+              <@ww.submit value="Submit Rating" />
             </@ww.form>
             </fieldset>
           </li>
