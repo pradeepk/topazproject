@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -14,16 +14,13 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.Iterator;
-import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
-import org.plos.article.service.ArticleWebService;
 import org.plos.article.service.BrowseService;
 import org.topazproject.ws.article.ArticleInfo;
 
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
 /**
  * @author stevec
@@ -39,26 +36,16 @@ public class BrowseArticlesAction extends BaseActionSupport  {
   private int year = -1;
   private int month = -1;
   private int day = -1;
-  private GeneralCacheAdministrator articleCacheAdministrator;
-  private ArticleWebService articleWebService;
   private BrowseService browseService;
-  private ArticleInfo[] allArticles;
   private String[] categoryNames;
   private ArrayList<ArrayList<ArticleInfo>> articlesByCategory;
-  private TreeMap<String, ArrayList<ArticleInfo>> articlesByCategoryMap;
-  private TreeMap<Date, ArrayList<ArticleInfo>> articlesByDateMap;  
   private ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>> articlesByDate;
   private ArrayList<ArrayList<ArrayList<Date>>> articleDates;
   private ArrayList<ArticleInfo> articleList;
   
   private static final int PAGE_SIZE = 10;
   private static final String DATE_FIELD = "date"; 
-  private static final String CAT_NAME_CACHE_KEY = "CAT_NAME_CACHE_KEY";
-  private static final String CAT_ARTICLES_CACHE_KEY = "CAT_ARTICLES_CACHE_KEY";
-  private static final String DATES_CACHE_KEY = "DATES_CACHE_KEY";
-  private static final String DATES_ARTICLES_CACHE_KEY = "DATES_ARTICLES_CACHE_KEY";
-  public static final String ALL_ARTICLE_CACHE_GROUP_KEY = "ALL_ARTICLE_LIST_GROUP";
-  public static final String ALL_ARTICLE_CACHE_KEY = "ALL_ARTICLE_LIST";
+
   
 
   
@@ -182,20 +169,6 @@ public class BrowseArticlesAction extends BaseActionSupport  {
    */
   public void setCatId(int catId) {
     this.catId = catId;
-  }
-
-  /**
-   * @param articleCacheAdministrator The articleCacheAdministrator to set.
-   */
-  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
-    this.articleCacheAdministrator = articleCacheAdministrator;
-  }
-
-  /**
-   * @param articleWebService The articleWebService to set.
-   */
-  public void setArticleWebService(ArticleWebService articleWebService) {
-    this.articleWebService = articleWebService;
   }
 
   /**
