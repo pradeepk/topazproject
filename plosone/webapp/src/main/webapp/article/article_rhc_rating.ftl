@@ -1,43 +1,48 @@
-            <h6>Average Rating <a href="" class="rating">(${numOverallRatings} User Ratings)</a></h6>
+            <#if numOverallRatings != 1>
+              <#assign char = "s">
+            <#else>
+              <#assign char = "">
+            </#if>
+            <h6>Average Rating <a href="" class="rating">(${numOverallRatings} User Rating${char})</a></h6>
             <ol>
               <li>
                 <span class="inline-rating">
                   <ul class="star-rating pone_rating" title="overall">
-                    <#assign overallPct = (20 * overallRoundedAverage)?string("#00")>
+                    <#assign overallPct = (20 * overallRoundedAverage)?string("##0")>
                     <li class="current-rating average-rating pct${overallPct}">Currently ${totalOverall?string("0.#")}/5 Stars.</li>
                   </ul>    
                 </span>  
                 <a href="javascript:void(0);" onclick="return topaz.domUtil.swapDisplayMode('ratingAverages');" class="rating catAvg">See all categories</a>
                 <fieldset id="ratingAverages">
-                	<ol class="ratingAvgs">
-                  	<li><label for="insight">Insight</label>
-					            <ul class="star-rating pone_rating" title="insight">
-        					      <#assign insightPct = (20 * insightRoundedAverage)?string("#00")>
-				    	          <li class="current-rating average pct${insightPct}">Currently ${insightAverage?string("0.#")}/5 Stars.</li>
-				      	      </ul>    
+                  <ol class="ratingAvgs">
+                    <li><label for="insight">Insight</label>
+                      <ul class="star-rating pone_rating" title="insight">
+                        <#assign insightPct = (20 * insightRoundedAverage)?string("##0")>
+                        <li class="current-rating average pct${insightPct}">Currently ${insightAverage?string("0.#")}/5 Stars.</li>
+                      </ul>    
                     </li>
                     <li><label for="reliability">Reliability</label>
-					            <ul class="star-rating pone_rating" title="reliability">
-        	  				    <#assign reliabilityPct = (20 * reliabilityRoundedAverage)?string("#00")>            
-				  	            <li class="current-rating average pct${reliabilityPct}">Currently ${reliabilityAverage?string("0.#")}/5 Stars.</li>
-            					</ul>    
+                      <ul class="star-rating pone_rating" title="reliability">
+                        <#assign reliabilityPct = (20 * reliabilityRoundedAverage)?string("##0")>            
+                        <li class="current-rating average pct${reliabilityPct}">Currently ${reliabilityAverage?string("0.#")}/5 Stars.</li>
+                      </ul>    
                     </li>
                     <li><label for="style">Style</label>
-			                <ul class="star-rating pone_rating" title="style">
-      					        <#assign stylePct = (20 * styleRoundedAverage)?string("#00")>                            
-					              <li class="current-rating average pct${stylePct}">Currently ${styleAverage?string("0.#")}/5 Stars.</li>
-					            </ul>    
+                      <ul class="star-rating pone_rating" title="style">
+                        <#assign stylePct = (20 * styleRoundedAverage)?string("##0")>                            
+                        <li class="current-rating average pct${stylePct}">Currently ${styleAverage?string("0.#")}/5 Stars.</li>
+                      </ul>    
                     </li>
                   </ol>
                 </fieldset>
               </li>
               <li>
-          	    <#if Session.PLOS_ONE_USER?exists>
+                <#if Session.PLOS_ONE_USER?exists>
                   <#if hasRated>
                     <a href="javascript:void(0);" onclick="return topaz.rating.show('edit');" class="rating">Edit My Rating</a>
-									<#else>
+                  <#else>
                     <a href="javascript:void(0);" onclick="return topaz.rating.show();" class="rating">Rate This Article</a>
-									</#if>
+                  </#if>
                 <#else>
                   <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="rating">Rate This Article</a>
                 </#if>
