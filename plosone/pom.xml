@@ -20,6 +20,7 @@
     <module>webwork-json-mod</module>
     <module>emailer</module>
     <module>doi-resolver</module>
+    <module>libs</module>
   </modules>
 
 </project>
