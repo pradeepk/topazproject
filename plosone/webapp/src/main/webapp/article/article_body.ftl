@@ -18,6 +18,8 @@
 
 	<#include "/widget/commentDialog.ftl">
 	
+	<#include "/widget/ratingDialog.ftl">
+	
 	<#include "/widget/loadingCycle.ftl">
 </div>
 

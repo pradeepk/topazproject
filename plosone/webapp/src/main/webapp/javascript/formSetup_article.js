@@ -1,7 +1,11 @@
 var commentTitle;
 var comments;
-var titleCue     = 'Enter your annotation title...';
-var commentCue   = 'Enter your annotation...';
+var ratingTitle;
+var ratingComments;
+var titleCue    			 = 'Enter your annotation title...';
+var commentCue    		 = 'Enter your annotation...';
+var ratingTitleCue		 = 'Enter your comment title...';
+var ratingCommentCue   = 'Enter your comment...';
 var btn_save;
 var btn_post;
 var btn_cancel;
@@ -11,9 +15,9 @@ function initAnnotationForm() {
 	comments         = annotationForm.cArea;
 	var privateFlag  = annotationForm.privateFlag;
 	var publicFlag   = annotationForm.publicFlag;
-	btn_save         = document.getElementById("btn_save");
-	btn_post         = document.getElementById("btn_post");
-	btn_cancel       = document.getElementById("btn_cancel");
+	btn_save         = dojo.byId("btn_save");
+	btn_post         = dojo.byId("btn_post");
+	btn_cancel       = dojo.byId("btn_cancel");
 	var submitMsg    = dojo.byId('submitMsg');
 	
 	// Annotation Dialog Box: Title field
@@ -102,6 +106,85 @@ function initAnnotationForm() {
     dojo.dom.removeChildren(submitMsg);
     dlg.hide();
     topaz.formUtil.enableFormFields(annotationForm);
+	  getArticle();
+    topaz.displayComment.processBugCount();
+    e.preventDefault();
+  });
+
+	/******************************************************
+	 * Ratings Initial Settings
+	 ******************************************************/
+	ratingTitle                = ratingsForm.cTitle;
+	ratingComments             = ratingsForm.cArea;
+	var btn_post_rating        = dojo.byId("btn_post_rating");
+	var btn_cancel_rating      = dojo.byId("btn_cancel_rating");
+	var submitRatingMsg        = dojo.byId('submitRatingMsg');
+	
+	// Annotation Dialog Box: Title field
+	dojo.event.connect(ratingTitle, "onfocus", function () { 
+	  topaz.formUtil.textCues.off(ratingTitle, ratingTitleCue); 
+	});
+	
+	dojo.event.connect(ratingTitle, "onchange", function () {
+    var fldTitle = ratingsForm.commentTitle;
+    if(ratingsForm.cTitle.value != "" && ratingsForm.cTitle.value != ratingTitleCue) {
+      fldTitle.value = ratingsForm.cTitle.value;
+    }
+    else {
+      fldTitle.value = "";
+    }
+	});
+
+	dojo.event.connect(ratingTitle, "onblur", function () { 
+    var fldTitle = ratingsForm.commentTitle;
+    if(ratingsForm.cTitle.value != "" && ratingsForm.cTitle.value != ratingTitleCue) {
+      fldTitle.value = ratingsForm.cTitle.value;
+    }
+    else {
+      fldTitle.value = "";
+    }
+	  topaz.formUtil.textCues.on(ratingTitle, ratingTitleCue); 
+	});
+	
+	// Annotation Dialog Box: Comment field
+	dojo.event.connect(ratingComments, "onfocus", function () {
+	  topaz.formUtil.textCues.off(ratingComments, ratingCommentCue);
+	});
+
+	dojo.event.connect(ratingComments, "onchange", function () {
+    var fldTitle = ratingsForm.comment;
+    if(ratingsForm.cArea.value != "" && ratingsForm.cArea.value != ratingCommentCue) {
+      fldTitle.value = ratingsForm.cArea.value;
+    }
+    else {
+      fldTitle.value = "";
+    }
+	});
+	
+	dojo.event.connect(ratingComments, "onblur", function () {
+    var fldTitle = ratingsForm.comment;
+    if(ratingsForm.cArea.value != "" && ratingsForm.cArea.value != ratingCommentCue) {
+      fldTitle.value = ratingsForm.cArea.value;
+    }
+    else {
+      fldTitle.value = "";
+    }
+	  topaz.formUtil.textCues.on(ratingComments, ratingCommentCue); 
+	  //topaz.formUtil.checkFieldStrLength(ratingComments);
+	});
+	
+	// Rating Dialog Box: Post buttons
+	dojo.event.connect(btn_post_rating, "onclick", function(e) {
+    updateRating();
+    topaz.rating.resetDialog();
+    e.preventDefault();
+  });
+
+	dojo.event.connect(btn_cancel_rating, "onclick", function(e) {
+    dojo.dom.removeChildren(submitMsg);
+    dlg.hide();
+    topaz.formUtil.enableFormFields(ratingsForm);
+    topaz.rating.resetDialog();
 	  getArticle();
     topaz.displayComment.processBugCount();
     e.preventDefault();

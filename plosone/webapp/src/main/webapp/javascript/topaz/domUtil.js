@@ -376,5 +376,18 @@ topaz.domUtil = {
     }
     
     return itemsFound;
+  },
+  
+  firstSibling: function(siblingObj) {
+  	var fSibling;
+  	for (var current = siblingObj; current != null; current = current.previousSibling) {
+      if (current.nodeName == "#text" && (current.nodeValue.match(new RegExp("\n")) || current.nodeValue.match(new RegExp("\r")))) {
+        continue;
+      }
+      
+  		fSibling = current;
+  	}
+  	
+  	return fSibling;
   }
 }

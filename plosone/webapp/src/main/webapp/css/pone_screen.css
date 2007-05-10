@@ -64,6 +64,12 @@ a.tooltip	/* use for any functional icon for on page actions */
 /* for user dashboard icons */
 #user a.icon		{ padding: 0 16px 0 0; background-repeat: no-repeat; background-position: 100% -14px; padding-top: 1px; padding-bottom: 1px;}
 
+a.rating      { border: none; background: transparent; }
+a.rating,
+a.rating:visited	{ color: #389A0C; }
+a.rating:hover 	{ color: #45BF0F; }
+a.rating			{ padding: 0 0 2px 5px; }
+h6 a.rating { font-size: .9em; }
 
 /* portions of this icon set have been adapted Mark Jame's Silk icon set available under a Creative Commons Attribution 2.5 license at http://www.famfamfam.com/lab/icons/silk/ */
 a.new			{ padding: 6px; }
@@ -137,6 +143,9 @@ div.pane div.close a		{ margin-top: -20px; margin-right: -20px; border-color: #c
 div.pane div.close a:hover	{ background-color: #ddd; color: #000;}
 div.pane div.post a			{ border-color: #ccc; }
 div.pane div.post a:hover	{ background-color: #393; }
+
+/* div.rating div.close a { border-left: 2px solid #069; border-bottom: 2px solid #069;} */
+
 /* Main Container: Main Menu : Elements
 
 ----------------------------------------------------------
@@ -364,6 +373,14 @@ div.commentview div		{ display: inline; position: absolute; right: 40px;}
 div.commentview li ul 	{ margin: 0; padding: 0; list-style-type: none; }
 div.commentview li ul li	{ background: url(../images/pone_tools_li.gif) no-repeat 0 2px; font-weight: bold; padding-left: 14px; margin-left: 20px; font-size: 1em; color: #666;}
 
+ol.ratingAvgs { padding: 0; margin: 0; }
+ol.ratingAvgs,
+ol.ratingAvgs ul { list-style: none; }
+ol.ratingAvgs li { padding: 0 0 0 10px; margin: 0; height: 2em;}
+ol.ratingAvgs label {  }
+ol.ratingAvgs ul { left: 8em; top: -2em;;}
+ol.ratingAvgs li ul li { display: inline; background: none; margin: 0; padding: 0; width: auto;}
+
 #postcomment, #postcommentfloat { width: 240px; top: 0; position: relative; }
 #postcommentfloat { position: fixed; display: none; }
 .fixed { position: fixed !important; }
@@ -541,3 +558,4 @@ ol li.current { background: none!important; font-size: inherit;}
 ol li.current * { color: #000; text-decoration: none; background: none; cursor: default;}
 
 #bannerRight { float: right; margin-bottom: 20px;}
+

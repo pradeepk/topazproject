@@ -71,6 +71,13 @@
 	<!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your annotation!</li> -->
 			</ol>
 		</div> 
+    
+    		
+		<div class="commentview">
+			<#include "/article/article_rhc_rating.ftl">
+		</div> 
+		
+
 		<div id="sectionNavTop" class="tools">
 		</div>
 		<!--<div id="dojoDebug"></div>-->
@@ -128,6 +135,11 @@
 	<!-- show this if there is no commentary at all <li>Be the first to <a href="${createDiscussionURL}" class="discuss icon">start a discussion</a> or use the tools above to add your annotation!</li> -->
 			</ol>
 		</div> 
+		
+		<div class="commentview">
+			<#include "/article/article_rhc_rating.ftl">
+		</div> 
+		
 		<div id="sectionNavTopFloat" class="tools">
 		</div>
 	</div>

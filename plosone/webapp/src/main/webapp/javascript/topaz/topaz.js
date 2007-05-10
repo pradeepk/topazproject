@@ -89,6 +89,33 @@ String.prototype.isEmpty = function() {
   return (this == null || this == "");
 }
 
+String.prototype.replaceStringArray = function(delimiter, strMatch, newStr) {
+	if (!strMatch || !newStr) {
+		return "Missing required value";
+	}
+	
+	var strArr = (delimiter) ? this.split(delimiter) : this.split(" ");
+	var matchIndexStart = -1;
+	var matchIndexEnd = -1;
+	for (var i=0; i<strArr.length; i++) {
+		if (strArr[i].match(strMatch) != null) {
+			if (matchIndexStart < 0)
+				matchIndexStart = i;
+			
+			matchIndexEnd = i;
+		}
+	}
+	
+	if (matchIndexEnd >= 0) {
+		var diff = matchIndexEnd - matchIndexStart + 1;
+		strArr.splice(matchIndexStart, diff, newStr);
+	}
+	
+	var newStr = strArr.join(" ");
+	
+	return newStr;
+}
+
 function toggleAnnotation(obj, userType) {
   ldc.show();
   var bugs = document.getElementsByTagAndClassName('a', 'bug');

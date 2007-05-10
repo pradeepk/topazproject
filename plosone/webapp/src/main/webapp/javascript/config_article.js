@@ -44,3 +44,9 @@ var multiCommentConfig = {
   tipDownDiv: "mTip",
   tipUpDiv: "mTipu"
 };  
+
+var ratingConfig =  {
+	insight:  "rateInsight",
+	reliability: "ratingReliability",
+	style: "rateStyle"
+};

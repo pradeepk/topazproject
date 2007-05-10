@@ -92,3 +92,5 @@ html>body #home { height: auto }
 
 *:first-child+html a.bug,
 *:first-child+html a:visited.bug, { margin-bottom: -20px!important; }
+
+* html .inline-rating { display: inline; margin-left: -90px; top: 50px; }

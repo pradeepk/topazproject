@@ -4,6 +4,8 @@
   var ldc;
   var annotationForm;
   var menu;
+  var ratingDlg;
+  var ratingsForm;
   
   function init(e) {
     ldc = dojo.widget.byId("LoadingCycle");
@@ -27,6 +29,12 @@
     }
         
  		annotationForm = document.createAnnotation;
+
+  	ratingDlg = dojo.widget.manager.getWidgetById("Rating");
+  	var ratingCancel = dojo.byId('btn_cancel_rating');
+  	ratingDlg.setCloseControl(ratingCancel);
+  	ratingsForm = document.ratingForm;
+
     initAnnotationForm();
     
     topaz.formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate');
@@ -104,6 +112,7 @@
 
     topaz.displayComment.init();
     topaz.displayComment.processBugCount();
+    //topaz.rating.init();
     
     var anId = document.articleInfo.annotationId.value;
     var anEl = getAnnotationEl(anId);
