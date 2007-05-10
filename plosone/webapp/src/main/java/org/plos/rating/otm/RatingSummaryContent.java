@@ -25,37 +25,35 @@ import org.plos.annotation.otm.AnnotationBody;
  *
  */
 
-@Entity (model="ri", type = Rdf.topaz + "RatingContent")
-public class RatingContent implements AnnotationBody {
+@Entity (model="ri", type = Rdf.topaz + "RatingSummaryContent")
+public class RatingSummaryContent implements AnnotationBody {
   
   @Id @GeneratedValue(generatorClass = "org.topazproject.otm.id.GUIDGenerator",
-      uriPrefix = "info:doi/10.1371/ratingContent/")
+      uriPrefix = "info:doi/10.1371/ratingSummaryContent/")
   private String id;
   
-  @Predicate (uri = Rdf.topaz + "RatingValue")
-  private int value;
+  @Predicate (uri = Rdf.topaz + "NumRatings")
+  private int numRatings;
   
-  public RatingContent () {
+  @Predicate (uri = Rdf.topaz + "TotalValue")
+  private double total;
+  
+  public RatingSummaryContent () {
 
   }
   
-  public RatingContent (int inValue) {
-    this.value = inValue;
+  public RatingSummaryContent (double totalValue, int numRatings) {
+    this.total = totalValue;
+    this.numRatings = numRatings;
   }
   
   /**
    * @return Returns the value.
    */
-  public int getValue() {
-    return value;
+  public double retrieveAverage() {
+    return total/numRatings;
   }
-  /**
-   * @param value The value to set.
-   */
-  public void setValue(int value) {
-    this.value = value;
-  }
-
+  
   /**
    * @return Returns the id.
    */
@@ -68,5 +66,33 @@ public class RatingContent implements AnnotationBody {
    */
   public void setId(String id) {
     this.id = id;
+  }
+
+  /**
+   * @return Returns the numRatings.
+   */
+  public int getNumRatings() {
+    return numRatings;
+  }
+
+  /**
+   * @param numRatings The numRatings to set.
+   */
+  public void setNumRatings(int numRatings) {
+    this.numRatings = numRatings;
+  }
+
+  /**
+   * @return Returns the total.
+   */
+  public double getTotal() {
+    return total;
+  }
+
+  /**
+   * @param total The total to set.
+   */
+  public void setTotal(double total) {
+    this.total = total;
   }
 }

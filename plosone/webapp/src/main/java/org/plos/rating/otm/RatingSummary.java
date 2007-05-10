@@ -27,29 +27,25 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Stephen Cheng
  *
  */
-@Entity(type = Rdf.topaz + "RatingsAnnotation")
-public class Rating extends Annotation {
+@Entity(type = Rdf.topaz + "RatingSummaryAnnotation")
+public class RatingSummary extends Annotation {
 
-  public static final String STYLE_TYPE = Rdf.topaz + "StyleRating";
-  public static final String INSIGHT_TYPE = Rdf.topaz + "InsightRating";
-  public static final String RELIABILITY_TYPE = Rdf.topaz + "ReliabilityRating";
-  public static final String OVERALL_TYPE = Rdf.topaz + "OverallRating";
-  
   @Predicate(uri=Annotea.NS + "body")
-  private RatingContent                                     body;
+  private RatingSummaryContent                              body;
+  
   @Predicate(uri = Rdf.rdf + "type")
   private String                                            type;
   
-  public Rating() {
+  public RatingSummary() {
   }
 
-  public Rating (URI id) {
+  public RatingSummary (URI id) {
     super(id);
   }
   /**
    * @return Returns the rating.
    */
-  public RatingContent getBody() {
+  public RatingSummaryContent getBody() {
     return this.body;
   }
   
@@ -57,7 +53,7 @@ public class Rating extends Annotation {
    * @param rating The rating to set.
    */
   public void setBody(AnnotationBody rating) {
-    this.body = (RatingContent)rating;
+    this.body = (RatingSummaryContent)rating;
   }
 
   
@@ -66,25 +62,64 @@ public class Rating extends Annotation {
    * 
    * @return value
    */
-  public int retrieveValue () {
+  public double retrieveAverage() {
     if (this.body == null) {
-      return -1;
+      return 0;
     }
-    return this.body.getValue();
+    return this.body.retrieveAverage();
   }
   
   
   /**
    * Set the value of the rating
    * 
-   * @param value
+   * @param numRatings
    */
-  public void assignValue (int value) {
+  public void assignNumRatings (int numRatings) {
     if (this.body == null) {
-      this.body = new RatingContent();
+      this.body = new RatingSummaryContent();
     }
-    this.body.setValue(value);
+    this.body.setNumRatings(numRatings);
   }
+  
+  
+  /**
+   * Get the value of the rating
+   * 
+   * @return value
+   */
+  public int retrieveNumRatings() {
+    if (this.body == null) {
+      return 0;
+    }
+    return this.body.getNumRatings();
+  }
+  
+  
+  /**
+   * Set the value of the rating
+   * 
+   * @param total
+   */
+  public void assignTotal(double total) {
+    if (this.body == null) {
+      this.body = new RatingSummaryContent();
+    }
+    this.body.setTotal(total);
+  }
+
+  /**
+   * Set the value of the rating
+   * 
+   */
+  public double retrieveTotal() {
+    if (this.body == null){
+      return 0;
+    }
+    return this.body.getTotal();
+  }
+  
+  
 
   /**
    * @return Returns the type.
@@ -99,6 +134,17 @@ public class Rating extends Annotation {
   public void setType(String type) {
     this.type = type;
   }
+  
+  public void removeRating (int value) {
+    assignNumRatings(retrieveNumRatings() - 1);
+    assignTotal(retrieveTotal() - value);
+  }
+  
+  public void addRating (int value) {
+    assignNumRatings(retrieveNumRatings() + 1);
+    assignTotal(retrieveTotal() + value);
+  }
+  
 }
   
 

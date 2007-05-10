@@ -27,6 +27,7 @@ import org.plos.configuration.OtmConfiguration;
 
 import org.plos.annotation.otm.CommentAnnotation;
 import org.plos.rating.otm.Rating;
+import org.plos.rating.otm.RatingSummary;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -77,6 +78,12 @@ public class RateAction extends BaseActionSupport {
     Rating insightRating = null;
     Rating styleRating = null;
     Rating reliabilityRating = null;    
+    RatingSummary insightSummary = null;
+    RatingSummary styleSummary = null; 
+    RatingSummary reliabilitySummary = null;    
+    RatingSummary overallSummary = null;
+    
+    
     CommentAnnotation ratingComment = null;
     URI annotatedArticle = null; 
     
@@ -89,52 +96,104 @@ public class RateAction extends BaseActionSupport {
 
     try {
       tx = session.beginTransaction();
+      
+      List summaryList = session.createCriteria(RatingSummary.class).add(Restrictions.eq("annotates", articleUri)).list();
+      Iterator iter = summaryList.iterator();             
+      
+      while (iter.hasNext()) {
+        RatingSummary ratingSummary = (RatingSummary)iter.next();
+
+        if (Rating.INSIGHT_TYPE.equals(ratingSummary.getType())) {
+          insightSummary= ratingSummary; 
+        } else if (Rating.STYLE_TYPE.equals(ratingSummary.getType())) { 
+          styleSummary= ratingSummary;
+        } else if (Rating.RELIABILITY_TYPE.equals(ratingSummary.getType())) {
+          reliabilitySummary= ratingSummary;
+        } else if (Rating.OVERALL_TYPE.equals(ratingSummary.getType())) {
+          overallSummary= ratingSummary;
+        }
+      }
+
       List ratingsList = session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleUri)).
       add(Restrictions.eq("creator", user.getUserId())).list();
       
-      Iterator iter = ratingsList.iterator();
+      iter = ratingsList.iterator();
+      boolean updatingRating = false;
       
       while (iter.hasNext()) {
+        updatingRating = true;
         Rating rating = (Rating)iter.next();
         //session.delete(rating);
 
         if (Rating.INSIGHT_TYPE.equals(rating.getType())) {
           insightRating = rating; 
-        }
-        else if (Rating.STYLE_TYPE.equals(rating.getType())) { 
+        } else if (Rating.STYLE_TYPE.equals(rating.getType())) { 
           styleRating = rating;
-        }
-        else if (Rating.RELIABILITY_TYPE.equals(rating.getType())) {
+        } else if (Rating.RELIABILITY_TYPE.equals(rating.getType())) {
           reliabilityRating = rating;
         }
       }
      
       if (insight > 0) {
-        if (insightRating == null)
+        if (insightRating == null) {
           insightRating = new Rating();
+        } else {
+          if (insightSummary != null) {
+            insightSummary.removeRating(insightRating.retrieveValue()); 
+          }
+        }
         insightRating.setType(Rating.INSIGHT_TYPE);
         insightRating.setContext("");
         insightRating.setAnnotates(annotatedArticle);
         insightRating.assignValue((int)insight);
         insightRating.setCreator(user.getUserId());
+        if (insightSummary == null) {
+          insightSummary = new RatingSummary();
+          insightSummary.setAnnotates(annotatedArticle);
+          insightSummary.setType(Rating.INSIGHT_TYPE);
+        }
+        insightSummary.addRating((int)insight);
+        
       }
       if (style > 0) {
-        if (styleRating == null)
+        if (styleRating == null) {
           styleRating = new Rating();
+        } else {
+          if (styleSummary != null) {
+            styleSummary.removeRating(styleRating.retrieveValue()); 
+          }
+        }
         styleRating.setType(Rating.STYLE_TYPE);
         styleRating.setContext("");
         styleRating.setAnnotates(annotatedArticle);
         styleRating.assignValue((int)style);
         styleRating.setCreator(user.getUserId());     
+        if (styleSummary == null) {
+          styleSummary = new RatingSummary();
+          styleSummary.setAnnotates(annotatedArticle);
+          styleSummary.setType(Rating.STYLE_TYPE);
+        }
+        styleSummary.addRating((int)style);
       }
       if (reliability > 0) {
-        if (reliabilityRating == null)
+        if (reliabilityRating == null) {
           reliabilityRating = new Rating();
+        } else {
+          if (reliabilitySummary != null) {
+            reliabilitySummary.removeRating(reliabilityRating.retrieveValue()); 
+          }
+        }          
         reliabilityRating.setType(Rating.RELIABILITY_TYPE);
         reliabilityRating.setContext("");
         reliabilityRating.setAnnotates(annotatedArticle);
         reliabilityRating.assignValue((int)reliability);
         reliabilityRating.setCreator(user.getUserId());      
+        if (reliabilitySummary == null) {
+          reliabilitySummary = new RatingSummary();
+          reliabilitySummary.setAnnotates(annotatedArticle);
+          reliabilitySummary.setType(Rating.RELIABILITY_TYPE);
+        }
+        reliabilitySummary.addRating((int)reliability);
       }
       
       List<CommentAnnotation> commentList = session.createCriteria(CommentAnnotation.class).add(Restrictions.eq("annotates", articleUri)).
@@ -146,11 +205,12 @@ public class RateAction extends BaseActionSupport {
       
       if (!StringUtils.isBlank(commentTitle) || !StringUtils.isBlank(comment)) {
         if (ratingComment == null) {
-          ratingComment = new CommentAnnotation(comment);
+          ratingComment = new CommentAnnotation();
         }
         ratingComment.setContext("");
         ratingComment.setAnnotates(annotatedArticle);
         ratingComment.setTitle(commentTitle);
+        ratingComment.assignComment(comment);
         ratingComment.setCreator(user.getUserId());
       }
       
@@ -175,6 +235,27 @@ public class RateAction extends BaseActionSupport {
           session.delete(reliabilityRating);
       } 
 
+      if (styleSummary != null) {
+        session.saveOrUpdate(styleSummary);
+      }
+      
+      if (insightSummary != null) {
+        session.saveOrUpdate(insightSummary);
+      } 
+      
+      if (reliabilitySummary != null) {
+        session.saveOrUpdate(reliabilitySummary);
+      } 
+      
+      if (overallSummary == null) {
+        overallSummary = new RatingSummary();
+        overallSummary.setAnnotates(annotatedArticle);
+        overallSummary.setType(Rating.OVERALL_TYPE);
+      }
+      
+      calculateOverall(updatingRating, overallSummary, insightSummary, styleSummary, reliabilitySummary);
+      session.saveOrUpdate(overallSummary);
+      
       if (ratingComment != null) {
         session.saveOrUpdate(ratingComment);
       } 
@@ -199,6 +280,38 @@ public class RateAction extends BaseActionSupport {
 
     return SUCCESS;
   }
+  
+  private void calculateOverall (boolean update, RatingSummary overall, RatingSummary insight, 
+                                  RatingSummary style, RatingSummary reliability) {
+    int numCategories = 0;
+    double runningTotal = 0;
+    
+    log.debug("Calling calculate overall");
+    
+    
+    if (insight != null) {
+      numCategories ++;
+      runningTotal += insight.retrieveAverage();
+      log.debug("INSIGHT: numCats = " + numCategories + " runningTotal: " + runningTotal);
+    }
+    if (style != null) {
+      numCategories ++;
+      runningTotal += style.retrieveAverage();
+      log.debug("STYLE: numCats = " + numCategories + " runningTotal: " + runningTotal);
+    }
+    if (reliability != null) {
+      numCategories ++;
+      runningTotal += reliability.retrieveAverage();
+      log.debug("RELIABILITY: numCats = " + numCategories + " runningTotal: " + runningTotal);
+    }
+    if (!update) {
+      overall.assignNumRatings(overall.retrieveNumRatings() + 1);
+    }
+    overall.assignTotal(runningTotal/numCategories);
+    log.debug("NUMRATINGS: " + overall.retrieveNumRatings());
+    log.debug("OVERALL_TOTAL: " + overall.retrieveTotal());    
+  }
+  
   
   public String retrieveRatingsForUser() {
     

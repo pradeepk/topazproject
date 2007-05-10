@@ -54,6 +54,11 @@
             <@ww.a href="%{getRatingsURL}">GetRatings</@ww.a>
           </li>
           <li>
+            <@ww.url id="getAvgRatingsURL" action="getAverageRatings" namespace="/rate" articleURI="${article}"/>
+            <@ww.a href="%{getAvgRatingsURL}">Get Average Ratings</@ww.a>
+          </li>
+
+          <li>
             <fieldset>
               <legend>Create an annotation</legend>
             <@ww.form name="createAnnotationForm" action="createAnnotationSubmit" method="post" namespace="/annotation/secure" enctype="multipart/form-data">

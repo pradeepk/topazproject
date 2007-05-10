@@ -336,19 +336,24 @@
   </package>
   
   <package name="rate" extends="default" namespace="/rate">
-   
-    <action name="getAllAverageRatings" class="org.plos.rating.action.RateAction" method="getAllAverageRatings">
-      <result name="success" type="ajaxJSON"/>
-      <result name="input" type="ajaxJSON"/>
-      <result name="error" type="ajaxJSON"/>
+    <action name="getAverageRatingsForArticle" class="org.plos.rating.action.GetAverageRatingsAction">
+      <interceptor-ref name="chain"/>
+      <interceptor-ref name="plosUserStack"/>
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/article/article_body.ftl</param>
+        <param name="noCache">true</param>
+      </result>
     </action>
-
-    <action name="getAverageRating" class="org.plos.rating.action.RateAction" method="getAverageRating">
-      <result name="success" type="ajaxJSON"/>
-      <result name="input" type="ajaxJSON"/>
-      <result name="error" type="ajaxJSON"/>
+    <action name="getAverageRatings" class="org.plos.rating.action.GetAverageRatingsAction">
+      <result name="success">/WEB-INF/pages/article/articleRatings.ftl</result>
+      <result name="error">/WEB-INF/pages/article/articleRatings.ftl</result>
     </action>
-
+    <action name="getUpdatedRatings" class="org.plos.rating.action.GetAverageRatingsAction">
+     <result name="success" type="plosOneFreemarker">
+        <param name="location">/article/article_rhc_rating.ftl</param>
+        <param name="noCache">true</param>
+      </result>
+    </action>
   </package>
 
   <package name="rate-secure" extends="default" namespace="/rate/secure">
@@ -358,12 +363,6 @@
       <result name="success" type="ajaxJSON"/>
     </action>
 
-    <action name="updateRating" class="org.plos.rating.action.RateAction" method="updateRating">
-      <result name="input" type="ajaxJSON"/>
-      <result name="error" type="ajaxJSON"/>
-      <result name="success" type="ajaxJSON"/>
-    </action>
-    
     <action name="getRatingsForUser" class="org.plos.rating.action.RateAction" method="retrieveRatingsForUser">
       <result name="input" type="ajaxJSON"/>
       <result name="error" type="ajaxJSON"/>
@@ -403,9 +402,9 @@
     </action>
 
     <action name="fetchArticle" class="org.plos.article.action.FetchArticleAction">
-      <result name="success" type="plosOneFreemarker">
-        <param name="templateFile">/article/article_body.ftl</param>
-        <param name="noCache">true</param>
+      <result type="chain">
+        <param name="actionName">getAverageRatingsForArticle</param>
+        <param name="namespace">/rate</param>
       </result>
     </action>
 
