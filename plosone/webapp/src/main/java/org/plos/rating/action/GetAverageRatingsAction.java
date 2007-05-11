@@ -71,10 +71,12 @@ public class GetAverageRatingsAction extends BaseActionSupport {
     RatingSummary overallSummary = null;
     PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
     
-    
-    
     try {
       tx = session.beginTransaction();
+      
+      if (log.isDebugEnabled()) {
+        log.debug("retrieving rating summaries for: " + articleURI);
+      }
       
       List summaryList = session.createCriteria(RatingSummary.class).add(Restrictions.eq("annotates", articleURI)).list();
       Iterator iter = summaryList.iterator();             
@@ -110,6 +112,10 @@ public class GetAverageRatingsAction extends BaseActionSupport {
       }
       
       if (user != null) {
+        if (log.isDebugEnabled()) {
+          log.debug("retrieving list of user ratings for article: " + articleURI + 
+                    " and user: " + user.getUserId());
+        }
         List ratingsList = session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI)).
         add(Restrictions.eq("creator", user.getUserId())).list();
         

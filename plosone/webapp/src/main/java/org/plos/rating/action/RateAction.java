@@ -12,6 +12,7 @@ package org.plos.rating.action;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.List;
 import java.util.Iterator;
 
@@ -20,23 +21,20 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
-import org.plos.user.PlosOneUser;
+
 import org.plos.action.BaseActionSupport;
-
-import org.plos.configuration.OtmConfiguration;
-
 import org.plos.annotation.otm.CommentAnnotation;
+import org.plos.configuration.OtmConfiguration;
 import org.plos.rating.otm.Rating;
 import org.plos.rating.otm.RatingSummary;
+import org.plos.user.PlosOneUser;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 
-
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork.validator.annotations.DoubleRangeFieldValidator;
 import com.opensymphony.webwork.ServletActionContext;
 
 /**
@@ -60,21 +58,19 @@ public class RateAction extends BaseActionSupport {
   private OtmConfiguration otmFactory;
   
   private static final Log log = LogFactory.getLog(RateAction.class);
-  
-  public String execute() {
-    return SUCCESS;
-  }
-  
-  public String updateRating() {
 
-    return SUCCESS;
-  }
-
+  /**
+   * Rates an article for the currently logged in user.  Will look to see if there are existing rating.
+   * If so, will update the ratings, otherwise will insert new ones.
+   * 
+   * @return WebWork action status
+   */
   public String rateArticle() {
     Session     session = otmFactory.getFactory().openSession();
     Transaction tx      = null;
     PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
-
+    Date now = new Date(System.currentTimeMillis());
+    
     Rating insightRating = null;
     Rating styleRating = null;
     Rating reliabilityRating = null;    
@@ -82,8 +78,7 @@ public class RateAction extends BaseActionSupport {
     RatingSummary styleSummary = null; 
     RatingSummary reliabilitySummary = null;    
     RatingSummary overallSummary = null;
-    
-    
+        
     CommentAnnotation ratingComment = null;
     URI annotatedArticle = null; 
     
@@ -97,7 +92,12 @@ public class RateAction extends BaseActionSupport {
     try {
       tx = session.beginTransaction();
       
-      List summaryList = session.createCriteria(RatingSummary.class).add(Restrictions.eq("annotates", articleUri)).list();
+      if (log.isDebugEnabled()) {
+        log.debug("Retrieving Ratings Summaries for article: " + articleUri);
+      }
+      
+      List summaryList = session.createCriteria(RatingSummary.class).
+                         add(Restrictions.eq("annotates", articleUri)).list();
       Iterator iter = summaryList.iterator();             
       
       while (iter.hasNext()) {
@@ -114,8 +114,13 @@ public class RateAction extends BaseActionSupport {
         }
       }
 
+      if (log.isDebugEnabled()) {
+        log.debug("Retrieving user ratings for article: " + articleUri + 
+                  " and user: " + user.getUserId());
+      }
+      
       List ratingsList = session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleUri)).
-      add(Restrictions.eq("creator", user.getUserId())).list();
+                         add(Restrictions.eq("creator", user.getUserId())).list();
       
       iter = ratingsList.iterator();
       boolean updatingRating = false;
@@ -123,7 +128,6 @@ public class RateAction extends BaseActionSupport {
       while (iter.hasNext()) {
         updatingRating = true;
         Rating rating = (Rating)iter.next();
-        //session.delete(rating);
 
         if (Rating.INSIGHT_TYPE.equals(rating.getType())) {
           insightRating = rating; 
@@ -147,13 +151,13 @@ public class RateAction extends BaseActionSupport {
         insightRating.setAnnotates(annotatedArticle);
         insightRating.assignValue((int)insight);
         insightRating.setCreator(user.getUserId());
+        insightRating.setCreated(now);
         if (insightSummary == null) {
           insightSummary = new RatingSummary();
           insightSummary.setAnnotates(annotatedArticle);
           insightSummary.setType(Rating.INSIGHT_TYPE);
         }
         insightSummary.addRating((int)insight);
-        
       }
       if (style > 0) {
         if (styleRating == null) {
@@ -167,7 +171,8 @@ public class RateAction extends BaseActionSupport {
         styleRating.setContext("");
         styleRating.setAnnotates(annotatedArticle);
         styleRating.assignValue((int)style);
-        styleRating.setCreator(user.getUserId());     
+        styleRating.setCreator(user.getUserId());  
+        styleRating.setCreated(now);
         if (styleSummary == null) {
           styleSummary = new RatingSummary();
           styleSummary.setAnnotates(annotatedArticle);
@@ -188,6 +193,7 @@ public class RateAction extends BaseActionSupport {
         reliabilityRating.setAnnotates(annotatedArticle);
         reliabilityRating.assignValue((int)reliability);
         reliabilityRating.setCreator(user.getUserId());      
+        reliabilityRating.setCreated(now);
         if (reliabilitySummary == null) {
           reliabilitySummary = new RatingSummary();
           reliabilitySummary.setAnnotates(annotatedArticle);
@@ -196,8 +202,9 @@ public class RateAction extends BaseActionSupport {
         reliabilitySummary.addRating((int)reliability);
       }
       
-      List<CommentAnnotation> commentList = session.createCriteria(CommentAnnotation.class).add(Restrictions.eq("annotates", articleUri)).
-      add(Restrictions.eq("creator", user.getUserId())).list();
+      List<CommentAnnotation> commentList = session.createCriteria(CommentAnnotation.class).
+                                            add(Restrictions.eq("annotates", articleUri)).
+                                            add(Restrictions.eq("creator", user.getUserId())).list();
       
       if (commentList.size() > 0) {
         ratingComment = commentList.get(0);
@@ -212,38 +219,48 @@ public class RateAction extends BaseActionSupport {
         ratingComment.setTitle(commentTitle);
         ratingComment.assignComment(comment);
         ratingComment.setCreator(user.getUserId());
+        ratingComment.setCreated(now);
       }
       
       if (styleRating != null) {
         if (style > 0)
           session.saveOrUpdate(styleRating);
-        else 
+        else {
+          styleSummary.removeRating(styleRating.retrieveValue()); 
           session.delete(styleRating);
+        }
       }
       
       if (insightRating != null) {
         if (insight > 0)
           session.saveOrUpdate(insightRating);
-        else 
+        else { 
+          insightSummary.removeRating(insightRating.retrieveValue()); 
           session.delete(insightRating);
+        }
       } 
       
       if (reliabilityRating != null) {
         if (reliability > 0)
           session.saveOrUpdate(reliabilityRating);
-        else 
+        else { 
+          reliabilitySummary.removeRating(reliabilityRating.retrieveValue());           
           session.delete(reliabilityRating);
+        }
       } 
 
       if (styleSummary != null) {
+        styleSummary.setCreated(now);
         session.saveOrUpdate(styleSummary);
       }
       
       if (insightSummary != null) {
+        insightSummary.setCreated(now);
         session.saveOrUpdate(insightSummary);
       } 
       
       if (reliabilitySummary != null) {
+        reliabilitySummary.setCreated(now);
         session.saveOrUpdate(reliabilitySummary);
       } 
       
@@ -254,6 +271,7 @@ public class RateAction extends BaseActionSupport {
       }
       
       calculateOverall(updatingRating, overallSummary, insightSummary, styleSummary, reliabilitySummary);
+      overallSummary.setCreated(now);
       session.saveOrUpdate(overallSummary);
       
       if (ratingComment != null) {
@@ -286,9 +304,6 @@ public class RateAction extends BaseActionSupport {
     int numCategories = 0;
     double runningTotal = 0;
     
-    log.debug("Calling calculate overall");
-    
-    
     if (insight != null) {
       numCategories ++;
       runningTotal += insight.retrieveAverage();
@@ -306,13 +321,17 @@ public class RateAction extends BaseActionSupport {
     }
     if (!update) {
       overall.assignNumRatings(overall.retrieveNumRatings() + 1);
+    } else if ((this.style < 1) && (this.insight < 1) && (this.reliability < 1)) {
+      overall.assignNumRatings(overall.retrieveNumRatings() - 1);
     }
     overall.assignTotal(runningTotal/numCategories);
-    log.debug("NUMRATINGS: " + overall.retrieveNumRatings());
-    log.debug("OVERALL_TOTAL: " + overall.retrieveTotal());    
   }
   
-  
+  /**
+   * Get the ratings and comment for the logged in user
+   * 
+   * @return WebWork action status
+   */
   public String retrieveRatingsForUser() {
     
     Session     session = otmFactory.getFactory().openSession();
@@ -322,11 +341,18 @@ public class RateAction extends BaseActionSupport {
       tx = session.beginTransaction();
       PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
 
+      if (user == null) {
+        log.info ("User is null for retrieving user ratings");
+        addActionError("Must be logged in");
+        return ERROR;
+      }
+      
       List<Rating> ratingsList = session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleUri)).
-      add(Restrictions.eq("creator", user.getUserId())).list();
+                                 add(Restrictions.eq("creator", user.getUserId())).list();
       
       if (ratingsList.size() < 1) {
-        log.debug("didn't find any matching");
+        log.debug("didn't find any matching ratings for user: " + user.getUserId());
+        addActionError("No ratings for user");
         return ERROR;
       }
       
@@ -374,20 +400,6 @@ public class RateAction extends BaseActionSupport {
     return SUCCESS;
   }
   
-  public String retrieveAllAverageRatings() {
-   
-    setInsight(2);
-    setStyle(1);
-    setReliability (4);
-    setOverall(3);
-   
-    return SUCCESS;
-  }
-
-  public String retrieveAverageRating() {
-    return SUCCESS;
-  }
-
   /**
    * @return Returns the articleUri.
    */
