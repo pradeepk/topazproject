@@ -78,10 +78,14 @@ public class UserAccountsFilter implements Filter {
    */
   protected static String ITQL_CONF_KEY = "topaz.services.itql";
 
+  private boolean wrap = true;
+
   /*
    * @see javax.servlet.Filter#init
    */
   public void init(FilterConfig config) {
+    if ("false".equals(config.getInitParameter("wrapRequest")))
+      wrap = false;
   }
 
   /*
@@ -97,7 +101,8 @@ public class UserAccountsFilter implements Filter {
                 throws ServletException, IOException {
     if (request instanceof HttpServletRequest) {
       String user = lookupUser((HttpServletRequest) request);
-      request = wrapRequest((HttpServletRequest) request, user);
+      if (wrap)
+        request = wrapRequest((HttpServletRequest) request, user);
     }
 
     fc.doFilter(request, response);
