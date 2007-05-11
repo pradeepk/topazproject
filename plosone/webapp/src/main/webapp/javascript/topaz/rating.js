@@ -51,7 +51,6 @@ topaz.rating = {
 				dojo.dom.insertBefore(newLi, ratingList[i].firstChild);
 	//			dojo.dom.replaceNode(ratingList[i].firstChild, newLi);
 	*/
-	
 				     
 	      var indexInt = 0;
 				for (var n=0; n<rateChildNodes.length; n++) {
@@ -77,6 +76,9 @@ topaz.rating = {
 						indexInt++;
 					}
 				}
+				
+	    	ratingsForm[rateItem].value = jsonObj[rateItem];
+				
     	}
     }
     
