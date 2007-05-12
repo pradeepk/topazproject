@@ -7,21 +7,24 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-
 package org.plos.rating.action;
-
-import static org.plos.Constants.PLOS_ONE_USER_KEY;
 
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import static org.plos.Constants.PLOS_ONE_USER_KEY;
+
 import org.plos.action.BaseActionSupport;
+
 import org.plos.configuration.OtmConfiguration;
+
 import org.plos.rating.otm.Rating;
 import org.plos.rating.otm.RatingSummary;
+
 import org.plos.user.PlosOneUser;
+
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
@@ -30,99 +33,104 @@ import org.topazproject.otm.criterion.Restrictions;
 import com.opensymphony.webwork.ServletActionContext;
 
 /**
- * @author stevec
+ * General Rating action class to store and retrieve summary ratings on an article.
  *
+ * @author stevec
  */
 public class GetAverageRatingsAction extends BaseActionSupport {
   private OtmConfiguration otmFactory;
-  
-  private String articleURI;
-  
-  private double insightAverage;
-  private double styleAverage;  
-  private double reliabilityAverage;  
-  private double overallAverage;  
+  private String           articleURI;
+  private double           insightAverage;
+  private double           styleAverage;
+  private double           reliabilityAverage;
+  private double           overallAverage;
+  private double           insightRoundedAverage;
+  private double           styleRoundedAverage;
+  private double           reliabilityRoundedAverage;
+  private double           overallRoundedAverage;
+  private int              numInsightRatings;
+  private int              numStyleRatings;
+  private int              numReliabilityRatings;
+  private int              numOverallRatings;
+  private double           totalInsight;
+  private double           totalStyle;
+  private double           totalReliability;
+  private double           totalOverall;
+  private boolean          hasRated = false;
+  private static final Log log      = LogFactory.getLog(GetAverageRatingsAction.class);
 
-  private double insightRoundedAverage;
-  private double styleRoundedAverage;  
-  private double reliabilityRoundedAverage;  
-  private double overallRoundedAverage;  
- 
-  private int numInsightRatings;
-  private int numStyleRatings;  
-  private int numReliabilityRatings;  
-  private int numOverallRatings;  
-
-  private double totalInsight;
-  private double totalStyle;
-  private double totalReliability;
-  private double totalOverall;
-
-  private boolean hasRated = false;;
-  
-  private static final Log log = LogFactory.getLog(GetAverageRatingsAction.class);
-  
+  /**
+   * Execute the ratings summary action.
+   *
+   * @return WebWork action status
+   */
   public String execute() {
-    Session     session = otmFactory.getFactory().openSession();
-    Transaction tx      = null;
-    RatingSummary insightSummary = null;
-    RatingSummary styleSummary = null; 
-    RatingSummary reliabilitySummary = null;    
-    RatingSummary overallSummary = null;
-    PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
-    
+    Session       session            = otmFactory.getFactory().openSession();
+    Transaction   tx                 = null;
+    RatingSummary insightSummary     = null;
+    RatingSummary styleSummary       = null;
+    RatingSummary reliabilitySummary = null;
+    RatingSummary overallSummary     = null;
+    PlosOneUser   user               =
+      (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
+
     try {
       tx = session.beginTransaction();
-      
+
       if (log.isDebugEnabled()) {
         log.debug("retrieving rating summaries for: " + articleURI);
       }
-      
-      List summaryList = session.createCriteria(RatingSummary.class).add(Restrictions.eq("annotates", articleURI)).list();
-      Iterator iter = summaryList.iterator();             
-      
+
+      List     summaryList =
+        session.createCriteria(RatingSummary.class).add(Restrictions.eq("annotates", articleURI))
+                .list();
+      Iterator iter        = summaryList.iterator();
+
       while (iter.hasNext()) {
-        RatingSummary ratingSummary = (RatingSummary)iter.next();
+        RatingSummary ratingSummary = (RatingSummary) iter.next();
 
         if (Rating.INSIGHT_TYPE.equals(ratingSummary.getType())) {
-          insightSummary= ratingSummary; 
-          insightAverage = insightSummary.retrieveAverage();
-          insightRoundedAverage = roundTo(insightAverage, 0.5);
-          numInsightRatings = insightSummary.retrieveNumRatings();
-          totalInsight = insightSummary.retrieveTotal();
-        } else if (Rating.STYLE_TYPE.equals(ratingSummary.getType())) { 
-          styleSummary= ratingSummary;
-          styleAverage = styleSummary.retrieveAverage();
-          styleRoundedAverage = roundTo(styleAverage, 0.5);
-          numStyleRatings = styleSummary.retrieveNumRatings();
-          totalStyle = styleSummary.retrieveTotal();
+          insightSummary          = ratingSummary;
+          insightAverage          = insightSummary.retrieveAverage();
+          insightRoundedAverage   = roundTo(insightAverage, 0.5);
+          numInsightRatings       = insightSummary.retrieveNumRatings();
+          totalInsight            = insightSummary.retrieveTotal();
+        } else if (Rating.STYLE_TYPE.equals(ratingSummary.getType())) {
+          styleSummary          = ratingSummary;
+          styleAverage          = styleSummary.retrieveAverage();
+          styleRoundedAverage   = roundTo(styleAverage, 0.5);
+          numStyleRatings       = styleSummary.retrieveNumRatings();
+          totalStyle            = styleSummary.retrieveTotal();
         } else if (Rating.RELIABILITY_TYPE.equals(ratingSummary.getType())) {
-          reliabilitySummary= ratingSummary;
-          reliabilityAverage = reliabilitySummary.retrieveAverage();
-          reliabilityRoundedAverage = roundTo(reliabilityAverage, 0.5);
-          numReliabilityRatings = reliabilitySummary.retrieveNumRatings();
-          totalReliability = reliabilitySummary.retrieveTotal();
+          reliabilitySummary          = ratingSummary;
+          reliabilityAverage          = reliabilitySummary.retrieveAverage();
+          reliabilityRoundedAverage   = roundTo(reliabilityAverage, 0.5);
+          numReliabilityRatings       = reliabilitySummary.retrieveNumRatings();
+          totalReliability            = reliabilitySummary.retrieveTotal();
         } else if (Rating.OVERALL_TYPE.equals(ratingSummary.getType())) {
-          overallSummary= ratingSummary;
-          overallAverage = overallSummary.retrieveTotal();
-          overallRoundedAverage = roundTo(overallAverage, 0.5);
-          numOverallRatings = overallSummary.retrieveNumRatings();
-          totalOverall = overallSummary.retrieveTotal();
+          overallSummary          = ratingSummary;
+          overallAverage          = overallSummary.retrieveTotal();
+          overallRoundedAverage   = roundTo(overallAverage, 0.5);
+          numOverallRatings       = overallSummary.retrieveNumRatings();
+          totalOverall            = overallSummary.retrieveTotal();
         }
       }
-      
+
       if (user != null) {
         if (log.isDebugEnabled()) {
-          log.debug("retrieving list of user ratings for article: " + articleURI + 
-                    " and user: " + user.getUserId());
+          log.debug("retrieving list of user ratings for article: " + articleURI + " and user: "
+                    + user.getUserId());
         }
-        List ratingsList = session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI)).
-        add(Restrictions.eq("creator", user.getUserId())).list();
-        
+
+        List ratingsList =
+          session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
+                  .add(Restrictions.eq("creator", user.getUserId())).list();
+
         if (ratingsList.size() > 0) {
           hasRated = true;
         }
       }
+
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       try {
@@ -131,6 +139,7 @@ public class GetAverageRatingsAction extends BaseActionSupport {
       } catch (OtmException re) {
         log.warn("rollback failed", re);
       }
+
       throw e; // or display error message
     } finally {
       try {
@@ -139,18 +148,21 @@ public class GetAverageRatingsAction extends BaseActionSupport {
         log.warn("close failed", ce);
       }
     }
+
     return SUCCESS;
   }
 
-  private double roundTo (double x, double r) {
-    if (r == 0) { 
-      return x; 
+  private double roundTo(double x, double r) {
+    if (r == 0) {
+      return x;
     }
+
     return Math.round(x * (1 / r)) / (1 / r);
- }
-  
-  
+  }
+
   /**
+   * Gets the URI of the article being rated.
+   *
    * @return Returns the articleURI.
    */
   public String getArticleURI() {
@@ -158,6 +170,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the URI of the article being rated.
+   *
    * @param articleURI The articleUri to set.
    */
   public void setArticleURI(String articleURI) {
@@ -165,6 +179,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the insight ratings average.
+   *
    * @return Returns the insightAverage.
    */
   public double getInsightAverage() {
@@ -172,6 +188,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the insight ratinngs average.
+   *
    * @param insightAverage The insightAverage to set.
    */
   public void setInsightAverage(double insightAverage) {
@@ -179,6 +197,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the count of insight ratings.
+   *
    * @return Returns the numInsightRatings.
    */
   public int getNumInsightRatings() {
@@ -186,6 +206,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the count of insight ratings.
+   *
    * @param numInsightRatings The numInsightRatings to set.
    */
   public void setNumInsightRatings(int numInsightRatings) {
@@ -193,6 +215,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the count of overall ratings.
+   *
    * @return Returns the numOverallRatings.
    */
   public int getNumOverallRatings() {
@@ -200,6 +224,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the count of overall ratings.
+   *
    * @param numOverallRatings The numOverallRatings to set.
    */
   public void setNumOverallRatings(int numOverallRatings) {
@@ -207,6 +233,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the count of reliability ratings.
+   *
    * @return Returns the numReliabilityRatings.
    */
   public int getNumReliabilityRatings() {
@@ -214,6 +242,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the count of reliability ratings.
+   *
    * @param numReliabilityRatings The numReliabilityRatings to set.
    */
   public void setNumReliabilityRatings(int numReliabilityRatings) {
@@ -221,6 +251,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the count of style ratings.
+   *
    * @return Returns the numStyleRatings.
    */
   public int getNumStyleRatings() {
@@ -228,6 +260,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the count of style ratings.
+   *
    * @param numStyleRatings The numStyleRatings to set.
    */
   public void setNumStyleRatings(int numStyleRatings) {
@@ -235,6 +269,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the otm util.
+   *
    * @return Returns the otmFactory.
    */
   public OtmConfiguration getOtmFactory() {
@@ -242,6 +278,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the otm util.
+   *
    * @param otmFactory The otmFactory to set.
    */
   public void setOtmFactory(OtmConfiguration otmFactory) {
@@ -249,6 +287,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the overall average ratings.
+   *
    * @return Returns the overallAverage.
    */
   public double getOverallAverage() {
@@ -256,6 +296,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the overall average ratings.
+   *
    * @param overallAverage The overallAverage to set.
    */
   public void setOverallAverage(double overallAverage) {
@@ -263,6 +305,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the reliability ratings average.
+   *
    * @return Returns the reliabilityAverage.
    */
   public double getReliabilityAverage() {
@@ -270,6 +314,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the reliability ratings average.
+   *
    * @param reliabilityAverage The reliabilityAverage to set.
    */
   public void setReliabilityAverage(double reliabilityAverage) {
@@ -277,6 +323,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the style ratings average.
+   *
    * @return Returns the styleAverage.
    */
   public double getStyleAverage() {
@@ -284,6 +332,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the style ratings average.
+   *
    * @param styleAverage The styleAverage to set.
    */
   public void setStyleAverage(double styleAverage) {
@@ -291,6 +341,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the total on insight ratings.
+   *
    * @return Returns the totalInsight.
    */
   public double getTotalInsight() {
@@ -298,6 +350,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the total on insight ratings.
+   *
    * @param totalInsight The totalInsight to set.
    */
   public void setTotalInsight(double totalInsight) {
@@ -305,6 +359,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the overall total.
+   *
    * @return Returns the totalOverall.
    */
   public double getTotalOverall() {
@@ -312,6 +368,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the overall total.
+   *
    * @param totalOverall The totalOverall to set.
    */
   public void setTotalOverall(double totalOverall) {
@@ -319,6 +377,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the total on reliability ratings.
+   *
    * @return Returns the totalReliability.
    */
   public double getTotalReliability() {
@@ -326,6 +386,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the total on reliability ratings.
+   *
    * @param totalReliability The totalReliability to set.
    */
   public void setTotalReliability(double totalReliability) {
@@ -333,6 +395,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the total on style ratings.
+   *
    * @return Returns the totalStyle.
    */
   public double getTotalStyle() {
@@ -340,6 +404,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the total on style ratings.
+   *
    * @param totalStyle The totalStyle to set.
    */
   public void setTotalStyle(double totalStyle) {
@@ -347,6 +413,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Tests if this article has been rated.
+   *
    * @return Returns the hasRated.
    */
   public boolean isHasRated() {
@@ -354,6 +422,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets a flag to indicate that an article has been rated.
+   *
    * @param hasRated The hasRated to set.
    */
   public void setHasRated(boolean hasRated) {
@@ -361,6 +431,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the rounded average on insight ratings.
+   *
    * @return Returns the insightRoundedAverage.
    */
   public double getInsightRoundedAverage() {
@@ -368,6 +440,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the rounded average on insight ratings.
+   *
    * @param insightRoundedAverage The insightRoundedAverage to set.
    */
   public void setInsightRoundedAverage(double insightRoundedAverage) {
@@ -375,6 +449,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the overall rounded average.
+   *
    * @return Returns the overallRoundedAverage.
    */
   public double getOverallRoundedAverage() {
@@ -382,6 +458,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the overall rounded average.
+   *
    * @param overallRoundedAverage The overallRoundedAverage to set.
    */
   public void setOverallRoundedAverage(double overallRoundedAverage) {
@@ -389,6 +467,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the rounded average on reliability ratings.
+   *
    * @return Returns the reliabilityRoundedAverage.
    */
   public double getReliabilityRoundedAverage() {
@@ -396,6 +476,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the rounded average on reliability ratings.
+   *
    * @param reliabilityRoundedAverage The reliabilityRoundedAverage to set.
    */
   public void setReliabilityRoundedAverage(double reliabilityRoundedAverage) {
@@ -403,6 +485,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Gets the rounded average on style ratings.
+   *
    * @return Returns the styleRoundedAverage.
    */
   public double getStyleRoundedAverage() {
@@ -410,6 +494,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
+   * Sets the rounded average on style ratings.
+   *
    * @param styleRoundedAverage The styleRoundedAverage to set.
    */
   public void setStyleRoundedAverage(double styleRoundedAverage) {
