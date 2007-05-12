@@ -16,6 +16,7 @@
 
   <modules>
     <module>otm-models</module>
+    <module>article-util</module>
   </modules>
 
   <!-- TODO: Move this up one level - be sure to test! -->
