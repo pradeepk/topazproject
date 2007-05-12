@@ -49,6 +49,15 @@
   </filter>
 
   <filter>
+    <filter-name>User Accounts Filter</filter-name>
+    <filter-class>org.topazproject.ws.users.filter.UserAccountsFilter</filter-class>
+    <init-param>
+      <param-name>wrapRequest</param-name>
+      <param-value>false</param-value>
+    </init-param>
+  </filter>
+
+  <filter>
     <filter-name>webwork</filter-name>
     <filter-class>com.opensymphony.webwork.dispatcher.FilterDispatcher</filter-class>
   </filter>
@@ -90,6 +99,22 @@
     <filter-name>CAS Filter</filter-name>
     <url-pattern>/admin/*</url-pattern>
   </filter-mapping>
+  
+  <filter-mapping>
+    <filter-name>User Accounts Filter</filter-name>
+<!-- <url-pattern>/*</url-pattern>-->
+    <url-pattern>/annotation/secure/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>User Accounts Filter</filter-name>
+    <url-pattern>/user/secure/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>User Accounts Filter</filter-name>
+    <url-pattern>/admin/*</url-pattern>
+  </filter-mapping>
 
   <filter-mapping >
     <filter-name>Member Session</filter-name>
@@ -124,6 +149,10 @@
 
   <listener>
     <listener-class>org.plos.configuration.WebAppListener</listener-class>
+  </listener>
+
+  <listener>
+    <listener-class>org.plos.bootstrap.MasterWebAppListener</listener-class>
   </listener>
 
   <!-- to hook in the spring container -->

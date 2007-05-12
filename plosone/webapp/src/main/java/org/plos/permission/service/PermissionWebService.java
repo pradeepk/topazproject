@@ -9,10 +9,19 @@
  */
 package org.plos.permission.service;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.plos.service.BaseConfigurableService;
+import org.plos.service.WSTopazContext;
+import org.plos.service.ImplInvocationHandler;
+import org.plos.xacml.XacmlUtil;
+
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.ws.permissions.Permissions;
 import org.topazproject.ws.permissions.PermissionsClientFactory;
+import org.topazproject.ws.permissions.impl.PermissionsImpl;
+import org.topazproject.ws.permissions.impl.PermissionsPEP;
 
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
@@ -26,9 +35,35 @@ public class PermissionWebService extends BaseConfigurableService {
   private Permissions permissionsService;
   private String currentPrincipal;
 
+  private static boolean directConnect = true;
+  private static final Log      log    = LogFactory.getLog(PermissionWebService.class);
+  private static WSTopazContext ctx;
+  private static PermissionsPEP pep;
+  private static Permissions    impl;
+
+  private static synchronized Permissions getImpl() throws ServiceException {
+    if (impl != null)
+      return impl;
+    try {
+      pep = new WSPermissionsPEP();
+      ctx  = new WSTopazContext(PermissionWebService.class.getName());
+      ctx.init(null);
+      impl   = new PermissionsImpl(pep, ctx);
+      impl = (Permissions)ImplInvocationHandler.newProxy(impl, ctx, log);
+      log.info("Permissions service impl is ready for direct-connect");
+    } catch (Exception e){
+      throw new ServiceException("Failed to set-up direct-connect to permissions service", e);
+    }
+    return impl;
+  }
+
   public void init() throws IOException, URISyntaxException, ServiceException {
-    final ProtectedService permissionProtectedService = getProtectedService();
-    permissionsService = PermissionsClientFactory.create(permissionProtectedService);
+    if (directConnect)
+      permissionsService = getImpl();
+    else {
+      final ProtectedService permissionProtectedService = getProtectedService();
+      permissionsService = PermissionsClientFactory.create(permissionProtectedService);
+    }
   }
 
   /**
@@ -167,5 +202,16 @@ public class PermissionWebService extends BaseConfigurableService {
   public String[] listRevokes(final String resource, final String principal) throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     return permissionsService.listRevokes(resource, principal);
+  }
+  private static class WSPermissionsPEP extends PermissionsPEP {
+    static {
+      init(WSPermissionsPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
+    }
+
+    public WSPermissionsPEP()
+                     throws Exception {
+      super(XacmlUtil.lookupPDP("topaz.permissions.pdpName"),
+            XacmlUtil.createSubjAttrs());
+    }
   }
 }
