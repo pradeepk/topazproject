@@ -56,6 +56,18 @@ public class RateAction extends BaseActionSupport {
   private String           comment;
   private OtmConfiguration otmFactory;
   private static final Log log = LogFactory.getLog(RateAction.class);
+  private RatingsPEP       pep;
+
+/**
+   * Creates a new RateAction object.
+   */
+  public RateAction() {
+    try {
+      pep                      = new RatingsPEP();
+    } catch (Exception e) {
+      throw new Error("Failed to create Ratings PEP", e);
+    }
+  }
 
   /**
    * Rates an article for the currently logged in user.  Will look to see if there are
@@ -88,6 +100,8 @@ public class RateAction extends BaseActionSupport {
 
       return ERROR;
     }
+
+    pep.checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
 
     try {
       tx = session.beginTransaction();

@@ -9,6 +9,8 @@
  */
 package org.plos.rating.action;
 
+import java.net.URI;
+
 import java.util.Iterator;
 import java.util.List;
 
@@ -58,6 +60,18 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   private double           totalOverall;
   private boolean          hasRated = false;
   private static final Log log      = LogFactory.getLog(GetAverageRatingsAction.class);
+  private RatingsPEP       pep;
+
+  /**
+   * Creates a new GetAverageRatingsAction object.
+   */
+  public GetAverageRatingsAction() {
+    try {
+      pep                           = new RatingsPEP();
+    } catch (Exception e) {
+      throw new Error("Failed to create Ratings PEP", e);
+    }
+  }
 
   /**
    * Execute the ratings summary action.
@@ -73,6 +87,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
     RatingSummary overallSummary     = null;
     PlosOneUser   user               =
       (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
+
+    pep.checkObjectAccess(RatingsPEP.GET_STATS, URI.create(user.getUserId()), URI.create(articleURI));
 
     try {
       tx = session.beginTransaction();

@@ -28,5 +28,8 @@
         </permission>
       </impliedPermissions>
     </permissions>
+    <ratings>
+      <pdpName>_default_</pdpName>
+    </ratings>
   </topaz>
 </config>
