@@ -398,11 +398,15 @@ class ResultChecker extends BuilderSupport {
         break;
 
       case 'string':
-        test.assertEquals(res.getString(col++), value);
+        test.assertEquals(value, res.getString(col++));
         break;
 
       case 'uri':
-        test.assertEquals(res.getURI(col++), value.toURI());
+        test.assertEquals(value.toURI(), res.getURI(col++));
+        break;
+
+      case 'nul':
+        test.assertNull(res.get(col++));
         break;
 
       case 'subq':
