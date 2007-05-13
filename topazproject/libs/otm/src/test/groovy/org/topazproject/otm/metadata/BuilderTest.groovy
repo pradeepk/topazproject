@@ -63,7 +63,7 @@ public class BuilderTest extends GroovyTestCase {
     }
     ClassMetadata cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cm.type          == 'topaz:Test1'
+    assert cm.type          == 'http://rdf.topazproject.org/RDF/Test1'
     assert cm.model         == 'ri'
     assert cm.fields.size() == 1
 
@@ -71,7 +71,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.name     == 'state'
     assert m.type     == String.class
     assert m.dataType == null
-    assert m.uri      == 'topaz:state'
+    assert m.uri      == 'http://rdf.topazproject.org/RDF/state'
     assert !m.hasInverseUri()
 
     // relative-uri overrides, typed literal
@@ -80,7 +80,7 @@ public class BuilderTest extends GroovyTestCase {
     }
     cm = rdf.sessFactory.getClassMetadata(cls)
 
-    assert cm.type          == 'topaz:Test2'
+    assert cm.type          == 'http://rdf.topazproject.org/RDF/Test2'
     assert cm.model         == 'm2'
     assert cm.fields.size() == 1
 
@@ -88,7 +88,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.name     == 'state'
     assert m.type     == Integer.TYPE
     assert m.dataType == 'http://www.w3.org/2001/XMLSchema#int'
-    assert m.uri      == 'topaz:p2'
+    assert m.uri      == 'http://rdf.topazproject.org/RDF/p2'
     assert !m.hasInverseUri()
 
     // absolute-uri overrides, class type
