@@ -33,4 +33,6 @@ public interface Rdf {
   public static final String topaz="http://rdf.topazproject.org/RDF/";
   /** help compose fedora defined URIs */
   public static final String fedora="info:fedora/";
+  /** help compose foaf defined URIs */
+  public static final String foaf="http://xmlns.com/foaf/0.1/";
 }
