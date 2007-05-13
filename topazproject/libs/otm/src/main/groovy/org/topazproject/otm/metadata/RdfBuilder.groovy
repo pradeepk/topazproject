@@ -13,6 +13,7 @@ package org.topazproject.otm.metadata;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -62,7 +63,9 @@ public class RdfBuilder extends BuilderSupport {
 
   String expandAliases(String str) {
     // FIXME: do general alias expansion
-    return str?.replace('xsd:', "http://www.w3.org/2001/XMLSchema#")
+    return str?.replaceAll('^([^:]+):') {
+      all, alias -> def r = ItqlHelper.defaultAliases[alias]; return r ? r : alias
+    }
   }
 
 
