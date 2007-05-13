@@ -63,8 +63,8 @@ public class RdfBuilder extends BuilderSupport {
 
   String expandAliases(String str) {
     // FIXME: do general alias expansion
-    return str?.replaceAll('^([^:]+):') {
-      all, alias -> def r = ItqlHelper.defaultAliases[alias]; return r ? r : alias
+    return str?.replaceAll('^([^:]+):') { all, alias ->
+      def r = ItqlHelper.defaultAliases[alias]; return r ? r : alias + ':'
     }
   }
 
