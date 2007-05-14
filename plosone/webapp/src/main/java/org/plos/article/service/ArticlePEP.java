@@ -93,22 +93,4 @@ public class ArticlePEP extends AbstractSimplePEP {
       throws IOException, ParsingException, UnknownIdentifierException {
     super(pdp, subjAttrs);
   }
-
-  /** 
-   * Check if the user may perform the requested action on the given object.
-   * 
-   * @param action one of the actions defined above
-   * @param userId the ratings owner's internal id
-   * @param object the object for which to get/set the ratings; may be null
-   */
-  protected void checkObjectAccess(String action, URI userId, URI object) throws SecurityException {
-    Set resourceAttrs = new HashSet();
-
-    resourceAttrs.add(
-        new Attribute(Util.RESOURCE_ID, null, null, new AnyURIAttribute(userId)));
-    if (object != null)
-      resourceAttrs.add(new Attribute(OBJ_ID, null, null, new AnyURIAttribute(object)));
-
-    checkAccess(action, resourceAttrs);
-  }
 }
