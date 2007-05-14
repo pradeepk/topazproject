@@ -24,11 +24,9 @@ import java.net.URLDecoder;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.xml.transform.ErrorListener;
 import javax.xml.transform.OutputKeys;
@@ -51,7 +49,6 @@ import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
-import org.w3c.dom.Text;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
@@ -59,9 +56,6 @@ import org.xml.sax.SAXException;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.fedora.client.Uploader;
 import org.topazproject.fedora.client.FedoraAPIM;
-//import org.topazproject.ws.permissions.Permissions;
-//import org.topazproject.ws.permissions.impl.PermissionsImpl;
-//import org.topazproject.ws.permissions.impl.PermissionsPEP;
 
 import org.topazproject.xml.transform.cache.CachedSource;
 import org.topazproject.fedoragsearch.service.FgsOperations;
@@ -111,19 +105,9 @@ public class Ingester {
   private static final String DSCRPTN      = "Description";
   private static final String RDFNS        = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
   private static final String RDF_MDL_A    = "model";
-  private static final String PERMS        = "Permissions";
-  private static final String PROPAGATE    = "propagate";
-  private static final String P_FROM_A     = "from";
-  private static final String TO           = "to";
-  private static final String IMPLY        = "imply";
-  private static final String I_PERM_A     = "permission";
-  private static final String IMPLIES      = "implies";
 
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
   private static final String FGS_REPO     = CONF.getString("topaz.fedoragsearch.repository");
-
-  private static final int    OP_PRPGT     = 0;
-  private static final int    OP_IMPLY     = 1;
 
   private final TransformerFactory tFactory;
 //  private final TopazContext       ctx;
@@ -198,7 +182,6 @@ public class Ingester {
          * and we really don't want to delete existing RDF or permissions in this case.
          */
         fedoraIngest(zip, objInfo, apim, uploader, rb);
-//        doPermissions(objInfo, perms, rb);
         mulgaraInsert(objInfo, itql, rb);
         rb = null;
       } finally {
@@ -564,115 +547,9 @@ public class Ingester {
     }
   }
 
-  /** 
-   * Add the permissions according to the given object-info doc. 
-   * 
-   * @param objInfo the document describing the permissions to add
-   * @param perms   the handle to access the permissions api
-   * @param rb      where to store the list of completed operations that need to be undone
-   *                in case of a rollback
-   * @throws RemoteException if an error occurred adding the permissions
-   */
-/*
-  private void doPermissions(Document objInfo, Permissions perms, RollbackBuffer rb)
-      throws RemoteException {
-    // gather all the permission operations
-    Map propgts = new HashMap();
-    Map implies = new HashMap();
-
-    Element objList = objInfo.getDocumentElement();
-    NodeList objs = objList.getElementsByTagName(PERMS);
-    for (int idx = 0; idx < objs.getLength(); idx++) {
-      Element obj = (Element) objs.item(idx);
-      collectActions(obj.getElementsByTagName(PROPAGATE), P_FROM_A, TO, propgts);
-      collectActions(obj.getElementsByTagName(IMPLY), I_PERM_A, IMPLIES, implies);
-    }
-
-    // try to apply them
-    applyActions(perms, propgts, OP_PRPGT, true, rb);
-    applyActions(perms, implies, OP_IMPLY, true, rb);
-  }
-*/
-  /**
-   * Parses
-   * <pre>
-   *   <x src="...">
-   *     <dst>...</dst>
-   *     ...
-   *     <dst>...</dst>
-   *   </x>
-   * </pre>
-   *
-   * @param list    list the 'x''s
-   * @param srcAttr the 'src'
-   * @param dstElem the 'dst''s
-   * @param res     where to put the stuff
-   */
-  private static void collectActions(NodeList list, String srcAttr, String dstElem, Map res) {
-    for (int idx = 0; idx < list.getLength(); idx++) {
-      Element item = (Element) list.item(idx);
-
-      String src = item.getAttribute(srcAttr);
-      Set    dst = (Set) res.get(src);
-      if (dst == null)
-        res.put(src, dst = new HashSet());
-
-      NodeList dstList = item.getElementsByTagName(dstElem);
-      for (int idx2 = 0; idx2 < dstList.getLength(); idx2++) {
-        Element val = (Element) dstList.item(idx2);
-        Text text = (Text) val.getFirstChild();
-        if (text != null)
-          dst.add(text.getData());
-      }
-    }
-  }
-/*
-  private static void applyActions(Permissions perms, Map actions, int op, boolean create,
-                                   RollbackBuffer rb)
-      throws RemoteException {
-    for (Iterator iter = actions.keySet().iterator(); iter.hasNext(); ) {
-      String src = (String) iter.next();
-      Set    val = (Set) actions.get(src);
-      String[] valList = (String[]) val.toArray(new String[val.size()]);
-
-      switch (op) {
-        case OP_PRPGT:
-          if (create) {
-            perms.propagatePermissions(src, valList);
-            rb.addPropagatePerms(src, val);
-          } else {
-            try {
-              perms.cancelPropagatePermissions(src, valList);
-            } catch (Exception e) {
-              log.error("Error while rolling back permissions for failed ingest", e);
-            }
-          }
-          break;
-
-        case OP_IMPLY:
-          if (create) {
-            perms.implyPermissions(src, valList);
-            rb.addImplyPerms(src, val);
-          } else {
-            try {
-              perms.cancelImplyPermissions(src, valList);
-            } catch (Exception e) {
-              log.error("Error while rolling back permissions for failed ingest", e);
-            }
-          }
-          break;
-
-        default:
-          throw new Error("Internal error: unknown op '" + op + "'");
-      }
-    }
-  }
-*/
   private static class RollbackBuffer {
     List fedoraObjects = new ArrayList();
     List fgsObjects    = new ArrayList();
-//    Map  prpgtPerms    = new HashMap();
-//    Map  implyPerms    = new HashMap();
     Map  rdfStmts      = new HashMap();
 
     void addFedoraObject(String pid) {
@@ -682,23 +559,7 @@ public class Ingester {
     void addFGSObject(String pid) {
       fgsObjects.add(pid);
     }
-/*
-    void addPropagatePerms(String from, Set toList) {
-      addPerms(prpgtPerms, from, toList);
-    }
 
-    void addImplyPerms(String perm, Set dstList) {
-      addPerms(implyPerms, perm, dstList);
-    }
-
-    private void addPerms(Map map, String src, Set dstList) {
-      Set t = (Set) map.get(src);
-      if (t != null)
-        t.addAll(dstList);
-      else
-        map.put(src, dstList);
-    }
-*/
     void addRDFStatements(String model, String statements) {
       List s = (List) rdfStmts.get(model);
       if (s == null)

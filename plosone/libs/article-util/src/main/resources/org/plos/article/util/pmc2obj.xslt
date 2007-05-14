@@ -117,9 +117,13 @@
       </rdf:Description>
     </rdf:RDF>
 
-    <Permissions>
-      <xsl:call-template name="main-permissions"/>
-    </Permissions>
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+             xmlns:topaz="http://rdf.topazproject.org/RDF/"
+             model="pp">
+      <rdf:Description rdf:about="{my:doi-to-uri($article-doi)}">
+        <xsl:call-template name="main-pp-rdf"/>
+      </rdf:Description>
+    </rdf:RDF>
   </xsl:template>
 
   <!-- generate the rdf statements for the article -->
@@ -185,14 +189,13 @@
     <xsl:apply-templates select="$file-entries[my:is-main(@name)]" mode="ds-rdf"/>
   </xsl:template>
 
-  <!-- generate the propagate-permissions for the article -->
-  <xsl:template name="main-permissions">
-    <propagate from="{my:doi-to-uri($article-doi)}">
-      <to><xsl:value-of select="my:doi-to-fedora-uri($article-doi)"/></to>
-      <xsl:for-each select="$sec-dois">
-        <to><xsl:value-of select="my:doi-to-uri(.)"/></to>
-      </xsl:for-each>
-    </propagate>
+  <!-- generate the propagate-permissions rdf statements for the article -->
+  <xsl:template name="main-pp-rdf" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:topaz="http://rdf.topazproject.org/RDF/">
+    <topaz:propagate-permissions-to rdf:resource="{my:doi-to-fedora-uri($article-doi)}"/>
+    <xsl:for-each select="$sec-dois">
+      <topaz:propagate-permissions-to rdf:resource="{my:doi-to-uri(.)}"/>
+    </xsl:for-each>
   </xsl:template>
 
   <!-- generate the article object's datastream definitions -->
@@ -291,11 +294,15 @@
       </rdf:Description>
     </rdf:RDF>
 
-    <Permissions>
-      <xsl:call-template name="sec-permissions">
-        <xsl:with-param name="sdoi" select="$sdoi"/>
-      </xsl:call-template>
-    </Permissions>
+    <rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+             xmlns:topaz="http://rdf.topazproject.org/RDF/"
+             model="pp">
+      <rdf:Description rdf:about="{my:doi-to-uri($sdoi)}">
+        <xsl:call-template name="sec-pp-rdf">
+          <xsl:with-param name="sdoi" select="$sdoi"/>
+        </xsl:call-template>
+      </rdf:Description>
+    </rdf:RDF>
   </xsl:template>
 
   <!-- generate the rdf statements for the secondary object -->
@@ -354,13 +361,11 @@
     <xsl:apply-templates select="current-group()" mode="ds-rdf"/>
   </xsl:template>
 
-  <!-- generate the propagate-permissions for the article -->
-  <xsl:template name="sec-permissions">
-    <xsl:param name="sdoi"/>
-
-    <propagate from="{my:doi-to-uri($sdoi)}">
-      <to><xsl:value-of select="my:doi-to-fedora-uri($sdoi)"/></to>
-    </propagate>
+  <!-- generate the propagate-permissions rdf statements for the article -->
+  <xsl:template name="sec-pp-rdf" xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+                xmlns:topaz="http://rdf.topazproject.org/RDF/">
+    <xsl:param name="sdoi" as="xs:string"/>
+    <topaz:propagate-permissions-to rdf:resource="{my:doi-to-fedora-uri($sdoi)}"/>
   </xsl:template>
 
   <!-- generate the object's datastream definitions for the secondary object -->
