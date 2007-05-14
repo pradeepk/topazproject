@@ -9,8 +9,6 @@
  */
 package org.plos.article.util;
 
-import org.topazproject.common.NoSuchIdException;
-
 /** 
  * Signifies that the article does not exist. 
  * 

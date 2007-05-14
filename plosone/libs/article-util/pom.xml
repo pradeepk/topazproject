@@ -50,6 +50,12 @@
       <groupId>org.topazproject</groupId>
       <artifactId>fedora-client</artifactId>
     </dependency>
+    <!-- Add logging for utility classes -->
+    <dependency>
+      <groupId>log4j</groupId>
+      <artifactId>log4j</artifactId>
+      <version>1.2.13</version>
+    </dependency>
 
     <!-- For scripts -->
     <dependency>
@@ -57,37 +63,7 @@
       <artifactId>groovy-all</artifactId>
       <version>1.0</version>
     </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>mulgara-client</artifactId>
-      <version>${version}</version>
-    </dependency>
 
-    <!-- TODO: Get rid of xacml & maybe permissions stuff -->
-      <!-- TODO: Move to dependency mgmt -->
-<!--    <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>xacml-helper</artifactId>
-      <version>${version}</version>
-    </dependency>
--->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-articles-impl</artifactId>
-      <version>${version}</version>
-    </dependency>
-
-    <!-- TODO: Move permissions to plos -->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-permissions-api</artifactId>
-      <version>${version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-permissions-impl</artifactId>
-      <version>${version}</version>
-    </dependency>
     <!-- TODO: Move search stuff over to plosone -->
     <dependency>
       <groupId>org.topazproject.ws</groupId>
