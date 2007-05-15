@@ -26,14 +26,14 @@
 					<ul>
 						<li>
 						<#if Session.PLOS_ONE_USER?exists>
-							<a href="${loginURL}" onclick="topaz.responsePanel.show(this, dcf, 'toolbar', '${reply.id}', null, null, 1); return false;" class="flag tooltip" title="Request Review">Request review</a>
+							<a href="${loginURL}" onclick="topaz.responsePanel.show(this, _dcf, 'toolbar', '${reply.id}', null, null, 1); return false;" class="flag tooltip" title="Request Review">Request review</a>
 						<#else>							
 							<a href="${loginURL}" class="flag tooltip" title="Request review">Request review</a>						
 						</#if>
 						</li>
 						<li>
 						<#if Session.PLOS_ONE_USER?exists>
-							<a href="${loginURL}" onclick="topaz.responsePanel.show(this, dcr, 'toolbar', '${baseAnnotation.id}', '${reply.id}', '${reply.commentTitle?js_string}'); return false;" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
+							<a href="${loginURL}" onclick="topaz.responsePanel.show(this, _dcr, 'toolbar', '${baseAnnotation.id}', '${reply.id}', '${reply.commentTitle?js_string}'); return false;" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
 						<#else>
 							<a href="${loginURL}" class="respond tooltip" title="Click to respond">Respond to this Posting</a>						
 						</#if>
@@ -76,14 +76,14 @@
 				<ul>
 					<li>
 					<#if Session.PLOS_ONE_USER?exists>
-						<a href="${loginURL}" onclick="topaz.responsePanel.show(this, dcf, 'toolbar', '${baseAnnotation.id}', null, null, 0); return false;" class="flag tooltip" title="Request review">Request review</a>
+						<a href="${loginURL}" onclick="topaz.responsePanel.show(this, _dcf, 'toolbar', '${baseAnnotation.id}', null, null, 0); return false;" class="flag tooltip" title="Request review">Request review</a>
 					<#else>
 						<a href="${loginURL}" class="flag tooltip" title="Request review">Request review</a>					
 					</#if>
 					</li>
 					<li>
 					<#if Session.PLOS_ONE_USER?exists>
-						<a href="${loginURL}" onclick="topaz.responsePanel.show(this, dcr, 'toolbar', '${baseAnnotation.id}', '${baseAnnotation.id}', '${baseAnnotation.commentTitle?js_string}'); return false;" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
+						<a href="${loginURL}" onclick="topaz.responsePanel.show(this, _dcr, 'toolbar', '${baseAnnotation.id}', '${baseAnnotation.id}', '${baseAnnotation.commentTitle?js_string}'); return false;" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
 					<#else>
 						<a href="${loginURL}" class="respond tooltip" title="Click to respond">Respond to this Posting</a>
 					</#if>
