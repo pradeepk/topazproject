@@ -108,7 +108,6 @@
       <!-- <file>/javascript/topaz/errorConsole.js</file>    --> 
       <file>/javascript/init_global.js</file>  
       <file>/javascript/init_navigation.js</file>   
-      <file>/javascript/init_rating.js</file>   
     </javascript>
   </page>
 

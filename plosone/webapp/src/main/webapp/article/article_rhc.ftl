@@ -31,7 +31,7 @@
 						<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>
 			  </#if>
 				<li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn annotations on/off">Hide annotations</a>
-				<!--<li><a href="#" onclick="return topaz.domUtil.swapDisplayMode('toggleAnnotations');" class="expand tooltip" title="Click to turn annotations on/off">Turn annotations on/off</a>-->
+
 				<!-- begin : expanded block -->
 				<!--	<fieldset>
 						<form>
@@ -95,7 +95,7 @@
 						<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>
 			  </#if>
 				<li><a href="#" onclick="toggleAnnotation(this, 'public'); return false;" class="collapse tooltip" title="Click to turn annotations on/off">Hide annotations</a>
-				<!--<li><a href="#" onclick="return topaz.domUtil.swapDisplayMode('toggleAnnotations');" class="expand tooltip" title="Click to turn annotations on/off">Turn annotations on/off</a>-->
+
 				<!-- begin : expanded block -->
 				<!--	<fieldset>
 						<form>

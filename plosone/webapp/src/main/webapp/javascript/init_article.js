@@ -1,15 +1,14 @@
-  var dlg;
-  var popup;
-  var popupm;
-  var ldc;
-  var annotationForm;
-  var menu;
-  var ratingDlg;
-  var ratingsForm;
+  var _dlg;
+  var _commentDlg;
+  var _commentMultiDlg;
+  var _ldc;
+  var _annotationForm;
+  var _ratingDlg;
+  var _ratingsForm;
   
   function init(e) {
-    ldc = dojo.widget.byId("LoadingCycle");
-    ldc.show();
+    _ldc = dojo.widget.byId("LoadingCycle");
+    _ldc.show();
     
 /*    if (loggedIn) {    
       var triggerNode = dojo.byId(annotationConfig.trigger);
@@ -28,42 +27,42 @@
       topaz.navigation.buildTOC(tocObj);
     }
         
- 		annotationForm = document.createAnnotation;
+ 		_annotationForm = document.createAnnotation;
 
-  	ratingDlg = dojo.widget.manager.getWidgetById("Rating");
+  	_ratingDlg = dojo.widget.manager.getWidgetById("Rating");
   	var ratingCancel = dojo.byId('btn_cancel_rating');
-  	ratingDlg.setCloseControl(ratingCancel);
-  	ratingsForm = document.ratingForm;
+  	_ratingDlg.setCloseControl(ratingCancel);
+  	_ratingsForm = document.ratingForm;
 
     initAnnotationForm();
     
     topaz.formUtil.toggleFieldsByClassname('commentPublic', 'commentPrivate');
     
-  	dlg = dojo.widget.manager.getWidgetById("AnnotationDialog");
+  	_dlg = dojo.widget.manager.getWidgetById("AnnotationDialog");
   	var dlgCancel = dojo.byId('btn_cancel');
-  	dlg.setCloseControl(dlgCancel);
-  	dlg.setTipDown(dojo.byId(annotationConfig.tipDownDiv));
-  	dlg.setTipUp(dojo.byId(annotationConfig.tipUpDiv));
+  	_dlg.setCloseControl(dlgCancel);
+  	_dlg.setTipDown(dojo.byId(annotationConfig.tipDownDiv));
+  	_dlg.setTipUp(dojo.byId(annotationConfig.tipUpDiv));
 
-  	popup = dojo.widget.manager.getWidgetById("CommentDialog");
-  	var popupClose = dojo.byId('btn_close');
-    popup.setCloseControl(popupClose);
-  	popup.setTipDown(dojo.byId(commentConfig.tipDownDiv));
-  	popup.setTipUp(dojo.byId(commentConfig.tipUpDiv));
-    dojo.event.connect(popupClose, 'onclick', function(e) {
+  	_commentDlg = dojo.widget.manager.getWidgetById("CommentDialog");
+  	var commentDlgClose = dojo.byId('btn_close');
+    _commentDlg.setCloseControl(commentDlgClose);
+  	_commentDlg.setTipDown(dojo.byId(commentConfig.tipDownDiv));
+  	_commentDlg.setTipUp(dojo.byId(commentConfig.tipUpDiv));
+    dojo.event.connect(commentDlgClose, 'onclick', function(e) {
         topaz.displayComment.mouseoutComment(topaz.displayComment.target);
       }
     );
-    dojo.event.connect(popupClose, 'onblur', function(e) {
+    dojo.event.connect(commentDlgClose, 'onblur', function(e) {
         topaz.displayComment.mouseoutComment(topaz.displayComment.target);
       }
     );
   	
-  	popupm = dojo.widget.manager.getWidgetById("CommentDialogMultiple");
+  	_commentMultiDlg = dojo.widget.manager.getWidgetById("CommentDialogMultiple");
   	var popupCloseMulti = dojo.byId('btn_close_multi');
-    popupm.setCloseControl(popupCloseMulti);
-  	popupm.setTipDown(dojo.byId(multiCommentConfig.tipDownDiv));
-  	popupm.setTipUp(dojo.byId(multiCommentConfig.tipUpDiv));
+    _commentMultiDlg.setCloseControl(popupCloseMulti);
+  	_commentMultiDlg.setTipDown(dojo.byId(multiCommentConfig.tipDownDiv));
+  	_commentMultiDlg.setTipUp(dojo.byId(multiCommentConfig.tipUpDiv));
     dojo.event.connect(popupCloseMulti, 'onclick', function(e) {
         topaz.displayComment.mouseoutComment(topaz.displayComment.target);
       }
@@ -122,7 +121,7 @@
     //var errClose = dojo.byId("btn_ok");
     //errView.setCloseControl(errClose);
     
-    ldc.hide();
+    _ldc.hide();
     
   }
   

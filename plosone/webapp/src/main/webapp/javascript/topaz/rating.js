@@ -17,7 +17,7 @@ topaz.rating = {
       getRatingsForUser();
     }
     else {
-      ratingDlg.show();
+      _ratingDlg.show();
     }
     
     return false;
@@ -26,7 +26,7 @@ topaz.rating = {
   buildCurrentRating: function(liNode, rateIndex) {
 		var ratedValue = (parseInt(rateIndex)/this.rateScale)*100;
 		liNode.className += " pct" + ratedValue;
-		liNode.textContent = "Currently " + rateIndex + "/" + this.rateScale + " Stars";
+		dojo.dom.textContent(liNode, "Currently " + rateIndex + "/" + this.rateScale + " Stars");
   },
   
   buildDialog: function(jsonObj) {
@@ -40,18 +40,7 @@ topaz.rating = {
 	    	var rateChildNodes = currentNode.childNodes;
 	      var rateItem = currentNode.id.substr(4).toLowerCase();
 	      var rateItemCount = jsonObj[rateItem];
-	
-	/*			var newLi = document.createElement("li");
-				newLi.className = "current-rating";
-				var ratedValue = (rateItemCount/this.rateScale)*100;
-				var ratedPercentage = ratedValue + "%";
-				newLi.style.width = ratedPercentage;
-				newLi.textContent = "Currently " + rateItemCount + "/" + this.rateScale + " Stars";
-				
-				dojo.dom.insertBefore(newLi, ratingList[i].firstChild);
-	//			dojo.dom.replaceNode(ratingList[i].firstChild, newLi);
-	*/
-				     
+					     
 	      var indexInt = 0;
 				for (var n=0; n<rateChildNodes.length; n++) {
 					var currentChild = rateChildNodes[n];
@@ -59,7 +48,7 @@ topaz.rating = {
 		        continue;
 		      }
 		      
-		      if (currentChild.className.match("average") != null) {
+		      if (currentChild.className.match("average") != null || ratingList[i].className.match("overall-rating") != null) {
 		      	continue;
 		      }
 		      
@@ -77,21 +66,21 @@ topaz.rating = {
 					}
 				}
 				
-	    	ratingsForm[rateItem].value = jsonObj[rateItem];
+	    	_ratingsForm[rateItem].value = jsonObj[rateItem];
 				
     	}
     }
     
     // add title
     if (jsonObj.commentTitle != null) {
-    	ratingsForm.commentTitle.value = jsonObj.commentTitle;
-    	ratingsForm.cTitle.value = jsonObj.commentTitle;
+    	_ratingsForm.commentTitle.value = jsonObj.commentTitle;
+    	_ratingsForm.cTitle.value = jsonObj.commentTitle;
     }
     
     // add comments
     if (jsonObj.comment) {
-    	ratingsForm.comment.value = jsonObj.comment;
-    	ratingsForm.cArea.value = jsonObj.comment;
+    	_ratingsForm.comment.value = jsonObj.comment;
+    	_ratingsForm.cArea.value = jsonObj.comment;
     }
   },
   
@@ -100,17 +89,16 @@ topaz.rating = {
     
     // build rating stars
     for (var i=0; i<ratingList.length; i++) {
-    	if (ratingList[i].className.match("average") == null)
+	      if (ratingList[i].className.match("average") != null || ratingList[i].className.match("overall-rating") != null) {
+	      	continue;
+	      }
+	      
 	      ratingList[i].className = ratingList[i].className.replaceStringArray(" ", "pct", "pct0");
     }
     
-    // reset title
-		ratingsForm.commentTitle.value = "";
-		ratingsForm.cTitle.value = ratingTitleCue;
-    
-    // reset comments
-  	ratingsForm.comment.value = "";
-  	ratingsForm.cArea.value = ratingCommentCue;
+		topaz.formUtil.textCues.reset(_ratingTitle, _ratingTitleCue);
+		topaz.formUtil.textCues.reset(_ratingComments, _ratingCommentCue);
+  	
   },
   
   hover: {
@@ -126,7 +114,7 @@ topaz.rating = {
   },
   
   setRatingCategory: function(node, categoryId, rateNum) {
-  	ratingsForm[categoryId].value = rateNum;
+  	_ratingsForm[categoryId].value = rateNum;
   	var sibling = topaz.domUtil.firstSibling(node.parentNode);
   	var rateStyle = "pct" + (parseInt(rateNum) * 20);  
   	sibling.className = sibling.className.replaceStringArray(" ", "pct", rateStyle);
@@ -135,10 +123,10 @@ topaz.rating = {
 }
   
 function getRatingsForUser() {
-	 var targetUri = ratingsForm.articleUri.value;
+	 var targetUri = _ratingsForm.articleUri.value;
 	 
    var bindArgs = {
-    url: namespace + "/rate/secure/getRatingsForUser.action?articleUri=" + targetUri,
+    url: _namespace + "/rate/secure/getRatingsForUser.action?articleUri=" + targetUri,
     method: "get",
     error: function(type, data, evt){
      alert("An error occurred." + data.toSource());
@@ -167,28 +155,28 @@ function getRatingsForUser() {
      }
      else {
        
-		   ratingDlg.show();
+		   _ratingDlg.show();
        topaz.rating.buildDialog(jsonObj);
        return false;
      }
      
     },
     mimetype: "text/plain",
-    //formNode: ratingsForm,
+    //formNode: _ratingsForm,
     transport: "XMLHTTPTransport"
    };
    dojo.io.bind(bindArgs);
 }
 
 function updateRating() {
-	topaz.formUtil.disableFormFields(ratingsForm);
+	topaz.formUtil.disableFormFields(_ratingsForm);
   var submitMsg = dojo.byId('submitRatingMsg');
   dojo.dom.removeChildren(submitMsg);
 
-  ldc.show();
+  _ldc.show();
    
   var bindArgs = {
-    url: namespace + "/rate/secure/rateArticle.action",
+    url: _namespace + "/rate/secure/rateArticle.action",
     method: "post",
     error: function(type, data, evt){
      alert("An error occurred." + data.toSource());
@@ -209,9 +197,9 @@ function updateRating() {
        //alert("ERROR: " + errorMsg);
        var err = document.createTextNode(errorMsg);
        submitMsg.appendChild(err);
-       topaz.formUtil.enableFormFields(annotationForm);
-       //ratingDlg.placeModalDialog();
-       ldc.hide();
+       topaz.formUtil.enableFormFields(_ratingsForm);
+       //_ratingDlg.placeModalDialog();
+       _ldc.hide();
        
        return false;
      }
@@ -236,8 +224,8 @@ function updateRating() {
        }
        
 	     submitMsg.appendChild(fieldErrors);
-       topaz.formUtil.enableFormFields(ratingsForm);
-       ldc.hide();
+       topaz.formUtil.enableFormFields(_ratingsForm);
+       _ldc.hide();
 
        return false;
      }
@@ -245,19 +233,16 @@ function updateRating() {
        if (djConfig.isDebug) {
          dojo.byId(djConfig.debugContainerId).innerHTML = "";
        }
+       _ratingDlg.hide();
        getArticle();
-       ratingDlg.hide();
-
-       topaz.formUtil.textCues.reset(ratingTitle, titleCue);
-       topaz.formUtil.textCues.reset(ratingComments, commentCue);
         
-       topaz.formUtil.enableFormFields(ratingsForm);
+       topaz.formUtil.enableFormFields(_ratingsForm);
        return false;
      }
      
    },
    mimetype: "text/plain",
-   formNode: ratingsForm,
+   formNode: _ratingsForm,
    transport: "XMLHTTPTransport"
   };
   dojo.io.bind(bindArgs);

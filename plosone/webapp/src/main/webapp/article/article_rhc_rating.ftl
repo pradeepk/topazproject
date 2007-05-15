@@ -3,16 +3,18 @@
             <#else>
               <#assign char = "">
             </#if>
-            <h6>Average Rating <a href="" class="rating">(${numOverallRatings} User Rating${char})</a></h6>
+		    <@ww.url id="ratingsURL" namespace="/rate" action="getArticleRating" includeParams="none" target="${articleURI}"/>
+            <h6>Average Rating <a href="${ratingsURL}" class="rating">(${numOverallRatings} User Rating${char})</a></h6>
             <ol>
               <li>
                 <span class="inline-rating">
                   <ul class="star-rating pone_rating" title="overall">
                     <#assign overallPct = (20 * overallRoundedAverage)?string("##0")>
-                    <li class="current-rating average-rating pct${overallPct}">Currently ${totalOverall?string("0.#")}/5 Stars.</li>
+                    <li class="current-rating overall-rating pct${overallPct}">Currently ${totalOverall?string("0.#")}/5 Stars.</li>
                   </ul>    
                 </span>  
-                <a href="javascript:void(0);" onclick="return topaz.domUtil.swapDisplayMode('ratingAverages');" class="rating catAvg">See all categories</a>
+
+                <a href="javascript:void(0);" onclick="return topaz.domUtil.swapDisplayTextMode(this, 'ratingAverages', null, 'Hide all categories', 'See all categories');" class="rating catAvg">See all categories</a>
                 <fieldset id="ratingAverages">
                   <ol class="ratingAvgs">
                     <li><label for="insight">Insight</label>
@@ -41,6 +43,7 @@
                   <#if hasRated>
                     <a href="javascript:void(0);" onclick="return topaz.rating.show('edit');" class="rating">Edit My Rating</a>
                   <#else>
+
                     <a href="javascript:void(0);" onclick="return topaz.rating.show();" class="rating">Rate This Article</a>
                   </#if>
                 <#else>
