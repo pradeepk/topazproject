@@ -18,10 +18,10 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.PredicateMap;
+import org.topazproject.otm.annotations.Rdf;
 
 /**
  * Model for the objects that are stored mostly in mulgara and partially in the blob-store

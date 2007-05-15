@@ -15,10 +15,10 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.PredicateMap;
+import org.topazproject.otm.annotations.Rdf;
 
 /**
  * Model for PLOS articles.

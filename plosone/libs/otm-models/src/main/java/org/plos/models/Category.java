@@ -12,9 +12,9 @@ package org.plos.models;
 import java.net.URI;
 
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.Rdf;
 
 /**
  * PLOSOne articles have a category and sub-category. Theoretically these are well defined
