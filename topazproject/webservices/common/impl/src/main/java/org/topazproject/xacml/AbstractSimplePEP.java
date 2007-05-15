@@ -32,6 +32,15 @@ import com.sun.xacml.finder.AttributeFinder;
  * @author Ronald Tschalär
  */
 public abstract class AbstractSimplePEP extends DenyBiasedPEP {
+
+  /**
+   * Resource URI that represents any resource.
+   *
+   * Allows PEP.checkAccess(myAction, ANY_RESOURCE),
+   * i.e. check to see if the user can perform myAction against any resource.
+   */
+  public static final URI ANY_RESOURCE = URI.create("dummy:dummy");
+
   private static Map         envAttrsMap         = new HashMap();
   private static Map         actionAttrsMap      = new HashMap();
   private static Map         knownObligationsMap = new HashMap();
