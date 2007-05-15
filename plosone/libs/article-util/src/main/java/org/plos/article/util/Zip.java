@@ -18,31 +18,31 @@ import java.util.zip.ZipFile;
 import java.util.zip.ZipInputStream;
 import javax.activation.DataSource;
 
-/** 
- * A simple abstraction of a zip archive, as needed by the ingester. 
- * 
+/**
+ * A simple abstraction of a zip archive, as needed by the ingester.
+ *
  * @author Ronald Tschalär
  */
 public interface Zip {
-  /** 
-   * Get the name of the archive. 
-   * 
+  /**
+   * Get the name of the archive.
+   *
    * @return the name of the archive, or null if unknown.
    */
   public String getName();
 
-  /** 
-   * Get a list of all the entries in the archive. 
-   * 
+  /**
+   * Get a list of all the entries in the archive.
+   *
    * @return an Enumeration of {@link java.util.zip.ZipEntry ZipEntry} that enumerates all the
    *         entries
    * @throws IOException if an error occurred getting the enumeration
    */
   public Enumeration getEntries() throws IOException;
 
-  /** 
+  /**
    * Get the given entry's contents as an InputStream.
-   * 
+   *
    * @param name the full pathname of the entry to retrieve
    * @param size (output) must be an array of length &gt;= 1; on return the 0'th
    *             element will contain the size of the contents, or -1 if unknown.
@@ -57,9 +57,9 @@ public interface Zip {
   public static class FileZip implements Zip {
     private final ZipFile zf;
 
-    /** 
-     * Create a new instance. 
-     * 
+    /**
+     * Create a new instance.
+     *
      * @param zipFile the file-name of the zip archive
      * @throws IOException if an error occurred accessing the file
      */
@@ -147,9 +147,9 @@ public interface Zip {
     private final ByteArrayInputStream zs;
     private final String               name;
 
-    /** 
-     * Create a new instance. 
-     * 
+    /**
+     * Create a new instance.
+     *
      * @param zipBytes the zip archive as an array of bytes
      * @param name the name of the archive, or null if unknown
      */
@@ -177,9 +177,9 @@ public interface Zip {
   public static class DataSourceZip extends StreamZip {
     private final DataSource zs;
 
-    /** 
-     * Create a new instance. 
-     * 
+    /**
+     * Create a new instance.
+     *
      * @param zipSource the zip archive as a datasource
      */
     public DataSourceZip(DataSource zipSource) {

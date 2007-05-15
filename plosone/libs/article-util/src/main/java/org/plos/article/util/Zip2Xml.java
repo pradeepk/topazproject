@@ -15,14 +15,14 @@ import java.util.zip.ZipEntry;
 
 import org.apache.commons.codec.binary.Base64;
 
-/** 
+/**
  * Helper class to generate an XML descript of a zip archive. The DTD of the result is as
  * follows:
  * <pre>
  *   &lt;!ELEMENT ZipInfo (ZipEntry*) &gt;
  *   &lt;!ATTLIST ZipInfo
  *       name           CDATA          #IMPLIED &gt;
- *   
+ *
  *   &lt;!ELEMENT ZipEntry (Comment?, Extra?) &gt;
  *   &lt;!ATTLIST ZipEntry
  *       name           CDATA          #REQUIRED
@@ -31,7 +31,7 @@ import org.apache.commons.codec.binary.Base64;
  *       size           CDATA          #IMPLIED
  *       compressedSize CDATA          #IMPLIED
  *       time           CDATA          #IMPLIED &gt;
- *   
+ *
  *   &lt;!ELEMENT Comment (#PCDATA) &gt;
  *   &lt;!ELEMENT Extra   (#PCDATA) &gt;
  * </pre>
@@ -52,14 +52,14 @@ import org.apache.commons.codec.binary.Base64;
  *   &lt;/ZipEntry&gt;
  * &lt;/ZipInfo&gt;
  * &lt;/pre&gt;
- * 
+ *
  * @author Ronald Tschalär
  */
 public class Zip2Xml {
 
-  /** 
-   * Generate a description of the given zip archive. 
-   * 
+  /**
+   * Generate a description of the given zip archive.
+   *
    * @param zip  the zip archive to describe
    * @return the xml doc describing the archive (adheres to zip.dtd)
    * @throws IOException if an exception occurred reading the zip archive
@@ -82,9 +82,9 @@ public class Zip2Xml {
     return res.toString();
   }
 
-  /** 
+  /**
    * Generate a description for a single zip-entry.
-   * 
+   *
    * @param ze  the zip entry to describe.
    * @param buf the buffer to place the description into
    */

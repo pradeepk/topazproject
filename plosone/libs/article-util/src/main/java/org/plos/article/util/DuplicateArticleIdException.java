@@ -9,9 +9,9 @@
  */
 package org.plos.article.util;
 
-/** 
+/**
  * Signifies that the article with the requested id already exists.
- * 
+ *
  * @author Ronald Tschalär
  * @author Eric Brown
  * @version $Id$
@@ -19,18 +19,18 @@ package org.plos.article.util;
 public class DuplicateArticleIdException extends Exception {
   private final String id;
 
-  /** 
-   * Create a new exception instance with a default exception message. 
-   * 
+  /**
+   * Create a new exception instance with a default exception message.
+   *
    * @param id      the (duplicate) id
    */
   public DuplicateArticleIdException(String id) {
     this(id, "id = '" + id + "'");
   }
 
-  /** 
-   * Create a new exception instance. 
-   * 
+  /**
+   * Create a new exception instance.
+   *
    * @param id      the (duplicate) id
    * @param message the exception message
    */

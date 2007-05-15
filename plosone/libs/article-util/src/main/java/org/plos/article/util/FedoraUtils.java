@@ -14,34 +14,34 @@ import java.rmi.RemoteException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-/** 
+/**
  * Some utilities for dealing with Fedora.
- * 
+ *
  * @author Ronald Tschalär
  */
 class FedoraUtil {
   private static final Log log = LogFactory.getLog(FedoraUtil.class);
 
-  /** 
+  /**
    * Not meant to be instantiated.
    */
   private FedoraUtil() {
   }
 
-  /** 
+  /**
    * See if the given exception indicates that the fedora object does not exist.
-   * 
+   *
    * @param re the RemoteException to analyze
    */
   public static boolean isNoSuchObjectException(RemoteException re) {
     return re.getMessage().startsWith("fedora.server.errors.ObjectNotInLowlevelStorageException");
   }
 
-  /** 
+  /**
    * See if the given exception indicates that the fedora object already exists, and if so generate
    * a DuplicateArticleIdException; otherwise just rethrow the original exception. This method never
    * returns normally.
-   * 
+   *
    * @param re  the RemoteException to analyze
    * @param id  the id to put in the DuplicateArticleIdException
    * @throws DuplicateArticleIdException if <var>re</var> indicates that the fedora object already

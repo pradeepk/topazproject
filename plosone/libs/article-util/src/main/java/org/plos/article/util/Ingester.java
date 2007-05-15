@@ -52,7 +52,6 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-//import org.topazproject.common.impl.TopazContext;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.fedora.client.Uploader;
 import org.topazproject.fedora.client.FedoraAPIM;
@@ -63,25 +62,13 @@ import org.topazproject.fedoragsearch.service.FgsOperations;
 import net.sf.saxon.Controller;
 import net.sf.saxon.TransformerFactoryImpl;
 
-// TODO: Get rid of this stuff
-//import org.topazproject.ws.article.impl.ArticlePEP;
-
-/** 
+/**
  * The article ingestor.
- * 
+ *
  * @author Ronald Tschalär
+ * @author Eric Brown
  */
 public class Ingester {
-  /**
-   * Permissions associated with Ingestion
-   */
-//  public static interface Permissions {
-//    /** The action that represents an ingest operation in XACML policies. */
-//    public static final String INGEST_ARTICLE = "articles:ingestArticle";
-//    /** The action that represents a delete operation in XACML policies. */
-//    public static final String DELETE_ARTICLE = "articles:deleteArticle";
-//  }
-
   private static final Log    log = LogFactory.getLog(Ingester.class);
 
   private static final String OUT_LOC_P    = "output-loc";
@@ -110,21 +97,18 @@ public class Ingester {
   private static final String FGS_REPO     = CONF.getString("topaz.fedoragsearch.repository");
 
   private final TransformerFactory tFactory;
-//  private final TopazContext       ctx;
   private final ItqlHelper         itql;
   private final FedoraAPIM         apim;
   private final Uploader           uploader;
-//  private final ArticlePEP         pep;
   private final FgsOperations[]    fgs;
 
-  /** 
+  /**
    * Create a new ingester pointing to the given fedora server.
-   * 
+   *
    * @param ctx      the topaz context containing apim, uploader and itql
    * @param fgs      an array of fedoragsearch clients
    */
   public Ingester(ItqlHelper itql, FedoraAPIM apim, Uploader uploader, FgsOperations[] fgs) {
-//    this.pep = pep;
     this.itql = itql;
     this.apim = apim;
     this.uploader = uploader;
@@ -135,9 +119,9 @@ public class Ingester {
     tFactory.setAttribute("http://saxon.sf.net/feature/version-warning", Boolean.FALSE);
   }
 
-  /** 
-   * Ingest a new article. 
-   * 
+  /**
+   * Ingest a new article.
+   *
    * @param zip  the zip archive containing the article and it's related objects
    * @return the URI of the new article
    * @throws DuplicateArticleIdException if an article or other object already exists with any
@@ -166,11 +150,6 @@ public class Ingester {
       // get the article id
       Element objList = objInfo.getDocumentElement();
       String uri = objList.getAttribute(OL_AID_A);
-
-      // do the access check, now that we have the uri
-//      pep.checkAccess(pep.INGEST_ARTICLE, URI.create(uri));
-
-//      Permissions perms    = new PermissionsImpl(new PermissionsPEP.Proxy(pep), ctx);
 
       RollbackBuffer rb = new RollbackBuffer();
       try {
@@ -256,9 +235,9 @@ public class Ingester {
     return getClass().getResource("obj2foxml.xslt").toString();
   }
 
-  /** 
-   * Run the main ingest script. 
-   * 
+  /**
+   * Run the main ingest script.
+   *
    * @param zip     the zip archive containing the items to ingest
    * @param zipInfo the document describing the zip archive (adheres to zip.dtd)
    * @param handler the stylesheet to run on <var>zipInfo</var>; this is the main script
@@ -314,9 +293,9 @@ public class Ingester {
     return (Document) res.getNode();
   }
 
-  /** 
-   * Insert the RDF into the triple-store according to the given object-info doc. 
-   * 
+  /**
+   * Insert the RDF into the triple-store according to the given object-info doc.
+   *
    * @param objInfo the document describing the RDF to insert
    * @param itql    the handle to access the RDF store
    * @param rb      where to store the list of completed operations that need to be undone
@@ -392,9 +371,9 @@ public class Ingester {
     return false;
   }
 
-  /** 
-   * Create the objects in Fedora according to the given object-info doc. 
-   * 
+  /**
+   * Create the objects in Fedora according to the given object-info doc.
+   *
    * @param zip      the zip archive containing the data for the objects to ingest
    * @param objInfo  the document describing the objects and their datastreams to create
    * @param apim     the handle to access the fedora management api
@@ -424,7 +403,7 @@ public class Ingester {
     }
   }
 
-  private void fedoraIngestOneObj(FedoraAPIM apim, Uploader uploader, Element obj, Transformer t, 
+  private void fedoraIngestOneObj(FedoraAPIM apim, Uploader uploader, Element obj, Transformer t,
                                   Zip zip, String logMsg, RollbackBuffer rb)
       throws DuplicateArticleIdException, TransformerException, IOException, RemoteException,
              URISyntaxException {
@@ -568,7 +547,7 @@ public class Ingester {
       s.add(statements);
     }
 
-    void doRollback(ItqlHelper itql, FedoraAPIM apim, FgsOperations[] fgs /*, Permissions perms */) {
+    void doRollback(ItqlHelper itql, FedoraAPIM apim, FgsOperations[] fgs) {
       // clear out RDF statements
       log.debug("Rolling back RDF statements");
       for (Iterator iter = rdfStmts.keySet().iterator(); iter.hasNext(); ) {
@@ -612,17 +591,6 @@ public class Ingester {
                     pid + "'", e);
         }
       }
-/*
-      // remove permissions
-      log.debug("Rolling back permissions");
-      try {
-        applyActions(perms, prpgtPerms, OP_PRPGT, false, null);
-        applyActions(perms, implyPerms, OP_IMPLY, false, null);
-      } catch (RemoteException re) {
-        log.error("Internal error: impossible exception received while rolling back permissions",
-                  re);
-      }
-*/
     }
   }
 
@@ -654,9 +622,9 @@ public class Ingester {
   private static class ZipURIResolver extends URLResolver {
     private final Zip zip;
 
-    /** 
+    /**
      * Create a new resolver that returns documents from the given zip.
-     * 
+     *
      * @param zip the zip archive to return documents from
      */
     public ZipURIResolver(Zip zip) {

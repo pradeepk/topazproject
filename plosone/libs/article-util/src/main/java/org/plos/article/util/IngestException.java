@@ -9,24 +9,24 @@
  */
 package org.plos.article.util;
 
-/** 
+/**
  * Singals an error with the ingest.
- * 
+ *
  * @author Ronald Tschalär
  */
 public class IngestException extends Exception {
-  /** 
-   * Create a new exception instance. 
-   * 
+  /**
+   * Create a new exception instance.
+   *
    * @param message a message describing the error
    */
   public IngestException(String message) {
     super(message);
   }
 
-  /** 
-   * Create a new exception instance. 
-   * 
+  /**
+   * Create a new exception instance.
+   *
    * @param message a message describing the error
    * @param cause   the exception that caused the error
    */
@@ -34,7 +34,7 @@ public class IngestException extends Exception {
     super(message, cause);
   }
 
-  /** 
+  /**
    * This is just here so axis will generate a service version with a contructor that takes the
    * message.
    *

@@ -9,27 +9,27 @@
  */
 package org.plos.article.util;
 
-/** 
- * Signifies that the article does not exist. 
- * 
+/**
+ * Signifies that the article does not exist.
+ *
  * @author Ronald Tschalär
  * @author Eric Brown
  */
 public class NoSuchArticleIdException extends Exception {
   private final String id;
 
-  /** 
-   * Create a new exception instance with a default exception message. 
-   * 
+  /**
+   * Create a new exception instance with a default exception message.
+   *
    * @param id      the (non-existant) id
    */
   public NoSuchArticleIdException(String id) {
     this(id, "id = '" + id + "'");
   }
 
-  /** 
-   * Create a new exception instance. 
-   * 
+  /**
+   * Create a new exception instance.
+   *
    * @param id      the (non-existant) id
    * @param message the exception message
    */
