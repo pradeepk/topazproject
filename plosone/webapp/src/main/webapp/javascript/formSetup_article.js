@@ -182,7 +182,7 @@ function initAnnotationForm() {
     _ratingDlg.hide();
     topaz.formUtil.enableFormFields(_ratingsForm);
     topaz.rating.resetDialog();
-	  getArticle();
+	  getArticle("rating");
     topaz.displayComment.processBugCount();
     e.preventDefault();
   });
@@ -292,7 +292,7 @@ function validateNewComment() {
   }*/
 }  
 
-function getArticle() {
+function getArticle(refreshType) {
   var refreshArea = dojo.byId(annotationConfig.articleContainer);
   var targetUri = _annotationForm.target.value;
 
@@ -322,7 +322,14 @@ function getArticle() {
       refreshArea.innerHTML = docFragment;
       //dojo.dom.removeChildren(refreshArea);
       //refreshArea.appendChild(docFragment);
-      getAnnotationCount();
+      
+      if (refreshType  == "rating") {
+        refreshRating(targetUri);
+     	}
+     	else {
+	      getAnnotationCount();
+     	}
+     	
       topaz.displayComment.processBugCount();
       
       _ldc.hide();
@@ -337,7 +344,8 @@ function getArticle() {
 }
 
 function getAnnotationCount() {
-  var refreshArea = dojo.byId(annotationConfig.rhcCount);
+  var refreshArea1 = dojo.byId(annotationConfig.rhcCount + "1");
+  var refreshArea2 = dojo.byId(annotationConfig.rhcCount + "2");
   var targetUri = _annotationForm.target.value;
 
   var bindArgs = {
@@ -353,11 +361,9 @@ function getAnnotationCount() {
     load: function(type, data, evt){
       var docFragment = document.createDocumentFragment();
       docFragment = data;
-      //alert(data);
 
-      refreshArea.innerHTML = docFragment;
-      //dojo.dom.removeChildren(refreshArea);
-      //refreshArea.appendChild(docFragment);
+      refreshArea1.innerHTML = docFragment;
+      refreshArea2.innerHTML = docFragment;
 
       return false;
     },

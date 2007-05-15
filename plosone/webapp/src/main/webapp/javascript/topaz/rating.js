@@ -162,7 +162,6 @@ function getRatingsForUser() {
      
     },
     mimetype: "text/plain",
-    //formNode: _ratingsForm,
     transport: "XMLHTTPTransport"
    };
    dojo.io.bind(bindArgs);
@@ -172,6 +171,7 @@ function updateRating() {
 	topaz.formUtil.disableFormFields(_ratingsForm);
   var submitMsg = dojo.byId('submitRatingMsg');
   dojo.dom.removeChildren(submitMsg);
+  var articleUri = _ratingsForm.articleUri.value;
 
   _ldc.show();
    
@@ -234,7 +234,7 @@ function updateRating() {
          dojo.byId(djConfig.debugContainerId).innerHTML = "";
        }
        _ratingDlg.hide();
-       getArticle();
+       getArticle("rating");
         
        topaz.formUtil.enableFormFields(_ratingsForm);
        return false;
@@ -248,6 +248,37 @@ function updateRating() {
   dojo.io.bind(bindArgs);
 }
 
+function refreshRating(uri) {
+	 var refreshArea1 = dojo.byId(ratingConfig.ratingContainer + "1");
+	 var refreshArea2 = dojo.byId(ratingConfig.ratingContainer + "2");
+	 
+   var bindArgs = {
+    url: _namespace + "/rate/getUpdatedRatings.action?articleURI=" + uri,
+    method: "get",
+    error: function(type, data, evt){
+     alert("An error occurred." + data.toSource());
+     var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
+     //topaz.errorConsole.writeToConsole(err);
+     //topaz.errorConsole.show();
+     
+     return false;
+    },
+    load: function(type, data, evt){
+     var jsonObj = dojo.json.evalJson(data);
+     
+     var docFragment = document.createDocumentFragment();
+     docFragment = data;
+     
+     refreshArea1.innerHTML = docFragment;
+     refreshArea2.innerHTML = docFragment;
+     
+     return false;
+    },
+    mimetype: "text/plain",
+    transport: "XMLHTTPTransport"
+   };
+   dojo.io.bind(bindArgs);
+}
 
   
   

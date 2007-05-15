@@ -48,5 +48,6 @@ var multiCommentConfig = {
 var ratingConfig =  {
 	insight:  "rateInsight",
 	reliability: "ratingReliability",
-	style: "rateStyle"
+	style: "rateStyle",
+	ratingContainer: "ratingRhc"
 };

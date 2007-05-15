@@ -63,7 +63,7 @@
 
 		    <@ww.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
 				<li><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article
-					<ul id="dcCount">
+					<ul id="dcCount1">
 					  <#include "/article/article_rhc_count.ftl">
 					</ul>
 				</li>
@@ -73,7 +73,7 @@
 		</div> 
     
     		
-		<div class="commentview">
+		<div class="commentview" id="ratingRhc1">
 			<#include "/article/article_rhc_rating.ftl">
 		</div> 
 		
@@ -127,7 +127,7 @@
 
 		    <@ww.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
 				<li><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article
-					<ul id="dcCount">
+					<ul id="dcCount2">
 					  <#include "/article/article_rhc_count.ftl">
 					</ul>
 				</li>
@@ -136,7 +136,7 @@
 			</ol>
 		</div> 
 		
-		<div class="commentview">
+		<div class="commentview" id="ratingRhc2">
 			<#include "/article/article_rhc_rating.ftl">
 		</div> 
 		
