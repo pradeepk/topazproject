@@ -9,11 +9,9 @@
  */
 package org.plos.article.util
 
-import org.plos.article.util.Zip // Groovy needs this for some inexplicable reason
-
 args = ToolHelper.fixArgs(args)
 
-def cli = new CliBuilder(usage: 'Ingest [-c config-overrides.xml] zip')
+def cli = new CliBuilder(usage: 'Delete [-c config-overrides.xml] article-uris ...')
 cli.h(longOpt:'help', "help (this message)")
 cli.c(args:1, 'config-overrides.xml - overrides /etc/topaz.xml')
 
@@ -24,11 +22,9 @@ def opt = cli.parse(args); if (opt.h) { cli.usage(); return }
 CONF = ToolHelper.loadConfiguration(opt.c)
 
 def util = new ArticleUtil()
-
 opt.arguments().each() {
-  def zip = new Zip.FileZip(it)
-  def doi = util.ingest(zip)
-  println "Ingested $it: $doi"
+  util.delete(it)
+  println "Deleted $it"
 }
 
-println "Ingested ${opt.arguments().size()} article(s)"
+println "Deleted ${opt.arguments().size()} article(s)"
