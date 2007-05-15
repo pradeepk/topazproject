@@ -1,5 +1,4 @@
-var ldc;
-var preferenceForm;
+var _ldc;
 
 function init(e) {
   topaz.horizontalTabs.setTabPaneSet(dojo.byId(homeConfig.tabPaneSetId));

@@ -52,10 +52,10 @@ topaz.annotation = {
   },
   
   createAnnotationOnMouseDown: function (event) {
-	  topaz.formUtil.textCues.reset(commentTitle, titleCue); 
-	  topaz.formUtil.textCues.reset(comments, commentCue); 
-	  annotationForm.commentTitle.value = "";
-	  annotationForm.comment.value = "";
+	  topaz.formUtil.textCues.reset(_commentTitle, _titleCue); 
+	  topaz.formUtil.textCues.reset(_comments, _commentCue); 
+	  _annotationForm.commentTitle.value = "";
+	  _annotationForm.comment.value = "";
 	  
     var captureText = this.createNewAnnotation();
 		
@@ -96,10 +96,10 @@ topaz.annotation = {
               "annotationConfig.rangeInfoObj.endXpath = "       + annotationConfig.rangeInfoObj.endXpath;
       }
       
-      annotationForm.startPath.value = annotationConfig.rangeInfoObj.startXpath;
-      annotationForm.startOffset.value = annotationConfig.rangeInfoObj.startPoint + 1;
-      annotationForm.endPath.value = annotationConfig.rangeInfoObj.endXpath;
-      annotationForm.endOffset.value = annotationConfig.rangeInfoObj.endPoint + 1;
+      _annotationForm.startPath.value = annotationConfig.rangeInfoObj.startXpath;
+      _annotationForm.startOffset.value = annotationConfig.rangeInfoObj.startPoint + 1;
+      _annotationForm.endPath.value = annotationConfig.rangeInfoObj.endXpath;
+      _annotationForm.endOffset.value = annotationConfig.rangeInfoObj.endPoint + 1;
      
       var mod = this.analyzeRange(annotationConfig.rangeInfoObj, 'span');
      
@@ -184,8 +184,8 @@ topaz.annotation = {
     }
 
   	var marker = dojo.byId(annotationConfig.regionalDialogMarker);
-  	dlg.setMarker(marker);
-    dlg.show();
+  	_dlg.setMarker(marker);
+    _dlg.show();
   },
 
   findIeRange: function() {
@@ -513,7 +513,7 @@ topaz.annotation = {
           					" Annotation " + 
           					(annotationConfig.isPublic ? "(Public)" : "(Private)");
   	var markerId     = annotationConfig.regionalDialogMarker;
-  	var noteImg   = djConfig.namespace + "/images/" + "pone_note_" + (annotationConfig.isAuthor ? "author" : "private") + "_active.gif";
+  	var noteImg   = _namespace + "/images/" + "pone_note_" + (annotationConfig.isAuthor ? "author" : "private") + "_active.gif";
   	var noteImgClass = annotationConfig.annotationImgMarker;
     var contents = document.createDocumentFragment();
   	  

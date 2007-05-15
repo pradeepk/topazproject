@@ -1,20 +1,20 @@
-var ldc;
-var formObj;
-function init(e) {
-  ldc = dojo.widget.byId("LoadingCycle");
-  
-  formObj = document.userAlerts;
+var _ldc;
+var _alertForm;
 
-  formObj.action = namespace + "/user/secure/saveAlerts.action";
-  dojo.event.connect(formObj.formSubmit, "onclick", function() {
-      formObj.submit(); 
+function init(e) {
+  _ldc = dojo.widget.byId("LoadingCycle");
+  
+  _alertForm = document.userAlerts;
+
+  _alertForm.action = _namespace + "/user/secure/saveAlerts.action";
+  dojo.event.connect(_alertForm.formSubmit, "onclick", function() {
+      _alertForm.submit(); 
       return true;
     }
   );
   
-  var alertsForm = document.userAlerts;
-  topaz.formUtil.selectCheckboxPerCollection(alertsForm.checkAllWeekly, alertsForm.weeklyAlerts);
-  topaz.formUtil.selectCheckboxPerCollection(alertsForm.checkAllMonthly, alertsForm.monthlyAlerts);
+  topaz.formUtil.selectCheckboxPerCollection(_alertForm.checkAllWeekly, _alertForm.weeklyAlerts);
+  topaz.formUtil.selectCheckboxPerCollection(_alertForm.checkAllMonthly, _alertForm.monthlyAlerts);
 }
 
 dojo.addOnLoad(init);

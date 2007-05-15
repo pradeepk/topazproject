@@ -1,25 +1,25 @@
-var container;
-var topBanner;
+var _containerDiv;
+var _topBannerDiv;
 
 function globalInit() {
   if (dojo.render.html.ie) {
-    container = dojo.byId("container");
-    topBanner = dojo.byId("topBanner");
+    _containerDiv = dojo.byId("container");
+    _topBannerDiv = dojo.byId("topBanner");
     
-    if (container) {
-      topaz.domUtil.setContainerWidth(container, 675, 940);
+    if (_containerDiv) {
+      topaz.domUtil.setContainerWidth(_containerDiv, 675, 940);
       
       dojo.event.connect(window, "onresize", function() {
-          setTimeout("topaz.domUtil.setContainerWidth(container, 675, 940)", 100);
+          setTimeout("topaz.domUtil.setContainerWidth(_containerDiv, 675, 940)", 100);
         }
       );
     }
     
-    if (topBanner) {
-      topaz.domUtil.setContainerWidth(topBanner, 942, 944);
+    if (_topBannerDiv) {
+      topaz.domUtil.setContainerWidth(_topBannerDiv, 942, 944);
       
       dojo.event.connect(window, "onresize", function() {
-          setTimeout("topaz.domUtil.setContainerWidth(topBanner, 942, 944)", 100);
+          setTimeout("topaz.domUtil.setContainerWidth(_topBannerDiv, 942, 944)", 100);
         }
       );
     }

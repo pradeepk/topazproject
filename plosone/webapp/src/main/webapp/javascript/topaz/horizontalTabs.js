@@ -286,7 +286,7 @@ topaz.horizontalTabs = {
     
   getContent: function() {
     if (!proceedFlag) {
-      ldc.hide();
+      _ldc.hide();
   
       this.targetFormObj.formSubmit.focus();
       return false;
@@ -306,7 +306,7 @@ topaz.horizontalTabs = {
   show: function(id) {
     var newTarget = this.getMapObject(id);
     this.setNewTarget(newTarget);
-    ldc.show();
+    _ldc.show();
     this.confirmChange();
     
     setTimeout("getContentFunc()", 1000);
@@ -329,10 +329,10 @@ function loadContent(targetObj) {
   var refreshArea = dojo.byId(profileConfig.tabPaneSetId);
   var targetUri = targetObj.urlLoad + "?tabId=" + targetObj.tabKey;
 
-  ldc.show();
+  _ldc.show();
   
   var bindArgs = {
-    url: namespace + targetUri,
+    url: _namespace + targetUri,
     method: "get",
     error: function(type, data, evt){
      var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
@@ -354,7 +354,7 @@ function loadContent(targetObj) {
       changeFlag = false;
       
       proceedFlag = true;
-      ldc.hide();
+      _ldc.hide();
 
       return false;
     },
@@ -369,7 +369,7 @@ function loadContentHome(targetObj) {
   var targetUri = targetObj.urlLoad;
 
   var bindArgs = {
-    url: namespace + targetUri,
+    url: _namespace + targetUri,
     method: "get",
     error: function(type, data, evt){
      var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
@@ -408,10 +408,10 @@ function submitContent() {
   
   //alert("formValueObj = " + formValueObj.toSource());
 
-  ldc.show();
+  _ldc.show();
   
   var bindArgs = {
-    url: namespace + targetUri,
+    url: _namespace + targetUri,
     method: "post",
     content: formValueObj,
     error: function(type, data, evt){
@@ -449,7 +449,7 @@ function submitContent() {
       //topaz.horizontalTabs.attachFormEvents(document.forms[targetObj.formName]);
       //topaz.horizontalTabs.toggleTab(targetObj);
       
-      ldc.hide();
+      _ldc.hide();
 
       return false;
     },

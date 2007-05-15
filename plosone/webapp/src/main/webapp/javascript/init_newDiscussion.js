@@ -1,66 +1,65 @@
-  var dcr = new Object();
-  var responseForm;
-  var ldc;
+  var _dcr = new Object();
+  var _ldc;
   
   function init(e) {
-    ldc = dojo.widget.byId("LoadingCycle");
+    _ldc = dojo.widget.byId("LoadingCycle");
 
-    dcr.widget = dojo.byId("DiscussionPanel");
-    dcr.btnCancel = dojo.byId("btnCancelResponse");
-    dcr.btnSubmit = dojo.byId("btnPostResponse");
-    dcr.form = document.discussionResponse;
-    dcr.formAction = "/annotation/secure/createDiscussionSubmit.action";
-    dcr.responseTitleCue = "Enter your comment title...";
-    dcr.responseCue = "Enter your comment...";
-    dcr.error = dojo.byId('responseSubmitMsg');
-    dcr.requestType = "new";
-    dcr.baseId = dcr.form.target.value;
-    dcr.replyId = dcr.form.target.value;
-    var responseTitle = dcr.form.responseTitle;
-    var responseArea = dcr.form.responseArea;
+    _dcr.widget = dojo.byId("DiscussionPanel");
+    _dcr.btnCancel = dojo.byId("btnCancelResponse");
+    _dcr.btnSubmit = dojo.byId("btnPostResponse");
+    _dcr.form = document.discussionResponse;
+    _dcr.formAction = "/annotation/secure/createDiscussionSubmit.action";
+    _dcr.responseTitleCue = "Enter your comment title...";
+    _dcr.responseCue = "Enter your comment...";
+    _dcr.error = dojo.byId('responseSubmitMsg');
+    _dcr.requestType = "new";
+    _dcr.baseId = _dcr.form.target.value;
+    _dcr.replyId = _dcr.form.target.value;
+    var responseTitle = _dcr.form.responseTitle;
+    var responseArea = _dcr.form.responseArea;
     
-    dojo.event.connect(dcr.btnSubmit, "onclick", function(e) {
-        topaz.responsePanel.submit(dcr);
+    dojo.event.connect(_dcr.btnSubmit, "onclick", function(e) {
+        topaz.responsePanel.submit(_dcr);
       }
     );    
     
     dojo.event.connect(responseTitle, "onfocus", function(e) {
-        topaz.formUtil.textCues.off(responseTitle, dcr.responseTitleCue);
+        topaz.formUtil.textCues.off(responseTitle, _dcr.responseTitleCue);
       }
     );    
        
     dojo.event.connect(responseArea, "onfocus", function(e) {
-        topaz.formUtil.textCues.off(responseArea, dcr.responseCue);
+        topaz.formUtil.textCues.off(responseArea, _dcr.responseCue);
       }
     );    
        
     dojo.event.connect(responseTitle, "onblur", function(e) {
-        var fldResponseTitle = dcr.form.commentTitle;
-        if(responseTitle.value != "" && responseTitle.value != dcr.responseCue) {
+        var fldResponseTitle = _dcr.form.commentTitle;
+        if(responseTitle.value != "" && responseTitle.value != _dcr.responseCue) {
           fldResponseTitle.value = responseTitle.value;
         }
         else {
           fldResponseTitle.value = "";
         }
-        topaz.formUtil.textCues.on(responseTitle, dcr.responseTitleCue);
+        topaz.formUtil.textCues.on(responseTitle, _dcr.responseTitleCue);
       }
     );    
 
     dojo.event.connect(responseArea, "onblur", function(e) {
-        var fldResponse = dcr.form.comment;
-        if(responseArea.value != "" && responseArea.value != dcr.responseCue) {
+        var fldResponse = _dcr.form.comment;
+        if(responseArea.value != "" && responseArea.value != _dcr.responseCue) {
           fldResponse.value = responseArea.value;
         }
         else {
           fldResponse.value = "";
         }
-        topaz.formUtil.textCues.on(responseArea, dcr.responseCue);
+        topaz.formUtil.textCues.on(responseArea, _dcr.responseCue);
       }
     );    
        
     dojo.event.connect(responseTitle, "onchange", function(e) {
-        var fldResponseTitle = dcr.form.commentTitle;
-        if(responseTitle.value != "" && responseTitle.value != dcr.responseCue) {
+        var fldResponseTitle = _dcr.form.commentTitle;
+        if(responseTitle.value != "" && responseTitle.value != _dcr.responseCue) {
           fldResponseTitle.value = responseTitle.value;
         }
         else {
@@ -70,8 +69,8 @@
     );    
        
     dojo.event.connect(responseArea, "onchange", function(e) {
-        var fldResponse = dcr.form.comment;
-        if(responseArea.value != "" && responseArea.value != dcr.responseCue) {
+        var fldResponse = _dcr.form.comment;
+        if(responseArea.value != "" && responseArea.value != _dcr.responseCue) {
           fldResponse.value = responseArea.value;
         }
         else {

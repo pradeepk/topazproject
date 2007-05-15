@@ -1,13 +1,14 @@
-var ldc;
-var formObj;
+var _ldc;
+var _profileForm;
+
 function init(e) {
-  ldc = dojo.widget.byId("LoadingCycle");
+  _ldc = dojo.widget.byId("LoadingCycle");
   
-  formObj = document.userForm;
+  _profileForm = document.userForm;
 //  alert ("setting form action to createNewUser.action");
-  formObj.action = namespace + "/user/createNewUser.action";
-  dojo.event.connect(formObj.formSubmit, "onclick", function() {
-      formObj.submit(); 
+  _profileForm.action = _namespace + "/user/createNewUser.action";
+  dojo.event.connect(_profileForm.formSubmit, "onclick", function() {
+      _profileForm.submit(); 
       return true;
     }
   );

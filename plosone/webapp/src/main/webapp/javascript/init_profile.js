@@ -1,17 +1,16 @@
-var ldc;
-var preferenceForm;
+var _ldc;
 
 function init(e) {
-  ldc = dojo.widget.byId("LoadingCycle");
+  _ldc = dojo.widget.byId("LoadingCycle");
   
-  ldc.show();
+  _ldc.show();
 
   topaz.horizontalTabs.setTabPaneSet(dojo.byId(profileConfig.tabPaneSetId));
   topaz.horizontalTabs.setTabsListObject(tabsListMap);
   topaz.horizontalTabs.setTabsContainer(dojo.byId(profileConfig.tabsContainer));
   topaz.horizontalTabs.init(tabSelectId);
   
-  ldc.hide();
+  _ldc.hide();
   
   dojo.event.connect(document, "onunload", topaz.horizontalTabs.confirmChange(topaz.horizontalTabs.targetFormObj));
   

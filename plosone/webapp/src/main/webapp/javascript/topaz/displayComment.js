@@ -66,8 +66,8 @@ topaz.displayComment = {
   show: function(obj){
     this.setTarget(obj);
     
-		popup.setMarker(this.target);
-		popupm.setMarker(this.target);
+		_commentDlg.setMarker(this.target);
+		_commentMultiDlg.setMarker(this.target);
     getComment(this.target);
     
     return false;
@@ -78,7 +78,7 @@ topaz.displayComment = {
     
     // Insert title link text
     var titleLink = document.createElement('a');
-    titleLink.href = namespace + '/annotation/listThread.action?inReplyTo=' + jsonObj.annotationId + '&root=' + jsonObj.annotationId; 
+    titleLink.href = _namespace + '/annotation/listThread.action?inReplyTo=' + jsonObj.annotationId + '&root=' + jsonObj.annotationId; 
     titleLink.className = "discuss icon";
     titleLink.title="View full annotation";
     //alert("jsonObj.annotation.commentTitle = " + jsonObj.annotation.commentTitle);
@@ -96,7 +96,7 @@ topaz.displayComment = {
     
     var creatorId = jsonObj.creatorUserName;
     var creatorLink = document.createElement('a');
-    creatorLink.href = namespace + '/user/showUser.action?userId=' + jsonObj.annotation.creator;
+    creatorLink.href = _namespace + '/user/showUser.action?userId=' + jsonObj.annotation.creator;
 //   creatorLink.title = "Annotation Author";
     creatorLink.className = "user icon";
     creatorLink.appendChild(document.createTextNode(creatorId));
@@ -113,7 +113,7 @@ topaz.displayComment = {
     uniqueId.value = "tt" + tooltipId;
     divTooltip.setAttributeNode(uniqueId);
     var contentUrl = document.createAttribute('dojo:contentUrl');
-    contentUrl.value = namespace + "/user/displayUserAJAX.action?userId=" + creatorId;
+    contentUrl.value = _namespace + "/user/displayUserAJAX.action?userId=" + creatorId;
     divTooltip.setAttributeNode(contentUrl);
     var executeScripts = document.createAttribute('dojo:executeScripts');
     executeScripts.value = "true";
@@ -165,7 +165,7 @@ topaz.displayComment = {
   
   buildDisplayViewLink: function (jsonObj) {
     var commentLink = document.createElement('a');
-    commentLink.href = namespace + '/annotation/listThread.action?inReplyTo=' + jsonObj.annotationId + '&root=' + jsonObj.annotationId;
+    commentLink.href = _namespace + '/annotation/listThread.action?inReplyTo=' + jsonObj.annotationId + '&root=' + jsonObj.annotationId;
     commentLink.className = 'commentary icon';
     commentLink.title = 'Click to view full thread and respond';
     commentLink.appendChild(document.createTextNode('View/respond to this'));
@@ -347,12 +347,12 @@ topaz.displayComment = {
     else
       container1.parentNode.style.height = (container2Mb + addPx) + "px";
       
-    popupm.placeModalDialog();
+    _commentMultiDlg.placeModalDialog();
   }
 }
 
 function getComment(obj) {
-    ldc.show();
+    _ldc.show();
     
     var targetUri = topaz.domUtil.getDisplayId(obj);
           
@@ -376,7 +376,7 @@ function getComment(obj) {
     for (var i=0; i<stopPt; i++) {
       //alert("uriArray[" + i + "] = " + uriArray[i]);
       var bindArgs = {
-        url: namespace + "/annotation/getAnnotation.action?annotationId=" + uriArray[i],
+        url: _namespace + "/annotation/getAnnotation.action?annotationId=" + uriArray[i],
         method: "get",
         error: function(type, data, evt){
          alert("ERROR [AJAX]:" + data.toSource());
@@ -400,7 +400,7 @@ function getComment(obj) {
            alert("ERROR [actionErrors]: " + errorMsg);
            var err = document.createTextNode("ERROR:" + errorMsg);
            //topaz.displayComment.retrieveMsg.innerHTML = err;
-           ldc.hide();
+           _ldc.hide();
            
            return false;
          }
@@ -418,7 +418,7 @@ function getComment(obj) {
            alert("ERROR [numFieldErrors]: " + fieldErrors);
            var err = document.createTextNode("ERROR:" + fieldErrors);
            //topaz.displayComment.retrieveMsg.innerHTML = err;
-           ldc.hide();
+           _ldc.hide();
   
            return false;
          }
@@ -429,11 +429,11 @@ function getComment(obj) {
              if (targetContainer.childNodes.length == stopPt) {
                topaz.displayComment.mouseoverComment(topaz.displayComment.target, uriArray[0]);
                 
-               popupm.show();
+               _commentMultiDlg.show();
 
                topaz.displayComment.adjustDialogHeight(targetContainer, targetContainerSecondary, 50);
 
-               ldc.hide();
+               _ldc.hide();
             
                return false;
              }
@@ -442,8 +442,8 @@ function getComment(obj) {
              topaz.displayComment.buildDisplayView(jsonObj);
              topaz.displayComment.mouseoverComment(topaz.displayComment.target);
  
-             popup.show();
-             ldc.hide();
+             _commentDlg.show();
+             _ldc.hide();
           
              return false;
            }

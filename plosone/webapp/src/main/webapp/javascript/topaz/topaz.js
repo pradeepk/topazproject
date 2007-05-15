@@ -117,7 +117,7 @@ String.prototype.replaceStringArray = function(delimiter, strMatch, newStr) {
 }
 
 function toggleAnnotation(obj, userType) {
-  ldc.show();
+  _ldc.show();
   var bugs = document.getElementsByTagAndClassName('a', 'bug');
   
   for (var i=0; i<bugs.length; i++) {
@@ -131,7 +131,7 @@ function toggleAnnotation(obj, userType) {
   
   toggleExpand(obj, null, "Show annotations", "Hide annotations");
   
-  ldc.hide();
+  _ldc.hide();
   
   return false;
 }
@@ -173,15 +173,15 @@ function jumpToElement(elNode) {
 function toggleExpand(obj, isOpen, textOn, textOff) {
   if (isOpen == false) {
     obj.className = obj.className.replace(/collapse/, "expand");
-    if (textOn) obj.innerHTML = textOn;
+    if (textOn) dojo.dom.textContent(obj, textOn);
   }
   else if (obj.className.match('collapse')) {
     obj.className = obj.className.replace(/collapse/, "expand");
-    if (textOn) obj.innerHTML = textOn;
+    if (textOn) dojo.dom.textContent(obj, textOn);
   }
   else {
     obj.className = obj.className.replace(/expand/, "collapse");
-    if (textOff) obj.innerHTML = textOff;
+    if (textOff) dojo.dom.textContent(obj, textOff);
   }
   
 }

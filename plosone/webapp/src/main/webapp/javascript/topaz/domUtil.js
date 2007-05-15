@@ -191,6 +191,24 @@ topaz.domUtil = {
     return false;
   },
   
+  swapDisplayTextMode: function(node, objId, state, textOn, textOff) {
+    var obj = dojo.byId(objId);
+    
+    if (state) 
+      obj.style.display = state;
+    else if(obj.style.display != "block")
+      obj.style.display = "block";
+    else
+      obj.style.display = "none";
+      
+    if (obj.style.display == "block")
+    	dojo.dom.textContent(node, textOn);
+    else
+    	dojo.dom.textContent(node, textOff);
+      
+    return false;
+  },
+  
   removeExtraSpaces: function(text) {
     //alert("text = '" + text + "'");
     return text.replace(/([\r\n]+\s+)/g," ");

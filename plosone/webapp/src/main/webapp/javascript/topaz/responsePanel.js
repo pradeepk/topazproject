@@ -96,10 +96,10 @@ function submitResponseInfo(targetObj) {
     topaz.formUtil.disableFormFields(targetForm);
   }
    
-  ldc.show();
+  _ldc.show();
 
    var bindArgs = {
-    url: namespace + urlParam,
+    url: _namespace + urlParam,
     method: "post",
     error: function(type, data, evt){
      alert("An error occurred." + data.toSource());
@@ -107,7 +107,7 @@ function submitResponseInfo(targetObj) {
      //topaz.errorConsole.writeToConsole(err);
      //topaz.errorConsole.show();
      topaz.formUtil.enableFormFields(targetForm);
-     ldc.hide();
+     _ldc.hide();
      
      return false;
     },
@@ -129,7 +129,7 @@ function submitResponseInfo(targetObj) {
        submitMsg.appendChild(err);
        topaz.formUtil.enableFormFields(targetForm);
        //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
-       ldc.hide();
+       _ldc.hide();
   
        return false;
      }
@@ -160,18 +160,18 @@ function submitResponseInfo(targetObj) {
        topaz.formUtil.enableFormFields(targetForm);
        //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
 
-       ldc.hide();
+       _ldc.hide();
   
        return false;
      }
      else {
        if (targetObj.requestType == "flag"){
-         ldc.hide();
+         _ldc.hide();
          topaz.responsePanel.getFlagConfirm();
        }
        else if (targetObj.requestType == "new"){
          var rootId = jsonObj.annotationId;
-         window.location.href = namespace + "/annotation/listThread.action?inReplyTo=" + rootId +"&root=" + rootId;
+         window.location.href = _namespace + "/annotation/listThread.action?inReplyTo=" + rootId +"&root=" + rootId;
        }
        else {
          if (dojo.render.html.ie)
@@ -194,10 +194,10 @@ function submitResponseInfo(targetObj) {
 function getDiscussion(targetObj) {
   var refreshArea = dojo.byId(responseConfig.discussionContainer);
 
-  ldc.show();
+  _ldc.show();
   
   var bindArgs = {
-    url: namespace + "/annotation/listThreadRefresh.action?root=" + targetObj.baseId + "&inReplyTo=" + targetObj.baseId,
+    url: _namespace + "/annotation/listThreadRefresh.action?root=" + targetObj.baseId + "&inReplyTo=" + targetObj.baseId,
     method: "get",
     error: function(type, data, evt){
      var err = document.createTextNode("ERROR [AJAX]:" + data.toSource());
@@ -212,7 +212,7 @@ function getDiscussion(targetObj) {
 
       refreshArea.innerHTML = docFragment;
       
-      ldc.hide();
+      _ldc.hide();
 
       return false;
     },

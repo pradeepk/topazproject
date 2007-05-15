@@ -1,5 +1,5 @@
 <script type="text/javascript">
-  var namespace="${freemarker_config.getContext()}";
+  var _namespace="${freemarker_config.getContext()}";
 	<#if Session.PLOS_ONE_USER?exists>
 		var loggedIn = true;
 	<#else>
