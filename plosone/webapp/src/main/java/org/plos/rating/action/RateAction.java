@@ -41,6 +41,8 @@ import com.opensymphony.webwork.ServletActionContext;
 
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 
+import org.springframework.beans.factory.annotation.Required;
+
 /**
  * General Rating action class to store and retrieve a users's rating
  *
@@ -54,7 +56,7 @@ public class RateAction extends BaseActionSupport {
   private String           articleUri;
   private String           commentTitle;
   private String           comment;
-  private OtmConfiguration otmFactory;
+  private Session          session;
   private static final Log log = LogFactory.getLog(RateAction.class);
   private RatingsPEP       pep;
 
@@ -76,7 +78,6 @@ public class RateAction extends BaseActionSupport {
    * @return WebWork action status
    */
   public String rateArticle() {
-    Session           session            = otmFactory.getFactory().openSession();
     Transaction       tx                 = null;
     PlosOneUser       user               =
       (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
@@ -368,7 +369,6 @@ public class RateAction extends BaseActionSupport {
    * @return WebWork action status
    */
   public String retrieveRatingsForUser() {
-    Session     session = otmFactory.getFactory().openSession();
     Transaction tx      = null;
 
     try {
@@ -577,20 +577,21 @@ public class RateAction extends BaseActionSupport {
   }
 
   /**
-   * Gets the OTM util.
+   * Gets the otm session.
    *
-   * @return Returns the otmFactory.
+   * @return Returns the otm session.
    */
-  public OtmConfiguration getOtmFactory() {
-    return otmFactory;
+  public Session getOtmSession() {
+    return session;
   }
 
   /**
-   * Sets the OTM util.
+   * Sets the otm util.
    *
-   * @param otmFactory The otmFactory to set.
+   * @param session The otm session to set.
    */
-  public void setOtmFactory(OtmConfiguration otmFactory) {
-    this.otmFactory = otmFactory;
+  @Required
+  public void setOtmSession(Session session) {
+    this.session = session;
   }
 }

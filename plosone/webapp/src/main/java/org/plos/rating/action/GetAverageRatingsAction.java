@@ -33,6 +33,7 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 
 import com.opensymphony.webwork.ServletActionContext;
+import org.springframework.beans.factory.annotation.Required;
 
 /**
  * General Rating action class to store and retrieve summary ratings on an article.
@@ -40,7 +41,7 @@ import com.opensymphony.webwork.ServletActionContext;
  * @author stevec
  */
 public class GetAverageRatingsAction extends BaseActionSupport {
-  private OtmConfiguration otmFactory;
+  private Session          session;
   private String           articleURI;
   private double           insightAverage;
   private double           styleAverage;
@@ -79,7 +80,6 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    * @return WebWork action status
    */
   public String execute() {
-    Session       session            = otmFactory.getFactory().openSession();
     Transaction   tx                 = null;
     RatingSummary insightSummary     = null;
     RatingSummary styleSummary       = null;
@@ -157,12 +157,6 @@ public class GetAverageRatingsAction extends BaseActionSupport {
       }
 
       throw e; // or display error message
-    } finally {
-      try {
-        session.close();
-      } catch (OtmException ce) {
-        log.warn("close failed", ce);
-      }
     }
 
     return SUCCESS;
@@ -285,21 +279,22 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
-   * Gets the otm util.
+   * Gets the otm session.
    *
-   * @return Returns the otmFactory.
+   * @return Returns the otm session.
    */
-  public OtmConfiguration getOtmFactory() {
-    return otmFactory;
+  public Session getOtmSession() {
+    return session;
   }
 
   /**
-   * Sets the otm util.
+   * Set the OTM session. Called by spring's bean wiring. 
    *
-   * @param otmFactory The otmFactory to set.
+   * @param session The otm session to set.
    */
-  public void setOtmFactory(OtmConfiguration otmFactory) {
-    this.otmFactory = otmFactory;
+  @Required
+  public void setOtmSession(Session session) {
+    this.session = session;
   }
 
   /**

@@ -322,6 +322,12 @@
     </property>
   </bean>
 
+  <bean id="otmSessionFactory" factory-bean="otmFactory" factory-method="getFactory"
+      scope="singleton"/>
+
+  <bean id="otmSession" factory-bean="otmSessionFactory" factory-method="openSession"
+      destroy-method="close" scope="request"/>
+
   <bean id="browseService" class="org.plos.article.service.BrowseService" />
 
   <bean id="plosOneFreemarkerManager" class="org.plos.webwork.PlosOneFreemarkerManager">
