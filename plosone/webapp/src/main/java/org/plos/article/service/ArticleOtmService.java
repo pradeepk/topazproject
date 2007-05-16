@@ -21,6 +21,8 @@ import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.IngestException;
@@ -30,6 +32,7 @@ import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.article.util.Zip;
 import org.plos.configuration.OtmConfiguration;
+import org.plos.models.Article;
 import org.plos.service.BaseConfigurableService;
 import org.plos.service.WSTopazContext;
 
@@ -44,7 +47,8 @@ import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
-import org.topazproject.ws.article.Article;
+import org.topazproject.otm.query.Results;
+//import org.topazproject.ws.article.Article;
 import org.topazproject.ws.article.ArticleClientFactory;
 import org.topazproject.ws.article.ArticleInfo;
 //import org.topazproject.ws.article.IngestException;
@@ -63,7 +67,8 @@ import org.topazproject.ws.article.ObjectInfo;
  */
 public class ArticleOtmService extends BaseConfigurableService {
 
-  private Article delegateService;
+  // TODO: remove all refs to ws Article in favor of otm Article
+  private org.topazproject.ws.article.Article delegateService;
   private String smallImageRep;
   private String largeImageRep;
   private String mediumImageRep;
@@ -72,11 +77,13 @@ public class ArticleOtmService extends BaseConfigurableService {
   private Session session;
 
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
+  private static final Log log = LogFactory.getLog(Article.class);
   private static final List FGS_URLS = CONF.getList("topaz.fedoragsearch.urls.url");
 
   public void init() throws IOException, URISyntaxException, ServiceException {
     final ProtectedService permissionProtectedService = getProtectedService();
-    delegateService = ArticleClientFactory.create(permissionProtectedService);
+    // TODO: no refs to delegateService
+    delegateService = null;  // ArticleClientFactory.create(permissionProtectedService);
 
     // create an XACML PEP for Articles
     try {
@@ -218,7 +225,12 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public String getArticles(final String startDate, final String endDate) throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return delegateService.getArticles(startDate, endDate, null, null, null, true);
+
+    return getArticles(
+      startDate,
+      endDate,
+      null,   // convention for all states
+      true);  // ascending
   }
 
   /*  * @param startDate  is the date to start searching from. If null, start from begining of time.
@@ -241,8 +253,18 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public ArticleInfo[] getArticleInfos(String startDate, String endDate,
                                      String[] categories, String[] authors, int[] states,
-                                     boolean ascending) throws RemoteException{
+                                     boolean ascending) throws RemoteException {
+    // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
+    
+    // ask the Session for a list of Articles that meet the specified Criteria and Restrictions
+    /*
+    List<Article> articleList = session
+      .createCriteria(Article.class).add(Restrictions.eq("annotates", articleURI))
+                .list();
+      Iterator iter        = summaryList.iterator();
+    */
+   
     return delegateService.getArticleInfos(startDate, endDate, categories, authors, states, ascending);
   }
 
@@ -299,7 +321,7 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // sanity check args
     if (maxArticles < 0) {
-      throw IllegalArgumentException("Requesting a maximum # of commented articles < 0: " +  maxArticles);
+      throw new IllegalArgumentException("Requesting a maximum # of commented articles < 0: " +  maxArticles);
     }
     if (maxArticles == 0) {
       return new ObjectInfo[0];
@@ -311,17 +333,18 @@ public class ArticleOtmService extends BaseConfigurableService {
     Results commentedArticles = session.doQuery(oqlQuery);
 
     // check access control on all Article results
-    List returnArticles = new ArrayList();
+    // TODO: remove FQ package name
+    List <Article> returnArticles = new ArrayList();
     commentedArticles.beforeFirst();
     while(commentedArticles.next()) {
       Article commentedArticle = (Article) commentedArticles.get("a");
       try {
-        pep.checkAccess(pep.READ_META_DATA, URI.create(commentedArticle.getUri()));
-        returnArticles.add(commented);
+        pep.checkAccess(pep.READ_META_DATA, commentedArticle.getId());
+        returnArticles.add(commentedArticle);
       } catch (SecurityException se) {
          if (log.isDebugEnabled())
           log.debug("Filtering URI "
-            + commentedArticle.getUri()
+            + commentedArticle.getId()
             + " from commented Article list due to PEP SecurityException", se);
       }
     }

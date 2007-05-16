@@ -322,6 +322,12 @@
       <version>${pom.parent.version}</version>
     </dependency>
 	
+    <dependency>
+      <groupId>org.topazproject</groupId>
+      <artifactId>otm</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
+	
    </dependencies>
 
   <!--
