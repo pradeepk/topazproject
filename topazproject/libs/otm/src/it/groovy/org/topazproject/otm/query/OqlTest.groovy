@@ -27,10 +27,10 @@ public class OqlTest extends GroovyTestCase {
   private static final Log log = LogFactory.getLog(OqlTest.class);
 
   def rdf;
+  def store;
 
   void setUp() {
-    def store =
-        new ItqlStore("http://localhost:9091/mulgara-service/services/ItqlBeanService".toURI())
+    store = new ItqlStore("http://localhost:9091/mulgara-service/services/ItqlBeanService".toURI())
     rdf = new RdfBuilder(
         sessFactory:new SessionFactory(tripleStore:store), defModel:'ri', defUriPrefix:'topaz:')
 
@@ -282,15 +282,6 @@ public class OqlTest extends GroovyTestCase {
 
       checkCollection([o1, o2], cls, "colors.color", "'fuchsia'", "'sienna'",
                       ["'sienna'", "'yellow'"])
-    }
-
-    for (col in ['Predicate', 'RdfBag', 'RdfSeq', 'RdfAlt' /* , 'RdfList' */]) {
-      Class cls = rdf.class('Test' + cnt++) {
-        name () 'Jack Rabbit'
-        colors (type:'Color', maxCard:-1, colMapping:col)
-      }
-      def o1 = cls.newInstance(id:id1, colors:[c1, c2, c3])
-      def o2 = cls.newInstance(id:id2, colors:[c4, c5, c6])
 
       checkCollection([o1, o2], cls, "colors", "<foo:bar>", "<${cid5}>", ["<${cid5}>", "<${cid2}>"])
     }
@@ -325,6 +316,78 @@ public class OqlTest extends GroovyTestCase {
       for (o in obj)
         s.delete(o)
     }
+  }
+
+  void testModels() {
+    def checker = new ResultChecker(test:this)
+
+    // set up models
+    for (num in 1..3) {
+      def m = new ModelConfig("m${num}", "local:///topazproject#otmtest_m${num}".toURI(), null)
+      rdf.sessFactory.addModel(m);
+
+      try { store.dropModel(m); } catch (OtmException oe) { }
+      store.createModel(m)
+    }
+
+    // predicate stored with child model
+    Class cls = rdf.class('Test1', model:'m1') {
+      foo1 ()
+      bar1 (className:'Bar11', model:'m2', inverse:true) {
+        foo2 ()
+        bar2 (className:'Bar21', model:'m3') {
+          foo3 ()
+        }
+      }
+    }
+
+    def o1 = cls.newInstance(foo1:'f1', bar1:[foo2:'f2', bar2:[foo3:'f3']])
+    def o2 = cls.newInstance(foo1:'f4', bar1:[foo2:'f5', bar2:[foo3:'f6']])
+
+    doInTx { s ->
+      s.saveOrUpdate(o1);
+      s.saveOrUpdate(o2);
+
+      Results r = s.doQuery("select t from Test1 t where " +
+                            "t.foo1 = 'f1' and t.bar1.foo2 = 'f2' and t.bar1.bar2.foo3 = 'f3';")
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+      }
+
+      s.delete(o1);
+      s.delete(o2);
+    }
+
+    // predicate stored with parent model
+    Class bcl2 = rdf.class('Bar22', model:'m3') {
+      foo3 ()
+    }
+    Class bcl1 = rdf.class('Bar12', model:'m2') {
+      foo2 ()
+      bar2 (type:'Bar22', inverse:true)
+    }
+    Class cls1 = rdf.class('Test2', model:'m1') {
+      foo1 ()
+      bar1 (type:'Bar12')
+    }
+
+    o1 = cls1.newInstance(foo1:'f1', bar1:[foo2:'f2', bar2:[foo3:'f3']])
+    o2 = cls1.newInstance(foo1:'f4', bar1:[foo2:'f5', bar2:[foo3:'f6']])
+
+    doInTx { s ->
+      s.saveOrUpdate(o1);
+      s.saveOrUpdate(o2);
+
+      Results r = s.doQuery("select t from Test2 t where " +
+                            "t.foo1 = 'f1' and t.bar1.foo2 = 'f2' and t.bar1.bar2.foo3 = 'f3';")
+      checker.verify(r) {
+        row { object (class:cls1, id:o1.id) }
+      }
+
+      s.delete(o1);
+      s.delete(o2);
+    }
+
   }
 
   private def doInTx(Closure c) {

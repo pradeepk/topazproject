@@ -73,7 +73,7 @@ public class ItqlStore implements TripleStore {
   public ItqlStore(URI server) {
     serverUri = server;
 
-    //xxx: configure these
+    //XXX: configure these
     ComparisonCriterionBuilder cc = new ComparisonCriterionBuilder("local:///topazproject#str");
     critBuilders.put("gt", cc);
     critBuilders.put("lt", cc);
@@ -88,28 +88,55 @@ public class ItqlStore implements TripleStore {
   }
 
   public void insert(ClassMetadata cm, String id, Object o, Transaction txn) throws OtmException {
-    ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
-
+    Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm);
     StringBuilder insert = new StringBuilder(500);
-    insert.append("insert ");
-    buildInsert(insert, cm, id, o, txn.getSession());
-    insert.append("into <").append(getModelUri(cm.getModel(), txn)).append(">;");
 
-    log.debug("insert: " + insert);
+    // for every model create an insert statement
+    for (String m : mappersByModel.keySet()) {
+      insert.append("insert ");
+
+      if (m.equals(cm.getModel())) {
+        for (String type : cm.getTypes())
+          addStmt(insert, id, Rdf.rdf + "type", type, null, true);
+      }
+
+      buildInsert(insert, mappersByModel.get(m), id, o, txn.getSession());
+      insert.append("into <").append(getModelUri(m, txn)).append(">;");
+    }
+
+    if (log.isDebugEnabled())
+      log.debug("insert: " + insert);
+
     try {
+      ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
       isc.getItqlHelper().doUpdate(insert.toString(), null);
     } catch (RemoteException re) {
       throw new OtmException("error performing update", re);
     }
   }
 
-  private void buildInsert(StringBuilder buf, ClassMetadata cm, String id, Object o, Session sess)
-      throws OtmException {
-    for (String type : cm.getTypes())
-      addStmt(buf, id, Rdf.rdf + "type", type, null, true);
+  private static Map<String, List<Mapper>> groupMappersByModel(ClassMetadata cm) {
+    Map<String, List<Mapper>> mappersByModel = new HashMap<String, List<Mapper>>();
 
-    int i = 0;
+    if (cm.getTypes().size() > 0)
+      mappersByModel.put(cm.getModel(), new ArrayList<Mapper>());
+
     for (Mapper p : cm.getFields()) {
+      String m = (p.getModel() != null) ? p.getModel() : cm.getModel();
+      List<Mapper> pList = mappersByModel.get(m);
+      if (pList == null)
+        mappersByModel.put(m, pList = new ArrayList<Mapper>());
+      pList.add(p);
+    }
+
+    return mappersByModel;
+  }
+
+
+  private void buildInsert(StringBuilder buf, List<Mapper> pList, String id, Object o, Session sess)
+      throws OtmException {
+    int i = 0;
+    for (Mapper p : pList) {
       if (!p.isEntityOwned())
         continue;
       if (p.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
@@ -187,31 +214,37 @@ public class ItqlStore implements TripleStore {
   }
 
   public void delete(ClassMetadata cm, String id, Transaction txn) throws OtmException {
-    ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
-
+    Map<String, List<Mapper>> mappersByModel = groupMappersByModel(cm);
     StringBuilder delete = new StringBuilder(500);
-    delete.append("delete ");
-    buildDeleteSelect(delete, cm, id, txn);
-    delete.append("from <").append(getModelUri(cm.getModel(), txn)).append(">;");
 
-    log.debug("delete: " + delete);
+    // for every model create a delete statement
+    for (String m : mappersByModel.keySet()) {
+      delete.append("delete ");
+      buildDeleteSelect(delete, getModelUri(m, txn), mappersByModel.get(m),
+                        m.equals(cm.getModel()) && cm.getTypes().size() > 0, id);
+      delete.append("from <").append(getModelUri(m, txn)).append(">;");
+    }
+
+    if (log.isDebugEnabled())
+      log.debug("delete: " + delete);
+
     try {
+      ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
       isc.getItqlHelper().doUpdate(delete.toString(), null);
     } catch (RemoteException re) {
       throw new OtmException("error performing update: " + delete.toString(), re);
     }
   }
 
-  private void buildDeleteSelect(StringBuilder qry, ClassMetadata cm, String id, Transaction txn)
+  private void buildDeleteSelect(StringBuilder qry, String model, List<Mapper> mappers,
+                                 boolean delTypes, String id)
       throws OtmException {
-    String model = getModelUri(cm.getModel(), txn);
-
     qry.append("select $s $p $o from <").append(model).append("> where ");
 
     // build forward statements
-    boolean found = cm.getTypes().size() > 0;
+    boolean found = delTypes;
     boolean predicateMap = false;
-    for (Mapper p : cm.getFields()) {
+    for (Mapper p : mappers) {
       if (!p.hasInverseUri() && p.isEntityOwned()) {
         if (p.getMapperType() == Mapper.MapperType.PREDICATE_MAP) {
           predicateMap = true;
@@ -227,9 +260,9 @@ public class ItqlStore implements TripleStore {
 
     if (found) {
       qry.append("($s $p $o and $s <mulgara:is> <").append(id).append("> and (");
-      if (cm.getTypes().size() > 0)
+      if (delTypes)
         qry.append("$p <mulgara:is> <rdf:type> or ");
-      for (Mapper p : cm.getFields()) {
+      for (Mapper p : mappers) {
         if (!p.hasInverseUri() && p.isEntityOwned())
           qry.append("$p <mulgara:is> <").append(p.getUri()).append("> or ");
       }
@@ -238,8 +271,9 @@ public class ItqlStore implements TripleStore {
     }
 
     // build reverse statements
+    boolean needDisj = found | predicateMap;
     found = false;
-    for (Mapper p : cm.getFields()) {
+    for (Mapper p : mappers) {
       if (p.hasInverseUri() && p.isEntityOwned()) {
         found = true;
         break;
@@ -247,28 +281,20 @@ public class ItqlStore implements TripleStore {
     }
 
     if (found) {
-      qry.append("or (");
-      for (Mapper p : cm.getFields()) {
-        if (p.hasInverseUri() && p.isEntityOwned()) {
-          String invP = p.getUri();
-
-          qry.append("($s $p $o ");
-
-          String inverseModel = p.getModel();
-          if (inverseModel != null)
-            qry.append("in <").append(getModelUri(inverseModel, txn)).append("> ");
-
-          qry.append("and $o <mulgara:is> <").append(id).append("> and $p <mulgara:is> <")
-             .append(invP).append(">) or ");
-        }
+      if (needDisj)
+        qry.append("or ");
+      qry.append("($s $p $o and $o <mulgara:is> <").append(id).append("> and (");
+      for (Mapper p : mappers) {
+        if (p.hasInverseUri() && p.isEntityOwned())
+          qry.append("$p <mulgara:is> <").append(p.getUri()).append("> or ");
       }
       qry.setLength(qry.length() - 4);
-      qry.append(") ");
+      qry.append(") ) ");
     }
 
     // build rdf:List, rdf:Bag, rdf:Seq or rdf:Alt statements
     found = false;
-    for (Mapper p : cm.getFields()) {
+    for (Mapper p : mappers) {
       if ((p.getMapperType() == Mapper.MapperType.RDFLIST) ||
           (p.getMapperType() == Mapper.MapperType.RDFBAG) || 
           (p.getMapperType() == Mapper.MapperType.RDFSEQ) ||
@@ -284,7 +310,6 @@ public class ItqlStore implements TripleStore {
         .append(" and ($s <rdf:type> <rdf:List> or $s <rdf:type> <rdf:Bag> ")
         .append("or $s <rdf:type> <rdf:Seq> or $s <rdf:type> <rdf:Alt>) )");
     }
-
   }
 
   public ResultObject get(ClassMetadata cm, String id, Transaction txn) throws OtmException {
@@ -376,12 +401,13 @@ public class ItqlStore implements TripleStore {
       Mapper m = cm.getMapperByUri(p, false);
       if (m == null)
         continue;
+      String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), txn) : modelUri;
       if (Mapper.MapperType.RDFLIST == m.getMapperType())
-        fvalues.put(p, getRdfList(id, p, modelUri, txn));
+        fvalues.put(p, getRdfList(id, p, mUri, txn));
       else if (Mapper.MapperType.RDFBAG == m.getMapperType() ||
           Mapper.MapperType.RDFSEQ == m.getMapperType() || 
           Mapper.MapperType.RDFALT == m.getMapperType())
-        fvalues.put(p, getRdfBag(id, p, modelUri, txn));
+        fvalues.put(p, getRdfBag(id, p, mUri, txn));
     }
 
     // create result
@@ -440,16 +466,51 @@ public class ItqlStore implements TripleStore {
 
   private void buildGetSelect(StringBuilder qry, ClassMetadata cm, String id, Transaction txn)
       throws OtmException {
-    String model = getModelUri(cm.getModel(), txn);
-    qry.append("select $s $p $o subquery (select $t from <").append(model).append("> where ");
+    SessionFactory sf     = txn.getSession().getSessionFactory();
+    String         models = getModelsExpr(new ClassMetadata[] { cm }, txn);
+    String         tmdls  = getModelsExpr(listFieldClasses(cm, sf), txn);
+
+    qry.append("select $s $p $o subquery (select $t from ").append(tmdls).append(" where ");
     qry.append("$o <rdf:type> $t) ");
-    qry.append("from <").append(model).append("> where ");
+    qry.append("from ").append(models).append(" where ");
     qry.append("$s $p $o and $s <mulgara:is> <").append(id).append(">;");
 
-    qry.append("select $s $p $o subquery (select $t from <").append(model).append("> where ");
+    qry.append("select $s $p $o subquery (select $t from ").append(models).append(" where ");
     qry.append("$s <rdf:type> $t) ");
-    qry.append("from <").append(model).append("> where ");
+    qry.append("from ").append(models).append(" where ");
     qry.append("$s $p $o and $o <mulgara:is> <").append(id).append(">");
+  }
+
+  private static String getModelsExpr(ClassMetadata[] cmList, Transaction txn) {
+    Set<String> mList = new HashSet<String>();
+    for (ClassMetadata cm : cmList) {
+      mList.add(cm.getModel());
+      for (Mapper p : cm.getFields()) {
+        if (p.getModel() != null)
+          mList.add(p.getModel());
+      }
+    }
+
+    StringBuilder mexpr = new StringBuilder(100);
+    for (String m : mList)
+      mexpr.append("<").append(getModelUri(m, txn)).append("> or ");
+    mexpr.setLength(mexpr.length() - 4);
+
+    return mexpr.toString();
+  }
+
+  private static ClassMetadata[] listFieldClasses(ClassMetadata cm, SessionFactory sf) {
+    Set<ClassMetadata> clss = new HashSet<ClassMetadata>();
+    for (Mapper p : cm.getFields()) {
+      ClassMetadata c = sf.getClassMetadata(p.getComponentType());
+      if (c != null)
+        clss.add(c);
+    }
+
+    if (clss.size() == 0)
+      clss.add(cm);     // dummy to ensure we always have something, to simplify rest of code
+
+    return clss.toArray(new ClassMetadata[clss.size()]);
   }
 
   private List<String> getRdfList(String sub, String pred, String modelUri, Transaction txn)
@@ -578,17 +639,20 @@ public class ItqlStore implements TripleStore {
 
     qry.append(" from <").append(model).append("> where ");
 
-    //xxx: there is problem with this auto generated where clause
-    //xxx: it could potentially limit the result set returned by a trans() criteriom
+    //XXX: there is problem with this auto generated where clause
+    //XXX: it could potentially limit the result set returned by a trans() criteriom
     int i = 0;
     for (Order o: criteria.getOrderList()) {
       Mapper m = cm.getMapperByName(o.getName());
+      String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), txn) : model;
       if (m == null)
         throw new OtmException("Order by: No field with the name '" + o.getName() + "' in " + cm);
       if (m.hasInverseUri())
-        qry.append("$o" + i++).append(" <").append(m.getUri()).append("> $s and ");
+        qry.append("$o" + i++).append(" <").append(m.getUri()).append("> $s in <").append(mUri).
+            append("> and ");
       else
-        qry.append("$s <").append(m.getUri()).append("> $o" + i++).append(" and ");
+        qry.append("$s <").append(m.getUri()).append("> $o" + i++).append(" in <").append(mUri).
+            append("> and ");
     }
 
     if ((i > 0) && (criteria.getCriterionList().size() == 0))

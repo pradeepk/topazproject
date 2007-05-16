@@ -21,10 +21,10 @@ import org.topazproject.otm.stores.ItqlStore;
  */
 public class BuilderIntegrationTest extends GroovyTestCase {
   def rdf;
+  def store;
 
   void setUp() {
-    def store =
-        new ItqlStore("http://localhost:9091/mulgara-service/services/ItqlBeanService".toURI())
+    store = new ItqlStore("http://localhost:9091/mulgara-service/services/ItqlBeanService".toURI())
     rdf = new RdfBuilder(
         sessFactory:new SessionFactory(tripleStore:store), defModel:'ri', defUriPrefix:'topaz:')
 
@@ -118,6 +118,55 @@ public class BuilderIntegrationTest extends GroovyTestCase {
 
     obj = cls.newInstance(state:42)
     shouldFail(OtmException, { doInTx { s -> s.saveOrUpdate(obj) } })
+  }
+
+  void testModels() {
+    // set up models
+    for (num in 1..3) {
+      def m = new ModelConfig("m${num}", "local:///topazproject#otmtest_m${num}".toURI(), null)
+      rdf.sessFactory.addModel(m);
+
+      try { store.dropModel(m); } catch (OtmException oe) { }
+      store.createModel(m)
+    }
+
+    // predicate stored with child model
+    Class cls = rdf.class('Test1', model:'m1') {
+      foo1 ()
+      bar1 (className:'Bar11', model:'m2', inverse:true) {
+        foo2 ()
+        bar2 (className:'Bar21', model:'m3') {
+          foo3 ()
+        }
+      }
+    }
+
+    def obj = cls.newInstance(foo1:'f1', bar1:[foo2:'f2', bar2:[foo3:'f3']])
+    doInTx { s -> s.saveOrUpdate(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+
+    doInTx { s -> s.delete(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+
+    // predicate stored with parent model
+    Class bcl2 = rdf.class('Bar22', model:'m3') {
+      foo3 ()
+    }
+    Class bcl1 = rdf.class('Bar12', model:'m2') {
+      foo2 ()
+      bar2 (type:'Bar22', inverse:true)
+    }
+    Class cls1 = rdf.class('Test2', model:'m1') {
+      foo1 ()
+      bar1 (type:'Bar12')
+    }
+
+    obj = cls.newInstance(foo1:'f1', bar1:[foo2:'f2', bar2:[foo3:'f3']])
+    doInTx { s -> s.saveOrUpdate(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+
+    doInTx { s -> s.delete(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
   }
 
   private def doInTx(Closure c) {
