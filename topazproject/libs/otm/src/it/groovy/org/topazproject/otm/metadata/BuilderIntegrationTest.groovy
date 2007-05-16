@@ -148,6 +148,34 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     doInTx { s -> s.delete(obj) }
     doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
 
+    obj = cls.newInstance(foo1:'f1')
+    doInTx { s -> s.saveOrUpdate(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+
+    doInTx { s -> s.delete(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+
+    obj = cls.newInstance(foo1:'f1', bar1:[])
+    doInTx { s -> s.saveOrUpdate(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+
+    doInTx { s -> s.delete(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+
+    obj = cls.newInstance(foo1:'f1', bar1:[bar2:[]])
+    doInTx { s -> s.saveOrUpdate(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+
+    doInTx { s -> s.delete(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+
+    obj = cls.newInstance(foo1:'f1', bar1:[bar2:[foo3:'f3']])
+    doInTx { s -> s.saveOrUpdate(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+
+    doInTx { s -> s.delete(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+
     // predicate stored with parent model
     Class bcl2 = rdf.class('Bar22', model:'m3') {
       foo3 ()
@@ -162,6 +190,34 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     }
 
     obj = cls.newInstance(foo1:'f1', bar1:[foo2:'f2', bar2:[foo3:'f3']])
+    doInTx { s -> s.saveOrUpdate(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+
+    doInTx { s -> s.delete(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+
+    obj = cls.newInstance(foo1:'f1')
+    doInTx { s -> s.saveOrUpdate(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+
+    doInTx { s -> s.delete(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+
+    obj = cls.newInstance(foo1:'f1', bar1:[])
+    doInTx { s -> s.saveOrUpdate(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+
+    doInTx { s -> s.delete(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+
+    obj = cls.newInstance(foo1:'f1', bar1:[bar2:[]])
+    doInTx { s -> s.saveOrUpdate(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
+
+    doInTx { s -> s.delete(obj) }
+    doInTx { s -> assert s.get(cls, obj.id.toString()) == null }
+
+    obj = cls.newInstance(foo1:'f1', bar1:[bar2:[foo3:'f3']])
     doInTx { s -> s.saveOrUpdate(obj) }
     doInTx { s -> assert s.get(cls, obj.id.toString()) == obj }
 

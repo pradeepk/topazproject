@@ -94,6 +94,7 @@ public class ItqlStore implements TripleStore {
     // for every model create an insert statement
     for (String m : mappersByModel.keySet()) {
       insert.append("insert ");
+      int startLen = insert.length();
 
       if (m.equals(cm.getModel())) {
         for (String type : cm.getTypes())
@@ -101,7 +102,11 @@ public class ItqlStore implements TripleStore {
       }
 
       buildInsert(insert, mappersByModel.get(m), id, o, txn.getSession());
-      insert.append("into <").append(getModelUri(m, txn)).append(">;");
+
+      if (insert.length() > startLen)
+        insert.append("into <").append(getModelUri(m, txn)).append(">;");
+      else
+        insert.setLength(insert.length() - 7);
     }
 
     if (log.isDebugEnabled())
