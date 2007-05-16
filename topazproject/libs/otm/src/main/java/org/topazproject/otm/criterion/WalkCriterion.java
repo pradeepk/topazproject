@@ -81,13 +81,6 @@ public class WalkCriterion implements Criterion {
       throw new OtmException("Value must be a uri for walk(): field is "
                              + m.getField().toGenericString());
 
-    String query =
-      m.hasInverseUri()
-      ? ("walk(" + val + " <" + m.getUri() + "> " + subjectVar + " and " + varPrefix + " <"
-      + m.getUri() + "> " + subjectVar + ")")
-      : ("walk(" + subjectVar + " <" + m.getUri() + "> " + val + " and " + subjectVar + " <"
-      + m.getUri() + "> " + varPrefix + ")");
-
     String model = m.getModel();
 
     if (model != null) {
@@ -97,10 +90,15 @@ public class WalkCriterion implements Criterion {
         throw new OtmException("Model/Graph '" + model + "' is not configured in SessionFactory");
 
       model = " in <" + conf.getUri() + ">";
-    }
+    } else
+      model = "";
 
-    if (model != null)
-      query += model;
+    String query =
+      m.hasInverseUri()
+      ? ("walk(" + val + " <" + m.getUri() + "> " + subjectVar + model + " and " + varPrefix + " <"
+      + m.getUri() + "> " + subjectVar + model + ")")
+      : ("walk(" + subjectVar + " <" + m.getUri() + "> " + val + model + " and " + subjectVar + " <"
+      + m.getUri() + "> " + varPrefix + model + ")");
 
     return query;
   }

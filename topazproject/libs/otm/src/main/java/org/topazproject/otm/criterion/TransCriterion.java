@@ -89,8 +89,8 @@ public class TransCriterion implements Criterion {
 
     String subj   = m.hasInverseUri() ? val : subjectVar;
     String obj    = m.hasInverseUri() ? subjectVar : val;
-    String triple = subj + " <" + m.getUri() + "> " + obj;
+    String triple = subj + " <" + m.getUri() + "> " + obj + model;
 
-    return "(trans(" + triple + ")" + model + " or " + triple + model + ")";
+    return "(trans(" + triple + ") or " + triple + ")";
   }
 }
