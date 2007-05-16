@@ -24,8 +24,6 @@
 .pone_rating .pct100 { width: 100%;	}
 span.inlineRatingEnd { left: 0; top: 0; }
 
-
-
 /* apply class original to the original posting of either a discussio or annotation on the directory page */
 div.ratingComment	{ margin: 20px 0 5px 0!important; border-top-width: 1px; margin-top:20px!important; }
 div.ratingComment div.hd { background: url(../images/pone_toolbar_bg.gif) repeat-x bottom; }
@@ -45,3 +43,8 @@ div.ratingDetail ol.ratingAvgs li ul { top: -17px; left: 7em; }
 div.ratingDetail blockquote { background: none!important; border: 0!important; padding: 0!important; margin: 0!important; }
 
 div.rsep { margin-top: 10px;  margin-right: -5px; padding: 0; border: none; background: #fff; }
+
+
+.inline-rating { margin: 11px 85px -11px -85px; }
+/* This is a hack for Safari.  This needs to go last because any instruction after this next line will be ignored  */
+.inline-rating { margin: auto;# }

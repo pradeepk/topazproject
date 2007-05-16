@@ -110,3 +110,6 @@ html>body #home { height: auto }
 * html div.ratingComment a.icon { }
 * html div.ratingComment div.ratingDetail { padding-bottom: 1px; }
 * html div.ratingDetail ol.ratingAvgs li { margin-bottom: -1.5em; }
+
+*:first-child+html .inline-rating { margin: 14px 85px -14px -85px; }
+

@@ -50,7 +50,7 @@
             <@ww.a href="%{feedbackURL}">Send Feedback</@ww.a>
           </li>
           <li>
-            <@ww.url id="getRatingsURL" action="getRatingsForUser" namespace="/rate/secure" articleUri="${article}"/>
+            <@ww.url id="getRatingsURL" action="getRatingsForUser" namespace="/rate/secure" articleURI="${article}"/>
             <@ww.a href="%{getRatingsURL}">GetRatings</@ww.a>
           </li>
           <li>
@@ -84,7 +84,7 @@
               <@ww.textfield name="insight" label="Insight Rating" size="1"/>
               <@ww.textfield name="reliability" label="Reliability Rating" size="1"/>
               <@ww.textfield name="style" label="Style Rating" size="1"/>
-							<@ww.textfield name="articleUri" label="Article URI" value="${article}"/>
+              <@ww.textfield name="articleURI" label="Article URI" value="${article}"/>
               <@ww.textfield name="commentTitle" label="Title" value="%{'title'}"/>
               <@ww.textarea name="comment" label="Annotation text" value="%{'This article rocks'}" rows="'3'" cols="'30'" required="true"/>
               <@ww.submit value="Submit Rating" />

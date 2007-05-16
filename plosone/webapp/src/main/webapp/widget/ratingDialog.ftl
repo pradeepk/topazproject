@@ -9,7 +9,7 @@
       <h5><span class="commentPublic">Rate This Article</span></h5>
       <div class="posting pane">
         <form name="ratingForm" id="ratingForm" method="post" action="">
-          <input type="hidden" name="articleUri" value="${articleURI}" />  
+          <input type="hidden" name="articleURI" value="${articleURI}" />  
           <input type="hidden" name="commentTitle" id="commentTitle" value="" />
           <input type="hidden" name="comment" id="commentArea" value="" />
           <fieldset>
