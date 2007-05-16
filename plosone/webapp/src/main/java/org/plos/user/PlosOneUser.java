@@ -12,13 +12,14 @@ package org.plos.user;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.topazproject.ws.pap.UserPreference;
-import org.topazproject.ws.pap.UserProfile;
+import org.plos.ApplicationException;
+import org.plos.models.UserAccount;
+import org.plos.models.UserPreferences;
+import org.plos.models.UserProfile;
 
+import java.net.URI;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 import java.util.Set;
 
 /**
@@ -27,39 +28,131 @@ import java.util.Set;
  */
 
 public class PlosOneUser {
-
   private static final Log log = LogFactory.getLog(PlosOneUser.class);
-
-  /* Topaz user ID */
-  private String userId;
-
-  /* authID for the user in this app */
-  private String authId;
-
-  private UserProfile userProfile;
-
-  private Map<String, String[]> userPrefs;
-
   // Constants for application specific User Preferences
   private static final String ALERTS_CATEGORIES = "alertsJournals";
 
+  /** the current user-id */
+  private String      userId;
+
+  /** authID for the user in this app */
+  private String      authId;
+
+  /** authID for the user in this app */
+  private UserProfile userProfile;
+
+  /** the user-preferences as a map */
+  private Map<String, String[]> userPrefs;
+
   /**
    * Initializes a new PLoS ONE user
+   *
+   * @param ua the user-account
    */
-  public PlosOneUser() {
-    userProfile = new UserProfile();
-    userPrefs = new HashMap<String, String[]>();
+  public PlosOneUser(UserAccount ua, String appId, UsersPEP pep) {
+    this.userId   = ua.getId().toString();
+    this.authId   = ua.getAuthIds().iterator().next().getValue();
+
+    userProfile = ua.getProfile();
+    if (userProfile == null)
+      userProfile = new UserProfile();
+    else
+      filterProfile(userProfile, ua.getId(), pep);
+
+    UserPreferences p;
+    try {
+      pep.checkAccess(pep.GET_PREFERENCES, ua.getId());
+      p = ua.getPreferences(appId);
+    } catch (SecurityException se) {
+      if (log.isDebugEnabled())
+        log.debug("get-preferences was disallowed on '" + ua.getId() + "'", se);
+      p = null;
+    }
+    if (p != null)
+      userPrefs = p.getPrefsAsMap();
+    else
+      userPrefs = new HashMap<String, String[]>();
   }
 
   /**
    * Initializes a new PLoS ONE user and sets the authentication ID
    *
-   * @param authId
-   *          authentication ID of new user
+   * @param authId authentication ID of new user
    */
   public PlosOneUser(String authId) {
-    this();
+    this.userId = null;
     this.authId = authId;
+
+    userProfile = new UserProfile();
+    userPrefs   = new HashMap<String, String[]>();
+  }
+
+  /**
+   * Initializes a new PLoS ONE user from another one.
+   *
+   * @param pou the other user-object
+   */
+  protected PlosOneUser(PlosOneUser pou) {
+    userId      = pou.userId;
+    authId      = pou.authId;
+    userProfile = pou.userProfile;
+    userPrefs   = pou.userPrefs;
+  }
+
+  private static void filterProfile(UserProfile prof, URI owner, UsersPEP pep) {
+    if (prof.getDisplayName() != null && !checkAccess(owner, pep.GET_DISP_NAME, pep))
+      prof.setDisplayName(null);
+    if (prof.getRealName() != null && !checkAccess(owner, pep.GET_REAL_NAME, pep))
+      prof.setRealName(null);
+    if (prof.getGivenNames() != null && !checkAccess(owner, pep.GET_GIVEN_NAMES, pep))
+      prof.setGivenNames(null);
+    if (prof.getSurnames() != null && !checkAccess(owner, pep.GET_SURNAMES, pep))
+      prof.setSurnames(null);
+    if (prof.getTitle() != null && !checkAccess(owner, pep.GET_TITLE, pep))
+      prof.setTitle(null);
+    if (prof.getGender() != null && !checkAccess(owner, pep.GET_GENDER, pep))
+      prof.setGender(null);
+    if (prof.getPositionType() != null && !checkAccess(owner, pep.GET_POSITION_TYPE, pep))
+      prof.setPositionType(null);
+    if (prof.getOrganizationName() != null && !checkAccess(owner, pep.GET_ORGANIZATION_NAME, pep))
+      prof.setOrganizationName(null);
+    if (prof.getOrganizationType() != null && !checkAccess(owner, pep.GET_ORGANIZATION_TYPE, pep))
+      prof.setOrganizationType(null);
+    if (prof.getPostalAddress() != null && !checkAccess(owner, pep.GET_POSTAL_ADDRESS, pep))
+      prof.setPostalAddress(null);
+    if (prof.getCity() != null && !checkAccess(owner, pep.GET_CITY, pep))
+      prof.setCity(null);
+    if (prof.getCountry() != null && !checkAccess(owner, pep.GET_COUNTRY, pep))
+      prof.setCountry(null);
+    if (prof.getEmail() != null && !checkAccess(owner, pep.GET_EMAIL, pep))
+      prof.setEmail(null);
+    if (prof.getHomePage() != null && !checkAccess(owner, pep.GET_HOME_PAGE, pep))
+      prof.setHomePage(null);
+    if (prof.getWeblog() != null && !checkAccess(owner, pep.GET_WEBLOG, pep))
+      prof.setWeblog(null);
+    if (prof.getBiography() != null && !checkAccess(owner, pep.GET_BIOGRAPHY, pep))
+      prof.setBiography(null);
+    if (prof.getInterests() != null && !checkAccess(owner, pep.GET_INTERESTS, pep))
+      prof.setInterests(null);
+    if (prof.getPublications() != null && !checkAccess(owner, pep.GET_PUBLICATIONS, pep))
+      prof.setPublications(null);
+    if (prof.getBiographyText() != null && !checkAccess(owner, pep.GET_BIOGRAPHY_TEXT, pep))
+      prof.setBiographyText(null);
+    if (prof.getInterestsText() != null && !checkAccess(owner, pep.GET_INTERESTS_TEXT, pep))
+      prof.setInterestsText(null);
+    if (prof.getResearchAreasText() != null && !checkAccess(owner, pep.GET_RESEARCH_AREAS_TEXT, pep))
+      prof.setResearchAreasText(null);
+  }
+
+  private static boolean checkAccess(URI owner, String perm, UsersPEP pep) {
+    try {
+      pep.checkAccess(perm, owner);
+      return true;
+    } catch (SecurityException se) {
+      if (log.isDebugEnabled())
+        log.debug("access '" + perm + "' to '" + owner + "'s profile denied", se);
+      return false;
+    }
   }
 
   /**
@@ -68,69 +161,21 @@ public class PlosOneUser {
    * @return Returns true if the user is initialized (i.e. has chosen a username)
    */
   public boolean isInitialized() {
-    if (userProfile == null) {
-      return false;
-    }
     return (userProfile.getDisplayName() != null);
   }
 
   /**
-   * Returns the userPrefs for the web services to use. Should never need to be used by the main
-   * parts of the application.
-   *
-   * @return Returns the userPrefs.
-   */
-  public UserPreference[] getUserPrefs() {
-    int numElements = userPrefs.size();
-    UserPreference[] tempPrefs = new UserPreference[numElements];
-    UserPreference onePref;
-    Set<Entry<String, String[]>> prefsSet = userPrefs.entrySet();
-    Iterator<Entry<String, String[]>> iter = prefsSet.iterator();
-    Entry<String, String[]> oneEntry;
-    int i = 0;
-    while (iter.hasNext()) {
-      oneEntry = iter.next();
-      onePref = new UserPreference();
-      onePref.setName(oneEntry.getKey());
-      onePref.setValues(oneEntry.getValue());
-      tempPrefs[i] = onePref;
-      i++;
-    }
-    return tempPrefs;
-  }
-
-  /**
-   * Sets the userPrefs for the back end web services. Should never need to be used by the main
-   * parts of the application.
-   *
-   * @param inUserPrefs
-   *          The userPrefs to set.
-   */
-  public void setUserPrefs(UserPreference[] inUserPrefs) {
-    if (inUserPrefs == null || inUserPrefs.length == 0) {
-      this.userPrefs = null;
-    } else {
-      this.userPrefs = new HashMap<String, String[]>();
-      // int numElements = inUserPrefs.length;
-      for (UserPreference onePref : inUserPrefs) {
-        this.userPrefs.put(onePref.getName(), onePref.getValues());
-      }
-    }
-  }
-
-  /**
-   * @return Returns the userProfile.
+   * @return Returns the user profile.
    */
   public UserProfile getUserProfile() {
     return userProfile;
   }
 
   /**
-   * @param userProfile
-   *          The userProfile to set.
+   * @param the user preferences to fill in.
    */
-  public void setUserProfile(UserProfile userProfile) {
-    this.userProfile = userProfile;
+  public void getUserPrefs(UserPreferences p) {
+    p.setPrefsFromMap(userPrefs);
   }
 
   /**
@@ -167,10 +212,7 @@ public class PlosOneUser {
    * @return Returns the displayName.
    */
   public String getDisplayName() {
-    if (userProfile != null){
-      return getNonNull(userProfile.getDisplayName());
-    }
-    return ("");
+    return getNonNull(userProfile.getDisplayName());
   }
 
   /**
@@ -185,7 +227,7 @@ public class PlosOneUser {
    * @return Returns the email.
    */
   public String getEmail() {
-    return getNonNull(userProfile.getEmail());
+    return getNonNull(userProfile.getEmailAsString());
   }
 
   /**
@@ -193,7 +235,7 @@ public class PlosOneUser {
    *          The email to set.
    */
   public void setEmail(String email) {
-    userProfile.setEmail(email);
+    userProfile.setEmailFromString(email);
   }
 
   /**
@@ -223,14 +265,21 @@ public class PlosOneUser {
    *          The homePage to set.
    */
   public void setHomePage(String homePage) {
-    userProfile.setHomePage(homePage);
+    userProfile.setHomePage(homePage != null ? URI.create(homePage) : null);
   }
 
   /**
    * @return Returns the interests.
    */
   public String[] getInterests() {
-    return userProfile.getInterests();
+    Set<URI> i = userProfile.getInterests();
+
+    String[] res = new String[i.size()];
+    int idx = 0;
+    for (URI uri : i)
+      res[idx++] = uri.toString();
+
+    return res;
   }
 
   /**
@@ -238,7 +287,12 @@ public class PlosOneUser {
    *          The interests to set.
    */
   public void setInterests(String[] interests) {
-    userProfile.setInterests(interests);
+    Set<URI> i = userProfile.getInterests();
+    i.clear();
+    for (String interest : interests) {
+      if (interest != null)
+        i.add(URI.create(interest));
+    }
   }
 
   /**
@@ -253,7 +307,7 @@ public class PlosOneUser {
    *          The publications to set.
    */
   public void setPublications(String publications) {
-    userProfile.setPublications(publications);
+    userProfile.setPublications(publications != null ? URI.create(publications) : null);
   }
 
   /**
@@ -313,7 +367,7 @@ public class PlosOneUser {
    *          The weblog to set.
    */
   public void setWeblog(String weblog) {
-    userProfile.setWeblog(weblog);
+    userProfile.setWeblog(weblog != null ? URI.create(weblog) : null);
   }
 
   /**
@@ -355,7 +409,7 @@ public class PlosOneUser {
    * @return array of categories user is subscribed to
    */
   public String[] getAlerts() {
-    return null == userPrefs ? null : userPrefs.get(PlosOneUser.ALERTS_CATEGORIES);
+    return userPrefs.get(PlosOneUser.ALERTS_CATEGORIES);
   }
 
   /**
@@ -497,4 +551,7 @@ public class PlosOneUser {
     return null == value ? StringUtils.EMPTY : value;
   }
 
+  private String getNonNull(final URI value) {
+    return null == value ? StringUtils.EMPTY : value.toString();
+  }
 }

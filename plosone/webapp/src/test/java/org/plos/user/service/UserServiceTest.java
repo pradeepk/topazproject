@@ -65,7 +65,7 @@ public class UserServiceTest extends BasePlosoneTestCase {
     }
 
     for (final String tId : topazIds) {
-      getUserWebService().deleteUser(tId);
+      getUserService().deleteUser(tId);
     }
   }
 
@@ -136,7 +136,7 @@ public class UserServiceTest extends BasePlosoneTestCase {
       assertTrue(fieldsThatArePublic.contains(UserProfileGrant.EMAIL));
     }
     for (final String tId : topazIds) {
-      getUserWebService().deleteUser(tId);
+      getUserService().deleteUser(tId);
     }
 
   }
@@ -149,7 +149,7 @@ public class UserServiceTest extends BasePlosoneTestCase {
 
   private void deleteAccount(final int num) throws Exception {
     try {
-      getUserWebService().deleteUser("info:doi/10.1371/account/" + num);
+      getUserService().deleteUser("info:doi/10.1371/account/" + num);
     } catch (Exception ex) {
 
     }

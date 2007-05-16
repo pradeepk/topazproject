@@ -32,10 +32,7 @@ import org.plos.user.action.DisplayUserAction;
 import org.plos.user.action.MemberUserAlertsAction;
 import org.plos.user.action.MemberUserProfileAction;
 import org.plos.user.action.SearchUserAction;
-import org.plos.user.service.PreferencesWebService;
-import org.plos.user.service.ProfileWebService;
 import org.plos.user.service.UserService;
-import org.plos.user.service.UserWebService;
 import org.plos.util.ProfanityCheckingService;
 import org.springframework.test.AbstractDependencyInjectionSpringContextTests;
 
@@ -71,10 +68,7 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   private ArticleWebService articleWebService;
   private PermissionWebService permissionWebService;
   private AnnotationService annotationService;
-  private PreferencesWebService preferencesWebService;
-  private ProfileWebService profileWebService;
   private UserService userService;
-  private UserWebService userWebService;
   private DeleteFlagAction deleteFlagAction;
   private UnflagAnnotationAction unflagAnnotationAction;
   private ListFlagAction listFlagAction;
@@ -306,34 +300,6 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
   }
 
   /**
-   * @return Returns the preferencesWebService.
-   */
-  public PreferencesWebService getPreferencesWebService() {
-    return preferencesWebService;
-  }
-
-  /**
-   * @param preferencesWebService The preferencesWebService to set.
-   */
-  public void setPreferencesWebService(PreferencesWebService preferencesWebService) {
-    this.preferencesWebService = preferencesWebService;
-  }
-
-  /**
-   * @return Returns the profileWebService.
-   */
-  public ProfileWebService getProfileWebService() {
-    return profileWebService;
-  }
-
-  /**
-   * @param profileWebService The profileWebService to set.
-   */
-  public void setProfileWebService(ProfileWebService profileWebService) {
-    this.profileWebService = profileWebService;
-  }
-
-  /**
    * @return Returns the userService.
    */
   public UserService getUserService() {
@@ -345,20 +311,6 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
    */
   public void setUserService(UserService userService) {
     this.userService = userService;
-  }
-
-  /**
-   * @return Returns the userWebService.
-   */
-  public UserWebService getUserWebService() {
-    return userWebService;
-  }
-
-  /**
-   * @param userWebService The userWebService to set.
-   */
-  public void setUserWebService(UserWebService userWebService) {
-    this.userWebService = userWebService;
   }
 
   protected URL getAsUrl(final String resourceToIngest) throws MalformedURLException {

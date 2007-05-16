@@ -23,7 +23,7 @@ public class UserAlertsTest extends BasePlosoneTestCase {
   final String AUTH_ID = UserAlertsTest.class.getName();
 
   public void testCreateAlerts() throws Exception {
-//    getUserWebService().deleteUser("info:doi/10.1371/account/141");
+//    getUserService().deleteUser("info:doi/10.1371/account/141");
     final String topazId = createUser(AUTH_ID);
     final UserAlertsAction alertsAction = getMockUserAlertsAction(AUTH_ID, topazId);
     final String[] weeklyAlertCategories = new String[]{
@@ -56,7 +56,7 @@ public class UserAlertsTest extends BasePlosoneTestCase {
       assertTrue(ArrayUtils.contains(weeklyAlertCategories, weeklyAlert));
     }
 
-    getUserWebService().deleteUser(topazId);
+    getUserService().deleteUser(topazId);
   }
 
   protected UserAlertsAction getMockUserAlertsAction(final String authId, final String topazId) {

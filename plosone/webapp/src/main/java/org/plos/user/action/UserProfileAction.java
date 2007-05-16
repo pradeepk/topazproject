@@ -21,12 +21,12 @@ import static org.plos.Constants.Length;
 import static org.plos.Constants.ReturnCode.NEW_PROFILE;
 import static org.plos.Constants.ReturnCode.UPDATE_PROFILE;
 import org.plos.user.PlosOneUser;
+import org.plos.user.UserAccountsInterceptor;
 import org.plos.user.UserProfileGrant;
 import org.plos.user.service.DisplayNameAlreadyExistsException;
 import org.plos.util.FileUtils;
 import org.plos.util.ProfanityCheckingService;
 import org.plos.util.TextUtils;
-import org.topazproject.ws.pap.UserProfile;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -159,12 +159,17 @@ public abstract class UserProfileAction extends UserActionSupport {
       }
       return INPUT;
     }
-    
+
     authId = getUserIdToFetchEmailAddressFor();
 
     topazId = getUserService().lookUpUserByAuthId(authId);
     if (topazId == null) {
       topazId = getUserService().createUser(authId);
+
+      // update the user-id in the session if we just created an account for ourselves
+      Map<String, Object> session = getSessionMap();
+      if (authId != null && authId.equals(session.get(UserAccountsInterceptor.AUTH_KEY)))
+        session.put(UserAccountsInterceptor.USER_KEY, topazId);
     }
 
     newUser = createPlosOneUser();
@@ -266,7 +271,6 @@ public abstract class UserProfileAction extends UserActionSupport {
         //Will not be needed when all the user accounts with a profile have a email set up
         //This is to display the email address to the user on the profile page, not required for saving
         email = fetchUserEmailAddress();
-        assignUserProfileToPlosUser(plosOneUser);
         if (log.isDebugEnabled()) {
           log.debug("Profile was not found, so creating one for user with email:" + email);
         }
@@ -276,15 +280,6 @@ public abstract class UserProfileAction extends UserActionSupport {
     //else just forward the user to a success page, which might be the home page.
     isDisplayNameSet = true;
     return SUCCESS;
-  }
-
-  /**
-   * Assign a user profile to the PlosOneUse.
-   * To be used only in the case where a topaz user has been created but the profile creation failed.
-   * @param plosOneUser plosOneUser
-   */
-  protected void assignUserProfileToPlosUser(final PlosOneUser plosOneUser) {
-    plosOneUser.setUserProfile(new UserProfile());
   }
 
   private PlosOneUser createPlosOneUser() throws Exception {

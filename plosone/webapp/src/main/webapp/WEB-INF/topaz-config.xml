@@ -31,5 +31,8 @@
     <ratings>
       <pdpName>_default_</pdpName>
     </ratings>
+    <users>
+      <pdpName>_default_</pdpName>
+    </users>
   </topaz>
 </config>

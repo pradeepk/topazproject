@@ -50,7 +50,7 @@ import org.topazproject.fedora.client.Uploader;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import org.topazproject.ws.users.filter.UserAccountsFilter;
+import org.plos.user.UserAccountsInterceptor;
 
 import com.opensymphony.webwork.ServletActionContext;
 
@@ -245,7 +245,7 @@ public class WSTopazContext implements TopazContext {
     if (session == null)
       return null;
 
-    return (String)session.getAttribute(UserAccountsFilter.USER_KEY);
+    return (String)session.getAttribute(UserAccountsInterceptor.USER_KEY);
   }
 
   /*

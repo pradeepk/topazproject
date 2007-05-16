@@ -9,6 +9,9 @@
  */
 package org.plos.user.service;
 
+import java.io.IOException;
+import java.net.URI;
+
 import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 import org.apache.commons.collections.CollectionUtils;
@@ -17,15 +20,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.Constants;
+import org.plos.models.AuthenticationId;
+import org.plos.models.UserAccount;
+import org.plos.models.UserPreferences;
+import org.plos.models.UserProfile;
+import org.plos.models.UserRole;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
 import org.plos.user.UserProfileGrant;
-import org.topazproject.common.DuplicateIdException;
-import org.topazproject.common.NoSuchIdException;
-import org.topazproject.ws.pap.UserPreference;
-import org.topazproject.ws.pap.UserProfile;
-import org.topazproject.ws.users.NoSuchUserIdException;
+import org.plos.user.UsersPEP;
+import org.plos.util.TransactionHelper;
+import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.query.Results;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -43,12 +52,11 @@ import java.util.Set;
  * 
  */
 public class UserService extends BaseConfigurableService {
+  private Session session;
 
-  private UserWebService userWebService;
-  private UserRoleWebService userRoleWebService;
-  private ProfileWebService profileWebService;
+  private UsersPEP pep;
+
   private PermissionWebService permissionWebService;
-  private PreferencesWebService preferencesWebService;
   private GeneralCacheAdministrator userCacheAdministrator;
 
   private String applicationId;
@@ -62,6 +70,12 @@ public class UserService extends BaseConfigurableService {
   private Collection<String> monthlyCategories;
   private Map<String, String> categoryNames;
 
+  @Override
+  public void init() throws IOException {
+    if (pep == null)
+      pep = new UsersPEP();
+  }
+
   /**
    * Create a new user account and associate a single authentication id with it.
    * 
@@ -72,31 +86,91 @@ public class UserService extends BaseConfigurableService {
    *           if an error occured
    */
   public String createUser(final String authId) throws ApplicationException {
-    try {
-      return userWebService.createUser(authId);
-    } catch (DuplicateIdException e) {
-      throw new ApplicationException(e);
-    } catch (RemoteException e) {
-      throw new ApplicationException(e);
-    }
+    pep.checkAccessAE(pep.CREATE_USER, pep.ANY_RESOURCE);
+
+    // create account
+    final UserAccount ua =
+        TransactionHelper.doInTx(session, new TransactionHelper.Action<UserAccount>() {
+      public UserAccount run(Transaction tx) {
+        UserAccount ua = new UserAccount();
+        ua.getAuthIds().add(new AuthenticationId(authId));
+        tx.getSession().saveOrUpdate(ua);
+        return ua;
+      }
+    });
+
+    // check for duplicate
+    boolean dup = TransactionHelper.doInTx(session, new TransactionHelper.Action<Boolean>() {
+      public Boolean run(Transaction tx) {
+        Results r = tx.getSession().doQuery(
+          "select ua from UserAccount ua where ua.authIds.value = '" + authId + "';");
+        if (!r.next() || !r.next())
+          return false;
+
+        tx.getSession().delete(ua);
+        tx.commit();
+        return true;
+      }
+    });
+    if (dup)
+      throw new ApplicationException("AuthId '" + authId + "' is already in use");
+
+    return ua.getId().toString();
   }
 
   /**
-   * Deletes the given user from Topaz. Currently, does not remove the entries in the system
-   * associated with the ID. May not want to make this visible as this can affect other applications
+   * Deletes the given user from Topaz. Visible for testing only.
    * 
    * @param topazUserId
    *          the Topaz User ID
    * @throws ApplicationException ApplicationException
    */
-  private void deleteUser(final String topazUserId) throws ApplicationException {
-    try {
-      userWebService.deleteUser(topazUserId);
-    } catch (NoSuchIdException ne) {
-      throw new ApplicationException(ne);
-    } catch (RemoteException re) {
-      throw new ApplicationException(re);
-    }
+  public void deleteUser(final String topazUserId) throws ApplicationException {
+    pep.checkAccessAE(pep.DELETE_USER, URI.create(topazUserId));
+
+    TransactionHelper.doInTx(session, new TransactionHelper.Action<Void>() {
+      public Void run(Transaction tx) {
+        UserAccount ua = tx.getSession().get(UserAccount.class, topazUserId);
+        if (ua != null)
+          tx.getSession().delete(ua);
+        return null;
+      }
+    });
+  }
+
+  /**
+   * Get the account info for the given user.
+   * @param topazUserId
+   *          the Topaz User ID
+   * @throws ApplicationException ApplicationException
+   */
+  private UserAccount getUserAccount(final String topazUserId) throws ApplicationException {
+    UserAccount ua = TransactionHelper.doInTx(session, new TransactionHelper.Action<UserAccount>() {
+      public UserAccount run(Transaction tx) {
+        return tx.getSession().get(UserAccount.class, topazUserId);
+      }
+    });
+    if (ua == null)
+      throw new ApplicationException("No user-account with id '" + topazUserId + "' found");
+    return ua;
+  }
+
+  /**
+   * Get the account info for the given user.
+   * @param authId
+   *          the Topaz Auth ID
+   * @throws ApplicationException ApplicationException
+   */
+  private UserAccount getUserAccountByAuthId(final String authId) throws ApplicationException {
+    return TransactionHelper.doInTx(session, new TransactionHelper.Action<UserAccount>() {
+      public UserAccount run(Transaction tx) {
+        Results r = tx.getSession().doQuery(
+          "select ua from UserAccount ua where ua.authIds.value = '" + authId + "';");
+        if (!r.next())
+          return null;
+        return (UserAccount) r.get(0);
+      }
+    });
   }
 
   /**
@@ -107,7 +181,6 @@ public class UserService extends BaseConfigurableService {
    * @return username username
    * @throws ApplicationException ApplicationException
    */
-  
   public String getUsernameByTopazId(final String topazUserId) throws ApplicationException {
     String retVal = null;
     try {
@@ -116,11 +189,10 @@ public class UserService extends BaseConfigurableService {
       if (log.isDebugEnabled()) {
         log.debug("retrieved user from cache: " + topazUserId);
       }
-//      throw new NeedsRefreshException("forced");
     } catch (NeedsRefreshException nre) {
       boolean updated = false;
       if (log.isDebugEnabled()) {
-        log.debug("trying to get from TOPAZ:" + topazUserId);
+        log.debug("trying to get from mulgara:" + topazUserId);
       }
       try {
         PlosOneUser pou = getUserWithProfileLoaded(topazUserId);
@@ -136,7 +208,7 @@ public class UserService extends BaseConfigurableService {
     }
     return retVal;
   }
-  
+
   /**
    * Gets the user specified by the Topaz userID passed in
    * 
@@ -146,14 +218,7 @@ public class UserService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    */
   public PlosOneUser getUserByTopazId(final String topazUserId) throws ApplicationException {
-    final PlosOneUser pou = getUserWithProfileLoaded(topazUserId);
-    
-    final UserPreference[] userPrefs = getPreferences(applicationId, topazUserId);
-    if (null != userPrefs) {
-      pou.setUserPrefs(userPrefs);
-    }
-
-    return pou;
+    return getUserWithProfileLoaded(topazUserId);
   }
 
   /**
@@ -164,10 +229,9 @@ public class UserService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    */
   public PlosOneUser getUserWithProfileLoaded(final String topazUserId) throws ApplicationException {
-    final PlosOneUser pou = new PlosOneUser();
-    pou.setUserProfile(getProfile(topazUserId));
-    pou.setUserId(topazUserId);
-    return pou;
+    pep.checkAccessAE(pep.LOOKUP_USER, URI.create(topazUserId));
+
+    return new PlosOneUser(getUserAccount(topazUserId), applicationId, pep);
   }
 
   /**
@@ -179,8 +243,10 @@ public class UserService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    */
   public PlosOneUser getUserByAuthId(final String authId) throws ApplicationException {
-    final String topazUserId = lookUpUserByAuthId(authId);
-    return topazUserId == null ? null : getUserByTopazId(topazUserId);
+    pep.checkAccessAE(pep.LOOKUP_USER, URI.create("account:" + authId));
+
+    UserAccount ua = getUserAccountByAuthId(authId);
+    return (ua != null) ? new PlosOneUser(ua, applicationId, pep) : null;
   }
 
   /**
@@ -193,13 +259,11 @@ public class UserService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    */
   public void setState(final String userId, int state) throws ApplicationException {
-    try {
-      userWebService.setState(userId, state);
-    } catch (NoSuchIdException ne) {
-      throw new ApplicationException(ne);
-    } catch (RemoteException re) {
-      throw new ApplicationException(re);
-    }
+    pep.checkAccessAE(pep.SET_STATE, URI.create(userId));
+
+    UserAccount ua = getUserAccount(userId);
+    ua.setState(state);
+    flush(ua);
   }
 
   /**
@@ -211,13 +275,10 @@ public class UserService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    */
   public int getState(final String userId) throws ApplicationException {
-    try {
-      return userWebService.getState(userId);
-    } catch (NoSuchIdException ne) {
-      throw new ApplicationException(ne);
-    } catch (RemoteException re) {
-      throw new ApplicationException(re);
-    }
+    pep.checkAccessAE(pep.GET_STATE, URI.create(userId));
+
+    UserAccount ua = getUserAccount(userId);
+    return ua.getState();
   }
 
   /**
@@ -229,17 +290,10 @@ public class UserService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    */
   public String getAuthenticationId(final String topazId) throws ApplicationException {
-    try {
-      final String[] authenticationIds = userWebService.getAuthenticationIds(topazId);
-      if (authenticationIds.length < 1) {
-        throw new NoSuchUserIdException("No auth id's found for topazId:" + topazId);
-      }
-      return authenticationIds[0];
-    } catch (NoSuchUserIdException ne) {
-      throw new ApplicationException(ne);
-    } catch (RemoteException re) {
-      throw new ApplicationException(re);
-    }
+    pep.checkAccessAE(pep.GET_AUTH_IDS, URI.create(topazId));
+
+    UserAccount ua = getUserAccount(topazId);
+    return ua.getAuthIds().iterator().next().getValue();
   }
 
   /**
@@ -251,11 +305,10 @@ public class UserService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    */
   public String lookUpUserByAuthId(final String authId) throws ApplicationException {
-    try {
-      return userWebService.lookUpUserByAuthId(authId);
-    } catch (RemoteException re) {
-      throw new ApplicationException("lookUpUserByAuthId failed for authId:" + authId, re);
-    }
+    pep.checkAccessAE(pep.LOOKUP_USER, URI.create("account:" + authId));
+
+    UserAccount ua = getUserAccountByAuthId(authId);
+    return (ua != null) ? ua.getId().toString() : null;
   }
 
   /**
@@ -265,33 +318,25 @@ public class UserService extends BaseConfigurableService {
    * @throws org.plos.ApplicationException ApplicationException
    */
   public String lookUpUserByEmailAddress(final String emailAddress) throws ApplicationException {
-    try {
-      return profileWebService.getUserWithEmailAddress(emailAddress);
-    } catch (RemoteException re) {
-      throw new ApplicationException("Error occured while fetching profile with email:" + emailAddress, re);
-    }
+    return lookUpUserByProfile("email", URI.create("mailto:" + emailAddress));
   }
 
-  /**
-   * Retrieves the profile for the given Topaz User ID
-   * 
-   * @param topazUserId
-   *          Topaz userID
-   * @return user profile of Topaz user
-   * @throws ApplicationException ApplicationException
-   */
-  public UserProfile getProfile(final String topazUserId) throws ApplicationException {
-    try {
-      return profileWebService.getProfile(topazUserId);
-    } catch (NoSuchIdException ne) {
-      throw new ApplicationException("No user found with topazId:" + topazUserId, ne);
-    } catch (RemoteException re) {
-      throw new ApplicationException(re);
-    }
+  private String lookUpUserByProfile(final String field, final Object value)
+      throws ApplicationException {
+    pep.checkAccessAE(pep.FIND_USERS_BY_PROF, pep.ANY_RESOURCE);
 
+    return TransactionHelper.doInTx(session, new TransactionHelper.Action<String>() {
+      public String run(Transaction tx) {
+        String v = (value instanceof URI) ? "<" + value + ">" : "'" + value + "'";
+        Results r = tx.getSession().doQuery(
+          "select ua from UserAccount ua where ua.profile." + field + " = " + v + ";");
+        if (!r.next())
+          return null;
+        return ((UserAccount) r.get(0)).getId().toString();
+      }
+    });
   }
 
-  
   /**
    * Takes in a PLoS ONE user and write the profile to the store
    *
@@ -302,12 +347,12 @@ public class UserService extends BaseConfigurableService {
    */
   public void setProfile(final PlosOneUser inUser) throws ApplicationException, DisplayNameAlreadyExistsException {
     if (inUser != null) {
-      setProfile(inUser.getUserId(), inUser.getUserProfile(), false);
+      setProfile(inUser, false);
     } else {
       throw new ApplicationException("User is null");
     }
   }
-  
+
   /**
    * Takes in a PLoS ONE user and write the profile to the store
    *
@@ -318,9 +363,11 @@ public class UserService extends BaseConfigurableService {
    * @throws org.plos.ApplicationException ApplicationException
    * @throws org.plos.user.service.DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
-  public void setProfile(final PlosOneUser inUser, final String[] privateFields, final boolean userNameIsRequired) throws ApplicationException, DisplayNameAlreadyExistsException {
+  public void setProfile(final PlosOneUser inUser, final String[] privateFields,
+                         final boolean userNameIsRequired)
+      throws ApplicationException, DisplayNameAlreadyExistsException {
     if (inUser != null) {
-      setProfile(inUser.getUserId(), inUser.getUserProfile(), userNameIsRequired);
+      setProfile(inUser, userNameIsRequired);
       final Collection<UserProfileGrant> profileGrantsList = UserProfileGrant.getProfileGrantsForFields(privateFields);
       final UserProfileGrant[] profileGrants = profileGrantsList.toArray(new UserProfileGrant[profileGrantsList.size()]);
       setProfileFieldsPrivate(inUser.getUserId(), profileGrants);
@@ -340,22 +387,22 @@ public class UserService extends BaseConfigurableService {
    * @throws org.plos.ApplicationException ApplicationException
    * @throws org.plos.user.service.DisplayNameAlreadyExistsException DisplayNameAlreadyExistsException
    */
-  protected void setProfile(final String topazUserId, final UserProfile profile, final boolean userNameIsRequired)
+  protected void setProfile(final PlosOneUser inUser, final boolean userNameIsRequired)
       throws ApplicationException, DisplayNameAlreadyExistsException {
-    try {
-      if (userNameIsRequired) {
-        final String userId = profileWebService.getUserWithDisplayName(profile.getDisplayName());
-        if ((null != userId) && !userId.equals(topazUserId)) {
-          throw new DisplayNameAlreadyExistsException();
-        }
+    pep.checkAccessAE(pep.SET_PROFILE, URI.create(inUser.getUserId()));
+
+    if (userNameIsRequired) {
+      final String userId = lookUpUserByProfile("displayName", inUser.getDisplayName());
+      if ((null != userId) && !userId.equals(inUser.getUserId())) {
+        throw new DisplayNameAlreadyExistsException();
       }
-      profileWebService.setProfile(topazUserId, profile);
-      userCacheAdministrator.flushEntry(topazUserId);
-    } catch (NoSuchIdException ne) {
-      throw new ApplicationException(ne);
-    } catch (RemoteException re) {
-      throw new ApplicationException(re);
     }
+
+    UserAccount ua = getUserAccount(inUser.getUserId());
+    ua.setProfile(inUser.getUserProfile());
+    flush(ua);
+
+    userCacheAdministrator.flushEntry(inUser.getUserId());
   }
 
   /**
@@ -480,27 +527,6 @@ public class UserService extends BaseConfigurableService {
   }
 
   /**
-   * Retrieves user preferences for this application and this Topaz user ID
-   *
-   * @param appId
-   *          application ID
-   * @param topazUserId
-   *          Topaz User ID
-   * @return array of user preferences
-   * @throws ApplicationException ApplicationException
-   */
-  public UserPreference[] getPreferences(final String appId, final String topazUserId)
-      throws ApplicationException {
-    try {
-      return preferencesWebService.getPreferences(appId, topazUserId);
-    } catch (NoSuchIdException ne) {
-      throw new ApplicationException(ne);
-    } catch (RemoteException re) {
-      throw new ApplicationException(re);
-    }
-  }
-
-  /**
    * Writes the preferences for the given user to the store
    *
    * @param inUser
@@ -508,53 +534,65 @@ public class UserService extends BaseConfigurableService {
    * @throws ApplicationException ApplicationException
    */
   public void setPreferences(final PlosOneUser inUser) throws ApplicationException {
-    if (inUser != null) {
-      setPreferences(applicationId, inUser.getUserId(), inUser.getUserPrefs());
-    } else {
+    if (inUser == null)
       throw new ApplicationException("User is null");
+
+    pep.checkAccessAE(pep.SET_PREFERENCES, URI.create(inUser.getUserId()));
+
+    UserAccount ua = getUserAccount(inUser.getUserId());
+
+    UserPreferences p = ua.getPreferences(applicationId);
+    if (p == null) {
+      p = new UserPreferences();
+      p.setAppId(applicationId);
+      ua.getPreferences().add(p);
     }
+    inUser.getUserPrefs(p);
+
+    flush(ua);
   }
 
   /**
-   * Writes the preferences for the user ID and application ID to the store.
+   * Writes out the given user's to the store.
    *
-   * @param appId
-   *          application ID
-   * @param topazUserId
-   *          Topaz User ID
-   * @param prefs
-   *          User preferences to write
+   * @param ua
+   *          User account whose data should be written
    * @throws ApplicationException ApplicationException
    */
-  protected void setPreferences(final String appId, final String topazUserId, UserPreference[] prefs)
-      throws ApplicationException {
-    try {
-      preferencesWebService.setPreferences(appId, topazUserId, prefs);
-    } catch (NoSuchIdException ne) {
-      throw new ApplicationException(ne);
-    } catch (RemoteException re) {
-      throw new ApplicationException(re);
-    }
+  private void flush(final UserAccount ua) throws ApplicationException {
+    if (ua == null)
+      throw new ApplicationException("User is null");
+
+    TransactionHelper.doInTx(session, new TransactionHelper.Action<Void>() {
+      public Void run(Transaction tx) {
+        tx.getSession().saveOrUpdate(ua);
+        return null;
+      }
+    });
   }
 
   /**
    * @see org.plos.user.service.UserService#setRole(String, String[])
    */
   public void setRole(final String topazId, final String roleId) throws ApplicationException {
-    setRole(topazId, new String[]{roleId});
+    setRole(topazId, new String[] { roleId });
   }
 
   /**
-   * @see org.plos.user.service.UserRoleWebService#setRole(String, String[])
+   * Set the roles for the user.
+   *
+   * @param topazId the user's id
+   * @param roleIds the new roles
+   * @throws ApplicationException if the user doesn't exist
    */
   public void setRole(final String topazId, final String[] roleIds) throws ApplicationException {
-    try {
-      userRoleWebService.setRole(topazId, roleIds);
-    } catch (RemoteException re) {
-      throw new ApplicationException("topazId:" + topazId + ", roleIds:" + Arrays.toString(roleIds), re);
-    } catch (NoSuchUserIdException nsuie) {
-      throw new ApplicationException(nsuie);
-    }
+    pep.checkAccessAE(pep.SET_ROLES, URI.create(topazId));
+
+    UserAccount ua = getUserAccount(topazId);
+    ua.getRoles().clear();
+    for (String r : roleIds)
+      ua.getRoles().add(new UserRole(r));
+    flush(ua);
   }
 
   /**
@@ -563,73 +601,16 @@ public class UserService extends BaseConfigurableService {
    * @see org.plos.user.service.UserRoleWebService#getRoles(String)
    */
   public String[] getRole(final String topazId) throws ApplicationException {
-    try {
-      return userRoleWebService.getRoles(topazId);
-    } catch (RemoteException re) {
-      throw new ApplicationException(re);
-    } catch (NoSuchUserIdException nsuie) {
-      throw new ApplicationException(nsuie);
-    }
-  }
+    pep.checkAccessAE(pep.GET_ROLES, URI.create(topazId));
 
-  /**
-   * @return Returns the preferencesWebService.
-   */
-  public PreferencesWebService getPreferencesWebService() {
-    return preferencesWebService;
-  }
+    UserAccount ua = getUserAccount(topazId);
 
-  /**
-   * @param preferencesWebService
-   *          The preferencesWebService to set.
-   */
-  public void setPreferencesWebService(PreferencesWebService preferencesWebService) {
-    this.preferencesWebService = preferencesWebService;
-  }
+    String[] res = new String[ua.getRoles().size()];
+    int idx = 0;
+    for (UserRole ur : ua.getRoles())
+      res[idx++] = ur.getRole();
 
-  /**
-   * @return Returns the profileWebService.
-   */
-  public ProfileWebService getProfileWebService() {
-    return profileWebService;
-  }
-
-  /**
-   * @param profileWebService
-   *          The profileWebService to set.
-   */
-  public void setProfileWebService(ProfileWebService profileWebService) {
-    this.profileWebService = profileWebService;
-  }
-
-  /**
-   * @return Returns the userWebService.
-   */
-  public UserWebService getUserWebService() {
-    return userWebService;
-  }
-
-  /**
-   * @param userWebService
-   *          The userWebService to set.
-   */
-  public void setUserWebService(UserWebService userWebService) {
-    this.userWebService = userWebService;
-  }
-
-  /**
-   * @return the userRoleWebService
-   */
-  public UserRoleWebService getUserRoleWebService() {
-    return userRoleWebService;
-  }
-
-  /**
-   * Set the userRoleWebService
-   * @param userRoleWebService userRoleWebService
-   */
-  public void setUserRoleWebService(final UserRoleWebService userRoleWebService) {
-    this.userRoleWebService = userRoleWebService;
+    return res;
   }
 
   /**
@@ -763,5 +744,15 @@ public class UserService extends BaseConfigurableService {
     }
 
     return result;
+  }
+
+  /** 
+   * Set the OTM session. Called by spring's bean wiring. 
+   * 
+   * @param session the otm session
+   */
+  @Required
+  public void setOtmSession(Session session) {
+    this.session = session;
   }
 }

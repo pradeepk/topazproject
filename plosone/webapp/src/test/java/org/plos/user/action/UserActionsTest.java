@@ -74,7 +74,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
 		assertEquals(CITY, pou.getCity());
 		assertEquals(COUNTRY, pou.getCountry());
 
-    getUserWebService().deleteUser(topazId);
+    getUserService().deleteUser(topazId);
   }
 
   public void testCreateUserWithRightVisibilityOfFields() throws Exception {
@@ -116,7 +116,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
 		assertEquals(CITY, pou.getCity());
 		assertEquals(COUNTRY, pou.getCountry());
 
-    getUserWebService().deleteUser(topazId);
+    getUserService().deleteUser(topazId);
   }
 
   public void testCreateAdminUser() throws Exception {
@@ -136,7 +136,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
     assignAdminRoleAction.setTopazId(topazId);
     assertEquals(SUCCESS, assignAdminRoleAction.execute());
 
-    getUserWebService().deleteUser(topazId);
+    getUserService().deleteUser(topazId);
   }
 
   public void testSearchUserByUID() throws Exception {
@@ -171,7 +171,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
 		assertEquals(authId, pou.getAuthId());
 		assertEquals(CITY, pou.getCity());
 		assertEquals(COUNTRY, pou.getCountry());
-    getUserWebService().deleteUser(topazId);
+    getUserService().deleteUser(topazId);
   }
 
   public void testSearchUserByEmail() throws Exception {
@@ -205,7 +205,7 @@ public class UserActionsTest extends BasePlosoneTestCase {
 		assertEquals(SURNAMES, pou.getSurnames());
 		assertEquals(CITY, pou.getCity());
 		assertEquals(COUNTRY, pou.getCountry());
-    getUserWebService().deleteUser(topazId);
+    getUserService().deleteUser(topazId);
   }
 
   protected AssignAdminRoleAction createMockAssignAdminRoleAction(final String authId, final String topazId) {

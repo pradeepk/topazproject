@@ -24,15 +24,13 @@ public class AdminUserProfileAction extends UserProfileAction {
     final PlosOneUser plosOneUser = getUserService().getUserByTopazId(getTopazId());
 
     //To be used to fix the partial created user profile for a user
-    if (null == plosOneUser.getUserProfile()) {
-      assignUserProfileToPlosUser(plosOneUser);
+    if ("".equals(plosOneUser.getEmail())) {
       setDisplayNameRequired(false);
       userIsHalfCreated = true;
     } else if ("".equals(plosOneUser.getDisplayName())) {
       setDisplayNameRequired(false);
       setIsDisplayNameSet(false);
     }
-      
 
     return plosOneUser;
   }

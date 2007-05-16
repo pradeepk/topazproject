@@ -34,6 +34,7 @@
       <interceptor name="ensureAdmin" class="org.plos.user.EnsureRoleInterceptor">
         <param name="roleToCheck">admin</param>
       </interceptor>
+      <interceptor name="plosUserLookup" class="org.plos.user.UserAccountsInterceptor"/>
 
       <interceptor-stack name="plosBaseStack">
         <interceptor-ref name="exception">
@@ -60,6 +61,7 @@
         <interceptor-ref name="workflow">
            <param name="excludeMethods">input,back,cancel,browse</param>
         </interceptor-ref>
+        <interceptor-ref name="plosUserLookup"/>
       </interceptor-stack>
 
       <interceptor-stack name="plosUserStack">

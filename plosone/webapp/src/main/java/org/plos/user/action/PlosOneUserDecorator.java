@@ -19,6 +19,7 @@ public class PlosOneUserDecorator extends PlosOneUser {
   private final PlosOneUser plosOneUser;
 
   public PlosOneUserDecorator(final PlosOneUser plosOneUser) {
+    super(plosOneUser);
     this.plosOneUser = plosOneUser;
   }
 

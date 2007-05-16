@@ -22,7 +22,7 @@ import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
 import org.topazproject.xacml.Util;
-import org.topazproject.ws.users.filter.UserAccountsFilter;
+import org.plos.user.UserAccountsInterceptor;
 
 import com.opensymphony.webwork.ServletActionContext;
 
@@ -165,7 +165,7 @@ public class ServletActionContextAttributeFinderModule extends AttributeFinderMo
       if (session == null)
         return null;
 
-      return Util.toAttributeValue(type, session.getAttribute(UserAccountsFilter.USER_KEY));
+      return Util.toAttributeValue(type, session.getAttribute(UserAccountsInterceptor.USER_KEY));
 
     }
   }

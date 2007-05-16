@@ -15,9 +15,7 @@ import com.opensymphony.xwork.ActionInvocation;
 import com.opensymphony.xwork.mock.MockActionInvocation;
 import org.plos.BasePlosoneTestCase;
 import org.plos.Constants;
-import org.plos.user.service.UserRoleWebService;
 import org.plos.user.service.UserService;
-import org.topazproject.ws.users.NoSuchUserIdException;
 
 import java.rmi.RemoteException;
 import java.util.HashMap;
@@ -107,7 +105,8 @@ public class EnsureRoleInterceptorTest extends BasePlosoneTestCase {
     assertEquals(actionCalledStatus, result);
   }
 
-  private UserService getUserServiceReturningRole(final String roleToReturn) {
+  private UserService getUserServiceReturningRole(final String roleToReturn) throws Exception {
+    /*
     final UserService userService = getUserService();
     final UserRoleWebService userRoleWebService = new UserRoleWebService() {
       public String[] getRoles(final String topazId) throws NoSuchUserIdException, RemoteException {
@@ -116,6 +115,12 @@ public class EnsureRoleInterceptorTest extends BasePlosoneTestCase {
     };
     userService.setUserRoleWebService(userRoleWebService);
     return userService;
+    */
+    return new UserService() {
+      public String[] getRoles(final String topazId) {
+        return new String[] { roleToReturn };
+      }
+    };
   }
 
 }
