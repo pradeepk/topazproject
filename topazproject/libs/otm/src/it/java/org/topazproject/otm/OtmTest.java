@@ -11,6 +11,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.Grants;
@@ -604,18 +605,16 @@ public class OtmTest extends TestCase {
 
       assertTrue(id1.equals(a1.getId()) || id2.equals(a1.getId()));
 
-/* resolver needs to be installed for these
-      l = session.createCriteria(Annotation.class).add(Restrictions.gt("creator", "bb")).list();
-      assertEquals(1, l.size());
-      a1 = (Annotation) l.get(0);
-      assertEquals(id3, a1.getId());
-
-      l = session.createCriteria(Annotation.class).add(Restrictions.lt("creator", "bb")).list();
-      assertEquals(1, l.size());
-      a1 = (Annotation) l.get(0);
-      assertEquals(id1, a1.getId());
-*/
-
+      /* resolver needs to be installed for these
+         l = session.createCriteria(Annotation.class).add(Restrictions.gt("creator", "bb")).list();
+         assertEquals(1, l.size());
+         a1 = (Annotation) l.get(0);
+         assertEquals(id3, a1.getId());
+         l = session.createCriteria(Annotation.class).add(Restrictions.lt("creator", "bb")).list();
+         assertEquals(1, l.size());
+         a1 = (Annotation) l.get(0);
+         assertEquals(id1, a1.getId());
+       */
       l = session.createCriteria(Annotation.class).add(Restrictions.exists("created")).list();
       assertEquals(1, l.size());
       a1 = (Annotation) l.get(0);
@@ -642,6 +641,7 @@ public class OtmTest extends TestCase {
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       log.warn("test failed", e);
+
       try {
         if (tx != null)
           tx.rollback();
@@ -826,6 +826,131 @@ public class OtmTest extends TestCase {
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public void test07() throws OtmException {
+    Session     session = factory.openSession();
+    Transaction tx      = null;
+
+    URI         id1     = URI.create("http://localhost/annotation/1");
+    URI         id2     = URI.create("http://localhost/annotation/2");
+    URI         id3     = URI.create("http://localhost/annotation/3");
+    URI         foo     = URI.create("foo:1");
+
+    try {
+      tx = session.beginTransaction();
+
+      Article a = new Article();
+      a.setUri(foo);
+
+      Annotation a1 = new PublicAnnotation(id1);
+      Annotation a2 = new PublicAnnotation(id2);
+      Annotation a3 = new PrivateAnnotation(id3);
+
+      a1.setAnnotates(foo);
+      a2.setAnnotates(foo);
+      a3.setAnnotates(foo);
+
+      session.saveOrUpdate(a);
+      session.saveOrUpdate(a1);
+      session.saveOrUpdate(a2);
+      session.saveOrUpdate(a3);
+
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+
+    session   = factory.openSession();
+    tx        = null;
+
+    try {
+      tx = session.beginTransaction();
+
+      List l = session.createCriteria(Article.class).list();
+      assertEquals(1, l.size());
+
+      Article a = (Article) l.get(0);
+
+      List<PublicAnnotation> al = a.getPublicAnnotations();
+      assertEquals(2, al.size());
+
+      PublicAnnotation a1 = al.get(0);
+      PublicAnnotation a2 = al.get(1);
+      assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
+      assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
+      assertEquals(foo, a1.getAnnotates());
+      assertEquals(foo, a2.getAnnotates());
+
+      l = session.createCriteria(Annotation.class).list();
+      assertEquals(3, l.size());
+
+      for (Object o : l) {
+        assertEquals(foo, ((Annotation)o).getAnnotates());
+        if (o instanceof PublicAnnotation)
+          assertTrue(a1 == o || a2 == o);
+      }
+
+
+      Results r = session.doQuery("select a from Annotation a where a.annotates = <foo:1>;");
+      l.clear();
+      while (r.next())
+        l.add(r.get(0));
+
+      assertEquals(3, l.size());
+
+      for (Object o : l) {
+        assertEquals(foo, ((Annotation)o).getAnnotates());
+        if (o instanceof PublicAnnotation)
+          assertTrue(a1 == o || a2 == o);
+      }
+
+
+      session.delete(a);
+      assertNull(session.get(Article.class, a.getUri().toString()));
+      session.flush();
+      assertNull(session.get(Article.class, a.getUri().toString()));
+      l = session.createCriteria(Article.class).list();
+      assertEquals(0, l.size());
+      l = session.createCriteria(Annotation.class).list();
+      assertEquals(1, l.size());
+
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      log.warn("test failed", e);
       try {
         if (tx != null)
           tx.rollback();
