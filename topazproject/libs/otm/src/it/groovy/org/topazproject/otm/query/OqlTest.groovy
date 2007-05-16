@@ -93,7 +93,7 @@ public class OqlTest extends GroovyTestCase {
       checker.verify(r) {
         row { object (class:Article.class, uri:id4); object (class:PublicAnnotation.class, id:id1) }
         row { object (class:Article.class, uri:id4); object (class:PublicAnnotation.class, id:id2) }
-        row { object (class:Article.class, uri:id5); object (class:PublicAnnotation.class, id:id3) }
+        row { nul();                                 object (class:PublicAnnotation.class, id:id3) }
       }
 
       // no results
@@ -128,7 +128,7 @@ public class OqlTest extends GroovyTestCase {
             """)
       checker.verify(r) {
         row {
-          object (class:Article.class, uri:id5)
+          nul()
           subq {
             row { object (class:PublicAnnotation.class, id:id3) }
           }
@@ -148,7 +148,7 @@ public class OqlTest extends GroovyTestCase {
             where p := art.publicAnnotations order by art;
             """)
       checker.verify(r) {
-        row { object (class:Article.class, uri:id5); string ("1.0") }
+        row { nul();                                 string ("1.0") }
         row { object (class:Article.class, uri:id4); string ("2.0") }
       }
 

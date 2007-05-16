@@ -391,7 +391,10 @@ public class ItqlStore implements TripleStore {
 
     // figure out class to instantiate
     Class clazz = cm.getSourceClass();
-    if (fvalues.get(Rdf.rdf + "type") != null) {
+    if (fvalues.get(Rdf.rdf + "type") == null) {
+      if (cm.getType() != null)
+        return null;
+    } else {
       clazz = sf.mostSpecificSubClass(clazz, fvalues.get(Rdf.rdf + "type"));
       if (clazz == null)
         return null;
