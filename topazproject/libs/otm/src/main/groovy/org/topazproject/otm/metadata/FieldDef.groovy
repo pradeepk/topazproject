@@ -37,6 +37,8 @@ public class FieldDef {
   String   name
   /** the rdf predicate to store this under; if not specified, defaults to uriPrefix + name  */
   String   pred
+  /** the model to store the statements in */
+  String   model
   /**
    * if null, this is an untyped literal; if it's an xsd type, this is a typed literal; else
    * this is a class type, and interpreted as uriPrefix + type if not absolute
@@ -150,18 +152,18 @@ public class FieldDef {
       m = classType.toClass().fields.collect{ new EmbeddedClassFieldMapper(container, it) }
     } else if (maxCard == 1) {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
-      m = [new FunctionalMapper(pred, f, get, set, ser, dtype, inverse, null, mt, owned, idGen)]
+      m = [new FunctionalMapper(pred, f, get, set, ser, dtype, inverse, model, mt, owned, idGen)]
     } else {
       String     collType = colType ? colType : rdf.defColType
       Class      compType = toJavaClass(getBaseJavaType(), rdf);
       Serializer ser      = rdf.sessFactory.getSerializerFactory().getSerializer(compType, dtype)
 
       if (collType.toLowerCase() == 'array')
-        m = [new ArrayMapper(pred, f, get, set, ser, compType, dtype, inverse, null, mt, owned,
+        m = [new ArrayMapper(pred, f, get, set, ser, compType, dtype, inverse, model, mt, owned,
                              idGen)]
       else
-        m = [new CollectionMapper(pred, f, get, set, ser, compType, dtype, inverse, null, mt, owned,
-                                  idGen)]
+        m = [new CollectionMapper(pred, f, get, set, ser, compType, dtype, inverse, model, mt,
+                                  owned, idGen)]
     }
 
     // done

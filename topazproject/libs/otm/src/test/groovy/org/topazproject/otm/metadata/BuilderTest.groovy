@@ -73,6 +73,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.dataType == null
     assert m.uri      == 'http://rdf.topazproject.org/RDF/state'
     assert !m.hasInverseUri()
+    assert m.model    == null
 
     // relative-uri overrides, typed literal
     cls = rdf.class('Test2', type:'Test2', model:'m2') {
@@ -90,6 +91,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.dataType == 'http://www.w3.org/2001/XMLSchema#int'
     assert m.uri      == 'http://rdf.topazproject.org/RDF/p2'
     assert !m.hasInverseUri()
+    assert m.model    == null
 
     // absolute-uri overrides, class type
     Class cls2 = cls
@@ -108,11 +110,12 @@ public class BuilderTest extends GroovyTestCase {
     assert m.dataType == null
     assert m.uri      == 'foo:p3'
     assert !m.hasInverseUri()
+    assert m.model    == null
 
     // nested class type
     cls = rdf.class('Test4', type:'foo:Test4', model:'m4') {
       state (pred:'foo:p4', model:'m41', uriPrefix:'bar4:') {
-        value ()
+        value (model:'m42')
         history (maxCard:-1) {
           value ()
         }
@@ -130,6 +133,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.dataType == null
     assert m.uri      == 'foo:p4'
     assert !m.hasInverseUri()
+    assert m.model    == 'm41'
 
     cm = rdf.sessFactory.getClassMetadata('State')
 
@@ -143,6 +147,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.dataType == null
     assert m.uri      == 'bar4:value'
     assert !m.hasInverseUri()
+    assert m.model    == 'm42'
 
     m = cm.fields.asList()[1]
     assert m.name          == 'history'
@@ -151,6 +156,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.dataType      == null
     assert m.uri           == 'bar4:history'
     assert !m.hasInverseUri()
+    assert m.model    == null
 
     cm = rdf.sessFactory.getClassMetadata('History')
 
@@ -164,6 +170,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.dataType == null
     assert m.uri      == 'bar4:value'
     assert !m.hasInverseUri()
+    assert m.model    == null
 
     // uri type
     cls = rdf.class('Test5', type:'foo:Test5', model:'m5') {
@@ -181,6 +188,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.dataType == null
     assert m.uri      == 'foo:p5'
     assert m.hasInverseUri()
+    assert m.model    == null
 
     // no default prefix defined
     rdf.defUriPrefix = null
@@ -199,6 +207,7 @@ public class BuilderTest extends GroovyTestCase {
     assert m.dataType == null
     assert m.uri      == 'p6:state'
     assert !m.hasInverseUri()
+    assert m.model    == null
 
     // no prefix defined, default type
     assert shouldFail(OtmException, {
