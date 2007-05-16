@@ -15,6 +15,7 @@ import java.net.URISyntaxException;
 import java.net.URI;
 import java.net.URL;
 import java.rmi.RemoteException;
+import java.util.ArrayList;
 import java.util.List;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
@@ -31,6 +32,8 @@ import org.plos.article.util.Zip;
 import org.plos.configuration.OtmConfiguration;
 import org.plos.service.BaseConfigurableService;
 import org.plos.service.WSTopazContext;
+
+import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.common.NoSuchIdException;
@@ -59,22 +62,22 @@ import org.topazproject.ws.article.ObjectInfo;
  * Ideal solution is pure article.action, no article.service.
  */
 public class ArticleOtmService extends BaseConfigurableService {
-  
+
   private Article delegateService;
   private String smallImageRep;
   private String largeImageRep;
   private String mediumImageRep;
 
   private ArticlePEP pep;
-  private OtmConfiguration otmFactory;
+  private Session session;
 
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
   private static final List FGS_URLS = CONF.getList("topaz.fedoragsearch.urls.url");
-  
+
   public void init() throws IOException, URISyntaxException, ServiceException {
     final ProtectedService permissionProtectedService = getProtectedService();
     delegateService = ArticleClientFactory.create(permissionProtectedService);
-    
+
     // create an XACML PEP for Articles
     try {
       pep = new ArticlePEP();
@@ -182,7 +185,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     // ask PEP if delete is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
      pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
-     
+
      // let the Article utils do the real work
      ArticleUtil articleUtil = null;
      try {
@@ -242,8 +245,8 @@ public class ArticleOtmService extends BaseConfigurableService {
     ensureInitGetsCalledWithUsersSessionAttributes();
     return delegateService.getArticleInfos(startDate, endDate, categories, authors, states, ascending);
   }
- 
- 
+
+
   /**
    * Get the object-info of an object
    * @param uri uri
@@ -265,7 +268,7 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public SecondaryObject[] listSecondaryObjects(final String article)
     throws RemoteException, org.topazproject.ws.article.NoSuchArticleIdException {
-    
+
     ensureInitGetsCalledWithUsersSessionAttributes();
     return convert(delegateService.listSecondaryObjects(article));
   }
@@ -282,29 +285,59 @@ public class ArticleOtmService extends BaseConfigurableService {
   }
 
   /**
-   * 
-   * see org.topazproject.ws.article.Article#getCommentedArticles
+   * Get the ObjectInfos for the most commented Articles.
+   * The actual # of ObjectInfos returned maybe < maxArticles
+   * as PEP filtering is done on the results.
+   *
+   * @param maxArticles Maximum # of articles to retrieve.
+   * @returns ObjectInfos for Articles.
    */
   public ObjectInfo[] getCommentedArticles(int maxArticles) throws RemoteException {
-
-    Session session = otmFactory.getFactory().openSession();
-    Transaction tx  = null;
 
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    return delegateService.getCommentedArticles(maxArticles);
+    // sanity check args
+    if (maxArticles < 0) {
+      throw IllegalArgumentException("Requesting a maximum # of commented articles < 0: " +  maxArticles);
+    }
+    if (maxArticles == 0) {
+      return new ObjectInfo[0];
+    }
+
+    String oqlQuery =
+      "select a, count(n) c from Article a, Annotation n where n.annotates = a order by c desc limit " + maxArticles;
+
+    Results commentedArticles = session.doQuery(oqlQuery);
+
+    // check access control on all Article results
+    List returnArticles = new ArrayList();
+    commentedArticles.beforeFirst();
+    while(commentedArticles.next()) {
+      Article commentedArticle = (Article) commentedArticles.get("a");
+      try {
+        pep.checkAccess(pep.READ_META_DATA, URI.create(commentedArticle.getUri()));
+        returnArticles.add(commented);
+      } catch (SecurityException se) {
+         if (log.isDebugEnabled())
+          log.debug("Filtering URI "
+            + commentedArticle.getUri()
+            + " from commented Article list due to PEP SecurityException", se);
+      }
+    }
+
+    return (ObjectInfo[]) returnArticles.toArray(new ObjectInfo[returnArticles.size()]);
   }
-  
-  
+
+
   private SecondaryObject convert(final ObjectInfo objectInfo) {
     return new SecondaryObject(objectInfo, smallImageRep, mediumImageRep, largeImageRep);
   }
 
-  /** 
+  /**
    * Create or update a representation of an object. The object itself must exist; if the specified
    * representation does not exist, it is created, otherwise the current one is replaced.
-   * 
+   *
    * @param obj      the URI of the object
    * @param rep      the name of this representation
    * @param content  the actual content that makes up this representation; if this contains a
@@ -316,10 +349,10 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @throws NullPointerException if any of the parameters are null
    */
   public void setRepresentation(String obj, String rep, DataHandler content)
-      throws org.topazproject.ws.article.NoSuchObjectIdException, RemoteException 
+      throws org.topazproject.ws.article.NoSuchObjectIdException, RemoteException
   {
-	  ensureInitGetsCalledWithUsersSessionAttributes();
-	  delegateService.setRepresentation(obj, rep, content);
+          ensureInitGetsCalledWithUsersSessionAttributes();
+          delegateService.setRepresentation(obj, rep, content);
   }
 
   /**
@@ -344,6 +377,25 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public void setLargeImageRep(final String largeImageRep) {
     this.largeImageRep = largeImageRep;
+  }
+
+  /**
+   * Gets the otm session.
+   *
+   * @return Returns the otm session.
+   */
+  public Session getOtmSession() {
+    return session;
+  }
+
+  /**
+   * Set the OTM session. Called by spring's bean wiring.
+   *
+   * @param session The otm session to set.
+   */
+  @Required
+  public void setOtmSession(Session session) {
+    this.session = session;
   }
 
   // methods & functionality that were "pulled up" from org.topazproject.ws.article.impl.ArticleImpl
