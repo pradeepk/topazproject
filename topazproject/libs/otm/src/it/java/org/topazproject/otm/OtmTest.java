@@ -627,6 +627,18 @@ public class OtmTest extends TestCase {
       a2   = (Annotation) l.get(1);
       assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
       assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
+
+      /* uncomment when child criteria are implemented
+      l = session.createCriteria(Annotation.class).createCriteria("supersedes").
+                  add(Restrictions.eq("annotates", "foo:1")).addOrder(Order.asc("annotates")).
+                  list();
+      assertEquals(2, l.size());
+      a1 = (Annotation) l.get(0);
+      a2 = (Annotation) l.get(1);
+      assertEquals(id2, a1.getId());
+      assertEquals(id3, a2.getId());
+      */
+
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       log.warn("test failed", e);

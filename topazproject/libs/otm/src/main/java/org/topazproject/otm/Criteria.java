@@ -58,7 +58,7 @@ public class Criteria {
    * @throws OtmException on an error
    */
   public Criteria createCriteria(String path) throws OtmException {
-    Criteria c = session.createCriteria(parent, path);
+    Criteria c = session.createCriteria(this, path);
     children.add(c);
 
     return c;
