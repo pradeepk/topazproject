@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.annotation.otm;
+package org.plos.models;
 
 import java.net.URI;
 import java.util.ArrayList;
@@ -33,34 +33,32 @@ public class ReplyThread extends Reply {
   /**
    * Creates a new ReplyThread object.
    *
-   * @param id DOCUMENT ME!
+   * @param id reply id
    */
   public ReplyThread(URI id) {
     super(id);
   }
 
   /**
-   * DOCUMENT ME!
    *
-   * @return DOCUMENT ME!
+   * @return the thread of replies
    */
   public List<ReplyThread> getReplies() {
     return replies;
   }
 
   /**
-   * DOCUMENT ME!
    *
-   * @param replies DOCUMENT ME!
+   * @param replies the thread of replies
    */
   public void setReplies(List<ReplyThread> replies) {
     this.replies = replies;
   }
 
   /**
-   * DOCUMENT ME!
+   * Add a reply to this.
    *
-   * @param r DOCUMENT ME!
+   * @param r the reply to add
    */
   public void addReply(ReplyThread r) {
     r.setRoot(getRoot());

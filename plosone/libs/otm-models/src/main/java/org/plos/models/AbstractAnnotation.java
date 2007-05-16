@@ -7,8 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-
-package org.plos.annotation.otm;
+package org.plos.models;
 
 import java.net.URI;
 
@@ -29,11 +28,11 @@ public abstract class AbstractAnnotation extends Annotea {
   private URI                                                                       annotates;
   private String                                                                    context;
   @Predicate(uri = Rdf.rdf + "type")
-  private String type;
+  private String                                                                    type;
   @Predicate(uri = Rdf.dc_terms + "replaces")
-  private AbstractAnnotation                                                                supersedes;
+  private AbstractAnnotation                                                        supersedes;
   @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
-  private AbstractAnnotation                                                                supersededBy;
+  private AbstractAnnotation                                                        supersededBy;
   @Predicate(uri = Reply.NS + "inReplyTo", inverse = true)
   private List<ReplyThread>                                                         replies =
     new ArrayList<ReplyThread>();
@@ -169,5 +168,4 @@ public abstract class AbstractAnnotation extends Annotea {
   public void setType(String type) {
     this.type = type;
   }
-
 }

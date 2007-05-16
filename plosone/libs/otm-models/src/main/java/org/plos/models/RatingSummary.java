@@ -7,13 +7,9 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-
-package org.plos.rating.otm;
+package org.plos.models;
 
 import java.net.URI;
-
-import org.plos.annotation.otm.AbstractAnnotation;
-import org.plos.annotation.otm.Annotea;
 
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
@@ -22,29 +18,36 @@ import org.topazproject.otm.annotations.Rdf;
 
 /**
  * General base rating class to store a RatingContent body
- * 
- * @author Stephen Cheng
  *
+ * @author Stephen Cheng
  */
 @Entity(type = Rdf.topaz + "RatingSummaryAnnotation")
 public class RatingSummary extends AbstractAnnotation {
+  @Predicate(uri = Annotea.NS + "body")
+  private RatingSummaryContent body;
 
-  @Predicate(uri=Annotea.NS + "body")
-  private RatingSummaryContent                              body;
-  
+  /**
+   * Creates a new RatingSummary object.
+   */
   public RatingSummary() {
   }
 
-  public RatingSummary (URI id) {
+  /**
+   * Creates a new RatingSummary object.
+   *
+   * @param id id for the rating summary annotation
+   */
+  public RatingSummary(URI id) {
     super(id);
   }
+
   /**
    * @return Returns the rating.
    */
   public RatingSummaryContent getBody() {
     return this.body;
   }
-  
+
   /**
    * @param rating The rating to set.
    */
@@ -52,81 +55,84 @@ public class RatingSummary extends AbstractAnnotation {
     this.body = rating;
   }
 
-  
   /**
    * Get the value of the rating
-   * 
+   *
    * @return value
    */
   public double retrieveAverage() {
     if (this.body == null) {
       return 0;
     }
+
     return this.body.retrieveAverage();
   }
-  
-  
+
   /**
    * Set the value of the rating
-   * 
+   *
    * @param numRatings
    */
-  public void assignNumRatings (int numRatings) {
+  public void assignNumRatings(int numRatings) {
     if (this.body == null) {
       this.body = new RatingSummaryContent();
     }
+
     this.body.setNumRatings(numRatings);
   }
-  
-  
+
   /**
    * Get the value of the rating
-   * 
+   *
    * @return value
    */
   public int retrieveNumRatings() {
     if (this.body == null) {
       return 0;
     }
+
     return this.body.getNumRatings();
   }
-  
-  
+
   /**
    * Set the value of the rating
-   * 
+   *
    * @param total
    */
   public void assignTotal(double total) {
     if (this.body == null) {
       this.body = new RatingSummaryContent();
     }
+
     this.body.setTotal(total);
   }
 
   /**
-   * Set the value of the rating
-   * 
+   * Get the value of the rating
+   *
+   * @return total rating
    */
   public double retrieveTotal() {
-    if (this.body == null){
+    if (this.body == null) {
       return 0;
     }
+
     return this.body.getTotal();
   }
-  
-  
 
-  public void removeRating (int value) {
+  /**
+   * @param value remove a rating
+   */
+  public void removeRating(int value) {
     assignNumRatings(retrieveNumRatings() - 1);
     assignTotal(retrieveTotal() - value);
   }
-  
-  public void addRating (int value) {
+
+  /**
+   * @param value add a rating
+   */
+  public void addRating(int value) {
     assignNumRatings(retrieveNumRatings() + 1);
     assignTotal(retrieveTotal() + value);
   }
-  
 }
-  
-

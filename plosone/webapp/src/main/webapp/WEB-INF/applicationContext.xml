@@ -377,14 +377,15 @@
 
     <property name="preloadClasses">
       <list>
-        <value>org.plos.annotation.otm.CommentAnnotation</value>
-        <value>org.plos.annotation.otm.StringBody</value>
-        <value>org.plos.annotation.otm.Reply</value>
-        <value>org.plos.annotation.otm.ReplyThread</value>
-        <value>org.plos.rating.otm.Rating</value>
-        <value>org.plos.rating.otm.RatingContent</value>
-        <value>org.plos.rating.otm.RatingSummary</value>
-        <value>org.plos.rating.otm.RatingSummaryContent</value>
+        <value>org.plos.models.Annotation</value>
+        <value>org.plos.models.CommentAnnotation</value>
+        <value>org.plos.models.StringBody</value>
+        <value>org.plos.models.Reply</value>
+        <value>org.plos.models.ReplyThread</value>
+        <value>org.plos.models.Rating</value>
+        <value>org.plos.models.RatingContent</value>
+        <value>org.plos.models.RatingSummary</value>
+        <value>org.plos.models.RatingSummaryContent</value>
         <value>org.plos.models.Article</value>
         <value>org.plos.models.AuthenticationId</value>
         <value>org.plos.models.Category</value>

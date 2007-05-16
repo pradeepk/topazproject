@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.annotation.otm;
+package org.plos.models;
 
 import java.net.URI;
 
@@ -29,11 +29,10 @@ import org.topazproject.otm.annotations.Rdf;
 @UriPrefix(Annotea.NS)
 public abstract class Annotea {
   /**
-   * DOCUMENT ME!
+   * Annotea Namespace URI
    */
   public static final String NS = "http://www.w3.org/2000/10/annotation-ns#";
-  @Id @GeneratedValue(generatorClass = "org.topazproject.otm.id.GUIDGenerator",
-      uriPrefix = "info:doi/10.1371/annotation/")
+  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/annotation/")
   private URI                                               id;
   private Date                                              created;
   //private Object                                            body;
@@ -47,13 +46,13 @@ public abstract class Annotea {
   @Predicate(uri = Rdf.topaz + "state")
   private int                                               state;
 
-/**
+  /**
    * Creates a new Annotea object.
    */
   public Annotea() {
   }
 
-/**
+  /**
    * Creates a new Annotea object.
    */
   public Annotea(URI id) {
@@ -96,20 +95,6 @@ public abstract class Annotea {
     this.created = created;
   }
 
-  /**
-   * Get body.
-   *
-   * @return body as an Object.
-   */
-  //public abstract AnnotationBody getBody();
-
-  /**
-   * Set body.
-   *
-   * @param body the value to set.
-   */
-  //public abstract void setBody(AnnotationBody body);
-  
   /**
    * Get id.
    *

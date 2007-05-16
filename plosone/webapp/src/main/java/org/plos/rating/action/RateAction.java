@@ -23,12 +23,11 @@ import static org.plos.Constants.PLOS_ONE_USER_KEY;
 
 import org.plos.action.BaseActionSupport;
 
-import org.plos.annotation.otm.CommentAnnotation;
-
 import org.plos.configuration.OtmConfiguration;
 
-import org.plos.rating.otm.Rating;
-import org.plos.rating.otm.RatingSummary;
+import org.plos.models.CommentAnnotation;
+import org.plos.models.Rating;
+import org.plos.models.RatingSummary;
 
 import org.plos.user.PlosOneUser;
 

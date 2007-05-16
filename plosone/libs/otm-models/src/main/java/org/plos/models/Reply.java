@@ -7,9 +7,10 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.annotation.otm;
+package org.plos.models;
 
 import java.net.URI;
+
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;
@@ -23,20 +24,30 @@ import org.topazproject.otm.annotations.UriPrefix;
 @Entity(type = Reply.NS + "Reply")
 @UriPrefix(Reply.NS)
 public class Reply extends Annotea {
+  /**
+   * Thread Namespace
+   */
   public static final String NS = "http://www.w3.org/2001/03/thread#";
-  private URI  root;
-  private URI  inReplyTo;
-  @Predicate(uri=Annotea.NS + "body")
-  private URI body;
+  private URI                                      root;
+  private URI                                      inReplyTo;
+  @Predicate(uri = Annotea.NS + "body")
+  private URI                                      body;
+
   /**
    * Creates a new Reply object.
    */
   public Reply() {
   }
 
+  /**
+   * Creates a new Reply object.
+   *
+   * @param id the reply id
+   */
   public Reply(URI id) {
     super(id);
   }
+
   /**
    * Get root.
    *
@@ -74,6 +85,7 @@ public class Reply extends Annotea {
   }
 
   /**
+   *
    * @return Returns the body.
    */
   public URI getBody() {
@@ -81,6 +93,7 @@ public class Reply extends Annotea {
   }
 
   /**
+   *
    * @param body The body to set.
    */
   public void setBody(URI body) {
