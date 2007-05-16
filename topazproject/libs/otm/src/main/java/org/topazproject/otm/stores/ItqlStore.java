@@ -663,8 +663,18 @@ public class ItqlStore implements TripleStore {
             append("> and ");
     }
 
-    if ((i > 0) && (criteria.getCriterionList().size() == 0))
-      qry.setLength(qry.length() - 4);
+    if ((criteria.getCriterionList().size() == 0) && (cm.getType() == null)) {
+      if (i > 0)
+        qry.setLength(qry.length() - 4);
+      else
+        throw new OtmException("No criterion list to filter by and the class '" 
+                             + cm + "' does not have an rdf:type.");
+    }
+
+    if (cm.getType() != null) {
+      qry.append("$s <rdf:type> <").append(cm.getType());
+      qry.append((criteria.getCriterionList().size() > 0) ? "> and " : "> ");
+    }
 
     i = 0;
     for (Criterion c : criteria.getCriterionList())
