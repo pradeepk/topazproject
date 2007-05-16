@@ -12,6 +12,7 @@ package org.plos.annotation.otm;
 import java.net.URI;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
 /**
@@ -25,8 +26,8 @@ public class Reply extends Annotea {
   public static final String NS = "http://www.w3.org/2001/03/thread#";
   private URI  root;
   private URI  inReplyTo;
-  private StreamableBody body;
-  
+  @Predicate(uri=Annotea.NS + "body")
+  private URI body;
   /**
    * Creates a new Reply object.
    */
@@ -75,14 +76,14 @@ public class Reply extends Annotea {
   /**
    * @return Returns the body.
    */
-  public AnnotationBody getBody() {
+  public URI getBody() {
     return body;
   }
 
   /**
    * @param body The body to set.
    */
-  public void setBody(AnnotationBody body) {
-    this.body = (StreamableBody)body;
+  public void setBody(URI body) {
+    this.body = body;
   }
 }

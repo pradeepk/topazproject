@@ -12,9 +12,8 @@ package org.plos.rating.otm;
 
 import java.net.URI;
 
-import org.plos.annotation.otm.Annotation;
+import org.plos.annotation.otm.AbstractAnnotation;
 import org.plos.annotation.otm.Annotea;
-import org.plos.annotation.otm.AnnotationBody;
 
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
@@ -28,7 +27,7 @@ import org.topazproject.otm.annotations.Rdf;
  *
  */
 @Entity(type = Rdf.topaz + "RatingsAnnotation")
-public class Rating extends Annotation {
+public class Rating extends AbstractAnnotation {
 
   public static final String STYLE_TYPE = Rdf.topaz + "StyleRating";
   public static final String INSIGHT_TYPE = Rdf.topaz + "InsightRating";
@@ -37,8 +36,6 @@ public class Rating extends Annotation {
   
   @Predicate(uri=Annotea.NS + "body")
   private RatingContent                                     body;
-  @Predicate(uri = Rdf.rdf + "type")
-  private String                                            type;
   
   public Rating() {
   }
@@ -56,8 +53,8 @@ public class Rating extends Annotation {
   /**
    * @param rating The rating to set.
    */
-  public void setBody(AnnotationBody rating) {
-    this.body = (RatingContent)rating;
+  public void setBody(RatingContent rating) {
+    this.body = rating;
   }
 
   
@@ -86,19 +83,6 @@ public class Rating extends Annotation {
     this.body.setValue(value);
   }
 
-  /**
-   * @return Returns the type.
-   */
-  public String getType() {
-    return type;
-  }
-
-  /**
-   * @param type The type to set.
-   */
-  public void setType(String type) {
-    this.type = type;
-  }
 }
   
 

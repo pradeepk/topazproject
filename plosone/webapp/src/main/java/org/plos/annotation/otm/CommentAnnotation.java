@@ -13,6 +13,7 @@ package org.plos.annotation.otm;
 import java.net.URI;
 
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Predicate;
 
 
 /**
@@ -23,8 +24,9 @@ import org.topazproject.otm.annotations.Entity;
  */
 
 @Entity (type = Annotea.NS + "Comment")
-public class  CommentAnnotation extends Annotation{
+public class  CommentAnnotation extends AbstractAnnotation {
 
+  @Predicate(uri=Annotea.NS + "body")
   private StringBody body;
   
   public CommentAnnotation() {
@@ -42,14 +44,14 @@ public class  CommentAnnotation extends Annotation{
   /**
    * @return Returns the body.
    */
-  public AnnotationBody getBody() {
+  public StringBody getBody() {
     return body;
   }
 
   /**
    * @param body The body to set.
    */
-  public void setBody(AnnotationBody body) {
+  public void setBody(StringBody body) {
     this.body = (StringBody)body;
   }
   

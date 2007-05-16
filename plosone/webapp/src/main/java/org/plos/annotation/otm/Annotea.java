@@ -101,14 +101,14 @@ public abstract class Annotea {
    *
    * @return body as an Object.
    */
-  public abstract AnnotationBody getBody();
+  //public abstract AnnotationBody getBody();
 
   /**
    * Set body.
    *
    * @param body the value to set.
    */
-  public abstract void setBody(AnnotationBody body);
+  //public abstract void setBody(AnnotationBody body);
   
   /**
    * Get id.

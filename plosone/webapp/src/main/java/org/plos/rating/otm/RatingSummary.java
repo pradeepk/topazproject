@@ -12,9 +12,8 @@ package org.plos.rating.otm;
 
 import java.net.URI;
 
-import org.plos.annotation.otm.Annotation;
+import org.plos.annotation.otm.AbstractAnnotation;
 import org.plos.annotation.otm.Annotea;
-import org.plos.annotation.otm.AnnotationBody;
 
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
@@ -28,13 +27,10 @@ import org.topazproject.otm.annotations.Rdf;
  *
  */
 @Entity(type = Rdf.topaz + "RatingSummaryAnnotation")
-public class RatingSummary extends Annotation {
+public class RatingSummary extends AbstractAnnotation {
 
   @Predicate(uri=Annotea.NS + "body")
   private RatingSummaryContent                              body;
-  
-  @Predicate(uri = Rdf.rdf + "type")
-  private String                                            type;
   
   public RatingSummary() {
   }
@@ -52,8 +48,8 @@ public class RatingSummary extends Annotation {
   /**
    * @param rating The rating to set.
    */
-  public void setBody(AnnotationBody rating) {
-    this.body = (RatingSummaryContent)rating;
+  public void setBody(RatingSummaryContent rating) {
+    this.body = rating;
   }
 
   
@@ -121,20 +117,6 @@ public class RatingSummary extends Annotation {
   
   
 
-  /**
-   * @return Returns the type.
-   */
-  public String getType() {
-    return type;
-  }
-
-  /**
-   * @param type The type to set.
-   */
-  public void setType(String type) {
-    this.type = type;
-  }
-  
   public void removeRating (int value) {
     assignNumRatings(retrieveNumRatings() - 1);
     assignTotal(retrieveTotal() - value);

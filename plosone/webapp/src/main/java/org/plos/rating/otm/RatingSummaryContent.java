@@ -16,8 +16,6 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Rdf;
 
-import org.plos.annotation.otm.AnnotationBody;
-
 /**
  * AnnotationBody implementation to store a value for the rating
  * 
@@ -26,10 +24,9 @@ import org.plos.annotation.otm.AnnotationBody;
  */
 
 @Entity (model="ri", type = Rdf.topaz + "RatingSummaryContent")
-public class RatingSummaryContent implements AnnotationBody {
+public class RatingSummaryContent {
   
-  @Id @GeneratedValue(generatorClass = "org.topazproject.otm.id.GUIDGenerator",
-      uriPrefix = "info:doi/10.1371/ratingSummaryContent/")
+  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/ratingSummaryContent/")
   private String id;
   
   @Predicate (uri = Rdf.topaz + "NumRatings")

@@ -10,8 +10,11 @@
 
 package org.plos.annotation.otm;
 
-import org.topazproject.otm.annotations.Embeddable;
+import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.GeneratedValue;
+import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
+import org.topazproject.otm.annotations.Rdf;
 
 /**
  * Implmentation of String body that simply stores the content as a string
@@ -19,9 +22,12 @@ import org.topazproject.otm.annotations.Predicate;
  * @author stevec
  *
  */
-@Embeddable
-public class StringBody implements AnnotationBody{
-  @Predicate(uri=Annotea.NS + "body")
+@Entity (model="ri", type = Rdf.topaz + "RatingContent")
+public class StringBody {
+  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/commentContent/")
+  private String id;
+  
+  @Predicate (uri = Rdf.topaz + "CommentValue")
   private String value;
   
   public StringBody () {
@@ -46,4 +52,24 @@ public class StringBody implements AnnotationBody{
     this.value = body;
   }
   
+  
+  /**
+   * Get id.
+   *
+   * @return id as String.
+   */
+  public String getId()
+  {
+      return id;
+  }
+  
+  /**
+   * Set id.
+   *
+   * @param id the value to set.
+   */
+  public void setId(String id)
+  {
+      this.id = id;
+  }
 }
