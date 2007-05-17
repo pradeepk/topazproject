@@ -52,13 +52,18 @@ public class RateAction extends BaseActionSupport {
   private double           reliability;
   private double           style;
   private double           overall;
-  private String           articleUri;
+  private String           articleURI;
   private String           commentTitle;
   private String           comment;
   private Session          session;
-  private static final Log log = LogFactory.getLog(RateAction.class);
   private RatingsPEP       pep;
 
+  private static final Log log = LogFactory.getLog(RateAction.class);
+  private static final int INSIGHT_WEIGHT = 6;
+  private static final int RELIABILITY_WEIGHT = 5;
+  private static final int STYLE_WEIGHT = 4;
+  
+  
 /**
    * Creates a new RateAction object.
    */
@@ -94,24 +99,24 @@ public class RateAction extends BaseActionSupport {
     URI               annotatedArticle   = null;
 
     try {
-      annotatedArticle = new URI(articleUri);
+      annotatedArticle = new URI(articleURI);
     } catch (URISyntaxException ue) {
-      log.info("Could not construct article URI: " + articleUri, ue);
+      log.info("Could not construct article URI: " + articleURI, ue);
 
       return ERROR;
     }
 
-    pep.checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
+   // pep.checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
 
     try {
       tx = session.beginTransaction();
 
       if (log.isDebugEnabled()) {
-        log.debug("Retrieving Ratings Summaries for article: " + articleUri);
+        log.debug("Retrieving Ratings Summaries for article: " + articleURI);
       }
 
       List     summaryList =
-        session.createCriteria(RatingSummary.class).add(Restrictions.eq("annotates", articleUri))
+        session.createCriteria(RatingSummary.class).add(Restrictions.eq("annotates", articleURI))
                 .list();
       Iterator iter        = summaryList.iterator();
 
@@ -130,12 +135,12 @@ public class RateAction extends BaseActionSupport {
       }
 
       if (log.isDebugEnabled()) {
-        log.debug("Retrieving user ratings for article: " + articleUri + " and user: "
+        log.debug("Retrieving user ratings for article: " + articleURI + " and user: "
                   + user.getUserId());
       }
 
       List ratingsList =
-        session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleUri))
+        session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
                 .add(Restrictions.eq("creator", user.getUserId())).list();
 
       iter = ratingsList.iterator();
@@ -232,7 +237,7 @@ public class RateAction extends BaseActionSupport {
       }
 
       List<CommentAnnotation> commentList =
-        session.createCriteria(CommentAnnotation.class).add(Restrictions.eq("annotates", articleUri))
+        session.createCriteria(CommentAnnotation.class).add(Restrictions.eq("annotates", articleURI))
                 .add(Restrictions.eq("creator", user.getUserId())).list();
 
       if (commentList.size() > 0) {
@@ -332,25 +337,28 @@ public class RateAction extends BaseActionSupport {
 
   private void calculateOverall(boolean update, RatingSummary overall, RatingSummary insight,
                                 RatingSummary style, RatingSummary reliability) {
-    int    numCategories = 0;
+    int    runningWeight = 0;
     double runningTotal  = 0;
 
     if (insight != null) {
-      numCategories++;
-      runningTotal += insight.retrieveAverage();
-      log.debug("INSIGHT: numCats = " + numCategories + " runningTotal: " + runningTotal);
+      runningWeight += INSIGHT_WEIGHT;
+      runningTotal += insight.retrieveAverage() * INSIGHT_WEIGHT;
+      if (log.isDebugEnabled())
+        log.debug("INSIGHT: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
     }
 
     if (style != null) {
-      numCategories++;
-      runningTotal += style.retrieveAverage();
-      log.debug("STYLE: numCats = " + numCategories + " runningTotal: " + runningTotal);
+      runningWeight += STYLE_WEIGHT;
+      runningTotal += style.retrieveAverage() * STYLE_WEIGHT;
+      if (log.isDebugEnabled())
+        log.debug("STYLE: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
     }
 
     if (reliability != null) {
-      numCategories++;
-      runningTotal += reliability.retrieveAverage();
-      log.debug("RELIABILITY: numCats = " + numCategories + " runningTotal: " + runningTotal);
+      runningWeight += RELIABILITY_WEIGHT;
+      runningTotal += reliability.retrieveAverage() * RELIABILITY_WEIGHT;
+      if (log.isDebugEnabled())
+        log.debug("RELIABILITY: runningWeight = " + runningWeight+ " runningTotal: " + runningTotal);
     }
 
     if (!update) {
@@ -359,7 +367,7 @@ public class RateAction extends BaseActionSupport {
       overall.assignNumRatings(overall.retrieveNumRatings() - 1);
     }
 
-    overall.assignTotal(runningTotal / numCategories);
+    overall.assignTotal(runningTotal / runningWeight);
   }
 
   /**
@@ -384,7 +392,7 @@ public class RateAction extends BaseActionSupport {
       }
 
       List<Rating> ratingsList =
-        session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleUri))
+        session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
                 .add(Restrictions.eq("creator", user.getUserId())).list();
 
       if (ratingsList.size() < 1) {
@@ -408,7 +416,7 @@ public class RateAction extends BaseActionSupport {
       }
 
       List<CommentAnnotation> commentList =
-        session.createCriteria(CommentAnnotation.class).add(Restrictions.eq("annotates", articleUri))
+        session.createCriteria(CommentAnnotation.class).add(Restrictions.eq("annotates", articleURI))
                 .add(Restrictions.eq("creator", user.getUserId())).list();
 
       if (commentList.size() < 1) {
@@ -442,20 +450,20 @@ public class RateAction extends BaseActionSupport {
   /**
    * Gets the URI of the article being rated.
    *
-   * @return Returns the articleUri.
+   * @return Returns the articleURI.
    */
   @RequiredStringValidator(message = "Article URI is a required field")
-  public String getArticleUri() {
-    return articleUri;
+  public String getArticleURI() {
+    return articleURI;
   }
 
   /**
    * Sets the URI of the article being rated.
    *
-   * @param articleUri The articleUri to set.
+   * @param articleURI The articleUri to set.
    */
-  public void setArticleUri(String articleUri) {
-    this.articleUri = articleUri;
+  public void setArticleURI(String articleURI) {
+    this.articleURI = articleURI;
   }
 
   /**

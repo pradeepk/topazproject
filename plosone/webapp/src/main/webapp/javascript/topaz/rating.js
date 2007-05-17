@@ -123,10 +123,10 @@ topaz.rating = {
 }
   
 function getRatingsForUser() {
-	 var targetUri = _ratingsForm.articleUri.value;
+	 var targetUri = _ratingsForm.articleURI.value;
 	 
    var bindArgs = {
-    url: _namespace + "/rate/secure/getRatingsForUser.action?articleUri=" + targetUri,
+    url: _namespace + "/rate/secure/getRatingsForUser.action?articleURI=" + targetUri,
     method: "get",
     error: function(type, data, evt){
      alert("An error occurred." + data.toSource());
@@ -171,7 +171,7 @@ function updateRating() {
 	topaz.formUtil.disableFormFields(_ratingsForm);
   var submitMsg = dojo.byId('submitRatingMsg');
   dojo.dom.removeChildren(submitMsg);
-  var articleUri = _ratingsForm.articleUri.value;
+  var articleUri = _ratingsForm.articleURI.value;
 
   _ldc.show();
    
