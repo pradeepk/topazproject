@@ -354,6 +354,19 @@ public class ArticleOtmService extends BaseConfigurableService {
     if (uri == null) throw new IllegalArgumentException("URI == null");
     URI realURI = URI.create(uri);
 
+    // filter access by id with PEP
+    try {
+      pep.checkAccess(pep.READ_META_DATA, realURI);
+    } catch (SecurityException se) {
+      if (log.isDebugEnabled()) {
+        log.debug("Filtering URI "
+          + uri
+          + " from ObjectInfo list due to PEP SecurityException", se);
+        // it's still a SecurityException
+        throw se;
+      }
+    }
+
     // build up Criteria for the ObjectInfo
     Criteria objectInfoCriteria = session.createCriteria(org.plos.models.ObjectInfo.class);
 
@@ -369,17 +382,6 @@ public class ArticleOtmService extends BaseConfigurableService {
     }
     if (objectInfoList.size() > 1) {
       throw new RuntimeException("multiple," +  objectInfoList.size() + ", ObjectInfos for URI: \"" + uri + "\"");
-    }
-
-    // filter access by id with PEP
-    try {
-      pep.checkAccess(pep.READ_META_DATA, realURI);
-    } catch (SecurityException se) {
-      if (log.isDebugEnabled()) {
-        log.debug("Filtering URI "
-          + uri
-          + " from ObjectInfo list due to PEP SecurityException", se);
-      }
     }
 
     return objectInfoList.get(0);
