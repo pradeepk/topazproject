@@ -362,9 +362,9 @@ public class ArticleOtmService extends BaseConfigurableService {
         log.debug("Filtering URI "
           + uri
           + " from ObjectInfo list due to PEP SecurityException", se);
-        // it's still a SecurityException
-        throw se;
       }
+      // it's still a SecurityException
+      throw se;
     }
 
     // build up Criteria for the ObjectInfo
