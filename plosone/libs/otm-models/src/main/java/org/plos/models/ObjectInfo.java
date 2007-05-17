@@ -32,7 +32,7 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Eric Brown
  */
 @Entity(model = "ri")
-class ObjectInfo {
+public class ObjectInfo {
   @Id
   private URI id;
 

@@ -336,15 +336,53 @@ public class ArticleOtmService extends BaseConfigurableService {
   }
 
   /**
-   * Get the object-info of an object
+   * Get the Article's ObjectInfo by URI.
+   *
    * @param uri uri
    * @return the object-info of the object
    * @throws org.topazproject.ws.article.NoSuchObjectIdException NoSuchObjectIdException
    * @throws java.rmi.RemoteException RemoteException
    */
-  public ObjectInfo getObjectInfo(final String uri) throws RemoteException, org.topazproject.ws.article.NoSuchObjectIdException {
+  // TODO: remove FQ package name when no more ws ObjectInfo
+  public org.plos.models.ObjectInfo getObjectInfo(final String uri)
+    throws RemoteException, NoSuchObjectIdException {
+
+    // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return delegateService.getObjectInfo(uri);
+
+    // sanity check parms
+    if (uri == null) throw new IllegalArgumentException("URI == null");
+    URI realURI = URI.create(uri);
+
+    // build up Criteria for the ObjectInfo
+    Criteria objectInfoCriteria = session.createCriteria(org.plos.models.ObjectInfo.class);
+
+    // match on URI
+    objectInfoCriteria = objectInfoCriteria.add(Restrictions.eq("id", realURI));
+
+    // get a list of ObjectInfos that meet the specified Criteria and Restrictions
+    List<org.plos.models.ObjectInfo> objectInfoList = objectInfoCriteria.list();
+
+    // should be 1 & only 1 result
+    if (objectInfoList.size() == 0) {
+      throw new NoSuchObjectIdException("no ObjectInfo for URI: \"" + uri + "\"");
+    }
+    if (objectInfoList.size() > 1) {
+      throw new RuntimeException("multiple," +  objectInfoList.size() + ", ObjectInfos for URI: \"" + uri + "\"");
+    }
+
+    // filter access by id with PEP
+    try {
+      pep.checkAccess(pep.READ_META_DATA, realURI);
+    } catch (SecurityException se) {
+      if (log.isDebugEnabled()) {
+        log.debug("Filtering URI "
+          + uri
+          + " from ObjectInfo list due to PEP SecurityException", se);
+      }
+    }
+
+    return objectInfoList.get(0);
   }
 
   /**
