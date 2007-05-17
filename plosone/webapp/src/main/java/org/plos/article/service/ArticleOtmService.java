@@ -16,7 +16,10 @@ import java.net.URI;
 import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Iterator;
 import java.util.List;
+import java.util.ListIterator;
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
@@ -43,9 +46,12 @@ import org.topazproject.common.NoSuchIdException;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
 import org.topazproject.fedoragsearch.service.FgsOperations;
+import org.topazproject.feed.ArticleFeed;
+import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
+import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
 //import org.topazproject.ws.article.Article;
@@ -77,7 +83,7 @@ public class ArticleOtmService extends BaseConfigurableService {
   private Session session;
 
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
-  private static final Log log = LogFactory.getLog(Article.class);
+  private static final Log log = LogFactory.getLog(ArticleOtmService.class);
   private static final List FGS_URLS = CONF.getList("topaz.fedoragsearch.urls.url");
 
   public void init() throws IOException, URISyntaxException, ServiceException {
@@ -249,25 +255,85 @@ public class ArticleOtmService extends BaseConfigurableService {
   }
 
   /**
-   * @see org.topazproject.ws.article.Article#getArticleInfos(String, String, String[], String[], int[], boolean)
+   * Get list of articles for a given set of categories, authors and states bracked by specified
+   * times.
+   *
+   * @param startDate  is the date to start searching from. If null, start from begining of time.
+   *                   Can be iso8601 formatted or string representation of Date object.
+   * @param endDate    is the date to search until. If null, search until present date
+   * @param categories is list of categories to search for articles within (all categories if null
+   *                   or empty)
+   * @param authors    is list of authors to search for articles within (all authors if null or
+   *                   empty)
+   * @param states     the list of article states to search for (all states if null or empty)
+   * @param ascending  controls the sort order (by date). If used for RSS feeds, decending would
+   *                   be appropriate. For archive display, ascending would be appropriate.
+   * @return the (possibly empty) list of articles.
+   * @throws RemoteException if there was a problem talking to any service
    */
-  public ArticleInfo[] getArticleInfos(String startDate, String endDate,
-                                     String[] categories, String[] authors, int[] states,
-                                     boolean ascending) throws RemoteException {
+  public Article[] getArticles(String startDate,String endDate,
+                                String[] categories, String[] authors, int[] states,
+                                boolean ascending)
+    throws RemoteException {
+
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
-    
-    // ask the Session for a list of Articles that meet the specified Criteria and Restrictions
-    /*
-    List<Article> articleList = session
-      .createCriteria(Article.class).add(Restrictions.eq("annotates", articleURI))
-                .list();
-      Iterator iter        = summaryList.iterator();
-    */
-   
-    return delegateService.getArticleInfos(startDate, endDate, categories, authors, states, ascending);
-  }
 
+    // build up Criteria for the Articles
+    Criteria articleCriteria = session.createCriteria(Article.class);
+
+    // normalize dates for query
+    articleCriteria = articleCriteria.add(Restrictions.ge("date", ArticleFeed.parseDateParam(startDate)));
+    articleCriteria = articleCriteria.add(Restrictions.le("date", ArticleFeed.parseDateParam(endDate)));
+
+    // match all categories
+    if (categories != null) {
+      for (String category : categories) {
+        articleCriteria = articleCriteria.add(Restrictions.eq("mainCategory", category));
+      }
+    }
+
+    // match all authors
+    if (authors != null) {
+      for (String author : authors) {
+        articleCriteria = articleCriteria.add(Restrictions.eq("creator", author));
+      }
+    }
+
+    // match all states
+    if (states != null) {
+      for (int state : states) {
+        articleCriteria = articleCriteria.add(Restrictions.eq("articleState", state));
+      }
+    }
+
+    // order by date
+    if (ascending) {
+        articleCriteria = articleCriteria.addOrder(Order.asc("date"));
+    } else {
+        articleCriteria = articleCriteria.addOrder(Order.desc("date"));
+    }
+
+    // get a list of Articles that meet the specified Criteria and Restrictions
+    List<Article> articleList = articleCriteria.list();
+
+    // filter access by id with PEP
+    for (Iterator it = articleList.iterator(); it.hasNext(); ) {
+      Article article = (Article) it.next();
+      try {
+        pep.checkAccess(pep.READ_META_DATA, article.getId());
+      } catch (SecurityException se) {
+        it.remove();
+        if (log.isDebugEnabled()) {
+          log.debug("Filtering URI "
+            + article.getId()
+            + " from Article list due to PEP SecurityException", se);
+        }
+      }
+    }
+
+    return articleList.toArray(new Article[articleList.size()]);
+  }
 
   /**
    * Get the object-info of an object
@@ -307,14 +373,14 @@ public class ArticleOtmService extends BaseConfigurableService {
   }
 
   /**
-   * Get the ObjectInfos for the most commented Articles.
-   * The actual # of ObjectInfos returned maybe < maxArticles
+   * Get the most commented Articles.
+   * The actual # of Articles returned maybe < maxArticles
    * as PEP filtering is done on the results.
    *
-   * @param maxArticles Maximum # of articles to retrieve.
-   * @returns ObjectInfos for Articles.
+   * @param maxArticles Maximum # of Articles to retrieve.
+   * @returns Article[] of most commented Articles.
    */
-  public ObjectInfo[] getCommentedArticles(int maxArticles) throws RemoteException {
+  public Article[] getCommentedArticles(int maxArticles) throws RemoteException {
 
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
@@ -324,7 +390,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       throw new IllegalArgumentException("Requesting a maximum # of commented articles < 0: " +  maxArticles);
     }
     if (maxArticles == 0) {
-      return new ObjectInfo[0];
+      return new Article[0];
     }
 
     String oqlQuery =
@@ -333,8 +399,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     Results commentedArticles = session.doQuery(oqlQuery);
 
     // check access control on all Article results
-    // TODO: remove FQ package name
-    List <Article> returnArticles = new ArrayList();
+    ArrayList<Article> returnArticles = new ArrayList();
     commentedArticles.beforeFirst();
     while(commentedArticles.next()) {
       Article commentedArticle = (Article) commentedArticles.get("a");
@@ -349,7 +414,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       }
     }
 
-    return (ObjectInfo[]) returnArticles.toArray(new ObjectInfo[returnArticles.size()]);
+    return returnArticles.toArray(new Article[returnArticles.size()]);
   }
 
 
