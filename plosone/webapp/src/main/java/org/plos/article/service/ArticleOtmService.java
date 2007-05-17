@@ -318,10 +318,11 @@ public class ArticleOtmService extends BaseConfigurableService {
     List<Article> articleList = articleCriteria.list();
 
     // filter access by id with PEP
+    // logged in user is automatically resolved by the ServletActionContextAttribute
     for (Iterator it = articleList.iterator(); it.hasNext(); ) {
       Article article = (Article) it.next();
       try {
-        pep.checkAccess(pep.READ_META_DATA, article.getId());
+        pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
       } catch (SecurityException se) {
         it.remove();
         if (log.isDebugEnabled()) {
@@ -355,14 +356,16 @@ public class ArticleOtmService extends BaseConfigurableService {
     URI realURI = URI.create(uri);
 
     // filter access by id with PEP
+    // logged in user is automatically resolved by the ServletActionContextAttribute
     try {
-      pep.checkAccess(pep.READ_META_DATA, realURI);
+      pep.checkAccess(ArticlePEP.READ_META_DATA, realURI);
     } catch (SecurityException se) {
       if (log.isDebugEnabled()) {
         log.debug("Filtering URI "
           + uri
           + " from ObjectInfo list due to PEP SecurityException", se);
       }
+
       // it's still a SecurityException
       throw se;
     }
@@ -385,6 +388,38 @@ public class ArticleOtmService extends BaseConfigurableService {
     }
 
     return objectInfoList.get(0);
+  }
+
+  /**
+   * Get an Article by URI.
+   *
+   * @param uri URI of Article to get.
+   * @return Article with specified URI or null if not found.
+   * @throws NoSuchArticleIDException NoSuchArticleIdException
+   * @throws RemoteException RemoteException
+   */
+  public Article getArticle(final URI uri)
+    throws RemoteException, NoSuchArticleIdException {
+
+    // sanity check parms
+    if (uri == null) throw new IllegalArgumentException("URI == null");
+
+    // filter access by id with PEP
+    try {
+      pep.checkAccess(ArticlePEP.READ_META_DATA, uri);
+    } catch (SecurityException se) {
+      if (log.isDebugEnabled()) {
+        log.debug("Filtering URI "
+          + uri
+          + " due to PEP SecurityException", se);
+      }
+
+      // it's still a SecurityException
+      throw se;
+    }
+
+    // use Session to get an Article by URI, may return null
+    return session.get(Article.class, uri.toString());
   }
 
   /**
@@ -439,12 +474,13 @@ public class ArticleOtmService extends BaseConfigurableService {
     Results commentedArticles = session.doQuery(oqlQuery);
 
     // check access control on all Article results
+    // logged in user is automatically resolved by the ServletActionContextAttribute
     ArrayList<Article> returnArticles = new ArrayList();
     commentedArticles.beforeFirst();
     while(commentedArticles.next()) {
       Article commentedArticle = (Article) commentedArticles.get("a");
       try {
-        pep.checkAccess(pep.READ_META_DATA, commentedArticle.getId());
+        pep.checkAccess(ArticlePEP.READ_META_DATA, commentedArticle.getId());
         returnArticles.add(commentedArticle);
       } catch (SecurityException se) {
          if (log.isDebugEnabled())
