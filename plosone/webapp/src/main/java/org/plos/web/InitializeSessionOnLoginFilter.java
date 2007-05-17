@@ -14,6 +14,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.Constants;
 
+import org.plos.user.UserAccountsInterceptor;
+
 import javax.servlet.Filter;
 import javax.servlet.FilterChain;
 import javax.servlet.FilterConfig;
@@ -25,6 +27,7 @@ import javax.servlet.http.HttpSession;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Set;
 import java.util.Map;
 import java.util.Iterator;
@@ -35,6 +38,15 @@ import java.util.Iterator;
 public class InitializeSessionOnLoginFilter implements Filter {
   private static final Log log = LogFactory.getLog(InitializeSessionOnLoginFilter.class);
   private static final String PGT_IOU_KEY = "org.plos.web.InitilalizeSessionOnLoginFilter.PGT_IOU_KEY";
+
+  private static final Set<String> excludedNames = new HashSet();
+
+  static {
+    excludedNames.add(UserAccountsInterceptor.USER_KEY);
+    excludedNames.add(UserAccountsInterceptor.AUTH_KEY);
+    excludedNames.add(UserAccountsInterceptor.STATE_KEY);
+    excludedNames.add(UserAccountsInterceptor.MAP_STATUS);
+  }
 
   public void doFilter(final ServletRequest request, final ServletResponse response, final FilterChain filterChain) throws IOException, ServletException {
     try {
@@ -98,6 +110,8 @@ public class InitializeSessionOnLoginFilter implements Filter {
     Object attribute;
     while (attributeNames.hasMoreElements()) {
       attributeName = (String) attributeNames.nextElement();
+      if (excludedNames.contains(attributeName))
+        continue;
       attribute = initialSession.getAttribute(attributeName);
 
       if (!attributeMatchesPlosSessionObjects(attribute)) {
