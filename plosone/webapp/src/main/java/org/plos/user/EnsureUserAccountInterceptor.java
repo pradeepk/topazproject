@@ -17,6 +17,7 @@ import org.apache.commons.logging.LogFactory;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import static org.plos.Constants.ReturnCode;
 import static org.plos.Constants.SINGLE_SIGNON_USER_KEY;
+import static org.plos.Constants.SINGLE_SIGNON_EMAIL_KEY;
 import static org.plos.Constants.SINGLE_SIGNON_RECEIPT;
 
 import org.plos.ApplicationException;
@@ -122,6 +123,10 @@ public class EnsureUserAccountInterceptor implements Interceptor {
   }
   
   private String fetchUserEmailAddress(PlosOneUser user, String authId) throws ApplicationException {
+    String presetEmail = (String) getUserSessionMap().get(SINGLE_SIGNON_EMAIL_KEY);
+    if (presetEmail != null)
+      return presetEmail;
+
     final String emailAddressUrl = getEmailAddressUrl();
     final String url = emailAddressUrl + authId;
     try {

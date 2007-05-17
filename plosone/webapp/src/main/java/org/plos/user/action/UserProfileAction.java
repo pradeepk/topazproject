@@ -16,10 +16,10 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import org.plos.Constants;
 import static org.plos.Constants.Length;
 import static org.plos.Constants.ReturnCode.NEW_PROFILE;
 import static org.plos.Constants.ReturnCode.UPDATE_PROFILE;
+import static org.plos.Constants.SINGLE_SIGNON_EMAIL_KEY;
 import org.plos.user.PlosOneUser;
 import org.plos.user.UserAccountsInterceptor;
 import org.plos.user.UserProfileGrant;
@@ -356,7 +356,7 @@ public abstract class UserProfileAction extends UserActionSupport {
         final int usernameLength = displayName.length();
         if (usernameLength < Integer.parseInt(Length.DISPLAY_NAME_MIN)
               || usernameLength > Integer.parseInt(Length.DISPLAY_NAME_MAX)) {
-          addErrorForField(DISPLAY_NAME, "must be between " + Constants.Length.DISPLAY_NAME_MIN + " and " + Constants.Length.DISPLAY_NAME_MAX + " characters");
+          addErrorForField(DISPLAY_NAME, "must be between " + Length.DISPLAY_NAME_MIN + " and " + Length.DISPLAY_NAME_MAX + " characters");
           isValid = false;
         }
       } else {
@@ -894,6 +894,10 @@ public abstract class UserProfileAction extends UserActionSupport {
   protected abstract String getUserIdToFetchEmailAddressFor() throws ApplicationException;
 
   protected String fetchUserEmailAddress() throws ApplicationException {
+    String presetEmail = (String) getSessionMap().get(SINGLE_SIGNON_EMAIL_KEY);
+    if (presetEmail != null)
+      return presetEmail;
+
     final String emailAddressUrl = getEmailAddressUrl();
     final String userId = getUserIdToFetchEmailAddressFor();
     final String url = emailAddressUrl + userId;
