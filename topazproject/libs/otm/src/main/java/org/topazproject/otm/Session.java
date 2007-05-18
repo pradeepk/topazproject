@@ -232,7 +232,12 @@ public class Session {
       cleanMap.put(id, o);
     }
 
-    return clazz.cast(o);
+    if ((o == null) || clazz.isInstance(o))
+      return clazz.cast(o);
+
+    throw new OtmException("something wrong: asked to load() <" + oid + "> and map to class '"
+                           + clazz + "' but what we ended up with is an instance of '"
+                           + o.getClass());
   }
 
   /**
@@ -268,7 +273,12 @@ public class Session {
         sync(o, id, false, false, false);
     }
 
-    return clazz.cast(o);
+    if ((o == null) || clazz.isInstance(o))
+      return clazz.cast(o);
+
+    throw new OtmException("something wrong: asked to get() <" + oid + "> and map to class '"
+                           + clazz + "' but what we ended up with is an instance of '"
+                           + o.getClass());
   }
 
   /**
