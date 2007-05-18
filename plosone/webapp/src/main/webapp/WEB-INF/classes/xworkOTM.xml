@@ -109,17 +109,17 @@
       <result type="redirect">/</result>
     </action>
 
-    <action name="home" class="org.plos.action.HomePageAction">
+    <action name="home" class="org.plos.action.otm.HomePageAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/index.ftl</param>
       </result>
     </action>
 
-    <action name="recentArticles" class="org.plos.action.HomePageAction">
+    <action name="recentArticles" class="org.plos.action.otm.HomePageAction">
       <result name="success">/article/recentArticles.ftl</result>
     </action>
 
-    <action name="mostCommented" class="org.plos.action.HomePageAction">
+    <action name="mostCommented" class="org.plos.action.otm.HomePageAction">
       <result name="success">/article/mostCommented.ftl</result>
     </action>
 
