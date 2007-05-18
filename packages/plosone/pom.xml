@@ -26,6 +26,12 @@
       <type>war</type>
     </dependency>
     <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-search-webapp</artifactId>
+      <version>${pom.version}</version>
+      <type>war</type>
+    </dependency>
+    <dependency>
       <groupId>org.topazproject.packages</groupId>
       <artifactId>packages</artifactId>
       <version>${pom.version}</version>
