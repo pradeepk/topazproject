@@ -15,8 +15,6 @@ import java.util.Date;
 
 import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Entity;
-import org.topazproject.otm.annotations.GeneratedValue;
-import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
 
@@ -32,32 +30,21 @@ public abstract class Annotea {
    * Annotea Namespace URI
    */
   public static final String NS = "http://www.w3.org/2000/10/annotation-ns#";
-  @Id @GeneratedValue(uriPrefix = "info:doi/10.1371/annotation/")
-  private URI                                               id;
   private Date                                              created;
   //private Object                                            body;
 
+  @Predicate(uri = Rdf.rdf + "type", dataType=Rdf.xsd + "anyURI")
+  private String                                            type;
   @Predicate(uri = Rdf.dc + "creator")
   private String                                            creator;
+  @Predicate(uri = Rdf.topaz + "anonymousCreator")
+  private String                                            anonymousCreator;
   @Predicate(uri = Rdf.dc + "title")
   private String                                            title;
   @Predicate(uri = Rdf.dc_terms + "mediator")
   private String                                            mediator;
-  @Predicate(uri = Rdf.topaz + "state")
+  @Predicate(uri = Rdf.topaz + "state", dataType = Predicate.UNTYPED)
   private int                                               state;
-
-  /**
-   * Creates a new Annotea object.
-   */
-  public Annotea() {
-  }
-
-  /**
-   * Creates a new Annotea object.
-   */
-  public Annotea(URI id) {
-    this.id = id;
-  }
 
   /**
    * Get creator.
@@ -78,6 +65,24 @@ public abstract class Annotea {
   }
 
   /**
+   * Get creator.
+   *
+   * @return creator as String.
+   */
+  public String getAnonymousCreator() {
+    return anonymousCreator;
+  }
+
+  /**
+   * Set creator.
+   *
+   * @param creator the value to set.
+   */
+  public void setAnonymousCreator(String creator) {
+    this.anonymousCreator = creator;
+  }
+
+  /**
    * Get created.
    *
    * @return created as Date.
@@ -95,23 +100,6 @@ public abstract class Annotea {
     this.created = created;
   }
 
-  /**
-   * Get id.
-   *
-   * @return id as URI.
-   */
-  public URI getId() {
-    return id;
-  }
-
-  /**
-   * Set id.
-   *
-   * @param id the value to set.
-   */
-  public void setId(URI id) {
-    this.id = id;
-  }
 
   /**
    * Get title.
@@ -165,5 +153,22 @@ public abstract class Annotea {
    */
   public void setState(int state) {
     this.state = state;
+  }
+  /**
+   * Get type.
+   *
+   * @return type as String.
+   */
+  public String getType() {
+    return type;
+  }
+
+  /**
+   * Set type.
+   *
+   * @param type the value to set.
+   */
+  public void setType(String type) {
+    this.type = type;
   }
 }

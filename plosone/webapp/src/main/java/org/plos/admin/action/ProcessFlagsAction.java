@@ -18,8 +18,7 @@ import org.plos.ApplicationException;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.ReplyWebService;
-import org.topazproject.ws.annotation.NoSuchAnnotationIdException;
-import org.topazproject.ws.annotation.ReplyInfo;
+import org.plos.annotation.service.ReplyInfo;
 
 import com.opensymphony.webwork.components.If;
 
@@ -44,7 +43,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
     commentsToDelete = comments;
   }
   
-  public String execute() throws RemoteException, ApplicationException, NoSuchAnnotationIdException  {
+  public String execute() throws RemoteException, ApplicationException {
     String[] segments;
     
     if (commentsToUnflag != null){
@@ -96,7 +95,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
    * @throws NoSuchAnnotationIdException 
    * @throws RemoteException 
    */
-  private void deleteTarget(String root, String target) throws ApplicationException, RemoteException, NoSuchAnnotationIdException {
+  private void deleteTarget(String root, String target) throws ApplicationException, RemoteException {
     ReplyInfo[] replies;		
     Flag[] flags = annotationService.listFlags(target);
     boolean isReply = root.length() > 0;

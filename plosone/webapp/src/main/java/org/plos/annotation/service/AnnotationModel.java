@@ -11,10 +11,7 @@ package org.plos.annotation.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.jrdf.graph.Literal;
-import org.jrdf.graph.URIReference;
 import org.topazproject.mulgara.itql.ItqlHelper;
-import org.topazproject.ws.annotation.AnnotationInfo;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.Node;
@@ -29,7 +26,7 @@ import java.util.Map;
  *
  * @author Pradeep Krishnan
  */
-public class AnnotationModel extends AnnotationInfo {
+public class AnnotationModel {
   private static final Log log = LogFactory.getLog(AnnotationModel.class);
 
   //
@@ -68,26 +65,6 @@ public class AnnotationModel extends AnnotationInfo {
     element.setAttributeNS(xmlns, "xmlns:topaz", topaz.toString());
   }
 
-  /**
-   * Creates a new AnnotationModel object.
-   *
-   * @param id the annotation id;
-   * @param map meta-data as a map of name value pairs
-   */
-  public AnnotationModel(final String id, final Map<URI, String> map) {
-    setId(id);
-    setType(map.get(r_type));
-    setAnnotates(map.get(a_annotates));
-    setContext(map.get(a_context));
-    setCreator(map.get(d_creator));
-    setCreated(map.get(a_created));
-    setBody(map.get(a_body));
-    setSupersedes(map.get(dt_replaces));
-    setSupersededBy(map.get(dt_isReplacedBy));
-    setTitle(map.get(d_title));
-    setMediator(map.get(dt_mediator));
-    setState(Integer.parseInt(map.get(topaz_state)));
-  }
 
   /**
    * Append annotation meta data to a parent node.
@@ -164,55 +141,5 @@ public class AnnotationModel extends AnnotationInfo {
     node = document.createElementNS(topazNs, "topaz:state");
     node.appendChild(document.createTextNode("" + annotation.getState()));
     parent.appendChild(node);
-  }
-
-  /**
-   * Creates an AnnotationInfo object from an ITQL query result.
-   *
-   * @param id the annotation-id
-   * @param rows a list of name value pairs (predicate, object)
-   *
-   * @return returns the newly created Annotation Info
-   */
-  public static AnnotationInfo create(String id, List rows) {
-    final Map<URI, String> map = new HashMap<URI, String>();
-
-    for (final Object row : rows) {
-      Object[] cols = (Object[]) row;
-      URI predicate = (URI) getColumnValue(cols[0]);
-      Object object = getColumnValue(cols[1]);
-
-      if (nil.equals(object))
-        continue;
-
-      if (r_type.equals(predicate) && a_Annotation.equals(object))
-        continue;
-
-      final String prev = map.put(predicate, object.toString());
-
-      if (prev != null) {
-        log.warn("Unexpected duplicate triple found. Ignoring <" + id + "> <" + predicate + "> <"
-                + prev + ">");
-      }
-    }
-
-    return new AnnotationModel(id, map);
-  }
-
-  /**
-   * Get the column value for an ITQL result column.
-   *
-   * @param o the raw value from ITQL result
-   *
-   * @return the value that is of any use
-   */
-  static Object getColumnValue(Object o) {
-    if (o instanceof URIReference)
-      return ((URIReference) o).getURI();
-
-    if (o instanceof Literal)
-      return ((Literal) o).getLexicalForm();
-
-    return o;
   }
 }

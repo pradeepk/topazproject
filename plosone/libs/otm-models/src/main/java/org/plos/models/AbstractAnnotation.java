@@ -15,6 +15,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.GeneratedValue;
+import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
 
@@ -25,17 +27,15 @@ import org.topazproject.otm.annotations.Rdf;
  */
 @Entity(type = Annotea.NS + "Annotation")
 public abstract class AbstractAnnotation extends Annotea {
-  private URI                                                                       annotates;
-  private String                                                                    context;
-  @Predicate(uri = Rdf.rdf + "type")
-  private String                                                                    type;
+  @Id
+  @GeneratedValue(uriPrefix = "info:doi/10.1371/annotation/")
+  private URI                                                               id;
+  private URI                                                               annotates;
+  private String                                                            context;
   @Predicate(uri = Rdf.dc_terms + "replaces")
-  private AbstractAnnotation                                                        supersedes;
+  private AbstractAnnotation                                                supersedes;
   @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
-  private AbstractAnnotation                                                        supersededBy;
-  @Predicate(uri = Reply.NS + "inReplyTo", inverse = true)
-  private List<ReplyThread>                                                         replies =
-    new ArrayList<ReplyThread>();
+  private AbstractAnnotation                                                supersededBy;
 
 /**
    * Creates a new AbstractAnnotation object.
@@ -47,7 +47,7 @@ public abstract class AbstractAnnotation extends Annotea {
    * Creates a new AbstractAnnotation object.
    */
   public AbstractAnnotation(URI id) {
-    super(id);
+    this.id = id;
   }
 
   /**
@@ -87,35 +87,6 @@ public abstract class AbstractAnnotation extends Annotea {
   }
 
   /**
-   * DOCUMENT ME!
-   *
-   * @return DOCUMENT ME!
-   */
-  public List<ReplyThread> getReplies() {
-    return replies;
-  }
-
-  /**
-   * DOCUMENT ME!
-   *
-   * @param replies DOCUMENT ME!
-   */
-  public void setReplies(List<ReplyThread> replies) {
-    this.replies = replies;
-  }
-
-  /**
-   * DOCUMENT ME!
-   *
-   * @param r DOCUMENT ME!
-   */
-  public void addReply(ReplyThread r) {
-    r.setRoot(getId());
-    r.setInReplyTo(getId());
-    replies.add(r);
-  }
-
-  /**
    * Get supersedes.
    *
    * @return supersedes.
@@ -152,20 +123,20 @@ public abstract class AbstractAnnotation extends Annotea {
   }
 
   /**
-   * Get type.
+   * Get id.
    *
-   * @return type as String.
+   * @return id as URI.
    */
-  public String getType() {
-    return type;
+  public URI getId() {
+    return id;
   }
 
   /**
-   * Set type.
+   * Set id.
    *
-   * @param type the value to set.
+   * @param id the value to set.
    */
-  public void setType(String type) {
-    this.type = type;
+  public void setId(URI id) {
+    this.id = id;
   }
 }

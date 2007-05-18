@@ -9,9 +9,6 @@
  */
 package org.plos.annotation.service;
 
-import org.topazproject.ws.annotation.AnnotationInfo;
-import org.topazproject.ws.annotation.ReplyInfo;
-
 /**
  * Factory to return instances of lazy loaders as required by annotations and replies
  */

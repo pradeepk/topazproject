@@ -14,10 +14,6 @@ import org.plos.permission.service.PermissionWebService;
 import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
-import org.topazproject.common.NoSuchIdException;
-import org.topazproject.ws.annotation.AnnotationInfo;
-import org.topazproject.ws.annotation.Annotations;
-import org.topazproject.ws.annotation.ReplyInfo;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -75,8 +71,6 @@ public class AnnotationService extends BaseConfigurableService {
       return annotationId;
     } catch (RemoteException e) {
       throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
-      throw new ApplicationException(e);
     } catch (UnsupportedEncodingException e) {
       throw new ApplicationException(e);
     }
@@ -96,8 +90,6 @@ public class AnnotationService extends BaseConfigurableService {
     try {
       return replyWebService.createReply(mimeType, root, inReplyTo, title, body, this);
     } catch (RemoteException e) {
-      throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
       throw new ApplicationException(e);
     } catch (UnsupportedEncodingException e) {
       throw new ApplicationException(e);
@@ -139,8 +131,6 @@ public class AnnotationService extends BaseConfigurableService {
       annotationWebService.unflagAnnotation(annotationId);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
-      throw new ApplicationException(e);
     }
   }
 
@@ -153,8 +143,6 @@ public class AnnotationService extends BaseConfigurableService {
     try {
       replyWebService.unflagReply(replyId);
     } catch (RemoteException e) {
-      throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
       throw new ApplicationException(e);
     }
   }
@@ -170,8 +158,6 @@ public class AnnotationService extends BaseConfigurableService {
       annotationWebService.deletePrivateAnnotation(annotationId, deletePreceding);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
-      throw new ApplicationException(e);
     }
   }
 
@@ -185,8 +171,6 @@ public class AnnotationService extends BaseConfigurableService {
       annotationWebService.deletePublicAnnotation(annotationId);
       //TODO: Set the access permissions for administrator only
     } catch (RemoteException e) {
-      throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
       throw new ApplicationException(e);
     }
   }
@@ -202,8 +186,6 @@ public class AnnotationService extends BaseConfigurableService {
       replyWebService.deleteReplies(root, inReplyTo);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
-      throw new ApplicationException(e);
     }
   }
 
@@ -217,8 +199,6 @@ public class AnnotationService extends BaseConfigurableService {
       annotationWebService.deleteFlag(flagId);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
-      throw new ApplicationException(e);
     }
   }
   
@@ -231,8 +211,6 @@ public class AnnotationService extends BaseConfigurableService {
     try {
       replyWebService.deleteReply(replyId);
     } catch (RemoteException e) {
-      throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
       throw new ApplicationException(e);
     }
   }
@@ -294,8 +272,6 @@ public class AnnotationService extends BaseConfigurableService {
       return converter.convert(replies);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
-      throw new ApplicationException(e);
     }
   }
 
@@ -322,8 +298,6 @@ public class AnnotationService extends BaseConfigurableService {
       return replyWebService.listAllReplies(root, inReplyTo);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
-      throw new ApplicationException(e);
     }
   }
   
@@ -344,8 +318,6 @@ public class AnnotationService extends BaseConfigurableService {
       return converter.convert(replies, com);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
-      throw new ApplicationException(e);
     }
   }
 
@@ -360,8 +332,6 @@ public class AnnotationService extends BaseConfigurableService {
       return converter.convert(annotation);
     } catch (RemoteException e) {
       throw new ApplicationException(e);
-    } catch (NoSuchIdException e) {
-      throw new ApplicationException(e);
     }
   }
 
@@ -369,10 +339,9 @@ public class AnnotationService extends BaseConfigurableService {
    * Get reply
    * @param replyId replyId
    * @return the reply object
-   * @throws NoSuchIdException NoSuchIdException
    * @throws ApplicationException ApplicationException
    */
-  public Reply getReply(final String replyId) throws NoSuchIdException, ApplicationException {
+  public Reply getReply(final String replyId) throws ApplicationException {
     try {
       final ReplyInfo reply = replyWebService.getReplyInfo(replyId);
       return converter.convert(reply);
@@ -414,13 +383,13 @@ public class AnnotationService extends BaseConfigurableService {
       permissionWebService.grant(
               annotationDoi,
               new String[]{
-                      Annotations.Permissions.GET_ANNOTATION_INFO}, everyone);
+                      AnnotationsPEP.GET_ANNOTATION_INFO}, everyone);
 
       permissionWebService.revoke(
               annotationDoi,
               new String[]{
-                      Annotations.Permissions.DELETE_ANNOTATION,
-                      Annotations.Permissions.SUPERSEDE});
+                      AnnotationsPEP.DELETE_ANNOTATION,
+                      AnnotationsPEP.SUPERSEDE});
 
       annotationWebService.setPublic(annotationDoi);
 

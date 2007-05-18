@@ -21,7 +21,6 @@ import org.plos.user.PlosOneUser;
 import org.plos.util.DateParser;
 import org.plos.util.InvalidDateException;
 
-import org.topazproject.ws.annotation.ReplyInfo;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -80,14 +79,6 @@ public abstract class Reply extends BaseAnnotation {
     return reply.getCreated();
   }
 
-  /**
-   * Set created.
-   *
-   * @param created the value to set.
-   */
-  public void setCreated(final String created) {
-    reply.setCreated(created);
-  }
 
   /**
    * Get creator.
@@ -99,15 +90,6 @@ public abstract class Reply extends BaseAnnotation {
   }
 
   /**
-   * Set creator.
-   *
-   * @param creator the value to set.
-   */
-  public void setCreator(final String creator) {
-    reply.setCreator(creator);
-  }
-
-  /**
    * Get id.
    *
    * @return id as String.
@@ -116,14 +98,6 @@ public abstract class Reply extends BaseAnnotation {
     return reply.getId();
   }
 
-  /**
-   * Set id.
-   *
-   * @param id the value to set.
-   */
-  public void setId(final String id) {
-    reply.setId(id);
-  }
 
   /**
    * Get inReplyTo.
@@ -135,15 +109,6 @@ public abstract class Reply extends BaseAnnotation {
   }
 
   /**
-   * Set inReplyTo.
-   *
-   * @param inReplyTo the value to set.
-   */
-  public void setInReplyTo(final String inReplyTo) {
-    reply.setInReplyTo(inReplyTo);
-  }
-
-  /**
    * Get mediator.
    *
    * @return mediator as String.
@@ -152,14 +117,6 @@ public abstract class Reply extends BaseAnnotation {
     return reply.getMediator();
   }
 
-  /**
-   * Set mediator.
-   *
-   * @param mediator the value to set.
-   */
-  public void setMediator(final String mediator) {
-    reply.setMediator(mediator);
-  }
 
   /**
    * Get root.
@@ -168,15 +125,6 @@ public abstract class Reply extends BaseAnnotation {
    */
   public String getRoot() {
     return reply.getRoot();
-  }
-
-  /**
-   * Set root.
-   *
-   * @param root the value to set.
-   */
-  public void setRoot(final String root) {
-    reply.setRoot(root);
   }
 
   /**
@@ -189,15 +137,6 @@ public abstract class Reply extends BaseAnnotation {
   }
 
   /**
-   * Set state.
-   *
-   * @param state the value to set.
-   */
-  public void setState(final int state) {
-    reply.setState(state);
-  }
-
-  /**
    * Get title.
    *
    * @return title as String.
@@ -207,30 +146,12 @@ public abstract class Reply extends BaseAnnotation {
   }
 
   /**
-   * Set title.
-   *
-   * @param title the value to set.
-   */
-  public void setCommentTitle(final String title) {
-    reply.setTitle(title);
-  }
-
-  /**
    * Get type.
    *
    * @return type as String.
    */
   public String getType() {
     return reply.getType();
-  }
-
-  /**
-   * Set type.
-   *
-   * @param type the value to set.
-   */
-  public void setType(final String type) {
-    reply.setType(type);
   }
 
   /**

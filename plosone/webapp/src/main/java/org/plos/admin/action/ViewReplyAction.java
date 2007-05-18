@@ -14,7 +14,7 @@ package org.plos.admin.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.annotation.service.ReplyWebService;
-import org.topazproject.ws.annotation.ReplyInfo;
+import org.plos.annotation.service.ReplyInfo;
 
 public class ViewReplyAction extends BaseAdminActionSupport {
   

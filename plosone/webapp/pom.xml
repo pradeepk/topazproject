@@ -88,18 +88,6 @@
 
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-annotation-api</artifactId>
-      <version>${pom.parent.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-annotation-client-impl</artifactId>
-      <version>${pom.parent.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-permissions-client-impl</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>

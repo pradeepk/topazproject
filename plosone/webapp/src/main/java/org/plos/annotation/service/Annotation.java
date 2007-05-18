@@ -15,7 +15,6 @@ import org.plos.ApplicationException;
 import org.plos.user.service.UserService;
 import org.plos.util.DateParser;
 import org.plos.util.InvalidDateException;
-import org.topazproject.ws.annotation.AnnotationInfo;
 
 import java.util.Date;
 
@@ -40,14 +39,6 @@ public abstract class Annotation extends BaseAnnotation {
   }
 
   /**
-   * Set the target (probably a uri) that it annotates.
-   * @param annotates annotates
-   */
-  public void setAnnotates(final String annotates) {
-    annotation.setAnnotates(annotates);
-  }
-
-  /**
    * Get context.
    * @return context as String.
    */
@@ -55,15 +46,6 @@ public abstract class Annotation extends BaseAnnotation {
     return annotation.getContext();
   }
 
-  /**
-   * Set context.
-   * @param context the value to set.
-   */
-  public void setContext(final String context) {
-    annotation.setContext(context);
-  }
-  
-  
   /**
    * Get created date.
    * @return created as java.util.Date.
@@ -87,14 +69,6 @@ public abstract class Annotation extends BaseAnnotation {
   }
 
   /**
-   * Set created.
-   * @param created the value to set.
-   */
-  public void setCreated(final String created) {
-    annotation.setCreated(created);
-  }
-
-  /**
    * Get creator.
    * @return creator as String.
    */
@@ -106,9 +80,11 @@ public abstract class Annotation extends BaseAnnotation {
    * Set creator.
    * @param creator the value to set.
    */
+  /*
   public void setCreator(final String creator) {
     annotation.setCreator(creator);
   }
+  */
 
   /**
    * @return Returns the creatorName.
@@ -127,26 +103,11 @@ public abstract class Annotation extends BaseAnnotation {
   }
 
   /**
-   * @param creatorName The creatorName to set.
-   */
-  public void setCreatorName(String creatorName) {
-    this.creatorName = creatorName;
-  }
-  
-  /**
    * Get id.
    * @return id as String.
    */
   public String getId() {
     return annotation.getId();
-  }
-
-  /**
-   * Set id.
-   * @param id the value to set.
-   */
-  public void setId(final String id) {
-    annotation.setId(id);
   }
 
   /**
@@ -157,13 +118,6 @@ public abstract class Annotation extends BaseAnnotation {
     return annotation.getMediator();
   }
 
-  /**
-   * Set mediator.
-   * @param mediator the value to set.
-   */
-  public void setMediator(final String mediator) {
-    annotation.setMediator(mediator);
-  }
 
   /**
    * Get state.
@@ -171,14 +125,6 @@ public abstract class Annotation extends BaseAnnotation {
    */
   public int getState() {
     return annotation.getState();
-  }
-
-  /**
-   * Set state.
-   * @param state the value to set.
-   */
-  public void setState(final int state) {
-    annotation.setState(state);
   }
 
   /**
@@ -190,27 +136,11 @@ public abstract class Annotation extends BaseAnnotation {
   }
 
   /**
-   * Set supersededBy.
-   * @param supersededBy the value to set.
-   */
-  public void setSupersededBy(final String supersededBy) {
-    annotation.setSupersededBy(supersededBy);
-  }
-
-  /**
    * Get supersedes.
    * @return supersedes as String.
    */
   public String getSupersedes() {
     return annotation.getSupersedes();
-  }
-
-  /**
-   * Set supersedes.
-   * @param supersedes the value to set.
-   */
-  public void setSupersedes(final String supersedes) {
-    annotation.setSupersedes(supersedes);
   }
 
  /**
@@ -222,14 +152,6 @@ public abstract class Annotation extends BaseAnnotation {
   }
 
   /**
-   * Set commentTitle.
-   * @param commentTitle the value to set.
-   */
-  public void setCommentTitle(final String commentTitle) {
-    annotation.setTitle(commentTitle);
-  }
-
-  /**
    * Get annotation type.
    * @return annotation type as String.
    */
@@ -237,13 +159,6 @@ public abstract class Annotation extends BaseAnnotation {
     return annotation.getType();
   }
 
-  /**
-   * Set annotation type.
-   * @param type the value to set.
-   */
-  public void setType(final String type) {
-    annotation.setType(type);
-  }
 
   public Annotation(final AnnotationInfo annotation) {
     this.annotation = annotation;

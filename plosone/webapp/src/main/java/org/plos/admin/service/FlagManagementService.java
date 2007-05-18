@@ -18,15 +18,15 @@ import java.util.Collections;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+import org.plos.annotation.service.AnnotationInfo;
+import org.plos.annotation.service.ReplyInfo;
 import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.AnnotationService;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.ReplyWebService;
-import org.plos.user.service.UserService;
-import org.topazproject.ws.annotation.AnnotationInfo;
-import org.topazproject.ws.annotation.ReplyInfo;
 import static org.plos.annotation.service.Annotation.FLAG_MASK;
 import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
+import org.plos.user.service.UserService;
 
 /**
  * @author alan

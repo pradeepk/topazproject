@@ -17,11 +17,11 @@ import org.plos.BasePlosoneTestCase;
 import org.plos.Constants;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.AnnotationService;
+import org.plos.annotation.service.AnnotationsPEP;
 import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.Reply;
 import org.plos.article.action.FetchArticleAction;
 import org.plos.permission.service.PermissionWebService;
-import org.topazproject.ws.annotation.Annotations;
 import org.topazproject.ws.article.DuplicateArticleIdException;
 
 import java.net.URL;
@@ -460,13 +460,13 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     assertTrue(annotation.isPublic());
 
     final List<String> grantsList = Arrays.asList(permissionWebService.listGrants(annotationId, Constants.Permission.ALL_PRINCIPALS));
-    assertTrue(grantsList.contains(Annotations.Permissions.GET_ANNOTATION_INFO));
+    assertTrue(grantsList.contains(AnnotationsPEP.GET_ANNOTATION_INFO));
 
     final String currentUser = ANON_PRINCIPAL;
 
     final List<String> revokesList = Arrays.asList(permissionWebService.listRevokes(annotationId, currentUser));
-    assertTrue(revokesList.contains(Annotations.Permissions.DELETE_ANNOTATION));
-    assertTrue(revokesList.contains(Annotations.Permissions.SUPERSEDE));
+    assertTrue(revokesList.contains(AnnotationsPEP.DELETE_ANNOTATION));
+    assertTrue(revokesList.contains(AnnotationsPEP.SUPERSEDE));
     resetAnnotationPermissionsToDefault(annotationId, currentUser);
   }
 
@@ -475,13 +475,13 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     //Cleanup - Reset the permissions so that these annotations can be deleted by other unit tests
     permissionWebService.cancelRevokes(
             annotationId,
-            new String[] {Annotations.Permissions.DELETE_ANNOTATION, Annotations.Permissions.SUPERSEDE},
+            new String[] {AnnotationsPEP.DELETE_ANNOTATION, AnnotationsPEP.SUPERSEDE},
             new String[] {currentUser}
     );
 
     permissionWebService.cancelGrants(
             annotationId,
-            new String[] {Annotations.Permissions.GET_ANNOTATION_INFO},
+            new String[] {AnnotationsPEP.GET_ANNOTATION_INFO},
             new String[] {Constants.Permission.ALL_PRINCIPALS}
     );
   }

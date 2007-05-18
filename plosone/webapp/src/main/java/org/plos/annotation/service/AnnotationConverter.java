@@ -13,9 +13,6 @@ import org.plos.ApplicationException;
 import org.plos.annotation.Commentary;
 import org.plos.user.service.UserService;
 
-import org.topazproject.ws.annotation.AnnotationInfo;
-import org.topazproject.ws.annotation.ReplyInfo;
-
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;

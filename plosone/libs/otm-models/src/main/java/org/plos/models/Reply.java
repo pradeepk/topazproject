@@ -13,6 +13,8 @@ import java.net.URI;
 
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.GeneratedValue;
+import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.UriPrefix;
 
@@ -28,24 +30,27 @@ public class Reply extends Annotea {
    * Thread Namespace
    */
   public static final String NS = "http://www.w3.org/2001/03/thread#";
-  private URI                                      root;
-  private URI                                      inReplyTo;
+  @Id
+  @GeneratedValue(uriPrefix = "info:doi/10.1371/reply/")
+  private URI                                                          id;
+  private URI                                                          root;
+  private URI                                                          inReplyTo;
   @Predicate(uri = Annotea.NS + "body")
-  private URI                                      body;
+  private URI                                                          body;
 
-  /**
+/**
    * Creates a new Reply object.
    */
   public Reply() {
   }
 
-  /**
+/**
    * Creates a new Reply object.
    *
    * @param id the reply id
    */
   public Reply(URI id) {
-    super(id);
+    this.id = id;
   }
 
   /**
@@ -85,6 +90,8 @@ public class Reply extends Annotea {
   }
 
   /**
+   * 
+  DOCUMENT ME!
    *
    * @return Returns the body.
    */
@@ -93,10 +100,30 @@ public class Reply extends Annotea {
   }
 
   /**
+   * 
+  DOCUMENT ME!
    *
    * @param body The body to set.
    */
   public void setBody(URI body) {
     this.body = body;
+  }
+
+  /**
+   * Get id.
+   *
+   * @return id as URI.
+   */
+  public URI getId() {
+    return id;
+  }
+
+  /**
+   * Set id.
+   *
+   * @param id the value to set.
+   */
+  public void setId(URI id) {
+    this.id = id;
   }
 }

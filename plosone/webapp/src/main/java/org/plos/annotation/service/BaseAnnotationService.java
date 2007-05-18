@@ -24,7 +24,6 @@ public abstract class BaseAnnotationService extends BaseConfigurableService {
   /**
    * Set the default annotation type.
    * @param defaultType defaultType
-   * @see org.topazproject.ws.annotation.Annotations
    */
   public void setDefaultType(final String defaultType) {
     this.defaultType = defaultType;

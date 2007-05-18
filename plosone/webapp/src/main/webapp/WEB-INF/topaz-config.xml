@@ -34,5 +34,11 @@
     <users>
       <pdpName>_default_</pdpName>
     </users>
+    <annotations>
+      <pdpName>_default_</pdpName>
+    </annotations>
+    <replies>
+      <pdpName>_default_</pdpName>
+    </replies>
   </topaz>
 </config>
