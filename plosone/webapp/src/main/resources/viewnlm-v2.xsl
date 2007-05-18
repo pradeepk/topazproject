@@ -1626,36 +1626,30 @@ Make article meta data
 <!-- The first p in a footnote displays the fn symbol or,
      if no symbol, the fn ID -->
 <xsl:template match="fn/p[1]">
-  <p>
-    <xsl:call-template name="make-id"/>
-    <xsl:if test="../@symbol | ../@id">
-      <sup>
-        <xsl:choose>
-          <xsl:when test="../@symbol">
-            <xsl:value-of select="../@symbol"/>
-          </xsl:when>
-          <xsl:when test="../@id">
-            <xsl:value-of select="../@id"/>
-          </xsl:when>
-          <xsl:otherwise/>
-        </xsl:choose>
-      </sup>
-    </xsl:if>
-
-    <xsl:apply-templates/>
-  </p>
+  <xsl:choose>
+    <xsl:when test="parent::fn/@fn-type='financial-disclosure'"><xsl:apply-templates/></xsl:when>
+    <xsl:when test="parent::fn/@fn-type='conflict'"><xsl:apply-templates/></xsl:when>
+    <xsl:otherwise>
+      <p>
+        <xsl:call-template name="make-id"/>
+        <xsl:if test="../@symbol | ../@id">
+        <sup>
+          <xsl:choose>
+            <xsl:when test="../@symbol">
+              <xsl:value-of select="../@symbol"/>
+            </xsl:when>
+            <xsl:when test="../@id">
+              <xsl:value-of select="../@id"/>
+            </xsl:when>
+            <xsl:otherwise/>
+          </xsl:choose>
+        </sup>
+      </xsl:if>
+      <xsl:apply-templates/>
+      </p>
+    </xsl:otherwise>
+  </xsl:choose>
 </xsl:template>
-
-
-<!--<xsl:template match="fn[@fn-type='financial-disclosure'] | fn[@fn-type='conflict']">
-	<xsl:apply-templates/>
-</xsl:template>-->
-
-<xsl:template match="fn[@fn-type='financial-disclosure']/p[1] | fn[@fn-type='conflict']/p[1]">
-    <xsl:apply-templates/>
-</xsl:template>
-
-
 
 <xsl:template match="speech/p[1]">
   <p>
