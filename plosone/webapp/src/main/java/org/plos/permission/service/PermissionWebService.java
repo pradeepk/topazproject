@@ -203,6 +203,33 @@ public class PermissionWebService extends BaseConfigurableService {
     ensureInitGetsCalledWithUsersSessionAttributes();
     return permissionsService.listRevokes(resource, principal);
   }
+
+  /**
+   * Propagate permissions 
+   * @param resource resource
+   * @param to other secondary resources
+   * @throws RemoteException
+   * @see org.topazproject.ws.permissions.Permissions#cancelRevokes(String, String[], String[])
+   */
+  public void propagatePermissions(final String resource, final String[] to) 
+    throws RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    permissionsService.propagatePermissions(resource, to);
+  }
+
+  /**
+   * Propagate permissions 
+   * @param resource resource
+   * @param to other secondary resources
+   * @throws RemoteException
+   * @see org.topazproject.ws.permissions.Permissions#cancelRevokes(String, String[], String[])
+   */
+  public void cancelPropagatePermissions(final String resource, final String[] to) 
+    throws RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    permissionsService.propagatePermissions(resource, to);
+  }
+
   private static class WSPermissionsPEP extends PermissionsPEP {
     static {
       init(WSPermissionsPEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
