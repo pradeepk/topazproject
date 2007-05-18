@@ -19,6 +19,7 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URI;
 import java.net.URL;
 import java.util.HashMap;
 import java.util.Map;
@@ -162,4 +163,9 @@ public class FileUtils {
     return buf.toString();
 
   }
+
+  public static String escapeURIAsPath (final URI inURI) {
+    return (inURI == null) ? null : escapeURIAsPath(inURI.toString());
+  }
+
 }
