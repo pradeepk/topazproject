@@ -109,6 +109,7 @@ public class SerializerFactory {
       };
 
     setSerializer(String.class, new SimpleSerializer<String>(String.class));
+    setSerializer(String.class, Rdf.xsd + "anyURI", new SimpleSerializer<String>(String.class));
     setSerializer(Boolean.class, new XsdBooleanSerializer());
     setSerializer(Boolean.TYPE, new XsdBooleanSerializer());
     setSerializer(Integer.class, new SimpleSerializer<Integer>(Integer.class));
