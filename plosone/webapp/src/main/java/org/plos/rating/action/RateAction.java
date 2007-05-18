@@ -106,7 +106,14 @@ public class RateAction extends BaseActionSupport {
       return ERROR;
     }
 
-    pep.checkAccess(RatingsPEP.SET_RATINGS, annotatedArticle);
+    if (user == null) {
+      log.info("User is null for rating articles");
+      addActionError("Must be logged in");
+
+      return ERROR;
+    }
+    pep.checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
+    pep.checkAccess(RatingsPEP.SET_STATS, annotatedArticle);
 
     try {
       tx = session.beginTransaction();
@@ -379,8 +386,6 @@ public class RateAction extends BaseActionSupport {
     Transaction tx      = null;
 
     try {
-      tx = session.beginTransaction();
-
       PlosOneUser user =
         (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
 
@@ -390,6 +395,11 @@ public class RateAction extends BaseActionSupport {
 
         return ERROR;
       }
+
+      pep.checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()),
+                                                    URI.create(articleURI));
+
+      tx = session.beginTransaction();
 
       List<Rating> ratingsList =
         session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))

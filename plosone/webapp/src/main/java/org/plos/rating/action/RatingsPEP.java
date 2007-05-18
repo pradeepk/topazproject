@@ -38,6 +38,8 @@ public class RatingsPEP extends AbstractSimplePEP {
   public static final String GET_RATINGS = "ratings:getRatings";
     /** The action that represents the get-stats operation in XACML policies. */
   public static final String GET_STATS = "ratings:getStats";
+    /** The action that represents the get-stats operation in XACML policies. */
+  public static final String SET_STATS = "ratings:setStats";
   /** The id of the attribute containing the URI of the object */
   public static final URI OBJ_ID =
       URI.create("urn:topazproject:names:tc:xacml:1.0:resource:object-uri");
@@ -47,10 +49,12 @@ public class RatingsPEP extends AbstractSimplePEP {
                                                            SET_RATINGS,
                                                            GET_RATINGS,
                                                            GET_STATS,
+                                                           SET_STATS,
                                                          };
 
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
+                                                           null,
                                                            null,
                                                            null,
                                                            null,
