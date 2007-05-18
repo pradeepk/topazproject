@@ -106,7 +106,7 @@ public class RateAction extends BaseActionSupport {
       return ERROR;
     }
 
-    pep.checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
+    pep.checkAccess(RatingsPEP.SET_RATINGS, annotatedArticle);
 
     try {
       tx = session.beginTransaction();

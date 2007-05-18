@@ -88,7 +88,7 @@ public class GetAverageRatingsAction extends BaseActionSupport {
     PlosOneUser   user               =
       (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
 
-    pep.checkObjectAccess(RatingsPEP.GET_STATS, URI.create(user.getUserId()), URI.create(articleURI));
+    pep.checkAccess(RatingsPEP.GET_STATS, URI.create(articleURI));
 
     try {
       tx = session.beginTransaction();
