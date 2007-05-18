@@ -27,7 +27,13 @@ import org.topazproject.otm.annotations.Rdf;
  */
 @Entity(type = Rdf.topaz + "Article", model = "ri")
 public class Article extends ObjectInfo {
-  // dublin-core predicates
+
+    /** Article state of "Active" */
+  public static final int STATE_ACTIVE   = 0;
+  /** Article state of "Disabled" */
+  public static final int STATE_DISABLED = 1;
+
+// dublin-core predicates
   /** Subjects are really a raw representation of category/subCategory */
   @Predicate(uri = Rdf.dc + "subject")
   private Set<String> subjects = new HashSet<String>();

@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.article.service;
+package org.plos.article.service.otm;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,6 +27,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.plos.article.service.otm.ArticleFeedData;
 import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.IngestException;
 import org.plos.article.util.Ingester;
@@ -36,6 +37,7 @@ import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.article.util.Zip;
 import org.plos.configuration.OtmConfiguration;
 import org.plos.models.Article;
+import org.plos.models.ObjectInfo;
 import org.plos.service.BaseConfigurableService;
 import org.plos.service.WSTopazContext;
 
@@ -46,7 +48,9 @@ import org.topazproject.common.NoSuchIdException;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
 import org.topazproject.fedoragsearch.service.FgsOperations;
+// TODO: should feed mv up to webapp?
 import org.topazproject.feed.ArticleFeed;
+// import org.topazproject.feed.ArticleFeedData;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -54,27 +58,12 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
-//import org.topazproject.ws.article.Article;
-import org.topazproject.ws.article.ArticleClientFactory;
-import org.topazproject.ws.article.ArticleInfo;
-//import org.topazproject.ws.article.IngestException;
-//import org.topazproject.ws.article.NoSuchArticleIdException;
-//import org.topazproject.ws.article.NoSuchObjectIdException;
-import org.topazproject.ws.article.ObjectInfo;
 
 /**
  * Provide Article "services" via OTM.
- *
- * TODO: this is designed to provide the functionality of
- * {@link org.topazproject.ws.article.Article}.
- * It should be possible to refactor most of this "up" into
- * "org.plos.article.action".
- * Ideal solution is pure article.action, no article.service.
  */
 public class ArticleOtmService extends BaseConfigurableService {
 
-  // TODO: remove all refs to ws Article in favor of otm Article
-  private org.topazproject.ws.article.Article delegateService;
   private String smallImageRep;
   private String largeImageRep;
   private String mediumImageRep;
@@ -88,8 +77,6 @@ public class ArticleOtmService extends BaseConfigurableService {
 
   public void init() throws IOException, URISyntaxException, ServiceException {
     final ProtectedService permissionProtectedService = getProtectedService();
-    // TODO: no refs to delegateService
-    delegateService = null;  // ArticleClientFactory.create(permissionProtectedService);
 
     // create an XACML PEP for Articles
     try {
@@ -150,7 +137,9 @@ public class ArticleOtmService extends BaseConfigurableService {
   public void markSuperseded(final String oldUri, final String newUri)
           throws RemoteException, NoSuchIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    delegateService.markSuperseded(oldUri, newUri);
+    
+    // TODO: SERVICE
+    // delegateService.markSuperseded(oldUri, newUri);
   }
 
   /**
@@ -163,7 +152,7 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @throws NoSuchIdException NoSuchIdException
    */
   public String getObjectURL(final String obj, final String rep)
-          throws RemoteException, ServiceException, NoSuchObjectIdException {
+          throws RemoteException, NoSuchObjectIdException {
 
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
@@ -178,7 +167,10 @@ public class ArticleOtmService extends BaseConfigurableService {
       articleUtil = new ArticleUtil();  // no arg, utils use default config
     } catch (MalformedURLException ex) {
       throw new RuntimeException(ex);
+    } catch (ServiceException se) {
+      throw new RemoteException("Failed getting URL for \"" + obj + "\", \"" + rep + "\"", se);
     }
+    
     return articleUtil.getObjectURL(obj, rep);
   }
 
@@ -219,7 +211,13 @@ public class ArticleOtmService extends BaseConfigurableService {
   public void setState(final String article, final int state)
           throws RemoteException, NoSuchIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    delegateService.setState(article, state);
+    
+    // TODO: SERVICE
+    
+    // PEP etc.
+    // delegateService..setState(article, state);
+    
+    return;
   }
 
   /**
@@ -251,7 +249,23 @@ public class ArticleOtmService extends BaseConfigurableService {
   public String getArticles(final String startDate, final String endDate,
                  final int[] states, boolean ascending) throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return delegateService.getArticles(startDate, endDate, null, null, states, true);
+    
+    // TODO: model PEP after ws impl
+    
+    return getArticles(startDate, endDate, null, null, states, true);
+  }
+
+  /**
+   * @see org.topazproject.ws.article.Article#getArticleInfos(String, String, String[], String[], int[], boolean)
+   */
+  public ArticleInfo[] getArticleInfos(String startDate, String endDate,
+                                     String[] categories, String[] authors, int[] states,
+                                     boolean ascending) throws RemoteException{
+    ensureInitGetsCalledWithUsersSessionAttributes();
+    
+    // TODO: SERVICE
+    // return delegateService.getArticleInfos(startDate, endDate, categories, authors, states, ascending);
+    return new ArticleInfo[0];
   }
 
   /**
@@ -271,9 +285,9 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @return the (possibly empty) list of articles.
    * @throws RemoteException if there was a problem talking to any service
    */
-  public Article[] getArticles(String startDate,String endDate,
-                                String[] categories, String[] authors, int[] states,
-                                boolean ascending)
+  public String getArticles(String startDate,String endDate,
+                            String[] categories, String[] authors, int[] states,
+                            boolean ascending)
     throws RemoteException {
 
     // session housekeeping
@@ -319,10 +333,22 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // filter access by id with PEP
     // logged in user is automatically resolved by the ServletActionContextAttribute
+    List<ArticleFeedData> articleFeedData = new ArrayList();
     for (Iterator it = articleList.iterator(); it.hasNext(); ) {
       Article article = (Article) it.next();
       try {
         pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
+        
+         ArticleFeedData articleFeedDatum = new ArticleFeedData(
+            article.getId().toString(),
+            article.getTitle(),
+            article.getDescription(),
+            article.getDate(),
+            article.getAuthors(),
+            article.getSubjects(),
+            article.getCategories(),
+            article.getState());
+         articleFeedData.add(articleFeedDatum);
       } catch (SecurityException se) {
         it.remove();
         if (log.isDebugEnabled()) {
@@ -333,7 +359,9 @@ public class ArticleOtmService extends BaseConfigurableService {
       }
     }
 
-    return articleList.toArray(new Article[articleList.size()]);
+    return ArticleFeed.buildXml(articleFeedData);
+    // TODO: confirm calling chain logic
+    // return articleList.toArray(new Article[articleList.size()]);
   }
 
   /**
@@ -341,11 +369,10 @@ public class ArticleOtmService extends BaseConfigurableService {
    *
    * @param uri uri
    * @return the object-info of the object
-   * @throws org.topazproject.ws.article.NoSuchObjectIdException NoSuchObjectIdException
+   * @throws NoSuchObjectIdException NoSuchObjectIdException
    * @throws java.rmi.RemoteException RemoteException
    */
-  // TODO: remove FQ package name when no more ws ObjectInfo
-  public org.plos.models.ObjectInfo getObjectInfo(final String uri)
+  public ObjectInfo getObjectInfo(final String uri)
     throws RemoteException, NoSuchObjectIdException {
 
     // session housekeeping
@@ -371,13 +398,13 @@ public class ArticleOtmService extends BaseConfigurableService {
     }
 
     // build up Criteria for the ObjectInfo
-    Criteria objectInfoCriteria = session.createCriteria(org.plos.models.ObjectInfo.class);
+    Criteria objectInfoCriteria = session.createCriteria(ObjectInfo.class);
 
     // match on URI
     objectInfoCriteria = objectInfoCriteria.add(Restrictions.eq("id", realURI));
 
     // get a list of ObjectInfos that meet the specified Criteria and Restrictions
-    List<org.plos.models.ObjectInfo> objectInfoList = objectInfoCriteria.list();
+    List<ObjectInfo> objectInfoList = objectInfoCriteria.list();
 
     // should be 1 & only 1 result
     if (objectInfoList.size() == 0) {
@@ -427,13 +454,16 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @param article uri
    * @return the secondary objects of the article
    * @throws java.rmi.RemoteException RemoteException
-   * @throws org.topazproject.ws.article.NoSuchArticleIdException NoSuchArticleIdException
+   * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   public SecondaryObject[] listSecondaryObjects(final String article)
-    throws RemoteException, org.topazproject.ws.article.NoSuchArticleIdException {
+    throws RemoteException, NoSuchArticleIdException {
 
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return convert(delegateService.listSecondaryObjects(article));
+    
+    // TODO: SERVICE
+    // return convert(delegateService.listSecondaryObjects(article));
+    return new SecondaryObject[0];
   }
 
   private SecondaryObject[] convert(final ObjectInfo[] objectInfos) {
@@ -513,10 +543,12 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @throws NullPointerException if any of the parameters are null
    */
   public void setRepresentation(String obj, String rep, DataHandler content)
-      throws org.topazproject.ws.article.NoSuchObjectIdException, RemoteException
+      throws NoSuchObjectIdException, RemoteException
   {
           ensureInitGetsCalledWithUsersSessionAttributes();
-          delegateService.setRepresentation(obj, rep, content);
+          
+          // TODO: SERVICE
+          // delegateService.setRepresentation(obj, rep, content);
   }
 
   /**

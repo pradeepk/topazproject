@@ -7,12 +7,12 @@ import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
-import org.plos.article.service.FetchArticleService;
+
+import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.article.service.otm.FetchArticleService;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.AnnotationService;
-
-import org.topazproject.common.NoSuchIdException;
-import org.topazproject.ws.article.ObjectInfo;
+import org.plos.models.ObjectInfo;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -46,7 +46,7 @@ public class FetchArticleAction extends BaseActionSupport {
         }
       }
       setArticleInfo(fetchArticleService.getArticleInfo(articleURI));
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchArticleIdException e) {
       messages.add("No article found for id: " + articleURI);
       log.info("Could not find article: "+ articleURI, e);
       return ERROR;
