@@ -17,9 +17,7 @@ import org.plos.service.WSTopazContext;
 import org.plos.service.ImplInvocationHandler;
 import org.plos.xacml.XacmlUtil;
 
-import org.topazproject.authentication.ProtectedService;
 import org.topazproject.ws.permissions.Permissions;
-import org.topazproject.ws.permissions.PermissionsClientFactory;
 import org.topazproject.ws.permissions.impl.PermissionsImpl;
 import org.topazproject.ws.permissions.impl.PermissionsPEP;
 
@@ -35,7 +33,6 @@ public class PermissionWebService extends BaseConfigurableService {
   private Permissions permissionsService;
   private String currentPrincipal;
 
-  private static boolean directConnect = true;
   private static final Log      log    = LogFactory.getLog(PermissionWebService.class);
   private static WSTopazContext ctx;
   private static PermissionsPEP pep;
@@ -58,12 +55,7 @@ public class PermissionWebService extends BaseConfigurableService {
   }
 
   public void init() throws IOException, URISyntaxException, ServiceException {
-    if (directConnect)
-      permissionsService = getImpl();
-    else {
-      final ProtectedService permissionProtectedService = getProtectedService();
-      permissionsService = PermissionsClientFactory.create(permissionProtectedService);
-    }
+    permissionsService = getImpl();
   }
 
   /**

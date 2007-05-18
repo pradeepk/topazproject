@@ -88,12 +88,6 @@
 
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-permissions-client-impl</artifactId>
-      <version>${pom.parent.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-permissions-impl</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
