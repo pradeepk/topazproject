@@ -19,7 +19,6 @@ import org.apache.lucene.document.Document;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.xacml.AbstractSimplePEP;
-import org.topazproject.ws.article.Article;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -57,7 +56,8 @@ public class TopazHitGuard implements Guard {
     String uri = "info:fedora/" + pid;
     AbstractSimplePEP pep = SearchContext.getPEP();
     try {
-      pep.checkAccess(Article.Permissions.READ_META_DATA, new URI(uri));
+      // XXX: replace hardcoded string with constant again once this is merged into plosone
+      pep.checkAccess("articles:readMetaData", new URI(uri));
 
       if (log.isDebugEnabled())
         log.debug("Returning unguarded uri '" + uri + "'");

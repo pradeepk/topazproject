@@ -126,66 +126,6 @@
     </dependency>
 
     <!-- topazproject/webservices -->
-    <!-- annotation -->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-annotation-client-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-annotation-webapp</artifactId>
-      <type>war</type>
-    </dependency>
-    <!-- articles -->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-articles-client-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-articles-webapp</artifactId>
-      <type>war</type>
-    </dependency>
-    <!-- users -->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-users-client-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-users-webapp</artifactId>
-      <type>war</type>
-    </dependency>
-    <!-- pap -->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-pap-client-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-pap-webapp</artifactId>
-      <type>war</type>
-    </dependency>
-    <!-- permissions -->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-permissions-client-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-permissions-webapp</artifactId>
-      <type>war</type>
-    </dependency>
-    <!-- alerts -->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-alerts-client-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-alerts-webapp</artifactId>
-      <type>war</type>
-    </dependency>
     <!-- Get IOUtil -->
     <dependency>
       <groupId>commons-io</groupId>
@@ -195,26 +135,6 @@
     <dependency>
       <groupId>dumbster</groupId>
       <artifactId>dumbster</artifactId>
-    </dependency>
-    <!-- journal-admin -->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-journal-admin-client-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-journal-admin-webapp</artifactId>
-      <type>war</type>
-    </dependency>
-    <!-- ratings -->
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-ratings-client-impl</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-ratings-webapp</artifactId>
-      <type>war</type>
     </dependency>
     <!-- access -->
     <dependency>
@@ -578,70 +498,6 @@
               <cargo.logging>high</cargo.logging>
             </properties>
             <deployables>
-              <deployable>
-                <groupId>org.topazproject.ws</groupId>
-                <artifactId>ws-articles-webapp</artifactId>
-                <type>war</type>
-                <properties>
-                  <context>ws-articles</context>
-                </properties>
-              </deployable>
-              <deployable>
-                <groupId>org.topazproject.ws</groupId>
-                <artifactId>ws-annotation-webapp</artifactId>
-                <type>war</type>
-                <properties>
-                  <context>ws-annotation</context>
-                </properties>
-              </deployable>
-              <deployable>
-                <groupId>org.topazproject.ws</groupId>
-                <artifactId>ws-users-webapp</artifactId>
-                <type>war</type>
-                <properties>
-                  <context>ws-users</context>
-                </properties>
-              </deployable>
-              <deployable>
-                <groupId>org.topazproject.ws</groupId>
-                <artifactId>ws-pap-webapp</artifactId>
-                <type>war</type>
-                <properties>
-                  <context>ws-pap</context>
-                </properties>
-              </deployable>
-              <deployable>
-                <groupId>org.topazproject.ws</groupId>
-                <artifactId>ws-permissions-webapp</artifactId>
-                <type>war</type>
-                <properties>
-                  <context>ws-permissions</context>
-                </properties>
-              </deployable>
-              <deployable>
-                <groupId>org.topazproject.ws</groupId>
-                <artifactId>ws-alerts-webapp</artifactId>
-                <type>war</type>
-                <properties>
-                  <context>ws-alerts</context>
-                </properties>
-              </deployable>
-              <deployable>
-                <groupId>org.topazproject.ws</groupId>
-                <artifactId>ws-journal-admin-webapp</artifactId>
-                <type>war</type>
-                <properties>
-                  <context>ws-journal-admin</context>
-                </properties>
-              </deployable>
-              <deployable>
-                <groupId>org.topazproject.ws</groupId>
-                <artifactId>ws-ratings-webapp</artifactId>
-                <type>war</type>
-                <properties>
-                  <context>ws-ratings</context>
-                </properties>
-              </deployable>
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-access-webapp</artifactId>

@@ -27,7 +27,6 @@ import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.xacml.ws.WSXacmlUtil;
 import org.topazproject.fedoragsearch.topazlucene.SearchContext;
 import org.topazproject.xacml.AbstractSimplePEP;
-import org.topazproject.ws.article.Article;
 
 import dk.defxws.fedoragsearch.server.Operations; // API
 import dk.defxws.fedoragsearch.server.SOAPImpl;
@@ -129,8 +128,8 @@ public class FedoraGenericSearchServicePortSoapBindingImpl implements Operations
     ctx.passivate();
   }
 
-  private static class WSSearchPEP extends AbstractSimplePEP implements Article.Permissions {
-    protected static final String[] SUPPORTED_ACTIONS = new String[] { READ_META_DATA };
+  private static class WSSearchPEP extends AbstractSimplePEP {
+    protected static final String[] SUPPORTED_ACTIONS = new String[] { "articles:readMetaData" };
     protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] { null };
 
     static {
