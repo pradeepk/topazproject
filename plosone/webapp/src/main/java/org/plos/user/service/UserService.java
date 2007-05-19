@@ -22,6 +22,7 @@ import org.plos.ApplicationException;
 import org.plos.Constants;
 import org.plos.models.AuthenticationId;
 import org.plos.models.UserAccount;
+import org.plos.models.UserPreference;
 import org.plos.models.UserPreferences;
 import org.plos.models.UserProfile;
 import org.plos.models.UserRole;
@@ -52,6 +53,16 @@ import java.util.Set;
  * 
  */
 public class UserService extends BaseConfigurableService {
+  private static final Log      log = LogFactory.getLog(UserService.class);
+  private static final String[] allUserProfileFieldGrants = getAllUserProfileFieldGrants();
+
+  private static final int      LD_NONE     = 0;
+  private static final int      LD_AUTH_IDS = 1 << 0;
+  private static final int      LD_ROLES    = 1 << 1;
+  private static final int      LD_PREFS    = 1 << 2;
+  private static final int      LD_PROFILE  = 1 << 3;
+  private static final int      LD_ALL      = 0xFFFFFFFF;
+
   private Session session;
 
   private UsersPEP pep;
@@ -62,10 +73,7 @@ public class UserService extends BaseConfigurableService {
   private String applicationId;
   private String emailAddressUrl;
 
-  private final static String[] allUserProfileFieldGrants = getAllUserProfileFieldGrants();
-
-  private static final Log log = LogFactory.getLog(UserService.class);
-  private final String[] ALL_PRINCIPALS = new String[]{Constants.Permission.ALL_PRINCIPALS};
+  private final String[] ALL_PRINCIPALS = new String[] { Constants.Permission.ALL_PRINCIPALS };
   private Collection<String> weeklyCategories;
   private Collection<String> monthlyCategories;
   private Map<String, String> categoryNames;
@@ -103,7 +111,7 @@ public class UserService extends BaseConfigurableService {
     boolean dup = TransactionHelper.doInTx(session, new TransactionHelper.Action<Boolean>() {
       public Boolean run(Transaction tx) {
         Results r = tx.getSession().doQuery(
-          "select ua from UserAccount ua where ua.authIds.value = '" + authId + "';");
+          "select ua.id from UserAccount ua where ua.authIds.value = '" + authId + "';");
         if (!r.next() || !r.next())
           return false;
 
@@ -140,37 +148,42 @@ public class UserService extends BaseConfigurableService {
 
   /**
    * Get the account info for the given user.
-   * @param topazUserId
-   *          the Topaz User ID
+   * @param topazUserId the Topaz User ID
+   * @param loadList    the list of associations to eagerly load
    * @throws ApplicationException ApplicationException
    */
-  private UserAccount getUserAccount(final String topazUserId) throws ApplicationException {
+  private UserAccount getUserAccount(final String topazUserId, final int loadList)
+      throws ApplicationException {
     UserAccount ua = TransactionHelper.doInTx(session, new TransactionHelper.Action<UserAccount>() {
       public UserAccount run(Transaction tx) {
-        return tx.getSession().get(UserAccount.class, topazUserId);
+        UserAccount ua = tx.getSession().get(UserAccount.class, topazUserId);
+        if (ua == null)
+          return null;
+
+        /* Ugh! This is ugly, and fragile in case the model ever changes...
+         * Since there's no eager loading (yet) in OTM, we touch (force a load of)
+         * all the stuff we'll need now while we're still in a transaction.
+         */
+        if ((loadList & LD_AUTH_IDS) != 0)
+          for (AuthenticationId ai : ua.getAuthIds()) ;
+
+        if ((loadList & LD_ROLES) != 0)
+          for (UserRole r : ua.getRoles()) ;
+
+        if ((loadList & LD_PREFS) != 0) {
+          for (UserPreferences pl : ua.getPreferences())
+            for (UserPreference p : pl.getPrefs()) ;
+        }
+
+        if ((loadList & LD_PROFILE) != 0)
+          for (URI i : ua.getProfile().getInterests()) ;
+
+        return ua;
       }
     });
     if (ua == null)
       throw new ApplicationException("No user-account with id '" + topazUserId + "' found");
     return ua;
-  }
-
-  /**
-   * Get the account info for the given user.
-   * @param authId
-   *          the Topaz Auth ID
-   * @throws ApplicationException ApplicationException
-   */
-  private UserAccount getUserAccountByAuthId(final String authId) throws ApplicationException {
-    return TransactionHelper.doInTx(session, new TransactionHelper.Action<UserAccount>() {
-      public UserAccount run(Transaction tx) {
-        Results r = tx.getSession().doQuery(
-          "select ua from UserAccount ua where ua.authIds.value = '" + authId + "';");
-        if (!r.next())
-          return null;
-        return (UserAccount) r.get(0);
-      }
-    });
   }
 
   /**
@@ -195,11 +208,11 @@ public class UserService extends BaseConfigurableService {
         log.debug("trying to get from mulgara:" + topazUserId);
       }
       try {
-        PlosOneUser pou = getUserWithProfileLoaded(topazUserId);
-        if (pou != null) {
-          userCacheAdministrator.putInCache(topazUserId, pou.getDisplayName());
+        String dispName = getDisplayName(topazUserId);
+        if (dispName != null) {
+          userCacheAdministrator.putInCache(topazUserId, dispName);
           updated = true;
-          retVal = pou.getDisplayName();
+          retVal = dispName;
         }
       } finally {
         if (!updated)
@@ -207,6 +220,19 @@ public class UserService extends BaseConfigurableService {
       }
     }
     return retVal;
+  }
+
+  private String getDisplayName(final String topazUserId) throws ApplicationException {
+    pep.checkAccessAE(pep.GET_DISP_NAME, URI.create(topazUserId));
+    return TransactionHelper.doInTx(session, new TransactionHelper.Action<String>() {
+      public String run(Transaction tx) {
+        Results r = tx.getSession().doQuery(
+          "select ua.profile.displayName from UserAccount ua where ua = <" + topazUserId + ">;");
+        if (!r.next())
+          return null;
+        return r.getString(0);
+      }
+    });
   }
 
   /**
@@ -231,7 +257,7 @@ public class UserService extends BaseConfigurableService {
   public PlosOneUser getUserWithProfileLoaded(final String topazUserId) throws ApplicationException {
     pep.checkAccessAE(pep.LOOKUP_USER, URI.create(topazUserId));
 
-    return new PlosOneUser(getUserAccount(topazUserId), applicationId, pep);
+    return new PlosOneUser(getUserAccount(topazUserId, LD_ALL), applicationId, pep);
   }
 
   /**
@@ -245,8 +271,15 @@ public class UserService extends BaseConfigurableService {
   public PlosOneUser getUserByAuthId(final String authId) throws ApplicationException {
     pep.checkAccessAE(pep.LOOKUP_USER, URI.create("account:" + authId));
 
-    UserAccount ua = getUserAccountByAuthId(authId);
-    return (ua != null) ? new PlosOneUser(ua, applicationId, pep) : null;
+    return TransactionHelper.doInTx(session, new TransactionHelper.Action<PlosOneUser>() {
+      public PlosOneUser run(Transaction tx) {
+        Results r = tx.getSession().doQuery(
+          "select ua from UserAccount ua where ua.authIds.value = '" + authId + "';");
+        if (!r.next())
+          return null;
+        return new PlosOneUser((UserAccount) r.get(0), applicationId, pep);
+      }
+    });
   }
 
   /**
@@ -261,7 +294,7 @@ public class UserService extends BaseConfigurableService {
   public void setState(final String userId, int state) throws ApplicationException {
     pep.checkAccessAE(pep.SET_STATE, URI.create(userId));
 
-    UserAccount ua = getUserAccount(userId);
+    UserAccount ua = getUserAccount(userId, LD_NONE);
     ua.setState(state);
     flush(ua);
   }
@@ -277,7 +310,7 @@ public class UserService extends BaseConfigurableService {
   public int getState(final String userId) throws ApplicationException {
     pep.checkAccessAE(pep.GET_STATE, URI.create(userId));
 
-    UserAccount ua = getUserAccount(userId);
+    UserAccount ua = getUserAccount(userId, LD_NONE);
     return ua.getState();
   }
 
@@ -292,7 +325,7 @@ public class UserService extends BaseConfigurableService {
   public String getAuthenticationId(final String topazId) throws ApplicationException {
     pep.checkAccessAE(pep.GET_AUTH_IDS, URI.create(topazId));
 
-    UserAccount ua = getUserAccount(topazId);
+    UserAccount ua = getUserAccount(topazId, LD_AUTH_IDS);
     return ua.getAuthIds().iterator().next().getValue();
   }
 
@@ -307,8 +340,15 @@ public class UserService extends BaseConfigurableService {
   public String lookUpUserByAuthId(final String authId) throws ApplicationException {
     pep.checkAccessAE(pep.LOOKUP_USER, URI.create("account:" + authId));
 
-    UserAccount ua = getUserAccountByAuthId(authId);
-    return (ua != null) ? ua.getId().toString() : null;
+    return TransactionHelper.doInTx(session, new TransactionHelper.Action<String>() {
+      public String run(Transaction tx) {
+        Results r = tx.getSession().doQuery(
+          "select ua.id from UserAccount ua where ua.authIds.value = '" + authId + "';");
+        if (!r.next())
+          return null;
+        return r.getString(0);
+      }
+    });
   }
 
   /**
@@ -329,10 +369,10 @@ public class UserService extends BaseConfigurableService {
       public String run(Transaction tx) {
         String v = (value instanceof URI) ? "<" + value + ">" : "'" + value + "'";
         Results r = tx.getSession().doQuery(
-          "select ua from UserAccount ua where ua.profile." + field + " = " + v + ";");
+          "select ua.id from UserAccount ua where ua.profile." + field + " = " + v + ";");
         if (!r.next())
           return null;
-        return ((UserAccount) r.get(0)).getId().toString();
+        return r.getString(0);
       }
     });
   }
@@ -398,7 +438,7 @@ public class UserService extends BaseConfigurableService {
       }
     }
 
-    UserAccount ua = getUserAccount(inUser.getUserId());
+    UserAccount ua = getUserAccount(inUser.getUserId(), LD_PROFILE);
     ua.setProfile(inUser.getUserProfile());
     flush(ua);
 
@@ -539,7 +579,7 @@ public class UserService extends BaseConfigurableService {
 
     pep.checkAccessAE(pep.SET_PREFERENCES, URI.create(inUser.getUserId()));
 
-    UserAccount ua = getUserAccount(inUser.getUserId());
+    UserAccount ua = getUserAccount(inUser.getUserId(), LD_PREFS);
 
     UserPreferences p = ua.getPreferences(applicationId);
     if (p == null) {
@@ -588,7 +628,7 @@ public class UserService extends BaseConfigurableService {
   public void setRole(final String topazId, final String[] roleIds) throws ApplicationException {
     pep.checkAccessAE(pep.SET_ROLES, URI.create(topazId));
 
-    UserAccount ua = getUserAccount(topazId);
+    UserAccount ua = getUserAccount(topazId, LD_ROLES);
     ua.getRoles().clear();
     for (String r : roleIds)
       ua.getRoles().add(new UserRole(r));
@@ -603,7 +643,7 @@ public class UserService extends BaseConfigurableService {
   public String[] getRole(final String topazId) throws ApplicationException {
     pep.checkAccessAE(pep.GET_ROLES, URI.create(topazId));
 
-    UserAccount ua = getUserAccount(topazId);
+    UserAccount ua = getUserAccount(topazId, LD_ROLES);
 
     String[] res = new String[ua.getRoles().size()];
     int idx = 0;
