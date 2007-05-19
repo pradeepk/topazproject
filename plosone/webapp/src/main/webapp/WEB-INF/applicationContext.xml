@@ -43,10 +43,7 @@
   <bean id="articleOtmService" class="org.plos.article.service.ArticleOtmService" scope="session">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
-      <map>
-        <entry key="uri" value="${service.article}"/>
-        <entry key="auth-method" value-ref="auth-method"/>
-      </map>
+      <map/>
     </property>
  <!--   <property name="smallImageRep" value="TIF"/>
     <property name="mediumImageRep" value="TIF"/>
@@ -102,10 +99,7 @@
   <bean id="permissionWebService" class="org.plos.permission.service.PermissionWebService" scope="session">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
-      <map>
-        <entry key="uri" value="${service.permission}"/>
-        <entry key="auth-method" value-ref="auth-method"/>
-      </map>
+      <map/>
     </property>
     <aop:scoped-proxy/>
   </bean>
@@ -124,10 +118,7 @@
     <property name="defaultType" value="http://www.w3.org/2001/12/replyType#Comment"/>
     <property name="permissionWebService" ref="permissionWebService"/>
     <property name="configurationMap">
-      <map>
-        <entry key="uri" value="${service.reply}"/>
-        <entry key="auth-method" value-ref="auth-method"/>
-      </map>
+      <map/>
     </property>
     <aop:scoped-proxy/>
   </bean>
@@ -140,10 +131,7 @@
     <property name="defaultType" value="http://www.w3.org/2000/10/annotationType#Annotation"/>
     <property name="permissionWebService" ref="permissionWebService"/>
     <property name="configurationMap">
-      <map>
-        <entry key="uri" value="${service.annotation}"/>
-        <entry key="auth-method" value-ref="auth-method"/>
-      </map>
+      <map/>
     </property>
     <aop:scoped-proxy/>
   </bean>
