@@ -160,6 +160,17 @@ public class OqlTest extends GroovyTestCase {
       checker.verify(r) {
         row { object (class:Article.class, uri:id4); string ('yellow') }
       }
+
+      // id field
+      r = s.doQuery("select a.uri from Article a where a.title = 'Yo ho ho';")
+      checker.verify(r) {
+        row { uri (id4) }
+      }
+
+      r = s.doQuery("select a from Article a where a.uri = <${id4}>;")
+      checker.verify(r) {
+        row { object (class:Article.class, uri:id4) }
+      }
     }
   }
 
@@ -465,7 +476,7 @@ class ResultChecker extends BuilderSupport {
         break;
 
       case 'uri':
-        test.assertEquals(value.toURI(), res.getURI(col++));
+        test.assertEquals((value instanceof URI) ? value : value.toURI(), res.getURI(col++));
         break;
 
       case 'nul':

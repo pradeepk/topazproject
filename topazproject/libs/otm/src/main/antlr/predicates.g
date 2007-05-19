@@ -83,12 +83,14 @@ options {
 
     private ExprType resolveField(ASTPair cur, ExprType type, AST field)
         throws RecognitionException {
+      // see if this is dereferenceable type (class or embedded-class)
       if (type == null ||
           type.getType() != ExprType.Type.CLASS && type.getType() != ExprType.Type.EMB_CLASS)
         throw new RecognitionException("can't dereference type '" + type + "'; " +
                                        "current node: '" + cur.root + "', field: '" + field +
                                        "'");
 
+      // for embedded classes get the fully-qualified field-name
       String fname = "";
       if (type.getType() == ExprType.Type.EMB_CLASS) {
         for (Mapper m : type.getEmbeddedFields())
@@ -96,6 +98,7 @@ options {
       }
       fname += field.getText();
 
+      // see if we have a mapper for the field; if so, great
       Mapper m = type.getMeta().getMapperByName(fname);
       if (m != null) {
         ExprType cType = getTypeForMapper(m);
@@ -108,27 +111,36 @@ options {
         return cType;
       }
 
+      // see if this is the id-field
       m = type.getMeta().getIdField();
-      if (m != null && fname.equals(m.getName()))       // ignore id fields
-        return type;
+      if (m != null && fname.equals(m.getName())) {
+        ExprType cType = ExprType.uriType(null);
+        updateAST(getCurAST(cur), type, cType, m, false);
+        return cType;
+      }
 
+      // see if this is a partial match on a hierarchy of embedded classes
       m = findEmbeddedFieldMapper(type.getMeta(), fname);
       if (m != null) {
         if (type.getType() == ExprType.Type.EMB_CLASS)
           type.getEmbeddedFields().add((EmbeddedClassMapper) m);
         else {
           type = ExprType.embeddedClassType(type.getMeta(), (EmbeddedClassMapper) m);
-
-          AST last = cur.child;
-          if (last == null)
-            last = cur.root;
-          ((OqlAST) last).setExprType(type);
+          getCurAST(cur).setExprType(type);
         }
 
         return type;
       }
 
+      // nope, nothing found, must be a user error
       throw new RecognitionException("no field '" + field.getText() + "' in " + getClass(type));
+    }
+
+    private static OqlAST getCurAST(ASTPair cur) {
+      AST last = cur.child;
+      if (last == null)
+        last = cur.root;
+      return (OqlAST) last;
     }
 
     private static EmbeddedClassMapper findEmbeddedFieldMapper(ClassMetadata md, String field) {
@@ -239,7 +251,7 @@ options {
                                        "', prev type='" + vars.get(var.getText()) +
                                        "', new type='" + type + "'");
       vars.put(var.getText(), type);
-      updateAST(var, null, type, null, true);
+      updateAST(var, type, type, null, true);
     }
 
     private AST nextVar() {
