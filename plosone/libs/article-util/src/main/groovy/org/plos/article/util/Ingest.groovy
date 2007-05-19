@@ -9,7 +9,7 @@
  */
 package org.plos.article.util
 
-import org.plos.article.util.Zip // Groovy needs this for some inexplicable reason
+import org.plos.article.util.Zip
 
 args = ToolHelper.fixArgs(args)
 
