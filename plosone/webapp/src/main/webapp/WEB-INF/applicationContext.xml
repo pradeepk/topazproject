@@ -23,7 +23,7 @@
     <property name="secondaryObjectXslTemplate" value="/objInfo.xsl"/>
     <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
-    <property name="articleService" ref="articleWebService"/>
+    <property name="articleService" ref="articleOtmService"/>
     <property name="annotationWebService" ref="annotationWebService"/>
     <property name="useTranslet" value="true"/>
     <property name="encodingCharset" ref="defaultEncodingCharset"/>
@@ -40,7 +40,7 @@
   </util:map>
 
   <!-- TODO: Update the servicePort url's automatically using maven build process itself-->
-  <bean id="articleWebService" class="org.plos.article.service.ArticleWebService" scope="session">
+  <bean id="articleOtmService" class="org.plos.article.service.ArticleOtmService" scope="session">
     <property name="userContext" ref="userContext"/>
     <property name="configurationMap">
       <map>

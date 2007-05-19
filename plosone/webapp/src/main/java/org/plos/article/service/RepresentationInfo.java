@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.plos.article.service.otm;
+package org.plos.article.service;
 
 import java.net.MalformedURLException;
 import java.net.URI;

@@ -11,8 +11,8 @@ package org.plos.article.service;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.topazproject.ws.article.ObjectInfo;
-import org.topazproject.ws.article.RepresentationInfo;
+
+import org.plos.models.ObjectInfo;
 
 /**
  * Wrapper around topaz's ObjectInfo.
@@ -39,7 +39,7 @@ public class SecondaryObject {
   }
   
   /**
-   * @see org.topazproject.ws.article.ObjectInfo#getContextElement()
+   * @see ObjectInfo#getContextElement()
    * 
    * @return the context element of this object
    */
@@ -48,14 +48,14 @@ public class SecondaryObject {
   }
   
   /**
-   * @see org.topazproject.ws.article.ObjectInfo#getUri()
+   * @see ObjectInfo#getUri()
    */
   public String getUri() {
-    return objectInfo.getUri();
+    return objectInfo.getId().toString();
   }
 
   /**
-   * @see org.topazproject.ws.article.ObjectInfo#getTitle()
+   * @see ObjectInfo#getTitle()
    */
   public String getTitle() {
     
@@ -63,26 +63,27 @@ public class SecondaryObject {
   }
 
   /**
-   * @see org.topazproject.ws.article.ObjectInfo#getDescription()
+   * @see ObjectInfo#getDescription()
    */
   public String getDescription() {
     return (objectInfo.getDescription() == null) ? "" : objectInfo.getDescription();
   }
 
   /**
-   * @see org.topazproject.ws.article.ObjectInfo#getRepresentations()
+   * @see ObjectInfo#getRepresentations()
    */
   public RepresentationInfo[] getRepresentations() {
-    return objectInfo.getRepresentations();
+    return RepresentationInfo.parseObjectInfo(objectInfo);
   }
 
   /**
-   * @see org.topazproject.ws.article.ObjectInfo#getDoi()
+   * @see ObjectInfo#getDoi()
    */
   public String getDoi() {
-    return objectInfo.getDoi();
+    // TODO: doi: munging not really resolved
+    return null;  // objectInfo.getDoi();
   }
-  
+
   /**
    * @return the thumbnail representation for the images
    */

@@ -10,8 +10,6 @@
 
 package org.plos.article.service;
 
-import static org.topazproject.ws.article.Article.ST_ACTIVE;
-
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -23,7 +21,8 @@ import java.util.TreeMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.topazproject.ws.article.ArticleInfo;
+
+import static org.plos.models.Article.STATE_ACTIVE;
 
 import com.opensymphony.oscache.base.CacheEntry;
 import com.opensymphony.oscache.base.NeedsRefreshException;
@@ -39,7 +38,7 @@ public class BrowseService {
   private static final Log log = LogFactory.getLog(BrowseService.class);
 
   private GeneralCacheAdministrator articleCacheAdministrator;
-  private ArticleWebService articleWebService;
+  private ArticleOtmService articleOtmService;
 
   private Object[] allBrowseObjects;
 
@@ -77,8 +76,8 @@ public class BrowseService {
       }
       try {
         //  Get the value from TOPAZ
-        allArticles = articleWebService.getArticleInfos(null, null, null, null, 
-                                                        new int[]{ST_ACTIVE}, true);
+        allArticles = articleOtmService.getArticleInfos(null, null, null, null, 
+                                                        new int[]{STATE_ACTIVE}, true);
         
         // Store in the cache
         articleCacheAdministrator.putInCache(ALL_ARTICLE_CACHE_KEY, allArticles, 
@@ -263,10 +262,10 @@ public class BrowseService {
 
 
   /**
-   * @param articleWebService The articleWebService to set.
+   * @param articleOtmService The articleOtmService to set.
    */
-  public void setArticleWebService(ArticleWebService articleWebService) {
-    this.articleWebService = articleWebService;
+  public void setArticleOtmService(ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
 }

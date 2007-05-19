@@ -13,11 +13,13 @@ package org.plos.action;
 import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.article.service.ArticleWebService;
+
+import org.plos.action.BaseActionSupport;
+import org.plos.article.service.ArticleInfo;
+import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.BrowseService;
-import static org.topazproject.ws.article.Article.ST_ACTIVE;
-import org.topazproject.ws.article.ArticleInfo;
-import org.topazproject.ws.article.ObjectInfo;
+import org.plos.models.ObjectInfo;
+import static org.plos.models.Article.STATE_ACTIVE;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 import com.opensymphony.oscache.base.NeedsRefreshException;
@@ -37,43 +39,43 @@ import java.util.TreeMap;
  *
  */
 public class HomePageAction extends BaseActionSupport {
-  
+
   private static final Log log = LogFactory.getLog(HomePageAction.class);
-  private ArticleWebService articleWebService;
+  private ArticleOtmService articleOtmService;
   private BrowseService browseService;
   private ArticleInfo[] lastWeeksArticles;
   private static final long ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
   private static final long FIFTEEN_DAYS = 15 * 24 * 60 * 60 * 1000;
   private GeneralCacheAdministrator articleCacheAdministrator;
   public static final String WEEK_ARTICLE_CACHE_KEY = "WEEK_ARTICLE_LIST";
-  private static final int WEEK_ARTICLE_CACHE_DURATION = 43200; //12hrs  
+  private static final int WEEK_ARTICLE_CACHE_DURATION = 43200; //12hrs
   private static final String MOST_COMMENTED_CACHE_KEY = "MOST_COMMENTED_LIST";
   private static final int MOST_COMMENTED_CACHE_DURATION = 3600;  //1 hr
-  
-  
+
+
   /**
    * This execute method always returns SUCCESS
-   * 
+   *
    */
   public String execute() throws Exception {
     return SUCCESS;
   }
-  
+
   /**
    * Retrieves the most recently published articles in the last 7 days
-   * 
+   *
    * @return array of ArticleInfo objects
    */
   public ArticleInfo[] getRecentArticles() {
     return getLastWeeksArticles();
   }
-  
+
   private ArticleInfo[] getLastWeeksArticles() {
     if (lastWeeksArticles == null) {
       try {
         // Get from the cache
 
-        lastWeeksArticles= (ArticleInfo[]) 
+        lastWeeksArticles= (ArticleInfo[])
           articleCacheAdministrator.getFromCache(WEEK_ARTICLE_CACHE_KEY, WEEK_ARTICLE_CACHE_DURATION);
         if (log.isDebugEnabled()) {
           log.debug("retrieved last week's articles from cache");
@@ -87,9 +89,9 @@ public class HomePageAction extends BaseActionSupport {
           if (log.isDebugEnabled()){
             log.debug("retrieving last week's articles from TOPAZ");
           }
-          lastWeeksArticles = articleWebService.getArticleInfos(weekAgo.toString(), null, null,
-                              null, new int[]{ST_ACTIVE}, false);
-          
+          lastWeeksArticles = articleOtmService.getArticleInfos(weekAgo.toString(), null, null,
+                              null, new int[]{STATE_ACTIVE}, false);
+
           // Store in the cache
           articleCacheAdministrator.putInCache(WEEK_ARTICLE_CACHE_KEY, lastWeeksArticles);
           updated = true;
@@ -104,14 +106,14 @@ public class HomePageAction extends BaseActionSupport {
           }
         }
       }
-    }    
+    }
     return lastWeeksArticles;
   }
-  
-  
+
+
   /**
    * Return an array of ObjectInfos representing the maxArticles most commented on articles
-   * 
+   *
    * @param maxArticles
    * @return ObjectInfo[] of maxArticles maximum size
    */
@@ -122,7 +124,7 @@ public class HomePageAction extends BaseActionSupport {
     ObjectInfo[] retArray = new ObjectInfo[0];
     try {
       // Get from the cache
-      retArray= (ObjectInfo[]) 
+      retArray= (ObjectInfo[])
         articleCacheAdministrator.getFromCache(MOST_COMMENTED_CACHE_KEY + maxArticles, MOST_COMMENTED_CACHE_DURATION);
       if (log.isDebugEnabled()) {
         log.debug("retrieved most commented from cache");
@@ -134,7 +136,7 @@ public class HomePageAction extends BaseActionSupport {
         if (log.isDebugEnabled()){
           log.debug("retrieving most commented articles from TOPAZ");
         }
-        retArray = articleWebService.getCommentedArticles(maxArticles);        
+        retArray = articleOtmService.getCommentedArticles(maxArticles);
         // Store in the cache
         articleCacheAdministrator.putInCache(MOST_COMMENTED_CACHE_KEY + maxArticles, retArray);
         updated = true;
@@ -149,20 +151,20 @@ public class HomePageAction extends BaseActionSupport {
       }
     }
     return retArray;
-  }    
-
-  /**
-   * @return Returns the articleWebService.
-   */
-  protected ArticleWebService getArticleWebService() {
-    return articleWebService;
   }
 
   /**
-   * @param articleWebService The articleWebService to set.
+   * @return Returns the articleOtmService.
    */
-  public void setArticleWebService(ArticleWebService articleWebService) {
-    this.articleWebService = articleWebService;
+  protected ArticleOtmService getArticleOtmService() {
+    return articleOtmService;
+  }
+
+  /**
+   * @param articleOtmService The articleOtmService to set.
+   */
+  public void setArticleOtmService(ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   /**
@@ -179,17 +181,17 @@ public class HomePageAction extends BaseActionSupport {
   public String[] getCategoryNames() {
     return browseService.getCategoryNames();
   }
-  
+
   /**
    * returns an array of numValues ints which are randomly selected between 0 (inclusive)
    * and maxValue(exclusive). If maxValue is less than numValues, will return maxValue items.
-   * Guarantees uniquness of values.  
-   * 
+   * Guarantees uniquness of values.
+   *
    * @param numValues
    * @param maxValue
    * @return array of random ints
    */
-  
+
   public int[] randomNumbers (int numValues, int maxValue) {
     if (maxValue < numValues) {
       numValues = maxValue;

@@ -13,11 +13,12 @@ import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.plos.action.BaseActionSupport;
-import org.plos.article.service.ArticleWebService;
+import org.plos.article.service.ArticleOtmService;
+import org.plos.article.service.RepresentationInfo;
+import org.plos.models.ObjectInfo;
 import org.plos.util.FileUtils;
-import org.topazproject.ws.article.ObjectInfo;
-import org.topazproject.ws.article.RepresentationInfo;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -28,7 +29,7 @@ import java.net.URLConnection;
  * Fetch the object for a given uri
  */
 public class FetchObjectAction extends BaseActionSupport {
-  private ArticleWebService articleWebService;
+  private ArticleOtmService articleOtmService;
   private String uri;
   private String representation;
 
@@ -48,7 +49,7 @@ public class FetchObjectAction extends BaseActionSupport {
       return INPUT;
     }
 
-    final String objectURL = articleWebService.getObjectURL(uri, representation);
+    final String objectURL = articleOtmService.getObjectURL(uri, representation);
     setOutputStreamAndAttributes(objectURL);
     return SUCCESS;
   }
@@ -59,11 +60,11 @@ public class FetchObjectAction extends BaseActionSupport {
    * @throws Exception Exception
    */
   public String fetchFirstObject() throws Exception {
-    final ObjectInfo objectInfo = articleWebService.getObjectInfo(uri);
+    final ObjectInfo objectInfo = articleOtmService.getObjectInfo(uri);
 
     if (null == objectInfo) return ERROR;
 
-    final RepresentationInfo[] representations = objectInfo.getRepresentations();
+    final RepresentationInfo[] representations = RepresentationInfo.parseObjectInfo(objectInfo);
     if (representations.length == 0) {
       addActionMessage("No representations found");
       log.error("No representation found for the uri:" + uri);
@@ -93,11 +94,11 @@ public class FetchObjectAction extends BaseActionSupport {
   }
 
   /**
-   * Set articleWebService
-   * @param articleWebService articleWebService
+   * Set articleOtmService
+   * @param articleOtmService articleOtmService
    */
-  public void setArticleWebService(final ArticleWebService articleWebService) {
-    this.articleWebService = articleWebService;
+  public void setArticleOtmService(final ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   @RequiredStringValidator(message = "Object URI is required.")

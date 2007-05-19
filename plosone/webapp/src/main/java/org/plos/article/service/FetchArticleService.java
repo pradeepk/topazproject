@@ -8,17 +8,20 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 import com.sun.org.apache.xpath.internal.XPathAPI;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.plos.ApplicationException;
 import org.plos.Constants;
 import org.plos.annotation.service.AnnotationInfo;
 import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Annotator;
+import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.article.util.NoSuchObjectIdException;
+import org.plos.models.ObjectInfo;
 import org.plos.service.InvalidProxyTicketException;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
 import org.plos.util.TextUtils;
-import org.topazproject.common.NoSuchIdException;
-import org.topazproject.ws.article.ObjectInfo;
+
 import org.topazproject.xml.transform.cache.CachedSource;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -57,7 +60,8 @@ import java.util.Map;
  * Fetch article service
  */
 public class FetchArticleService {
-  private ArticleWebService articleService;
+
+  private ArticleOtmService articleOtmService;
   private File xslTemplate;
   private File secondaryObjectXslTemplate;
   private String articleRep;
@@ -88,7 +92,7 @@ public class FetchArticleService {
   }
 
 
-  private String getTransformedArticle(final String articleURI) throws ApplicationException, NoSuchIdException {
+  private String getTransformedArticle(final String articleURI) throws ApplicationException, NoSuchArticleIdException {
     try {
       final Transformer transformer = getTransformer();
       final Source domSource = getAnnotatedContentAsDOMSource(articleURI);
@@ -98,8 +102,6 @@ public class FetchArticleService {
                             new StreamResult(writer));
       return (writer.toString());
     } catch (InvalidProxyTicketException ex) {
-      throw ex;
-    } catch (NoSuchIdException ex) {
       throw ex;
     } catch (Exception e) {
       log.error("Transformation of article failed", e);
@@ -113,11 +115,11 @@ public class FetchArticleService {
    * @return String representing the annotated article as HTML
    * @throws org.plos.ApplicationException ApplicationException
    * @throws java.rmi.RemoteException RemoteException
-   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
+   * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   public String getURIAsHTML(final String articleURI) throws ApplicationException,
-                          RemoteException, NoSuchIdException {
-    final PlosOneUser pou = (PlosOneUser)articleService.getSessionMap().get(Constants.PLOS_ONE_USER_KEY);
+                          RemoteException, NoSuchArticleIdException {
+    final PlosOneUser pou = (PlosOneUser)articleOtmService.getSessionMap().get(Constants.PLOS_ONE_USER_KEY);
     String topazUserId = "";
     if (pou != null) {
       topazUserId = pou.getUserId();
@@ -181,11 +183,12 @@ public class FetchArticleService {
 
  
   /**
-   * Set articleService
-   * @param articleService articleService
+   * Set articleOtmService
+   * 
+   * @param articleOtmService articleOtmService
    */
-  public void setArticleService(final ArticleWebService articleService) {
-    this.articleService = articleService;
+  public void setArticleService(final ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   private TransformerFactory tFactory;
@@ -311,9 +314,9 @@ public class FetchArticleService {
    * @throws IOException IOException
    * @throws URISyntaxException URISyntaxException
    * @throws org.plos.ApplicationException ApplicationException
-   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
+   * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
-  public Source getAnnotatedContentAsDOMSource(final String articleURI) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException, NoSuchIdException {
+  public Source getAnnotatedContentAsDOMSource(final String articleURI) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException, NoSuchArticleIdException {
     //final DocumentBuilder builder = createDocBuilder();
 
    // final Document doc = builder.parse(getAnnotatedContentAsInputStream(articleURI));
@@ -331,12 +334,12 @@ public class FetchArticleService {
    * @throws IOException IOException
    * @throws URISyntaxException URISyntaxException
    * @throws org.plos.ApplicationException ApplicationException
-   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
+   * @throws NoSuchArticleIdException NoSuchArticleIdException
    * @throws javax.xml.transform.TransformerException TransformerException
    */
   public String getAnnotatedContent(final String articleURI) throws ParserConfigurationException, 
                                     SAXException, IOException, URISyntaxException, 
-                                    ApplicationException, NoSuchIdException,TransformerException{
+                                    ApplicationException, NoSuchArticleIdException,TransformerException{
     return TextUtils.getAsXMLString(getAnnotatedContentAsDocument(articleURI));
   }
 
@@ -349,9 +352,9 @@ public class FetchArticleService {
    * @throws IOException IOException
    * @throws URISyntaxException URISyntaxException
    * @throws org.plos.ApplicationException ApplicationException
-   * @throws org.topazproject.common.NoSuchIdException NoSuchIdException
+   * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
-  public Source getDOMSource(final String xmlFileURL) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException, NoSuchIdException {
+  public Source getDOMSource(final String xmlFileURL) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException, NoSuchArticleIdException {
     final DocumentBuilder builder = createDocBuilder();
 
     Document doc;
@@ -373,8 +376,15 @@ public class FetchArticleService {
   }
 
   private Document getAnnotatedContentAsDocument(final String infoUri) throws IOException,
-          NoSuchIdException, ParserConfigurationException, SAXException, ApplicationException {
-    final String contentUrl = articleService.getObjectURL(infoUri, articleRep);
+          NoSuchArticleIdException, ParserConfigurationException, SAXException, ApplicationException {
+
+    final String contentUrl;
+    try {
+      contentUrl = articleOtmService.getObjectURL(infoUri, articleRep);
+    } catch (NoSuchObjectIdException ex) {
+      throw new NoSuchArticleIdException(infoUri);
+    }
+
     return getAnnotatedContentAsDocument(contentUrl, infoUri);
   }
   
@@ -433,7 +443,7 @@ public class FetchArticleService {
     final ArrayList<String> articles = new ArrayList<String>();
 
     try {
-      final String articlesDoc = articleService.getArticles(startDate, endDate, state, true);
+      final String articlesDoc = articleOtmService.getArticles(startDate, endDate, state, true);
 
       // Create the builder and parse the file
       final Document articleDom = factory.newDocumentBuilder().parse(new InputSource(new StringReader(articlesDoc)));
@@ -501,13 +511,13 @@ public class FetchArticleService {
   }
 
   /**
-   * @see org.plos.article.service.ArticleWebService#getObjectInfo(String)
+   * @see ArticleOtmService#getObjectInfo(String)
    * @param articleURI articleURI
    * @return ObjectInfo
    * @throws ApplicationException ApplicationException
    */
   public ObjectInfo getArticleInfo(final String articleURI) throws ApplicationException {
-    // do caching here rather than at articleWebService level because we want the cache key
+    // do caching here rather than at articleOtmService level because we want the cache key
     // and group to be article specific
     ObjectInfo artInfo;
     
@@ -519,7 +529,7 @@ public class FetchArticleService {
     } catch (NeedsRefreshException nre) {
       boolean updated = false;
       try {
-        artInfo = articleService.getObjectInfo(articleURI);
+        artInfo = articleOtmService.getObjectInfo(articleURI);
         articleCacheAdministrator.putInCache(articleURI + CACHE_KEY_ARTICLE_INFO, artInfo, 
                                              new String[]{FileUtils.escapeURIAsPath(articleURI)});
         updated = true;
@@ -531,11 +541,11 @@ public class FetchArticleService {
           log.error("Failed to get object info for article URI: " + articleURI, e);
         }
         throw new ApplicationException("Failed to get object info " + articleURI, e);
-      } catch (NoSuchIdException nsie) {
+      } catch (NoSuchObjectIdException nsoie) {
         if (log.isErrorEnabled()) {  
-          log.error("Failed to get object info for article URI: " + articleURI, nsie);
+          log.error("Failed to get object info for article URI: " + articleURI, nsoie);
         }
-        throw new ApplicationException("Failed to get object info " + articleURI, nsie);
+        throw new ApplicationException("Failed to get object info " + articleURI, nsoie);
       } finally {
         if (!updated)
           articleCacheAdministrator.cancelUpdate(articleURI + CACHE_KEY_ARTICLE_INFO);

@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.article.service.otm;
+package org.plos.article.service;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
@@ -27,7 +27,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.article.service.otm.ArticleFeedData;
+import org.plos.article.service.ArticleFeedData;
 import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.IngestException;
 import org.plos.article.util.Ingester;
@@ -44,7 +44,6 @@ import org.plos.service.WSTopazContext;
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.authentication.ProtectedService;
-import org.topazproject.common.NoSuchIdException;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
 import org.topazproject.fedoragsearch.service.FgsOperations;
@@ -132,10 +131,10 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @param oldUri oldUri
    * @param newUri newUri
    * @throws RemoteException RemoteException
-   * @throws NoSuchIdException NoSuchIdException
+   * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   public void markSuperseded(final String oldUri, final String newUri)
-          throws RemoteException, NoSuchIdException {
+          throws RemoteException, NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     
     // TODO: SERVICE
@@ -149,7 +148,7 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @param rep rep
    * @return the URL, or null if this object doesn't exist in the desired version
    * @throws RemoteException RemoteException
-   * @throws NoSuchIdException NoSuchIdException
+   * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   public String getObjectURL(final String obj, final String rep)
           throws RemoteException, NoSuchObjectIdException {
@@ -179,7 +178,7 @@ public class ArticleOtmService extends BaseConfigurableService {
    *
    * @param article uri
    * @throws RemoteException RemoteException
-   * @throws NoSuchIdException NoSuchIdException
+   * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   public void delete(final String article)
     throws RemoteException, ServiceException, NoSuchArticleIdException {
@@ -206,10 +205,10 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @param article uri
    * @param state state
    * @throws RemoteException RemoteException
-   * @throws NoSuchIdException NoSuchIdException
+   * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   public void setState(final String article, final int state)
-          throws RemoteException, NoSuchIdException {
+          throws RemoteException, NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     
     // TODO: SERVICE

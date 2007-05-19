@@ -13,7 +13,7 @@ import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
-import org.plos.article.service.ArticleWebService;
+import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.SecondaryObject;
 import org.w3c.dom.Document;
@@ -30,7 +30,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 public class SecondaryObjectAction extends BaseActionSupport {
   private String uri;
   private SecondaryObject[] secondaryObjects;
-  private ArticleWebService articleWebService;
+  private ArticleOtmService articleOtmService;
   private FetchArticleService fetchArticleService;
   private DocumentBuilderFactory factory;
   private Map<String, String> xmlFactoryProperty;
@@ -38,10 +38,10 @@ public class SecondaryObjectAction extends BaseActionSupport {
 
   private static final String FIGURE_CONTEXT = "fig";
   private static final String TABLE_CONTEXT = "table-wrap";
-  
+
   public String execute() throws Exception {
     try {
-      secondaryObjects = articleWebService.listSecondaryObjects(uri);
+      secondaryObjects = articleOtmService.listSecondaryObjects(uri);
     } catch (Exception ex) {
       log.error ("Could not get secondary objects for: " + uri, ex);
       return ERROR;
@@ -51,22 +51,22 @@ public class SecondaryObjectAction extends BaseActionSupport {
 
   /**
    * Action to return list of Secondary object for an article that are enclosed in Tables (table-warp)
-   * and Figures (fig) tags.   
-   * 
+   * and Figures (fig) tags.
+   *
    * @return webork status string
    * @throws Exception
    */
-  
+
   public String listFiguresAndTables() throws Exception {
     try {
-      secondaryObjects = articleWebService.listSecondaryObjects(uri);
+      secondaryObjects = articleOtmService.listSecondaryObjects(uri);
       ArrayList<SecondaryObject> figTables = new ArrayList<SecondaryObject>(secondaryObjects.length);
       String contextElem;
       String allTransformed;
       String[] elems;
       StringBuilder desc;
       String doi;
-      
+
       for (SecondaryObject s: secondaryObjects) {
         contextElem = s.getContextElement();
         if (FIGURE_CONTEXT.equals(contextElem) || TABLE_CONTEXT.equals(contextElem)) {
@@ -75,7 +75,7 @@ public class SecondaryObjectAction extends BaseActionSupport {
             allTransformed = fetchArticleService.getTranformedSecondaryObjectDescription(s.getDescription());
             if (log.isDebugEnabled()){
               log.debug("Transformed figure captions for article: " + uri);
-              log.debug(allTransformed);              
+              log.debug(allTransformed);
             }
             elems = allTransformed.split("END_TITLE");
             desc = new StringBuilder();
@@ -93,7 +93,7 @@ public class SecondaryObjectAction extends BaseActionSupport {
               if ((doi != null) && (doi.length() > 0)) {
                 desc.append("doi:").append(doi);
               }
-              s.setTransformedDescription(desc.toString());              
+              s.setTransformedDescription(desc.toString());
             }
           } catch (Exception e) {
             log.warn("Could not transform description for Object: " + getUri(), e);
@@ -106,9 +106,9 @@ public class SecondaryObjectAction extends BaseActionSupport {
       log.warn("Couldn't retrieve secondary object for URI: " + uri, ex);
       return ERROR;
     }
-    return SUCCESS;   
+    return SUCCESS;
   }
-  
+
   @RequiredStringValidator(message = "Object URI is required.")
   public String getUri() {
     return uri;
@@ -132,10 +132,10 @@ public class SecondaryObjectAction extends BaseActionSupport {
 
   /**
    * Set the secondary objects
-   * @param articleWebService articleWebService
+   * @param articleOtmService articleOtmService
    */
-  public void setArticleWebService(final ArticleWebService articleWebService) {
-    this.articleWebService = articleWebService;
+  public void setArticleOtmService(final ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   /**

@@ -14,9 +14,11 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.BasePlosoneTestCase;
+import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.annotation.action.BodyFetchAction;
+
 import org.topazproject.common.DuplicateIdException;
-import org.topazproject.common.NoSuchIdException;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
@@ -37,13 +39,13 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
 //    String resourceURI = "info:doi/10.1371/journal.pone.0000011";
 
     try {
-      getArticleWebService().delete(resourceURI);
-    } catch (NoSuchIdException nsie) {
+      getArticleOtmService().delete(resourceURI);
+    } catch (NoSuchArticleIdException nsie) {
       // ignore - this just means there wasn't any stale stuff left
     }
 
     final URL article = getAsUrl(resourceToIngest);
-    String uri = getArticleWebService().ingest(article);
+    String uri = getArticleOtmService().ingest(article);
     assertEquals(uri, resourceURI);
 
     final FetchArticleAction fetchArticleAction = getFetchArticleAction();
@@ -83,30 +85,30 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
 
   private void doIngestTest(String resourceURI, String resourceToIngest) throws Exception {
     try {
-      getArticleWebService().delete(resourceURI);
-    } catch (NoSuchIdException nsie) {
+      getArticleOtmService().delete(resourceURI);
+    } catch (NoSuchArticleIdException nsie) {
       // ignore - this just means there wasn't any stale stuff left
     }
 
     final URL article = getAsUrl(resourceToIngest);
 
-    String uri = getArticleWebService().ingest(article);
+    String uri = getArticleOtmService().ingest(article);
     assertEquals(uri, resourceURI);
 
-    assertNotNull(getArticleWebService().getObjectURL(uri, "XML"));
+    assertNotNull(getArticleOtmService().getObjectURL(uri, "XML"));
 
     try {
-      uri = getArticleWebService().ingest(new DataHandler(article));
+      uri = getArticleOtmService().ingest(new DataHandler(article));
       fail("Failed to get expected duplicate-id exception");
-    } catch (DuplicateIdException die) {
+    } catch (DuplicateArticleIdException die) {
     }
 
-    getArticleWebService().delete(uri);
+    getArticleOtmService().delete(uri);
 
     try {
-      getArticleWebService().delete(uri);
-      fail("Failed to get NoSuchIdException");
-    } catch (NoSuchIdException nsie) {
+      getArticleOtmService().delete(uri);
+      fail("Failed to get NoSuchArticleIdException");
+    } catch (NoSuchArticleIdException nsie) {
     }
   }
 }

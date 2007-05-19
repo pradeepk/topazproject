@@ -18,10 +18,9 @@ import org.plos.ApplicationException;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.Reply;
 import org.plos.annotation.Commentary;
-import org.plos.article.service.ArticleWebService;
-
-import org.topazproject.common.NoSuchIdException;
-import org.topazproject.ws.article.ObjectInfo;
+import org.plos.article.service.ArticleOtmService;
+import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.models.ObjectInfo;
 
 import java.util.Arrays;
 
@@ -36,7 +35,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
   private Annotation[] annotations;
   private Commentary[] allCommentary;
   private ObjectInfo articleInfo;
-  private ArticleWebService articleWebService;
+  private ArticleOtmService articleOtmService;
   
   private static final Log log = LogFactory.getLog(ListAnnotationAction.class);
 
@@ -51,7 +50,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
       if (log.isDebugEnabled()){
         log.debug("retrieving all commentary for article id: " + target);
       }
-      articleInfo = getArticleWebService().getObjectInfo(target);
+      articleInfo = getArticleOtmService().getObjectInfo(target);
       annotations = getAnnotationService().listAnnotations(target);
       allCommentary = new Commentary[annotations.length];
       Commentary com = null;
@@ -63,7 +62,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
             getAnnotationService().listAllReplies(annotations[i].getId(), annotations[i].getId(), com);
           } catch (ApplicationException ae) {
             Throwable t = ae.getCause();
-            if ((t instanceof NoSuchIdException) || (t instanceof java.lang.SecurityException)) {
+            if ((t instanceof NoSuchArticleIdException) || (t instanceof java.lang.SecurityException)) {
               // don't error if that id is gone or if you can't list the replies
               com.setNumReplies(0);
               com.setReplies(null);
@@ -84,7 +83,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
   }
   
   public String getArticleMetaInfo () throws Exception {
-    articleInfo = getArticleWebService().getObjectInfo(target);
+    articleInfo = getArticleOtmService().getObjectInfo(target);
     return SUCCESS;
   }
     
@@ -115,17 +114,17 @@ public class GetCommentaryAction extends AnnotationActionSupport {
   }
 
   /**
-   * @return Returns the articleWebService.
+   * @return Returns the articleOtmService.
    */
-  protected ArticleWebService getArticleWebService() {
-    return articleWebService;
+  protected ArticleOtmService getArticleOtmService() {
+    return articleOtmService;
   }
 
   /**
-   * @param articleWebService The articleWebService to set.
+   * @param articleOtmService The articleOtmService to set.
    */
-  public void setArticleWebService(ArticleWebService articleWebService) {
-    this.articleWebService = articleWebService;
+  public void setArticleOtmService(ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   /**

@@ -22,7 +22,7 @@ import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.Reply;
 import org.plos.article.action.FetchArticleAction;
 import org.plos.permission.service.PermissionWebService;
-import org.topazproject.ws.article.DuplicateArticleIdException;
+import org.plos.article.util.DuplicateArticleIdException;
 
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -54,7 +54,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
     final URL article = getAsUrl(resourceToIngest);
 
     try {
-      testXmlTarget = getArticleWebService().ingest(article);
+      testXmlTarget = getArticleOtmService().ingest(article);
     } catch(DuplicateArticleIdException ex) {
       //article has already been ingested
     }
@@ -545,7 +545,7 @@ public class AnnotationActionsTest extends BasePlosoneTestCase {
 
 //    String target = "http://localhost:9080/existingArticle/test.xml";
 //    String target = "http://localhost:8080/plosone-webapp/article/fetchArticle.action?articleURI=info:doi/10.1371%2Fjournal.pone.0000008";
-//    final String target = getArticleWebService().getObjectURL("info:doi/10.1371/journal.pone.0000008", "XML");
+//    final String target = getArticleOtmService().getObjectURL("info:doi/10.1371/journal.pone.0000008", "XML");
     final String target = "info:doi/10.1371/journal.pone.0000008";
     log.debug("target =" + target);
     

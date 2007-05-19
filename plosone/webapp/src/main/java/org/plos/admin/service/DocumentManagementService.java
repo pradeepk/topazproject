@@ -32,6 +32,7 @@ import java.util.zip.ZipFile;
 import javax.activation.DataHandler;
 import javax.activation.DataSource;
 import javax.servlet.ServletContext;
+import javax.xml.rpc.ServiceException;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
@@ -43,20 +44,20 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
+
 import static org.plos.action.HomePageAction.WEEK_ARTICLE_CACHE_KEY;
 import static org.plos.article.service.BrowseService.ALL_ARTICLE_CACHE_GROUP_KEY;
-import org.plos.article.service.ArticleWebService;
+import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.SecondaryObject;
+import org.plos.models.Article;
+import org.plos.models.ObjectInfo;
+import org.plos.article.service.RepresentationInfo;
+import org.plos.article.util.DuplicateArticleIdException;
+import org.plos.article.util.IngestException;
+import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.util.FileUtils;
-import org.topazproject.common.DuplicateIdException;
-import org.topazproject.common.NoSuchIdException;
-import org.topazproject.ws.article.Article;
-import org.topazproject.ws.article.IngestException;
-import org.topazproject.ws.article.NoSuchArticleIdException;
-import org.topazproject.ws.article.NoSuchObjectIdException;
-import org.topazproject.ws.article.ObjectInfo;
-import org.topazproject.ws.article.RepresentationInfo;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 import com.opensymphony.oscache.web.ServletCacheAdministrator;
@@ -69,7 +70,7 @@ public class DocumentManagementService {
   
   private static final Log log = LogFactory.getLog(DocumentManagementService.class);
   
-  private ArticleWebService articleWebService;
+  private ArticleOtmService articleOtmService;
   
   private FetchArticleService fetchArticleService;
   
@@ -98,11 +99,11 @@ public class DocumentManagementService {
   /**
    * Set the article web service
    * 
-   * @param articleWebService
-   *          articleWebService
+   * @param articleOtmService
+   *          articleOtmService
    */
-  public void setArticleWebService(final ArticleWebService articleWebService) {
-    this.articleWebService = articleWebService;
+  public void setArticleOtmService(final ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
   
   public void setFetchArticleService(final FetchArticleService fetchArticleService) {
@@ -157,10 +158,10 @@ public class DocumentManagementService {
    * @param objectURI -
    *          URI of the article to delete
    * @throws RemoteException
-   * @throws NoSuchIdException
+   * @throws NoSuchArticleIdException
    */
-  public void delete(String objectURI) throws RemoteException, NoSuchIdException {
-    articleWebService.delete(objectURI);
+  public void delete(String objectURI) throws RemoteException, ServiceException, NoSuchArticleIdException {
+    articleOtmService.delete(objectURI);
   }
   
   /**
@@ -171,10 +172,11 @@ public class DocumentManagementService {
    * @param servletContext -
    *          Servlet Context under which the image cache exists
    * @throws RemoteException
-   * @throws NoSuchIdException
+   * @throws ServiceException
+   * @throws NoSuchArticleIdException
    */
-  public void delete(String objectURI, ServletContext servletContext) throws RemoteException, NoSuchIdException {
-    articleWebService.delete(objectURI);
+  public void delete(String objectURI, ServletContext servletContext) throws RemoteException, ServiceException, NoSuchArticleIdException {
+    articleOtmService.delete(objectURI);
     articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
     articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);
     articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(objectURI));
@@ -187,16 +189,17 @@ public class DocumentManagementService {
    *          of file on server to be ingested
    * @return URI of ingested document
    * @throws IngestException
-   * @throws DuplicateIdException
+   * @throws DuplicateArticleIdException
    * @throws IOException
    * @throws TransformerException
    * @throws NoSuchArticleIdException
    * @throws NoSuchObjectIdException
    * @throws ImageResizeException
+   * @throws ServiceException
    */
-  public String ingest(String pathname) throws IngestException, DuplicateIdException,
+  public String ingest(String pathname) throws IngestException, DuplicateArticleIdException,
   ImageResizeException, IOException, TransformerException, NoSuchArticleIdException,
-  NoSuchObjectIdException {
+  NoSuchObjectIdException, ServiceException {
     return ingest(new File(pathname));
   }
   
@@ -209,21 +212,22 @@ public class DocumentManagementService {
    *          to be ingested
    * @return URI of ingested document
    * @throws IngestException
-   * @throws DuplicateIdException
+   * @throws DuplicateArticleIdException
    * @throws IOException
    * @throws TransformerException
    * @throws NoSuchArticleIdException
    * @throws NoSuchObjectIdException
    * @throws ImageResizeException
+   * @throws ServiceException
    */
-  public String ingest(File file) throws IngestException, DuplicateIdException,
+  public String ingest(File file) throws IngestException, DuplicateArticleIdException,
   ImageResizeException, IOException, TransformerException, NoSuchArticleIdException,
-  NoSuchObjectIdException {
+  NoSuchObjectIdException, ServiceException {
     String uri;
     File ingestedDir = new File(ingestedDocumentDirectory);
     log.info("Ingesting: " + file);
     DataHandler dh = new DataHandler(file.toURL());
-    uri = articleWebService.ingest(dh);
+    uri = articleOtmService.ingest(dh);
     log.info("Ingested: " + file);
     try {
       resizeImages(uri);
@@ -253,7 +257,7 @@ public class DocumentManagementService {
     
     ImageResizeService irs;
     
-    SecondaryObject[] objects = articleWebService.listSecondaryObjects(uri);
+    SecondaryObject[] objects = articleOtmService.listSecondaryObjects(uri);
     SecondaryObject object = null;
     for (int i = 0; i < objects.length; ++i) {
       // try {
@@ -262,7 +266,7 @@ public class DocumentManagementService {
       if (log.isDebugEnabled()) {
         log.debug("retrieving Object Info for: " + object.getUri());
       }
-      ObjectInfo info = articleWebService.getObjectInfo(object.getUri());
+      ObjectInfo info = articleOtmService.getObjectInfo(object.getUri());
       if (log.isDebugEnabled()) {
         log.debug("object Info " + info);
         log.debug("contextElement" + info.getContextElement());
@@ -277,13 +281,13 @@ public class DocumentManagementService {
           }
           irs.captureImage(rep.getURL());
           log.debug("Captured image");
-          articleWebService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
+          articleOtmService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
               new PngDataSource(irs.getSmallImageBoxScaled())));
           log.debug("Set small");
-          articleWebService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
+          articleOtmService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
               new PngDataSource(irs.getMediumImageBoxScaled())));
           log.debug("Set medium");
-          articleWebService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
+          articleOtmService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
               new PngDataSource(irs.getLargeImageBoxScaled())));
           log.debug("Set large");
         } else if (context.equalsIgnoreCase("table-wrap")) { 
@@ -293,13 +297,13 @@ public class DocumentManagementService {
           }
           irs.captureImage(rep.getURL());
           log.debug("Captured image");
-          articleWebService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
+          articleOtmService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
               new PngDataSource(irs.getSmallImageSubsample())));
           log.debug("Set small");
-          articleWebService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
+          articleOtmService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
               new PngDataSource(irs.getMediumImageSubsample())));
           log.debug("Set medium");
-          articleWebService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
+          articleOtmService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
               new PngDataSource(irs.getLargeImageSubsample())));
           log.debug("Set large");
         } else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
@@ -309,7 +313,7 @@ public class DocumentManagementService {
           }
           irs.captureImage(rep.getURL());
           log.debug("Captured image");
-          articleWebService.setRepresentation(object.getUri(), "PNG", new DataHandler(
+          articleOtmService.setRepresentation(object.getUri(), "PNG", new DataHandler(
               new PngDataSource(irs.getLargeImageSubsample())));
         } else if (context.equals("inline-formula")) {
           RepresentationInfo rep = object.getRepresentations()[0];
@@ -318,7 +322,7 @@ public class DocumentManagementService {
           }
           irs.captureImage(rep.getURL());
           log.debug("Captured image");
-          articleWebService.setRepresentation(object.getUri(), "PNG", new DataHandler(
+          articleOtmService.setRepresentation(object.getUri(), "PNG", new DataHandler(
               new PngDataSource(irs.getLargeImageSubsample())));
         }
         // Don't continue trying to process images if one of them failed
@@ -356,7 +360,7 @@ public class DocumentManagementService {
    */
   public Collection<String> getPublishableFiles() throws RemoteException, ApplicationException {
     ArrayList<String> articles = fetchArticleService.getArticles(null, null,
-        new int[] { Article.ST_DISABLED });
+        new int[] { Article.STATE_DISABLED });
     Collections.sort(articles);
     return articles;
   }
@@ -434,7 +438,7 @@ public class DocumentManagementService {
         throw new Exception("CrossRef status returned " + stat);
       }
     }
-    articleWebService.setState(uri, Article.ST_ACTIVE);
+    articleOtmService.setState(uri, Article.STATE_ACTIVE);
     articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
     articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);
   }

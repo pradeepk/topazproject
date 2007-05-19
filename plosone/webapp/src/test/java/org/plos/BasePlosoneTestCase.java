@@ -21,7 +21,7 @@ import org.plos.annotation.service.AnnotationService;
 import org.plos.article.action.FetchArticleAction;
 import org.plos.article.action.FetchObjectAction;
 import org.plos.article.action.SecondaryObjectAction;
-import org.plos.article.service.ArticleWebService;
+import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.search.action.SearchAction;
@@ -65,7 +65,7 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
 
   private FetchArticleService fetchArticleService;
   private ProfanityCheckingService profanityCheckingService;
-  private ArticleWebService articleWebService;
+  private ArticleOtmService articleOtmService;
   private PermissionWebService permissionWebService;
   private AnnotationService annotationService;
   private UserService userService;
@@ -87,12 +87,12 @@ public abstract class BasePlosoneTestCase extends AbstractDependencyInjectionSpr
     this.permissionWebService = permissionWebService;
   }
 
-  protected ArticleWebService getArticleWebService() throws MalformedURLException, ServiceException {
-    return articleWebService;
+  protected ArticleOtmService getArticleOtmService() throws MalformedURLException, ServiceException {
+    return articleOtmService;
   }
 
-  public void setArticleWebService(final ArticleWebService articleWebService) {
-    this.articleWebService = articleWebService;
+  public void setArticleOtmService(final ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   public FetchArticleService getFetchArticleService() throws MalformedURLException, ServiceException {

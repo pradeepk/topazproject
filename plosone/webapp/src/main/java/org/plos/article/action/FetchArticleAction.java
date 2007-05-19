@@ -8,22 +8,21 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.FetchArticleService;
+import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.AnnotationService;
-
-import org.topazproject.common.NoSuchIdException;
-import org.topazproject.ws.article.ObjectInfo;
+import org.plos.models.ObjectInfo;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 
 /**
- * Fetch article action. 
+ * Fetch article action.
  */
 public class FetchArticleAction extends BaseActionSupport {
   private String articleURI;
   private String annotationId = "";
-  
+
   private ArrayList<String> messages = new ArrayList<String>();
   private static final Log log = LogFactory.getLog(FetchArticleAction.class);
   private FetchArticleService fetchArticleService;
@@ -32,7 +31,7 @@ public class FetchArticleAction extends BaseActionSupport {
   private AnnotationService annotationService;
   private int numDiscussions = 0;
   private int numAnnotations = 0;
-  
+
   public String execute() throws Exception {
     try {
       setTransformedArticle(fetchArticleService.getURIAsHTML(articleURI));
@@ -46,7 +45,7 @@ public class FetchArticleAction extends BaseActionSupport {
         }
       }
       setArticleInfo(fetchArticleService.getArticleInfo(articleURI));
-    } catch (NoSuchIdException e) {
+    } catch (NoSuchArticleIdException e) {
       messages.add("No article found for id: " + articleURI);
       log.info("Could not find article: "+ articleURI, e);
       return ERROR;
@@ -54,14 +53,14 @@ public class FetchArticleAction extends BaseActionSupport {
       messages.add(e.getMessage());
       log.error("Error retrieving article: " + articleURI, e);
       return ERROR;
-    } 
+    }
     return SUCCESS;
   }
 
-  
+
   /**
    * Returns just the annotated article XML
-   * 
+   *
    * @return Annotated Article XML String
    */
   public String getAnnotatedArticle() {
@@ -73,8 +72,8 @@ public class FetchArticleAction extends BaseActionSupport {
     }
     return SUCCESS;
   }
-  
-  
+
+
   /**
    * @return transformed output
    */
@@ -168,6 +167,6 @@ public class FetchArticleAction extends BaseActionSupport {
   private void setArticleInfo(ObjectInfo articleInfo) {
     this.articleInfo = articleInfo;
   }
-  
-  
+
+
 }

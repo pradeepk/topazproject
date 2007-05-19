@@ -12,11 +12,12 @@ package org.plos.annotation.action;
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.plos.ApplicationException;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.Reply;
-import org.plos.article.service.ArticleWebService;
-import org.topazproject.ws.article.ObjectInfo;
+import org.plos.article.service.ArticleOtmService;
+import org.plos.models.ObjectInfo;
 
 /**
  * Action class to get a list of replies to annotations.
@@ -26,7 +27,7 @@ public class ListReplyAction extends AnnotationActionSupport {
   private String inReplyTo;
   private Reply[] replies;
   private Annotation baseAnnotation;
-  private ArticleWebService articleWebService;
+  private ArticleOtmService articleOtmService;
   private ObjectInfo articleInfo;
   
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
@@ -54,7 +55,7 @@ public class ListReplyAction extends AnnotationActionSupport {
       }
       baseAnnotation = getAnnotationService().getAnnotation(root);
       replies = getAnnotationService().listAllReplies(root, inReplyTo);
-      articleInfo = getArticleWebService().getObjectInfo(baseAnnotation.getAnnotates());
+      articleInfo = getArticleOtmService().getObjectInfo(baseAnnotation.getAnnotates());
     } catch (final ApplicationException e) {
       log.error("Could not list all replies for root:" + root, e);
       addActionError("Reply fetching failed with error message: " + e.getMessage());
@@ -100,17 +101,17 @@ public class ListReplyAction extends AnnotationActionSupport {
   }
 
   /**
-   * @return Returns the articleWebService.
+   * @return Returns the articleOtmService.
    */
-  public ArticleWebService getArticleWebService() {
-    return articleWebService;
+  public ArticleOtmService getArticleOtmService() {
+    return articleOtmService;
   }
 
   /**
-   * @param articleWebService The articleWebService to set.
+   * @param articleOtmService The articleOtmService to set.
    */
-  public void setArticleWebService(ArticleWebService articleWebService) {
-    this.articleWebService = articleWebService;
+  public void setArticleOtmService(ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   /**

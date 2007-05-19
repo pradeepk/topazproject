@@ -27,7 +27,7 @@ import org.plos.action.BaseActionSupport;
 import org.plos.admin.service.DocumentManagementService;
 import org.plos.admin.service.ImageResizeException;
 
-import org.topazproject.common.DuplicateIdException;
+import org.plos.article.util.DuplicateArticleIdException;
 
 import com.opensymphony.webwork.interceptor.ParameterAware;
 import com.opensymphony.webwork.util.ServletContextAware;
@@ -53,7 +53,7 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
               getDocumentManagementService().getDocumentDirectory(),
               filename));
           addActionMessage("Ingested: " + filename);
-        } catch (DuplicateIdException de) {
+        } catch (DuplicateArticleIdException de) {
           addActionMessage("Error ingesting: " + filename + " - " + de.toString());
           log.info("Error ingesting article: " + filename , de);
         } catch (ImageResizeException ire) {

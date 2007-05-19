@@ -12,21 +12,24 @@ package org.plos.article.action;
 import com.opensymphony.xwork.Action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.plos.BasePlosoneTestCase;
-import org.plos.article.service.ArticleWebService;
+import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.SecondaryObject;
-import org.topazproject.common.NoSuchIdException;
-import org.topazproject.ws.article.ObjectInfo;
-import org.topazproject.ws.article.RepresentationInfo;
+import org.plos.article.service.RepresentationInfo;
+import org.plos.article.util.NoSuchArticleIdException;
+import org.plos.article.util.NoSuchObjectIdException;
+import org.plos.models.ObjectInfo;
 
 import java.net.URL;
+import java.util.Set;
 
 public class FetchObjectTest extends BasePlosoneTestCase {
   private static final Log log = LogFactory.getLog(FetchObjectTest.class);
   private String BASE_TEST_PATH = "src/test/resources/";
 
   public void testArticleRepresentations() throws Exception {
-    final ArticleWebService service = getArticleWebService();
+    final ArticleOtmService service = getArticleOtmService();
 
     final String resourceToIngest = BASE_TEST_PATH  + "pone.0000008.zip";
     final String uri = "info:doi/10.1371/journal.pone.0000008";
@@ -34,8 +37,8 @@ public class FetchObjectTest extends BasePlosoneTestCase {
     deleteAndIngestArticle(resourceToIngest, uri);
 
     final ObjectInfo oi = service.getObjectInfo(uri);
-    final RepresentationInfo[] ri = oi.getRepresentations();
-    assertEquals(2, ri.length);
+    final Set<String> ri = oi.getRepresentations();
+    assertEquals(2, ri.size());
 
     final FetchObjectAction fetchObjectAction = getFetchObjectAction();
     fetchObjectAction.setUri(uri);
@@ -45,8 +48,8 @@ public class FetchObjectTest extends BasePlosoneTestCase {
     final SecondaryObject[] so = service.listSecondaryObjects(uri);
     assertEquals(8, so.length);
 
-    final RepresentationInfo[] riForG001 = service.getObjectInfo(uri + ".g001").getRepresentations();
-    assertEquals(1, riForG001.length);
+    final Set<String> riForG001 = service.getObjectInfo(uri + ".g001").getRepresentations();
+    assertEquals(1, riForG001.size());
   }
 
   public void testSecondaryDocInfo() throws Exception {
@@ -69,11 +72,11 @@ public class FetchObjectTest extends BasePlosoneTestCase {
 
   private void deleteAndIngestArticle(final String resourceToIngest, final String uri) throws Exception {
     final URL article = getAsUrl(resourceToIngest);
-    final ArticleWebService service = getArticleWebService();
+    final ArticleOtmService service = getArticleOtmService();
 
     try {
       service.delete(uri);
-    } catch(NoSuchIdException ex) {
+    } catch(NoSuchArticleIdException ex) {
       //means that this article is not ingested yet, so delete would fail
     }
 

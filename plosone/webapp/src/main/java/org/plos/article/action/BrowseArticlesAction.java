@@ -17,10 +17,10 @@ import java.util.Iterator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.action.BaseActionSupport;
-import org.plos.article.service.BrowseService;
-import org.topazproject.ws.article.ArticleInfo;
 
+import org.plos.action.BaseActionSupport;
+import org.plos.article.service.ArticleInfo;
+import org.plos.article.service.BrowseService;
 
 /**
  * @author stevec

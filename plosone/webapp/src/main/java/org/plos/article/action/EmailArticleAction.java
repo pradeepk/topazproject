@@ -13,14 +13,15 @@ import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.validator.EmailValidator;
+
 import org.plos.ApplicationException;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.article.service.FetchArticleService;
 import org.plos.email.impl.FreemarkerTemplateMailer;
+import org.plos.models.ObjectInfo;
 import org.plos.service.PlosoneMailer;
 import org.plos.user.PlosOneUser;
 import org.plos.user.action.UserActionSupport;
-import org.topazproject.ws.article.ObjectInfo;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -39,7 +40,7 @@ public class EmailArticleAction extends UserActionSupport {
   private PlosoneMailer plosoneMailer;
   private FetchArticleService fetchArticleService;
   private static final Log log = LogFactory.getLog(EmailArticleAction.class);
-  
+
   /**
    * Render the page with the values passed in
    * @return webwork status
