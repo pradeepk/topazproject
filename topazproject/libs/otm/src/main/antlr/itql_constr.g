@@ -123,17 +123,17 @@ tokens {
 
           curVar  = addTriple(list, curVar, curPred);
 
-          listPred = nextVar();
-          listPred.setModel(curPred.getModel());
-
           OqlAST s = nextVar();
           OqlAST o = nextVar();
           // XXX: doesn't work!!! Need to "fix" mulgara
-          AST walk = #([WALK,"walk"], makeTriple(curVar, "<rdf:rest>", o),
-                                      makeTriple(s, "<rdf:rest>", o));
+          AST walk = #([WALK,"walk"], makeTriple(curVar, "<rdf:rest>", o, curPred.getModel()),
+                                      makeTriple(s, "<rdf:rest>", o, curPred.getModel()));
           list.addChild(walk);
 
-          return new AST[] { s, makeID("<rdf:first>") };
+          listPred = makeID("<rdf:first>");
+          listPred.setModel(curPred.getModel());
+
+          return new AST[] { s, listPred };
 
         case PREDICATE_MAP:
           throw new RecognitionException("Predicate-Map not supported (yet)");
