@@ -40,5 +40,8 @@
     <replies>
       <pdpName>_default_</pdpName>
     </replies>
+    <articles>
+      <pdpName>_default_</pdpName>
+    </articles>
   </topaz>
 </config>
