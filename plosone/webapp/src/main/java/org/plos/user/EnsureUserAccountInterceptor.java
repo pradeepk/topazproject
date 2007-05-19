@@ -70,7 +70,6 @@ public class EnsureUserAccountInterceptor implements Interceptor {
         return ReturnCode.NEW_PROFILE;
       } else {
         updateUserEmailAddress(plosUser, userId);
-        plosUser.setAuthId(userId);
         sessionMap.put(PLOS_ONE_USER_KEY, plosUser);
         log.debug("Existing user detected: " + userId);
         return getReturnCodeDependingOnDisplayName(plosUser, actionInvocation);
