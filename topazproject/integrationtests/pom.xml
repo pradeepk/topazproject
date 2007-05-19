@@ -393,7 +393,7 @@
               
               <tasks>
                 <copy todir="${project.build.directory}/generated-sources">
-                  <fileset dir=".."/>
+                  <fileset dir=".." excludes="**/ws-client-it/**"/>
                   <compositemapper>
                     <regexpmapper from="^(.*)/src/it/(.*)" to="src/it/\2"/>
                     <regexpmapper
