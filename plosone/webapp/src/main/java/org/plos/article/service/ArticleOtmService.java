@@ -106,11 +106,35 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // create an Ingester using the values from the WSTopazContext
     WSTopazContext ctx  = new WSTopazContext(getClass().getName());
-    Ingester ingester =
-      new Ingester(ctx.getItqlHelper(), ctx.getFedoraAPIM(), ctx.getFedoraUploader(), getFgsOperations());
+    ctx.activate();
+
+    // TODO: remove debug
+    if (log.isDebugEnabled()) {
+      log.debug("WSTopazContext isActive: " + ctx.isActive()
+                + ", " + ctx.getItqlHelper()
+                + "" + ctx.getFedoraAPIM()
+                + ", " + ctx.getFedoraUploader()
+                + ", " + getFgsOperations());
+    }
+
+    Ingester ingester = null;
+    try {
+      ingester = new Ingester(ctx.getItqlHelper(), ctx.getFedoraAPIM(), ctx.getFedoraUploader(), getFgsOperations());
+    } finally {
+      ctx.destroy();
+    }
 
     // let Ingester.ingest() do the real work
-    return ingester.ingest(new Zip.DataSourceZip(dataHandler.getDataSource()));
+    try {
+      return ingester.ingest(
+        new Zip.DataSourceZip(
+          new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(), 8192, "application/octet-stream", true))
+          );
+//      return ingester.ingest(new Zip.DataSourceZip(dataHandler.getDataSource()));
+    } catch(IOException ioe) {
+      log.error("Ingestion failed: ", ioe);
+      throw new IngestException("Ingestion failed: ", ioe);
+    }
   }
 
   /**
@@ -136,7 +160,7 @@ public class ArticleOtmService extends BaseConfigurableService {
   public void markSuperseded(final String oldUri, final String newUri)
           throws RemoteException, NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    
+
     // TODO: SERVICE
     // delegateService.markSuperseded(oldUri, newUri);
   }
@@ -169,7 +193,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     } catch (ServiceException se) {
       throw new RemoteException("Failed getting URL for \"" + obj + "\", \"" + rep + "\"", se);
     }
-    
+
     return articleUtil.getObjectURL(obj, rep);
   }
 
@@ -210,12 +234,12 @@ public class ArticleOtmService extends BaseConfigurableService {
   public void setState(final String article, final int state)
           throws RemoteException, NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    
+
     // TODO: SERVICE
-    
+
     // PEP etc.
     // delegateService..setState(article, state);
-    
+
     return;
   }
 
@@ -248,9 +272,9 @@ public class ArticleOtmService extends BaseConfigurableService {
   public String getArticles(final String startDate, final String endDate,
                  final int[] states, boolean ascending) throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    
+
     // TODO: model PEP after ws impl
-    
+
     return getArticles(startDate, endDate, null, null, states, true);
   }
 
@@ -261,7 +285,7 @@ public class ArticleOtmService extends BaseConfigurableService {
                                      String[] categories, String[] authors, int[] states,
                                      boolean ascending) throws RemoteException{
     ensureInitGetsCalledWithUsersSessionAttributes();
-    
+
     // TODO: SERVICE
     // return delegateService.getArticleInfos(startDate, endDate, categories, authors, states, ascending);
     return new ArticleInfo[0];
@@ -289,56 +313,64 @@ public class ArticleOtmService extends BaseConfigurableService {
                             boolean ascending)
     throws RemoteException {
 
+    Transaction   tx                 = null;
+    List<ArticleFeedData> articleFeedData = new ArrayList();
+
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    // build up Criteria for the Articles
-    Criteria articleCriteria = session.createCriteria(Article.class);
+    try {
+      tx = session.beginTransaction();
+      // build up Criteria for the Articles
+      Criteria articleCriteria = session.createCriteria(Article.class);
 
-    // normalize dates for query
-    articleCriteria = articleCriteria.add(Restrictions.ge("date", ArticleFeed.parseDateParam(startDate)));
-    articleCriteria = articleCriteria.add(Restrictions.le("date", ArticleFeed.parseDateParam(endDate)));
-
-    // match all categories
-    if (categories != null) {
-      for (String category : categories) {
-        articleCriteria = articleCriteria.add(Restrictions.eq("mainCategory", category));
+      // normalize dates for query
+      if (startDate != null) {
+        articleCriteria = articleCriteria.add(Restrictions.ge("date", ArticleFeed.parseDateParam(startDate)));
       }
-    }
-
-    // match all authors
-    if (authors != null) {
-      for (String author : authors) {
-        articleCriteria = articleCriteria.add(Restrictions.eq("creator", author));
+      if (endDate != null) {
+        articleCriteria = articleCriteria.add(Restrictions.le("date", ArticleFeed.parseDateParam(endDate)));
       }
-    }
 
-    // match all states
-    if (states != null) {
-      for (int state : states) {
-        articleCriteria = articleCriteria.add(Restrictions.eq("articleState", state));
+      // match all categories
+      if (categories != null) {
+        for (String category : categories) {
+          articleCriteria = articleCriteria.add(Restrictions.eq("categories", category));
+        }
       }
-    }
 
-    // order by date
-    if (ascending) {
+      // match all authors
+      if (authors != null) {
+        for (String author : authors) {
+          articleCriteria = articleCriteria.add(Restrictions.eq("authors", author));
+        }
+      }
+
+      // match all states
+      if (states != null) {
+        for (int state : states) {
+          articleCriteria = articleCriteria.add(Restrictions.eq("state", state));
+        }
+      }
+
+      // order by date
+      if (ascending) {
         articleCriteria = articleCriteria.addOrder(Order.asc("date"));
-    } else {
+      } else {
         articleCriteria = articleCriteria.addOrder(Order.desc("date"));
-    }
+      }
 
-    // get a list of Articles that meet the specified Criteria and Restrictions
-    List<Article> articleList = articleCriteria.list();
+      // get a list of Articles that meet the specified Criteria and Restrictions
+      List<Article> articleList = articleCriteria.list();
 
-    // filter access by id with PEP
-    // logged in user is automatically resolved by the ServletActionContextAttribute
-    List<ArticleFeedData> articleFeedData = new ArrayList();
-    for (Iterator it = articleList.iterator(); it.hasNext(); ) {
-      Article article = (Article) it.next();
-      try {
-        pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
-        
-         ArticleFeedData articleFeedDatum = new ArticleFeedData(
+      // filter access by id with PEP
+      // logged in user is automatically resolved by the ServletActionContextAttribute
+      for (Iterator it = articleList.iterator(); it.hasNext(); ) {
+        Article article = (Article) it.next();
+        try {
+          pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
+
+          ArticleFeedData articleFeedDatum = new ArticleFeedData(
             article.getId().toString(),
             article.getTitle(),
             article.getDescription(),
@@ -347,15 +379,27 @@ public class ArticleOtmService extends BaseConfigurableService {
             article.getSubjects(),
             article.getCategories(),
             article.getState());
-         articleFeedData.add(articleFeedDatum);
-      } catch (SecurityException se) {
-        it.remove();
-        if (log.isDebugEnabled()) {
-          log.debug("Filtering URI "
-            + article.getId()
-            + " from Article list due to PEP SecurityException", se);
+          articleFeedData.add(articleFeedDatum);
+        } catch (SecurityException se) {
+          it.remove();
+          if (log.isDebugEnabled()) {
+            log.debug("Filtering URI "
+              + article.getId()
+              + " from Article list due to PEP SecurityException", se);
+          }
         }
       }
+
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
     }
 
     return ArticleFeed.buildXml(articleFeedData);
@@ -373,6 +417,9 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public ObjectInfo getObjectInfo(final String uri)
     throws RemoteException, NoSuchObjectIdException {
+    
+    Transaction tx = null;
+    List<ObjectInfo> objectInfoList = null;
 
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
@@ -396,23 +443,38 @@ public class ArticleOtmService extends BaseConfigurableService {
       throw se;
     }
 
-    // build up Criteria for the ObjectInfo
-    Criteria objectInfoCriteria = session.createCriteria(ObjectInfo.class);
+    try {
+      tx = session.beginTransaction();
+      
+      // build up Criteria for the ObjectInfo
+      Criteria objectInfoCriteria = session.createCriteria(ObjectInfo.class);
 
-    // match on URI
-    objectInfoCriteria = objectInfoCriteria.add(Restrictions.eq("id", realURI));
+      // match on URI
+      objectInfoCriteria = objectInfoCriteria.add(Restrictions.eq("pid", realURI));
 
-    // get a list of ObjectInfos that meet the specified Criteria and Restrictions
-    List<ObjectInfo> objectInfoList = objectInfoCriteria.list();
+      // get a list of ObjectInfos that meet the specified Criteria and Restrictions
+      objectInfoList = objectInfoCriteria.list();
 
-    // should be 1 & only 1 result
-    if (objectInfoList.size() == 0) {
-      throw new NoSuchObjectIdException("no ObjectInfo for URI: \"" + uri + "\"");
+      // should be 1 & only 1 result
+      if (objectInfoList.size() == 0) {
+        throw new NoSuchObjectIdException("no ObjectInfo for URI: \"" + uri + "\"");
+      }
+      if (objectInfoList.size() > 1) {
+        throw new RuntimeException("multiple," +  objectInfoList.size() + ", ObjectInfos for URI: \"" + uri + "\"");
+      }
+
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
     }
-    if (objectInfoList.size() > 1) {
-      throw new RuntimeException("multiple," +  objectInfoList.size() + ", ObjectInfos for URI: \"" + uri + "\"");
-    }
-
+    
     return objectInfoList.get(0);
   }
 
@@ -459,7 +521,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     throws RemoteException, NoSuchArticleIdException {
 
     ensureInitGetsCalledWithUsersSessionAttributes();
-    
+
     // TODO: SERVICE
     // return convert(delegateService.listSecondaryObjects(article));
     return new SecondaryObject[0];
@@ -545,7 +607,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       throws NoSuchObjectIdException, RemoteException
   {
           ensureInitGetsCalledWithUsersSessionAttributes();
-          
+
           // TODO: SERVICE
           // delegateService.setRepresentation(obj, rep, content);
   }

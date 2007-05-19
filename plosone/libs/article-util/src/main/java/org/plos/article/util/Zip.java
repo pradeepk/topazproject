@@ -175,15 +175,24 @@ public interface Zip {
    * (like Axis's ManagedMemoryDataSource does).
    */
   public static class DataSourceZip extends StreamZip {
-    private final DataSource zs;
+    private final DataSource  zs;
+    private final InputStream is;
 
     /**
      * Create a new instance.
      *
      * @param zipSource the zip archive as a datasource
      */
-    public DataSourceZip(DataSource zipSource) {
+    public DataSourceZip(DataSource zipSource) throws IOException {
       zs = zipSource;
+      InputStream i = zs.getInputStream();
+      if (i.markSupported()) {
+        i.mark(Integer.MAX_VALUE);
+        is = i;
+      } else {
+        i.close();
+        is = null;
+      }
     }
 
     public String getName() {
@@ -191,10 +200,11 @@ public interface Zip {
     }
 
     protected InputStream getStream() throws IOException {
-      InputStream is = zs.getInputStream();
-      if (is.markSupported())
+      if (is != null) {
         is.reset();
-      return is;
+        return is;
+      } else
+        return zs.getInputStream();
     }
   }
 }
