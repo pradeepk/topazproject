@@ -260,6 +260,7 @@ public class SerializerFactory {
     private SimpleDateFormat zparser;
     private SimpleDateFormat fmt;
     private DateBuilder<T>   dateBuilder;
+    private boolean          hasTime = true;
 
     public XsdDateTimeSerializer(DateBuilder dateBuilder, String dataType) {
       this.dateBuilder = dateBuilder;
@@ -268,6 +269,7 @@ public class SerializerFactory {
         zparser   = new SimpleDateFormat("yyyy-MM-ddZ");
         sparser   = new SimpleDateFormat("yyyy-MM-dd");
         fmt       = new SimpleDateFormat("yyyy-MM-dd'Z'");
+        hasTime   = false;
       } else if ((Rdf.xsd + "dateTime").equals(dataType)) {
         zparser   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSSZ");
         sparser   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS");
@@ -307,27 +309,29 @@ public class SerializerFactory {
       boolean hasTimeZone =
         ((o.charAt(len - 3) == ':') && ((o.charAt(len - 6) == '-') || (o.charAt(len - 6) == '+')));
 
-      int     pos         = o.indexOf('.');
-      String  mss;
-      int     endPos;
+      if (hasTime) {
+        int    pos    = o.indexOf('.');
+        String mss;
+        int    endPos;
 
-      if (pos == -1) {
-        mss               = ".000";
-        pos               = hasTimeZone ? (len - 6) : len;
-        endPos            = pos;
-      } else {
-        // convert fractional seconds to number of milliseconds
-        endPos   = hasTimeZone ? (len - 6) : len;
-        mss      = o.substring(pos, endPos);
+        if (pos == -1) {
+          mss         = ".000";
+          pos         = hasTimeZone ? (len - 6) : len;
+          endPos      = pos;
+        } else {
+          // convert fractional seconds to number of milliseconds
+          endPos   = hasTimeZone ? (len - 6) : len;
+          mss      = o.substring(pos, endPos);
 
-        while (mss.length() < 4)
-          mss += "0";
+          while (mss.length() < 4)
+            mss += "0";
 
-        if (mss.length() > 4)
-          mss = mss.substring(0, 4);
+          if (mss.length() > 4)
+            mss = mss.substring(0, 4);
+        }
+
+        o = o.substring(0, pos) + mss + o.substring(endPos, len);
       }
-
-      o = o.substring(0, pos) + mss + o.substring(endPos, len);
 
       if (hasTimeZone) {
         // convert hh:mm to hhmm in timezone
