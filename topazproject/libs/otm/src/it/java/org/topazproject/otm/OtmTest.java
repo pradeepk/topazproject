@@ -12,6 +12,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
+import org.topazproject.otm.samples.Annotea;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.Grants;
@@ -139,7 +140,7 @@ public class OtmTest extends TestCase {
     try {
       tx = session.beginTransaction();
 
-      Annotation a = session.get(Annotation.class, "http://localhost/annotation/1");
+      Annotation a = (Annotation)session.get(Annotea.class, "http://localhost/annotation/1");
       assertNotNull(a);
 
       NoRdfType n = session.get(NoRdfType.class, "http://localhost/noRdfType/1");

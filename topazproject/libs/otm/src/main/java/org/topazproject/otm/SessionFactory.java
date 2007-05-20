@@ -132,9 +132,6 @@ public class SessionFactory {
         mappedClasses.addAll(classes);
     }
 
-    if (!mappedClasses.contains(clazz) && (typeUris.size() > 0))
-      return null;
-
     Class solution = clazz;
 
     //now we have to find the most specific class
@@ -142,6 +139,9 @@ public class SessionFactory {
       if (solution.isAssignableFrom(candidate) && isInstantiable(candidate))
         solution = candidate;
     }
+
+    if (!mappedClasses.contains(solution) && (typeUris.size() > 0))
+      return null;
 
     return solution;
   }
