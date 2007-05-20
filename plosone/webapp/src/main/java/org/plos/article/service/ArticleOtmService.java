@@ -17,9 +17,12 @@ import java.net.URL;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.ListIterator;
+import java.util.Map;
+
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
@@ -47,6 +50,7 @@ import org.topazproject.authentication.ProtectedService;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
 import org.topazproject.fedoragsearch.service.FgsOperations;
+import org.topazproject.mulgara.itql.ItqlHelper;
 // TODO: should feed mv up to webapp?
 import org.topazproject.feed.ArticleFeed;
 // import org.topazproject.feed.ArticleFeedData;
@@ -426,7 +430,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       throw e; // or display error message
     }
 
-    return ArticleFeed.buildXml(articleFeedData);
+    return buildArticleFeedXml(articleFeedData);
     // TODO: confirm calling chain logic
     // return articleList.toArray(new Article[articleList.size()]);
   }
@@ -702,6 +706,77 @@ public class ArticleOtmService extends BaseConfigurableService {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
+  }
+
+  // TODO: mv feeds to webapp?
+  // inspired by ArticleFeed.buildXml(Collection articles)
+  private static String buildArticleFeedXml(Collection articles) {
+    
+    final String XML_RESPONSE =
+      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<articles>\n${articles}</articles>\n";
+    final String XML_ARTICLE_TAG =
+      "  <article>\n" +
+      "    <uri>${uri}</uri>\n" +
+      "    <title>${title}</title>\n" +
+      "    <description>${description}</description>\n" +
+      "    <date>${date}</date>\n" +
+      "    ${authors}\n" +
+      "    ${categories}\n" +
+      "    ${subjects}\n" +
+      "  </article>\n";
+  
+    String articlesXml = "";
+    for (Iterator articleIt = articles.iterator(); articleIt.hasNext(); ) {
+      ArticleFeedData article = (ArticleFeedData)articleIt.next();
+
+      StringBuffer authorsSb = new StringBuffer();
+      if (article.authors != null && article.authors.size() > 0) {
+        for (Iterator authorsIt = article.authors.iterator(); authorsIt.hasNext(); ) {
+          authorsSb.append("      <author>");
+          authorsSb.append(authorsIt.next());
+          authorsSb.append("</author>\n");
+        }
+        authorsSb.insert(0, "<authors>\n");
+        authorsSb.append("    </authors>");
+      }
+
+      StringBuffer categoriesSb = new StringBuffer();
+      if (article.categories != null && article.categories.size() > 0) {
+        for (Iterator categoriesIt = article.categories.iterator(); categoriesIt.hasNext(); ) {
+          categoriesSb.append("      <category>");
+          categoriesSb.append(categoriesIt.next());
+          categoriesSb.append("</category>\n");
+        }
+        categoriesSb.insert(0, "<categories>\n");
+        categoriesSb.append("    </categories>");
+      }
+
+      StringBuffer subjectsSb = new StringBuffer();
+      if (article.subjects != null && article.subjects.size() > 0) {
+        for (Iterator subjectsIt = article.subjects.iterator(); subjectsIt.hasNext(); ) {
+          subjectsSb.append("      <subject>");
+          subjectsSb.append(subjectsIt.next());
+          subjectsSb.append("</subject>\n");
+        }
+        subjectsSb.insert(0, "<subjects>\n");
+        subjectsSb.append("    </subjects>");
+      }
+
+      Map values = new HashMap();
+      /* internationalize () */
+      values.put("uri", article.uri);
+      values.put("title", article.title);
+      values.put("description", article.description);
+      values.put("date", ArticleFeed.formatDate(article.date));
+      values.put("authors", authorsSb.toString());
+      values.put("subjects", subjectsSb.toString());
+      values.put("categories", categoriesSb.toString());
+      articlesXml += ItqlHelper.bindValues(XML_ARTICLE_TAG, values);
+    }
+
+    Map values = new HashMap();
+    values.put("articles", articlesXml);
+    return ItqlHelper.bindValues(XML_RESPONSE, values);
   }
 
   // methods & functionality that were "pulled up" from org.topazproject.ws.article.impl.ArticleImpl
