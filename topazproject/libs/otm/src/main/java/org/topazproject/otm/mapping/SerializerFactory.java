@@ -59,7 +59,7 @@ public class SerializerFactory {
     typeMap.put(Calendar.class, Rdf.xsd + "dateTime");
   }
 
-  /**
+/**
    * Creates a new SerializerFactory object.
    *
    * @param sf the session factory
@@ -272,6 +272,11 @@ public class SerializerFactory {
         zparser   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSSZ");
         sparser   = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS");
         fmt       = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'.'SSS'Z'");
+
+        if (mulgaraWorkAround()) {
+          // assume UTC if no timezone specified
+          sparser.setTimeZone(new SimpleTimeZone(0, "UTC"));
+        }
       } else if ((Rdf.xsd + "time").equals(dataType)) {
         zparser   = new SimpleDateFormat("HH:mm:ss'.'SSSZ");
         sparser   = new SimpleDateFormat("HH:mm:ss'.'SSS");
@@ -339,6 +344,21 @@ public class SerializerFactory {
 
     public String toString() {
       return "XsdDateTimeSerializer";
+    }
+
+    /**
+     * Comment from Ronald. I give it  Tue Jan 12 11:42:34 PST 1999 what goes into mulgara
+     * is 1999-01-12T19:42:34.000Z what comes out of mulgara is 1999-01-12T19:42:34 and the result
+     * is Tue Jan 12 19:42:34 PST 1999 (i.e. 8 hours shifted). This problem doesn't occur for date
+     * (no time) or time because curiously time comes back as '19:42:34.000Z' i.e. with the Z. I
+     * think mulgara dropping the time zone is a bug.
+     *
+     * @return true
+     */
+    private boolean mulgaraWorkAround() {
+      // xxx : detect if this bug exists in the version we are connected to
+      // xxx : or pull this from the triple-store config
+      return true;
     }
   }
 

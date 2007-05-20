@@ -100,10 +100,10 @@ public class BuilderIntegrationTest extends GroovyTestCase {
                               u_uri:'bar:blah/blah'.toURI(), u_url:'http://bar/baz'.toURL(),
                               d_date:new Date('Oct 23 2006'),
                               d_time:new Date('Jan 1 1970 11:42:34'),
-                              /* d_datTim:new Date('Jan 12 1999 11:42:34'), */
+                              d_datTim:new Date('Jan 12 1999 11:42:34'), 
                               l_date:new Date('Oct 23 2006').time,
                               l_time:new Date('Jan 1 1970 11:42:34').time,
-                              /* l_datTim:new Date('Jan 12 1999 11:42:34').time */)
+                              l_datTim:new Date('Jan 12 1999 11:42:34').time )
 
     doInTx { s-> s.saveOrUpdate(obj) }
     doInTx { s -> assertEquals obj, s.get(cls, obj.id.toString()) }
