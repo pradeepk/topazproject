@@ -107,6 +107,21 @@ public class BuilderIntegrationTest extends GroovyTestCase {
 
     doInTx { s-> s.saveOrUpdate(obj) }
     doInTx { s -> assertEquals obj, s.get(cls, obj.id.toString()) }
+
+    Class cls2 = rdf.class('Test2', uriPrefix:'http://rdf.topazproject.org/RDF/', type:"foo:bar") {
+      ser (pred:'date')
+    }
+    Class cls3 = rdf.class('Test3', uriPrefix:'http://rdf.topazproject.org/RDF/', type:"foo:bar") {
+      date (pred:'date', type:'xsd:date')
+    }
+
+    def obj2 = cls2.newInstance(id:'foo:1'.toURI(), ser:'2006-12-20')
+    doInTx { s-> s.saveOrUpdate(obj2) }
+    doInTx { s -> assertEquals new Date('Dec 20 2006'), s.get(cls3, obj2.id.toString()).date }
+
+    obj2 = cls2.newInstance(id:'foo:2'.toURI(), ser:'2006-12-20Z')
+    doInTx { s-> s.saveOrUpdate(obj2) }
+    doInTx { s -> assertEquals new Date('Dec 20 2006 GMT'), s.get(cls3, obj2.id.toString()).date }
   }
 
   void testIdGenerator() {
