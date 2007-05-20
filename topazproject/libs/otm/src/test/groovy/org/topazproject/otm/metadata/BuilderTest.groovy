@@ -246,7 +246,8 @@ public class BuilderTest extends GroovyTestCase {
                ['xsd:int', Integer.TYPE, 42424242], ['xsd:long', Long.TYPE, 424242424242424242L],
                ['xsd:float', Float.TYPE, 1.42], ['xsd:double', Double.TYPE, 1.3333333333333],
                ['xsd:boolean', Boolean.TYPE, true], ['xsd:date', Date.class, new Date()],
-               ['xsd:time', Date.class, new Date()], ['xsd:dateTime', Date.class, new Date()]]) {
+               ['xsd:time', Date.class, new Date()], ['xsd:dateTime', Date.class, new Date()],
+               ['rdf:XMLLiteral', String.class, '<title>A Fine Day</title>']]) {
       Class cls = rdf.class('Test' + cnt++) {
         foo (type:t[0])
       }
