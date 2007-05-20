@@ -66,8 +66,36 @@ public class TransactionHelper {
       }
       if (t instanceof Error)
         throw (Error) t;
-      else
+      throw (RuntimeException) t;
+    }
+  }
+
+  /** 
+   * Run the given action within a transaction.
+   * 
+   * @param s      the otm session to use    
+   * @param action the action to run
+   * @return the value returned by the action
+   */
+  public static <T, E extends Throwable> T doInTxE(Session s, ActionE<T, E> action) throws E {
+    Transaction tx = null;
+    try {
+      tx = s.beginTransaction();
+      T res = action.run(tx);
+      tx.commit();
+      return res;
+    } catch (Throwable t) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException oe) {
+        log.warn("rollback failed", oe);
+      }
+      if (t instanceof Error)
+        throw (Error) t;
+      if (t instanceof RuntimeException)
         throw (RuntimeException) t;
+      throw (E) t;
     }
   }
 
@@ -82,5 +110,18 @@ public class TransactionHelper {
      * @return anything you want
      */
     T run(Transaction tx);
+  }
+
+  /**
+   * The interface actions which throw an exception must implement.
+   */
+  public static interface ActionE<T, E extends Throwable> {
+    /** 
+     * This is run within the context of a transaction.
+     * 
+     * @param tx the current transaction
+     * @return anything you want
+     */
+    T run(Transaction tx) throws E;
   }
 }

@@ -33,6 +33,7 @@ import org.plos.user.UserProfileGrant;
 import org.plos.user.UsersPEP;
 import org.plos.util.TransactionHelper;
 import org.springframework.beans.factory.annotation.Required;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.query.Results;
@@ -108,20 +109,19 @@ public class UserService extends BaseConfigurableService {
     });
 
     // check for duplicate
-    boolean dup = TransactionHelper.doInTx(session, new TransactionHelper.Action<Boolean>() {
-      public Boolean run(Transaction tx) {
+    TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, ApplicationException>() {
+      public Void run(Transaction tx) throws ApplicationException {
         Results r = tx.getSession().doQuery(
           "select ua.id from UserAccount ua where ua.authIds.value = '" + authId + "';");
         if (!r.next() || !r.next())
-          return false;
+          return null;
 
         tx.getSession().delete(ua);
         tx.commit();
-        return true;
+
+        throw new ApplicationException("AuthId '" + authId + "' is already in use");
       }
     });
-    if (dup)
-      throw new ApplicationException("AuthId '" + authId + "' is already in use");
 
     return ua.getId().toString();
   }
@@ -154,11 +154,12 @@ public class UserService extends BaseConfigurableService {
    */
   private UserAccount getUserAccount(final String topazUserId, final int loadList)
       throws ApplicationException {
-    UserAccount ua = TransactionHelper.doInTx(session, new TransactionHelper.Action<UserAccount>() {
-      public UserAccount run(Transaction tx) {
+    return TransactionHelper.doInTxE(session,
+                              new TransactionHelper.ActionE<UserAccount, ApplicationException>() {
+      public UserAccount run(Transaction tx) throws ApplicationException {
         UserAccount ua = tx.getSession().get(UserAccount.class, topazUserId);
         if (ua == null)
-          return null;
+          throw new ApplicationException("No user-account with id '" + topazUserId + "' found");
 
         /* Ugh! This is ugly, and fragile in case the model ever changes...
          * Since there's no eager loading (yet) in OTM, we touch (force a load of)
@@ -181,9 +182,6 @@ public class UserService extends BaseConfigurableService {
         return ua;
       }
     });
-    if (ua == null)
-      throw new ApplicationException("No user-account with id '" + topazUserId + "' found");
-    return ua;
   }
 
   /**
