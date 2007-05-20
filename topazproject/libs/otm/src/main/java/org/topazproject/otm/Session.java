@@ -83,6 +83,13 @@ public class Session {
   }
 
   /**
+   * Clears the txn when committed or rolled back.
+   */
+  void endTransaction() {
+    txn = null;
+  }
+
+  /**
    * Gets the current transaction.
    *
    * @return the transaction

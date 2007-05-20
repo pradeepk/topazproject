@@ -85,5 +85,10 @@ public class Transaction {
       session.getSessionFactory().getTripleStore().closeConnection(conn);
       conn = null;
     }
+
+    if (session != null) {
+      session.endTransaction();
+      session = null;
+    }
   }
 }
