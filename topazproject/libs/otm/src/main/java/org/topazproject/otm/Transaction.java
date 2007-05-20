@@ -47,6 +47,8 @@ public class Transaction {
    * Gets a connection to the triplestore.
    *
    * @return the connection
+   *
+   * @throws OtmException on an error in opening a connection
    */
   public Connection getConnection() throws OtmException {
     if (conn != null)
@@ -60,24 +62,28 @@ public class Transaction {
 
   /**
    * Flush the session, commit and close the connection.
+   *
+   * @throws OtmException on an error in commit
    */
   public void commit() throws OtmException {
     session.flush();
 
-    if (conn != null) {
+    if (conn != null)
       conn.commit();
-      close();
-    }
+
+    close();
   }
 
   /**
    * Rollback the transaction and close the connection. Session data is left alone.
+   *
+   * @throws OtmException on an error in roll-back
    */
   public void rollback() throws OtmException {
-    if (conn != null) {
+    if (conn != null)
       conn.rollback();
-      close();
-    }
+
+    close();
   }
 
   private void close() throws OtmException {
