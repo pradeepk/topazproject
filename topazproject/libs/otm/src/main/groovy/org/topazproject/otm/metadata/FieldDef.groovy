@@ -32,6 +32,7 @@ import org.apache.commons.logging.LogFactory;
 public class FieldDef {
   private static final Log    log    = LogFactory.getLog(FieldDef.class)
   private static final String xsdURI = "http://www.w3.org/2001/XMLSchema#";
+  private static final String rdfURI = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 
   /** the field name */
   String   name
@@ -40,10 +41,15 @@ public class FieldDef {
   /** the model to store the statements in */
   String   model
   /**
-   * if null, this is an untyped literal; if it's an xsd type, this is a typed literal; else
-   * this is a class type, and interpreted as uriPrefix + type if not absolute
+   * the rdf type. If null, this is an untyped literal; if it's an xsd type, this is a typed
+   * literal; else this is a class type, and interpreted as uriPrefix + type if not absolute
    */
   String   type
+  /**
+   * the property type. If maxCard &gt; 1 this is the component type. If null this is defaulted
+   * from the rdf type.
+   */
+  Class    javaType
   /** true if this is the id-field */
   boolean  isId        = false
   /** max cardinality; use -1 for unbound */
@@ -193,7 +199,9 @@ public class FieldDef {
   }
 
   protected String getBaseJavaType() {
-    if (classType)
+    if (javaType)
+      return javaType.name;
+    else if (classType)
       return classType.className
     else
       return xsdToJava()
@@ -204,6 +212,8 @@ public class FieldDef {
       case null:
         return 'String'
       case xsdURI + 'string':
+        return 'String'
+      case rdfURI + 'XMLLiteral':
         return 'String'
       case xsdURI + 'anyURI':
         return 'URI'
@@ -229,9 +239,9 @@ public class FieldDef {
         return 'Date'
       default:
         throw new OtmException("Unsupported xsd type '${type}' - must be one of " +
-                               "xsd:string, xsd:anyURI, xsd:boolean, xsd:byte, xsd:short, " +
-                               "xsd:int, xsd:long, xsd:float, xsd:double, xsd:date, xsd:time, " +
-                               "xsd:dateTime")
+                               "xsd:string, rdf:XMLLiteral, xsd:anyURI, xsd:boolean, xsd:byte, " +
+                               "xsd:short, xsd:int, xsd:long, xsd:float, xsd:double, xsd:date, " +
+                               "xsd:time, xsd:dateTime")
     }
   }
 
