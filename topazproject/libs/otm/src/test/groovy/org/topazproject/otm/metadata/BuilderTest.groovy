@@ -236,6 +236,54 @@ public class BuilderTest extends GroovyTestCase {
         state ()
       }
     }).contains('No model has been set')
+
+    // explicit null type
+    rdf.defUriPrefix = 'topaz:'
+    rdf.defModel     = 'ri'
+    cls = rdf.class('Test11', type:null) {
+      state ()
+    }
+    cm = rdf.sessFactory.getClassMetadata(cls)
+
+    assert cm.type          == null
+    assert cm.model         == 'ri'
+    assert cm.fields.size() == 1
+
+    m = cm.fields.iterator().next()
+    assert m.name     == 'state'
+    assert m.type     == String.class
+    assert m.dataType == null
+    assert m.uri      == 'http://rdf.topazproject.org/RDF/state'
+    assert !m.hasInverseUri()
+    assert m.model    == null
+
+    Class sup = rdf.class('Test12') {
+      state ()
+    }
+    cls = rdf.class('Test13', type:null, extendsClass:'Test12') {
+      blah ()
+    }
+    cm = rdf.sessFactory.getClassMetadata(cls)
+
+    assert cm.type          == null
+    assert cm.model         == 'ri'
+    assert cm.fields.size() == 2
+
+    m = cm.fields.asList()[0]
+    assert m.name     == 'blah'
+    assert m.type     == String.class
+    assert m.dataType == null
+    assert m.uri      == 'http://rdf.topazproject.org/RDF/blah'
+    assert !m.hasInverseUri()
+    assert m.model    == null
+
+    m = cm.fields.asList()[1]
+    assert m.name     == 'state'
+    assert m.type     == String.class
+    assert m.dataType == null
+    assert m.uri      == 'http://rdf.topazproject.org/RDF/state'
+    assert !m.hasInverseUri()
+    assert m.model    == null
   }
 
   void testDatatypes() {

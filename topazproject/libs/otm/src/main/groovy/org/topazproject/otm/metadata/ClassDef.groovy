@@ -31,10 +31,10 @@ public class ClassDef {
   /** the name of the java class */
   String   className
   /**
-   * the rdf type; if relative, it's set to uriPrefix + type; if null, it's inherited from
-   * superclass; if still null and not abstract, it's set to uriPrefix + className
+   * the rdf type; if relative, it's set to uriPrefix + type; if unset, it's inherited from
+   * superclass; if still unset, it's set to uriPrefix + className; set to null for no type.
    */
-  String   type
+  String   type = ""
   /** the default model for properties in this class */
   String   model
   /** the uri prefix to use to create absolute uri's from names */
@@ -81,7 +81,7 @@ public class ClassDef {
     ClassDef clsDef = this
     while (clsDef) {
       if (clsDef.type) {
-        if (!type)
+        if (type == "")
           type = clsDef.type
         allTypes << clsDef.type
       }
@@ -90,14 +90,13 @@ public class ClassDef {
     }
 
     // default type if necessary
-    if (!type && !isAbstract) {
+    if (type == "") {
       if (!uriPrefix)
-        throw new OtmException("class '${className}': type is null, no type in superclass found, " +
-                               "and no uri-prefix has been configured")
+        throw new OtmException("class '${className}': type is unset, no type in superclass found," +
+                               " and no uri-prefix has been configured")
       type = uriPrefix + className
+      allTypes << type;
     }
-
-    allTypes << type;
 
     // find the id-field and ensure there's only one; if there's none, create one
     def idFields = allFields.findAll{it.isId}
