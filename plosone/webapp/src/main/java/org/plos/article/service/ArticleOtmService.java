@@ -163,11 +163,10 @@ public class ArticleOtmService extends BaseConfigurableService {
    * Mark an article as superseded by another article
    * @param oldUri oldUri
    * @param newUri newUri
-   * @throws RemoteException RemoteException
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   public void markSuperseded(final String oldUri, final String newUri)
-          throws RemoteException, NoSuchArticleIdException {
+          throws NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
     // TODO
@@ -191,7 +190,7 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // ask PEP if getting Object URL is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
-     pep.checkAccess(ArticlePEP.GET_OBJECT_URL, URI.create(obj));
+    pep.checkAccess(ArticlePEP.GET_OBJECT_URL, URI.create(obj));
 
     // let the Article utils do the real work
     ArticleUtil articleUtil = null;
@@ -235,16 +234,16 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // ask PEP if delete is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
-     pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
+    pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
 
-     // let the Article utils do the real work
-     ArticleUtil articleUtil = null;
-     try {
-      articleUtil = new ArticleUtil();  // no arg, utils use default config
-     } catch (MalformedURLException ex) {
-       throw new RuntimeException(ex);
-     }
-     articleUtil.delete(article);
+    // let the Article utils do the real work
+    ArticleUtil articleUtil = null;
+    try {
+     articleUtil = new ArticleUtil();  // no arg, utils use default config
+    } catch (MalformedURLException ex) {
+      throw new RuntimeException(ex);
+    }
+    articleUtil.delete(article);
   }
 
   /**
@@ -428,7 +427,7 @@ public class ArticleOtmService extends BaseConfigurableService {
                                      String[] authors, int[] states, boolean ascending,
                                      Transaction tx) throws RemoteException {
     // build up Criteria for the Articles
-    Criteria articleCriteria = session.createCriteria(Article.class);
+    Criteria articleCriteria = tx.getSession().createCriteria(Article.class);
 
     // normalize dates for query
     if (startDate != null) {
@@ -494,13 +493,8 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @param uri uri
    * @return the object-info of the object
    * @throws NoSuchObjectIdException NoSuchObjectIdException
-   * @throws java.rmi.RemoteException RemoteException
    */
-  public ObjectInfo getObjectInfo(final String uri)
-    throws RemoteException, NoSuchObjectIdException {
-
-    Transaction tx = null;
-    ObjectInfo objectInfo = null;
+  public ObjectInfo getObjectInfo(final String uri) throws NoSuchObjectIdException {
 
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
@@ -524,26 +518,15 @@ public class ArticleOtmService extends BaseConfigurableService {
       throw se;
     }
 
-    try {
-      tx = session.beginTransaction();
-      objectInfo = session.get(ObjectInfo.class, uri);
-      tx.commit(); // Flush happens automatically
-    } catch (OtmException e) {
-      try {
-        if (tx != null)
-          tx.rollback();
-      } catch (OtmException re) {
-        log.warn("rollback failed", re);
+    return TransactionHelper.doInTxE(session,
+                            new TransactionHelper.ActionE<ObjectInfo, NoSuchObjectIdException>() {
+      public ObjectInfo run(Transaction tx) throws NoSuchObjectIdException {
+        ObjectInfo objectInfo = tx.getSession().get(ObjectInfo.class, uri);
+        if (objectInfo == null)
+          throw new NoSuchObjectIdException(uri);
+        return objectInfo;
       }
-
-      throw e; // or display error message
-    }
-
-    if (objectInfo == null) {
-      throw new NoSuchObjectIdException(uri);
-    }
-
-    return objectInfo;
+    });
   }
 
   /**
@@ -552,13 +535,8 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @param uri URI of Article to get.
    * @return Article with specified URI or null if not found.
    * @throws NoSuchArticleIDException NoSuchArticleIdException
-   * @throws RemoteException RemoteException
    */
-  public Article getArticle(final URI uri)
-    throws RemoteException, NoSuchArticleIdException {
-
-    Article article = null;
-    Transaction tx = null;
+  public Article getArticle(final URI uri) throws NoSuchArticleIdException {
 
     // sanity check parms
     if (uri == null) throw new IllegalArgumentException("URI == null");
@@ -577,27 +555,15 @@ public class ArticleOtmService extends BaseConfigurableService {
       throw se;
     }
 
-    // use Session to get an Article by URI, may return null
-    try {
-      tx = session.beginTransaction();
-      article = session.get(Article.class, uri.toString());
-      tx.commit(); // Flush happens automatically
-    } catch (OtmException e) {
-      try {
-        if (tx != null)
-          tx.rollback();
-      } catch (OtmException re) {
-        log.warn("rollback failed", re);
+    return TransactionHelper.doInTxE(session,
+                            new TransactionHelper.ActionE<Article, NoSuchArticleIdException>() {
+      public Article run(Transaction tx) throws NoSuchArticleIdException {
+        Article article = tx.getSession().get(Article.class, uri.toString());
+        if (article == null)
+          throw new NoSuchArticleIdException(uri.toString());
+        return article;
       }
-
-      throw e; // or display error message
-    }
-
-    if (article == null) {
-      throw new NoSuchArticleIdException(uri.toString());
-    }
-
-    return article;
+    });
   }
 
   /**
@@ -642,10 +608,7 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @param maxArticles Maximum # of Articles to retrieve.
    * @returns Article[] of most commented Articles.
    */
-  public Article[] getCommentedArticles(int maxArticles) throws RemoteException {
-
-    ArrayList<Article> returnArticles = new ArrayList();
-    Transaction tx = null;
+  public Article[] getCommentedArticles(final int maxArticles) {
 
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
@@ -658,42 +621,34 @@ public class ArticleOtmService extends BaseConfigurableService {
       return new Article[0];
     }
 
-    String oqlQuery =
+    final String oqlQuery =
       "select a, count(n) c from Article a, Annotation n where n.annotates = a order by c desc limit " + maxArticles;
 
-    try {
-      tx = session.beginTransaction();
-      Results commentedArticles = commentedArticles = session.doQuery(oqlQuery);
+    return TransactionHelper.doInTx(session, new TransactionHelper.Action<Article[]>() {
+      public Article[] run(Transaction tx) {
+        Results commentedArticles = commentedArticles = tx.getSession().doQuery(oqlQuery);
 
-      // check access control on all Article results
-      // logged in user is automatically resolved by the ServletActionContextAttribute
-      commentedArticles.beforeFirst();
-      while(commentedArticles.next()) {
-        Article commentedArticle = (Article) commentedArticles.get("a");
-        try {
-          pep.checkAccess(ArticlePEP.READ_META_DATA, commentedArticle.getId());
-          returnArticles.add(commentedArticle);
-        } catch (SecurityException se) {
-           if (log.isDebugEnabled())
-            log.debug("Filtering URI "
-              + commentedArticle.getId()
-              + " from commented Article list due to PEP SecurityException", se);
+        // check access control on all Article results
+        // logged in user is automatically resolved by the ServletActionContextAttribute
+        ArrayList<Article> returnArticles = new ArrayList();
+
+        commentedArticles.beforeFirst();
+        while (commentedArticles.next()) {
+          Article commentedArticle = (Article) commentedArticles.get("a");
+          try {
+            pep.checkAccess(ArticlePEP.READ_META_DATA, commentedArticle.getId());
+            returnArticles.add(commentedArticle);
+          } catch (SecurityException se) {
+            if (log.isDebugEnabled())
+              log.debug("Filtering URI "
+                + commentedArticle.getId()
+                + " from commented Article list due to PEP SecurityException", se);
+          }
         }
+
+        return returnArticles.toArray(new Article[returnArticles.size()]);
       }
-
-      tx.commit(); // Flush happens automatically
-    } catch (OtmException e) {
-      try {
-        if (tx != null)
-          tx.rollback();
-      } catch (OtmException re) {
-        log.warn("rollback failed", re);
-      }
-
-      throw e; // or display error message
-    }
-
-    return returnArticles.toArray(new Article[returnArticles.size()]);
+    });
   }
 
 
