@@ -222,7 +222,7 @@ public class ArticleUtil {
       throws NoSuchObjectIdException, RemoteException {
     String pid = getPIDForURI(obj, itql);
     if (pid == null)
-      throw new NoSuchObjectIdException(obj);
+      throw new NoSuchObjectIdException(obj, "with representation: " + rep);
 
     String path = "/fedora/get/" + pid + "/" + rep;
     return fedoraServer.resolve(path).toString();

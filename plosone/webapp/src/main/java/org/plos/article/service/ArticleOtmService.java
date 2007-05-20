@@ -172,7 +172,7 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @param rep rep
    * @return the URL, or null if this object doesn't exist in the desired version
    * @throws RemoteException RemoteException
-   * @throws NoSuchArticleIdException NoSuchArticleIdException
+   * @throws NoSuchObjectIdException NoSuchObjectIdException
    */
   public String getObjectURL(final String obj, final String rep)
           throws RemoteException, NoSuchObjectIdException {
@@ -193,8 +193,22 @@ public class ArticleOtmService extends BaseConfigurableService {
     } catch (ServiceException se) {
       throw new RemoteException("Failed getting URL for \"" + obj + "\", \"" + rep + "\"", se);
     }
-
-    return articleUtil.getObjectURL(obj, rep);
+    
+    // trap the Exception for better debgging
+    String objectURL = null;
+    try {
+      objectURL= articleUtil.getObjectURL(obj, rep);
+      if (log.isDebugEnabled()) {
+        log.debug("AtricleOtmService.getObjectURL("+obj+", " + rep + ") = " + objectURL);
+      }
+    } catch (NoSuchObjectIdException nsoe) {
+      if (log.isDebugEnabled()) {
+        log.debug("failed to AtricleOtmService.getObjectURL(" + obj + ", " + rep + ")");
+      }
+      throw nsoe;
+    }
+    
+    return objectURL;
   }
 
   /**

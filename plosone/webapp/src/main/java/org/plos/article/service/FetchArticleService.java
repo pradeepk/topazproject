@@ -382,7 +382,7 @@ public class FetchArticleService {
     try {
       contentUrl = articleOtmService.getObjectURL(infoUri, articleRep);
     } catch (NoSuchObjectIdException ex) {
-      throw new NoSuchArticleIdException(infoUri);
+      throw new NoSuchArticleIdException(infoUri, "(representation=" + articleRep + ")", ex);
     }
 
     return getAnnotatedContentAsDocument(contentUrl, infoUri);

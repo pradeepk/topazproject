@@ -9,6 +9,8 @@
  */
 package org.plos.article.util
 
+import javax.activation.DataHandler;
+import javax.activation.URLDataSource
 import org.plos.article.util.Zip
 
 args = ToolHelper.fixArgs(args)
@@ -26,9 +28,18 @@ CONF = ToolHelper.loadConfiguration(opt.c)
 def util = new ArticleUtil()
 
 opt.arguments().each() {
+  // Zip.FileZip
+/*
   def zip = new Zip.FileZip(it)
   def doi = util.ingest(zip)
-  println "Ingested $it: $doi"
+  println "Ingested $it: $doi w/Zip.FileZip"
+*/
+
+  // Zip.DataSource
+  def zip = new Zip.DataSourceZip(new URLDataSource(it));
+  def doi = util.ingest(zip)
+  println "Ingested $it: $doi w/Zip.DataSourceZip"
+
 }
 
 println "Ingested ${opt.arguments().size()} article(s)"

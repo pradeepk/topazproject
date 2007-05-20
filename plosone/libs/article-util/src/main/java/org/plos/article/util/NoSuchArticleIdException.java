@@ -24,7 +24,7 @@ public class NoSuchArticleIdException extends Exception {
    * @param id      the (non-existant) id
    */
   public NoSuchArticleIdException(String id) {
-    this(id, "id = '" + id + "'");
+    this(id, null, null);
   }
 
   /**
@@ -34,7 +34,18 @@ public class NoSuchArticleIdException extends Exception {
    * @param message the exception message
    */
   public NoSuchArticleIdException(String id, String message) {
-    super(message);
+    this(id, message, null);
+  }
+
+  /**
+   * Create a new exception instance with a cause.
+   *
+   * @param id      the (non-existant) id
+   * @param message the exception message
+   * @param cause   the original cause
+   */
+  public NoSuchArticleIdException(String id, String message, Throwable cause) {
+    super("(id = '" + id + "')" + message, cause);
     this.id = id;
   }
 
