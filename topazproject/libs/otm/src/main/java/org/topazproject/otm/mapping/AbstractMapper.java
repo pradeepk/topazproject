@@ -254,7 +254,7 @@ public abstract class AbstractMapper implements Mapper {
     try {
       return (serializer != null) ? serializer.deserialize((String) o) : o;
     } catch (Exception e) {
-      throw new OtmException("Deserialization error", e);
+      throw new OtmException("Deserialization error on " + toString(), e);
     }
   }
 
