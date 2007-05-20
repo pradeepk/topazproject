@@ -327,7 +327,7 @@ public class ArticleOtmService extends BaseConfigurableService {
                             boolean ascending)
     throws RemoteException {
 
-    Transaction   tx                 = null;
+    Transaction tx = null;
     List<ArticleFeedData> articleFeedData = new ArrayList();
 
     // session housekeeping
@@ -502,7 +502,10 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public Article getArticle(final URI uri)
     throws RemoteException, NoSuchArticleIdException {
-
+    
+    Article article = null;
+    Transaction tx = null;
+    
     // sanity check parms
     if (uri == null) throw new IllegalArgumentException("URI == null");
 
@@ -521,7 +524,22 @@ public class ArticleOtmService extends BaseConfigurableService {
     }
 
     // use Session to get an Article by URI, may return null
-    return session.get(Article.class, uri.toString());
+    try {
+      tx = session.beginTransaction();    
+      article = session.get(Article.class, uri.toString());
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    }
+    
+    return article;
   }
 
   /**
@@ -562,6 +580,9 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public Article[] getCommentedArticles(int maxArticles) throws RemoteException {
 
+    Results commentedArticles = null;
+    Transaction tx = null;
+    
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
 
@@ -576,7 +597,20 @@ public class ArticleOtmService extends BaseConfigurableService {
     String oqlQuery =
       "select a, count(n) c from Article a, Annotation n where n.annotates = a order by c desc limit " + maxArticles;
 
-    Results commentedArticles = session.doQuery(oqlQuery);
+    try {
+      tx = session.beginTransaction();
+      commentedArticles = session.doQuery(oqlQuery);
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    }
 
     // check access control on all Article results
     // logged in user is automatically resolved by the ServletActionContextAttribute
