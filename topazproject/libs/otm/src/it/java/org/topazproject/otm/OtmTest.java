@@ -628,16 +628,15 @@ public class OtmTest extends TestCase {
       assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
 
       /* uncomment when child criteria are implemented
-      l = session.createCriteria(Annotation.class).createCriteria("supersedes").
-                  add(Restrictions.eq("annotates", "foo:1")).addOrder(Order.asc("annotates")).
-                  list();
-      assertEquals(2, l.size());
-      a1 = (Annotation) l.get(0);
-      a2 = (Annotation) l.get(1);
-      assertEquals(id2, a1.getId());
-      assertEquals(id3, a2.getId());
-      */
-
+         l = session.createCriteria(Annotation.class).createCriteria("supersedes").
+                     add(Restrictions.eq("annotates", "foo:1")).addOrder(Order.asc("annotates")).
+                     list();
+         assertEquals(2, l.size());
+         a1 = (Annotation) l.get(0);
+         a2 = (Annotation) l.get(1);
+         assertEquals(id2, a1.getId());
+         assertEquals(id3, a2.getId());
+       */
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       log.warn("test failed", e);
@@ -824,6 +823,25 @@ public class OtmTest extends TestCase {
       assertEquals(1, u.size());
       assertEquals("user:1", u.get(0));
 
+      List<Grants> l =
+        session.createCriteria(Grants.class).add(Restrictions.id("http://localhost/articles/1"))
+                .list();
+      assertEquals(1, l.size());
+
+      Grants g1 = l.get(0);
+      assertTrue(g == g1);
+
+      assertEquals(2, g.permissions.size());
+
+      u = g.permissions.get("perm:1");
+      assertNotNull(u);
+      assertEquals(1, u.size());
+      assertEquals("user:1", u.get(0));
+
+      u = g.permissions.get("perm:2");
+      assertNotNull(u);
+      assertEquals(1, u.size());
+
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       try {
@@ -903,7 +921,7 @@ public class OtmTest extends TestCase {
       List l = session.createCriteria(Article.class).list();
       assertEquals(1, l.size());
 
-      Article a = (Article) l.get(0);
+      Article                a  = (Article) l.get(0);
 
       List<PublicAnnotation> al = a.getPublicAnnotations();
       assertEquals(2, al.size());
@@ -919,25 +937,26 @@ public class OtmTest extends TestCase {
       assertEquals(3, l.size());
 
       for (Object o : l) {
-        assertEquals(foo, ((Annotation)o).getAnnotates());
-        if (o instanceof PublicAnnotation)
-          assertTrue(a1 == o || a2 == o);
-      }
+        assertEquals(foo, ((Annotation) o).getAnnotates());
 
+        if (o instanceof PublicAnnotation)
+          assertTrue((a1 == o) || (a2 == o));
+      }
 
       Results r = session.doQuery("select a from Annotation a where a.annotates = <foo:1>;");
       l.clear();
+
       while (r.next())
         l.add(r.get(0));
 
       assertEquals(3, l.size());
 
       for (Object o : l) {
-        assertEquals(foo, ((Annotation)o).getAnnotates());
-        if (o instanceof PublicAnnotation)
-          assertTrue(a1 == o || a2 == o);
-      }
+        assertEquals(foo, ((Annotation) o).getAnnotates());
 
+        if (o instanceof PublicAnnotation)
+          assertTrue((a1 == o) || (a2 == o));
+      }
 
       session.delete(a);
       assertNull(session.get(Article.class, a.getUri().toString()));
@@ -951,6 +970,7 @@ public class OtmTest extends TestCase {
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       log.warn("test failed", e);
+
       try {
         if (tx != null)
           tx.rollback();

@@ -599,7 +599,7 @@ public class Session {
       if (op == null)
         continue;
 
-      if ((loopDetect == null) || (p.getSerializer() != null))
+      if ((loopDetect == null) || (p.getSerializer() != null) || (p.getUri() == null))
         p.set(o, op.get(other));
       else {
         List cc = new ArrayList();

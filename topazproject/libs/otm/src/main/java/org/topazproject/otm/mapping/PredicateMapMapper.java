@@ -42,30 +42,36 @@ public class PredicateMapMapper extends AbstractMapper {
   }
 
   /**
-   * Retrieve elements from a collection field of an object.
+   * Returns the value as 'raw' map.
    *
    * @param o the object
    *
-   * @return the list of array elements (may be serialized)
+   * @return the 'raw' value in a list
    *
-   * @throws OtmException if a field's value cannot be retrieved and serialized
-   * @throws UnsupportedOperationException DOCUMENT ME!
+   * @throws OtmException if a field's value cannot be retrieved
    */
   public List get(Object o) throws OtmException {
-    throw new UnsupportedOperationException("Only raw get/set allowed");
+    Object value = getRawValue(o, false);
+
+    return (value == null) ? Collections.emptyList() : Collections.singletonList(value);
   }
 
   /**
-   * Populate a collection field of an object.
+   * Sets the value from a 'raw' map.
    *
    * @param o the object
-   * @param vals the values to be set (may be deserialized)
+   * @param vals the values to be set 
    *
-   * @throws OtmException if a field's value cannot be de-serialized and set
-   * @throws UnsupportedOperationException DOCUMENT ME!
+   * @throws OtmException if a field's value cannot be set
    */
   public void set(Object o, List vals) throws OtmException {
-    throw new UnsupportedOperationException("Only raw get/set allowed");
+    int size = vals.size();
+
+    if (size > 1)
+      throw new OtmException("Too many values for '" + getField().toGenericString() + "'");
+
+    Object value = (size == 0) ? null : vals.get(0);
+    setRawValue(o, value);
   }
 
   public IdentifierGenerator getGenerator() {
