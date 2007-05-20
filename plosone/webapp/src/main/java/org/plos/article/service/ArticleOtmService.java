@@ -27,6 +27,7 @@ import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -43,11 +44,13 @@ import org.plos.models.Article;
 import org.plos.models.ObjectInfo;
 import org.plos.service.BaseConfigurableService;
 import org.plos.service.WSTopazContext;
+import org.plos.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.configuration.ConfigurationStore;
+import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
 import org.topazproject.fedoragsearch.service.FgsOperations;
 import org.topazproject.mulgara.itql.ItqlHelper;
@@ -77,6 +80,8 @@ public class ArticleOtmService extends BaseConfigurableService {
   private static final Configuration CONF = ConfigurationStore.getInstance().getConfiguration();
   private static final Log log = LogFactory.getLog(ArticleOtmService.class);
   private static final List FGS_URLS = CONF.getList("topaz.fedoragsearch.urls.url");
+
+  private final WSTopazContext ctx = new WSTopazContext(getClass().getName());
 
   public void init() throws IOException, URISyntaxException, ServiceException {
     final ProtectedService permissionProtectedService = getProtectedService();
@@ -109,7 +114,6 @@ public class ArticleOtmService extends BaseConfigurableService {
      pep.checkAccess(ArticlePEP.INGEST_ARTICLE, ArticlePEP.ANY_RESOURCE);
 
     // create an Ingester using the values from the WSTopazContext
-    WSTopazContext ctx  = new WSTopazContext(getClass().getName());
     ctx.activate();
 
     // TODO: remove debug
@@ -125,7 +129,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     try {
       ingester = new Ingester(ctx.getItqlHelper(), ctx.getFedoraAPIM(), ctx.getFedoraUploader(), getFgsOperations());
     } finally {
-      ctx.destroy();
+      ctx.passivate();
     }
 
     // let Ingester.ingest() do the real work
@@ -165,8 +169,8 @@ public class ArticleOtmService extends BaseConfigurableService {
           throws RemoteException, NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    // TODO: SERVICE
-    // delegateService.markSuperseded(oldUri, newUri);
+    // TODO
+    throw new UnsupportedOperationException();
   }
 
   /**
@@ -244,21 +248,29 @@ public class ArticleOtmService extends BaseConfigurableService {
 
   /**
    * Change an articles state.
+   *
    * @param article uri
    * @param state state
-   * @throws RemoteException RemoteException
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
-  public void setState(final String article, final int state)
-          throws RemoteException, NoSuchArticleIdException {
+  public void setState(final String article, final int state) throws NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    // TODO: SERVICE
+    pep.checkAccess(ArticlePEP.SET_ARTICLE_STATE, URI.create(article));
 
-    // PEP etc.
-    // delegateService..setState(article, state);
+    TransactionHelper.doInTxE(session,
+                              new TransactionHelper.ActionE<Void, NoSuchArticleIdException>() {
+      public Void run(Transaction tx) throws NoSuchArticleIdException {
+        Article a = tx.getSession().get(Article.class, article);
+        if (a == null)
+          throw new NoSuchArticleIdException(article);
 
-    return;
+        a.setState(state);
+        tx.getSession().saveOrUpdate(a);
+
+        return null;
+      }
+    });
   }
 
   /**
@@ -646,7 +658,7 @@ public class ArticleOtmService extends BaseConfigurableService {
    * Create or update a representation of an object. The object itself must exist; if the specified
    * representation does not exist, it is created, otherwise the current one is replaced.
    *
-   * @param obj      the URI of the object
+   * @param objId    the URI of the object
    * @param rep      the name of this representation
    * @param content  the actual content that makes up this representation; if this contains a
    *                 content-type then that will be used; otherwise the content-type will be
@@ -656,13 +668,116 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @throws RemoteException if some other error occured
    * @throws NullPointerException if any of the parameters are null
    */
-  public void setRepresentation(String obj, String rep, DataHandler content)
-      throws NoSuchObjectIdException, RemoteException
-  {
-          ensureInitGetsCalledWithUsersSessionAttributes();
+  public void setRepresentation(final String objId, final String rep, final DataHandler content)
+      throws NoSuchObjectIdException, RemoteException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
 
-          // TODO: SERVICE
-          // delegateService.setRepresentation(obj, rep, content);
+    pep.checkAccess(ArticlePEP.SET_REPRESENTATION, URI.create(objId));
+
+    try {
+    TransactionHelper.doInTxE(session,
+                                new TransactionHelper.ActionE<Void, Exception>() {
+        public Void run(Transaction tx) throws NoSuchObjectIdException, RemoteException {
+          // get the object info
+          ObjectInfo obj = tx.getSession().get(ObjectInfo.class, objId);
+          if (obj == null)
+            throw new NoSuchObjectIdException(objId);
+
+          String ct = content.getContentType();
+          if (ct == null)
+            ct = "application/octet-stream";
+
+          // update fedora
+          long len = setDatastream(obj.getPid(), rep, ct, content);
+        
+          // update the rdf
+          obj.getRepresentations().add(rep);
+
+          obj.getData().put(rep + "-contentType", toList(ct));
+          obj.getData().put(rep + "-objectSize", toList(Long.toString(len)));
+
+          tx.getSession().saveOrUpdate(obj);
+
+          // done
+          return null;
+        }
+      });
+    } catch (Exception e) {
+      if (e instanceof RuntimeException)
+        throw (RuntimeException) e;
+      if (e instanceof NoSuchObjectIdException)
+        throw (NoSuchObjectIdException) e;
+      throw (RemoteException) e;
+    }
+  }
+
+  private static <T> List<T> toList(T item) {
+    List<T> res = new ArrayList<T>();
+    res.add(item);
+    return res;
+  }
+
+  private long setDatastream(String pid, String rep, String ct, DataHandler content)
+      throws NoSuchObjectIdException, RemoteException {
+    ctx.activate();
+    try {
+      FedoraAPIM apim = ctx.getFedoraAPIM();
+
+      if (content != null) {
+        CountingInputStream cis = new CountingInputStream(content.getInputStream());
+        String reLoc = ctx.getFedoraUploader().upload(cis);
+        try {
+          apim.modifyDatastreamByReference(pid, rep, null, null, false, ct,
+              null, reLoc, "A", "Updated datastream", false);
+        } catch (RemoteException re) {
+          if (!isNoSuchDatastream(re))
+            throw re;
+
+          if (log.isDebugEnabled())
+            log.debug("representation '" + rep + "' for '" + pid + "' doesn't exist yet - " +
+                      "creating it", re);
+
+          apim.addDatastream(pid, rep, new String[0], "Represention", false, ct,
+              null, reLoc, "M", "A", "New representation");
+        }
+
+        return cis.getByteCount();
+      } else {
+        try {
+          apim.purgeDatastream(pid, rep, null, "Purged datastream", false);
+        } catch (RemoteException re) {
+          if (!isNoSuchDatastream(re))
+            throw re;
+
+          if (log.isDebugEnabled())
+            log.debug("representation '" + rep + "' for '" + pid + "' doesn't exist", re);
+        }
+
+        return 0;
+      }
+    } catch (RemoteException re) {
+      if (isNoSuchObject(re))
+        throw new NoSuchObjectIdException(pid, "object '" + pid + "' doesn't exist in fedora", re);
+      else
+        throw re;
+    } catch (IOException ioe) {
+      throw new RemoteException("Error uploading representation", ioe);
+    } finally {
+      ctx.passivate();
+    }
+  }
+
+  private static boolean isNoSuchObject(RemoteException re) {
+    // Ugh! What a hack...
+    String msg = re.getMessage();
+    return msg != null &&
+           msg.startsWith("fedora.server.errors.ObjectNotInLowlevelStorageException:");
+  }
+
+  private static boolean isNoSuchDatastream(RemoteException re) {
+    // Ugh! What a hack...
+    String msg = re.getMessage();
+    return msg != null && msg.equals("java.lang.Exception: Uncaught exception from Fedora Server");
   }
 
   /**
