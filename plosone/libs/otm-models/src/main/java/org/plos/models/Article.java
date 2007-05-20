@@ -35,24 +35,24 @@ public class Article extends ObjectInfo {
 
 // dublin-core predicates
   /** Subjects are really a raw representation of category/subCategory */
-  @Predicate(uri = Rdf.dc + "subject")
+  @Predicate(uri = Rdf.dc + "subject", dataType = Rdf.rdf + "XMLLiteral")
   private Set<String> subjects = new HashSet<String>();
   @Predicate(uri = Rdf.dc + "language")
   private String language; // always 'en'
-  @Predicate(uri = Rdf.dc + "publisher")
+  @Predicate(uri = Rdf.dc + "publisher", dataType = Rdf.rdf + "XMLLiteral")
   private String publisher;
   @Predicate(uri = Rdf.dc + "format")
   private String format;
 
-  @Predicate(uri = Rdf.dc_terms + "available")
+  @Predicate(uri = Rdf.dc_terms + "available", dataType = Rdf.xsd + "date")
   private Date available;
   @Predicate(uri = Rdf.dc_terms + "hasPart")
   private Set<ObjectInfo> parts = new HashSet<ObjectInfo>();
-  @Predicate(uri = Rdf.dc_terms + "issued")
+  @Predicate(uri = Rdf.dc_terms + "issued", dataType = Rdf.xsd + "date")
   private Date issued;
-  @Predicate(uri = Rdf.dc_terms + "dateSubmitted")
+  @Predicate(uri = Rdf.dc_terms + "dateSubmitted", dataType = Rdf.xsd + "date")
   private Date dateSubmitted;
-  @Predicate(uri = Rdf.dc_terms + "dateAccepted")
+  @Predicate(uri = Rdf.dc_terms + "dateAccepted", dataType = Rdf.xsd + "date")
   private Date dateAccepted;
 
   @Predicate(uri = Rdf.topaz + "topaz:hasCategory")

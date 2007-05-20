@@ -37,17 +37,17 @@ public class ObjectInfo {
   private URI id;
 
   // dublin-core predicates:
-  @Predicate(uri = Rdf.dc + "title")
+  @Predicate(uri = Rdf.dc + "title", dataType = Rdf.rdf + "XMLLiteral")
   private String title;
-  @Predicate(uri = Rdf.dc + "description")
+  @Predicate(uri = Rdf.dc + "description", dataType = Rdf.rdf + "XMLLiteral")
   private String description;
   @Predicate(uri = Rdf.dc + "creator")
   private Set<String> authors = new HashSet<String>();
-  @Predicate(uri = Rdf.dc + "date")
+  @Predicate(uri = Rdf.dc + "date", dataType = Rdf.xsd + "date")
   private Date date;
   @Predicate(uri = Rdf.dc + "identifier")
   private String identifier; // looks like a uri -- doi as a uri (for doi to uri conversion?)
-  @Predicate(uri = Rdf.dc + "rights")
+  @Predicate(uri = Rdf.dc + "rights", dataType = Rdf.rdf + "XMLLiteral")
   private String rights;
   /** Will be: http://purl.org/dc/dcmitype/{Text|StillImage|Dataset|MovingImage|Sound} */
   @Predicate(uri = Rdf.dc + "type")
@@ -63,7 +63,7 @@ public class ObjectInfo {
   @Predicate(uri = Rdf.topaz + "nextObject")
   private ObjectInfo nextObject;
   @Predicate(uri = Rdf.topaz + "isPID")
-  private URI pid;
+  private String pid;
   /** The state of this article (or its parts). */
   @Predicate(uri = Rdf.topaz + "articleState")
   private int state;
@@ -242,14 +242,14 @@ public class ObjectInfo {
   /**
    * @return the pid
    */
-  public URI getPid() {
+  public String getPid() {
     return pid;
   }
 
   /**
    * @param pid the pid to set
    */
-  public void setPid(URI pid) {
+  public void setPid(String pid) {
     this.pid = pid;
   }
 
