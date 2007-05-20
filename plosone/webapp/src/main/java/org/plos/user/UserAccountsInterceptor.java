@@ -180,21 +180,20 @@ public class UserAccountsInterceptor extends AroundInterceptor {
     if (authId == null)
       return null;
 
-    UserAccount ua = TransactionHelper.doInTx(session,
-      new TransactionHelper.Action<UserAccount>() {
-        public UserAccount run(Transaction tx) {
-          Results r = tx.getSession().doQuery(
-            "select ua from UserAccount ua where ua.authIds.value = '" + authId + "';");
-          if (!r.next())
-            return null;
-          return (UserAccount) r.get(0);
+    return TransactionHelper.doInTx(session, new TransactionHelper.Action<UserAccount>() {
+      public UserAccount run(Transaction tx) {
+        Results r = tx.getSession().doQuery(
+          "select ua from UserAccount ua where ua.authIds.value = '" + authId + "';");
+
+        if (!r.next()) {
+          if (log.isDebugEnabled())
+            log.debug("Failed to look up plos-user with auth-id '" + authId + "'");
+          return null;
         }
+
+        return (UserAccount) r.get(0);
+      }
     });
-
-    if (ua == null && log.isDebugEnabled())
-      log.debug("Failed to look up plos-user with auth-id '" + authId + "'");
-
-    return ua;
   }
 
   /** 
