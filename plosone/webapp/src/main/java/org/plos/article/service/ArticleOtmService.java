@@ -41,6 +41,7 @@ import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.article.util.Zip;
 import org.plos.configuration.OtmConfiguration;
 import org.plos.models.Article;
+import org.plos.models.Category;
 import org.plos.models.ObjectInfo;
 import org.plos.service.BaseConfigurableService;
 import org.plos.service.WSTopazContext;
@@ -321,14 +322,44 @@ public class ArticleOtmService extends BaseConfigurableService {
   /**
    * @see org.topazproject.ws.article.Article#getArticleInfos(String, String, String[], String[], int[], boolean)
    */
-  public ArticleInfo[] getArticleInfos(String startDate, String endDate,
-                                     String[] categories, String[] authors, int[] states,
-                                     boolean ascending) throws RemoteException{
+  public ArticleInfo[] getArticleInfos(final String startDate, final String endDate,
+                                       final String[] categories, final String[] authors,
+                                       final int[] states, final boolean ascending)
+      throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    // TODO: SERVICE
-    // return delegateService.getArticleInfos(startDate, endDate, categories, authors, states, ascending);
-    return new ArticleInfo[0];
+    return TransactionHelper.doInTxE(session,
+                               new TransactionHelper.ActionE<ArticleInfo[], RemoteException>() {
+      public ArticleInfo[] run(Transaction tx) throws RemoteException {
+        // get a list of Articles that meet the specified Criteria and Restrictions
+        List<Article> articleList =
+            findArticles(startDate, endDate, categories, authors, states, ascending, tx);
+
+        List<ArticleInfo> infoList = new ArrayList<ArticleInfo>();
+        for (Iterator it = articleList.iterator(); it.hasNext(); )
+          infoList.add(convert((Article) it.next()));
+
+        return infoList.toArray(new ArticleInfo[infoList.size()]);
+      }
+    });
+  }
+
+  private static ArticleInfo convert(Article art) {
+    ArticleInfo ai = new ArticleInfo();
+    ai.setUri(art.getId().toString());
+    ai.setTitle(art.getTitle());
+    ai.setArticleDate(art.getDate());
+    ai.setAuthors(art.getAuthors().toArray(new String[0]));
+    ai.setSubjects(art.getSubjects().toArray(new String[0]));
+    ai.setState(art.getState());
+
+    String[] mainCats = new String[art.getCategories().size()];
+    int idx = 0;
+    for (Category cat : art.getCategories())
+      mainCats[idx++] = cat.getMainCategory();
+    ai.setCategories(mainCats);
+
+    return ai;
   }
 
   /**
@@ -348,68 +379,23 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @return the (possibly empty) list of articles.
    * @throws RemoteException if there was a problem talking to any service
    */
-  public String getArticles(String startDate,String endDate,
-                            String[] categories, String[] authors, int[] states,
-                            boolean ascending)
-    throws RemoteException {
+  public String getArticles(final String startDate, final String endDate, final String[] categories,
+                            final String[] authors, final int[] states, final boolean ascending)
+      throws RemoteException {
 
-    Transaction tx = null;
-    List<ArticleFeedData> articleFeedData = new ArrayList();
+    final List<ArticleFeedData> articleFeedData = new ArrayList();
 
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    try {
-      tx = session.beginTransaction();
-      // build up Criteria for the Articles
-      Criteria articleCriteria = session.createCriteria(Article.class);
+    TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, RemoteException>() {
+      public Void run(Transaction tx) throws RemoteException {
+        // get a list of Articles that meet the specified Criteria and Restrictions
+        List<Article> articleList =
+            findArticles(startDate, endDate, categories, authors, states, ascending, tx);
 
-      // normalize dates for query
-      if (startDate != null) {
-        articleCriteria = articleCriteria.add(Restrictions.ge("date", ArticleFeed.parseDateParam(startDate)));
-      }
-      if (endDate != null) {
-        articleCriteria = articleCriteria.add(Restrictions.le("date", ArticleFeed.parseDateParam(endDate)));
-      }
-
-      // match all categories
-      if (categories != null) {
-        for (String category : categories) {
-          articleCriteria = articleCriteria.add(Restrictions.eq("categories", category));
-        }
-      }
-
-      // match all authors
-      if (authors != null) {
-        for (String author : authors) {
-          articleCriteria = articleCriteria.add(Restrictions.eq("authors", author));
-        }
-      }
-
-      // match all states
-      if (states != null) {
-        for (int state : states) {
-          articleCriteria = articleCriteria.add(Restrictions.eq("state", state));
-        }
-      }
-
-      // order by date
-      if (ascending) {
-        articleCriteria = articleCriteria.addOrder(Order.asc("date"));
-      } else {
-        articleCriteria = articleCriteria.addOrder(Order.desc("date"));
-      }
-
-      // get a list of Articles that meet the specified Criteria and Restrictions
-      List<Article> articleList = articleCriteria.list();
-
-      // filter access by id with PEP
-      // logged in user is automatically resolved by the ServletActionContextAttribute
-      for (Iterator it = articleList.iterator(); it.hasNext(); ) {
-        Article article = (Article) it.next();
-        try {
-          pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
-
+        for (Iterator it = articleList.iterator(); it.hasNext(); ) {
+          Article article = (Article) it.next();
           ArticleFeedData articleFeedDatum = new ArticleFeedData(
             article.getId().toString(),
             article.getTitle(),
@@ -420,32 +406,87 @@ public class ArticleOtmService extends BaseConfigurableService {
             article.getCategories(),
             article.getState());
           articleFeedData.add(articleFeedDatum);
-        } catch (SecurityException se) {
-          it.remove();
-          if (log.isDebugEnabled()) {
-            log.debug("Filtering URI "
-              + article.getId()
-              + " from Article list due to PEP SecurityException", se);
-          }
         }
-      }
 
-      tx.commit(); // Flush happens automatically
-    } catch (OtmException e) {
-      try {
-        if (tx != null)
-          tx.rollback();
-      } catch (OtmException re) {
-        log.warn("rollback failed", re);
+        return null;
       }
-
-      throw e; // or display error message
-    }
+    });
 
     return buildArticleFeedXml(articleFeedData);
     // TODO: confirm calling chain logic
     // return articleList.toArray(new Article[articleList.size()]);
   }
+
+  /**
+   * Search for articles matching the specific criteria. Must be called with a transaction
+   * active.
+   *
+   * FIXME: shouldn't be throwing RemoteException - that's only because ArticleFeed.parseDateParam
+   * throws it.
+   */
+  private List<Article> findArticles(String startDate,String endDate, String[] categories,
+                                     String[] authors, int[] states, boolean ascending,
+                                     Transaction tx) throws RemoteException {
+    // build up Criteria for the Articles
+    Criteria articleCriteria = session.createCriteria(Article.class);
+
+    // normalize dates for query
+    if (startDate != null) {
+      articleCriteria = articleCriteria.add(Restrictions.ge("date", ArticleFeed.parseDateParam(startDate)));
+    }
+    if (endDate != null) {
+      articleCriteria = articleCriteria.add(Restrictions.le("date", ArticleFeed.parseDateParam(endDate)));
+    }
+
+    // match all categories
+    if (categories != null) {
+      Criteria catCriteria = articleCriteria.createCriteria("categories");
+      for (String category : categories) {
+        catCriteria.add(Restrictions.eq("mainCategory", category));
+      }
+    }
+
+    // match all authors
+    if (authors != null) {
+      for (String author : authors) {
+        articleCriteria = articleCriteria.add(Restrictions.eq("authors", author));
+      }
+    }
+
+    // match all states
+    if (states != null) {
+      for (int state : states) {
+        articleCriteria = articleCriteria.add(Restrictions.eq("state", state));
+      }
+    }
+
+    // order by date
+    if (ascending) {
+      articleCriteria = articleCriteria.addOrder(Order.asc("date"));
+    } else {
+      articleCriteria = articleCriteria.addOrder(Order.desc("date"));
+    }
+
+    // get a list of Articles that meet the specified Criteria and Restrictions
+    List<Article> articleList = articleCriteria.list();
+
+    // filter access by id with PEP
+    // logged in user is automatically resolved by the ServletActionContextAttribute
+    for (Iterator it = articleList.iterator(); it.hasNext(); ) {
+      Article article = (Article) it.next();
+      try {
+        pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
+      } catch (SecurityException se) {
+        it.remove();
+        if (log.isDebugEnabled())
+          log.debug("Filtering URI " + article.getId()
+                    + " from Article list due to PEP SecurityException", se);
+      }
+    }
+
+    return articleList;
+  }
+
 
   /**
    * Get the Article's ObjectInfo by URI.
