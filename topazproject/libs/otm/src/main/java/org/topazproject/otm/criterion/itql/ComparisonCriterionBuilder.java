@@ -120,7 +120,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
       val = "'" + ItqlHelper.escapeLiteral(val) + "'";
 
       if (m.getDataType() != null)
-        val += ("^^" + m.getDataType());
+        val += ("^^<" + m.getDataType() + ">");
 
       String model = m.getModel();
 
