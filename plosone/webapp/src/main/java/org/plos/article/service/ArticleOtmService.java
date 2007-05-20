@@ -193,7 +193,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     } catch (ServiceException se) {
       throw new RemoteException("Failed getting URL for \"" + obj + "\", \"" + rep + "\"", se);
     }
-    
+
     // trap the Exception for better debgging
     String objectURL = null;
     try {
@@ -207,7 +207,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       }
       throw nsoe;
     }
-    
+
     return objectURL;
   }
 
@@ -265,11 +265,15 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @throws java.rmi.RemoteException RemoteException
    */
   public String getArticles(final String startDate, final String endDate) throws RemoteException {
+
     ensureInitGetsCalledWithUsersSessionAttributes();
 
+    // PEP is called by full signature getArticles()
     return getArticles(
       startDate,
       endDate,
+      null,   // convention for all categories
+      null,   // convention for all authors
       null,   // convention for all states
       true);  // ascending
   }
@@ -285,11 +289,17 @@ public class ArticleOtmService extends BaseConfigurableService {
   */
   public String getArticles(final String startDate, final String endDate,
                  final int[] states, boolean ascending) throws RemoteException {
+
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    // TODO: model PEP after ws impl
-
-    return getArticles(startDate, endDate, null, null, states, true);
+    // PEP is called by full signature getArticles()
+    return getArticles(
+      startDate,
+      endDate,
+      null,  // convention for all categories
+      null,  // convention for all authors
+      states,
+      true);
   }
 
   /**
@@ -431,9 +441,9 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public ObjectInfo getObjectInfo(final String uri)
     throws RemoteException, NoSuchObjectIdException {
-    
+
     Transaction tx = null;
-    List<ObjectInfo> objectInfoList = null;
+    ObjectInfo objectInfo = null;
 
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
@@ -459,24 +469,7 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     try {
       tx = session.beginTransaction();
-      
-      // build up Criteria for the ObjectInfo
-      Criteria objectInfoCriteria = session.createCriteria(ObjectInfo.class);
-
-      // match on URI
-      objectInfoCriteria = objectInfoCriteria.add(Restrictions.eq("pid", realURI));
-
-      // get a list of ObjectInfos that meet the specified Criteria and Restrictions
-      objectInfoList = objectInfoCriteria.list();
-
-      // should be 1 & only 1 result
-      if (objectInfoList.size() == 0) {
-        throw new NoSuchObjectIdException("no ObjectInfo for URI: \"" + uri + "\"");
-      }
-      if (objectInfoList.size() > 1) {
-        throw new RuntimeException("multiple," +  objectInfoList.size() + ", ObjectInfos for URI: \"" + uri + "\"");
-      }
-
+      objectInfo = session.get(ObjectInfo.class, uri);
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       try {
@@ -488,8 +481,12 @@ public class ArticleOtmService extends BaseConfigurableService {
 
       throw e; // or display error message
     }
-    
-    return objectInfoList.get(0);
+
+    if (objectInfo == null) {
+      throw new NoSuchObjectIdException(uri);
+    }
+
+    return objectInfo;
   }
 
   /**
@@ -502,10 +499,10 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public Article getArticle(final URI uri)
     throws RemoteException, NoSuchArticleIdException {
-    
+
     Article article = null;
     Transaction tx = null;
-    
+
     // sanity check parms
     if (uri == null) throw new IllegalArgumentException("URI == null");
 
@@ -525,7 +522,7 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // use Session to get an Article by URI, may return null
     try {
-      tx = session.beginTransaction();    
+      tx = session.beginTransaction();
       article = session.get(Article.class, uri.toString());
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
@@ -538,7 +535,11 @@ public class ArticleOtmService extends BaseConfigurableService {
 
       throw e; // or display error message
     }
-    
+
+    if (article == null) {
+      throw new NoSuchArticleIdException(uri.toString());
+    }
+
     return article;
   }
 
@@ -580,9 +581,9 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public Article[] getCommentedArticles(int maxArticles) throws RemoteException {
 
-    Results commentedArticles = null;
+    ArrayList<Article> returnArticles = new ArrayList();
     Transaction tx = null;
-    
+
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
 
@@ -599,7 +600,24 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     try {
       tx = session.beginTransaction();
-      commentedArticles = session.doQuery(oqlQuery);
+      Results commentedArticles = commentedArticles = session.doQuery(oqlQuery);
+
+      // check access control on all Article results
+      // logged in user is automatically resolved by the ServletActionContextAttribute
+      commentedArticles.beforeFirst();
+      while(commentedArticles.next()) {
+        Article commentedArticle = (Article) commentedArticles.get("a");
+        try {
+          pep.checkAccess(ArticlePEP.READ_META_DATA, commentedArticle.getId());
+          returnArticles.add(commentedArticle);
+        } catch (SecurityException se) {
+           if (log.isDebugEnabled())
+            log.debug("Filtering URI "
+              + commentedArticle.getId()
+              + " from commented Article list due to PEP SecurityException", se);
+        }
+      }
+
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       try {
@@ -610,23 +628,6 @@ public class ArticleOtmService extends BaseConfigurableService {
       }
 
       throw e; // or display error message
-    }
-
-    // check access control on all Article results
-    // logged in user is automatically resolved by the ServletActionContextAttribute
-    ArrayList<Article> returnArticles = new ArrayList();
-    commentedArticles.beforeFirst();
-    while(commentedArticles.next()) {
-      Article commentedArticle = (Article) commentedArticles.get("a");
-      try {
-        pep.checkAccess(ArticlePEP.READ_META_DATA, commentedArticle.getId());
-        returnArticles.add(commentedArticle);
-      } catch (SecurityException se) {
-         if (log.isDebugEnabled())
-          log.debug("Filtering URI "
-            + commentedArticle.getId()
-            + " from commented Article list due to PEP SecurityException", se);
-      }
     }
 
     return returnArticles.toArray(new Article[returnArticles.size()]);
