@@ -739,8 +739,8 @@ public class ArticleOtmService extends BaseConfigurableService {
           // update the rdf
           obj.getRepresentations().add(rep);
 
-          obj.getData().put(rep + "-contentType", toList(ct));
-          obj.getData().put(rep + "-objectSize", toList(Long.toString(len)));
+          obj.getData().put("topaz:" + rep + "-contentType", toList(ct));
+          obj.getData().put("topaz:" + rep + "-objectSize", toList(Long.toString(len)));
 
           tx.getSession().saveOrUpdate(obj);
 
