@@ -208,11 +208,11 @@ public class ArticleOtmService extends BaseConfigurableService {
     try {
       objectURL= articleUtil.getObjectURL(obj, rep);
       if (log.isDebugEnabled()) {
-        log.debug("AtricleOtmService.getObjectURL("+obj+", " + rep + ") = " + objectURL);
+        log.debug("ArticleOtmService.getObjectURL("+obj+", " + rep + ") = " + objectURL);
       }
     } catch (NoSuchObjectIdException nsoe) {
       if (log.isDebugEnabled()) {
-        log.debug("failed to AtricleOtmService.getObjectURL(" + obj + ", " + rep + ")");
+        log.debug("failed to ArticleOtmService.getObjectURL(" + obj + ", " + rep + ")");
       }
       throw nsoe;
     }
@@ -773,8 +773,8 @@ public class ArticleOtmService extends BaseConfigurableService {
         CountingInputStream cis = new CountingInputStream(content.getInputStream());
         String reLoc = ctx.getFedoraUploader().upload(cis);
         try {
-          apim.modifyDatastreamByReference(pid, rep, null, null, false, ct,
-              null, reLoc, "A", "Updated datastream", false);
+          apim.modifyDatastreamByReference(pid, rep, null, null, false, ct, null, reLoc, "A",
+                                           "Updated datastream", false);
         } catch (RemoteException re) {
           if (!isNoSuchDatastream(re))
             throw re;
@@ -783,8 +783,8 @@ public class ArticleOtmService extends BaseConfigurableService {
             log.debug("representation '" + rep + "' for '" + pid + "' doesn't exist yet - " +
                       "creating it", re);
 
-          apim.addDatastream(pid, rep, new String[0], "Represention", false, ct,
-              null, reLoc, "M", "A", "New representation");
+          apim.addDatastream(pid, rep, new String[0], "Represention", false, ct, null, reLoc, "M",
+                             "A", "New representation");
         }
 
         return cis.getByteCount();
