@@ -563,17 +563,23 @@ public class ArticleOtmService extends BaseConfigurableService {
    * Return the list of secondary objects
    * @param article uri
    * @return the secondary objects of the article
-   * @throws java.rmi.RemoteException RemoteException
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    */
   public SecondaryObject[] listSecondaryObjects(final String article)
-    throws RemoteException, NoSuchArticleIdException {
-
+      throws NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    // TODO: SERVICE
-    // return convert(delegateService.listSecondaryObjects(article));
-    return new SecondaryObject[0];
+    pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
+
+    return TransactionHelper.doInTxE(session,
+                new TransactionHelper.ActionE<SecondaryObject[], NoSuchArticleIdException>() {
+      public SecondaryObject[] run(Transaction tx) throws NoSuchArticleIdException {
+        Article art = tx.getSession().get(Article.class, article);
+        if (art == null)
+          throw new NoSuchArticleIdException(article);
+        return convert(art.getParts().toArray(new ObjectInfo[0]));
+      }
+    });
   }
 
   private SecondaryObject[] convert(final ObjectInfo[] objectInfos) {
@@ -675,8 +681,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     pep.checkAccess(ArticlePEP.SET_REPRESENTATION, URI.create(objId));
 
     try {
-    TransactionHelper.doInTxE(session,
-                                new TransactionHelper.ActionE<Void, Exception>() {
+      TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, Exception>() {
         public Void run(Transaction tx) throws NoSuchObjectIdException, RemoteException {
           // get the object info
           ObjectInfo obj = tx.getSession().get(ObjectInfo.class, objId);
