@@ -148,7 +148,7 @@ public class ItqlStore implements TripleStore {
         Map<String, List<String>> pMap = (Map<String, List<String>>) p.getRawValue(o, true);
         for (String k : pMap.keySet())
           for (String v : pMap.get(k))
-            addStmt(buf, id, k, v, null, true);
+            addStmt(buf, id, k, v, null, false); // xxx: uri or literal?
       } else if (p.getSerializer() != null)
         addStmts(buf, id, p.getUri(), (List<String>) p.get(o) , p.getDataType(), p.typeIsUri(), 
                  p.getMapperType(), "$s" + i++ + "i", p.hasInverseUri());
