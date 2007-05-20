@@ -20,6 +20,9 @@ import java.util.Map;
 import java.util.Set;
 import javax.xml.rpc.ServiceException;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.models.ObjectInfo;
@@ -39,9 +42,10 @@ public class RepresentationInfo {
   /** The URL at which the representation can be retrieved. */
   private String url;
 
-  
+  private static final Log log = LogFactory.getLog(RepresentationInfo.class);
+
   public static RepresentationInfo[] parseObjectInfo(ObjectInfo objectInfo) {
-    
+
     ArrayList<RepresentationInfo> returnRepresentationInfo = new ArrayList();
 
     Map<String, List<String>> data = objectInfo.getData();
@@ -49,27 +53,47 @@ public class RepresentationInfo {
     Iterator it = formats.iterator();
     while(it.hasNext()) {
       String format = (String) it.next();
-            
+
       // build keys into predicate Map
       String contentTypeKey = "<topaz:" + format + "-contentType>";
       String objectSizeKey = "<topaz:" + format + "-objectSize>";
-      
+
       String contentType = null;
       List<String> contentTypeList = data.get(contentTypeKey);
-      if (contentTypeList.size() == 1) {
-        contentType = contentTypeList.get(0);
+      if (contentTypeList != null) {
+        if (contentTypeList.size() == 1) {
+          contentType = contentTypeList.get(0);
+        } else {
+          // TODO: data integ issue?
+          if (log.isWarnEnabled()) {
+            log.warn("found " + contentTypeList.size() + " " + contentTypeKey);
+          }
+        }
       } else {
-        // TODO: data integ issue?        
+        // TODO: what kind of error?
+        if (log.isWarnEnabled()) {
+          log.warn("missing: " + contentTypeKey);
+        }
       }
-      
+
       long objectSize = 0L;
       List<String> objectSizeList = data.get(objectSizeKey);
-      if (objectSizeList.size() == 1) {
-        objectSize = Long.parseLong(objectSizeList.get(0));
+      if (objectSizeList != null) {
+        if (objectSizeList.size() == 1) {
+          objectSize = Long.parseLong(objectSizeList.get(0));
+        } else {
+          // TODO: data integ issue?
+          if (log.isWarnEnabled()) {
+            log.warn("found " + objectSizeList.size() + " " + objectSizeKey);
+          }
+        }
       } else {
-        // TODO: data integ issue?        
+        // TODO: what kind of error?
+        if (log.isWarnEnabled()) {
+          log.warn("missing: " + objectSizeKey);
+        }
       }
-            
+
       String url = null;
       try {
         url = (new ArticleUtil()).getObjectURL(objectInfo.getId().toString(), format);
@@ -82,13 +106,13 @@ public class RepresentationInfo {
       } catch (RemoteException ex) {
         // TODO: data integ issue
       }
-      
+
       RepresentationInfo representationInfo = new RepresentationInfo();
       representationInfo.setContentType(contentType);
       representationInfo.setName(format);
       representationInfo.setSize(objectSize);
       representationInfo.setURL(url);
-      
+
       returnRepresentationInfo.add(representationInfo);
     }
       return returnRepresentationInfo.toArray(new RepresentationInfo[returnRepresentationInfo.size()]);
