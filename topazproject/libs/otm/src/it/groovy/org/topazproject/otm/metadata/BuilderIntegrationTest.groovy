@@ -65,6 +65,50 @@ public class BuilderIntegrationTest extends GroovyTestCase {
     doInTx { s -> assert s.get(t1, "foo:1") == null }
   }
 
+  void testDatatypes() {
+    Class cls = rdf.class('Test1') {
+      b_bool   (type:'xsd:boolean')
+
+      n_byte   (type:'xsd:byte')
+      n_short  (type:'xsd:short')
+      n_int    (type:'xsd:int')
+      n_long   (type:'xsd:long')
+      n_float  (type:'xsd:float')
+      n_double (type:'xsd:double')
+
+      l_date   (type:'xsd:date', javaType:Long.class)
+      l_time   (type:'xsd:time', javaType:Long.class)
+      l_datTim (type:'xsd:dateTime', javaType:Long.class)
+
+      s_untypd ()
+      s_string (type:'xsd:string')
+      s_xmllit (type:'rdf:XMLLiteral')
+      s_uri    (type:'rdf:anyURI', javaType:String.class)
+
+      u_uri    (type:'xsd:anyURI')
+      u_url    (type:'xsd:anyURI', javaType:URL.class)
+
+      d_date   (type:'xsd:date')
+      d_time   (type:'xsd:time')
+      d_datTim (type:'xsd:dateTime')
+    }
+
+    def obj = cls.newInstance(b_bool:true, n_byte:42, n_short:4242, n_int:42424242,
+                              n_long:4242424242424242L, n_float:1.42, n_double:1.3377223993,
+                              s_untypd:'hello', s_string:'bye', s_xmllit:'<title>foobar</title>',
+                              s_uri:'foo:bar/baz',
+                              u_uri:'bar:blah/blah'.toURI(), u_url:'http://bar/baz'.toURL(),
+                              d_date:new Date('Oct 23 2006'),
+                              d_time:new Date('Jan 1 1970 11:42:34'),
+                              /* d_datTim:new Date('Jan 12 1999 11:42:34'), */
+                              l_date:new Date('Oct 23 2006').time,
+                              l_time:new Date('Jan 1 1970 11:42:34').time,
+                              /* l_datTim:new Date('Jan 12 1999 11:42:34').time */)
+
+    doInTx { s-> s.saveOrUpdate(obj) }
+    doInTx { s -> assertEquals obj, s.get(cls, obj.id.toString()) }
+  }
+
   void testIdGenerator() {
     // default gen
     Class cls = rdf.class('Test1') {
