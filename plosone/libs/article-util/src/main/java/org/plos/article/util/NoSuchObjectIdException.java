@@ -24,7 +24,7 @@ public class NoSuchObjectIdException extends Exception {
    * @param id      the (non-existant) id
    */
   public NoSuchObjectIdException(String id) {
-    this(id, null, null);
+    this(id, "", null);
   }
 
   /**

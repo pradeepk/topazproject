@@ -24,7 +24,7 @@ public class NoSuchArticleIdException extends Exception {
    * @param id      the (non-existant) id
    */
   public NoSuchArticleIdException(String id) {
-    this(id, null, null);
+    this(id, "", null);
   }
 
   /**
