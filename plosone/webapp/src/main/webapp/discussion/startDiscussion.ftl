@@ -5,7 +5,7 @@
 	
 		<div class="source">
 			<span>On the Article</span>
-      <@ww.url id="articlePageURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.uri}" includeParams="none"/>
+      <@ww.url id="articlePageURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
       <@ww.a href="%{articlePageURL}" title="Back to original article" cssClass="article icon">${articleInfo.title}</@ww.a>
 		</div>
 	
@@ -17,7 +17,7 @@
 				<h5>Post Your Discussion Comment</h5>
 				<div class="close btn" id="btnCancelResponse"><@ww.a href="%{articlePageURL}" title="Cancel and go back to original article">Cancel</@ww.a></div>
 				<form name="discussionResponse" method="post" action="">
-					<input type="hidden" name="target" value="${articleInfo.uri}" />	
+					<input type="hidden" name="target" value="${articleInfo.id}" />	
 					<input type="hidden" name="commentTitle" value="" />
 					<input type="hidden" name="comment" value="" />
           <input type="hidden" name="isPublic" value="true" />

@@ -1,7 +1,7 @@
 <div id="content">
 	<h1>Annotations and Discussions</h1>
-	<@ww.url namespace="/article" includeParams="none" id="articleURL" action="fetchArticle" articleURI="${articleInfo.uri}"/>
-	<@ww.url namespace="/annotation/secure" includeParams="none" id="startDiscussionUrl" action="startDiscussion" target="${articleInfo.uri}"/>
+	<@ww.url namespace="/article" includeParams="none" id="articleURL" action="fetchArticle" articleURI="${articleInfo.id}"/>
+	<@ww.url namespace="/annotation/secure" includeParams="none" id="startDiscussionUrl" action="startDiscussion" target="${articleInfo.id}"/>
 
 	<div class="source">
 		<span>Original Article</span><a href="${articleURL}" title="Back to original article" class="article icon">${articleInfo.title}</a>
