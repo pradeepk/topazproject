@@ -536,11 +536,6 @@ public class FetchArticleService {
         if (log.isDebugEnabled()) {
           log.debug("retrieved objectInfo from TOPAZ for article URI: " + articleURI);
         }        
-      } catch (RemoteException e) {
-        if (log.isErrorEnabled()) {  
-          log.error("Failed to get object info for article URI: " + articleURI, e);
-        }
-        throw new ApplicationException("Failed to get object info " + articleURI, e);
       } catch (NoSuchObjectIdException nsoie) {
         if (log.isErrorEnabled()) {  
           log.error("Failed to get object info for article URI: " + articleURI, nsoie);

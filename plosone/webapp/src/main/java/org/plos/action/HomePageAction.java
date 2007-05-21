@@ -140,8 +140,6 @@ public class HomePageAction extends BaseActionSupport {
         // Store in the cache
         articleCacheAdministrator.putInCache(MOST_COMMENTED_CACHE_KEY + maxArticles, retArray);
         updated = true;
-      } catch (RemoteException re) {
-        log.error("Could not retrieve most commented on Articles", re);
       } finally {
         if (!updated) {
             // It is essential that cancelUpdate is called if the
