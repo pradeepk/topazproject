@@ -28,7 +28,7 @@ import org.topazproject.otm.annotations.Rdf;
 @Entity(type = Rdf.topaz + "Article", model = "ri")
 public class Article extends ObjectInfo {
 
-    /** Article state of "Active" */
+  /** Article state of "Active" */
   public static final int STATE_ACTIVE   = 0;
   /** Article state of "Disabled" */
   public static final int STATE_DISABLED = 1;
@@ -55,7 +55,7 @@ public class Article extends ObjectInfo {
   @Predicate(uri = Rdf.dc_terms + "dateAccepted", dataType = Rdf.xsd + "date")
   private Date dateAccepted;
 
-  @Predicate(uri = Rdf.topaz + "topaz:hasCategory")
+  @Predicate(uri = Rdf.topaz + "hasCategory")
   private Set<Category> categories = new HashSet<Category>();
   // TODO: Change this to Set<User> once User model is done
   @Predicate(uri = Rdf.topaz + "userIsAuthor")
