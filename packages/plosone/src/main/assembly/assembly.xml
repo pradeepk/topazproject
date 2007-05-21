@@ -37,7 +37,6 @@ WARNING: See overrides/defaults in parent common.xml (head/packages/src/main/ass
       </includes>
       <excludes>
 	<exclude>*doi*:war</exclude>
-        <exclude>*search*:war</exclude>
       </excludes>
     </dependencySet>
     <dependencySet>
@@ -45,9 +44,11 @@ WARNING: See overrides/defaults in parent common.xml (head/packages/src/main/ass
       <outputFileNameMapping>${artifactId}</outputFileNameMapping>
       <unpack>true</unpack>
       <includes>
-        <include>*doi*:war</include>
-        <include>*search*:war</include>
+        <include>*:war</include>
       </includes>
+      <excludes>
+        <exclude>*plosone-webapp*:war</exclude>
+      </excludes>
     </dependencySet>
     <dependencySet>
       <outputDirectory>/</outputDirectory>
