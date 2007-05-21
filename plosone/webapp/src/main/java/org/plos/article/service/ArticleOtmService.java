@@ -262,8 +262,12 @@ public class ArticleOtmService extends BaseConfigurableService {
           throw new NoSuchArticleIdException(article);
 
         a.setState(state);
-        tx.getSession().saveOrUpdate(a);
+        for (ObjectInfo oi : a.getParts())
+          oi.setState(state);
+        for (Category c : a.getCategories())
+          c.setState(state);
 
+        tx.getSession().saveOrUpdate(a);
         return null;
       }
     });

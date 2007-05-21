@@ -31,9 +31,7 @@
               <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
               <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
                 select $state from &lt;?&gt;
-                where ($s &lt;topaz:articleState&gt; $state)
-                and ($s &lt;tucana:is&gt; &lt;?&gt; or
-                     $s &lt;topaz:propagate-permissions-to&gt; &lt;?&gt; in &lt;?&gt;);
+                where (&lt;?&gt; &lt;topaz:articleState&gt; $state)
               </AttributeValue>
               <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
                 <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -42,14 +40,6 @@
               <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
                 <ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
                   AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>
-              </Apply>
-              <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
-                <ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
-                  AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>
-              </Apply>
-              <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
-                <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-                  AttributeId="topaz.models.pp"/>
               </Apply>
             </Apply>
           </Apply>
@@ -70,9 +60,7 @@
                 <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">topaz.services.itql-admin</AttributeValue>
                 <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
                   select $state from &lt;?&gt;
-                  where ($s &lt;topaz:articleState&gt; $state)
-                  and ($s &lt;tucana:is&gt; &lt;?&gt; or
-                       &lt;?&gt; &lt;topaz:propagate-permissions-to&gt; $s in &lt;?&gt;);
+                  where (&lt;?&gt; &lt;topaz:articleState&gt; $state)
                 </AttributeValue>
                 <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
                   <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
@@ -81,14 +69,6 @@
                 <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
                   <ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
                     AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>
-                </Apply>
-                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:anyURI-one-and-only">
-                  <ResourceAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#anyURI"
-                    AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>
-                </Apply>
-                <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
-                  <EnvironmentAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
-                    AttributeId="topaz.models.pp"/>
                 </Apply>
               </Apply>
             </Apply>
