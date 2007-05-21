@@ -581,10 +581,22 @@ public class ArticleOtmService extends BaseConfigurableService {
     return TransactionHelper.doInTxE(session,
                 new TransactionHelper.ActionE<SecondaryObject[], NoSuchArticleIdException>() {
       public SecondaryObject[] run(Transaction tx) throws NoSuchArticleIdException {
+        // get objects
         Article art = tx.getSession().get(Article.class, article);
         if (art == null)
           throw new NoSuchArticleIdException(article);
-        return convert(art.getParts().toArray(new ObjectInfo[0]));
+
+        /* sort the object list.
+         *
+         * TODO: the list should be stored using RdfSeq or RdfList instead of this next-object hack
+         * so we can just use art.getParts()
+         */
+        List<ObjectInfo> sorted = new ArrayList<ObjectInfo>();
+        for (ObjectInfo oi = art.getNextObject(); oi != null; oi = oi.getNextObject())
+          sorted.add(oi);
+
+        // convert to SecondaryObject's. TODO: can't we just return ObjectInfo?
+        return convert(sorted.toArray(new ObjectInfo[sorted.size()]));
       }
     });
   }
