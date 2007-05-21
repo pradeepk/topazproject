@@ -11,18 +11,14 @@ package org.plos.article.service;
 
 import java.io.IOException;
 import java.net.URI;
-import java.util.HashSet;
 import java.util.Set;
 
 import org.topazproject.xacml.AbstractSimplePEP;
-import org.topazproject.xacml.Util;
 
 import org.plos.xacml.XacmlUtil;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;
-import com.sun.xacml.attr.AnyURIAttribute;
-import com.sun.xacml.ctx.Attribute;
 
 /**
  * The XACML PEP for Articles.

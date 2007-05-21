@@ -11,7 +11,6 @@
 package org.plos.article.service;
 
 import java.net.MalformedURLException;
-import java.net.URI;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Iterator;

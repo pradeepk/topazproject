@@ -16,10 +16,7 @@ import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.SecondaryObject;
-import org.w3c.dom.Document;
-import org.xml.sax.InputSource;
 
-import java.io.StringReader;
 import java.util.ArrayList;
 import java.util.Map;
 
