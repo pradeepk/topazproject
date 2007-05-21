@@ -165,18 +165,21 @@ public class UserService extends BaseConfigurableService {
          * Since there's no eager loading (yet) in OTM, we touch (force a load of)
          * all the stuff we'll need now while we're still in a transaction.
          */
-        if ((loadList & LD_AUTH_IDS) != 0)
+        if ((loadList & LD_AUTH_IDS) != 0 && ua.getAuthIds() != null)
           for (AuthenticationId ai : ua.getAuthIds()) ;
 
-        if ((loadList & LD_ROLES) != 0)
+        if ((loadList & LD_ROLES) != 0 && ua.getRoles() != null)
           for (UserRole r : ua.getRoles()) ;
 
-        if ((loadList & LD_PREFS) != 0) {
-          for (UserPreferences pl : ua.getPreferences())
-            for (UserPreference p : pl.getPrefs()) ;
+        if ((loadList & LD_PREFS) != 0 && ua.getPreferences() != null) {
+          for (UserPreferences pl : ua.getPreferences()) {
+            if (pl.getPrefs() != null)
+              for (UserPreference p : pl.getPrefs()) ;
+          }
         }
 
-        if ((loadList & LD_PROFILE) != 0)
+        if ((loadList & LD_PROFILE) != 0 && ua.getProfile() != null &&
+            ua.getProfile().getInterests() != null)
           for (URI i : ua.getProfile().getInterests()) ;
 
         return ua;
