@@ -37,22 +37,19 @@ public class OqlTest extends GroovyTestCase {
     rdf = new RdfBuilder(
         sessFactory:new SessionFactory(tripleStore:store), defModel:'ri', defUriPrefix:'topaz:')
 
-    def ri = new ModelConfig("ri", "local:///topazproject#otmtest1".toURI(), null)
-    rdf.sessFactory.addModel(ri);
-    def pf = new ModelConfig("prefix", "local:///topazproject#prefix".toURI(),
-                             "mulgara:PrefixModel".toURI())
-    rdf.sessFactory.addModel(pf);
+    for (c in [['ri',     'otmtest1', null],
+               ['prefix', 'prefix',   'mulgara:PrefixModel'.toURI()],
+               ['xsd',    'xsd',      'mulgara:XMLSchemaModel'.toURI()],
+               ['str',    'str',      'http://topazproject.org/models#StringCompare'.toURI()]]) {
+      def m = new ModelConfig(c[0], "local:///topazproject#${c[1]}".toURI(), c[2])
+      rdf.sessFactory.addModel(m)
+      try { store.dropModel(m); } catch (Throwable t) { }
+      store.createModel(m)
+    }
 
     rdf.sessFactory.preload(Annotation.class);
     rdf.sessFactory.preload(Article.class);
     rdf.sessFactory.preload(PublicAnnotation.class);
-
-    try {
-      store.dropModel(ri);
-    } catch (Throwable t) {
-    }
-    store.createModel(ri)
-    store.createModel(pf)
   }
 
   void testBasic() {
@@ -173,6 +170,59 @@ public class OqlTest extends GroovyTestCase {
       r = s.doQuery("select a from Article a where a.uri = <${id4}>;")
       checker.verify(r) {
         row { object (class:Article.class, uri:id4) }
+      }
+    }
+  }
+
+  void testFunctions() {
+    // test lt, gt, le, ge
+    Class cls = rdf.class('Test1') {
+      name  ()
+      age   (type:'xsd:int')
+      birth (type:'xsd:date')
+    }
+
+    def o1 = cls.newInstance(name:'Bob',  age:5,   birth:new Date("6 Jun 1860"))
+    def o2 = cls.newInstance(name:'Joe',  age:42,  birth:new Date("4 Feb 1970"))
+    def o3 = cls.newInstance(name:'John', age:153, birth:new Date("2 Mar 2002"))
+
+    doInTx { s ->
+      s.saveOrUpdate(o1)
+      s.saveOrUpdate(o2)
+      s.saveOrUpdate(o3)
+    }
+
+    def checker = new ResultChecker(test:this)
+    Results r
+
+    doInTx { s ->
+      for (test in [['birth', "'1970-02-04'^^<xsd:date>"], ['name', "'Joe'"],
+                    /* ['age', "'42'^^<xsd:int>"] */]) {
+        r = s.doQuery("select t.name n from Test1 t where lt(t.${test[0]}, ${test[1]}) order by n;")
+        checker.verify(r) {
+          row { string ('Bob') }
+        }
+
+        /*
+        r = s.doQuery("select t.name n from Test1 t where le(t.${test[0]}, ${test[1]}) order by n;")
+        checker.verify(r) {
+          row { string ('Bob') }
+          row { string ('Joe') }
+        }
+        */
+
+        r = s.doQuery("select t.name n from Test1 t where gt(t.${test[0]}, ${test[1]}) order by n;")
+        checker.verify(r) {
+          row { string ('John') }
+        }
+
+        /*
+        r = s.doQuery("select t.name n from Test1 t where ge(t.${test[0]}, ${test[1]}) order by n;")
+        checker.verify(r) {
+          row { string ('Joe') }
+          row { string ('John') }
+        }
+        */
       }
     }
   }

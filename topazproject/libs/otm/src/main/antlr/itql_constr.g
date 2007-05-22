@@ -20,6 +20,9 @@ header
 
 package org.topazproject.otm.query;
 
+import java.util.Set;
+
+import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.Session;
 
@@ -70,7 +73,18 @@ tokens {
 }
 
 {
-    private static final String  TMP_VAR_PFX = "oqltmp2_";
+    private static final String   TMP_VAR_PFX = "oqltmp2_";
+    private static final String   XSD         = "http://www.w3.org/2001/XMLSchema#";
+    private static final String[] DATE_TYPES = {
+        XSD + "date", XSD + "dateTime", XSD + "gYear", XSD + "gYearMonth",
+    };
+    private static final String[] NUM_TYPES = {
+        XSD + "decimal", XSD + "float", XSD + "double", XSD + "integer", XSD + "nonPositiveInteger",
+        XSD + "negativeInteger", XSD + "long", XSD + "int", XSD + "short", XSD + "byte",
+        XSD + "nonNegativeInteger", XSD + "unsignedLong", XSD + "unsignedInt",
+        XSD + "unsignedShort", XSD + "unsignedByte", XSD + "positiveInteger",
+    };
+
     private              Session sess;
     private              int     varCnt = 0;
 
@@ -91,6 +105,7 @@ tokens {
         AST obj = nextVar();
         list.addChild(makeTriple(prevVar, prevPred, obj));
         prevVar = obj;
+        ((OqlAST) prevVar).setExprType(((OqlAST) prevPred).getExprType());
       }
       return prevVar;
     }
@@ -111,6 +126,7 @@ tokens {
 
           OqlAST listPred = nextVar();
           listPred.setModel(curPred.getModel());
+          listPred.setExprType(curPred.getExprType());
 
           // FIXME: avoid hardcoded model-name
           list.addChild(makeTriple(listPred, "<mulgara:prefix>", "<rdf:_>", getModelUri("prefix")));
@@ -132,6 +148,8 @@ tokens {
 
           listPred = makeID("<rdf:first>");
           listPred.setModel(curPred.getModel());
+          listPred.setExprType(curPred.getExprType());
+          ((OqlAST) s).setExprType(curPred.getExprType());
 
           return new AST[] { s, listPred };
 
@@ -180,12 +198,17 @@ tokens {
 
     private AST handleFunction(AST ns, AST fname, AST args, AST resVar, boolean isProj)
         throws RecognitionException {
-      if (isProj && ns == null && fname.getText().equals("count"))
+      String f = fname.getText();
+
+      if (isProj && ns == null && f.equals("count"))
         return handleCount(args, resVar);
 
+      if (!isProj && ns == null &&
+          (f.equals("lt") || f.equals("gt") || f.equals("le") || f.equals("ge")))
+        return handleCompare(f, args);
+
       throw new RecognitionException("unrecognized function call '" +
-                                     (ns != null ? ns.getText() + ":" : "") + fname.getText() +
-                                     "'");
+                                     (ns != null ? ns.getText() + ":" : "") + f + "'");
     }
 
     private AST handleCount(AST args, AST resVar) throws RecognitionException {
@@ -206,6 +229,7 @@ tokens {
       AST pexpr = astFactory.dupTree(arg);
       if (!var.equals(resVar))
         pexpr.addChild(makeTriple(var, "<mulgara:equals>", resVar));
+      ((OqlAST) resVar).setExprType(((OqlAST) var).getExprType());
 
       // create subquery
       AST from  = #([FROM, "from"], #([ID, "dummy"]), #([ID, "dummy"]));
@@ -213,6 +237,86 @@ tokens {
       AST proj  = #([PROJ, "projection"], astFactory.dup(resVar), astFactory.dup(resVar));
 
       return #([COUNT, "count"], #([SELECT, "select"], from, where, proj));
+    }
+
+    private AST handleCompare(String f, AST args) throws RecognitionException {
+      // parse args
+      if (args.getNumberOfChildren() != 4)
+        throw new RecognitionException("count() must have exactly 2 arguments, but found " +
+                                       (args.getNumberOfChildren() / 2));
+      AST lvar = args.getFirstChild();
+      AST larg = lvar.getNextSibling();
+      AST rvar = larg.getNextSibling();
+      AST rarg = rvar.getNextSibling();
+
+      // check argument type compatiblity
+      ExprType ltype = ((OqlAST) lvar).getExprType();
+      ExprType rtype = ((OqlAST) rvar).getExprType();
+
+      if (ltype != null && rtype != null) {
+        ExprType.Type lt = ltype.getType();
+        ExprType.Type rt = rtype.getType();
+
+        if (lt == ExprType.Type.CLASS || lt == ExprType.Type.EMB_CLASS ||
+            rt == ExprType.Type.CLASS || rt == ExprType.Type.EMB_CLASS)
+          throw new RecognitionException("Can't compare class types");
+
+        if (lt != rt)
+          throw new RecognitionException("left and right side are not of same type: " + lt +
+                                         " != " + rt);
+        if (lt == ExprType.Type.TYPED_LIT && !ltype.getDataType().equals(rtype.getDataType()))
+          throw new RecognitionException("left and right side are not of same data-type: " +
+                                         ltype.getDataType() + " != " + rtype.getDataType());
+      }
+
+      // create expression
+      String pred, model;
+      if (isDate(ltype)) {
+        pred  = (f.charAt(0) == 'l') ? "<mulgara:before>" : "<mulgara:after>";
+        model = "xsd";
+      } else if (isNum(ltype)) {
+        pred  = (f.charAt(0) == 'l') ? "<mulgara:lt>" : "<mulgara:gt>";
+        model = "xsd";
+      } else {
+        pred  = (f.charAt(0) == 'l') ? "<topaz:lt>" : "<topaz:gt>";
+        model = "str";
+      }
+
+      AST res = #([AND, "and"], astFactory.dupTree(larg), astFactory.dupTree(rarg));
+      if (f.equals("ge") || f.equals("le"))
+        res.addChild(#([OR, "or"],
+                       makeTriple(lvar, pred, rvar, getModelUri(model)),
+                       makeTriple(lvar, "<mulgara:equals>", rvar)));
+      else
+        res.addChild(
+            makeTriple(astFactory.dup(lvar), pred, astFactory.dup(rvar), getModelUri(model)));
+
+      return res;
+    }
+
+    private static boolean isDate(ExprType type) {
+      return (type != null) && (type.getType() == ExprType.Type.TYPED_LIT) &&
+             isDt(type.getDataType(), DATE_TYPES);
+    }
+
+    private static boolean isNum(ExprType type) {
+      return (type != null) && (type.getType() == ExprType.Type.TYPED_LIT) &&
+             isDt(type.getDataType(), NUM_TYPES);
+    }
+
+    private static boolean isDt(String v, String[] list) {
+      for (String s : list) {
+        if (v.equals(s))
+          return true;
+      }
+      return false;
+    }
+
+    private String expandAliases(String uri) {
+      // TODO: should use aliases in SessionFactory
+      for (String alias : (Set<String>) ItqlHelper.getDefaultAliases().keySet())
+        uri = uri.replace("<" + alias + ":", "<" + ItqlHelper.getDefaultAliases().get(alias));
+      return uri.substring(1, uri.length() - 1);
     }
 }
 
@@ -278,15 +382,22 @@ factor[AST var, boolean isProj]
 constant[AST var]
     : ! QSTRING ((DHAT type:URIREF) | (AT lang:ID))? {
           String lit = #QSTRING.getText();
-          if (#type != null)
-            lit += "^^" + #type.getText();
+          String dt  = (#type != null) ? expandAliases(#type.getText()) : null;
+          if (dt != null)
+            lit += "^^<" + dt + ">";
           else if (#lang != null)
             lit += "@" + #lang.getText();
           #constant = makeTriple(var, "<mulgara:is>", lit);
+
+          if (dt != null)
+            ((OqlAST) var).setExprType(ExprType.literalType(dt, null));
+          else
+            ((OqlAST) var).setExprType(ExprType.literalType(null));
         }
 
     | ! URIREF {
           #constant = makeTriple(var, "<mulgara:is>", #URIREF);
+          ((OqlAST) var).setExprType(ExprType.uriType(null));
         }
     ;
 
@@ -326,12 +437,16 @@ deref[AST var]
              }
              )?
        ) {
-         if (wantPred)
+         if (wantPred) {
            res.addChild(makeTriple(prevVar, var, nextVar()));
-         else if (prevPred != null)
+           ((OqlAST) var).setExprType(ExprType.uriType(null));
+         } else if (prevPred != null) {
            res.addChild(makeTriple(prevVar, prevPred, var));
-         else if (!prevVar.equals(var))         // XXX
+           ((OqlAST) var).setExprType(((OqlAST) prevPred).getExprType());
+         } else if (!prevVar.equals(var)) {       // XXX
            res.addChild(makeTriple(prevVar, "<mulgara:equals>", var));
+           ((OqlAST) var).setExprType(((OqlAST) prevVar).getExprType());
+         }
 
          #deref = res;
       }

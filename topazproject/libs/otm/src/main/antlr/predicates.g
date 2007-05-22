@@ -26,6 +26,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.Session;
@@ -292,6 +293,13 @@ options {
       reportWarning("type mismatch in expression '" + expr.toStringTree() + "': " + et1 +
                     " is not comparable to " + et2);
     }
+
+    private String expandAliases(String uri) {
+      // TODO: should use aliases in SessionFactory
+      for (String alias : (Set<String>) ItqlHelper.getDefaultAliases().keySet())
+        uri = uri.replace("<" + alias + ":", "<" + ItqlHelper.getDefaultAliases().get(alias));
+      return uri.substring(1, uri.length() - 1);
+    }
 }
 
 
@@ -352,7 +360,8 @@ expr
 
 factor returns [ExprType type = null]
     : QSTRING ((DHAT t:URIREF) | (AT ID))? {
-        type = (#t != null) ? ExprType.literalType(#t.getText(), null) : ExprType.literalType(null);
+        type = (#t != null) ? ExprType.literalType(expandAliases(#t.getText()), null) :
+                              ExprType.literalType(null);
       }
     | URIREF                               { type = ExprType.uriType(null); }
     | #(FUNC ID (COLON ID)? (factor)*)
