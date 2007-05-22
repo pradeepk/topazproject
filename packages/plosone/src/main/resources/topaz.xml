@@ -48,7 +48,7 @@
     
     <fedoragsearch>
       <urls>
-        <url>http://${topaz.server.hostname}:${topaz.server.http-port}/ws-search-webapp/services/FedoraGenericSearchServicePort</url>
+        <url>http://${topaz.server.hostname}:8080/ws-search-webapp/services/FedoraGenericSearchServicePort</url>
       </urls>
       <repository>Topaz</repository>
       <index>TopazIndex</index>
