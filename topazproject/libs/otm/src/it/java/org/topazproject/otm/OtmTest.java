@@ -438,6 +438,7 @@ public class OtmTest extends TestCase {
     URI         id1     = URI.create("http://localhost/annotation/1");
     URI         id2     = URI.create("http://localhost/annotation/2");
     URI         id3     = URI.create("http://localhost/annotation/3");
+    URI         id4     = URI.create("http://localhost/annotation/4");
 
     try {
       tx = session.beginTransaction();
@@ -445,6 +446,7 @@ public class OtmTest extends TestCase {
       Annotation a1 = new PublicAnnotation(id1);
       Annotation a2 = new PublicAnnotation(id2);
       Annotation a3 = new PublicAnnotation(id3);
+      Annotation a4 = new PublicAnnotation(id4);
 
       a1.setAnnotates(URI.create("foo:1"));
       a2.setAnnotates(URI.create("foo:1"));
@@ -461,9 +463,12 @@ public class OtmTest extends TestCase {
       a2.setSupersededBy(a3);
       a3.setSupersedes(a2);
 
+      a4.setTitle("foo");
+
       session.saveOrUpdate(a1);
       session.saveOrUpdate(a2);
       session.saveOrUpdate(a3);
+      session.saveOrUpdate(a4);
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
@@ -590,11 +595,13 @@ public class OtmTest extends TestCase {
 
       l = session.createCriteria(Annotation.class).add(Restrictions.ne("annotates", "foo:1")).list();
 
-      assertEquals(1, l.size());
+      assertEquals(2, l.size());
 
       a3 = (Annotation) l.get(0);
+      Annotation a4 = (Annotation) l.get(1);
 
-      assertTrue(id3.equals(a3.getId()));
+      assertTrue(id3.equals(a3.getId()) || id4.equals(a3.getId()));
+      assertTrue(id3.equals(a4.getId()) || id4.equals(a4.getId()));
 
       l = session.createCriteria(Annotation.class).add(Restrictions.ne("annotates", "bar:1"))
                   .setFirstResult(0).setMaxResults(1).list();
@@ -641,11 +648,13 @@ public class OtmTest extends TestCase {
       assertEquals(id3, a1.getId());
 
       l = session.createCriteria(Annotation.class).add(Restrictions.notExists("created")).list();
-      assertEquals(2, l.size());
+      assertEquals(3, l.size());
       a1   = (Annotation) l.get(0);
       a2   = (Annotation) l.get(1);
-      assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
-      assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
+      a4   = (Annotation) l.get(2);
+      assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()) || id1.equals(a4.getId()));
+      assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()) || id2.equals(a4.getId()));
+      assertTrue(id4.equals(a1.getId()) || id4.equals(a2.getId()) || id4.equals(a4.getId()));
 
       /* uncomment when child criteria are implemented
          l = session.createCriteria(Annotation.class).createCriteria("supersedes").

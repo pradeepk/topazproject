@@ -128,7 +128,7 @@ public class Restrictions {
    * @return a newly created Criterion object
    */
   public static Criterion le(String name, Object value) {
-    return not(gt(name, value));
+    return minus(new PredicateCriterion(name), gt(name, value));
   }
 
   /**
@@ -140,7 +140,7 @@ public class Restrictions {
    * @return a newly created Criterion object
    */
   public static Criterion ge(String name, Object value) {
-    return not(lt(name, value));
+    return minus(new PredicateCriterion(name), lt(name, value));
   }
 
   /**
