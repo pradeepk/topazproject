@@ -30,12 +30,6 @@
     </dependency>
     
     <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-alerts-client-impl</artifactId>
-      <version>${pom.version}</version>
-    </dependency>
-    
-    <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>entity-resolver</artifactId>
       <version>${pom.version}</version>
