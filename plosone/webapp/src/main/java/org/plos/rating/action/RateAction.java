@@ -62,17 +62,16 @@ public class RateAction extends BaseActionSupport {
   private static final int INSIGHT_WEIGHT = 6;
   private static final int RELIABILITY_WEIGHT = 5;
   private static final int STYLE_WEIGHT = 4;
-  
-  
-/**
-   * Creates a new RateAction object.
-   */
-  public RateAction() {
+
+
+  private RatingsPEP getPEP() {
     try {
-      pep                      = new RatingsPEP();
+      if (pep == null)
+        pep                      = new RatingsPEP();
     } catch (Exception e) {
       throw new Error("Failed to create Ratings PEP", e);
     }
+    return pep;
   }
 
   /**
@@ -112,8 +111,8 @@ public class RateAction extends BaseActionSupport {
 
       return ERROR;
     }
-    pep.checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
-    pep.checkAccess(RatingsPEP.SET_STATS, annotatedArticle);
+    getPEP().checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
+    getPEP().checkAccess(RatingsPEP.SET_STATS, annotatedArticle);
 
     try {
       tx = session.beginTransaction();
@@ -396,7 +395,7 @@ public class RateAction extends BaseActionSupport {
         return ERROR;
       }
 
-      pep.checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()),
+      getPEP().checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()),
                                                     URI.create(articleURI));
 
       tx = session.beginTransaction();

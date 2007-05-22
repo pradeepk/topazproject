@@ -63,15 +63,14 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   private static final Log log      = LogFactory.getLog(GetAverageRatingsAction.class);
   private RatingsPEP       pep;
 
-  /**
-   * Creates a new GetAverageRatingsAction object.
-   */
-  public GetAverageRatingsAction() {
+  private RatingsPEP getPEP() {
     try {
-      pep                           = new RatingsPEP();
+      if (pep == null)
+        pep                           = new RatingsPEP();
     } catch (Exception e) {
       throw new Error("Failed to create Ratings PEP", e);
     }
+    return pep;
   }
 
   /**
@@ -88,7 +87,7 @@ public class GetAverageRatingsAction extends BaseActionSupport {
     PlosOneUser   user               =
       (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
 
-    pep.checkAccess(RatingsPEP.GET_STATS, URI.create(articleURI));
+    getPEP().checkAccess(RatingsPEP.GET_STATS, URI.create(articleURI));
 
     try {
       tx = session.beginTransaction();
