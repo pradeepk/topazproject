@@ -15,21 +15,6 @@
   <dependencies>
     <dependency>
       <groupId>org.topazproject</groupId>
-      <artifactId>topaz-tools-alerts</artifactId>
-      <version>${pom.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>topaz-tools-articles</artifactId>
-      <version>${pom.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>topaz-tools-rss</artifactId>
-      <version>${pom.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
       <artifactId>topaz-tools-users</artifactId>
       <version>${pom.version}</version>
     </dependency>
