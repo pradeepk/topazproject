@@ -23,6 +23,7 @@ package org.topazproject.otm.query;
 import java.util.Set;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.Session;
 
@@ -288,8 +289,7 @@ tokens {
                        makeTriple(lvar, pred, rvar, getModelUri(model)),
                        makeTriple(lvar, "<mulgara:equals>", rvar)));
       else
-        res.addChild(
-            makeTriple(astFactory.dup(lvar), pred, astFactory.dup(rvar), getModelUri(model)));
+        res.addChild(makeTriple(lvar, pred, rvar, getModelUri(model)));
 
       return res;
     }
@@ -322,13 +322,20 @@ tokens {
 
 
 query
-    :   #(SELECT #(FROM fclause) #(WHERE w:wclause) #(PROJ sclause[#w]) (oclause)? (lclause)? (tclause)?)
+{ AST tc = #([AND, "and"]); }
+    :   #(SELECT #(FROM fclause[tc]) #(WHERE w:wclause[tc]) #(PROJ sclause[#w]) (oclause)? (lclause)? (tclause)?)
     ;
 
 
-fclause
-    :   #(COMMA fclause fclause)
-    |   ID ID
+fclause[AST tc]
+    :   #(COMMA fclause[tc] fclause[tc])
+    |   cls:ID var:ID {
+          ClassMetadata cm   = ((OqlAST) #var).getExprType().getMeta();
+          String        type = cm.getType();
+          if (type != null)
+            tc.addChild(
+                    makeTriple(#var, "<rdf:type>", "<" + type + ">", getModelUri(cm.getModel())));
+        }
     ;
 
 
@@ -351,8 +358,8 @@ pexpr[AST var, AST where]
     ;   // pexpr is now either a subquery or the variable
 
 
-wclause
-    : ! (e:expr)? { #wclause = #([AND, "and"], #e); /* so we can add projections */ }
+wclause[AST tc]
+    : ! (e:expr)? { #wclause = #([AND, "and"], tc, #e); }
     ;
 
 expr

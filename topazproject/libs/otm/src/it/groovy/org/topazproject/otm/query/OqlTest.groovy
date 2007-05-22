@@ -93,7 +93,6 @@ public class OqlTest extends GroovyTestCase {
       checker.verify(r) {
         row { object (class:Article.class, uri:id4); object (class:PublicAnnotation.class, id:id1) }
         row { object (class:Article.class, uri:id4); object (class:PublicAnnotation.class, id:id2) }
-        row { nul();                                 object (class:PublicAnnotation.class, id:id3) }
       }
 
       // no results
@@ -128,12 +127,6 @@ public class OqlTest extends GroovyTestCase {
             """)
       checker.verify(r) {
         row {
-          nul()
-          subq {
-            row { object (class:PublicAnnotation.class, id:id3) }
-          }
-        }
-        row {
           object (class:Article.class, uri:id4)
           subq {
             row { object (class:PublicAnnotation.class, id:id1) }
@@ -148,7 +141,6 @@ public class OqlTest extends GroovyTestCase {
             where p := art.publicAnnotations order by art;
             """)
       checker.verify(r) {
-        row { nul();                                 string ("1.0") }
         row { object (class:Article.class, uri:id4); string ("2.0") }
       }
 
@@ -170,6 +162,14 @@ public class OqlTest extends GroovyTestCase {
       r = s.doQuery("select a from Article a where a.uri = <${id4}>;")
       checker.verify(r) {
         row { object (class:Article.class, uri:id4) }
+      }
+
+      // omitted where clause
+      r = s.doQuery("select n from Annotation n order by n;")
+      checker.verify(r) {
+        row { object (class:PublicAnnotation.class, id:id1) }
+        row { object (class:PublicAnnotation.class, id:id2) }
+        row { object (class:PublicAnnotation.class, id:id3) }
       }
     }
   }
