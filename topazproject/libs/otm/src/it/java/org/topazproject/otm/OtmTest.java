@@ -12,8 +12,8 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
-import org.topazproject.otm.samples.Annotea;
 import org.topazproject.otm.samples.Annotation;
+import org.topazproject.otm.samples.Annotea;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.Grants;
 import org.topazproject.otm.samples.NoPredicate;
@@ -45,15 +45,11 @@ public class OtmTest extends TestCase {
    */
   protected SessionFactory factory = new SessionFactory();
 
-  /**
-   * DOCUMENT ME!
-   *
-   * @throws OtmException DOCUMENT ME!
-   */
-  protected void setUp() throws OtmException {
+
+  public OtmTest() {
     factory.setTripleStore(new ItqlStore(URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService")));
 
-    //factory.setTripleStore(new MemStore());
+    factory.getTripleStore().createModel(new ModelConfig("str", URI.create("local:///topazproject#str"), URI.create("http://topazproject.org/models#StringCompare")));
     ModelConfig ri      = new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null);
     ModelConfig grants  =
       new ModelConfig("grants", URI.create("local:///topazproject#otmtest2"), null);
@@ -63,6 +59,27 @@ public class OtmTest extends TestCase {
     factory.addModel(ri);
     factory.addModel(grants);
     factory.addModel(revokes);
+
+    factory.preload(ReplyThread.class);
+    factory.preload(PublicAnnotation.class);
+    factory.preload(PrivateAnnotation.class);
+    factory.preload(Article.class);
+    factory.preload(NoRdfType.class);
+    factory.preload(NoPredicate.class);
+    factory.preload(SpecialMappers.class);
+    factory.preload(Grants.class);
+    factory.preload(Revokes.class);
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  protected void setUp() throws OtmException {
+    ModelConfig ri      = factory.getModel("ri");
+    ModelConfig grants  = factory.getModel("grants");
+    ModelConfig revokes = factory.getModel("revokes");
 
     try {
       factory.getTripleStore().dropModel(ri);
@@ -85,19 +102,10 @@ public class OtmTest extends TestCase {
         log.debug("Failed to drop model '" + revokes.getId() + "'", t);
     }
 
+
     factory.getTripleStore().createModel(ri);
     factory.getTripleStore().createModel(grants);
     factory.getTripleStore().createModel(revokes);
-
-    factory.preload(ReplyThread.class);
-    factory.preload(PublicAnnotation.class);
-    factory.preload(PrivateAnnotation.class);
-    factory.preload(Article.class);
-    factory.preload(NoRdfType.class);
-    factory.preload(NoPredicate.class);
-    factory.preload(SpecialMappers.class);
-    factory.preload(Grants.class);
-    factory.preload(Revokes.class);
   }
 
   /**
@@ -140,7 +148,7 @@ public class OtmTest extends TestCase {
     try {
       tx = session.beginTransaction();
 
-      Annotation a = (Annotation)session.get(Annotea.class, "http://localhost/annotation/1");
+      Annotation a = (Annotation) session.get(Annotea.class, "http://localhost/annotation/1");
       assertNotNull(a);
 
       NoRdfType n = session.get(NoRdfType.class, "http://localhost/noRdfType/1");
@@ -606,16 +614,27 @@ public class OtmTest extends TestCase {
 
       assertTrue(id1.equals(a1.getId()) || id2.equals(a1.getId()));
 
-      /* resolver needs to be installed for these
-         l = session.createCriteria(Annotation.class).add(Restrictions.gt("creator", "bb")).list();
-         assertEquals(1, l.size());
-         a1 = (Annotation) l.get(0);
-         assertEquals(id3, a1.getId());
-         l = session.createCriteria(Annotation.class).add(Restrictions.lt("creator", "bb")).list();
-         assertEquals(1, l.size());
-         a1 = (Annotation) l.get(0);
-         assertEquals(id1, a1.getId());
-       */
+      l = session.createCriteria(Annotation.class).add(Restrictions.gt("creator", "bb")).list();
+      assertEquals(1, l.size());
+      a1 = (Annotation) l.get(0);
+      assertEquals(id3, a1.getId());
+      l = session.createCriteria(Annotation.class).add(Restrictions.lt("creator", "bb")).list();
+      assertEquals(1, l.size());
+      a1 = (Annotation) l.get(0);
+      assertEquals(id1, a1.getId());
+      l = session.createCriteria(Annotation.class).add(Restrictions.le("creator", "bb")).list();
+      assertEquals(2, l.size());
+      a1   = (Annotation) l.get(0);
+      a2   = (Annotation) l.get(1);
+      assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
+      assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
+      l = session.createCriteria(Annotation.class).add(Restrictions.ge("creator", "bb")).list();
+      assertEquals(2, l.size());
+      a1   = (Annotation) l.get(0);
+      a2   = (Annotation) l.get(1);
+      assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
+      assertTrue(id3.equals(a1.getId()) || id3.equals(a2.getId()));
+
       l = session.createCriteria(Annotation.class).add(Restrictions.exists("created")).list();
       assertEquals(1, l.size());
       a1 = (Annotation) l.get(0);
