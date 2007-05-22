@@ -3,10 +3,10 @@
 	GLOBAL STYLE SHEET FOR : www.plosone.org
 	
 	CREATED ON  : 08-26-2006
-	MODIFIED ON : 11-10-2006
+	MODIFIED ON : 05-02-2007
 	
 	CREATED BY	: MARGARET SHEAR
-	MODIFIED BY	: MARGARET SHEAR
+	MODIFIED BY	: SUSANNE DERISI
 
    	------------------------------------------------------------- */
 
@@ -559,3 +559,8 @@ ol li.current * { color: #000; text-decoration: none; background: none; cursor: 
 
 #bannerRight { float: right; margin-bottom: 20px;}
 
+/*-------------- Style for Full Banner (468 x60) Ad Asset --------------------*/
+/*This should be added to journals_global.css for the other journal sites*/
+div.fullBanner { width: 468px; height: 60px; margin: 0!important; padding: 0!important; }
+div.fullBanner img { float: left; }
+div.fullBanner span.body { display: block; }

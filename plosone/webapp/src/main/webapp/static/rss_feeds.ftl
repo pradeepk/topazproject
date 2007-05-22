@@ -1,61 +1,65 @@
 
 <!-- begin : main content -->
 <div id="content" class="static">
-<h1>PLoS RSS Feeds</h1>
+<h1><em>PLoS ONE</em> RSS Feeds</h1>
 
-<p><em>PLoS ONE</em> provides the following RSS feeds:</p>
+<p><em>PLoS ONE</em> provides the following <a href="/static/rssInfo.action">RSS feeds</a> which are updated as new articles are published:</p>
 
 <ul>
-        <@ww.url id="rssUrl" includeParams="none" value="/rss/PLoSONE.xml"/>
-        <li><a href="${rssUrl}">New Articles</a> - Updated as articles are published.</li>
+        <li><a href="/rss/PLoSONE.xml">New Articles (All Subjects)</a></li>
+		<li><a href="/rss/AnesthesiologyandPainManagement.xml">Anesthesiology and Pain Management</a></li>
+		<li><a href="/rss/Biochemistry.xml">Biochemistry</a></li>
+		<li><a href="/rss/Biophysics.xml">Biophysics</a></li>
+		<li><a href="/rss/Biotechnology.xml">Biotechnology</a></li>
+		<li><a href="/rss/CardiovascularDisorders.xml">Cardiovascular Disorders</a></li>
+		<li><a href="/rss/CellBiology.xml">Cell Biology</a></li>
+		<li><a href="/rss/ChemicalBiology.xml">Chemical Biology</a></li>
+		<li><a href="/rss/Chemistry.xml">Chemistry</a></li>
+		<li><a href="/rss/ComputationalBiology.xml">Computational Biology</a></li>
+		<li><a href="/rss/ComputerScience.xml">Computer Science</a></li>
+		<li><a href="/rss/CriticalCareandEmergencyMedicine.xml">Critical Care and Emergency Medicine</a></li>
+		<li><a href="/rss/Dermatology.xml">Dermatology</a></li>
+		<li><a href="/rss/DevelopmentalBiology.xml">Developmental Biology</a></li>
+		<li><a href="/rss/DiabetesandEndocrinology.xml">Diabetes and Endocrinology</a></li>
+		<li><a href="/rss/Ecology.xml">Ecology</a></li>
+		<li><a href="/rss/Evidence-BasedHealthcare.xml">Evidence-Based Healthcare</a></li>
+		<li><a href="/rss/EvolutionaryBiology.xml">Evolutionary Biology</a></li>
+		<li><a href="/rss/GastroenterologyandHepatology.xml">Gastroenterology and Hepatology</a></li>
+		<li><a href="/rss/GeneticsandGenomics.xml">Genetics and Genomics</a></li>
+		<li><a href="/rss/Geriatrics.xml">Geriatrics</a></li>
+		<li><a href="/rss/Hematology.xml">Hematology</a></li>
+		<li><a href="/rss/Immunology.xml">Immunology</a></li>
+		<li><a href="/rss/InfectiousDiseases.xml">Infectious Diseases</a></li>
+		<li><a href="/rss/Mathematics.xml">Mathematics</a></li>
+		<li><a href="/rss/MentalHealth.xml">Mental Health</a></li>
+		<li><a href="/rss/Microbiology.xml">Microbiology</a></li>
+		<li><a href="/rss/MolecularBiology.xml">Molecular Biology</a></li>
+		<li><a href="/rss/Nephrology.xml">Nephrology</a></li>
+		<li><a href="/rss/NeurologicalDisorders.xml">Neurological Disorders</a></li>
+		<li><a href="/rss/Neuroscience.xml">Neuroscience</a></li>
+		<li><a href="/rss/Non-ClinicalMedicine.xml">Non-Clinical Medicine</a></li>
+		<li><a href="/rss/Nutrition.xml">Nutrition</a></li>
+		<li><a href="/rss/Obstetrics.xml">Obstetrics</a></li>
+		<li><a href="/rss/Oncology.xml">Oncology</a></li>
+		<li><a href="/rss/Ophthalmology.xml">Ophthalmology</a></li>
+		<li><a href="/rss/Otolaryngology.xml">Otolaryngology</a></li>
+		<li><a href="/rss/Pathology.xml">Pathology</a></li>
+		<li><a href="/rss/PediatricsandChildHealth.xml">Pediatrics and Child Health</a></li>
+		<li><a href="/rss/Pharmacology.xml">Pharmacology</a></li>
+		<li><a href="/rss/Physics.xml">Physics</a></li>
+		<li><a href="/rss/Physiology.xml">Physiology</a></li>
+		<li><a href="/rss/PlantBiology.xml">Plant Biology</a></li>
+		<li><a href="/rss/PublicHealthandEpidemiology.xml">Public Health and Epidemiology</a></li>
+		<li><a href="/rss/RadiologyandMedicalImaging.xml">Radiology and Medical Imaging</a></li>
+		<li><a href="/rss/RespiratoryMedicine.xml">Respiratory Medicine</a></li>
+		<li><a href="/rss/Rheumatology.xml">Rheumatology</a></li>
+		<li><a href="/rss/SciencePolicy.xml">Science Policy</a></li>
+		<li><a href="/rss/Surgery.xml">Surgery</a></li>
+		<li><a href="/rss/Urology.xml">Urology</a></li>
+		<li><a href="/rss/Virology.xml">Virology</a></li>
+		<li><a href="/rss/WomensHealth.xml">Women's Health</a></li>
+
 </ul>
-
-<p class="intro">Want to keep abreast of all PLoS journals without having to regularly visit each site? RSS will allow you to do just that.</p>
-
-	
-<a id="whatisrss" name="whatisrss"></a>
-<h2>What is an RSS feed?</h2>
-	
-<p>An <a href="http://blogs.law.harvard.edu/tech/rss" title="Technology at Harvard Law | RSS 2.0 Specification">RSS</a> (Really Simple Syndication) feed is a regularly published collection of headlines and summaries from an original source (e.g., a PLoS journal).  Readers can subscribe to their favorite RSS feeds to have the latest news and content updates delivered right to their desktop.  To do so, you will need an RSS feed reader.  See the section below on <a href="#howcaniread">reading RSS feeds</a> for more information.</p>
-	
-<p>Web site creators can distribute RSS feeds of their published content and can also retrieve and display feeds from other sources on their own Web site. See the section below on <a href="#termsofuse">displaying PLoS RSS feeds</a> for more information.</p>
-
-	
-<a id="whatkinds" name="whatkinds"></a>
-<h2>What RSS Feeds Does PLoS Provide?</h2>
-	
-<p>Select a journal title for a list of available RSS feeds:</p>
-<ul class="rss">
-	<li><a href="http://journals.plos.org/plosbiology/rss_feeds.php"><em>PLoS Biology</em></a></li>
-	<li><a href="http://journals.plos.org/plosmedicine/rss_feeds.php"><em>PLoS Medicine</em></a></li>
-	<li><a href="http://journals.plos.org/ploscompbiol/rss_feeds.php"><em>PLoS Computational Biology</em></a></li>
-	<li><a href="http://journals.plos.org/plosgenetics/rss_feeds.php"><em>PLoS Genetics</em></a></li>
-	<li><a href="http://journals.plos.org/plospathogens/rss_feeds.php"><em>PLoS Pathogens</em></a></li>
-	<li><a href="http://journals.plos.org/plosclinicaltrials/rss_feeds.php"><em>PLoS Clinical Trials</em></a></li>
-	<@ww.url id="rssURL" includeParams="none" namespace="/static" action="rssFeeds"/>
-	<li><a href="${rssURL}"><em>PLoS ONE</em></a></li>
-</ul>
-
-<a id="howcaniread" name="howcaniread"></a>
-<h2>How Can I Read RSS Feeds?</h2>
-		
-<p>There are many free and commercial RSS readers you can use to subscribe to and read RSS feeds.  There are RSS-enabled Web browsers, e.g., <a href="http://www.mozilla.com/firefox/">Mozilla Firefox</a>, <a href="http://www.opera.com">Opera</a>, and <a href="http://www.apple.com/macosx/features/safari/">Safari</a> (Mac).  There are Web-based readers, e.g., <a href="http://www.google.com/reader/things/intro">Google Reader</a> and <a href="http://www.bloglines.com">Bloglines</a>.  There are also stand-alone readers, e.g., <a href="http://www.disobey.com/amphetadesk/">AmphetaDesk</a> and <a href="http://www.feedreader.com/">Feedreader</a> (Windows).  You can find RSS readers by searching the Internet for "RSS Reader" or "RSS News Aggregator" and checking the <a href="http://dir.yahoo.com/Computers_and_Internet/Data_Formats/XML__eXtensible_Markup_Language_/RSS/RSS_Readers_and_Aggregators/">Yahoo! Directory of RSS Readers and Aggregators</a>. <em>Please note that PLoS does not endorse any particular RSS reader products.</em></p>
-
-		
-<a id="termsofuse" name="termsofuse"></a>
-<h2>I want to display PLoS RSS feeds on my Web site. What are the terms of use?</h2>
-		
-<p>PLoS RSS feeds are provided free of charge.  We encourage you to display our feeds on your Web site. We only ask that you cite the journal title in connection with your use of the feeds. If you provide this attribution with a graphic, please use the logo that we have included in the feed itself.</p>
-
-<p>If you maintain your own Web site, there are a number of ways you can retrieve and display RSS feeds from other sources on your Web site, including JavaScript, PHP, ASP, Perl, and commercial applications like <a href="http://www.feedrollpro.com/">FeedrollPro</a>. <em>Please note that PLoS does not endorse any particular RSS display products.</em></p>
-
-<h2>Past Table of Contents in XML format</h2>
-<p>If you maintain your own Web site and want to create an index to past issues of PLoS journals (excluding <em>PLoS ONE</em>), PLoS provides the archived tables of contents for past issues in XML format. To generate a link to a past table of contents file, append the specific volume and issue number to the URL for the table of contents feed.  For example, the link to the <em>PLoS Biology</em> Table of Contents feed is:<br />
-
-<a href="http://biology.plosjournals.org/perlserv/?request=get-rss&#38;issn=1545-7885&#38;type=toc-articles">http://biology.plosjournals.org/perlserv/?request=get-rss&#38;issn=1545-7885&#38;type=toc-articles</a><br />
-and the link to the archived table of contents for <em>PLoS Biology</em> Volume 1, Issue 1, is:<br />
-<a href="http://biology.plosjournals.org/perlserv/?request=get-rss&#38;issn=1545-7885&#38;type=toc-articles&#38;volume=1&#38;issue=1">http://biology.plosjournals.org/perlserv/?request=get-rss&#38;issn=1545-7885&#38;type=toc-articles&#38;volume=1&#38;issue=1</a></p>
-
 
 </div>
 <!-- end : main contents -->

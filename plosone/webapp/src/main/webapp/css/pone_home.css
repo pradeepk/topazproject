@@ -4,8 +4,8 @@ Global Homepages Style Sheet for PLoS Journals
 
 Created on: August 22, 2006
 Created by: Margaret Shear
-Modified on: September 07, 2006
-Modified by: Margaret Shear
+Modified on: May 09, 2007
+Modified by: Susanne DeRisi
 ----------------------------------------------------------
 All journal specific styles, colors are on individual
 journal style sheets
@@ -13,7 +13,7 @@ journal style sheets
 */
 
 
-body		{ background-color: transparent }
+body		{ background-color: transparent;}
 #wrap 		{ margin: 0 auto 0 auto; width: 940px; padding: 0 0 10px 0; line-height: 1.5em; position: relative;}
 #content 	{ margin-left: 0; }
 
@@ -100,29 +100,19 @@ div.banner object			{ padding-top: 0; }
 div.partner 				{ text-align: center; margin-right: 0; padding-right: 0; padding-top: 0;border-right: 1px solic #ccc; position: relative; border-top: 1px solic #ccc;}
 div.partner h6			{ font-weight: normal; text-align: center; font-size: .85em; margin: 0 0 0 10px; color: #999;text-transform: uppercase; background: url(../images/pone_home_partner_h6.gif) no-repeat top left; padding-top: 8px;}
 #first div.partner img 			{ float: none; display: block; margin: 20px auto 30px auto; text-align: center;  }
-.block img 						{ float: left; margin: 0 10px 10px 0; }
 
 /* fixes float clearing bug */
 .block:after					{ content: ".";  display: block;  height: 0; clear: both; visibility: hidden; }
 
 /* subject contains and category styles the category list */
-div.subject		{ padding: 0; padding-top: 5px;border: none;}
+div.subject		{ padding: 0; padding-top: 5px; border: none;}
 dl.category 		{ margin: 0;  padding: 10px 0 20px 0; }
-dl.category dt a,
-dl.category dt a:visited		{ cursor: pointer; color: #069; display: block; font-size: .9em; padding-bottom: 0; padding-left: 15px; margin-bottom: 2px;}
-dl.category dt a:hover { color: #000; }
+dl.category dt	{ margin: 0; padding: 0; font-size: .9em; font-weight: normal;  vertical-align: bottom; clear: left;/* This fixes the IE5 Win gap! */ }
+dl.category dt a {padding-bottom: 0; margin-bottom: 2px;}
+dl.category dt a:hover {text-decoration: underline;}
 dl.category a.expand,
-dl.category a:visited.expand 	{ background: url(../images/pone_home_expand.gif) no-repeat 0 5px; color: #666;}
-dl.category a.collapse,
-dl.category a:visited.collapse 	{ background: url(../images/pone_home_collapse.gif) no-repeat 0 5px; color: #333; font-weight: bold;}
-#home dl.category dt a:hover { text-decoration: none; border-color: #fff; vertical-align: bottom;}
-dl.category dt	{ margin: 0;padding: 0;color: #069; font-weight: normal;  vertical-align: bottom; clear: left;/* This fixes the IE5 Win gap! */ }
-dl.category dd 	{ vertical-align: bottom;}
-dl.category ul	{ padding: 4px 6px 4px 16px; }
-dl.category dt a,
-dl.category dt a:link { outline: none; }
-dl.category img	{ float: none; display: inline;float: left; padding: 0; margin-left: 0;}
-dl.category dd	{ display: none; background-color: #fff;}
+dl.category a:visited.expand 	{ padding-left: 15px;  background: url(../images/pone_home_expand.gif) no-repeat 0 5px;}
+dl.category img	{display: inline; padding: 0; margin-left: 0;}
 
 /* outreach blocks */
 div.ad					{ margin-top: 20px; }

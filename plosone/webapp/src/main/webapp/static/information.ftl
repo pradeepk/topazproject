@@ -1,7 +1,7 @@
 <!-- begin : main content -->
 <div id="content" class="static"><h1><em>PLoS ONE</em> Journal Information</h1>
 
-<p class="intro"><em>PLoS ONE</em> (eISSN-1932-6203) is an international, peer-reviewed, open-access, online publication from the Public Library of Science (PLoS). <em>PLoS ONE</em> welcomes reports on primary research from any scientific discipline.</p>
+<p class="intro"><em>PLoS ONE</em> (eISSN-1932-6203) is an international, peer-reviewed, open-access, online publication. <em>PLoS ONE</em> welcomes reports on primary research from any scientific discipline.  <em>PLoS ONE</em> is published by the Public Library of Science (PLoS), a nonprofit organization. <em>PLoS ONE's</em> start-up phase is supported by a grant from the <a href="http://www.opensocietyinstitute.org/" title="Open Society Institute">Open Society Institute</a>.</p>
 
 <p><em>PLoS ONE</em> is run as a partnership between its in-house PLoS staff and international <a href="edboard.action" title="PLoS ONE | Advisory and Editorial Boards">Advisory and Editorial Boards</a>, ensuring fast, fair, and professional peer review. To contact the Managing Editor, <a href="http://www.plos.org/about/people/one.html#csurridge" title="PLoS.org | Chris Surridge's Bio">Christopher Surridge</a>, or the Publications Assistants, <a href="http://www.plos.org/about/people/one.html#lking" title="PLoS.org | Lindsay King's Bio">Lindsay King</a> and <a href="http://www.plos.org/about/people/one.html#rwalton" title="PLoS.org | Rebecca Walton's Bio">Rebecca Walton</a> , please e-mail <strong>plosone [at] plos.org</strong>. </p>
 

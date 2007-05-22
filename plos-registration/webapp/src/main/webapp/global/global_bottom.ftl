@@ -6,7 +6,7 @@
 <#include "global_footer.ftl">
 </div>
 <!-- end : footer -->
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+<script src="https://ssl.google-analytics.com/urchin.js" type="text/javascript">
 </script>
 <script type="text/javascript">
 _uacct = "UA-338393-1";

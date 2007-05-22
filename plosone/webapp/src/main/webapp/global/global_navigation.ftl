@@ -1,9 +1,13 @@
 	<ul id="nav">
-		<li><a href="http://${freemarker_config.plosOneHost}${freemarker_config.context}" tabindex="1">Home</a></li>
-		
+		<li><a href="http://${freemarker_config.plosOneHost}${freemarker_config.context}" tabindex="101">Home</a></li>
+		<li><a href="/static/browse.action" tabindex="102">Browse Articles</a>
+				<ul>
+					<li><a href="/article/browse.action?field=date">By Publication Date</a></li>
+					<li><a href="/article/browse.action">By Subject</a></li>
+				</ul>
+		</li>			
 		<@ww.url action="about" namespace="/static" includeParams="none" id="about"/>
-	
-		<li><a href="${about}" tabindex="2">About</a>
+		<li><a href="${about}" tabindex="103">About</a>
 				<ul>
 				<@ww.url action="information.action" namespace="/static" includeParams="none" id="info"/>
 				<@ww.url action="edboard.action" namespace="/static" includeParams="none" id="edboard"/>
@@ -15,7 +19,7 @@
 				</ul>
 			</li>			
                 <@ww.url action="users" namespace="/static" includeParams="none" id="users"/>
-		<li><a href="${users}" tabindex="3">For Users</a>
+		<li><a href="${users}" tabindex="104">For Users</a>
 				<ul>
 				<@ww.url action="commentGuidelines.action" namespace="/static" includeParams="none" id="comment"/>
 				<@ww.url action="help.action" namespace="/static" includeParams="none" id="help"/>
@@ -28,7 +32,7 @@
 				</ul>
 			</li>
 		<@ww.url action="authors" namespace="/static" includeParams="none" id="authors"/>
-		<li><a href="${authors}" tabindex="4">For Authors and Reviewers</a>
+		<li><a href="${authors}" tabindex="105">For Authors and Reviewers</a>
 				<ul>
 				<@ww.url action="whypublish.action" namespace="/static" includeParams="none" id="why"/>
 				<@ww.url action="policies.action" namespace="/static" includeParams="none" id="policies"/>
@@ -44,9 +48,15 @@
 					<li><a href="${reviewer}">Reviewer Guidelines</a></li>
 				</ul>
 			</li>
-			<li class="journalnav"><a href="http://www.plos.org" tabindex="10">PLoS.org</a></li>
+			<li class="journalnav"><a href="http://www.plos.org" title="Public Library of Science" tabindex="110" class="drop">PLoS.org</a>
+				<ul>
+					<li><a href="http://www.plos.org/oa/index.html" title="Open Access Statement">Open Access</a></li>
+					<li><a href="http://www.plos.org/support/donate.php" title="Join PLoS: Show Your Support">Join PLoS</a></li>
+					<li><a href="http://www.plos.org/cms/blog" title="PLoS Blog">PLoS Blog</a></li>
+				</ul>
+			</li>
 
-			<li class="journalnav"><a href="http://www.plosjournals.org" tabindex="9">PLoS Journals</a>
+			<li class="journalnav"><a href="http://www.plosjournals.org" tabindex="109">PLoS Journals</a>
 				<ul>
 					<li><a href="http://biology.plosjournals.org" title="PLoSBiology.org">PLoS Biology</a></li>
 					<li><a href="http://medicine.plosjournals.org" title="PLoSMedicine.org">PLoS Medicine</a></li>

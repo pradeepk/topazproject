@@ -76,21 +76,21 @@ Submit Today</a></li>
 
 							<h2>New and Noted</h2>
 							<div>
-								<a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000341" title="Read Open-Access Article">Daytime Naps, Motor Memory Consolidation and Regionally Specific Sleep Spindles</a>
-								<p>It is well established that a good night’s sleep helps consolidate memories. This study shows that a brief midday nap has a similar effect. Subjects were trained on a motor-skill task in the morning, and those who were allowed an hour nap in the afternoon performed better when tested in the evening than those who had remained awake. Analysis on brain recording confirmed memory activity during sleep.</p>
+								<a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000443" title="Read Open-Access Article">Order in Spontaneous Behavior</a>
+								<p>Animals are usually considered to behave as complex automata, responding predictably to external stimuli. This study suggests otherwise, showing that even the humble fruit fly can behave spontaneously. The flight paths of flies in a completely featureless environment were neither random nor predictable, but followed a complicated fractal pattern generated within the fly's brain.</p>
 
-								<a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000350" title="Read Open-Access Article">Metabolic Engineering of Potato Carotenoid Content through Tuber-Specific Overexpression of a Bacterial Mini-Pathway</a>
-								<p>Genetic engineering holds the possibility of improving the nutritional value of common crop plants. For this study, <em>Enterobacter</em> was transplanted into potatoes to overcome their deficiency in Provitamin A. The increase in carotenoid production was such that 250g of these "golden" potatoes could provide half the recommended daily allowance of Vitamin A.</p>
+								<a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000444" title="Read Open-Access Article">Economic Inequality Predicts Biodiversity Loss</a>
+								<p>Human activity is causing high rates of biodiversity loss, but how socioeconomics feeds into this decline is poorly understood. This research explores how economic inequality, the gap between a country's rich and its poor, is related to biodiversity loss. Looking at both countries and individual U.S. states, it shows that inequality and increased biodiversity loss go hand-in-hand.</p>
 
-								<a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000356" title="Read Open-Access Article">Extensive Polycistronism and Antisense Transcription in the Mammalian <em>Hox</em> Clusters</a>
-								<p><em>Hox</em> clusters control body patterning in animals, encoding both transcription factor and micro-RNA genes. This study reports that the transcription of these genes is more complex than previously thought. In particular, it identifies several non-coding regions antisense to <em>Hox</em> genes, which may provide an additional layer of control on their expression.  </p>
+								<a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000451" title="Read Open-Access Article">Immunity against <em>Ixodes scapularis</em> Salivary Proteins Expressed within 24 Hours of Attachment Thwarts Tick Feeding and Impairs <em>Borrelia</em> Transmission</a>
+								<p>In North America, the black-legged tick, <em>Ixodes scapularis</em>, spreads several human diseases. This study shows that, in guinea pigs, immunity against proteins that ticks produce in the first day after their attachment inhibited the ticks' subsequent feeding. It also reduced transmission of the Lyme disease agent <em>Borrelia burgdorferi</em>, suggesting new strategies for the control tick-borne diseases.</p>
 								
 								<h3>Also of Note</h3>
 								<ul class="articles">
-									<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000348" title="Read Open-Access Article">Why Are Male Social Relationships Complex in the Doubtful Sound Bottlenose Dolphin Population?</a></li>
-									<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000342" title="Read Open-Access Article">Mad3 KEN Boxes Mediate both Cdc20 and Mad3 Turnover and Are Critical for the Spindle Checkpoint</a></li>
-									<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000351" title="Read Open-Access Article">Affiliative Behavior, Ultrasonic Communication and Social Reward Are Influenced by Genetic Variation in Adolescent Mice</a></li>
-									<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000357" title="Read Open-Access Article">Novelties in Hybrid Zones: Crossroads between Population Genomic and Ecological Approaches</a></li>
+									<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000446" title="Read Open-Access Article">Calculation of the Free Energy and Cooperativity of Protein Folding</a></li>
+									<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000450" title="Read Open-Access Article">Conditional Expression of <em>Wnt4</em> during Chondrogenesis Leads to Dwarfism in Mice</a></li>
+									<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000447" title="Read Open-Access Article">Genetic Evidence for a Link Between Glycolysis and DNA Replication</a></li>
+									<li><a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000445" title="Read Open-Access Article">A Model of Late Long-Term Potentiation Simulates Aspects of Memory Maintenance</a></li>
 								</ul>
 							</div>
 						</div>
@@ -112,15 +112,17 @@ Submit Today</a></li>
 							<div>
 								<p>A new way of communicating peer-reviewed science and medicine.</p>
 								<ul>
-									<li>Try out <a href="${annotation}" title="Learn how to add an annotation">annotations</a> and <a href="${discussion}" title="Learn how to start a discussion">discussions</a> in the <a href="/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000000" title="PLoS ONE Sandbox: A Play to Learn and Play">PLoS ONE Sandbox</a>.</li>
+									<li>Try out <a href="${annotation}" title="Learn how to add an annotation">annotations</a> and <a href="${discussion}" title="Learn how to start a discussion">discussions</a> in the <a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000000" title="PLoS ONE Sandbox: A Play to Learn and Play"><em>PLoS ONE</em> Sandbox</a>.</li>
+								<li><a href="${freemarker_config.context}/article/browse.action?field=date" title="PLoS ONE | Browse by Publication Date">Browse articles by Publication Date</a> and try our improved <a href="/article/browse.action" title="PLoS ONE | Browse by Subject">Browse by Subject</a>.</li>
+								<li><a href="${freemarker_config.context}/static/rssFeeds.action" title="PLoS ONE | RSS Feeds">RSS Feeds</a> by Subject</li>
 								</ul>
 								<p><em>More functionality coming soon</em></p>
 								<p><a href="${feedback}" title="Send us your feedback">Your feedback</a> will help us shape <em>PLoS ONE</em>.</p>
-								<h3>Introducing Journal Club</h3>
-								<p>PLoS ONE regularly sends out papers in advance of publication to interested labs to debate them and post their comments online. </p>
+								<h3>Journal Clubs - New Discussion</h3>
+								<p><em>PLoS ONE</em> regularly sends out papers in advance of publication to interested labs to debate them and post their comments online. </p>
 								<ul>
-									<li><a href="http://www.plosone.org/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000028" title="Perceptual Learning of Motion Leads to Faster Flicker Perception">This recent paper</a> was discussed by the <a href="http://www.physiol.usyd.edu.au/span/" title="SPAN @ Sydney" target="_new">University of Sydney Perception Group</a>.</li>
-									<li>Add your own comments to <a href="http://www.plosone.org/annotation/getCommentary.action?target=info:doi/10.1371/journal.pone.0000028" title="Annotations and Discussions Re: Perceptual Learning of Motion Leads to Faster Flicker Perception">the discussion</a>.</li>
+									<li><a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000343" title="Onset Rivalry: Brief Presentation Isolates an Early Independent Phase of Perceptual Competition">This recent paper</a> was discussed by the <a href="${freemarker_config.context}/user/showUser.action?userId=info:doi/10.1371/account/39755" title="Potsdam University Eye-Movement Group">Potsdam University Eye-Movement Group</a>.</li>
+									<li>Add your own comments to <a href="${freemarker_config.context}/annotation/getCommentary.action?target=info:doi/10.1371/journal.pone.0000343" title="Annotations and Discussions Re: Onset Rivalry: Brief Presentation Isolates an Early Independent Phase of Perceptual Competition">the discussion</a>.</li>
 									<li><a href="${feedback}" title="Send us your feedback">Nominate your lab</a> for a future journal club.</li>
 								</ul>
 							</div>
@@ -137,8 +139,11 @@ Submit Today</a></li>
 							<#else>
   								<#assign index = 8>
 							</#if>
-							  <@ww.url id="browseURL" action="browse" namespace="/article"  catId="${category_index}" includeParams="none"/>
-								<dt><a class="expand" id="widget${categoryId}" href="${browseURL}">${category} (${articlesByCategory[category_index]?size})</a></dt>
+							<@ww.url id="browseURL" action="browse" namespace="/article"  catId="${category_index}" includeParams="none"/>
+							<dt>
+								<a class="expand" id="widget${categoryId}" href="${browseURL}">${category} (${articlesByCategory[category_index]?size})</a>&nbsp;
+								<a href="${freemarker_config.context}/rss/${category?replace(' ','')?replace("'",'')}.xml"><img src="${freemarker_config.context}/images/feed-icon-12x12.gif" /></a>
+							</dt>
 							</#list>
 							</dl>
 						</div><!-- end : subject block -->

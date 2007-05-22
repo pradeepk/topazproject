@@ -50,7 +50,13 @@
 <ul id="nav">
 	<li class="none"><a href="http://www.plosjournals.org" title="PLoS Journals Home Page" tabindex="101">Home</a></li>
 	<li class="none"><a href="http://www.plosone.org/profile" title="My Profile" tabindex="102">My Profile</a></li>
-	<li class="journalnav"><a href="http://www.plos.org" title="Public Library of Science" tabindex="110">PLoS.org</a></li>
+	<li class="journalnav"><a href="http://www.plos.org" title="Public Library of Science" class="drop" tabindex="110">PLoS.org</a>
+		<ul>
+			<li><a href="http://www.plos.org/oa/index.html" title="Open Access Statement">Open Access</a></li>
+			<li><a href="http://www.plos.org/support/donate.php" title="Join PLoS: Show your Support">Join PLoS</a></li>
+			<li><a href="http://www.plos.org/cms/blog" title="PLoS Blogs">PLoS Blog</a></li>
+		</ul>
+	</li>
 	<li class="journalnav"><a href="http://www.plosjournals.org" title="PLoS Journals" tabindex="109" class="drop">PLoS Journals</a>
 	<ul>
 			<li><a href="http://medicine.plosjournals.org" title="PLoSMedicine.org">PLoS Medicine</a></li>
@@ -84,12 +90,13 @@
 <li><a href="http://journals.plos.org/privacy.php" title="PLoS Privacy Statement" tabindex="501">Privacy Statement</a></li>
 <li><a href="http://journals.plos.org/terms.php" title="PLoS Terms of Use" tabindex="502">Terms of Use</a></li>
 <li><a href="http://www.plos.org/advertise/" title="Advertise with PLoS" tabindex="503">Advertise</a></li>
+<li><a href="http://journals.plos.org/help.php" title="Help Using this Site" tabindex="504">Help</a></li>
 <li><a href="http://www.plos.org" title="PLoS.org" tabindex="504">PLoS.org</a></li>
 </ul>
 
 </div>
 <!-- end : footer -->
-<script src="http://www.google-analytics.com/urchin.js" type="text/javascript">
+<script src="https://ssl.google-analytics.com/urchin.js" type="text/javascript">
 </script>
 <script type="text/javascript">
 _uacct = "UA-338393-1";
