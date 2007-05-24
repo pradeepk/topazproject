@@ -16,6 +16,7 @@
   <modules>
     <module>libs</module>
     <module>webservices</module>
+    <module>tools</module>
   </modules>
 
   <dependencyManagement>
