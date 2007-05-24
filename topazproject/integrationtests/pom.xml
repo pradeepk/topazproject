@@ -482,14 +482,6 @@
             <deployables>
               <deployable>
                 <groupId>org.topazproject.ws</groupId>
-                <artifactId>ws-access-webapp</artifactId>
-                <type>war</type>
-                <properties>
-                  <context>ws-access</context>
-                </properties>
-              </deployable>
-              <deployable>
-                <groupId>org.topazproject.ws</groupId>
                 <artifactId>ws-search-webapp</artifactId>
                 <type>war</type>
                 <properties>
