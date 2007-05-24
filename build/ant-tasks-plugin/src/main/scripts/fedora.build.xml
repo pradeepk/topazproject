@@ -184,11 +184,6 @@
       tofile="${FEDORA_HOME}/server/bin/fedora.sh"
       overwrite="true"/>
 
-    <!-- copy xacml policies -->
-    <copy todir="${FEDORA_HOME}/data/fedora-xacml-policies" overwrite="true">
-      <fileset dir="server/fedora-xacml-policies"/>
-    </copy>
-
     <!-- configure mckoi (overwrite with our local copy) -->
     <copy file="mckoi1.0.3/db.conf"
       tofile="${FEDORA_HOME}/server/mckoi1.0.3/db.conf"
@@ -235,25 +230,6 @@
 
     <delete dir="${TOMCAT_HOME}/web-xml-temp"/>
     
-    <!-- copy authoriztion -->
-    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
-      file="${WS_ACCESS_CLIENT}"/>
-       
-    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
-      file="${WS_ACCESS_API}"/>
-       
-    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
-      file="${WS_COMMON_API}"/>
-       
-    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
-      file="${AUTH_HELPER}"/>
-       
-    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
-      file="${CONF_HELPER}"/>
-       
-    <copy todir="${TOMCAT_HOME}/webapps/fedora/WEB-INF/lib" overwrite="true" flatten="true" 
-      file="${FEDORA_SECURITY}"/>
-
     <!-- copy fedora patches -->
     <unjar src="${FEDORA_PATCHES}" 
       dest="${TOMCAT_HOME}/webapps/fedora/WEB-INF/classes" overwrite="true">
@@ -262,8 +238,5 @@
       </patternset>
     </unjar> 
     
-    <!-- Install access-service -->
-    <unjar src="${ACCESS_WAR}" dest="${TOMCAT_HOME}/webapps/access"/>
-
   </target>
 </project>

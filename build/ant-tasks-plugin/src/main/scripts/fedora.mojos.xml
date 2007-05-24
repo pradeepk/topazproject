@@ -235,48 +235,6 @@
         </parameter>
 
         <parameter>
-          <name>WS_ACCESS_CLIENT</name>
-          <property>WS_ACCESS_CLIENT</property>
-          <required>true</required>
-        </parameter>
-        
-        <parameter>
-          <name>WS_ACCESS_API</name>
-          <property>WS_ACCESS_API</property>
-          <required>true</required>
-        </parameter>
-        
-        <parameter>
-          <name>WS_COMMON_API</name>
-          <property>WS_COMMON_API</property>
-          <required>true</required>
-        </parameter>
-        
-        <parameter>
-          <name>AUTH_HELPER</name>
-          <property>AUTH_HELPER</property>
-          <required>true</required>
-        </parameter>
-        
-        <parameter>
-          <name>CONF_HELPER</name>
-          <property>CONF_HELPER</property>
-          <required>true</required>
-        </parameter>
-        
-        <parameter>
-          <name>FEDORA_SECURITY</name>
-          <property>FEDORA_SECURITY</property>
-          <required>true</required>
-        </parameter>
-        
-        <parameter>
-          <name>ACCESS_WAR</name>
-          <property>ACCESS_WAR</property>
-          <required>true</required>
-        </parameter>
-      
-        <parameter>
           <name>FEDORA_PATCHES</name>
           <property>FEDORA_PATCHES</property>
           <required>true</required>

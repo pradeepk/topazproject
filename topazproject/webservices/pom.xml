@@ -17,7 +17,6 @@
     <module>common</module>
     <module>users</module>
     <module>permissions</module>
-    <module>access</module>
     <module>search</module>
   </modules>
 </project>

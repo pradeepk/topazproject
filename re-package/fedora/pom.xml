@@ -33,13 +33,6 @@
           <TOMCAT>jakarta-tomcat-5.0.28</TOMCAT>
           <CAS_AUTHENTICATOR>${settings.localRepository}/org/topazproject/tomcat-jaas-cas/${pom.parent.version}/tomcat-jaas-cas-${pom.parent.version}.jar</CAS_AUTHENTICATOR>
           <CAS_CLIENT>${settings.localRepository}/cas/casclient/${casVersion}/casclient-${casVersion}.jar</CAS_CLIENT>
-          <WS_ACCESS_CLIENT>${settings.localRepository}/org/topazproject/ws/ws-access-client-impl/${pom.parent.version}/ws-access-client-impl-${pom.parent.version}.jar</WS_ACCESS_CLIENT>
-          <WS_ACCESS_API>${settings.localRepository}/org/topazproject/ws/ws-access-api/${pom.parent.version}/ws-access-api-${pom.parent.version}.jar</WS_ACCESS_API>
-          <WS_COMMON_API>${settings.localRepository}/org/topazproject/ws/ws-common-api/${pom.parent.version}/ws-common-api-${pom.parent.version}.jar</WS_COMMON_API>
-          <AUTH_HELPER>${settings.localRepository}/org/topazproject/auth-helper/${pom.parent.version}/auth-helper-${pom.parent.version}.jar</AUTH_HELPER>
-          <CONF_HELPER>${settings.localRepository}/org/topazproject/conf-helper/${pom.parent.version}/conf-helper-${pom.parent.version}.jar</CONF_HELPER>
-          <FEDORA_SECURITY>${settings.localRepository}/org/topazproject/fedora-security/${pom.parent.version}/fedora-security-${pom.parent.version}.jar</FEDORA_SECURITY>
-          <ACCESS_WAR>${settings.localRepository}/org/topazproject/ws/ws-access-webapp/${pom.parent.version}/ws-access-webapp-${pom.parent.version}.war</ACCESS_WAR>
           <FEDORA_PATCHES>${settings.localRepository}/org/topazproject/fedora-patches/${pom.parent.version}/fedora-patches-${pom.parent.version}.jar</FEDORA_PATCHES>
         </configuration>
         <executions>
@@ -69,24 +62,8 @@
             <version>${casVersion}</version>
           </dependency>
           <dependency>
-            <groupId>org.topazproject.ws</groupId>
-            <artifactId>ws-access-webapp</artifactId>
-            <version>${pom.parent.version}</version>
-            <type>war</type>
-          </dependency>
-          <dependency>
-            <groupId>org.topazproject.ws</groupId>
-            <artifactId>ws-access-client-impl</artifactId>
-            <version>${pom.parent.version}</version>
-          </dependency>
-          <dependency>
             <groupId>org.topazproject</groupId>
             <artifactId>tomcat-jaas-cas</artifactId>
-            <version>${pom.parent.version}</version>
-          </dependency>
-          <dependency>
-            <groupId>org.topazproject</groupId>
-            <artifactId>fedora-security</artifactId>
             <version>${pom.parent.version}</version>
           </dependency>
           <dependency>
