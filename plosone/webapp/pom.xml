@@ -75,12 +75,6 @@
     </dependency>
 
     <dependency>
-      <groupId>jboss</groupId>
-      <artifactId>javassist</artifactId>
-      <version>3.4.ga</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.topazproject.ws</groupId>
       <artifactId>ws-permissions-impl</artifactId>
       <version>${pom.parent.version}</version>
@@ -204,12 +198,6 @@
     </dependency>
 
     <dependency>
-      <groupId>net.sf.saxon</groupId>
-      <artifactId>saxon-dom</artifactId>
-      <version>8.7</version>
-    </dependency>
-
-    <dependency>
       <groupId>rome</groupId>
       <artifactId>rome</artifactId>
       <version>0.9</version>
@@ -301,12 +289,6 @@
     <dependency>
       <groupId>org.plosone</groupId>
       <artifactId>article-util</artifactId>
-      <version>${pom.parent.version}</version>
-    </dependency>
-	
-    <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>otm</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
 	
