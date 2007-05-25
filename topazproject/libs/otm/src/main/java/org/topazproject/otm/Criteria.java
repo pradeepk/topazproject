@@ -27,11 +27,12 @@ public class Criteria {
   private ClassMetadata   classMetadata;
   private Criteria        parent;
   private Mapper          mapping;
-  private int             maxResults  = -1;
-  private int             firstResult = -1;
-  private List<Criterion> criterions  = new ArrayList<Criterion>();
-  private List<Order>     orders      = new ArrayList<Order>();
-  private List<Criteria>  children    = new ArrayList<Criteria>();
+  private int             maxResults    = -1;
+  private int             firstResult   = -1;
+  private List<Criterion> criterions    = new ArrayList<Criterion>();
+  private List<Order>     orders        = new ArrayList<Order>();
+  private List<Criteria>  children      = new ArrayList<Criteria>();
+  private List<Order>     orderPosition;
 
   /**
    * Creates a new Criteria object. Called by {@link Session#createCriteria}.
@@ -42,10 +43,13 @@ public class Criteria {
    * @param classMetadata The class meta-data of this criteria
    */
   public Criteria(Session session, Criteria parent, Mapper mapping, ClassMetadata classMetadata) {
-    this.session         = session;
-    this.parent          = parent;
-    this.mapping         = mapping;
-    this.classMetadata   = classMetadata;
+    this.session                        = session;
+    this.parent                         = parent;
+    this.mapping                        = mapping;
+    this.classMetadata                  = classMetadata;
+
+    if (parent == null)
+      orderPosition = new ArrayList<Order>();
   }
 
   /**
@@ -122,6 +126,7 @@ public class Criteria {
    */
   public Criteria addOrder(Order order) {
     orders.add(order);
+    getRoot().orderPosition.add(order);
 
     return this;
   }
@@ -162,6 +167,18 @@ public class Criteria {
    */
   public List<Order> getOrderList() {
     return orders;
+  }
+
+  /**
+   * Gets the position of this order by clause in the root Criteria. Position is determined
+   * by the sequence in which the {@link #addOrder} call is made.
+   *
+   * @param order a previously added order entry
+   *
+   * @return the position or -1 if the order entry does not exist
+   */
+  public int getOrderPosition(Order order) {
+    return getRoot().orderPosition.indexOf(order);
   }
 
   /**
@@ -206,5 +223,9 @@ public class Criteria {
    */
   public int getFirstResult() {
     return firstResult;
+  }
+
+  private Criteria getRoot() {
+    return (parent == null) ? this : parent.getRoot();
   }
 }

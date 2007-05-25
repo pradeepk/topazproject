@@ -663,6 +663,24 @@ public class OtmTest extends TestCase {
       a2 = (Annotation) l.get(1);
       assertEquals(id2, a1.getId());
       assertEquals(id3, a2.getId());
+      l = session.createCriteria(Annotation.class).addOrder(Order.asc("supersedes"))
+          .createCriteria("supersedes").add(Restrictions.eq("annotates", "foo:1")).list();
+      assertEquals(2, l.size());
+      a1 = (Annotation) l.get(0);
+      a2 = (Annotation) l.get(1);
+      assertEquals(id2, a1.getId());
+      assertEquals(id3, a2.getId());
+
+      Criteria criteria = session.createCriteria(Annotation.class);
+      criteria.createCriteria("supersedes").addOrder(Order.desc("creator"))
+                    .add(Restrictions.eq("annotates", "foo:1"));
+      l = criteria.addOrder(Order.desc("annotates")).list();
+      assertEquals(2, l.size());
+      a1 = (Annotation) l.get(0);
+      a2 = (Annotation) l.get(1);
+      assertEquals(id3, a1.getId());
+      assertEquals(id2, a2.getId());
+
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       log.warn("test failed", e);

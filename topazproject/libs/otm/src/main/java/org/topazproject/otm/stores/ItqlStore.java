@@ -657,7 +657,10 @@ public class ItqlStore implements TripleStore {
 
     if (hasOrderBy) {
       qry.append("order by ");
-      buildOrderBy(criteria, qry, "$s");
+      List<String> orders = new ArrayList();
+      buildOrderBy(criteria, orders, "$s");
+      for (String o : orders)
+        qry.append(o);
     }
 
     if (criteria.getMaxResults() > 0)
@@ -729,15 +732,19 @@ public class ItqlStore implements TripleStore {
             .append(" in <").append(mUri).append("> and ");
   }
 
-  private void buildOrderBy(Criteria criteria, StringBuilder qry, String subject) {
+  private void buildOrderBy(Criteria criteria, List<String> orders, String subject) {
     int i = 0;
     String prefix = subject + "o";
-    for (Order o : criteria.getOrderList())
-      qry.append(prefix + i++).append(o.isAscending() ? " asc " : " desc ");
+    for (Order o : criteria.getOrderList()) {
+      int pos = criteria.getOrderPosition(o);
+      while (pos >= orders.size())
+        orders.add("");
+      orders.set(pos, prefix + i++ + (o.isAscending() ? " asc " : " desc "));
+    }
 
     i = 0;
     for (Criteria cr : criteria.getChildren())
-      buildOrderBy(cr, qry, subject + "c" + i++);
+      buildOrderBy(cr, orders, subject + "c" + i++);
   }
 
   public Results doQuery(String query, Transaction txn) throws OtmException {
