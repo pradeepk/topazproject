@@ -737,7 +737,7 @@ public class ItqlStore implements TripleStore {
 
     i = 0;
     for (Criteria cr : criteria.getChildren())
-      buildProjections(cr, qry, subject + "c" + i++);
+      buildOrderBy(cr, qry, subject + "c" + i++);
   }
 
   public Results doQuery(String query, Transaction txn) throws OtmException {
