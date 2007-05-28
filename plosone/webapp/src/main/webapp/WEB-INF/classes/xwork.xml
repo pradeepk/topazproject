@@ -477,7 +477,6 @@
     </action>
   </package>
 
-  <!--
   <package name="article-feed" extends="default" namespace="/article/feed">
     <action name="getFeed" class="org.plos.article.action.ArticleFeed" method="execute">
       <result name="success" type="feed">
@@ -485,7 +484,6 @@
       </result>
     </action>
   </package>
--->
 
   <package name="annotation" extends="default" namespace="/annotation">
     <action name="fetchBody" class="org.plos.annotation.action.BodyFetchAction">

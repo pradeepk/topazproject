@@ -362,6 +362,120 @@ public class ArticleOtmService extends BaseConfigurableService {
   }
 
   /**
+   * A full featured getArticles.
+   */
+  public List<Article> getArticles(
+    final String startDate,
+    final String endDate,
+    final String[] categories,
+    final String[] authors,
+    final int[] states,
+    final Map<String, Boolean> orderBy,
+    final int maxResults)
+    throws RemoteException {
+
+    ensureInitGetsCalledWithUsersSessionAttributes();
+
+    return TransactionHelper.doInTxE(session,
+                               new TransactionHelper.ActionE<List<Article>, RemoteException>() {
+      public List<Article> run(Transaction tx) throws RemoteException {
+        // get a list of Articles that meet the specified Criteria and Restrictions
+        List<Article> articleList =
+            findArticles(startDate, endDate, categories, authors, states, orderBy, maxResults, tx);
+
+        return articleList;
+      }
+    });
+  }
+
+  /**
+   * Search for articles matching the specific criteria. Must be called with a transaction
+   * active.
+   *
+   * FIXME: shouldn't be throwing RemoteException - that's only because ArticleFeed.parseDateParam
+   * throws it.
+   */
+  private List<Article> findArticles(
+    String startDate,
+    String endDate,
+    String[] categories,
+    String[] authors,
+    int[] states,
+    Map<String, Boolean> orderBy,
+    int maxResults,
+    Transaction tx) throws RemoteException {
+
+    // build up Criteria for the Articles
+    Criteria articleCriteria = tx.getSession().createCriteria(Article.class);
+
+    // normalize dates for query
+    if (startDate != null) {
+      articleCriteria = articleCriteria.add(Restrictions.ge("date", ArticleFeed.parseDateParam(startDate)));
+    }
+    if (endDate != null) {
+      articleCriteria = articleCriteria.add(Restrictions.le("date", ArticleFeed.parseDateParam(endDate)));
+    }
+
+    // match all categories
+    if (categories != null) {
+      Criteria catCriteria = articleCriteria.createCriteria("categories");
+      for (String category : categories) {
+        catCriteria.add(Restrictions.eq("mainCategory", category));
+      }
+    }
+
+    // match all authors
+    if (authors != null) {
+      for (String author : authors) {
+        articleCriteria = articleCriteria.add(Restrictions.eq("authors", author));
+      }
+    }
+
+    // match all states
+    if (states != null) {
+      for (int state : states) {
+        articleCriteria = articleCriteria.add(Restrictions.eq("state", state));
+      }
+    }
+
+    // order by
+    if (orderBy != null) {
+      for (String field : orderBy.keySet()) {
+        boolean ascending = (boolean) orderBy.get(field);
+        if (ascending) {
+          articleCriteria = articleCriteria.addOrder(Order.asc(field));
+        } else {
+          articleCriteria = articleCriteria.addOrder(Order.desc(field));
+        }
+      }
+    }
+
+    // max results
+    if (maxResults > 0) {
+      articleCriteria = articleCriteria.setMaxResults(maxResults);
+    }
+
+    // get a list of Articles that meet the specified Criteria and Restrictions
+    List<Article> articleList = articleCriteria.list();
+
+    // filter access by id with PEP
+    // logged in user is automatically resolved by the ServletActionContextAttribute
+    for (Iterator it = articleList.iterator(); it.hasNext(); ) {
+      Article article = (Article) it.next();
+      try {
+        pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
+      } catch (SecurityException se) {
+        it.remove();
+        if (log.isDebugEnabled())
+          log.debug("Filtering URI " + article.getId()
+                    + " from Article list due to PEP SecurityException", se);
+      }
+    }
+
+    return articleList;
+  }
+
+  /**
    * Get list of articles for a given set of categories, authors and states bracked by specified
    * times.
    *
@@ -485,7 +599,6 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     return articleList;
   }
-
 
   /**
    * Get the Article's ObjectInfo by URI.
@@ -702,7 +815,7 @@ public class ArticleOtmService extends BaseConfigurableService {
 
           // update fedora
           long len = setDatastream(obj.getPid(), rep, ct, content);
-        
+
           // update the rdf
           obj.getRepresentations().add(rep);
 
@@ -839,7 +952,7 @@ public class ArticleOtmService extends BaseConfigurableService {
   // TODO: mv feeds to webapp?
   // inspired by ArticleFeed.buildXml(Collection articles)
   private static String buildArticleFeedXml(Collection articles) {
-    
+
     final String XML_RESPONSE =
       "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<articles>\n${articles}</articles>\n";
     final String XML_ARTICLE_TAG =
@@ -852,7 +965,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       "    ${categories}\n" +
       "    ${subjects}\n" +
       "  </article>\n";
-  
+
     String articlesXml = "";
     for (Iterator articleIt = articles.iterator(); articleIt.hasNext(); ) {
       ArticleFeedData article = (ArticleFeedData)articleIt.next();
