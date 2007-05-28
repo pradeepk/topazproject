@@ -30,6 +30,9 @@ public class Article extends ObjectInfo {
 
   /** Article state of "Active" */
   public static final int STATE_ACTIVE   = 0;
+  /** Active article states */
+  public static final int[] ACTIVE_STATES = {STATE_ACTIVE};
+
   /** Article state of "Disabled" */
   public static final int STATE_DISABLED = 1;
 
