@@ -27,6 +27,7 @@
       <result-type name="ajaxJSON" class="com.opensymphony.webwork.result.AjaxJSONResult">
         <param name="contentType">text/plain;charset=UTF-8</param>
       </result-type>
+      <result-type name="feed" class="org.plos.webwork.PlosOneFeedResult"/>
     </result-types>
 
     <interceptors>
@@ -475,6 +476,16 @@
       </result>
     </action>
   </package>
+
+  <!--
+  <package name="article-feed" extends="default" namespace="/article/feed">
+    <action name="getFeed" class="org.plos.article.action.ArticleFeed" method="execute">
+      <result name="success" type="feed">
+        <param name="feedName">wireFeed</param>
+      </result>
+    </action>
+  </package>
+-->
 
   <package name="annotation" extends="default" namespace="/annotation">
     <action name="fetchBody" class="org.plos.annotation.action.BodyFetchAction">
