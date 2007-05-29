@@ -90,11 +90,11 @@ public interface TripleStore {
    * @param criteria the criteria
    * @param txn the transaction context
    *
-   * @return list of results containing partially created objects
+   * @return list of result objects
    *
    * @throws OtmException on an error
    */
-  public List<ResultObject> list(Criteria criteria, Transaction txn)
+  public List list(Criteria criteria, Transaction txn)
                           throws OtmException;
 
   /**

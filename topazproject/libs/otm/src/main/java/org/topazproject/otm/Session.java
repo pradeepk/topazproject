@@ -393,19 +393,9 @@ public class Session {
 
     flush(); // so that mods are visible to queries
 
-    TripleStore store  = sessionFactory.getTripleStore();
+    TripleStore store = sessionFactory.getTripleStore();
 
-    List        result = new ArrayList();
-
-    for (TripleStore.ResultObject ro : store.list(criteria, txn)) {
-      Object io = instantiate(ro);
-      Object r  = sync(io, new Id(io.getClass(), ro.id), true, false, false);
-
-      if (r != null)
-        result.add(r);
-    }
-
-    return result;
+    return store.list(criteria, txn);
   }
 
   /**

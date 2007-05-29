@@ -592,7 +592,7 @@ public class ItqlStore implements TripleStore {
     return res;
   }
 
-  public List<ResultObject> list(Criteria criteria, Transaction txn) throws OtmException {
+  public List list(Criteria criteria, Transaction txn) throws OtmException {
     // do query
     String qry = buildUserQuery(criteria, txn);
     log.debug("list: " + qry);
@@ -605,7 +605,7 @@ public class ItqlStore implements TripleStore {
     }
 
     // parse
-    List<ResultObject> results  = new ArrayList<ResultObject>();
+    List results  = new ArrayList();
     ClassMetadata cm = criteria.getClassMetadata();
 
     try {
@@ -624,9 +624,9 @@ public class ItqlStore implements TripleStore {
       qa.beforeFirst();
       while (qa.next()) {
         String s = qa.getString("s");
-        ResultObject ro = get(cm, s, txn);
-        if (ro != null)
-          results.add(ro);
+        Object o = txn.getSession().get(cm.getSourceClass(), s);
+        if (o != null)
+          results.add(o);
       }
     } catch (AnswerException ae) {
       throw new OtmException("Error parsing answer", ae);

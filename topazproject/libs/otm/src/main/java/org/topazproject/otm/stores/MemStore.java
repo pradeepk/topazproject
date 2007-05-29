@@ -132,21 +132,29 @@ public class MemStore implements TripleStore {
   /*
    * inherited javadoc
    */
-  public List<ResultObject> list(Criteria criteria, Transaction txn)
-                          throws OtmException {
+  public List list(Criteria criteria, Transaction txn)
+            throws OtmException {
     MemStoreConnection msc      = (MemStoreConnection) txn.getConnection();
     Storage            storage  = msc.getStorage();
     ClassMetadata      cm       = criteria.getClassMetadata();
     Set<String>        subjects = conjunction(criteria.getCriterionList(), criteria, storage);
-    List<ResultObject> results  = new ArrayList<ResultObject>();
+    List               results  = new ArrayList();
 
-    for (String id : subjects)
-      results.add(get(cm, id, txn));
+    for (String id : subjects) {
+      Object o = txn.getSession().get(cm.getSourceClass(), id);
+
+      if (o != null)
+        results.add(o);
+    }
 
     return results;
   }
 
-  public Results doQuery(String query, Transaction txn) throws OtmException {
+  /*
+   * inherited javadoc
+   */
+  public Results doQuery(String query, Transaction txn)
+                  throws OtmException {
     throw new OtmException("OQL queries not supported");
   }
 
