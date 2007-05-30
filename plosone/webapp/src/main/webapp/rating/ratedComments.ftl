@@ -4,7 +4,7 @@
     <h1>Ratings</h1>
       <div class="source">
         <span>Original Article</span>
-        <a href="/article/fetchArticle.action?articleURI=${articleURI}" title="Back to original article" class="article icon">TODO: Article meta data
+        <a href="/article/fetchArticle.action?articleURI=${articleURI}" title="Back to original article" class="article icon">${articleTitle}
           <span class="inline-rating inlineRatingEnd">
             <ul class="star-rating pone_rating" title="overall">
               <li class="current-rating overall-rating pct70">TODO: re-calc ratings summary? best to refactor ratings action(s)?</li>
@@ -20,7 +20,7 @@
         <div class="response ratingComment">
           <div class="hd">
             <!-- begin : response title : user -->
-            <h3><span class="detail">Posted by <a href="/user/showUser.action?userId=${articleRatingSummary.creator}" title="Annotation Author" class="user icon">${articleRatingSummary.creator}</a></span></h3>
+            <h3><span class="detail">Posted by <a href="/user/showUser.action?userId=${articleRatingSummary.creatorURI}" title="Annotation Author" class="user icon">${articleRatingSummary.creatorName}</a></span></h3>
             <!-- end : response title : user -->
           </div>
           <!-- begin : response body text -->
