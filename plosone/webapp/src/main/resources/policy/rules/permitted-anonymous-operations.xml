@@ -32,6 +32,7 @@
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">userAccounts:createUser</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">userAccounts:lookUpUser</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">profiles:findUsersByProfile</AttributeValue>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ratings:getRatings</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ratings:getStats</AttributeValue>
       </Apply>
     </Condition>
