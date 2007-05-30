@@ -19,7 +19,10 @@ import org.plos.models.Rating;
  */
 public class ArticleRatingSummary {
 
-  private String creator = null;
+  private String articleURI;
+  private String articleTitle;
+  private String creatorURI;
+  private String creatorName;
   private int style;
   private int insight;
   private int reliability;
@@ -46,11 +49,32 @@ public class ArticleRatingSummary {
     this.commentValue = comment.getBody().getValue();
   }
 
-  public void setCreator(String creator) {
-    this.creator = creator;
+  public void setArticleURI(String articleURI) {
+    this.articleURI = articleURI;
   }
-  public String getCreator() {
-    return creator;
+  public String getArticleURI() {
+    return articleURI;
+  }
+
+  public void setArticleTitle(String articleTitle) {
+    this.articleTitle = articleTitle;
+  }
+  public String getArticleTitle() {
+    return articleTitle;
+  }
+
+  public void setCreatorURI(String creatorURI) {
+    this.creatorURI = creatorURI;
+  }
+  public String getCreatorURI() {
+    return creatorURI;
+  }
+
+  public void setCreatorName(String creatorName) {
+    this.creatorName = creatorName;
+  }
+  public String getCreatorName() {
+    return creatorName;
   }
 
   public void setStyle(int style) {

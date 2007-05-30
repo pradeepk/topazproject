@@ -3,7 +3,7 @@
             <#else>
               <#assign char = "">
             </#if>
-		    <@ww.url id="ratingsURL" namespace="/rate" action="getArticleRating" includeParams="none" target="${articleURI}"/>
+		    <@ww.url id="ratingsURL" namespace="/rate" action="getArticleRatings" includeParams="none" articleURI="${articleURI}"/>
             <h6>Average Rating <a href="${ratingsURL}" class="rating">(${numOverallRatings} User Rating${char})</a></h6>
             <ol>
               <li>

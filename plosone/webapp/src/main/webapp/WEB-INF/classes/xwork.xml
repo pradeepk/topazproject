@@ -357,7 +357,7 @@
         <param name="noCache">true</param>
       </result>
     </action>
-    <action name="getArticleRating">
+    <action name="getArticleRatings" class="org.plos.rating.action.GetArticleRatingsAction">
       <result name="success" type="plosOneFreemarker">
         <param name="templateFile">/rating/index.ftl</param>
       </result>

@@ -20,16 +20,14 @@ import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
-
 import org.plos.action.BaseActionSupport;
-
+import org.plos.article.service.ArticleOtmService;
 import org.plos.configuration.OtmConfiguration;
-
 import org.plos.models.CommentAnnotation;
 import org.plos.models.Rating;
 import org.plos.models.RatingSummary;
-
 import org.plos.user.PlosOneUser;
 
 import org.topazproject.otm.OtmException;
@@ -48,6 +46,7 @@ import org.springframework.beans.factory.annotation.Required;
 public class GetArticleRatingsAction extends BaseActionSupport {
 
   private Session            session;
+  private ArticleOtmService  articleOtmService;
   private String             articleURI;
   private boolean            hasRated = false;
   private Map<String, ArticleRatingSummary> articleRatings = new HashMap();
@@ -93,12 +92,31 @@ public class GetArticleRatingsAction extends BaseActionSupport {
         ArticleRatingSummary userArticleRatings = articleRatings.get(rating.getCreator());
         if (userArticleRatings == null) {
           userArticleRatings = new ArticleRatingSummary();
-          userArticleRatings.setCreator(rating.getCreator());
+          userArticleRatings.setCreatorURI(rating.getCreator());
+          // TODO: resolve creatorURI to creatorName, for now, it will be filled in w/tmp String below
           articleRatings.put(rating.getCreator(), userArticleRatings);
         }
 
         // update Rating type for this user
         userArticleRatings.addRating(rating);
+        
+        // respect existing values for articleURI & articleTitle, should also be more effecient
+        if (userArticleRatings.getArticleURI() == null) {
+          userArticleRatings.setArticleURI(articleURI);
+        }
+        if (userArticleRatings.getArticleTitle() == null) {
+          // TODO: ArticleOtmService...
+          userArticleRatings.setArticleTitle("Article title place holder for testing, resolve " + articleURI);
+        }
+
+        // respect existing values for creatorURI & creatorName, should also be more effecient
+        if (userArticleRatings.getCreatorURI() == null) {
+          userArticleRatings.setCreatorURI(rating.getCreator());
+        }
+        if (userArticleRatings.getCreatorName() == null) {
+          // TODO: user service or native OTM
+          userArticleRatings.setCreatorName("Creator name place holder for testing, resolve " + rating.getCreator());
+        }
 
         hasRated = true;
       }
@@ -112,7 +130,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
         ArticleRatingSummary userArticleRatings = articleRatings.get(comment.getCreator());
         if (userArticleRatings == null) {
           userArticleRatings = new ArticleRatingSummary();
-          userArticleRatings.setCreator(comment.getCreator());
+          userArticleRatings.setCreatorURI(comment.getCreator());
           articleRatings.put(comment.getCreator(), userArticleRatings);
         }
 
@@ -174,6 +192,28 @@ public class GetArticleRatingsAction extends BaseActionSupport {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
+  }
+
+  /**
+   * Gets the ArticleOtmService.
+   * Use ArticleOtmService v native OTM as it's aware of Article semantics.
+   *
+   * @return The ArticleOtmService.
+   */
+  public ArticleOtmService getArticleOtmService() {
+    return articleOtmService;
+  }
+
+  /**
+   * Sets the ArticleOtmService.
+   * Use ArticleOtmService v native OTM as it's aware of Article semantics.
+   * Called by Spring's bean wiring.
+   *
+   * @param ArticleOtmService to set.
+   */
+  @Required
+  public void setArticleOtmService(ArticleOtmService articleOtmService) {
+    this.articleOtmService = articleOtmService;
   }
 
   /**
