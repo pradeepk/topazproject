@@ -1,104 +1,76 @@
-<div id="discussionContainer">	
-	<!-- begin : main content -->
-	<div id="content">
-		<h1>Ratings</h1>
-		<div class="source">
-			<span>Original Article</span>
-			<a href="/plosone-webapp/article/fetchArticle.action?articleURI=info:doi/10.1371/journal.pone.0000151&amp;annotationId=info:doi/10.1371/annotation/2" title="Back to original article" class="article icon">Recruitment and Activation of RSK2 by HIV-1 Tat
-	            <span class="inline-rating inlineRatingEnd">
-	              <ul class="star-rating pone_rating" title="overall">
-	                <li class="current-rating overall-rating pct70">Currently 3.3/5 Stars.</li>
-	              </ul>    
-	            </span>  
-	        </a>
-		</div>
+<div id="discussionContainer">
 
-		<div class="response ratingComment">
-			<div class="hd">
-			  <!-- begin response title -->
-			  <h3>fd <span class="detail">Posted by <a href="/plosone-webapp/user/showUser.action?userId=info%3Adoi%2F10.1371%2Faccount%2F1" title="Annotation Author" class="user icon">joycelyn</a> on <strong>23 Apr 2007 </strong>at<strong> 19:58 GMT</strong></span></h3>
-			  <!-- end : response title -->
-			  <!-- begin : response poster detail -->
-			
-			  
-  			  <!-- end : response poster details -->
-			</div>
-			<!-- begin : response body text -->
-			<div class="ratingDetail">
-				<div class="posterRating">
-	                <ol class="ratingAvgs">
-	                  <li><label for="insight">Insight</label>
-						<ul class="star-rating pone_rating" title="insight">
-						  <li class="current-rating average pct60">Currently 3/5 Stars.</li>
-						</ul>		
-	                  </li>
-	                  <li><label for="reliability">Reliability</label>
-						<ul class="star-rating pone_rating" title="reliability">
-						  <li class="current-rating average pct40">Currently 2/5 Stars.</li>
-						</ul>		
-	                  </li>
-	                  <li><label for="style">Style</label>
-			        	<ul class="star-rating pone_rating" title="style">
-						  <li class="current-rating average pct80">Currently 4/5 Stars.</li>
-						</ul>		
-	                  </li>
-	                </ol>
-				</div>
-				<blockquote>
-				  <p>asfsdfs</p>
-				</blockquote>
-			</div>
-			<!-- end : response body text -->
-		</div>
-		
-		<div class="rsep"></div>
-		
-		<div class="response ratingComment">
-			<div class="hd">
-			  <!-- begin response title -->
-			  <h3>fd <span class="detail">Posted by <a href="/plosone-webapp/user/showUser.action?userId=info%3Adoi%2F10.1371%2Faccount%2F1" title="Annotation Author" class="user icon">joycelyn</a> on <strong>23 Apr 2007 </strong>at<strong> 19:58 GMT</strong></span></h3>
-			  <!-- end : response title -->
-			  <!-- begin : response poster detail -->
-			
-			  
-  			  <!-- end : response poster details -->
-			</div>
-			<!-- begin : response body text -->
-			<div class="ratingDetail">
-				<div class="posterRating">
-	                <ol class="ratingAvgs">
-	                  <li><label for="insight">Insight</label>
-						<ul class="star-rating pone_rating" title="insight">
-						  <li class="current-rating average pct60">Currently 3/5 Stars.</li>
-						</ul>		
-	                  </li>
-	                  <li><label for="reliability">Reliability</label>
-						<ul class="star-rating pone_rating" title="reliability">
-						  <li class="current-rating average pct40">Currently 2/5 Stars.</li>
-						</ul>		
-	                  </li>
-	                  <li><label for="style">Style</label>
-			        	<ul class="star-rating pone_rating" title="style">
-						  <li class="current-rating average pct80">Currently 4/5 Stars.</li>
-						</ul>		
-	                  </li>
-	                </ol>
-				</div>
-				<blockquote>
-				  <p>asfsdfs</p>
-				</blockquote>
-			</div>
-			<!-- end : response body text -->
+  <div id="content">
+    <h1>Ratings</h1>
+      <div class="source">
+        <span>Original Article</span>
+        <a href="/article/fetchArticle.action?articleURI=${articleURI}" title="Back to original article" class="article icon">TODO: Article meta data
+          <span class="inline-rating inlineRatingEnd">
+            <ul class="star-rating pone_rating" title="overall">
+              <li class="current-rating overall-rating pct70">TODO: re-calc ratings summary? best to refactor ratings action(s)?</li>
+            </ul>
+          </span>
+        </a>
+        <p><a href="/annotation/getCommentary.action?target=${articleURI}" class="commentary icon">See all commentary</a> on this article</p>
+      </div>
 
-		</div>
-	</div>
+      <div class="rsep"></div>
 
-	
-				<p><a href="/plosone-webapp/annotation/getCommentary.action?target=info%3Adoi%2F10.1371%2Fjournal.pone.0000151" class="commentary icon">See all commentary</a> on this article</p>
-	
-	<!-- end : main contents -->
-
-
-
-
+      <#list articleRatings as articleRatingSummary>
+        <div class="response ratingComment">
+          <div class="hd">
+            <!-- begin : response title : user -->
+            <h3><span class="detail">Posted by <a href="/user/showUser.action?userId=${articleRatingSummary.creator}" title="Annotation Author" class="user icon">${articleRatingSummary.creator}</a></span></h3>
+            <!-- end : response title : user -->
+          </div>
+          <!-- begin : response body text -->
+          <div class="ratingDetail">
+            <div class="posterRating">
+              <ol class="ratingAvgs">
+                <#if articleRatingSummary.insight?exists>
+                  <li><label for="insight">Insight</label>
+                      <ul class="star-rating pone_rating" title="insight">
+                        <#assign insightPct = (20 * articleRatingSummary.insight)?string("##0")>
+                        <li class="current-rating average pct${insightPct}">Currently ${articleRatingSummary.insight?string("0.#")}/5 Stars.</li>
+                      </ul>
+                  </li>
+                </#if>
+                <#if articleRatingSummary.reliability?exists>
+                  <li><label for="reliability">Reliability</label>
+                    <ul class="star-rating pone_rating" title="reliability">
+                      <#assign reliabilityPct = (20 * articleRatingSummary.reliability)?string("##0")>
+                      <li class="current-rating average pct${reliabilityPct}">Currently ${articleRatingSummary.reliability?string("0.#")}/5 Stars.</li>
+                    </ul>
+                  </li>
+                </#if>
+                <#if articleRatingSummary.style?exists>
+                  <li><label for="style">Style</label>
+                    <ul class="star-rating pone_rating" title="style">
+                      <#assign stylePct = (20 * articleRatingSummary.style)?string("##0")>
+                      <li class="current-rating average pct${stylePct}">Currently ${articleRatingSummary.style?string("0.#")}/5 Stars.</li>
+                    </ul>
+                  </li>
+                </#if>
+                <#if articleRatingSummary.overall?exists>
+                  <li><label for="overall">Overall</label>
+                    <ul class="star-rating pone_rating" title="overall">
+                      <#assign stylePct = (20 * articleRatingSummary.overall)?string("##0")>
+                      <li class="current-rating average pct${stylePct}">Currently ${articleRatingSummary.overall?string("0.#")}/5 Stars.</li>
+                    </ul>
+                  </li>
+                </#if>
+              </ol>
+            </div>
+            <blockquote>
+              <#if articleRatingSummary.commentTitle?exists>
+                <h4>${articleRatingSummary.commentTitle}</h4>
+              </#if>
+              <#if articleRatingSummary.commentValue?exists>
+                <p>${articleRatingSummary.commentValue}</p>
+              </#if>
+            </blockquote>
+          </div>
+        </div>
+      </#list>
+    </div>
 </div>
