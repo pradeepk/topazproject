@@ -76,7 +76,7 @@ public class TransCriterion implements Criterion {
 
     String model = m.getModel();
 
-    if (model == null)
+    if ((model == null) || model.equals(cm.getModel()))
       model = "";
     else {
       ModelConfig conf = criteria.getSession().getSessionFactory().getModel(model);

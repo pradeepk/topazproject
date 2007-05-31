@@ -83,7 +83,7 @@ public class WalkCriterion implements Criterion {
 
     String model = m.getModel();
 
-    if (model != null) {
+    if ((model != null) && !cm.getModel().equals(model)) {
       ModelConfig conf = criteria.getSession().getSessionFactory().getModel(model);
 
       if (conf == null)
