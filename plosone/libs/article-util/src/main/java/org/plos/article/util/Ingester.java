@@ -166,7 +166,7 @@ public class Ingester {
       } finally {
         if (rb != null) {
           log.info("Rolling back failed ingest for '" + uri + "'");
-          rb.doRollback(itql, apim, fgs /*, perms*/);
+          rb.doRollback(itql, apim, fgs);
         }
       }
 
