@@ -28,6 +28,13 @@
         https://${plosone.hostname}:${plosone.port.https}${plosone.app-context}/CasProxyServlet
       </proxy-callback>
     </url>
+
+    <!-- Stuff used by doi-resolver -->
+    <webserver-url>http://FQHN:8080</webserver-url>
+    <article-action>article/fetchArticle.action?articleURI=</article-action>
+    <figure-action1>article/slideshow.action?uri=</figure-action1>
+    <figure-action2>&amp;imageURI=</figure-action2>
+    <error-page>static/pageNotFound.action</error-page>
   </plosone>
   <plos-registration>
     <hostname>FQHN</hostname>
