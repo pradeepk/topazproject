@@ -48,6 +48,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
   private Session            session;
   private ArticleOtmService  articleOtmService;
   private String             articleURI;
+  private String             articleTitle;
   private boolean            hasRated = false;
   private Map<String, ArticleRatingSummary> articleRatings = new HashMap();
 
@@ -91,7 +92,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
         // does an entry exist for this user?
         ArticleRatingSummary userArticleRatings = articleRatings.get(rating.getCreator());
         if (userArticleRatings == null) {
-          userArticleRatings = new ArticleRatingSummary();
+          userArticleRatings = new ArticleRatingSummary(getArticleURI(), getArticleTitle());
           userArticleRatings.setCreatorURI(rating.getCreator());
           // TODO: resolve creatorURI to creatorName, for now, it will be filled in w/tmp String below
           articleRatings.put(rating.getCreator(), userArticleRatings);
@@ -99,15 +100,6 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
         // update Rating type for this user
         userArticleRatings.addRating(rating);
-        
-        // respect existing values for articleURI & articleTitle, should also be more effecient
-        if (userArticleRatings.getArticleURI() == null) {
-          userArticleRatings.setArticleURI(articleURI);
-        }
-        if (userArticleRatings.getArticleTitle() == null) {
-          // TODO: ArticleOtmService...
-          userArticleRatings.setArticleTitle("Article title place holder for testing, resolve " + articleURI);
-        }
 
         // respect existing values for creatorURI & creatorName, should also be more effecient
         if (userArticleRatings.getCreatorURI() == null) {
@@ -129,7 +121,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
         // does an entry exist for this user?
         ArticleRatingSummary userArticleRatings = articleRatings.get(comment.getCreator());
         if (userArticleRatings == null) {
-          userArticleRatings = new ArticleRatingSummary();
+          userArticleRatings = new ArticleRatingSummary(getArticleURI(), getArticleTitle());
           userArticleRatings.setCreatorURI(comment.getCreator());
           articleRatings.put(comment.getCreator(), userArticleRatings);
         }
@@ -173,6 +165,30 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    */
   public void setArticleURI(String articleURI) {
     this.articleURI = articleURI;
+  }
+
+  /**
+   * Gets the title of the article being rated.
+   *
+   * @return Returns the articleTitle.
+   */
+  public String getArticleTitle() {
+    
+    if (articleTitle != null) {
+      return articleTitle;
+    }
+    
+    articleTitle = "Article title place holder for testing, resolve " + articleURI;
+    return articleTitle;
+  }
+
+  /**
+   * Sets the title of the article being rated.
+   *
+   * @param articleTitle The article's title.
+   */
+  public void setArticleTitle(String articleTitle) {
+    this.articleTitle = articleTitle;
   }
 
   /**
@@ -243,7 +259,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
     // TODO: remove dubbing
     if (log.isDebugEnabled()) {
-      log.debug("getArticleRatings():" + articleRatings.size());
+      log.debug("getArticleRatings(): (" + articleRatings.size() + ")" + articleURI + articleTitle);
     }
     return articleRatings.values();
   }
