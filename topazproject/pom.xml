@@ -212,6 +212,11 @@
         <version>${pom.version}</version>
       </dependency>
       <dependency>
+        <groupId>org.plosone</groupId>
+        <artifactId>conf-helper</artifactId>
+        <version>${pom.version}</version>
+      </dependency>
+      <dependency>
         <groupId>org.topazproject</groupId>
         <artifactId>fedora-client</artifactId>
         <version>${pom.version}</version>

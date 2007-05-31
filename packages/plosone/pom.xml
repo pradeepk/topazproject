@@ -142,16 +142,10 @@
                   <groupname>topaz</groupname>
                   <sources>
                     <source>
-                      <location>src/main/resources/plosOne.xml</location>
+                      <location>src/main/resources/plosone.xml</location>
                     </source>
                     <source>
                       <location>src/main/resources/plosone.properties</location>
-                    </source>
-                    <source>
-                      <location>src/main/resources/plosOneDoi.xml</location>
-                    </source>
-                    <source>
-                      <location>src/main/resources/topaz.xml</location>
                     </source>
                   </sources>
                 </mapping>

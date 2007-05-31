@@ -7,7 +7,7 @@
   <display-name>PLoS ONE DOI Resolver</display-name>
 
   <listener>
-    <listener-class>org.plos.doi.config.WebAppListener</listener-class>
+    <listener-class>org.plos.configuration.WebAppListener</listener-class>
   </listener>
 
   <servlet>

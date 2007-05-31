@@ -16,6 +16,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import java.net.URL;
+
 import java.util.HashMap;
 import java.util.Map;
 
@@ -96,6 +98,24 @@ public class PDPFactory {
    */
   public PDPFactory(File configFile) throws ParsingException, UnknownIdentifierException {
     store = new ConfigurationStore(configFile);
+
+    // xxx: use defaults now; may be provide ability to choose factories later
+    store.useDefaultFactories();
+    defaultPDPConfig = store.getDefaultPDPConfig();
+  }
+
+  /**
+   * Creates a PDPFactory from a configuration file.  See
+   * <code>com.sun.xacml.ConfigurationStore</code> on how to configure the Factory.
+   *
+   * @param configUrl A URL pointing to a file containing various PDP configurations
+   *
+   * @throws ParsingException on error in parsing the config file
+   * @throws UnknownIdentifierException when an unknown identifier was used in a standard xacml
+   *         factory
+   */
+  public PDPFactory(URL configUrl) throws ParsingException, UnknownIdentifierException {
+    store = new ConfigurationStore(configUrl);
 
     // xxx: use defaults now; may be provide ability to choose factories later
     store.useDefaultFactories();

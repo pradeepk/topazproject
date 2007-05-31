@@ -17,6 +17,7 @@
   <modules>
     <module>otm-models</module>
     <module>article-util</module>
+    <module>conf-helper</module>
   </modules>
 
   <!-- TODO: Move this up one level - be sure to test! -->

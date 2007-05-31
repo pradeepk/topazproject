@@ -45,6 +45,7 @@ WARNING: See overrides/defaults in parent common.xml (head/packages/src/main/ass
       <unpack>true</unpack>
       <includes>
         <include>*:war</include>
+        <include>*search*:war</include>
       </includes>
       <excludes>
         <exclude>*plosone-webapp*:war</exclude>

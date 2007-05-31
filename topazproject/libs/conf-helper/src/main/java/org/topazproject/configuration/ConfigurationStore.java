@@ -45,7 +45,7 @@ public class ConfigurationStore {
    * @return Returns the currently loaded configuration root
    */
   public Configuration getConfiguration() {
-    return configuration;
+    return org.plos.configuration.ConfigurationStore.getInstance().getConfiguration();
   }
 
   /**

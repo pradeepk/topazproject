@@ -34,14 +34,10 @@
     <users>
       <pdpName>_default_</pdpName>
     </users>
-    <annotations>
-      <pdpName>_default_</pdpName>
-    </annotations>
-    <replies>
-      <pdpName>_default_</pdpName>
-    </replies>
-    <articles>
-      <pdpName>_default_</pdpName>
-    </articles>
+    
+    <life-cycle-listeners>
+      <listener name="models">org.plos.bootstrap.WebAppListenerInitModels</listener>
+      <listener name="ehcache">net.sf.ehcache.constructs.web.ShutdownListener</listener>
+    </life-cycle-listeners>
   </topaz>
 </config>

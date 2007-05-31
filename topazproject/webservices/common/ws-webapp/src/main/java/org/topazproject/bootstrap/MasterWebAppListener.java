@@ -21,7 +21,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.configuration.ConfigurationStore;
-import org.topazproject.configuration.WebAppListener;
+import org.plos.configuration.WebAppListener;
 
 /**
  * A listener class for web-apps to initialize things at startup.

@@ -17,7 +17,8 @@
       <artifactId>mulgara-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.topazproject</groupId>
+      <!-- <groupId>org.topazproject</groupId> -->
+      <groupId>org.plosone</groupId>
       <artifactId>conf-helper</artifactId>
     </dependency>
     <dependency>

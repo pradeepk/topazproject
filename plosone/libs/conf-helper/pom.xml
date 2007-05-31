@@ -6,8 +6,8 @@
   <name>Configuration Helper</name>
 
   <parent>
-    <groupId>org.topazproject</groupId>
-    <artifactId>topazproject-libs</artifactId>
+    <groupId>org.plosone</groupId>
+    <artifactId>plosone-libs</artifactId>
     <version>0.7-SNAPSHOT</version>
   </parent>
 
@@ -28,12 +28,6 @@
       <artifactId>junit</artifactId>
     </dependency>
 
-    <!-- This is f***ed up: All topaz rubbish needs to take a commons-config Configuration obj,
-         ***NOT*** use a singleton -->
-    <dependency>
-      <groupId>org.plosone</groupId>
-      <artifactId>conf-helper</artifactId>
-    </dependency>
   </dependencies>
 
 </project>
