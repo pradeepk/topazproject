@@ -132,10 +132,7 @@
     <param name="file_system" value="fedora.server.storage.lowlevel.GenericFileSystem"/>
     <param name="backslash_is_escape" value="true" oraclevalue="false"/>
    </module>
-   <module role="fedora.server.security.Authorization" class="org.topazproject.fedora.security.FedoraAuthorization">
-   <!--
   <module role="fedora.server.security.Authorization" class="fedora.server.security.DefaultAuthorization">
-    -->
     <comment>Builds and manages Fedora's authorization structure.</comment>
     <param name="access-service-uri" value="http://localhost:9090/access/services/AccessServicePort"/>
     <param name="access-service-pdp" value="_default_"/>
