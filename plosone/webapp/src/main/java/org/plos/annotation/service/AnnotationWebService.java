@@ -54,13 +54,15 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
  */
 public class AnnotationWebService extends BaseAnnotationService {
   private GeneralCacheAdministrator articleCacheAdministrator;
-  private static final String       CACHE_KEY_ANNOTATION = "ANNOTATION";
-  private static final Log          log                  =
+  private static final String       CACHE_KEY_ANNOTATION     = "ANNOTATION";
+  private static final Log          log                      =
     LogFactory.getLog(AnnotationWebService.class);
   private AnnotationsPEP            pep;
   private FedoraHelper              fedora;
   private Session                   session;
   private PermissionWebService      permissions;
+  private static final String       PLOSONE_0_6_DEFAULT_TYPE =
+    "http://www.w3.org/2000/10/annotationType#Annotation";
 
   /**
    * DOCUMENT ME!
@@ -76,7 +78,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     } catch (IOException e) {
       throw e;
     } catch (Exception e) {
-      IOException ioe                                    = new IOException("Failed to create PEP");
+      IOException ioe = new IOException("Failed to create PEP");
       ioe.initCause(e);
       throw ioe;
     }
@@ -302,10 +304,15 @@ public class AnnotationWebService extends BaseAnnotationService {
           TransactionHelper.doInTx(session,
                                    new TransactionHelper.Action<List<Annotation>>() {
               public List<Annotation> run(Transaction tx) {
+                // xxx: See trac #357. The previous default was incorrect. 
+                // Support both the old and the new to be compatible. (till data migration)
                 return tx.getSession().createCriteria(Annotation.class)
                           .add(Restrictions.eq("mediator", getApplicationId()))
                           .add(Restrictions.eq("annotates", target))
-                          .add(Restrictions.eq("type", getDefaultType())).list();
+                          .add(Restrictions.disjunction()
+                                            .add(Restrictions.eq("type", getDefaultType()))
+                                            .add(Restrictions.eq("type", PLOSONE_0_6_DEFAULT_TYPE)))
+                          .list();
               }
             });
 
