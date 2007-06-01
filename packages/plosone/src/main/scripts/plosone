@@ -13,7 +13,7 @@
 # description: plosone container
 
 # Validate valid configuration files
-[ -e /etc/topaz/plosOne.xml ] && ! xmllint --noout /etc/topaz/plosOne.xml && exit 1
+[ -e /etc/topaz/plosone.xml ] && ! xmllint --noout /etc/topaz/plosone.xml && exit 1
 
 # Source function library (not really used but seems standard on redhat)
 . /etc/init.d/functions
