@@ -99,6 +99,7 @@ public class AnnotationWebService extends BaseAnnotationService {
    *
    * @throws RemoteException RemoteException
    * @throws UnsupportedEncodingException UnsupportedEncodingException
+   * @throws UnsupportedOperationException DOCUMENT ME!
    */
   public String createAnnotation(final String mimeType, final String target, final String context,
                                  final String olderAnnotation, final String title, final String body)
@@ -115,15 +116,14 @@ public class AnnotationWebService extends BaseAnnotationService {
     if (earlierAnnotation != null)
       throw new UnsupportedOperationException("supersedes is not supported");
 
-    String       bodyUri;
-    String       user;
+    String bodyUri;
+    String user;
 
     try {
       fedora.getContext().activate();
-      user                        = fedora.getContext().getUserName();
-      bodyUri                     = fedora.createBody(contentType,
-                                                      body.getBytes(getEncodingCharset()),
-                                                      "Annotation", "Annotation Body");
+      user      = fedora.getContext().getUserName();
+      bodyUri   = fedora.createBody(contentType, body.getBytes(getEncodingCharset()), "Annotation",
+                                    "Annotation Body");
     } finally {
       fedora.getContext().passivate();
     }
@@ -138,10 +138,12 @@ public class AnnotationWebService extends BaseAnnotationService {
     a.setAnnotates(URI.create(target));
     a.setContext(context);
     a.setTitle(title);
+
     if (isAnonymous())
       a.setAnonymousCreator(user);
     else
       a.setCreator(user);
+
     a.setBody(URI.create(bodyUri));
     a.setCreated(new Date());
 
@@ -451,9 +453,11 @@ public class AnnotationWebService extends BaseAnnotationService {
       TransactionHelper.doInTx(session,
                                new TransactionHelper.Action<List<Annotation>>() {
           public List<Annotation> run(Transaction tx) {
-            Criteria c = tx.getSession().createCriteria(Annotation.class);
+            Criteria c           = tx.getSession().createCriteria(Annotation.class);
+
             if (mediator != null)
-                c.add(Restrictions.eq("mediator", mediator));
+              c.add(Restrictions.eq("mediator", mediator));
+
             if (state == 0)
               c.add(Restrictions.ne("state", "0"));
             else
