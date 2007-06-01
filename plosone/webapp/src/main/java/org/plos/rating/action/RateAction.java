@@ -98,7 +98,7 @@ public class RateAction extends BaseActionSupport {
     CommentAnnotation styleComment       = null;
     CommentAnnotation reliabilityComment = null;
     CommentAnnotation overallComment     = null;
-    
+
     URI               annotatedArticle   = null;
 
     try {
@@ -150,8 +150,10 @@ public class RateAction extends BaseActionSupport {
       }
 
       List ratingsList =
-        session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
-                .add(Restrictions.eq("creator", user.getUserId())).list();
+        session.createCriteria(Rating.class)
+          .add(Restrictions.eq("annotates", articleURI))
+          .add(Restrictions.eq("creator", user.getUserId()))
+          .list();
 
       iter = ratingsList.iterator();
 
@@ -168,6 +170,8 @@ public class RateAction extends BaseActionSupport {
           styleRating = rating;
         } else if (Rating.RELIABILITY_TYPE.equals(rating.getType())) {
           reliabilityRating = rating;
+        } else if (Rating.OVERALL_TYPE.equals(rating.getType())) {
+          overallRating = rating;
         }
       }
 
@@ -246,11 +250,41 @@ public class RateAction extends BaseActionSupport {
         reliabilitySummary.addRating((int) reliability);
       }
 
+      // force a refresh of overall value due to new individual values
+      RatingSummary calcSummary = new RatingSummary();
+      calculateOverall(true, calcSummary, insightSummary, styleSummary, reliabilitySummary);
+      overall = calcSummary.getBody().retrieveAverage();
+
+      if (overall > 0) {
+        if (overallRating == null) {
+          overallRating = new Rating();
+        } else {
+          if (overallSummary != null) {
+            overallSummary.removeRating(overallRating.retrieveValue());
+          }
+        }
+
+        overallRating.setType(Rating.OVERALL_TYPE);
+        overallRating.setContext("");
+        overallRating.setAnnotates(annotatedArticle);
+        overallRating.assignValue((int) overall);
+        overallRating.setCreator(user.getUserId());
+        overallRating.setCreated(now);
+
+        if (overallSummary == null) {
+          overallSummary = new RatingSummary();
+          overallSummary.setAnnotates(annotatedArticle);
+          overallSummary.setType(Rating.OVERALL_TYPE);
+        }
+
+        overallSummary.addRating((int) overall);
+      }
+
       // currently, the only CommentAnnotation is on the overall Rating
       List<CommentAnnotation> commentList =
         session.createCriteria(CommentAnnotation.class)
-          .add(Restrictions.eq("creator", user.getUserId()))
           .add(Restrictions.eq("annotates", overallRating.getId()))
+          .add(Restrictions.eq("creator", user.getUserId()))
           .list();
 
       if (commentList.size() > 0) {
