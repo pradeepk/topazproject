@@ -128,29 +128,29 @@ public class GetArticleRatingsAction extends BaseActionSupport {
           userArticleRatings.setCreatorName("Creator name place holder for testing, resolve " + rating.getCreator());
         }
 
+        // also add any user comments for this Rating
+        List<CommentAnnotation> commentList =
+          session.createCriteria(CommentAnnotation.class)
+            .add(Restrictions.eq("annotates", rating.getId()))
+            .list();
+        for (CommentAnnotation comment : commentList) {
+
+          // does an entry exist for this user?
+          ArticleRatingSummary userCommentRatings = articleRatings.get(comment.getCreator());
+          if (userCommentRatings == null) {
+            userCommentRatings = new ArticleRatingSummary(getArticleURI(), getArticleTitle());
+            userCommentRatings.setCreatorURI(comment.getCreator());
+            articleRatings.put(comment.getCreator(), userCommentRatings);
+          }
+
+          // TODO: current ratings model assumes 1 & only 1 comment exists,
+          //   expand to mutiple typed comments?
+          // update Comment for this user
+          userCommentRatings.addComment(comment);
+        }
+
         hasRated = true;
       }
-
-      // also add user comments
-      List<CommentAnnotation> commentList =
-        session.createCriteria(CommentAnnotation.class).add(Restrictions.eq("annotates", articleURI)).list();
-      for (CommentAnnotation comment : commentList) {
-
-        // does an entry exist for this user?
-        ArticleRatingSummary userArticleRatings = articleRatings.get(comment.getCreator());
-        if (userArticleRatings == null) {
-          userArticleRatings = new ArticleRatingSummary(getArticleURI(), getArticleTitle());
-          userArticleRatings.setCreatorURI(comment.getCreator());
-          articleRatings.put(comment.getCreator(), userArticleRatings);
-        }
-
-        // TODO: current ratings model assumes 1 & only 1 comment exists,
-        //   expand to mutiple typed comments?
-        // update Comment for this user
-        userArticleRatings.addComment(comment);
-
-        hasRated = true;
-        }
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
