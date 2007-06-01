@@ -52,6 +52,7 @@ public class RateAction extends BaseActionSupport {
   private double           reliability;
   private double           style;
   private double           overall;
+  private Rating           overallRating;
   private String           articleURI;
   private String           commentTitle;
   private String           comment;
@@ -93,8 +94,11 @@ public class RateAction extends BaseActionSupport {
     RatingSummary     styleSummary       = null;
     RatingSummary     reliabilitySummary = null;
     RatingSummary     overallSummary     = null;
-
-    CommentAnnotation ratingComment      = null;
+    CommentAnnotation insightComment     = null;
+    CommentAnnotation styleComment       = null;
+    CommentAnnotation reliabilityComment = null;
+    CommentAnnotation overallComment     = null;
+    
     URI               annotatedArticle   = null;
 
     try {
@@ -242,25 +246,28 @@ public class RateAction extends BaseActionSupport {
         reliabilitySummary.addRating((int) reliability);
       }
 
+      // currently, the only CommentAnnotation is on the overall Rating
       List<CommentAnnotation> commentList =
-        session.createCriteria(CommentAnnotation.class).add(Restrictions.eq("annotates", articleURI))
-                .add(Restrictions.eq("creator", user.getUserId())).list();
+        session.createCriteria(CommentAnnotation.class)
+          .add(Restrictions.eq("creator", user.getUserId()))
+          .add(Restrictions.eq("annotates", overallRating.getId()))
+          .list();
 
       if (commentList.size() > 0) {
-        ratingComment = commentList.get(0);
+        overallComment = commentList.get(0);
       }
 
       if (!StringUtils.isBlank(commentTitle) || !StringUtils.isBlank(comment)) {
-        if (ratingComment == null) {
-          ratingComment = new CommentAnnotation();
+        if (overallComment == null) {
+          overallComment = new CommentAnnotation();
         }
 
-        ratingComment.setContext("");
-        ratingComment.setAnnotates(annotatedArticle);
-        ratingComment.setTitle(commentTitle);
-        ratingComment.assignComment(comment);
-        ratingComment.setCreator(user.getUserId());
-        ratingComment.setCreated(now);
+        overallComment.setContext("");
+        overallComment.setAnnotates(overallRating.getId());
+        overallComment.setTitle(commentTitle);
+        overallComment.assignComment(comment);
+        overallComment.setCreator(user.getUserId());
+        overallComment.setCreated(now);
       }
 
       if (styleRating != null) {
@@ -290,6 +297,15 @@ public class RateAction extends BaseActionSupport {
         }
       }
 
+      if (overallRating != null) {
+        if (overall > 0)
+          session.saveOrUpdate(overallRating);
+        else {
+          overallSummary.removeRating(overallRating.retrieveValue());
+          session.delete(overallRating);
+        }
+      }
+
       if (styleSummary != null) {
         styleSummary.setCreated(now);
         session.saveOrUpdate(styleSummary);
@@ -316,8 +332,11 @@ public class RateAction extends BaseActionSupport {
       overallSummary.setCreated(now);
       session.saveOrUpdate(overallSummary);
 
-      if (ratingComment != null) {
-        session.saveOrUpdate(ratingComment);
+      if (overallComment != null) {
+        // comment is related to overallRating.
+        // overallRating may have been created so update annotates value
+        overallComment.setAnnotates(overallRating.getId());
+        session.saveOrUpdate(overallComment);
       }
 
       tx.commit(); // Flush happens automatically
@@ -401,8 +420,10 @@ public class RateAction extends BaseActionSupport {
       tx = session.beginTransaction();
 
       List<Rating> ratingsList =
-        session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
-                .add(Restrictions.eq("creator", user.getUserId())).list();
+        session.createCriteria(Rating.class)
+          .add(Restrictions.eq("creator", user.getUserId()))
+          .add(Restrictions.eq("annotates", articleURI))
+          .list();
 
       if (ratingsList.size() < 1) {
         log.debug("didn't find any matching ratings for user: " + user.getUserId());
@@ -422,11 +443,16 @@ public class RateAction extends BaseActionSupport {
           setStyle(rating.retrieveValue());
         else if (Rating.RELIABILITY_TYPE.equals(rating.getType()))
           setReliability(rating.retrieveValue());
+        else if (Rating.OVERALL_TYPE.equals(rating.getType()))
+          setOverall(rating.retrieveValue());
+          setOverallRating(rating);
       }
 
       List<CommentAnnotation> commentList =
-        session.createCriteria(CommentAnnotation.class).add(Restrictions.eq("annotates", articleURI))
-                .add(Restrictions.eq("creator", user.getUserId())).list();
+        session.createCriteria(CommentAnnotation.class)
+          .add(Restrictions.eq("creator", user.getUserId()))
+          .add(Restrictions.eq("annotates", overallRating.getId()))
+          .list();
 
       if (commentList.size() < 1) {
         log.debug("didn't find any matching comment for user: " + user.getUserId());
@@ -534,6 +560,15 @@ public class RateAction extends BaseActionSupport {
    */
   public void setOverall(double overall) {
     this.overall = overall;
+  }
+
+  /**
+   * Sets the overallRating.
+   *
+   * @param overallRating Overall Rating to set.
+   */
+  public void setOverallRating(Rating overallRating) {
+    this.overallRating = overallRating;
   }
 
   /**

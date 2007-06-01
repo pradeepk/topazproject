@@ -24,6 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
+import org.plos.article.util.ArticleUtil;
 import org.plos.configuration.OtmConfiguration;
 import org.plos.models.CommentAnnotation;
 import org.plos.models.Rating;
@@ -49,6 +50,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
   private ArticleOtmService  articleOtmService;
   private String             articleURI;
   private String             articleTitle;
+  private String             articleDescription;
   private boolean            hasRated = false;
   private Map<String, ArticleRatingSummary> articleRatings = new HashMap();
 
@@ -82,6 +84,20 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
       if (log.isDebugEnabled()) {
         log.debug("retrieving all ratings for: " + articleURI);
+      }
+      
+      // fill in Article title if necessary
+      // TODO, expose more of the Article metadata, need a articleOtmService.getArticleInfo(URI)
+      Article article = null;
+      if (articleTile == null) {
+        article = articleOtmService.getArticle(articleURI);
+        articleTitle = article.getTitle();
+      }
+      if (articleDescription == null) {
+        if (article == null) {
+          article = articleOtmService.getArticle(articleURI);
+        }
+        articleDescription = article.getDescription();
       }
 
       // TODO: straight OQL might be better?
@@ -189,6 +205,21 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    */
   public void setArticleTitle(String articleTitle) {
     this.articleTitle = articleTitle;
+  }
+
+  /**
+   * Gets the description of the Article being rated.
+   *
+   * @return Returns the articleDescription.
+   */
+  public String getArticleDescription() {
+    
+    if (articleDescription != null) {
+      return articleDescription;
+    }
+    
+    articleDescription = "Article Description place holder for testing, resolve " + articleURI;
+    return articleDescription;
   }
 
   /**
