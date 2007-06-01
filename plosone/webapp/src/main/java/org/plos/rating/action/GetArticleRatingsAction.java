@@ -25,7 +25,9 @@ import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.util.ArticleUtil;
+import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.configuration.OtmConfiguration;
+import org.plos.models.Article;
 import org.plos.models.CommentAnnotation;
 import org.plos.models.Rating;
 import org.plos.models.RatingSummary;
@@ -72,7 +74,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    *
    * @return WebWork action status
    */
-  public String execute() {
+  public String execute() throws Exception {
     Transaction   tx                 = null;
     PlosOneUser   user               =
       (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
@@ -85,17 +87,17 @@ public class GetArticleRatingsAction extends BaseActionSupport {
       if (log.isDebugEnabled()) {
         log.debug("retrieving all ratings for: " + articleURI);
       }
-      
+
       // fill in Article title if necessary
       // TODO, expose more of the Article metadata, need a articleOtmService.getArticleInfo(URI)
       Article article = null;
-      if (articleTile == null) {
-        article = articleOtmService.getArticle(articleURI);
+      if (articleTitle == null) {
+        article = articleOtmService.getArticle(URI.create(articleURI));
         articleTitle = article.getTitle();
       }
       if (articleDescription == null) {
         if (article == null) {
-          article = articleOtmService.getArticle(articleURI);
+          article = articleOtmService.getArticle(URI.create(articleURI));
         }
         articleDescription = article.getDescription();
       }
@@ -160,6 +162,9 @@ public class GetArticleRatingsAction extends BaseActionSupport {
       }
 
       throw e; // or display error message
+    } catch (NoSuchArticleIdException nsaie) {
+      // should never happen
+      throw new Exception(nsaie);
     }
 
     return SUCCESS;
@@ -189,11 +194,11 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    * @return Returns the articleTitle.
    */
   public String getArticleTitle() {
-    
+
     if (articleTitle != null) {
       return articleTitle;
     }
-    
+
     articleTitle = "Article title place holder for testing, resolve " + articleURI;
     return articleTitle;
   }
@@ -213,11 +218,11 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    * @return Returns the articleDescription.
    */
   public String getArticleDescription() {
-    
+
     if (articleDescription != null) {
       return articleDescription;
     }
-    
+
     articleDescription = "Article Description place holder for testing, resolve " + articleURI;
     return articleDescription;
   }
