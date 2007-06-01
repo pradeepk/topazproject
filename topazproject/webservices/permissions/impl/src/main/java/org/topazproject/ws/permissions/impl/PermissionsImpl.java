@@ -99,17 +99,6 @@ public class PermissionsImpl implements Permissions {
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
   private static final String ITQL_RESOURCE_PERMISSIONS =
     ("select $p $o from ${PP_MODEL} where ($s $p $o in ${MODEL} " //
-    + "  or ($s $impliedBy $o in ${MODEL} " //
-    + "   and ($impliedBy <${IMPLIES}> $p " //
-    + "      or trans($impliedBy <${IMPLIES}> $p))) " //
-    + " ) and ($s <tucana:is> <${resource}> or $s <tucana:is> <${ALL}> " 
-    + "      or $s <${PP}> <${resource}> "
-    + "      or (trans($s <${PP}> $res) and $res <tucana:is> <${resource}>))" //
-    ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
-      .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
-/*
-  private static final String ITQL_RESOURCE_PERMISSIONS =
-    ("select $p $o from ${PP_MODEL} where ($s $p $o in ${MODEL} " //
     + "   and ($s <tucana:is> <${resource}> or $s <tucana:is> <${ALL}> "
     + "      or $s <${PP}> <${resource}> "
     + "      or (trans($s <${PP}> $res) and $res <tucana:is> <${resource}>))"
@@ -121,7 +110,7 @@ public class PermissionsImpl implements Permissions {
     + "      or (trans($s <${PP}> $res) and $res <tucana:is> <${resource}>))" + ")" //
     ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
-*/
+
   //
   private static Ehcache grantsCache  = initCache("permission-grants");
   private static Ehcache revokesCache = initCache("permission-revokes");
