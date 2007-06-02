@@ -16,56 +16,22 @@ import org.plos.auth.db.DatabaseException;
 import org.plos.auth.db.DatabaseContext;
 import org.plos.auth.service.UserService;
 
+import org.apache.commons.configuration.Configuration;
+import org.plos.configuration.ConfigurationStore;
+
 import javax.servlet.ServletContextListener;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContext;
 import java.util.Properties;
 
 /**
- * Initializes the following:
- * - DatabaseContext
- * - UserService
-
- <context-param>
-   <param-name>jdbcDriver</param-name>
-   <param-value>org.postgresql.Driver</param-value>
- </context-param>
- <context-param>
-   <param-name>jdbcUrl</param-name>
-   <param-value>jdbc:postgresql://localhost/postgres</param-value>
- </context-param>
- <context-param>
-   <param-name>usernameToGuidSql</param-name>
-   <param-value>select id from plos_user where loginname=?</param-value>
- </context-param>
- <context-param>
-   <param-name>guidToUsernameSql</param-name>
-   <param-value>select loginname from plos_user where id=?</param-value>
- </context-param>
- <context-param>
-   <param-name>connectionValidationQuery</param-name>
-   <param-value>select 1</param-value>
- </context-param>
- <context-param>
-   <param-name>initialSize</param-name>
-   <param-value>2</param-value>
- </context-param>
- <context-param>
-   <param-name>maxActive</param-name>
-   <param-value>10</param-value>
- </context-param>
- <context-param>
-   <param-name>adminUser</param-name>
-   <param-value>postgres</param-value>
- </context-param>
- <context-param>
-   <param-name>adminPassword</param-name>
-   <param-value>postgres</param-value>
- </context-param>
-
- <listener>
-   <listener-class>org.plos.auth.web.AuthServletContextListener</listener-class>
- </listener>
+ * Initialize the DatabaseContext and UserService for cas.<p>
+ *
+ * Be sure to add to CAS' web.xml as a servlet context listner. Uses commons-config
+ * for configuration.
+ *
+ * @author Viru
+ * @author Eric Brown
  */
 public class AuthServletContextListener implements ServletContextListener {
   private DatabaseContext dbContext;
@@ -74,26 +40,30 @@ public class AuthServletContextListener implements ServletContextListener {
   public void contextInitialized(final ServletContextEvent event) {
     final ServletContext context = event.getServletContext();
 
+    Configuration conf = ConfigurationStore.getInstance().getConfiguration();
+    if (conf == null)
+      throw new Error("Commons-Configuration not initialized properly");
+
     final Properties dbProperties = new Properties();
-    dbProperties.setProperty("url", context.getInitParameter("jdbcUrl"));
-    dbProperties.setProperty("user", context.getInitParameter("dbUser"));
-    dbProperties.setProperty("password", context.getInitParameter("dbPassword"));
+    dbProperties.setProperty("url", conf.getString("cas.db.url"));
+    dbProperties.setProperty("user", conf.getString("cas.db.user"));
+    dbProperties.setProperty("password", conf.getString("cas.db.password"));
 
     try {
       dbContext = DatabaseContext.createDatabaseContext(
-              context.getInitParameter("jdbcDriver"),
+              conf.getString("cas.db.driver"),
               dbProperties,
-              Integer.parseInt(context.getInitParameter("initialSize")),
-              Integer.parseInt(context.getInitParameter("maxActive")),
-              context.getInitParameter("connectionValidationQuery"));
+              conf.getInt("cas.db.initialSize"),
+              conf.getInt("cas.db.maxActive"),
+              conf.getString("cas.db.connectionValidationQuery"));
     } catch (final DatabaseException ex) {
       log.error("Failed to initialize the database context", ex);
     }
 
     final UserService userService = new UserService(
                                           dbContext,
-                                          context.getInitParameter("usernameToGuidSql"),
-                                          context.getInitParameter("guidToUsernameSql"));
+                                          conf.getString("cas.db.usernameToGuidSql"),
+                                          conf.getString("cas.db.guidToUsernameSql"));
 
     context.setAttribute(AuthConstants.USER_SERVICE, userService);
   }

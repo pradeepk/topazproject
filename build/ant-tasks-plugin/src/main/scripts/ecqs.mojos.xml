@@ -58,6 +58,12 @@
         </parameter>
 
         <parameter>
+          <name>CONF_HELPER</name>
+          <property>CONF_HELPER</property>
+          <required>true</required>
+        </parameter>
+
+        <parameter>
           <name>PASSWORD_MOD</name>
           <property>PASSWORD_MOD</property>
           <required>true</required>
@@ -90,6 +96,30 @@
         <parameter>
           <name>COMMONS_COLLECTIONS</name>
           <property>COMMONS_COLLECTIONS</property>
+          <required>true</required>
+        </parameter>
+        
+        <parameter>
+          <name>COMMONS_CONFIG</name>
+          <property>COMMONS_CONFIG</property>
+          <required>true</required>
+        </parameter>
+        
+        <parameter>
+          <name>COMMONS_LANG</name>
+          <property>COMMONS_LANG</property>
+          <required>true</required>
+        </parameter>
+        
+        <parameter>
+          <name>COMMONS_DIGESTER</name>
+          <property>COMMONS_DIGESTER</property>
+          <required>true</required>
+        </parameter>
+        
+        <parameter>
+          <name>COMMONS_BEANUTILS</name>
+          <property>COMMONS_BEANUTILS</property>
           <required>true</required>
         </parameter>
         
