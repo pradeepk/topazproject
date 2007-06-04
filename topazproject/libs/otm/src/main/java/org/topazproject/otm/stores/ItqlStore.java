@@ -406,7 +406,7 @@ public class ItqlStore implements TripleStore {
     // pre-process for special constructs (rdf:List, rdf:bag, rdf:Seq, rdf:Alt)
     String modelUri = getModelUri(cm.getModel(), txn);
     for (String p : fvalues.keySet()) {
-      Mapper m = cm.getMapperByUri(p, false);
+      Mapper m = cm.getMapperByUri(p, false, null);
       if (m == null)
         continue;
       String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), txn) : modelUri;
@@ -428,18 +428,30 @@ public class ItqlStore implements TripleStore {
 
     cm.getIdField().set(ro.o, Collections.singletonList(id));
 
+    // re-map values based on the rdf:type look ahead
+    Map<Mapper, List<String>> mvalues = new HashMap();
     boolean inverse = false;
     for (Map<String, List<String>> values : new Map[] { fvalues, rvalues }) {
       for (String p : values.keySet()) {
-        Mapper m = cm.getMapperByUri(p, inverse);
-        if (m != null) {
-          if (m.getSerializer() != null)
-            m.set(ro.o, values.get(p));
-          else
-            ro.unresolvedAssocs.put(m, values.get(p));
+        for (String o : values.get(p)) {
+          Mapper m = cm.getMapperByUri(sf, p, inverse, types.get(o));
+          if (m != null) {
+            List<String> v = mvalues.get(m);
+            if (v == null)
+              mvalues.put(m, v = new ArrayList<String>());
+            v.add(o);
+          }
         }
       }
       inverse = true;
+    }
+
+    // now assign values to fields
+    for (Mapper m : mvalues.keySet()) {
+      if (m.getSerializer() != null)
+        m.set(ro.o, mvalues.get(m));
+      else
+        ro.unresolvedAssocs.put(m, mvalues.get(m));
     }
 
     ro.types = types;

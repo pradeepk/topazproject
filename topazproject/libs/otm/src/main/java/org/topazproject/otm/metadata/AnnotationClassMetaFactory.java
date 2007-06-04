@@ -35,7 +35,6 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
-import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Entity;
@@ -44,6 +43,7 @@ import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.PredicateMap;
 import org.topazproject.otm.annotations.Rdf;
+import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.ArrayMapper;
 import org.topazproject.otm.mapping.CollectionMapper;
@@ -96,15 +96,15 @@ public class AnnotationClassMetaFactory {
     Mapper             idField   = null;
     Collection<Mapper> fields    = new ArrayList<Mapper>();
 
-    Class              s       = clazz.getSuperclass();
+    Class              s         = clazz.getSuperclass();
 
     if (!Object.class.equals(s) && (s != null)) {
       ClassMetadata superMeta = create(s, top, uriPrefixOfContainingClass, loopDetect);
-      model     = superMeta.getModel();
-      uriPrefix = superMeta.getUriPrefix();
-      type      = superMeta.getType();
-      types     = superMeta.getTypes();
-      idField   = superMeta.getIdField();
+      model       = superMeta.getModel();
+      uriPrefix   = superMeta.getUriPrefix();
+      type        = superMeta.getType();
+      types       = superMeta.getTypes();
+      idField     = superMeta.getIdField();
       fields.addAll(superMeta.getFields());
     }
 
@@ -166,7 +166,7 @@ public class AnnotationClassMetaFactory {
    * Create an appropriate mapper for the given java field.
    *
    * @param f the field
-   * @param clazz the declaring class 
+   * @param clazz the declaring class
    * @param top the class where this field belongs (may not be the declaring class)
    * @param ns the rdf name space or null to use to build an rdf predicate uri
    * @param loopDetect to avoid loops in following associations
@@ -233,7 +233,7 @@ public class AnnotationClassMetaFactory {
     if (gv != null) {
       try {
         generator = (IdentifierGenerator) Thread.currentThread().getContextClassLoader()
-                                            .loadClass(gv.generatorClass()).newInstance();
+                                                 .loadClass(gv.generatorClass()).newInstance();
       } catch (Throwable t) {
         // Between Class.forName() and newInstance() there are a half-dozen possible excps
         throw new OtmException("Unable to find implementation of '" + gv.generatorClass()
@@ -268,7 +268,7 @@ public class AnnotationClassMetaFactory {
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
 
       Mapper     p          =
-        new FunctionalMapper(null, f, getMethod, setMethod, serializer, null, false, null,
+        new FunctionalMapper(null, f, getMethod, setMethod, serializer, null, null, false, null,
                              Mapper.MapperType.PREDICATE, true, generator);
 
       return Collections.singletonList(p);
@@ -300,17 +300,18 @@ public class AnnotationClassMetaFactory {
       log.debug("No serializer found for " + type);
 
     if (!embedded) {
-      boolean inverse = (rdf != null) && rdf.inverse();
-      String  model   = ((rdf != null) && !"".equals(rdf.model())) ? rdf.model() : null;
+      boolean       inverse = (rdf != null) && rdf.inverse();
+      String        model   = ((rdf != null) && !"".equals(rdf.model())) ? rdf.model() : null;
 
-      if (inverse && (model == null) && (serializer == null)) {
-        ClassMetadata cm = loopDetect.get(type);
+      ClassMetadata cm      = loopDetect.get(type);
 
-        if (cm == null)
-          cm = create(type, type, null, loopDetect);
+      if ((cm == null) && (serializer == null))
+        cm = create(type, type, null, loopDetect);
 
+      String rt = (cm != null) ? cm.getType() : null;
+
+      if (inverse && (model == null) && (serializer == null))
         model = cm.getModel();
-      }
 
       boolean           notOwned = (rdf != null) && rdf.notOwned();
 
@@ -318,14 +319,14 @@ public class AnnotationClassMetaFactory {
       Mapper            p;
 
       if (isArray)
-        p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse, model, mt,
-                            !notOwned, generator);
+        p = new ArrayMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse, model,
+                            mt, !notOwned, generator);
       else if (isCollection)
-        p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, inverse,
+        p = new CollectionMapper(uri, f, getMethod, setMethod, serializer, type, dt, rt, inverse,
                                  model, mt, !notOwned, generator);
       else
-        p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, inverse, model, mt,
-                                 !notOwned, generator);
+        p = new FunctionalMapper(uri, f, getMethod, setMethod, serializer, dt, rt, inverse, model,
+                                 mt, !notOwned, generator);
 
       return Collections.singletonList(p);
     }

@@ -28,19 +28,20 @@ import org.topazproject.otm.id.IdentifierGenerator;
  * @author Pradeep krishnan
  */
 public abstract class AbstractMapper implements Mapper {
-  private Serializer serializer;
-  private Method     getter;
-  private Method     setter;
-  private Field      field;
-  private String     name;
-  private String     uri;
-  private Class      type;
-  private Class      componentType;
-  private boolean    inverse;
-  private String     model;
-  private String     dataType;
-  private MapperType mapperType;
-  private boolean    entityOwned;
+  private Serializer          serializer;
+  private Method              getter;
+  private Method              setter;
+  private Field               field;
+  private String              name;
+  private String              uri;
+  private Class               type;
+  private Class               componentType;
+  private boolean             inverse;
+  private String              model;
+  private String              dataType;
+  private String              rdfType;
+  private MapperType          mapperType;
+  private boolean             entityOwned;
   private IdentifierGenerator generator;
 
   /**
@@ -53,6 +54,7 @@ public abstract class AbstractMapper implements Mapper {
    * @param serializer the serializer or null
    * @param componentType of arrays and collections or type of functional properties
    * @param dataType of literals or null for un-typed
+   * @param rdfType of associations or null for un-typed
    * @param inverse if this field is persisted with an inverse predicate
    * @param model  the model where this field is persisted
    * @param mapperType the mapper type of this field
@@ -61,7 +63,7 @@ public abstract class AbstractMapper implements Mapper {
    */
   public AbstractMapper(String uri, Field field, Method getter, Method setter,
                         Serializer serializer, Class componentType, String dataType,
-                        boolean inverse, String model, MapperType mapperType,
+                        String rdfType, boolean inverse, String model, MapperType mapperType,
                         boolean entityOwned, IdentifierGenerator generator) {
     this.uri             = uri;
     this.field           = field;
@@ -72,6 +74,7 @@ public abstract class AbstractMapper implements Mapper {
     this.type            = field.getType();
     this.componentType   = componentType;
     this.dataType        = dataType;
+    this.rdfType         = rdfType;
     this.inverse         = inverse;
     this.model           = model;
     this.mapperType      = mapperType;
@@ -183,6 +186,13 @@ public abstract class AbstractMapper implements Mapper {
   /*
    * inherited javadoc
    */
+  public String getRdfType() {
+    return rdfType;
+  }
+
+  /*
+   * inherited javadoc
+   */
   public Class getComponentType() {
     return componentType;
   }
@@ -258,6 +268,11 @@ public abstract class AbstractMapper implements Mapper {
     }
   }
 
+  /**
+   * DOCUMENT ME!
+   *
+   * @return DOCUMENT ME!
+   */
   public IdentifierGenerator getGenerator() {
     return generator;
   }
@@ -269,8 +284,8 @@ public abstract class AbstractMapper implements Mapper {
     return getClass().getName() + "[field=" + name + ", pred=" + uri + ", type="
            + ((type != null) ? type.getName() : "-null-") + ", componentType="
            + ((componentType != null) ? componentType.getName() : "-null-") + ", dataType="
-           + dataType + ", mapperType=" + mapperType + ", inverse=" + inverse + ", serializer="
-      + serializer + ", generator=" + ((generator != null) ? generator.getClass() : "-null-") +
-           "]";
+           + dataType + ", rdfType=" + rdfType + ", mapperType=" + mapperType + ", inverse="
+           + inverse + ", serializer=" + serializer + ", generator="
+           + ((generator != null) ? generator.getClass() : "-null-") + "]";
   }
 }

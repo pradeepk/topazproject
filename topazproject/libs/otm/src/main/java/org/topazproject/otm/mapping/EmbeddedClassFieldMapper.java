@@ -142,6 +142,13 @@ public class EmbeddedClassFieldMapper implements Mapper {
   /*
    * inherited javadoc
    */
+  public String getRdfType() {
+    return field.getRdfType();
+  }
+
+  /*
+   * inherited javadoc
+   */
   public Class getComponentType() {
     return field.getComponentType();
   }

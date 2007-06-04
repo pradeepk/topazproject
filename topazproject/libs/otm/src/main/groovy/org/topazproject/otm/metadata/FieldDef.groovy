@@ -13,6 +13,7 @@ package org.topazproject.otm.metadata;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.ArrayMapper;
@@ -158,17 +159,18 @@ public class FieldDef {
       m = classType.toClass().fields.collect{ new EmbeddedClassFieldMapper(container, it) }
     } else if (maxCard == 1) {
       Serializer ser = rdf.sessFactory.getSerializerFactory().getSerializer(f.getType(), dtype)
-      m = [new FunctionalMapper(pred, f, get, set, ser, dtype, inverse, model, mt, owned, idGen)]
+      String rt = (ser == null) ? getRdfType(rdf, f.getType()) : null;
+      m = [new FunctionalMapper(pred, f, get, set, ser, dtype, rt, inverse, model, mt, owned, idGen)]
     } else {
       String     collType = colType ? colType : rdf.defColType
       Class      compType = toJavaClass(getBaseJavaType(), rdf);
       Serializer ser      = rdf.sessFactory.getSerializerFactory().getSerializer(compType, dtype)
-
+      String rt = (ser == null) ? getRdfType(rdf, compType) : null;
       if (collType.toLowerCase() == 'array')
-        m = [new ArrayMapper(pred, f, get, set, ser, compType, dtype, inverse, model, mt, owned,
+        m = [new ArrayMapper(pred, f, get, set, ser, compType, dtype, rt, inverse, model, mt, owned,
                              idGen)]
       else
-        m = [new CollectionMapper(pred, f, get, set, ser, compType, dtype, inverse, model, mt,
+        m = [new CollectionMapper(pred, f, get, set, ser, compType, dtype, rt, inverse, model, mt,
                                   owned, idGen)]
     }
 
@@ -292,5 +294,14 @@ public class FieldDef {
         throw new OtmException("Unknown collection-mapping type '${cm}' - must be one of " +
                                "'Predicate', 'RdfList', 'RdfBag', 'RdfSeq', or 'RdfAlt'");
     }
+  }
+
+  private String getRdfType(RdfBuilder rdf, Class clazz) {
+    ClassMetadata cm = rdf.sessFactory.getClassMetadata(clazz);
+    if (cm == null) {
+      try { rdf.sessFactory.preload(clazz)} catch (Throwable t) {}
+      cm = rdf.sessFactory.getClassMetadata(clazz);
+    }
+    return (cm != null) ? cm.getType() : null;
   }
 }

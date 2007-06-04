@@ -32,7 +32,7 @@ public class EmbeddedClassMapper extends AbstractMapper {
    * @param setter the set method or null for this embedded classs field
    */
   public EmbeddedClassMapper(Field field, Method getter, Method setter) {
-    super(null, field, getter, setter, null, null, null, false, null, null, true, null);
+    super(null, field, getter, setter, null, null, null, null, false, null, null, true, null);
   }
 
   /**

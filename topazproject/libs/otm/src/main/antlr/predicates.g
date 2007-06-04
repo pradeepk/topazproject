@@ -184,7 +184,7 @@ options {
       astFactory.addASTChild(cur, ref);
 
       String uri = ref.getText().substring(1, ref.getText().length() - 1);
-      Mapper m = type.getMeta().getMapperByUri(uri, false);
+      Mapper m = type.getMeta().getMapperByUri(uri, false, null); // xxx : get rdf:type
       ExprType cType = getTypeForMapper(m);
       updateAST(ref, type, cType, m, false);
 

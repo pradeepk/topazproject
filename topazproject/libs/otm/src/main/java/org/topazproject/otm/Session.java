@@ -584,7 +584,7 @@ public class Session {
       throw new OtmException(cm.toString() + " is not assignable from " + ocm);
 
     for (Mapper p : cm.getFields()) {
-      Mapper op = ocm.getMapperByUri(p.getUri(), p.hasInverseUri());
+      Mapper op = ocm.getMapperByUri(p.getUri(), p.hasInverseUri(), p.getRdfType());
 
       if (op == null)
         continue;

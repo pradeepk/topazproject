@@ -969,13 +969,18 @@ public class OtmTest extends TestCase {
 
       List<PublicAnnotation> al = a.getPublicAnnotations();
       assertEquals(2, al.size());
+      List<PrivateAnnotation> pl = a.getPrivateAnnotations();
+      assertEquals(1, pl.size());
 
       PublicAnnotation a1 = al.get(0);
       PublicAnnotation a2 = al.get(1);
+      PrivateAnnotation a3 = pl.get(0);
       assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
       assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
       assertEquals(foo, a1.getAnnotates());
       assertEquals(foo, a2.getAnnotates());
+      assertTrue(id3.equals(a3.getId()));
+      assertEquals(foo, a3.getAnnotates());
 
       l = session.createCriteria(Annotation.class).list();
       assertEquals(3, l.size());
@@ -1009,7 +1014,7 @@ public class OtmTest extends TestCase {
       l = session.createCriteria(Article.class).list();
       assertEquals(0, l.size());
       l = session.createCriteria(Annotation.class).list();
-      assertEquals(1, l.size());
+      assertEquals(0, l.size());
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {

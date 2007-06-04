@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -30,20 +31,19 @@ import org.topazproject.otm.mapping.Mapper;
  * @author Pradeep Krishnan
  */
 public class ClassMetadata {
-  private static final Log    log        = LogFactory.getLog(ClassMetadata.class);
-  private Set<String>         types;
-  private String              type;
-  private String              name;
-  private String              model;
-  private String              uriPrefix;
-  private Mapper              idField;
-  private Map<String, Mapper> fieldMap;
-  private Map<String, Mapper> inverseMap;
-  private Map<String, Mapper> nameMap;
-  private Class               clazz;
-  private Collection<Mapper>  fields;
+  private static final Log          log       = LogFactory.getLog(ClassMetadata.class);
+  private Set<String>               types;
+  private String                    type;
+  private String                    name;
+  private String                    model;
+  private String                    uriPrefix;
+  private Mapper                    idField;
+  private Map<String, List<Mapper>> uriMap;
+  private Map<String, Mapper>       nameMap;
+  private Class                     clazz;
+  private Collection<Mapper>        fields;
 
-  /**
+/**
    * Creates a new ClassMetadata object.
    *
    * @param clazz the class 
@@ -58,33 +58,35 @@ public class ClassMetadata {
   public ClassMetadata(Class clazz, String name, String type, Set<String> types, String model,
                        String uriPrefix, Mapper idField, Collection<Mapper> fields)
                 throws OtmException {
-    this.clazz                           = clazz;
-    this.name                            = name;
-    this.type                            = type;
-    this.model                           = model;
-    this.uriPrefix                       = uriPrefix;
-    this.idField                         = idField;
+    this.clazz                                = clazz;
+    this.name                                 = name;
+    this.type                                 = type;
+    this.model                                = model;
+    this.uriPrefix                            = uriPrefix;
+    this.idField                              = idField;
 
-    this.types                           = Collections.unmodifiableSet(new HashSet<String>(types));
-    this.fields                          = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
+    this.types                                = Collections.unmodifiableSet(new HashSet<String>(types));
+    this.fields                               = Collections.unmodifiableCollection(new ArrayList<Mapper>(fields));
 
-    fieldMap                             = new HashMap<String, Mapper>();
-    inverseMap                           = new HashMap<String, Mapper>();
-    nameMap                              = new HashMap<String, Mapper>();
+    uriMap                                    = new HashMap<String, List<Mapper>>();
+    nameMap                                   = new HashMap<String, Mapper>();
 
     for (Mapper m : fields) {
-      Map<String, Mapper> map = m.hasInverseUri() ? inverseMap : fieldMap;
+      List<Mapper> mappers = uriMap.get(m.getUri());
 
-      if (map.put(m.getUri(), m) != null)
-        throw new OtmException("Duplicate Rdf uri for " + m.getField().toGenericString());
+      if (mappers == null)
+        uriMap.put(m.getUri(), mappers = new ArrayList<Mapper>());
+      else if (isDuplicateMapping(mappers, m))
+        throw new OtmException("Duplicate predicate uri for " + m.getField().toGenericString());
+
+      mappers.add(m);
 
       if (nameMap.put(m.getName(), m) != null)
         throw new OtmException("Duplicate field name for " + m.getField().toGenericString());
     }
 
-    fieldMap     = Collections.unmodifiableMap(fieldMap);
-    inverseMap   = Collections.unmodifiableMap(inverseMap);
-    nameMap      = Collections.unmodifiableMap(nameMap);
+    uriMap    = Collections.unmodifiableMap(uriMap);
+    nameMap   = Collections.unmodifiableMap(nameMap);
   }
 
   /**
@@ -165,11 +167,76 @@ public class ClassMetadata {
    *
    * @param uri the predicate uri
    * @param inverse if the mapping is reverse (ie. o,p,s instead of s,p,o))
+   * @param type for associations the rdf:type or null
    *
    * @return the mapper or null
    */
-  public Mapper getMapperByUri(String uri, boolean inverse) {
-    return inverse ? inverseMap.get(uri) : fieldMap.get(uri);
+  public Mapper getMapperByUri(String uri, boolean inverse, String type) {
+    List<Mapper> mappers = uriMap.get(uri);
+
+    if (mappers == null)
+      return null;
+
+    Mapper candidate = null;
+
+    for (Mapper m : mappers) {
+      if (m.hasInverseUri() != inverse)
+        continue;
+
+      String rt = m.getRdfType();
+
+      if ((type == null) || type.equals(rt))
+        return m;
+
+      if ((rt == null) && (candidate == null))
+        candidate = m;
+    }
+
+    return candidate;
+  }
+
+  /**
+   * Gets a field mapper by its predicate uri.
+   *
+   * @param sf the session factory for looking up associations
+   * @param uri the predicate uri
+   * @param inverse if the mapping is reverse (ie. o,p,s instead of s,p,o))
+   * @param typeUris Collection of rdf:Type values
+   *
+   * @return the mapper or null
+   */
+  public Mapper getMapperByUri(SessionFactory sf, String uri, boolean inverse,
+                               Collection<String> typeUris) {
+    if ((typeUris == null) || (typeUris.size() == 0))
+      return getMapperByUri(uri, inverse, null);
+
+    if (typeUris.size() == 1)
+      return getMapperByUri(uri, inverse, typeUris.iterator().next());
+
+    List<Mapper> mappers = uriMap.get(uri);
+
+    if (mappers == null)
+      return null;
+
+    Set<String> uris      = new HashSet(typeUris);
+    Mapper      candidate = null;
+
+    for (Mapper m : mappers) {
+      if (m.hasInverseUri() != inverse)
+        continue;
+
+      String rt = m.getRdfType();
+
+      if ((rt == null) && (candidate == null))
+        candidate = m;
+
+      if (uris.contains(rt)) {
+        uris.removeAll(sf.getClassMetadata(m.getComponentType()).getTypes());
+        candidate = m;
+      }
+    }
+
+    return candidate;
   }
 
   /**
@@ -198,5 +265,20 @@ public class ClassMetadata {
    */
   public boolean isEntity() {
     return (idField != null) && (model != null);
+  }
+
+  private static boolean isDuplicateMapping(List<Mapper> mappers, Mapper o) {
+    for (Mapper m : mappers) {
+      if (m.hasInverseUri() != o.hasInverseUri())
+        continue;
+
+      if (m.getRdfType() != null) {
+        if (m.getRdfType().equals(o.getRdfType()))
+          return true;
+      } else if (o.getRdfType() == null)
+        return true;
+    }
+
+    return false;
   }
 }

@@ -45,6 +45,8 @@ public class Article {
   private int      state;
   @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true)
   private List<PublicAnnotation> publicAnnotations = new ArrayList<PublicAnnotation>();
+  @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true)
+  private List<PrivateAnnotation> privateAnnotations = new ArrayList<PrivateAnnotation>();
   @Predicate(uri = Reply.NS + "inReplyTo", inverse=true, notOwned=true)
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
 
@@ -193,7 +195,14 @@ public class Article {
   public void setState(int state) {
     this.state = state;
   }
- 
+
+  public void setPrivateAnnotations(List<PrivateAnnotation> privateAnnotations) {
+    this.privateAnnotations = privateAnnotations;
+  }
+
+  public List<PrivateAnnotation> getPrivateAnnotations() {
+    return privateAnnotations;
+  }
 
   public void setPublicAnnotations(List<PublicAnnotation> publicAnnotations) {
     this.publicAnnotations = publicAnnotations;

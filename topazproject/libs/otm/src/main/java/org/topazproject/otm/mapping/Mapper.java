@@ -118,6 +118,13 @@ public interface Mapper {
   public String getDataType();
 
   /**
+   * Gets the rdf:type for an association field.
+   *
+   * @return the rdf:type or null for un-typed
+   */
+  public String getRdfType();
+
+  /**
    * Gets the component type of this field.
    *
    * @return component type for arrays; member type for collections; or same as type for simple

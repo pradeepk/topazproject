@@ -46,6 +46,7 @@ public class CollectionMapper extends AbstractMapper {
    * @param serializer the serializer or null
    * @param componentType the collection component type
    * @param dataType of literals or null for un-typed
+   * @param rdfType of associations or null for un-typed
    * @param inverse if this field is persisted with an inverse predicate
    * @param model the model where this field is persisted
    * @param mapperType the mapper type of this field
@@ -54,9 +55,9 @@ public class CollectionMapper extends AbstractMapper {
    */
   public CollectionMapper(String uri, Field field, Method getter, Method setter,
                           Serializer serializer, Class componentType, String dataType,
-                          boolean inverse, String model, MapperType mapperType,
+                          String rdfType, boolean inverse, String model, MapperType mapperType,
                           boolean entityOwned, IdentifierGenerator generator) {
-    super(uri, field, getter, setter, serializer, componentType, dataType, inverse, model,
+    super(uri, field, getter, setter, serializer, componentType, dataType, rdfType, inverse, model,
           mapperType, entityOwned, generator);
   }
 
