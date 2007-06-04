@@ -118,6 +118,11 @@
 
   <filter-mapping>
     <filter-name>CAS Filter</filter-name>
+    <url-pattern>/rate/secure/*</url-pattern>
+  </filter-mapping>
+
+  <filter-mapping>
+    <filter-name>CAS Filter</filter-name>
     <url-pattern>/admin/*</url-pattern>
   </filter-mapping>
   
@@ -133,9 +138,13 @@
 
   <filter-mapping >
     <filter-name>Member Session</filter-name>
-    <url-pattern>/admin/*</url-pattern>
+    <url-pattern>/rate/secure/*</url-pattern>
   </filter-mapping>
 
+  <filter-mapping >
+    <filter-name>Member Session</filter-name>
+    <url-pattern>/admin/*</url-pattern>
+  </filter-mapping>
 
   <filter-mapping>
     <filter-name>CacheFilter</filter-name>
