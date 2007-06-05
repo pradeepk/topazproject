@@ -13,6 +13,12 @@ import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.apache.commons.configuration.Configuration;
 import java.util.Properties;
 
+/**
+ * A Spring Configurer that uses the commons-configuration singleton
+ * <code>ConfigurationStore</code> in this package to get its configuration.
+ *
+ * @author Eric Brown
+ */
 public class SpringPlaceholderConfigurer extends PropertyPlaceholderConfigurer {
   protected String resolvePlaceholder(String placeholder, Properties properties) {
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
