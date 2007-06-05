@@ -9,6 +9,7 @@
     <fedora>${hosts.default}</fedora>
     <mulgara>${hosts.default}</mulgara>
     <plosone>${hosts.default}</plosone>
+    <mailhost>${hosts.default}</mailhost>
   </hosts>
   <ports>
     <!-- For webhead, set default to empty (not 80) -->
