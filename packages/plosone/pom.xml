@@ -144,9 +144,6 @@
                     <source>
                       <location>src/main/resources/plosone.xml</location>
                     </source>
-                    <source>
-                      <location>src/main/resources/plosone.properties</location>
-                    </source>
                   </sources>
                 </mapping>
                 <mapping>
