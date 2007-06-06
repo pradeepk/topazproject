@@ -54,7 +54,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
   private String             articleTitle;
   private String             articleDescription;
   private boolean            hasRated = false;
-  private Map<String, ArticleRatingSummary> articleRatings = new HashMap();
+  private List<Rating> articleRatings = new ArrayList();
 
   private static final Log log = LogFactory.getLog(GetArticleRatingsAction.class);
   private RatingsPEP pep;
@@ -81,76 +81,30 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
     getPEP().checkAccess(RatingsPEP.GET_RATINGS, URI.create(articleURI));
 
+    // fill in Article title if necessary
+    // TODO, expose more of the Article metadata, need a articleOtmService.getArticleInfo(URI)
+    Article article = null;
+    if (articleTitle == null) {
+      article = articleOtmService.getArticle(URI.create(articleURI));
+      articleTitle = article.getTitle();
+    }
+    if (articleDescription == null) {
+      if (article == null) {
+        article = articleOtmService.getArticle(URI.create(articleURI));
+      }
+      articleDescription = article.getDescription();
+    }
+
     try {
       tx = session.beginTransaction();
 
-      if (log.isDebugEnabled()) {
-        log.debug("retrieving all ratings for: " + articleURI);
-      }
-
-      // fill in Article title if necessary
-      // TODO, expose more of the Article metadata, need a articleOtmService.getArticleInfo(URI)
-      Article article = null;
-      if (articleTitle == null) {
-        article = articleOtmService.getArticle(URI.create(articleURI));
-        articleTitle = article.getTitle();
-      }
-      if (articleDescription == null) {
-        if (article == null) {
-          article = articleOtmService.getArticle(URI.create(articleURI));
-        }
-        articleDescription = article.getDescription();
-      }
-
-      // TODO: straight OQL might be better?
       // list of Ratings that annotate this article
-      List<Rating> ratings = session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI)).list();
-      // populate a Map by user of ratings
-      for (Rating rating :ratings) {
-        // does an entry exist for this user?
-        ArticleRatingSummary userArticleRatings = articleRatings.get(rating.getCreator());
-        if (userArticleRatings == null) {
-          userArticleRatings = new ArticleRatingSummary(getArticleURI(), getArticleTitle());
-          userArticleRatings.setCreatorURI(rating.getCreator());
-          // TODO: resolve creatorURI to creatorName, for now, it will be filled in w/tmp String below
-          articleRatings.put(rating.getCreator(), userArticleRatings);
-        }
-
-        // update Rating type for this user
-        userArticleRatings.addRating(rating);
-
-        // respect existing values for creatorURI & creatorName, should also be more effecient
-        if (userArticleRatings.getCreatorURI() == null) {
-          userArticleRatings.setCreatorURI(rating.getCreator());
-        }
-        if (userArticleRatings.getCreatorName() == null) {
-          // TODO: user service or native OTM
-          userArticleRatings.setCreatorName("Creator name place holder for testing, resolve " + rating.getCreator());
-        }
-
-        // also add any user comments for this Rating
-        List<CommentAnnotation> commentList =
-          session.createCriteria(CommentAnnotation.class)
-            .add(Restrictions.eq("annotates", rating.getId()))
-            .list();
-        for (CommentAnnotation comment : commentList) {
-
-          // does an entry exist for this user?
-          ArticleRatingSummary userCommentRatings = articleRatings.get(comment.getCreator());
-          if (userCommentRatings == null) {
-            userCommentRatings = new ArticleRatingSummary(getArticleURI(), getArticleTitle());
-            userCommentRatings.setCreatorURI(comment.getCreator());
-            articleRatings.put(comment.getCreator(), userCommentRatings);
-          }
-
-          // TODO: current ratings model assumes 1 & only 1 comment exists,
-          //   expand to mutiple typed comments?
-          // update Comment for this user
-          userCommentRatings.addComment(comment);
-        }
-
-        hasRated = true;
-      }
+      articleRatings = session
+        .createCriteria(Rating.class)
+        .add(Restrictions.eq("annotates", articleURI))
+        .list();
+      
+      // create ArticleRatingSummary(s)
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
@@ -162,11 +116,16 @@ public class GetArticleRatingsAction extends BaseActionSupport {
       }
 
       throw e; // or display error message
-    } catch (NoSuchArticleIdException nsaie) {
-      // should never happen
-      throw new Exception(nsaie);
     }
 
+    if (articleRatings.size() > 0) {
+      hasRated = true;
+    }
+
+    if (log.isDebugEnabled()) {
+      log.debug("retried all ratings, " + articleRatings.size() + ", for: " + articleURI);
+    }
+    
     return SUCCESS;
   }
 
@@ -291,12 +250,12 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    *
    * @return Returns Ratings for the Article.
    */
-  public Collection<ArticleRatingSummary> getArticleRatings() {
+  public Collection<Rating> getArticleRatings() {
 
     // TODO: remove dubbing
     if (log.isDebugEnabled()) {
-      log.debug("getArticleRatings(): (" + articleRatings.size() + ")" + articleURI + articleTitle);
+      log.debug("getArticleRatings(): (" + articleRatings.size() + ") " + articleURI + ", " + articleTitle);
     }
-    return articleRatings.values();
+    return articleRatings;
   }
 }

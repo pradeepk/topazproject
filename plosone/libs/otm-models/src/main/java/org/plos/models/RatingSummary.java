@@ -17,7 +17,7 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
- * General base rating class to store a RatingContent body
+ * General base rating class to store a RatingSummaryContent body.
  *
  * @author Stephen Cheng
  */
@@ -51,88 +51,7 @@ public class RatingSummary extends AbstractAnnotation {
   /**
    * @param rating The rating to set.
    */
-  public void setBody(RatingSummaryContent rating) {
-    this.body = rating;
-  }
-
-  /**
-   * Get the value of the rating
-   *
-   * @return value
-   */
-  public double retrieveAverage() {
-    if (this.body == null) {
-      return 0;
-    }
-
-    return this.body.retrieveAverage();
-  }
-
-  /**
-   * Set the value of the rating
-   *
-   * @param numRatings
-   */
-  public void assignNumRatings(int numRatings) {
-    if (this.body == null) {
-      this.body = new RatingSummaryContent();
-    }
-
-    this.body.setNumRatings(numRatings);
-  }
-
-  /**
-   * Get the value of the rating
-   *
-   * @return value
-   */
-  public int retrieveNumRatings() {
-    if (this.body == null) {
-      return 0;
-    }
-
-    return this.body.getNumRatings();
-  }
-
-  /**
-   * Set the value of the rating
-   *
-   * @param total
-   */
-  public void assignTotal(double total) {
-    if (this.body == null) {
-      this.body = new RatingSummaryContent();
-    }
-
-    this.body.setTotal(total);
-  }
-
-  /**
-   * Get the value of the rating
-   *
-   * @return total rating
-   */
-  public double retrieveTotal() {
-    if (this.body == null) {
-      return 0;
-    }
-
-    return this.body.getTotal();
-  }
-
-  /**
-   * @param value remove a rating
-   */
-  public void removeRating(int value) {
-    assignNumRatings(retrieveNumRatings() - 1);
-    assignTotal(retrieveTotal() - value);
-  }
-
-  /**
-   * @param value add a rating
-   */
-  public void addRating(int value) {
-    assignNumRatings(retrieveNumRatings() + 1);
-    assignTotal(retrieveTotal() + value);
+  public void setBody(RatingSummaryContent ratingSummaryContent) {
+    this.body = ratingSummaryContent;
   }
 }

@@ -25,9 +25,10 @@ import org.plos.action.BaseActionSupport;
 
 import org.plos.configuration.OtmConfiguration;
 
-import org.plos.models.CommentAnnotation;
 import org.plos.models.Rating;
+import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
+import org.plos.models.RatingSummaryContent;
 
 import org.plos.user.PlosOneUser;
 
@@ -59,10 +60,6 @@ public class RateAction extends BaseActionSupport {
   private RatingsPEP       pep;
 
   private static final Log log = LogFactory.getLog(RateAction.class);
-  private static final int INSIGHT_WEIGHT = 6;
-  private static final int RELIABILITY_WEIGHT = 5;
-  private static final int STYLE_WEIGHT = 4;
-
 
   private RatingsPEP getPEP() {
     try {
@@ -86,16 +83,10 @@ public class RateAction extends BaseActionSupport {
       (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
     Date              now                = new Date(System.currentTimeMillis());
 
-    Rating            insightRating      = null;
-    Rating            styleRating        = null;
-    Rating            reliabilityRating  = null;
-    RatingSummary     insightSummary     = null;
-    RatingSummary     styleSummary       = null;
-    RatingSummary     reliabilitySummary = null;
-    RatingSummary     overallSummary     = null;
+    URI           annotatedArticle     = null;
+    Rating        articleRating        = null;
+    RatingSummary articleRatingSummary = null;
 
-    CommentAnnotation ratingComment      = null;
-    URI               annotatedArticle   = null;
 
     try {
       annotatedArticle = new URI(articleURI);
@@ -118,207 +109,108 @@ public class RateAction extends BaseActionSupport {
       tx = session.beginTransaction();
 
       if (log.isDebugEnabled()) {
-        log.debug("Retrieving Ratings Summaries for article: " + articleURI);
-      }
-
-      List     summaryList =
-        session.createCriteria(RatingSummary.class).add(Restrictions.eq("annotates", articleURI))
-                .list();
-      Iterator iter        = summaryList.iterator();
-
-      while (iter.hasNext()) {
-        RatingSummary ratingSummary = (RatingSummary) iter.next();
-
-        if (Rating.INSIGHT_TYPE.equals(ratingSummary.getType())) {
-          insightSummary = ratingSummary;
-        } else if (Rating.STYLE_TYPE.equals(ratingSummary.getType())) {
-          styleSummary = ratingSummary;
-        } else if (Rating.RELIABILITY_TYPE.equals(ratingSummary.getType())) {
-          reliabilitySummary = ratingSummary;
-        } else if (Rating.OVERALL_TYPE.equals(ratingSummary.getType())) {
-          overallSummary = ratingSummary;
-        }
-      }
-
-      if (log.isDebugEnabled()) {
-        log.debug("Retrieving user ratings for article: " + articleURI + " and user: "
+        log.debug("Retrieving user Ratings for article: " + articleURI + " and user: "
                   + user.getUserId());
       }
 
-      List ratingsList =
-        session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
-                .add(Restrictions.eq("creator", user.getUserId())).list();
-
-      iter = ratingsList.iterator();
-
-      boolean updatingRating = false;
-
-      while (iter.hasNext()) {
-        updatingRating = true;
-
-        Rating rating = (Rating) iter.next();
-
-        if (Rating.INSIGHT_TYPE.equals(rating.getType())) {
-          insightRating = rating;
-        } else if (Rating.STYLE_TYPE.equals(rating.getType())) {
-          styleRating = rating;
-        } else if (Rating.RELIABILITY_TYPE.equals(rating.getType())) {
-          reliabilityRating = rating;
-        }
+      // Ratings by this User for Article
+      List<Rating> ratingsList = session
+        .createCriteria(Rating.class)
+        .add(Restrictions.eq("annotates", articleURI))
+        .add(Restrictions.eq("creator", user.getUserId()))
+        .list();
+      if (ratingsList.size() == 0) {
+          articleRating = new Rating();
+          articleRating.setAnnotates(annotatedArticle);
+          articleRating.setContext("");
+          articleRating.setCreator(user.getUserId());
+          articleRating.setCreated(now);
+          articleRating.setBody(new RatingContent());
+      } else if (ratingsList.size() == 1) {
+        articleRating = ratingsList.get(0);
+      } else {
+        // should never happen
+        String errorMessage = "Multiple Ratings, " + ratingsList.size() + ", for Article, " + articleURI + ", for user, " + user.getUserId();
+        log.error(errorMessage);
+        throw new RuntimeException(errorMessage);
       }
 
+      // RatingsSummary for Article
+      List<RatingSummary> summaryList = session
+        .createCriteria(RatingSummary.class)
+        .add(Restrictions.eq("annotates", articleURI))
+        .list();
+      if (summaryList.size() == 0) {
+          articleRatingSummary = new RatingSummary();
+          articleRatingSummary.setAnnotates(annotatedArticle);
+          articleRatingSummary.setContext("");
+          articleRatingSummary.setCreated(now);
+          articleRatingSummary.setBody(new RatingSummaryContent());
+      } else if (summaryList.size() == 1) {
+        articleRatingSummary = summaryList.get(0);
+      } else {
+        // should never happen
+        String errorMessage = "Multiple RatingsSummary, " + summaryList.size() + ", for Article " + articleURI;
+        log.error(errorMessage);
+        throw new RuntimeException(errorMessage);
+      }
+
+      // update Rating + RatingSummary with new values
+        articleRating.setCreated(now);
+        articleRatingSummary.setCreated(now);
+
+      // if they had a prior insight Rating, remove it from the RatingSummary
+      if (articleRating.getBody().getInsightValue() > 0) {
+        articleRatingSummary.getBody().removeRating(Rating.INSIGHT_TYPE, articleRating.getBody().getInsightValue());
+      }
+
+      // update insight Article Rating, don't care if new, update or 0
+      articleRating.getBody().setInsightValue((int) insight);
+
+      // if user rated insight, add to to Article RatingSummary
       if (insight > 0) {
-        if (insightRating == null) {
-          insightRating = new Rating();
-        } else {
-          if (insightSummary != null) {
-            insightSummary.removeRating(insightRating.retrieveValue());
-          }
-        }
-
-        insightRating.setType(Rating.INSIGHT_TYPE);
-        insightRating.setContext("");
-        insightRating.setAnnotates(annotatedArticle);
-        insightRating.assignValue((int) insight);
-        insightRating.setCreator(user.getUserId());
-        insightRating.setCreated(now);
-
-        if (insightSummary == null) {
-          insightSummary = new RatingSummary();
-          insightSummary.setAnnotates(annotatedArticle);
-          insightSummary.setType(Rating.INSIGHT_TYPE);
-        }
-
-        insightSummary.addRating((int) insight);
+        articleRatingSummary.getBody().addRating(Rating.INSIGHT_TYPE, (int) insight);
       }
 
-      if (style > 0) {
-        if (styleRating == null) {
-          styleRating = new Rating();
-        } else {
-          if (styleSummary != null) {
-            styleSummary.removeRating(styleRating.retrieveValue());
-          }
-        }
-
-        styleRating.setType(Rating.STYLE_TYPE);
-        styleRating.setContext("");
-        styleRating.setAnnotates(annotatedArticle);
-        styleRating.assignValue((int) style);
-        styleRating.setCreator(user.getUserId());
-        styleRating.setCreated(now);
-
-        if (styleSummary == null) {
-          styleSummary = new RatingSummary();
-          styleSummary.setAnnotates(annotatedArticle);
-          styleSummary.setType(Rating.STYLE_TYPE);
-        }
-
-        styleSummary.addRating((int) style);
+      // if they had a prior reliability Rating, remove it from the RatingSummary
+      if (articleRating.getBody().getReliabilityValue() > 0) {
+        articleRatingSummary.getBody().removeRating(Rating.RELIABILITY_TYPE, articleRating.getBody().getReliabilityValue());
       }
 
+      // update reliability Article Rating, don't care if new, update or 0
+      articleRating.getBody().setReliabilityValue((int) reliability);
+
+      // if user rated reliability, add to to Article RatingSummary
       if (reliability > 0) {
-        if (reliabilityRating == null) {
-          reliabilityRating = new Rating();
-        } else {
-          if (reliabilitySummary != null) {
-            reliabilitySummary.removeRating(reliabilityRating.retrieveValue());
-          }
-        }
-
-        reliabilityRating.setType(Rating.RELIABILITY_TYPE);
-        reliabilityRating.setContext("");
-        reliabilityRating.setAnnotates(annotatedArticle);
-        reliabilityRating.assignValue((int) reliability);
-        reliabilityRating.setCreator(user.getUserId());
-        reliabilityRating.setCreated(now);
-
-        if (reliabilitySummary == null) {
-          reliabilitySummary = new RatingSummary();
-          reliabilitySummary.setAnnotates(annotatedArticle);
-          reliabilitySummary.setType(Rating.RELIABILITY_TYPE);
-        }
-
-        reliabilitySummary.addRating((int) reliability);
+        articleRatingSummary.getBody().addRating(Rating.RELIABILITY_TYPE, (int) reliability);
       }
 
-      List<CommentAnnotation> commentList =
-        session.createCriteria(CommentAnnotation.class).add(Restrictions.eq("annotates", articleURI))
-                .add(Restrictions.eq("creator", user.getUserId())).list();
-
-      if (commentList.size() > 0) {
-        ratingComment = commentList.get(0);
+      // if they had a prior style Rating, remove it from the RatingSummary
+      if (articleRating.getBody().getStyleValue() > 0) {
+        articleRatingSummary.getBody().removeRating(Rating.STYLE_TYPE, articleRating.getBody().getStyleValue());
       }
 
+      // update style Article Rating, don't care if new, update or 0
+      articleRating.getBody().setStyleValue((int) style);
+
+      // if user rated style, add to to Article RatingSummary
+      if (style > 0) {
+        articleRatingSummary.getBody().addRating(Rating.STYLE_TYPE, (int) style);
+      }
+
+      // Rating comment
       if (!StringUtils.isBlank(commentTitle) || !StringUtils.isBlank(comment)) {
-        if (ratingComment == null) {
-          ratingComment = new CommentAnnotation();
-        }
-
-        ratingComment.setContext("");
-        ratingComment.setAnnotates(annotatedArticle);
-        ratingComment.setTitle(commentTitle);
-        ratingComment.assignComment(comment);
-        ratingComment.setCreator(user.getUserId());
-        ratingComment.setCreated(now);
+        articleRating.getBody().setCommentTitle(commentTitle);
+        articleRating.getBody().setCommentValue(comment);
       }
+      
+      // PLoS states that ratings can never be deleted once created,
+      // so always do a Session.saveOrUpdate(), no delete
+      session.saveOrUpdate(articleRating);
+      session.saveOrUpdate(articleRatingSummary);
+      
 
-      if (styleRating != null) {
-        if (style > 0)
-          session.saveOrUpdate(styleRating);
-        else {
-          styleSummary.removeRating(styleRating.retrieveValue());
-          session.delete(styleRating);
-        }
-      }
-
-      if (insightRating != null) {
-        if (insight > 0)
-          session.saveOrUpdate(insightRating);
-        else {
-          insightSummary.removeRating(insightRating.retrieveValue());
-          session.delete(insightRating);
-        }
-      }
-
-      if (reliabilityRating != null) {
-        if (reliability > 0)
-          session.saveOrUpdate(reliabilityRating);
-        else {
-          reliabilitySummary.removeRating(reliabilityRating.retrieveValue());
-          session.delete(reliabilityRating);
-        }
-      }
-
-      if (styleSummary != null) {
-        styleSummary.setCreated(now);
-        session.saveOrUpdate(styleSummary);
-      }
-
-      if (insightSummary != null) {
-        insightSummary.setCreated(now);
-        session.saveOrUpdate(insightSummary);
-      }
-
-      if (reliabilitySummary != null) {
-        reliabilitySummary.setCreated(now);
-        session.saveOrUpdate(reliabilitySummary);
-      }
-
-      if (overallSummary == null) {
-        overallSummary = new RatingSummary();
-        overallSummary.setAnnotates(annotatedArticle);
-        overallSummary.setType(Rating.OVERALL_TYPE);
-      }
-
-      calculateOverall(updatingRating, overallSummary, insightSummary, styleSummary,
-                       reliabilitySummary);
-      overallSummary.setCreated(now);
-      session.saveOrUpdate(overallSummary);
-
-      if (ratingComment != null) {
-        session.saveOrUpdate(ratingComment);
-      }
+      overall = articleRatingSummary.getBody().retrieveAverage(Rating.OVERALL_TYPE);
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
@@ -339,41 +231,6 @@ public class RateAction extends BaseActionSupport {
     }
 
     return SUCCESS;
-  }
-
-  private void calculateOverall(boolean update, RatingSummary overall, RatingSummary insight,
-                                RatingSummary style, RatingSummary reliability) {
-    int    runningWeight = 0;
-    double runningTotal  = 0;
-
-    if (insight != null) {
-      runningWeight += INSIGHT_WEIGHT;
-      runningTotal += insight.retrieveAverage() * INSIGHT_WEIGHT;
-      if (log.isDebugEnabled())
-        log.debug("INSIGHT: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
-    }
-
-    if (style != null) {
-      runningWeight += STYLE_WEIGHT;
-      runningTotal += style.retrieveAverage() * STYLE_WEIGHT;
-      if (log.isDebugEnabled())
-        log.debug("STYLE: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
-    }
-
-    if (reliability != null) {
-      runningWeight += RELIABILITY_WEIGHT;
-      runningTotal += reliability.retrieveAverage() * RELIABILITY_WEIGHT;
-      if (log.isDebugEnabled())
-        log.debug("RELIABILITY: runningWeight = " + runningWeight+ " runningTotal: " + runningTotal);
-    }
-
-    if (!update) {
-      overall.assignNumRatings(overall.retrieveNumRatings() + 1);
-    } else if ((this.style < 1) && (this.insight < 1) && (this.reliability < 1)) {
-      overall.assignNumRatings(overall.retrieveNumRatings() - 1);
-    }
-
-    overall.assignTotal(runningTotal / runningWeight);
   }
 
   /**
@@ -400,9 +257,10 @@ public class RateAction extends BaseActionSupport {
 
       tx = session.beginTransaction();
 
-      List<Rating> ratingsList =
-        session.createCriteria(Rating.class).add(Restrictions.eq("annotates", articleURI))
-                .add(Restrictions.eq("creator", user.getUserId())).list();
+      List<Rating> ratingsList = session
+        .createCriteria(Rating.class)
+        .add(Restrictions.eq("annotates", articleURI))
+        .add(Restrictions.eq("creator", user.getUserId())).list();
 
       if (ratingsList.size() < 1) {
         log.debug("didn't find any matching ratings for user: " + user.getUserId());
@@ -411,29 +269,14 @@ public class RateAction extends BaseActionSupport {
         return ERROR;
       }
 
-      Iterator<Rating> iter = ratingsList.iterator();
+      Rating rating = ratingsList.get(0);
 
-      while (iter.hasNext()) {
-        Rating rating = iter.next();
+      setInsight(rating.getBody().getInsightValue());
+      setReliability(rating.getBody().getReliabilityValue());
+      setStyle(rating.getBody().getStyleValue());
 
-        if (Rating.INSIGHT_TYPE.equals(rating.getType()))
-          setInsight(rating.retrieveValue());
-        else if (Rating.STYLE_TYPE.equals(rating.getType()))
-          setStyle(rating.retrieveValue());
-        else if (Rating.RELIABILITY_TYPE.equals(rating.getType()))
-          setReliability(rating.retrieveValue());
-      }
-
-      List<CommentAnnotation> commentList =
-        session.createCriteria(CommentAnnotation.class).add(Restrictions.eq("annotates", articleURI))
-                .add(Restrictions.eq("creator", user.getUserId())).list();
-
-      if (commentList.size() < 1) {
-        log.debug("didn't find any matching comment for user: " + user.getUserId());
-      } else {
-        setCommentTitle(commentList.get(0).getTitle());
-        setComment(commentList.get(0).retrieveComment());
-      }
+      setCommentTitle(rating.getBody().getCommentTitle());
+      setComment(rating.getBody().getCommentValue());
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
@@ -519,24 +362,6 @@ public class RateAction extends BaseActionSupport {
   }
 
   /**
-   * Gets the overall rating.
-   *
-   * @return Returns the overall.
-   */
-  public double getOverall() {
-    return overall;
-  }
-
-  /**
-   * Sets the overall rating.
-   *
-   * @param overall The overall to set.
-   */
-  public void setOverall(double overall) {
-    this.overall = overall;
-  }
-
-  /**
    * Gets the reliability rating.
    *
    * @return Returns the security.
@@ -555,7 +380,16 @@ public class RateAction extends BaseActionSupport {
   public void setReliability(double reliability) {
     this.reliability = reliability;
   }
-
+  
+  /**
+   * Gets the overall rating.
+   * 
+   * @return Returns the overall.
+   */
+  public double getOverall() {
+    return overall;
+  }
+  
   /**
    * Gets the rating comment.
    *

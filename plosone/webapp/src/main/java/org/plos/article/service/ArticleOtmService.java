@@ -79,16 +79,21 @@ public class ArticleOtmService extends BaseConfigurableService {
   private static final List FGS_URLS = CONF.getList("topaz.fedoragsearch.urls.url");
 
   private final WSTopazContext ctx = new WSTopazContext(getClass().getName());
+  
+  private ArticlePEP getPEP() {
+    // create an XACML PEP for Articles
+    try {
+      if (pep == null) {
+        pep = new ArticlePEP();
+      }
+    } catch (Exception e) {
+      throw new Error("Failed to create ArticlePEP", e);
+    }
+    return pep;
+  }
 
   public void init() throws IOException, URISyntaxException, ServiceException {
     final ProtectedService permissionProtectedService = getProtectedService();
-
-    // create an XACML PEP for Articles
-    try {
-      pep = new ArticlePEP();
-    } catch (Exception e) {
-      throw new Error("Failed to create Article PEP", e);
-    }
   }
 
   /**
@@ -108,7 +113,7 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // ask PEP if ingest is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
-     pep.checkAccess(ArticlePEP.INGEST_ARTICLE, ArticlePEP.ANY_RESOURCE);
+     getPEP().checkAccess(ArticlePEP.INGEST_ARTICLE, ArticlePEP.ANY_RESOURCE);
 
     // create an Ingester using the values from the WSTopazContext
     ctx.activate();
@@ -186,7 +191,7 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // ask PEP if getting Object URL is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
-    pep.checkAccess(ArticlePEP.GET_OBJECT_URL, URI.create(obj));
+    getPEP().checkAccess(ArticlePEP.GET_OBJECT_URL, URI.create(obj));
 
     // let the Article utils do the real work
     ArticleUtil articleUtil = null;
@@ -230,7 +235,7 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // ask PEP if delete is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
-    pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
+    getPEP().checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
 
     // let the Article utils do the real work
     ArticleUtil articleUtil = null;
@@ -252,7 +257,7 @@ public class ArticleOtmService extends BaseConfigurableService {
   public void setState(final String article, final int state) throws NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    pep.checkAccess(ArticlePEP.SET_ARTICLE_STATE, URI.create(article));
+    getPEP().checkAccess(ArticlePEP.SET_ARTICLE_STATE, URI.create(article));
 
     TransactionHelper.doInTxE(session,
                               new TransactionHelper.ActionE<Void, NoSuchArticleIdException>() {
@@ -463,7 +468,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     for (Iterator it = articleList.iterator(); it.hasNext(); ) {
       Article article = (Article) it.next();
       try {
-        pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
+        getPEP().checkAccess(ArticlePEP.READ_META_DATA, article.getId());
       } catch (SecurityException se) {
         it.remove();
         if (log.isDebugEnabled())
@@ -588,7 +593,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     for (Iterator it = articleList.iterator(); it.hasNext(); ) {
       Article article = (Article) it.next();
       try {
-        pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
+        getPEP().checkAccess(ArticlePEP.READ_META_DATA, article.getId());
       } catch (SecurityException se) {
         it.remove();
         if (log.isDebugEnabled())
@@ -619,7 +624,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     // filter access by id with PEP
     // logged in user is automatically resolved by the ServletActionContextAttribute
     try {
-      pep.checkAccess(ArticlePEP.READ_META_DATA, realURI);
+      getPEP().checkAccess(ArticlePEP.READ_META_DATA, realURI);
     } catch (SecurityException se) {
       if (log.isDebugEnabled()) {
         log.debug("Filtering URI "
@@ -656,7 +661,7 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // filter access by id with PEP
     try {
-      pep.checkAccess(ArticlePEP.READ_META_DATA, uri);
+      getPEP().checkAccess(ArticlePEP.READ_META_DATA, uri);
     } catch (SecurityException se) {
       if (log.isDebugEnabled()) {
         log.debug("Filtering URI "
@@ -689,7 +694,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       throws NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
+    getPEP().checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
 
     return TransactionHelper.doInTxE(session,
                 new TransactionHelper.ActionE<SecondaryObject[], NoSuchArticleIdException>() {
@@ -761,7 +766,7 @@ public class ArticleOtmService extends BaseConfigurableService {
         while (commentedArticles.next()) {
           Article commentedArticle = (Article) commentedArticles.get("a");
           try {
-            pep.checkAccess(ArticlePEP.READ_META_DATA, commentedArticle.getId());
+            getPEP().checkAccess(ArticlePEP.READ_META_DATA, commentedArticle.getId());
             returnArticles.add(commentedArticle);
           } catch (SecurityException se) {
             if (log.isDebugEnabled())
@@ -799,7 +804,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       throws NoSuchObjectIdException, RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    pep.checkAccess(ArticlePEP.SET_REPRESENTATION, URI.create(objId));
+    getPEP().checkAccess(ArticlePEP.SET_REPRESENTATION, URI.create(objId));
 
     try {
       TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, Exception>() {

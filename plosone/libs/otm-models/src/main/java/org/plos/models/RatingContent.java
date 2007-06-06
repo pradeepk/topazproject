@@ -9,52 +9,155 @@
  */
 package org.plos.models;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.GeneratedValue;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
+import org.topazproject.otm.annotations.UriPrefix;
 
 /**
- * AnnotationBody implementation to store a value for the rating
+ * RatingContent is the body of a Rating.
+ * It stores, insight, reliability, style and comment values.
  *
  * @author stevec
+ * @author Jeff Suttor
  */
+@UriPrefix(Rdf.topaz + "/RatingContent/")
 @Entity(model = "ri", type = Rdf.topaz + "RatingContent")
 public class RatingContent {
+  
+  public static final int INSIGHT_WEIGHT = 6;
+  public static final int RELIABILITY_WEIGHT = 5;
+  public static final int STYLE_WEIGHT = 4;
+  
   @Id
   @GeneratedValue(uriPrefix = "info:doi/10.1371/ratingContent/")
-  private String                                                                  id;
-  @Predicate(uri = Rdf.topaz + "RatingValue")
-  private int                                                                     value;
+  private String id;
+
+  private int insightValue;
+  private int reliabilityValue;
+  private int styleValue;
+  private String commentTitle;
+  private String commentValue;
+
+  private static final Log log = LogFactory.getLog(RatingContent.class);
 
   /**
-   * Creates a new RatingContent object.
+   * Creates a new RatingContent object with default values.
    */
   public RatingContent() {
+
+    this(0, 0, 0, null, null);
   }
 
   /**
-   * Creates a new RatingContent object.
+   * Creates a new RatingContent object with specified values.
+   */
+  public RatingContent(int insight, int reliability, int sytle, String commentTitle, String commentValue) {
+
+    this.insightValue      = insight;
+    this.reliabilityValue  = reliability;
+    this.styleValue        = styleValue;
+    this.commentTitle = commentTitle;
+    this.commentValue = commentValue;
+  }
+
+  /**
+   * Get insightValue value.
+   * 
+   * @return Insight value.
+   */
+  public int getInsightValue() {
+    return insightValue;
+  }
+  /**
+   * Set insightValue value.
+   * 
+   * @param Insight value.
+   */
+  public void setInsightValue(int insight) {
+    this.insightValue = insight;
+  }
+
+  /**
+   * Get reliabilityValue value.
+   * 
+   * @return Reliability value.
+   */
+  public int getReliabilityValue() {
+    return reliabilityValue;
+  }
+  /**
+   * Set reliabilityValue value.
+   * 
+   * @param Reliability value.
+   */
+  public void setReliabilityValue(int reliability) {
+    this.reliabilityValue = reliability;
+  }
+
+  /**
+   * Get styleValue value.
+   * 
+   * @return Style value.
+   */
+  public int getStyleValue() {
+    return styleValue;
+  }
+  /**
+   * Set styleValue value.
+   * 
+   * @param Style value.
+   */
+  public void setStyleValue(int style) {
+    this.styleValue = style;
+  }
+
+  /**
+   * Get overall (weighted) value.
+   * 
+   * @return Overall value.
+   */
+  public int getOverallValue() {
+    return (int) calculateOverall();
+  }
+
+    /**
+   * Get comment title.
    *
-   * @param inValue the rating value to set
+   * @return Comment title.
    */
-  public RatingContent(int inValue) {
-    this.value = inValue;
+  public String getCommentTitle() {
+    return commentTitle;
+  }
+  /**
+   * Set comment title.
+   *
+   * @param Comment title.
+   */
+  public void setCommentTitle(String commentTitle) {
+    this.commentTitle = commentTitle;
   }
 
   /**
-   * @return Returns the value.
+   * Get comment value.
+   *
+   * @return Comment value.
    */
-  public int getValue() {
-    return value;
+  public String getCommentValue() {
+    return commentValue;
   }
-
   /**
-   * @param value The value to set.
+   * Set comment value.
+   *
+   * @param Comment value.
    */
-  public void setValue(int value) {
-    this.value = value;
+  public void setCommentValue(String commentValue) {
+    this.commentValue = commentValue;
   }
 
   /**
@@ -63,11 +166,38 @@ public class RatingContent {
   public String getId() {
     return id;
   }
-
   /**
    * @param id The id to set.
    */
   public void setId(String id) {
     this.id = id;
+  }
+    
+  private double calculateOverall() {
+    int    runningWeight = 0;
+    double runningTotal  = 0;
+
+    if (getInsightValue() > 0) {
+      runningWeight += RatingContent.INSIGHT_WEIGHT;
+      runningTotal += getInsightValue() * RatingContent.INSIGHT_WEIGHT;
+      if (log.isDebugEnabled())
+        log.debug("INSIGHT: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
+    }
+
+    if (getStyleValue() > 0) {
+      runningWeight += RatingContent.STYLE_WEIGHT;
+      runningTotal += getStyleValue() * RatingContent.STYLE_WEIGHT;
+      if (log.isDebugEnabled())
+        log.debug("STYLE: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
+    }
+
+    if (getReliabilityValue() > 0) {
+      runningWeight += RatingContent.RELIABILITY_WEIGHT;
+      runningTotal += getReliabilityValue() * RatingContent.RELIABILITY_WEIGHT;
+      if (log.isDebugEnabled())
+        log.debug("RELIABILITY: runningWeight = " + runningWeight+ " runningTotal: " + runningTotal);
+    }
+
+    return runningTotal / runningWeight;
   }
 }

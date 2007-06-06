@@ -41,6 +41,7 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Pattern;
 import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -63,6 +64,7 @@ import org.plos.ApplicationException;
 
 import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
+import org.plos.article.service.ArticleFeedData;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.NoSuchObjectIdException;
@@ -99,6 +101,14 @@ public class ArticleFeed extends BaseActionSupport {
   private Templates toHtmlTranslet;
   private DocumentBuilderFactory factory;
 
+  // WebWorks will set from URI param
+  private String startDate;
+  private String endDate;  
+  private String category;
+  private String author;
+  private int maxResults = -1;
+  private String representation;
+  
   // WebWorks PlosOneFeedResult parms
   private WireFeed wireFeed;
 
@@ -122,9 +132,9 @@ public class ArticleFeed extends BaseActionSupport {
     String pathInfo = request.getPathInfo();
     URI uri;
     if (pathInfo == null) {
-      uri = URI.create("http://" + SERVER_PLOSONE + WEBWORKS_NAMESPACE + "/");
+      uri = URI.create("/");
     } else {
-      uri = URI.create("http://" + SERVER_PLOSONE + WEBWORKS_NAMESPACE + request.getPathInfo());
+      uri = URI.create(pathInfo);
 
     }
 
@@ -169,8 +179,8 @@ public class ArticleFeed extends BaseActionSupport {
     feed.setTagline(tagline);
     feed.setUpdated(new Date());
     // TODO: bug in Rome ignores icon/logo :(
-    feed.setIcon("http://www.plosone.org/images/pone_favicon.ico");  // TODO: wrong format
-    feed.setLogo("http://www.plosone.org/images/pone_favicon.ico");
+    feed.setIcon("/images/pone_favicon.ico");
+    feed.setLogo("/images/pone_favicon.ico");
     feed.setCopyright(CC_BY_SA_3_0);
 
     // make PLoS the author of the feed
@@ -182,15 +192,44 @@ public class ArticleFeed extends BaseActionSupport {
     feedAuthors.add(plos);
     feed.setAuthors(feedAuthors);
 
-    // TODO: support category=, for now, just generate a default PLoS Feed
-
-    // go back <= 3 months
-    GregorianCalendar threeMonthsAgo = new GregorianCalendar();
-    threeMonthsAgo.add(Calendar.MONTH, -3);
-    String startDate = threeMonthsAgo.getTime().toString();
-    if (log.isDebugEnabled()) {
-      log.debug("starting feed, startDate=" + startDate);
+    // build up OTM query, take URI params first, then sensible defaults
+    
+    // was startDate= URI param specified?
+    if (startDate == null) {
+        // default is to go back <= 3 months
+        GregorianCalendar threeMonthsAgo = new GregorianCalendar();
+        threeMonthsAgo.add(Calendar.MONTH, -3);
+        startDate = threeMonthsAgo.getTime().toString();
     }
+    if (log.isDebugEnabled()) {
+      log.debug("generating feed w/startDate=" + startDate);
+    }
+    
+    // ignore endDate, default is null
+
+    // was category= URI param specified?
+    List<String> categoriesList = new ArrayList();
+    if (category != null) {
+      categoriesList.add(category);
+      if (log.isDebugEnabled()) {
+        log.debug("generating feed w/category=" + category);
+      }
+    }
+
+    // was author= URI param specified?
+    List<String> authorsList = new ArrayList();
+    if (author != null) {
+      authorsList.add(author);
+      if (log.isDebugEnabled()) {
+        log.debug("generating feed w/author=" + author);
+      }
+    }
+    
+    // was maxResults= URI param specified?
+    if (maxResults <= 0) {
+      maxResults = 30;  // default
+    }
+
     // sort by date, ascending
     HashMap<String, Boolean> sort = new HashMap();
     sort.put("date", true);
@@ -199,12 +238,12 @@ public class ArticleFeed extends BaseActionSupport {
     try {
       articles = articleOtmService.getArticles(
         startDate,             // start date
-        null,                  // end date
-        null,                  // categories
-        null,                  // authors
+        endDate,               // end date
+        categoriesList.toArray(new String[categoriesList.size()]),  // categories
+        authorsList.toArray(new String[authorsList.size()]),        // authors
         Article.ACTIVE_STATES, // states
         sort,                  // sort by
-        30);                   // max results
+        maxResults);           // max results
     } catch (RemoteException ex) {
       throw new ApplicationException(ex);
     }
@@ -357,6 +396,47 @@ public class ArticleFeed extends BaseActionSupport {
     return wireFeed;
   }
 
+  /**
+   * WebWorks will set from URI param.
+   */
+  public void setStartDate(final String startDate) {
+    this.startDate = startDate;
+  }
+
+  /**
+   * WebWorks will set from URI param.
+   */
+  public void setEndDate(final String endDate) {
+    this.endDate = endDate;
+  }
+
+  /**
+   * WebWorks will set from URI param.
+   */
+  public void setCategory(final String category) {
+    this.category = category;
+  }
+
+  /**
+   * WebWorks will set from URI param.
+   */
+  public void setAuthor(final String author) {
+    this.author = author;
+  }
+
+  /**
+   * WebWorks will set from URI param.
+   */
+  public void setMaxResults(final int maxResults) {
+    this.maxResults = maxResults;
+  }
+
+  /**
+   * Representation to return results in.
+   */
+  public void setRepresentation(final String representation) {
+    this.representation = representation;
+  }
   /**
    * Transform article XML to HTML for inclusion in the feed
    */

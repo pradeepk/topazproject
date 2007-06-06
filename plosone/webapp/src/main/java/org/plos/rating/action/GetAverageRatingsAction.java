@@ -80,10 +80,13 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    */
   public String execute() {
     Transaction   tx                 = null;
+    RatingSummary ratingSummary      = null;
+    // TODO: placeholders for compilation
     RatingSummary insightSummary     = null;
     RatingSummary styleSummary       = null;
     RatingSummary reliabilitySummary = null;
     RatingSummary overallSummary     = null;
+
     PlosOneUser   user               =
       (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
 
@@ -96,39 +99,33 @@ public class GetAverageRatingsAction extends BaseActionSupport {
         log.debug("retrieving rating summaries for: " + articleURI);
       }
 
-      List     summaryList =
-        session.createCriteria(RatingSummary.class).add(Restrictions.eq("annotates", articleURI))
-                .list();
-      Iterator iter        = summaryList.iterator();
+      List<RatingSummary> summaryList = session
+        .createCriteria(RatingSummary.class)
+        .add(Restrictions.eq("annotates", articleURI))
+        .list();
 
-      while (iter.hasNext()) {
-        RatingSummary ratingSummary = (RatingSummary) iter.next();
+      if (summaryList.size() > 0) {
+        ratingSummary = summaryList.get(0);
 
-        if (Rating.INSIGHT_TYPE.equals(ratingSummary.getType())) {
-          insightSummary          = ratingSummary;
-          insightAverage          = insightSummary.retrieveAverage();
-          insightRoundedAverage   = roundTo(insightAverage, 0.5);
-          numInsightRatings       = insightSummary.retrieveNumRatings();
-          totalInsight            = insightSummary.retrieveTotal();
-        } else if (Rating.STYLE_TYPE.equals(ratingSummary.getType())) {
-          styleSummary          = ratingSummary;
-          styleAverage          = styleSummary.retrieveAverage();
-          styleRoundedAverage   = roundTo(styleAverage, 0.5);
-          numStyleRatings       = styleSummary.retrieveNumRatings();
-          totalStyle            = styleSummary.retrieveTotal();
-        } else if (Rating.RELIABILITY_TYPE.equals(ratingSummary.getType())) {
-          reliabilitySummary          = ratingSummary;
-          reliabilityAverage          = reliabilitySummary.retrieveAverage();
-          reliabilityRoundedAverage   = roundTo(reliabilityAverage, 0.5);
-          numReliabilityRatings       = reliabilitySummary.retrieveNumRatings();
-          totalReliability            = reliabilitySummary.retrieveTotal();
-        } else if (Rating.OVERALL_TYPE.equals(ratingSummary.getType())) {
-          overallSummary          = ratingSummary;
-          overallAverage          = overallSummary.retrieveTotal();
-          overallRoundedAverage   = roundTo(overallAverage, 0.5);
-          numOverallRatings       = overallSummary.retrieveNumRatings();
-          totalOverall            = overallSummary.retrieveTotal();
-        }
+        insightAverage          = ratingSummary.getBody().retrieveAverage(Rating.INSIGHT_TYPE);
+        insightRoundedAverage   = roundTo(insightAverage, 0.5);
+        numInsightRatings       = ratingSummary.getBody().getInsightNumRatings();
+        totalInsight            = ratingSummary.getBody().retrieveTotal(Rating.INSIGHT_TYPE);
+
+        reliabilityAverage          = ratingSummary.getBody().retrieveAverage(Rating.RELIABILITY_TYPE);
+        reliabilityRoundedAverage   = roundTo(reliabilityAverage, 0.5);
+        numReliabilityRatings       = ratingSummary.getBody().getReliabilityNumRatings();
+        totalReliability            = ratingSummary.getBody().retrieveTotal(Rating.RELIABILITY_TYPE);
+
+        styleAverage          = ratingSummary.getBody().retrieveAverage(Rating.STYLE_TYPE);
+        styleRoundedAverage   = roundTo(styleAverage, 0.5);
+        numStyleRatings       = ratingSummary.getBody().getStyleNumRatings();
+        totalStyle            = ratingSummary.getBody().retrieveTotal(Rating.STYLE_TYPE);
+        
+        overallAverage        = ratingSummary.getBody().retrieveAverage(Rating.OVERALL_TYPE);
+        overallRoundedAverage = roundTo(overallAverage, 0.5);
+        numOverallRatings     = ratingSummary.getBody().getOverallNumRatings();
+        totalOverall          = ratingSummary.getBody().retrieveTotal(Rating.OVERALL_TYPE);
       }
 
       if (user != null) {
@@ -287,7 +284,7 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
-   * Set the OTM session. Called by spring's bean wiring. 
+   * Set the OTM session. Called by spring's bean wiring.
    *
    * @param session The otm session to set.
    */

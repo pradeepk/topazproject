@@ -38,21 +38,10 @@ public class ArticleRatingSummary {
 
   public void addRating(Rating rating) {
 
-    if (Rating.INSIGHT_TYPE.equals(rating.getType())) {
-      this.insight = rating.getBody().getValue();
-    } else if (Rating.STYLE_TYPE.equals(rating.getType())) {
-      this.style = rating.getBody().getValue();
-    } else if (Rating.RELIABILITY_TYPE.equals(rating.getType())) {
-      this.reliability = rating.getBody().getValue();
-    } else if (Rating.OVERALL_TYPE.equals(rating.getType())) {
-      this.overall = rating.getBody().getValue();
-    }
-  }
-
-  public void addComment(CommentAnnotation comment) {
-
-    this.commentTitle = comment.getTitle();
-    this.commentValue = comment.getBody().getValue();
+    this.insight = rating.getBody().getInsightValue();
+    this.style = rating.getBody().getStyleValue();
+    this.reliability = rating.getBody().getReliabilityValue();
+    this.overall = rating.getBody().getOverallValue();
   }
 
   public void setArticleURI(String articleURI) {
