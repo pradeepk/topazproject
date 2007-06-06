@@ -83,11 +83,10 @@ public class AnnotationClassMetaFactory {
    * @throws OtmException on an error
    */
   public ClassMetadata create(Class clazz) throws OtmException {
-    return create(clazz, clazz, null, new HashMap<Class, ClassMetadata>());
+    return create(clazz, clazz, null);
   }
 
-  private ClassMetadata create(Class clazz, Class top, String uriPrefixOfContainingClass,
-                               Map<Class, ClassMetadata> loopDetect)
+  private ClassMetadata create(Class clazz, Class top, String uriPrefixOfContainingClass)
                         throws OtmException {
     Set<String>        types     = Collections.emptySet();
     String             type      = null;
@@ -98,8 +97,11 @@ public class AnnotationClassMetaFactory {
 
     Class              s         = clazz.getSuperclass();
 
+    if (log.isDebugEnabled())
+      log.debug("Creating class-meta for " + clazz);
+
     if (!Object.class.equals(s) && (s != null)) {
-      ClassMetadata superMeta = create(s, top, uriPrefixOfContainingClass, loopDetect);
+      ClassMetadata superMeta = create(s, top, uriPrefixOfContainingClass);
       model       = superMeta.getModel();
       uriPrefix   = superMeta.getUriPrefix();
       type        = superMeta.getType();
@@ -129,15 +131,10 @@ public class AnnotationClassMetaFactory {
         throw new OtmException("Duplicate rdf:type in class hierarchy " + clazz);
     }
 
-    String        name =
-      ((entity != null) && !"".equals(entity.name())) ? entity.name() : getName(clazz);
-
-    ClassMetadata cm   =
-      new ClassMetadata(clazz, name, type, types, model, uriPrefix, idField, fields);
-    loopDetect.put(clazz, cm);
+    String name = ((entity != null) && !"".equals(entity.name())) ? entity.name() : getName(clazz);
 
     for (Field f : clazz.getDeclaredFields()) {
-      Collection<?extends Mapper> mappers = createMapper(f, clazz, top, uriPrefix, loopDetect);
+      Collection<?extends Mapper> mappers = createMapper(f, clazz, top, uriPrefix);
 
       if (mappers == null)
         continue;
@@ -156,10 +153,7 @@ public class AnnotationClassMetaFactory {
       }
     }
 
-    cm = new ClassMetadata(clazz, name, type, types, model, uriPrefix, idField, fields);
-    loopDetect.put(clazz, cm);
-
-    return cm;
+    return new ClassMetadata(clazz, name, type, types, model, uriPrefix, idField, fields);
   }
 
   /**
@@ -169,14 +163,12 @@ public class AnnotationClassMetaFactory {
    * @param clazz the declaring class
    * @param top the class where this field belongs (may not be the declaring class)
    * @param ns the rdf name space or null to use to build an rdf predicate uri
-   * @param loopDetect to avoid loops in following associations
    *
    * @return a mapper or null if the field is static or transient
    *
    * @throws OtmException if a mapper can't be created
    */
-  public Collection<?extends Mapper> createMapper(Field f, Class clazz, Class top, String ns,
-                                                  Map<Class, ClassMetadata> loopDetect)
+  public Collection<?extends Mapper> createMapper(Field f, Class clazz, Class top, String ns)
                                            throws OtmException {
     Class type = f.getType();
     int   mod  = f.getModifiers();
@@ -300,18 +292,13 @@ public class AnnotationClassMetaFactory {
       log.debug("No serializer found for " + type);
 
     if (!embedded) {
-      boolean       inverse = (rdf != null) && rdf.inverse();
-      String        model   = ((rdf != null) && !"".equals(rdf.model())) ? rdf.model() : null;
+      boolean inverse = (rdf != null) && rdf.inverse();
+      String  model   = ((rdf != null) && !"".equals(rdf.model())) ? rdf.model() : null;
 
-      ClassMetadata cm      = loopDetect.get(type);
-
-      if ((cm == null) && (serializer == null))
-        cm = create(type, type, null, loopDetect);
-
-      String rt = (cm != null) ? cm.getType() : null;
+      String  rt      = (serializer == null) ? getRdfType(type) : null;
 
       if (inverse && (model == null) && (serializer == null))
-        model = cm.getModel();
+        model = getModel(type);
 
       boolean           notOwned = (rdf != null) && rdf.notOwned();
 
@@ -338,7 +325,7 @@ public class AnnotationClassMetaFactory {
     ClassMetadata cm;
 
     try {
-      cm                         = create(type, type, ns, loopDetect);
+      cm                         = create(type, type, ns);
     } catch (OtmException e) {
       throw new OtmException("Could not generate metadata for @Embedded class field '"
                              + f.toGenericString() + "'", e);
@@ -470,5 +457,29 @@ public class AnnotationClassMetaFactory {
     }
 
     return null;
+  }
+
+  private static String getRdfType(Class clazz) {
+    if (clazz == null)
+      return null;
+
+    Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+
+    if ((entity != null) && !"".equals(entity.type()))
+      return entity.type();
+
+    return getRdfType(clazz.getSuperclass());
+  }
+
+  private static String getModel(Class clazz) {
+    if (clazz == null)
+      return null;
+
+    Entity entity = (Entity) clazz.getAnnotation(Entity.class);
+
+    if ((entity != null) && !"".equals(entity.model()))
+      return entity.model();
+
+    return getModel(clazz.getSuperclass());
   }
 }
