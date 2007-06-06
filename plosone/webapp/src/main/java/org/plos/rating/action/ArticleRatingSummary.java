@@ -42,6 +42,11 @@ public class ArticleRatingSummary {
     this.style = rating.getBody().getStyleValue();
     this.reliability = rating.getBody().getReliabilityValue();
     this.overall = rating.getBody().getOverallValue();
+
+    this.commentTitle = rating.getBody().getCommentTitle();
+    this.commentValue = rating.getBody().getCommentValue();
+
+    this.creatorURI = rating.getCreator();
   }
 
   public void setArticleURI(String articleURI) {
@@ -62,14 +67,23 @@ public class ArticleRatingSummary {
     this.creatorURI = creatorURI;
   }
   public String getCreatorURI() {
-    return creatorURI;
+    if (creatorURI != null) {
+      return creatorURI;
+    }
+
+    // TODO: it should never be null
+    return("null");
   }
 
   public void setCreatorName(String creatorName) {
     this.creatorName = creatorName;
   }
   public String getCreatorName() {
-    return creatorName;
+    if (creatorName != null) {
+      return creatorName;
+    }
+    // TODO: it should never be null
+    return("null");
   }
 
   public void setStyle(int style) {

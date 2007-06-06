@@ -54,7 +54,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
   private String             articleTitle;
   private String             articleDescription;
   private boolean            hasRated = false;
-  private List<Rating> articleRatings = new ArrayList();
+  private List<ArticleRatingSummary> articleRatingSummaries = new ArrayList();
 
   private static final Log log = LogFactory.getLog(GetArticleRatingsAction.class);
   private RatingsPEP pep;
@@ -99,12 +99,26 @@ public class GetArticleRatingsAction extends BaseActionSupport {
       tx = session.beginTransaction();
 
       // list of Ratings that annotate this article
-      articleRatings = session
+      List<Rating> articleRatings = session
         .createCriteria(Rating.class)
         .add(Restrictions.eq("annotates", articleURI))
         .list();
-      
+
+      if (log.isDebugEnabled()) {
+        log.debug("retrieved all ratings, " + articleRatings.size() + ", for: " + articleURI);
+      }
+
       // create ArticleRatingSummary(s)
+      Iterator iter = articleRatings.iterator();
+      while (iter.hasNext()) {
+        Rating rating = (Rating) iter.next();
+        ArticleRatingSummary summary = new ArticleRatingSummary(getArticleURI(),getArticleTitle());
+        summary.addRating(rating);
+        summary.setArticleTitle(getArticleTitle());
+        summary.setArticleURI(getArticleURI());
+        summary.setCreatorName("TODO: resolve creatorName, which 'name' to use? for: " + rating.getCreator());
+        articleRatingSummaries.add(summary);
+      }
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
@@ -118,14 +132,14 @@ public class GetArticleRatingsAction extends BaseActionSupport {
       throw e; // or display error message
     }
 
-    if (articleRatings.size() > 0) {
+    if (articleRatingSummaries.size() > 0) {
       hasRated = true;
     }
 
     if (log.isDebugEnabled()) {
-      log.debug("retried all ratings, " + articleRatings.size() + ", for: " + articleURI);
+      log.debug("created ArticleRatingSummaries, " + articleRatingSummaries.size() + ", for: " + articleURI);
     }
-    
+
     return SUCCESS;
   }
 
@@ -250,12 +264,12 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    *
    * @return Returns Ratings for the Article.
    */
-  public Collection<Rating> getArticleRatings() {
+  public Collection<ArticleRatingSummary> getArticleRatingSummaries() {
 
     // TODO: remove dubbing
     if (log.isDebugEnabled()) {
-      log.debug("getArticleRatings(): (" + articleRatings.size() + ") " + articleURI + ", " + articleTitle);
+      log.debug("getArticleRatingSummaries(): (" + articleRatingSummaries.size() + ") " + articleURI + ", " + articleTitle);
     }
-    return articleRatings;
+    return articleRatingSummaries;
   }
 }

@@ -17,11 +17,11 @@
 
       <div class="rsep"></div>
 
-      <#list articleRatings as articleRating>
+      <#list articleRatingSummaries as articleRatingSummary>
         <div class="response ratingComment">
           <div class="hd">
             <!-- begin : response title : user -->
-            <h3><span class="detail">Posted by <a href="/user/showUser.action?userId=${articleRating.body.creator}" title="Annotation Author" class="user icon">${articleRatingSummary.creatorName}</a></span></h3>
+            <h3><span class="detail">Posted by <a href="/user/showUser.action?userId=TODOarticleRatingSummary.creatorURI" title="Annotation Author" class="user icon">${articleRatingSummary.creatorName}</a></span></h3>
             <!-- end : response title : user -->
           </div>
           <!-- begin : response body text -->
