@@ -26,7 +26,7 @@ import org.topazproject.configuration.ConfigurationStore
  * @return A fixed version of the args
  */
 static String[] fixArgs(String[] args) {
-  if (args[0] == null) args = [ ]
+  if (args.size() > 0 && args[0] == null) args = [ ]
   if (args != null && args.length == 1)
     args = new StrTokenizer(args[0], StrMatcher.trimMatcher(), StrMatcher.quoteMatcher()).tokenArray
   return args

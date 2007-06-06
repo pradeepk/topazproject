@@ -14,11 +14,10 @@ def cli = new CliBuilder(usage: 'rungroovy ...')
 cli.h(longOpt:'help', 'usage: rungroovy script.groovy [args]')
 
 // In case being called from maven, re-parse arguments
-if (args.length == 1 && args[0] == null) args = [ ]
-if (args.length == 1 && args[0].indexOf(' ') > 0)
-  args = new StrTokenizer(args[0], 
-                          StrMatcher.trimMatcher(), 
-                          StrMatcher.quoteMatcher()).getTokenArray()
+if (args.size() > 0 && args[0] == null) args = [ ]
+if (args != null && args.length == 1)
+  args = new StrTokenizer(args[0], StrMatcher.trimMatcher(), StrMatcher.quoteMatcher()).tokenArray
+
 def opt = cli.parse(args)
 if (!opt) return
 if (opt.h) { cli.usage(); return }
