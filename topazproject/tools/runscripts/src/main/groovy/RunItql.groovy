@@ -39,16 +39,9 @@ cli.i(longOpt:'runinit', 'Run ~/.runitql even if running a script')
 cli.m(args:1, 'mode')
 cli.t(args:1, 'number of characters to truncate literals to')
 
-// Fix crap with maven sometimes passing args of [ null ] (an array of one null)
-if (args[0] == null)
-  args = [ ]
-
-/* If this is run from maven, re-parse arguments
- * i.e. cd head/topazproject/tools/runscripts; mvn -e -o -Prungroovy exec:java -Dargs="script args"
- */
-if (args != null && args.length == 1 && args[0] != null)
-  args = new StrTokenizer(args[0], StrMatcher.trimMatcher(), StrMatcher.quoteMatcher())
-                  .getTokenArray()
+if (args.size() > 0 && args[0] == null) args = [ ]
+if (args != null && args.length == 1)
+  args = new StrTokenizer(args[0], StrMatcher.trimMatcher(), StrMatcher.quoteMatcher()).tokenArray
 
 def opt = cli.parse(args)
 if (!opt) return
@@ -281,6 +274,7 @@ def showTsv(xmlResult) {
 
 def showTable(xmlResult) {
   def ans = new Answer(xmlResult.query[0])
+  def cnt = ans.data.size()
   ans.flatten()
   def ops = [ ]
   if (trunc instanceof Integer && trunc > 3) ops.add(ans.createTruncateClosure(trunc))
@@ -299,6 +293,11 @@ def showTable(xmlResult) {
     }
     println line.trim()
   }
+  def rowCnt = ans.data.size()
+  if (rowCnt == cnt)
+    println "${cnt} rows"
+  else
+    println "${rowCnt} total rows (${cnt} rows from main query)"
 }
 
 /**

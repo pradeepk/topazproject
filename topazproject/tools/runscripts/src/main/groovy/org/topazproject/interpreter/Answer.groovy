@@ -35,10 +35,12 @@ class Value {
   }
 }
 
-class Literal  extends Value {  Literal(value)  { this.value = value } }
-class Resource extends Value {  Resource(value) { this.value = value } }
-class Blank    extends Value {  Blank(value)    { this.value = value } }
-class Empty    extends Value {  Empty()         { this.value = ""    } }
+class Literal  extends Value   { Literal(value)  { this.value = value } }
+class RdfDate  extends Value   { RdfDate(value)  { this.value = value } } // TODO: extend Literal
+class RdfInt   extends Value   { RdfInt(value)   { this.value = value } } // TODO: extend Literal
+class Resource extends Value   { Resource(value) { this.value = value } }
+class Blank    extends Value   { Blank(value)    { this.value = value } }
+class Empty    extends Value   { Empty()         { this.value = ""    } }
 
 /**
  * Represents one row of an itql answer. Some columns may also contain rows and
@@ -64,8 +66,12 @@ class Row {
         } else if (sol."$var".children().size() == 0) {
           val = sol."$var".toString().trim()
           if (val) {
-            // TODO: Capture data-type
-            val = new Literal(sol."$var".toString().trim())
+            // TODO: Capture more data-types
+            switch (sol."$var"."@datatype") {
+              case "http://www.w3.org/2001/XMLSchema#int":  val = new RdfInt(val); break
+              case "http://www.w3.org/2001/XMLSchema#date": val = new RdfDate(val); break
+              default: val = new Literal(val)
+            }
           } else {
             val = new Empty() // If a value does not exist in a sub-query
           }
@@ -178,8 +184,10 @@ class Answer {
 
   static def rdfQuoteClosure = { v ->
     switch (v) {
-      case Literal: return "'" + v.toString().replace("'", "\\'") + "'"
-      case Resource: return "<$v>"
+      case RdfDate: return v.toString(); break
+      case RdfInt:  return v.toString(); break
+      case Literal: return "'" + v.toString().replace("'", "\\'") + "'"; break
+      case Resource: return "<$v>"; break
       default: return v.toString()
     }
   }
