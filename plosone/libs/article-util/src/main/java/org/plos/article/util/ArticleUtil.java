@@ -24,7 +24,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.PasswordProtectedService;
 import org.topazproject.authentication.UnProtectedService;
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.StringAnswer;

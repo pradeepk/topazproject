@@ -16,7 +16,7 @@ import org.apache.commons.configuration.Configuration
 import org.apache.commons.configuration.CompositeConfiguration
 import org.apache.commons.configuration.XMLConfiguration
 
-import org.topazproject.configuration.ConfigurationStore
+import org.plos.configuration.ConfigurationStore
 
 /**
  * Fix mave java:exec command line parsing. Should not impact args run outside
@@ -39,7 +39,7 @@ static String[] fixArgs(String[] args) {
  * @return A commons-config Configuration instance
  */
 static Configuration loadConfiguration(xmlConfigFileOverride) {
-  ConfigurationStore.instance.loadConfiguration(ToolHelper.class.getResource("/config.xml"))
+  ConfigurationStore.instance.loadDefaultConfiguration()
   def conf = new CompositeConfiguration()
   if (xmlConfigFileOverride)
     conf.addConfiguration(new XMLConfiguration(xmlConfigFileOverride))

@@ -50,6 +50,11 @@
       <groupId>org.topazproject</groupId>
       <artifactId>fedora-client</artifactId>
     </dependency>
+    <dependency>
+      <groupId>org.plosone</groupId>
+      <artifactId>conf-helper</artifactId>
+      <version>${version}</version>
+    </dependency>
 
     <!-- For scripts -->
     <dependency>

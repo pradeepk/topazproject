@@ -52,7 +52,7 @@ import org.w3c.dom.NodeList;
 import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 import org.topazproject.fedora.client.Uploader;
 import org.topazproject.fedora.client.FedoraAPIM;
 
