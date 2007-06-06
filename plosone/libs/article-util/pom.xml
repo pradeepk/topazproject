@@ -180,6 +180,33 @@
     </profile>
 
     <profile>
+      <id>FedoraArticle</id>
+      <dependencies>
+        <dependency>
+          <groupId>log4j</groupId>
+          <artifactId>log4j</artifactId>
+          <version>1.2.14</version>
+        </dependency>
+      </dependencies>
+      <build>
+        <defaultGoal>exec:java</defaultGoal>
+        <plugins>
+          <plugin>
+            <groupId>org.codehaus.mojo</groupId>
+            <artifactId>exec-maven-plugin</artifactId>
+            <version>1.0.2</version>
+            <configuration>
+              <mainClass>org.plos.article.util.FedoraArticle</mainClass>
+              <arguments>
+                <argument>${args}</argument>
+              </arguments>
+            </configuration>
+          </plugin>
+        </plugins>
+      </build>
+    </profile>
+
+    <profile>
       <id>test</id>
       <dependencies>
         <dependency>
