@@ -11,4 +11,4 @@
 # Load the common functions
 . /usr/local/topaz/bin/tools
 
-java -cp `getJars` AlertsClient "$@"
+java -cp `getJars` org.plos.article.util.Ingest "$@"
