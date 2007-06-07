@@ -61,8 +61,10 @@
     </services>
     
     <server>
-      <hostname>localhost</hostname>
-      <https-port>8443</https-port>
+      <!-- Any remaining topaz services (search) are in the plosone container
+           TODO: Use of these parameters should be deprecated -->
+      <hostname>${hosts.plosone}</hostname>
+      <https-port>${ports.plosone-ssl}</https-port>
     </server>
 
     <cas-server>
