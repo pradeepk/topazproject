@@ -22,7 +22,7 @@ Options:
   -h, --help    Usage information (this message)
   -b basename   The name of the program. i.e. cas, topaz, plosone
   -n timeout    The number of seconds to wait after starting or stopping
-                (default=60)
+                (default=45)
   -f            If we can't stop in <timeout>, send TERM signal
   -F            If we can't stop in <timeout>, send KILL signal
 
@@ -85,7 +85,7 @@ fedora_PORT=9090
 
 BASENAME=$(basename $0)
 killsignal=0
-timeout=60
+timeout=45
 
 # Verify that JAVA_HOME is set and exists
 [ -z "$JAVA_HOME" ] && echo "JAVA_HOME must be set" && exit 1
@@ -261,8 +261,15 @@ jsvc_stop() {
 }
 
 su_cmd() {
+  start="$1"
+  shift
   if [ -n "$SU_USER" -a `id -u` -eq 0 ] ; then
-    su $SU_USER -s /bin/bash -c "$* >>$STDLOG 2>&1 & echo \$! >$PIDFILE"
+    if [ "$start" = "start" ] ; then
+      # Run the thing as root and create the pidfile
+      su $SU_USER -s /bin/bash -c "$* >>$STDLOG 2>&1 & echo \$! >$PIDFILE"
+    else
+      su $SU_USER -s /bin/bash -c "$* >>$STDLOG 2>&1"
+    fi
   elif [ -n "$SU_USER" -a `id -u` -ne `id -u $SU_USER` ] ; then
     echo "Must be root or $SU_USER to run \"""$@""\""
     exit 1
@@ -273,7 +280,7 @@ su_cmd() {
 }
 
 java_start() {
-  su_cmd $JAVA_HOME/bin/java -$JVM $TOMCAT_OPTS $TOMCAT_TRUST_OPTS $CATALINA_OPTS start
+  su_cmd start $JAVA_HOME/bin/java -$JVM $TOMCAT_OPTS $TOMCAT_TRUST_OPTS $CATALINA_OPTS start
   # Give it a few seconds to start (to create PID file)
   PID=`cat ${PIDFILE} 2>/dev/null`
   i=1
@@ -300,10 +307,10 @@ java_start() {
 }
 
 java_stop() {
-  su_cmd $JAVA_HOME/bin/java $TOMCAT_OPTS $CATALINA_OPTS stop
+  PID=`cat ${PIDFILE} 2>/dev/null`
+  su_cmd stop $JAVA_HOME/bin/java $TOMCAT_OPTS $CATALINA_OPTS stop
 #  $JAVA_HOME/bin/java $TOMCAT_OPTS $CATALINA_OPTS stop >>$STDLOG 2>&1
   # Give it a few seconds to stop (to delete PID file)
-  PID=`cat ${PIDFILE} 2>/dev/null`
   i=1
   while [ -n "$PID" ] ; do
     sleep 1
@@ -316,7 +323,7 @@ java_stop() {
   elif [ "$killsignal" -ne 0 ]; then
     log "Killing $BASENAME (kill -$killsignal $PID)"
     kill -$killsignal $PID
-    sleep 1
+    sleep 4
     PID=`ps -p $PID -o pid | tail -n +2`
     [ -z "$PID" ] && rm -f $PIDFILE
   fi
