@@ -103,12 +103,12 @@ public class ArticleFeed extends BaseActionSupport {
 
   // WebWorks will set from URI param
   private String startDate;
-  private String endDate;  
+  private String endDate;
   private String category;
   private String author;
   private int maxResults = -1;
   private String representation;
-  
+
   // WebWorks PlosOneFeedResult parms
   private WireFeed wireFeed;
 
@@ -193,7 +193,7 @@ public class ArticleFeed extends BaseActionSupport {
     feed.setAuthors(feedAuthors);
 
     // build up OTM query, take URI params first, then sensible defaults
-    
+
     // was startDate= URI param specified?
     if (startDate == null) {
         // default is to go back <= 3 months
@@ -204,7 +204,7 @@ public class ArticleFeed extends BaseActionSupport {
     if (log.isDebugEnabled()) {
       log.debug("generating feed w/startDate=" + startDate);
     }
-    
+
     // ignore endDate, default is null
 
     // was category= URI param specified?
@@ -224,7 +224,7 @@ public class ArticleFeed extends BaseActionSupport {
         log.debug("generating feed w/author=" + author);
       }
     }
-    
+
     // was maxResults= URI param specified?
     if (maxResults <= 0) {
       maxResults = 30;  // default

@@ -5,13 +5,7 @@
       <div class="source">
         <span>Original Article</span>
         <@ww.url id="fetchArticleURL" namespace="/article" action="fetchArticle" articleURI="${articleURI}"/>
-
         <a href="${fetchArticleURL}" title="Back to original article" class="article icon">${articleTitle}</a>
-        <span class="inline-rating inlineRatingEnd">
-          <ul class="star-rating pone_rating" title="overall">
-            <li class="current-rating overall-rating pct70">TODO: re-calc ratings summary? best to refactor ratings action(s)?</li>
-          </ul>
-        </span>
         <p><a href="/annotation/getCommentary.action?target=${articleURI}" class="commentary icon">See all commentary</a> on this article</p>
       </div>
 
@@ -21,7 +15,7 @@
         <div class="response ratingComment">
           <div class="hd">
             <!-- begin : response title : user -->
-            <h3><span class="detail">Posted by <a href="/user/showUser.action?userId=TODOarticleRatingSummary.creatorURI" title="Annotation Author" class="user icon">${articleRatingSummary.creatorName}</a></span></h3>
+            <h3><span class="detail">Posted by <a href="/user/showUser.action?userId=${articleRatingSummary.creatorURI}" title="Annotation Author" class="user icon">${articleRatingSummary.creatorName}</a></span></h3>
             <!-- end : response title : user -->
           </div>
           <!-- begin : response body text -->

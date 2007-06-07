@@ -31,6 +31,8 @@ import org.plos.models.Article;
 import org.plos.models.CommentAnnotation;
 import org.plos.models.Rating;
 import org.plos.models.RatingSummary;
+import org.plos.models.UserAccount;
+import org.plos.models.UserProfile;
 import org.plos.user.PlosOneUser;
 
 import org.topazproject.otm.OtmException;
@@ -75,9 +77,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    * @return WebWork action status
    */
   public String execute() throws Exception {
-    Transaction   tx                 = null;
-    PlosOneUser   user               =
-      (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
+    Transaction tx  = null;
 
     getPEP().checkAccess(RatingsPEP.GET_RATINGS, URI.create(articleURI));
 
@@ -114,9 +114,17 @@ public class GetArticleRatingsAction extends BaseActionSupport {
         Rating rating = (Rating) iter.next();
         ArticleRatingSummary summary = new ArticleRatingSummary(getArticleURI(),getArticleTitle());
         summary.addRating(rating);
-        summary.setArticleTitle(getArticleTitle());
         summary.setArticleURI(getArticleURI());
-        summary.setCreatorName("TODO: resolve creatorName, which 'name' to use? for: " + rating.getCreator());
+        summary.setArticleTitle(getArticleTitle());
+        summary.setCreatorURI(rating.getCreator());
+        // get public 'name' for user
+        UserAccount ua = session.get(UserAccount.class, rating.getCreator());
+        if (ua != null) {
+          summary.setCreatorName(ua.getProfile().getGivenNames() + " " + ua.getProfile().getSurnames());
+        } else {
+          summary.setCreatorName("Unknown");
+          log.error("Unable to look up UserAccount for " + rating.getCreator() + " for Rating " + rating.getId());
+        }
         articleRatingSummaries.add(summary);
       }
 
@@ -266,7 +274,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    */
   public Collection<ArticleRatingSummary> getArticleRatingSummaries() {
 
-    // TODO: remove dubbing
+    // TODO: remove debugging
     if (log.isDebugEnabled()) {
       log.debug("getArticleRatingSummaries(): (" + articleRatingSummaries.size() + ") " + articleURI + ", " + articleTitle);
     }

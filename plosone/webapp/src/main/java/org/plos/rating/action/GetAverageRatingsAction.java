@@ -81,11 +81,6 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   public String execute() {
     Transaction   tx                 = null;
     RatingSummary ratingSummary      = null;
-    // TODO: placeholders for compilation
-    RatingSummary insightSummary     = null;
-    RatingSummary styleSummary       = null;
-    RatingSummary reliabilitySummary = null;
-    RatingSummary overallSummary     = null;
 
     PlosOneUser   user               =
       (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
@@ -121,7 +116,7 @@ public class GetAverageRatingsAction extends BaseActionSupport {
         styleRoundedAverage   = roundTo(styleAverage, 0.5);
         numStyleRatings       = ratingSummary.getBody().getStyleNumRatings();
         totalStyle            = ratingSummary.getBody().retrieveTotal(Rating.STYLE_TYPE);
-        
+
         overallAverage        = ratingSummary.getBody().retrieveAverage(Rating.OVERALL_TYPE);
         overallRoundedAverage = roundTo(overallAverage, 0.5);
         numOverallRatings     = ratingSummary.getBody().getOverallNumRatings();

@@ -203,12 +203,12 @@ public class RateAction extends BaseActionSupport {
         articleRating.getBody().setCommentTitle(commentTitle);
         articleRating.getBody().setCommentValue(comment);
       }
-      
+
       // PLoS states that ratings can never be deleted once created,
       // so always do a Session.saveOrUpdate(), no delete
       session.saveOrUpdate(articleRating);
       session.saveOrUpdate(articleRatingSummary);
-      
+
 
       overall = articleRatingSummary.getBody().retrieveAverage(Rating.OVERALL_TYPE);
 
@@ -380,16 +380,16 @@ public class RateAction extends BaseActionSupport {
   public void setReliability(double reliability) {
     this.reliability = reliability;
   }
-  
+
   /**
    * Gets the overall rating.
-   * 
+   *
    * @return Returns the overall.
    */
   public double getOverall() {
     return overall;
   }
-  
+
   /**
    * Gets the rating comment.
    *

@@ -55,7 +55,7 @@ public class Rating extends AbstractAnnotation {
   public void setBody(RatingContent rating) {
     this.body = rating;
   }
-  
+
   /**
    * TODO: signature to support compilation during conversion
    */

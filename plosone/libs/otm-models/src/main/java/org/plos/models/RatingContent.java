@@ -29,11 +29,11 @@ import org.topazproject.otm.annotations.UriPrefix;
 @UriPrefix(Rdf.topaz + "/RatingContent/")
 @Entity(model = "ri", type = Rdf.topaz + "RatingContent")
 public class RatingContent {
-  
+
   public static final int INSIGHT_WEIGHT = 6;
   public static final int RELIABILITY_WEIGHT = 5;
   public static final int STYLE_WEIGHT = 4;
-  
+
   @Id
   @GeneratedValue(uriPrefix = "info:doi/10.1371/ratingContent/")
   private String id;
@@ -68,7 +68,7 @@ public class RatingContent {
 
   /**
    * Get insightValue value.
-   * 
+   *
    * @return Insight value.
    */
   public int getInsightValue() {
@@ -76,7 +76,7 @@ public class RatingContent {
   }
   /**
    * Set insightValue value.
-   * 
+   *
    * @param Insight value.
    */
   public void setInsightValue(int insight) {
@@ -85,7 +85,7 @@ public class RatingContent {
 
   /**
    * Get reliabilityValue value.
-   * 
+   *
    * @return Reliability value.
    */
   public int getReliabilityValue() {
@@ -93,7 +93,7 @@ public class RatingContent {
   }
   /**
    * Set reliabilityValue value.
-   * 
+   *
    * @param Reliability value.
    */
   public void setReliabilityValue(int reliability) {
@@ -102,7 +102,7 @@ public class RatingContent {
 
   /**
    * Get styleValue value.
-   * 
+   *
    * @return Style value.
    */
   public int getStyleValue() {
@@ -110,7 +110,7 @@ public class RatingContent {
   }
   /**
    * Set styleValue value.
-   * 
+   *
    * @param Style value.
    */
   public void setStyleValue(int style) {
@@ -119,7 +119,7 @@ public class RatingContent {
 
   /**
    * Get overall (weighted) value.
-   * 
+   *
    * @return Overall value.
    */
   public int getOverallValue() {
@@ -172,7 +172,7 @@ public class RatingContent {
   public void setId(String id) {
     this.id = id;
   }
-    
+
   private double calculateOverall() {
     int    runningWeight = 0;
     double runningTotal  = 0;

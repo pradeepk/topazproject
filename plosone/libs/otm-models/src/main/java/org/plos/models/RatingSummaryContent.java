@@ -328,7 +328,7 @@ public class RatingSummaryContent {
       throw new RuntimeException(errorMessage);
     }
   }
-  
+
     private double calculateOverall() {
       int    runningWeight = 0;
       double runningTotal  = 0;
