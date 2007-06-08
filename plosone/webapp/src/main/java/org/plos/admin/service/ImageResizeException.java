@@ -16,7 +16,16 @@ package org.plos.admin.service;
 public class ImageResizeException extends Exception {
   private String articleURI;
   private String imageURI;
-  
+
+  public ImageResizeException (final Throwable cause) {
+    super(cause);
+  }
+
+  public ImageResizeException (final String inImageURI,final Throwable cause) {
+    super(cause);
+    this.imageURI = inImageURI;
+  }
+
   public ImageResizeException (final String inArticleURI) {
     this.articleURI = inArticleURI;
     //this.imageURI = inImageURI;

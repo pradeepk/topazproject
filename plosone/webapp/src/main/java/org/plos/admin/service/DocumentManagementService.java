@@ -253,14 +253,14 @@ public class DocumentManagementService {
   }
   
   private void resizeImages(String uri) throws NoSuchArticleIdException, NoSuchObjectIdException,
-  HttpException, IOException {
-    
+                                               ImageResizeException, ImageStorageServiceException,
+                                               HttpException, IOException {
     ImageResizeService irs;
-    
+    ImageStorageService iss;
+
     SecondaryObject[] objects = articleOtmService.listSecondaryObjects(uri);
     SecondaryObject object = null;
     for (int i = 0; i < objects.length; ++i) {
-      // try {
       irs = new ImageResizeService();
       object = objects[i];
       if (log.isDebugEnabled()) {
@@ -274,56 +274,65 @@ public class DocumentManagementService {
       String context = info.getContextElement();
       if (context != null) {
         context = context.trim();
+        iss = new ImageStorageService();
         if (context.equalsIgnoreCase("fig")) {
           RepresentationInfo rep = object.getRepresentations()[0];
+
           if (log.isDebugEnabled()) {
             log.debug("Found image to resize: " + rep.getURL() + " repsize-" + rep.getSize());
           }
-          irs.captureImage(rep.getURL());
-          log.debug("Captured image");
+
+          iss.captureImage(new URL(rep.getURL()));
+          final byte[] originalBytes = iss.getBytes();
           articleOtmService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
-              new PngDataSource(irs.getSmallImageBoxScaled())));
+              new PngDataSource(irs.getSmallScaledImage(originalBytes))));
           log.debug("Set small");
           articleOtmService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
-              new PngDataSource(irs.getMediumImageBoxScaled())));
+              new PngDataSource(irs.getMediumScaledImage(originalBytes))));
           log.debug("Set medium");
           articleOtmService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
-              new PngDataSource(irs.getLargeImageBoxScaled())));
+              new PngDataSource(irs.getLargeScaledImage(originalBytes))));
           log.debug("Set large");
         } else if (context.equalsIgnoreCase("table-wrap")) { 
           RepresentationInfo rep = object.getRepresentations()[0];
+
           if (log.isDebugEnabled()) {
             log.debug("Found image to resize: " + rep.getURL() + " repsize-" + rep.getSize());
           }
-          irs.captureImage(rep.getURL());
-          log.debug("Captured image");
+
+          iss.captureImage(new URL(rep.getURL()));
+          final byte[] originalBytes = iss.getBytes();
           articleOtmService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
-              new PngDataSource(irs.getSmallImageSubsample())));
+              new PngDataSource(irs.getSmallScaledImage(originalBytes))));
           log.debug("Set small");
           articleOtmService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
-              new PngDataSource(irs.getMediumImageSubsample())));
+              new PngDataSource(irs.getMediumScaledImage(originalBytes))));
           log.debug("Set medium");
           articleOtmService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
-              new PngDataSource(irs.getLargeImageSubsample())));
+              new PngDataSource(irs.getLargeScaledImage(originalBytes))));
           log.debug("Set large");
         } else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
           RepresentationInfo rep = object.getRepresentations()[0];
+
           if (log.isDebugEnabled()) {
             log.debug("Found image to resize for disp-forumla: " + rep.getURL());
           }
-          irs.captureImage(rep.getURL());
-          log.debug("Captured image");
+
+          iss.captureImage(new URL(rep.getURL()));
+          final byte[] originalBytes = iss.getBytes();
           articleOtmService.setRepresentation(object.getUri(), "PNG", new DataHandler(
-              new PngDataSource(irs.getLargeImageSubsample())));
+              new PngDataSource(irs.getLargeScaledImage(originalBytes))));
         } else if (context.equals("inline-formula")) {
           RepresentationInfo rep = object.getRepresentations()[0];
+
           if (log.isDebugEnabled()) {
             log.debug("Found image to resize for inline formula: " + rep.getURL());
           }
-          irs.captureImage(rep.getURL());
-          log.debug("Captured image");
+
+          iss.captureImage(new URL(rep.getURL()));
+          final byte[] originalBytes = iss.getBytes();
           articleOtmService.setRepresentation(object.getUri(), "PNG", new DataHandler(
-              new PngDataSource(irs.getLargeImageSubsample())));
+              new PngDataSource(irs.getLargeScaledImage(originalBytes))));
         }
         // Don't continue trying to process images if one of them failed
         /*
