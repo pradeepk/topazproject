@@ -10,7 +10,15 @@
 
 package org.plos.admin.service;
 
-import java.io.*;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
+import java.io.IOException;
+
 import java.net.URL;
 
 import javax.media.jai.JAI;
@@ -24,7 +32,6 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
 
 public class ImageResizeService {
-  
   private static final Log log = LogFactory.getLog(ImageResizeService.class);
 
   private int height;
@@ -57,7 +64,7 @@ public class ImageResizeService {
     }
 
     setDirectory(directory);
- 
+
     final Integer disambiguation = new Integer(hashCode());
     setInputImageFileName("_"+disambiguation+"current");
     setOutputImageFileName("_"+disambiguation+"final.png");
