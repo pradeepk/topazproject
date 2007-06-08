@@ -63,69 +63,69 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 import com.opensymphony.oscache.web.ServletCacheAdministrator;
 
 /**
- * 
+ *
  * @author alan Manage documents on server. Ingest and access ingested documents.
  */
 public class DocumentManagementService {
-  
+
   private static final Log log = LogFactory.getLog(DocumentManagementService.class);
-  
+
   private ArticleOtmService articleOtmService;
-  
+
   private FetchArticleService fetchArticleService;
-  
+
   private String documentDirectory;
-  
+
   private String ingestedDocumentDirectory;
-  
+
   private CrossRefPosterService crossRefPosterService;
-  
+
   private File xslTemplate;
-  
+
   private GeneralCacheAdministrator articleCacheAdministrator;
-  
+
   private String plosDoiUrl;
-  
+
   private String plosEmail;
-  
+
   private boolean sendToXref;
-  
+
   public DocumentManagementService() {
   }
-  
+
   public void init() {
   }
-  
+
   /**
    * Set the article web service
-   * 
+   *
    * @param articleOtmService
    *          articleOtmService
    */
   public void setArticleOtmService(final ArticleOtmService articleOtmService) {
     this.articleOtmService = articleOtmService;
   }
-  
+
   public void setFetchArticleService(final FetchArticleService fetchArticleService) {
     this.fetchArticleService = fetchArticleService;
   }
-  
+
   public void setDocumentDirectory(final String documentDirectory) {
     this.documentDirectory = documentDirectory;
   }
-  
+
   public String getDocumentDirectory() {
     return documentDirectory;
   }
-  
+
   public void setIngestedDocumentDirectory(final String ingestedDocumentDirectory) {
     this.ingestedDocumentDirectory = ingestedDocumentDirectory;
   }
-  
+
   public void setCrossRefPosterService(final CrossRefPosterService crossRefPosterService) {
     this.crossRefPosterService = crossRefPosterService;
   }
-  
+
   public void setXslTemplate(final String xslTemplate) throws URISyntaxException {
     File file = getAsFile(xslTemplate);
     if (!file.exists()) {
@@ -133,7 +133,7 @@ public class DocumentManagementService {
     }
     this.xslTemplate = file;
   }
-  
+
   /**
    * @param filenameOrURL
    *          filenameOrURL
@@ -150,11 +150,11 @@ public class DocumentManagementService {
       return new File(resource.toURI());
     }
   }
-  
+
   /**
    * Deletes an article from Topaz, but does not flush the cache
    * Useful for deleting a recently ingested article that hasn't been published
-   * 
+   *
    * @param objectURI -
    *          URI of the article to delete
    * @throws RemoteException
@@ -163,10 +163,10 @@ public class DocumentManagementService {
   public void delete(String objectURI) throws RemoteException, ServiceException, NoSuchArticleIdException {
     articleOtmService.delete(objectURI);
   }
-  
+
   /**
    * Deletes an article from Topaz and flushes the servlet image cache and article cache
-   * 
+   *
    * @param objectURI -
    *          URI of the article to delete
    * @param servletContext -
@@ -182,9 +182,9 @@ public class DocumentManagementService {
     articleCacheAdministrator.flushGroup(FileUtils.escapeURIAsPath(objectURI));
     ServletCacheAdministrator.getInstance(servletContext).flushAll();
   }
-  
+
   /**
-   * 
+   *
    * @param pathname
    *          of file on server to be ingested
    * @return URI of ingested document
@@ -202,12 +202,12 @@ public class DocumentManagementService {
   NoSuchObjectIdException, ServiceException {
     return ingest(new File(pathname));
   }
-  
+
   /**
    * Ingest the file. If succesful move it to the ingestedDocumentDirectory then create the
    * Transformed CrossRef xml file and deposit that in the Directory as well.
-   * 
-   * 
+   *
+   *
    * @param file
    *          to be ingested
    * @return URI of ingested document
@@ -240,7 +240,7 @@ public class DocumentManagementService {
     try {
       dh.getOutputStream().close();
     } catch (Exception e) {
-      
+
     }
     log.info("Resized images");
     generateCrossRefInfoDoc(file, uri);
@@ -251,7 +251,7 @@ public class DocumentManagementService {
     log.info("Ingested and relocated " + file + ":" + uri);
     return uri;
   }
-  
+
   private void resizeImages(String uri) throws NoSuchArticleIdException, NoSuchObjectIdException,
                                                ImageResizeException, ImageStorageServiceException,
                                                HttpException, IOException {
@@ -293,7 +293,7 @@ public class DocumentManagementService {
           articleOtmService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
               new PngDataSource(irs.getLargeScaledImage(originalBytes))));
           log.debug("Set large");
-        } else if (context.equalsIgnoreCase("table-wrap")) { 
+        } else if (context.equalsIgnoreCase("table-wrap")) {
           RepresentationInfo rep = object.getRepresentations()[0];
 
           if (log.isDebugEnabled()) {
@@ -337,13 +337,13 @@ public class DocumentManagementService {
         // Don't continue trying to process images if one of them failed
         /*
          * } catch (Exception e) {
-         * 
+         *
          * log.error("Couldn't resize image : " + ((object == null) ? "null" : object.getUri())); }
          */
       }
     }
   }
-  
+
   /**
    * @return List of filenames of files in uploadable directory on server
    */
@@ -357,11 +357,11 @@ public class DocumentManagementService {
           documents.add(filenames[i]);
       }
     }
-    
+
     Collections.sort(documents);
     return documents;
   }
-  
+
   /**
    * @return A list of URIs of ingested documents in ST_DISABLED
    * @throws RemoteException
@@ -373,19 +373,19 @@ public class DocumentManagementService {
     Collections.sort(articles);
     return articles;
   }
-  
+
   private void generateCrossRefInfoDoc(File file, String uri) throws ZipException, IOException,
   TransformerException {
     ZipFile zip = new ZipFile(file);
     Enumeration entries = zip.entries();
-    
+
     try {
       while (entries.hasMoreElements()) {
         ZipEntry entry = (ZipEntry) entries.nextElement();
         if (entry.getName().toLowerCase().endsWith(".xml")) {
           File source_xml = File.createTempFile("xref-doi-src", ".xml");
           File target_xml = new File(ingestedDocumentDirectory, uriToFilename(uri) + ".xml");
-          
+
           BufferedInputStream fis = new BufferedInputStream(zip.getInputStream(entry));
           BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(source_xml));
           byte[] buf = new byte[(int) entry.getSize()];
@@ -408,10 +408,10 @@ public class DocumentManagementService {
       zip.close();
     }
   }
-  
+
   private File crossRefXML(File src, File dest) throws IOException,
   TransformerFactoryConfigurationError, TransformerException {
-    
+
     Transformer t = TransformerFactory.newInstance().newTransformer(new StreamSource(xslTemplate));
     t.setParameter("plosDoiUrl", plosDoiUrl);
     t.setParameter("plosEmail", plosEmail);
@@ -420,7 +420,7 @@ public class DocumentManagementService {
     t.transform(s_source, s_result);
     return dest;
   }
-  
+
   /**
    * @param uri
    * @return a string usable as a distinct filename - ':', '/' and '.' -> '_'
@@ -428,7 +428,7 @@ public class DocumentManagementService {
   private String uriToFilename(String uri) {
     return uri.replace(':', '_').replace('/', '_').replace('.', '_');
   }
-  
+
   /**
    * @param uri
    *          uri to be published Send CrossRef xml file top CrossRef -- if it is _received_ ok then
@@ -451,46 +451,46 @@ public class DocumentManagementService {
     articleCacheAdministrator.flushEntry(WEEK_ARTICLE_CACHE_KEY);
     articleCacheAdministrator.flushGroup(ALL_ARTICLE_CACHE_GROUP_KEY);
   }
-  
+
   private static class PngDataSource implements DataSource {
     private final byte[] src;
-    
+
     private final String ct;
-    
+
     public PngDataSource(byte[] content) {
       this(content, "image/png");
     }
-    
+
     public PngDataSource(byte[] content, String contType) {
       src = content;
       ct = contType;
       log.info("PngDataSource type=" + ct + " size=" + content.length);
     }
-    
+
     public InputStream getInputStream() throws IOException {
       return new ByteArrayInputStream(src);
     }
-    
+
     public OutputStream getOutputStream() throws IOException {
       throw new IOException("Not supported");
     }
-    
+
     public String getContentType() {
       return ct;
     }
-    
+
     public String getName() {
       return "png";
     }
   }
-  
+
   /**
    * @return Returns the articleCacheAdministrator.
    */
   public GeneralCacheAdministrator getArticleCacheAdministrator() {
     return articleCacheAdministrator;
   }
-  
+
   /**
    * @param articleCacheAdministrator The articleCacheAdministrator to set.
    */
