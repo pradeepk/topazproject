@@ -108,6 +108,13 @@
       </itql-admin>
     </services>
 
+    <utilities>
+      <image-magick>
+        <executable-path>/usr/bin/convert</executable-path>
+        <temp-directory>/tmp</temp-directory>
+      </image-magick>
+    </utilities>
+
     <search>
       <indexpath>/var/lib/topaz/data/lucene</indexpath>
       <defaultfields>description,title,body,creator</defaultfields>
