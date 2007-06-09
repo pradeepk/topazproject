@@ -31,34 +31,31 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.configuration.ConfigurationStore;
 
+/**
+ *
+ * Class documentation here
+ *
+ * @author <>
+ */
 public class ImageResizeService {
   private static final Log log = LogFactory.getLog(ImageResizeService.class);
 
   private int height;
-
   private int width;
-
   private String directory;
-
   private String inputImageFileName;
-
   private String outputImageFileName;
-
   private File location;
-
   private File inputImageFile;
-
   private File outputImageFile;
 
   public ImageResizeService() throws ImageResizeException {
     final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
-
     if (configuration.isEmpty()) {
       throw new ImageResizeException("ERROR: configuration has no property values");
     }
 
     final String directory = configuration.getString("topaz.utilities.image-magick.temp-directory");
-
     if (directory == null) {
       throw new ImageResizeException("ERROR: configuration failed to associate a value with property topaz.utilities.image-magick.temp-directory");
     }
@@ -70,11 +67,12 @@ public class ImageResizeService {
     outputImageFileName = "_" + disambiguation + "final.png";
   }
 
-/**
- * mutator for member directory (from which member location is constructed) where the image files are to be created.
- *
- * @param directory - the path to this directory
- */
+  /**
+   * Mutator for member directory (from which member location is constructed)
+   * where the image files are to be created.
+   *
+   * @param directory - the path to this directory
+   */
   public void setDirectory(final String directory) throws ImageResizeException {
     this.directory = directory;
     location = new File(this.directory);
@@ -82,62 +80,61 @@ public class ImageResizeService {
     if (!location.isDirectory()) {
       throw new ImageResizeException("ERROR: "+this.getClass().getCanonicalName()+" requires a valid directory.");
     }
-
     if (!location.canRead()) {
       throw new ImageResizeException("ERROR: "+this.getClass().getCanonicalName()+" requires a directory from which the process may read.");
     }
-
     if (!location.canWrite()) {
       throw new ImageResizeException("ERROR: "+this.getClass().getCanonicalName()+" requires a directory to which the process may write.");
     }
   }
 
-/**
- * mutator for member height
- *
- * @param height - the current height of the untransformed/un scaled image
- */
+  /**
+   * Mutator for member height
+   *
+   * @param height - the current height of the untransformed/un scaled image
+   */
   private void setHeight(final int height) {
     this.height = height;
   }
 
-/**
- * accessor for member height
- *
- * @return the current height of the untransformed/un scaled image
- */
+  /**
+   * Accessor for member height
+   *
+   * @return the current height of the untransformed/un scaled image
+   */
   private int getHeight() {
     return height;
   }
 
-/**
- * mutator for member width
- *
- * @param width - the current width of the untransformed/un scaled image
- */
+  /**
+   * Mutator for member width
+   *
+   * @param width - the current width of the untransformed/un scaled image
+   */
   private void setWidth(final int width) {
     this.width = width;
   }
 
-/**
- * accessor for member width
- *
- * @return the current width of the untransformed/un scaled image
- */
+  /**
+   * Accessor for member width
+   *
+   * @return the current width of the untransformed/un scaled image
+   */
   private int getWidth() {
     return width;
   }
 
-/**
- * initialize members inputImageFile, outputImageFile, width and height as follows:
- * inputImageFile - is an extant file populated with the contents of image
- * outputImageFile - is a non-extant file which is, nonetheless, a valid instance of File
- * width - the current width of the image stored in member inputImageFile
- * height - the current height of the image stored in member inputImageFile
- *
- * @param image - the image data to be stored in member inputImageFile
- * @throws ImageResizeException
- */
+  /**
+   * Initialize members inputImageFile, outputImageFile, width and height as follows:
+   *
+   * inputImageFile - is an extant file populated with the contents of image
+   * outputImageFile - is a non-extant file which is, nonetheless, a valid instance of File
+   * width - the current width of the image stored in member inputImageFile
+   * height - the current height of the image stored in member inputImageFile
+   *
+   * @param image - the image data to be stored in member inputImageFile
+   * @throws ImageResizeException
+   */
   private void preOperation(final byte[] image) throws ImageResizeException {
     final ImageRetrievalService imageRetrievalService = new ImageRetrievalService();
 
@@ -174,7 +171,7 @@ public class ImageResizeService {
         setWidth(srcImage.getWidth());
         setHeight(srcImage.getHeight());
       } catch (SecurityException e) {
-          throw new ImageResizeException(e);
+        throw new ImageResizeException(e);
       } finally {
         in.close();
       }
@@ -185,12 +182,12 @@ public class ImageResizeService {
     }
   }
 
-/**
- * disassociates members inputImageFile and outputImageFile from their filesystem counterparts
- * by deleting their filesystem counterparts.
- *
- * @throws ImageResizeException
- */
+  /**
+   * Disassociates members inputImageFile and outputImageFile from their
+   * filesystem counterparts by deleting their filesystem counterparts.
+   *
+   * @throws ImageResizeException
+   */
   private void postOperation() throws ImageResizeException {
     String path;
 
@@ -217,22 +214,22 @@ public class ImageResizeService {
     }
   }
 
-/**
- * convert the image and apply no scaling
- *
- * @throws ImageResizeException
- */
+  /**
+   * Convert the image and apply no scaling
+   *
+   * @throws ImageResizeException
+   */
   private void createScaledImage() throws ImageResizeException {
     createScaledImage(getWidth(),getHeight());
   }
 
-/**
- * convert the image and apply desired scaling
- *
- * @param newWidth - the desired width to which the image should be scaled
- * @param newHeight - the desired height to which the image should be scaled
- * @throws ImageResizeException
- */
+  /**
+   * Convert the image and apply desired scaling
+   *
+   * @param newWidth - the desired width to which the image should be scaled
+   * @param newHeight - the desired height to which the image should be scaled
+   * @throws ImageResizeException
+   */
   private void createScaledImage(final int newWidth,final int newHeight) throws ImageResizeException {
     final ImageMagicExecUtil util = new ImageMagicExecUtil();
     final boolean status = util.convert(this.inputImageFile,outputImageFile,newWidth,newHeight);
@@ -243,12 +240,13 @@ public class ImageResizeService {
     }
   }
 
-/**
- * read the transformed PNG image from member outputImageFile, write it to a buffer and return the resulting byte array.
- *
- * @return byte array of the scaled and transformed (PNG) image
- * @throws ImageResizeException
- */
+  /**
+   * Read the transformed PNG image from member outputImageFile, write it to a
+   * buffer and return the resulting byte array.
+   *
+   * @return byte array of the scaled and transformed (PNG) image
+   * @throws ImageResizeException
+   */
   private synchronized byte[] getPNGByteArray() throws ImageResizeException {
     assert(outputImageFile != null && outputImageFile.exists() && outputImageFile.length() > 0);
 
@@ -286,24 +284,25 @@ public class ImageResizeService {
     return result;
   }
 
-/**
- * return a PNG version of the image without scaling it.
- *
- * @return byte array of the scaled and transformed (PNG) image
- * @throws ImageResizeException
- */
+  /**
+   * Return a PNG version of the image without scaling it.
+   *
+   * @return byte array of the scaled and transformed (PNG) image
+   * @throws ImageResizeException
+   */
   private byte[] performNoScaling () throws ImageResizeException {
     createScaledImage();
     return getPNGByteArray();
   }
 
-/**
- * scale the image to a maximum height of fixHeight (while preserving the aspect ratio) and return a PNG version of it
- *
- * @param fixHeight
- * @return byte array of the scaled and transformed (PNG) image
- * @throws ImageResizeException
- */
+  /**
+   * Scale the image to a maximum height of fixHeight (while preserving the
+   * aspect ratio) and return a PNG version of it
+   *
+   * @param fixHeight
+   * @return byte array of the scaled and transformed (PNG) image
+   * @throws ImageResizeException
+   */
   private byte[] scaleFixHeight(final float fixHeight) throws ImageResizeException {
     final float scale;
     final int newHeight;
@@ -328,13 +327,14 @@ public class ImageResizeService {
     return getPNGByteArray();
   }
 
-/**
- * scale the image to a maximum width of fixWidth (while preserving the aspect ratio) and return a PNG version of it
- *
- * @param fixWidth
- * @return byte array of the scaled and transformed (PNG) image
- * @throws ImageResizeException
- */
+  /**
+   * Scale the image to a maximum width of fixWidth (while preserving the
+   * aspect ratio) and return a PNG version of it
+   *
+   * @param fixWidth
+   * @return byte array of the scaled and transformed (PNG) image
+   * @throws ImageResizeException
+   */
   private byte[] scaleFixWidth(final float fixWidth) throws ImageResizeException {
     final float scale;
     final int newHeight;
@@ -359,13 +359,14 @@ public class ImageResizeService {
     return getPNGByteArray();
   }
 
-/**
- * scale the image to a maximum of oneSide in both directions (while preserving the aspect ratio) and return a PNG version of it
- *
- * @param oneSide
- * @return byte array of the scaled and transformed (PNG) image
- * @throws ImageResizeException
- */
+  /**
+   * Scale the image to a maximum of oneSide in both directions (while
+   * preserving the aspect ratio) and return a PNG version of it
+   *
+   * @param oneSide
+   * @return byte array of the scaled and transformed (PNG) image
+   * @throws ImageResizeException
+   */
   private byte[] scaleLargestDim(final float oneSide) throws ImageResizeException {
     final float scale;
     final int newHeight;
@@ -393,13 +394,13 @@ public class ImageResizeService {
 
     return getPNGByteArray();
   }
-  
-/**
- * scale the image to 70 pixels in width into PNG
- *
- * @return byte array of the new small PNG image
- * @throws ImageResizeException
- */
+
+  /**
+   * Scale the image to 70 pixels in width into PNG
+   *
+   * @return byte array of the new small PNG image
+   * @throws ImageResizeException
+   */
   public byte[] getSmallScaledImage(final byte[] initialImage) throws ImageResizeException {
     try {
       preOperation(initialImage);
@@ -409,12 +410,12 @@ public class ImageResizeService {
     }
   }
 
-/**
- * scale the image to at most 600 pixels in either direction into a PNG
- *
- * @return byte array of the new medium size PNG image
- * @throws ImageResizeException
- */
+  /**
+   * Scale the image to at most 600 pixels in either direction into a PNG
+   *
+   * @return byte array of the new medium size PNG image
+   * @throws ImageResizeException
+   */
   public byte[] getMediumScaledImage(final byte[] initialImage) throws ImageResizeException {
     try {
       preOperation(initialImage);
@@ -424,12 +425,12 @@ public class ImageResizeService {
     }
   }
 
-/**
- * don't scale the image, just return a PNG version of it
- *
- * @return byte array of the new PNG version of the image
- * @throws ImageResizeException
- */
+  /**
+   * Don't scale the image, just return a PNG version of it
+   *
+   * @return byte array of the new PNG version of the image
+   * @throws ImageResizeException
+   */
   public byte[] getLargeScaledImage(final byte[] initialImage) throws ImageResizeException {
     try {
       preOperation(initialImage);
