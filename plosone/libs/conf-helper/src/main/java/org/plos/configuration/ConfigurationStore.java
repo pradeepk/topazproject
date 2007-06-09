@@ -66,9 +66,14 @@ public class ConfigurationStore {
    * Gets the current configuration root.
    *
    * @return Returns the currently loaded configuration root
+   *
+   * @throws RuntimeException if the configuration factory is not initialized
    */
   public Configuration getConfiguration() {
-    return configuration;
+    if (configuration != null)
+      return configuration;
+
+    throw new RuntimeException("ERROR: Configuration not loaded or initialized.");
   }
 
   /**
