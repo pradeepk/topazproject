@@ -41,8 +41,6 @@ public class AuthServletContextListener implements ServletContextListener {
     final ServletContext context = event.getServletContext();
 
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
-    if (conf == null)
-      throw new Error("Commons-Configuration not initialized properly");
 
     final Properties dbProperties = new Properties();
     dbProperties.setProperty("url", conf.getString("cas.db.url"));
