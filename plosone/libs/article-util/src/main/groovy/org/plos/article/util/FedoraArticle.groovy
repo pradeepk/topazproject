@@ -41,7 +41,8 @@ class FedoraArticle {
     this.url = "$fedoraUri/doi:${URLEncoder.encode(doi.substring(9))}/XML"
     this.article = slurper.parse(new URL(this.url).getContent())
     article.front.'article-meta'.'contrib-group'.contrib.name.each() {
-      this.contributors += "${it.'given-names'} ${it.surname}"
+      this.contributors += (it.@'name-style' == "eastern") ? "${it.surname} ${it.'given-names'}" :
+                                                             "${it.'given-names'} ${it.surname}"
     }
     this.volume = Integer.valueOf(article.front.'article-meta'.volume.toString())
     this.issue = Integer.valueOf(article.front.'article-meta'.issue.toString())
