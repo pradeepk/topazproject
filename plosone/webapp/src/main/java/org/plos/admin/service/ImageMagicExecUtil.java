@@ -38,14 +38,12 @@ public class ImageMagicExecUtil {
       throw new ImageResizeException("ERROR: configuration has no property values");
     }
 
-    final String pathToProgram = configuration.getString("topaz.utilities.image-magick.executable-path");
-
-    if (log.isDebugEnabled()) {
-      log.debug("pathToProgram: "+pathToProgram);
-    }
+    final String pathToProgramKey = "topaz.utilities.image-magick.executable-path";
+    final String pathToProgram = configuration.getString(pathToProgramKey);
 
     if (pathToProgram == null) {
-      throw new ImageResizeException("ERROR: configuration failed to associate a value with property topaz.utilities.image-magick.executable-path");
+      throw new ImageResizeException("ERROR: configuration failed to associate a value with " +
+                                     pathToProgramKey);
     }
 
     setPathToProgram(pathToProgram);
@@ -62,20 +60,24 @@ public class ImageMagicExecUtil {
 
   /**
    * This method calls the convert utility to create a new image with the specified properties
-   * @param input - the object representing the file to be converted
-   * @param output - the file to be created (which results from the conversion operation)
-   * @param imageWidth - the maximum width of the converted and resized image
-   * @param imageHeight - the maximum height of the converted and resized image
-   * @return result - an indication of whether the program was run successfully or not (true = success & false = failure)
+   * @param input       the object representing the file to be converted
+   * @param output      the file to be created (which results from the conversion operation)
+   * @param imageWidth  the maximum width of the converted and resized image
+   * @param imageHeight the maximum height of the converted and resized image
+   * @return result     an indication of whether the program was run successfully or not
+   *                    (true = success & false = failure)
    */
-  public boolean convert(final File input,final File output,final int imageWidth,final int imageHeight) {
+  public boolean convert(final File input,final File output,
+                         final int imageWidth,final int imageHeight) {
     final boolean result;
     final ArrayList<String> command = new ArrayList<String>(7);
-    final String resizeOperation="-resize";
-    final String newDimensions=(new Integer(imageWidth)).toString()+"x"+(new Integer(imageHeight)).toString(); // for example: 1024x768
-    final String compressionOperation="-quality";
-    final String qualityLevel="100"; // perfect quality => no compression beyond that specified by file format
-
+    final String resizeOperation = "-resize";
+    // for example: newDimensions = 1024x768
+    final String newDimensions = (new Integer(imageWidth)).toString() + "x" +
+                                 (new Integer(imageHeight)).toString();
+    final String compressionOperation = "-quality";
+    // qualityLevel = 100 => perfect quality/no compression
+    final String qualityLevel = "100";
     int exitStatus = 1;
 
     try {
@@ -102,9 +104,7 @@ public class ImageMagicExecUtil {
           exitStatus = proc.waitFor();
           break;
         } catch (InterruptedException e) {
-          if (log.isDebugEnabled()) {
-	        log.debug("Ignoring ...",e);
-	      }
+          // not a problem. simply resume execution of method waitFor.
         }
       }
 

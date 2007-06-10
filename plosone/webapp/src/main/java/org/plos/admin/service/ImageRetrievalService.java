@@ -15,32 +15,34 @@ import java.io.IOException;
 import java.io.OutputStream;
 
 /**
- * User: jonnie
- * Date: May 31, 2007
- * Time: 8:26:48 PM
+ * This class performs the operations of conversion and resizing of images.
+ * The final image format is assumed to be png. The desired image sizes are
+ * passed to the public methods.
+ *
+ * @author jonnie 
  */
-
 public class ImageRetrievalService {
-  public ImageRetrievalService() {}
+  private static int BUFFER_SIZE = 8192;
 
- /**
-  * This method is used to copy image data from an input stream to an output stream.
-  * @param in - the input stream to read from
-  * @param out - the output stream to write to
-  * @throws ImageRetrievalServiceException
-  */
-  public void transferImage(final InputStream in,final OutputStream out) throws ImageRetrievalServiceException {
+  public ImageRetrievalService() {
+  }
+
+  /**
+   * This method is used to copy image data from an input stream to an output stream.
+   * @param in  the input stream to read from
+   * @param out the output stream to write to
+   * @throws ImageRetrievalServiceException
+   */
+  public void transferImage(final InputStream in,final OutputStream out)
+        throws ImageRetrievalServiceException {
     try {
       int bytesReadTotal = 0;
-
-      int length = 8192;
+      int length = BUFFER_SIZE;
       byte[] buffer = new byte[length];
-
       int bytesRead;
 
       do {
         bytesRead = 0;
-
         int offset = 0;
         int remainingBytes = (length - offset);
 
@@ -48,10 +50,8 @@ public class ImageRetrievalService {
           offset = offset + bytesRead;
           remainingBytes = remainingBytes - bytesRead;
           assert(remainingBytes + offset == length);
-
           bytesReadTotal = bytesReadTotal + bytesRead;
 
-          // buffer is full => exit inner loop.
           if (remainingBytes <= 0) {
             assert(remainingBytes == 0);
             break;
@@ -60,14 +60,11 @@ public class ImageRetrievalService {
           bytesRead = in.read(buffer,offset,remainingBytes);
         }
 
-        // buffer is as full as possible.
-        // placing contents into output-stream and then resume outer loop.
         remainingBytes = offset;
         offset = 0;
         out.write(buffer,offset,remainingBytes);
       } while (bytesRead != -1);
     } catch (IOException e) {
-      System.out.println(e);
       throw new ImageRetrievalServiceException("",e);
     }
   }

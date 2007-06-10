@@ -32,10 +32,11 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.configuration.ConfigurationStore;
 
 /**
+ * This class performs the operations of conversion and resizing of images.
+ * The final image format is assumed to be png. The desired image sizes are
+ * passed to the public methods.
  *
- * Class documentation here
- *
- * @author <>
+ * @author stevec
  */
 public class ImageResizeService {
   private static final Log log = LogFactory.getLog(ImageResizeService.class);
@@ -57,11 +58,11 @@ public class ImageResizeService {
 
     final String directory = configuration.getString("topaz.utilities.image-magick.temp-directory");
     if (directory == null) {
-      throw new ImageResizeException("ERROR: configuration failed to associate a value with property topaz.utilities.image-magick.temp-directory");
+      throw new ImageResizeException("ERROR: configuration failed to associate a value with " +
+		                     "property topaz.utilities.image-magick.temp-directory");
     }
 
     setDirectory(directory);
-
     final Integer disambiguation = new Integer(hashCode());
     inputImageFileName = "_" + disambiguation + "current";
     outputImageFileName = "_" + disambiguation + "final.png";
@@ -78,50 +79,19 @@ public class ImageResizeService {
     location = new File(this.directory);
 
     if (!location.isDirectory()) {
-      throw new ImageResizeException("ERROR: "+this.getClass().getCanonicalName()+" requires a valid directory.");
+      throw new ImageResizeException("ERROR: " + this.getClass().getCanonicalName() +
+                                     " requires a valid directory");
     }
+
     if (!location.canRead()) {
-      throw new ImageResizeException("ERROR: "+this.getClass().getCanonicalName()+" requires a directory from which the process may read.");
+      throw new ImageResizeException("ERROR: " + this.getClass().getCanonicalName() +
+                                     " requires a directory from which the process may read");
     }
+
     if (!location.canWrite()) {
-      throw new ImageResizeException("ERROR: "+this.getClass().getCanonicalName()+" requires a directory to which the process may write.");
+      throw new ImageResizeException("ERROR: " + this.getClass().getCanonicalName() +
+                                     " requires a directory to which the process may write.");
     }
-  }
-
-  /**
-   * Mutator for member height
-   *
-   * @param height - the current height of the untransformed/un scaled image
-   */
-  private void setHeight(final int height) {
-    this.height = height;
-  }
-
-  /**
-   * Accessor for member height
-   *
-   * @return the current height of the untransformed/un scaled image
-   */
-  private int getHeight() {
-    return height;
-  }
-
-  /**
-   * Mutator for member width
-   *
-   * @param width - the current width of the untransformed/un scaled image
-   */
-  private void setWidth(final int width) {
-    this.width = width;
-  }
-
-  /**
-   * Accessor for member width
-   *
-   * @return the current width of the untransformed/un scaled image
-   */
-  private int getWidth() {
-    return width;
   }
 
   /**
@@ -147,11 +117,14 @@ public class ImageResizeService {
           inputImageFile.delete();
         } catch (SecurityException e) {}
 
-        throw new ImageResizeException("ERROR: unable to create temporary file: "+inputImageFile.getCanonicalPath());
+        throw new ImageResizeException("ERROR: unable to create temporary file: " +
+                                       inputImageFile.getCanonicalPath());
       }
 
       if (outputImageFile.exists()) {
-        throw new ImageResizeException("ERROR: temporary file: "+outputImageFile.getCanonicalPath()+" already exists");
+        throw new ImageResizeException("ERROR: temporary file: " +
+                                       outputImageFile.getCanonicalPath() +
+                                       " already exists");
       }
 
       final ByteArrayInputStream in = new ByteArrayInputStream(image);
@@ -168,8 +141,8 @@ public class ImageResizeService {
         }
 
         final RenderedOp srcImage = JAI.create("fileload",inputImageFile.getCanonicalPath());
-        setWidth(srcImage.getWidth());
-        setHeight(srcImage.getHeight());
+        width = srcImage.getWidth();
+        height = srcImage.getHeight();
       } catch (SecurityException e) {
         throw new ImageResizeException(e);
       } finally {
@@ -189,24 +162,18 @@ public class ImageResizeService {
    * @throws ImageResizeException
    */
   private void postOperation() throws ImageResizeException {
-    String path;
-
-    try {
-      path = inputImageFile.getCanonicalPath();
-    } catch (IOException e) {
-      path = "bad file";
-    }
-
     try {
       if (inputImageFile.exists() && !inputImageFile.delete()) {
-        throw new ImageResizeException("ERROR: unable to delete temporary file: "+path);
+        throw new ImageResizeException("ERROR: unable to delete temporary file: " +
+                                       inputImageFileName);
       }
     } catch (SecurityException e) {
       throw new ImageResizeException(e);
     } finally {
       try {
         if (outputImageFile.exists() && !outputImageFile.delete()) {
-          throw new ImageResizeException("ERROR: unable to delete temporary file: "+path);
+          throw new ImageResizeException("ERROR: unable to delete temporary file: " +
+                                         outputImageFileName);
         }
       } catch (SecurityException e) {
         throw new ImageResizeException(e);
@@ -220,7 +187,7 @@ public class ImageResizeService {
    * @throws ImageResizeException
    */
   private void createScaledImage() throws ImageResizeException {
-    createScaledImage(getWidth(),getHeight());
+    createScaledImage(this.width,this.height);
   }
 
   /**
@@ -230,7 +197,8 @@ public class ImageResizeService {
    * @param newHeight - the desired height to which the image should be scaled
    * @throws ImageResizeException
    */
-  private void createScaledImage(final int newWidth,final int newHeight) throws ImageResizeException {
+  private void createScaledImage(final int newWidth,final int newHeight)
+        throws ImageResizeException {
     final ImageMagicExecUtil util = new ImageMagicExecUtil();
     final boolean status = util.convert(this.inputImageFile,outputImageFile,newWidth,newHeight);
 
@@ -265,7 +233,7 @@ public class ImageResizeService {
           result = out.toByteArray();
 
           if (log.isDebugEnabled()) {
-            log.debug("file size: "+result.length);
+            log.debug("file size: " + result.length);
           }
         } catch (ImageRetrievalServiceException e) {
           throw new ImageResizeException(e);
@@ -308,14 +276,14 @@ public class ImageResizeService {
     final int newHeight;
     final int newWidth;
 
-    if (getHeight() > fixHeight) {
-      scale = fixHeight / getHeight();
+    if (this.height > fixHeight) {
+      scale = fixHeight / this.height;
       newHeight = (int) fixHeight;
-      newWidth = (int) (getWidth() * scale);
+      newWidth = (int) (this.width * scale);
     } else {
       scale = 1;
-      newHeight = getHeight();
-      newWidth = getWidth();
+      newHeight = this.height;
+      newWidth = this.width;
     }
 
     if (scale == 1) {
@@ -340,14 +308,14 @@ public class ImageResizeService {
     final int newHeight;
     final int newWidth;
 
-    if (getWidth() > fixWidth) {
-      scale = fixWidth / getWidth();
+    if (this.width > fixWidth) {
+      scale = fixWidth / this.width;
       newWidth = (int) fixWidth;
-      newHeight = (int) (getHeight() * scale);
+      newHeight = (int) (this.height * scale);
     } else {
       scale = 1;
-      newWidth = getWidth();
-      newHeight = getHeight();
+      newWidth = width;
+      newHeight = this.height;
     }
 
     if (scale == 1) {
@@ -372,18 +340,18 @@ public class ImageResizeService {
     final int newHeight;
     final int newWidth;
 
-    if ((getHeight() > getWidth()) && (getHeight() > oneSide)) {
-      scale = oneSide / getHeight();
+    if ((this.height > this.width) && (this.height > oneSide)) {
+      scale = oneSide / this.height;
       newHeight = (int) oneSide;
-      newWidth = (int) (getWidth() * scale);
-    } else if (getWidth() > oneSide) {
-      scale = oneSide / getWidth();
+      newWidth = (int) (this.width * scale);
+    } else if (this.width > oneSide) {
+      scale = oneSide / this.width;
       newWidth = (int) oneSide;
-      newHeight = (int) (getHeight() * scale);
+      newHeight = (int) (this.height * scale);
     } else {
       scale = 1;
-      newWidth = getWidth();
-      newHeight = getHeight();
+      newWidth = this.width;
+      newHeight = this.height;
     }
 
     if (scale == 1) {
