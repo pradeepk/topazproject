@@ -73,8 +73,7 @@ public class ImageMagicExecUtil {
     final ArrayList<String> command = new ArrayList<String>(7);
     final String resizeOperation = "-resize";
     // for example: newDimensions = 1024x768
-    final String newDimensions = (new Integer(imageWidth)).toString() + "x" +
-                                 (new Integer(imageHeight)).toString();
+    final String newDimensions = imageWidth + "x" + imageHeight;
     final String compressionOperation = "-quality";
     // qualityLevel = 100 => perfect quality/no compression
     final String qualityLevel = "100";
@@ -104,7 +103,9 @@ public class ImageMagicExecUtil {
           exitStatus = proc.waitFor();
           break;
         } catch (InterruptedException e) {
-          // not a problem. simply resume execution of method waitFor.
+          if (log.isDebugEnabled()) {
+            log.debug("Ignoring ...",e);
+          }
         }
       }
 
