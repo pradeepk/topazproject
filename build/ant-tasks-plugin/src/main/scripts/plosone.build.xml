@@ -83,6 +83,12 @@
     </artifact:dependencies>
     <pathconvert property="plosreg-war" refid="plosreg.fileset"/>
 
+    <artifact:dependencies filesetId="search.fileset" useScope="runtime">
+      <dependency groupId="org.topazproject.ws" artifactId="ws-search-webapp"
+                  version="${webappVersion}" type="war"/>
+    </artifact:dependencies>
+    <pathconvert property="search-war" refid="search.fileset"/>
+
     <artifact:dependencies filesetId="log4j.fileset" useScope="runtime">
       <dependency groupId="log4j" artifactId="log4j" version="1.2.14" type="jar"/>
     </artifact:dependencies>
@@ -111,8 +117,8 @@
 
     <tempfile property="temp.file" prefix="plosone" suffix=".properties" destDir="${home}"/>
     <echo file="${temp.file}" message=""/>
-    <propertyselector property="prop.list" delimiter="," match="(topaz|plosone|log4j|com)\..*"
-        casesensitive="false" />
+    <propertyselector property="prop.list" casesensitive="false"
+        match="(topaz|plosone|plos-registration|crossref|itql|log4j|com|ingest|server|service|hosts|ports)\..*"/>
     <if>
       <isset property="prop.list"/>
       <then>
@@ -146,6 +152,9 @@
         </deployable>
         <deployable type="war" file="${plosreg-war}">
           <property name="context" value="plos-registration"/>
+        </deployable>
+        <deployable type="war" file="${search-war}">
+          <property name="context" value="ws-search-webapp"/>
         </deployable>
       </configuration>
     </cargo>
