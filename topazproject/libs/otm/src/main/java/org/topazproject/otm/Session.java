@@ -280,6 +280,9 @@ public class Session {
         sync(o, id, false, false, false);
     }
 
+    if (o instanceof ProxyObject)
+      o.equals(o); // ensure object is loaded
+
     if ((o == null) || clazz.isInstance(o))
       return clazz.cast(o);
 
