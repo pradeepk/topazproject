@@ -9,9 +9,12 @@
  */
 
 package org.plos.admin.service;
+
 /**
- * @author stevec
+ * This is the exception used by the ImageResizeService to indicate the
+ * failure of an operation.
  *
+ * @author stevec
  */
 public class ImageResizeException extends Exception {
   private String articleURI;

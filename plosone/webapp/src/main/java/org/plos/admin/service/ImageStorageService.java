@@ -16,11 +16,11 @@ import java.io.ByteArrayOutputStream;
 import java.net.URL;
 
 /**
- * User: jonnie
- * Date: Jun 6, 2007
- * Time: 9:05:11 PM
+ * This Stores an image from a given URL in a buffer and provides the images as
+ * a byte array.
+ *
+ * @author jonnie
  */
-
 public class ImageStorageService {
   private static final int DEFAULT_BUFFER_SIZE = 33554432;
 
@@ -30,15 +30,23 @@ public class ImageStorageService {
     this(DEFAULT_BUFFER_SIZE);
   }
 
+  /**
+   * Constructs the service and allocates memory storage of numberOfBytes in
+   * length
+   *
+   * @param numberOfBytes the number of bytes to be allocated
+   */
   public ImageStorageService(final int numberOfBytes) {
     buffer = new ByteArrayOutputStream(numberOfBytes);
   }
 
- /**
-  * Retrieves the contents of the URL and stores them into memory for later retrieval by clients.
-  * @param url - the url from which the content is to be obtained.
-  * @throws ImageStorageServiceException
-  */
+  /**
+   * Retrieves the contents of the URL and stores them into memory for later
+   * retrieval by clients.
+   * 
+   * @param url the url from which the content is to be obtained.
+   * @throws ImageStorageServiceException
+   */
   public void captureImage(final URL url) throws ImageStorageServiceException {
     final ImageRetrievalService imageRetrievalService = new ImageRetrievalService();
 
@@ -52,6 +60,11 @@ public class ImageStorageService {
     }
   }
 
+  /**
+   * Provides the image in the form of a bytes array.
+   *
+   * @return the image as a byte array
+   */
   public byte[] getBytes() {
     return buffer.toByteArray();
   }
