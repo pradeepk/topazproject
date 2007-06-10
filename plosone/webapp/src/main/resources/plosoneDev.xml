@@ -45,7 +45,7 @@
       <http>${ports.default}</http>
       <https>${ports.plosone-ssl}</https>
     </port>
-    <app-context></app-context>
+    <app-context>/plosone-webapp</app-context>
     <resource-sub-dir></resource-sub-dir>
     <host>${plosone.hostname}:${plosone.port.http}</host>
     <url>
@@ -350,6 +350,13 @@
         <auth-method>NONE</auth-method>
       </itql-admin>
     </services>
+
+    <utilities>
+      <image-magick>
+        <executable-path>/usr/bin/convert</executable-path>
+        <temp-directory>/tmp</temp-directory>
+      </image-magick>
+    </utilities>
 
     <search>
       <indexpath>/var/lib/topaz/data/lucene</indexpath>
