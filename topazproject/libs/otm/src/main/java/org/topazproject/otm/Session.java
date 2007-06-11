@@ -632,7 +632,7 @@ public class Session {
                       throws Throwable {
           if (loaded == null) {
             log.info(m.getName() + " on " + id + " is forcing a load from store");
-            loaded = getFromStore(clazz, id, cm); // xxx: associations? sub-classes?
+            loaded = getFromStore(clazz, id, cm);
             pristineProxies.remove(id);
           }
 
