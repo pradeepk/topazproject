@@ -13,7 +13,7 @@
 	          </ul>
 	        </span>
 	    </a>
-        <p><a href="/annotation/getCommentary.action?target=${articleURI}" class="commentary icon">See all commentary</a> on this article</p>
+        <!--<p><a href="/annotation/getCommentary.action?target=${articleURI}" class="commentary icon">See all commentary</a> on this article</p>-->
       </div>
 
       <div class="rsep"></div>
