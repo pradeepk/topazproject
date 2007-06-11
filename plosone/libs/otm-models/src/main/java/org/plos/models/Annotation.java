@@ -22,6 +22,10 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Pradeep Krishnan
  */
 public class Annotation extends AbstractAnnotation {
+  /**
+   * Annotation type Namespace URI
+   */
+  public static final String TYPE_NS = "http://www.w3.org/2000/10/annotationType#";
   @Predicate(uri = Annotea.NS + "body")
   private URI body;
 
