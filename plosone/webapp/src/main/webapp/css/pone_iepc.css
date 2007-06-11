@@ -94,8 +94,6 @@ html>body #home { height: auto }
 *:first-child+html a:visited.bug, { margin-bottom: -20px!important; }
 
 * html span.inline-rating { display: inline; position: relative; left: -85px; top: 14px; }
-* html div.commentview ol,
-* html div.commentview ol li { background: transparent; }
 * html div.commentview fieldset { margin-top: 3px; }
 * html div.commentview fieldset ol li { padding-bottom: -100px; margin-bottom: -2em; }
 
