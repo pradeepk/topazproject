@@ -521,6 +521,8 @@ public class BuilderTest extends GroovyTestCase {
     shouldFail(NoSuchFieldException, { base.getDeclaredField('id') })
 
     def obj  = ext.newInstance(id:'foo:1'.toURI(), state:42, color:'blue')
+    assert obj != null
+    assert !obj.equals(null)
     assert obj == ext.newInstance(id:'foo:1'.toURI(), state:42, color:'blue')
     assert obj != ext.newInstance(id:'foo:2'.toURI(), state:42, color:'blue')
     assert obj != ext.newInstance(id:'foo:1'.toURI(), state:43, color:'blue')

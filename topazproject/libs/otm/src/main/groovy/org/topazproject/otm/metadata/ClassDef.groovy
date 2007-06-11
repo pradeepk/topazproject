@@ -169,6 +169,8 @@ public class ClassDef {
     clsSrc << "    return \\\n"
     if (extendsClass)
       clsSrc << "      super.equals(o) &&\n"
+    else
+      clsSrc << "      o != null &&\n"
     for (f in fields)
       clsSrc << "      o.${f.name} == ${f.name} &&\n"
     clsSrc << "    true\n"
