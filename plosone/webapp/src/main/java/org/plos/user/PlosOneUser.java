@@ -12,7 +12,6 @@ package org.plos.user;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.ApplicationException;
 import org.plos.models.UserAccount;
 import org.plos.models.UserPreferences;
 import org.plos.models.UserProfile;

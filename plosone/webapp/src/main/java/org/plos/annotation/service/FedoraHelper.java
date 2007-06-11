@@ -12,16 +12,11 @@ package org.plos.annotation.service;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 
-import java.net.URI;
-
 import java.rmi.RemoteException;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.apache.axis.types.NonNegativeInteger;
 
@@ -32,7 +27,6 @@ import org.plos.service.WSTopazContext;
 
 import org.topazproject.common.impl.TopazContext;
 import org.topazproject.fedora.client.FedoraAPIM;
-import org.topazproject.fedora.client.Uploader;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 

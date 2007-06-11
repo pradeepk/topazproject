@@ -11,11 +11,7 @@ package org.plos.xacml;
 
 import java.net.URI;
 
-import java.security.Principal;
-
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.ServletContext;

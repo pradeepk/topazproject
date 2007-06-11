@@ -9,7 +9,6 @@
  */
 package org.plos.rating.action;
 
-import org.plos.models.CommentAnnotation;
 import org.plos.models.Rating;
 
 /**

@@ -12,36 +12,18 @@ package org.plos.xacml.cond;
 import java.net.URI;
 
 import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
-import javax.servlet.http.HttpSession;
-
-import org.apache.commons.configuration.Configuration;
-import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.authentication.ProtectedService;
-import org.topazproject.authentication.ProtectedServiceFactory;
-
 import org.plos.service.WSTopazContext;
-
-import org.topazproject.configuration.ConfigurationStore;
-
-import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.topazproject.ws.permissions.Permissions;
 import org.topazproject.ws.permissions.impl.PermissionsImpl;
 
 import com.sun.xacml.EvaluationCtx;
-import com.sun.xacml.ParsingException;
-import com.sun.xacml.UnknownIdentifierException;
-import com.sun.xacml.attr.AttributeFactory;
-import com.sun.xacml.attr.BagAttribute;
 import com.sun.xacml.attr.BooleanAttribute;
 import com.sun.xacml.attr.StringAttribute;
 import com.sun.xacml.cond.Evaluatable;

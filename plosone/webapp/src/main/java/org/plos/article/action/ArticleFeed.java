@@ -10,7 +10,6 @@
 package org.plos.article.action;
 
 import com.opensymphony.webwork.ServletActionContext;
-import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 
 import com.sun.syndication.feed.WireFeed;
 import com.sun.syndication.feed.atom.Content;
@@ -18,21 +17,15 @@ import com.sun.syndication.feed.atom.Entry;
 import com.sun.syndication.feed.atom.Feed;
 import com.sun.syndication.feed.atom.Link;
 import com.sun.syndication.feed.atom.Person;
-import com.sun.syndication.io.FeedException;
-import com.sun.syndication.io.WireFeedOutput;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.io.InputStream;
 import java.io.StringReader;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.net.MalformedURLException;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.net.URLConnection;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -41,14 +34,10 @@ import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Pattern;
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Source;
 import javax.xml.transform.Templates;
 import javax.xml.transform.Transformer;
 import javax.xml.transform.TransformerException;
@@ -56,18 +45,13 @@ import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
-import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.plos.ApplicationException;
 
 import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
-import org.plos.article.service.ArticleFeedData;
 import org.plos.article.service.ArticleOtmService;
-import org.plos.article.util.ArticleUtil;
-import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.models.Article;
 import org.plos.models.Category;
 import org.plos.util.FileUtils;
@@ -75,11 +59,8 @@ import org.plos.util.FileUtils;
 import org.topazproject.xml.transform.cache.CachedSource;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
 import org.xml.sax.InputSource;
-import org.xml.sax.SAXException;
 
 
 /**

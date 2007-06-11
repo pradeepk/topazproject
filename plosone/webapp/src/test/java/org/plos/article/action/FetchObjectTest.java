@@ -16,9 +16,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.SecondaryObject;
-import org.plos.article.service.RepresentationInfo;
 import org.plos.article.util.NoSuchArticleIdException;
-import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.models.ObjectInfo;
 
 import java.net.URL;

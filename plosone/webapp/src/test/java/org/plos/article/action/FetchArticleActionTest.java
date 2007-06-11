@@ -18,8 +18,6 @@ import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.DuplicateArticleIdException;
 import org.plos.annotation.action.BodyFetchAction;
 
-import org.topazproject.common.DuplicateIdException;
-
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
 import java.net.MalformedURLException;

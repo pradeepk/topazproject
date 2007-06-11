@@ -14,7 +14,6 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleInfo;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.BrowseService;
@@ -29,10 +28,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
-import java.util.Map;
 import java.util.Random;
 import java.util.Set;
-import java.util.TreeMap;
 
 /**
  * @author stevec

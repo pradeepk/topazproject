@@ -16,7 +16,6 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.ApplicationException;
 import org.plos.annotation.service.Annotation;
-import org.plos.annotation.service.Reply;
 import org.plos.annotation.Commentary;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.util.NoSuchArticleIdException;

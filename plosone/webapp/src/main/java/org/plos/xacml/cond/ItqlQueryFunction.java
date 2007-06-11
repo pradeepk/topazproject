@@ -30,9 +30,7 @@ import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.mulgara.itql.StringAnswer;
 
-
 import com.sun.xacml.EvaluationCtx;
-import com.sun.xacml.attr.BagAttribute;
 import com.sun.xacml.cond.EvaluationResult;
 
 /**

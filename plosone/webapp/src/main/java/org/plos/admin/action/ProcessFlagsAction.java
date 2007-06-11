@@ -20,8 +20,6 @@ import org.plos.annotation.service.Flag;
 import org.plos.annotation.service.ReplyWebService;
 import org.plos.annotation.service.ReplyInfo;
 
-import com.opensymphony.webwork.components.If;
-
 public class ProcessFlagsAction extends BaseAdminActionSupport {
   
   private static final Log log = LogFactory.getLog(ProcessFlagsAction.class);

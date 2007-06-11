@@ -19,8 +19,6 @@ import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.io.IOException;
 
-import java.net.URL;
-
 import javax.media.jai.JAI;
 import javax.media.jai.RenderedOp;
 

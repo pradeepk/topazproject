@@ -17,7 +17,6 @@ import org.plos.BasePlosoneTestCase;
 import org.plos.Constants;
 import org.plos.user.service.UserService;
 
-import java.rmi.RemoteException;
 import java.util.HashMap;
 import java.util.Map;
 

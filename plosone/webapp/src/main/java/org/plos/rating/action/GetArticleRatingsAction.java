@@ -13,10 +13,8 @@ import java.net.URI;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -24,23 +22,15 @@ import org.apache.commons.logging.LogFactory;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
-import org.plos.article.util.ArticleUtil;
-import org.plos.article.util.NoSuchArticleIdException;
-import org.plos.configuration.OtmConfiguration;
 import org.plos.models.Article;
-import org.plos.models.CommentAnnotation;
 import org.plos.models.Rating;
-import org.plos.models.RatingSummary;
 import org.plos.models.UserAccount;
-import org.plos.models.UserProfile;
-import org.plos.user.PlosOneUser;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 
-import com.opensymphony.webwork.ServletActionContext;
 import org.springframework.beans.factory.annotation.Required;
 
 /**

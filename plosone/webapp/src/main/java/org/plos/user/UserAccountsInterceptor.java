@@ -10,7 +10,6 @@
 
 package org.plos.user;
 
-import java.io.IOException;
 import java.net.URLEncoder;
 import java.security.Principal;
 

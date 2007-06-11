@@ -9,8 +9,6 @@
  */
 package org.plos.bootstrap.permissions;
 
-import java.util.Iterator;
-
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 

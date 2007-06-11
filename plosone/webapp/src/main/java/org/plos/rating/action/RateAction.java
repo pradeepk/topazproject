@@ -13,7 +13,6 @@ import java.net.URI;
 import java.net.URISyntaxException;
 
 import java.util.Date;
-import java.util.Iterator;
 import java.util.List;
 
 import org.apache.commons.lang.StringUtils;
@@ -22,8 +21,6 @@ import org.apache.commons.logging.LogFactory;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 
 import org.plos.action.BaseActionSupport;
-
-import org.plos.configuration.OtmConfiguration;
 
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;

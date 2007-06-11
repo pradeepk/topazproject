@@ -16,7 +16,6 @@ import java.util.Set;
 import org.plos.xacml.XacmlUtil;
 
 import org.topazproject.xacml.AbstractSimplePEP;
-import org.topazproject.xacml.Util;
 
 import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;

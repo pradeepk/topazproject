@@ -18,7 +18,6 @@ import org.topazproject.fedoragsearch.service.FgsOperations;
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.net.URL;
 import java.rmi.RemoteException;
 
 /**

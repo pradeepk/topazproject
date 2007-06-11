@@ -11,15 +11,8 @@ package org.plos.xacml.finder;
 
 import java.net.URI;
 
-import java.security.Principal;
-
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
-
-import javax.servlet.ServletContext;
-import javax.servlet.http.HttpSession;
 
 import org.apache.commons.configuration.Configuration;
 
@@ -28,8 +21,6 @@ import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.xacml.Util;
 
 import com.sun.xacml.EvaluationCtx;
-import com.sun.xacml.ParsingException;
-import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.attr.AttributeDesignator;
 import com.sun.xacml.attr.AttributeValue;
 import com.sun.xacml.attr.BagAttribute;
