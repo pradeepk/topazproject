@@ -363,9 +363,8 @@ public class ReplyWebService extends BaseAnnotationService {
       TransactionHelper.doInTx(session,
                                new TransactionHelper.Action<List<Reply>>() {
           public List<Reply> run(Transaction tx) {
-            return loadInstances(tx.getSession().createCriteria(Reply.class)
-                                   .add(Restrictions.eq("root", root))
-                                   .add(Restrictions.eq("inReplyTo", inReplyTo)).list());
+            return tx.getSession().createCriteria(Reply.class).add(Restrictions.eq("root", root))
+                      .add(Restrictions.eq("inReplyTo", inReplyTo)).list();
           }
         });
 
@@ -410,9 +409,9 @@ public class ReplyWebService extends BaseAnnotationService {
       TransactionHelper.doInTx(session,
                                new TransactionHelper.Action<List<Reply>>() {
           public List<Reply> run(Transaction tx) {
-            return loadInstances(tx.getSession().createCriteria(Reply.class)
-                                   .add(Restrictions.eq("root", root))
-                                   .add(Restrictions.walk("inReplyTo", inReplyTo)).list());
+            return tx.getSession().createCriteria(Reply.class)
+                      .add(Restrictions.eq("root", root))
+                      .add(Restrictions.walk("inReplyTo", inReplyTo)).list();
           }
         });
 
@@ -533,7 +532,7 @@ public class ReplyWebService extends BaseAnnotationService {
             else
               c.add(Restrictions.eq("state", "" + state));
 
-            return loadInstances(c.list());
+            return c.list();
           }
         });
 
@@ -545,21 +544,6 @@ public class ReplyWebService extends BaseAnnotationService {
       replies[i++] = new ReplyInfo(a, fedora);
 
     return replies;
-  }
-
-  /**
-   * Force the instances to be loaded. This is a temporary hack till OTM supports eager loading
-   * and/or we have a request-wide transaction.
-   *
-   * TODO: remove when eager loading or tx-per-request is implemented.
-   *
-   * @param list the list of replies to load
-   * @return <var>list</var>
-   */
-  private static final List<Reply> loadInstances(List<Reply> list) {
-    for (Reply r : list)
-      ;
-    return list;
   }
 
   /**
