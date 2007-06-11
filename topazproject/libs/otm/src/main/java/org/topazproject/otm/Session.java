@@ -281,7 +281,7 @@ public class Session {
     }
 
     if (o instanceof ProxyObject)
-      o.equals(o); // ensure object is loaded
+      o.equals(null); // ensure object is loaded
 
     if ((o == null) || clazz.isInstance(o))
       return clazz.cast(o);

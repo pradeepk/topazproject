@@ -700,6 +700,82 @@ public class OtmTest extends TestCase {
         log.warn("close failed", ce);
       }
     }
+    session   = factory.openSession();
+    tx        = null;
+
+    List<Annotation> al = null;
+
+    try {
+      tx = session.beginTransaction();
+
+      al = session.createCriteria(Annotation.class).list();
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+
+    assertNotNull(al);
+    assertEquals(4, al.size());
+    for (Annotation a : al) {
+      if (a.getSupersedes() != null)
+        assertTrue(a == a.getSupersedes().getSupersededBy());
+      if (a.getSupersededBy() != null)
+        assertTrue(a == a.getSupersededBy().getSupersedes());
+    }
+
+    session   = factory.openSession();
+    tx        = null;
+
+    try {
+      tx = session.beginTransaction();
+
+      Results r = session.doQuery("select a from Annotation a;");
+      al.clear();
+
+      while (r.next())
+        al.add((Annotation)r.get(0));
+
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+
+    assertNotNull(al);
+    assertEquals(4, al.size());
+    for (Annotation a : al) {
+      if (a.getSupersedes() != null)
+        assertTrue(a == a.getSupersedes().getSupersededBy());
+      if (a.getSupersededBy() != null)
+        assertTrue(a == a.getSupersededBy().getSupersedes());
+    }
+
+
   }
 
   /**
