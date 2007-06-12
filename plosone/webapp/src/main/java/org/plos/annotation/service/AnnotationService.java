@@ -88,7 +88,9 @@ public class AnnotationService extends BaseConfigurableService {
    */
   public String createReply(final String root, final String inReplyTo, final String title, final String mimeType, final String body) throws ApplicationException {
     try {
-      return replyWebService.createReply(mimeType, root, inReplyTo, title, body, this);
+      String id = replyWebService.createReply(mimeType, root, inReplyTo, title, body, this);
+      setReplyPublic(id);
+      return id;
     } catch (RemoteException e) {
       throw new ApplicationException(e);
     } catch (UnsupportedEncodingException e) {
@@ -397,6 +399,29 @@ public class AnnotationService extends BaseConfigurableService {
       throw new ApplicationException(e);
     }
   }
+
+  public void setReplyPublic(final String id) throws ApplicationException {
+    final String[] everyone = new String[]{Constants.Permission.ALL_PRINCIPALS};
+    try {
+      permissionWebService.grant(
+              id,
+              new String[]{
+                      RepliesPEP.GET_REPLY_INFO}, everyone);
+
+      permissionWebService.revoke(
+              id,
+              new String[]{
+                      RepliesPEP.DELETE_REPLY});
+
+    } catch (final Exception e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
+   * Set the PermissionWebService
+   * @param permissionWebService permissionWebService
+   */
 
   /**
    * Set the PermissionWebService
