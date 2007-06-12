@@ -226,14 +226,20 @@ public class DocumentManagementService {
   NoSuchObjectIdException, ServiceException {
     String uri;
     File ingestedDir = new File(ingestedDocumentDirectory);
-    log.info("Ingesting: " + file);
+    if (log.isDebugEnabled()) {
+      log.debug("Ingesting: " + file);
+    }
     DataHandler dh = new DataHandler(file.toURL());
     uri = articleOtmService.ingest(dh);
-    log.info("Ingested: " + file);
+    if (log.isInfoEnabled()) {
+      log.info("Ingested: " + file);
+    }
     try {
       resizeImages(uri);
     } catch (Exception e) {
-      log.error("Resize images failed for article " + uri + e.getMessage(), e);
+      if (log.isErrorEnabled()) {
+        log.error("Resize images failed for article " + uri, e);
+      }
       URI articleUri = null;      
       try {
         articleUri = new URI (uri);
@@ -247,13 +253,19 @@ public class DocumentManagementService {
     } catch (Exception e) {
 
     }
-    log.info("Resized images");
+    if (log.isInfoEnabled()) {
+      log.info("Resized images");
+    }
     generateCrossRefInfoDoc(file, uri);
-    log.info("Generated Xref for file: " + file);
+    if (log.isInfoEnabled()) {
+      log.info("Generated Xref for file: " + file);
+    }
     if (!file.renameTo(new File(ingestedDir, file.getName()))) {
       throw new IOException("Cannot relocate ingested documented " + file.getName());
     }
-    log.info("Ingested and relocated " + file + ":" + uri);
+    if (log.isInfoEnabled()) {
+      log.info("Ingested and relocated " + file + ":" + uri);
+    }
     return uri;
   }
 
@@ -291,13 +303,19 @@ public class DocumentManagementService {
           final byte[] originalBytes = iss.getBytes();
           articleOtmService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
               new PngDataSource(irs.getSmallScaledImage(originalBytes))));
-          log.debug("Set small");
+          if (log.isDebugEnabled()) {
+            log.debug("Set small image for " + object.getUri());
+          }
           articleOtmService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
               new PngDataSource(irs.getMediumScaledImage(originalBytes))));
-          log.debug("Set medium");
+          if (log.isDebugEnabled()) {
+            log.debug("Set medium image for " + object.getUri());
+          }
           articleOtmService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
               new PngDataSource(irs.getLargeScaledImage(originalBytes))));
-          log.debug("Set large");
+          if (log.isDebugEnabled()) {
+            log.debug("Set large image for " + object.getUri());
+          }
         } else if (context.equalsIgnoreCase("table-wrap")) {
           RepresentationInfo rep = object.getRepresentations()[0];
 
@@ -309,13 +327,19 @@ public class DocumentManagementService {
           final byte[] originalBytes = iss.getBytes();
           articleOtmService.setRepresentation(object.getUri(), "PNG_S", new DataHandler(
               new PngDataSource(irs.getSmallScaledImage(originalBytes))));
-          log.debug("Set small");
+          if (log.isDebugEnabled()) {
+            log.debug("Set small image for " + object.getUri());
+          }
           articleOtmService.setRepresentation(object.getUri(), "PNG_M", new DataHandler(
               new PngDataSource(irs.getMediumScaledImage(originalBytes))));
-          log.debug("Set medium");
+          if (log.isDebugEnabled()) {
+            log.debug("Set medium image for " + object.getUri());
+          }
           articleOtmService.setRepresentation(object.getUri(), "PNG_L", new DataHandler(
               new PngDataSource(irs.getLargeScaledImage(originalBytes))));
-          log.debug("Set large");
+          if (log.isDebugEnabled()) {
+            log.debug("Set large image for " + object.getUri());
+          }
         } else if (context.equals("disp-formula") || context.equals("chem-struct-wrapper")) {
           RepresentationInfo rep = object.getRepresentations()[0];
 
@@ -469,7 +493,9 @@ public class DocumentManagementService {
     public PngDataSource(byte[] content, String contType) {
       src = content;
       ct = contType;
-      log.info("PngDataSource type=" + ct + " size=" + content.length);
+      if (log.isDebugEnabled()) {
+        log.debug("PngDataSource type=" + ct + " size=" + content.length);
+      }
     }
 
     public InputStream getInputStream() throws IOException {
