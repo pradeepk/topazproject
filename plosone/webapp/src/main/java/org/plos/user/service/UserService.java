@@ -208,11 +208,9 @@ public class UserService extends BaseConfigurableService {
       }
       try {
         String dispName = getDisplayName(topazUserId);
-        if (dispName != null) {
-          userCacheAdministrator.putInCache(topazUserId, dispName);
-          updated = true;
-          retVal = dispName;
-        }
+        userCacheAdministrator.putInCache(topazUserId, dispName);
+        updated = true;
+        retVal = dispName;
       } finally {
         if (!updated)
           userCacheAdministrator.cancelUpdate(topazUserId);
@@ -223,12 +221,13 @@ public class UserService extends BaseConfigurableService {
 
   private String getDisplayName(final String topazUserId) throws ApplicationException {
     pep.checkAccessAE(pep.GET_DISP_NAME, URI.create(topazUserId));
-    return TransactionHelper.doInTx(session, new TransactionHelper.Action<String>() {
-      public String run(Transaction tx) {
+    return TransactionHelper.doInTxE(session,
+                                     new TransactionHelper.ActionE<String, ApplicationException>() {
+      public String run(Transaction tx) throws ApplicationException {
         Results r = tx.getSession().doQuery(
           "select ua.profile.displayName from UserAccount ua where ua = <" + topazUserId + ">;");
         if (!r.next())
-          return null;
+          throw new ApplicationException("No user-account with id '" + topazUserId + "' found");
         return r.getString(0);
       }
     });
