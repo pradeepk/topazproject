@@ -47,7 +47,7 @@ public class IngestArchivesAction extends BaseAdminActionSupport {
         } catch (ImageResizeException ire) {
           addActionMessage("Error ingesting: " + filename + " - " + ire.getCause().toString());
           log.error("Error ingesting articles: " + filename, ire);
-          articleURI = ire.getArticleURI();
+          articleURI = ire.getArticleURI().toString();
           log.debug("trying to delete: " + articleURI);
           try {
             getDocumentManagementService().delete(articleURI);

@@ -18,6 +18,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.rmi.RemoteException;
@@ -232,9 +233,13 @@ public class DocumentManagementService {
     try {
       resizeImages(uri);
     } catch (Exception e) {
-      log.error("Resize images failed for article " + uri, e);
-      ImageResizeException ire = new ImageResizeException(uri);
-      ire.initCause(e);
+      log.error("Resize images failed for article " + uri + e.getMessage(), e);
+      URI articleUri = null;      
+      try {
+        articleUri = new URI (uri);
+      } catch (URISyntaxException ue) {
+      }
+      ImageResizeException ire = new ImageResizeException(articleUri, e);
       throw ire;
     }
     try {

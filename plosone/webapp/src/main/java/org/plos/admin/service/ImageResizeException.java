@@ -10,6 +10,7 @@
 
 package org.plos.admin.service;
 
+import java.net.URI;
 /**
  * This is the exception used by the ImageResizeService to indicate the
  * failure of an operation.
@@ -17,50 +18,42 @@ package org.plos.admin.service;
  * @author stevec
  */
 public class ImageResizeException extends Exception {
-  private String articleURI;
-  private String imageURI;
+  private URI articleURI;
 
   public ImageResizeException (final Throwable cause) {
     super(cause);
   }
 
-  public ImageResizeException (final String inImageURI,final Throwable cause) {
+  public ImageResizeException (final URI inArticleURI, final Throwable cause) {
     super(cause);
-    this.imageURI = inImageURI;
+    this.articleURI = inArticleURI;
   }
 
-  public ImageResizeException (final String inArticleURI) {
+  public ImageResizeException (final URI inArticleURI) {
     this.articleURI = inArticleURI;
     //this.imageURI = inImageURI;
   }
 
+  public ImageResizeException (String message) {
+    super(message);
+  }
+  
+  public ImageResizeException (String message, Throwable cause) {
+    super (message, cause);
+  }
+  
   /**
    * @return Returns the articleURI.
    */
-  public String getArticleURI() {
+  public URI getArticleURI() {
     return articleURI;
   }
 
   /**
    * @param articleURI The articleURI to set.
    */
-  public void setArticleURI(String articleURI) {
+  public void setArticleURI(URI articleURI) {
     this.articleURI = articleURI;
   }
 
-  /**
-   * @return Returns the imageURI.
-   */
-  public String getImageURI() {
-    return imageURI;
-  }
-
-  /**
-   * @param imageURI The imageURI to set.
-   */
-  public void setImageURI(String imageURI) {
-    this.imageURI = imageURI;
-  }
-  
-  
 }
