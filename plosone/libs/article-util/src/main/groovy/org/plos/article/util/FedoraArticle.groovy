@@ -20,6 +20,7 @@ import org.topazproject.xml.transform.cache.CachedSource
 class FedoraArticle {
   def article
   String url
+  List authors = new ArrayList()
   List contributors = new ArrayList()
   int volume
   int issue
@@ -40,9 +41,14 @@ class FedoraArticle {
 
     this.url = "$fedoraUri/doi:${URLEncoder.encode(doi.substring(9))}/XML"
     this.article = slurper.parse(new URL(this.url).getContent())
-    article.front.'article-meta'.'contrib-group'.contrib.name.each() {
-      this.contributors += (it.@'name-style' == "eastern") ? "${it.surname} ${it.'given-names'}" :
-                                                             "${it.'given-names'} ${it.surname}"
+    article.front.'article-meta'.'contrib-group'.contrib.each() {
+      def name = ((it.name.@'name-style' == "eastern") 
+                       ? "${it.name.surname} ${it.name.'given-names'}"
+                       : "${it.name.'given-names'} ${it.name.surname}")
+      switch(it.@'contrib-type') {
+      case 'author': this.authors += name; break
+      case 'contributor': this.contributors += name; break
+      }
     }
     this.volume = Integer.valueOf(article.front.'article-meta'.volume.toString())
     this.issue = Integer.valueOf(article.front.'article-meta'.issue.toString())
@@ -57,6 +63,7 @@ class FedoraArticle {
     // TODO: accept and parse real arguments
     def fa = new FedoraArticle(args[0])
     println "Url: " + fa.url
+    println "Authors: " + fa.authors
     println "Contributors: " + fa.contributors
     println "Volume/Issue: ${fa.volume}/${fa.issue}"
 //    new XmlNodePrinter().print(new XmlParser().parseText(fa.content))
