@@ -10,6 +10,8 @@
 
 package org.plos.admin.service;
 
+import com.sun.media.jai.codec.FileSeekableStream;
+
 import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
@@ -126,7 +128,7 @@ public class ImageResizeService {
       }
 
       final ByteArrayInputStream in = new ByteArrayInputStream(image);
-
+      FileSeekableStream fss = null;
       try {
         final FileOutputStream out = new FileOutputStream(inputImageFile);
 
@@ -137,13 +139,19 @@ public class ImageResizeService {
         } finally {
           out.close();
         }
-
-        final RenderedOp srcImage = JAI.create("fileload",inputImageFile.getCanonicalPath());
+        
+        fss  = new FileSeekableStream (inputImageFile);
+        
+        final RenderedOp srcImage = JAI.create("Stream", fss);
         width = srcImage.getWidth();
         height = srcImage.getHeight();
+        srcImage.dispose();
       } catch (SecurityException e) {
         throw new ImageResizeException(e);
-      } finally {
+      } finally { 
+        if (fss != null) {
+          fss.close();
+        }
         in.close();
       }
     } catch (SecurityException e) {
