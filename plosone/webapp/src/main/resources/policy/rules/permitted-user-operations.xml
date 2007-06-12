@@ -27,7 +27,6 @@
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">replies:createReply</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">replies:setReplyState</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ratings:setRatings</AttributeValue>
-        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ratings:setStats</AttributeValue>
       </Apply>
     </Condition>
 
