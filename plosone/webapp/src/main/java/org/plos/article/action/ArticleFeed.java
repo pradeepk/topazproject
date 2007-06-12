@@ -32,6 +32,7 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
@@ -52,6 +53,7 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
+import org.plos.article.util.FedoraArticle;
 import org.plos.models.Article;
 import org.plos.models.Category;
 import org.plos.util.FileUtils;
@@ -283,11 +285,23 @@ public class ArticleFeed extends BaseActionSupport {
       // set all alternative links
       entry.setAlternateLinks(altLinks);
 
+      // TODO: Authors,Contributors should be in Article order in OTM,
+      // use Fedora workaround until database is re-ingested
+      FedoraArticle fedoraArticle = null;
+      try {
+        fedoraArticle = new FedoraArticle(article.getIdentifier());
+      } catch (RuntimeException groovyRuntime) {
+        log.warn(groovyRuntime);  // call to attention
+        throw groovyRuntime;
+      }
+
       // Authors
-      Set<String> authors = article.getAuthors();
+      List authors = fedoraArticle.getAuthors();
       if (authors != null) {
         List<Person> authorList = new ArrayList();
-        for (String author : authors) {
+        Iterator onAuthor = authors.iterator();
+        while (onAuthor.hasNext()) {
+          String author = (String) onAuthor.next();
           Person person = new Person();
           person.setName(author);
           // TODO: setEmail, setUri
@@ -297,10 +311,12 @@ public class ArticleFeed extends BaseActionSupport {
       }
 
       // contributors
-      Set<String> contributors = article.getContributors();
+      List contributors = fedoraArticle.getContributors();
       if (contributors != null) {
         List<Person> contributorList = new ArrayList();
-        for (String contributor : contributors) {
+        Iterator onContributor = contributors.iterator();
+        while (onContributor.hasNext()) {
+          String contributor = (String) onContributor.next();
           Person person = new Person();
           person.setName(contributor);
           // TODO: setEmail, setUri

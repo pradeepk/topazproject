@@ -46,8 +46,8 @@ class FedoraArticle {
                        ? "${it.name.surname} ${it.name.'given-names'}"
                        : "${it.name.'given-names'} ${it.name.surname}")
       switch(it.@'contrib-type') {
-      case 'author': this.authors += name; break
-      case 'contributor': this.contributors += name; break
+      case 'author': this.authors += name.toString(); break
+      case 'contributor': this.contributors += name.toString(); break
       }
     }
     this.volume = Integer.valueOf(article.front.'article-meta'.volume.toString())
