@@ -78,23 +78,16 @@ public class ArticleRatingSummary {
     this.creatorURI = creatorURI;
   }
   public String getCreatorURI() {
-    if (creatorURI != null) {
-      return creatorURI;
-    }
 
-    // TODO: it should never be null
-    return("null");
+    return creatorURI;
   }
 
   public void setCreatorName(String creatorName) {
     this.creatorName = creatorName;
   }
   public String getCreatorName() {
-    if (creatorName != null) {
-      return creatorName;
-    }
-    // TODO: it should never be null
-    return("null");
+
+    return creatorName;
   }
 
   public void setStyle(int style) {

@@ -281,10 +281,6 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    */
   public Collection<ArticleRatingSummary> getArticleRatingSummaries() {
 
-    // TODO: remove debugging
-    if (log.isDebugEnabled()) {
-      log.debug("getArticleRatingSummaries(): (" + articleRatingSummaries.size() + ") " + articleURI + ", " + articleTitle);
-    }
     return articleRatingSummaries;
   }
 }
