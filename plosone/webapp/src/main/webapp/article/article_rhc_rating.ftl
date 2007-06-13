@@ -10,7 +10,7 @@
                 <span class="inline-rating">
                   <ul class="star-rating pone_rating" title="overall">
                     <#assign overallPct = (20 * overallRoundedAverage)?string("##0")>
-                    <li class="current-rating overall-rating pct${overallPct}">Currently ${totalOverall?string("0.#")}/5 Stars.</li>
+                    <li class="current-rating overall-rating pct${overallPct}">Currently ${overallRoundedAverage?string("0.#")}/5 Stars.</li>
                   </ul>
                 </span>
 
