@@ -8,18 +8,12 @@
 
         <a href="${fetchArticleURL}" title="Back to original article" class="article icon">${articleTitle}
           <#if articleOverall?exists>
-            <div class="ratingDetail">
-              <div class="posterRating">
-                <ol class="ratingAvgs">
-                  <li><label for="overall">Overall</label>
-                    <ul class="star-rating pone_rating" title="overall">
-                      <#assign overallPct = (20 * articleOverall)?string("##0")>
-                      <li class="current-rating average pct${overallPct}">Currently ${articleOverall?string("0.#")}/5 Stars.</li>
-                    </ul>
-                  </li>
-                </ol>
-              </div>
-            </div>
+	        <span class="inline-rating inlineRatingEnd">
+	          <ul class="star-rating pone_rating" title="overall">
+              <#assign overallPct = (20 * articleOverall)?string("##0")>
+	            <li class="current-rating pct${overallPct}">Currently ${articleOverall?string("0.#")}/5 Stars.</li>
+	          </ul>
+	        </span>
           </#if>
         </a>
         <!--<p><a href="/annotation/getCommentary.action?target=${articleURI}" class="commentary icon">See all commentary</a> on this article</p>-->

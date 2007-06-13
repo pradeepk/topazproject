@@ -243,7 +243,8 @@ function updateRating() {
    },
    mimetype: "text/plain",
    formNode: _ratingsForm,
-   transport: "XMLHTTPTransport"
+   transport: "XMLHTTPTransport",
+   sync: true
   };
   dojo.io.bind(bindArgs);
 }
