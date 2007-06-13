@@ -18,9 +18,11 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
@@ -357,11 +359,10 @@ public class ArticleOtmService extends BaseConfigurableService {
     ai.setSubjects(art.getSubjects().toArray(new String[0]));
     ai.setState(art.getState());
 
-    String[] mainCats = new String[art.getCategories().size()];
-    int idx = 0;
+    Set<String> mainCats = new HashSet<String>();
     for (Category cat : art.getCategories())
-      mainCats[idx++] = cat.getMainCategory();
-    ai.setCategories(mainCats);
+      mainCats.add(cat.getMainCategory());
+    ai.setCategories(mainCats.toArray(new String[mainCats.size()]));
 
     return ai;
   }
