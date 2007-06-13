@@ -36,7 +36,9 @@
               <#if articleRatingSummary.commentTitle?exists>
                 ${articleRatingSummary.commentTitle}
               </#if>
-              <span class="detail">Posted by <a href="${fetchUserURL}" title="Annotation Author" class="user icon">${articleRatingSummary.creatorName}</a></span>
+              <span class="detail">Posted by <a href="${fetchUserURL}" title="Annotation Author" class="user icon">${articleRatingSummary.creatorName}</a>
+                on <strong>${articleRatingSummary.created?string("dd MMM yyyy '</strong>at<strong>' HH:mm zzz")}</strong>
+              </span>
             </h3>
             <!-- end : response title : user -->
           </div>

@@ -9,6 +9,8 @@
  */
 package org.plos.rating.action;
 
+import java.util.Date;
+
 import org.plos.models.Rating;
 
 /**
@@ -20,12 +22,13 @@ public class ArticleRatingSummary {
 
   private String articleURI;
   private String articleTitle;
+  private Date   created;
   private String creatorURI;
   private String creatorName;
-  private int style;
-  private int insight;
-  private int reliability;
-  private int overall;
+  private int    style;
+  private int    insight;
+  private int    reliability;
+  private int    overall;
   private String commentTitle;
   private String commentValue;
 
@@ -60,6 +63,13 @@ public class ArticleRatingSummary {
   }
   public String getArticleTitle() {
     return articleTitle;
+  }
+
+  public void setCreated(Date created) {
+    this.created = created;
+  }
+  public Date getCreated() {
+    return created;
   }
 
   public void setCreatorURI(String creatorURI) {

@@ -104,6 +104,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
         Rating rating = (Rating) iter.next();
         ArticleRatingSummary summary = new ArticleRatingSummary(getArticleURI(),getArticleTitle());
         summary.addRating(rating);
+        summary.setCreated(rating.getCreated());
         summary.setArticleURI(getArticleURI());
         summary.setArticleTitle(getArticleTitle());
         summary.setCreatorURI(rating.getCreator());
@@ -116,7 +117,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
           log.error("Unable to look up UserAccount for " + rating.getCreator() + " for Rating " + rating.getId());
         }
         articleRatingSummaries.add(summary);
-        
+
         // keep track of running overall total
         articleOverall += summary.getOverall();
       }
