@@ -285,8 +285,12 @@ public class Session {
       }
     }
 
-    if (o instanceof ProxyObject)
-      proxies.get(id).load(); // ensure it is loaded
+    if (o instanceof ProxyObject) {
+      LazyLoadMethodHandler llm = proxies.get(id);
+
+      if (llm != null)
+        llm.load(); // ensure it is loaded
+    }
 
     if ((o == null) || clazz.isInstance(o))
       return clazz.cast(o);
@@ -445,10 +449,10 @@ public class Session {
   }
 
   private void write(Id id, Object o, boolean delete) throws OtmException {
-    boolean       pristineProxy =
-      (o instanceof ProxyObject) ? (proxies.get(id).getLoaded() == null) : false;
-    ClassMetadata cm            = sessionFactory.getClassMetadata(o.getClass());
-    TripleStore   store         = sessionFactory.getTripleStore();
+    LazyLoadMethodHandler llm           = (o instanceof ProxyObject) ? proxies.get(id) : null;
+    boolean               pristineProxy = (llm != null) ? (llm.getLoaded() == null) : false;
+    ClassMetadata         cm            = sessionFactory.getClassMetadata(o.getClass());
+    TripleStore           store         = sessionFactory.getTripleStore();
 
     if (delete || !pristineProxy) {
       if (log.isDebugEnabled())
