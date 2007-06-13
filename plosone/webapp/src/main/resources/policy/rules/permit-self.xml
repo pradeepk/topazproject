@@ -30,7 +30,7 @@
             AttributeId="urn:oasis:names:tc:xacml:1.0:resource:resource-id"/>   
         </Apply>
       </Apply>
-      <!-- action-id = profiles:* or preferences:* or permissions:* -->
+      <!-- action-id = profiles:* or preferences:* or permissions:* or ratings:* -->
       <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:or">
         <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:regexp-string-match">
           <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">profiles:*</AttributeValue> 
@@ -48,6 +48,13 @@
         </Apply>
         <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:regexp-string-match">
           <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">permissions:*</AttributeValue> 
+          <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
+            <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
+              AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>   
+          </Apply>
+        </Apply>
+        <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:regexp-string-match">
+          <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ratings:*</AttributeValue> 
           <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">
             <ActionAttributeDesignator DataType="http://www.w3.org/2001/XMLSchema#string"
               AttributeId="urn:oasis:names:tc:xacml:1.0:action:action-id"/>   
