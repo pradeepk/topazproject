@@ -52,6 +52,7 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   private int              numStyleRatings;
   private int              numReliabilityRatings;
   private int              numOverallRatings;
+  private int              numUsersThatRated;
   private double           totalInsight;
   private double           totalStyle;
   private double           totalReliability;
@@ -118,6 +119,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
         overallRoundedAverage = roundTo(overallAverage, 0.5);
         numOverallRatings     = ratingSummary.getBody().getOverallNumRatings();
         totalOverall          = ratingSummary.getBody().retrieveTotal(Rating.OVERALL_TYPE);
+        
+        numUsersThatRated     = ratingSummary.getBody().getNumUsersThatRated();
       }
 
       if (user != null) {
@@ -499,5 +502,14 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    */
   public void setStyleRoundedAverage(double styleRoundedAverage) {
     this.styleRoundedAverage = styleRoundedAverage;
+  }
+
+  /**
+   * Gets the number of users that rated.
+   *
+   * @return Number of users that rated.
+   */
+  public int getNumUsersThatRated() {
+    return numUsersThatRated;
   }
 }

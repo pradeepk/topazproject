@@ -38,6 +38,7 @@ public class RatingSummaryContent {
   private double reliabilityTotal;
   private int    styleNumRatings;
   private double styleTotal;
+  private int    numUsersThatRated;
 
   private static final Log log = LogFactory.getLog(RatingSummaryContent.class);
 
@@ -45,7 +46,7 @@ public class RatingSummaryContent {
    * Creates a new RatingSummaryContent object.
    */
   public RatingSummaryContent() {
-    this(0, 0, 0, 0, 0, 0);
+    this(0, 0, 0, 0, 0, 0, 0);
   }
 
   /**
@@ -57,7 +58,8 @@ public class RatingSummaryContent {
   public RatingSummaryContent(
     int insightNumRatings,     double insightTotal,
     int reliabilityNumRatings, double reliabilityTotal,
-    int styleNumRatings,       double styleTotal) {
+    int styleNumRatings,       double styleTotal,
+    int numUsersThatRated) {
 
     this.insightNumRatings     = insightNumRatings;
     this.insightTotal          = insightTotal;
@@ -65,6 +67,7 @@ public class RatingSummaryContent {
     this.reliabilityTotal      = reliabilityTotal;
     this.styleNumRatings       = styleNumRatings;
     this.styleTotal            = styleTotal;
+    this.numUsersThatRated     = numUsersThatRated;
   }
 
   /**
@@ -164,6 +167,20 @@ public class RatingSummaryContent {
    */
   public int getOverallNumRatings() {
     return insightNumRatings + reliabilityNumRatings + styleNumRatings;
+  }
+
+  /**
+   * @return Number of users that rated.
+   */
+  public int getNumUsersThatRated() {
+    return numUsersThatRated;
+  }
+
+  /**
+   * @param numUsersThatRated Number of users that rated.
+   */
+  public void setNumUsersThatRated(int numUsersThatRated) {
+    this.numUsersThatRated = numUsersThatRated;
   }
 
   /**

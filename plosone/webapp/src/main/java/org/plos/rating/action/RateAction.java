@@ -83,6 +83,7 @@ public class RateAction extends BaseActionSupport {
     URI           annotatedArticle     = null;
     Rating        articleRating        = null;
     RatingSummary articleRatingSummary = null;
+    boolean       newRating            = false;
 
 
     try {
@@ -117,12 +118,13 @@ public class RateAction extends BaseActionSupport {
         .add(Restrictions.eq("creator", user.getUserId()))
         .list();
       if (ratingsList.size() == 0) {
-          articleRating = new Rating();
-          articleRating.setAnnotates(annotatedArticle);
-          articleRating.setContext("");
-          articleRating.setCreator(user.getUserId());
-          articleRating.setCreated(now);
-          articleRating.setBody(new RatingContent());
+        newRating = true;
+        articleRating = new Rating();
+        articleRating.setAnnotates(annotatedArticle);
+        articleRating.setContext("");
+        articleRating.setCreator(user.getUserId());
+        articleRating.setCreated(now);
+        articleRating.setBody(new RatingContent());
       } else if (ratingsList.size() == 1) {
         articleRating = ratingsList.get(0);
       } else {
@@ -199,6 +201,11 @@ public class RateAction extends BaseActionSupport {
       if (!StringUtils.isBlank(commentTitle) || !StringUtils.isBlank(comment)) {
         articleRating.getBody().setCommentTitle(commentTitle);
         articleRating.getBody().setCommentValue(comment);
+      }
+
+      // if this is a new Rating, the summary needs to know
+      if (newRating) {
+        articleRatingSummary.getBody().setNumUsersThatRated(articleRatingSummary.getBody().getNumUsersThatRated() + 1);
       }
 
       // PLoS states that ratings can never be deleted once created,

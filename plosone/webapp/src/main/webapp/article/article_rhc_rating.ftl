@@ -1,18 +1,18 @@
-            <#if numOverallRatings != 1>
+            <#if numUsersThatRated != 1>
               <#assign char = "s">
             <#else>
               <#assign char = "">
             </#if>
-		    <@ww.url id="ratingsURL" namespace="/rate" action="getArticleRatings" includeParams="none" articleURI="${articleURI}"/>
-            <h6>Average Rating <a href="${ratingsURL}" class="rating">(${numOverallRatings} User Rating${char})</a></h6>
+            <@ww.url id="ratingsURL" namespace="/rate" action="getArticleRatings" includeParams="none" articleURI="${articleURI}"/>
+            <h6>Average Rating <a href="${ratingsURL}" class="rating">(${numUsersThatRated} User Rating${char})</a></h6>
             <ol>
               <li>
                 <span class="inline-rating">
                   <ul class="star-rating pone_rating" title="overall">
                     <#assign overallPct = (20 * overallRoundedAverage)?string("##0")>
                     <li class="current-rating overall-rating pct${overallPct}">Currently ${totalOverall?string("0.#")}/5 Stars.</li>
-                  </ul>    
-                </span>  
+                  </ul>
+                </span>
 
                 <a href="javascript:void(0);" onclick="return topaz.domUtil.swapDisplayTextMode(this, 'ratingAverages', null, 'Hide all categories', 'See all categories');" class="rating catAvg">See all categories</a>
                 <fieldset id="ratingAverages">
@@ -21,19 +21,19 @@
                       <ul class="star-rating pone_rating" title="insight">
                         <#assign insightPct = (20 * insightRoundedAverage)?string("##0")>
                         <li class="current-rating average pct${insightPct}">Currently ${insightAverage?string("0.#")}/5 Stars.</li>
-                      </ul>    
+                      </ul>
                     </li>
                     <li><label for="reliability">Reliability</label>
                       <ul class="star-rating pone_rating" title="reliability">
-                        <#assign reliabilityPct = (20 * reliabilityRoundedAverage)?string("##0")>            
+                        <#assign reliabilityPct = (20 * reliabilityRoundedAverage)?string("##0")>
                         <li class="current-rating average pct${reliabilityPct}">Currently ${reliabilityAverage?string("0.#")}/5 Stars.</li>
-                      </ul>    
+                      </ul>
                     </li>
                     <li><label for="style">Style</label>
                       <ul class="star-rating pone_rating" title="style">
-                        <#assign stylePct = (20 * styleRoundedAverage)?string("##0")>                            
+                        <#assign stylePct = (20 * styleRoundedAverage)?string("##0")>
                         <li class="current-rating average pct${stylePct}">Currently ${styleAverage?string("0.#")}/5 Stars.</li>
-                      </ul>    
+                      </ul>
                     </li>
                   </ol>
                 </fieldset>
