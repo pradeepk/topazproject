@@ -123,6 +123,9 @@ public class OwlHelper {
               continue;
           }
 
+          if (m.getUri() == null)
+            continue;
+
           // See if we've already created this property
           ObjectProperty op = session.get(ObjectProperty.class, m.getUri());
           if (op == null)
@@ -143,7 +146,7 @@ public class OwlHelper {
               op.setRanges(new URI[] { URI.create(m.getDataType()) });
             else {
               ClassMetadata cm2 = factory.getClassMetadata(m.getComponentType());
-              if (cm2 != null)
+              if ((cm2 != null) && (cm2.getType() != null))
                 op.setRanges(new URI[] { URI.create(cm2.getType()) });
             }
 
