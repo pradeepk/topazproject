@@ -18,16 +18,15 @@ import java.util.List;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
-
 import org.plos.action.BaseActionSupport;
-
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
 import org.plos.models.RatingSummaryContent;
-
 import org.plos.user.PlosOneUser;
+import org.plos.util.ProfanityCheckingService;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
@@ -56,6 +55,7 @@ public class RateAction extends BaseActionSupport {
   private Session          session;
   private RatingsPEP       pep;
 
+  private ProfanityCheckingService profanityCheckingService;
   private static final Log log = LogFactory.getLog(RateAction.class);
 
   private RatingsPEP getPEP() {
@@ -102,6 +102,16 @@ public class RateAction extends BaseActionSupport {
     }
 
     getPEP().checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
+
+    // reject profanity in content
+    final List<String> profaneWordsInCommentTitle = profanityCheckingService.validate(commentTitle);
+    final List<String> profaneWordsInComment      = profanityCheckingService.validate(comment);
+    if (profaneWordsInCommentTitle.size() != 0
+      || profaneWordsInComment.size() != 0) {
+      addProfaneMessages(profaneWordsInCommentTitle, "commentTitle", "title");
+      addProfaneMessages(profaneWordsInComment, "comment", "comment");
+      return INPUT;
+    }
 
     try {
       tx = session.beginTransaction();
@@ -447,5 +457,15 @@ public class RateAction extends BaseActionSupport {
   @Required
   public void setOtmSession(Session session) {
     this.session = session;
+  }
+
+  /**
+   * Set the profanityCheckingService.
+   *
+   * @param profanityCheckingService profanityCheckingService
+   */
+  public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {
+
+    this.profanityCheckingService = profanityCheckingService;
   }
 }

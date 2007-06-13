@@ -29,6 +29,7 @@ import org.plos.models.UserAccount;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
+import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -92,6 +93,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
       List<Rating> articleRatings = session
         .createCriteria(Rating.class)
         .add(Restrictions.eq("annotates", articleURI))
+        .addOrder(new Order("created", true))
         .list();
 
       if (log.isDebugEnabled()) {
@@ -111,7 +113,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
         // get public 'name' for user
         UserAccount ua = session.get(UserAccount.class, rating.getCreator());
         if (ua != null) {
-          summary.setCreatorName(ua.getProfile().getGivenNames() + " " + ua.getProfile().getSurnames());
+          summary.setCreatorName(ua.getProfile().getDisplayName());
         } else {
           summary.setCreatorName("Unknown");
           log.error("Unable to look up UserAccount for " + rating.getCreator() + " for Rating " + rating.getId());

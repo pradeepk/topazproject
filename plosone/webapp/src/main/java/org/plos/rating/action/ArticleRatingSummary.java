@@ -12,6 +12,7 @@ package org.plos.rating.action;
 import java.util.Date;
 
 import org.plos.models.Rating;
+import org.plos.util.TextUtils;
 
 /**
  * Article ratings & comments by user.
@@ -45,8 +46,9 @@ public class ArticleRatingSummary {
     this.reliability = rating.getBody().getReliabilityValue();
     this.overall = rating.getBody().getOverallValue();
 
-    this.commentTitle = rating.getBody().getCommentTitle();
-    this.commentValue = rating.getBody().getCommentValue();
+    // escape any markup
+    this.commentTitle = TextUtils.escapeHtml(rating.getBody().getCommentTitle());
+    this.commentValue = TextUtils.escapeHtml(rating.getBody().getCommentValue());
 
     this.creatorURI = rating.getCreator();
   }
@@ -123,16 +125,36 @@ public class ArticleRatingSummary {
     return overall;
   }
 
+  /**
+   * Set comment title.
+   *
+   * Escape HTML markup for protection.
+   *
+   * @param title Comment title.
+   */
   public void setCommentTitle(String title) {
-    this.commentTitle = title;
+
+    // protect against markup
+    this.commentTitle = TextUtils.escapeHtml(title);
   }
+
   public String getCommentTitle() {
     return commentTitle;
   }
 
+  /**
+   * Set comment value.
+   *
+   * Escape HTML markup for protection.
+   *
+   * @param value Comment value.
+   */
   public void setCommentValue(String value) {
-    this.commentValue = value;
+
+    // protect against markup
+    this.commentValue = TextUtils.escapeHtml(value);
   }
+
   public String getCommentValue() {
     return commentValue;
   }
