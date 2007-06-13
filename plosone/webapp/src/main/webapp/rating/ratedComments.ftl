@@ -7,18 +7,28 @@
         <@ww.url id="fetchArticleURL" namespace="/article" action="fetchArticle" articleURI="${articleURI}"/>
 
         <a href="${fetchArticleURL}" title="Back to original article" class="article icon">${articleTitle}
-	        <span class="inline-rating inlineRatingEnd">
-	          <ul class="star-rating pone_rating" title="overall">
-	            <li class="current-rating overall-rating pct70">TODO: re-calc ratings summary? best to refactor ratings action(s)?</li>
-	          </ul>
-	        </span>
-	    </a>
+          <#if articleOverall?exists>
+            <div class="ratingDetail">
+              <div class="posterRating">
+                <ol class="ratingAvgs">
+                  <li><label for="overall">Overall</label>
+                    <ul class="star-rating pone_rating" title="overall">
+                      <#assign overallPct = (20 * articleOverall)?string("##0")>
+                      <li class="current-rating average pct${overallPct}">Currently ${articleOverall?string("0.#")}/5 Stars.</li>
+                    </ul>
+                  </li>
+                </ol>
+              </div>
+            </div>
+          </#if>
+        </a>
         <!--<p><a href="/annotation/getCommentary.action?target=${articleURI}" class="commentary icon">See all commentary</a> on this article</p>-->
       </div>
 
       <div class="rsep"></div>
 
       <#list articleRatingSummaries as articleRatingSummary>
+        <@ww.url id="fetchUserURL" namespace="/user" action="showUser" userId="${articleRatingSummary.creatorURI}"/>
         <div class="response ratingComment">
           <div class="hd">
             <!-- begin : response title : user -->
@@ -26,7 +36,7 @@
               <#if articleRatingSummary.commentTitle?exists>
                 ${articleRatingSummary.commentTitle}
               </#if>
-              <span class="detail">Posted by <a href="/user/showUser.action?userId=TODOarticleRatingSummary.creatorURI" title="Annotation Author" class="user icon">${articleRatingSummary.creatorName}</a></span>
+              <span class="detail">Posted by <a href="${fetchUserURL}" title="Annotation Author" class="user icon">${articleRatingSummary.creatorName}</a></span>
             </h3>
             <!-- end : response title : user -->
           </div>

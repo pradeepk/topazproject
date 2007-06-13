@@ -47,7 +47,7 @@ public class GetArticleRatingsAction extends BaseActionSupport {
   private String             articleDescription;
   private boolean            hasRated = false;
   private List<ArticleRatingSummary> articleRatingSummaries = new ArrayList();
-
+  private double             articleOverall = 0;
   private static final Log log = LogFactory.getLog(GetArticleRatingsAction.class);
   private RatingsPEP pep;
 
@@ -116,6 +116,9 @@ public class GetArticleRatingsAction extends BaseActionSupport {
           log.error("Unable to look up UserAccount for " + rating.getCreator() + " for Rating " + rating.getId());
         }
         articleRatingSummaries.add(summary);
+        
+        // keep track of running overall total
+        articleOverall += summary.getOverall();
       }
 
       tx.commit(); // Flush happens automatically
@@ -132,6 +135,8 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
     if (articleRatingSummaries.size() > 0) {
       hasRated = true;
+      // average running overall total
+      articleOverall = articleOverall / articleRatingSummaries.size();
     }
 
     if (log.isDebugEnabled()) {
@@ -157,6 +162,15 @@ public class GetArticleRatingsAction extends BaseActionSupport {
    */
   public void setArticleURI(String articleURI) {
     this.articleURI = articleURI;
+  }
+
+  /**
+   * Gets the Overall rating of the article being rated.
+   *
+   * @return Overall rating.
+   */
+  public double getArticleOverall() {
+    return articleOverall;
   }
 
   /**
