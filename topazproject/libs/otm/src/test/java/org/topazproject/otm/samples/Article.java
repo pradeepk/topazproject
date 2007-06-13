@@ -10,9 +10,11 @@
 package org.topazproject.otm.samples;
 
 import java.net.URI;
-import java.util.Date;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Rdf;
@@ -26,83 +28,21 @@ import org.topazproject.otm.annotations.Predicate;
  * @version $Id$
  */
 @Entity(type = Rdf.topaz + "Article", model = "ri")
-public class Article {
-  @Id
-  private URI      uri;
-  @Predicate(uri = Rdf.dc + "title")
-  private String   title;
-  @Predicate(uri = Rdf.dc + "description")
-  private String   description;
+public class Article extends ObjectInfo {
   @Predicate(uri = Rdf.dc_terms + "available")
   private Date     articleDate;
-  @Predicate(uri = Rdf.dc + "creator")
-  private String[] authors;
   @Predicate(uri = Rdf.dc + "subject")
   private String[] subjects;
   @Predicate(uri = Rdf.topaz + "hasCategory")
   private String[] categories;
-  @Predicate(uri = Rdf.topaz + "articleState")
-  private int      state;
   @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true)
   private List<PublicAnnotation> publicAnnotations = new ArrayList<PublicAnnotation>();
   @Predicate(uri = Annotation.NS + "annotates", inverse=true, notOwned=true)
   private List<PrivateAnnotation> privateAnnotations = new ArrayList<PrivateAnnotation>();
   @Predicate(uri = Reply.NS + "inReplyTo", inverse=true, notOwned=true)
   private List<ReplyThread> replies = new ArrayList<ReplyThread>();
-
-  /**
-   * Get the URI.
-   *
-   * @return the URI.
-   */
-  public URI getUri() {
-    return uri;
-  }
-
-  /**
-   * Set the URI.
-   *
-   * @param uri the URI.
-   */
-  public void setUri(URI uri) {
-    this.uri = uri;
-  }
-
-  /**
-   * Get the article title.
-   *
-   * @return the article title.
-   */
-  public String getTitle() {
-    return title;
-  }
-
-  /**
-   * Set the article title.
-   *
-   * @param title the article title.
-   */
-  public void setTitle(String title) {
-    this.title = title;
-  }
-
-  /**
-   * Get the article description (abstract).
-   *
-   * @return the article description.
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  /**
-   * Set the article description.
-   *
-   * @param description the article description.
-   */
-  public void setDescription(String description) {
-    this.description = description;
-  }
+  @Predicate(uri = Rdf.dc_terms + "hasPart")
+  private Set<ObjectInfo> parts = new HashSet<ObjectInfo>();
 
   /**
    * Get the article date.
@@ -120,24 +60,6 @@ public class Article {
    */
   public void setArticleDate(Date articleDate) {
     this.articleDate = articleDate;
-  }
-
-  /**
-   * Get the article's authors.
-   *
-   * @return the article's authors.
-   */
-  public String[] getAuthors() {
-    return authors;
-  }
-
-  /**
-   * Set the article's authors.
-   *
-   * @param authors the article's authors.
-   */
-  public void setAuthors(String[] authors) {
-    this.authors = authors;
   }
 
   /**
@@ -178,22 +100,12 @@ public class Article {
     this.categories = categories;
   }
 
-  /**
-   * Get the article's state.
-   *
-   * @return the article's state.
-   */
-  public int getState() {
-    return state;
+  public Set<ObjectInfo> getParts() {
+    return parts;
   }
 
-  /**
-   * Set the article's state.
-   *
-   * @param state the article's state.
-   */
-  public void setState(int state) {
-    this.state = state;
+  public void setParts(Set<ObjectInfo> parts) {
+    this.parts = parts;
   }
 
   public void setPrivateAnnotations(List<PrivateAnnotation> privateAnnotations) {

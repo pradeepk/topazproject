@@ -18,6 +18,7 @@ import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.Grants;
 import org.topazproject.otm.samples.NoPredicate;
 import org.topazproject.otm.samples.NoRdfType;
+import org.topazproject.otm.samples.ObjectInfo;
 import org.topazproject.otm.samples.Permissions;
 import org.topazproject.otm.samples.PrivateAnnotation;
 import org.topazproject.otm.samples.PublicAnnotation;
@@ -1096,6 +1097,84 @@ public class OtmTest extends TestCase {
     } catch (OtmException e) {
       log.warn("test failed", e);
 
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+  }
+  /**
+   * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public void test08() throws OtmException {
+    Session     session = factory.openSession();
+    Transaction tx      = null;
+
+    URI         aid     = URI.create("http://localhost/article/1");
+    URI         pid1     = URI.create("http://localhost/article/1/part/1");
+    URI         pid2     = URI.create("http://localhost/article/1/part/2");
+
+    try {
+      tx = session.beginTransaction();
+
+      Article a = new Article();
+      a.setUri(aid);
+
+      ObjectInfo p1 = new ObjectInfo();
+      ObjectInfo p2 = new ObjectInfo();
+      p1.setUri(pid1);
+      p2.setUri(pid2);
+      p1.setIsPartOf(a);
+      p2.setIsPartOf(a);
+      a.getParts().add(p1);
+      a.getParts().add(p2);
+
+      session.saveOrUpdate(a);
+
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+    session   = factory.openSession();
+    tx        = null;
+
+    try {
+      tx = session.beginTransaction();
+
+      Article a = session.get(Article.class, aid.toString());
+
+      assertNotNull(a);
+      assertEquals(2, a.getParts().size());
+      for (ObjectInfo o : a.getParts())
+        assertTrue(o.getIsPartOf() == a);
+
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
       try {
         if (tx != null)
           tx.rollback();

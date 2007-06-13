@@ -40,15 +40,15 @@ import org.topazproject.otm.query.Results;
  * @author Pradeep Krishnan
  */
 public class Session {
-  private static final Log      log             = LogFactory.getLog(Session.class);
-  private SessionFactory        sessionFactory;
-  private Transaction           txn             = null;
-  private Map<Id, Object>       cleanMap        = new HashMap<Id, Object>();
-  private Map<Id, Object>       dirtyMap        = new HashMap<Id, Object>();
-  private Map<Id, Object>       deleteMap       = new HashMap<Id, Object>();
-  private Set<Id>               pristineProxies = new HashSet<Id>();
-  private Map<Id, Set<Wrapper>> associations    = new HashMap<Id, Set<Wrapper>>();
-  private Set<Id>               currentIds      = new HashSet<Id>();
+  private static final Log               log            = LogFactory.getLog(Session.class);
+  private SessionFactory                 sessionFactory;
+  private Transaction                    txn            = null;
+  private Map<Id, Object>                cleanMap       = new HashMap<Id, Object>();
+  private Map<Id, Object>                dirtyMap       = new HashMap<Id, Object>();
+  private Map<Id, Object>                deleteMap      = new HashMap<Id, Object>();
+  private Map<Id, LazyLoadMethodHandler> proxies        = new HashMap<Id, LazyLoadMethodHandler>();
+  private Map<Id, Set<Wrapper>>          associations   = new HashMap<Id, Set<Wrapper>>();
+  private Set<Id>                        currentIds     = new HashSet<Id>();
 
   /**
    * Creates a new Session object.
@@ -140,7 +140,7 @@ public class Session {
     cleanMap.clear();
     dirtyMap.clear();
     deleteMap.clear();
-    pristineProxies.clear();
+    proxies.clear();
     associations.clear();
   }
 
@@ -276,12 +276,17 @@ public class Session {
     if (o == null) {
       o = getFromStore(clazz, id, checkClass(clazz));
 
-      if (o != null)
-        sync(o, id, false, false, false);
+      if (o != null) {
+        // Must merge here. Associations may have a back-pointer to this Id.
+        // If those associations are loaded from the store even before
+        // we complete this get() operation, there will be an instance
+        // in our cache for this same Id.
+        o = sync(o, id, true, false, false);
+      }
     }
 
     if (o instanceof ProxyObject)
-      o.equals(null); // ensure object is loaded
+      proxies.get(id).load(); // ensure it is loaded
 
     if ((o == null) || clazz.isInstance(o))
       return clazz.cast(o);
@@ -440,7 +445,8 @@ public class Session {
   }
 
   private void write(Id id, Object o, boolean delete) throws OtmException {
-    boolean       pristineProxy = pristineProxies.contains(id);
+    boolean       pristineProxy =
+      (o instanceof ProxyObject) ? (proxies.get(id).getLoaded() == null) : false;
     ClassMetadata cm            = sessionFactory.getClassMetadata(o.getClass());
     TripleStore   store         = sessionFactory.getTripleStore();
 
@@ -510,6 +516,9 @@ public class Session {
 
       p.set(ro.o, assocs);
     }
+
+    if (log.isDebugEnabled())
+      log.debug("Instantiated " + ro.id);
 
     return ro.o;
   }
@@ -586,6 +595,17 @@ public class Session {
     if (!cm.getSourceClass().isAssignableFrom(ocm.getSourceClass()))
       throw new OtmException(cm.toString() + " is not assignable from " + ocm);
 
+    LazyLoadMethodHandler llm = proxies.get(checkObject(o));
+
+    if (llm != null) {
+      llm.setLoaded(other);
+
+      return o;
+    }
+
+    if (log.isDebugEnabled())
+      log.debug("Copy merging " + checkObject(o));
+
     for (Mapper p : cm.getFields()) {
       Mapper op = ocm.getMapperByUri(p.getUri(), p.hasInverseUri(), p.getRdfType());
 
@@ -624,19 +644,40 @@ public class Session {
 
   private Object newDynamicProxy(final Class clazz, final Id id, final ClassMetadata cm)
                           throws OtmException {
-    MethodHandler mi =
-      new MethodHandler() {
+    LazyLoadMethodHandler mi =
+      new LazyLoadMethodHandler() {
         private Object loaded = null;
 
         public Object invoke(Object self, Method m, Method proceed, Object[] args)
                       throws Throwable {
           if (loaded == null) {
-            log.info(m.getName() + " on " + id + " is forcing a load from store");
+            if (log.isDebugEnabled())
+              log.debug(m.getName() + " on " + id + " is forcing a load from store");
+
             loaded = getFromStore(clazz, id, cm);
-            pristineProxies.remove(id);
           }
 
           return m.invoke(loaded, args);
+        }
+
+        public Object getLoaded() {
+          return loaded;
+        }
+
+        public void setLoaded(Object o) {
+          if ((loaded != o) && log.isDebugEnabled())
+            log.debug("Replacing the loaded object for proxy " + id);
+
+          loaded = o;
+        }
+
+        public void load() throws OtmException {
+          if (loaded == null) {
+            if (log.isDebugEnabled())
+              log.debug(id + " is force loaded from store");
+
+            loaded = getFromStore(clazz, id, cm);
+          }
         }
       };
 
@@ -644,7 +685,10 @@ public class Session {
       Object o = sessionFactory.getProxyMapping(clazz).newInstance();
       cm.getIdField().set(o, Collections.singletonList(id.getId()));
       ((ProxyObject) o).setHandler(mi);
-      pristineProxies.add(id);
+      proxies.put(id, mi);
+
+      if (log.isDebugEnabled())
+        log.debug("Dynamic proxy created for " + id);
 
       return o;
     } catch (Exception e) {
@@ -752,5 +796,13 @@ public class Session {
     public String toString() {
       return id;
     }
+  }
+
+  private interface LazyLoadMethodHandler extends MethodHandler {
+    public Object getLoaded();
+
+    public void setLoaded(Object o);
+
+    public void load() throws OtmException;
   }
 }
