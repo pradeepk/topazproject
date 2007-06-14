@@ -34,6 +34,7 @@
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">profiles:findUsersByProfile</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ratings:getRatings</AttributeValue>
         <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">ratings:getStats</AttributeValue>
+        <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">replies:getReplyInfo</AttributeValue>
       </Apply>
     </Condition>
 

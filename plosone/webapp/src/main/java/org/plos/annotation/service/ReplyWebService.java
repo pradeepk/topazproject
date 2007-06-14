@@ -50,8 +50,7 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
  */
 public class ReplyWebService extends BaseAnnotationService {
   private GeneralCacheAdministrator articleCacheAdministrator;
-  private static final Log          log              = LogFactory.getLog(ReplyWebService.class);
-  private static final boolean      compatibleWith06 = true;
+  private static final Log          log         = LogFactory.getLog(ReplyWebService.class);
   private RepliesPEP                pep;
   private FedoraHelper              fedora;
   private Session                   session;
@@ -71,7 +70,7 @@ public class ReplyWebService extends BaseAnnotationService {
     } catch (IOException e) {
       throw e;
     } catch (Exception e) {
-      IOException ioe                                = new IOException("Failed to create PEP");
+      IOException ioe                           = new IOException("Failed to create PEP");
       ioe.initCause(e);
       throw ioe;
     }
@@ -369,22 +368,16 @@ public class ReplyWebService extends BaseAnnotationService {
           }
         });
 
-    List<Reply> l;
+    List<Reply> l   = new ArrayList(all.size());
 
-    if (compatibleWith06)
-      l = all;
-    else {
-      l             = new ArrayList(all.size());
-
-      for (Reply a : all) {
-        try {
-          pep.checkAccess(pep.GET_REPLY_INFO, a.getId());
-          l.add(a);
-        } catch (Throwable t) {
-          if (log.isDebugEnabled())
-            log.debug("no permission for viewing reply " + a.getId()
-                      + " and therefore removed from list");
-        }
+    for (Reply a : all) {
+      try {
+        pep.checkAccess(pep.GET_REPLY_INFO, a.getId());
+        l.add(a);
+      } catch (Throwable t) {
+        if (log.isDebugEnabled())
+          log.debug("no permission for viewing reply " + a.getId()
+                    + " and therefore removed from list");
       }
     }
 
@@ -416,27 +409,22 @@ public class ReplyWebService extends BaseAnnotationService {
       TransactionHelper.doInTx(session,
                                new TransactionHelper.Action<List<Reply>>() {
           public List<Reply> run(Transaction tx) {
-            return tx.getSession().createCriteria(Reply.class).add(Restrictions.eq("root", root))
+            return tx.getSession().createCriteria(Reply.class)
+                      .add(Restrictions.eq("root", root))
                       .add(Restrictions.walk("inReplyTo", inReplyTo)).list();
           }
         });
 
-    List<Reply> l;
+    List<Reply> l   = new ArrayList(all.size());
 
-    if (compatibleWith06)
-      l = all;
-    else {
-      l             = new ArrayList(all.size());
-
-      for (Reply a : all) {
-        try {
-          pep.checkAccess(pep.GET_REPLY_INFO, a.getId());
-          l.add(a);
-        } catch (Throwable t) {
-          if (log.isDebugEnabled())
-            log.debug("no permission for viewing reply " + a.getId()
-                      + " and therefore removed from list");
-        }
+    for (Reply a : all) {
+      try {
+        pep.checkAccess(pep.GET_REPLY_INFO, a.getId());
+        l.add(a);
+      } catch (Throwable t) {
+        if (log.isDebugEnabled())
+          log.debug("no permission for viewing reply " + a.getId()
+                    + " and therefore removed from list");
       }
     }
 
@@ -536,11 +524,9 @@ public class ReplyWebService extends BaseAnnotationService {
       TransactionHelper.doInTx(session,
                                new TransactionHelper.Action<List<Reply>>() {
           public List<Reply> run(Transaction tx) {
-            Criteria c  = tx.getSession().createCriteria(Reply.class);
-
+            Criteria c = tx.getSession().createCriteria(Reply.class);
             if (mediator != null)
-              c.add(Restrictions.eq("mediator", mediator));
-
+                c.add(Restrictions.eq("mediator", mediator));
             if (state == 0)
               c.add(Restrictions.ne("state", "0"));
             else
