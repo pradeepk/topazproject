@@ -72,7 +72,7 @@ topaz.displayComment = {
     
     return false;
   },
-    
+
   buildDisplayHeader: function (jsonObj) {
     var titleDocFrag = document.createDocumentFragment();
     
@@ -82,7 +82,7 @@ topaz.displayComment = {
     titleLink.className = "discuss icon";
     titleLink.title="View full annotation";
     //alert("jsonObj.annotation.commentTitle = " + jsonObj.annotation.commentTitle);
-    titleLink.appendChild(document.createTextNode(jsonObj.annotation.commentTitle));
+    titleLink.innerHTML = jsonObj.annotation.commentTitle;
     titleDocFrag.appendChild(titleLink);
 
     return titleDocFrag;    
