@@ -171,8 +171,11 @@ public class RateAction extends BaseActionSupport {
       }
 
       // update Rating + RatingSummary with new values
-        articleRating.setCreated(now);
-        articleRatingSummary.setCreated(now);
+      articleRating.setCreated(now);
+      articleRatingSummary.setCreated(now);
+
+      // overall is calculated in Rating, remember original value before modification(s)
+      int originalOverallValue = articleRating.getBody().getOverallValue();
 
       // if they had a prior insight Rating, remove it from the RatingSummary
       if (articleRating.getBody().getInsightValue() > 0) {
@@ -212,6 +215,13 @@ public class RateAction extends BaseActionSupport {
       if (style > 0) {
         articleRatingSummary.getBody().addRating(Rating.STYLE_TYPE, (int) style);
       }
+
+      // maintain overall in RatingSummary
+      if (!newRating) {
+        articleRatingSummary.getBody().removeRating(Rating.OVERALL_TYPE, originalOverallValue);
+      }
+      // let Rating calculate its new overall
+      articleRatingSummary.getBody().addRating(Rating.OVERALL_TYPE, articleRating.getBody().getOverallValue());
 
       // Rating comment
       if (!StringUtils.isBlank(commentTitle) || !StringUtils.isBlank(comment)) {

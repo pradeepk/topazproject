@@ -173,6 +173,20 @@ public class RatingContent {
     this.id = id;
   }
 
+  /**
+   * Round a rating.
+   * @param x Rating value to round.
+   * @param r Typically 0.5, to round to half stars
+   * @return Rounded rating value
+   */
+  public static double roundTo(double x, double r) {
+    if (r == 0) {
+      return x;
+    }
+
+    return Math.round(x * (1 / r)) / (1 / r);
+  }
+
   private double calculateOverall() {
     int    runningWeight = 0;
     double runningTotal  = 0;

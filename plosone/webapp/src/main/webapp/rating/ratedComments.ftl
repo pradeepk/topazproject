@@ -7,13 +7,13 @@
         <@ww.url id="fetchArticleURL" namespace="/article" action="fetchArticle" articleURI="${articleURI}"/>
 
         <a href="${fetchArticleURL}" title="Back to original article" class="article icon">${articleTitle}
-          <#if articleOverall?exists>
-	        <span class="inline-rating inlineRatingEnd">
-	          <ul class="star-rating pone_rating" title="overall">
-              <#assign overallPct = (20 * articleOverall)?string("##0")>
-	            <li class="current-rating pct${overallPct}">Currently ${articleOverall?string("0.#")}/5 Stars.</li>
-	          </ul>
-	        </span>
+          <#if articleOverallRounded?exists>
+            <span class="inline-rating inlineRatingEnd">
+              <ul class="star-rating pone_rating" title="overall">
+                <#assign overallPct = (20 * articleOverallRounded)?string("##0")>
+                <li class="current-rating pct${overallPct}">Currently ${articleOverallRounded?string("0.#")}/5 Stars.</li>
+              </ul>
+            </span>
           </#if>
         </a>
         <!--<p><a href="/annotation/getCommentary.action?target=${articleURI}" class="commentary icon">See all commentary</a> on this article</p>-->
@@ -67,8 +67,8 @@
                 <#if articleRatingSummary.overall?exists>
                   <li><label for="overall">Overall</label>
                     <ul class="star-rating pone_rating" title="overall">
-                      <#assign stylePct = (20 * articleRatingSummary.overall)?string("##0")>
-                      <li class="current-rating average pct${stylePct}">Currently ${articleRatingSummary.overall?string("0.#")}/5 Stars.</li>
+                      <#assign overallPct = (20 * articleRatingSummary.overall)?string("##0")>
+                      <li class="current-rating average pct${overallPct}">Currently ${articleRatingSummary.overall?string("0.#")}/5 Stars.</li>
                     </ul>
                   </li>
                 </#if>

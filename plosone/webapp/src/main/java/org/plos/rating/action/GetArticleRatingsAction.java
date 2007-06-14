@@ -24,6 +24,8 @@ import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.models.Article;
 import org.plos.models.Rating;
+import org.plos.models.RatingContent;
+import org.plos.models.RatingSummary;
 import org.plos.models.UserAccount;
 
 import org.topazproject.otm.OtmException;
@@ -89,6 +91,19 @@ public class GetArticleRatingsAction extends BaseActionSupport {
     try {
       tx = session.beginTransaction();
 
+      // RatingSummary for this Article
+      List<RatingSummary> summaryList = session
+        .createCriteria(RatingSummary.class)
+        .add(Restrictions.eq("annotates", article.getId()))
+        .list();
+      if (summaryList.size() == 1) {
+        articleOverall = summaryList.get(0).getBody().retrieveAverage(Rating.OVERALL_TYPE);
+      } else {
+        // unexpected
+        log.warn("Unexpected: " + summaryList.size() + " RatingSummary for " + article.getId());
+        articleOverall = 0;
+      }
+
       // list of Ratings that annotate this article
       List<Rating> articleRatings = session
         .createCriteria(Rating.class)
@@ -119,9 +134,6 @@ public class GetArticleRatingsAction extends BaseActionSupport {
           log.error("Unable to look up UserAccount for " + rating.getCreator() + " for Rating " + rating.getId());
         }
         articleRatingSummaries.add(summary);
-
-        // keep track of running overall total
-        articleOverall += summary.getOverall();
       }
 
       tx.commit(); // Flush happens automatically
@@ -138,8 +150,6 @@ public class GetArticleRatingsAction extends BaseActionSupport {
 
     if (articleRatingSummaries.size() > 0) {
       hasRated = true;
-      // average running overall total
-      articleOverall = articleOverall / articleRatingSummaries.size();
     }
 
     if (log.isDebugEnabled()) {
@@ -168,12 +178,13 @@ public class GetArticleRatingsAction extends BaseActionSupport {
   }
 
   /**
-   * Gets the Overall rating of the article being rated.
+   * Gets the Overall rounded rating of the article being rated.
    *
-   * @return Overall rating.
+   * @return Overall rounded rating.
    */
-  public double getArticleOverall() {
-    return articleOverall;
+  public double getArticleOverallRounded() {
+
+    return RatingContent.roundTo(articleOverall, 0.5);
   }
 
   /**

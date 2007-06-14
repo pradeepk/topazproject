@@ -20,6 +20,7 @@ import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.action.BaseActionSupport;
 
 import org.plos.models.Rating;
+import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
 
 import org.plos.user.PlosOneUser;
@@ -101,25 +102,25 @@ public class GetAverageRatingsAction extends BaseActionSupport {
         ratingSummary = summaryList.get(0);
 
         insightAverage          = ratingSummary.getBody().retrieveAverage(Rating.INSIGHT_TYPE);
-        insightRoundedAverage   = roundTo(insightAverage, 0.5);
+        insightRoundedAverage   = RatingContent.roundTo(insightAverage, 0.5);
         numInsightRatings       = ratingSummary.getBody().getInsightNumRatings();
         totalInsight            = ratingSummary.getBody().retrieveTotal(Rating.INSIGHT_TYPE);
 
         reliabilityAverage          = ratingSummary.getBody().retrieveAverage(Rating.RELIABILITY_TYPE);
-        reliabilityRoundedAverage   = roundTo(reliabilityAverage, 0.5);
+        reliabilityRoundedAverage   = RatingContent.roundTo(reliabilityAverage, 0.5);
         numReliabilityRatings       = ratingSummary.getBody().getReliabilityNumRatings();
         totalReliability            = ratingSummary.getBody().retrieveTotal(Rating.RELIABILITY_TYPE);
 
         styleAverage          = ratingSummary.getBody().retrieveAverage(Rating.STYLE_TYPE);
-        styleRoundedAverage   = roundTo(styleAverage, 0.5);
+        styleRoundedAverage   = RatingContent.roundTo(styleAverage, 0.5);
         numStyleRatings       = ratingSummary.getBody().getStyleNumRatings();
         totalStyle            = ratingSummary.getBody().retrieveTotal(Rating.STYLE_TYPE);
 
         overallAverage        = ratingSummary.getBody().retrieveAverage(Rating.OVERALL_TYPE);
-        overallRoundedAverage = roundTo(overallAverage, 0.5);
+        overallRoundedAverage = RatingContent.roundTo(overallAverage, 0.5);
         numOverallRatings     = ratingSummary.getBody().getOverallNumRatings();
         totalOverall          = ratingSummary.getBody().retrieveTotal(Rating.OVERALL_TYPE);
-        
+
         numUsersThatRated     = ratingSummary.getBody().getNumUsersThatRated();
       }
 
@@ -151,14 +152,6 @@ public class GetAverageRatingsAction extends BaseActionSupport {
     }
 
     return SUCCESS;
-  }
-
-  private double roundTo(double x, double r) {
-    if (r == 0) {
-      return x;
-    }
-
-    return Math.round(x * (1 / r)) / (1 / r);
   }
 
   /**

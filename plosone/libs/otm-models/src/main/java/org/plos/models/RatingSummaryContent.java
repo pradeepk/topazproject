@@ -38,6 +38,8 @@ public class RatingSummaryContent {
   private double reliabilityTotal;
   private int    styleNumRatings;
   private double styleTotal;
+  private int    overallNumRatings;
+  private double overallTotal;
   private int    numUsersThatRated;
 
   private static final Log log = LogFactory.getLog(RatingSummaryContent.class);
@@ -46,7 +48,7 @@ public class RatingSummaryContent {
    * Creates a new RatingSummaryContent object.
    */
   public RatingSummaryContent() {
-    this(0, 0, 0, 0, 0, 0, 0);
+    this(0, 0, 0, 0, 0, 0, 0, 0, 0);
   }
 
   /**
@@ -59,6 +61,7 @@ public class RatingSummaryContent {
     int insightNumRatings,     double insightTotal,
     int reliabilityNumRatings, double reliabilityTotal,
     int styleNumRatings,       double styleTotal,
+    int overallNumRatings,     double overallTotal,
     int numUsersThatRated) {
 
     this.insightNumRatings     = insightNumRatings;
@@ -67,6 +70,8 @@ public class RatingSummaryContent {
     this.reliabilityTotal      = reliabilityTotal;
     this.styleNumRatings       = styleNumRatings;
     this.styleTotal            = styleTotal;
+    this.overallNumRatings     = overallNumRatings;
+    this.overallTotal          = overallTotal;
     this.numUsersThatRated     = numUsersThatRated;
   }
 
@@ -166,7 +171,26 @@ public class RatingSummaryContent {
    * @return Returns the number of overall Ratings.
    */
   public int getOverallNumRatings() {
-    return insightNumRatings + reliabilityNumRatings + styleNumRatings;
+    return overallNumRatings;
+  }
+  /**
+   * @param overallNumRatings The number of overall ratings.
+   */
+  public void setOverallNumRatings(int overallNumRatings) {
+    this.overallNumRatings = overallNumRatings;
+  }
+
+  /**
+   * @return Returns the total of overall Ratings.
+   */
+  public double getOverallTotal() {
+    return overallTotal;
+  }
+  /**
+   * @param overallTotal The total of overall ratings.
+   */
+  public void setOverallTotal(double overallTotal) {
+    this.overallTotal = overallTotal;
   }
 
   /**
@@ -199,6 +223,9 @@ public class RatingSummaryContent {
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       styleNumRatings += 1;
       styleTotal      += value;
+    } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
+      overallNumRatings += 1;
+      overallTotal      += value;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when adding a Rating to a RatingSummary.";
@@ -224,6 +251,9 @@ public class RatingSummaryContent {
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       styleNumRatings -= 1;
       styleTotal      -= value;
+    } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
+      overallNumRatings -= 1;
+      overallTotal      -= value;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when removing a Rating from a RatingSummary.";
@@ -247,7 +277,7 @@ public class RatingSummaryContent {
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       return styleTotal / styleNumRatings;
     } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
-      return calculateOverall();
+      return overallTotal / overallNumRatings;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when retrieving the average Rating from a RatingSummary.";
@@ -270,6 +300,8 @@ public class RatingSummaryContent {
       reliabilityNumRatings = numRatings;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       styleNumRatings = numRatings;
+    } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
+      overallNumRatings = numRatings;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when assigning the number of Ratings for a RatingSummary.";
@@ -292,6 +324,8 @@ public class RatingSummaryContent {
       return reliabilityNumRatings;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       return styleNumRatings;
+    } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
+      return overallNumRatings;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when retriving the number of Ratings for a RatingSummary.";
@@ -314,6 +348,8 @@ public class RatingSummaryContent {
       reliabilityTotal = total;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       styleTotal = total;
+    } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
+      overallTotal = total;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when assigning a total Ratings value for a RatingSummary.";
@@ -337,40 +373,12 @@ public class RatingSummaryContent {
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       return styleTotal;
     } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
-      return insightTotal + reliabilityTotal + styleTotal;
+      return overallTotal;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when retrieving a total Ratings value for a RatingSummary.";
       log.error(errorMessage);
       throw new RuntimeException(errorMessage);
     }
-  }
-
-    private double calculateOverall() {
-      int    runningWeight = 0;
-      double runningTotal  = 0;
-
-    if (getInsightNumRatings() > 0) {
-      runningWeight += RatingContent.INSIGHT_WEIGHT;
-      runningTotal += retrieveAverage(Rating.INSIGHT_TYPE) * RatingContent.INSIGHT_WEIGHT;
-      if (log.isDebugEnabled())
-        log.debug("INSIGHT: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
-    }
-
-    if (getStyleNumRatings() > 0) {
-      runningWeight += RatingContent.STYLE_WEIGHT;
-      runningTotal += retrieveAverage(Rating.STYLE_TYPE) * RatingContent.STYLE_WEIGHT;
-      if (log.isDebugEnabled())
-        log.debug("STYLE: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
-    }
-
-    if (retrieveAverage(Rating.RELIABILITY_TYPE) > 0) {
-      runningWeight += RatingContent.RELIABILITY_WEIGHT;
-      runningTotal += retrieveAverage(Rating.RELIABILITY_TYPE) * RatingContent.RELIABILITY_WEIGHT;
-      if (log.isDebugEnabled())
-        log.debug("RELIABILITY: runningWeight = " + runningWeight+ " runningTotal: " + runningTotal);
-    }
-
-    return runningTotal / runningWeight;
   }
 }
