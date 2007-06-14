@@ -1011,8 +1011,8 @@ public class ArticleOtmService extends BaseConfigurableService {
       Map values = new HashMap();
       /* internationalize () */
       values.put("uri", article.uri);
-      values.put("title", article.title);
-      values.put("description", article.description);
+      values.put("title", nullToEmpty(article.title));
+      values.put("description", nullToEmpty(article.description));
       values.put("date", ArticleFeed.formatDate(article.date));
       values.put("authors", authorsSb.toString());
       values.put("subjects", subjectsSb.toString());
@@ -1023,6 +1023,10 @@ public class ArticleOtmService extends BaseConfigurableService {
     Map values = new HashMap();
     values.put("articles", articlesXml);
     return ItqlHelper.bindValues(XML_RESPONSE, values);
+  }
+
+  private static String nullToEmpty(String str) {
+    return (str != null) ? str : "";
   }
 
   // methods & functionality that were "pulled up" from org.topazproject.ws.article.impl.ArticleImpl
