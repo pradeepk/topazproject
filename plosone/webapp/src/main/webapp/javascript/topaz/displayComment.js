@@ -391,7 +391,7 @@ function getComment(obj) {
          //alert("jsonObj:\n" + jsonObj.toSource());
          
          if (jsonObj.actionErrors.list.length > 0) {
-           var errorMsg;
+           var errorMsg = "";
            //alert("jsonObj.actionErrors.list.length = " + jsonObj.actionErrors.list.length);
            for (var i=0; i<jsonObj.actionErrors.list.length; i++) {
              errorMsg = errorMsg + jsonObj.actionErrors.list[i] + "\n";

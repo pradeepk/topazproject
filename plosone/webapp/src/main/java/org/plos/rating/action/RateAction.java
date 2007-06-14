@@ -105,7 +105,7 @@ public class RateAction extends BaseActionSupport {
 
     // must rate at least one value
     if (insight == 0 && reliability == 0 && style == 0) {
-      addFieldError("Ratings", "A Rating must have at least one value selected.");
+      addActionError("At least one category must be rated");
       return INPUT;
     }
 

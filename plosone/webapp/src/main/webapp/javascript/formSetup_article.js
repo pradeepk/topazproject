@@ -219,7 +219,7 @@ function validateNewComment() {
        //submitMsg.appendChild(document.createTextNode(jsonObj.toSource()));
        
        if (jsonObj.actionErrors.list.length > 0) {
-         var errorMsg;
+         var errorMsg = "";
          
          for (var i=0; i<jsonObj.actionErrors.list.length; i++) {
            errorMsg = errorMsg + jsonObj.actionErrors.list[i] + "\n";
