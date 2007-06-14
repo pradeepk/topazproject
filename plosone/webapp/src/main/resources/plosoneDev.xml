@@ -56,7 +56,7 @@
     </url>
 
     <!-- Stuff used by doi-resolver -->
-    <webserver-url>http://${hosts.default}:${ports.default}</webserver-url>
+    <webserver-url>http://${hosts.default}:${ports.default}${plosone.app-context}/</webserver-url>
     <article-action>article/fetchArticle.action?articleURI=</article-action>
     <figure-action1>article/slideshow.action?uri=</figure-action1>
     <figure-action2>&amp;imageURI=</figure-action2>
