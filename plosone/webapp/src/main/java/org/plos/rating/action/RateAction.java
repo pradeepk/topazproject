@@ -103,6 +103,12 @@ public class RateAction extends BaseActionSupport {
 
     getPEP().checkObjectAccess(RatingsPEP.SET_RATINGS, URI.create(user.getUserId()), annotatedArticle);
 
+    // must rate at least one value
+    if (insight == 0 && reliability == 0 && style == 0) {
+      addFieldError("Ratings", "A Rating must have at least one value selected.");
+      return INPUT;
+    }
+
     // reject profanity in content
     final List<String> profaneWordsInCommentTitle = profanityCheckingService.validate(commentTitle);
     final List<String> profaneWordsInComment      = profanityCheckingService.validate(comment);
