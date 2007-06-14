@@ -483,7 +483,7 @@ public class ItqlHelper {
       String val   = (String) values.get(token);
 
       if (val == null)
-        throw new IllegalArgumentException("Missing value for ${'" + token + "}");
+        throw new IllegalArgumentException("Missing value for ${'" + token + "'}");
 
       sb.append(fmt.substring(pos, ts));
       sb.append(val);
