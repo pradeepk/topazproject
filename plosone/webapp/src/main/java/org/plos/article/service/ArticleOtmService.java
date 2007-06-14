@@ -56,7 +56,6 @@ import org.topazproject.fedoragsearch.service.FgsOperations;
 import org.topazproject.mulgara.itql.ItqlHelper;
 // TODO: should feed mv up to webapp?
 import org.topazproject.feed.ArticleFeed;
-// import org.topazproject.feed.ArticleFeedData;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
