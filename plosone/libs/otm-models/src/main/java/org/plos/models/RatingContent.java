@@ -57,11 +57,11 @@ public class RatingContent {
   /**
    * Creates a new RatingContent object with specified values.
    */
-  public RatingContent(int insight, int reliability, int sytle, String commentTitle, String commentValue) {
+  public RatingContent(int insight, int reliability, int style, String commentTitle, String commentValue) {
 
     this.insightValue      = insight;
     this.reliabilityValue  = reliability;
-    this.styleValue        = styleValue;
+    this.styleValue        = style;
     this.commentTitle = commentTitle;
     this.commentValue = commentValue;
   }
