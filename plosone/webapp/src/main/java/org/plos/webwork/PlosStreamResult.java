@@ -99,11 +99,27 @@ public class PlosStreamResult extends StreamResult {
 
       // Flush
       oOutput.flush();
+
+      oOutput.close();
+      oOutput = null;
+
+      oInput.close();
+      oInput = null;
     } finally {
-      if (oInput != null)
-        oInput.close();
-      if (oOutput != null)
-        oOutput.close();
+      try {
+        if (oInput != null)
+          oInput.close();
+      } catch (Throwable t) {
+        if (log.isDebugEnabled())
+          log.debug("Failed to close input stream", t);
+      }
+      try {
+        if (oOutput != null)
+          oOutput.close();
+      } catch (Throwable t) {
+        if (log.isDebugEnabled())
+          log.debug("Failed to close output stream", t);
+      }
     }
   }
 
