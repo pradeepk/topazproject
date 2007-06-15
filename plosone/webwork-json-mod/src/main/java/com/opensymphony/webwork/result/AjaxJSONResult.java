@@ -32,6 +32,7 @@ public class AjaxJSONResult implements Result {
    */
   private static Log log = LogFactory.getLog(AjaxJSONResult.class);
   private String contentType;
+  private boolean noCache = false;
 
 
   /**
@@ -63,6 +64,16 @@ public class AjaxJSONResult implements Result {
       log.error("Error while json serializing:", e);
     }
 
+    if (noCache) {
+      // HTTP 1.1 browsers should defeat caching on this header
+      response.setHeader("Cache-Control", "no-cache");
+      // HTTP 1.0 browsers should defeat caching on this header
+      response.setHeader("Pragma", "no-cache");
+      // Last resort for those that ignore all of the above
+      response.setHeader("Expires", "-1");
+    }
+
+
     // Write JSON to response.
     try {
       response.setContentLength(json.length());
@@ -83,4 +94,13 @@ public class AjaxJSONResult implements Result {
   public void setContentType(final String contentType) {
     this.contentType = contentType;
   }
+
+  /**
+   * Set the content type for the json result
+   * @param contentType contentType
+   */
+  public void setNoCache(final boolean inNoCache) {
+    this.noCache = inNoCache;
+  }
+
 } // End class.
