@@ -24,6 +24,15 @@ import org.topazproject.otm.annotations.Rdf;
 @Entity(type = Rdf.topaz + "RatingsAnnotation")
 public class Rating extends AbstractAnnotation {
 
+  /** Style */
+  public static final String STYLE_TYPE = Rdf.topaz + "StyleRating";
+  /** Insight */
+  public static final String INSIGHT_TYPE = Rdf.topaz + "InsightRating";
+  /** Reliability */
+  public static final String RELIABILITY_TYPE = Rdf.topaz + "ReliabilityRating";
+  /** Overall */
+  public static final String OVERALL_TYPE = Rdf.topaz + "OverallRating";
+
   @Predicate(uri = Annotea.NS + "body")
   private RatingContent body;
 
@@ -55,15 +64,4 @@ public class Rating extends AbstractAnnotation {
   public void setBody(RatingContent rating) {
     this.body = rating;
   }
-
-  /**
-   * TODO: signature to support compilation during conversion
-   */
-  public static final String STYLE_TYPE = Rdf.topaz + "StyleRating";
-  public static final String INSIGHT_TYPE = Rdf.topaz + "InsightRating";
-  public static final String RELIABILITY_TYPE = Rdf.topaz + "ReliabilityRating";
-  public static final String OVERALL_TYPE = Rdf.topaz + "OverallRating";
-  public void assignValue(int value) {}
-  public int retrieveValue() {return -1;}
-
 }

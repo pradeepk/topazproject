@@ -25,7 +25,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  * @author stevec
  * @author Jeff Suttor
  */
-@UriPrefix(Rdf.topaz + "/RatingSummaryContent/")
+@UriPrefix(Rdf.topaz + "RatingSummaryContent/")
 @Entity(model = "ri", type = Rdf.topaz + "RatingSummaryContent")
 public class RatingSummaryContent {
   @Id
