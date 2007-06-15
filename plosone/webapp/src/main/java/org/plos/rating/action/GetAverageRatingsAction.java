@@ -22,6 +22,7 @@ import org.plos.action.BaseActionSupport;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
+import org.plos.models.RatingSummaryContent;
 
 import org.plos.user.PlosOneUser;
 
@@ -44,20 +45,16 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   private double           insightAverage;
   private double           styleAverage;
   private double           reliabilityAverage;
-  private double           overallAverage;
   private double           insightRoundedAverage;
   private double           styleRoundedAverage;
   private double           reliabilityRoundedAverage;
-  private double           overallRoundedAverage;
   private int              numInsightRatings;
   private int              numStyleRatings;
   private int              numReliabilityRatings;
-  private int              numOverallRatings;
   private int              numUsersThatRated;
   private double           totalInsight;
   private double           totalStyle;
   private double           totalReliability;
-  private double           totalOverall;
   private boolean          hasRated = false;
   private static final Log log      = LogFactory.getLog(GetAverageRatingsAction.class);
   private RatingsPEP       pep;
@@ -115,11 +112,6 @@ public class GetAverageRatingsAction extends BaseActionSupport {
         styleRoundedAverage   = RatingContent.roundTo(styleAverage, 0.5);
         numStyleRatings       = ratingSummary.getBody().getStyleNumRatings();
         totalStyle            = ratingSummary.getBody().retrieveTotal(Rating.STYLE_TYPE);
-
-        overallAverage        = ratingSummary.getBody().retrieveAverage(Rating.OVERALL_TYPE);
-        overallRoundedAverage = RatingContent.roundTo(overallAverage, 0.5);
-        numOverallRatings     = ratingSummary.getBody().getOverallNumRatings();
-        totalOverall          = ratingSummary.getBody().retrieveTotal(Rating.OVERALL_TYPE);
 
         numUsersThatRated     = ratingSummary.getBody().getNumUsersThatRated();
       }
@@ -209,24 +201,6 @@ public class GetAverageRatingsAction extends BaseActionSupport {
   }
 
   /**
-   * Gets the count of overall ratings.
-   *
-   * @return Returns the numOverallRatings.
-   */
-  public int getNumOverallRatings() {
-    return numOverallRatings;
-  }
-
-  /**
-   * Sets the count of overall ratings.
-   *
-   * @param numOverallRatings The numOverallRatings to set.
-   */
-  public void setNumOverallRatings(int numOverallRatings) {
-    this.numOverallRatings = numOverallRatings;
-  }
-
-  /**
    * Gets the count of reliability ratings.
    *
    * @return Returns the numReliabilityRatings.
@@ -287,16 +261,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    * @return Returns the overallAverage.
    */
   public double getOverallAverage() {
-    return overallAverage;
-  }
 
-  /**
-   * Sets the overall average ratings.
-   *
-   * @param overallAverage The overallAverage to set.
-   */
-  public void setOverallAverage(double overallAverage) {
-    this.overallAverage = overallAverage;
+    return RatingContent.calculateOverall(getInsightAverage(), getReliabilityAverage(), getStyleAverage());
   }
 
   /**
@@ -351,24 +317,6 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    */
   public void setTotalInsight(double totalInsight) {
     this.totalInsight = totalInsight;
-  }
-
-  /**
-   * Gets the overall total.
-   *
-   * @return Returns the totalOverall.
-   */
-  public double getTotalOverall() {
-    return totalOverall;
-  }
-
-  /**
-   * Sets the overall total.
-   *
-   * @param totalOverall The totalOverall to set.
-   */
-  public void setTotalOverall(double totalOverall) {
-    this.totalOverall = totalOverall;
   }
 
   /**
@@ -449,16 +397,8 @@ public class GetAverageRatingsAction extends BaseActionSupport {
    * @return Returns the overallRoundedAverage.
    */
   public double getOverallRoundedAverage() {
-    return overallRoundedAverage;
-  }
 
-  /**
-   * Sets the overall rounded average.
-   *
-   * @param overallRoundedAverage The overallRoundedAverage to set.
-   */
-  public void setOverallRoundedAverage(double overallRoundedAverage) {
-    this.overallRoundedAverage = overallRoundedAverage;
+    return RatingContent.roundTo(getOverallAverage(), 0.5);
   }
 
   /**

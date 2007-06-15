@@ -12,6 +12,7 @@ package org.plos.rating.action;
 import java.util.Date;
 
 import org.plos.models.Rating;
+import org.plos.models.RatingContent;
 import org.plos.util.TextUtils;
 
 /**
@@ -29,7 +30,7 @@ public class ArticleRatingSummary {
   private int    style;
   private int    insight;
   private int    reliability;
-  private int    overall;
+  private double overall;
   private String commentTitle;
   private String commentValue;
 
@@ -111,11 +112,8 @@ public class ArticleRatingSummary {
     return reliability;
   }
 
-  public void setOverall(int overall) {
-    this.overall = overall;
-  }
-  public int getOverall() {
-    return overall;
+  public double getOverallRounded() {
+    return RatingContent.roundTo(overall, 0.5);
   }
 
   /**

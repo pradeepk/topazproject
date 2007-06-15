@@ -38,8 +38,6 @@ public class RatingSummaryContent {
   private double reliabilityTotal;
   private int    styleNumRatings;
   private double styleTotal;
-  private int    overallNumRatings;
-  private double overallTotal;
   private int    numUsersThatRated;
 
   private static final Log log = LogFactory.getLog(RatingSummaryContent.class);
@@ -48,7 +46,7 @@ public class RatingSummaryContent {
    * Creates a new RatingSummaryContent object.
    */
   public RatingSummaryContent() {
-    this(0, 0, 0, 0, 0, 0, 0, 0, 0);
+    this(0, 0, 0, 0, 0, 0, 0);
   }
 
   /**
@@ -61,7 +59,6 @@ public class RatingSummaryContent {
     int insightNumRatings,     double insightTotal,
     int reliabilityNumRatings, double reliabilityTotal,
     int styleNumRatings,       double styleTotal,
-    int overallNumRatings,     double overallTotal,
     int numUsersThatRated) {
 
     this.insightNumRatings     = insightNumRatings;
@@ -70,8 +67,6 @@ public class RatingSummaryContent {
     this.reliabilityTotal      = reliabilityTotal;
     this.styleNumRatings       = styleNumRatings;
     this.styleTotal            = styleTotal;
-    this.overallNumRatings     = overallNumRatings;
-    this.overallTotal          = overallTotal;
     this.numUsersThatRated     = numUsersThatRated;
   }
 
@@ -168,29 +163,14 @@ public class RatingSummaryContent {
   }
 
   /**
-   * @return Returns the number of overall Ratings.
+   * @return Returns the overall Rating.
    */
-  public int getOverallNumRatings() {
-    return overallNumRatings;
-  }
-  /**
-   * @param overallNumRatings The number of overall ratings.
-   */
-  public void setOverallNumRatings(int overallNumRatings) {
-    this.overallNumRatings = overallNumRatings;
-  }
+  public double getOverall() {
 
-  /**
-   * @return Returns the total of overall Ratings.
-   */
-  public double getOverallTotal() {
-    return overallTotal;
-  }
-  /**
-   * @param overallTotal The total of overall ratings.
-   */
-  public void setOverallTotal(double overallTotal) {
-    this.overallTotal = overallTotal;
+    return RatingContent.calculateOverall(
+      getInsightTotal() / getInsightNumRatings(),
+      getReliabilityTotal() / getReliabilityNumRatings(),
+      getStyleTotal() / getStyleNumRatings());
   }
 
   /**
@@ -223,9 +203,6 @@ public class RatingSummaryContent {
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       styleNumRatings += 1;
       styleTotal      += value;
-    } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
-      overallNumRatings += 1;
-      overallTotal      += value;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when adding a Rating to a RatingSummary.";
@@ -251,9 +228,6 @@ public class RatingSummaryContent {
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       styleNumRatings -= 1;
       styleTotal      -= value;
-    } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
-      overallNumRatings -= 1;
-      overallTotal      -= value;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when removing a Rating from a RatingSummary.";
@@ -276,8 +250,6 @@ public class RatingSummaryContent {
       return reliabilityTotal / reliabilityNumRatings;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       return styleTotal / styleNumRatings;
-    } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
-      return overallTotal / overallNumRatings;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when retrieving the average Rating from a RatingSummary.";
@@ -300,8 +272,6 @@ public class RatingSummaryContent {
       reliabilityNumRatings = numRatings;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       styleNumRatings = numRatings;
-    } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
-      overallNumRatings = numRatings;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when assigning the number of Ratings for a RatingSummary.";
@@ -324,8 +294,6 @@ public class RatingSummaryContent {
       return reliabilityNumRatings;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       return styleNumRatings;
-    } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
-      return overallNumRatings;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when retriving the number of Ratings for a RatingSummary.";
@@ -348,8 +316,6 @@ public class RatingSummaryContent {
       reliabilityTotal = total;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       styleTotal = total;
-    } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
-      overallTotal = total;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when assigning a total Ratings value for a RatingSummary.";
@@ -372,8 +338,6 @@ public class RatingSummaryContent {
       return reliabilityTotal;
     } else if (ratingType.equals(Rating.STYLE_TYPE)) {
       return styleTotal;
-    } else if (ratingType.equals(Rating.OVERALL_TYPE)) {
-      return overallTotal;
     } else {
       // should never happen
       String errorMessage = "Invalid type, " + ratingType + ", when retrieving a total Ratings value for a RatingSummary.";

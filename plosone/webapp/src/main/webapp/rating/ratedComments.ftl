@@ -64,11 +64,11 @@
                     </ul>
                   </li>
                 </#if>
-                <#if articleRatingSummary.overall?exists>
+                <#if articleRatingSummary.overallRounded?exists>
                   <li><label for="overall">Overall</label>
                     <ul class="star-rating pone_rating" title="overall">
-                      <#assign overallPct = (20 * articleRatingSummary.overall)?string("##0")>
-                      <li class="current-rating average pct${overallPct}">Currently ${articleRatingSummary.overall?string("0.#")}/5 Stars.</li>
+                      <#assign overallPct = (20 * articleRatingSummary.overallRounded)?string("##0")>
+                      <li class="current-rating average pct${overallPct}">Currently ${articleRatingSummary.overallRounded?string("0.#")}/5 Stars.</li>
                     </ul>
                   </li>
                 </#if>

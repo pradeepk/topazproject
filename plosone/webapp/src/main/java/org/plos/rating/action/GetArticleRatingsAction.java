@@ -91,13 +91,14 @@ public class GetArticleRatingsAction extends BaseActionSupport {
     try {
       tx = session.beginTransaction();
 
+      // assume if valid RatingsPEP.GET_RATINGS, OK to GET_STATS
       // RatingSummary for this Article
       List<RatingSummary> summaryList = session
         .createCriteria(RatingSummary.class)
         .add(Restrictions.eq("annotates", article.getId()))
         .list();
       if (summaryList.size() == 1) {
-        articleOverall = summaryList.get(0).getBody().retrieveAverage(Rating.OVERALL_TYPE);
+        articleOverall = summaryList.get(0).getBody().getOverall();
       } else {
         // unexpected
         log.warn("Unexpected: " + summaryList.size() + " RatingSummary for " + article.getId());

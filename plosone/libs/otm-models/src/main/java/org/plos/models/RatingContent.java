@@ -122,8 +122,9 @@ public class RatingContent {
    *
    * @return Overall value.
    */
-  public int getOverallValue() {
-    return (int) calculateOverall();
+  public double getOverallValue() {
+
+    return calculateOverall(getInsightValue(), getReliabilityValue(), getStyleValue());
   }
 
     /**
@@ -187,29 +188,51 @@ public class RatingContent {
     return Math.round(x * (1 / r)) / (1 / r);
   }
 
-  private double calculateOverall() {
+  /**
+   * Calculate weighted overall.
+   *
+   * @param insightValue Insight value.
+   * @param reliabilityValue Reliability value.
+   * @param styleValue Style value.
+   * @returns Weighted overall.
+   */
+  public static double calculateOverall(int insightValue, int reliabilityValue, int styleValue) {
+
+    return calculateOverall((double) insightValue, (double) reliabilityValue, (double) styleValue);
+  }
+
+  /**
+   * Calculate weighted overall.
+   *
+   * @param insightValue Insight value.
+   * @param reliabilityValue Reliability value.
+   * @param styleValue Style value.
+   * @returns Weighted overall.
+   */
+  public static double calculateOverall(double insightValue, double reliabilityValue, double styleValue) {
+
     int    runningWeight = 0;
     double runningTotal  = 0;
 
-    if (getInsightValue() > 0) {
+    if (insightValue > 0) {
       runningWeight += RatingContent.INSIGHT_WEIGHT;
-      runningTotal += getInsightValue() * RatingContent.INSIGHT_WEIGHT;
+      runningTotal += insightValue * RatingContent.INSIGHT_WEIGHT;
       if (log.isDebugEnabled())
         log.debug("INSIGHT: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
     }
 
-    if (getStyleValue() > 0) {
-      runningWeight += RatingContent.STYLE_WEIGHT;
-      runningTotal += getStyleValue() * RatingContent.STYLE_WEIGHT;
-      if (log.isDebugEnabled())
-        log.debug("STYLE: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
-    }
-
-    if (getReliabilityValue() > 0) {
+    if (reliabilityValue > 0) {
       runningWeight += RatingContent.RELIABILITY_WEIGHT;
-      runningTotal += getReliabilityValue() * RatingContent.RELIABILITY_WEIGHT;
+      runningTotal += reliabilityValue * RatingContent.RELIABILITY_WEIGHT;
       if (log.isDebugEnabled())
         log.debug("RELIABILITY: runningWeight = " + runningWeight+ " runningTotal: " + runningTotal);
+    }
+
+    if (styleValue > 0) {
+      runningWeight += RatingContent.STYLE_WEIGHT;
+      runningTotal += styleValue * RatingContent.STYLE_WEIGHT;
+      if (log.isDebugEnabled())
+        log.debug("STYLE: runningWeight = " + runningWeight + " runningTotal: " + runningTotal);
     }
 
     return runningTotal / runningWeight;

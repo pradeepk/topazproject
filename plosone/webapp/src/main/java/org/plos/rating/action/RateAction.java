@@ -48,7 +48,6 @@ public class RateAction extends BaseActionSupport {
   private double           insight;
   private double           reliability;
   private double           style;
-  private double           overall;
   private String           articleURI;
   private String           commentTitle;
   private String           comment;
@@ -174,9 +173,6 @@ public class RateAction extends BaseActionSupport {
       articleRating.setCreated(now);
       articleRatingSummary.setCreated(now);
 
-      // overall is calculated in Rating, remember original value before modification(s)
-      int originalOverallValue = articleRating.getBody().getOverallValue();
-
       // if they had a prior insight Rating, remove it from the RatingSummary
       if (articleRating.getBody().getInsightValue() > 0) {
         articleRatingSummary.getBody().removeRating(Rating.INSIGHT_TYPE, articleRating.getBody().getInsightValue());
@@ -216,13 +212,6 @@ public class RateAction extends BaseActionSupport {
         articleRatingSummary.getBody().addRating(Rating.STYLE_TYPE, (int) style);
       }
 
-      // maintain overall in RatingSummary
-      if (!newRating) {
-        articleRatingSummary.getBody().removeRating(Rating.OVERALL_TYPE, originalOverallValue);
-      }
-      // let Rating calculate its new overall
-      articleRatingSummary.getBody().addRating(Rating.OVERALL_TYPE, articleRating.getBody().getOverallValue());
-
       // Rating comment
       if (!StringUtils.isBlank(commentTitle) || !StringUtils.isBlank(comment)) {
         articleRating.getBody().setCommentTitle(commentTitle);
@@ -238,9 +227,6 @@ public class RateAction extends BaseActionSupport {
       // so always do a Session.saveOrUpdate(), no delete
       session.saveOrUpdate(articleRating);
       session.saveOrUpdate(articleRatingSummary);
-
-
-      overall = articleRatingSummary.getBody().retrieveAverage(Rating.OVERALL_TYPE);
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
@@ -417,7 +403,8 @@ public class RateAction extends BaseActionSupport {
    * @return Returns the overall.
    */
   public double getOverall() {
-    return overall;
+
+    return RatingContent.calculateOverall(getInsight(), getReliability(), getStyle());
   }
 
   /**
