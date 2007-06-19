@@ -17,6 +17,9 @@ import org.plos.search.SearchUtil;
 
 /**
  * Service to provide search capabilities for the application
+ *
+ * @author Viru
+ * @author Eric Brown
  */
 public class SearchService {
   private int snippetsMax;
@@ -35,12 +38,16 @@ public class SearchService {
    * @return a Collection<SearchResult>
    * @throws ApplicationException ApplicationException
    */
-  public SearchResultPage find(final String query, final int startPage, final int pageSize) throws ApplicationException {
+  public SearchResultPage find(final String query, final int startPage, final int pageSize)
+      throws ApplicationException {
     try {
       final int hitStartPage = startPage * pageSize;
-      final String findResult = searchWebService.find(query, hitStartPage, pageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
-      log.debug("findResult = " + findResult);
+      final String findResult = searchWebService.find(query, hitStartPage, pageSize, snippetsMax,
+                                                      fieldMaxLength, indexName, resultPageXslt);
+      if (log.isDebugEnabled())
+        log.debug("findResult = " + findResult);
 
+      // TODO: Just read out of some cache we're going to have to create (steal from topaz)
       return SearchUtil.convertSearchResultXml(findResult);
     } catch (Exception e) {
       throw new ApplicationException("Search failed with exception:", e);

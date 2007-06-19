@@ -26,6 +26,8 @@ import java.util.Collection;
 
 /**
  * Search Action class to search for simple or advanced search.
+ *
+ * @author Viru
  */
 public class SearchAction extends BaseActionSupport {
   private String query;

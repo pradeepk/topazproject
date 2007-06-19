@@ -14,14 +14,21 @@ import org.plos.search.service.SearchHit;
 import java.util.Collection;
 
 /**
- * Value object that denotes a single page of search result
+ * Value object that denotes a single page of search result.<p>
+ *
+ * Presumably this is part of the data-model passed to freemarker.
+ *
+ * @author Viru
+ * @author Eric Brown
  */
 public class SearchResultPage {
   private final int totalNoOfResults;
   private final int pageSize;
   private final Collection<SearchHit> hits;
 
-  public SearchResultPage(final int totalResults, final int pageSize, final Collection<SearchHit> hits) {
+  public SearchResultPage(final int totalResults,
+                          final int pageSize,
+                          final Collection<SearchHit> hits) {
     this.totalNoOfResults = totalResults;
     this.pageSize = pageSize;
     this.hits = hits;

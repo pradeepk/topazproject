@@ -36,23 +36,30 @@ import java.util.regex.Matcher;
 
 /**
  * Util functions to be used for Flag related tasks like created and extracting flag attributes.
+ *
+ * @author Viru
+ * @author Eric Brown
  */
 public class SearchUtil {
-  private static final String charsetEncoding = "UTF-8";
-  private static final DocumentBuilderFactory documentBuilderFactory = DocumentBuilderFactory.newInstance();
-  private static final Pattern patternToMatchFieldNode = Pattern.compile("<field\\s[^>]*>(.*)</field>");
+  private static final String                 charsetEncoding         = "UTF-8";
+  private static final DocumentBuilderFactory documentBuilderFactory  =
+                                                DocumentBuilderFactory.newInstance();
+  private static final Pattern                patternToMatchFieldNode =
+                                                Pattern.compile("<field\\s[^>]*>(.*)</field>");
 
   /**
    * Return a collection of SearchHit's
    * @param searchResultXml searchResultXml
-   * @return a Collection<SearchHit>
+   * @return An object representing a result page
    * @throws IOException IOException
    * @throws ParserConfigurationException ParserConfigurationException
    * @throws SAXException SAXException
    * @throws org.plos.util.InvalidDateException InvalidDateException
    * @throws javax.xml.transform.TransformerException TransformerException
    */
-  public static SearchResultPage convertSearchResultXml(final String searchResultXml) throws IOException, ParserConfigurationException, SAXException, InvalidDateException, TransformerException {
+  public static SearchResultPage convertSearchResultXml(final String searchResultXml)
+      throws IOException, ParserConfigurationException, SAXException, InvalidDateException,
+             TransformerException {
     final String nodeName = "hit";
     final Element rootNode = getRootNode(searchResultXml);
 
@@ -72,17 +79,20 @@ public class SearchUtil {
     return new SearchResultPage(totalNoOfHits, pageSize, hits);
   }
 
-  private static Element getRootNode(final String xmlDocument) throws SAXException, IOException, ParserConfigurationException {
+  private static Element getRootNode(final String xmlDocument)
+      throws SAXException, IOException, ParserConfigurationException {
     final Document doc = documentBuilderFactory.newDocumentBuilder()
                             .parse(new ByteArrayInputStream(xmlDocument.getBytes(charsetEncoding)));
     return doc.getDocumentElement();
   }
 
-  private static NodeList getNodeList(final Element element, final String nodeName) throws SAXException, IOException, ParserConfigurationException {
+  private static NodeList getNodeList(final Element element, final String nodeName)
+      throws SAXException, IOException, ParserConfigurationException {
     return element.getElementsByTagName(nodeName);
   }
 
-  private static SearchHit convertToSearchHit(final Element hitNode) throws InvalidDateException, TransformerException {
+  private static SearchHit convertToSearchHit(final Element hitNode)
+      throws InvalidDateException, TransformerException {
     final NamedNodeMap hitNodeMap = hitNode.getAttributes();
     final String hitNumber = getAttributeTextValue(hitNodeMap, "no");
     final String hitScore = getAttributeTextValue(hitNodeMap, "score");
@@ -102,14 +112,18 @@ public class SearchUtil {
     final Date date = DateParser.parse(map.get("date"));
     final String title = map.get("title");
     final String highlight = map.get("body");
-    return new SearchHit(hitNumber, hitScore, pid, title, highlight, type, state, creator, date, createdDate, lastModifiedDate, contentModel, description, publisher, repositoryName);
+    return new SearchHit(hitNumber, hitScore, pid, title, highlight, type, state, creator, date,
+                         createdDate, lastModifiedDate, contentModel, description, publisher,
+                         repositoryName);
   }
 
-  private static String getAttributeTextValue(final NamedNodeMap hitNodeMap, final String attributeName) {
+  private static String getAttributeTextValue(final NamedNodeMap hitNodeMap,
+                                              final String attributeName) {
     return hitNodeMap.getNamedItem(attributeName).getTextContent();
   }
 
-  private static Map<String, String> getFieldNodeNameAttributeValueMap(final Element hitNode) throws TransformerException {
+  private static Map<String, String> getFieldNodeNameAttributeValueMap(final Element hitNode)
+      throws TransformerException {
     final NodeList fieldNodes = hitNode.getElementsByTagName("field");
 
     final int noOfFields = fieldNodes.getLength();

@@ -22,6 +22,9 @@ import java.rmi.RemoteException;
 
 /**
  * Wrapper over search service
+ *
+ * @author Viru
+ * @author Eric Brown
  */
 public class SearchWebService extends BaseConfigurableService {
   private String uri;
@@ -39,10 +42,13 @@ public class SearchWebService extends BaseConfigurableService {
   }
 
   /**
-   * @see org.topazproject.fedoragsearch.service.FgsOperations#gfindObjects(String, long, int, int, int, String, String)
+   * @see FgsOperations#gfindObjects(String, long, int, int, int, String, String)
    */
-  public String find(final String query, final int hitStartPage, final int pageSize, final int snippetsMax, final int fieldMaxLength, final String indexName, final String resultPageXslt) throws RemoteException {
+  public String find(final String query, final int hitStartPage, final int pageSize,
+                     final int snippetsMax, final int fieldMaxLength, final String indexName,
+                     final String resultPageXslt) throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
-    return fgsOperations.gfindObjects(query, hitStartPage, pageSize, snippetsMax, fieldMaxLength, indexName, resultPageXslt);
+    return fgsOperations.gfindObjects(query, hitStartPage, pageSize, snippetsMax,
+                                      fieldMaxLength, indexName, resultPageXslt);
   }
 }

@@ -15,6 +15,9 @@ import java.util.Date;
 
 /**
  * Value object that holds the result of a single search item
+ *
+ * @author Viru
+ * @author Eric Brown
  */
 public class SearchHit {
   private final String hitNumber;
@@ -37,7 +40,11 @@ public class SearchHit {
   /**
    * Create a search hit with the values set
    */
-  public SearchHit(final String hitNumber, final String hitScore, final String pid, final String title, final String highlight, final String type, final String state, final String creator, final Date date, final Date createdDate, final Date lastModifiedDate, final String contentModel, final String description, final String publisher, final String repositoryName) {
+  public SearchHit(final String hitNumber, final String hitScore, final String pid,
+                   final String title, final String highlight, final String type,
+                   final String state, final String creator, final Date date,
+                   final Date createdDate, final Date lastModifiedDate, final String contentModel,
+                   final String description, final String publisher, final String repositoryName) {
     this.date = date;
     this.hitNumber = hitNumber;
     this.hitScore = hitScore;
