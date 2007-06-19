@@ -25,6 +25,7 @@ Options:
                 (default=45)
   -f            If we can't stop in <timeout>, send TERM signal
   -F            If we can't stop in <timeout>, send KILL signal
+  -w            If we can't stop in <timeout>, don't stop - print an error msg
 
 Environment:
   Variable      Default -- Description
@@ -82,7 +83,7 @@ fedora_PORT=9090
 #
 
 BASENAME=$(basename $0)
-killsignal=0
+killsignal=15
 timeout=45
 
 # Verify that JAVA_HOME is set and exists
@@ -98,7 +99,7 @@ fi
 [ "--basename" == "$1" ] && BASENAME=$2 && shift 2
 
 # Parse command line options
-while getopts b:n:fFhVv opt; do
+while getopts b:n:fFwhVv opt; do
   case $opt in
     b) # Change the basename (used mostly for testing)
        BASENAME="$OPTARG"
@@ -108,6 +109,9 @@ while getopts b:n:fFhVv opt; do
        ;;
     F) # If we can't stop in timeout, send KILL signal
        killsignal=9
+       ;;
+    w) # if we want to just wait for tomcat to stop normally
+       killsignal=0
        ;;
     n) # Number of seconds to wait for processes to start or stop
        timeout="$OPTARG"
