@@ -254,8 +254,7 @@ public class Statement {
 
   private Results getResults(String queryString) throws IOException, ParseException {
     // See if we already have the query
-    String userName = SearchContext.getUserName();
-    String cacheKey = userName + "|" + queryString;
+    String cacheKey = queryString;
     // TODO: these should be SoftReferences
     Results results = (Results) queryCache.get(cacheKey);
     if (log.isDebugEnabled())
@@ -269,7 +268,7 @@ public class Statement {
     // query.rewrite(IndexReader.open(indexPath));
     Hits hits = searcher.search(query);
     results = new Results();
-    results.iter = new CachingIterator(new GuardedIterator(hits.iterator(), new TopazHitGuard()));
+    results.iter = new CachingIterator(hits.iterator());
     results.size = hits.length(); // Approx before Guard - but returned in result string anyway
     results.query = query; // Needed by QueryScorer
     queryCache.put(cacheKey, results);

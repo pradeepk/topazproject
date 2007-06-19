@@ -25,7 +25,6 @@ import org.topazproject.common.ws.ImplInvocationHandler;
 import org.topazproject.common.ws.WSTopazContext;
 import org.topazproject.configuration.ConfigurationStore;
 import org.topazproject.xacml.ws.WSXacmlUtil;
-import org.topazproject.fedoragsearch.topazlucene.SearchContext;
 import org.topazproject.xacml.AbstractSimplePEP;
 
 import dk.defxws.fedoragsearch.server.Operations; // API
@@ -124,7 +123,6 @@ public class FedoraGenericSearchServicePortSoapBindingImpl implements Operations
 
   private void setupContext() throws RemoteException {
     ctx.activate();
-    SearchContext.setContext(ctx.getItqlHelper(), pep, ctx.getUserName());
     ctx.passivate();
   }
 
