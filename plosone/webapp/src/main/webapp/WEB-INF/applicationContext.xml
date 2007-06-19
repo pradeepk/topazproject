@@ -24,7 +24,6 @@
     <aop:scoped-proxy/>
   </bean>
 
-  <!--Plosone developer beans here -->
   <bean id="articleXmlUtils" class="org.plos.util.ArticleXMLUtils" scope="session" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
@@ -33,8 +32,6 @@
     <aop:scoped-proxy/>
   </bean>
 
-
-  <!--Plosone developer beans here -->
   <bean id="citationService" class="org.plos.util.ArticleXMLUtils" scope="session" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/citation.xsl"/>
@@ -43,7 +40,6 @@
     <aop:scoped-proxy/>
   </bean>
 
-  <!--Plosone developer beans here -->
   <bean id="secondaryObjectService" class="org.plos.util.ArticleXMLUtils" scope="session" init-method="init">
     <property name="articleRep" value="XML"/>
     <property name="xslTemplate" value="/objInfo.xsl"/>
