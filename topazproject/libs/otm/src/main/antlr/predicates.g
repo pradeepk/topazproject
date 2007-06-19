@@ -182,13 +182,9 @@ options {
                                        "'");
 
       astFactory.addASTChild(cur, ref);
+      updateAST(ref, type, null, null, false);
 
-      String uri = ref.getText().substring(1, ref.getText().length() - 1);
-      Mapper m = type.getMeta().getMapperByUri(uri, false, null); // xxx : get rdf:type
-      ExprType cType = getTypeForMapper(m);
-      updateAST(ref, type, cType, m, false);
-
-      return cType;
+      return null;
     }
 
     private ExprType getTypeForMapper(Mapper m) {

@@ -290,6 +290,52 @@ public class OqlTest extends GroovyTestCase {
     }
   }
 
+  void testUriAndTypes() {
+    // create data
+    Class cls = rdf.class('Test1') {
+      state (type:'xsd:int')
+      info () {
+        name () {
+          givenName ()
+          surname   ()
+        }
+      }
+    }
+
+    def o1 = cls.newInstance(state:1, info:[name:[givenName:'Bob', surname:'Cutter']])
+    def o2 = cls.newInstance(state:2, info:[name:[givenName:'Jack', surname:'Keller']])
+
+    doInTx { s ->
+      s.saveOrUpdate(o1)
+      s.saveOrUpdate(o2)
+    }
+
+    // run tests
+    def checker = new ResultChecker(test:this)
+
+    doInTx { s ->
+      Results r = s.doQuery("select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name>.<http://rdf.topazproject.org/RDF/givenName> = 'Jack';")
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+      }
+
+      r = s.doQuery("select obj from Test1 obj where obj.info.<http://rdf.topazproject.org/RDF/name>.<http://rdf.topazproject.org/RDF/givenName> = 'Bob';")
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+      }
+
+      assert shouldFail(QueryException, {
+        r = s.doQuery(
+              "select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.name.givenName != 'foo' order by obj;")
+      }).contains("error parsing query")
+
+      assert shouldFail(QueryException, {
+        r = s.doQuery(
+              "select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name>.givenName != 'foo' order by obj;")
+      }).contains("error parsing query")
+    }
+  }
+
   void testCollections() {
     URI id1 = "http://localhost/test/1".toURI()
     URI id2 = "http://localhost/test/2".toURI()
