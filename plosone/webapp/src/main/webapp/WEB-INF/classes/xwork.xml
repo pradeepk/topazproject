@@ -29,6 +29,7 @@
         <param name="noCache">true</param>        
       </result-type>
       <result-type name="feed" class="org.plos.webwork.PlosOneFeedResult"/>
+      <result-type name="citation" class="org.plos.webwork.CitationResult"/>      
     </result-types>
 
     <interceptors>
@@ -476,6 +477,23 @@
         <param name="templateFile">/article/browse.ftl</param>
       </result>
     </action>
+
+    <action name="getRisCitation" class="org.plos.article.action.CreateCitation">
+      <result name="success" type="citation">
+        <param name="location">/article/ris.ftl</param>
+        <param name="contentType">text/plain</param>
+        <param name="fileExtension">.ris</param>
+      </result>
+    </action>
+    <action name="getBibTexCitation" class="org.plos.article.action.CreateCitation">
+      <result name="success" type="citation">
+        <param name="location">/article/bibtex.ftl</param>
+        <param name="contentType">text/plain</param>
+        <param name="fileExtension">.bib</param>
+      </result>
+    </action>
+
+
   </package>
 
   <package name="article-feed" extends="default" namespace="/article/feed">

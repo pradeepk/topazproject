@@ -17,18 +17,41 @@
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
   <!--Plosone developer beans here -->
-  <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" scope="session" init-method="init">
+  <bean id="fetchArticleService" class="org.plos.article.service.FetchArticleService" scope="session" >
+    <property name="annotationWebService" ref="annotationWebService"/>
+    <property name="encodingCharset" ref="defaultEncodingCharset"/>
+    <property name="articleXmlUtils" ref="articleXmlUtils"/>
+    <aop:scoped-proxy/>
+  </bean>
+
+  <!--Plosone developer beans here -->
+  <bean id="articleXmlUtils" class="org.plos.util.ArticleXMLUtils" scope="session" init-method="init">
     <property name="articleRep" value="XML"/>
-    <!-- Note: remember to prefix the filename with a "/" -->
-    <property name="secondaryObjectXslTemplate" value="/objInfo.xsl"/>
     <property name="xslTemplate" value="/viewnlm-v2.xsl"/>
     <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
     <property name="articleService" ref="articleOtmService"/>
-    <property name="annotationWebService" ref="annotationWebService"/>
-    <property name="useTranslet" value="true"/>
-    <property name="encodingCharset" ref="defaultEncodingCharset"/>
     <aop:scoped-proxy/>
   </bean>
+
+
+  <!--Plosone developer beans here -->
+  <bean id="citationService" class="org.plos.util.ArticleXMLUtils" scope="session" init-method="init">
+    <property name="articleRep" value="XML"/>
+    <property name="xslTemplate" value="/citation.xsl"/>
+    <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
+    <property name="articleService" ref="articleOtmService"/>
+    <aop:scoped-proxy/>
+  </bean>
+
+  <!--Plosone developer beans here -->
+  <bean id="secondaryObjectService" class="org.plos.util.ArticleXMLUtils" scope="session" init-method="init">
+    <property name="articleRep" value="XML"/>
+    <property name="xslTemplate" value="/objInfo.xsl"/>
+    <property name="xmlFactoryProperty" ref="xmlFactoryProperties"/>
+    <property name="articleService" ref="articleOtmService"/>
+    <aop:scoped-proxy/>
+  </bean>
+
 
   <util:map id="xmlFactoryProperties">
 <!--       <entry key="javax.xml.transform.TransformerFactory"

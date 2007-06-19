@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -9,18 +9,19 @@
  */
 package org.plos.article.action;
 
+import java.util.ArrayList;
+
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
+
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
-import org.plos.article.service.FetchArticleService;
 import org.plos.article.service.SecondaryObject;
+import org.plos.util.ArticleXMLUtils;
 
-import java.util.ArrayList;
-import java.util.Map;
 
-import javax.xml.parsers.DocumentBuilderFactory;
 /**
  * Fetch the secondary objects for a given uri
  */
@@ -28,9 +29,7 @@ public class SecondaryObjectAction extends BaseActionSupport {
   private String uri;
   private SecondaryObject[] secondaryObjects;
   private ArticleOtmService articleOtmService;
-  private FetchArticleService fetchArticleService;
-  private DocumentBuilderFactory factory;
-  private Map<String, String> xmlFactoryProperty;
+  private ArticleXMLUtils secondaryObjectService;
   private static final Log log = LogFactory.getLog(SecondaryObjectAction.class);
 
   private static final String FIGURE_CONTEXT = "fig";
@@ -69,7 +68,7 @@ public class SecondaryObjectAction extends BaseActionSupport {
         if (FIGURE_CONTEXT.equals(contextElem) || TABLE_CONTEXT.equals(contextElem)) {
           figTables.add(s);
           try {
-            allTransformed = fetchArticleService.getTranformedSecondaryObjectDescription(s.getDescription());
+            allTransformed = secondaryObjectService.getTranformedDocument(s.getDescription());
             if (log.isDebugEnabled()){
               log.debug("Transformed figure captions for article: " + uri);
               log.debug(allTransformed);
@@ -136,16 +135,9 @@ public class SecondaryObjectAction extends BaseActionSupport {
   }
 
   /**
-   * @param xmlFactoryProperty The xmlFactoryProperty to set.
+   * @param secondaryObjectUtil The secondaryObjectUtil to set.
    */
-  public void setXmlFactoryProperty(Map<String, String> xmlFactoryProperty) {
-    this.xmlFactoryProperty = xmlFactoryProperty;
-  }
-
-  /**
-   * @param fetchArticleService The fetchArticleService to set.
-   */
-  public void setFetchArticleService(FetchArticleService fetchArticleService) {
-    this.fetchArticleService = fetchArticleService;
+  public void setSecondaryObjectService(ArticleXMLUtils secondaryObjectService) {
+    this.secondaryObjectService = secondaryObjectService;
   }
 }
