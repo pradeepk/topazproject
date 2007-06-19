@@ -615,7 +615,6 @@ public class BuilderTest extends GroovyTestCase {
     }).contains('only class types may be embedded')
 
     // duplicate field names
-/*
     assert shouldFail(OtmException, {
       cls = rdf.class('Test5') {
         state (type:'xsd:int')
@@ -632,7 +631,7 @@ public class BuilderTest extends GroovyTestCase {
           }
         }
       }
-    }).contains('Duplicate Rdf uri')
+    }).contains('Duplicate predicate uri')
 
     assert shouldFail(OtmException, {
       cls = rdf.class('Test6') {
@@ -650,7 +649,6 @@ public class BuilderTest extends GroovyTestCase {
           }
         }
       }
-    }).contains('Duplicate Rdf uri')
-*/
+    }).contains('Duplicate predicate uri')
   }
 }
