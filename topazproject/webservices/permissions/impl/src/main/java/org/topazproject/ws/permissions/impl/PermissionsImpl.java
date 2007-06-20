@@ -30,7 +30,7 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.common.impl.TopazContext;
 
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;

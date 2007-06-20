@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.configuration;
+package org.topazproject.configuration;
 
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -25,10 +25,30 @@ import org.apache.commons.logging.LogFactory;
  * A listener class for web-apps to load a configuration at startup.
  *
  * @author Pradeep Krishnan
- * @author Eric Brown
  */
 public class WebAppListener implements ServletContextListener {
   private static Log log = LogFactory.getLog(WebAppListener.class);
+
+  /**
+   * A property used to define the <code>ConfigurationFactory</code>  configuration
+   * <code>URL</code>. It can be defined as a System property (eg.
+   * <code>-Dorg.topazproject.configuration=file:///etc/topaz/config.xml</code>) or as a web
+   * application context initialization parameter. If specified in both places, then the System
+   * property will take precedence over the context initialization parameter.
+   * 
+   * <p>
+   * If the value of this property starts with a '/', then it is assumed to be relative to the web
+   * application context. Otherwise it must be a valid <code>URL</code>.
+   * </p>
+   *
+   * @see org.apache.commons.configuration.ConfigurationFactory for details on how to configure.
+   */
+  public static final String CONFIG_FACTORY_CONFIG_PROPERTY = "org.topazproject.configuration";
+
+  /**
+   * The default <code>ConfigurationFactory</code> config file.
+   */
+  public static final String DEFAULT_CONFIG_FACTORY_CONFIG = "/WEB-INF/config.xml";
 
   /**
    * Destroy the configuration singleton since this web application is getting un-deployed.
@@ -40,12 +60,7 @@ public class WebAppListener implements ServletContextListener {
   }
 
   /**
-   * Initialize the configuration singleton since this web application is getting deployed.<p>
-   *
-   * By default, WebAppListener looks for /commons-config.xml in the classpath. (This can
-   * be overridden by setting the org.plos.configuration system property to a URL or
-   * a name resolvable as a resource.) However, if we cannot find the configuration this way,
-   * we use our own /commons-config-default.xml that is included with this library.
+   * Initialize the configuration singleton since this web application is getting deployed.
    *
    * @param event destroyed event
    *
@@ -59,29 +74,20 @@ public class WebAppListener implements ServletContextListener {
       URL url;
 
       // Locate the config url.
-      if (config.name.startsWith("/WEB-INF")) {
+      if (!config.name.startsWith("/"))
+        url = new URL(config.name);
+      else {
         url = context.getResource(config.name);
 
         if (url == null)
           throw new MalformedURLException("'" + config.name + "' not found in the web-app context");
-      } else {
-        try {
-          // First see if it is a valid URL
-          url = new URL(config.name);
-        } catch (MalformedURLException e) {
-          // Otherwise, load as a resource
-          url = WebAppListener.class.getResource(config.name);
-          if (url == null)
-            throw e;
-        }
       }
 
       // Now load the config
-      log.info("Loading '" + url + "' (" + config.name + ") configured via " + config.source);
       ConfigurationStore.getInstance().loadConfiguration(url);
     } catch (MalformedURLException e) {
-      // Bad config file url. Try to abort.
-      log.fatal(config.name + " defined by " + config.source + " is not a valid URL or resource", e);
+      // Bad config file url. Try to abort. 
+      log.fatal(config.name + " defined by " + config.source + " is not a valid URL", e);
       throw new Error("Failed to load configuration", e);
     } catch (ConfigurationException e) {
       // Bad config file. Try to abort.
@@ -92,22 +98,21 @@ public class WebAppListener implements ServletContextListener {
 
   private FactoryConfig getFactoryConfig(ServletContext context) {
     // Allow JVM level property to override everything else
-    String name = System.getProperty(ConfigurationStore.CONFIG_FACTORY_CONFIG_PROPERTY);
+    String name = System.getProperty(CONFIG_FACTORY_CONFIG_PROPERTY);
 
     if (name != null)
-      return new FactoryConfig(name, "JVM System property " +
-                               ConfigurationStore.CONFIG_FACTORY_CONFIG_PROPERTY);
+      return new FactoryConfig(name, "JVM System property " + CONFIG_FACTORY_CONFIG_PROPERTY);
 
     // Now look for a config specified in web.xml
-    name = context.getInitParameter(ConfigurationStore.CONFIG_FACTORY_CONFIG_PROPERTY);
+    name = context.getInitParameter(CONFIG_FACTORY_CONFIG_PROPERTY);
 
     if (name != null)
       return new FactoryConfig(name,
                                "Web-app context initialization parameter "
-                               + ConfigurationStore.CONFIG_FACTORY_CONFIG_PROPERTY);
+                               + CONFIG_FACTORY_CONFIG_PROPERTY);
 
-    // Return a default
-    return new FactoryConfig(ConfigurationStore.DEFAULT_CONFIG_FACTORY_CONFIG, "default");
+    // Return a default 
+    return new FactoryConfig(DEFAULT_CONFIG_FACTORY_CONFIG, "default");
   }
 
   private class FactoryConfig {

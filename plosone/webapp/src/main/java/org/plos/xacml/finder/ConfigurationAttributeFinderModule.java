@@ -16,7 +16,7 @@ import java.util.Set;
 
 import org.apache.commons.configuration.Configuration;
 
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.xacml.Util;
 

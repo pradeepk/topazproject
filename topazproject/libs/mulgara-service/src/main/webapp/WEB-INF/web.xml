@@ -6,15 +6,9 @@ PUBLIC "-//Sun Microsystems, Inc.//DTD Web Application 2.3//EN"
 <web-app>
   <display-name>Mulgara Webapp</display-name>
 
-  <context-param>
-    <param-name>org.plos.configuration</param-name>
-    <param-value>/WEB-INF/config.xml</param-value>
-    <description>Mulgara service specific commons-configuration</description>
-  </context-param>
-
   <!-- Initialize Mulgara -->
   <listener>
-    <listener-class>org.plos.configuration.WebAppListener</listener-class>
+    <listener-class>org.topazproject.configuration.WebAppListener</listener-class>
   </listener>
   <listener>
     <listener-class>org.topazproject.mulgara.ws.WebAppListenerInitMulgara</listener-class>

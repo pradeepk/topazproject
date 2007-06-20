@@ -18,8 +18,6 @@ package org.topazproject.fedoragsearch.topazlucene;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
-import org.topazproject.configuration.ConfigurationStore; // Wraps commons-config initialization
-import org.apache.commons.configuration.Configuration;
 
 import java.io.ByteArrayInputStream;
 import java.io.File;

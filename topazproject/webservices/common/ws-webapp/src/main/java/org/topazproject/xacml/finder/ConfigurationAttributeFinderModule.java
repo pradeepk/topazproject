@@ -25,7 +25,7 @@ import javax.xml.rpc.server.ServletEndpointContext;
 
 import org.apache.commons.configuration.Configuration;
 
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.xacml.Util;
 import org.topazproject.xacml.ws.ServletEndpointContextAttribute;

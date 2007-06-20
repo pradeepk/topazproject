@@ -50,9 +50,6 @@ import java.util.NoSuchElementException;
 
 import org.apache.lucene.search.Hit;
 
-import org.topazproject.configuration.ConfigurationStore; // Wraps commons-config initialization
-
-import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 

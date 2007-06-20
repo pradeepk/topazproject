@@ -27,10 +27,6 @@
     </dependency>
     <dependency>
       <groupId>org.topazproject</groupId>
-      <artifactId>conf-helper</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
       <artifactId>auth-helper</artifactId>
     </dependency>
     <dependency>

@@ -16,7 +16,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Set;
 
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.xacml.PDPFactory;
 import org.topazproject.xacml.Util;

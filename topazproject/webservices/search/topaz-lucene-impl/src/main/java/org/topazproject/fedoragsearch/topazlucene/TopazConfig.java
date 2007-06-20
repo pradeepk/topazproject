@@ -21,7 +21,7 @@ import java.util.Arrays;
 import java.io.File;
 import java.io.IOException;
 import java.io.FileNotFoundException;
-import org.topazproject.configuration.ConfigurationStore; // Wraps commons-config initialization
+import org.plos.configuration.ConfigurationStore; // Wraps commons-config initialization
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

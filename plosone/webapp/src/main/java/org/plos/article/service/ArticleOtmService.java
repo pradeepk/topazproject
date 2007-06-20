@@ -49,7 +49,7 @@ import org.plos.util.TransactionHelper;
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.authentication.ProtectedService;
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
 import org.topazproject.fedoragsearch.service.FgsOperations;

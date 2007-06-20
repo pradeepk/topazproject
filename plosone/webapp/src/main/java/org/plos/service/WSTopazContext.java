@@ -36,7 +36,7 @@ import org.topazproject.authentication.ProtectedServiceFactory;
 
 import org.topazproject.common.impl.TopazContext;
 
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.fedora.client.APIMStubFactory;
 import org.topazproject.fedora.client.FedoraAPIA;

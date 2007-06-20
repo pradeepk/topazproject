@@ -16,7 +16,7 @@ import java.util.Set;
 
 import javax.xml.rpc.server.ServletEndpointContext;
 
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.xacml.PDPFactory;
 import org.topazproject.xacml.Util;
