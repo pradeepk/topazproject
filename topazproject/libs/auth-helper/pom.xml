@@ -19,11 +19,6 @@
     </dependency>
 
     <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>conf-helper</artifactId>
-    </dependency>
-    
-    <dependency>
       <groupId>cas</groupId>
       <artifactId>casclient</artifactId>
     </dependency>
@@ -36,6 +31,11 @@
     <dependency>
       <groupId>commons-logging</groupId>
       <artifactId>commons-logging</artifactId>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-configuration</groupId>
+      <artifactId>commons-configuration</artifactId>
     </dependency>
 
     <dependency>

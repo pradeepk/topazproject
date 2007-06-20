@@ -37,7 +37,7 @@ import org.apache.commons.configuration.ConfigurationException;
 import org.apache.commons.lang.time.DateUtils;
 import org.apache.commons.lang.time.DateFormatUtils;
 
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.mulgara.itql.Answer;

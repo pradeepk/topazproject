@@ -21,7 +21,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 
@@ -58,7 +58,7 @@ public class WebAppListenerInitModels implements ServletContextListener {
       Configuration    conf = ConfigurationStore.getInstance().getConfiguration();
 
       ProtectedService service =
-        ProtectedServiceFactory.createService("topaz.services.itql-admin", null);
+        ProtectedServiceFactory.createService(conf.subset("topaz.services.itql-admin"), null);
 
       itql   = new ItqlHelper(service);
 

@@ -19,8 +19,6 @@ import javax.servlet.http.HttpSession;
 
 import org.apache.commons.configuration.Configuration;
 
-import org.topazproject.configuration.ConfigurationStore;
-
 /**
  * A factory class to create ProtectedService instances.
  *
@@ -64,22 +62,5 @@ public class ProtectedServiceFactory {
 
     // Defaults to unprotected
     return new UnProtectedService(uri);
-  }
-
-  /**
-   * Creates a ProtectedService instance based on configuration.
-   *
-   * @param configKey the configuration key (eg. topaz.services.itql)
-   * @param session HttpSession to retrieve any run-time info (eg. CASReceipt)
-   *
-   * @return Returns the newly created instance
-   *
-   * @throws IOException if there is an error in acquiring auth credentials
-   * @throws URISyntaxException thrown from service creation
-   */
-  public static ProtectedService createService(String configKey, HttpSession session)
-                                        throws IOException, URISyntaxException {
-    return createService(ConfigurationStore.getInstance().getConfiguration().subset(configKey),
-                         session);
   }
 }

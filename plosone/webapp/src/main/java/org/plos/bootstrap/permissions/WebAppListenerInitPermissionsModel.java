@@ -53,7 +53,7 @@ public class WebAppListenerInitPermissionsModel implements ServletContextListene
       Configuration    conf = ConfigurationStore.getInstance().getConfiguration();
 
       ProtectedService service =
-        ProtectedServiceFactory.createService("topaz.services.itql-admin", null);
+        ProtectedServiceFactory.createService(conf.subset("topaz.services.itql-admin"), null);
 
       itql = new ItqlHelper(service);
 
