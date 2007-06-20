@@ -7,21 +7,16 @@
     <org.plos.article.service.CitationInfo>
       <DOI><xsl:value-of select="//article-id[@pub-id-type='doi'][1]"/></DOI>
       <publicationDate>
-        <xsl:value-of select="article/front/article-meta/pub-date[@pub-type='epub']/year"/>
         <xsl:choose>
-          <xsl:when test="article/front/article-meta/pub-date[@pub-type='epub']/month">
-            <xsl:text>-</xsl:text><xsl:value-of select="article/front/article-meta/pub-date[@pub-type='epub']/month"/>
+          <xsl:when test="article/front/article-meta/pub-date[@pub-type='ppub']/year">
+            <xsl:call-template name="makeDate">
+              <xsl:with-param name="dateSelector">ppub</xsl:with-param>
+            </xsl:call-template>
           </xsl:when>
           <xsl:otherwise>
-            <xsl:text>-01</xsl:text>
-          </xsl:otherwise>
-        </xsl:choose>
-        <xsl:choose>
-          <xsl:when test="article/front/article-meta/pub-date[@pub-type='epub']/day">
-            <xsl:text>-</xsl:text><xsl:value-of select="article/front/article-meta/pub-date[@pub-type='epub']/day"/>
-          </xsl:when>
-          <xsl:otherwise>
-            <xsl:text>-01</xsl:text>
+            <xsl:call-template name="makeDate">
+              <xsl:with-param name="dateSelector">epub</xsl:with-param>
+            </xsl:call-template>
           </xsl:otherwise>
         </xsl:choose>
       </publicationDate>
@@ -70,6 +65,27 @@
 
   <xsl:template match="title">
     <xsl:apply-templates /><xsl:text>: </xsl:text>
+  </xsl:template>
+  
+  <xsl:template name="makeDate">
+    <xsl:param name="dateSelector" />
+    <xsl:value-of select="article/front/article-meta/pub-date[@pub-type=$dateSelector]/year"/>
+    <xsl:choose>
+      <xsl:when test="article/front/article-meta/pub-date[@pub-type='epub']/month">
+        <xsl:text>-</xsl:text><xsl:value-of select="article/front/article-meta/pub-date[@pub-type=$dateSelector]/month"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>-01</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
+    <xsl:choose>
+      <xsl:when test="article/front/article-meta/pub-date[@pub-type='epub']/day">
+        <xsl:text>-</xsl:text><xsl:value-of select="article/front/article-meta/pub-date[@pub-type=$dateSelector]/day"/>
+      </xsl:when>
+      <xsl:otherwise>
+        <xsl:text>-01</xsl:text>
+      </xsl:otherwise>
+    </xsl:choose>
   </xsl:template>
   
 </xsl:stylesheet>
