@@ -58,7 +58,6 @@ public class FetchArticleService {
   
   private static final Log log = LogFactory.getLog(FetchArticleService.class);
   private AnnotationWebService annotationWebService;
-  private DocumentBuilderFactory factory;
 
   private GeneralCacheAdministrator articleCacheAdministrator;
   
@@ -227,7 +226,7 @@ public class FetchArticleService {
       final String articlesDoc = articleXmlUtils.getArticleService().getArticles(startDate, endDate, state, true);
 
       // Create the builder and parse the file
-      final Document articleDom = factory.newDocumentBuilder().parse(new InputSource(new StringReader(articlesDoc)));
+      final Document articleDom = articleXmlUtils.getFactory().newDocumentBuilder().parse(new InputSource(new StringReader(articlesDoc)));
 
       // Get the matching elements
       final NodeList nodelist = XPathAPI.selectNodeList(articleDom, "/articles/article/uri");

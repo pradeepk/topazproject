@@ -255,4 +255,11 @@ public class ArticleXMLUtils {
   public String getArticleRep() {
     return articleRep;
   }
+
+  /**
+   * @return Returns the factory.
+   */
+  public DocumentBuilderFactory getFactory() {
+    return factory;
+  }
 }
