@@ -393,7 +393,9 @@
   <bean id="otmSession" factory-bean="otmSessionFactory" factory-method="openSession"
       destroy-method="close" scope="request"/>
 
-  <bean id="browseService" class="org.plos.article.service.BrowseService" />
+  <bean id="browseService" class="org.plos.article.service.BrowseService" scope="session">
+    <aop:scoped-proxy/>
+  </bean>
 
   <bean id="plosOneFreemarkerManager" class="org.plos.webwork.PlosOneFreemarkerManager">
     <constructor-arg index="0">
