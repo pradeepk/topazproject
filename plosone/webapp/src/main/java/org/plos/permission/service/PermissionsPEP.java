@@ -7,13 +7,11 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.ws.permissions.impl;
+package org.plos.permission.service;
 
 import java.io.IOException;
 
 import java.util.Set;
-
-import org.topazproject.ws.permissions.Permissions;
 
 import org.topazproject.xacml.AbstractSimplePEP;
 

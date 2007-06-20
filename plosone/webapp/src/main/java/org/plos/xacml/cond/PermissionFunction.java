@@ -20,8 +20,8 @@ import org.apache.commons.logging.LogFactory;
 
 import org.plos.service.WSTopazContext;
 
-import org.topazproject.ws.permissions.Permissions;
-import org.topazproject.ws.permissions.impl.PermissionsImpl;
+import org.plos.permission.service.Permissions;
+import org.plos.permission.service.PermissionsImpl;
 
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.attr.BooleanAttribute;

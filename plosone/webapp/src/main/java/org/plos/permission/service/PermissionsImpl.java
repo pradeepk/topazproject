@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.ws.permissions.impl;
+package org.plos.permission.service;
 
 import java.io.IOException;
 
@@ -35,8 +35,6 @@ import org.plos.configuration.ConfigurationStore;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.mulgara.itql.StringAnswer;
-
-import org.topazproject.ws.permissions.Permissions;
 
 import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheException;

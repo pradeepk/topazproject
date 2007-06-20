@@ -17,10 +17,6 @@ import org.plos.service.WSTopazContext;
 import org.plos.service.ImplInvocationHandler;
 import org.plos.xacml.XacmlUtil;
 
-import org.topazproject.ws.permissions.Permissions;
-import org.topazproject.ws.permissions.impl.PermissionsImpl;
-import org.topazproject.ws.permissions.impl.PermissionsPEP;
-
 import javax.xml.rpc.ServiceException;
 import java.io.IOException;
 import java.net.URISyntaxException;

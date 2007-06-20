@@ -50,6 +50,11 @@
       <artifactId>conf-helper</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
+    <dependency>
+      <groupId>org.topazproject.ws</groupId>
+      <artifactId>ws-common-impl</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
@@ -76,12 +81,6 @@
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>otm</artifactId>
-      <version>${pom.parent.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-permissions-impl</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
 
@@ -284,6 +283,18 @@
       <groupId>com.thoughtworks.xstream</groupId> 
       <artifactId>xstream</artifactId> 
       <version>1.2.2</version> 
+    </dependency>
+
+    <dependency>
+      <groupId>net.sf.ehcache</groupId>
+      <artifactId>ehcache</artifactId>
+      <version>1.2.3</version>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+      <version>3.2</version>
     </dependency>
 
     <dependency>

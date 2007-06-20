@@ -23,7 +23,7 @@ import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import org.topazproject.ws.permissions.impl.PermissionsImpl;
+import org.plos.permission.service.PermissionsImpl;
 
 /**
  * A listener class for initializing permissions impl.
