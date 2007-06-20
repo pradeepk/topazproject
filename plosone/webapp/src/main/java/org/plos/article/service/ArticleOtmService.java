@@ -14,9 +14,11 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.net.URI;
 import java.net.URL;
+import java.text.ParseException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -31,6 +33,8 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.commons.lang.time.DateUtils;
+import org.apache.commons.lang.time.DateFormatUtils;
 
 import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.IngestException;
@@ -54,8 +58,6 @@ import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
 import org.topazproject.fedoragsearch.service.FgsOperations;
 import org.topazproject.mulgara.itql.ItqlHelper;
-// TODO: should feed mv up to webapp?
-import org.topazproject.feed.ArticleFeed;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
@@ -415,10 +417,10 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // normalize dates for query
     if (startDate != null) {
-      articleCriteria = articleCriteria.add(Restrictions.ge("date", ArticleFeed.parseDateParam(startDate)));
+      articleCriteria = articleCriteria.add(Restrictions.ge("date", parseDateParam(startDate)));
     }
     if (endDate != null) {
-      articleCriteria = articleCriteria.add(Restrictions.le("date", ArticleFeed.parseDateParam(endDate)));
+      articleCriteria = articleCriteria.add(Restrictions.le("date", parseDateParam(endDate)));
     }
 
     // match all categories
@@ -550,10 +552,10 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // normalize dates for query
     if (startDate != null) {
-      articleCriteria = articleCriteria.add(Restrictions.ge("date", ArticleFeed.parseDateParam(startDate)));
+      articleCriteria = articleCriteria.add(Restrictions.ge("date", parseDateParam(startDate)));
     }
     if (endDate != null) {
-      articleCriteria = articleCriteria.add(Restrictions.le("date", ArticleFeed.parseDateParam(endDate)));
+      articleCriteria = articleCriteria.add(Restrictions.le("date", parseDateParam(endDate)));
     }
 
     // match all categories
@@ -1013,7 +1015,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       values.put("uri", article.uri);
       values.put("title", nullToEmpty(article.title));
       values.put("description", nullToEmpty(article.description));
-      values.put("date", ArticleFeed.formatDate(article.date));
+      values.put("date", formatDate(article.date));
       values.put("authors", authorsSb.toString());
       values.put("subjects", subjectsSb.toString());
       values.put("categories", categoriesSb.toString());
@@ -1048,5 +1050,63 @@ public class ArticleOtmService extends BaseConfigurableService {
     }
 
     return ops;
+  }
+
+  /**
+   * Parse a kowari date into a java Date object.
+   *
+   * @param iso8601date is the date string to parse.
+   * @return a java Date object.
+   * @throws ParseException if there is a problem parsing the string
+   */
+  public static Date parseDate(String iso8601date) throws ParseException {
+    // Obvious formats:
+    final String[] defaultFormats = new String [] {
+      "yyyy-MM-dd", "y-M-d", "y-M-d'T'H:m:s", "y-M-d'T'H:m:s.S",
+      "y-M-d'T'H:m:s.Sz", "y-M-d'T'H:m:sz" };
+
+    // TODO: Replace with fedora.server.utilities.DateUtility some how?
+    // XXX: Deal with ' ' instead of 'T'
+    // XXX: Deal with timezone in iso8601 format (not java's idea)
+
+    return DateUtils.parseDate(iso8601date, defaultFormats);
+  }
+
+  /**
+   * Format a date object to a string to insert into the feed's XML.
+   *
+   * If the date object is null, return an empty string.
+   *
+   * @param date is the date object to format
+   * @return a string representation
+   */
+  public static String formatDate(Date date) {
+    if (date == null)
+      return "";
+//    return DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(date); // XXX: Use in future?
+    return DateFormatUtils.ISO_DATE_FORMAT.format(date);
+  }
+
+  /**
+   * Convert a date pased in as a string to a Date object. Support both string representations
+   * of the Date object and iso8601 formatted dates.
+   *
+   * @param date the string to convert to a Date object
+   * @return a date object (or null if date is null)
+   * @throws RemoteException if unable to parse date
+   */
+  public static Date parseDateParam(String date) throws RemoteException {
+    if (date == null)
+      return null;
+    try {
+      return new Date(date);
+    } catch (IllegalArgumentException iae) {
+      try {
+        return parseDate(date);
+      } catch (ParseException pe) {
+        throw new RemoteException("Unable to parse date parameter (as Date-string or iso8601): " +
+                                  date, pe);
+      }
+    }
   }
 }

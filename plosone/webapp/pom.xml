@@ -50,11 +50,6 @@
       <artifactId>conf-helper</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-common-api</artifactId>
-      <version>${pom.parent.version}</version>
-    </dependency>
 
     <dependency>
       <groupId>org.mortbay.jetty</groupId>
