@@ -13,7 +13,7 @@ import java.io.IOException;
 
 import java.util.Set;
 
-import org.topazproject.xacml.AbstractSimplePEP;
+import org.plos.xacml.AbstractSimplePEP;
 
 import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;
@@ -43,7 +43,7 @@ public abstract class PermissionsPEP extends AbstractSimplePEP
     new String[][] { null, null, null, null, null, null, null, null, null, null, null, null };
 
   /*
-   *@see org.topazproject.xacml.AbstractSimplePEP
+   * inherited javadoc
    *
    */
   protected PermissionsPEP(PDP pdp, Set subjAttrs)
@@ -52,7 +52,7 @@ public abstract class PermissionsPEP extends AbstractSimplePEP
   }
 
   /*
-   *@see org.topazproject.xacml.AbstractSimplePEP
+   * inherited javadoc
    *
    */
   protected PermissionsPEP(AbstractSimplePEP pep) {

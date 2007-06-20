@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.xacml;
+package org.plos.xacml;
 
 import java.io.IOException;
 

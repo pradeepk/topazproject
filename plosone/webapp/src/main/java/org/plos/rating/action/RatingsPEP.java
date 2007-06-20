@@ -15,9 +15,8 @@ import java.net.URI;
 import java.util.HashSet;
 import java.util.Set;
 
-import org.topazproject.xacml.AbstractSimplePEP;
-import org.topazproject.xacml.Util;
-
+import org.plos.xacml.AbstractSimplePEP;
+import org.plos.xacml.Util;
 import org.plos.xacml.XacmlUtil;
 
 import com.sun.xacml.ParsingException;

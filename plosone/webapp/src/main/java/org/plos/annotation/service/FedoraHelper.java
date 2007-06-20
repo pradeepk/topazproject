@@ -24,10 +24,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.service.WSTopazContext;
+import org.plos.service.TopazContext;
 
-import org.topazproject.common.impl.TopazContext;
 import org.topazproject.fedora.client.FedoraAPIM;
-
 import org.topazproject.mulgara.itql.ItqlHelper;
 
 /**

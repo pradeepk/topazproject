@@ -16,9 +16,6 @@ import java.lang.reflect.Proxy;
 
 import org.apache.commons.logging.Log;
 
-import org.topazproject.common.ExceptionUtils;
-import org.topazproject.common.impl.TopazContext;
-
 /**
  * An invocation handler to invoke calls to a Topaz Service Impl
  *
@@ -68,16 +65,7 @@ public class ImplInvocationHandler implements InvocationHandler {
       else
         log.info("method " + method.getName() + " threw an exception", t);
 
-      Throwable nt;
-
-      try {
-        nt = ExceptionUtils.flattenException(t, log);
-      } catch (Throwable e) {
-        log.error("Error flattening exception", e);
-        nt = t;
-      }
-
-      throw nt;
+      throw t;
     } finally {
       ctx.passivate();
     }

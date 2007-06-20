@@ -13,9 +13,9 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Set;
 
-import org.topazproject.xacml.AbstractSimplePEP;
-
+import org.plos.xacml.AbstractSimplePEP;
 import org.plos.xacml.XacmlUtil;
+
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.PDP;
 import com.sun.xacml.UnknownIdentifierException;

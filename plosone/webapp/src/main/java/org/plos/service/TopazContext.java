@@ -7,7 +7,7 @@
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.topazproject.common.impl;
+package org.plos.service;
 
 import java.net.URI;
 

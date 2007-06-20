@@ -14,8 +14,7 @@ import java.io.IOException;
 import java.util.Set;
 
 import org.plos.xacml.XacmlUtil;
-
-import org.topazproject.xacml.AbstractSimplePEP;
+import org.plos.xacml.AbstractSimplePEP;
 
 import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;
@@ -83,7 +82,7 @@ public class RepliesPEP extends AbstractSimplePEP {
   }
 
   /*
-   *    *@see org.topazproject.xacml.AbstractSimplePEP
+   *     inherited javadoc
    *
    */
   public RepliesPEP() throws IOException, ParsingException, UnknownIdentifierException {
@@ -91,7 +90,7 @@ public class RepliesPEP extends AbstractSimplePEP {
   }
 
   /*
-   *    *@see org.topazproject.xacml.AbstractSimplePEP
+   *     inherited javadoc
    *
    */
   protected RepliesPEP(PDP pdp, Set subjAttrs)

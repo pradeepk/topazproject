@@ -14,8 +14,8 @@ import java.io.IOException;
 import java.net.URI;
 import java.util.Set;
 
-import org.topazproject.xacml.AbstractSimplePEP;
 import org.plos.ApplicationException;
+import org.plos.xacml.AbstractSimplePEP;
 import org.plos.xacml.XacmlUtil;
 
 import com.sun.xacml.ParsingException;

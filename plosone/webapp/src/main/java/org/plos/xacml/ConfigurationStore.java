@@ -41,7 +41,7 @@
  * You acknowledge that this software is not designed or intended for use in
  * the design, construction, operation or maintenance of any nuclear facility.
  */
-package org.topazproject.xacml;
+package org.plos.xacml;
 
 import java.io.File;
 import java.io.FileInputStream;

@@ -34,10 +34,6 @@ import org.apache.commons.pool.impl.GenericObjectPool;
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
 
-import org.topazproject.common.impl.TopazContext;
-
-import org.plos.configuration.ConfigurationStore;
-
 import org.topazproject.fedora.client.APIMStubFactory;
 import org.topazproject.fedora.client.FedoraAPIA;
 import org.topazproject.fedora.client.FedoraAPIM;
@@ -46,6 +42,7 @@ import org.topazproject.fedora.client.Uploader;
 import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.plos.user.UserAccountsInterceptor;
+import org.plos.configuration.ConfigurationStore;
 
 import com.opensymphony.webwork.ServletActionContext;
 
@@ -137,26 +134,26 @@ public class WSTopazContext implements TopazContext {
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public void init(Object object) {
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public void destroy() {
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public void activate() {
     ((TLC) tc.get()).active = true;
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public void passivate() {
     TLC tlc = (TLC) tc.get();
@@ -187,21 +184,21 @@ public class WSTopazContext implements TopazContext {
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public boolean isActive() {
     return ((TLC) tc.get()).active;
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public ServletContext getServletContext() {
     return ServletActionContext.getServletContext();
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public Principal getUserPrincipal() throws IllegalStateException {
     HttpSession session = getHttpSession();
@@ -222,7 +219,7 @@ public class WSTopazContext implements TopazContext {
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public HttpSession getHttpSession() throws IllegalStateException {
     if (!((TLC) tc.get()).active)
@@ -232,7 +229,7 @@ public class WSTopazContext implements TopazContext {
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public String getUserName() throws IllegalStateException {
     HttpSession session = getHttpSession();
@@ -244,28 +241,28 @@ public class WSTopazContext implements TopazContext {
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public String getServerName() {
     return serverName;
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public URI getObjectBaseUri() {
     return objectBaseUri;
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public URI getFedoraBaseUri() {
     return fedoraBaseUri;
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public ItqlHelper getItqlHelper() throws RemoteException, IllegalStateException {
     TLC tlc = (TLC) tc.get();
@@ -284,7 +281,7 @@ public class WSTopazContext implements TopazContext {
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public FedoraAPIM getFedoraAPIM() throws RemoteException, IllegalStateException {
     TLC tlc = (TLC) tc.get();
@@ -314,7 +311,7 @@ public class WSTopazContext implements TopazContext {
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public Uploader getFedoraUploader() throws RemoteException, IllegalStateException {
     TLC tlc = (TLC) tc.get();
@@ -340,7 +337,7 @@ public class WSTopazContext implements TopazContext {
   }
 
   /*
-   * @see org.topazproject.common.impl.TopazContext
+   * inherited javadoc
    */
   public FedoraAPIA getFedoraAPIA() throws RemoteException, IllegalStateException {
     throw new UnsupportedOperationException("not implemented");

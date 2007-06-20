@@ -28,8 +28,7 @@ import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.common.impl.TopazContext;
-
+import org.plos.service.TopazContext;
 import org.plos.configuration.ConfigurationStore;
 
 import org.topazproject.mulgara.itql.AnswerException;

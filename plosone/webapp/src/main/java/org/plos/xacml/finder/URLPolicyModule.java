@@ -26,21 +26,21 @@ import java.util.List;
  */
 public class URLPolicyModule extends AbstractPolicyModule {
   /*
-   * @see org.topazproject.xacml.finder.AbstractPolicyFinderModule
+   * inherited javadoc
    */
   public URLPolicyModule() {
     super();
   }
 
   /*
-   * @see org.topazproject.xacml.finder.AbstractPolicyFinderModule
+   * inherited javadoc
    */
   public URLPolicyModule(File schemaFile) {
     super(schemaFile);
   }
 
   /*
-   * @see org.topazproject.xacml.finder.AbstractPolicyFinderModule
+   * inherited javadoc
    */
   public URLPolicyModule(List resources) {
     super(resources);
@@ -57,7 +57,7 @@ public class URLPolicyModule extends AbstractPolicyModule {
   }
 
   /*
-   * @see org.topazproject.xacml.finder.AbstratcPolicyFinderModule#getPolicyResourceAsStream
+   * inherited javadoc
    */
   public InputStream getPolicyResourceAsStream(String resource) throws IOException {
     return (new URL(resource)).openStream();

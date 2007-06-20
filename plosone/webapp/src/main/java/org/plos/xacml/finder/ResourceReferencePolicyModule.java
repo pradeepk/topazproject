@@ -24,21 +24,21 @@ import java.util.List;
  */
 public class ResourceReferencePolicyModule extends AbstractPolicyModule {
   /*
-   * @see org.topazproject.xacml.finder.AbstractPolicyFinderModule
+   * inherited javadoc
    */
   public ResourceReferencePolicyModule() {
     super();
   }
 
   /*
-   * @see org.topazproject.xacml.finder.AbstractPolicyFinderModule
+   * inherited javadoc
    */
   public ResourceReferencePolicyModule(File schemaFile) {
     super(schemaFile);
   }
 
   /*
-   * @see org.topazproject.xacml.finder.AbstractPolicyFinderModule
+   * inherited javadoc
    */
   public ResourceReferencePolicyModule(List resources) {
     super(resources);
@@ -53,9 +53,9 @@ public class ResourceReferencePolicyModule extends AbstractPolicyModule {
   public boolean isIdReferenceSupported() {
     return true;
   }
-  
+
   /*
-   * @see org.topazproject.xacml.finder.AbstratcPolicyFinderModule#getPolicyResourceAsStream
+   * inherited javadoc
    */
   public InputStream getPolicyResourceAsStream(String resource) throws IOException {
     ClassLoader cl = Thread.currentThread().getContextClassLoader();

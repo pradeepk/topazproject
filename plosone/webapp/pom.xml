@@ -52,7 +52,7 @@
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-common-impl</artifactId>
+      <artifactId>ws-common-api</artifactId>
       <version>${pom.parent.version}</version>
     </dependency>
 
@@ -295,6 +295,12 @@
       <groupId>commons-collections</groupId>
       <artifactId>commons-collections</artifactId>
       <version>3.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>xacml</groupId>
+      <artifactId>sunxacml</artifactId>
+      <version>1.2</version>
     </dependency>
 
     <dependency>

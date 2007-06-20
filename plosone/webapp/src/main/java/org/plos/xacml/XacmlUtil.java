@@ -18,9 +18,6 @@ import java.util.Set;
 
 import org.plos.configuration.ConfigurationStore;
 
-import org.topazproject.xacml.PDPFactory;
-import org.topazproject.xacml.Util;
-
 import com.opensymphony.webwork.ServletActionContext;
 
 import com.sun.xacml.PDP;
