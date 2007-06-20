@@ -20,7 +20,7 @@
           <#assign allNames = allNames + temp>
         </#if>
       </#list>
-      ${author.surname} <#list allNames as n>${n[0]}</#list><#if author_has_next>,</#if>
+      ${author.surname} <#if author.suffix?exists>${author.suffix}</#if> <#list allNames as n>${n[0]}</#list><#if author_has_next>,</#if>
     </#list>
     <#if gt5>et al.</#if>
     (${citation.publicationDate?string("yyyy")}) ${citation.articleTitle}. ${citation.journalTitle} 
