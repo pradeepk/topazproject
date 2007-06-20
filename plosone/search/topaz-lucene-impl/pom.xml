@@ -46,10 +46,9 @@
       <artifactId>mulgara-client</artifactId>
     </dependency>
     <dependency>
-      <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-common-impl</artifactId>
+      <groupId>org.plosone</groupId>
+      <artifactId>conf-helper</artifactId>
     </dependency>
-
     <dependency>
       <groupId>net.sf.saxon</groupId>
       <artifactId>saxon</artifactId>

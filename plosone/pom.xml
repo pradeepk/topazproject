@@ -21,6 +21,7 @@
     <module>emailer</module>
     <module>doi-resolver</module>
     <module>libs</module>
+    <module>search</module>
   </modules>
 
 </project>
