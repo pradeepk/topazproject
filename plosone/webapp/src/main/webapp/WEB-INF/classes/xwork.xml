@@ -478,6 +478,11 @@
       </result>
     </action>
 
+    <action name="citationList" class="org.plos.article.action.CreateCitation">
+      <result name="success" type="plosOneFreemarker">
+        <param name="templateFile">/article/citationList.ftl</param>
+      </result>
+    </action>
     <action name="getRisCitation" class="org.plos.article.action.CreateCitation">
       <result name="success" type="citation">
         <param name="location">/article/ris.ftl</param>
@@ -492,8 +497,6 @@
         <param name="fileExtension">.bib</param>
       </result>
     </action>
-
-
   </package>
 
   <package name="article-feed" extends="default" namespace="/article/feed">

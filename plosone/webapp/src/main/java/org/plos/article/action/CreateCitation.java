@@ -84,6 +84,13 @@ public class CreateCitation extends BaseActionSupport {
   }
 
   /**
+   * @return Returns the articleURI.
+   */
+  public String getArticleURI() {
+    return articleURI;
+  }
+  
+  /**
    * @param articleURI The articleURI to set.
    */
   public void setArticleURI(String articleURI) {
@@ -103,5 +110,4 @@ public class CreateCitation extends BaseActionSupport {
   public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
     this.articleCacheAdministrator = articleCacheAdministrator;
   }
-  
 }
