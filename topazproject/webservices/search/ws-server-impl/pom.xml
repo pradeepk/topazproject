@@ -19,10 +19,6 @@
     </dependency>
     <dependency>
       <groupId>org.topazproject.ws</groupId>
-      <artifactId>ws-common-server</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject.ws</groupId>
       <artifactId>topaz-lucene-impl</artifactId>
     </dependency>
   </dependencies>
