@@ -14,7 +14,7 @@
   <ports>
     <!-- For webhead, set default to empty (not 80) -->
     <default>${ports.plosone}</default>
-    
+
     <plosone>8080</plosone>
     <plosone-ssl>10443</plosone-ssl>
     <cas-ssl>7443</cas-ssl>
@@ -60,6 +60,20 @@
     <figure-action1>article/slideshow.action?uri=</figure-action1>
     <figure-action2>&amp;imageURI=</figure-action2>
     <error-page>static/pageNotFound.action</error-page>
+
+    <!-- common display constants -->
+    <name>Public Library of Science</name>
+    <email>
+      <general>webmaster@plos.org</general>
+    </email>
+    <copyright>This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License, http://creativecommons.org/licenses/by-sa/3.0/</copyright>
+
+    <!-- defaults for generating a PLoS ONE Atom Feed -->
+    <feed>
+      <title>PLoS ONE Alerts: PLoS ONE Journal</title>
+      <tagline>Publishing science, accelerating research</tagline>
+      <icon>${plosone.host}/images/pone_favicon.ico</icon>
+    </feed>
   </plosone>
   <plos-registration>
     <hostname>${hosts.cas}</hostname>
@@ -73,14 +87,14 @@
       <change-email>${plos-registration.url.base}/changeEmail.action</change-email>
     </url>
   </plos-registration>
-  
+
   <topaz>
 
     <!-- Configuration to talk to CAS -->
     <cas-server>
       <base-url>https://${hosts.cas}:${ports.cas-ssl}/cas</base-url>
     </cas-server>
-    
+
     <services>
       <!-- Configuration to talk to Fedora -->
       <fedora>
@@ -119,7 +133,7 @@
       <indexpath>/var/lib/topaz/data/lucene</indexpath>
       <defaultfields>description,title,body,creator</defaultfields>
     </search>
-    
+
     <fedoragsearch>
       <urls>
         <url>http://${hosts.plosone}:${ports.plosone}/ws-search-webapp/services/FedoraGenericSearchServicePort</url>
