@@ -12,8 +12,7 @@ package org.plos.search.service;
 import org.plos.search.SearchResultPage;
 import org.plos.search.SearchUtil;
 
-import org.topazproject.xacml.AbstractSimplePEP;
-
+import org.plos.xacml.AbstractSimplePEP;
 import org.plos.xacml.XacmlUtil;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
@@ -33,7 +32,7 @@ import java.io.IOException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 import org.apache.commons.configuration.Configuration;
 
 /**

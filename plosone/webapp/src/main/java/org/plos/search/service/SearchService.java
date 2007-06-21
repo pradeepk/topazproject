@@ -19,7 +19,7 @@ import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.configuration.ConfigurationStore;
+import org.plos.configuration.ConfigurationStore;
 import org.apache.commons.configuration.Configuration;
 
 /**
