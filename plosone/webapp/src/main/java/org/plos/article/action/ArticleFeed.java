@@ -139,24 +139,25 @@ public class ArticleFeed extends BaseActionSupport {
   private WireFeed getFeed(URI uri) throws ApplicationException {
 
     // get default values from config file
-    final String PLOSONE_HOST          = configuration.getString("plosone.host",          "plosone.org");
+    final String PLOSONE_URI           = configuration.getString("plosone.webserver-url", "http://plosone.org/");
     final String PLOSONE_NAME          = configuration.getString("plosone.name",          "Public Library of Science");
     final String PLOSONE_EMAIL_GENERAL = configuration.getString("plosone.email.general", "webmaster@plos.org");
     final String PLOSONE_COPYRIGHT     = configuration.getString("plosone.copyright",
       "This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License, http://creativecommons.org/licenses/by-sa/3.0/");
     final String FEED_TITLE            = configuration.getString("plosone.feed.title",    "PLoS ONE Alerts: PLoS ONE Journal");
     final String FEED_TAGLINE          = configuration.getString("plosone.feed.tagline",  "Publishing science, accelerating research");
-    final String FEED_ICON             = configuration.getString("plosone.feed.icon",     PLOSONE_HOST + "/images/pone_favicon.ico");
+    final String FEED_ICON             = configuration.getString("plosone.feed.icon",     PLOSONE_URI + "images/pone_favicon.ico");
 
     // use WebWorks to get Action URIs
     // TODO: WebWorks ActionMapper is broken, hand-code URIs
-    final String fetchArticleAction = "/article/fetchArticle.action";
-    final String fetchObjectAttachmentAction = "/article/fetchObjectAttachment.action";
+    final String fetchArticleAction = "article/fetchArticle.action";
+    final String fetchObjectAttachmentAction = "article/fetchObjectAttachment.action";
 
     // Atom 1.0 is default
     Feed feed = new Feed("atom_1.0");
 
     feed.setEncoding("UTF-8");
+    feed.setXmlBase(PLOSONE_URI);
 
     // must link to self
     Link self = new Link();
@@ -182,7 +183,7 @@ public class ArticleFeed extends BaseActionSupport {
     Person plos = new Person();
     plos.setEmail(PLOSONE_EMAIL_GENERAL);
     plos.setName(PLOSONE_NAME);
-    plos.setUri("http://" + PLOSONE_HOST);
+    plos.setUri(PLOSONE_URI);
     List<Person> feedAuthors = new ArrayList();
     feedAuthors.add(plos);
     feed.setAuthors(feedAuthors);
@@ -285,7 +286,7 @@ public class ArticleFeed extends BaseActionSupport {
         for (String representation : representations) {
           Link altLink = new Link();
           altLink.setHref(fetchObjectAttachmentAction + "?uri=" + article.getIdentifier() + "&representation=" + representation);
-          altLink.setRel("alternate");
+          altLink.setRel("related");
           altLink.setTitle("(" + representation + ") " + article.getTitle());
           altLink.setType(FileUtils.getContentType(representation));
           altLinks.add(altLink);
