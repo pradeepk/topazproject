@@ -5,7 +5,7 @@ package org.plos.web;
 
 import org.plos.registration.User;
 import org.plos.BasePlosoneRegistrationTestCase;
-import com.opensymphony.xwork.Action;
+import com.opensymphony.xwork2.Action;
 
 public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
   public void testShouldFailToAcceptForgotPasswordEmailAsItIsNotRegistered() throws Exception {
@@ -13,7 +13,7 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
 
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);
-    assertEquals(Action.ERROR, forgotPasswordAction.execute());
+    assertEquals(Action.INPUT, forgotPasswordAction.execute());
   }
 
   public void testShouldSendEmailForForgotPasswordEmailEvenIfTheEmailItIsNotVerified() throws Exception {
@@ -33,7 +33,7 @@ public class TestForgotPasswordAction extends BasePlosoneRegistrationTestCase {
     final String email = "viru-forgot-password-not-active-yet@home.com";
     createUser(email, "virupasswd");
     final User beforeVerificationUser = getRegistrationService().getUserWithLoginName(email);
-    assertFalse(beforeVerificationUser.isActive());
+    assertTrue(beforeVerificationUser.isActive());
 
     final ForgotPasswordAction forgotPasswordAction = getForgotPasswordAction();
     forgotPasswordAction.setLoginName(email);

@@ -8,10 +8,10 @@
         <p>
             <fieldset>
                 <legend>Forgot Password</legend>
-                <@ww.form method="post" name="forgotPasswordForm" action="forgotPasswordSubmit">
-                  <@ww.textfield name="loginName" label="Please enter your previously registered email address" />
-                  <@ww.submit value="i want to reset my password" />
-                </@ww.form>
+                <@s.form method="post" name="forgotPasswordForm" action="forgotPasswordSubmit">
+                  <@s.textfield name="loginName" label="Please enter your previously registered email address" />
+                  <@s.submit value="i want to reset my password" />
+                </@s.form>
             </fieldset>
         </p>
     </body>

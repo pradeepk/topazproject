@@ -4,18 +4,18 @@
     </head>
     <body>
         <br/>
-        <h3>Hello <@ww.property value="loginName"/></h3>
+        <h3>Hello <@s.property value="loginName"/></h3>
 
         <fieldset>
             <legend>Please enter a new password</legend>
             <p>
-              <@ww.form method="post" name="forgotPasswordChangePasswordForm" action="forgotPasswordChangePasswordSubmit">
-                <@ww.hidden name="loginName" />
-                <@ww.hidden name="resetPasswordToken" />
-                <@ww.password name="password1" label="Enter your new password" />
-                <@ww.password name="password2" label="Enter your new password again" />
-                <@ww.submit value="change my password" />
-              </@ww.form>
+              <@s.form method="post" name="forgotPasswordChangePasswordForm" action="forgotPasswordChangePasswordSubmit">
+                <@s.hidden name="loginName" />
+                <@s.hidden name="resetPasswordToken" />
+                <@s.password name="password1" label="Enter your new password" />
+                <@s.password name="password2" label="Enter your new password again" />
+                <@s.submit value="change my password" />
+              </@s.form>
 
             </p>
         </fieldset>

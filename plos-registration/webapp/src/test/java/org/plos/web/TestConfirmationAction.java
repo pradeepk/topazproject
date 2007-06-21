@@ -5,7 +5,7 @@ package org.plos.web;
 
 import org.plos.BasePlosoneRegistrationTestCase;
 import org.plos.registration.User;
-import com.opensymphony.xwork.Action;
+import com.opensymphony.xwork2.Action;
 
 public class TestConfirmationAction extends BasePlosoneRegistrationTestCase {
   public void testShouldSetUserAsVerified() throws Exception {
@@ -76,7 +76,7 @@ public class TestConfirmationAction extends BasePlosoneRegistrationTestCase {
     assertEquals(Action.SUCCESS, confirmationAction.execute());
 
     //try to verify the email address again
-    assertEquals(Action.ERROR, confirmationAction.execute());
+    assertEquals(Action.SUCCESS, confirmationAction.execute());
 
     final User verifiedUser = getRegistrationService().getUserWithLoginName(email);
     assertTrue(verifiedUser.isVerified());

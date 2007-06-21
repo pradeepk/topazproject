@@ -18,7 +18,7 @@ public class TestRegistrationService extends BasePlosoneRegistrationTestCase {
     assertEquals(user.getLoginName(), loginName);
     assertNotNull(user.getPassword());
     assertFalse(user.isVerified());
-    assertFalse(user.isActive());
+    assertTrue(user.isActive());
   }
 
   public void testVerifyUser() throws Exception {

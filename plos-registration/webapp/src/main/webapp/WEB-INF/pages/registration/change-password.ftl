@@ -8,13 +8,13 @@
             <legend>Change password</legend>
             <p>
 
-              <@ww.form method="post" name="changePasswordForm" action="changePasswordSubmit">
-                <@ww.textfield name="loginName" label="Enter your registered email address" />
-                <@ww.password name="oldPassword" label="Enter your old password" />
-                <@ww.password name="newPassword1" label="Enter your new password" />
-                <@ww.password name="newPassword2" label="Enter your new password again" />
-                <@ww.submit value="change my password" />
-              </@ww.form>
+              <@s.form method="post" name="changePasswordForm" action="changePasswordSubmit">
+                <@s.textfield name="loginName" label="Enter your registered email address" />
+                <@s.password name="oldPassword" label="Enter your old password" />
+                <@s.password name="newPassword1" label="Enter your new password" />
+                <@s.password name="newPassword2" label="Enter your new password again" />
+                <@s.submit value="change my password" />
+              </@s.form>
 
             </p>
         </fieldset>

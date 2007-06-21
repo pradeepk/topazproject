@@ -3,7 +3,7 @@
  */
 package org.plos.web;
 
-import com.opensymphony.xwork.ActionSupport;
+import com.opensymphony.xwork2.ActionSupport;
 import org.plos.OtherConstants;
 
 

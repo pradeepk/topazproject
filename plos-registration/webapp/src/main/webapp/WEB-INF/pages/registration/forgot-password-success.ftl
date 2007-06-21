@@ -4,18 +4,18 @@
     </head>
     <body>
         <br/>
-        <h3>Hello <@ww.property value="loginName"/> : Please check your email account for further instructions to reset your password.</h3>
+        <h3>Hello <@s.property value="loginName"/> : Please check your email account for further instructions to reset your password.</h3>
 
         <fieldset>
             <legend>Email body</legend>
             <p>
               Please click the following link to verify your email address:
 
-              <@ww.url id="forgotPasswordEmailURL" action="forgotPasswordVerify">
-                <@ww.param name="loginName" value="user.loginName"/>
-                <@ww.param name="resetPasswordToken" value="user.resetPasswordToken"/>
-              </@ww.url>
-              <@ww.a href="%{forgotPasswordEmailURL}"  >${forgotPasswordEmailURL}</@ww.a>
+              <@s.url id="forgotPasswordEmailURL" action="forgotPasswordVerify">
+                <@s.param name="loginName" value="user.loginName"/>
+                <@s.param name="resetPasswordToken" value="user.resetPasswordToken"/>
+              </@s.url>
+              <@s.a href="%{forgotPasswordEmailURL}"  >${forgotPasswordEmailURL}</@s.a>
             </p>
         </fieldset>
 

@@ -5,7 +5,7 @@ package org.plos.web;
 
 import org.plos.registration.User;
 import org.plos.BasePlosoneRegistrationTestCase;
-import com.opensymphony.xwork.Action;
+import com.opensymphony.xwork2.Action;
 
 public class TestChangePasswordAction extends BasePlosoneRegistrationTestCase {
 
@@ -36,7 +36,8 @@ public class TestChangePasswordAction extends BasePlosoneRegistrationTestCase {
     changePasswordAction.setLoginName(email);
     changePasswordAction.setOldPassword(oldPassword);
     changePasswordAction.setNewPassword1("new"+oldPassword);
-    assertEquals(Action.ERROR, changePasswordAction.execute());
+    changePasswordAction.setNewPassword2("new"+oldPassword);    
+    assertEquals(Action.INPUT, changePasswordAction.execute());
     assertEquals(1, changePasswordAction.getFieldErrors().size());
   }
 
@@ -52,7 +53,8 @@ public class TestChangePasswordAction extends BasePlosoneRegistrationTestCase {
     changePasswordAction.setLoginName(email);
     changePasswordAction.setOldPassword(oldPassword+"change");
     changePasswordAction.setNewPassword1("new"+oldPassword);
-    assertEquals(Action.ERROR, changePasswordAction.execute());
+    changePasswordAction.setNewPassword2("new"+oldPassword);
+    assertEquals(Action.INPUT, changePasswordAction.execute());
     assertEquals(1, changePasswordAction.getFieldErrors().size());
   }
 
@@ -64,7 +66,8 @@ public class TestChangePasswordAction extends BasePlosoneRegistrationTestCase {
     changePasswordAction.setLoginName(email);
     changePasswordAction.setOldPassword(oldPassword);
     changePasswordAction.setNewPassword1("new"+oldPassword);
-    assertEquals(Action.ERROR, changePasswordAction.execute());
+    changePasswordAction.setNewPassword2("new"+oldPassword);
+    assertEquals(Action.INPUT, changePasswordAction.execute());
     assertEquals(1, changePasswordAction.getFieldErrors().size());
   }
 

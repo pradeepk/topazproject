@@ -8,7 +8,7 @@
 		<strong>Thanks for registering!</strong>
 		Please check your e-mail inbox to confirm your registration.  
   </p>
-  <@ww.url id="resendURL" includeParams="none"  action="resendRegistration"/>
+  <@s.url id="resendURL" includeParams="none"  action="resendRegistration"/>
 
  	<p>If you do not receive the e-mail, please add <strong>${registrationVerificationMailer.fromEmailAddress}</strong> to your allowed 
 	senders list and <a href="${resendURL}">request</a> that a new e-mail be sent.</p>

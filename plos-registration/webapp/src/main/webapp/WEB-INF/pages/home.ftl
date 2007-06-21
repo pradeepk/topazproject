@@ -9,22 +9,22 @@
             <fieldset>
                 <legend>A few things for you to do</legend>
                 <p>
-                    <@ww.url id="registerURL" action="register" />
-                    <@ww.a href="%{registerURL}">Register</@ww.a>
+                    <@s.url id="registerURL" action="register" />
+                    <@s.a href="%{registerURL}">Register</@s.a>
                 </p>
 
                 <p>
-                    <@ww.url id="changePasswordURL" action="changePassword" />
-                    <@ww.a href="%{changePasswordURL}">Change Password</@ww.a>
+                    <@s.url id="changePasswordURL" action="changePassword" />
+                    <@s.a href="%{changePasswordURL}">Change Password</@s.a>
                 </p>
 
                 <p>
-                    <@ww.url id="forgotPasswordURL" action="forgotPassword" />
-                    <@ww.a href="%{forgotPasswordURL}">Forgot Password</@ww.a>
+                    <@s.url id="forgotPasswordURL" action="forgotPassword" />
+                    <@s.a href="%{forgotPasswordURL}">Forgot Password</@s.a>
                 </p>
 
                 <p>
-                    <@ww.action name="constants" namespace="" id="otherConstants"/>
+                    <@s.action name="constants" namespace="" id="otherConstants"/>
                     Plosone app url: ${otherConstants.get("mainAppUrl")}
                 </p>
 

@@ -17,9 +17,9 @@ import org.plos.service.NoUserFoundWithGivenLoginNameException;
 import org.plos.service.RegistrationService;
 import org.plos.service.VerificationTokenInvalidException;
 
-import com.opensymphony.xwork.validator.annotations.EmailValidator;
-import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork.validator.annotations.ValidatorType;
+import com.opensymphony.xwork2.validator.annotations.EmailValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 
 /**
  * @author stevec

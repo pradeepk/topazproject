@@ -3,7 +3,7 @@
  */
 package org.plos.web;
 
-import com.opensymphony.xwork.Action;
+import com.opensymphony.xwork2.Action;
 import org.plos.BasePlosoneRegistrationTestCase;
 
 /**
@@ -23,7 +23,7 @@ public class TestRegistrationAction extends BasePlosoneRegistrationTestCase {
 
     assertEquals(Action.SUCCESS, createUser(email, password));
 
-    assertEquals(Action.ERROR, createUser(email, password));
+    assertEquals(Action.INPUT, createUser(email, password));
   }
 
 }

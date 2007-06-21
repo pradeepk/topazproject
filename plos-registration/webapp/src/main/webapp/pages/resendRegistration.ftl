@@ -6,19 +6,19 @@
 <h1>Resend Registration E-mail</h1>
 	<!--<p><strong>Instruction Title   Text.</strong> Additional Instructoins here.</p>-->
 	<p>Fields marked with <span class="required">*</span> are required. </p>
-  <@ww.form cssClass="pone-form" method="post" name="resendRegistrationForm" id="resendRegistrationForm" action="resendRegistrationSubmit" title="Resend Registration Form">
+  <@s.form cssClass="pone-form" method="post" name="resendRegistrationForm" id="resendRegistrationForm" action="resendRegistrationSubmit" title="Resend Registration Form">
 		
 	<fieldset>
 		<legend>Resend Registration</legend>
 		<ol class="field-list">
-    	<@ww.textfield name="loginName" label="E-mail " required="true" id="email" tabindex="1" maxlength="256"/>
+    	<@s.textfield name="loginName" label="E-mail " required="true" id="email" tabindex="1" maxlength="256"/>
 		</ol>
   	<div class="btnwrap">
-	  <@ww.submit name="submit" id="submit" value="Submit" tabindex="2"/>
+	  <@s.submit name="submit" id="submit" value="Submit" tabindex="2"/>
 	</div>
 	</fieldset>
 
-  </@ww.form>
+  </@s.form>
   
   <ul>
           <li><a href="http://journals.plos.org/help.php">Help</a></li>

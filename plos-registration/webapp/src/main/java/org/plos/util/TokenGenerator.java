@@ -4,7 +4,7 @@
  */
 package org.plos.util;
 
-import com.opensymphony.util.GUID;
+import org.apache.struts2.util.TokenHelper;
 
 /**
  * Token generator to be used for generating unique tokens.
@@ -16,6 +16,6 @@ public class TokenGenerator {
    * @return a unique guid token
    */
   public static String getUniqueToken() {
-    return GUID.generateGUID();
+    return TokenHelper.generateGUID();
   }
 }

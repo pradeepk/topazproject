@@ -20,10 +20,10 @@ import org.plos.service.RegistrationService;
 import org.plos.service.UserAlreadyExistsException;
 import org.plos.service.password.PasswordServiceException;
 
-import com.opensymphony.xwork.validator.annotations.EmailValidator;
-import com.opensymphony.xwork.validator.annotations.FieldExpressionValidator;
-import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork.validator.annotations.StringLengthFieldValidator;
+import com.opensymphony.xwork2.validator.annotations.EmailValidator;
+import com.opensymphony.xwork2.validator.annotations.FieldExpressionValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork2.validator.annotations.StringLengthFieldValidator;
 
 
 

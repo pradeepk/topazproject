@@ -4,10 +4,10 @@
  */
 package org.plos.web;
 
-import com.opensymphony.xwork.ActionSupport;
-import com.opensymphony.xwork.validator.annotations.EmailValidator;
-import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-import com.opensymphony.xwork.validator.annotations.ValidatorType;
+import com.opensymphony.xwork2.ActionSupport;
+import com.opensymphony.xwork2.validator.annotations.EmailValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork2.validator.annotations.ValidatorType;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
