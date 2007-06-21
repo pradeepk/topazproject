@@ -73,7 +73,19 @@
       <change-email>${plos-registration.url.base}/changeEmail.action</change-email>
     </url>
   </plos-registration>
-  
+
+  <!-- crossref information - set parameters and sendToXref to true to turn on -->
+  <crossref>
+    <plos>
+      <doiurl>http://...</doiurl>        <!-- URL where your URIs can be found -->
+      <email>webmaster@your-org</email>  <!-- email address to send info to -->
+    </plos>
+    <login>crossref-username</login>     <!-- crossref login -->
+    <password>your-password</password>   <!-- crossref password -->
+    <area>test</area>
+    <sendToXref>false</sendToXref>       <!-- Set to true to turn on crossref posting -->
+  </crossref>
+
   <topaz>
 
     <!-- Configuration to talk to CAS -->

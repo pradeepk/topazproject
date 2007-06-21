@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="UTF-8" ?>
+<?xml version="1.0" encoding="UTF-8"?>
 <config>
   <!-- Define defaults for spring - must be redone soon -->
   <hostname>${hosts.plosone}</hostname>
@@ -20,14 +20,13 @@
   </ingest>
   <crossref>
     <plos>
-      <doiurl>http://dx.plos.org/</doiurl>
-      <email>deposit@plos.org</email>
+      <doiurl>http://...</doiurl>        <!-- URL where your URIs can be found -->
+      <email>webmaster@your-org</email>  <!-- email address to send info to -->
     </plos>
-    <login>one</login>
-    <!-- This is a dummy password -->
-    <password>xxxxx</password>
+    <login>crossref-username</login>     <!-- crossref login -->
+    <password>your-password</password>   <!-- crossref password -->
     <area>test</area>
-    <sendToXref>false</sendToXref>
+    <sendToXref>false</sendToXref>       <!-- Set to true to turn on crossref posting -->
     <post><url>http://doi.crossref.org/servlet/deposit?operation=doMDUpload&amp;login_id=${crossref.login}&amp;login_passwd=${crossref.password}&amp;area=${crossref.area}</url></post>
   </crossref>
   <itql><uri>http://${server.mulgara}/mulgara-service/services/ItqlBeanService</uri></itql>
