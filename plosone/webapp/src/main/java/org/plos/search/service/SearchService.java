@@ -9,11 +9,18 @@
  */
 package org.plos.search.service;
 
-import org.apache.commons.logging.Log;
-import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.search.SearchResultPage;
 import org.plos.search.SearchUtil;
+import org.plos.user.PlosOneUser;
+import org.plos.web.UserContext;
+import static org.plos.Constants.PLOS_ONE_USER_KEY;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
+import org.topazproject.configuration.ConfigurationStore;
+import org.apache.commons.configuration.Configuration;
 
 /**
  * Service to provide search capabilities for the application
@@ -22,68 +29,41 @@ import org.plos.search.SearchUtil;
  * @author Eric Brown
  */
 public class SearchService {
-  private int snippetsMax;
-  private int fieldMaxLength;
-  private String indexName;
-  private String resultPageXslt;
-  private SearchWebService searchWebService;
+  private static final Log           log   = LogFactory.getLog(SearchService.class);
+  private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
+  private static TemporaryCache      cache = new TemporaryCache(
+                                              CONF.getLong("plosone.search.cacheDuration", 600000L));
 
-  private static final Log log = LogFactory.getLog(SearchService.class);
+  private SearchWebService           searchWebService;
+  private UserContext                userContext;
 
   /**
    * Find the results for a given query.
-   * @param query query
-   * @param startPage startPage
-   * @param pageSize pageSize
-   * @return a Collection<SearchResult>
-   * @throws ApplicationException ApplicationException
+   *
+   * @param query     The query string the user suplied
+   * @param startPage The page number of the search results the user wants
+   * @param pageSize  The number of results per page
+   * @return A SearchResultPage representing the search results page to be rendered
+   * @throws ApplicationException that wraps some underlying exception
    */
   public SearchResultPage find(final String query, final int startPage, final int pageSize)
       throws ApplicationException {
     try {
-      final int hitStartPage = startPage * pageSize;
-      final String findResult = searchWebService.find(query, hitStartPage, pageSize, snippetsMax,
-                                                      fieldMaxLength, indexName, resultPageXslt);
-      if (log.isDebugEnabled())
-        log.debug("findResult = " + findResult);
+      PlosOneUser user     = (PlosOneUser) userContext.getSessionMap().get(PLOS_ONE_USER_KEY);
+      String      cacheKey = (user == null ? "anon" : user.getUserId()) + "|" + query;
+      Results     results  = (Results) cache.get(cacheKey);
 
-      // TODO: Just read out of some cache we're going to have to create (steal from topaz)
-      return SearchUtil.convertSearchResultXml(findResult);
+      if (results == null) {
+        results = new Results(query, searchWebService);
+        cache.put(cacheKey, results);
+        if (log.isDebugEnabled())
+          log.debug("Created search cache for '" + cacheKey + "' of " + results.getTotalHits());
+      }
+
+      return results.getPage(startPage, pageSize);
     } catch (Exception e) {
       throw new ApplicationException("Search failed with exception:", e);
     }
-  }
-
-  /**
-   * Setter for property 'fieldMaxLength'.
-   * @param fieldMaxLength Value to set for property 'fieldMaxLength'.
-   */
-  public void setFieldMaxLength(final int fieldMaxLength) {
-    this.fieldMaxLength = fieldMaxLength;
-  }
-
-  /**
-   * Setter for property 'indexName'.
-   * @param indexName Value to set for property 'indexName'.
-   */
-  public void setIndexName(final String indexName) {
-    this.indexName = indexName;
-  }
-
-  /**
-   * Setter for property 'resultPageXslt'.
-   * @param resultPageXslt Value to set for property 'resultPageXslt'.
-   */
-  public void setResultPageXslt(final String resultPageXslt) {
-    this.resultPageXslt = resultPageXslt;
-  }
-
-  /**
-   * Setter for property 'snippetsMax'.
-   * @param snippetsMax Value to set for property 'snippetsMax'.
-   */
-  public void setSnippetsMax(final int snippetsMax) {
-    this.snippetsMax = snippetsMax;
   }
 
   /**
@@ -92,5 +72,13 @@ public class SearchService {
    */
   public void setSearchWebService(final SearchWebService searchWebService) {
     this.searchWebService = searchWebService;
+  }
+
+  /**
+   * Set the user's context which can be used to obtain user's session values/attributes
+   * @param userContext userContext
+   */
+  public void setUserContext(final UserContext userContext) {
+    this.userContext = userContext;
   }
 }

@@ -13,6 +13,9 @@ import org.plos.search.service.SearchHit;
 
 import java.util.Collection;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
+
 /**
  * Value object that denotes a single page of search result.<p>
  *
@@ -22,6 +25,8 @@ import java.util.Collection;
  * @author Eric Brown
  */
 public class SearchResultPage {
+  private static final Log log = LogFactory.getLog(SearchResultPage.class);
+
   private final int totalNoOfResults;
   private final int pageSize;
   private final Collection<SearchHit> hits;
@@ -32,6 +37,9 @@ public class SearchResultPage {
     this.totalNoOfResults = totalResults;
     this.pageSize = pageSize;
     this.hits = hits;
+
+    if (log.isDebugEnabled())
+      log.debug("Got " + hits.size() + " on page of " + pageSize + " of total " + totalResults);
   }
 
   /**

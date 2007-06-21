@@ -216,11 +216,8 @@
   </util:map>
 
   <bean id="searchService" class="org.plos.search.service.SearchService" scope="session">
-    <property name="snippetsMax" value="3"/>
-    <property name="fieldMaxLength" value="50"/>
-    <property name="indexName" value="TopazIndex"/>
-    <property name="resultPageXslt" value="copyXml"/>
     <property name="searchWebService" ref="searchWebService"/>
+    <property name="userContext" ref="userContext"/>
     <aop:scoped-proxy/>
   </bean>
 

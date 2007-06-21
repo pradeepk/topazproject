@@ -61,6 +61,13 @@
     <url>               
       <proxy-callback>https://${plosone.hostname}:${plosone.port.https}${plosone.app-context}/CasProxyServlet</proxy-callback>
     </url>              
+    <search>
+      <snippetsMax>3</snippetsMax>          <!-- Number of snippets to show per document -->
+      <fieldMaxLength>50</fieldMaxLength>   <!-- Max chars per indexed field? -->
+      <cacheDuration>600000</cacheDuration> <!-- Milliseconds to cache search results -->
+      <pageSize>10</pageSize>               <!-- Number of results per page -->
+      <fetchSize>10</fetchSize>             <!-- Number of results to fetch at a time -->
+    </search>
   </plosone>
   <plos-registration>
     <hostname>${cas.hostname}</hostname>
