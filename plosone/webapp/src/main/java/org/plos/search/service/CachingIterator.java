@@ -65,6 +65,7 @@ public class CachingIterator implements Iterator {
 
     if (iter.nextIndex() != index) {
       iter = cache.listIterator(index);
+      element = null;
       if (log.isDebugEnabled())
         log.debug("Reading from cache of " + cache.size() + " starting at index " + index);
     }
