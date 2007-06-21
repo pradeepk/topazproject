@@ -298,12 +298,6 @@ public class RateAction extends BaseActionSupport {
       }
 
       throw e; // or display error message
-    } finally {
-      try {
-        session.close();
-      } catch (OtmException ce) {
-        log.warn("close failed", ce);
-      }
     }
 
     return SUCCESS;
