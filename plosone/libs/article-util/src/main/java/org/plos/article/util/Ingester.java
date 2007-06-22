@@ -310,8 +310,10 @@ public class Ingester {
 
     // create the fedora objects
     String txn = "ingest " + objList.getAttribute(OL_AID_A);
+    boolean inTransaction = itql.isInTransaction();
     try {
-      itql.beginTxn(txn);
+      if (!inTransaction)
+        itql.beginTxn(txn);
 
       NodeList objs = objList.getElementsByTagNameNS(RDFNS, RDF);
       for (int idx = 0; idx < objs.getLength(); idx++) {
@@ -319,11 +321,12 @@ public class Ingester {
         mulgaraInsertOneRDF(itql, obj, tf, rb);
       }
 
-      itql.commitTxn(txn);
+      if (!inTransaction)
+        itql.commitTxn(txn);
       txn = null;
     } finally {
       try {
-        if (txn != null) {
+        if ((txn != null) && !inTransaction) {
           rb.rdfStmts.clear();
           itql.rollbackTxn(txn);
         }
