@@ -15,7 +15,9 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.ModelConfig;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.context.ThreadLocalSessionContext;
 import org.topazproject.otm.stores.ItqlStore;
 
 /**
@@ -24,22 +26,48 @@ import org.topazproject.otm.stores.ItqlStore;
  * @author Stephen Cheng
  */
 public class OtmConfiguration {
-  private SessionFactory   factory;
-  private String[]         preloadClasses;
-  private ModelConfig[]    models;
-  private static final Log log = LogFactory.getLog(OtmConfiguration.class);
+  private SessionFactory          factory;
+  private String[]                preloadClasses;
+  private ModelConfig[]           models;
+  private static final Log        log      = LogFactory.getLog(OtmConfiguration.class);
+  private static OtmConfiguration instance;
 
   /**
-   * Creates a new OtmConfiguration object.
+   * Creates the singleton OtmConfiguration object.
    *
    * @param tripleStoreUrl the URL for the store
+   *
+   * @return the newly created instamce
+   *
+   * @throws OtmException in case of an error
    */
-  public OtmConfiguration(String tripleStoreUrl) {
+  public static OtmConfiguration createInstance(String tripleStoreUrl)
+                                         throws OtmException {
+    if (instance != null)
+      throw new OtmException("An instance already created");
+
+    instance                               = new OtmConfiguration(tripleStoreUrl);
+
+    return instance;
+  }
+
+  /**
+   * Gets the singleton OtmConfiguration object.
+   *
+   * @return the singleton instamce
+   */
+  public static OtmConfiguration getInstance() {
+    return instance;
+  }
+
+  private OtmConfiguration(String tripleStoreUrl) throws OtmException {
     factory = new SessionFactory();
 
     if (log.isDebugEnabled()) {
       log.debug("Creating new triplestore: " + tripleStoreUrl);
     }
+
+    factory.setCurrentSessionContext(new ThreadLocalSessionContext(factory));
 
     factory.setTripleStore(new ItqlStore(URI.create(tripleStoreUrl)));
   }
