@@ -19,7 +19,8 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
- * Annotea meta-data.
+ * This is the base class to capture common predicates between Annotations and
+ * Replies (discussion threads).
  *
  * @author Pradeep Krishnan
  */
@@ -30,9 +31,8 @@ public abstract class Annotea {
    * Annotea Namespace URI
    */
   public static final String NS = "http://www.w3.org/2000/10/annotation-ns#";
-  private Date                                              created;
-  //private Object                                            body;
 
+  private Date                                              created;
   @Predicate(uri = Rdf.rdf + "type", dataType=Rdf.xsd + "anyURI")
   private String                                            type;
   @Predicate(uri = Rdf.dc + "creator")
