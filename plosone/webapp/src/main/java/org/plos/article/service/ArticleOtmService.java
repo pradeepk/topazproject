@@ -64,6 +64,7 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
+import org.topazproject.otm.stores.ItqlStore.ItqlStoreConnection;
 
 /**
  * Provide Article "services" via OTM.
@@ -82,7 +83,7 @@ public class ArticleOtmService extends BaseConfigurableService {
   private static final List FGS_URLS = CONF.getList("topaz.fedoragsearch.urls.url");
 
   private final WSTopazContext ctx = new WSTopazContext(getClass().getName());
-  
+
   private ArticlePEP getPEP() {
     // create an XACML PEP for Articles
     try {
@@ -119,34 +120,32 @@ public class ArticleOtmService extends BaseConfigurableService {
      getPEP().checkAccess(ArticlePEP.INGEST_ARTICLE, ArticlePEP.ANY_RESOURCE);
 
     // create an Ingester using the values from the WSTopazContext
-    ctx.activate();
 
-    // TODO: remove debug
-    if (log.isDebugEnabled()) {
-      log.debug("WSTopazContext isActive: " + ctx.isActive()
-                + ", " + ctx.getItqlHelper()
-                + "" + ctx.getFedoraAPIM()
-                + ", " + ctx.getFedoraUploader()
-                + ", " + getFgsOperations());
-    }
-
-    Ingester ingester = null;
+    Transaction txn = null;
     try {
-      ingester = new Ingester(ctx.getItqlHelper(), ctx.getFedoraAPIM(), ctx.getFedoraUploader(), getFgsOperations());
-    } finally {
-      ctx.passivate();
-    }
-
-    // let Ingester.ingest() do the real work
-    try {
-      return ingester.ingest(
+      ctx.activate();
+      txn = session.beginTransaction();
+      ItqlHelper itql = ((ItqlStoreConnection)txn.getConnection()).getItqlHelper();
+      Ingester ingester = new Ingester(itql, ctx.getFedoraAPIM(), ctx.getFedoraUploader(), 
+                                       getFgsOperations());
+      String ret = ingester.ingest(
         new Zip.DataSourceZip(
-          new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(), 8192, "application/octet-stream", true))
-          );
-//      return ingester.ingest(new Zip.DataSourceZip(dataHandler.getDataSource()));
+          new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(), 
+                                                8192, "application/octet-stream", true)));
+      txn.commit();
+      txn = null;
+      return ret;
     } catch(IOException ioe) {
       log.error("Ingestion failed: ", ioe);
       throw new IngestException("Ingestion failed: ", ioe);
+    } finally {
+      ctx.passivate();
+      try {
+        if (txn != null)
+          txn.rollback();
+      } catch (Throwable t) {
+        log.debug("rollback failed", t);
+      }
     }
   }
 
