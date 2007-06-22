@@ -15,11 +15,6 @@
   <dependencies>
     <dependency>
       <groupId>org.topazproject</groupId>
-      <artifactId>topaz-tools-users</artifactId>
-      <version>${pom.version}</version>
-    </dependency>
-    <dependency>
-      <groupId>org.topazproject</groupId>
       <artifactId>topaz-tools-runscripts</artifactId>
       <version>${pom.version}</version>
     </dependency>
