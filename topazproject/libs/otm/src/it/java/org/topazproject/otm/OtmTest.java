@@ -46,15 +46,21 @@ public class OtmTest extends TestCase {
    */
   protected SessionFactory factory = new SessionFactory();
 
-
+  /**
+   * Creates a new OtmTest object.
+   */
   public OtmTest() {
     factory.setTripleStore(new ItqlStore(URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService")));
 
-    factory.getTripleStore().createModel(new ModelConfig("str", URI.create("local:///topazproject#str"), URI.create("http://topazproject.org/models#StringCompare")));
-    ModelConfig ri      = new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null);
-    ModelConfig grants  =
+    factory.getTripleStore()
+            .createModel(new ModelConfig("str", URI.create("local:///topazproject#str"),
+                                          URI.create("http://topazproject.org/models#StringCompare")));
+
+    ModelConfig ri             =
+      new ModelConfig("ri", URI.create("local:///topazproject#otmtest1"), null);
+    ModelConfig grants         =
       new ModelConfig("grants", URI.create("local:///topazproject#otmtest2"), null);
-    ModelConfig revokes =
+    ModelConfig revokes        =
       new ModelConfig("revokes", URI.create("local:///topazproject#otmtest2"), null);
 
     factory.addModel(ri);
@@ -102,7 +108,6 @@ public class OtmTest extends TestCase {
       if (log.isDebugEnabled())
         log.debug("Failed to drop model '" + revokes.getId() + "'", t);
     }
-
 
     factory.getTripleStore().createModel(ri);
     factory.getTripleStore().createModel(grants);
@@ -599,6 +604,7 @@ public class OtmTest extends TestCase {
       assertEquals(2, l.size());
 
       a3 = (Annotation) l.get(0);
+
       Annotation a4 = (Annotation) l.get(1);
 
       assertTrue(id3.equals(a3.getId()) || id4.equals(a3.getId()));
@@ -658,27 +664,27 @@ public class OtmTest extends TestCase {
       assertTrue(id4.equals(a1.getId()) || id4.equals(a2.getId()) || id4.equals(a4.getId()));
 
       l = session.createCriteria(Annotation.class).addOrder(Order.desc("annotates"))
-          .createCriteria("supersedes").add(Restrictions.eq("annotates", "foo:1")).list();
+                  .createCriteria("supersedes").add(Restrictions.eq("annotates", "foo:1")).list();
       assertEquals(2, l.size());
-      a1 = (Annotation) l.get(0);
-      a2 = (Annotation) l.get(1);
+      a1   = (Annotation) l.get(0);
+      a2   = (Annotation) l.get(1);
       assertEquals(id2, a1.getId());
       assertEquals(id3, a2.getId());
       l = session.createCriteria(Annotation.class).addOrder(Order.asc("supersedes"))
-          .createCriteria("supersedes").add(Restrictions.eq("annotates", "foo:1")).list();
+                  .createCriteria("supersedes").add(Restrictions.eq("annotates", "foo:1")).list();
       assertEquals(2, l.size());
-      a1 = (Annotation) l.get(0);
-      a2 = (Annotation) l.get(1);
+      a1   = (Annotation) l.get(0);
+      a2   = (Annotation) l.get(1);
       assertEquals(id2, a1.getId());
       assertEquals(id3, a2.getId());
 
       Criteria criteria = session.createCriteria(Annotation.class);
       criteria.createCriteria("supersedes").addOrder(Order.desc("creator"))
-                    .add(Restrictions.eq("annotates", "foo:1"));
+               .add(Restrictions.eq("annotates", "foo:1"));
       l = criteria.addOrder(Order.desc("annotates")).list();
       assertEquals(2, l.size());
-      a1 = (Annotation) l.get(0);
-      a2 = (Annotation) l.get(1);
+      a1   = (Annotation) l.get(0);
+      a2   = (Annotation) l.get(1);
       assertEquals(id3, a1.getId());
       assertEquals(id2, a2.getId());
 
@@ -701,15 +707,16 @@ public class OtmTest extends TestCase {
         log.warn("close failed", ce);
       }
     }
+
     session   = factory.openSession();
     tx        = null;
 
     List<Annotation> al = null;
 
     try {
-      tx = session.beginTransaction();
+      tx   = session.beginTransaction();
 
-      al = session.createCriteria(Annotation.class).list();
+      al   = session.createCriteria(Annotation.class).list();
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
       try {
@@ -730,9 +737,11 @@ public class OtmTest extends TestCase {
 
     assertNotNull(al);
     assertEquals(4, al.size());
+
     for (Annotation a : al) {
       if (a.getSupersedes() != null)
         assertTrue(a == a.getSupersedes().getSupersededBy());
+
       if (a.getSupersededBy() != null)
         assertTrue(a == a.getSupersededBy().getSupersedes());
     }
@@ -747,7 +756,7 @@ public class OtmTest extends TestCase {
       al.clear();
 
       while (r.next())
-        al.add((Annotation)r.get(0));
+        al.add((Annotation) r.get(0));
 
       tx.commit(); // Flush happens automatically
     } catch (OtmException e) {
@@ -769,14 +778,14 @@ public class OtmTest extends TestCase {
 
     assertNotNull(al);
     assertEquals(4, al.size());
+
     for (Annotation a : al) {
       if (a.getSupersedes() != null)
         assertTrue(a == a.getSupersedes().getSupersededBy());
+
       if (a.getSupersededBy() != null)
         assertTrue(a == a.getSupersededBy().getSupersedes());
     }
-
-
   }
 
   /**
@@ -1046,11 +1055,12 @@ public class OtmTest extends TestCase {
 
       List<PublicAnnotation> al = a.getPublicAnnotations();
       assertEquals(2, al.size());
+
       List<PrivateAnnotation> pl = a.getPrivateAnnotations();
       assertEquals(1, pl.size());
 
-      PublicAnnotation a1 = al.get(0);
-      PublicAnnotation a2 = al.get(1);
+      PublicAnnotation  a1 = al.get(0);
+      PublicAnnotation  a2 = al.get(1);
       PrivateAnnotation a3 = pl.get(0);
       assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
       assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
@@ -1113,6 +1123,7 @@ public class OtmTest extends TestCase {
       }
     }
   }
+
   /**
    * DOCUMENT ME!
    *
@@ -1123,8 +1134,8 @@ public class OtmTest extends TestCase {
     Transaction tx      = null;
 
     URI         aid     = URI.create("http://localhost/article/1");
-    URI         pid1     = URI.create("http://localhost/article/1/part/1");
-    URI         pid2     = URI.create("http://localhost/article/1/part/2");
+    URI         pid1    = URI.create("http://localhost/article/1/part/1");
+    URI         pid2    = URI.create("http://localhost/article/1/part/2");
 
     try {
       tx = session.beginTransaction();
@@ -1160,6 +1171,7 @@ public class OtmTest extends TestCase {
         log.warn("close failed", ce);
       }
     }
+
     session   = factory.openSession();
     tx        = null;
 
@@ -1170,6 +1182,7 @@ public class OtmTest extends TestCase {
 
       assertNotNull(a);
       assertEquals(2, a.getParts().size());
+
       for (ObjectInfo o : a.getParts())
         assertTrue(o.getIsPartOf() == a);
 
