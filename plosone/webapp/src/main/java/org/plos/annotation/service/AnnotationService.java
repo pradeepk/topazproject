@@ -8,9 +8,14 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 import org.plos.Constants;
+import static org.plos.annotation.service.Annotation.FLAG_MASK;
+import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
 import org.plos.annotation.Commentary;
 import org.plos.annotation.FlagUtil;
 import org.plos.permission.service.PermissionWebService;
+import org.plos.rating.service.RatingInfo;
+import org.plos.rating.service.RatingsService;
+import org.plos.rating.service.RatingsServiceException;
 import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
@@ -28,6 +33,7 @@ import java.util.Collection;
 public class AnnotationService extends BaseConfigurableService {
   private AnnotationWebService annotationWebService;
   private ReplyWebService replyWebService;
+  private RatingsService ratingsService;
 
   private static final Log log = LogFactory.getLog(AnnotationService.class);
   private AnnotationConverter converter;
@@ -124,6 +130,27 @@ public class AnnotationService extends BaseConfigurableService {
   }
 
   /**
+   * Create a flag against a Rating
+   *
+   * @param target target that a flag is being created for
+   * @param reasonCode corresponds to the reason cited when "flagged" by the user
+   * @param body body
+   * @param mimeType mime-type
+   * @return unique identifier for the newly created flag
+   * @throws org.plos.ApplicationException
+   */
+  public String createRatingFlag(final String target, final String reasonCode, final String body, final String mimeType) throws ApplicationException {
+    try {
+      final String flagBody = FlagUtil.createFlagBody(reasonCode, body);
+      final String flagId = annotationWebService.createAnnotation(mimeType, target, null, null, null, flagBody);
+      ratingsService.setFlagged(target);
+      return flagId;
+    } catch (Exception e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
    * Unflag the given annotation
    * @param annotationId annotationId
    * @throws ApplicationException ApplicationException
@@ -145,6 +172,20 @@ public class AnnotationService extends BaseConfigurableService {
     try {
       replyWebService.unflagReply(replyId);
     } catch (RemoteException e) {
+      throw new ApplicationException(e);
+    }
+  }
+
+  /**
+   * Unflag the given Rating
+   *
+   * @param ratingId the id of the Rating object for which a flag is to be removed
+   * @throws ApplicationException
+   */
+  public void unflagRating(final String ratingId) throws ApplicationException {
+    try {
+      ratingsService.unflagRating(ratingId);
+    } catch (RatingsServiceException e) {
       throw new ApplicationException(e);
     }
   }
@@ -352,12 +393,31 @@ public class AnnotationService extends BaseConfigurableService {
     }
   }
 
+  /**
+   * Obtain a list of flagged ratings
+   *
+   * @return a list of flagged ratings
+   * @throws ApplicationException
+   */
+  public RatingInfo[] listFlaggedRatings() throws ApplicationException {
+    try {
+      return ratingsService.listRatings(null,FLAG_MASK | PUBLIC_MASK);
+    } catch (RatingsServiceException e) {
+      log.error("",e);
+      throw new ApplicationException(e);
+    }
+  }
+
   public void setAnnotationWebService(final AnnotationWebService annotationWebService) {
     this.annotationWebService = annotationWebService;
   }
 
   public void setReplyWebService(final ReplyWebService replyWebService) {
     this.replyWebService = replyWebService;
+  }
+
+  public void setRatingsService(final RatingsService ratingsService) {
+    this.ratingsService = ratingsService;
   }
 
   /**
