@@ -35,8 +35,7 @@ import org.plos.user.service.UserService;
  */
 public class FlagManagementService {
   
-  private static final Log log = LogFactory
-  .getLog(DocumentManagementService.class);
+  private static final Log log = LogFactory.getLog(FlagManagementService.class);
   
   private AnnotationWebService annotationWebService;
   private AnnotationService annotationService;
@@ -44,8 +43,7 @@ public class FlagManagementService {
   
   private UserService userService;
   
-  public Collection getFlaggedComments() throws RemoteException,
-  ApplicationException {
+  public Collection getFlaggedComments() throws RemoteException, ApplicationException {
     ArrayList<FlaggedCommentRecord> commentrecords = new ArrayList<FlaggedCommentRecord>();
     AnnotationInfo[] annotationinfos;
     ReplyInfo[] replyinfos;
@@ -55,16 +53,20 @@ public class FlagManagementService {
     final RatingInfo[] ratingInfos = annotationService.listFlaggedRatings();
     annotationinfos = annotationWebService.listAnnotations(null, FLAG_MASK| PUBLIC_MASK);
     replyinfos = replyWebService.listReplies(null, FLAG_MASK| PUBLIC_MASK ); // Bug - not marked with public flag for now
-    log.debug("There are " + ratingInfos.length + " ratings with flags");
-    log.debug("There are " + annotationinfos.length + " annotations with flags");
-    log.debug("There are " + replyinfos.length + " replies with flags");		
+    if (log.isDebugEnabled()) { 
+      log.debug("There are " + ratingInfos.length + " ratings with flags");
+      log.debug("There are " + annotationinfos.length + " annotations with flags");
+      log.debug("There are " + replyinfos.length + " replies with flags");
+    }
 
     for (final RatingInfo ratingInfo : ratingInfos) {
       flags = annotationService.listFlags(ratingInfo.getId());
-      log.debug("There are " + flags.length + " flags on rating: " + ratingInfo.getId());
+      if (log.isDebugEnabled())
+        log.debug("There are " + flags.length + " flags on rating: " + ratingInfo.getId());
       for (final Flag flag : flags) {
         if (flag.isDeleted()) {
-          log.debug("Flag: " + flag.getId() + " is deleted - skipping");
+          if (log.isDebugEnabled())
+            log.debug("Flag: " + flag.getId() + " is deleted - skipping");
           continue;
         }
         try {
@@ -89,10 +91,12 @@ public class FlagManagementService {
 
     for (AnnotationInfo annotationinfo : annotationinfos) {
       flags = annotationService.listFlags((String) annotationinfo.getId());
-      log.debug("There are " + flags.length + " flags on annotation: " + annotationinfo.getId());
+      if (log.isDebugEnabled())
+        log.debug("There are " + flags.length + " flags on annotation: " + annotationinfo.getId());
       for (Flag flag : flags) {
         if (flag.isDeleted()) {
-          log.debug("Flag: " + flag.getId() + " is deleted - skipping");
+          if (log.isDebugEnabled())
+            log.debug("Flag: " + flag.getId() + " is deleted - skipping");
           continue;
         }
         try {
@@ -117,10 +121,12 @@ public class FlagManagementService {
     
     for (ReplyInfo replyinfo : replyinfos) {
       flags = annotationService.listFlags((String) replyinfo.getId());
-      log.debug("There are " + flags.length + " flags on reply: " + replyinfo.getId());			
+      if (log.isDebugEnabled())
+        log.debug("There are " + flags.length + " flags on reply: " + replyinfo.getId());			
       for (Flag flag : flags) {
         if (flag.isDeleted()) {
-          log.debug("Flag: " + flag.getId() + " is deleted - skipping");					
+          if (log.isDebugEnabled())
+            log.debug("Flag: " + flag.getId() + " is deleted - skipping");					
           continue;
         }
         try {
