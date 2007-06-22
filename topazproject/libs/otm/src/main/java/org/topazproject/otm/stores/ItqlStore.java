@@ -849,7 +849,7 @@ public class ItqlStore implements TripleStore {
     critBuilders.put(func, builder);
   }
 
-  private static class ItqlStoreConnection implements Connection {
+  public static class ItqlStoreConnection implements Connection {
     private final URI  serverUri;
     private ItqlHelper itql;
 
