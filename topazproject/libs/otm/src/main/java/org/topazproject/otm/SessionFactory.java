@@ -26,6 +26,7 @@ import javassist.util.proxy.ProxyFactory;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.context.CurrentSessionContext;
 import org.topazproject.otm.mapping.SerializerFactory;
 import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
 
@@ -66,6 +67,7 @@ public class SessionFactory {
   private AnnotationClassMetaFactory cmf = new AnnotationClassMetaFactory(this);
   private SerializerFactory          serializerFactory = new SerializerFactory(this);
   private TripleStore                store;
+  private CurrentSessionContext      currentSessionContext;
 
   /**
    * Open a new otm session.
@@ -74,6 +76,22 @@ public class SessionFactory {
    */
   public Session openSession() {
     return new Session(this);
+  }
+
+  /**
+   * Obtains the current session.  The definition of what exactly "current" means is
+   * controlled by the {@link org.topazproject.otm.context.CurrentSessionContext} impl configured
+   * for use.
+   *
+   * @return The current session.
+   *
+   * @throws OtmException Indicates an issue locating a suitable current session.
+   */
+  public Session getCurrentSession() throws OtmException {
+    if (currentSessionContext == null)
+      throw new OtmException("CurrentSessionContext is not configured");
+
+    return currentSessionContext.currentSession();
   }
 
   /**
@@ -274,6 +292,24 @@ public class SessionFactory {
    */
   public void setTripleStore(TripleStore store) {
     this.store = store;
+  }
+
+  /**
+   * Get currentSessionContext.
+   *
+   * @return currentSessionContext as CurrentSessionContext.
+   */
+  public CurrentSessionContext getCurrentSessionContext() {
+    return currentSessionContext;
+  }
+
+  /**
+   * Set currentSessionContext.
+   *
+   * @param currentSessionContext the value to set.
+   */
+  public void setCurrentSessionContext(CurrentSessionContext currentSessionContext) {
+    this.currentSessionContext = currentSessionContext;
   }
 
   /**

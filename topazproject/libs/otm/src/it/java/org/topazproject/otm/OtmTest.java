@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.context.ThreadLocalSessionContext;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
@@ -1201,6 +1202,53 @@ public class OtmTest extends TestCase {
         session.close();
       } catch (OtmException ce) {
         log.warn("close failed", ce);
+      }
+    }
+  }
+
+  /**
+   * DOCUMENT ME!
+   *
+   * @throws OtmException DOCUMENT ME!
+   */
+  public void test09() throws OtmException {
+    Session s1 = null;
+    Session s2 = null;
+
+    try {
+      factory.setCurrentSessionContext(new ThreadLocalSessionContext(factory));
+
+      s1 = factory.getCurrentSession();
+      assertNotNull(s1);
+      assertTrue(s1 == factory.getCurrentSession());
+      s1.close();
+
+      s2 = factory.getCurrentSession();
+      assertNotNull(s2);
+      assertTrue(s2 == factory.getCurrentSession());
+      s2.close();
+      assertTrue(s1 != s2);
+      s1   = null;
+      s2   = null;
+    } finally {
+      try {
+        factory.setCurrentSessionContext(null);
+      } catch (Throwable t) {
+        log.warn("removing current session context failed", t);
+      }
+
+      try {
+        if (s1 != null)
+          s1.close();
+      } catch (Throwable t) {
+        log.warn("close failed", t);
+      }
+
+      try {
+        if (s2 != null)
+          s2.close();
+      } catch (Throwable t) {
+        log.warn("close failed", t);
       }
     }
   }
