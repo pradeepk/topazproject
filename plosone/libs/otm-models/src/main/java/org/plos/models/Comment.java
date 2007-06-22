@@ -17,42 +17,44 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
- * Class that will represent annotations persisted by PlosOne.
+ * Class that will represent comments by users persisted as comment annotations
+ * by PlosOne.
  *
  * @author Pradeep Krishnan
  */
-public class Annotation extends AbstractAnnotation {
+public class Comment extends AbstractAnnotation {
   /**
    * Annotation type Namespace URI
    */
   public static final String TYPE_NS = "http://www.w3.org/2000/10/annotationType#";
+
   @Predicate(uri = Annotea.NS + "body")
   private URI body;
 
   /**
-   * Creates a new Annotation object.
+   * Creates a new comment object.
    */
-  public Annotation() {
+  public Comment() {
   }
 
   /**
-   * Creates a new PlosAnnotation object.
+   * Creates a new comment object.
    *
    * @param id annotation id
    */
-  public Annotation(URI id) {
+  public Comment(URI id) {
     super(id);
   }
 
   /**
-   * @return Returns the body.
+   * @return Returns the body of the comment
    */
   public URI getBody() {
     return body;
   }
 
   /**
-   * @param body The body to set.
+   * @param body The body of the comment to set
    */
   public void setBody(URI body) {
     this.body = body;

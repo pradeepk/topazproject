@@ -31,7 +31,7 @@ import static org.plos.annotation.service.Annotation.DELETE_MASK;
 import static org.plos.annotation.service.Annotation.FLAG_MASK;
 import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
 
-import org.plos.models.Annotation;
+import org.plos.models.Comment;
 
 import org.plos.permission.service.PermissionWebService;
 
@@ -132,7 +132,7 @@ public class AnnotationWebService extends BaseAnnotationService {
     if (log.isDebugEnabled())
       log.debug("created fedora object " + bodyUri + " for annotation ");
 
-    final Annotation a = new Annotation();
+    final Comment a = new Comment();
 
     a.setMediator(getApplicationId());
     a.setType(getDefaultType());
@@ -245,11 +245,11 @@ public class AnnotationWebService extends BaseAnnotationService {
                          throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    Annotation a =
+    Comment a =
       TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Annotation>() {
-          public Annotation run(Transaction tx) {
-            Annotation a = tx.getSession().get(Annotation.class, annotationId);
+                               new TransactionHelper.Action<Comment>() {
+          public Comment run(Transaction tx) {
+            Comment a = tx.getSession().get(Comment.class, annotationId);
 
             if (a != null)
               tx.getSession().delete(a);
@@ -299,13 +299,13 @@ public class AnnotationWebService extends BaseAnnotationService {
       boolean updated = false;
 
       try {
-        List<Annotation> all =
+        List<Comment> all =
           TransactionHelper.doInTx(session,
-                                   new TransactionHelper.Action<List<Annotation>>() {
-              public List<Annotation> run(Transaction tx) {
+                                   new TransactionHelper.Action<List<Comment>>() {
+              public List<Comment> run(Transaction tx) {
                 // xxx: See trac #357. The previous default was incorrect. 
                 // Support both the old and the new to be compatible. (till data migration)
-                return tx.getSession().createCriteria(Annotation.class)
+                return tx.getSession().createCriteria(Comment.class)
                           .add(Restrictions.eq("mediator", getApplicationId()))
                           .add(Restrictions.eq("annotates", target))
                           .add(Restrictions.disjunction()
@@ -315,12 +315,12 @@ public class AnnotationWebService extends BaseAnnotationService {
               }
             });
 
-        List<Annotation> l   = all;
+        List<Comment> l   = all;
 
         if (false) { // xxx: no point here because of the cache logic above
           l = new ArrayList(all);
 
-          for (Annotation a : all) {
+          for (Comment a : all) {
             try {
               pep.checkAccess(pep.GET_ANNOTATION_INFO, a.getId());
             } catch (Throwable t) {
@@ -337,7 +337,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
         int i = 0;
 
-        for (Annotation a : l)
+        for (Comment a : l)
           annotations[i++] = new AnnotationInfo(a, fedora);
 
         //use grouping for future when annotations can be private
@@ -373,11 +373,11 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     pep.checkAccess(pep.GET_ANNOTATION_INFO, URI.create(annotationId));
 
-    Annotation a =
+    Comment a =
       TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Annotation>() {
-          public Annotation run(Transaction tx) {
-            return tx.getSession().get(Annotation.class, annotationId);
+                               new TransactionHelper.Action<Comment>() {
+          public Comment run(Transaction tx) {
+            return tx.getSession().get(Comment.class, annotationId);
           }
         });
 
@@ -399,11 +399,11 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationDoi));
 
-    Annotation a =
+    Comment a =
       TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Annotation>() {
-          public Annotation run(Transaction tx) {
-            Annotation a = tx.getSession().get(Annotation.class, annotationDoi);
+                               new TransactionHelper.Action<Comment>() {
+          public Comment run(Transaction tx) {
+            Comment a = tx.getSession().get(Comment.class, annotationDoi);
             a.setState(PUBLIC_MASK);
             tx.getSession().saveOrUpdate(a);
 
@@ -424,11 +424,11 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
 
-    Annotation a =
+    Comment a =
       TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Annotation>() {
-          public Annotation run(Transaction tx) {
-            Annotation a = tx.getSession().get(Annotation.class, annotationId);
+                               new TransactionHelper.Action<Comment>() {
+          public Comment run(Transaction tx) {
+            Comment a = tx.getSession().get(Comment.class, annotationId);
             a.setState(PUBLIC_MASK | FLAG_MASK);
             tx.getSession().saveOrUpdate(a);
 
@@ -455,11 +455,11 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
 
-    List<Annotation> l           =
+    List<Comment> l           =
       TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<List<Annotation>>() {
-          public List<Annotation> run(Transaction tx) {
-            Criteria c           = tx.getSession().createCriteria(Annotation.class);
+                               new TransactionHelper.Action<List<Comment>>() {
+          public List<Comment> run(Transaction tx) {
+            Criteria c           = tx.getSession().createCriteria(Comment.class);
 
             if (mediator != null)
               c.add(Restrictions.eq("mediator", mediator));
@@ -477,7 +477,7 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     int              i           = 0;
 
-    for (Annotation a : l)
+    for (Comment a : l)
       annotations[i++] = new AnnotationInfo(a, fedora);
 
     return annotations;

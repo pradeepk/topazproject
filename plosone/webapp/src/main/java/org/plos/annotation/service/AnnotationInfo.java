@@ -17,7 +17,7 @@ import java.util.Date;
 import java.util.SimpleTimeZone;
 
 import org.plos.models.AbstractAnnotation;
-import org.plos.models.Annotation;
+import org.plos.models.Comment;
 
 /**
  * Annotation meta-data - compatible with topaz annotation ws.
@@ -25,7 +25,7 @@ import org.plos.models.Annotation;
  * @author Pradeep Krishnan
  */
 public class AnnotationInfo {
-  private Annotation              ann;
+  private Comment                 ann;
   private FedoraHelper            fedora;
   private static SimpleDateFormat fmt = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 
@@ -36,7 +36,7 @@ public class AnnotationInfo {
 /**
    * Creates a new AnnotationInfo object.
    */
-  public AnnotationInfo(Annotation ann, FedoraHelper fedora) {
+  public AnnotationInfo(Comment ann, FedoraHelper fedora) {
     this.ann      = ann;
     this.fedora   = fedora;
   }
