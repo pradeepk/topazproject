@@ -27,9 +27,10 @@ import javax.servlet.http.HttpSession;
 import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.Configuration;
-import org.apache.commons.pool.BasePoolableObjectFactory;
-import org.apache.commons.pool.ObjectPool;
-import org.apache.commons.pool.impl.GenericObjectPool;
+
+import org.plos.configuration.ConfigurationStore;
+
+import org.plos.user.UserAccountsInterceptor;
 
 import org.topazproject.authentication.ProtectedService;
 import org.topazproject.authentication.ProtectedServiceFactory;
@@ -41,9 +42,6 @@ import org.topazproject.fedora.client.Uploader;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 
-import org.plos.user.UserAccountsInterceptor;
-import org.plos.configuration.ConfigurationStore;
-
 import com.opensymphony.webwork.ServletActionContext;
 
 /**
@@ -52,18 +50,14 @@ import com.opensymphony.webwork.ServletActionContext;
  * @author Pradeep Krishnan
  */
 public class WSTopazContext implements TopazContext {
-  private static final String                   serverName;
-  private static final URI                      objectBaseUri;
-  private static final URI                      fedoraBaseUri;
-  private static final Configuration            itqlConfig;
-  private static final Configuration            apimConfig;
-  private static final Configuration            upldConfig;
-  private static final GenericObjectPool.Config poolConfig;
-  private static final ObjectPool               itqlPool;
+  private static final String        serverName;
+  private static final URI           objectBaseUri;
+  private static final URI           fedoraBaseUri;
+  private static final Configuration apimConfig;
+  private static final Configuration upldConfig;
 
   static {
     Configuration root = ConfigurationStore.getInstance().getConfiguration();
-    itqlConfig   = root.subset("topaz.services.itql");
     apimConfig   = root.subset("topaz.services.fedora");
     upldConfig   = root.subset("topaz.services.fedoraUploader");
     serverName   = root.getString("topaz.server.hostname");
@@ -71,7 +65,6 @@ public class WSTopazContext implements TopazContext {
     String objectBase = root.getString("topaz.objects.base-uri");
     String fedoraBase = root.getString("topaz.services.fedora.uri");
 
-    ItqlHelper.validateUri(itqlConfig.getString("uri"), "topaz.services.itql.uri");
     ItqlHelper.validateUri(upldConfig.getString("uri"), "topaz.services.fedoraUploader.uri");
 
     objectBaseUri = ItqlHelper.validateUri(objectBase, "topaz.objects.base-uri");
@@ -86,24 +79,7 @@ public class WSTopazContext implements TopazContext {
       }
     }
 
-    fedoraBaseUri                               = uri;
-
-    // xxx: Get this from config
-    poolConfig                                  = new GenericObjectPool.Config();
-    poolConfig.maxActive                        = 20;
-    poolConfig.maxIdle                          = 20;
-    poolConfig.maxWait                          = 1000; // time to block for handle if none available
-    poolConfig.minEvictableIdleTimeMillis       = 5 * 60 * 1000; // 5 min
-    poolConfig.minIdle                          = 0;
-    poolConfig.numTestsPerEvictionRun           = 5;
-    poolConfig.softMinEvictableIdleTimeMillis   = 5 * 60 * 1000; // 5 min
-    poolConfig.testOnBorrow                     = false;
-    poolConfig.testOnReturn                     = false;
-    poolConfig.testWhileIdle                    = true;
-    poolConfig.timeBetweenEvictionRunsMillis    = 5 * 60 * 1000; // 5 min
-    poolConfig.whenExhaustedAction              = GenericObjectPool.WHEN_EXHAUSTED_BLOCK;
-    itqlPool                                    = new GenericObjectPool(new ItqlHelperFactory(),
-                                                                        poolConfig);
+    fedoraBaseUri = uri;
   }
 
   private final String sessionKey;
@@ -112,7 +88,6 @@ public class WSTopazContext implements TopazContext {
     private boolean     active  = false;
     private FedoraAPIM  apim    = null;
     private Uploader    upld    = null;
-    private ItqlHelper  itql    = null;
     private HandleCache cache   = null;
     private HttpSession session = null;
   }
@@ -167,16 +142,6 @@ public class WSTopazContext implements TopazContext {
     if (tlc.upld != null) {
       tlc.cache.returnObject(tlc.upld);
       tlc.upld = null;
-    }
-
-    if (tlc.itql != null) {
-      try {
-        itqlPool.returnObject(tlc.itql);
-      } catch (Exception e) {
-        // xxx: ignore this for now 
-      }
-
-      tlc.itql = null;
     }
 
     tlc.cache     = null;
@@ -237,7 +202,7 @@ public class WSTopazContext implements TopazContext {
     if (session == null)
       return null;
 
-    return (String)session.getAttribute(UserAccountsInterceptor.USER_KEY);
+    return (String) session.getAttribute(UserAccountsInterceptor.USER_KEY);
   }
 
   /*
@@ -259,25 +224,6 @@ public class WSTopazContext implements TopazContext {
    */
   public URI getFedoraBaseUri() {
     return fedoraBaseUri;
-  }
-
-  /*
-   * inherited javadoc
-   */
-  public ItqlHelper getItqlHelper() throws RemoteException, IllegalStateException {
-    TLC tlc = (TLC) tc.get();
-
-    if (tlc.itql == null) {
-      try {
-        tlc.itql = (ItqlHelper) itqlPool.borrowObject();
-      } catch (RemoteException e) {
-        throw e;
-      } catch (Exception e) {
-        throw new RemoteException("", e);
-      }
-    }
-
-    return tlc.itql;
   }
 
   /*
@@ -397,26 +343,6 @@ public class WSTopazContext implements TopazContext {
       }
 
       refs[count++] = new SoftReference(borrowed);
-    }
-  }
-
-  private static class ItqlHelperFactory extends BasePoolableObjectFactory {
-    public Object makeObject() throws Exception {
-      //xxx: assume that we aren't using an auth scheme that requires HttpSession (eg. CAS)
-      ProtectedService svc = ProtectedServiceFactory.createService(itqlConfig, (HttpSession) null);
-
-      return new ItqlHelper(svc);
-    }
-
-    public void destroyObject(Object obj) throws Exception {
-      ItqlHelper itql = (ItqlHelper) obj;
-      itql.close();
-    }
-
-    public boolean validateObject(Object obj) {
-      ItqlHelper itql = (ItqlHelper) obj;
-
-      return (itql.getLastError() == null);
     }
   }
 }

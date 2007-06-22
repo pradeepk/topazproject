@@ -22,8 +22,6 @@ import org.topazproject.fedora.client.FedoraAPIA;
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedora.client.Uploader;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
-
 /**
  * The context for Topaz API calls.
  *
@@ -43,7 +41,7 @@ public interface TopazContext {
   public void destroy();
 
   /**
-   * Lifecycle activate. 
+   * Lifecycle activate.
    */
   public void activate();
 
@@ -86,8 +84,8 @@ public interface TopazContext {
   public HttpSession getHttpSession() throws IllegalStateException;
 
   /**
-   * The username of the user associated with the current Topaz API call.  It is a wrapper around
-   * the {@link #getUserPrincipal} method.
+   * The username of the user associated with the current Topaz API call.  It is a wrapper
+   * around the {@link #getUserPrincipal} method.
    *
    * @return the username or <code>null</code>
    *
@@ -115,16 +113,6 @@ public interface TopazContext {
    * @return the base uri
    */
   public URI getFedoraBaseUri();
-
-  /**
-   * Gets the ItqlHelper handle.
-   *
-   * @return the ItqlHelper
-   *
-   * @throws RemoteException if there is an error in creating the handle
-   * @throws IllegalStateException if context is not {@link #activate activate}d
-   */
-  public ItqlHelper getItqlHelper() throws RemoteException, IllegalStateException;
 
   /**
    * Gets the fedora APIM handle.
