@@ -80,6 +80,26 @@
               </#if>
             </blockquote>
           </div>
+          <!-- end : response body text -->
+
+          <!-- begin : toolbar options -->
+          <div class="toolbar">
+            <#if articleRatingSummary.commentTitle?exists>
+              <#assign flagTitle = "${articleRatingSummary.commentTitle}">
+            <#else>
+              <#assign flagTitle = "Flag this rating">
+            </#if>
+            <ul>
+              <li>
+                <#if Session.PLOS_ONE_USER?exists>
+                  <a href="#" onclick="topaz.responsePanel.show(this, _dcf, 'toolbar', '${articleRatingSummary.ratingId}', null, '${flagTitle}', 2); return false;" class="flag tooltip" title="Request Review">Request review</a>
+                <#else>							
+                  <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="flag tooltip" title="Request review">Request review</a>
+                </#if>
+              </li>
+            </ul>
+          </div>
+          <!-- end : toolbar options -->
         </div>
 
         <div class="rsep"></div>

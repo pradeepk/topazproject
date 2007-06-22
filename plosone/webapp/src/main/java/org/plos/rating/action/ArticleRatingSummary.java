@@ -9,6 +9,7 @@
  */
 package org.plos.rating.action;
 
+import java.net.URI;
 import java.util.Date;
 
 import org.plos.models.Rating;
@@ -22,6 +23,7 @@ import org.plos.util.TextUtils;
  */
 public class ArticleRatingSummary {
 
+  private URI    ratingId;
   private String articleURI;
   private String articleTitle;
   private Date   created;
@@ -42,16 +44,26 @@ public class ArticleRatingSummary {
 
   public void addRating(Rating rating) {
 
-    this.insight = rating.getBody().getInsightValue();
-    this.style = rating.getBody().getStyleValue();
+    this.ratingId    = rating.getId();
+    this.insight     = rating.getBody().getInsightValue();
+    this.style       = rating.getBody().getStyleValue();
     this.reliability = rating.getBody().getReliabilityValue();
-    this.overall = rating.getBody().getOverallValue();
+    this.overall     = rating.getBody().getOverallValue();
 
     // escape any markup
     this.commentTitle = TextUtils.escapeHtml(rating.getBody().getCommentTitle());
     this.commentValue = TextUtils.escapeHtml(rating.getBody().getCommentValue());
 
     this.creatorURI = rating.getCreator();
+  }
+
+  /**
+   * Get the Rating Id as a String.
+   *
+   * @return Rating Id as a String.
+   */
+  public String getRatingId() {
+    return ratingId.toString();
   }
 
   public void setArticleURI(String articleURI) {

@@ -373,6 +373,12 @@
       <result name="success" type="ajaxJSON"/>
     </action>
 
+    <action name="createRatingFlagSubmit" class="org.plos.rating.action.CreateFlagAction" method="createRatingFlag">
+      <result name="input"   type="ajaxJSON"/>
+      <result name="error"   type="ajaxJSON"/>
+      <result name="success" type="ajaxJSON"/>
+    </action>
+
     <action name="getRatingsForUser" class="org.plos.rating.action.RateAction" method="retrieveRatingsForUser">
       <result name="input" type="ajaxJSON"/>
       <result name="error" type="ajaxJSON"/>

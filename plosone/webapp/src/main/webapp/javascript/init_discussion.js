@@ -96,7 +96,7 @@
     _dcf.btnSubmit = dojo.byId("btnSubmit");
     _dcf.btnFlagClose = dojo.byId("btnFlagConfirmClose");
     _dcf.form = document.discussionFlag;
-    _dcf.formAction = new Array("/annotation/secure/createAnnotationFlagSubmit.action", "/annotation/secure/createReplyFlagSubmit.action");
+    _dcf.formAction = new Array("/annotation/secure/createAnnotationFlagSubmit.action", "/annotation/secure/createReplyFlagSubmit.action", "/rating/secure/createRatingFlagSubmit.action");
     _dcf.responseCue = "Add any additional information here...";
     _dcf.error = dojo.byId('flagSubmitMsg');
     _dcf.requestType = "flag";
