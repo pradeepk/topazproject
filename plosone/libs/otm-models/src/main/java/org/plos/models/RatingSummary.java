@@ -22,7 +22,7 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Stephen Cheng
  */
 @Entity(type = Rdf.topaz + "RatingSummaryAnnotation")
-public class RatingSummary extends AbstractAnnotation {
+public class RatingSummary extends Annotation {
   @Predicate(uri = Annotea.NS + "body")
   private RatingSummaryContent body;
 

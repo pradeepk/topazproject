@@ -22,7 +22,7 @@ import org.topazproject.otm.annotations.Rdf;
  *
  * @author Pradeep Krishnan
  */
-public class Comment extends AbstractAnnotation {
+public class Comment extends Annotation {
   /**
    * Annotation type Namespace URI
    */

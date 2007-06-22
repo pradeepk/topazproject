@@ -16,7 +16,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.SimpleTimeZone;
 
-import org.plos.models.AbstractAnnotation;
+import org.plos.models.Annotation;
 import org.plos.models.Comment;
 
 /**
@@ -109,7 +109,7 @@ public class AnnotationInfo {
    * @return supersedes as String.
    */
   public String getSupersedes() {
-    AbstractAnnotation a = ann.getSupersedes();
+    Annotation a = ann.getSupersedes();
 
     return (a == null) ? null : a.getId().toString();
   }
@@ -138,7 +138,7 @@ public class AnnotationInfo {
    * @return supersededBy as String.
    */
   public String getSupersededBy() {
-    AbstractAnnotation a = ann.getSupersededBy();
+    Annotation a = ann.getSupersededBy();
 
     return (a == null) ? null : a.getId().toString();
   }

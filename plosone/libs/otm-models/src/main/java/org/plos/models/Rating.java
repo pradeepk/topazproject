@@ -22,7 +22,7 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Stephen Cheng
  */
 @Entity(type = Rdf.topaz + "RatingsAnnotation")
-public class Rating extends AbstractAnnotation {
+public class Rating extends Annotation {
 
   /** Style */
   public static final String STYLE_TYPE = Rdf.topaz + "StyleRating";

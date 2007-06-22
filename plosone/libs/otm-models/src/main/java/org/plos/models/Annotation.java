@@ -21,32 +21,32 @@ import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
- * AbstractAnnotation meta-data.
+ * Annotation meta-data.
  *
  * @author Pradeep Krishnan
  */
 @Entity(type = Annotea.NS + "Annotation")
-public abstract class AbstractAnnotation extends Annotea {
+public abstract class Annotation extends Annotea {
   @Id
   @GeneratedValue(uriPrefix = "info:doi/10.1371/annotation/")
   private URI                                                               id;
   private URI                                                               annotates;
   private String                                                            context;
   @Predicate(uri = Rdf.dc_terms + "replaces")
-  private AbstractAnnotation                                                supersedes;
+  private Annotation                                                        supersedes;
   @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
-  private AbstractAnnotation                                                supersededBy;
+  private Annotation                                                        supersededBy;
 
-/**
-   * Creates a new AbstractAnnotation object.
+  /**
+   * Creates a new Annotation object.
    */
-  public AbstractAnnotation() {
+  public Annotation() {
   }
 
-/**
-   * Creates a new AbstractAnnotation object.
+  /**
+   * Creates a new Annotation object.
    */
-  public AbstractAnnotation(URI id) {
+  public Annotation(URI id) {
     this.id = id;
   }
 
@@ -91,7 +91,7 @@ public abstract class AbstractAnnotation extends Annotea {
    *
    * @return supersedes.
    */
-  public AbstractAnnotation getSupersedes() {
+  public Annotation getSupersedes() {
     return supersedes;
   }
 
@@ -100,7 +100,7 @@ public abstract class AbstractAnnotation extends Annotea {
    *
    * @param supersedes the value to set.
    */
-  public void setSupersedes(AbstractAnnotation supersedes) {
+  public void setSupersedes(Annotation supersedes) {
     this.supersedes = supersedes;
   }
 
@@ -109,7 +109,7 @@ public abstract class AbstractAnnotation extends Annotea {
    *
    * @return supersededBy.
    */
-  public AbstractAnnotation getSupersededBy() {
+  public Annotation getSupersededBy() {
     return supersededBy;
   }
 
@@ -118,7 +118,7 @@ public abstract class AbstractAnnotation extends Annotea {
    *
    * @param supersededBy the value to set.
    */
-  public void setSupersededBy(AbstractAnnotation supersededBy) {
+  public void setSupersededBy(Annotation supersededBy) {
     this.supersededBy = supersededBy;
   }
 

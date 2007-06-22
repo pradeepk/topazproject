@@ -16,7 +16,6 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.SimpleTimeZone;
 
-import org.plos.models.AbstractAnnotation;
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 
