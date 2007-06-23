@@ -27,6 +27,7 @@ import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
 import org.plos.models.UserAccount;
+import org.plos.rating.service.RatingsPEP;
 
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;

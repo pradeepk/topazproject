@@ -23,6 +23,7 @@ import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
 import org.plos.models.RatingSummaryContent;
+import org.plos.rating.service.RatingsPEP;
 
 import org.plos.user.PlosOneUser;
 
