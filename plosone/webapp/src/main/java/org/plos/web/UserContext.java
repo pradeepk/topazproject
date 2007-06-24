@@ -25,13 +25,13 @@ import org.apache.commons.logging.LogFactory;
 public class UserContext {
   private Map sessionMap;
   private static final Log log = LogFactory.getLog(UserContext.class);
-  
+
   public UserContext() {
     if (log.isDebugEnabled()){
       log.debug("UserContext constructed with hashcode" + this.hashCode());
     }
   }
-  
+
   /**
    * @return the session variables for the user session in a map
    */
@@ -48,18 +48,14 @@ public class UserContext {
   public HttpSession getHttpSession() {
     if (log.isDebugEnabled()){
       HttpSession initialSession = ServletActionContext.getRequest().getSession();
-      log.debug("UserContext getting HttpSession of classname" + 
+      log.debug("UserContext getting HttpSession of classname" +
           ServletActionContext.getRequest().getSession().getClass().getName());
       log.debug("UserContext hashcode: " + this.hashCode());
       log.debug("Session is hashCode: " + initialSession.hashCode());
       log.debug("Session is id: " + initialSession.getId());
       log.debug("Session is String: " + initialSession);
     }
-    
+
     return ServletActionContext.getRequest().getSession();
   }
-  
-  
-  
-  
 }

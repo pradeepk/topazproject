@@ -54,7 +54,7 @@ public class InitializeSessionOnLoginFilter implements Filter {
       final HttpSession initialSession = servletRequest.getSession();
       final CASReceipt casReceipt = (CASReceipt) initialSession.getAttribute(Constants.SINGLE_SIGNON_RECEIPT);
       final String sessionPgtIOU = (String)initialSession.getAttribute(PGT_IOU_KEY);
-      
+
       if (log.isDebugEnabled()){
         log.debug("Session is hashCode: " + initialSession.hashCode());
         log.debug("Session is id: " + initialSession.getId());
@@ -62,10 +62,10 @@ public class InitializeSessionOnLoginFilter implements Filter {
         log.debug("Original Session PGT_IOU_KEY: " + sessionPgtIOU);
         log.debug("CAS Receipt is: " + casReceipt);
       }
-      
-      
+
+
 //    if member session was already recreated and I haven't received a new PGT_IOU
-      
+
       // if user wasn't logged in before and he still isn't logged in  ||
       // if the user was logged in before and he is still logged in with the same PGT_IOU
       if (((null == casReceipt) && (null == sessionPgtIOU)) ||
@@ -82,7 +82,7 @@ public class InitializeSessionOnLoginFilter implements Filter {
           }
         }
         final HttpSession session = reInitializeSessionForMemberLogin(initialSession, servletRequest);
-          
+
         if (casReceipt != null) {
           session.setAttribute(PGT_IOU_KEY, casReceipt.getPgtIou());
           if (log.isDebugEnabled()) {
@@ -91,7 +91,7 @@ public class InitializeSessionOnLoginFilter implements Filter {
         } else {
           session.removeAttribute(PGT_IOU_KEY);
         }
-        
+
         filterChain.doFilter(request, response);
        }
     } catch (IOException io) {

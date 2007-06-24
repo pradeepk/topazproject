@@ -18,6 +18,8 @@ import org.plos.models.ObjectInfo;
  * Wrapper around topaz's ObjectInfo.
  */
 public class SecondaryObject {
+  private static final Log log = LogFactory.getLog(SecondaryObject.class);
+
   private final ObjectInfo objectInfo;
   private String repSmall;
   private String repMedium;
@@ -25,11 +27,9 @@ public class SecondaryObject {
   private String transformedDescription;
   private String transformedCaptionTitle;
   private String plainCaptionTitle;
-  
 
-  private static final Log log = LogFactory.getLog(SecondaryObject.class);
-  
-  public SecondaryObject(final ObjectInfo objectInfo, 
+
+  public SecondaryObject(final ObjectInfo objectInfo,
                          final String repSmall, final String repMedium, final String repLarge)  {
     this.objectInfo = objectInfo;
     this.repSmall = repSmall;
@@ -37,7 +37,7 @@ public class SecondaryObject {
     this.repLarge = repLarge;
 
   }
-  
+
   /**
    * @see ObjectInfo#getContextElement()
    * 
@@ -46,7 +46,7 @@ public class SecondaryObject {
   public String getContextElement() {
     return objectInfo.getContextElement();
   }
-  
+
   /**
    * @see ObjectInfo#getUri()
    */
@@ -58,7 +58,6 @@ public class SecondaryObject {
    * @see ObjectInfo#getTitle()
    */
   public String getTitle() {
-    
     return (objectInfo.getTitle() == null) ? "" : objectInfo.getTitle();
   }
 

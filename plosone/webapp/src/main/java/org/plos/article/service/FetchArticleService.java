@@ -54,14 +54,14 @@ public class FetchArticleService {
 
   private String encodingCharset;
   private ArticleXMLUtils articleXmlUtils;
-  
+
   private static final Log log = LogFactory.getLog(FetchArticleService.class);
   private AnnotationWebService annotationWebService;
 
   private GeneralCacheAdministrator articleCacheAdministrator;
-  
+
   private static final String CACHE_KEY_ARTICLE_INFO = "CACHE_KEY_ARTICLE_INFO";
-  
+
   private String getTransformedArticle(final String articleURI) throws ApplicationException {
     try {
       return articleXmlUtils.getTransformedDocument (getAnnotatedContentAsDocument(articleURI));
@@ -76,7 +76,7 @@ public class FetchArticleService {
       }
     }
   }
-  
+
   /**
    * Get the URI transformed as HTML.
    * @param articleURI articleURI
@@ -128,8 +128,8 @@ public class FetchArticleService {
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    * @throws javax.xml.transform.TransformerException TransformerException
    */
-  public String getAnnotatedContent(final String articleURI) throws ParserConfigurationException, 
-                                    SAXException, IOException, URISyntaxException, 
+  public String getAnnotatedContent(final String articleURI) throws ParserConfigurationException,
+                                    SAXException, IOException, URISyntaxException,
                                     ApplicationException, NoSuchArticleIdException,TransformerException{
     return TextUtils.getAsXMLString(getAnnotatedContentAsDocument(articleURI));
   }
@@ -178,10 +178,9 @@ public class FetchArticleService {
     return applyAnnotationsOnContentAsDocument (contentUrl, annotations);
   }
 
-  private Document applyAnnotationsOnContentAsDocument (final String contentUrl, 
+  private Document applyAnnotationsOnContentAsDocument (final String contentUrl,
                                                         final AnnotationInfo[] annotations)
           throws IOException, ParserConfigurationException, ApplicationException {
-    
     final DataHandler content = new DataHandler(new URLDataSource(new URL(contentUrl)));
     final DocumentBuilder builder = articleXmlUtils.createDocBuilder();
     if (annotations.length != 0) {
@@ -256,9 +255,9 @@ public class FetchArticleService {
    * @throws ApplicationException ApplicationException
    */
   public Collection<String> getArticles(final String startDate, final String endDate) throws ApplicationException {
-	  return getArticles(startDate, endDate, null);
+    return getArticles(startDate, endDate, null);
   }
-  
+
   /**
    * Set the encoding charset
    * @param encodingCharset encodingCharset
@@ -287,7 +286,7 @@ public class FetchArticleService {
   public void setArticleXmlUtils(ArticleXMLUtils articleXmlUtils) {
     this.articleXmlUtils = articleXmlUtils;
   }
-  
+
   /**
    * @see ArticleOtmService#getObjectInfo(String)
    * @param articleURI articleURI
@@ -308,10 +307,10 @@ public class FetchArticleService {
             updated[0] = true;
             if (log.isDebugEnabled()) {
               log.debug("retrieved objectInfo from TOPAZ for article URI: " + articleURI);
-            }        
+            }
             return artInfo;
           } catch (NoSuchObjectIdException nsoie) {
-            if (log.isErrorEnabled()) {  
+            if (log.isErrorEnabled()) {
               log.error("Failed to get object info for article URI: " + articleURI, nsoie);
             }
             return null;

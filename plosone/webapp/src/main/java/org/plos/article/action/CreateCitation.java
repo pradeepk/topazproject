@@ -31,25 +31,23 @@ import org.plos.util.FileUtils;
  */
 public class CreateCitation extends BaseActionSupport {
 
- // private ArticleOtmService articleOtmService; 
+  // private ArticleOtmService articleOtmService;
   private String articleURI;
   private ArticleXMLUtils citationService;
   private CitationInfo citation;
   private GeneralCacheAdministrator articleCacheAdministrator;
-  
+
   private static final String CACHE_KEY_CITATION_INFO = "CITATION_INFO";
   private static final Log log = LogFactory.getLog(CreateCitation.class);
-  
-  
+
+
   /**
    * Generate citation information by first attempting to get from cache.  If not present,
    * will create a CitationInfo object.
-   * 
    */
   public String execute () {
-   
     try {
-      citation = (CitationInfo)articleCacheAdministrator.getFromCache(articleURI + CACHE_KEY_CITATION_INFO); 
+      citation = (CitationInfo)articleCacheAdministrator.getFromCache(articleURI + CACHE_KEY_CITATION_INFO);
       if (log.isDebugEnabled()) {
         log.debug("retrieved CitationInfo from cache for: " + articleURI);
       }
@@ -72,7 +70,7 @@ public class CreateCitation extends BaseActionSupport {
           articleCacheAdministrator.cancelUpdate(articleURI + CACHE_KEY_CITATION_INFO);
       }
     }
-    
+
     return SUCCESS;
   }
 
@@ -89,7 +87,7 @@ public class CreateCitation extends BaseActionSupport {
   public String getArticleURI() {
     return articleURI;
   }
-  
+
   /**
    * @param articleURI The articleURI to set.
    */

@@ -64,7 +64,7 @@ public class Annotator {
    *
    * @throws RemoteException on a failure
    */
-  public static DataHandler annotate(DataHandler content, AnnotationInfo[] annotations, 
+  public static DataHandler annotate(DataHandler content, AnnotationInfo[] annotations,
                                     final DocumentBuilder documentBuilder)
                               throws RemoteException {
     try {
@@ -73,8 +73,7 @@ public class Annotator {
       throw new RemoteException("", e);
     }
   }
-  
-  
+
   /**
    * Creates an annotated document and returns it as Document.
    *
@@ -85,7 +84,7 @@ public class Annotator {
    *
    * @throws RemoteException on a failure
    */
-  public static Document annotateAsDocument(DataHandler content, AnnotationInfo[] annotations, 
+  public static Document annotateAsDocument(DataHandler content, AnnotationInfo[] annotations,
                                             final DocumentBuilder documentBuilder)
                               throws RemoteException {
     try {
@@ -94,7 +93,6 @@ public class Annotator {
       throw new RemoteException("", e);
     }
   }
-  
 
   /**
    * Creates an annotated document.
@@ -127,10 +125,10 @@ public class Annotator {
     AnnotationModel.appendNSAttr(aRoot);
 
     AnnotationInfo annotation;
-    
+
     for (int i = 0; i < annotations.length; i++) {
       annotation = annotations[i];
-      if ((lists[i] != null) && (annotation.getContext() != null)) { 
+      if ((lists[i] != null) && (annotation.getContext() != null)) {
         Element a = document.createElementNS(AML_NS, "aml:annotation");
         a.setAttributeNS(AML_NS, "aml:id", annotation.getId());
         aRoot.appendChild(a);
@@ -205,9 +203,9 @@ public class Annotator {
   private static LocationList[] evaluate(Document document, AnnotationInfo[] annotations)
                                   throws URISyntaxException, TransformerException {
     ArrayList<LocationList> lists = new ArrayList<LocationList>(annotations.length);
-    
+
     String annotationContext;
-    
+
     for (int i = 0; i < annotations.length; i++) {
       annotationContext = annotations[i].getContext();
       if (annotationContext != null){
@@ -226,13 +224,13 @@ public class Annotator {
           } catch (Exception e) {
             StringBuilder errorMsg = new StringBuilder();
             log.error ("Could not evaluate xPointer");
-            errorMsg.append("AnnotationID: ").append(annotations[i].getId()); 
-            errorMsg.append(" Context: ").append(annotations[i].getContext()); 
-            errorMsg.append(" Created: ").append(annotations[i].getCreated()); 
-            errorMsg.append(" Creator: ").append(annotations[i].getCreator()); 
-            errorMsg.append(" ID: ").append(annotations[i].getId()); 
-            errorMsg.append(" Annotates: ").append(annotations[i].getAnnotates()); 
-            errorMsg.append(" Title: ").append(annotations[i].getTitle()); 
+            errorMsg.append("AnnotationID: ").append(annotations[i].getId());
+            errorMsg.append(" Context: ").append(annotations[i].getContext());
+            errorMsg.append(" Created: ").append(annotations[i].getCreated());
+            errorMsg.append(" Creator: ").append(annotations[i].getCreator());
+            errorMsg.append(" ID: ").append(annotations[i].getId());
+            errorMsg.append(" Annotates: ").append(annotations[i].getAnnotates());
+            errorMsg.append(" Title: ").append(annotations[i].getTitle());
             log.error(errorMsg, e);
             lists.add(null);
             // Trap the error here and continue.  One bad annotation shouldn't

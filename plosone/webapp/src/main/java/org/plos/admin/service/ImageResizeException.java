@@ -37,11 +37,11 @@ public class ImageResizeException extends Exception {
   public ImageResizeException (String message) {
     super(message);
   }
-  
+
   public ImageResizeException (String message, Throwable cause) {
     super (message, cause);
   }
-  
+
   /**
    * @return Returns the articleURI.
    */

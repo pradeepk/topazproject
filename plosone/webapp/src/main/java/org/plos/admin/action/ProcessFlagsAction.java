@@ -21,29 +21,29 @@ import org.plos.annotation.service.ReplyWebService;
 import org.plos.annotation.service.ReplyInfo;
 
 public class ProcessFlagsAction extends BaseAdminActionSupport {
-  
+
   private static final Log log = LogFactory.getLog(ProcessFlagsAction.class);
   private String[] commentsToUnflag;
   private String[] commentsToDelete;
-  private AnnotationService annotationService;	
+  private AnnotationService annotationService;
   private ReplyWebService replyWebService;
-  
-  
+
+
   public void setAnnotationService(AnnotationService annotationService) {
     this.annotationService = annotationService;
   }
-  
+
   public void setCommentsToUnflag(String[] comments) {
     commentsToUnflag = comments;
   }
-  
+
   public void setCommentsToDelete(String[] comments) {
     commentsToDelete = comments;
   }
-  
+
   public String execute() throws RemoteException, ApplicationException {
     String[] segments;
-    
+
     if (commentsToUnflag != null){
       for (String toUnFlag : commentsToUnflag){
         if (log.isDebugEnabled()){
@@ -53,7 +53,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         deleteFlag(segments[0], segments[1]);
       }
     }
-    
+
     if (commentsToDelete != null) {
       for (String toDelete : commentsToDelete) {
         if (log.isDebugEnabled()) {
@@ -65,27 +65,27 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
     }
     return base();
   }
-  
+
   /**
    * @param root
    * @param target
    * 
-   * Delete the target. Root is either an id (in which case 
-   * target is a reply) or else it is a "" in which case target is an annotation. 
+   * Delete the target. Root is either an id (in which case
+   * target is a reply) or else it is a "" in which case target is an annotation.
    * In either case:
-   * 		remove flags on this target
-   * 		get all replies to this target
-   * 			for each reply
-   * 				check to see if reply has flags
-   * 					remove each flag
-   * 		remove all replies in bulk
-   * 		remove target
-   * 		
-   * 	Note that because this may be called from a 'batch' job (i.e multiple
+   *         remove flags on this target
+   *         get all replies to this target
+   *             for each reply
+   *                 check to see if reply has flags
+   *                     remove each flag
+   *         remove all replies in bulk
+   *         remove target
+   *         
+   *  Note that because this may be called from a 'batch' job (i.e multiple
    *  rows were checked off in process flags UI) it may be that things have
    *  been deleted by previous actions. So we catch 'non-exsietent-id' exceptions
    *  which may well get thrown and recover and continue (faster than going across
-   *  teh web service tro see if the ID is valid then going out again to get its object).		
+   *  teh web service tro see if the ID is valid then going out again to get its object).
    * @throws ApplicationException 
    * @throws ApplicationException 
    * @throws NoSuchAnnotationIdException 
@@ -94,10 +94,10 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
    * @throws RemoteException 
    */
   private void deleteTarget(String root, String target) throws ApplicationException, RemoteException {
-    ReplyInfo[] replies;		
+    ReplyInfo[] replies;
     Flag[] flags = annotationService.listFlags(target);
     boolean isReply = root.length() > 0;
-    
+
     if (log.isDebugEnabled()) {
       log.debug("Deleting Target" + target + " Root is " + root);
       log.debug(target + " has " + flags.length + " flags - deleting them");
@@ -112,13 +112,13 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         }
       }
     }
-    
+
     if (isReply) { // it's a reply
       replies = annotationService.listAllRepliesFlattened(root, target);
     } else {
       replies = annotationService.listAllRepliesFlattened(target, target);
     }
-    
+
     if (log.isDebugEnabled()) {
       log.debug(target + " has " + replies.length + " replies. Removing their flags");
     }
@@ -131,9 +131,9 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         if (flag.isDeleted())
           continue;
         deleteFlag(reply.getId(), flag.getId());
-      }				
+      }
     }
-    
+
     if (isReply) {
       replyWebService.deleteReplies(target); // Bulk delete
       //annotationService.deleteReply(target);
@@ -148,7 +148,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       }
     }
   }
-  
+
   private void deleteFlag(String target, String flag) throws ApplicationException {
     // Delete flag
     annotationService.deleteFlag(flag);
@@ -175,7 +175,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
       log.debug("Flags exist. Target will remain marked as flagged");
     }
   }
-  
+
   private boolean isReply(String target) {
     String segments[] = target.split("/");
     if (segments.length >= 2)
@@ -183,7 +183,7 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         return true;
     return false;
   }
-  
+
   private boolean isAnnotation(String target) {
     String segments[] = target.split("/");
     if (segments.length >= 2)
@@ -191,9 +191,8 @@ public class ProcessFlagsAction extends BaseAdminActionSupport {
         return true;
     return false;
   }
-  
+
   public void setReplyWebService(ReplyWebService replyWebService) {
     this.replyWebService = replyWebService;
   }
-  
 }

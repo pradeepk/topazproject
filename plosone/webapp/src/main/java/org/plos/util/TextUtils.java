@@ -31,7 +31,7 @@ public class TextUtils {
   public static final String HTTP_PREFIX = "http://";
   private static final Pattern maliciousContentPattern = Pattern.compile("[<>\"\'%;()&+]");
   private static final Pattern lineBreakPattern = Pattern.compile("\\p{Zl}|\r\n|\n|\u0085|\\p{Zp}");
-  
+
   /**
    * Takes in a String and returns it with all line separators replaced by <br/> tags suitable
    * for display as HTML.
@@ -45,7 +45,7 @@ public class TextUtils {
     }
     return lineBreakPattern.matcher(input).replaceAll("<br/>");
   }
-  
+
   /**
    * Linkify any possible web links excepting email addresses and enclosed with <p> tags
    * @param text text
@@ -89,7 +89,7 @@ public class TextUtils {
     return hyperlinkEnclosedWithPTags(escapeHtml(bodyContent));
   }
 
-  
+
   /**
    * Transforms an org.w3c.dom.Document into a String
    * 

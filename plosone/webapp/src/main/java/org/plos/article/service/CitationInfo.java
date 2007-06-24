@@ -33,17 +33,15 @@ public class CitationInfo {
   private String issue;
   private String articleAbstract;
   private String DOI;
-  
-  
-  
+
+
   /**
    * Empty Constructor
    *
    */
   public CitationInfo() {
-    
   }
-  
+
   /**
    * @return Returns the articleAbstract.
    */
@@ -187,6 +185,4 @@ public class CitationInfo {
   public void setVolume(String volume) {
     this.volume = volume;
   }
-  
-  
 }

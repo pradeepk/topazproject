@@ -140,7 +140,7 @@ public abstract class UserProfileAction extends UserActionSupport {
   /**
    * Will take the CAS ID and create a user in Topaz associated with that auth ID. If auth ID
    * already exists, it will not create another user. Email and Username are required and the
-   * profile will be updated.  
+   * profile will be updated.
    * 
    * @return status code for webwork
    */
@@ -244,8 +244,8 @@ public abstract class UserProfileAction extends UserActionSupport {
     city = plosOneUser.getCity();
     country = plosOneUser.getCountry();
   }
-  
-  
+
+
   /**
    * Prepopulate the user profile data as available
    * @return return code for webwork
@@ -264,7 +264,7 @@ public abstract class UserProfileAction extends UserActionSupport {
       // if the user has no display name, possibly getting migrated from an old system
       try {
         log.debug("this is an existing user with email: " + plosOneUser.getEmail());
-        
+
         assignUserFields (plosOneUser);
       } catch(NullPointerException  ex) {
         //fetching email in the case where profile creation failed and so email did not get saved.
@@ -288,7 +288,7 @@ public abstract class UserProfileAction extends UserActionSupport {
       if (plosOneUser == null) {
         plosOneUser = new PlosOneUser(this.authId);
       }
-      //Set the email address if the email address did not get saved during profile creation 
+      //Set the email address if the email address did not get saved during profile creation
       plosOneUser.setEmail(fetchUserEmailAddress());
     }
 
@@ -870,7 +870,6 @@ public abstract class UserProfileAction extends UserActionSupport {
     this.profanityCheckingService = profanityCheckingService;
   }
 
-  
   /**
    * Getter for isDisplayNameSet.
    * @return Value of isDisplayNameSet.
@@ -878,7 +877,7 @@ public abstract class UserProfileAction extends UserActionSupport {
   protected void setIsDisplayNameSet(final boolean inIsDisplayNameSet) {
     isDisplayNameSet = inIsDisplayNameSet;
   }
-  
+
   /**
    * Getter for isDisplayNameSet.
    * @return Value of isDisplayNameSet.

@@ -21,12 +21,12 @@ import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
 
 public class PublishArchivesAction extends BaseAdminActionSupport implements ServletContextAware {
-  
+
   private static final Log log = LogFactory.getLog(PublishArchivesAction.class);
   private String[] articlesToPublish;
   private String[] articlesToDelete;
   private ServletContext servletContext;
-  
+
   /**
    * Deletes and publishes checked articles from the admin console.  Note that delete has priority
    * over publish.
@@ -37,7 +37,7 @@ public class PublishArchivesAction extends BaseAdminActionSupport implements Ser
     publishArticles();
     return base();
   }
-  
+
   /**
    * publishes articles from the admin console
    * 
@@ -60,8 +60,7 @@ public class PublishArchivesAction extends BaseAdminActionSupport implements Ser
       }
     }
   }
-  
-  
+
   /**
    * Deletes the checked articles from the admin console.
    * 
@@ -79,12 +78,12 @@ public class PublishArchivesAction extends BaseAdminActionSupport implements Ser
           addActionMessage("Deleted: " + article);
         } catch (Exception e) {
           addActionMessage("Error deleting: " + article + " - " + e.toString());
-          log.warn ("Could not delete article: " + article, e);        
+          log.warn ("Could not delete article: " + article, e);
         }
-      } 
+      }
     }
   }
-  
+
   /**
    * 
    * @param articles array of articles to publish
@@ -92,7 +91,7 @@ public class PublishArchivesAction extends BaseAdminActionSupport implements Ser
   public void setArticlesToPublish(String[] articles) {
     articlesToPublish = articles;
   }
-  
+
   /**
    * 
    * @param articles array of articles to delete
@@ -100,7 +99,7 @@ public class PublishArchivesAction extends BaseAdminActionSupport implements Ser
   public void setArticlesToDelete(String[] articles) {
     articlesToDelete= articles;
   }
-  
+
   /**
    * Sets the servlet context.  Needed in order to clear the image cache
    * 
@@ -113,5 +112,4 @@ public class PublishArchivesAction extends BaseAdminActionSupport implements Ser
   private ServletContext getServletContext () {
     return this.servletContext;
   }
-  
 }

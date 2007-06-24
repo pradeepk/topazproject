@@ -29,7 +29,7 @@ public class ArticleFeedData {
   List     subjects = new ArrayList();
   List     categories = new ArrayList();
   int      state;
-  
+
   /**
    * Public constructor.
    */
@@ -67,7 +67,7 @@ public class ArticleFeedData {
   public List getCategories() { return categories; }
   /** Return the article's state */
   public int getState() { return state; }
-  
+
   public String toString() {
     return "ArticleData[" + this.uri + ":" + this.date + "]";
   }

@@ -63,7 +63,7 @@ public class ArticleXMLUtils {
   private Map<String, String> xmlFactoryProperty;
 
   private static final Log log = LogFactory.getLog(ArticleXMLUtils.class);
-  
+
   /**
    * Initialization method called by Spring
    * 
@@ -90,7 +90,7 @@ public class ArticleXMLUtils {
    * @throws ApplicationException
    */
   public String getTranformedDocument (String description) throws ApplicationException {
-    
+
     try {
       final DocumentBuilder builder = createDocBuilder();
       Document desc = builder.parse(new InputSource(new StringReader("<desc>" + description + "</desc>")));
@@ -99,13 +99,12 @@ public class ArticleXMLUtils {
       if (log.isErrorEnabled()) {
         log.error ("Could not transform document", e);
       }
-      throw new ApplicationException(e);            
+      throw new ApplicationException(e);
     }
   }
-  
 
   /**
-   * Given an article URI, will retrieve XML of article and apply an XSL transform to it, returning the 
+   * Given an article URI, will retrieve XML of article and apply an XSL transform to it, returning the
    * resulting document as a String.
    * 
    * @param articleUri
@@ -114,7 +113,7 @@ public class ArticleXMLUtils {
    * @throws ApplicationException
    * @throws NoSuchArticleIdException
    * @throws ParserConfigurationException
-   * @throws IOException  
+   * @throws IOException
    */
 
   public String getTransformedArticle (String articleUri) throws SAXException, ApplicationException,
@@ -122,8 +121,7 @@ public class ArticleXMLUtils {
                                                           IOException {
     return getTransformedDocument(getArticleAsDocument(articleUri));
   }
-  
-  
+
   /**
    * Given an XML Document as input, will return an XML string representing the document after
    * transformation.
@@ -138,15 +136,15 @@ public class ArticleXMLUtils {
       final DOMSource domSource = new DOMSource(doc);
       final Transformer transformer = getTranslet();
       final Writer writer = new StringWriter(1000);
-      
+
       transformer.transform(domSource, new StreamResult(writer));
-      transformedString = writer.toString(); 
+      transformedString = writer.toString();
     } catch (Exception e) {
-      throw new ApplicationException(e);      
+      throw new ApplicationException(e);
     }
     return transformedString;
   }
-  
+
   /**
    * Convenience method to create a DocumentBuilder with the factory configs
    * 
@@ -159,7 +157,7 @@ public class ArticleXMLUtils {
     builder.setEntityResolver(CachedSource.getResolver());
     return builder;
   }
-  
+
   private Transformer getTranslet() throws TransformerException, FileNotFoundException {
     if (null == translet) {
       // Instantiate the TransformerFactory, and use it with a StreamSource
@@ -172,7 +170,7 @@ public class ArticleXMLUtils {
     // transformations on that thread from a StreamSource to a StreamResult;
     return translet.newTransformer();
   }
-  
+
   private Document getArticleAsDocument (final String articleUri)
         throws IOException, SAXException, ParserConfigurationException, NoSuchArticleIdException {
 
@@ -182,7 +180,7 @@ public class ArticleXMLUtils {
     } catch (NoSuchObjectIdException ex) {
       throw new NoSuchArticleIdException(articleUri, "(representation=" + articleRep + ")", ex);
     }
-    
+
     final DataHandler content = new DataHandler(new URLDataSource(new URL(contentUrl)));
     final DocumentBuilder builder = createDocBuilder();
     return builder.parse(content.getInputStream());
@@ -217,7 +215,7 @@ public class ArticleXMLUtils {
       return new File(resource.toURI());
     }
   }
-  
+
   /**
    * Setter for article represenation
    * 

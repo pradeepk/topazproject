@@ -63,7 +63,7 @@ public class EnsureUserAccountInterceptor implements Interceptor {
         log.debug("UserService : " + userService + " hashcode = "  + userService.hashCode());
         log.debug("Session: " + ServletActionContext.getRequest().getSession().getId());
       }
-      
+
       if (null == plosUser) {
         //forward to new profile creation page
         log.debug("This is a new user with id: " + userId);
@@ -108,19 +108,19 @@ public class EnsureUserAccountInterceptor implements Interceptor {
           userService.setProfile(user);
         } catch (DisplayNameAlreadyExistsException de) {
           if (log.isErrorEnabled()) {
-            log.error("Username: " + user.getDisplayName() + 
-                      " already exists while trying to update email address for user: " + 
+            log.error("Username: " + user.getDisplayName() +
+                      " already exists while trying to update email address for user: " +
                       user.getUserId(), de);
           }
         }
-      } 
+      }
     } else {
       if (log.isErrorEnabled()) {
         log.error("Retrieved a null email address from CAS for userId: " + user.getUserId());
       }
     }
   }
-  
+
   private String fetchUserEmailAddress(PlosOneUser user, String authId) throws ApplicationException {
     String presetEmail = (String) getUserSessionMap().get(SINGLE_SIGNON_EMAIL_KEY);
     if (presetEmail != null)
@@ -140,8 +140,7 @@ public class EnsureUserAccountInterceptor implements Interceptor {
   private String getEmailAddressUrl() {
     return getUserService().getEmailAddressUrl();
   }
-  
-  
+
   public void destroy() {}
   public void init() {}
 }

@@ -193,26 +193,26 @@ public class PermissionWebService extends BaseConfigurableService {
   }
 
   /**
-   * Propagate permissions 
+   * Propagate permissions
    * @param resource resource
    * @param to other secondary resources
    * @throws RemoteException
    * @see org.topazproject.ws.permissions.Permissions#cancelRevokes(String, String[], String[])
    */
-  public void propagatePermissions(final String resource, final String[] to) 
+  public void propagatePermissions(final String resource, final String[] to)
     throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     permissionsService.propagatePermissions(resource, to);
   }
 
   /**
-   * Propagate permissions 
+   * Propagate permissions
    * @param resource resource
    * @param to other secondary resources
    * @throws RemoteException
    * @see org.topazproject.ws.permissions.Permissions#cancelRevokes(String, String[], String[])
    */
-  public void cancelPropagatePermissions(final String resource, final String[] to) 
+  public void cancelPropagatePermissions(final String resource, final String[] to)
     throws RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     permissionsService.propagatePermissions(resource, to);

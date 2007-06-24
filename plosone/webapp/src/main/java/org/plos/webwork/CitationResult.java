@@ -34,10 +34,10 @@ public class CitationResult extends FreemarkerResult  {
 
   private static final Log log = LogFactory.getLog(CitationResult.class);
   private String fileExtension;
-  
+
   protected boolean preTemplateProcess(freemarker.template.Template template,
       freemarker.template.TemplateModel model) throws IOException{
-     
+
     String doi = (String)invocation.getStack().findValue("citation.DOI");
     HttpServletResponse response = ServletActionContext.getResponse();
     try {
@@ -47,12 +47,11 @@ public class CitationResult extends FreemarkerResult  {
     }
     return super.preTemplateProcess(template, model);
   }
-  
+
   /**
    * @param fileExtension The fileExtension to set.
    */
   public void setFileExtension(String fileExtension) {
     this.fileExtension = fileExtension;
   }
-  
 }

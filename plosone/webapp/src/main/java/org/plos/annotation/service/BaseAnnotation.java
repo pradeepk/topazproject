@@ -25,7 +25,7 @@ public abstract class BaseAnnotation {
   public static final int FLAG_MASK = Constants.StateMask.FLAG;
   public static final int DELETE_MASK = Constants.StateMask.DELETE;
   private static final int TRUNCATED_COMMENT_LENGTH = 256;
-  
+
   /**
    * @return the escaped comment.
    * @throws org.plos.ApplicationException ApplicationException
@@ -51,11 +51,11 @@ public abstract class BaseAnnotation {
     String comment = getComment();
     if (comment.length() > TRUNCATED_COMMENT_LENGTH) {
       return TextUtils.hyperlinkEnclosedWithPTags(comment.substring(0, TRUNCATED_COMMENT_LENGTH) + "...");
-    } else { 
+    } else {
       return TextUtils.hyperlinkEnclosedWithPTags(comment);
     }
   }
-  
+
   /**
    * @return the original content of the annotation body
    * @throws ApplicationException ApplicationException

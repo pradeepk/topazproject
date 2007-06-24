@@ -215,7 +215,7 @@ public class ConfigurationStore {
       throw pe;
     }
   }
-  
+
   /**
    * Private helper function used by both constructors to actually load the configuration data.
    * This is the root of several private methods used to setup all the pdps and factories.
@@ -243,9 +243,9 @@ public class ConfigurationStore {
       throw new ParsingException("failed to load the file ", ioe);
     } finally {
       try { in.close(); } catch (Throwable t) {}
-    } 
+    }
   }
-  
+
   private void setupConfig(InputStream configFile) throws ParsingException {
     logger.config("Loading runtime configuration");
 

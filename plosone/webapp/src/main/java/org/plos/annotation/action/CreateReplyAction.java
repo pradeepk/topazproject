@@ -97,7 +97,7 @@ public class CreateReplyAction extends AnnotationActionSupport {
   public String getComment() {
   return comment;
   }
-  
+
   public void setProfanityCheckingService(final ProfanityCheckingService profanityCheckingService) {
     this.profanityCheckingService = profanityCheckingService;
   }

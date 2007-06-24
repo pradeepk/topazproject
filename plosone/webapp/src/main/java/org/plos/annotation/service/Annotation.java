@@ -27,9 +27,9 @@ public abstract class Annotation extends BaseAnnotation {
   private final AnnotationInfo annotation;
   private UserService userService;
   private String creatorName;
-  
+
   private static final Log log = LogFactory.getLog(Annotation.class);
-  
+
   /**
    * Get the target(probably a uri) that it annotates
    * @return target
@@ -54,7 +54,7 @@ public abstract class Annotation extends BaseAnnotation {
     try {
       return DateParser.parse(annotation.getCreated());
     } catch (InvalidDateException ide) {
-      log.error("Could not parse date for reply: " + this.getId() + 
+      log.error("Could not parse date for reply: " + this.getId() +
                 "; dateString is: " + annotation.getCreated(), ide);
     }
     return null;
@@ -175,7 +175,7 @@ public abstract class Annotation extends BaseAnnotation {
     this.annotation = annotation;
     this.userService = userSvc;
   }
-  
+
   /**
    * @return Returns the userService.
    */

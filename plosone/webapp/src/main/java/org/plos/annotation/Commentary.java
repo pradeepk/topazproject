@@ -28,12 +28,12 @@ import java.util.Date;
  *
  */
 public class Commentary implements Comparator<Commentary> {
-  private Annotation annotation;  
+  private Annotation annotation;
   private int numReplies;
   private String lastModified;
   private Reply[]replies;
   private static final Log log = LogFactory.getLog(Commentary.class);
-  
+
   public Commentary() {
   }
 
@@ -64,7 +64,7 @@ public class Commentary implements Comparator<Commentary> {
   public void setReplies(Reply[] replies) {
     this.replies = replies;
   }
-  
+
   /**
    * This comparator does a reverse sort based on the last reply to the annotation.  If not replies
    * are present, the annotation time is used.
@@ -84,7 +84,7 @@ public class Commentary implements Comparator<Commentary> {
       dateB = b.getAnnotation().getCreated();
     } else {
       dateB = b.getLastModified();
-    }    
+    }
     return dateB.compareTo(dateA);
   }
 
@@ -101,10 +101,10 @@ public class Commentary implements Comparator<Commentary> {
   public void setLastModified(String lastModified) {
     this.lastModified = lastModified;
   }
-  
+
   public Date getLastModifiedAsDate() {
     String theDate;
-    
+
     if (lastModified == null) {
       theDate = annotation.getCreated();;
     } else {
@@ -117,7 +117,7 @@ public class Commentary implements Comparator<Commentary> {
       }
       return DateParser.parse (theDate);
     } catch (InvalidDateException ide) {
-      log.error("Could not parse date for commnetary: " + this.annotation.getId() + 
+      log.error("Could not parse date for commnetary: " + this.annotation.getId() +
                 "; dateString is: " + theDate, ide);
     }
     return null;

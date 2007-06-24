@@ -29,7 +29,7 @@ public abstract class UserAlertsAction extends UserActionSupport {
   private final String MONTHLY_ALERT_SUFFIX = "_monthly";
   private final String WEEKLY_ALERT_SUFFIX = "_weekly";
   private static final Log log = LogFactory.getLog(UserAlertsAction.class);
-  
+
   /**
    * Save the alerts.
    * @return webwork status
@@ -58,7 +58,7 @@ public abstract class UserAlertsAction extends UserActionSupport {
       }
       alertsList.add(alert + WEEKLY_ALERT_SUFFIX);
     }
-    
+
     final String[] alerts = alertsList.toArray(new String[alertsList.size()]);
     plosOneUser.setAlerts(alerts);
 
@@ -84,7 +84,7 @@ public abstract class UserAlertsAction extends UserActionSupport {
       log.debug("plosuser email = " + plosOneUser.getEmail());
       log.debug("plosuser userID = " + plosOneUser.getUserId());
     }
-    
+
     if (null != alerts) {
       for (final String alert : alerts) {
         if (log.isDebugEnabled()) {
@@ -99,7 +99,7 @@ public abstract class UserAlertsAction extends UserActionSupport {
     }
 
     monthlyAlerts = monthlyAlertsList.toArray(new String[monthlyAlertsList.size()]);
-    weeklyAlerts = weeklyAlertsList.toArray(new String[weeklyAlertsList.size()]);  
+    weeklyAlerts = weeklyAlertsList.toArray(new String[weeklyAlertsList.size()]);
 
     setDisplayName(plosOneUser.getDisplayName());
     return SUCCESS;

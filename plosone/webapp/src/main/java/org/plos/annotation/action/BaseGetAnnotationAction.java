@@ -23,7 +23,7 @@ public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
   private String annotationId;
   private Annotation annotation;
   private String creatorUserName;
-  
+
   private static final Log log = LogFactory.getLog(BaseGetAnnotationAction.class);
 
   public String execute() throws Exception {
@@ -32,12 +32,12 @@ public abstract class BaseGetAnnotationAction extends AnnotationActionSupport {
       try {
         creatorUserName = getUserService().getUsernameByTopazId(annotation.getCreator());
       } catch (ApplicationException ae){
-        log.debug("Couldn't retrieve username: " + annotationId, ae);  
+        log.debug("Couldn't retrieve username: " + annotationId, ae);
         //Temporarily here to allow for anonymous annotations
         creatorUserName = "anonymous";
       }
       if (log.isDebugEnabled()){
-        StringBuilder message = new StringBuilder("CreatorUserName for annotationId "); 
+        StringBuilder message = new StringBuilder("CreatorUserName for annotationId ");
         log.debug(message.append(annotationId).append(": ").append(creatorUserName));
       }
     } catch (final ApplicationException e) {

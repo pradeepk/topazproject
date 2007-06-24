@@ -40,9 +40,8 @@ public class BaseConfigurableService {
       log.debug ("Service constructed: " + this.getClass());
    //   log.debug("", new Exception ());
     }
-    
   }
-  
+
   /**
    * @param configuration configuration
    * @return an instance of protected service
@@ -68,7 +67,6 @@ public class BaseConfigurableService {
       }
       configuration = new MapConfiguration(cloneConfigMap(configuration));
       configuration.setProperty(Constants.AUTH_METHOD_KEY, Constants.ANONYMOUS_USER_AUTHENTICATION);
-      
     }
 
     return ProtectedServiceFactory.createService(configuration, userContext.getHttpSession());
@@ -140,7 +138,7 @@ public class BaseConfigurableService {
         init();
       } catch (final CASProtectedService.NoProxyTicketException ex) {
         log.error("No proxy ticket exception thrown for " + userContext.getSessionMap().get(Constants.SINGLE_SIGNON_RECEIPT), ex);
-        throw new InvalidProxyTicketException(ex); 
+        throw new InvalidProxyTicketException(ex);
       } catch (final Exception e) {
         log.error("Init failed for service:" + getClass().getName(), e);
         throw new RuntimeException("Init failed for service:" + getClass().getName(), e);

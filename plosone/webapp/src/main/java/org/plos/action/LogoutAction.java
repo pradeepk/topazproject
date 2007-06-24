@@ -23,7 +23,7 @@ import com.opensymphony.webwork.dispatcher.SessionMap;
 public class LogoutAction extends BaseActionSupport {
   private String goTo;
   private UserContext userContext;
-  
+
   /**
    * Invalidates sesssion and returns SUCCESS if successful, else returns ERROR
    * 
@@ -31,7 +31,7 @@ public class LogoutAction extends BaseActionSupport {
   public String execute() throws Exception {
     if (userContext != null) {
       SessionMap session = (SessionMap)userContext.getSessionMap();
-      if (session != null) { 
+      if (session != null) {
         session.invalidate();
         return SUCCESS;
       }
@@ -66,7 +66,4 @@ public class LogoutAction extends BaseActionSupport {
   public void setUserContext(UserContext userContext) {
     this.userContext = userContext;
   }
-
-
-  
 }

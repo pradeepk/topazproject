@@ -22,21 +22,21 @@ import org.apache.commons.httpclient.methods.multipart.Part;
 
 public class CrossRefPosterService {
   private String doiXrefUrl;
-  
-  
+
+
   public void init() {
   }
-  
+
   public void setDoiXrefUrl(final String doiXrefUrl) {
     this.doiXrefUrl = doiXrefUrl;
   }
-  
+
   public int post(File file) throws HttpException, IOException {
     PostMethod poster = new PostMethod(doiXrefUrl);
     HttpClient client = new HttpClient();
-    
+
     Part[] parts = {new FilePart("fname", file.getName(), file)};
-    
+
     poster.setRequestEntity(
         new MultipartRequestEntity(parts, poster.getParams())
     );

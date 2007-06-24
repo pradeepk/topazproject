@@ -29,7 +29,7 @@ public class ListReplyAction extends AnnotationActionSupport {
   private Annotation baseAnnotation;
   private ArticleOtmService articleOtmService;
   private ObjectInfo articleInfo;
-  
+
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
 
   public String execute() throws Exception {

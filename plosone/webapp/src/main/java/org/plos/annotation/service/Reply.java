@@ -29,19 +29,17 @@ import java.util.Date;
  * - a separation from any topaz changes
  */
 public abstract class Reply extends BaseAnnotation {
+  private static final Log log = LogFactory.getLog(Reply.class);
+
   private final ReplyInfo reply;
   private Collection<Reply> replies = new ArrayList<Reply>();
   private String creatorName;
-  private UserService userService;  
+  private UserService userService;
 
-  private static final Log log = LogFactory.getLog(Reply.class);
-
-  
   public Reply(final ReplyInfo reply) {
     this.reply = reply;
   }
- 
-  
+
   /**
    * Constructor that takes in a UserService object in addition to ReplyInfo in order
    * to retrieve the username.
@@ -53,8 +51,7 @@ public abstract class Reply extends BaseAnnotation {
     this.reply = reply;
     this.userService = userSvc;
   }
- 
-  
+
   /**
    * Get created date.
    * @return created as java.util.Date.
@@ -66,7 +63,7 @@ public abstract class Reply extends BaseAnnotation {
     }
     return null;
   }
-  
+
   /**
    * Get created.
    *
@@ -95,7 +92,6 @@ public abstract class Reply extends BaseAnnotation {
     return reply.getId();
   }
 
-
   /**
    * Get inReplyTo.
    *
@@ -113,7 +109,6 @@ public abstract class Reply extends BaseAnnotation {
   public String getMediator() {
     return reply.getMediator();
   }
-
 
   /**
    * Get root.

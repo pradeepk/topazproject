@@ -29,7 +29,7 @@ import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
 /**
  * Class to get all ArticleInfos in system and organize them by date and by category
- * 
+ *
  * @author stevec
  *
  */
@@ -45,17 +45,17 @@ public class BrowseService {
   private static final int DATES_ARTICLES_INDEX= 1;
   private static final int CAT_NAME_INDEX = 2;
   private static final int CAT_ARTICLES_INDEX = 3;
-  
+
   private static final String ALL_ARTICLE_CACHE_KEY = "ALL_ARTICLE_LIST";
   private static final String ALL_BROWSE_OBJECTS = "ALL_BROWSE_OBJECTS";
-  
+
   public static final String ALL_ARTICLE_CACHE_GROUP_KEY = "ALL_ARTICLE_LIST_GROUP";
 
   private boolean populated = false;
-  
+
   /**
    * retrieve a listing of all articles in Topaz
-   * 
+   *
    * @return all articles
    */
   private ArticleInfo[] getAllArticles() {
@@ -65,7 +65,7 @@ public class BrowseService {
                                          new CacheAdminHelper.CacheUpdater<ArticleInfo[]>() {
         public ArticleInfo[] lookup(boolean[] updated) {
           try {
-            ArticleInfo[] res = articleOtmService.getArticleInfos(null, null, null, null, 
+            ArticleInfo[] res = articleOtmService.getArticleInfos(null, null, null, null,
                                                                   new int[] { STATE_ACTIVE }, true);
             updated[0] = true;
             return res;
@@ -77,11 +77,11 @@ public class BrowseService {
       }
     );
   }
-  
-  
+
+
   /**
    * Takes the articles and sets the categoryNames and articlesByCategory as well as the articleDates
-   * and articlesByDate values.  
+   * and articlesByDate values.
    */
   private void populateArticlesAndCategories() {
     allBrowseObjects =
@@ -98,17 +98,17 @@ public class BrowseService {
     );
     populated = true;
   }
-  
+
   private Object[] createBrowseObjects() {
     ArrayList<ArrayList<ArticleInfo>> articlesByCategory;
     TreeMap<String, ArrayList<ArticleInfo>> articlesByCategoryMap;
-    TreeMap<Date, ArrayList<ArticleInfo>> articlesByDateMap;  
+    TreeMap<Date, ArrayList<ArticleInfo>> articlesByDateMap;
     ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>> articlesByDate;
     ArrayList<ArrayList<ArrayList<Date>>> articleDates;
     String[] categoryNames;
-    
+
     ArticleInfo[] allArticleList = getAllArticles();
-    
+
     if (allArticleList.length > 0){
       articlesByCategoryMap = new TreeMap<String, ArrayList<ArticleInfo>>();
       articlesByDateMap = new TreeMap<Date, ArrayList<ArticleInfo>>();
@@ -133,20 +133,17 @@ public class BrowseService {
           theList.add(art);
         }
       }
-      Set<Map.Entry<String, ArrayList<ArticleInfo>>> allEntries = articlesByCategoryMap.entrySet();  
+      Set<Map.Entry<String, ArrayList<ArticleInfo>>> allEntries = articlesByCategoryMap.entrySet();
       Iterator<Map.Entry<String, ArrayList<ArticleInfo>>> iter = allEntries.iterator();
-      Map.Entry<String, ArrayList<ArticleInfo>> entry;
       categoryNames = new String[allEntries.size()];
       articlesByCategory = new ArrayList<ArrayList<ArticleInfo>>(allEntries.size());
-      ArrayList<ArticleInfo> artInfoArrayList;
       for (int i = 0; iter.hasNext(); i++) {
-        entry = iter.next();
+        Map.Entry<String, ArrayList<ArticleInfo>> entry = iter.next();
         categoryNames[i] = entry.getKey();
-        artInfoArrayList = entry.getValue();
-        articlesByCategory.add(i, artInfoArrayList);
+        articlesByCategory.add(i, entry.getValue());
       }
-      
-      Set<Map.Entry<Date, ArrayList<ArticleInfo>>> allDateEntries = articlesByDateMap.entrySet();  
+
+      Set<Map.Entry<Date, ArrayList<ArticleInfo>>> allDateEntries = articlesByDateMap.entrySet();
       Iterator<Map.Entry<Date, ArrayList<ArticleInfo>>> dateIter = allDateEntries.iterator();
       Map.Entry<Date, ArrayList<ArticleInfo>> dateEntry;
       articleDates = new ArrayList<ArrayList<ArrayList<Date>>>(2);
@@ -167,7 +164,7 @@ public class BrowseService {
           currentYear = oneDate.get(Calendar.YEAR);
           j = -1;
         }
-        
+
         if (currentMonth != oneDate.get(Calendar.MONTH)) {
           //flaw here is if you have two consecutive entries with the same month but different year
           articleDates.get(k).add(++j,new ArrayList<Date>());
@@ -207,7 +204,7 @@ public class BrowseService {
    */
   public ArrayList<ArrayList<ArticleInfo>> getArticlesByCategory() {
     if (!populated)
-      populateArticlesAndCategories();      
+      populateArticlesAndCategories();
     return (ArrayList<ArrayList<ArticleInfo>>) allBrowseObjects[CAT_ARTICLES_INDEX];
   }
 
@@ -217,7 +214,7 @@ public class BrowseService {
    */
   public ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>> getArticlesByDate() {
     if (!populated)
-      populateArticlesAndCategories();      
+      populateArticlesAndCategories();
     return (ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>>) allBrowseObjects[DATES_ARTICLES_INDEX];
   }
 
@@ -227,7 +224,7 @@ public class BrowseService {
    */
   public String[] getCategoryNames() {
     if (!populated)
-      populateArticlesAndCategories();      
+      populateArticlesAndCategories();
     return (String[]) allBrowseObjects[CAT_NAME_INDEX];
   }
 

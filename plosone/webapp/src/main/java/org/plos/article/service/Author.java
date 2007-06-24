@@ -22,7 +22,7 @@ public class Author {
   private String surname;
   private String suffix;
   private boolean isPrimary;
-  
+
   /**
    * 
    * @param given
@@ -35,13 +35,12 @@ public class Author {
     suffix = suf;
     isPrimary = isP;
   }
-  
+
   /**
    * 
    *
    */
   public Author (){
-    
   }
 
   /**
@@ -100,6 +99,4 @@ public class Author {
   public void setIsPrimary(boolean isPrimary) {
     this.isPrimary = isPrimary;
   }
-  
-  
 }

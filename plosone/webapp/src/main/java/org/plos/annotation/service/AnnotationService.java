@@ -38,7 +38,7 @@ public class AnnotationService extends BaseConfigurableService {
   private static final Log log = LogFactory.getLog(AnnotationService.class);
   private AnnotationConverter converter;
   private PermissionWebService permissionWebService;
-  
+
   /**
    * Create an annotation.
    * @param target target that an annotation is being created for
@@ -51,9 +51,9 @@ public class AnnotationService extends BaseConfigurableService {
    * @throws org.plos.ApplicationException ApplicationException
    * @return unique identifier for the newly created annotation
    */
-  public String createAnnotation(final String target, final String context, final String olderAnnotation, 
+  public String createAnnotation(final String target, final String context, final String olderAnnotation,
       final String title, final String mimeType, final String body, final boolean isPublic) throws ApplicationException {
-    
+
     if (log.isDebugEnabled()) {
       StringBuilder debugMsg = new StringBuilder("creating annotation for target: ");
       debugMsg.append(target).append("; context: ").append(context).append("; supercedes: ");
@@ -244,7 +244,7 @@ public class AnnotationService extends BaseConfigurableService {
       throw new ApplicationException(e);
     }
   }
-  
+
   /**
    * delete reply with id
    * @param replyId replyId of the reply
@@ -269,7 +269,7 @@ public class AnnotationService extends BaseConfigurableService {
      *  which calls the AnnotationWebService listAnnotations directly, so that call
      *  won't happen too much.
      */
-    
+
     Annotation[] allAnnotations;
     AnnotationInfo[] annotations;
     try {
@@ -328,7 +328,7 @@ public class AnnotationService extends BaseConfigurableService {
   public Reply[] listAllReplies(final String root, final String inReplyTo)throws ApplicationException {
     return listAllReplies(root, inReplyTo, null);
   }
-  
+
   /**
    * Get a list of all replies in a flat array
    * @param root the discussion thread this resource is part of
@@ -343,9 +343,7 @@ public class AnnotationService extends BaseConfigurableService {
       throw new ApplicationException(e);
     }
   }
-  
-  
-  
+
   /**
    * Get a list of all replies
    * @param root the discussion thread this resource is part of

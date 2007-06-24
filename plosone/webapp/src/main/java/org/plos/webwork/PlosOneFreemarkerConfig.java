@@ -30,18 +30,18 @@ import java.util.List;
  */
 public class PlosOneFreemarkerConfig {
   private static final Log log = LogFactory.getLog(PlosOneFreemarkerConfig.class);
-  
+
   private HashMap<String, String[]> cssFiles;
   private HashMap<String, String[]> javaScriptFiles;
   private HashMap<String, String> titles;
-  
+
   private String[] defaultCss;
   private String[] defaultJavaScript;
   private String defaultTitle;
-  
+
   private String dirPrefix;
   private String subdirPrefix;
-  
+
   private String plosOneHost;
   private String casLoginURL;
   private String casLogoutURL;
@@ -55,7 +55,7 @@ public class PlosOneFreemarkerConfig {
 
   /**
    * Constructor that loads the list of css and javascript files and page titles for pages which
-   * follow the standard templates.  
+   * follow the standard templates.
    * 
    */
   public PlosOneFreemarkerConfig() {
@@ -68,14 +68,14 @@ public class PlosOneFreemarkerConfig {
     registrationURL = myConfig.getString("plos-registration.url.registration");
     changePasswordURL = myConfig.getString("plos-registration.url.change-password");
     changeEmailURL = myConfig.getString("plos-registration.url.change-email");
-    
+
     String title = myConfig.getString("default.title");
     if (title != null) {
       defaultTitle = title;
     } else {
       defaultTitle = DEFAULT_TITLE;
     }
-    
+
     List fileList = myConfig.getList("default.css.file");
     if (fileList.size() > 0) {
       defaultCss = new String[fileList.size()];
@@ -86,7 +86,7 @@ public class PlosOneFreemarkerConfig {
     } else {
       defaultCss = DEFAULT_CSS_FILES;
     }
-    
+
     fileList = myConfig.getList("default.javascript.file");
     String javascriptFile;
     if (fileList.size() > 0) {
@@ -94,8 +94,8 @@ public class PlosOneFreemarkerConfig {
       Iterator iter = fileList.iterator();
       for (int i = 0; i < fileList.size(); i++) {
         javascriptFile = (String)iter.next();
-    	if (javascriptFile.endsWith(".ftl")) {
-    	  defaultJavaScript[i] = subdirPrefix + javascriptFile;
+        if (javascriptFile.endsWith(".ftl")) {
+          defaultJavaScript[i] = subdirPrefix + javascriptFile;
         } else {
           defaultJavaScript[i] = dirPrefix + subdirPrefix +javascriptFile;
         }
@@ -103,18 +103,18 @@ public class PlosOneFreemarkerConfig {
     } else {
       defaultJavaScript = DEFAULT_JS_FILES;
     }
-    
+
     int numPages = myConfig.getList("page.name").size();
     int numCss, numJavaScript, j;
     String pageName, page;
     titles = new HashMap<String, String>();
     cssFiles = new HashMap<String, String[]>();
     javaScriptFiles = new HashMap<String, String[]>();
-    
+
 
     String[] cssArray = null;
     String[] javaScriptArray = null;
-    
+
     for (int i = 0; i < numPages; i++) {
       page = "page(" + i + ")";
       pageName = myConfig.getString(page + ".name");
@@ -132,7 +132,7 @@ public class PlosOneFreemarkerConfig {
       if (numCss > 0) {
         cssFiles.put(pageName, cssArray);
       }
-      
+
       for (j = 0; j < numJavaScript; j++) {
         String fileName = myConfig.getString(page + ".javascript.file(" + j + ")");
         String filePath;
@@ -150,9 +150,8 @@ public class PlosOneFreemarkerConfig {
     if (log.isDebugEnabled()){
       log.debug("End PlosOne Configuration Reading");
     }
-  
   }
-  
+
   /**
    * Gets the title for the given template name. Return the default PLoS ONE if not defined
    * 
@@ -175,7 +174,7 @@ public class PlosOneFreemarkerConfig {
    * 
    * @param templateName
    * @return Returns list of css files given a template name.
-   */  
+   */
   public String[] getCss(String templateName) {
     String[] retVal = cssFiles.get(templateName);
     if (retVal == null) {
@@ -200,11 +199,11 @@ public class PlosOneFreemarkerConfig {
       return retVal;
     }
   }
-  
+
   public String getContext() {
     return dirPrefix + subdirPrefix;
   }
-  
+
   /**
    * @return Returns the dirPrefix.
    */

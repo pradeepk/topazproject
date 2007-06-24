@@ -35,7 +35,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
   private Commentary[] allCommentary;
   private ObjectInfo articleInfo;
   private ArticleOtmService articleOtmService;
-  
+
   private static final Log log = LogFactory.getLog(ListAnnotationAction.class);
 
   /**
@@ -71,7 +71,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
           }
           allCommentary[i] = com;
         }
-        Arrays.sort(allCommentary, allCommentary[0]);  
+        Arrays.sort(allCommentary, allCommentary[0]);
       }
     } catch (final ApplicationException e) {
       log.error("Could not get all commentary for articleID: " + target, e);
@@ -80,14 +80,11 @@ public class GetCommentaryAction extends AnnotationActionSupport {
     }
     return SUCCESS;
   }
-  
+
   public String getArticleMetaInfo () throws Exception {
     articleInfo = getArticleOtmService().getObjectInfo(target);
     return SUCCESS;
   }
-    
-    
-  
 
   /**
    * @return a list of annotations

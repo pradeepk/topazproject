@@ -48,5 +48,4 @@ public class MemberUserProfileAction extends UserProfileAction {
     final Map<String, Object> sessionMap = getSessionMap();
     return (String) sessionMap.get(Constants.SINGLE_SIGNON_USER_KEY);
   }
-  
 }

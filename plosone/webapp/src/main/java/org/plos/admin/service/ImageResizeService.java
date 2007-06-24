@@ -59,7 +59,7 @@ public class ImageResizeService {
     final String directory = configuration.getString("topaz.utilities.image-magick.temp-directory");
     if (directory == null) {
       throw new ImageResizeException("ERROR: configuration failed to associate a value with " +
-		                     "property topaz.utilities.image-magick.temp-directory");
+                                     "property topaz.utilities.image-magick.temp-directory");
     }
 
     setDirectory(directory);
@@ -139,16 +139,16 @@ public class ImageResizeService {
         } finally {
           out.close();
         }
-        
+
         fss  = new FileSeekableStream (inputImageFile);
-        
+
         final RenderedOp srcImage = JAI.create("Stream", fss);
         width = srcImage.getWidth();
         height = srcImage.getHeight();
         srcImage.dispose();
       } catch (SecurityException e) {
         throw new ImageResizeException(e);
-      } finally { 
+      } finally {
         if (fss != null) {
           fss.close();
         }

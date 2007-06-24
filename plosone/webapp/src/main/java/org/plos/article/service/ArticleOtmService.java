@@ -126,11 +126,11 @@ public class ArticleOtmService extends BaseConfigurableService {
       ctx.activate();
       txn = session.beginTransaction();
       ItqlHelper itql = ((ItqlStoreConnection)txn.getConnection()).getItqlHelper();
-      Ingester ingester = new Ingester(itql, ctx.getFedoraAPIM(), ctx.getFedoraUploader(), 
+      Ingester ingester = new Ingester(itql, ctx.getFedoraAPIM(), ctx.getFedoraUploader(),
                                        getFgsOperations());
       String ret = ingester.ingest(
         new Zip.DataSourceZip(
-          new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(), 
+          new org.apache.axis.attachments.ManagedMemoryDataSource(dataHandler.getInputStream(),
                                                 8192, "application/octet-stream", true)));
       txn.commit();
       txn = null;

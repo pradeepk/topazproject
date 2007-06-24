@@ -25,7 +25,7 @@ import java.util.Map;
 public class AnnotationConverter {
   private AnnotationLazyLoaderFactory lazyLoaderFactory;
   private UserService userService;
-  
+
   /**
    * @param annotations an array of annotations
    * @return an array of Annotation objects as required by the web layer
@@ -55,21 +55,17 @@ public class AnnotationConverter {
 
   }
 
-  
   /**
    * Creates a hierarchical array of replies based on the flat array passed in.
-   * 
    * 
    * @param replies an array of Replies
    * @return an array of Reply objects as required by the web layer
    * @throws org.plos.ApplicationException ApplicationException
    */
-  
   public Reply[] convert(final ReplyInfo[] replies) throws ApplicationException {
     return convert (replies, null);
   }
-  
-  
+
   /**
    * Creates a hierarchical array of replies based on the flat array passed in.
    * Fills in Commentary com parameter as appropriate
@@ -84,8 +80,7 @@ public class AnnotationConverter {
     final LinkedHashMap<String, Reply> repliesMap = new LinkedHashMap<String, Reply>(replies.length);
     int numReplies = replies.length;
     String latestReplyTime = null;
-    
-    
+
     String annotationId = null;
     if (numReplies > 0) {
       annotationId = replies[0].getRoot();
@@ -95,15 +90,13 @@ public class AnnotationConverter {
     for (final ReplyInfo reply : replies) {
       final Reply convertedObj = convert(reply);
       repliesMap.put(reply.getId(), convertedObj);
-      
+
       final String replyTo = reply.getInReplyTo();
       //Setup the top level replies
       if (replyTo.equals(annotationId)) {
         plosoneReplies.add(convertedObj);
       }
     }
-
-    
 
     //Thread the replies in a parent/child structure
     for (final Map.Entry<String, Reply> entry : repliesMap.entrySet()) {
@@ -113,7 +106,7 @@ public class AnnotationConverter {
       if (!inReplyToId.equals(annotationId)) {
         final Reply inReplyTo = repliesMap.get(inReplyToId);
         // If the replies are in reply to another reply and that reply isn't present
-        // then just add them to the top. This only happens when the array passed in is a subtree 
+        // then just add them to the top. This only happens when the array passed in is a subtree
         if (null == inReplyTo) {
           plosoneReplies.add(savedReply);
         } else {
@@ -121,7 +114,7 @@ public class AnnotationConverter {
          }
       }
     }
-    
+
     Reply[] returnArray = plosoneReplies.toArray(new Reply[plosoneReplies.size()]);
     if (com != null) {
       com.setReplies(returnArray);
@@ -129,7 +122,6 @@ public class AnnotationConverter {
       com.setNumReplies(numReplies);
     }
     return returnArray;
-  
   }
 
   /**

@@ -71,6 +71,4 @@ public class PlosOneFreemarkerResult extends FreemarkerResult {
   public void setNoCache(boolean noCache) {
     this.noCache = noCache;
   }
-  
-  
 }

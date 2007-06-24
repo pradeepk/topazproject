@@ -18,7 +18,6 @@ import com.opensymphony.webwork.views.freemarker.ScopesHashModel;
 
 import com.opensymphony.xwork.util.OgnlValueStack;
 
-
 /**
  * Custom Freemarker Manager to load up the configuration files for css, javascript, and titles of pages
  * 
@@ -28,7 +27,7 @@ import com.opensymphony.xwork.util.OgnlValueStack;
 public class PlosOneFreemarkerManager extends FreemarkerManager {
 
     private PlosOneFreemarkerConfig fmConfig;
-    
+
     /**
      * Sets the custom configuration object via Spring injection
      * 
@@ -37,14 +36,13 @@ public class PlosOneFreemarkerManager extends FreemarkerManager {
     public PlosOneFreemarkerManager(PlosOneFreemarkerConfig fmConfig) {
       this.fmConfig = fmConfig;
     }
-    
-    
+
     /**
      * Subclass from parent to add the freemarker configuratio object globally
      * 
      * @see com.opensymphony.webwork.views.freemarker.FreemarkerManager
      */
-    public void populateContext(ScopesHashModel model, OgnlValueStack stack, Object action, 
+    public void populateContext(ScopesHashModel model, OgnlValueStack stack, Object action,
                                 HttpServletRequest request, HttpServletResponse response) {
       super.populateContext(model, stack, action, request, response);
       model.put("freemarker_config", fmConfig);

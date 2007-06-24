@@ -240,7 +240,7 @@ public class DocumentManagementService {
       if (log.isErrorEnabled()) {
         log.error("Resize images failed for article " + uri, e);
       }
-      URI articleUri = null;      
+      URI articleUri = null;
       try {
         articleUri = new URI (uri);
       } catch (URISyntaxException ue) {

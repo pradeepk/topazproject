@@ -61,7 +61,7 @@ public abstract class BaseActionSupport extends ActionSupport {
   }
 
   /**
-   * Return the url for this request, which could be used to redirect the user to it in case of failure  
+   * Return the url for this request, which could be used to redirect the user to it in case of failure
    * @return the start url for this request
    */
   public String getStartingUrl() {
@@ -82,7 +82,7 @@ public abstract class BaseActionSupport extends ActionSupport {
       }
     }
     final String url = urlBuilder.toString();
-    log.debug("Url for redirection (on getting proxy invalidation!?) = " + url);    
+    log.debug("Url for redirection (on getting proxy invalidation!?) = " + url);
     return url;
   }
 

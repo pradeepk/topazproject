@@ -19,7 +19,7 @@ package org.plos.action;
  */
 public class RedirectAction extends BaseActionSupport {
   private String goTo;
-  
+
   /**
    * This execute method always returns SUCCESS
    * 
@@ -41,7 +41,4 @@ public class RedirectAction extends BaseActionSupport {
   public void setGoTo(String goTo) {
     this.goTo = goTo;
   }
-
-
-  
 }

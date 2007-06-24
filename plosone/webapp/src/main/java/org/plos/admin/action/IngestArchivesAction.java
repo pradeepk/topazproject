@@ -21,16 +21,15 @@ import org.plos.admin.service.ImageResizeException;
 import org.plos.article.util.DuplicateArticleIdException;
 
 public class IngestArchivesAction extends BaseAdminActionSupport {
-  
+
   private static final Log log = LogFactory.getLog(IngestArchivesAction.class);
   private String[] filesToIngest;
-    
+
   public void setFilesToIngest(String[] files) {
     filesToIngest = files;
   }
-  
+
   public String execute() throws RemoteException, ApplicationException {
-    
     if (filesToIngest != null) {
       String articleURI = null;
       for (String filename : filesToIngest) {
