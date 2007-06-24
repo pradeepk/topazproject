@@ -27,6 +27,23 @@ public class CreateFlagAction extends AnnotationActionSupport {
   private static final Log log = LogFactory.getLog(CreateFlagAction.class);
 
   /**
+   * Flag a Rating.
+   *
+   * @return WebWorks SUCCESS or ERROR.
+   */
+  public String createRatingFlag() {
+    try {
+      annotationId = getAnnotationService().createRatingFlag(target, reasonCode, comment, mimeType);
+    } catch (final ApplicationException e) {
+      log.error("Could not create flag for target: " + target, e);
+      addActionError("Flag creation failed with error message: " + e.getMessage());
+      return ERROR;
+    }
+    addActionMessage("Flag created with id:" + annotationId);
+    return SUCCESS;
+  }
+
+  /**
    * {@inheritDoc}
    * Create a flag for a given annotation
    */
