@@ -13,8 +13,6 @@ import java.io.ByteArrayOutputStream;
 
 import java.net.URI;
 
-import java.security.Principal;
-
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
@@ -29,7 +27,6 @@ import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.attr.AnyURIAttribute;
 import com.sun.xacml.attr.AttributeDesignator;
-import com.sun.xacml.attr.AttributeValue;
 import com.sun.xacml.attr.BagAttribute;
 import com.sun.xacml.attr.StringAttribute;
 import com.sun.xacml.cond.EvaluationResult;
@@ -38,7 +35,6 @@ import com.sun.xacml.ctx.RequestCtx;
 import com.sun.xacml.ctx.ResponseCtx;
 import com.sun.xacml.ctx.Result;
 import com.sun.xacml.ctx.Status;
-import com.sun.xacml.ctx.Subject;
 import com.sun.xacml.finder.AttributeFinder;
 
 /**

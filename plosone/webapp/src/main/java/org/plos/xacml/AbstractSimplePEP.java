@@ -9,7 +9,6 @@
  */
 package org.plos.xacml;
 
-import java.io.IOException;
 import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
@@ -18,12 +17,9 @@ import java.util.Map;
 import java.util.Set;
 
 import com.sun.xacml.PDP;
-import com.sun.xacml.ParsingException;
-import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.attr.AnyURIAttribute;
 import com.sun.xacml.ctx.Attribute;
 import com.sun.xacml.ctx.RequestCtx;
-import com.sun.xacml.finder.AttributeFinder;
 
 /**
  * A superclass for simple XACML PEP's.

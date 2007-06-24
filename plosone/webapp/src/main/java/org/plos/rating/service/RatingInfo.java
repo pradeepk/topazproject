@@ -17,7 +17,6 @@ import java.util.Date;
 import java.util.SimpleTimeZone;
 
 import org.plos.models.Rating;
-import org.plos.models.RatingContent;
 
 /**
  * Rating meta-data - designed to facilitate display from within the webapp.

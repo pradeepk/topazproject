@@ -9,8 +9,6 @@
  */
 package org.plos.xacml;
 
-import java.io.IOException;
-
 import java.net.URI;
 
 import java.util.ArrayList;
@@ -20,7 +18,6 @@ import java.util.Iterator;
 import java.util.Set;
 
 import com.sun.xacml.EvaluationCtx;
-import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.attr.AttributeFactory;
@@ -31,7 +28,6 @@ import com.sun.xacml.cond.EvaluationResult;
 import com.sun.xacml.ctx.Attribute;
 import com.sun.xacml.ctx.Status;
 import com.sun.xacml.ctx.StatusDetail;
-import com.sun.xacml.ctx.Subject;
 
 /**
  * XACML related Utility functions.

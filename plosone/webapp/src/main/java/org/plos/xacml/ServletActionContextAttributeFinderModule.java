@@ -17,7 +17,6 @@ import java.util.Set;
 import javax.servlet.ServletContext;
 import javax.servlet.http.HttpSession;
 
-import org.plos.xacml.Util;
 import org.plos.user.UserAccountsInterceptor;
 
 import com.opensymphony.webwork.ServletActionContext;

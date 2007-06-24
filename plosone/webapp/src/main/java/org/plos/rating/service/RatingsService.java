@@ -10,21 +10,17 @@
 package org.plos.rating.service;
 
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 
 import java.net.URI;
 import java.net.URISyntaxException;
 
-import java.rmi.RemoteException;
 
-import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
 import javax.xml.rpc.ServiceException;
 
-import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -41,7 +37,6 @@ import org.plos.models.RatingSummaryContent;
 
 import org.plos.permission.service.PermissionWebService;
 
-import org.plos.util.FileUtils;
 import org.plos.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -51,9 +46,6 @@ import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
-
-import com.opensymphony.oscache.base.NeedsRefreshException;
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
 /**
  * author: jonnie boldly copying several methods from someone else.

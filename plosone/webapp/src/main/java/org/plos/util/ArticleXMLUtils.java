@@ -40,7 +40,6 @@ import org.plos.ApplicationException;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.article.service.ArticleOtmService;
-import org.plos.util.FileUtils;
 
 import org.topazproject.xml.transform.cache.CachedSource;
 

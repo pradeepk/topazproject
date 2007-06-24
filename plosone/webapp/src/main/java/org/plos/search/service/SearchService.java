@@ -11,7 +11,6 @@ package org.plos.search.service;
 
 import org.plos.ApplicationException;
 import org.plos.search.SearchResultPage;
-import org.plos.search.SearchUtil;
 import org.plos.user.PlosOneUser;
 import org.plos.web.UserContext;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;

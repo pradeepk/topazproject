@@ -9,10 +9,6 @@
  */
 package org.plos.permission.service;
 
-import java.io.IOException;
-
-import java.net.URI;
-
 import java.rmi.RemoteException;
 
 import java.util.ArrayList;
@@ -20,9 +16,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
-
-import javax.xml.rpc.ServiceException;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
@@ -43,7 +36,6 @@ import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.stores.ItqlStore.ItqlStoreConnection;
 
-import net.sf.ehcache.Cache;
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
 import net.sf.ehcache.Ehcache;
