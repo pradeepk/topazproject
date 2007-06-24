@@ -19,9 +19,9 @@ import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.BrowseService;
 import org.plos.models.ObjectInfo;
 import static org.plos.models.Article.STATE_ACTIVE;
+import org.plos.util.CacheAdminHelper;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
-import com.opensymphony.oscache.base.NeedsRefreshException;
 
 import java.rmi.RemoteException;
 import java.util.ArrayList;
@@ -69,41 +69,31 @@ public class HomePageAction extends BaseActionSupport {
 
   private ArticleInfo[] getLastWeeksArticles() {
     if (lastWeeksArticles == null) {
-      try {
-        // Get from the cache
+      lastWeeksArticles = CacheAdminHelper.getFromCache(articleCacheAdministrator,
+                                                        WEEK_ARTICLE_CACHE_KEY,
+                                                        WEEK_ARTICLE_CACHE_DURATION, null,
+                                                        "last week's articles",
+                                             new CacheAdminHelper.CacheUpdater<ArticleInfo[]>() {
+          public ArticleInfo[] lookup(boolean[] updated) {
+            Date weekAgo = new Date();
+            weekAgo.setTime(weekAgo.getTime() - FIFTEEN_DAYS);
 
-        lastWeeksArticles= (ArticleInfo[])
-          articleCacheAdministrator.getFromCache(WEEK_ARTICLE_CACHE_KEY, WEEK_ARTICLE_CACHE_DURATION);
-        if (log.isDebugEnabled()) {
-          log.debug("retrieved last week's articles from cache");
-        }
-      } catch (NeedsRefreshException nre) {
-        boolean updated = false;
-        try {
-          //  Get the value from TOPAZ
-          Date weekAgo = new Date();
-          weekAgo.setTime(weekAgo.getTime() - FIFTEEN_DAYS);
-          if (log.isDebugEnabled()){
-            log.debug("retrieving last week's articles from TOPAZ");
-          }
-          lastWeeksArticles = articleOtmService.getArticleInfos(weekAgo.toString(), null, null,
-                              null, new int[]{STATE_ACTIVE}, false);
+            ArticleInfo[] res;
+            try {
+              res = articleOtmService.getArticleInfos(weekAgo.toString(), null, null, null,
+                                                      new int[] { STATE_ACTIVE }, false);
+              updated[0] = true;
+            } catch (RemoteException re) {
+              log.error("Could not retrieve the most recent articles", re);
+              res = new ArticleInfo[0];
+            }
 
-          // Store in the cache
-          articleCacheAdministrator.putInCache(WEEK_ARTICLE_CACHE_KEY, lastWeeksArticles);
-          updated = true;
-        } catch (RemoteException re) {
-          log.error("Could not retrieve the most recent articles", re);
-          lastWeeksArticles = new ArticleInfo[0];
-        } finally {
-          if (!updated) {
-              // It is essential that cancelUpdate is called if the
-              // cached content could not be rebuilt
-              articleCacheAdministrator.cancelUpdate(WEEK_ARTICLE_CACHE_KEY);
+            return res;
           }
         }
-      }
+      );
     }
+
     return lastWeeksArticles;
   }
 
@@ -114,38 +104,22 @@ public class HomePageAction extends BaseActionSupport {
    * @param maxArticles
    * @return ObjectInfo[] of maxArticles maximum size
    */
-  public ObjectInfo[] getCommentedOnArticles(int maxArticles) {
-    if (log.isDebugEnabled()){
+  public ObjectInfo[] getCommentedOnArticles(final int maxArticles) {
+    if (log.isDebugEnabled())
       log.debug("Calling getCommentedOnArticles with " + maxArticles + " maxArticles");
-    }
-    ObjectInfo[] retArray = new ObjectInfo[0];
-    try {
-      // Get from the cache
-      retArray= (ObjectInfo[])
-        articleCacheAdministrator.getFromCache(MOST_COMMENTED_CACHE_KEY + maxArticles, MOST_COMMENTED_CACHE_DURATION);
-      if (log.isDebugEnabled()) {
-        log.debug("retrieved most commented from cache");
-      }
-    } catch (NeedsRefreshException nre) {
-      boolean updated = false;
-      try {
-        //  Get the value from TOPAZ
-        if (log.isDebugEnabled()){
-          log.debug("retrieving most commented articles from TOPAZ");
-        }
-        retArray = articleOtmService.getCommentedArticles(maxArticles);
-        // Store in the cache
-        articleCacheAdministrator.putInCache(MOST_COMMENTED_CACHE_KEY + maxArticles, retArray);
-        updated = true;
-      } finally {
-        if (!updated) {
-            // It is essential that cancelUpdate is called if the
-            // cached content could not be rebuilt
-            articleCacheAdministrator.cancelUpdate(MOST_COMMENTED_CACHE_KEY + maxArticles);
+
+    return CacheAdminHelper.getFromCache(articleCacheAdministrator,
+                                         MOST_COMMENTED_CACHE_KEY + maxArticles,
+                                         MOST_COMMENTED_CACHE_DURATION, null,
+                                         "most commented articles",
+                                         new CacheAdminHelper.CacheUpdater<ObjectInfo[]>() {
+        public ObjectInfo[] lookup(boolean[] updated) {
+          ObjectInfo[] res = articleOtmService.getCommentedArticles(maxArticles);
+          updated[0] = true;
+          return res;
         }
       }
-    }
-    return retArray;
+    );
   }
 
   /**

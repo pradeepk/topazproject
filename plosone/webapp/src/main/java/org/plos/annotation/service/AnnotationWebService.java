@@ -35,6 +35,7 @@ import org.plos.models.Comment;
 
 import org.plos.permission.service.PermissionWebService;
 
+import org.plos.util.CacheAdminHelper;
 import org.plos.util.FileUtils;
 import org.plos.util.TransactionHelper;
 
@@ -45,7 +46,6 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 
-import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
 /**
@@ -285,23 +285,13 @@ public class AnnotationWebService extends BaseAnnotationService {
 
     pep.checkAccess(pep.LIST_ANNOTATIONS, URI.create(target));
 
-    AnnotationInfo[] annotations = null;
-
-    try {
-      //for now, since all annotations are public, don't have to cache based on userID
-      annotations = (AnnotationInfo[]) articleCacheAdministrator.getFromCache(target
-                                                                              + CACHE_KEY_ANNOTATION);
-
-      if (log.isDebugEnabled()) {
-        log.debug("retrieved annotation list from cache for target: " + target);
-      }
-    } catch (NeedsRefreshException nre) {
-      boolean updated = false;
-
-      try {
-        List<Comment> all =
-          TransactionHelper.doInTx(session,
-                                   new TransactionHelper.Action<List<Comment>>() {
+    return CacheAdminHelper.getFromCache(articleCacheAdministrator, target + CACHE_KEY_ANNOTATION,
+                                         -1, new String[] { FileUtils.escapeURIAsPath(target) },
+                                         "annotation list",
+                                         new CacheAdminHelper.CacheUpdater<AnnotationInfo[]>() {
+        public AnnotationInfo[] lookup(boolean[] updated) {
+          List<Comment> all =
+            TransactionHelper.doInTx(session, new TransactionHelper.Action<List<Comment>>() {
               public List<Comment> run(Transaction tx) {
                 // xxx: See trac #357. The previous default was incorrect. 
                 // Support both the old and the new to be compatible. (till data migration)
@@ -315,46 +305,38 @@ public class AnnotationWebService extends BaseAnnotationService {
               }
             });
 
-        List<Comment> l   = all;
+          List<Comment> l   = all;
 
-        if (false) { // xxx: no point here because of the cache logic above
-          l = new ArrayList(all);
+          if (false) { // xxx: no point here because of the cache logic above
+            l = new ArrayList(all);
 
-          for (Comment a : all) {
-            try {
-              pep.checkAccess(pep.GET_ANNOTATION_INFO, a.getId());
-            } catch (Throwable t) {
-              if (log.isDebugEnabled())
-                log.debug("no permission for viewing annotation " + a.getId()
-                          + " and therefore removed from list");
+            for (Comment a : all) {
+              try {
+                pep.checkAccess(pep.GET_ANNOTATION_INFO, a.getId());
+              } catch (Throwable t) {
+                if (log.isDebugEnabled())
+                  log.debug("no permission for viewing annotation " + a.getId()
+                            + " and therefore removed from list");
 
-              l.remove(a);
+                l.remove(a);
+              }
             }
           }
+
+          AnnotationInfo[] annotations = new AnnotationInfo[l.size()];
+          int i = 0;
+
+          for (Comment a : l)
+            annotations[i++] = new AnnotationInfo(a, fedora);
+
+          updated[0] = true;
+          if (log.isDebugEnabled())
+            log.debug("retrieved annotation list from TOPAZ for target: " + target);
+
+          return annotations;
         }
-
-        annotations = new AnnotationInfo[l.size()];
-
-        int i = 0;
-
-        for (Comment a : l)
-          annotations[i++] = new AnnotationInfo(a, fedora);
-
-        //use grouping for future when annotations can be private
-        articleCacheAdministrator.putInCache(target + CACHE_KEY_ANNOTATION, annotations,
-                                             new String[] { FileUtils.escapeURIAsPath(target) });
-        updated = true;
-
-        if (log.isDebugEnabled()) {
-          log.debug("retrieved annotation list from TOPAZ for target: " + target);
-        }
-      } finally {
-        if (!updated)
-          articleCacheAdministrator.cancelUpdate(target + CACHE_KEY_ANNOTATION);
       }
-    }
-
-    return annotations;
+    );
   }
 
   /**

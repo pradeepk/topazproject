@@ -23,9 +23,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import static org.plos.models.Article.STATE_ACTIVE;
+import org.plos.util.CacheAdminHelper;
 
-import com.opensymphony.oscache.base.CacheEntry;
-import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
 /**
@@ -59,42 +58,24 @@ public class BrowseService {
    * 
    * @return all articles
    */
-  public ArticleInfo[] getAllArticles() {
-    ArticleInfo[] allArticles = null;
-    try {
-      // Get from the cache
-
-      allArticles = (ArticleInfo[]) 
-        articleCacheAdministrator.getFromCache(ALL_ARTICLE_CACHE_KEY, CacheEntry.INDEFINITE_EXPIRY);
-      if (log.isDebugEnabled()) {
-        log.debug("retrieved all articles from cache");
-      }
-    } catch (NeedsRefreshException nre) {
-      boolean updated = false;
-      if (log.isDebugEnabled()){
-        log.debug("retrieving all articles from TOPAZ");
-      }
-      try {
-        //  Get the value from TOPAZ
-        allArticles = articleOtmService.getArticleInfos(null, null, null, null, 
-                                                        new int[]{STATE_ACTIVE}, true);
-        
-        // Store in the cache
-        articleCacheAdministrator.putInCache(ALL_ARTICLE_CACHE_KEY, allArticles, 
-                                             new String[]{ALL_ARTICLE_CACHE_GROUP_KEY});
-        updated = true;
-      } catch (RemoteException re) {
-        log.error("Could not retrieve the all articles", re);
-        allArticles = new ArticleInfo[0];
-      } finally {
-        if (!updated) {
-            // It is essential that cancelUpdate is called if the
-            // cached content could not be rebuilt
-            articleCacheAdministrator.cancelUpdate(ALL_ARTICLE_CACHE_KEY);
+  private ArticleInfo[] getAllArticles() {
+    return CacheAdminHelper.getFromCache(articleCacheAdministrator, ALL_ARTICLE_CACHE_KEY, -1,
+                                         new String[] { ALL_ARTICLE_CACHE_GROUP_KEY },
+                                         "all articles",
+                                         new CacheAdminHelper.CacheUpdater<ArticleInfo[]>() {
+        public ArticleInfo[] lookup(boolean[] updated) {
+          try {
+            ArticleInfo[] res = articleOtmService.getArticleInfos(null, null, null, null, 
+                                                                  new int[] { STATE_ACTIVE }, true);
+            updated[0] = true;
+            return res;
+          } catch (RemoteException re) {
+            log.error("Could not retrieve the all articles", re);
+            return new ArticleInfo[0];
+          }
         }
       }
-    }
-    return allArticles;
+    );
   }
   
   
@@ -103,25 +84,18 @@ public class BrowseService {
    * and articlesByDate values.  
    */
   private void populateArticlesAndCategories() {
-    try {
-      allBrowseObjects = (Object[])articleCacheAdministrator.getFromCache (ALL_BROWSE_OBJECTS, CacheEntry.INDEFINITE_EXPIRY);
-    } catch (NeedsRefreshException nre) {
-      boolean updated = false;
-      if (log.isDebugEnabled()){
-        log.debug("constructing category and date browse objects");
-      }      
-      try {
-        allBrowseObjects = createBrowseObjects();
-        articleCacheAdministrator.putInCache(ALL_BROWSE_OBJECTS, allBrowseObjects, new String[] {ALL_ARTICLE_CACHE_GROUP_KEY});
-        updated = true;
-      } finally {
-        if (!updated) {
-          // It is essential that cancelUpdate is called if the
-          // cached content could not be rebuilt
-          articleCacheAdministrator.cancelUpdate(ALL_BROWSE_OBJECTS);
+    allBrowseObjects =
+        CacheAdminHelper.getFromCache(articleCacheAdministrator, ALL_BROWSE_OBJECTS, -1,
+                                      new String[] { ALL_ARTICLE_CACHE_GROUP_KEY },
+                                      "category and date browse objects",
+                                      new CacheAdminHelper.CacheUpdater<Object[]>() {
+        public Object[] lookup(boolean[] updated) {
+          Object[] res = createBrowseObjects();
+          updated[0] = true;
+          return res;
         }
       }
-    }
+    );
     populated = true;
   }
   

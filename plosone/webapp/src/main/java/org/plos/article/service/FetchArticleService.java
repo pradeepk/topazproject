@@ -3,7 +3,6 @@
  */
 package org.plos.article.service;
 
-import com.opensymphony.oscache.base.NeedsRefreshException;
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
 import com.sun.org.apache.xpath.internal.XPathAPI;
@@ -18,6 +17,7 @@ import org.plos.annotation.service.Annotator;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
 import org.plos.models.ObjectInfo;
+import org.plos.util.CacheAdminHelper;
 import org.plos.util.FileUtils;
 import org.plos.util.TextUtils;
 import org.plos.util.ArticleXMLUtils;
@@ -32,7 +32,6 @@ import org.xml.sax.SAXException;
 import javax.activation.DataHandler;
 import javax.activation.URLDataSource;
 import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
@@ -88,28 +87,33 @@ public class FetchArticleService {
    */
   public String getURIAsHTML(final String articleURI) throws ApplicationException,
                           RemoteException, NoSuchArticleIdException {
-    String theArticle = null;
     String escapedURI = FileUtils.escapeURIAsPath(articleURI);
-    try {
-      //for now, since all annotations are public, don't have to cache based on userID
-      theArticle = (String)articleCacheAdministrator.getFromCache(articleURI/* + topazUserId*/); 
-      if (log.isDebugEnabled()) {
-        log.debug("retrieved article from cache: " + articleURI /*+ " / " + topazUserId*/);
+
+    Object res = CacheAdminHelper.getFromCache(articleCacheAdministrator,
+                                               articleURI/* + topazUserId*/, -1,
+                                               new String[] { escapedURI }, "transformed article",
+                                               new CacheAdminHelper.CacheUpdater<Object>() {
+        public Object lookup(boolean[] updated) {
+          try {
+            String a = getTransformedArticle(articleURI);
+            updated[0] = true;
+            return a;
+          } catch (Exception e) {
+            return e;
+          }
+        }
       }
-    } catch (NeedsRefreshException nre) {
-      boolean updated = false;
-      try {
-        //use grouping for future when annotations can be private
-        theArticle= getTransformedArticle(articleURI);
-        articleCacheAdministrator.putInCache(articleURI/* + topazUserId*/, 
-                                   theArticle, new String[]{escapedURI});
-        updated = true;
-      } finally {
-        if (!updated)
-          articleCacheAdministrator.cancelUpdate(articleURI);
-      }
-    }
-    return theArticle;
+    );
+
+    if (res instanceof ApplicationException)
+      throw (ApplicationException) res;
+    if (res instanceof NoSuchArticleIdException)
+      throw (NoSuchArticleIdException) res;
+    if (res instanceof RemoteException)
+      throw (RemoteException) res;
+    if (res instanceof RuntimeException)
+      throw (RuntimeException) res;
+    return (String) res;
   }
 
   /**
@@ -293,34 +297,32 @@ public class FetchArticleService {
   public ObjectInfo getArticleInfo(final String articleURI) throws ApplicationException {
     // do caching here rather than at articleOtmService level because we want the cache key
     // and group to be article specific
-    ObjectInfo artInfo;
-    
-    try {
-      artInfo = (ObjectInfo)articleCacheAdministrator.getFromCache(articleURI + CACHE_KEY_ARTICLE_INFO); 
-      if (log.isDebugEnabled()) {
-        log.debug("retrieved objectInfo from cache for: " + articleURI);
-      }
-    } catch (NeedsRefreshException nre) {
-      boolean updated = false;
-      try {
-        artInfo = articleXmlUtils.getArticleService().getObjectInfo(articleURI);
-        articleCacheAdministrator.putInCache(articleURI + CACHE_KEY_ARTICLE_INFO, artInfo, 
-                                             new String[]{FileUtils.escapeURIAsPath(articleURI)});
-        updated = true;
-        if (log.isDebugEnabled()) {
-          log.debug("retrieved objectInfo from TOPAZ for article URI: " + articleURI);
-        }        
-      } catch (NoSuchObjectIdException nsoie) {
-        if (log.isErrorEnabled()) {  
-          log.error("Failed to get object info for article URI: " + articleURI, nsoie);
+    ObjectInfo artInfo = CacheAdminHelper.getFromCache(articleCacheAdministrator,
+                                             articleURI + CACHE_KEY_ARTICLE_INFO, -1,
+                                             new String[] { FileUtils.escapeURIAsPath(articleURI) },
+                                             "objectInfo",
+                                             new CacheAdminHelper.CacheUpdater<ObjectInfo>() {
+        public ObjectInfo lookup(boolean[] updated) {
+          try {
+            ObjectInfo artInfo = articleXmlUtils.getArticleService().getObjectInfo(articleURI);
+            updated[0] = true;
+            if (log.isDebugEnabled()) {
+              log.debug("retrieved objectInfo from TOPAZ for article URI: " + articleURI);
+            }        
+            return artInfo;
+          } catch (NoSuchObjectIdException nsoie) {
+            if (log.isErrorEnabled()) {  
+              log.error("Failed to get object info for article URI: " + articleURI, nsoie);
+            }
+            return null;
+          }
         }
-        throw new ApplicationException("Failed to get object info " + articleURI, nsoie);
-      } finally {
-        if (!updated)
-          articleCacheAdministrator.cancelUpdate(articleURI + CACHE_KEY_ARTICLE_INFO);
-      } 
-    }
+      }
+    );
+
+    if (artInfo == null)
+      throw new ApplicationException("Failed to get object info " + articleURI);
+
     return artInfo;
   }
-
 }
