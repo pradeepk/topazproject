@@ -38,7 +38,7 @@ import org.topazproject.otm.criterion.Restrictions;
 import org.springframework.beans.factory.annotation.Required;
 
 /**
- * Rating action class to retrive all ratings for an Article.
+ * Rating action class to retrieve all ratings for an Article.
  *
  * @author Jeff Suttor
  */
