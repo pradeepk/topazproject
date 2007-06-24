@@ -11,8 +11,9 @@
 				
 					<p>Welcome, <!--<a href="${freemarker_config.context}/user/showUser.action?userId=${Session.PLOS_ONE_USER.userId}" title="You are logged in as ${Session.PLOS_ONE_USER.displayName}">--><strong>${Session.PLOS_ONE_USER.displayName}</strong></a>!</p>
 				<ul>
+					<@ww.url id="logoutURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${freemarker_config.casLogoutURL}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action"/>
 					<li><a href="${editProfileURL}" title="Edit your account preferences and alert settings">Preferences</a></li>
-					<li><a href="${freemarker_config.casLogoutURL}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action" title="Logout of PLoS ONE">Logout</a></li>
+                                        <li><a href="${logoutURL}" title="Logout of PLoS ONE">Logout</a></li>
 				</ul>
 		</div>
 	</div>

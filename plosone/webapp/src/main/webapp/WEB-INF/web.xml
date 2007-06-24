@@ -42,6 +42,10 @@
     </init-param>
     -->
     <init-param>
+      <param-name>casUrl</param-name>
+      <param-value>https://localhost:7443/cas/</param-value>
+    </init-param>
+    <init-param>
       <param-name>wrapRequest</param-name>
       <param-value>true</param-value>
     </init-param>
