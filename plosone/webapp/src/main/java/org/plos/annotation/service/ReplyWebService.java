@@ -43,13 +43,10 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 
-import com.opensymphony.oscache.general.GeneralCacheAdministrator;
-
 /**
  * Wrapper over reply web service
  */
 public class ReplyWebService extends BaseAnnotationService {
-  private GeneralCacheAdministrator articleCacheAdministrator;
   private static final Log          log         = LogFactory.getLog(ReplyWebService.class);
   private RepliesPEP                pep;
   private FedoraHelper              fedora;
@@ -484,24 +481,6 @@ public class ReplyWebService extends BaseAnnotationService {
             return a;
           }
         });
-  }
-
-  /**
-   * DOCUMENT ME!
-   *
-   * @return Returns the articleCacheAdministrator.
-   */
-  public GeneralCacheAdministrator getArticleCacheAdministrator() {
-    return articleCacheAdministrator;
-  }
-
-  /**
-   * DOCUMENT ME!
-   *
-   * @param articleCacheAdministrator The articleCacheAdministrator to set.
-   */
-  public void setArticleCacheAdministrator(GeneralCacheAdministrator articleCacheAdministrator) {
-    this.articleCacheAdministrator = articleCacheAdministrator;
   }
 
   /**
