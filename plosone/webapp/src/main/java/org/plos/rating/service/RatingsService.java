@@ -24,7 +24,6 @@ import javax.xml.rpc.ServiceException;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import static org.plos.annotation.service.Annotation.DELETE_MASK;
 import static org.plos.annotation.service.Annotation.FLAG_MASK;
 import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
 
