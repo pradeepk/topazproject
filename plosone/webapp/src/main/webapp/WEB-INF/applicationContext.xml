@@ -393,7 +393,7 @@
 
     <property name="preloadClasses">
       <list>
-        <value>org.plos.models.Annotation</value>
+        <value>org.plos.models.Comment</value>
         <value>org.plos.models.Reply</value>
         <value>org.plos.models.ReplyThread</value>
         <value>org.plos.models.Rating</value>
