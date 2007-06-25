@@ -227,6 +227,99 @@ public class OqlTest extends GroovyTestCase {
     }
   }
 
+  void testOrderLimitOffset() {
+    // test order, limit, offset
+    Class cls = rdf.class('Test1') {
+      name  ()
+      age   (type:'xsd:int')
+      birth (type:'xsd:date')
+    }
+
+    def o1 = cls.newInstance(name:'Bob',  age:5,   birth:new Date("6 Jun 1860"))
+    def o2 = cls.newInstance(name:'Joe',  age:42,  birth:new Date("4 Feb 1970"))
+    def o3 = cls.newInstance(name:'John', age:153, birth:new Date("2 Mar 2002"))
+    def o4 = cls.newInstance(name:'Paul', age:42,  birth:new Date("7 Jul 1970"))
+
+    doInTx { s ->
+      s.saveOrUpdate(o1)
+      s.saveOrUpdate(o2)
+      s.saveOrUpdate(o3)
+      s.saveOrUpdate(o4)
+    }
+
+    def checker = new ResultChecker(test:this)
+    Results r
+
+    doInTx { s ->
+      r = s.doQuery("select t.name n from Test1 t order by n asc;")
+      checker.verify(r) {
+        row { string ('Bob') }
+        row { string ('Joe') }
+        row { string ('John') }
+        row { string ('Paul') }
+      }
+
+      r = s.doQuery("select t.name n from Test1 t order by n desc;")
+      checker.verify(r) {
+        row { string ('Paul') }
+        row { string ('John') }
+        row { string ('Joe') }
+        row { string ('Bob') }
+      }
+
+      r = s.doQuery("select t.age age from Test1 t order by age;")
+      checker.verify(r) {
+        row { string ('5') }
+        row { string ('42') }
+        row { string ('153') }
+      }
+
+      r = s.doQuery("select t.age age, t.name name from Test1 t order by age, name;")
+      checker.verify(r) {
+        row { string ('5');   string ('Bob')  }
+        row { string ('42');  string ('Joe')  }
+        row { string ('42');  string ('Paul') }
+        row { string ('153'); string ('John') }
+      }
+
+      r = s.doQuery("select t.age age, t.name name from Test1 t order by age, name desc;")
+      checker.verify(r) {
+        row { string ('5');   string ('Bob')  }
+        row { string ('42');  string ('Paul') }
+        row { string ('42');  string ('Joe')  }
+        row { string ('153'); string ('John') }
+      }
+
+      r = s.doQuery("select t.age age from Test1 t order by age offset 1;")
+      checker.verify(r) {
+        row { string ('42') }
+        row { string ('153') }
+      }
+
+      r = s.doQuery("select t.age age from Test1 t order by age offset 2;")
+      checker.verify(r) {
+        row { string ('153') }
+      }
+
+      r = s.doQuery("select t.age age from Test1 t order by age limit 1 offset 1;")
+      checker.verify(r) {
+        row { string ('42') }
+      }
+
+      r = s.doQuery("select t.age age from Test1 t order by age limit 2 offset 1;")
+      checker.verify(r) {
+        row { string ('42') }
+        row { string ('153') }
+      }
+
+      r = s.doQuery("select t.age age from Test1 t order by age limit 2;")
+      checker.verify(r) {
+        row { string ('5') }
+        row { string ('42') }
+      }
+    }
+  }
+
   void testEmbeddedClass() {
     // create data
     Class cls = rdf.class('Test1') {
