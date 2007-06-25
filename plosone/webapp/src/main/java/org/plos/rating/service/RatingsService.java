@@ -47,51 +47,34 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 
 /**
- * author: jonnie boldly copying several methods from someone else.
+ * This service allows client code to operate on ratings objects.
+ *
+ * @author jonnie.
  */
 public class RatingsService extends BaseRatingsService {
-  private static final Log          log =
-    LogFactory.getLog(RatingsService.class);
-
-  private RatingsPEP                pep;
-  private Session                   session;
-  private PermissionWebService      permissions;
+  private static final Log     log = LogFactory.getLog(RatingsService.class);
+  private Session              session;
+  private PermissionWebService permissions;
 
   /**
    * Initializes the service
-   *
-   * @throws IOException DOCUMENT ME!
    */
-  public void init() throws IOException {
-    try {
-      if (pep == null)
-        pep = new RatingsPEP();
-    } catch (IOException e) {
-      throw e;
-    } catch (Exception e) {
-      IOException ioe = new IOException("Failed to create PEP");
-      ioe.initCause(e);
-      throw ioe;
-    }
+  public void init() {
   }
 
   /**
    * Create or update a Rating.
    *
-   * @param mimeType mimeType
-   * @param target target
-   * @param context context
-   * @param olderAnnotation olderAnnotation that the new one will supersede
-   * @param title title
-   * @param body body
-   *
-   * @return a the new annotation id
-   *
-   * @throws RemoteException RemoteException
-   * @throws UnsupportedEncodingException UnsupportedEncodingException
-   * @throws UnsupportedOperationException DOCUMENT ME!
+   * @param user          the user on whose behalf this operation is performed.
+   * @param articleURIStr the URI of the article to be rated.
+   * @param values        the values with which to initialize the rating
+   *                      whether it is new or to be updated. 
+   * @return a the new rating id
+   * @throws RatingsServiceException
    */
-  public void saveOrUpdateRating(final PlosOneUser user,final String articleURIStr,final Rating values) throws RatingsServiceException {
+  public void saveOrUpdateRating(final PlosOneUser user,
+                                 final String articleURIStr,
+                                 final Rating values) throws RatingsServiceException {
     ensureInitGetsCalledWithUsersSessionAttributes();
     final Date now = Calendar.getInstance().getTime();
 
@@ -102,20 +85,16 @@ public class RatingsService extends BaseRatingsService {
       final RatingSummary articleRatingSummary;
       final Transaction tx = session.beginTransaction();
 
-      pep.checkObjectAccess(RatingsPEP.SET_RATINGS,userURI,articleURI);
-
       try {
         if (log.isDebugEnabled()) {
           log.debug("Retrieving user Ratings for article: " + articleURIStr +
                     " and user: " + user.getUserId());
         }
 
-        // Ratings by this User for Article
-        List<Rating> ratingsList = session.createCriteria(Rating.class)
-                                          .add(Restrictions.eq("annotates",articleURIStr))
-                                          .add(Restrictions.eq("creator",user.getUserId()))
-                                          .list();
-
+        final List<Rating> ratingsList = session.createCriteria(Rating.class)
+                                                .add(Restrictions.eq("annotates",articleURIStr))
+                                                .add(Restrictions.eq("creator",user.getUserId()))
+                                                .list();
         final boolean newRating;
 
         if (ratingsList.size() == 0) {
@@ -134,7 +113,6 @@ public class RatingsService extends BaseRatingsService {
           if (ratingsList.size() == 1) {
             articleRating = ratingsList.get(0);
           } else {
-            // should never happen
             final String errorMessage = "Multiple Ratings for Article " + articleURIStr +
                                         " and user: " + user.getUserId();
             final Exception e = new RuntimeException(errorMessage);
@@ -143,11 +121,9 @@ public class RatingsService extends BaseRatingsService {
           }
         }
 
-        // RatingsSummary for Article
-        List<RatingSummary> summaryList = session.createCriteria(RatingSummary.class)
+        final List<RatingSummary> summaryList = session.createCriteria(RatingSummary.class)
                                                  .add(Restrictions.eq("annotates",articleURIStr))
                                                  .list();
-
         final boolean newRatingSummary;
 
         if (summaryList.size() == 0) {
@@ -165,7 +141,6 @@ public class RatingsService extends BaseRatingsService {
           if (summaryList.size() == 1) {
             articleRatingSummary = summaryList.get(0);
           } else {
-            // should never happen
             final String errorMessage = "Multiple RatingsSummary for Article " + articleURIStr +
                                         " and user: " + user.getUserId();
             final Exception e = new RuntimeException(errorMessage);
@@ -175,7 +150,6 @@ public class RatingsService extends BaseRatingsService {
         }
 
         if (!newRating && newRatingSummary) {
-          // should never happen
           final String errorMessage = "No RatingsSummary exists for extant rating: " +
                                       "(Article: " + articleURIStr + ",User: " + user.getUserId();
           final Exception e = new RuntimeException(errorMessage);
@@ -186,7 +160,8 @@ public class RatingsService extends BaseRatingsService {
         if (newRating) {
           // if this is a new Rating, then the summary needs to be updated with
           // the number of users that rated the article.
-          articleRatingSummary.getBody().setNumUsersThatRated(articleRatingSummary.getBody().getNumUsersThatRated() + 1);
+          final int newNumberOfRatings = articleRatingSummary.getBody().getNumUsersThatRated() + 1;
+          articleRatingSummary.getBody().setNumUsersThatRated(newNumberOfRatings);
         } else {
           // if this is a revised Rating, then the count remains the same, but
           // the old rating values must be removed.
@@ -214,7 +189,6 @@ public class RatingsService extends BaseRatingsService {
         articleRating.getBody().setInsightValue(insight);
         articleRating.getBody().setReliabilityValue(reliability);
         articleRating.getBody().setStyleValue(style);
-//      articleRating.setTitle(commentTitle);
         articleRating.getBody().setCommentTitle(commentTitle);
         articleRating.getBody().setCommentValue(commentValue);
 
@@ -242,7 +216,6 @@ public class RatingsService extends BaseRatingsService {
    * Unflag a Rating
    *
    * @param ratingId the identifier of the Rating object to be unflagged
-   *
    * @throws RatingServiceException
    */
   public void unflagRating(final String ratingId)
@@ -260,13 +233,10 @@ public class RatingsService extends BaseRatingsService {
                          throws RatingsServiceException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    //pep.checkObjectAccess(RatingsPEP.SET_RATINGS,userURI,articleURI);
-
     try {
       final Transaction tx = session.beginTransaction();
 
       try {
-        // Rating with this id
         List<Rating> ratingsList = session.createCriteria(Rating.class)
                                           .add(Restrictions.eq("id",ratingId))
                                           .list();
@@ -283,13 +253,11 @@ public class RatingsService extends BaseRatingsService {
         }
 
         final Rating articleRating = ratingsList.get(0);
-
         final URI articleURI = articleRating.getAnnotates();
-
-        // RatingSummary for this article
-        List<RatingSummary> summaryList = session.createCriteria(RatingSummary.class)
-                                                 .add(Restrictions.eq("annotates",articleURI.toString()))
-                                                 .list();
+        final List<RatingSummary> summaryList = session
+                                          .createCriteria(RatingSummary.class)
+                                          .add(Restrictions.eq("annotates",articleURI.toString()))
+                                          .list();
 
         if (summaryList.size() <= 0) {
           final String errorMessage = "No RatingSummary object found for article " +
@@ -305,12 +273,12 @@ public class RatingsService extends BaseRatingsService {
         }
 
         final RatingSummary articleRatingSummary = summaryList.get(0);
-
-        articleRatingSummary.getBody().setNumUsersThatRated(articleRatingSummary.getBody().getNumUsersThatRated() - 1);
+        final int newNumberOfRatings = articleRatingSummary.getBody().getNumUsersThatRated() - 1;
         final int insight = articleRating.getBody().getInsightValue();
         final int reliability = articleRating.getBody().getReliabilityValue();
         final int style = articleRating.getBody().getStyleValue();
 
+        articleRatingSummary.getBody().setNumUsersThatRated(newNumberOfRatings);
         if (insight > 0) {
           articleRatingSummary.getBody().removeRating(Rating.INSIGHT_TYPE,insight);
         }
@@ -342,11 +310,8 @@ public class RatingsService extends BaseRatingsService {
   public void setPublic(final String ratingId) throws RatingsServiceException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
- // pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationDoi));
-
     final Rating result =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Rating>() {
+      TransactionHelper.doInTx(session, new TransactionHelper.Action<Rating>() {
           public Rating run(Transaction tx) {
             Rating r = tx.getSession().get(Rating.class,ratingId);
             r.setState(PUBLIC_MASK);
@@ -358,19 +323,16 @@ public class RatingsService extends BaseRatingsService {
   }
 
   /**
-   * Set the rating as flagged
+   * Set the rating as flagged.
    *
-   * @param ratingId ratingId
+   * @param ratingId the id of rating object
    * @throws RatingsServiceException
    */
   public void setFlagged(final String ratingId) throws RatingsServiceException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
- // pep.checkAccess(pep.SET_ANNOTATION_STATE, URI.create(annotationId));
-
     final Rating result =
-      TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<Rating>() {
+      TransactionHelper.doInTx(session, new TransactionHelper.Action<Rating>() {
           public Rating run(Transaction tx) {
             Rating r = tx.getSession().get(Rating.class,ratingId);
             r.setState(PUBLIC_MASK | FLAG_MASK);
@@ -385,21 +347,17 @@ public class RatingsService extends BaseRatingsService {
    * List the set of Ratings in a specific administrative state.
    *
    * @param mediator if present only those annotations that match this mediator are returned
-   * @param state the state to filter the list of annotations by or 0 to return annotations in any
-   *              administrative state
-   *
-   * @return an array of annotation metadata; if no matching annotations are found, an empty array
+   * @param state    the state to filter the list of annotations by or 0 to return annotations
+   *                 in any administrative state
+   * @return an array of rating metadata; if no matching annotations are found, an empty array
    *         is returned
-   *
    * @throws RatingsServiceException if some error occurred
    */
   public RatingInfo[] listRatings(final String mediator,final int state)
                           throws RatingsServiceException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-//    pep.checkAccess(pep.LIST_ANNOTATIONS_IN_STATE, pep.ANY_RESOURCE);
-
-    List<Rating> list =
+    final List<Rating> list =
       TransactionHelper.doInTx(session,
                                new TransactionHelper.Action<List<Rating>>() {
           public List<Rating> run(Transaction tx) {
@@ -409,7 +367,6 @@ public class RatingsService extends BaseRatingsService {
               c.add(Restrictions.eq("mediator",mediator));
 
             if (state == 0) {
-              // this doesn't look elegant.
               c.add(Restrictions.ne("state", "0"));
             } else {
               c.add(Restrictions.eq("state", "" + state));
@@ -439,7 +396,7 @@ public class RatingsService extends BaseRatingsService {
   }
 
   /**
-   * Set the PermissionWebService
+   * Set the PermissionWebService. Called by spring's bean wiring.
    *
    * @param permissionWebService permissionWebService
    */
