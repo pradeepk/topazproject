@@ -271,23 +271,33 @@ tokens {
       }
 
       // create expression
-      String pred, model;
+      String pred, iprd, model;
       if (isDate(ltype)) {
         pred  = (f.charAt(0) == 'l') ? "<mulgara:before>" : "<mulgara:after>";
+        iprd  = (f.charAt(0) != 'l') ? "<mulgara:before>" : "<mulgara:after>";
         model = "xsd";
       } else if (isNum(ltype)) {
         pred  = (f.charAt(0) == 'l') ? "<mulgara:lt>" : "<mulgara:gt>";
+        iprd  = (f.charAt(0) != 'l') ? "<mulgara:lt>" : "<mulgara:gt>";
         model = "xsd";
       } else {
         pred  = (f.charAt(0) == 'l') ? "<topaz:lt>" : "<topaz:gt>";
+        iprd  = (f.charAt(0) != 'l') ? "<topaz:lt>" : "<topaz:gt>";
         model = "str";
       }
 
       AST res = #([AND, "and"], astFactory.dupTree(larg), astFactory.dupTree(rarg));
       if (f.equals("ge") || f.equals("le"))
+        /* do this when mulgara supports <mulgara:equals>
         res.addChild(#([OR, "or"],
                        makeTriple(lvar, pred, rvar, getModelUri(model)),
                        makeTriple(lvar, "<mulgara:equals>", rvar)));
+        */
+        /* this requires the functions to support variables on both sides
+        res = #([MINUS, "minus"], res, makeTriple(lvar, iprd, rvar, getModelUri(model)));
+        */
+        res = #([MINUS, "minus"], astFactory.dupTree(res),
+                #([AND, "and"], res, makeTriple(lvar, iprd, rvar, getModelUri(model))));
       else
         res.addChild(makeTriple(lvar, pred, rvar, getModelUri(model)));
 

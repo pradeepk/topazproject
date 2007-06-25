@@ -203,27 +203,59 @@ public class OqlTest extends GroovyTestCase {
           row { string ('Bob') }
         }
 
-        /*
         r = s.doQuery("select t.name n from Test1 t where le(t.${test[0]}, ${test[1]}) order by n;")
         checker.verify(r) {
           row { string ('Bob') }
           row { string ('Joe') }
         }
-        */
 
         r = s.doQuery("select t.name n from Test1 t where gt(t.${test[0]}, ${test[1]}) order by n;")
         checker.verify(r) {
           row { string ('John') }
         }
 
-        /*
         r = s.doQuery("select t.name n from Test1 t where ge(t.${test[0]}, ${test[1]}) order by n;")
         checker.verify(r) {
-          row { string ('Joe') }
+          row { string ('Joe')  }
           row { string ('John') }
         }
-        */
       }
+
+      /* uncomment when the various resolvers support variables on both sides of the comparison
+      r = s.doQuery("select t1.name n1, t2.name n2 from Test1 t1, Test1 t2 where lt(t1.name, t2.name) order by n1, n2;")
+      checker.verify(r) {
+        row { string ('Bob'); string('Joe')  }
+        row { string ('Bob'); string('John') }
+        row { string ('Joe'); string('John') }
+      }
+
+      r = s.doQuery("select t1.name n1, t2.name n2 from Test1 t1, Test1 t2 where le(t1.name, t2.name) order by n1, n2;")
+      checker.verify(r) {
+        row { string ('Bob');  string ('Bob')  }
+        row { string ('Bob');  string ('Joe')  }
+        row { string ('Bob');  string ('John') }
+        row { string ('Joe');  string ('Joe')  }
+        row { string ('Joe');  string ('John') }
+        row { string ('John'); string ('John') }
+      }
+
+      r = s.doQuery("select t1.name n1, t2.name n2 from Test1 t1, Test1 t2 where gt(t1.name, t2.name) order by n1, n2;")
+      checker.verify(r) {
+        row { string ('Joe');  string ('Bob') }
+        row { string ('John'); string ('Bob') }
+        row { string ('John'); string ('Joe') }
+      }
+
+      r = s.doQuery("select t1.name n1, t2.name n2 from Test1 t1, Test1 t2 where ge(t1.name, t2.name) order by n1, n2;")
+      checker.verify(r) {
+        row { string ('Bob');  string ('Bob')  }
+        row { string ('Joe');  string ('Bob')  }
+        row { string ('Joe');  string ('Joe')  }
+        row { string ('John'); string ('Bob')  }
+        row { string ('John'); string ('Joe')  }
+        row { string ('John'); string ('John') }
+      }
+      */
     }
   }
 
