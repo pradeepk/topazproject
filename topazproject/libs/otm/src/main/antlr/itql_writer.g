@@ -228,7 +228,7 @@ constr[QueryBuilder qb]
         e.append(' ');
       }
 
-    | #(MINUS { e.append("("); } expr[qb] { e.append("minus "); } expr[qb]) { e.append(") "); }
+    | #(MINUS { e.append("(("); } expr[qb] { e.append(") minus ("); } expr[qb]) { e.append(")) "); }
 
     | #(TRANS { e.append("trans("); } expr[qb] { e.append("and "); } (opt:expr[qb])?) {
         if (#opt == null)

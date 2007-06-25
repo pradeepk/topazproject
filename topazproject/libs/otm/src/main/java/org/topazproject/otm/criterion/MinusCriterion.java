@@ -26,7 +26,7 @@ public class MinusCriterion implements Criterion {
   private Criterion minuend;
   private Criterion subtrahend;
 
-/**
+  /**
    * Creates a new MinusCriterion object.
    *
    * @param minuend subtract from
@@ -42,7 +42,7 @@ public class MinusCriterion implements Criterion {
    */
   public String toItql(Criteria criteria, String subjectVar, String varPrefix)
                 throws OtmException {
-    return "(" + minuend.toItql(criteria, subjectVar, varPrefix + "m1") + " minus "
-           + subtrahend.toItql(criteria, subjectVar, varPrefix + "m2") + ")";
+    return "( (" + minuend.toItql(criteria, subjectVar, varPrefix + "m1") + ") minus ("
+           + subtrahend.toItql(criteria, subjectVar, varPrefix + "m2") + ") )";
   }
 }
