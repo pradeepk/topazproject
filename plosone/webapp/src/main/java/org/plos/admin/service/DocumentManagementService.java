@@ -26,6 +26,7 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.zip.ZipEntry;
 import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
@@ -376,8 +377,8 @@ public class DocumentManagementService {
   /**
    * @return List of filenames of files in uploadable directory on server
    */
-  public ArrayList<String> getUploadableFiles() {
-    ArrayList<String> documents = new ArrayList<String>();
+  public List<String> getUploadableFiles() {
+    List<String> documents = new ArrayList<String>();
     File dir = new File(documentDirectory);
     if (dir.isDirectory()) {
       String filenames[] = dir.list();
@@ -393,14 +394,17 @@ public class DocumentManagementService {
 
   /**
    * @return A list of URIs of ingested documents in ST_DISABLED
-   * @throws RemoteException
    * @throws ApplicationException
    */
-  public Collection<String> getPublishableFiles() throws RemoteException, ApplicationException {
-    ArrayList<String> articles = fetchArticleService.getArticles(null, null,
-        new int[] { Article.STATE_DISABLED });
-    Collections.sort(articles);
-    return articles;
+  public Collection<String> getPublishableFiles() throws ApplicationException {
+    try {
+      List<String> articles =
+          fetchArticleService.getArticleIds(null, null, new int[] { Article.STATE_DISABLED });
+      Collections.sort(articles);
+      return articles;
+    } catch (Exception e) {
+      throw new ApplicationException(e);
+    }
   }
 
   private void generateCrossRefInfoDoc(File file, String uri) throws ZipException, IOException,

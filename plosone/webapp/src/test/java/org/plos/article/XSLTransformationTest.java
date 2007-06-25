@@ -38,18 +38,6 @@ public class XSLTransformationTest extends BasePlosoneTestCase {
     TimeIt.logTime();
   }
 
-  public void testXSLTransformationToBeEfficient() throws Exception {
-    final String XML_SOURCE = BASE_TEST_PATH + "pone.0000008.xml";
-//    final String XML_SOURCE = "pbio.0000001-embedded-math-dtd.xml";
-    final Transformer transformer = getXSLTransformer(XSL_SOURCE);
-
-    final Source source = getFetchArticleService().getDOMSource(XML_SOURCE);
-
-    transformXML(transformer, source, OUTPUT_FILENAME);
-    TimeIt.logTime();
-  }
-
-
   private void transformXML(final Transformer transformer, final Source xmlSource, final String outputFileName) throws TransformerException, FileNotFoundException {
     // 3. Use the Transformer to transform an XML_SOURCE Source and send the
     //    output to a Result object.

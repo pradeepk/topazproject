@@ -75,7 +75,7 @@ public class FetchArticleActionTest extends BasePlosoneTestCase {
   }
 
   public void testListArticles() throws MalformedURLException, ServiceException, ApplicationException {
-    Collection<String> articles = getFetchArticleService().getArticles(null, null);
+    Collection<String> articles = getFetchArticleService().getArticleIds(null, null, null);
     for (final String article : articles) {
       log.debug("article = " + article);
     }

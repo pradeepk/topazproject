@@ -26,7 +26,7 @@ import java.io.Writer;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
-import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
@@ -227,7 +227,7 @@ public class ArticleFeed extends BaseActionSupport {
         Article.ACTIVE_STATES, // states
         sort,                  // sort by
         maxResults);           // max results
-    } catch (RemoteException ex) {
+    } catch (ParseException ex) {
       throw new ApplicationException(ex);
     }
     if (log.isDebugEnabled()) {

@@ -19,8 +19,8 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.action.BaseActionSupport;
-import org.plos.article.service.ArticleInfo;
 import org.plos.article.service.BrowseService;
+import org.plos.models.Article;
 
 /**
  * @author stevec
@@ -38,10 +38,10 @@ public class BrowseArticlesAction extends BaseActionSupport  {
   private int day = -1;
   private BrowseService browseService;
   private String[] categoryNames;
-  private ArrayList<ArrayList<ArticleInfo>> articlesByCategory;
-  private ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>> articlesByDate;
+  private ArrayList<ArrayList<Article>> articlesByCategory;
+  private ArrayList<ArrayList<ArrayList<ArrayList<Article>>>> articlesByDate;
   private ArrayList<ArrayList<ArrayList<Date>>> articleDates;
-  private ArrayList<ArticleInfo> articleList;
+  private ArrayList<Article> articleList;
 
   private static final int PAGE_SIZE = 10;
   private static final String DATE_FIELD = "date";
@@ -68,23 +68,23 @@ public class BrowseArticlesAction extends BaseActionSupport  {
     if (getYear() > -1 && getMonth() > -1 && getDay () > -1) {
       articleList = articlesByDate.get(getYear()).get(getMonth()).get(getDay());
     } else if (getYear() > -1 && getMonth() > -1) {
-      articleList = new ArrayList<ArticleInfo>();
-      Iterator <ArrayList<ArticleInfo>> iter = articlesByDate.get(getYear()).get(getMonth()).iterator();
+      articleList = new ArrayList<Article>();
+      Iterator <ArrayList<Article>> iter = articlesByDate.get(getYear()).get(getMonth()).iterator();
       while (iter.hasNext()) {
         articleList.addAll(iter.next());
       }
     } else if (getMonth() == -2) {
       int sizeA = articlesByDate.size();
       int sizeB = articlesByDate.get(sizeA - 1).size();
-      articleList = new ArrayList<ArticleInfo>();
-      Iterator <ArrayList<ArticleInfo>> iter = articlesByDate.get(sizeA - 1).get(sizeB - 1).iterator();
+      articleList = new ArrayList<Article>();
+      Iterator <ArrayList<Article>> iter = articlesByDate.get(sizeA - 1).get(sizeB - 1).iterator();
       while (iter.hasNext()) {
         articleList.addAll(iter.next());
       }
     } else if (getMonth() == -3) {
       int sizeA = articlesByDate.size();
       int sizeB = articlesByDate.get(sizeA - 1).size();
-      articleList = new ArrayList<ArticleInfo>();
+      articleList = new ArrayList<Article>();
       int i = 3;
       int indexA = sizeA - 1;
       int indexB = sizeB - 1;
@@ -97,8 +97,8 @@ public class BrowseArticlesAction extends BaseActionSupport  {
         } else {
           break;
         }
-        Iterator <ArrayList<ArticleInfo>> iter = articlesByDate.get(indexA).get(indexB).iterator();
-        ArrayList<ArticleInfo> tempArrayList = new ArrayList<ArticleInfo>();
+        Iterator <ArrayList<Article>> iter = articlesByDate.get(indexA).get(indexB).iterator();
+        ArrayList<Article> tempArrayList = new ArrayList<Article>();
         while (iter.hasNext()) {
           tempArrayList.addAll(iter.next());
         }
@@ -179,7 +179,7 @@ public class BrowseArticlesAction extends BaseActionSupport  {
   /**
    * @return Returns the articlesByCategory.
    */
-  public ArrayList<ArrayList<ArticleInfo>> getArticlesByCategory() {
+  public ArrayList<ArrayList<Article>> getArticlesByCategory() {
     return articlesByCategory;
   }
 
@@ -228,7 +228,7 @@ public class BrowseArticlesAction extends BaseActionSupport  {
   /**
    * @return Returns the articleList.
    */
-  public Collection<ArticleInfo> getArticleList() {
+  public Collection<Article> getArticleList() {
     return articleList;
   }
 

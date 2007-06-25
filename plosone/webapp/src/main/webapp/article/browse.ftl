@@ -81,8 +81,8 @@
 		  <#list startIndex .. endIndex as idx>
 				<#assign art = articleList[idx]>
 				<li>
-					<span class="date">Published ${art.articleDate?string("dd MMM yyyy")}</span>
-          <@ww.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${art.uri}" includeParams="none"/>
+					<span class="date">Published ${art.date?string("dd MMM yyyy")}</span>
+          <@ww.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${art.id}" includeParams="none"/>
 					<span class="article"><@ww.a href="%{fetchArticleURL}" title="Read Open Access Article">${art.title}</@ww.a></span>
 					<span class="authors">
 						<#list art.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list>

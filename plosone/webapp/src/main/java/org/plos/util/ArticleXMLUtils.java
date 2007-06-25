@@ -55,6 +55,8 @@ import org.xml.sax.SAXException;
  *
  */
 public class ArticleXMLUtils {
+  private static final Log log = LogFactory.getLog(ArticleXMLUtils.class);
+
   private Templates translet;
   private File xslTemplate;
   private DocumentBuilderFactory factory;
@@ -62,18 +64,12 @@ public class ArticleXMLUtils {
   private String articleRep;
   private Map<String, String> xmlFactoryProperty;
 
-  private static final Log log = LogFactory.getLog(ArticleXMLUtils.class);
-
   /**
    * Initialization method called by Spring
-   * 
-   *
    */
   public void init() {
-    // Set the TransformerFactory system property.
-    for (Map.Entry<String, String> entry : xmlFactoryProperty.entrySet()) {
-      System.setProperty(entry.getKey(), entry.getValue());
-    }
+    // Set the TransformerFactory system properties.
+    System.getProperties().putAll(xmlFactoryProperty);
 
     // Create a document builder factory and set the defaults
     factory = DocumentBuilderFactory.newInstance();
@@ -89,11 +85,11 @@ public class ArticleXMLUtils {
    * @return Transformed document as a String
    * @throws ApplicationException
    */
-  public String getTranformedDocument (String description) throws ApplicationException {
-
+  public String getTranformedDocument(String description) throws ApplicationException {
     try {
       final DocumentBuilder builder = createDocBuilder();
-      Document desc = builder.parse(new InputSource(new StringReader("<desc>" + description + "</desc>")));
+      Document desc =
+          builder.parse(new InputSource(new StringReader("<desc>" + description + "</desc>")));
       return getTransformedDocument (desc);
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
@@ -104,8 +100,8 @@ public class ArticleXMLUtils {
   }
 
   /**
-   * Given an article URI, will retrieve XML of article and apply an XSL transform to it, returning the
-   * resulting document as a String.
+   * Given an article URI, will retrieve XML of article and apply an XSL transform to it, returning
+   * the resulting document as a String.
    * 
    * @param articleUri
    * @return XML String
@@ -115,10 +111,9 @@ public class ArticleXMLUtils {
    * @throws ParserConfigurationException
    * @throws IOException
    */
-
-  public String getTransformedArticle (String articleUri) throws SAXException, ApplicationException,
-                                                          NoSuchArticleIdException, ParserConfigurationException,
-                                                          IOException {
+  public String getTransformedArticle(String articleUri)
+      throws SAXException, ApplicationException, NoSuchArticleIdException,
+             ParserConfigurationException, IOException {
     return getTransformedDocument(getArticleAsDocument(articleUri));
   }
 
@@ -130,7 +125,7 @@ public class ArticleXMLUtils {
    * @return XML String of transformed document
    * @throws ApplicationException
    */
-  public String getTransformedDocument (Document doc) throws ApplicationException {
+  public String getTransformedDocument(Document doc) throws ApplicationException {
     String transformedString = null;
     try {
       final DOMSource domSource = new DOMSource(doc);
@@ -171,7 +166,7 @@ public class ArticleXMLUtils {
     return translet.newTransformer();
   }
 
-  private Document getArticleAsDocument (final String articleUri)
+  private Document getArticleAsDocument(final String articleUri)
         throws IOException, SAXException, ParserConfigurationException, NoSuchArticleIdException {
 
     final String contentUrl;

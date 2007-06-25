@@ -5,8 +5,6 @@ package org.plos.article.service;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
-import com.sun.org.apache.xpath.internal.XPathAPI;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -16,35 +14,28 @@ import org.plos.annotation.service.AnnotationWebService;
 import org.plos.annotation.service.Annotator;
 import org.plos.article.util.NoSuchArticleIdException;
 import org.plos.article.util.NoSuchObjectIdException;
-import org.plos.models.ObjectInfo;
+import org.plos.models.Article;
 import org.plos.util.CacheAdminHelper;
 import org.plos.util.FileUtils;
 import org.plos.util.TextUtils;
 import org.plos.util.ArticleXMLUtils;
 
 import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NodeList;
 
-import org.xml.sax.InputSource;
 import org.xml.sax.SAXException;
 
 import javax.activation.DataHandler;
 import javax.activation.URLDataSource;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.transform.Source;
 import javax.xml.transform.TransformerException;
-import javax.xml.transform.dom.DOMSource;
 
 import java.io.IOException;
-import java.io.StringReader;
 import java.net.URISyntaxException;
+import java.net.URI;
 import java.net.URL;
-import java.net.URLDecoder;
 import java.rmi.RemoteException;
-import java.util.ArrayList;
-import java.util.Collection;
+import java.util.List;
 
 
 /**
@@ -64,7 +55,7 @@ public class FetchArticleService {
 
   private String getTransformedArticle(final String articleURI) throws ApplicationException {
     try {
-      return articleXmlUtils.getTransformedDocument (getAnnotatedContentAsDocument(articleURI));
+      return articleXmlUtils.getTransformedDocument(getAnnotatedContentAsDocument(articleURI));
     } catch (Exception e) {
       if (log.isErrorEnabled()) {
         log.error ("Could not transform article: " + articleURI, e);
@@ -128,45 +119,23 @@ public class FetchArticleService {
    * @throws NoSuchArticleIdException NoSuchArticleIdException
    * @throws javax.xml.transform.TransformerException TransformerException
    */
-  public String getAnnotatedContent(final String articleURI) throws ParserConfigurationException,
-                                    SAXException, IOException, URISyntaxException,
-                                    ApplicationException, NoSuchArticleIdException,TransformerException{
+  public String getAnnotatedContent(final String articleURI)
+      throws ParserConfigurationException, SAXException, IOException, URISyntaxException,
+             ApplicationException, NoSuchArticleIdException,TransformerException{
     return TextUtils.getAsXMLString(getAnnotatedContentAsDocument(articleURI));
   }
 
-  /**
-   * Get the xmlFileURL as a DOMSource.
-   * @param xmlFileURL xmlFileURL
-   * @return an instance of DOMSource
-   * @throws ParserConfigurationException ParserConfigurationException
-   * @throws SAXException SAXException
-   * @throws IOException IOException
-   * @throws URISyntaxException URISyntaxException
-   * @throws org.plos.ApplicationException ApplicationException
-   * @throws NoSuchArticleIdException NoSuchArticleIdException
-   */
-  public Source getDOMSource(final String xmlFileURL) throws ParserConfigurationException, SAXException, IOException, URISyntaxException, ApplicationException, NoSuchArticleIdException {
-    final DocumentBuilder builder = articleXmlUtils.createDocBuilder();
-
-    Document doc;
-    try {
-      doc = builder.parse(articleXmlUtils.getAsFile(xmlFileURL));
-    } catch (Exception e) {
-      doc = builder.parse(xmlFileURL);
-    }
-
-    // Prepare the DOM source
-    return new DOMSource(doc);
-  }
-
-  private Document getAnnotatedContentAsDocument(final String infoUri) throws IOException,
-          NoSuchArticleIdException, ParserConfigurationException, SAXException, ApplicationException {
-
+  private Document getAnnotatedContentAsDocument(final String infoUri)
+      throws IOException, NoSuchArticleIdException, ParserConfigurationException, SAXException,
+             ApplicationException {
     final String contentUrl;
     try {
-      contentUrl = articleXmlUtils.getArticleService().getObjectURL(infoUri, articleXmlUtils.getArticleRep());
+      contentUrl = articleXmlUtils.getArticleService().
+                                   getObjectURL(infoUri, articleXmlUtils.getArticleRep());
     } catch (NoSuchObjectIdException ex) {
-      throw new NoSuchArticleIdException(infoUri, "(representation=" + articleXmlUtils.getArticleRep() + ")", ex);
+      throw new NoSuchArticleIdException(infoUri,
+                                         "(representation=" + articleXmlUtils.getArticleRep() + ")",
+                                         ex);
     }
 
     return getAnnotatedContentAsDocument(contentUrl, infoUri);
@@ -215,47 +184,21 @@ public class FetchArticleService {
   }
 
   /**
-   * Get a list of all articles
+   * Get a list of ids of all articles that match the given criteria.
+   *
    * @param startDate startDate
-   * @param endDate endDate
-   * @param state  array of matching state values
+   * @param endDate   endDate
+   * @param state     array of matching state values
    * @return list of article uri's
    * @throws ApplicationException ApplicationException
    */
-  public ArrayList<String> getArticles(final String startDate, final String endDate, final int[] state) throws ApplicationException {
-    final ArrayList<String> articles = new ArrayList<String>();
-
+  public List<String> getArticleIds(String startDate, String endDate, int[] state)
+      throws ApplicationException {
     try {
-      final String articlesDoc = articleXmlUtils.getArticleService().getArticles(startDate, endDate, state, true);
-
-      // Create the builder and parse the file
-      final Document articleDom = articleXmlUtils.getFactory().newDocumentBuilder().parse(new InputSource(new StringReader(articlesDoc)));
-
-      // Get the matching elements
-      final NodeList nodelist = XPathAPI.selectNodeList(articleDom, "/articles/article/uri");
-
-      for (int i = 0; i < nodelist.getLength(); i++) {
-        final Element elem = (Element) nodelist.item(i);
-        final String uri = elem.getTextContent();
-        final String decodedArticleUri = URLDecoder.decode(uri, encodingCharset);
-        articles.add(decodedArticleUri);
-      }
-
-      return articles;
+      return articleXmlUtils.getArticleService().getArticleIds(startDate, endDate, state, true);
     } catch (Exception e) {
       throw new ApplicationException(e);
     }
-  }
-
-  /**
-   * Get a list of all articles
-   * @param startDate startDate
-   * @param endDate endDate
-   * @return list of article uri's
-   * @throws ApplicationException ApplicationException
-   */
-  public Collection<String> getArticles(final String startDate, final String endDate) throws ApplicationException {
-    return getArticles(startDate, endDate, null);
   }
 
   /**
@@ -288,32 +231,32 @@ public class FetchArticleService {
   }
 
   /**
-   * @see ArticleOtmService#getObjectInfo(String)
    * @param articleURI articleURI
-   * @return ObjectInfo
+   * @return Article
    * @throws ApplicationException ApplicationException
+   * @see ArticleOtmService#Article(java.net.URI)
    */
-  public ObjectInfo getArticleInfo(final String articleURI) throws ApplicationException {
+  public Article getArticleInfo(final String articleURI) throws ApplicationException {
     // do caching here rather than at articleOtmService level because we want the cache key
     // and group to be article specific
-    ObjectInfo artInfo = CacheAdminHelper.getFromCache(articleCacheAdministrator,
+    Article artInfo = CacheAdminHelper.getFromCache(articleCacheAdministrator,
                                              articleURI + CACHE_KEY_ARTICLE_INFO, -1,
                                              new String[] { FileUtils.escapeURIAsPath(articleURI) },
                                              "objectInfo",
-                                             new CacheAdminHelper.CacheUpdater<ObjectInfo>() {
-        public ObjectInfo lookup(boolean[] updated) {
+                                             new CacheAdminHelper.CacheUpdater<Article>() {
+        public Article lookup(boolean[] updated) {
           try {
-            ObjectInfo artInfo = articleXmlUtils.getArticleService().getObjectInfo(articleURI);
+            Article artInfo = articleXmlUtils.getArticleService().getArticle(new URI(articleURI));
             updated[0] = true;
-            if (log.isDebugEnabled()) {
+            if (log.isDebugEnabled())
               log.debug("retrieved objectInfo from TOPAZ for article URI: " + articleURI);
-            }
             return artInfo;
-          } catch (NoSuchObjectIdException nsoie) {
-            if (log.isErrorEnabled()) {
-              log.error("Failed to get object info for article URI: " + articleURI, nsoie);
-            }
+          } catch (NoSuchArticleIdException nsaie) {
+            if (log.isErrorEnabled())
+              log.error("Failed to get object info for article URI: " + articleURI, nsaie);
             return null;
+          } catch (URISyntaxException use) {
+            throw new RuntimeException("article uri '" + articleURI + "' is not a valid URI", use);
           }
         }
       }

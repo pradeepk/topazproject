@@ -14,16 +14,14 @@ import org.apache.commons.lang.math.RandomUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.article.service.ArticleInfo;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.service.BrowseService;
-import org.plos.models.ObjectInfo;
-import static org.plos.models.Article.STATE_ACTIVE;
+import org.plos.models.Article;
 import org.plos.util.CacheAdminHelper;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
-import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Iterator;
@@ -40,7 +38,7 @@ public class HomePageAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(HomePageAction.class);
   private ArticleOtmService articleOtmService;
   private BrowseService browseService;
-  private ArticleInfo[] lastWeeksArticles;
+  private Article[] lastWeeksArticles;
   private static final long ONE_WEEK = 7 * 24 * 60 * 60 * 1000;
   private static final long FIFTEEN_DAYS = 15 * 24 * 60 * 60 * 1000;
   private GeneralCacheAdministrator articleCacheAdministrator;
@@ -61,31 +59,31 @@ public class HomePageAction extends BaseActionSupport {
   /**
    * Retrieves the most recently published articles in the last 7 days
    *
-   * @return array of ArticleInfo objects
+   * @return array of Article objects
    */
-  public ArticleInfo[] getRecentArticles() {
+  public Article[] getRecentArticles() {
     return getLastWeeksArticles();
   }
 
-  private ArticleInfo[] getLastWeeksArticles() {
+  private Article[] getLastWeeksArticles() {
     if (lastWeeksArticles == null) {
       lastWeeksArticles = CacheAdminHelper.getFromCache(articleCacheAdministrator,
                                                         WEEK_ARTICLE_CACHE_KEY,
                                                         WEEK_ARTICLE_CACHE_DURATION, null,
                                                         "last week's articles",
-                                             new CacheAdminHelper.CacheUpdater<ArticleInfo[]>() {
-          public ArticleInfo[] lookup(boolean[] updated) {
+                                             new CacheAdminHelper.CacheUpdater<Article[]>() {
+          public Article[] lookup(boolean[] updated) {
             Date weekAgo = new Date();
             weekAgo.setTime(weekAgo.getTime() - FIFTEEN_DAYS);
 
-            ArticleInfo[] res;
+            Article[] res;
             try {
-              res = articleOtmService.getArticleInfos(weekAgo.toString(), null, null, null,
-                                                      new int[] { STATE_ACTIVE }, false);
+              res = articleOtmService.getArticles(weekAgo.toString(), null, null, null,
+                                                  new int[] { Article.STATE_ACTIVE }, false);
               updated[0] = true;
-            } catch (RemoteException re) {
-              log.error("Could not retrieve the most recent articles", re);
-              res = new ArticleInfo[0];
+            } catch (ParseException pe) {
+              log.error("Internal error", pe);
+              res = new Article[0];
             }
 
             return res;
@@ -99,12 +97,12 @@ public class HomePageAction extends BaseActionSupport {
 
 
   /**
-   * Return an array of ObjectInfos representing the maxArticles most commented on articles
+   * Return an array of Article's representing the maxArticles most commented on articles
    *
    * @param maxArticles
-   * @return ObjectInfo[] of maxArticles maximum size
+   * @return Article[] of maxArticles maximum size
    */
-  public ObjectInfo[] getCommentedOnArticles(final int maxArticles) {
+  public Article[] getCommentedOnArticles(final int maxArticles) {
     if (log.isDebugEnabled())
       log.debug("Calling getCommentedOnArticles with " + maxArticles + " maxArticles");
 
@@ -112,9 +110,9 @@ public class HomePageAction extends BaseActionSupport {
                                          MOST_COMMENTED_CACHE_KEY + maxArticles,
                                          MOST_COMMENTED_CACHE_DURATION, null,
                                          "most commented articles",
-                                         new CacheAdminHelper.CacheUpdater<ObjectInfo[]>() {
-        public ObjectInfo[] lookup(boolean[] updated) {
-          ObjectInfo[] res = articleOtmService.getCommentedArticles(maxArticles);
+                                         new CacheAdminHelper.CacheUpdater<Article[]>() {
+        public Article[] lookup(boolean[] updated) {
+          Article[] res = articleOtmService.getCommentedArticles(maxArticles);
           updated[0] = true;
           return res;
         }
@@ -137,10 +135,10 @@ public class HomePageAction extends BaseActionSupport {
   }
 
   /**
-   * @return Returns the articlesByCategory - a two dimensional array of ArticleInfo
+   * @return Returns the articlesByCategory - a two dimensional array of Article
    *          objects to go along with getCategoryNames.
    */
-  public ArrayList<ArrayList<ArticleInfo>> getArticlesByCategory() {
+  public ArrayList<ArrayList<Article>> getArticlesByCategory() {
     return browseService.getArticlesByCategory();
   }
 

@@ -79,14 +79,21 @@ public class ArticlePEP extends AbstractSimplePEP {
     init(ArticlePEP.class, SUPPORTED_ACTIONS, SUPPORTED_OBLIGATIONS);
   }
 
-  public ArticlePEP()
-      throws IOException, ParsingException, UnknownIdentifierException {
-    this(XacmlUtil.lookupPDP("topaz.articles.pdpName"),
-            XacmlUtil.createSubjAttrs());
+  public ArticlePEP() throws IOException {
+    this(getPDP(), XacmlUtil.createSubjAttrs());
   }
 
-  protected ArticlePEP(PDP pdp, Set subjAttrs)
-      throws IOException, ParsingException, UnknownIdentifierException {
+  private static final PDP getPDP() throws IOException {
+    try {
+      return XacmlUtil.lookupPDP("topaz.articles.pdpName");
+    } catch (ParsingException pe) {
+      throw (IOException) new IOException("Error creating articles-pep").initCause(pe);
+    } catch (UnknownIdentifierException uie) {
+      throw (IOException) new IOException("Error creating articles-pep").initCause(uie);
+    }
+  }
+
+  protected ArticlePEP(PDP pdp, Set subjAttrs) {
     super(pdp, subjAttrs);
   }
 }

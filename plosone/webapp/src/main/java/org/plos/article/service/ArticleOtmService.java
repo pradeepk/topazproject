@@ -11,20 +11,16 @@ package org.plos.article.service;
 
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URISyntaxException;
 import java.net.URI;
 import java.net.URL;
 import java.text.ParseException;
 import java.rmi.RemoteException;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import javax.activation.DataHandler;
 import javax.xml.rpc.ServiceException;
@@ -34,7 +30,6 @@ import org.apache.commons.io.input.CountingInputStream;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.apache.commons.lang.time.DateUtils;
-import org.apache.commons.lang.time.DateFormatUtils;
 
 import org.plos.article.util.ArticleUtil;
 import org.plos.article.util.IngestException;
@@ -52,7 +47,6 @@ import org.plos.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
 
-import org.topazproject.authentication.ProtectedService;
 import org.plos.configuration.ConfigurationStore;
 import org.topazproject.fedora.client.FedoraAPIM;
 import org.topazproject.fedoragsearch.service.FgsOperationsServiceLocator;
@@ -61,8 +55,10 @@ import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
+import org.topazproject.otm.criterion.Disjunction;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.stores.ItqlStore.ItqlStoreConnection;
 
@@ -84,20 +80,10 @@ public class ArticleOtmService extends BaseConfigurableService {
 
   private final WSTopazContext ctx = new WSTopazContext(getClass().getName());
 
-  private ArticlePEP getPEP() {
-    // create an XACML PEP for Articles
-    try {
-      if (pep == null) {
-        pep = new ArticlePEP();
-      }
-    } catch (Exception e) {
-      throw new Error("Failed to create ArticlePEP", e);
-    }
-    return pep;
-  }
-
-  public void init() throws IOException, URISyntaxException, ServiceException {
-    final ProtectedService permissionProtectedService = getProtectedService();
+  @Override
+  protected void init() throws IOException {
+    if (pep == null)
+      pep = new ArticlePEP();
   }
 
   /**
@@ -117,7 +103,7 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // ask PEP if ingest is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
-     getPEP().checkAccess(ArticlePEP.INGEST_ARTICLE, ArticlePEP.ANY_RESOURCE);
+    pep.checkAccess(ArticlePEP.INGEST_ARTICLE, ArticlePEP.ANY_RESOURCE);
 
     // create an Ingester using the values from the WSTopazContext
 
@@ -187,13 +173,12 @@ public class ArticleOtmService extends BaseConfigurableService {
    */
   public String getObjectURL(final String obj, final String rep)
           throws RemoteException, NoSuchObjectIdException {
-
     // session housekeeping
     ensureInitGetsCalledWithUsersSessionAttributes();
 
     // ask PEP if getting Object URL is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
-    getPEP().checkAccess(ArticlePEP.GET_OBJECT_URL, URI.create(obj));
+    pep.checkAccess(ArticlePEP.GET_OBJECT_URL, URI.create(obj));
 
     // let the Article utils do the real work
     ArticleUtil articleUtil = null;
@@ -237,7 +222,7 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // ask PEP if delete is allowed
     // logged in user is automatically resolved by the ServletActionContextAttribute
-    getPEP().checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
+    pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
 
     // let the Article utils do the real work
     ArticleUtil articleUtil = null;
@@ -259,7 +244,7 @@ public class ArticleOtmService extends BaseConfigurableService {
   public void setState(final String article, final int state) throws NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    getPEP().checkAccess(ArticlePEP.SET_ARTICLE_STATE, URI.create(article));
+    pep.checkAccess(ArticlePEP.SET_ARTICLE_STATE, URI.create(article));
 
     TransactionHelper.doInTxE(session,
                               new TransactionHelper.ActionE<Void, NoSuchArticleIdException>() {
@@ -281,209 +266,71 @@ public class ArticleOtmService extends BaseConfigurableService {
   }
 
   /**
-   * Get a list of all articles
-   * @param startDate startDate
-   * @param endDate endDate
-   * @return list of article uri's
-   * @throws java.rmi.RemoteException RemoteException
-   */
-  public String getArticles(final String startDate, final String endDate) throws RemoteException {
-
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
-    // PEP is called by full signature getArticles()
-    return getArticles(
-      startDate,
-      endDate,
-      null,   // convention for all categories
-      null,   // convention for all authors
-      null,   // convention for all states
-      true);  // ascending
-  }
-
-  /*  * @param startDate  is the date to start searching from. If null, start from begining of time.
-  *                   Can be iso8601 formatted or string representation of Date object.
-  * @param endDate    is the date to search until. If null, search until present date
-  * @param states     the list of article states to search for (all states if null or empty)
-  * @param ascending  controls the sort order (by date). If used for RSS feeds, decending would
-  *                   be appropriate. For archive display, ascending would be appropriate.
-  * @return the xml for the specified feed
-  * @throws RemoteException if there was a problem talking to the alerts service
-  */
-  public String getArticles(final String startDate, final String endDate,
-                 final int[] states, boolean ascending) throws RemoteException {
-
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
-    // PEP is called by full signature getArticles()
-    return getArticles(
-      startDate,
-      endDate,
-      null,  // convention for all categories
-      null,  // convention for all authors
-      states,
-      true);
-  }
-
-  /**
-   * @see org.topazproject.ws.article.Article#getArticleInfos(String, String, String[], String[], int[], boolean)
-   */
-  public ArticleInfo[] getArticleInfos(final String startDate, final String endDate,
-                                       final String[] categories, final String[] authors,
-                                       final int[] states, final boolean ascending)
-      throws RemoteException {
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
-    return TransactionHelper.doInTxE(session,
-                               new TransactionHelper.ActionE<ArticleInfo[], RemoteException>() {
-      public ArticleInfo[] run(Transaction tx) throws RemoteException {
-        // get a list of Articles that meet the specified Criteria and Restrictions
-        List<Article> articleList =
-            findArticles(startDate, endDate, categories, authors, states, ascending, tx);
-
-        List<ArticleInfo> infoList = new ArrayList<ArticleInfo>();
-        for (Iterator it = articleList.iterator(); it.hasNext(); )
-          infoList.add(convert((Article) it.next()));
-
-        return infoList.toArray(new ArticleInfo[infoList.size()]);
-      }
-    });
-  }
-
-  private static ArticleInfo convert(Article art) {
-    ArticleInfo ai = new ArticleInfo();
-    ai.setUri(art.getId().toString());
-    ai.setTitle(art.getTitle());
-    ai.setArticleDate(art.getDate());
-    ai.setAuthors(art.getAuthors().toArray(new String[0]));
-    ai.setSubjects(art.getSubjects().toArray(new String[0]));
-    ai.setState(art.getState());
-
-    Set<String> mainCats = new HashSet<String>();
-    for (Category cat : art.getCategories())
-      mainCats.add(cat.getMainCategory());
-    ai.setCategories(mainCats.toArray(new String[mainCats.size()]));
-
-    return ai;
-  }
-
-  /**
-   * A full featured getArticles.
-   */
-  public List<Article> getArticles(
-    final String startDate,
-    final String endDate,
-    final String[] categories,
-    final String[] authors,
-    final int[] states,
-    final Map<String, Boolean> orderBy,
-    final int maxResults)
-    throws RemoteException {
-
-    ensureInitGetsCalledWithUsersSessionAttributes();
-
-    return TransactionHelper.doInTxE(session,
-                               new TransactionHelper.ActionE<List<Article>, RemoteException>() {
-      public List<Article> run(Transaction tx) throws RemoteException {
-        // get a list of Articles that meet the specified Criteria and Restrictions
-        List<Article> articleList =
-            findArticles(startDate, endDate, categories, authors, states, orderBy, maxResults, tx);
-
-        return articleList;
-      }
-    });
-  }
-
-  /**
-   * Search for articles matching the specific criteria. Must be called with a transaction
-   * active.
+   * Get the ids of all articles satisfying the given criteria.
    *
-   * FIXME: shouldn't be throwing RemoteException - that's only because ArticleFeed.parseDateParam
-   * throws it.
+   * @param startDate  is the date to start searching from. If null, start from begining of time.
+   *                   Can be iso8601 formatted or string representation of Date object.
+   * @param endDate    is the date to search until. If null, search until present date
+   * @param states     the list of article states to search for (all states if null or empty)
+   * @param ascending  controls the sort order (by date).
+   * @return the (possibly empty) list of article ids.
    */
-  private List<Article> findArticles(
-    String startDate,
-    String endDate,
-    String[] categories,
-    String[] authors,
-    int[] states,
-    Map<String, Boolean> orderBy,
-    int maxResults,
-    Transaction tx) throws RemoteException {
+  public List<String> getArticleIds(String startDate, String endDate, int[] states,
+                                    boolean ascending) throws Exception {
+    ensureInitGetsCalledWithUsersSessionAttributes();
 
-    // build up Criteria for the Articles
-    Criteria articleCriteria = tx.getSession().createCriteria(Article.class);
+    final StringBuilder qry = new StringBuilder();
+    qry.append("select art.id, art.date d from Article art where ");
 
-    // normalize dates for query
-    if (startDate != null) {
-      articleCriteria = articleCriteria.add(Restrictions.ge("date", parseDateParam(startDate)));
+    if (startDate != null)
+      qry.append("ge(art.date, ").append(fmtLiteral(startDate, "date")).append(" and ");
+    if (endDate != null)
+      qry.append("le(art.date, ").append(fmtLiteral(endDate, "date")).append(" and ");
+
+    if (states != null && states.length > 0) {
+      qry.append("(");
+      for (int state : states)
+        qry.append("art.state = ").append(fmtLiteral(state, "state")).append(" or ");
+      qry.setLength(qry.length() - 4);
+      qry.append(")");
     }
-    if (endDate != null) {
-      articleCriteria = articleCriteria.add(Restrictions.le("date", parseDateParam(endDate)));
-    }
 
-    // match all categories
-    if (categories != null) {
-      Criteria catCriteria = articleCriteria.createCriteria("categories");
-      for (String category : categories) {
-        catCriteria.add(Restrictions.eq("mainCategory", category));
+    if (qry.indexOf(" and ", qry.length() - 5) > 0)
+      qry.setLength(qry.length() - 4);
+
+    qry.append("order by d ").append(ascending ? "asc" : "desc").append(";");
+
+    List<URI> ids = TransactionHelper.doInTx(session, new TransactionHelper.Action<List<URI>>() {
+      public List<URI> run(Transaction tx) {
+        List<URI> uris = new ArrayList<URI>();
+        Results r = tx.getSession().doQuery(qry.toString());
+        while (r.next())
+          uris.add(r.getURI(0));
+        return uris;
       }
-    }
+    });
 
-    // match all authors
-    if (authors != null) {
-      for (String author : authors) {
-        articleCriteria = articleCriteria.add(Restrictions.eq("authors", author));
-      }
-    }
-
-    // match all states
-    if (states != null) {
-      for (int state : states) {
-        articleCriteria = articleCriteria.add(Restrictions.eq("state", state));
-      }
-    }
-
-    // order by
-    if (orderBy != null) {
-      for (String field : orderBy.keySet()) {
-        boolean ascending = (boolean) orderBy.get(field);
-        if (ascending) {
-          articleCriteria = articleCriteria.addOrder(Order.asc(field));
-        } else {
-          articleCriteria = articleCriteria.addOrder(Order.desc(field));
-        }
-      }
-    }
-
-    // max results
-    if (maxResults > 0) {
-      articleCriteria = articleCriteria.setMaxResults(maxResults);
-    }
-
-    // get a list of Articles that meet the specified Criteria and Restrictions
-    List<Article> articleList = articleCriteria.list();
-
-    // filter access by id with PEP
-    // logged in user is automatically resolved by the ServletActionContextAttribute
-    for (Iterator it = articleList.iterator(); it.hasNext(); ) {
-      Article article = (Article) it.next();
+    List<String> res = new ArrayList<String>();
+    for (URI id : ids) {
       try {
-        getPEP().checkAccess(ArticlePEP.READ_META_DATA, article.getId());
+        pep.checkAccess(ArticlePEP.READ_META_DATA, id);
+        res.add(id.toString());
       } catch (SecurityException se) {
-        it.remove();
         if (log.isDebugEnabled())
-          log.debug("Filtering URI " + article.getId()
-                    + " from Article list due to PEP SecurityException", se);
+          log.debug("Filtering URI " + id + " from Article list due to PEP SecurityException", se);
       }
     }
 
-    return articleList;
+    return res;
+  }
+
+  private String fmtLiteral(Object val, String field) throws Exception {
+    Mapper m = session.getSessionFactory().getClassMetadata(Article.class).getMapperByName(field);
+    return "'" + m.getSerializer().serialize(val) + "'^^<" + m.getDataType() + ">";
   }
 
   /**
-   * Get list of articles for a given set of categories, authors and states bracked by specified
-   * times.
+   * Get all articles satisfying the given criteria.
    *
    * @param startDate  is the date to start searching from. If null, start from begining of time.
    *                   Can be iso8601 formatted or string representation of Date object.
@@ -496,65 +343,83 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @param ascending  controls the sort order (by date). If used for RSS feeds, decending would
    *                   be appropriate. For archive display, ascending would be appropriate.
    * @return the (possibly empty) list of articles.
-   * @throws RemoteException if there was a problem talking to any service
+   * @throws ParseException if any of the dates could not be parsed
    */
-  public String getArticles(final String startDate, final String endDate, final String[] categories,
-                            final String[] authors, final int[] states, final boolean ascending)
-      throws RemoteException {
-
-    final List<ArticleFeedData> articleFeedData = new ArrayList();
-
-    // session housekeeping
+  public Article[] getArticles(final String startDate, final String endDate,
+                               final String[] categories, final String[] authors,
+                               final int[] states, final boolean ascending)
+      throws ParseException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, RemoteException>() {
-      public Void run(Transaction tx) throws RemoteException {
+    return TransactionHelper.doInTxE(session,
+                                     new TransactionHelper.ActionE<Article[], ParseException>() {
+      public Article[] run(Transaction tx) throws ParseException {
         // get a list of Articles that meet the specified Criteria and Restrictions
+        Map<String, Boolean> orderBy = new HashMap<String, Boolean>();
+        orderBy.put("date", ascending);
+
         List<Article> articleList =
-            findArticles(startDate, endDate, categories, authors, states, ascending, tx);
-
-        for (Iterator it = articleList.iterator(); it.hasNext(); ) {
-          Article article = (Article) it.next();
-          ArticleFeedData articleFeedDatum = new ArticleFeedData(
-            article.getId().toString(),
-            article.getTitle(),
-            article.getDescription(),
-            article.getDate(),
-            article.getAuthors(),
-            article.getSubjects(),
-            article.getCategories(),
-            article.getState());
-          articleFeedData.add(articleFeedDatum);
-        }
-
-        return null;
+            findArticles(startDate, endDate, categories, authors, states, orderBy, 0, tx);
+        return articleList.toArray(new Article[articleList.size()]);
       }
     });
+  }
 
-    return buildArticleFeedXml(articleFeedData);
-    // TODO: confirm calling chain logic
-    // return articleList.toArray(new Article[articleList.size()]);
+  /**
+   * A full featured getArticles.
+   *
+   * @param startDate  is the date to start searching from. If null, start from begining of time.
+   *                   Can be iso8601 formatted or string representation of Date object.
+   * @param endDate    is the date to search until. If null, search until present date
+   * @param categories is list of categories to search for articles within (all categories if null
+   *                   or empty)
+   * @param authors    is list of authors to search for articles within (all authors if null or
+   *                   empty)
+   * @param states     the list of article states to search for (all states if null or empty)
+   * @param orderBy    controls the ordering. The keys specify the fields to be ordered, and the
+   *                   values whether order is ascending (true) or descending (false).
+   * @return the (possibly empty) list of articles.
+   * @throws ParseException if any of the dates could not be parsed
+   */
+  public List<Article> getArticles(final String startDate, final String endDate,
+                                   final String[] categories, final String[] authors,
+                                   final int[] states, final Map<String, Boolean> orderBy,
+                                   final int maxResults)
+      throws ParseException {
+
+    ensureInitGetsCalledWithUsersSessionAttributes();
+
+    return TransactionHelper.doInTxE(session,
+                               new TransactionHelper.ActionE<List<Article>, ParseException>() {
+      public List<Article> run(Transaction tx) throws ParseException {
+        // get a list of Articles that meet the specified Criteria and Restrictions
+        List<Article> articleList =
+            findArticles(startDate, endDate, categories, authors, states, orderBy, maxResults, tx);
+
+        return articleList;
+      }
+    });
   }
 
   /**
    * Search for articles matching the specific criteria. Must be called with a transaction
    * active.
-   *
-   * FIXME: shouldn't be throwing RemoteException - that's only because ArticleFeed.parseDateParam
-   * throws it.
    */
-  private List<Article> findArticles(String startDate,String endDate, String[] categories,
-                                     String[] authors, int[] states, boolean ascending,
-                                     Transaction tx) throws RemoteException {
+  private List<Article> findArticles(String startDate, String endDate, String[] categories,
+                                     String[] authors, int[] states, Map<String, Boolean> orderBy,
+                                     int maxResults, Transaction tx)
+      throws ParseException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
+
     // build up Criteria for the Articles
     Criteria articleCriteria = tx.getSession().createCriteria(Article.class);
 
     // normalize dates for query
     if (startDate != null) {
-      articleCriteria = articleCriteria.add(Restrictions.ge("date", parseDateParam(startDate)));
+      articleCriteria.add(Restrictions.ge("date", parseDateParam(startDate)));
     }
     if (endDate != null) {
-      articleCriteria = articleCriteria.add(Restrictions.le("date", parseDateParam(endDate)));
+      articleCriteria.add(Restrictions.le("date", parseDateParam(endDate)));
     }
 
     // match all categories
@@ -568,22 +433,30 @@ public class ArticleOtmService extends BaseConfigurableService {
     // match all authors
     if (authors != null) {
       for (String author : authors) {
-        articleCriteria = articleCriteria.add(Restrictions.eq("authors", author));
+        articleCriteria.add(Restrictions.eq("authors", author));
       }
     }
 
     // match all states
-    if (states != null) {
+    if (states != null && states.length > 0) {
+      Disjunction or = Restrictions.disjunction();
       for (int state : states) {
-        articleCriteria = articleCriteria.add(Restrictions.eq("state", state));
+        or.add(Restrictions.eq("state", state));
+      }
+      articleCriteria.add(or);
+    }
+
+    // order by
+    if (orderBy != null) {
+      for (String field : orderBy.keySet()) {
+        boolean ascending = (boolean) orderBy.get(field);
+        articleCriteria.addOrder(ascending ? Order.asc(field) : Order.desc(field));
       }
     }
 
-    // order by date
-    if (ascending) {
-      articleCriteria = articleCriteria.addOrder(Order.asc("date"));
-    } else {
-      articleCriteria = articleCriteria.addOrder(Order.desc("date"));
+    // max results
+    if (maxResults > 0) {
+      articleCriteria.setMaxResults(maxResults);
     }
 
     // get a list of Articles that meet the specified Criteria and Restrictions
@@ -594,7 +467,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     for (Iterator it = articleList.iterator(); it.hasNext(); ) {
       Article article = (Article) it.next();
       try {
-        getPEP().checkAccess(ArticlePEP.READ_META_DATA, article.getId());
+        pep.checkAccess(ArticlePEP.READ_META_DATA, article.getId());
       } catch (SecurityException se) {
         it.remove();
         if (log.isDebugEnabled())
@@ -625,7 +498,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     // filter access by id with PEP
     // logged in user is automatically resolved by the ServletActionContextAttribute
     try {
-      getPEP().checkAccess(ArticlePEP.READ_META_DATA, realURI);
+      pep.checkAccess(ArticlePEP.READ_META_DATA, realURI);
     } catch (SecurityException se) {
       if (log.isDebugEnabled()) {
         log.debug("Filtering URI "
@@ -656,13 +529,14 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @throws NoSuchArticleIDException NoSuchArticleIdException
    */
   public Article getArticle(final URI uri) throws NoSuchArticleIdException {
+    ensureInitGetsCalledWithUsersSessionAttributes();
 
     // sanity check parms
     if (uri == null) throw new IllegalArgumentException("URI == null");
 
     // filter access by id with PEP
     try {
-      getPEP().checkAccess(ArticlePEP.READ_META_DATA, uri);
+      pep.checkAccess(ArticlePEP.READ_META_DATA, uri);
     } catch (SecurityException se) {
       if (log.isDebugEnabled()) {
         log.debug("Filtering URI "
@@ -695,7 +569,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       throws NoSuchArticleIdException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    getPEP().checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
+    pep.checkAccess(ArticlePEP.LIST_SEC_OBJECTS, URI.create(article));
 
     return TransactionHelper.doInTxE(session,
                 new TransactionHelper.ActionE<SecondaryObject[], NoSuchArticleIdException>() {
@@ -726,7 +600,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     }
     SecondaryObject[] convertedObjectInfos = new SecondaryObject[objectInfos.length];
     for (int i = 0; i < objectInfos.length; i++) {
-      convertedObjectInfos[i] = convert (objectInfos[i]);
+      convertedObjectInfos[i] = convert(objectInfos[i]);
     }
     return convertedObjectInfos;
   }
@@ -767,7 +641,7 @@ public class ArticleOtmService extends BaseConfigurableService {
         while (commentedArticles.next()) {
           Article commentedArticle = (Article) commentedArticles.get("a");
           try {
-            getPEP().checkAccess(ArticlePEP.READ_META_DATA, commentedArticle.getId());
+            pep.checkAccess(ArticlePEP.READ_META_DATA, commentedArticle.getId());
             returnArticles.add(commentedArticle);
           } catch (SecurityException se) {
             if (log.isDebugEnabled())
@@ -805,7 +679,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       throws NoSuchObjectIdException, RemoteException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    getPEP().checkAccess(ArticlePEP.SET_REPRESENTATION, URI.create(objId));
+    pep.checkAccess(ArticlePEP.SET_REPRESENTATION, URI.create(objId));
 
     try {
       TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, Exception>() {
@@ -955,85 +829,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     this.session = session;
   }
 
-  // TODO: mv feeds to webapp?
-  // inspired by ArticleFeed.buildXml(Collection articles)
-  private static String buildArticleFeedXml(Collection articles) {
-
-    final String XML_RESPONSE =
-      "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\n<articles>\n${articles}</articles>\n";
-    final String XML_ARTICLE_TAG =
-      "  <article>\n" +
-      "    <uri>${uri}</uri>\n" +
-      "    <title>${title}</title>\n" +
-      "    <description>${description}</description>\n" +
-      "    <date>${date}</date>\n" +
-      "    ${authors}\n" +
-      "    ${categories}\n" +
-      "    ${subjects}\n" +
-      "  </article>\n";
-
-    String articlesXml = "";
-    for (Iterator articleIt = articles.iterator(); articleIt.hasNext(); ) {
-      ArticleFeedData article = (ArticleFeedData)articleIt.next();
-
-      StringBuffer authorsSb = new StringBuffer();
-      if (article.authors != null && article.authors.size() > 0) {
-        for (Iterator authorsIt = article.authors.iterator(); authorsIt.hasNext(); ) {
-          authorsSb.append("      <author>");
-          authorsSb.append(authorsIt.next());
-          authorsSb.append("</author>\n");
-        }
-        authorsSb.insert(0, "<authors>\n");
-        authorsSb.append("    </authors>");
-      }
-
-      StringBuffer categoriesSb = new StringBuffer();
-      if (article.categories != null && article.categories.size() > 0) {
-        for (Iterator categoriesIt = article.categories.iterator(); categoriesIt.hasNext(); ) {
-          categoriesSb.append("      <category>");
-          categoriesSb.append(categoriesIt.next());
-          categoriesSb.append("</category>\n");
-        }
-        categoriesSb.insert(0, "<categories>\n");
-        categoriesSb.append("    </categories>");
-      }
-
-      StringBuffer subjectsSb = new StringBuffer();
-      if (article.subjects != null && article.subjects.size() > 0) {
-        for (Iterator subjectsIt = article.subjects.iterator(); subjectsIt.hasNext(); ) {
-          subjectsSb.append("      <subject>");
-          subjectsSb.append(subjectsIt.next());
-          subjectsSb.append("</subject>\n");
-        }
-        subjectsSb.insert(0, "<subjects>\n");
-        subjectsSb.append("    </subjects>");
-      }
-
-      Map values = new HashMap();
-      /* internationalize () */
-      values.put("uri", article.uri);
-      values.put("title", nullToEmpty(article.title));
-      values.put("description", nullToEmpty(article.description));
-      values.put("date", formatDate(article.date));
-      values.put("authors", authorsSb.toString());
-      values.put("subjects", subjectsSb.toString());
-      values.put("categories", categoriesSb.toString());
-      articlesXml += ItqlHelper.bindValues(XML_ARTICLE_TAG, values);
-    }
-
-    Map values = new HashMap();
-    values.put("articles", articlesXml);
-    return ItqlHelper.bindValues(XML_RESPONSE, values);
-  }
-
-  private static String nullToEmpty(String str) {
-    return (str != null) ? str : "";
-  }
-
-  // methods & functionality that were "pulled up" from org.topazproject.ws.article.impl.ArticleImpl
-
   private static FgsOperations[] getFgsOperations() throws ServiceException {
-
     FgsOperations ops[] = new FgsOperations[FGS_URLS.size()];
 
     for (int i = 0; i < ops.length; i++) {
@@ -1058,7 +854,7 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @return a java Date object.
    * @throws ParseException if there is a problem parsing the string
    */
-  public static Date parseDate(String iso8601date) throws ParseException {
+  private static Date parseDate(String iso8601date) throws ParseException {
     // Obvious formats:
     final String[] defaultFormats = new String [] {
       "yyyy-MM-dd", "y-M-d", "y-M-d'T'H:m:s", "y-M-d'T'H:m:s.S",
@@ -1072,40 +868,22 @@ public class ArticleOtmService extends BaseConfigurableService {
   }
 
   /**
-   * Format a date object to a string to insert into the feed's XML.
-   *
-   * If the date object is null, return an empty string.
-   *
-   * @param date is the date object to format
-   * @return a string representation
-   */
-  public static String formatDate(Date date) {
-    if (date == null)
-      return "";
-//    return DateFormatUtils.ISO_DATETIME_TIME_ZONE_FORMAT.format(date); // XXX: Use in future?
-    return DateFormatUtils.ISO_DATE_FORMAT.format(date);
-  }
-
-  /**
-   * Convert a date pased in as a string to a Date object. Support both string representations
+   * Convert a date passed in as a string to a Date object. Support both string representations
    * of the Date object and iso8601 formatted dates.
    *
    * @param date the string to convert to a Date object
    * @return a date object (or null if date is null)
-   * @throws RemoteException if unable to parse date
+   * @throws ParseException if unable to parse date
    */
-  public static Date parseDateParam(String date) throws RemoteException {
+  private static Date parseDateParam(String date) throws ParseException {
     if (date == null)
       return null;
     try {
       return new Date(date);
     } catch (IllegalArgumentException iae) {
-      try {
-        return parseDate(date);
-      } catch (ParseException pe) {
-        throw new RemoteException("Unable to parse date parameter (as Date-string or iso8601): " +
-                                  date, pe);
-      }
+      if (log.isDebugEnabled())
+        log.debug("failed to parse date '" + date + "' use Date - trying iso8601 format", iae);
+      return parseDate(date);
     }
   }
 }

@@ -24,7 +24,7 @@ public class ArticleListAction extends BaseActionSupport {
   private static final Log log = LogFactory.getLog(ArticleListAction.class);
 
   public String execute() throws Exception {
-    articles = fetchArticleService.getArticles(startDate, endDate);
+    articles = fetchArticleService.getArticleIds(startDate, endDate, null);
     return SUCCESS;
   }
 

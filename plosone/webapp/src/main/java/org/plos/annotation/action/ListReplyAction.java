@@ -9,6 +9,8 @@
  */
 package org.plos.annotation.action;
 
+import java.net.URI;
+
 import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -17,7 +19,7 @@ import org.plos.ApplicationException;
 import org.plos.annotation.service.Annotation;
 import org.plos.annotation.service.Reply;
 import org.plos.article.service.ArticleOtmService;
-import org.plos.models.ObjectInfo;
+import org.plos.models.Article;
 
 /**
  * Action class to get a list of replies to annotations.
@@ -28,7 +30,7 @@ public class ListReplyAction extends AnnotationActionSupport {
   private Reply[] replies;
   private Annotation baseAnnotation;
   private ArticleOtmService articleOtmService;
-  private ObjectInfo articleInfo;
+  private Article articleInfo;
 
   private static final Log log = LogFactory.getLog(ListReplyAction.class);
 
@@ -55,7 +57,7 @@ public class ListReplyAction extends AnnotationActionSupport {
       }
       baseAnnotation = getAnnotationService().getAnnotation(root);
       replies = getAnnotationService().listAllReplies(root, inReplyTo);
-      articleInfo = getArticleOtmService().getObjectInfo(baseAnnotation.getAnnotates());
+      articleInfo = getArticleOtmService().getArticle(new URI(baseAnnotation.getAnnotates()));
     } catch (final ApplicationException e) {
       log.error("Could not list all replies for root:" + root, e);
       addActionError("Reply fetching failed with error message: " + e.getMessage());
@@ -117,14 +119,14 @@ public class ListReplyAction extends AnnotationActionSupport {
   /**
    * @return Returns the articleInfo.
    */
-  public ObjectInfo getArticleInfo() {
+  public Article getArticleInfo() {
     return articleInfo;
   }
 
   /**
    * @param articleInfo The articleInfo to set.
    */
-  public void setArticleInfo(ObjectInfo articleInfo) {
+  public void setArticleInfo(Article articleInfo) {
     this.articleInfo = articleInfo;
   }
 }

@@ -10,10 +10,11 @@
 
 package org.plos.article.service;
 
-import java.rmi.RemoteException;
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
@@ -22,16 +23,16 @@ import java.util.TreeMap;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import static org.plos.models.Article.STATE_ACTIVE;
+import org.plos.models.Article;
+import org.plos.models.Category;
 import org.plos.util.CacheAdminHelper;
 
 import com.opensymphony.oscache.general.GeneralCacheAdministrator;
 
 /**
- * Class to get all ArticleInfos in system and organize them by date and by category
+ * Class to get all Articles in system and organize them by date and by category
  *
  * @author stevec
- *
  */
 public class BrowseService {
   private static final Log log = LogFactory.getLog(BrowseService.class);
@@ -58,20 +59,20 @@ public class BrowseService {
    *
    * @return all articles
    */
-  private ArticleInfo[] getAllArticles() {
+  private Article[] getAllArticles() {
     return CacheAdminHelper.getFromCache(articleCacheAdministrator, ALL_ARTICLE_CACHE_KEY, -1,
                                          new String[] { ALL_ARTICLE_CACHE_GROUP_KEY },
                                          "all articles",
-                                         new CacheAdminHelper.CacheUpdater<ArticleInfo[]>() {
-        public ArticleInfo[] lookup(boolean[] updated) {
+                                         new CacheAdminHelper.CacheUpdater<Article[]>() {
+        public Article[] lookup(boolean[] updated) {
           try {
-            ArticleInfo[] res = articleOtmService.getArticleInfos(null, null, null, null,
-                                                                  new int[] { STATE_ACTIVE }, true);
+            Article[] res = articleOtmService.getArticles(null, null, null, null,
+                                                          new int[] { Article.STATE_ACTIVE }, true);
             updated[0] = true;
             return res;
-          } catch (RemoteException re) {
-            log.error("Could not retrieve the all articles", re);
-            return new ArticleInfo[0];
+          } catch (ParseException pe) {
+            log.error("Internal error", pe);
+            return new Article[0];
           }
         }
       }
@@ -80,8 +81,8 @@ public class BrowseService {
 
 
   /**
-   * Takes the articles and sets the categoryNames and articlesByCategory as well as the articleDates
-   * and articlesByDate values.
+   * Takes the articles and sets the categoryNames and articlesByCategory as well as the
+   * articleDates and articlesByDate values.
    */
   private void populateArticlesAndCategories() {
     allBrowseObjects =
@@ -100,54 +101,53 @@ public class BrowseService {
   }
 
   private Object[] createBrowseObjects() {
-    ArrayList<ArrayList<ArticleInfo>> articlesByCategory;
-    TreeMap<String, ArrayList<ArticleInfo>> articlesByCategoryMap;
-    TreeMap<Date, ArrayList<ArticleInfo>> articlesByDateMap;
-    ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>> articlesByDate;
+    ArrayList<ArrayList<Article>> articlesByCategory;
+    TreeMap<String, ArrayList<Article>> articlesByCategoryMap;
+    TreeMap<Date, ArrayList<Article>> articlesByDateMap;
+    ArrayList<ArrayList<ArrayList<ArrayList<Article>>>> articlesByDate;
     ArrayList<ArrayList<ArrayList<Date>>> articleDates;
     String[] categoryNames;
 
-    ArticleInfo[] allArticleList = getAllArticles();
+    Article[] allArticleList = getAllArticles();
 
     if (allArticleList.length > 0){
-      articlesByCategoryMap = new TreeMap<String, ArrayList<ArticleInfo>>();
-      articlesByDateMap = new TreeMap<Date, ArrayList<ArticleInfo>>();
-      String[] categories;
-      ArrayList<ArticleInfo> theList;
+      articlesByCategoryMap = new TreeMap<String, ArrayList<Article>>();
+      articlesByDateMap = new TreeMap<Date, ArrayList<Article>>();
+      ArrayList<Article> theList;
       Date theDate;
-      for (ArticleInfo art : allArticleList) {
-        categories = art.getCategories();
-        theDate = art.getArticleDate();
+      for (Article art : allArticleList) {
+        Set<String> categories = getMainCategories(art);
+        theDate = art.getDate();
         theList = articlesByDateMap.get(theDate);
         if (theList == null) {
-          theList = new ArrayList<ArticleInfo>();
+          theList = new ArrayList<Article>();
           articlesByDateMap.put(theDate, theList);
         }
         theList.add(0, art);
         for (String cat : categories) {
           theList = articlesByCategoryMap.get(cat);
           if (theList == null) {
-            theList = new ArrayList<ArticleInfo>();
+            theList = new ArrayList<Article>();
             articlesByCategoryMap.put(cat, theList);
           }
           theList.add(art);
         }
       }
-      Set<Map.Entry<String, ArrayList<ArticleInfo>>> allEntries = articlesByCategoryMap.entrySet();
-      Iterator<Map.Entry<String, ArrayList<ArticleInfo>>> iter = allEntries.iterator();
+      Set<Map.Entry<String, ArrayList<Article>>> allEntries = articlesByCategoryMap.entrySet();
+      Iterator<Map.Entry<String, ArrayList<Article>>> iter = allEntries.iterator();
       categoryNames = new String[allEntries.size()];
-      articlesByCategory = new ArrayList<ArrayList<ArticleInfo>>(allEntries.size());
+      articlesByCategory = new ArrayList<ArrayList<Article>>(allEntries.size());
       for (int i = 0; iter.hasNext(); i++) {
-        Map.Entry<String, ArrayList<ArticleInfo>> entry = iter.next();
+        Map.Entry<String, ArrayList<Article>> entry = iter.next();
         categoryNames[i] = entry.getKey();
         articlesByCategory.add(i, entry.getValue());
       }
 
-      Set<Map.Entry<Date, ArrayList<ArticleInfo>>> allDateEntries = articlesByDateMap.entrySet();
-      Iterator<Map.Entry<Date, ArrayList<ArticleInfo>>> dateIter = allDateEntries.iterator();
-      Map.Entry<Date, ArrayList<ArticleInfo>> dateEntry;
+      Set<Map.Entry<Date, ArrayList<Article>>> allDateEntries = articlesByDateMap.entrySet();
+      Iterator<Map.Entry<Date, ArrayList<Article>>> dateIter = allDateEntries.iterator();
+      Map.Entry<Date, ArrayList<Article>> dateEntry;
       articleDates = new ArrayList<ArrayList<ArrayList<Date>>>(2);
-      articlesByDate = new ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>>(2);
+      articlesByDate = new ArrayList<ArrayList<ArrayList<ArrayList<Article>>>>(2);
 
       int j = -1;
       int currentMonth = -1;
@@ -160,7 +160,7 @@ public class BrowseService {
         oneDate.setTime(dateEntry.getKey());
         if (currentYear != oneDate.get(Calendar.YEAR)) {
           articleDates.add(++k, new ArrayList<ArrayList<Date>>(12));
-          articlesByDate.add(k, new ArrayList<ArrayList<ArrayList<ArticleInfo>>>(12));
+          articlesByDate.add(k, new ArrayList<ArrayList<ArrayList<Article>>>(12));
           currentYear = oneDate.get(Calendar.YEAR);
           j = -1;
         }
@@ -168,7 +168,7 @@ public class BrowseService {
         if (currentMonth != oneDate.get(Calendar.MONTH)) {
           //flaw here is if you have two consecutive entries with the same month but different year
           articleDates.get(k).add(++j,new ArrayList<Date>());
-          articlesByDate.get(k).add(j,new ArrayList<ArrayList<ArticleInfo>>());
+          articlesByDate.get(k).add(j,new ArrayList<ArrayList<Article>>());
           currentMonth = oneDate.get(Calendar.MONTH);
         }
         articleDates.get(k).get(j).add(dateEntry.getKey());
@@ -176,9 +176,9 @@ public class BrowseService {
       }
     } else {
       articleDates = new ArrayList<ArrayList<ArrayList<Date>>>(0);
-      articlesByDate = new ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>>(0);
+      articlesByDate = new ArrayList<ArrayList<ArrayList<ArrayList<Article>>>>(0);
       categoryNames = new String[0];
-      articlesByCategory = new ArrayList<ArrayList<ArticleInfo>>(0);
+      articlesByCategory = new ArrayList<ArrayList<Article>>(0);
     }
     Object[] cacheObjects = new Object[4];
     cacheObjects[DATES_INDEX] = articleDates;
@@ -188,6 +188,12 @@ public class BrowseService {
     return cacheObjects;
   }
 
+  private static Set<String> getMainCategories(Article art) {
+    Set<String> mainCats = new HashSet<String>();
+    for (Category cat : art.getCategories())
+      mainCats.add(cat.getMainCategory());
+    return mainCats;
+  }
 
   /**
    * @return Returns the articleDates.
@@ -202,20 +208,20 @@ public class BrowseService {
   /**
    * @return Returns the articlesByCategory.
    */
-  public ArrayList<ArrayList<ArticleInfo>> getArticlesByCategory() {
+  public ArrayList<ArrayList<Article>> getArticlesByCategory() {
     if (!populated)
       populateArticlesAndCategories();
-    return (ArrayList<ArrayList<ArticleInfo>>) allBrowseObjects[CAT_ARTICLES_INDEX];
+    return (ArrayList<ArrayList<Article>>) allBrowseObjects[CAT_ARTICLES_INDEX];
   }
 
 
   /**
    * @return Returns the articlesByDate.
    */
-  public ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>> getArticlesByDate() {
+  public ArrayList<ArrayList<ArrayList<ArrayList<Article>>>> getArticlesByDate() {
     if (!populated)
       populateArticlesAndCategories();
-    return (ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>>) allBrowseObjects[DATES_ARTICLES_INDEX];
+    return (ArrayList<ArrayList<ArrayList<ArrayList<Article>>>>) allBrowseObjects[DATES_ARTICLES_INDEX];
   }
 
 

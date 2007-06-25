@@ -19,8 +19,9 @@ import org.plos.annotation.service.Annotation;
 import org.plos.annotation.Commentary;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.util.NoSuchArticleIdException;
-import org.plos.models.ObjectInfo;
+import org.plos.models.Article;
 
+import java.net.URI;
 import java.util.Arrays;
 
 /**
@@ -33,7 +34,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
   private String target;
   private Annotation[] annotations;
   private Commentary[] allCommentary;
-  private ObjectInfo articleInfo;
+  private Article articleInfo;
   private ArticleOtmService articleOtmService;
 
   private static final Log log = LogFactory.getLog(ListAnnotationAction.class);
@@ -49,7 +50,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
       if (log.isDebugEnabled()){
         log.debug("retrieving all commentary for article id: " + target);
       }
-      articleInfo = getArticleOtmService().getObjectInfo(target);
+      articleInfo = getArticleOtmService().getArticle(new URI(target));
       annotations = getAnnotationService().listAnnotations(target);
       allCommentary = new Commentary[annotations.length];
       Commentary com = null;
@@ -82,7 +83,7 @@ public class GetCommentaryAction extends AnnotationActionSupport {
   }
 
   public String getArticleMetaInfo () throws Exception {
-    articleInfo = getArticleOtmService().getObjectInfo(target);
+    articleInfo = getArticleOtmService().getArticle(new URI(target));
     return SUCCESS;
   }
 
@@ -140,14 +141,14 @@ public class GetCommentaryAction extends AnnotationActionSupport {
   /**
    * @return Returns the articleInfo.
    */
-  public ObjectInfo getArticleInfo() {
+  public Article getArticleInfo() {
     return articleInfo;
   }
 
   /**
    * @param articleInfo The articleInfo to set.
    */
-  public void setArticleInfo(ObjectInfo articleInfo) {
+  public void setArticleInfo(Article articleInfo) {
     this.articleInfo = articleInfo;
   }
 

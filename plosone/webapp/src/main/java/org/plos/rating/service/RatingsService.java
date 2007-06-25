@@ -61,10 +61,8 @@ public class RatingsService extends BaseRatingsService {
    * Initializes the service
    *
    * @throws IOException DOCUMENT ME!
-   * @throws URISyntaxException DOCUMENT ME!
-   * @throws ServiceException DOCUMENT ME!
    */
-  public void init() throws IOException, URISyntaxException, ServiceException {
+  public void init() throws IOException {
     try {
       if (pep == null)
         pep = new RatingsPEP();
