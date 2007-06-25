@@ -42,25 +42,23 @@ public class BrowseArticlesAction extends BaseActionSupport  {
   private ArrayList<ArrayList<ArrayList<ArrayList<ArticleInfo>>>> articlesByDate;
   private ArrayList<ArrayList<ArrayList<Date>>> articleDates;
   private ArrayList<ArticleInfo> articleList;
-  
+
   private static final int PAGE_SIZE = 10;
-  private static final String DATE_FIELD = "date"; 
+  private static final String DATE_FIELD = "date";
 
-  
 
-  
   public String execute() throws Exception {
     articlesByCategory = browseService.getArticlesByCategory();
     articlesByDate = browseService.getArticlesByDate();
     articleDates = browseService.getArticleDates();
     categoryNames = browseService.getCategoryNames();
-    if (DATE_FIELD.equals(getField())) { 
+    if (DATE_FIELD.equals(getField())) {
       return browseDate();
     } else {
       return browseCategory();
     }
   }
-  
+
   private String browseCategory () {
     articleList = articlesByCategory.get(catId);
     return SUCCESS;
@@ -125,7 +123,7 @@ public class BrowseArticlesAction extends BaseActionSupport  {
   public Collection<ArrayList<ArrayList<Date>>> getArticleDates() {
     return articleDates;
   }
-  
+
   /**
    * @return Returns the field.
    */
@@ -257,6 +255,4 @@ public class BrowseArticlesAction extends BaseActionSupport  {
   public void setBrowseService(BrowseService browseService) {
     this.browseService = browseService;
   }
-  
-  
 }
