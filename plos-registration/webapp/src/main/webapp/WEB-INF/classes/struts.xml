@@ -1,4 +1,7 @@
-<!DOCTYPE xwork PUBLIC "-//OpenSymphony Group//XWork 1.1.1//EN" "http://www.opensymphony.com/xwork/xwork-1.1.1.dtd">
+<?xml version="1.0" encoding="UTF-8" ?>
+
+<!DOCTYPE struts PUBLIC "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
 <!--
   - Copyright (c) 2006-2007 by Topaz, Inc.
   - http://topazproject.org
@@ -6,7 +9,7 @@
   - Licensed under the Educational Community License version 1.0
   - http://opensource.org/licenses/ecl1.php
   -->
-<xwork>
+<struts>
     <include file="struts-default.xml"/>
 
     <package name="default" extends="struts-default">
@@ -126,4 +129,4 @@
       </action>
 
     </package>
-</xwork>
+</struts>
