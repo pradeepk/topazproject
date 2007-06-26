@@ -27,10 +27,12 @@ import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpServletResponseWrapper;
 import javax.servlet.http.HttpSession;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.Constants;
+import org.plos.configuration.ConfigurationStore;
 
 import edu.yale.its.tp.cas.client.CASReceipt;
 
@@ -54,10 +56,18 @@ public class DummySSOFilter implements Filter {
    * @see javax.servlet.Filter#init
    */
   public void init(final FilterConfig filterConfig) throws ServletException {
+    // get params defined in web.xml
     casUrl = filterConfig.getInitParameter("casUrl");
     ssoUrl = filterConfig.getInitParameter("ssoUrl");
     wrap   = "true".equalsIgnoreCase(filterConfig.getInitParameter("wrapRequest"));
 
+    // look up any overrides in the plos configuration
+    Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
+    String casBaseUrl = configuration.getString("cas.url.base");
+    if (casBaseUrl != null)
+      casUrl = casBaseUrl;
+
+    // final defaults
     if (ssoUrl == null)
       ssoUrl = "/dummy/";
 
