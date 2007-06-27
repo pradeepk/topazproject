@@ -240,8 +240,7 @@
     <aop:scoped-proxy/>
   </bean>
 
-  <bean id="otmFactory" class="org.plos.configuration.OtmConfiguration"
-    factory-method="createInstance" scope="singleton">
+  <bean id="otmFactory" class="org.plos.configuration.OtmConfiguration" scope="singleton">
     <constructor-arg index="0" value="${itql.uri}" />
     <property name="models">
       <list>
@@ -416,7 +415,7 @@
   <bean id="otmSessionFactory" factory-bean="otmFactory" factory-method="getFactory"
       scope="singleton"/>
 
-  <bean id="otmSession" factory-bean="otmSessionFactory" factory-method="getCurrentSession"
+  <bean id="otmSession" factory-bean="otmSessionFactory" factory-method="openSession"
       destroy-method="close" scope="request"/>
 
   <bean id="browseService" class="org.plos.article.service.BrowseService" />

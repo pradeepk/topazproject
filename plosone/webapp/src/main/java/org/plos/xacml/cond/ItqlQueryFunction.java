@@ -18,16 +18,17 @@ import java.util.List;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.plos.configuration.OtmConfiguration;
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.mulgara.itql.StringAnswer;
 
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.stores.ItqlStore.ItqlStoreConnection;
+
+import com.opensymphony.webwork.ServletActionContext;
 
 import com.sun.xacml.EvaluationCtx;
 import com.sun.xacml.cond.EvaluationResult;
@@ -86,20 +87,9 @@ public class ItqlQueryFunction extends DBQueryFunction {
 
     // Create an ItqlHelper
     try {
-      OtmConfiguration oc = OtmConfiguration.getInstance();
-
-      if (oc == null)
-        throw new QueryException("" + OtmConfiguration.class + " not initialized");
-
-      SessionFactory sf = oc.getFactory();
-
-      if (sf == null)
-        throw new QueryException("" + SessionFactory.class + " not initialized");
-
-      Session s = sf.getCurrentSession();
-
-      if (s == null)
-        throw new QueryException("Failed to get current otm session");
+      Session s = (Session) WebApplicationContextUtils
+        .getRequiredWebApplicationContext(ServletActionContext.getServletContext())
+        .getBean("otmSession");
 
       txn         = s.getTransaction();
       wasActive   = (txn != null);
@@ -107,13 +97,7 @@ public class ItqlQueryFunction extends DBQueryFunction {
       if (txn == null)
         txn = s.beginTransaction();
 
-      if (txn == null)
-        throw new QueryException("Failed to start an otm transaction");
-
       Connection isc = txn.getConnection();
-
-      if (isc == null)
-        throw new QueryException("Failed to get an otm connection");
 
       if (!(isc instanceof ItqlStoreConnection))
         throw new QueryException("Expecting an instance of " + ItqlStoreConnection.class);

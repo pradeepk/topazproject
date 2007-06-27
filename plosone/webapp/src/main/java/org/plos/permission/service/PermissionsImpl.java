@@ -22,9 +22,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.plos.configuration.ConfigurationStore;
-import org.plos.configuration.OtmConfiguration;
 
 import org.plos.service.TopazContext;
+
+import org.springframework.web.context.support.WebApplicationContextUtils;
 
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.ItqlHelper;
@@ -32,9 +33,10 @@ import org.topazproject.mulgara.itql.StringAnswer;
 
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.stores.ItqlStore.ItqlStoreConnection;
+
+import com.opensymphony.webwork.ServletActionContext;
 
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;
@@ -191,7 +193,7 @@ public class PermissionsImpl implements Permissions {
   private final TopazContext   ctx;
   private final PermissionsPEP pep;
 
-/**
+  /**
    * Create a new permission instance.
    *
    * @param pep the policy-enforcer to use for access-control
@@ -644,20 +646,9 @@ public class PermissionsImpl implements Permissions {
     Transaction txn       = null;
 
     try {
-      OtmConfiguration oc = OtmConfiguration.getInstance();
-
-      if (oc == null)
-        throw new RemoteException("" + OtmConfiguration.class + " not initialized");
-
-      SessionFactory sf = oc.getFactory();
-
-      if (sf == null)
-        throw new RemoteException("" + SessionFactory.class + " not initialized");
-
-      Session s = sf.getCurrentSession();
-
-      if (s == null)
-        throw new RemoteException("Failed to get current otm session");
+      Session s = (Session) WebApplicationContextUtils
+        .getRequiredWebApplicationContext(ServletActionContext.getServletContext())
+        .getBean("otmSession");
 
       txn         = s.getTransaction();
       wasActive   = (txn != null);
@@ -669,9 +660,6 @@ public class PermissionsImpl implements Permissions {
         throw new RemoteException("Failed to start an otm transaction");
 
       Connection isc = txn.getConnection();
-
-      if (isc == null)
-        throw new RemoteException("Failed to get an otm connection");
 
       if (!(isc instanceof ItqlStoreConnection))
         throw new RemoteException("Expecting an instance of " + ItqlStoreConnection.class);
@@ -714,6 +702,7 @@ public class PermissionsImpl implements Permissions {
     doInTxn(new Action<String>() {
         public String run(ItqlHelper itql) throws RemoteException {
           itql.doUpdate(cmd, null);
+
           return cmd;
         }
       });
