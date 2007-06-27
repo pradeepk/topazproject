@@ -47,6 +47,7 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
 import javax.xml.transform.stream.StreamSource;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
@@ -54,6 +55,7 @@ import org.plos.ApplicationException;
 import org.plos.action.BaseActionSupport;
 import org.plos.article.service.ArticleOtmService;
 import org.plos.article.util.FedoraArticle;
+import org.plos.configuration.ConfigurationStore;
 import org.plos.models.Article;
 import org.plos.models.Category;
 import org.plos.util.FileUtils;
@@ -72,13 +74,6 @@ import org.xml.sax.InputSource;
  */
 public class ArticleFeed extends BaseActionSupport {
 
-  public static final String CC_BY_SA_3_0 = "This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License, http://creativecommons.org/licenses/by-sa/3.0/";
-
-  private static final String SERVER_PLOSONE = System.getProperty("server.plosone", "localhost:8080");
-  private static final String WEBWORKS_NAMESPACE = "/article/feed";
-  private static final String PLOS_FETCH_ARTICLE_SERVICE = "http://" + SERVER_PLOSONE + "/article/fetchArticle.action";
-  private static final String PLOS_FETCH_OBJECT_ATTACHMENT_SERVICE = "http://" + SERVER_PLOSONE + "/article/fetchObjectAttachment.action";
-
   private ArticleOtmService articleOtmService;
 
   private Templates toHtmlTranslet;
@@ -94,6 +89,11 @@ public class ArticleFeed extends BaseActionSupport {
 
   // WebWorks PlosOneFeedResult parms
   private WireFeed wireFeed;
+
+  /**
+   * PLoS ONE Configuration
+   */
+  private static final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
 
   private static final Log log = LogFactory.getLog(ArticleFeed.class);
 
@@ -138,39 +138,52 @@ public class ArticleFeed extends BaseActionSupport {
    */
   private WireFeed getFeed(URI uri) throws ApplicationException {
 
+    // get default values from config file
+    final String PLOSONE_URI           = configuration.getString("plosone.webserver-url", "http://plosone.org/");
+    final String PLOSONE_NAME          = configuration.getString("plosone.name",          "Public Library of Science");
+    final String PLOSONE_EMAIL_GENERAL = configuration.getString("plosone.email.general", "webmaster@plos.org");
+    final String PLOSONE_COPYRIGHT     = configuration.getString("plosone.copyright",
+      "This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License, http://creativecommons.org/licenses/by-sa/3.0/");
+    final String FEED_TITLE            = configuration.getString("plosone.feed.title",    "PLoS ONE Alerts: PLoS ONE Journal");
+    final String FEED_TAGLINE          = configuration.getString("plosone.feed.tagline",  "Publishing science, accelerating research");
+    final String FEED_ICON             = configuration.getString("plosone.feed.icon",     PLOSONE_URI + "images/pone_favicon.ico");
+
+    // use WebWorks to get Action URIs
+    // TODO: WebWorks ActionMapper is broken, hand-code URIs
+    final String fetchArticleAction = "article/fetchArticle.action";
+    final String fetchObjectAttachmentAction = "article/fetchObjectAttachment.action";
+
     // Atom 1.0 is default
     Feed feed = new Feed("atom_1.0");
 
-    // TODO: all literals from common config
-    // TODO: fill in feed as richly as possible
-
     feed.setEncoding("UTF-8");
+    feed.setXmlBase(PLOSONE_URI);
 
     // must link to self
     Link self = new Link();
     self.setRel("self");
     self.setHref(uri.toString());
-    self.setTitle("PLoS ONE Alerts");
+    self.setTitle(FEED_TITLE);
     List<Link> otherLinks = new ArrayList();
     otherLinks.add(self);
     feed.setOtherLinks(otherLinks);
 
     feed.setId(uri.toString());  // TODO: used canned URIs
-    feed.setTitle("PLoS ONE Alerts: PLoS ONE Journal");
+    feed.setTitle(FEED_TITLE);
     Content tagline = new Content();
-    tagline.setValue("Publishing science, accelerating research");
+    tagline.setValue(FEED_TAGLINE);
     feed.setTagline(tagline);
     feed.setUpdated(new Date());
     // TODO: bug in Rome ignores icon/logo :(
-    feed.setIcon("/images/pone_favicon.ico");
-    feed.setLogo("/images/pone_favicon.ico");
-    feed.setCopyright(CC_BY_SA_3_0);
+    feed.setIcon(FEED_ICON);
+    feed.setLogo(FEED_ICON);
+    feed.setCopyright(PLOSONE_COPYRIGHT);
 
     // make PLoS the author of the feed
     Person plos = new Person();
-    plos.setEmail("gen@plos.org");  // TODO: generic email to PLoS?
-    plos.setName("Public Library of Science");
-    plos.setUri("http://plosone.org");
+    plos.setEmail(PLOSONE_EMAIL_GENERAL);
+    plos.setName(PLOSONE_NAME);
+    plos.setUri(PLOSONE_URI);
     List<Person> feedAuthors = new ArrayList();
     feedAuthors.add(plos);
     feed.setAuthors(feedAuthors);
@@ -239,10 +252,8 @@ public class ArticleFeed extends BaseActionSupport {
     for (Article article : articles) {
       Entry entry = new Entry();
 
-      // TODO: as much meta-data as possible
-      // article.getDc_type()
-      // article.getFormat()
-      // etc.
+      // TODO: how much more meta-data is possible
+      // e.g. article.getDc_type(), article.getFormat(), etc.
 
       entry.setId(article.getIdentifier());
 
@@ -252,7 +263,7 @@ public class ArticleFeed extends BaseActionSupport {
         entry.setRights(rights);
       } else {
         // default is CC BY SA 3.0
-        entry.setRights(CC_BY_SA_3_0);
+        entry.setRights(PLOSONE_COPYRIGHT);
       }
 
       entry.setTitle(article.getTitle());
@@ -265,7 +276,7 @@ public class ArticleFeed extends BaseActionSupport {
       // must link to self, do it first so link is favored
       Link entrySelf = new Link();
       entrySelf.setRel("alternate");
-      entrySelf.setHref(PLOS_FETCH_ARTICLE_SERVICE + "?articleURI=" + article.getIdentifier());
+      entrySelf.setHref(fetchArticleAction + "?articleURI=" + article.getIdentifier());
       entrySelf.setTitle(article.getTitle());
       altLinks.add(entrySelf);
 
@@ -274,8 +285,8 @@ public class ArticleFeed extends BaseActionSupport {
       if (representations != null) {
         for (String representation : representations) {
           Link altLink = new Link();
-          altLink.setHref(PLOS_FETCH_OBJECT_ATTACHMENT_SERVICE + "?representation=" + representation + "&uri=" + article.getIdentifier());
-          altLink.setRel("alternate"); //
+          altLink.setHref(fetchObjectAttachmentAction + "?uri=" + article.getIdentifier() + "&representation=" + representation);
+          altLink.setRel("related");
           altLink.setTitle("(" + representation + ") " + article.getTitle());
           altLink.setType(FileUtils.getContentType(representation));
           altLinks.add(altLink);

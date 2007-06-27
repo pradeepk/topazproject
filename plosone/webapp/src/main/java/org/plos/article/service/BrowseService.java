@@ -52,8 +52,8 @@ public class BrowseService {
 
   public static final String ALL_ARTICLE_CACHE_GROUP_KEY = "ALL_ARTICLE_LIST_GROUP";
 
-  private boolean populated = false;
 
+  
   /**
    * retrieve a listing of all articles in Topaz
    *
@@ -97,7 +97,6 @@ public class BrowseService {
         }
       }
     );
-    populated = true;
   }
 
   private Object[] createBrowseObjects() {
@@ -199,8 +198,7 @@ public class BrowseService {
    * @return Returns the articleDates.
    */
   public ArrayList<ArrayList<ArrayList<Date>>> getArticleDates() {
-    if (!populated)
-      populateArticlesAndCategories();
+    populateArticlesAndCategories();
     return (ArrayList<ArrayList<ArrayList<Date>>>)allBrowseObjects[DATES_INDEX];
   }
 
@@ -209,8 +207,7 @@ public class BrowseService {
    * @return Returns the articlesByCategory.
    */
   public ArrayList<ArrayList<Article>> getArticlesByCategory() {
-    if (!populated)
-      populateArticlesAndCategories();
+    populateArticlesAndCategories();      
     return (ArrayList<ArrayList<Article>>) allBrowseObjects[CAT_ARTICLES_INDEX];
   }
 
@@ -219,8 +216,7 @@ public class BrowseService {
    * @return Returns the articlesByDate.
    */
   public ArrayList<ArrayList<ArrayList<ArrayList<Article>>>> getArticlesByDate() {
-    if (!populated)
-      populateArticlesAndCategories();
+    populateArticlesAndCategories();      
     return (ArrayList<ArrayList<ArrayList<ArrayList<Article>>>>) allBrowseObjects[DATES_ARTICLES_INDEX];
   }
 
@@ -229,8 +225,7 @@ public class BrowseService {
    * @return Returns the categoryNames.
    */
   public String[] getCategoryNames() {
-    if (!populated)
-      populateArticlesAndCategories();
+    populateArticlesAndCategories();      
     return (String[]) allBrowseObjects[CAT_NAME_INDEX];
   }
 

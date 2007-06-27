@@ -7,6 +7,7 @@
 
     <div class="comment">
       <h5><span class="commentPublic">Rate This Article</span></h5>
+      <p>See also <a href="${freemarker_config.getContext()}/static/ratingGuidelines.action#identifying" class="instructions">guidelines for rating</a>.</p>
       <div class="posting pane">
         <form name="ratingForm" id="ratingForm" method="post" action="">
           <input type="hidden" name="articleURI" value="${articleURI}" />  
