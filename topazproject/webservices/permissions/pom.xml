@@ -6,12 +6,12 @@
   <artifactId>ws-permissions</artifactId>
   <packaging>pom</packaging>
   <name>Permissions Webservice</name>
-  <version>0.7</version>
+  <version>0.8-SNAPSHOT</version>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>webservices</artifactId>
-    <version>0.7</version>
+    <version>0.8-SNAPSHOT</version>
   </parent>
 
   <licenses>
