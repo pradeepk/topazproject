@@ -53,6 +53,11 @@ public class SessionFactory {
   private final Map<Class, ClassMetadata> metadata = new HashMap<Class, ClassMetadata>();
 
   /**
+   * Class name to metadata mapping.
+   */
+  private final Map<String, ClassMetadata> cnamemap = new HashMap<String, ClassMetadata>();
+
+  /**
    * Entity name to metadata mapping.
    */
   private final Map<String, ClassMetadata> entitymap = new HashMap<String, ClassMetadata>();
@@ -190,6 +195,7 @@ public class SessionFactory {
 
     Class c = cm.getSourceClass();
     metadata.put(c, cm);
+    cnamemap.put(c.getName(), cm);
     createProxy(c, cm);
 
     String type = cm.getType();
@@ -231,14 +237,20 @@ public class SessionFactory {
   }
 
   /**
-   * Gets the class metadata of a pre-registered entity.
+   * Gets the class metadata of a pre-registered entity. This first attempts to find a registered
+   * class with an entity name of <var>entity</var>, and if that fails it looks for any registered
+   * class with a fully-qualified class name of <var>entity</var>.
    *
-   * @param entity the entity.
+   * @param entity the entity name or the fully qualified class name.
    *
    * @return metadata for the class, or null if not found
    */
   public ClassMetadata getClassMetadata(String entity) {
-    return entitymap.get(entity);
+    ClassMetadata res = entitymap.get(entity);
+    if (res == null)
+      res = cnamemap.get(entity);
+
+    return res;
   }
 
   /**

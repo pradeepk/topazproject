@@ -1253,4 +1253,14 @@ public class OtmTest extends TestCase {
       }
     }
   }
+
+  public void test10() throws OtmException {
+    assertNotNull(factory.getClassMetadata("Article"));
+    assertEquals(factory.getClassMetadata(Article.class.getName()),
+                 factory.getClassMetadata("Article"));
+
+    assertNotNull(factory.getClassMetadata("Reply"));
+    assertEquals(factory.getClassMetadata(Reply.class.getName()),
+                 factory.getClassMetadata("Reply"));
+  }
 }

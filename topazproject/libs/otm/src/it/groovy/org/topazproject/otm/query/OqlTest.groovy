@@ -645,7 +645,36 @@ public class OqlTest extends GroovyTestCase {
       s.delete(o1);
       s.delete(o2);
     }
+  }
 
+  void testClassResolution() {
+    def checker = new ResultChecker(test:this)
+
+    Class cls = rdf.class('org.foo.Test1') {
+      foo1 ()
+    }
+
+    def o1 = cls.newInstance(foo1:'f1')
+
+    doInTx { s ->
+      s.saveOrUpdate(o1);
+
+      Results r = s.createQuery("select t from Test1 t where t.foo1 = 'f1';").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+      }
+
+      r = s.createQuery("select t from org.foo.Test1 t where t.foo1 = 'f1';").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+      }
+
+      assert shouldFail(QueryException, {
+        r = s.createQuery("select t from org.bar.Test1 t where t.foo1 = 'f1';").execute()
+      })
+
+      s.delete(o1);
+    }
   }
 
   private def doInTx(Closure c) {
