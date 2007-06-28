@@ -392,6 +392,10 @@
               <value>file:///etc/topaz/log4j.xml</value>
             </systemProperty>
             <systemProperty>
+              <name>org.plos.configuration</name>
+              <value>file:target/plosone/WEB-INF/classes/plosoneDev.xml</value>
+            </systemProperty>
+            <systemProperty>
               <name>org.apache.commons.logging.Log</name>
               <value>org.apache.commons.logging.impl.Log4JLogger</value>
             </systemProperty>
