@@ -11,12 +11,6 @@
     <param-value>/WEB-INF/propertyConfigurer.xml /WEB-INF/countryList.xml /WEB-INF/profaneWords.xml /WEB-INF/applicationContext.xml</param-value>
   </context-param>
 
-  <context-param>
-    <param-name>org.plos.configuration</param-name>
-    <param-value>/plosone-commons-config.xml</param-value>
-    <description>Plosone webapp specific commons-configuration</description>
-  </context-param>
-
   <filter>
     <filter-name>Member Session</filter-name>
     <filter-class>org.plos.web.InitializeSessionOnLoginFilter</filter-class>

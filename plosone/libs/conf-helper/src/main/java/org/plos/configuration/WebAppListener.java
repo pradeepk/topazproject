@@ -42,13 +42,12 @@ public class WebAppListener implements ServletContextListener {
   /**
    * Initialize the configuration singleton since this web application is getting deployed.<p>
    *
-   * By default, WebAppListener looks for /commons-config.xml in the classpath. (This can
-   * be overridden by setting the org.plos.configuration system property to a URL or
-   * a name resolvable as a resource.) However, if we cannot find the configuration this way,
-   * we use our own /commons-config-default.xml that is included with this library.
+   * By default, WebAppListener uses the default ConfigurationStore initialization. This
+   * usually means using /etc/.../plosone.xml. This can be overridden by setting the
+   * org.plos.configuration system property or webapp context variable to a URL or a name
+   * resolvable as a resource.
    *
-   * @param event destroyed event
-   *
+   * @param event The servlet event associated with initializing this context
    * @throws Error on non-recoverable config load error
    */
   public void contextInitialized(ServletContextEvent event) {
@@ -92,22 +91,22 @@ public class WebAppListener implements ServletContextListener {
 
   private FactoryConfig getFactoryConfig(ServletContext context) {
     // Allow JVM level property to override everything else
-    String name = System.getProperty(ConfigurationStore.CONFIG_FACTORY_CONFIG_PROPERTY);
+    String name = System.getProperty(ConfigurationStore.CONFIG_URL);
 
     if (name != null)
       return new FactoryConfig(name, "JVM System property " +
-                               ConfigurationStore.CONFIG_FACTORY_CONFIG_PROPERTY);
+                               ConfigurationStore.CONFIG_URL);
 
     // Now look for a config specified in web.xml
-    name = context.getInitParameter(ConfigurationStore.CONFIG_FACTORY_CONFIG_PROPERTY);
+    name = context.getInitParameter(ConfigurationStore.CONFIG_URL);
 
     if (name != null)
       return new FactoryConfig(name,
                                "Web-app context initialization parameter "
-                               + ConfigurationStore.CONFIG_FACTORY_CONFIG_PROPERTY);
+                               + ConfigurationStore.CONFIG_URL);
 
     // Return a default
-    return new FactoryConfig(ConfigurationStore.DEFAULT_CONFIG_FACTORY_CONFIG, "default");
+    return new FactoryConfig(ConfigurationStore.DEFAULT_CONFIG_URL, "default");
   }
 
   private class FactoryConfig {
