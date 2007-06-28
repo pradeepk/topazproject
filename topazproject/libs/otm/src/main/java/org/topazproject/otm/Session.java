@@ -411,23 +411,13 @@ public class Session {
   }
 
   /**
-   * Run an OQL query.
+   * Create an OQL query.
    *
    * @param query the OQL query
-   *
-   * @return the results
-   *
-   * @throws OtmException on an error
+   * @return the query object
    */
-  public Results doQuery(String query) throws OtmException {
-    if (txn == null)
-      throw new OtmException("No transaction active");
-
-    flush(); // so that mods are visible to queries
-
-    TripleStore store = sessionFactory.getTripleStore();
-
-    return store.doQuery(query, txn);
+  public Query createQuery(String query) throws OtmException {
+    return new Query(this, query);
   }
 
   /**

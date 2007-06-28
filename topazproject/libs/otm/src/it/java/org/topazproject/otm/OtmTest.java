@@ -753,7 +753,7 @@ public class OtmTest extends TestCase {
     try {
       tx = session.beginTransaction();
 
-      Results r = session.doQuery("select a from Annotation a;");
+      Results r = session.createQuery("select a from Annotation a;").execute();
       al.clear();
 
       while (r.next())
@@ -1080,7 +1080,8 @@ public class OtmTest extends TestCase {
           assertTrue((a1 == o) || (a2 == o));
       }
 
-      Results r = session.doQuery("select a from Annotation a where a.annotates = <foo:1>;");
+      Results r =
+          session.createQuery("select a from Annotation a where a.annotates = <foo:1>;").execute();
       l.clear();
 
       while (r.next())

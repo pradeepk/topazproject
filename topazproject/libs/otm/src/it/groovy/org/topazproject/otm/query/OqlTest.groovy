@@ -81,50 +81,52 @@ public class OqlTest extends GroovyTestCase {
 
     doInTx { s ->
       // single class, simple condition
-      Results r = s.doQuery("select a from Article a where a.title = 'Yo ho ho';")
+      Results r = s.createQuery("select a from Article a where a.title = 'Yo ho ho';").execute()
       checker.verify(r) {
         row { object (class:Article.class, uri:id4) }
       }
 
       // two classes, simple condition
-      r = s.doQuery("""
+      r = s.createQuery("""
           select art, ann from Article art, Annotation ann where ann.annotates = art order by ann;
-          """)
+          """).execute()
       checker.verify(r) {
         row { object (class:Article.class, uri:id4); object (class:PublicAnnotation.class, id:id1) }
         row { object (class:Article.class, uri:id4); object (class:PublicAnnotation.class, id:id2) }
       }
 
       // no results
-      r = s.doQuery("""
+      r = s.createQuery("""
             select art.publicAnnotations.note n from Article art
             where art.title = 'Yo ho ho' order by n;
-            """)
+            """).execute()
       checker.verify(r) {
       }
 
       // no results, cast, !=
-      r = s.doQuery("""
+      r = s.createQuery("""
             select ann from Annotation ann
             where cast(ann.annotates, Article).title != 'Yo ho ho' 
             order by ann;
-            """)
+            """).execute()
       checker.verify(r) {
       }
 
       // !=
-      r = s.doQuery("select ann from Annotation ann where ann.annotates != <foo:1> order by ann;")
+      r = s.createQuery("""
+          select ann from Annotation ann where ann.annotates != <foo:1> order by ann;
+          """).execute()
       checker.verify(r) {
         row { object (class:PublicAnnotation.class, id:id3) }
       }
 
       // subquery
-      r = s.doQuery("""
+      r = s.createQuery("""
             select art,
               (select pa from Article a2 where pa := art.publicAnnotations order by pa)
             from Article art 
             where p := art.publicAnnotations order by art;
-            """)
+            """).execute()
       checker.verify(r) {
         row {
           object (class:Article.class, uri:id4)
@@ -136,36 +138,36 @@ public class OqlTest extends GroovyTestCase {
       }
 
       // count
-      r = s.doQuery("""
+      r = s.createQuery("""
             select art, count(art.publicAnnotations) from Article art 
             where p := art.publicAnnotations order by art;
-            """)
+            """).execute()
       checker.verify(r) {
         row { object (class:Article.class, uri:id4); string ("2.0") }
       }
 
       // multiple orders, one by a constant
-      r = s.doQuery("""
+      r = s.createQuery("""
             select art, foo from Article art 
             where art.<rdf:type> = <topaz:Article> and foo := 'yellow' order by art, foo;
-            """)
+            """).execute()
       checker.verify(r) {
         row { object (class:Article.class, uri:id4); string ('yellow') }
       }
 
       // id field
-      r = s.doQuery("select a.uri from Article a where a.title = 'Yo ho ho';")
+      r = s.createQuery("select a.uri from Article a where a.title = 'Yo ho ho';").execute()
       checker.verify(r) {
         row { uri (id4) }
       }
 
-      r = s.doQuery("select a from Article a where a.uri = <${id4}>;")
+      r = s.createQuery("select a from Article a where a.uri = <${id4}>;").execute()
       checker.verify(r) {
         row { object (class:Article.class, uri:id4) }
       }
 
       // omitted where clause
-      r = s.doQuery("select n from Annotation n order by n;")
+      r = s.createQuery("select n from Annotation n order by n;").execute()
       checker.verify(r) {
         row { object (class:PublicAnnotation.class, id:id1) }
         row { object (class:PublicAnnotation.class, id:id2) }
@@ -198,23 +200,27 @@ public class OqlTest extends GroovyTestCase {
     doInTx { s ->
       for (test in [['birth', "'1970-02-04'^^<xsd:date>"], ['name', "'Joe'"],
                     /* ['age', "'42'^^<xsd:int>"] */]) {
-        r = s.doQuery("select t.name n from Test1 t where lt(t.${test[0]}, ${test[1]}) order by n;")
+        r = s.createQuery(
+            "select t.name n from Test1 t where lt(t.${test[0]}, ${test[1]}) order by n;").execute()
         checker.verify(r) {
           row { string ('Bob') }
         }
 
-        r = s.doQuery("select t.name n from Test1 t where le(t.${test[0]}, ${test[1]}) order by n;")
+        r = s.createQuery(
+            "select t.name n from Test1 t where le(t.${test[0]}, ${test[1]}) order by n;").execute()
         checker.verify(r) {
           row { string ('Bob') }
           row { string ('Joe') }
         }
 
-        r = s.doQuery("select t.name n from Test1 t where gt(t.${test[0]}, ${test[1]}) order by n;")
+        r = s.createQuery(
+            "select t.name n from Test1 t where gt(t.${test[0]}, ${test[1]}) order by n;").execute()
         checker.verify(r) {
           row { string ('John') }
         }
 
-        r = s.doQuery("select t.name n from Test1 t where ge(t.${test[0]}, ${test[1]}) order by n;")
+        r = s.createQuery(
+            "select t.name n from Test1 t where ge(t.${test[0]}, ${test[1]}) order by n;").execute()
         checker.verify(r) {
           row { string ('Joe')  }
           row { string ('John') }
@@ -222,14 +228,20 @@ public class OqlTest extends GroovyTestCase {
       }
 
       /* uncomment when the various resolvers support variables on both sides of the comparison
-      r = s.doQuery("select t1.name n1, t2.name n2 from Test1 t1, Test1 t2 where lt(t1.name, t2.name) order by n1, n2;")
+      r = s.createQuery("""
+              select t1.name n1, t2.name n2 from Test1 t1, Test1 t2 where lt(t1.name, t2.name)
+              order by n1, n2;
+              """).execute()
       checker.verify(r) {
         row { string ('Bob'); string('Joe')  }
         row { string ('Bob'); string('John') }
         row { string ('Joe'); string('John') }
       }
 
-      r = s.doQuery("select t1.name n1, t2.name n2 from Test1 t1, Test1 t2 where le(t1.name, t2.name) order by n1, n2;")
+      r = s.createQuery("""
+              select t1.name n1, t2.name n2 from Test1 t1, Test1 t2 where le(t1.name, t2.name)
+              order by n1, n2;
+              """).execute()
       checker.verify(r) {
         row { string ('Bob');  string ('Bob')  }
         row { string ('Bob');  string ('Joe')  }
@@ -239,14 +251,20 @@ public class OqlTest extends GroovyTestCase {
         row { string ('John'); string ('John') }
       }
 
-      r = s.doQuery("select t1.name n1, t2.name n2 from Test1 t1, Test1 t2 where gt(t1.name, t2.name) order by n1, n2;")
+      r = s.createQuery("""
+              select t1.name n1, t2.name n2 from Test1 t1, Test1 t2 where gt(t1.name, t2.name)
+              order by n1, n2;
+              """).execute()
       checker.verify(r) {
         row { string ('Joe');  string ('Bob') }
         row { string ('John'); string ('Bob') }
         row { string ('John'); string ('Joe') }
       }
 
-      r = s.doQuery("select t1.name n1, t2.name n2 from Test1 t1, Test1 t2 where ge(t1.name, t2.name) order by n1, n2;")
+      r = s.createQuery("""
+              select t1.name n1, t2.name n2 from Test1 t1, Test1 t2 where ge(t1.name, t2.name)
+              order by n1, n2;
+              """).execute()
       checker.verify(r) {
         row { string ('Bob');  string ('Bob')  }
         row { string ('Joe');  string ('Bob')  }
@@ -283,7 +301,7 @@ public class OqlTest extends GroovyTestCase {
     Results r
 
     doInTx { s ->
-      r = s.doQuery("select t.name n from Test1 t order by n asc;")
+      r = s.createQuery("select t.name n from Test1 t order by n asc;").execute()
       checker.verify(r) {
         row { string ('Bob') }
         row { string ('Joe') }
@@ -291,7 +309,7 @@ public class OqlTest extends GroovyTestCase {
         row { string ('Paul') }
       }
 
-      r = s.doQuery("select t.name n from Test1 t order by n desc;")
+      r = s.createQuery("select t.name n from Test1 t order by n desc;").execute()
       checker.verify(r) {
         row { string ('Paul') }
         row { string ('John') }
@@ -299,14 +317,14 @@ public class OqlTest extends GroovyTestCase {
         row { string ('Bob') }
       }
 
-      r = s.doQuery("select t.age age from Test1 t order by age;")
+      r = s.createQuery("select t.age age from Test1 t order by age;").execute()
       checker.verify(r) {
         row { string ('5') }
         row { string ('42') }
         row { string ('153') }
       }
 
-      r = s.doQuery("select t.age age, t.name name from Test1 t order by age, name;")
+      r = s.createQuery("select t.age age, t.name name from Test1 t order by age, name;").execute()
       checker.verify(r) {
         row { string ('5');   string ('Bob')  }
         row { string ('42');  string ('Joe')  }
@@ -314,7 +332,8 @@ public class OqlTest extends GroovyTestCase {
         row { string ('153'); string ('John') }
       }
 
-      r = s.doQuery("select t.age age, t.name name from Test1 t order by age, name desc;")
+      r = s.createQuery("select t.age age, t.name name from Test1 t order by age, name desc;").
+            execute()
       checker.verify(r) {
         row { string ('5');   string ('Bob')  }
         row { string ('42');  string ('Paul') }
@@ -322,29 +341,29 @@ public class OqlTest extends GroovyTestCase {
         row { string ('153'); string ('John') }
       }
 
-      r = s.doQuery("select t.age age from Test1 t order by age offset 1;")
+      r = s.createQuery("select t.age age from Test1 t order by age offset 1;").execute()
       checker.verify(r) {
         row { string ('42') }
         row { string ('153') }
       }
 
-      r = s.doQuery("select t.age age from Test1 t order by age offset 2;")
+      r = s.createQuery("select t.age age from Test1 t order by age offset 2;").execute()
       checker.verify(r) {
         row { string ('153') }
       }
 
-      r = s.doQuery("select t.age age from Test1 t order by age limit 1 offset 1;")
+      r = s.createQuery("select t.age age from Test1 t order by age limit 1 offset 1;").execute()
       checker.verify(r) {
         row { string ('42') }
       }
 
-      r = s.doQuery("select t.age age from Test1 t order by age limit 2 offset 1;")
+      r = s.createQuery("select t.age age from Test1 t order by age limit 2 offset 1;").execute()
       checker.verify(r) {
         row { string ('42') }
         row { string ('153') }
       }
 
-      r = s.doQuery("select t.age age from Test1 t order by age limit 2;")
+      r = s.createQuery("select t.age age from Test1 t order by age limit 2;").execute()
       checker.verify(r) {
         row { string ('5') }
         row { string ('42') }
@@ -390,25 +409,29 @@ public class OqlTest extends GroovyTestCase {
     def checker = new ResultChecker(test:this)
 
     doInTx { s ->
-      Results r = s.doQuery("select ann from Annotation ann where ann.foobar.bar = 'two';")
+      Results r =
+          s.createQuery("select ann from Annotation ann where ann.foobar.bar = 'two';").execute()
       checker.verify(r) {
         row { object (class:Annotation.class, id:id1) }
       }
 
-      r = s.doQuery("select obj from Test1 obj where obj.info.personal.name.givenName = 'Jack';")
+      r = s.createQuery(
+          "select obj from Test1 obj where obj.info.personal.name.givenName = 'Jack';").execute()
       checker.verify(r) {
         row { object (class:cls, id:id3) }
       }
 
-      r = s.doQuery(
-            "select obj from Test1 obj where obj.info.personal.address != 'foo' order by obj;")
+      r = s.createQuery(
+            "select obj from Test1 obj where obj.info.personal.address != 'foo' order by obj;").
+            execute()
       checker.verify(r) {
         row { object (class:cls, id:id2) }
         row { object (class:cls, id:id3) }
       }
 
-      r = s.doQuery(
-            "select obj from Test1 obj where obj.info.external.sig != 'foo' order by obj;")
+      r = s.createQuery(
+            "select obj from Test1 obj where obj.info.external.sig != 'foo' order by obj;").
+            execute()
       checker.verify(r) {
         row { object (class:cls, id:id3) }
       }
@@ -439,24 +462,22 @@ public class OqlTest extends GroovyTestCase {
     def checker = new ResultChecker(test:this)
 
     doInTx { s ->
-      Results r = s.doQuery("select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name>.<http://rdf.topazproject.org/RDF/givenName> = 'Jack';")
+      Results r = s.createQuery("select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name>.<http://rdf.topazproject.org/RDF/givenName> = 'Jack';").execute()
       checker.verify(r) {
         row { object (class:cls, id:o2.id) }
       }
 
-      r = s.doQuery("select obj from Test1 obj where obj.info.<http://rdf.topazproject.org/RDF/name>.<http://rdf.topazproject.org/RDF/givenName> = 'Bob';")
+      r = s.createQuery("select obj from Test1 obj where obj.info.<http://rdf.topazproject.org/RDF/name>.<http://rdf.topazproject.org/RDF/givenName> = 'Bob';").execute()
       checker.verify(r) {
         row { object (class:cls, id:o1.id) }
       }
 
       assert shouldFail(QueryException, {
-        r = s.doQuery(
-              "select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.name.givenName != 'foo' order by obj;")
+        r = s.createQuery("select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.name.givenName != 'foo' order by obj;").execute()
       }).contains("error parsing query")
 
       assert shouldFail(QueryException, {
-        r = s.doQuery(
-              "select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name>.givenName != 'foo' order by obj;")
+        r = s.createQuery("select obj from Test1 obj where obj.<http://rdf.topazproject.org/RDF/info>.<http://rdf.topazproject.org/RDF/name>.givenName != 'foo' order by obj;").execute()
       }).contains("error parsing query")
     }
   }
@@ -531,18 +552,18 @@ public class OqlTest extends GroovyTestCase {
     }
 
     doInTx { s ->
-      Results r = s.doQuery("select o from ${cls.name} o where o.${sel} = ${none};")
+      Results r = s.createQuery("select o from ${cls.name} o where o.${sel} = ${none};").execute()
       checker.verify(r) {
       }
 
-      r = s.doQuery("select o from ${cls.name} o where o.${sel} = ${one};")
+      r = s.createQuery("select o from ${cls.name} o where o.${sel} = ${one};").execute()
       checker.verify(r) {
         row { object (class:cls, id:obj[1].id) }
       }
 
-      r = s.doQuery(
+      r = s.createQuery(
         "select o from ${cls.name} o where o.${sel} = ${two[0]} or o.${sel} = ${two[1]} order by o;"
-      )
+      ).execute()
       checker.verify(r) {
         row { object (class:cls, id:obj[0].id) }
         row { object (class:cls, id:obj[1].id) }
@@ -583,8 +604,9 @@ public class OqlTest extends GroovyTestCase {
       s.saveOrUpdate(o1);
       s.saveOrUpdate(o2);
 
-      Results r = s.doQuery("select t from Test1 t where " +
-                            "t.foo1 = 'f1' and t.bar1.foo2 = 'f2' and t.bar1.bar2.foo3 = 'f3';")
+      Results r = s.createQuery("select t from Test1 t where " +
+                            "t.foo1 = 'f1' and t.bar1.foo2 = 'f2' and t.bar1.bar2.foo3 = 'f3';").
+                    execute()
       checker.verify(r) {
         row { object (class:cls, id:o1.id) }
       }
@@ -613,8 +635,9 @@ public class OqlTest extends GroovyTestCase {
       s.saveOrUpdate(o1);
       s.saveOrUpdate(o2);
 
-      Results r = s.doQuery("select t from Test2 t where " +
-                            "t.foo1 = 'f1' and t.bar1.foo2 = 'f2' and t.bar1.bar2.foo3 = 'f3';")
+      Results r = s.createQuery("select t from Test2 t where " +
+                            "t.foo1 = 'f1' and t.bar1.foo2 = 'f2' and t.bar1.bar2.foo3 = 'f3';").
+                    execute()
       checker.verify(r) {
         row { object (class:cls1, id:o1.id) }
       }

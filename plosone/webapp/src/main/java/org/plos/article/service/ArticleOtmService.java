@@ -303,7 +303,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     List<URI> ids = TransactionHelper.doInTx(session, new TransactionHelper.Action<List<URI>>() {
       public List<URI> run(Transaction tx) {
         List<URI> uris = new ArrayList<URI>();
-        Results r = tx.getSession().doQuery(qry.toString());
+        Results r = tx.getSession().createQuery(qry.toString()).execute();
         while (r.next())
           uris.add(r.getURI(0));
         return uris;
@@ -631,7 +631,7 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     return TransactionHelper.doInTx(session, new TransactionHelper.Action<Article[]>() {
       public Article[] run(Transaction tx) {
-        Results commentedArticles = commentedArticles = tx.getSession().doQuery(oqlQuery);
+        Results commentedArticles = tx.getSession().createQuery(oqlQuery).execute();
 
         // check access control on all Article results
         // logged in user is automatically resolved by the ServletActionContextAttribute
