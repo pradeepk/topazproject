@@ -23,16 +23,16 @@ import org.topazproject.otm.mapping.Mapper;
  * @author Pradeep Krishnan
  */
 public class Criteria {
-  private Session         session;
-  private ClassMetadata   classMetadata;
-  private Criteria        parent;
-  private Mapper          mapping;
-  private int             maxResults    = -1;
-  private int             firstResult   = -1;
-  private List<Criterion> criterions    = new ArrayList<Criterion>();
-  private List<Order>     orders        = new ArrayList<Order>();
-  private List<Criteria>  children      = new ArrayList<Criteria>();
-  private List<Order>     orderPosition;
+  private final Session            session;
+  private final ClassMetadata      classMetadata;
+  private final Criteria           parent;
+  private final Mapper             mapping;
+  private       int                maxResults    = -1;
+  private       int                firstResult   = -1;
+  private final List<Criterion>    criterions    = new ArrayList<Criterion>();
+  private final List<Order>        orders        = new ArrayList<Order>();
+  private final List<Criteria>     children      = new ArrayList<Criteria>();
+  private final List<Order>        orderPosition;
 
   /**
    * Creates a new Criteria object. Called by {@link Session#createCriteria}.
@@ -48,8 +48,7 @@ public class Criteria {
     this.mapping                        = mapping;
     this.classMetadata                  = classMetadata;
 
-    if (parent == null)
-      orderPosition = new ArrayList<Order>();
+    orderPosition = (parent == null) ? new ArrayList<Order>() : null;
   }
 
   /**
