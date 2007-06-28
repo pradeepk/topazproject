@@ -26,7 +26,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Ronald Tschalär
  */
-public abstract class OqlTreeParser extends TreeParser implements ErrorCollector {
+abstract class OqlTreeParser extends TreeParser implements ErrorCollector {
   private static final Log log = LogFactory.getLog(OqlTreeParser.class);
 
   private final List<String> errs = new ArrayList<String>();

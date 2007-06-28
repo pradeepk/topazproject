@@ -29,7 +29,7 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Ronald Tschalär
  */
-public abstract class OqlParser extends LLkParser implements ErrorCollector {
+abstract class OqlParser extends LLkParser implements ErrorCollector {
   private static final Log log = LogFactory.getLog(OqlParser.class);
 
   private final List<String> errs = new ArrayList<String>();

@@ -23,7 +23,7 @@ import org.topazproject.otm.mapping.Mapper.MapperType;
  * 
  * @author Ronald Tschalär
  */
-public class ExprType {
+class ExprType {
   /** valid expression types */
   public enum Type { CLASS, EMB_CLASS, URI, UNTYPED_LIT, TYPED_LIT };
 
