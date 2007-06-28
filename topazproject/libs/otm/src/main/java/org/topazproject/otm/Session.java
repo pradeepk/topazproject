@@ -41,14 +41,14 @@ import org.topazproject.otm.query.Results;
  */
 public class Session {
   private static final Log               log            = LogFactory.getLog(Session.class);
-  private SessionFactory                 sessionFactory;
-  private Transaction                    txn            = null;
-  private Map<Id, Object>                cleanMap       = new HashMap<Id, Object>();
-  private Map<Id, Object>                dirtyMap       = new HashMap<Id, Object>();
-  private Map<Id, Object>                deleteMap      = new HashMap<Id, Object>();
-  private Map<Id, LazyLoadMethodHandler> proxies        = new HashMap<Id, LazyLoadMethodHandler>();
-  private Map<Id, Set<Wrapper>>          associations   = new HashMap<Id, Set<Wrapper>>();
-  private Set<Id>                        currentIds     = new HashSet<Id>();
+  private final SessionFactory                 sessionFactory;
+  private       Transaction                    txn            = null;
+  private final Map<Id, Object>                cleanMap       = new HashMap<Id, Object>();
+  private final Map<Id, Object>                dirtyMap       = new HashMap<Id, Object>();
+  private final Map<Id, Object>                deleteMap      = new HashMap<Id, Object>();
+  private final Map<Id, LazyLoadMethodHandler> proxies        = new HashMap<Id, LazyLoadMethodHandler>();
+  private final Map<Id, Set<Wrapper>>          associations   = new HashMap<Id, Set<Wrapper>>();
+  private final Set<Id>                        currentIds     = new HashSet<Id>();
 
   /**
    * Creates a new Session object.
