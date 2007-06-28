@@ -2,7 +2,7 @@
 #set( $Svc = "${service.substring(0, 1).toUpperCase()}${service.substring(1)}" )
 <?xml version="1.0" encoding="UTF-8"?>
 <!--
-  $HeadURL::                                                                              $
+  $HeadURL::                                                                                       $
   $Id$
 
   Copyright (c) 2006 by Topaz, Inc.
@@ -20,12 +20,12 @@
   <artifactId>ws-${artifactId}</artifactId>
   <packaging>pom</packaging>
   <name>${Svc} Webservice</name>
-  <version>0.7</version>
+  <version>0.8-SNAPSHOT</version>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>webservices</artifactId>
-    <version>0.7</version>
+    <version>0.8-SNAPSHOT</version>
   </parent>
 
   <licenses>

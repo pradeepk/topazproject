@@ -44,7 +44,7 @@
             <goals><goal>wsdl2java</goal></goals>
             <configuration>
               <sourceDependencies>
-                <sourceDependency>info.fedora:fedoragsearch-server:2.1.1-t00700-SNAPSHOT:/fedoragsearch-service.wsdl</sourceDependency>
+                <sourceDependency>info.fedora:fedoragsearch-server:2.1.1-t00800-SNAPSHOT-SNAPSHOT:/fedoragsearch-service.wsdl</sourceDependency>
               </sourceDependencies>
               <!--
               <implementationClassName>org.topazproject.ws.search.SearchServicePortSoapBindingImpl</implementationClassName>
