@@ -651,4 +651,39 @@ public class BuilderTest extends GroovyTestCase {
       }
     }).contains('Duplicate predicate uri')
   }
+
+  void testPackages() {
+    // non-default package
+    Class cls = rdf.class('org.foo.Test1') {
+      state ()
+    }
+    ClassMetadata cm = rdf.sessFactory.getClassMetadata(cls)
+
+    assert cls.name         == 'org.foo.Test1'
+    assert cm.type          == 'http://rdf.topazproject.org/RDF/org.foo.Test1'
+
+    cm = rdf.sessFactory.getClassMetadata('Test1')
+
+    assert cls.name         == 'org.foo.Test1'
+    assert cm.type          == 'http://rdf.topazproject.org/RDF/org.foo.Test1'
+
+    cm = rdf.sessFactory.getClassMetadata('org.foo.Test1')
+
+    assert cls.name         == 'org.foo.Test1'
+    assert cm.type          == 'http://rdf.topazproject.org/RDF/org.foo.Test1'
+
+    // default package
+    cls = rdf.class('Test2') {
+      state ()
+    }
+    cm = rdf.sessFactory.getClassMetadata(cls)
+
+    assert cls.name         == 'Test2'
+    assert cm.type          == 'http://rdf.topazproject.org/RDF/Test2'
+
+    cm = rdf.sessFactory.getClassMetadata('Test2')
+
+    assert cls.name         == 'Test2'
+    assert cm.type          == 'http://rdf.topazproject.org/RDF/Test2'
+  }
 }

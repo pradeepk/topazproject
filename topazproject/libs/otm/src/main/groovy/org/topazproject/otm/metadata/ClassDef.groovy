@@ -138,9 +138,11 @@ public class ClassDef {
     // generate the groovy class definition
     StringBuffer clsSrc = new StringBuffer(100)
 
+    if (className.contains('.'))
+      clsSrc << "package ${className.substring(0, className.lastIndexOf('.'))}\n"
     if (isAbstract)
       clsSrc << 'abstract '
-    clsSrc << "class ${className} "
+    clsSrc << "class ${className.substring(className.lastIndexOf('.') + 1)} "
     if (extendsClass)
       clsSrc << "extends ${extendsClass} "
     clsSrc << "{\n"
@@ -228,7 +230,7 @@ public class ClassDef {
   }
 
   private String getShortName(Class cls) {
-    return cls.name - "${cls.getPackage()}.";
+    return cls.name.substring(cls.name.lastIndexOf('.') + 1)
   }
 
   private String javaConst(FieldDef f) {
