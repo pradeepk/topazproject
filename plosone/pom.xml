@@ -4,14 +4,14 @@
   <groupId>org.plosone</groupId>
   <artifactId>plosone</artifactId>
   <packaging>pom</packaging>
-  <version>0.7-SNAPSHOT</version>
+  <version>0.7</version>
   <name>PLoS ONE Application</name>
 
   <parent>
     <groupId>org.topazproject</groupId>
     <artifactId>the-whole-shebang</artifactId>
     <relativePath>../pom.xml</relativePath>
-    <version>0.7-SNAPSHOT</version>
+    <version>0.7</version>
   </parent>
 
   <modules>
