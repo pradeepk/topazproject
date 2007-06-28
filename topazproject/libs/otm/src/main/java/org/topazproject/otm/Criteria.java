@@ -10,6 +10,7 @@
 package org.topazproject.otm;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 import org.topazproject.otm.criterion.Criterion;
@@ -27,6 +28,7 @@ public class Criteria {
   private final ClassMetadata      classMetadata;
   private final Criteria           parent;
   private final Mapper             mapping;
+  private final Collection<Filter> filters;
   private       int                maxResults    = -1;
   private       int                firstResult   = -1;
   private final List<Criterion>    criterions    = new ArrayList<Criterion>();
@@ -41,12 +43,15 @@ public class Criteria {
    * @param parent The parent criteria for which this is a sub-criteria
    * @param mapping The mapping of the association field in parent 
    * @param classMetadata The class meta-data of this criteria
+   * @param filters The filters to apply
    */
-  public Criteria(Session session, Criteria parent, Mapper mapping, ClassMetadata classMetadata) {
+  public Criteria(Session session, Criteria parent, Mapper mapping, ClassMetadata classMetadata,
+                  Collection<Filter> filters) {
     this.session                        = session;
     this.parent                         = parent;
     this.mapping                        = mapping;
     this.classMetadata                  = classMetadata;
+    this.filters                        = filters;
 
     orderPosition = (parent == null) ? new ArrayList<Order>() : null;
   }

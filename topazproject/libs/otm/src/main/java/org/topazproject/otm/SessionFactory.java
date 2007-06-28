@@ -14,6 +14,7 @@ import java.lang.reflect.Modifier;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -27,6 +28,7 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.context.CurrentSessionContext;
+import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.mapping.SerializerFactory;
 import org.topazproject.otm.metadata.AnnotationClassMetaFactory;
 
@@ -64,6 +66,11 @@ public class SessionFactory {
    * Model to config mapping (uris, types etc.)
    */
   private final Map<String, ModelConfig> models = new HashMap<String, ModelConfig>();
+
+  /**
+   * Filter definitions by name.
+   */
+  private final Map<String, FilterDefinition> filterDefs = new HashMap<String, FilterDefinition>();
   private AnnotationClassMetaFactory cmf = new AnnotationClassMetaFactory(this);
   private SerializerFactory          serializerFactory = new SerializerFactory(this);
   private TripleStore                store;
@@ -319,6 +326,46 @@ public class SessionFactory {
    */
   public SerializerFactory getSerializerFactory() {
     return serializerFactory;
+  }
+
+  /** 
+   * Add a new filter definition. If one has already been registered with the same name it is
+   * replaced. 
+   * 
+   * @param fd the filter definition to register 
+   */
+  public void addFilterDefinition(FilterDefinition fd) {
+    filterDefs.put(fd.getFilterName(), fd);
+  }
+
+  /** 
+   * Remove the filter definition with the given name. Does nothing if none was registered with
+   * that name. 
+   * 
+   * @param filterName the filter name
+   */
+  public void removeFilterDefinition(String filterName) {
+    filterDefs.remove(filterName);
+  }
+
+  /** 
+   * List all registered filter definitions. 
+   * 
+   * @return the list of registered filter definitions; will be empty if no filter definitions have
+   *         been registered.
+   */
+  public Collection<FilterDefinition> listFilterDefinitions() {
+    return Collections.unmodifiableCollection(filterDefs.values());
+  }
+
+  /** 
+   * Get the filter definition for the named filter. 
+   * 
+   * @param name the name of the filter
+   * @return the filter definition, or null
+   */
+  FilterDefinition getFilterDefinition(String name) {
+    return filterDefs.get(name);
   }
 
   private boolean isInstantiable(Class clazz) {

@@ -10,6 +10,8 @@
 
 package org.topazproject.otm;
 
+import java.util.Collection;
+
 import org.topazproject.otm.query.Results;
 
 /** 
@@ -21,16 +23,19 @@ import org.topazproject.otm.query.Results;
 public class Query {
   private final Session            sess;
   private final String             query;
+  private final Collection<Filter> filters;
 
   /** 
    * Create a new query instance. 
    * 
    * @param sess    the session this is attached to
    * @param query   the oql query string
+   * @param filters the filters that should be applied to this query
    */
-  Query(Session sess, String query) {
+  Query(Session sess, String query, Collection<Filter> filters) {
     this.sess    = sess;
     this.query   = query;
+    this.filters = filters;
   }
 
   /** 

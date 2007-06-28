@@ -28,10 +28,10 @@ import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.annotations.Rdf;
+import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.AbstractMapper;
 import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.query.Results;
 
 /**
  * An otm session (similar to hibernate session). And similar to hibernate session, not thread
@@ -49,6 +49,7 @@ public class Session {
   private final Map<Id, LazyLoadMethodHandler> proxies        = new HashMap<Id, LazyLoadMethodHandler>();
   private final Map<Id, Set<Wrapper>>          associations   = new HashMap<Id, Set<Wrapper>>();
   private final Set<Id>                        currentIds     = new HashSet<Id>();
+  private final Map<String, Filter>            filters        = new HashMap<String, Filter>();
 
   /**
    * Creates a new Session object.
@@ -364,7 +365,8 @@ public class Session {
    * @throws OtmException on an error
    */
   public Criteria createCriteria(Class clazz) throws OtmException {
-    return new Criteria(this, null, null, checkClass(clazz));
+    return new Criteria(this, null, null, checkClass(clazz),
+                        new ArrayList<Filter>(filters.values()));
   }
 
   /**
@@ -387,7 +389,8 @@ public class Session {
     if (m == null)
       throw new OtmException(path + " is not a valid field name for " + cm);
 
-    return new Criteria(this, criteria, m, checkClass(m.getComponentType()));
+    return new Criteria(this, criteria, m, checkClass(m.getComponentType()),
+                        new ArrayList<Filter>(filters.values()));
   }
 
   /**
@@ -417,7 +420,7 @@ public class Session {
    * @return the query object
    */
   public Query createQuery(String query) throws OtmException {
-    return new Query(this, query);
+    return new Query(this, query, new ArrayList<Filter>(filters.values()));
   }
 
   /**
@@ -436,6 +439,32 @@ public class Session {
       results.add(checkObject(o).getId());
 
     return results;
+  }
+
+  /** 
+   * Enable the named filter. This does not affect existing queries or criteria.
+   * 
+   * @param name the name of the filter to enable
+   * @return the enabled filter, or null if no filter definition can be found.
+   */
+  public Filter enableFilter(String name) {
+    FilterDefinition fd = sessionFactory.getFilterDefinition(name);
+    if (fd == null)
+      return null;
+
+    Filter f = fd.createFilter(this);
+    filters.put(f.getName(), f);
+    return f;
+  }
+
+  /** 
+   * Disable the named filter. This does nothing if no filter by the given name has been enabled.
+   * This does not affect existing queries or criteria.
+   * 
+   * @param name the name of the filter to disable
+   */
+  public void disableFilter(String name) {
+    filters.remove(name);
   }
 
   private void write(Id id, Object o, boolean delete) throws OtmException {
