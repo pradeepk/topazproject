@@ -12,12 +12,13 @@
       <!-- Set hosts.default to FQHN (not localhost) for a singleboxinstall
            (or to webhead FQHN for multibox install) -->
       <default>localhost</default>
+      <mailhost>localhost</mailhost>
       <!-- For multibox install, change the following entires to the appropriate FQHNs -->
       <cas>${network.hosts.default}</cas>
+      <registration>${network.hosts.cas}</registration>
       <fedora>${network.hosts.default}</fedora>
       <mulgara>${network.hosts.default}</mulgara>
       <plosone>${network.hosts.default}</plosone>
-      <mailhost>${network.hosts.default}</mailhost>
     </hosts>
     <ports>
       <!-- For webhead, set default to empty (not 80) -->
