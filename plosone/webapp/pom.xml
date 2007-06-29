@@ -392,8 +392,14 @@
               <value>file:///etc/topaz/log4j.xml</value>
             </systemProperty>
             <systemProperty>
-              <name>org.plos.configuration</name>
-              <value>file:target/plosone/WEB-INF/classes/plosoneDev.xml</value>
+              <!-- Turn on dev mode configuration -->
+              <name>org.plos.configuration.overrides</name>
+              <value>defaults-dev.xml</value>
+            </systemProperty>
+            <systemProperty>
+              <!-- In case there is something in /etc, override here, not defaults-dev.xml -->
+              <name>plosone.app-context</name>
+              <value>/plosone-webapp</value>
             </systemProperty>
             <systemProperty>
               <name>org.apache.commons.logging.Log</name>

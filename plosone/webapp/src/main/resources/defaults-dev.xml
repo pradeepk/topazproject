@@ -1,82 +1,20 @@
 <?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  $HeadURL::                                                                                     $
+  $Id$
+
+  Copyright (c) 2006 by Topaz, Inc.
+  http://topazproject.org
+
+  Licensed under the Educational Community License version 1.0
+  http://opensource.org/licenses/ecl1.php
+
+  N.B. Settings in here may still be overridden by settings in /etc.
+-->
 <config>
-  <network>
-    <hosts>
-      <!-- Set hosts.default to FQHN (not localhost) for a singleboxinstall
-      (or to webhead FQHN for multibox install) -->
-      <default>localhost</default>
-      <!-- For multibox install, change the following entires to the appropriate FQHNs -->
-      <cas>${network.hosts.default}</cas>
-      <fedora>${network.hosts.default}</fedora>
-      <mulgara>${network.hosts.default}</mulgara>
-      <plosone>${network.hosts.default}</plosone>
-      <mailhost>${network.hosts.default}</mailhost>
-    </hosts>
-    <ports>
-      <!-- For webhead, set default to empty (not 80) -->
-      <default>${network.ports.plosone}</default>
-      
-      <plosone>8080</plosone>
-      <plosone-ssl>10443</plosone-ssl>
-      <cas-ssl>7443</cas-ssl>
-      <fedora>9090</fedora>
-      <mulgara>9091</mulgara>
-      <search>9092</search>
-    </ports>
-  </network>
-
-  <cas>
-    <!-- This password is only needed on servers running cas -->
-    <db><password>loot2_debonAir</password></db>
-
-    <hostname>${network.hosts.cas}</hostname>
-    <port>
-      <https>${network.ports.cas-ssl}</https>
-    </port>
-    <url>
-      <base>https://${cas.hostname}:${cas.port.https}/cas</base>
-      <login>${cas.url.base}/login</login>
-      <logout>${cas.url.base}/logout</logout>
-      <proxy-receptor>${cas.url.base}/proxy</proxy-receptor>
-      <proxy-validate>${cas.url.base}/proxyValidate</proxy-validate>
-    </url>
-  </cas>
-
   <plosone>
-    <hostname>${network.hosts.default}</hostname>
-    <port>
-      <http>${network.ports.default}</http>
-      <https>${network.ports.plosone-ssl}</https>
-    </port>
     <app-context>/plosone-webapp</app-context>
-    <resource-sub-dir></resource-sub-dir>
-    <host>${plosone.hostname}:${plosone.port.http}</host>
-    <url>
-      <proxy-callback>
-        https://${plosone.hostname}:${plosone.port.https}${plosone.app-context}/CasProxyServlet
-      </proxy-callback>
-    </url>
-
-    <!-- Stuff used by doi-resolver -->
-    <webserver-url>http://${network.hosts.default}:${network.ports.default}${plosone.app-context}/</webserver-url>
-    <article-action>article/fetchArticle.action?articleURI=</article-action>
-    <figure-action1>article/slideshow.action?uri=</figure-action1>
-    <figure-action2>&amp;imageURI=</figure-action2>
-    <error-page>static/pageNotFound.action</error-page>
   </plosone>
-
-  <plos-registration>
-    <hostname>${network.hosts.cas}</hostname>
-    <app-context>/plos-registration</app-context>
-    <url>
-      <base>
-        https://${plos-registration.hostname}:${cas.port.https}${plos-registration.app-context}
-      </base>
-      <registration>${plos-registration.url.base}/register.action</registration>
-      <change-password>${plos-registration.url.base}/changePassword.action</change-password>
-      <change-email>${plos-registration.url.base}/changeEmail.action</change-email>
-    </url>
-  </plos-registration>
 
   <freemarker>
     <default>
@@ -322,103 +260,4 @@
       </javascript>
     </page>
   </freemarker>
-  
-  <topaz>
-
-    <!-- Configuration to talk to CAS -->
-    <cas-server>
-      <base-url>https://${network.hosts.cas}:${network.ports.cas-ssl}/cas</base-url>
-    </cas-server>
-    
-    <services>
-      <!-- Configuration to talk to Fedora -->
-      <fedora>
-        <base-url>http://${network.hosts.fedora}:${network.ports.fedora}/fedora/</base-url>
-        <uri>${topaz.services.fedora.base-url}services/management</uri>
-        <auth-method>BASIC</auth-method>
-        <userName>fedoraAdmin</userName>
-        <password>fedoraAdmin</password>
-      </fedora>
-      <fedoraUploader>
-        <uri>${topaz.services.fedora.base-url}management/upload</uri>
-        <auth-method>BASIC</auth-method>
-        <userName>fedoraAdmin</userName>
-        <password>fedoraAdmin</password>
-      </fedoraUploader>
-
-      <!-- Configuration to talk to Mulgara -->
-      <itql>
-        <uri>http://${network.hosts.mulgara}:${network.ports.mulgara}/mulgara-service/services/ItqlBeanService</uri>
-        <auth-method>NONE</auth-method>
-      </itql>
-      <itql-admin>
-        <uri>${topaz.services.itql.uri}</uri>
-        <auth-method>NONE</auth-method>
-      </itql-admin>
-    </services>
-
-    <utilities>
-      <image-magick>
-        <executable-path>/usr/bin/convert</executable-path>
-        <temp-directory>/tmp</temp-directory>
-      </image-magick>
-    </utilities>
-
-    <search>
-      <indexpath>/var/lib/topaz/data/lucene</indexpath>
-      <defaultfields>description,title,body,creator</defaultfields>
-    </search>
-    
-    <fedoragsearch>
-      <urls>
-        <url>http://${network.hosts.plosone}:${network.ports.search}/ws-search-webapp/services/FedoraGenericSearchServicePort</url>
-      </urls>
-      <repository>Topaz</repository>
-      <index>TopazIndex</index>
-      <indexDocXslt>topazFoxmlToLucene</indexDocXslt>
-      <resultPageXslt>copyXml</resultPageXslt>
-      <fgsrepository>
-        <fedoraSoap>${topaz.services.fedora.base-url}services</fedoraSoap>
-        <fedoraUser>fedoraAdmin</fedoraUser>
-        <fedoraPass>fedoraAdmin</fedoraPass>
-      </fgsrepository>
-    </fedoragsearch>
-
-    <articles>
-      <pdpName>standard-pdp</pdpName>
-    </articles>
-    <annotations>
-      <pdpName>standard-pdp</pdpName>
-    </annotations>
-    <replies>
-      <pdpName>standard-pdp</pdpName>
-    </replies>
-    <permissions>
-      <pdpName>standard-pdp</pdpName>
-    </permissions>
-    <profiles>
-      <pdpName>standard-pdp</pdpName>
-    </profiles>
-    <preferences>
-      <pdpName>standard-pdp</pdpName>
-    </preferences>
-    <user-accounts>
-      <pdpName>standard-pdp</pdpName>
-    </user-accounts>
-    <user-roles>
-      <pdpName>standard-pdp</pdpName>
-    </user-roles>
-    <ratings>
-      <pdpName>standard-pdp</pdpName>
-    </ratings>
-    <alerts>
-      <pdpName>standard-pdp</pdpName>
-    </alerts>
-    <search>
-      <pdpName>standard-pdp</pdpName>
-    </search>
-    <access>
-      <pdpName>standard-pdp</pdpName>
-    </access>
-  </topaz>
 </config>
