@@ -37,8 +37,8 @@
   <plosone>
     <hostname>${network.hosts.default}</hostname>
     <port>
-      <http>8080</http>
-      <https>10443</https>
+      <http>${network.ports.default}</http>
+      <https>${network.ports.plosone-ssl}</https>
     </port>
     <host>${plosone.hostname}:${plosone.port.http}</host>
 
