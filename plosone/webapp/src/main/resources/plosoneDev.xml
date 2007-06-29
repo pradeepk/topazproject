@@ -1,36 +1,38 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <config>
-  <hosts>
-    <!-- Set hosts.default to FQHN (not localhost) for a singleboxinstall
-         (or to webhead FQHN for multibox install) -->
-    <default>localhost</default>
-    <!-- For multibox install, change the following entires to the appropriate FQHNs -->
-    <cas>${hosts.default}</cas>
-    <fedora>${hosts.default}</fedora>
-    <mulgara>${hosts.default}</mulgara>
-    <plosone>${hosts.default}</plosone>
-    <mailhost>${hosts.default}</mailhost>
-  </hosts>
-  <ports>
-    <!-- For webhead, set default to empty (not 80) -->
-    <default>${ports.plosone}</default>
-    
-    <plosone>8080</plosone>
-    <plosone-ssl>10443</plosone-ssl>
-    <cas-ssl>7443</cas-ssl>
-    <fedora>9090</fedora>
-    <mulgara>9091</mulgara>
-    <search>9092</search>
-  </ports>
+  <network>
+    <hosts>
+      <!-- Set hosts.default to FQHN (not localhost) for a singleboxinstall
+      (or to webhead FQHN for multibox install) -->
+      <default>localhost</default>
+      <!-- For multibox install, change the following entires to the appropriate FQHNs -->
+      <cas>${network.hosts.default}</cas>
+      <fedora>${network.hosts.default}</fedora>
+      <mulgara>${network.hosts.default}</mulgara>
+      <plosone>${network.hosts.default}</plosone>
+      <mailhost>${network.hosts.default}</mailhost>
+    </hosts>
+    <ports>
+      <!-- For webhead, set default to empty (not 80) -->
+      <default>${network.ports.plosone}</default>
+      
+      <plosone>8080</plosone>
+      <plosone-ssl>10443</plosone-ssl>
+      <cas-ssl>7443</cas-ssl>
+      <fedora>9090</fedora>
+      <mulgara>9091</mulgara>
+      <search>9092</search>
+    </ports>
+  </network>
 
-  <single-box-hostname>${hosts.default}</single-box-hostname>
+  <single-box-hostname>${network.hosts.default}</single-box-hostname>
   <cas>
     <!-- This password is only needed on servers running cas -->
     <db><password>loot2_debonAir</password></db>
 
-    <hostname>${hosts.cas}</hostname>
+    <hostname>${network.hosts.cas}</hostname>
     <port>
-      <https>${ports.cas-ssl}</https>
+      <https>${network.ports.cas-ssl}</https>
     </port>
     <url>
       <base>https://${cas.hostname}:${cas.port.https}/cas</base>
@@ -41,10 +43,10 @@
     </url>
   </cas>
   <plosone>
-    <hostname>${hosts.default}</hostname>
+    <hostname>${network.hosts.default}</hostname>
     <port>
-      <http>${ports.default}</http>
-      <https>${ports.plosone-ssl}</https>
+      <http>${network.ports.default}</http>
+      <https>${network.ports.plosone-ssl}</https>
     </port>
     <app-context>/plosone-webapp</app-context>
     <resource-sub-dir></resource-sub-dir>
@@ -56,14 +58,14 @@
     </url>
 
     <!-- Stuff used by doi-resolver -->
-    <webserver-url>http://${hosts.default}:${ports.default}${plosone.app-context}/</webserver-url>
+    <webserver-url>http://${network.hosts.default}:${network.ports.default}${plosone.app-context}/</webserver-url>
     <article-action>article/fetchArticle.action?articleURI=</article-action>
     <figure-action1>article/slideshow.action?uri=</figure-action1>
     <figure-action2>&amp;imageURI=</figure-action2>
     <error-page>static/pageNotFound.action</error-page>
   </plosone>
   <plos-registration>
-    <hostname>${hosts.cas}</hostname>
+    <hostname>${network.hosts.cas}</hostname>
     <app-context>/plos-registration</app-context>
     <url>
       <base>
@@ -325,13 +327,13 @@
 
     <!-- Configuration to talk to CAS -->
     <cas-server>
-      <base-url>https://${hosts.cas}:${ports.cas-ssl}/cas</base-url>
+      <base-url>https://${network.hosts.cas}:${network.ports.cas-ssl}/cas</base-url>
     </cas-server>
     
     <services>
       <!-- Configuration to talk to Fedora -->
       <fedora>
-        <base-url>http://${hosts.fedora}:${ports.fedora}/fedora/</base-url>
+        <base-url>http://${network.hosts.fedora}:${network.ports.fedora}/fedora/</base-url>
         <uri>${topaz.services.fedora.base-url}services/management</uri>
         <auth-method>BASIC</auth-method>
         <userName>fedoraAdmin</userName>
@@ -346,7 +348,7 @@
 
       <!-- Configuration to talk to Mulgara -->
       <itql>
-        <uri>http://${hosts.mulgara}:${ports.mulgara}/mulgara-service/services/ItqlBeanService</uri>
+        <uri>http://${network.hosts.mulgara}:${network.ports.mulgara}/mulgara-service/services/ItqlBeanService</uri>
         <auth-method>NONE</auth-method>
       </itql>
       <itql-admin>
@@ -369,7 +371,7 @@
     
     <fedoragsearch>
       <urls>
-        <url>http://${hosts.plosone}:${ports.search}/ws-search-webapp/services/FedoraGenericSearchServicePort</url>
+        <url>http://${network.hosts.plosone}:${network.ports.search}/ws-search-webapp/services/FedoraGenericSearchServicePort</url>
       </urls>
       <repository>Topaz</repository>
       <index>TopazIndex</index>

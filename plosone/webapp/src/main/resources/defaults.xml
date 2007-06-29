@@ -6,15 +6,15 @@
   <!-- Define defaults for spring - must be redone soon -->
   <plosone>
     <spring>
-      <hostname>${hosts.plosone}</hostname>
-      <mailhost>${hosts.mailhost}</mailhost>
+      <hostname>${network.hosts.plosone}</hostname>
+      <mailhost>${network.hosts.mailhost}</mailhost>
       <server>
-        <plosone>${hosts.plosone}:${ports.plosone}</plosone>
-        <cas>${hosts.cas}:${ports.cas-ssl}</cas>
-        <search>${hosts.plosone}:${ports.plosone}</search>
-        <mulgara>${hosts.mulgara}:${ports.mulgara}</mulgara>
+        <plosone>${network.hosts.plosone}:${network.ports.plosone}</plosone>
+        <cas>${network.hosts.cas}:${network.ports.cas-ssl}</cas>
+        <search>${network.hosts.plosone}:${network.ports.plosone}</search>
+        <mulgara>${network.hosts.mulgara}:${network.ports.mulgara}</mulgara>
       </server>
-      <homesite>${hosts.default}</homesite>
+      <homesite>${network.hosts.default}</homesite>
       <service>
         <!-- This may need to be mucked with to be just one -->
         <search>${topaz.fedoragsearch.urls.url}</search>
@@ -37,7 +37,7 @@
       <itql><uri>http://${plosone.spring.server.mulgara}/mulgara-service/services/ItqlBeanService</uri></itql>
       <email><feedback>webmaster@plos.org</feedback></email>
       <!-- Temporary default for /etc/topaz/plosone.xml -->
-      <hosts><mailhost>${hosts.default}</mailhost></hosts>
+      <hosts><mailhost>${network.hosts.default}</mailhost></hosts>
     </spring>
   </plosone>
 
