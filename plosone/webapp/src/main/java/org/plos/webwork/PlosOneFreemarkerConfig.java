@@ -69,14 +69,14 @@ public class PlosOneFreemarkerConfig {
     changePasswordURL = myConfig.getString("plos-registration.url.change-password");
     changeEmailURL = myConfig.getString("plos-registration.url.change-email");
 
-    String title = myConfig.getString("default.title");
+    String title = myConfig.getString("freemarker.default.title");
     if (title != null) {
       defaultTitle = title;
     } else {
       defaultTitle = DEFAULT_TITLE;
     }
 
-    List fileList = myConfig.getList("default.css.file");
+    List fileList = myConfig.getList("freemarker.default.css.file");
     if (fileList.size() > 0) {
       defaultCss = new String[fileList.size()];
       Iterator iter = fileList.iterator();
@@ -87,7 +87,7 @@ public class PlosOneFreemarkerConfig {
       defaultCss = DEFAULT_CSS_FILES;
     }
 
-    fileList = myConfig.getList("default.javascript.file");
+    fileList = myConfig.getList("freemarker.default.javascript.file");
     String javascriptFile;
     if (fileList.size() > 0) {
       defaultJavaScript = new String[fileList.size()];
@@ -104,7 +104,7 @@ public class PlosOneFreemarkerConfig {
       defaultJavaScript = DEFAULT_JS_FILES;
     }
 
-    int numPages = myConfig.getList("page.name").size();
+    int numPages = myConfig.getList("freemarker.page.name").size();
     int numCss, numJavaScript, j;
     String pageName, page;
     titles = new HashMap<String, String>();
@@ -116,7 +116,7 @@ public class PlosOneFreemarkerConfig {
     String[] javaScriptArray = null;
 
     for (int i = 0; i < numPages; i++) {
-      page = "page(" + i + ")";
+      page = "freemarker.page(" + i + ")";
       pageName = myConfig.getString(page + ".name");
       if (log.isDebugEnabled()){
         log.debug("Reading config for page name: " + pageName);
