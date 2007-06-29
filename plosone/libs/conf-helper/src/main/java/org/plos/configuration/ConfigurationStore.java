@@ -16,6 +16,7 @@ import java.io.IOException;
 import java.io.FileNotFoundException;
 
 import org.apache.commons.configuration.Configuration;
+import org.apache.commons.configuration.SystemConfiguration;
 import org.apache.commons.configuration.CompositeConfiguration;
 import org.apache.commons.configuration.PropertiesConfiguration;
 import org.apache.commons.configuration.XMLConfiguration;
@@ -39,6 +40,7 @@ import org.apache.commons.logging.LogFactory;
  *   <li>file:/etc/topaz/plosone.xml (or org.plos.configuration) - A set of user overrides
  *        in /etc. The name of this file can be changed for webapps that use WebAppInitializer
  *        by changing web.xml or by setting the org.plos.configuraiton system property.
+ *   <li>System properties
  * </ul>
  *
  * @author Pradeep Krishnan
@@ -125,6 +127,9 @@ public class ConfigurationStore {
    */
   public void loadConfiguration(URL configURL) throws ConfigurationException {
     composite = new CompositeConfiguration();
+
+    // System properties override everything
+    composite.addConfiguration(new SystemConfiguration());
 
     // Load from org.plos.configuration -- /etc/... (optional)
     if (configURL != null) {

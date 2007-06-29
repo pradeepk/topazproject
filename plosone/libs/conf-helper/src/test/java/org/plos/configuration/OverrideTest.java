@@ -21,20 +21,25 @@ public class OverrideTest extends TestCase {
 
   protected void setUp() throws ConfigurationException {
     System.setProperty(ConfigurationStore.OVERRIDES_URL, "defaults-dev.xml");
+    System.setProperty("plosconf.test", "goodbye world");
     ConfigurationStore store = ConfigurationStore.getInstance();
     store.loadDefaultConfiguration();
     conf = store.getConfiguration();
-
-    // Make an attempt to remove the system property for other test classes
-    Properties p = System.getProperties();
-    p.remove(ConfigurationStore.OVERRIDES_URL);
-    System.setProperties(p);
   }
 
   protected void tearDown() {
+    // Make an attempt to remove the system property for other test classes
+    Properties p = System.getProperties();
+    p.remove(ConfigurationStore.OVERRIDES_URL);
+    p.remove("plosconf.test");
+    System.setProperties(p);
   }
 
   public void testDefaultsOverrideGlobal() {
     assertEquals("defaults override", "override-dev", conf.getString("plosconf.def"));
+  }
+
+  public void testSystemPropertyOverride() {
+    assertEquals("system property override", "goodbye world", conf.getString("plosconf.test"));
   }
 }
