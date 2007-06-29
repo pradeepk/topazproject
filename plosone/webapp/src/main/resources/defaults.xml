@@ -18,9 +18,6 @@
 -->
 <config>
   <cas>
-    <!-- This password is only needed on servers running cas -->
-    <db><password>changeme</password></db>
-
     <hostname>${network.hosts.cas}</hostname>
     <port>
       <https>${network.ports.cas-ssl}</https>
