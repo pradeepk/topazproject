@@ -33,20 +33,21 @@ import org.apache.commons.logging.LogFactory;
  * <ul>
  *   <li>/global-defaults.xml - A resource in this library
  *   <li>/defaults.xml - A resource or resources on libraries and webapps using this lib
- *   <li>/etc/topaz/plosone.xml - A set of user overrides in /etc. The name of this file
- *        can be changed for webapps that use WebAppInitializer by changing web.xml or
- *        by setting the org.plos.configuraiton system property.
+ *   <li>org.plos.configuration.overrides - If set, this defines a named resource or URL
+ *        of a resource that is added to the configuration tree - usually supplementing
+ *        and overriding settings in /global-defaults.xml and /defaults.xml.
+ *   <li>file:/etc/topaz/plosone.xml (or org.plos.configuration) - A set of user overrides
+ *        in /etc. The name of this file can be changed for webapps that use WebAppInitializer
+ *        by changing web.xml or by setting the org.plos.configuraiton system property.
  * </ul>
- *
- * TODO: Document dev-mode system property (when it is implemented)
  *
  * @author Pradeep Krishnan
  * @author Eric Brown
  */
 public class ConfigurationStore {
-  private static final Log                log = LogFactory.getLog(ConfigurationStore.class);
-  private static final ConfigurationStore instance      = new ConfigurationStore();
-  private Configuration                   configuration = null;
+  private static final Log                log       = LogFactory.getLog(ConfigurationStore.class);
+  private static final ConfigurationStore instance  = new ConfigurationStore();
+  private CompositeConfiguration          composite = null;
 
   /**
    * A property used to define the location of the master set of configuration overrides.
@@ -54,6 +55,13 @@ public class ConfigurationStore {
    * a URL. (For example: file:///etc/topaz/plosone.xml.)
    */
   public static final String CONFIG_URL = "org.plos.configuration";
+
+  /**
+   * A property used to define overrides. This is primarily to support something like
+   * a development mode. If a valid URL, the resource is found from the URL. If not a
+   * URL, it is treated as the name of a resource.
+   */
+  public static final String OVERRIDES_URL = "org.plos.configuration.overrides";
 
   /**
    * Default configuration overrides in /etc
@@ -103,8 +111,8 @@ public class ConfigurationStore {
    * @throws RuntimeException if the configuration factory is not initialized
    */
   public Configuration getConfiguration() {
-    if (configuration != null)
-      return configuration;
+    if (composite != null)
+      return composite;
 
     throw new RuntimeException("ERROR: Configuration not loaded or initialized.");
   }
@@ -116,20 +124,13 @@ public class ConfigurationStore {
    * @throws ConfigurationException when the config factory configuration has an error
    */
   public void loadConfiguration(URL configURL) throws ConfigurationException {
-    CompositeConfiguration composite = new CompositeConfiguration();
+    composite = new CompositeConfiguration();
 
-    // TODO: Detect and handle "dev" mode
-
-    // Load from /etc/... (optional)
+    // Load from org.plos.configuration -- /etc/... (optional)
     if (configURL != null) {
-      Configuration config = null;
       try {
-        if (configURL.getFile().endsWith("properites"))
-          config = new PropertiesConfiguration(configURL);
-        else
-          config = new XMLConfiguration(configURL);
-
-        composite.addConfiguration(config);
+        composite.addConfiguration(getConfigurationFromUrl(configURL));
+        log.info("Added URL '" + configURL + "'");
       } catch (ConfigurationException ce) {
         if (!(ce.getCause() instanceof FileNotFoundException))
           throw ce;
@@ -137,21 +138,23 @@ public class ConfigurationStore {
       }
     }
 
-    // Add defaults.xml found in classpath
-    try {
-      Enumeration<URL> rs = getClass().getClassLoader().getResources(DEFAULTS_RESOURCE);
-      while(rs.hasMoreElements())
-        composite.addConfiguration(new XMLConfiguration(rs.nextElement()));
-    } catch (IOException ioe) {
-      // Don't understand how this could ever happen
-      throw new Error("Unexpected error", ioe);
+    // Add org.plos.configuration.overrides (if defined)
+    String overrides = System.getProperty(OVERRIDES_URL);
+    if (overrides != null) {
+      try {
+        composite.addConfiguration(getConfigurationFromUrl(new URL(overrides)));
+        log.info("Added override URL '" + overrides + "'");
+      } catch (MalformedURLException mue) {
+        // Must not be a URL, so it must be a resource
+        addResources(composite, overrides);
+      }
     }
 
-    // Add global-defaults.xml (presumably found in this jar)
-    composite.addConfiguration(new XMLConfiguration(
-                                 getClass().getResource(GLOBAL_DEFAULTS_RESOURCE)));
+    // Add defaults.xml found in classpath
+    addResources(composite, DEFAULTS_RESOURCE);
 
-    configuration = composite;
+    // Add global-defaults.xml (presumably found in this jar)
+    addResources(composite, GLOBAL_DEFAULTS_RESOURCE);
   }
 
   /**
@@ -177,6 +180,43 @@ public class ConfigurationStore {
    * Unload the current configuration.
    */
   public void unloadConfiguration() {
-    configuration = null;
+    composite = null;
+  }
+
+  /**
+   * Given a URL, determine whether it represents properties or xml and load it as a
+   * commons-config Configuration instance.
+   */
+  private static Configuration getConfigurationFromUrl(URL url) throws ConfigurationException {
+    if (url.getFile().endsWith("properties"))
+      return new PropertiesConfiguration(url);
+    else
+      return new XMLConfiguration(url);
+  }
+
+  /**
+   * Iterate over all the resources of the given name and add them to our composite
+   * configuration.
+   */
+  private static void addResources(CompositeConfiguration composite, String resource)
+      throws ConfigurationException {
+    Class klass = ConfigurationStore.class;
+    if (resource.startsWith("/")) {
+      composite.addConfiguration(getConfigurationFromUrl(klass.getResource(resource)));
+      log.info("Added resource '" + resource + "'");
+    } else {
+      try {
+        int cnt = 0;
+        Enumeration<URL> rs = klass.getClassLoader().getResources(resource);
+        while (rs.hasMoreElements()) {
+          composite.addConfiguration(getConfigurationFromUrl(rs.nextElement()));
+          cnt++;
+        }
+        log.info("Added " + cnt + " instances of resource '" + resource + "' to configuration");
+      } catch (IOException ioe) {
+        // Don't understand how this could ever happen
+        throw new Error("Unexpected error", ioe);
+      }
+    }
   }
 }
