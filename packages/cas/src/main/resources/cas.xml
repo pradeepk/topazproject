@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!--
+  This file is a template. It contains many configuration parameters you may want to change.
+  However, there are even more configuration parameters that can be tuned. To get a list of
+  all of these, see documentation. (Or, failing that, most defaults are configured in
+  webapps at WEB-INF/classes/defaults.xml. Though it is possible that there are
+  even more - see ConfigurationStore documentation.)
+-->
+<config>
+  <network>
+    <hosts>
+      <!-- Set hosts.default to FQHN (not localhost) for a singleboxinstall
+           (or to webhead FQHN for multibox install) -->
+      <cas>localhost</cas> <!-- could set <default> instead, but this is more specific -->
+      <mailhost>localhost</mailhost>
+    </hosts>
+    <ports>
+      <!-- If 443, set default to empty -->
+      <cas-ssl>7443</cas-ssl>
+    </ports>
+  </network>
+
+  <cas>
+    <!-- This password is only needed on servers running cas -->
+    <db>
+      <user>casuser</user>
+      <password>caspass</password>
+      <url>jdbc:postgresql://localhost/casdb</url>
+      <driver>org.postgresql.Driver</driver>
+    </db>
+  </cas>
+
+  <registration>
+    <from-email>registration@plosone.org</from-email>
+    <from-name>PLoS Registration</from-name>
+  </registration>
+</config>

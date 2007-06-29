@@ -135,7 +135,7 @@
                   <groupname>topaz</groupname>
                   <sources>
                     <source>
-                      <location>src/main/resources/nonJmxApplicationContext.xml</location>
+                      <location>src/main/resources/cas.xml</location>
                     </source>
                   </sources>
                 </mapping>

@@ -9,6 +9,9 @@
         http://www.springframework.org/schema/util http://www.springframework.org/schema/util/spring-util-2.0.xsd
         http://www.springframework.org/schema/aop http://www.springframework.org/schema/aop/spring-aop-2.0.xsd">
 
+  <!-- Allow overrides from conf-helper -->
+  <bean id="propertyConfigurer" class="org.plos.configuration.SpringPlaceholderConfigurer"/>
+
   <!--Plosone developer beans here -->
   <bean id="serviceFactory" class="org.plos.service.ServiceFactory">
     <property name="persistenceService" ref="persistenceService"/>
@@ -39,7 +42,7 @@
 
   <!-- required for email -->
   <bean id="mailSender" class="org.springframework.mail.javamail.JavaMailSenderImpl">
-    <property name="host" value="localhost"/>
+    <property name="host" value="${network.hosts.mailhost}"/>
   </bean>
 
 <!--
@@ -64,14 +67,14 @@
 
   <bean id="registrationVerificationMailer" class="org.plos.service.RegistrationMailer">
     <property name="mailSender" ref="mailSender"/>
-    <property name="fromEmailAddress" value="registration@plosone.org"/>
-    <property name="fromEmailName" value="PLoS Registration"/>
+    <property name="fromEmailAddress" value="${registration.from-email}"/>
+    <property name="fromEmailName" value="${registration.from-name}"/>
     <property name="freeMarkerConfigurer" ref="freemarkerConfig"/>
     <property name="changeEmailMap">
       <map>
         <entry key="text" value="verifyChangeEmail-text.ftl"/>
         <entry key="html" value="verifyChangeEmail-html.ftl"/>
-        <entry key="url" value="https://FQHN:7443/plos-registration/changeEmailVerification.action"/>
+        <entry key="url" value="${registration.url}/changeEmailVerification.action"/>
         <entry key="subject" value="Please verify your request to change your PLoS login"/>
       </map>
     </property>
@@ -79,7 +82,7 @@
       <map>
         <entry key="text" value="verifyEmail-text.ftl"/>
         <entry key="html" value="verifyEmail-html.ftl"/>
-        <entry key="url" value="https://FQHN:7443/plos-registration/emailVerification.action"/>
+        <entry key="url" value="${registration.url}/emailVerification.action"/>
         <entry key="subject" value="Please verify your PLoS registration"/>
       </map>
     </property>
@@ -87,7 +90,7 @@
       <map>
         <entry key="text" value="forgotPasswordVerificationEmailTemplate-text.ftl"/>
         <entry key="html" value="forgotPasswordVerificationEmailTemplate-html.ftl"/>
-        <entry key="url" value="https://FQHN:7443/plos-registration/forgotPasswordVerify.action"/>
+        <entry key="url" value="${registration.url}/forgotPasswordVerify.action"/>
         <entry key="subject" value="PLoS Password Reset Request"/>
       </map>
     </property>
@@ -102,10 +105,10 @@
 
   <!-- Postgres datasource -->
   <bean id="registrationDataSource" class="org.apache.commons.dbcp.BasicDataSource" destroy-method="close">
-    <property name="driverClassName" value="org.postgresql.Driver"/>
-    <property name="url" value="jdbc:postgresql://localhost/plosdb"/>
-    <property name="username" value="plosone"/>
-    <property name="password" value="loot2_debonAir"/>
+    <property name="driverClassName" value="${cas.db.driver}"/>
+    <property name="url" value="${cas.db.url}"/>
+    <property name="username" value="${cas.db.user}"/>
+    <property name="password" value="${cas.db.password}"/>
   </bean>
 
   <!-- Useful link:
@@ -145,15 +148,5 @@
       <bean class="org.springframework.transaction.annotation.AnnotationTransactionAttributeSource"/>
     </property>
   </bean>
-<!--  END - Transaction injection for annotated transaction classes-->
-
-  <!-- Add all your constants to the map with a key and a value/ref -->
-  <bean id="otherConstants" class="org.plos.OtherConstants">
-    <property name="allConstants">
-      <map>
-        <entry key="mainAppUrl" value="plosone-webapp"/>
-      </map>
-    </property>
-  </bean>
-
+  <!--  END - Transaction injection for annotated transaction classes-->
 </beans>

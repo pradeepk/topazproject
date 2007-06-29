@@ -160,6 +160,12 @@
       <version>1.4</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.plosone</groupId>
+      <artifactId>conf-helper</artifactId>
+      <version>${pom.parent.version}</version>
+    </dependency>
+
   </dependencies>
 
   <build>
