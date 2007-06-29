@@ -18,6 +18,11 @@
       <artifactId>commons-configuration</artifactId>
     </dependency>
 
+    <dependency> <!-- It is important we get version 3.x to match commons-configuration -->
+      <groupId>commons-collections</groupId>
+      <artifactId>commons-collections</artifactId>
+    </dependency>
+
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
