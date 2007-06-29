@@ -167,6 +167,34 @@ public class AnswerSet extends AbstractAnswer {
     }
 
     /** 
+     * Tests if the value of the specified column in the current row is a Literal.
+     * 
+     * @param idx the column index (0-based)
+     * @return true if the column has a non-null value and is a Literal
+     */
+    public boolean isLiteral(int idx) {
+      Element v = (Element) ((Object[]) rows.get(curPos))[idx];
+      return (v != null) && !v.hasAttribute(RSRC_ATTR) && !(v.getFirstChild() instanceof Element)
+                && !v.hasAttribute(BNODE_ATTR);
+    }
+
+    /** 
+     * Get the data type of the specified Literal column in the current row as a String.
+     * 
+     * @param idx the column index (0-based)
+     * @return the data type URI or null for untyped
+     * @throws AnswerException if the column refers to a non Literal
+     */
+    public String getLiteralDataType(int idx) throws AnswerException {
+      if (!isLiteral(idx))
+        throw new AnswerException("is not a literal");
+
+      Element v = (Element) ((Object[]) rows.get(curPos))[idx];
+      String res = v.getAttribute("datatype");
+      return (res.length() > 0) ? res : null;
+    }
+
+    /** 
      * Get the value of the specified column in the current row as a String.
      * 
      * @param idx the column index (0-based)
@@ -206,6 +234,17 @@ public class AnswerSet extends AbstractAnswer {
     }
 
     /** 
+     * Tests if the value of the specified column in the current row a URI.
+     * 
+     * @param idx the column index (0-based)
+     * @return true if the column has a non-null value and is a URI 
+     */
+    public boolean isURI(int idx) {
+      Element v = (Element) ((Object[]) rows.get(curPos))[idx];
+      return (v != null) && v.hasAttribute(RSRC_ATTR);
+    }
+
+    /** 
      * Get the value of the specified column in the current row as a URI.
      * 
      * @param idx the column index (0-based)
@@ -234,6 +273,17 @@ public class AnswerSet extends AbstractAnswer {
      */
     public URI getURI(String var) throws AnswerException {
       return getURI(indexOf(var));
+    }
+
+    /** 
+     * Tests if the value of the specified column in the current row is a subquery result.
+     * 
+     * @param idx the column index (0-based)
+     * @return true if the column has a non-null value and is a URI 
+     */
+    public boolean isSubQueryResults(int idx) {
+      Element v = (Element) ((Object[]) rows.get(curPos))[idx];
+      return (v != null) && (v.getFirstChild() instanceof Element);
     }
 
     /** 
