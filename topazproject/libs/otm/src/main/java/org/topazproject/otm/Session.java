@@ -32,6 +32,7 @@ import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.mapping.AbstractMapper;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.query.Results;
 
 /**
  * An otm session (similar to hibernate session). And similar to hibernate session, not thread
@@ -421,6 +422,24 @@ public class Session {
    */
   public Query createQuery(String query) throws OtmException {
     return new Query(this, query, new ArrayList<Filter>(filters.values()));
+  }
+
+  /**
+   * Execute a native(ITQL, SPARQL etc.) query.
+   *
+   * @param query the native query
+   * @return the results object
+   * @throws OtmException on an error
+   */
+  public Results doNativeQuery(String query) throws OtmException {
+    if (txn == null)
+      throw new OtmException("No transaction active");
+
+    flush(); // so that mods are visible to queries
+
+    TripleStore store = sessionFactory.getTripleStore();
+
+    return store.doNativeQuery(query, txn);
   }
 
   /**

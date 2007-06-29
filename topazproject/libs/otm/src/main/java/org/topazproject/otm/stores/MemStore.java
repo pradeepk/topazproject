@@ -161,6 +161,14 @@ public class MemStore implements TripleStore {
   /*
    * inherited javadoc
    */
+  public Results doNativeQuery(String query, Transaction txn)
+                        throws OtmException {
+    throw new OtmException("OQL queries not supported");
+  }
+
+  /*
+   * inherited javadoc
+   */
   public void createModel(ModelConfig conf) throws OtmException {
   }
 

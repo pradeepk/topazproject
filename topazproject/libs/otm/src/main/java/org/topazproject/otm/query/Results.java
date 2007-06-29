@@ -11,6 +11,7 @@
 package org.topazproject.otm.query;
 
 import java.net.URI;
+import java.util.Arrays;
 import org.topazproject.otm.OtmException;
 
 /** 
@@ -20,7 +21,7 @@ import org.topazproject.otm.OtmException;
  */
 public abstract class Results {
   private final String[] variables;
-  private final Type[]   types;
+  protected Type[]   types;
   private final String[] warnings;
 
   protected int      pos = -1;
@@ -28,7 +29,7 @@ public abstract class Results {
   protected Object[] curRow;
 
   /** possible result types */
-  public enum Type { CLASS, LITERAL, URI, SUBQ_RESULTS };
+  public enum Type { CLASS, LITERAL, URI, SUBQ_RESULTS, UNKNOWN };
 
   /** a literal in a result */
   public class Literal {
@@ -92,6 +93,13 @@ public abstract class Results {
     this.variables = variables;
     this.types     = types;
     this.warnings  = (warnings != null && warnings.length > 0) ? warnings : null;
+  }
+
+  protected Results(String[] variables, String[] warnings) {
+    this.variables = variables;
+    this.warnings  = (warnings != null && warnings.length > 0) ? warnings : null;
+    this.types = new Type[variables.length];
+    Arrays.fill(this.types, Type.UNKNOWN);
   }
 
   /** 
@@ -179,7 +187,8 @@ public abstract class Results {
   }
 
   /** 
-   * Get the type of the result object. 
+   * Get the column type of the current row. The value is undefined
+   * if the cursor is not on a valid row.
    * 
    * @param var  the variable identifying the column
    * @return the type
@@ -190,7 +199,8 @@ public abstract class Results {
   }
 
   /** 
-   * Get the type of the result object. 
+   * Get the column type of the current row. The value is undefined
+   * if the cursor is not on a valid row.
    * 
    * @param idx  the column for which to get the type
    * @return the type

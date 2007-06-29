@@ -774,6 +774,18 @@ public class ItqlStore implements TripleStore {
     return new ItqlResults(a, qi, iq.getWarnings().toArray(new String[0]), txn.getSession());
   }
 
+  public Results doNativeQuery(String query, Transaction txn) throws OtmException {
+    ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
+    String a;
+    try {
+      a = isc.getItqlHelper().doQuery(query, null);
+    } catch (RemoteException re) {
+      throw new QueryException("error performing query '" + query + "'", re);
+    }
+
+    return new ItqlNativeResults(a);
+  }
+
   private static String getModelUri(String modelId, Transaction txn) throws OtmException {
     ModelConfig mc = txn.getSession().getSessionFactory().getModel(modelId);
     if (mc == null) // Happens if using a Class but the model was not added

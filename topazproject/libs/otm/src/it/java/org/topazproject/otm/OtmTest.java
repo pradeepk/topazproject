@@ -5,10 +5,13 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.HashMap;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
+import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.context.ThreadLocalSessionContext;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
@@ -1262,5 +1265,77 @@ public class OtmTest extends TestCase {
     assertNotNull(factory.getClassMetadata("Reply"));
     assertEquals(factory.getClassMetadata(Reply.class.getName()),
                  factory.getClassMetadata("Reply"));
+  }
+
+  public void test11() throws OtmException {
+    Session     session = factory.openSession();
+    Transaction tx      = null;
+
+    URI         id1     = URI.create("http://localhost/annotation/1");
+    URI         id2     = URI.create("http://localhost/annotation/2");
+
+    try {
+      tx = session.beginTransaction();
+
+      Annotation a1 = new PublicAnnotation(id1);
+      Annotation a2 = new PublicAnnotation(id2);
+
+      a1.setAnnotates(URI.create("foo:1"));
+      a2.setAnnotates(URI.create("foo:1"));
+
+      a1.setCreator("aa");
+      a2.setCreator("bb");
+
+      a1.setSupersededBy(a2);
+      a2.setSupersedes(a1);
+
+      a1.setTitle("foo");
+
+      session.saveOrUpdate(a1);
+      session.saveOrUpdate(a2);
+
+      String model = factory.getClassMetadata(PublicAnnotation.class).getModel();
+      model = factory.getModel(model).getUri().toString();
+
+      Results r = session.doNativeQuery("select $s $p $o from <" + model + "> where $s $p $o");
+      Map m1 = new HashMap();
+      Map m2 = new HashMap();
+      while (r.next()) {
+        URI s = r.getURI(0);
+        URI p = r.getURI(1);
+        String o = r.getString(2);
+        if (s.equals(id1))
+          m1.put(p, o);
+        else if (s.equals(id2))
+          m2.put(p, o);
+        else
+          fail("Unknown subject-id");
+      }
+      assertEquals("foo:1", m1.get(URI.create(Annotea.NS + "annotates")));
+      assertEquals("foo:1", m2.get(URI.create(Annotea.NS + "annotates")));
+      assertEquals("aa", m1.get(URI.create(Rdf.dc + "creator")));
+      assertEquals("bb", m2.get(URI.create(Rdf.dc + "creator")));
+      assertEquals("foo", m1.get(URI.create(Rdf.dc + "title")));
+      assertNull(m2.get(URI.create(Rdf.dc + "title")));
+
+
+      tx.commit(); // Flush happens automatically
+    } catch (OtmException e) {
+      try {
+        if (tx != null)
+          tx.rollback();
+      } catch (OtmException re) {
+        log.warn("rollback failed", re);
+      }
+
+      throw e; // or display error message
+    } finally {
+      try {
+        session.close();
+      } catch (OtmException ce) {
+        log.warn("close failed", ce);
+      }
+    }
+
   }
 }
