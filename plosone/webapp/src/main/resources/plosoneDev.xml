@@ -25,7 +25,6 @@
     </ports>
   </network>
 
-  <single-box-hostname>${network.hosts.default}</single-box-hostname>
   <cas>
     <!-- This password is only needed on servers running cas -->
     <db><password>loot2_debonAir</password></db>

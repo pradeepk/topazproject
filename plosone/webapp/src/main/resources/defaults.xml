@@ -41,9 +41,8 @@
     </spring>
   </plosone>
 
-  <single-box-hostname>localhost</single-box-hostname>
   <cas>
-    <hostname>${single-box-hostname}</hostname>
+    <hostname>${network.hosts.default}</hostname>
     <port>
       <https>7443</https>
     </port>
@@ -56,7 +55,7 @@
     </url>
   </cas>
   <plosone>
-    <hostname>${single-box-hostname}</hostname>
+    <hostname>${network.hosts.default}</hostname>
     <port>
       <http>8080</http>
       <https>10443</https>
