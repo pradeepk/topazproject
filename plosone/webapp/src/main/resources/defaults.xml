@@ -1,11 +1,102 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <config>
+  <network>
+    <hosts>
+      <!-- Set hosts.default to FQHN (not localhost) for a singleboxinstall
+           (or to webhead FQHN for multibox install) -->
+      <default>localhost</default>
+      <!-- For multibox install, change the following entires to the appropriate FQHNs -->
+      <cas>${network.hosts.default}</cas>
+      <fedora>${network.hosts.default}</fedora>
+      <mulgara>${network.hosts.default}</mulgara>
+      <plosone>${network.hosts.default}</plosone>
+      <mailhost>${network.hosts.default}</mailhost>
+    </hosts>
+    <ports>
+      <!-- For webhead, set default to empty (not 80) -->
+      <default>${network.ports.plosone}</default>
+
+      <plosone>8080</plosone>
+      <plosone-ssl>10443</plosone-ssl>
+      <cas-ssl>7443</cas-ssl>
+      <fedora>9090</fedora>
+      <mulgara>9091</mulgara>
+    </ports>
+  </network>
+
+  <cas>
+    <!-- This password is only needed on servers running cas -->
+    <db><password>changeme</password></db>
+
+    <hostname>${network.hosts.cas}</hostname>
+    <port>
+      <https>${network.ports.cas-ssl}</https>
+    </port>
+    <url>
+      <base>https://${cas.hostname}:${cas.port.https}/cas</base>
+      <login>${cas.url.base}/login</login>
+      <logout>${cas.url.base}/logout</logout>
+      <proxy-receptor>${cas.url.base}/proxy</proxy-receptor>
+      <proxy-validate>${cas.url.base}/proxyValidate</proxy-validate>
+    </url>
+  </cas>
   
-  <!-- plosOne.xml -->
-  
-  <!-- Define defaults for spring - must be redone soon -->
+
   <plosone>
+    <hostname>${network.hosts.default}</hostname>
+    <port>
+      <http>8080</http>
+      <https>10443</https>
+    </port>
+    <host>${plosone.hostname}:${plosone.port.http}</host>
+
+    <url><proxy-callback>https://${plosone.hostname}:${plosone.port.https}${plosone.app-context}/CasProxyServlet</proxy-callback></url>
+
+    <app-context>/plosone-webapp</app-context>
+    <resource-sub-dir></resource-sub-dir>
+
+    <search>
+      <snippetsMax>3</snippetsMax>          <!-- Number of snippets to show per document -->
+      <fieldMaxLength>50</fieldMaxLength>   <!-- Max chars per indexed field? -->
+      <cacheDuration>600000</cacheDuration> <!-- Milliseconds to cache search results -->
+      <pageSize>10</pageSize>               <!-- Number of results per page -->
+      <fetchSize>10</fetchSize>             <!-- Number of results to fetch at a time -->
+    </search>
+
+    <!-- Stuff used by doi-resolver -->
+    <webserver-url>http://${network.hosts.default}:${network.ports.default}${plosone.app-context}/</webserver-url>
+    <article-action>article/fetchArticle.action?articleURI=</article-action>
+    <figure-action1>article/slideshow.action?uri=</figure-action1>
+    <figure-action2>&amp;imageURI=</figure-action2>
+    <error-page>static/pageNotFound.action</error-page>
+
+    <!-- common display constants -->
+    <name>Public Library of Science</name>
+    <email><general>webmaster@plos.org</general></email>
+    <copyright>This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License, http://creativecommons.org/licenses/by-sa/3.0/</copyright>
+
+    <!-- defaults for generating a PLoS ONE Atom Feed -->
+    <feed>
+      <title>PLoS ONE Alerts: PLoS ONE Journal</title>
+      <tagline>Publishing science, accelerating research</tagline>
+      <icon>${plosone.host}/images/pone_favicon.ico</icon>
+    </feed>
+
+    <!-- Define defaults for spring - must be redone soon -->
     <spring>
+      <!-- crossref information - set parameters and sendToXref to true to turn on -->
+      <crossref>
+        <plos>
+          <doiurl>http://...</doiurl>        <!-- URL where your URIs can be found -->
+          <email>webmaster@your-org</email>  <!-- email address to send info to -->
+        </plos>
+        <login>crossref-username</login>     <!-- crossref login -->
+        <password>your-password</password>   <!-- crossref password -->
+        <area>test</area>
+        <sendToXref>false</sendToXref>       <!-- Set to true to turn on crossref posting -->
+        <post><url>http://doi.crossref.org/servlet/deposit?operation=doMDUpload&amp;login_id=${plosone.spring.crossref.login}&amp;login_passwd=${plosone.spring.crossref.password}&amp;area=${plosone.spring.crossref.area}</url></post>
+      </crossref>
+
       <hostname>${network.hosts.plosone}</hostname>
       <mailhost>${network.hosts.mailhost}</mailhost>
       <server>
@@ -23,17 +114,6 @@
         <source>/var/spool/plosone/ingestion-queue</source>
         <destination>/var/spool/plosone/ingested</destination>
       </ingest>
-      <crossref>
-        <plos>
-          <doiurl>http://...</doiurl>        <!-- URL where your URIs can be found -->
-          <email>webmaster@your-org</email>  <!-- email address to send info to -->
-        </plos>
-        <login>crossref-username</login>     <!-- crossref login -->
-        <password>your-password</password>   <!-- crossref password -->
-        <area>test</area>
-        <sendToXref>false</sendToXref>       <!-- Set to true to turn on crossref posting -->
-        <post><url>http://doi.crossref.org/servlet/deposit?operation=doMDUpload&amp;login_id=${plosone.spring.crossref.login}&amp;login_passwd=${plosone.spring.crossref.password}&amp;area=${plosone.spring.crossref.area}</url></post>
-      </crossref>
       <itql><uri>http://${plosone.spring.server.mulgara}/mulgara-service/services/ItqlBeanService</uri></itql>
       <email><feedback>webmaster@plos.org</feedback></email>
       <!-- Temporary default for /etc/topaz/plosone.xml -->
@@ -41,41 +121,8 @@
     </spring>
   </plosone>
 
-  <cas>
-    <hostname>${network.hosts.default}</hostname>
-    <port>
-      <https>7443</https>
-    </port>
-    <url>
-      <base>https://${cas.hostname}:${cas.port.https}/cas</base>
-      <login>${cas.url.base}/login</login>
-      <logout>${cas.url.base}/logout</logout>
-      <proxy-receptor>${cas.url.base}/proxy</proxy-receptor>
-      <proxy-validate>${cas.url.base}/proxyValidate</proxy-validate>
-    </url>
-  </cas>
-  <plosone>
-    <hostname>${network.hosts.default}</hostname>
-    <port>
-      <http>8080</http>
-      <https>10443</https>
-    </port>
-    <app-context>/plosone-webapp</app-context>
-    <resource-sub-dir></resource-sub-dir>
-    <host>${plosone.hostname}:${plosone.port.http}</host>
-    <url>               
-      <proxy-callback>https://${plosone.hostname}:${plosone.port.https}${plosone.app-context}/CasProxyServlet</proxy-callback>
-    </url>              
-    <search>
-      <snippetsMax>3</snippetsMax>          <!-- Number of snippets to show per document -->
-      <fieldMaxLength>50</fieldMaxLength>   <!-- Max chars per indexed field? -->
-      <cacheDuration>600000</cacheDuration> <!-- Milliseconds to cache search results -->
-      <pageSize>10</pageSize>               <!-- Number of results per page -->
-      <fetchSize>10</fetchSize>             <!-- Number of results to fetch at a time -->
-    </search>
-  </plosone>
   <plos-registration>
-    <hostname>${cas.hostname}</hostname>
+    <hostname>${network.hosts.cas}</hostname>
     <app-context>/plos-registration</app-context>
     <url>
       <base>https://${plos-registration.hostname}:${cas.port.https}${plos-registration.app-context}</base>
@@ -85,9 +132,66 @@
     </url>
   </plos-registration>
 
-  <!-- topaz-config.xml -->
-  
   <topaz>
+    <!-- Configuration to talk to CAS -->
+    <cas-server>
+      <base-url>https://${network.hosts.cas}:${network.ports.cas-ssl}/cas</base-url>
+    </cas-server>
+
+    <services>
+      <!-- Configuration to talk to Fedora -->
+      <fedora>
+        <base-url>http://${network.hosts.fedora}:${network.ports.fedora}/fedora/</base-url>
+        <uri>${topaz.services.fedora.base-url}services/management</uri>
+        <auth-method>BASIC</auth-method>
+        <userName>fedoraAdmin</userName>
+        <password>fedoraAdmin</password>
+      </fedora>
+      <fedoraUploader>
+        <uri>${topaz.services.fedora.base-url}management/upload</uri>
+        <auth-method>${topaz.services.fedora.auth-method}</auth-method>
+        <userName>${topaz.services.fedora.userName}</userName>
+        <password>${topaz.services.fedora.password}</password>
+      </fedoraUploader>
+
+      <!-- Configuration to talk to Mulgara -->
+      <itql>
+        <uri>http://${network.hosts.mulgara}:${network.ports.mulgara}/mulgara-service/services/ItqlBeanService</uri>
+        <auth-method>NONE</auth-method>
+      </itql>
+      <itql-admin>
+        <uri>${topaz.services.itql.uri}</uri>
+        <auth-method>NONE</auth-method>
+      </itql-admin>
+    </services>
+
+    <utilities>
+      <image-magick>
+        <executable-path>/usr/bin/convert</executable-path>
+        <temp-directory>/tmp</temp-directory>
+      </image-magick>
+    </utilities>
+
+    <search>
+      <indexpath>/var/lib/topaz/data/lucene</indexpath>
+      <defaultfields>description,title,body,creator</defaultfields>
+    </search>
+
+    <fedoragsearch>
+      <urls>
+        <url>http://${network.hosts.plosone}:${network.ports.plosone}/ws-search-webapp/services/FedoraGenericSearchServicePort</url>
+      </urls>
+      <repository>Topaz</repository>
+      <index>TopazIndex</index>
+      <indexDocXslt>topazFoxmlToLucene</indexDocXslt>
+      <resultPageXslt>copyXml</resultPageXslt>
+      <fgsrepository>
+        <fedoraSoap>${topaz.services.fedora.base-url}services</fedoraSoap>
+        <fedoraUser>${topaz.services.fedora.userName}</fedoraUser>
+        <fedoraPass>${topaz.services.fedora.password}</fedoraPass>
+      </fgsrepository>
+    </fedoragsearch>
+
     <life-cycle-listeners>
       <listener name="init-permissions-model">org.plos.bootstrap.permissions.WebAppListenerInitPermissionsModel</listener>
     </life-cycle-listeners>

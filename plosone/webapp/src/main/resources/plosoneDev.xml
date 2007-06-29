@@ -41,6 +41,7 @@
       <proxy-validate>${cas.url.base}/proxyValidate</proxy-validate>
     </url>
   </cas>
+
   <plosone>
     <hostname>${network.hosts.default}</hostname>
     <port>
@@ -63,6 +64,7 @@
     <figure-action2>&amp;imageURI=</figure-action2>
     <error-page>static/pageNotFound.action</error-page>
   </plosone>
+
   <plos-registration>
     <hostname>${network.hosts.cas}</hostname>
     <app-context>/plos-registration</app-context>
@@ -75,7 +77,6 @@
       <change-email>${plos-registration.url.base}/changeEmail.action</change-email>
     </url>
   </plos-registration>
-
 
   <freemarker>
     <default>
