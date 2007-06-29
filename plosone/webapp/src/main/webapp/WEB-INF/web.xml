@@ -159,9 +159,13 @@
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
+  <!-- The configuration WebAppListner is not needed if MasterWebAppListener (below) is
+       configured as it pulls in the configuration stuff automatically. -->
+<!--
   <listener>
     <listener-class>org.plos.configuration.WebAppListener</listener-class>
   </listener>
+-->
 
   <listener>
     <listener-class>org.plos.bootstrap.MasterWebAppListener</listener-class>
