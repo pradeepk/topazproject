@@ -11,6 +11,12 @@
 
   <!-- Initialization -->
 
+    <!-- Use /etc/topaz/cas.xml instead of /etc/topaz/plosone.xml -->
+    <context-param>
+      <param-name>org.plos.configuration</param-name>
+      <param-value>file:/etc/topaz/cas.xml</param-value>
+    </context-param>
+
     <!-- Authentication handler -->
     <context-param>
         <param-name>edu.yale.its.tp.cas.authHandler</param-name>
