@@ -18,6 +18,8 @@
 
   <PolicyIdReference>deny-inactive</PolicyIdReference>
 
+  <PolicyIdReference>permit-irrevokables</PolicyIdReference>
+
   <PolicyIdReference>deny-revokes</PolicyIdReference>
 
   <PolicyIdReference>permit-grants</PolicyIdReference>
