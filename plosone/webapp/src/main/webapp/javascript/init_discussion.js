@@ -42,7 +42,7 @@
        
     dojo.event.connect(responseTitle, "onblur", function(e) {
         var fldResponseTitle = _dcr.form.commentTitle;
-        if(responseTitle.value != "" && responseTitle.value != _dcr.responseCue) {
+        if(responseTitle.value != "" && responseTitle.value != _dcr.responseTitleCue) {
           fldResponseTitle.value = responseTitle.value;
         }
         else {
@@ -67,7 +67,7 @@
        
     dojo.event.connect(responseTitle, "onchange", function(e) {
         var fldResponseTitle = _dcr.form.commentTitle;
-        if(responseTitle.value != "" && responseTitle.value != _dcr.responseCue) {
+        if(responseTitle.value != "" && responseTitle.value != _dcr.responseTitleCue) {
           fldResponseTitle.value = responseTitle.value;
         }
         else {
