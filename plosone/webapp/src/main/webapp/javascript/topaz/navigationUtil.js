@@ -1,3 +1,9 @@
+/**
+ * topaz.navigation()
+ * 
+ * This class builds the table of content navigation in the right-hand column. 
+ **/
+
 topaz.navigation = new Object();
 
 topaz.navigation = {

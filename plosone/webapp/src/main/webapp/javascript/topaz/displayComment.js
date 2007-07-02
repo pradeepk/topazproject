@@ -1,7 +1,10 @@
 /**
   * topaz.commentDisplay
+  * 
+  * This object builds the dialog that displays the comments for a specific 
+  * annotation bug.
   *
-  * @param
+  * @author  Joycelyn Chung			joycelyn@orangetowers.com
   *
   **/
 topaz.displayComment = new Object();
@@ -63,8 +66,18 @@ topaz.displayComment = {
     this.retrieveMsg = dojo.byId(configObj.retrieveMsg);
   },
   
-  show: function(obj){
-    this.setTarget(obj);
+  /**
+   * topaz.displayComment.show(Node node)
+   * 
+   * Method that triggers the display of the dialog box.
+   * 
+   * @param		node		Node			Node where the action was triggered and the
+   * 														 dialog box will positioned relative to.
+   * @return	false		boolean		In the link that triggered this call, sending 
+   * 															false back prevents the page from forwarding.			
+   */
+  show: function(node){
+    this.setTarget(node);
     
 		_commentDlg.setMarker(this.target);
 		_commentMultiDlg.setMarker(this.target);
@@ -73,6 +86,16 @@ topaz.displayComment = {
     return false;
   },
 
+  /**
+   * topaz.displayComment.buildDisplayHeader(JSON jsonObj)
+   * 
+   * Builds the header of the annotation comment display dialog.
+   * 
+   * @param		jsonObj				JSON object					JSON object containing the data that
+   * 														 						 		 retrieved from the database.
+   * 
+   * @return	titleDocFrag	Document fragment		Resulting document fragment created.
+   */
   buildDisplayHeader: function (jsonObj) {
     var titleDocFrag = document.createDocumentFragment();
     
@@ -88,6 +111,16 @@ topaz.displayComment = {
     return titleDocFrag;    
   },
 
+  /**
+   * topaz.displayComment.buildDisplayDetail(JSON jsonObj)
+   * 
+   * Builds the details of the annotation comment display dialog.
+   * 
+   * @param		jsonObj				JSON object					JSON object containing the data that
+   * 														 						 		 retrieved from the database.
+   * 
+   * @return	detailDocFrag	Document fragment		Resulting document fragment created.
+   */
   buildDisplayDetail: function (jsonObj) {
     // Insert creator detail info
     var annotationId = jsonObj.annotationId;
@@ -155,6 +188,16 @@ topaz.displayComment = {
     return detailDocFrag;
   },
   
+  /**
+   * topaz.displayComment.buildDisplayBody(JSON jsonObj)
+   * 
+   * Builds the comment body of the annotation comment display dialog.
+   * 
+   * @param		jsonObj				JSON object					JSON object containing the data that
+   * 														 						 		 retrieved from the database.
+   * 
+   * @return	commentFrag		Document fragment		Resulting document fragment created.
+   */
   buildDisplayBody: function (jsonObj) {
     // Insert formatted comment
     var commentFrag = document.createDocumentFragment();
@@ -163,6 +206,16 @@ topaz.displayComment = {
     return commentFrag;
   },
   
+  /**
+   * topaz.displayComment.buildDisplayViewLink(JSON jsonObj)
+   * 
+   * Builds the link that takes the user to the discussion section.
+   * 
+   * @param		jsonObj				JSON object					JSON object containing the data that
+   * 														 						 		 retrieved from the database.
+   * 
+   * @return	commentLink	Document fragment		Resulting document fragment created.
+   */
   buildDisplayViewLink: function (jsonObj) {
     var commentLink = document.createElement('a');
     commentLink.href = _namespace + '/annotation/listThread.action?inReplyTo=' + jsonObj.annotationId + '&root=' + jsonObj.annotationId;
@@ -173,6 +226,17 @@ topaz.displayComment = {
     return commentLink;
   },
   
+  /**
+   * topaz.displayComment.buildDisplayView(JSON jsonObj)
+   * 
+   * Builds the comment dialog box for a single comment.  Empties out the inner 
+   * containers if text already exists in it.
+   * 
+   * @param		jsonObj				JSON object					JSON object containing the data that
+   * 														 						 		 retrieved from the database.
+   * 
+   * @return	<nothing>
+   */
   buildDisplayView: function(jsonObj){
     if (topaz.displayComment.sectionTitle.hasChildNodes) dojo.dom.removeChildren(topaz.displayComment.sectionTitle);
     topaz.displayComment.sectionTitle.appendChild(this.buildDisplayHeader(jsonObj));
@@ -189,6 +253,17 @@ topaz.displayComment = {
     this.sectionLink.appendChild(this.buildDisplayViewLink(jsonObj));
   },
   
+  /**
+   * topaz.displayComment.buildDisplayView(JSON jsonObj)
+   * 
+   * Builds the comment dialog box for a multiple comments.  Empties out the inner 
+   * containers if text already exists in it.
+   * 
+   * @param		jsonObj				JSON object					JSON object containing the data that
+   * 														 						 		 retrieved from the database.
+   * 
+   * @return	<nothing>
+   */
   buildDisplayViewMultiple: function(jsonObj, iter, container, secondaryContainer){
     var newListItem = document.createElement('li');
     
@@ -254,6 +329,17 @@ topaz.displayComment = {
 
   },
   
+  /**
+   * topaz.displayComment.mouseoverComment(Node obj, String displayId)
+   * 
+   * This method gets a map of all element nodes that contain the same display ID
+   * and iterates through the map and modifies the classname to show highlight.
+   * 
+   * @param		obj					Node object				Source element to start highlight.
+   * @param		displayId		String						Id reference for display.
+   * 
+   * @return	<nothing>
+   */
   mouseoverComment: function (obj, displayId) {
    var elementList = topaz.domUtil.getDisplayMap(obj, displayId);
    
@@ -289,6 +375,13 @@ topaz.displayComment = {
 
   },
 
+	/**
+	 * topaz.displayComment.mouseoutComment(Node obj) 
+	 * 
+	 * Resets span tags that were modified to highlight to no highlight.
+	 * 
+	 * @param		obj		Node object				Object needed to be reset.
+	 */
   mouseoutComment: function (obj) {
     var elList = document.getElementsByTagName('span');
     
@@ -298,6 +391,13 @@ topaz.displayComment = {
     obj.className = obj.className.replace(/\-active/, "");
   },
   
+  /**
+   * topaz.displayComment.modifyClassName(Node obj)
+   * 
+   * Modifies the className
+   * 
+   * @param		obj		Node object		Source node.
+   */
   modifyClassName: function (obj) {
      classList = obj.className.split(" ");
      for (var i=0; i<classList.length; i++) {
@@ -309,6 +409,14 @@ topaz.displayComment = {
      obj.className = classList.join(' ');
   },
   
+  /**
+   * topaz.displayComment.processBugCount()
+   * 
+   * Searches the document for tags that has the classname of "bug" indicating
+   * that it's an annotation bug.  Looks at the node id which should have a list
+   * of IDs corresponding to an annotation.  This ID list is counted and the 
+   * result is shown in the bug.
+   */
   processBugCount: function () {
     var bugList = document.getElementsByTagAndClassName(null, 'bug');
     
@@ -329,6 +437,16 @@ topaz.displayComment = {
     }
   },
   
+  /**
+   * topaz.displayComment.adjustDialogHeight(Node container1, Node container2, Integer addPx)
+   * 
+   * The height of the margin box of container1 and container2 are compared and
+   * the height are adjusted accordingly.  
+   * 
+   * @param		container1		Node object			Container node object.
+   * @param		container2		Node object			Container node object.
+   * @param		addPx					Integer					Pixel amount to adjust height.
+   */
   adjustDialogHeight: function(container1, container2, addPx) {
     var container1Mb = dojo.html.getMarginBox(container1).height;
     var container2Mb = dojo.html.getMarginBox(container2).height;

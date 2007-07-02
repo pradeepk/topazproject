@@ -1,3 +1,13 @@
+/**
+ * topaz.slideshow()
+ * 
+ * This class builds and controls the slideshow thumbnails to display the appropriate
+ * images when the thumbnails are clicked.  When an image is selected, the container 
+ * will adjust to envelope the enlarged image.  This also ensures that when the user 
+ * clicks on the next and previous links, the highlighting of the thumbnails changes 
+ * as well to correspond to the link and vice versa.
+ **/
+
 topaz.slideshow = new Object();
 
 topaz.slideshow = {

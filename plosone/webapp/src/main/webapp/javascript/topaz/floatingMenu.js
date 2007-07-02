@@ -1,3 +1,16 @@
+/**
+ * floatMenu()
+ * 
+ * The function is activated when the page is scrolled or the window is resized.
+ * "postcomment" is the outer container of the sections that floats.  "floatMarker"
+ * is the point that indicates the topmost point that the floated menu should stop
+ * floating.  This doesn't work so well in Safari.  The best way to do in Safari is 
+ * to have 2 of these items, the other one being postcommentfloat.  This second one
+ * is on the page is hidden unless you're in safari.
+ * 
+ * @author		Joycelyn Chung		joycelyn@orangetowers.com
+ **/
+
 var el;
 var changeHeight;
 

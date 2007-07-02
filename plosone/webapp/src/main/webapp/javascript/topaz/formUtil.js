@@ -1,6 +1,22 @@
+/**
+ * topaz.formUtil
+ * 
+ * @author		Joycelyn Chung			joycelyn@orangetowers.com
+ **/
 topaz.formUtil = new Object();
 
 topaz.formUtil = {
+  
+  /**
+   * topaz.formUtil.textCues
+   * 
+   * This turns the form field cues on and off.  It also resets them.  It takes the form object
+   * and the text string for each state.
+   * 
+   * @param		 formEl			Form object			Form object
+   * @param		 textCue		String					Text string to be displayed or removed.  Must match the
+   * 																			string that's currently in the field.
+   */
   textCues: {
   	on: function ( formEl, textCue ) {
     if (formEl.value == "")
@@ -17,6 +33,15 @@ topaz.formUtil = {
 	  }
   },
   
+  /**
+   * topaz.formUtil.toggleFieldsByClassname(String toggleClassOn, String toggleClassOff)
+   * 
+   * Toggles all elements with a class attribute containing toggleClassOn/toggleClassOff on and off,
+   * respectively.
+   * 
+   * @param			toggleClassOn			String				Text string of the class name that will be toggled on.
+   * @param			toggleClassOff		String				Text string of the class name that will be toggled off.
+   */
   toggleFieldsByClassname: function ( toggleClassOn, toggleClassOff ) {
     var targetElOn = document.getElementsByTagAndClassName(null, toggleClassOn);
     var targetElOff = document.getElementsByTagAndClassName(null, toggleClassOff);
@@ -30,6 +55,17 @@ topaz.formUtil = {
     }
   },
   
+  /**
+   * topaz.formUtil.checkFieldStrLength(Form field  fieldObj, Integer maxLength)
+   * 
+   * Checks the specified fieldObj value exceeds the maxLength.
+   * 
+   * @param			fieldObj		Form field object			A form input object.
+   * @param			maxLength		Integer								Maximum length the value can be.
+   * 
+   * @return		-1					Integer								The field value did not exceed the maxLength.
+   * @return		 0					Integer								The field value has exceeded the maxLength.
+   */
   checkFieldStrLength: function ( fieldObj, maxLength ) {
     if(fieldObj.value && fieldObj.value.length > maxLength) {
       alert("Your comment exceeds the allowable limit of " + maxLength + " characters by " + (fieldObj.value.length - maxLength) + " characters.");
@@ -41,6 +77,14 @@ topaz.formUtil = {
     }
   },
   
+  /**
+   * topaz.formUtil.disableFormFields(Form formObj)
+   * 
+   * Method goes through all the elements of the form object formObj and disables all
+   * except hidden fields.
+   * 
+   * @param			formObj			Form object				Form object.
+   */
   disableFormFields: function (formObj) {
     for (var i=0; i<formObj.elements.length; i++) {
       if (formObj.elements[i].type != 'hidden') {
@@ -49,6 +93,14 @@ topaz.formUtil = {
     }
   },
   
+  /**
+   * topaz.formUtil.enableFormFields(Form formObj)
+   * 
+   * Method goes through all the elements of the form object formObj and enables all
+   * except hidden fields.
+   * 
+   * @param			formObj			Form object				Form object.
+   */
   enableFormFields: function (formObj) {
     for (var i=0; i<formObj.elements.length; i++) {
       if (formObj.elements[i].type != 'hidden') {
@@ -57,7 +109,14 @@ topaz.formUtil = {
     }
   },
   
-  createHiddenFields: function (formObj) {
+  /**
+   * topaz.formUtil.createHiddenFields(Form formObj)
+   * 
+   * Method goes through the form object formObj looking for elements other than hidden fields,
+   * buttons and submits and where the names are not null.  The elements that does meet the 
+   * criteria has a hidden counterpart created and attached at the end of the form.  
+   */
+/*  createHiddenFields: function (formObj) {
     for (var i=0; i<formObj.elements.length; i++) {
       if(formObj.elements[i].type != 'hidden' && 
          formObj.elements[i].type != 'button' && 
@@ -103,7 +162,23 @@ topaz.formUtil = {
     }
     
   },
+*/  
   
+  /**
+   * topaz.formUtil.createFormValueObject(Form formObj)
+   * 
+   * Method goes through the form object and looks for all fields that are not hidden,
+   * buttons, or submits.  For all other fields, the field names are stored as keys while
+   * their values are stored as values in an associative array.  Most of the values in 
+   * the associative arrays are strings with the exception of checkboxes.  Since in a
+   * checkbox, you can have more than one value selected.  The value from the checkboxes
+   * are stored in an array.  That array is then stored as the value mapped to checkbox
+   * fields.
+   * 
+   * @param			formObj						Form object					Form object
+   * 
+   * @return		formValueObject		Associative array		Map of all the field names and their values.
+   */
   createFormValueObject: function (formObj) {
     var formValueObject = new Object();
     
@@ -155,7 +230,12 @@ topaz.formUtil = {
     return formValueObject;
   },
   
-  hasFieldChange: function (formObj) {
+  /**
+   * topaz.formUtil.hasFieldChange(Form formObj)
+   * 
+   * Checks the fields in formObj that are not hidden, buttons, or submits, to see they have changed.
+   */
+/*  hasFieldChange: function (formObj) {
     var thisChanged = false;
     
     for (var i=0; i<formObj.elements.length; i++) {
@@ -231,7 +311,7 @@ topaz.formUtil = {
     
     return thisChanged;
   },
-  
+
   removeHiddenFields: function (formObj) {
     alert("removeHiddenFields");
     for (var i=0; i<formObj.elements.length; i++) {
@@ -240,7 +320,7 @@ topaz.formUtil = {
       }
     }
   },
-  
+
   addItemInArray: function (array, item) {
     var foundItem = false;
     for (var i=0; i<array.length; i++) {
@@ -268,7 +348,18 @@ topaz.formUtil = {
     else
       return false;
   },
+*/  
   
+  /**
+   * topaz.formUtil.selectAllCheckboxes(Form field  srcObj, Form field  targetCheckboxObj)
+   * 
+   * If the form field srcObj has been selected, all the checkboxes in the form field targetCheckboxObj
+   * gets selected.  When srcObj is not selected, all the checkboxes in targetCheckboxObj gets
+   * deselected.
+   * 
+   * @param			srcObj							Form field				Checkbox field.
+   * @param			targetCheckboxObj		Form field				Checkbox field.
+   */
   selectAllCheckboxes: function (srcObj, targetCheckboxObj) {
     if (srcObj.checked) {
       for (var i=0; i<targetCheckboxObj.length; i++) {
@@ -282,6 +373,15 @@ topaz.formUtil = {
     }
   },
   
+  /**
+   * topaz.formUtil.selectCheckboxPerCollection(Form field  srcObj, Form field  collectionObj)
+   * 
+   * Checks to see if all of the checkboxes in the collectionObj are selected.  If it is, select srcObj
+   * also.  If all of the checkboxes in collectionObj are not selected, deselect srcObj.
+   * 
+   * @param			srcObj							Form field				Checkbox field.
+   * @param			targetCheckboxObj		Form field				Checkbox field.
+   */
   selectCheckboxPerCollection: function (srcObj, collectionObj) {
     var count = 0;
     

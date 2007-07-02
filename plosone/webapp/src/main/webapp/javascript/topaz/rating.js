@@ -1,7 +1,9 @@
 /**
-  * topaz.rating
+  * topaz.rating()
   *
-  * @param
+  * This class uses a css-based ratings star and sets up the number of star 
+  * rating to be displayed in the right hand column.  This also displays the 
+  * rating dialog.
   *
   **/
 topaz.rating = new Object();

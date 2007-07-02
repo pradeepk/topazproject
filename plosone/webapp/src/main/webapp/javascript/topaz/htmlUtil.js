@@ -1,3 +1,10 @@
+/**
+ * topaz.htmlUtil()
+ * 
+ * Utility to help get the attribute from the url to be used in the JS.
+ * 
+ **/
+
 topaz.htmlUtil = new Object();
 
 topaz.htmlUtil = {

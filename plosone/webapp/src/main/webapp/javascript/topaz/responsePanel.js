@@ -1,3 +1,10 @@
+/**
+ * topaz.responsePanel()
+ * 
+ * This class sets up and displays the response panel in the commentary page.  It also
+ * sets up and displays the flagging panel.
+ **/
+
 var togglePanel = new Object();
 
 topaz.responsePanel = new Object();
@@ -128,7 +135,6 @@ function submitResponseInfo(targetObj) {
        var err = document.createTextNode(errorMsg);
        submitMsg.appendChild(err);
        topaz.formUtil.enableFormFields(targetForm);
-       //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
        _ldc.hide();
   
        return false;
@@ -158,7 +164,6 @@ function submitResponseInfo(targetObj) {
        //submitMsg.appendChild(err);
        submitMsg.appendChild(fieldErrors);
        topaz.formUtil.enableFormFields(targetForm);
-       //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
 
        _ldc.hide();
   

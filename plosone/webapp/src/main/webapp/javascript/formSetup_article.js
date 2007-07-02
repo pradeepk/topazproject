@@ -207,7 +207,6 @@ function validateNewComment() {
        //topaz.errorConsole.writeToConsole(err);
        //topaz.errorConsole.show();
        topaz.formUtil.enableFormFields(_annotationForm);
-       //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
        _ldc.hide();
        
        return false;
@@ -229,7 +228,6 @@ function validateNewComment() {
          var err = document.createTextNode(errorMsg);
          submitMsg.appendChild(err);
          topaz.formUtil.enableFormFields(_annotationForm);
-         //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
          _dlg.placeModalDialog();
          _ldc.hide();
          
@@ -260,7 +258,6 @@ function validateNewComment() {
          //submitMsg.appendChild(err);
          submitMsg.appendChild(fieldErrors);
          topaz.formUtil.enableFormFields(_annotationForm);
-         //topaz.domUtil.removeNewClass('post', '\sdisable', 'div');
          _dlg.placeModalDialog();
          _ldc.hide();
   

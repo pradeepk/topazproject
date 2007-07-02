@@ -1,3 +1,21 @@
+/**
+ * topaz.horizontalTabs()
+ * 
+ * The horizontal tabs are the secondary navigation that can be found on the
+ * home page and the profile page.  This class uses a map object set in the 
+ * configuration file that will be used for building the tabs.  This map
+ * object contains key-value pairs, for example,
+ * 			tabKey:    "recentlyPublished",
+ *      title:     "Recently Published",
+ *      className: "published",
+ *      urlLoad:   "/article/recentArticles.action",
+ *      urlSave:   ""
+ * 
+ * These values are set for each tab.  Using the setters, initialize the 
+ * tab in the page init.js files.
+ **/
+
+
 var proceedFlag = false;
 var tempValue = "";
 var changeFlag = false;
