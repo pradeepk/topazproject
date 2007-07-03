@@ -29,9 +29,9 @@
 
   <h2>Download the article citation in the following formats:</h2>
   <ul>
-    <@ww.url id="risURL" namespace="/article" action="getRisCitation" includeParams="none" articleURI="${articleURI}" />
+    <@s.url id="risURL" namespace="/article" action="getRisCitation" includeParams="none" articleURI="${articleURI}" />
     <li><a href="${risURL}" title="RIS Citation">RIS</a> (compatible with EndNote, Reference Manager, ProCite, RefWorks)</li>
-    <@ww.url id="bibtexURL" namespace="/article" action="getBibTexCitation" includeParams="none" articleURI="${articleURI}" />
+    <@s.url id="bibtexURL" namespace="/article" action="getBibTexCitation" includeParams="none" articleURI="${articleURI}" />
     <li><a href="${bibtexURL}" title="PLoS ONE | Editorial Board">BibTex</a> (compatible with BibDesk, LaTeX)</li>
   </ul>
 </div>

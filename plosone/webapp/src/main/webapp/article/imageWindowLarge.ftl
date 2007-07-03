@@ -5,7 +5,7 @@
    <#assign imageURI = "">
 </#if>
 
-	<@ww.url id="imageUrl" includeParams="none"  action="fetchObject" uri="${imageURI}"/>
+	<@s.url id="imageUrl" includeParams="none"  action="fetchObject" uri="${imageURI}"/>
 
 			<img src="${imageUrl}&representation=PNG_L" title="Larger Image" class="large" id="figureImg" />
 

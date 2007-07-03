@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -12,7 +12,7 @@ package org.plos.annotation.action;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;
-import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 /**
  * Action to delete a flag

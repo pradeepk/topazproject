@@ -4,7 +4,7 @@
     <h1>Ratings</h1>
       <div class="source">
         <span>Original Article</span>
-        <@ww.url id="fetchArticleURL" namespace="/article" action="fetchArticle" articleURI="${articleURI}"/>
+        <@s.url id="fetchArticleURL" namespace="/article" action="fetchArticle" articleURI="${articleURI}"/>
 
         <a href="${fetchArticleURL}" title="Back to original article" class="article icon">${articleTitle}
           <#if articleOverallRounded?exists>
@@ -22,7 +22,7 @@
       <div class="rsep"></div>
 
       <#list articleRatingSummaries as articleRatingSummary>
-        <@ww.url id="fetchUserURL" namespace="/user" action="showUser" userId="${articleRatingSummary.creatorURI}"/>
+        <@s.url id="fetchUserURL" namespace="/user" action="showUser" userId="${articleRatingSummary.creatorURI}"/>
         <div class="response ratingComment">
           <div class="hd">
             <!-- begin : response title : user -->
@@ -92,7 +92,7 @@
             <ul>
               <li>
                 <#if Session.PLOS_ONE_USER?exists>
-                  <a href="#" onclick="topaz.responsePanel.show(this, _dcf, 'toolbar', '${articleRatingSummary.ratingId}', null, '${flagTitle}', 2); return false;" class="flag tooltip" title="Request Review">Request review</a>
+                  <a href="#" onclick="topaz.responsePanel.show(this, _dcf, 'toolbar', '${articleRatingSummary.ratingId}', null, null, 2); return false;" class="flag tooltip" title="Request Review">Request review</a>
                 <#else>							
                   <a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" class="flag tooltip" title="Request review">Request review</a>
                 </#if>

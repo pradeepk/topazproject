@@ -1,9 +1,15 @@
 /* $HeadURL::                                                                            $
- * $Id:DeleteAnnotationAction.java 722 2006-10-02 16:42:45Z viru $
+ * $Id$
+ *
+ * Copyright (c) 2006-2007 by Topaz, Inc.
+ * http://topazproject.org
+ *
+ * Licensed under the Educational Community License version 1.0
+ * http://opensource.org/licenses/ecl1.php
  */
 package org.plos.annotation.action;
 
-import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.ApplicationException;

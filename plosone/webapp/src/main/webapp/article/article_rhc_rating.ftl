@@ -3,7 +3,7 @@
             <#else>
               <#assign char = "">
             </#if>
-            <@ww.url id="ratingsURL" namespace="/rate" action="getArticleRatings" includeParams="none" articleURI="${articleURI}"/>
+            <@s.url id="ratingsURL" namespace="/rate" action="getArticleRatings" includeParams="none" articleURI="${articleURI}"/>
             <h6>Average Rating <a href="${ratingsURL}" class="rating">(${numUsersThatRated} User Rating${char})</a></h6>
             <ol>
               <li>
@@ -43,7 +43,6 @@
                   <#if hasRated>
                     <a href="javascript:void(0);" onclick="return topaz.rating.show('edit');" class="rating">Edit My Rating</a>
                   <#else>
-
                     <a href="javascript:void(0);" onclick="return topaz.rating.show();" class="rating">Rate This Article</a>
                   </#if>
                 <#else>

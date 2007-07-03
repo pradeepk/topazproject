@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -11,7 +11,7 @@
 package org.plos.action;
 
 import org.plos.web.UserContext;
-import com.opensymphony.webwork.dispatcher.SessionMap;
+import org.apache.struts2.dispatcher.SessionMap;
 
 /**
  * Action that kills the current user session to log the user out.  The CAS logout call

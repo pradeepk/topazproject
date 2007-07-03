@@ -2,15 +2,15 @@
  * $HeadURL::                                                                            $ $Id:
  * PlosStreamResult.java 946 2006-11-03 22:23:42Z viru $
  * 
- * Copyright (c) 2006 by Topaz, Inc. http://topazproject.org
+ * Copyright (c) 2006-2007 by Topaz, Inc. http://topazproject.org
  * 
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
-package org.plos.webwork;
+package org.plos.struts2;
 
-import com.opensymphony.webwork.dispatcher.StreamResult;
-import com.opensymphony.xwork.ActionInvocation;
+import org.apache.struts2.dispatcher.StreamResult;
+import com.opensymphony.xwork2.ActionInvocation;
 
 import javax.servlet.http.HttpServletResponse;
 

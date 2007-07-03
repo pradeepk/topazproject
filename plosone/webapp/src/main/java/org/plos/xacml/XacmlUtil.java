@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -18,7 +18,7 @@ import java.util.Set;
 
 import org.plos.configuration.ConfigurationStore;
 
-import com.opensymphony.webwork.ServletActionContext;
+import org.apache.struts2.ServletActionContext;
 
 import com.sun.xacml.PDP;
 import com.sun.xacml.ParsingException;

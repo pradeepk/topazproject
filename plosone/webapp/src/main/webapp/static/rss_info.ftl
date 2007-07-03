@@ -25,7 +25,7 @@
 	<li><a href="http://journals.plos.org/plosgenetics/rss_feeds.php"><em>PLoS Genetics</em></a></li>
 	<li><a href="http://journals.plos.org/plospathogens/rss_feeds.php"><em>PLoS Pathogens</em></a></li>
 	<li><a href="http://journals.plos.org/plosclinicaltrials/rss_feeds.php"><em>PLoS Clinical Trials</em></a></li>
-	<@ww.url id="rssURL" includeParams="none" namespace="/static" action="rssFeeds"/>
+	<@s.url id="rssURL" includeParams="none" namespace="/static" action="rssFeeds"/>
 	<li><a href="${rssURL}"><em>PLoS ONE</em></a></li>
 </ul>
 

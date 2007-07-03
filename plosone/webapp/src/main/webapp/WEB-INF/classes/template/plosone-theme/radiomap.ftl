@@ -17,7 +17,7 @@
 <#if parameters.labelposition?default("") == 'top'>
 </#if>
 
-<@ww.iterator value="parameters.list">
+<@s.iterator value="parameters.list">
     <#if parameters.listKey?exists>
         <#assign itemKey = stack.findValue(parameters.listKey)/>
     <#else>
@@ -56,4 +56,4 @@
 /><#rt/>
     ${parameters.label?html} <#t/>
 </label>
-</@ww.iterator>
+</@s.iterator>

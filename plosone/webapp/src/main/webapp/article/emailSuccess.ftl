@@ -5,7 +5,7 @@
   <br/><br/>
   Back to the article:
   <div class="source">
-    <@ww.url id="fetchArticleURL" action="fetchArticle" articleURI="${articleURI}"/>
-    <@ww.a href="%{fetchArticleURL}" title="Back to original article" class="article icon">${title}</@ww.a>
+    <@s.url id="fetchArticleURL" action="fetchArticle" articleURI="${articleURI}"/>
+    <@s.a href="%{fetchArticleURL}" title="Back to original article" class="article icon">${title}</@s.a>
   </div>
 </div>

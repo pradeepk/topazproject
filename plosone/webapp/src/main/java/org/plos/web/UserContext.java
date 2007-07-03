@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -9,8 +9,8 @@
  */
 package org.plos.web;
 
-import com.opensymphony.xwork.ActionContext;
-import com.opensymphony.webwork.ServletActionContext;
+import com.opensymphony.xwork2.ActionContext;
+import org.apache.struts2.ServletActionContext;
 
 import java.util.Map;
 import javax.servlet.http.HttpSession;

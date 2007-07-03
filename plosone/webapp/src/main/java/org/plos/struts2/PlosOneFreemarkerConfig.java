@@ -8,7 +8,7 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.plos.webwork;
+package org.plos.struts2;
 
 import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;

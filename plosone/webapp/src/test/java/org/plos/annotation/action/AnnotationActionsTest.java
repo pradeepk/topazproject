@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id:AnnotationActionsTest.java 722 2006-10-02 16:42:45Z viru $
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -9,8 +9,8 @@
  */
 package org.plos.annotation.action;
 
-import com.opensymphony.xwork.Action;
-import static com.opensymphony.xwork.Action.SUCCESS;
+import com.opensymphony.xwork2.Action;
+import static com.opensymphony.xwork2.Action.SUCCESS;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.plos.BasePlosoneTestCase;

@@ -161,13 +161,13 @@
 	<p><strong>instruction Title   Text.</strong> General Instructions- Lorem ipsum dolor sit amet, consectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>
 	<p>Field marked with an <span class="required">*</span> are required. </p>
 
-  <@ww.form action="saveUserAlerts" namespace="/user/secure" method="post" cssClass="pone-form" method="post" title="Alert Form">
+  <@s.form action="saveUserAlerts" namespace="/user/secure" method="post" cssClass="pone-form" method="post" title="Alert Form">
 
   <fieldset>
 		<legend>Choose your alerts  </legend>
 		<ol>
 			<li>Check back soon for more PLoS One alerts</li>
-      <@ww.textfield name="alertEmailAddress" label="Email address for alerts" required="true"/>
+      <@s.textfield name="alertEmailAddress" label="Email address for alerts" required="true"/>
       <#list categoryBeans as category>
         <li>
           <ol>
@@ -175,7 +175,7 @@
             <li>
               <#if category.weeklyAvailable>
                 <label for="${category.key}">
-              <@ww.checkbox name="weeklyAlerts" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
+              <@s.checkbox name="weeklyAlerts" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
                 Weekly </label>
               </#if>
             </li>
@@ -183,7 +183,7 @@
             <li>
               <#if category.monthlyAvailable>
                 <label for="${category.key}">
-              <@ww.checkbox name="monthlyAlerts" fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
+              <@s.checkbox name="monthlyAlerts" fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
                   Monthly </label>
               <#else>
               </#if>
@@ -194,9 +194,9 @@
 		</ol>
 		<br clear="all" />
 			<input type="submit" name="cancel" id="cancel" value="Cancel" tabindex="199">
-      <@ww.submit name="Save" tabindex="200"/>
+      <@s.submit name="Save" tabindex="200"/>
 	</fieldset>
-  </@ww.form>
+  </@s.form>
 
 </div>
 <!-- end : main content wrapper -->

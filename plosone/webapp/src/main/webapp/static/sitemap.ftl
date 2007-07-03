@@ -9,8 +9,8 @@
 	<li><a href="http://www.plos.org/oa/index.html" title="PLoS.org | Open Access">Open Access</a></li>
 	<li><a href="rssFeeds.action" title="PLoS ONE | RSS Feeds">PLoS RSS Feeds</a></li>
 	
-	<@ww.url namespace="/" includeParams="none" id="feedbackURL" action="feedbackCreate" page="${thisPageURL?url}"/>
-	<@ww.url namespace="/user/secure" includeParams="none" id="loginURL" action="secureRedirect" goTo="${thisPage}"/>
+	<@s.url namespace="/" includeParams="none" id="feedbackURL" action="feedbackCreate" page="${thisPageURL?url}"/>
+	<@s.url namespace="/user/secure" includeParams="none" id="loginURL" action="secureRedirect" goTo="${thisPage}"/>
 	<li><a href="${feedbackURL}" title="PLoS ONE | Send Us Your Feedback">Send Us Feedback</a></li>
 	<li><a href="${freemarker_config.registrationURL}" title="PLoS ONE | Create a New Account">Create Account</a></li>
 	<li><a href="${loginURL}" title="PLoS ONE | Account Login">Login</a></li>	

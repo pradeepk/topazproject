@@ -1,2 +1,2 @@
-		<@ww.property value="transformedArticle" escape="false"/>
+		<@s.property value="transformedArticle" escape="false"/>
 

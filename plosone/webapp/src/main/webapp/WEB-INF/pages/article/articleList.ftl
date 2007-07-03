@@ -9,88 +9,108 @@
 
       <#list articles as article>
 
-        <@ww.url id="fetchArticleURL" action="fetchArticle" articleURI="${article}"/>
-        <@ww.a href="%{fetchArticleURL}">${article}</@ww.a>
+        <@s.url id="fetchArticleURL" action="fetchArticle" articleURI="${article}"/>
+        <@s.a href="%{fetchArticleURL}">${article}</@s.a>
 
         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-        <@ww.url id="fetchSecondaryObjectsURL" action="fetchSecondaryObjects" uri="${article}"/>
-        <@ww.a href="%{fetchSecondaryObjectsURL}">Images and more</@ww.a>
+        <@s.url id="fetchSecondaryObjectsURL" action="fetchSecondaryObjects" uri="${article}"/>
+        <@s.a href="%{fetchSecondaryObjectsURL}">Images and more</@s.a>
 
         <ul>
           <li>
-            <@ww.url id="firstRepresentationUrl"  action="fetchFirstRepresentation" uri="${article}"/>
-            <@ww.a href="%{firstRepresentationUrl}">View first representation</@ww.a>
+            <@s.url id="firstRepresentationUrl"  action="fetchFirstRepresentation" uri="${article}"/>
+            <@s.a href="%{firstRepresentationUrl}">View first representation</@s.a>
           </li>
           <li>
-            <@ww.url id="articleArticleRepXML"  action="fetchObject" uri="${article}">
-              <@ww.param name="representation" value="%{'XML'}"/>
-            </@ww.url>
-            <@ww.a href="%{articleArticleRepXML}">View XML representation</@ww.a>
+            <@s.url id="articleArticleRepXML"  action="fetchObject" uri="${article}">
+              <@s.param name="representation" value="%{'XML'}"/>
+            </@s.url>
+            <@s.a href="%{articleArticleRepXML}">View XML representation</@s.a>
           </li>
           <li>
-            <@ww.url id="articleArticleRepPDF"  action="fetchObject" uri="${article}">
-              <@ww.param name="representation" value="%{'PDF'}"/>
-            </@ww.url>
-            <@ww.a href="%{articleArticleRepPDF}">View PDF representation</@ww.a>
+            <@s.url id="articleArticleRepPDF"  action="fetchObject" uri="${article}">
+              <@s.param name="representation" value="%{'PDF'}"/>
+            </@s.url>
+            <@s.a href="%{articleArticleRepPDF}">View PDF representation</@s.a>
           </li>
           <li>
-            <@ww.url id="annotationURL" includeContext="false" namespace="../annotation" action="listAnnotation" target="${article}"/>
-            <@ww.a href="%{annotationURL}">View Annotations for Article</@ww.a>
+            <@s.url id="annotationURL" includeContext="false" namespace="../annotation" action="listAnnotation" target="${article}"/>
+            <@s.a href="%{annotationURL}">View Annotations for Article</@s.a>
           </li>
           <li>
-            <@ww.url id="annotatedArticleURL" action="fetchAnnotatedArticle" articleURI="${article}"/>
-            <@ww.a href="%{annotatedArticleURL}">Get Annotated Article XML</@ww.a>
+            <@s.url id="annotatedArticleURL" action="fetchAnnotatedArticle" articleURI="${article}"/>
+            <@s.a href="%{annotatedArticleURL}">Get Annotated Article XML</@s.a>
           </li>
           <li>
-            <@ww.url id="emailArticleURL" namespace="/article" action="emailThisArticleCreate" articleURI="${article}"/>
-            <@ww.a href="%{emailArticleURL}">Email this article</@ww.a>
+            <@s.url id="emailArticleURL" namespace="/article" action="emailThisArticleCreate" articleURI="${article}"/>
+            <@s.a href="%{emailArticleURL}">Email this article</@s.a>
           </li>
           <li>
-            <@ww.url id="feedbackURL" action="feedbackCreate" page="${article}"/>
-            <@ww.a href="%{feedbackURL}">Send Feedback</@ww.a>
+            <@s.url id="feedbackURL" action="feedbackCreate" page="${article}"/>
+            <@s.a href="%{feedbackURL}">Send Feedback</@s.a>
           </li>
           <li>
-            <@ww.url id="getRatingsURL" action="getRatingsForUser" namespace="/rate/secure" articleURI="${article}"/>
-            <@ww.a href="%{getRatingsURL}">GetRatings</@ww.a>
+            <@s.url id="getRatingsURL" action="getRatingsForUser" namespace="/rate/secure" articleURI="${article}"/>
+            <@s.a href="%{getRatingsURL}">GetRatings</@s.a>
           </li>
           <li>
-            <@ww.url id="getAvgRatingsURL" action="getAverageRatings" namespace="/rate" articleURI="${article}"/>
-            <@ww.a href="%{getAvgRatingsURL}">Get Average Ratings</@ww.a>
+            <@s.url id="getAvgRatingsURL" action="getAverageRatings" namespace="/rate" articleURI="${article}"/>
+            <@s.a href="%{getAvgRatingsURL}">Get Average Ratings</@s.a>
           </li>
+          <li>
+            <@s.url id="getTrackbacksURL" action="getTrackbacks" namespace="/" trackbackId="${article}"/>
+            <@s.a href="%{getTrackbacksURL}">Get Trackbacks</@s.a>
+          </li>
+
 
           <li>
             <fieldset>
               <legend>Create an annotation</legend>
-            <@ww.form name="createAnnotationForm" action="createAnnotationSubmit" method="post" namespace="/annotation/secure" enctype="multipart/form-data">
+            <@s.form name="createAnnotationForm" action="createAnnotationSubmit" method="post" namespace="/annotation/secure" enctype="multipart/form-data">
               <!--enctype="multipart/form-data"-->
-              <@ww.textfield name="target" label="What does it annotate" value="${article}" required="true" size="50"/>
-              <@ww.textfield name="startPath" label="Start path" value="%{'id(\"x20060728a\")/p[1]'}" required="true"/>
-              <@ww.textfield name="startOffset" label="Start offset" value="%{'288'}" required="true"/>
-              <@ww.textfield name="endPath" label="End path" value="%{'id(\"x20060801a\")/h3[1]'}" required="true"/>
-              <@ww.textfield name="endOffset" label="End offset" value="%{'39'}" required="true"/>
-              <@ww.textfield name="commentTitle" label="Title" value="%{'title1'}"/>
-              <@ww.textfield name="supercedes" label="Older Annotation to supersede" value="%{'doi:anOlderAnnotation'}" size="50"/>
-              <@ww.checkbox name="isPublic" label="Is it Public?" fieldValue="true"/>
-              <@ww.textarea name="comment" label="Annotation text" value="%{'This article seems to cover the same grounds as this ...'}" rows="'3'" cols="'30'" required="true"/>
-              <@ww.submit value="create annotation" />
-            </@ww.form>
+              <@s.textfield name="target" label="What does it annotate" value="${article}" required="true" size="50"/>
+              <@s.textfield name="startPath" label="Start path" value="%{'id(\"x20060728a\")/p[1]'}" required="true"/>
+              <@s.textfield name="startOffset" label="Start offset" value="%{'288'}" required="true"/>
+              <@s.textfield name="endPath" label="End path" value="%{'id(\"x20060801a\")/h3[1]'}" required="true"/>
+              <@s.textfield name="endOffset" label="End offset" value="%{'39'}" required="true"/>
+              <@s.textfield name="commentTitle" label="Title" value="%{'title1'}"/>
+              <@s.textfield name="supercedes" label="Older Annotation to supersede" value="%{'doi:anOlderAnnotation'}" size="50"/>
+              <@s.checkbox name="isPublic" label="Is it Public?" fieldValue="true"/>
+              <@s.textarea name="comment" label="Annotation text" value="%{'This article seems to cover the same grounds as this ...'}" rows="'3'" cols="'30'" required="true"/>
+              <@s.submit value="create annotation" />
+            </@s.form>
             </fieldset>
           </li>
           <li>
             <fieldset>
               <legend>Rate the Article</legend>
-            <@ww.form name="rateArticle Form" action="rateArticle" method="post" namespace="/rate/secure" enctype="multipart/form-data">
+            <@s.form name="rateArticle Form" action="rateArticle" method="post" namespace="/rate/secure" enctype="multipart/form-data">
               <!--enctype="multipart/form-data"-->
-              <@ww.textfield name="insight" label="Insight Rating" size="1"/>
-              <@ww.textfield name="reliability" label="Reliability Rating" size="1"/>
-              <@ww.textfield name="style" label="Style Rating" size="1"/>
-              <@ww.textfield name="articleURI" label="Article URI" value="${article}"/>
-              <@ww.textfield name="commentTitle" label="Title" value="%{'title'}"/>
-              <@ww.textarea name="comment" label="Annotation text" value="%{'This article rocks'}" rows="'3'" cols="'30'" required="true"/>
-              <@ww.submit value="Submit Rating" />
-            </@ww.form>
+              <@s.textfield name="insight" label="Insight Rating" size="1"/>
+              <@s.textfield name="reliability" label="Reliability Rating" size="1"/>
+              <@s.textfield name="style" label="Style Rating" size="1"/>
+              <@s.textfield name="articleURI" label="Article URI" value="${article}"/>
+              <@s.textfield name="commentTitle" label="Title" value="%{'title'}"/>
+              <@s.textarea name="comment" label="Annotation text" value="%{'This article rocks'}" rows="'3'" cols="'30'" required="true"/>
+              <@s.submit value="Submit Rating" />
+            </@s.form>
             </fieldset>
           </li>
+          <li>
+            <fieldset>
+              <legend>TrackbackPing the article</legend>
+            <@s.form name="trackbackArticle Form" action="trackback" method="post" namespace="/" enctype="application/x-www-form-urlencoded;charset=utf-8">
+              <!--enctype="multipart/form-data"-->
+              <@s.textfield name="title" label="Title" value="Test Title"/>
+              <@s.textfield name="excerpt" label="Excerpt" value="Excerpt here"/>
+              <@s.textfield name="blog_name" label="Blog Name" value="Test Blog"/>
+              <@s.textfield name="url" label="blog url" value="http://www.topazproject.org"/>
+              <@s.textfield name="trackbackId" label="Trackback Id" value="${article}"/>
+              <@s.submit value="Submit Ping" />
+            </@s.form>
+            </fieldset>
+          </li>
+
 
         </ul>
 

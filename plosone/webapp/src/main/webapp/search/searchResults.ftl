@@ -2,21 +2,21 @@
 <#macro renderSearchPaginationLinks totalPages>
   <#if (totalPages > 1) >
     <#if (startPage gt 0)>
-     	<@ww.url id="prevPageURL" action="simpleSearch" namespace="/search" startPage="${startPage - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
-      <@ww.a href="%{prevPageURL}">&lt; Prev</@ww.a> |
+     	<@s.url id="prevPageURL" action="simpleSearch" namespace="/search" startPage="${startPage - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
+      <@s.a href="%{prevPageURL}">&lt; Prev</@s.a> |
     </#if>
     <#list 1..totalPages as pageNumber>
       <#if (startPage == (pageNumber-1))>
       	${pageNumber}
       <#else>
-      	<@ww.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
-      	<@ww.a href="%{searchPageURL}">${pageNumber}</@ww.a>
+      	<@s.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
+      	<@s.a href="%{searchPageURL}">${pageNumber}</@s.a>
       </#if>
       <#if pageNumber != totalPages>|</#if>
     </#list>
     <#if (startPage lt totalPages - 1 )>
-     	<@ww.url id="nextPageURL" action="simpleSearch" namespace="/search" startPage="${startPage + 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
-      | <@ww.a href="%{nextPageURL}">Next &gt;</@ww.a> 
+     	<@s.url id="nextPageURL" action="simpleSearch" namespace="/search" startPage="${startPage + 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
+      | <@s.a href="%{nextPageURL}">Next &gt;</@s.a> 
     </#if>
     
   </#if>
@@ -62,8 +62,8 @@
 				<span class="date">Published ${hit.date?string("dd MMM yyyy")}</span>
 				<span class="article">
             <#if hit.contentModel == "PlosArticle">
-              <@ww.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${hit.pid}" includeParams="none"/>
-              <@ww.a href="%{fetchArticleURL}" title="Read Open Access Article">${hit.title}</@ww.a></span>
+              <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${hit.pid}" includeParams="none"/>
+              <@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${hit.title}</@s.a></span>
             <#else>
               <a href="#">${hit.title}</a>
             </#if>

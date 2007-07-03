@@ -10,8 +10,8 @@
 
         <#list flags as flag>
           id          =
-          <@ww.url id="getFlagURL" action="getFlag" flagId="${flag.id}"/>
-          <@ww.a href="%{getFlagURL}">${flag.id}</@ww.a> <br/>
+          <@s.url id="getFlagURL" action="getFlag" flagId="${flag.id}"/>
+          <@s.a href="%{getFlagURL}">${flag.id}</@s.a> <br/>
 
           annotates   =${flag.annotates}     <br/>
           comment       =${flag.comment}         <br/>
@@ -20,8 +20,8 @@
 
           <br/>
       
-          <@ww.url id="deleteFlagURL" action="deleteFlag" flagId="${flag.id}" namespace="/annotation/secure" />
-          <@ww.a href="%{deleteFlagURL}">delete</@ww.a><br/>
+          <@s.url id="deleteFlagURL" action="deleteFlag" flagId="${flag.id}" namespace="/annotation/secure" />
+          <@s.a href="%{deleteFlagURL}">delete</@s.a><br/>
           <hr/>
         </#list>
 

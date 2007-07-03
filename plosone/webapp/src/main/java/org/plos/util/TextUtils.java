@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -66,12 +66,11 @@ public class TextUtils {
   public static String hyperlink(final String text) {
     if (StringUtils.isBlank(text)) {
       return text;
-//      return "";
     } else {
-      return com.opensymphony.util.TextUtils.linkURL(text);
+      return com.opensymphony.util.TextUtils.linkURL(text); 
     }
   }
-
+  
   /**
    * Return the escaped html. Useful when you want to make any dangerous scripts safe to render.
    * @param bodyContent bodyContent

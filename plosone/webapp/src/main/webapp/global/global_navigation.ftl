@@ -6,40 +6,40 @@
 					<li><a href="/article/browse.action">By Subject</a></li>
 				</ul>
 		</li>			
-		<@ww.url action="about" namespace="/static" includeParams="none" id="about"/>
+		<@s.url action="about" namespace="/static" includeParams="none" id="about"/>
 		<li><a href="${about}" tabindex="103">About</a>
 				<ul>
-				<@ww.url action="information.action" namespace="/static" includeParams="none" id="info"/>
-				<@ww.url action="edboard.action" namespace="/static" includeParams="none" id="edboard"/>
-				<@ww.url action="media.action" namespace="/static" includeParams="none" id="media"/>
-				<@ww.url action="license.action" namespace="/static" includeParams="none" id="license"/>
+				<@s.url action="information.action" namespace="/static" includeParams="none" id="info"/>
+				<@s.url action="edboard.action" namespace="/static" includeParams="none" id="edboard"/>
+				<@s.url action="media.action" namespace="/static" includeParams="none" id="media"/>
+				<@s.url action="license.action" namespace="/static" includeParams="none" id="license"/>
 					<li><a href="${info}">Journal Information</a></li>
 					<li><a href="${edboard}">Editorial Board</a></li>
 					<li><a href="${license}">License</a></li>
 				</ul>
 			</li>			
-                <@ww.url action="users" namespace="/static" includeParams="none" id="users"/>
+                <@s.url action="users" namespace="/static" includeParams="none" id="users"/>
 		<li><a href="${users}" tabindex="104">For Users</a>
 				<ul>
-				<@ww.url action="commentGuidelines.action" namespace="/static" includeParams="none" id="comment"/>
-				<@ww.url action="help.action" namespace="/static" includeParams="none" id="help"/>
-				<@ww.url action="sitemap.action" namespace="/static" includeParams="none" id="site"/>				
-	  			<@ww.url action="contact.action" namespace="/static" includeParams="none" id="contact"/>				
+				<@s.url action="commentGuidelines.action" namespace="/static" includeParams="none" id="comment"/>
+				<@s.url action="help.action" namespace="/static" includeParams="none" id="help"/>
+				<@s.url action="sitemap.action" namespace="/static" includeParams="none" id="site"/>				
+	  			<@s.url action="contact.action" namespace="/static" includeParams="none" id="contact"/>				
 					<li><a href="${comment}">Commenting Guidelines</a></li>
 					<li><a href="${help}">Help Using this Site</a></li>
 					<li><a href="${site}">Site Map</a></li>
 					<li><a href="${contact}">Contact Us</a></li>
 				</ul>
 			</li>
-		<@ww.url action="authors" namespace="/static" includeParams="none" id="authors"/>
+		<@s.url action="authors" namespace="/static" includeParams="none" id="authors"/>
 		<li><a href="${authors}" tabindex="105">For Authors and Reviewers</a>
 				<ul>
-				<@ww.url action="whypublish.action" namespace="/static" includeParams="none" id="why"/>
-				<@ww.url action="policies.action" namespace="/static" includeParams="none" id="policies"/>
-				<@ww.url action="guidelines.action" namespace="/static" includeParams="none" id="guidelines"/>
-				<@ww.url action="figureGuidelines.action" namespace="/static" includeParams="none" id="figure"/>
-				<@ww.url action="checklist.action" namespace="/static" includeParams="none" id="checklist"/>				
-  			<@ww.url action="reviewerGuidelines.action" namespace="/static" includeParams="none" id="reviewer"/>								
+				<@s.url action="whypublish.action" namespace="/static" includeParams="none" id="why"/>
+				<@s.url action="policies.action" namespace="/static" includeParams="none" id="policies"/>
+				<@s.url action="guidelines.action" namespace="/static" includeParams="none" id="guidelines"/>
+				<@s.url action="figureGuidelines.action" namespace="/static" includeParams="none" id="figure"/>
+				<@s.url action="checklist.action" namespace="/static" includeParams="none" id="checklist"/>				
+  			<@s.url action="reviewerGuidelines.action" namespace="/static" includeParams="none" id="reviewer"/>								
 					<li><a href="${why}">Why Publish With Us?</a></li>
 					<li><a href="${policies}">Editorial and Publishing Policies</a></li>
 					<li><a href="${guidelines}">Author Guidelines</a></li>

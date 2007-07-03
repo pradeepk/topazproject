@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -9,9 +9,9 @@
  */
 package org.plos.user;
 
-import com.opensymphony.xwork.ActionInvocation;
-import com.opensymphony.xwork.interceptor.Interceptor;
-import com.opensymphony.webwork.ServletActionContext;
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.Interceptor;
+import org.apache.struts2.ServletActionContext;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;

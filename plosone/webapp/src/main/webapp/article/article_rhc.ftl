@@ -4,18 +4,18 @@
 <div id="sideNav">
 	<div class="links">
 		<ul>
-	    <@ww.url id="articleArticleRepXML"  namespace="/article" action="fetchObjectAttachment" includeParams="none" uri="${articleURI}">
-        <@ww.param name="representation" value="%{'XML'}"/>
-	    </@ww.url>
+	    <@s.url id="articleArticleRepXML"  namespace="/article" action="fetchObjectAttachment" includeParams="none" uri="${articleURI}">
+        <@s.param name="representation" value="%{'XML'}"/>
+	    </@s.url>
 			<li><a href="${articleArticleRepXML}" class="xml" title="Download XML">Download Article XML</a></li>
-	    <@ww.url id="articleArticleRepPDF"  namespace="/article" action="fetchObjectAttachment" includeParams="none" uri="${articleURI}">
-	      <@ww.param name="representation" value="%{'PDF'}"/>
-      </@ww.url>
+	    <@s.url id="articleArticleRepPDF"  namespace="/article" action="fetchObjectAttachment" includeParams="none" uri="${articleURI}">
+	      <@s.param name="representation" value="%{'PDF'}"/>
+      </@s.url>
 			<li><a href="${articleArticleRepPDF}" class="pdf" title="Download PDF">Download Article PDF</a></li>
-      <@ww.url id="articleCitationURL"  namespace="/article" action="citationList" includeParams="none" articleURI="${articleURI}" />
-      <li><@ww.a href="%{articleCitationURL}"  cssClass="citation" title="Download Citation">Download Citation</@ww.a></li>
-      <@ww.url id="emailArticleURL" namespace="/article" action="emailArticle" articleURI="${articleURI}"/>
-      <li><@ww.a href="%{emailArticleURL}"  cssClass="email" title="E-mail This Article to a Friend or Colleague">E-mail this Article</@ww.a></li>
+      <@s.url id="articleCitationURL"  namespace="/article" action="citationList" includeParams="none" articleURI="${articleURI}" />
+      <li><@s.a href="%{articleCitationURL}"  cssClass="citation" title="Download Citation">Download Citation</@s.a></li>
+      <@s.url id="emailArticleURL" namespace="/article" action="emailArticle" articleURI="${articleURI}"/>
+      <li><@s.a href="%{emailArticleURL}"  cssClass="email" title="E-mail This Article to a Friend or Colleague">E-mail this Article</@s.a></li>
       <li><a href="http://www.plos.org/journals/print.html" title="Order reprinted versions of this article" class="reprints icon">Order Reprints</a></li>
       <li><a href="#" onclick="window.print();return false;" class="print last" title="Print this article">Print this Article</a></li>
 		</ul>
@@ -59,11 +59,11 @@
 					</fieldset>-->
 				<!-- end : expanded block -->
 				</li>
-		    <@ww.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
+		    <@s.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
 
 				<li><a href="${createDiscussionURL}" class="discuss icon">Start a discussion</a> about this article</li>
 
-		    <@ww.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
+		    <@s.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
 				<li><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article
 					<ul id="dcCount1">
 					  <#include "/article/article_rhc_count.ftl">
@@ -123,11 +123,11 @@
 					</fieldset>-->
 				<!-- end : expanded block -->
 				</li>
-		    <@ww.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
+		    <@s.url id="createDiscussionURL" namespace="/annotation/secure" action="startDiscussion" includeParams="none" target="${articleURI}" />
 
 				<li><a href="${createDiscussionURL}" class="discuss icon">Start a discussion</a> about this article</li>
 
-		    <@ww.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
+		    <@s.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${articleURI}"/>
 				<li><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article
 					<ul id="dcCount2">
 					  <#include "/article/article_rhc_count.ftl">

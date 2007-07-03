@@ -17,13 +17,13 @@
       <fieldset>
         TODO: remove as it is merged with listAnnotation.ftl
           <legend>Create a flag</legend>
-          <@ww.form name="createFlagForm" action="createFlagSubmit" method="get">
-            <@ww.textfield name="target" label="What does it flag" required="true"/>
-            <@ww.select name="reasonCode" label="Reason"
+          <@s.form name="createFlagForm" action="createFlagSubmit" method="get">
+            <@s.textfield name="target" label="What does it flag" required="true"/>
+            <@s.select name="reasonCode" label="Reason"
                         list="{'spam', 'Offensive', 'Inappropriate'}"/> 
-            <@ww.textarea name="comment" label="Flag text" value="%{'Spammer guy attacks again. Who wants more viagra...'}" rows="'3'" cols="'30'" required="true"/>
-            <@ww.submit value="create flag" />
-          </@ww.form>
+            <@s.textarea name="comment" label="Flag text" value="%{'Spammer guy attacks again. Who wants more viagra...'}" rows="'3'" cols="'30'" required="true"/>
+            <@s.submit value="create flag" />
+          </@s.form>
       </fieldset>
     </p>
   </body>

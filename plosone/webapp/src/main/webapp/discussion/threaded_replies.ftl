@@ -4,8 +4,8 @@
 	<#assign loginURL = "${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}">
 </#if>
 	<#macro writeReplyDetails reply replyToAuthorId replyToAuthorName>
-  	<@ww.url namespace="/user" includeParams="none" id="showUserURL" action="showUser" userId="${reply.creator}"/>
-  	<@ww.url namespace="/user" includeParams="none" id="authorURL" action="showUser" userId="${replyToAuthorId}"/>
+  	<@s.url namespace="/user" includeParams="none" id="showUserURL" action="showUser" userId="${reply.creator}"/>
+  	<@s.url namespace="/user" includeParams="none" id="authorURL" action="showUser" userId="${replyToAuthorId}"/>
 			<div class="response">
 				<div class="hd">
 					<!-- begin response title -->
@@ -60,7 +60,7 @@
 				<h3>${baseAnnotation.commentTitle}</h3>
 				<!-- end : response title -->
 				<!-- begin : response poster detail -->
-				<@ww.url namespace="/user" includeParams="none" id="baseAuthorURL" action="showUser" userId="${baseAnnotation.creator}"/>
+				<@s.url namespace="/user" includeParams="none" id="baseAuthorURL" action="showUser" userId="${baseAnnotation.creator}"/>
 				
 				<div class="detail">Posted by <a href="${baseAuthorURL}" title="Annotation Author" class="user icon">${baseAnnotation.creatorName}</a> on <strong>${baseAnnotation.createdAsDate?string("dd MMM yyyy '</strong>at<strong>' HH:mm zzz")}</strong>
 				</div>
@@ -99,7 +99,7 @@
 		<!-- end : response -->
 	</div>
 	
-			    <@ww.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${baseAnnotation.annotates}"/>
+			    <@s.url id="commentsURL" namespace="/annotation" action="getCommentary" includeParams="none" target="${baseAnnotation.annotates}"/>
 				<p><a href="${commentsURL}" class="commentary icon">See all commentary</a> on this article</p>
 	
 	<!-- end : main contents -->

@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -9,7 +9,7 @@
  */
 package org.plos.action;
 
-import com.opensymphony.webwork.ServletActionContext;
+import org.apache.struts2.ServletActionContext;
 import org.apache.commons.collections.EnumerationUtils;
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.validator.EmailValidator;

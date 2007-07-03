@@ -17,22 +17,22 @@
 			<#assign infoText = "in the <strong>past week</strong>">
 			<li class="current">Past week</li>
 			<#else>
-		  	<@ww.url id="browseDateURL" action="browse" namespace="/article" field="${field}" includeParams="none"/>
-			<li><@ww.a href="%{browseDateURL}">Past week</@ww.a></li>
+		  	<@s.url id="browseDateURL" action="browse" namespace="/article" field="${field}" includeParams="none"/>
+			<li><@s.a href="%{browseDateURL}">Past week</@s.a></li>
 			</#if>
 			<#if month == -2>
 			<li class="current">Past month</li>
 			<#assign infoText = "in the <strong>past month</strong>">
 			<#else>
-			  <@ww.url id="browseDateURL" action="browse" namespace="/article" field="${field}" month="-2" includeParams="none"/>
-			<li><@ww.a href="%{browseDateURL}">Past month</@ww.a></li>
+			  <@s.url id="browseDateURL" action="browse" namespace="/article" field="${field}" month="-2" includeParams="none"/>
+			<li><@s.a href="%{browseDateURL}">Past month</@s.a></li>
 			</#if>
 			<#if month == -3>
 			<li class="current">Past 3 months</li>
 			<#assign infoText = "in the <strong>past 3 months</strong>">
 			<#else>
-		  	<@ww.url id="browseDateURL" action="browse" namespace="/article" field="${field}" month="-3" includeParams="none"/>			
-			<li><@ww.a href="%{browseDateURL}">Past 3 months</@ww.a></li>
+		  	<@s.url id="browseDateURL" action="browse" namespace="/article" field="${field}" month="-3" includeParams="none"/>			
+			<li><@s.a href="%{browseDateURL}">Past 3 months</@s.a></li>
 			</#if>
 		</ul>
 
@@ -51,8 +51,8 @@
 					<#else>
 						<li>
 					</#if>						
-				  <@ww.url id="monthURL" action="browse" namespace="/article" field="${field}" year="${i}" month="${j}" includeParams="none"/>								
-					<@ww.a href="%{monthURL}">${oneDay?string("MMM")}</@ww.a></li>
+				  <@s.url id="monthURL" action="browse" namespace="/article" field="${field}" year="${i}" month="${j}" includeParams="none"/>								
+					<@s.a href="%{monthURL}">${oneDay?string("MMM")}</@s.a></li>
 				<#list oneMonth as oneDay>
 					<#if i == year && j == month && oneDay_index == day>
 					<li class="current">
@@ -60,8 +60,8 @@
 					<#else>
 					<li>
 					</#if>
-				  <@ww.url id="dayURL" action="browse" namespace="/article" field="${field}" year="${i}" month="${j}" day="${oneDay_index}" includeParams="none"/>													
-					<@ww.a href="%{dayURL}">${oneDay?string("dd")}</@ww.a></li>
+				  <@s.url id="dayURL" action="browse" namespace="/article" field="${field}" year="${i}" month="${j}" day="${oneDay_index}" includeParams="none"/>													
+					<@s.a href="%{dayURL}">${oneDay?string("dd")}</@s.a></li>
 				</#list>
 				</ol>
 			</#list>

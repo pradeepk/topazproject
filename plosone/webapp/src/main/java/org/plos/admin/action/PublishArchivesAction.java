@@ -1,7 +1,7 @@
 /* $$HeadURL::                                                                            $$
  * $$Id$$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -14,7 +14,7 @@ import java.rmi.RemoteException;
 
 import javax.servlet.ServletContext;
 
-import com.opensymphony.webwork.util.ServletContextAware;
+import org.apache.struts2.util.ServletContextAware;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

@@ -16,13 +16,13 @@
     <p>
       <fieldset>
           <legend>Create an reply</legend>
-          <@ww.form name="createReplyForm" action="createReplySubmit">
-            <@ww.textfield name="root" label="What is the root of this reply" required="true"/>
-            <@ww.textfield name="inReplyTo" label="What is it in reply to" required="true"/>
-            <@ww.textfield name="commentTitle" label="Title"/>
-            <@ww.textarea name="comment" label="Reply text" rows="'3'" cols="'30'" required="true"/>
-            <@ww.submit value="create reply" />
-          </@ww.form>
+          <@s.form name="createReplyForm" action="createReplySubmit">
+            <@s.textfield name="root" label="What is the root of this reply" required="true"/>
+            <@s.textfield name="inReplyTo" label="What is it in reply to" required="true"/>
+            <@s.textfield name="commentTitle" label="Title"/>
+            <@s.textarea name="comment" label="Reply text" rows="'3'" cols="'30'" required="true"/>
+            <@s.submit value="create reply" />
+          </@s.form>
       </fieldset>
     </p>
   </body>

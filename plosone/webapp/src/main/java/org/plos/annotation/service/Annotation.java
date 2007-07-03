@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -16,6 +16,8 @@ import org.plos.user.service.UserService;
 import org.plos.util.DateParser;
 import org.plos.util.InvalidDateException;
 
+import com.googlecode.jsonplugin.annotations.JSON;
+
 import java.util.Date;
 
 /**
@@ -27,6 +29,7 @@ public abstract class Annotation extends BaseAnnotation {
   private final AnnotationInfo annotation;
   private UserService userService;
   private String creatorName;
+  private Date creationDate;
 
   private static final Log log = LogFactory.getLog(Annotation.class);
 
@@ -50,16 +53,29 @@ public abstract class Annotation extends BaseAnnotation {
    * Get created date.
    * @return created as java.util.Date.
    */
+  @JSON(serialize = false)
   public Date getCreatedAsDate() {
     try {
-      return DateParser.parse(annotation.getCreated());
+      if (creationDate == null)
+        creationDate = DateParser.parse(annotation.getCreated());
     } catch (InvalidDateException ide) {
       log.error("Could not parse date for reply: " + this.getId() +
                 "; dateString is: " + annotation.getCreated(), ide);
     }
-    return null;
+    return creationDate;
   }
 
+  /**
+   * Get created date.
+   * @return created as java.util.Date.
+   */
+  public long getCreatedAsMillis() {
+    if (getCreatedAsDate() != null) {
+      return creationDate.getTime();
+    }
+    return 0;
+  }
+  
   /**
    * Get created.
    * @return created as String.

@@ -1,17 +1,19 @@
 /* $HeadURL$
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.plos.webwork;
+package org.plos.struts2;
 
-import com.opensymphony.webwork.dispatcher.mapper.ActionMapping;
-import com.opensymphony.webwork.dispatcher.mapper.DefaultActionMapper;
+import com.opensymphony.xwork2.config.ConfigurationManager;
+
+import org.apache.struts2.dispatcher.mapper.ActionMapping;
+import org.apache.struts2.dispatcher.mapper.DefaultActionMapper;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -37,7 +39,7 @@ public class PlosOneActionMapper extends DefaultActionMapper {
   /**
    * @see DefaultActionManager#getMapping(HttpServletRequest request).
    */
-  public ActionMapping getMapping(HttpServletRequest request) {
+  public ActionMapping getMapping(HttpServletRequest request, ConfigurationManager configManager) {
 
     // filtering is driven by the request URI
     URI uri;
@@ -51,7 +53,7 @@ public class PlosOneActionMapper extends DefaultActionMapper {
 
     // do not care about "null"
     if (uri.getPath() == null) {
-      return super.getMapping(request);
+      return super.getMapping(request, configManager);
     }
 
     // only care about "/article/feed"
@@ -60,7 +62,7 @@ public class PlosOneActionMapper extends DefaultActionMapper {
     }
 
     // use default
-    return super.getMapping(request);
+    return super.getMapping(request, configManager);
   }
 
   /**

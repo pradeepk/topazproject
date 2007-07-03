@@ -31,7 +31,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 
-import com.opensymphony.webwork.ServletActionContext;
+import org.apache.struts2.ServletActionContext;
 import org.springframework.beans.factory.annotation.Required;
 
 /**

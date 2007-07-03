@@ -11,7 +11,7 @@ package org.plos.article.action;
 
 import java.util.ArrayList;
 
-import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

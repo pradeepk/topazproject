@@ -19,17 +19,17 @@
               mediator    =${reply.mediator}      <br/>
               type        =${reply.type}          <br/>
 
-              <@ww.url id="createReplyURL" action="createReplySubmit" root="${reply.root}" inReplyTo="${reply.id}" namespace="/annotation/secure"/>
-              <@ww.a href="%{createReplyURL}">create reply</@ww.a> <br/>
+              <@s.url id="createReplyURL" action="createReplySubmit" root="${reply.root}" inReplyTo="${reply.id}" namespace="/annotation/secure"/>
+              <@s.a href="%{createReplyURL}">create reply</@s.a> <br/>
 
-              <@ww.url id="listReplyURL" action="listAllReplies" root="${reply.root}" inReplyTo="${reply.id}"/>
-              <@ww.a href="%{listReplyURL}">list all replies</@ww.a> <br/>
+              <@s.url id="listReplyURL" action="listAllReplies" root="${reply.root}" inReplyTo="${reply.id}"/>
+              <@s.a href="%{listReplyURL}">list all replies</@s.a> <br/>
 
-              <@ww.url id="listThreadedRepliesURL" action="listThreadedReplies" root="${reply.root}" inReplyTo="${reply.id}"/>
-              <@ww.a href="%{listThreadedRepliesURL}">list threaded replies</@ww.a> <br/>
+              <@s.url id="listThreadedRepliesURL" action="listThreadedReplies" root="${reply.root}" inReplyTo="${reply.id}"/>
+              <@s.a href="%{listThreadedRepliesURL}">list threaded replies</@s.a> <br/>
 
-              <@ww.url id="listFlagURL" action="listAllFlags" target="${reply.id}" />
-              <@ww.a href="%{listFlagURL}">list all flags</@ww.a> <br/>
+              <@s.url id="listFlagURL" action="listAllFlags" target="${reply.id}" />
+              <@s.a href="%{listFlagURL}">list all flags</@s.a> <br/>
         </fieldset>
         <li>
           <ul>

@@ -8,10 +8,10 @@
       <legend>Available images</legend>
 
       <#list secondaryObjects as image>
-        <@ww.url id="imageThumbUrl"  action="fetchObject" uri="${image.uri}"/>
-        <@ww.a href="%{imageThumbUrl}&representation=${image.repLarge}">
+        <@s.url id="imageThumbUrl"  action="fetchObject" uri="${image.uri}"/>
+        <@s.a href="%{imageThumbUrl}&representation=${image.repLarge}">
           <img src="${imageThumbUrl}&representation=${image.repSmall}" alt="${image.title}" height="100px" width="120px"/>
-        </@ww.a>
+        </@s.a>
 
         <ul>
           <li>Title: ${image.title}</li>
@@ -19,8 +19,8 @@
           <li>Uri: ${image.uri}</li>
           <ul>
             <#list image.representations as rep>
-              <@ww.url id="imageRepUrl"  action="fetchObject" uri="${image.uri}"/>
-              <@ww.a href="%{imageRepUrl}&representation=${rep.name}">${rep.name}-${rep.contentType}</@ww.a>
+              <@s.url id="imageRepUrl"  action="fetchObject" uri="${image.uri}"/>
+              <@s.a href="%{imageRepUrl}&representation=${rep.name}">${rep.name}-${rep.contentType}</@s.a>
             </#list>
           </ul>
         </ul>

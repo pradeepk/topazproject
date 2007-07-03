@@ -416,19 +416,21 @@
       scope="singleton"/>
 
   <bean id="otmSession" factory-bean="otmSessionFactory" factory-method="openSession"
-      destroy-method="close" scope="request"/>
+      destroy-method="close" scope="request">
+    <aop:scoped-proxy/>      
+  </bean>
 
   <bean id="browseService" class="org.plos.article.service.BrowseService" scope="session">
     <aop:scoped-proxy/>
   </bean>
 
-  <bean id="plosOneFreemarkerManager" class="org.plos.webwork.PlosOneFreemarkerManager">
+  <bean id="plosOneFreemarkerManager" class="org.plos.struts2.PlosOneFreemarkerManager">
     <constructor-arg index="0">
       <ref bean="plosOneFreemarkerConfig" />
     </constructor-arg>
   </bean>
 
-  <bean id="plosOneFreemarkerConfig" class="org.plos.webwork.PlosOneFreemarkerConfig" />
+  <bean id="plosOneFreemarkerConfig" class="org.plos.struts2.PlosOneFreemarkerConfig" />
 
   <bean id="userCacheAdministrator" class="com.opensymphony.oscache.general.GeneralCacheAdministrator" destroy-method="destroy">
     <constructor-arg index="0">

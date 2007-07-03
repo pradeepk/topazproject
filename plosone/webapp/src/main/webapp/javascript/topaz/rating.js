@@ -144,11 +144,11 @@ function getRatingsForUser() {
      //alert("jsonObj:\n" + jsonObj.toSource());
      //submitMsg.appendChild(document.createTextNode(jsonObj.toSource()));
      
-     if (jsonObj.actionErrors.list.length > 0) {
+     if (jsonObj.actionErrors.length > 0) {
        var errorMsg = "";
        
-       for (var i=0; i<jsonObj.actionErrors.list.length; i++) {
-         errorMsg = errorMsg + jsonObj.actionErrors.list[i] + "\n";
+       for (var i=0; i<jsonObj.actionErrors.length; i++) {
+         errorMsg = errorMsg + jsonObj.actionErrors[i] + "\n";
        }
        
        alert("ERROR: " + errorMsg);
@@ -189,11 +189,11 @@ function updateRating() {
    load: function(type, data, evt){
      var jsonObj = dojo.json.evalJson(data);
      
-     if (jsonObj.actionErrors.list.length > 0) {
+     if (jsonObj.actionErrors.length > 0) {
        var errorMsg = "";
        
-       for (var i=0; i<jsonObj.actionErrors.list.length; i++) {
-         errorMsg += jsonObj.actionErrors.list[i] + "\n";
+       for (var i=0; i<jsonObj.actionErrors.length; i++) {
+         errorMsg += jsonObj.actionErrors[i] + "\n";
        }
        
        //alert("ERROR: " + errorMsg);
@@ -208,19 +208,17 @@ function updateRating() {
      else if (jsonObj.numFieldErrors > 0) {
        var fieldErrors = document.createDocumentFragment();
        
-       for (var item in jsonObj.fieldErrors.map) {
+       for (var item in jsonObj.fieldErrors) {
          var errorString = "";
-         for (var ilist in jsonObj.fieldErrors.map[item]) {
-           for (var i=0; i<jsonObj.numFieldErrors; i++) {
-             var err = jsonObj.fieldErrors.map[item][ilist][i];
-             if (err) {
-               errorString += err;
-               var error = document.createTextNode(errorString.trim());
-               var brTag = document.createElement('br');
-               
-               fieldErrors.appendChild(error);
-               fieldErrors.appendChild(brTag);
-             }
+         for (var ilist in jsonObj.fieldErrors[item]) {
+           var err = jsonObj.fieldErrors[item][ilist];
+           if (err) {
+             errorString += err;
+             var error = document.createTextNode(errorString.trim());
+             var brTag = document.createElement('br');
+
+             fieldErrors.appendChild(error);
+             fieldErrors.appendChild(brTag);
            }
          }
        }

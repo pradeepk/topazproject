@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -9,7 +9,7 @@
  */
 package org.plos.search.action;
 
-import static com.opensymphony.xwork.Action.SUCCESS;
+import static com.opensymphony.xwork2.Action.SUCCESS;
 import org.plos.BasePlosoneTestCase;
 import org.plos.search.SearchResultPage;
 import org.plos.search.SearchUtil;

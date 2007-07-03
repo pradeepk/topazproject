@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -36,7 +36,7 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.stores.ItqlStore.ItqlStoreConnection;
 
-import com.opensymphony.webwork.ServletActionContext;
+import org.apache.struts2.ServletActionContext;
 
 import net.sf.ehcache.CacheException;
 import net.sf.ehcache.CacheManager;

@@ -13,7 +13,7 @@
 							<ul>
 								<li><a href="http://www.plos.org/oa/index.html" title="Learn more about Open Access on PLoS.org">Open Access</a></li>
 								<li><a href="http://www.plos.org/support/donate.php" title="Join PLoS and our Open Access mission">Join PLoS</a></li>
-								<li><a href="/static/checklist.action" title="Find out how to submit to PLoS ONE"><@ww.url action="checklist.action" namespace="/static/" includeParams="none" id="checklist"/>
+								<li><a href="/static/checklist.action" title="Find out how to submit to PLoS ONE"><@s.url action="checklist.action" namespace="/static/" includeParams="none" id="checklist"/>
 Submit Today</a></li>
 							</ul>
 						</div><!-- end : block mainnav -->
@@ -104,9 +104,9 @@ Submit Today</a></li>
 					<!-- begin : col 3 -->
 					<div class="subcol first">
 						<div class="info block">
-							<@ww.url action="feedbackCreate.action" namespace="/static" includeParams="none" id="feedback"/>
-							<@ww.url action="commentGuidelines.action#annotation" namespace="/static" includeParams="none" id="annotation"/>
-							<@ww.url action="commentGuidelines.action#discussion" namespace="/static" includeParams="none" id="discussion"/>
+							<@s.url action="feedbackCreate.action" namespace="/static" includeParams="none" id="feedback"/>
+							<@s.url action="commentGuidelines.action#annotation" namespace="/static" includeParams="none" id="annotation"/>
+							<@s.url action="commentGuidelines.action#discussion" namespace="/static" includeParams="none" id="discussion"/>
 
 							<h2>What is PLoS ONE?</h2>
 							<div>
@@ -139,7 +139,7 @@ Submit Today</a></li>
 							<#else>
   								<#assign index = 8>
 							</#if>
-							<@ww.url id="browseURL" action="browse" namespace="/article"  catId="${category_index}" includeParams="none"/>
+							<@s.url id="browseURL" action="browse" namespace="/article"  catId="${category_index}" includeParams="none"/>
 							<dt>
 								<a class="expand" id="widget${categoryId}" href="${browseURL}">${category} (${articlesByCategory[category_index]?size})</a>&nbsp;
 								<a href="${freemarker_config.context}/rss/${category?replace(' ','')?replace("'",'')}.xml"><img src="${freemarker_config.context}/images/feed-icon-12x12.gif" /></a>

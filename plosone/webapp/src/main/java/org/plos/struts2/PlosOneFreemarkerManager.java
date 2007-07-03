@@ -1,22 +1,22 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.plos.webwork;
+package org.plos.struts2;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import com.opensymphony.webwork.views.freemarker.FreemarkerManager;
-import com.opensymphony.webwork.views.freemarker.ScopesHashModel;
+import org.apache.struts2.views.freemarker.FreemarkerManager;
+import org.apache.struts2.views.freemarker.ScopesHashModel;
 
-import com.opensymphony.xwork.util.OgnlValueStack;
+import com.opensymphony.xwork2.util.ValueStack;
 
 /**
  * Custom Freemarker Manager to load up the configuration files for css, javascript, and titles of pages
@@ -40,10 +40,11 @@ public class PlosOneFreemarkerManager extends FreemarkerManager {
     /**
      * Subclass from parent to add the freemarker configuratio object globally
      * 
-     * @see com.opensymphony.webwork.views.freemarker.FreemarkerManager
+     * @see org.apache.struts2.views.freemarker.FreemarkerManager
      */
-    public void populateContext(ScopesHashModel model, OgnlValueStack stack, Object action,
-                                HttpServletRequest request, HttpServletResponse response) {
+    
+    protected void populateContext(ScopesHashModel model, ValueStack stack, Object action, 
+                                   HttpServletRequest request, HttpServletResponse response) {
       super.populateContext(model, stack, action, request, response);
       model.put("freemarker_config", fmConfig);
     }

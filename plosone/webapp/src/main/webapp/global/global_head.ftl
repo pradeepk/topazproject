@@ -18,7 +18,7 @@
 
 <meta name="keywords" content="PLoS, Public Library of Science, Open Access, Open-Access, Science, Medicine, Biology, Research, Peer-review, Inclusive, Interdisciplinary, Ante-disciplinary, Physics, Chemistry, Engineering" />
 
-<@ww.url id="pgURL" includeParams="get" includeContext="true" encode="false"/>
+<@s.url id="pgURL" includeParams="get" includeContext="true" encode="false"/>
 <#assign rdfPgURL = pgURL?replace("&amp;", "&")>
 
 <!--

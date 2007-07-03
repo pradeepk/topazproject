@@ -74,14 +74,14 @@
 		</ul>
 	<!-- begin : dashboard -->
 	<div id="db">
-    <@ww.form name="simpleSearchForm" action="simpleSearch" namespace="/search" method="get">
+    <@s.form name="simpleSearchForm" action="simpleSearch" namespace="/search" method="get">
 		<fieldset>
 		<legend>Search PLoS ONE</legend>
 			<label for="search">Search</label>
 			<div class="wrap"><input type="text" name="query" value="Search PLoS ONE..." onfocus="if(this.value=='Search PLoS ONE...')value='';" onblur="if(this.value=='')value='Search PLoS ONE...';" class="searchField" alt="Search PLoS ONE..." /></div>
 			<input src="images/pone_searchinput_btn.gif" value="ftsearch" alt="SEARCH" tabindex="3" class="button" type="image" />
 		</fieldset>
-  </@ww.form>
+  </@s.form>
   </div>
 	<!-- end : dashboard -->
 	<!-- begin : navigation -->
@@ -148,18 +148,18 @@
 <div id="content">
 
 	<form name="search-results-form" id="search-results-form" class="pone-form" title="Search Results Form" method="POST" action="" onsubmit="">
-  <@ww.form name="simpleSearchForm" cssClass="pone-form" action="simpleSearch" namespace="/search" method="get" title="Search Results Form">
+  <@s.form name="simpleSearchForm" cssClass="pone-form" action="simpleSearch" namespace="/search" method="get" title="Search Results Form">
 
   <fieldset>
 		<legend>Search</legend>
 		<ol class="inline-list">
-      <@ww.textfield name="query" tabindex="101"/>
+      <@s.textfield name="query" tabindex="101"/>
       <li>
-        <@ww.submit value="Search" tabindex="102"/>
+        <@s.submit value="Search" tabindex="102"/>
       </li>
 	  </ol>
 	</fieldset>
-  </@ww.form>
+  </@s.form>
   
 <#assign totalPages=(totalNoOfResults/pageSize)?int>
   <#if (totalNoOfResults%pageSize > 0) >
@@ -173,8 +173,8 @@
   <#if (totalPages > 1) >
     <#list 1..totalPages as pageNumber>
       &lt;
-      <@ww.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}"/>
-      <@ww.a href="%{searchPageURL}">${pageNumber}</@ww.a>
+      <@s.url id="searchPageURL" action="simpleSearch" namespace="/search" startPage="${pageNumber - 1}" pageSize="${pageSize}" query="${query}"/>
+      <@s.a href="%{searchPageURL}">${pageNumber}</@s.a>
       &gt;&nbsp;
     </#list>
   </#if>

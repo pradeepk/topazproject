@@ -15,9 +15,15 @@ import java.net.URISyntaxException;
 import java.util.Date;
 import java.util.List;
 
+import com.googlecode.jsonplugin.annotations.JSON;
+
+import com.opensymphony.xwork2.validator.annotations.RequiredStringValidator;
+
 import org.apache.commons.lang.StringUtils;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.apache.struts2.ServletActionContext;
 
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import org.plos.action.BaseActionSupport;
@@ -34,11 +40,8 @@ import org.topazproject.otm.Session;
 import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Restrictions;
 
-import com.opensymphony.webwork.ServletActionContext;
-
-import com.opensymphony.xwork.validator.annotations.RequiredStringValidator;
-
 import org.springframework.beans.factory.annotation.Required;
+
 
 /**
  * General Rating action class to store and retrieve a users's rating
@@ -437,6 +440,7 @@ public class RateAction extends BaseActionSupport {
    *
    * @return Returns the otm session.
    */
+  @JSON(serialize = false)
   public Session getOtmSession() {
     return session;
   }

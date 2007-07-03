@@ -5,8 +5,8 @@
 	
 		<div class="source">
 			<span>On the Article</span>
-      <@ww.url id="articlePageURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
-      <@ww.a href="%{articlePageURL}" title="Back to original article" cssClass="article icon">${articleInfo.title}</@ww.a>
+      <@s.url id="articlePageURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
+      <@s.a href="%{articlePageURL}" title="Back to original article" cssClass="article icon">${articleInfo.title}</@s.a>
 		</div>
 	
 		<div class="original response">
@@ -15,7 +15,7 @@
 	<!-- begin : posting response -->
 			<div class="posting pane" id="DiscussionPanel">
 				<h5>Post Your Discussion Comment</h5>
-				<div class="close btn" id="btnCancelResponse"><@ww.a href="%{articlePageURL}" title="Cancel and go back to original article">Cancel</@ww.a></div>
+				<div class="close btn" id="btnCancelResponse"><@s.a href="%{articlePageURL}" title="Cancel and go back to original article">Cancel</@s.a></div>
 				<form name="discussionResponse" method="post" action="">
 					<input type="hidden" name="target" value="${articleInfo.id}" />	
 					<input type="hidden" name="commentTitle" value="" />

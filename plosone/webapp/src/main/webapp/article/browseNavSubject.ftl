@@ -17,8 +17,8 @@
 				<li class="current">${subjectName} (${articlesByCategory[subjectName_index]?size})</li>
 				<#assign infoText = "in <strong>" + subjectName+ "</strong>">
 			<#else>
-			  <@ww.url id="browseURL" action="browse" namespace="/article" field="${field}" catId="${subjectName_index}" includeParams="none"/>						
-			  <li><@ww.a href="%{browseURL}">${subjectName} (${articlesByCategory[subjectName_index]?size})</@ww.a></li>
+			  <@s.url id="browseURL" action="browse" namespace="/article" field="${field}" catId="${subjectName_index}" includeParams="none"/>						
+			  <li><@s.a href="%{browseURL}">${subjectName} (${articlesByCategory[subjectName_index]?size})</@s.a></li>
 			</#if>
 
 			</#list>

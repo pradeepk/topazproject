@@ -20,12 +20,12 @@
     <fieldset>
       <legend>A few things for you to do</legend>
       <p>
-          <@ww.url id="articleListURL"  namespace="/article" action="articleList" />
-          <@ww.a href="%{articleListURL}">View Articles</@ww.a>
+          <@s.url id="articleListURL"  namespace="/article" action="articleList" />
+          <@s.a href="%{articleListURL}">View Articles</@s.a>
       </p>
 
 			<p>
-			  <@ww.a href="/plos-registration/registerPart1.action">Register New User</@ww.a>
+			  <@s.a href="/plos-registration/registerPart1.action">Register New User</@s.a>
 			</p>
 		
 			<p>
@@ -39,59 +39,59 @@
 
 
 <!--      <p>
-          <@ww.url id="createAnnotationURL" namespace="/annotation/secure" action="createAnnotation" />
-          <@ww.a href="%{createAnnotationURL}">Create Annotation</@ww.a>
+          <@s.url id="createAnnotationURL" namespace="/annotation/secure" action="createAnnotation" />
+          <@s.a href="%{createAnnotationURL}">Create Annotation</@s.a>
       </p>-->
 
 <!--      <p>
-          <@ww.url id="listAnnotationURL" namespace="/annotation" action="listAnnotation">
-            <@ww.param name="target" value="%{'http://here.is/viru'}"/>
-          </@ww.url>
-          <@ww.a href="%{listAnnotationURL}">List Annotations for http://here.is/viru </@ww.a>
+          <@s.url id="listAnnotationURL" namespace="/annotation" action="listAnnotation">
+            <@s.param name="target" value="%{'http://here.is/viru'}"/>
+          </@s.url>
+          <@s.a href="%{listAnnotationURL}">List Annotations for http://here.is/viru </@s.a>
       </p>
 
       <p>
-          <@ww.url id="listAnnotationURL" namespace="/annotation" action="listAnnotation">
-            <@ww.param name="target" value="%{'http://localhost:9090/fedora/get/doi:10.1371%2Fjournal.pone.0000008/XML'}"/>
-          </@ww.url>
-          <@ww.a href="%{listAnnotationURL}">List Annotations for http://localhost:9090/fedora/get/doi:10.1371%2Fjournal.pone.0000008/XML</@ww.a>
+          <@s.url id="listAnnotationURL" namespace="/annotation" action="listAnnotation">
+            <@s.param name="target" value="%{'http://localhost:9090/fedora/get/doi:10.1371%2Fjournal.pone.0000008/XML'}"/>
+          </@s.url>
+          <@s.a href="%{listAnnotationURL}">List Annotations for http://localhost:9090/fedora/get/doi:10.1371%2Fjournal.pone.0000008/XML</@s.a>
       </p>-->
 
 
 <!--
       <p>
-          <@ww.url id="createUserURL" namespace="/user" action="newUser" />
-          <@ww.a href="%{createUserURL}">Create User</@ww.a>
+          <@s.url id="createUserURL" namespace="/user" action="newUser" />
+          <@s.a href="%{createUserURL}">Create User</@s.a>
       </p>
 
       <p>
-          <@ww.url id="createAdminUserURL" namespace="/user/secure" action="assignAdminRole" />
-          <@ww.a href="%{createAdminUserURL}">Assign admin role</@ww.a>
+          <@s.url id="createAdminUserURL" namespace="/user/secure" action="assignAdminRole" />
+          <@s.a href="%{createAdminUserURL}">Assign admin role</@s.a>
       </p>
 -->
       <p>
-          <@ww.url id="adminTopURL" namespace="/admin" action="adminTop" />
-          <@ww.a href="%{adminTopURL}">Admin Functions</@ww.a>
+          <@s.url id="adminTopURL" namespace="/admin" action="adminTop" />
+          <@s.a href="%{adminTopURL}">Admin Functions</@s.a>
       </p>
       
       <p>
-          <@ww.url id="getUserAlertURL" namespace="/user/secure" action="retrieveUserAlerts" />
-          <@ww.a href="%{getUserAlertURL}">Retrieve user alerts</@ww.a>
+          <@s.url id="getUserAlertURL" namespace="/user/secure" action="retrieveUserAlerts" />
+          <@s.a href="%{getUserAlertURL}">Retrieve user alerts</@s.a>
       </p>
 
       <p>
-          <@ww.url id="searchStartURL" namespace="/search" action="simpleSearch" />
-          <@ww.a href="%{searchStartURL}">Search</@ww.a>
+          <@s.url id="searchStartURL" namespace="/search" action="simpleSearch" />
+          <@s.a href="%{searchStartURL}">Search</@s.a>
       </p>
 
       <p>
-          <@ww.url id="retrieveUserProfileURL" namespace="/user/secure" action="retrieveUserProfile" />
-          <@ww.a href="%{retrieveUserProfileURL}">Retrieve User Profile</@ww.a>
+          <@s.url id="retrieveUserProfileURL" namespace="/user/secure" action="retrieveUserProfile" />
+          <@s.a href="%{retrieveUserProfileURL}">Retrieve User Profile</@s.a>
       </p>
 
       <p>
-          <@ww.url id="homeURL" namespace="" action="home" />
-          <@ww.a href="%{homeURL}">Home</@ww.a>
+          <@s.url id="homeURL" namespace="" action="home" />
+          <@s.a href="%{homeURL}">Home</@s.a>
       </p>
 
     </fieldset>

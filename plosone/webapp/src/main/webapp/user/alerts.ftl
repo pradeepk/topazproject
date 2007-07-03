@@ -22,7 +22,7 @@
   <#assign actionValue="saveUserAlerts"/>
   <#assign namespaceValue="/user/secure"/>
 </#if>
-  <@ww.form action="${actionValue}" namespace="${namespaceValue}" method="post" cssClass="pone-form" method="post" title="Alert Form" name="userAlerts">
+  <@s.form action="${actionValue}" namespace="${namespaceValue}" method="post" cssClass="pone-form" method="post" title="Alert Form" name="userAlerts">
   <fieldset id="alert-form">
 		<legend>Choose your alerts</legend>
 		<ol>
@@ -57,9 +57,9 @@
               <#if category.weeklyAvailable>
                 <label for="${category.key}">
 				<#if tabId?has_content>
-	              <@ww.checkbox name="weeklyAlerts" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this); topaz.formUtil.selectCheckboxPerCollection(this.form.checkAllWeekly, this.form.weeklyAlerts);" onchange="topaz.horizontalTabs.checkValue(this);" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
+	              <@s.checkbox name="weeklyAlerts" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this); topaz.formUtil.selectCheckboxPerCollection(this.form.checkAllWeekly, this.form.weeklyAlerts);" onchange="topaz.horizontalTabs.checkValue(this);" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
 				<#else>
-	              <@ww.checkbox name="weeklyAlerts" onclick="topaz.formUtil.selectCheckboxPerCollection(this.form.checkAllWeekly, this.form.weeklyAlerts);" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
+	              <@s.checkbox name="weeklyAlerts" onclick="topaz.formUtil.selectCheckboxPerCollection(this.form.checkAllWeekly, this.form.weeklyAlerts);" fieldValue="${category.key}" value="${isFound(weeklyAlerts, category.key)}"/>
 				</#if>
                 Weekly </label>
               </#if>
@@ -69,9 +69,9 @@
               <#if category.monthlyAvailable>
                 <label for="${category.key}">
     			<#if tabId?has_content>
-	              <@ww.checkbox name="monthlyAlerts" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this); topaz.formUtil.selectCheckboxPerCollection(this.form.checkAllMonthly, this.form.monthlyAlerts);" onchange="topaz.horizontalTabs.checkValue(this);"  fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
+	              <@s.checkbox name="monthlyAlerts" onfocus="topaz.horizontalTabs.setTempValue(this);" onclick="topaz.horizontalTabs.checkValue(this); topaz.formUtil.selectCheckboxPerCollection(this.form.checkAllMonthly, this.form.monthlyAlerts);" onchange="topaz.horizontalTabs.checkValue(this);"  fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
     			<#else>
-                  <@ww.checkbox name="monthlyAlerts" onclick="topaz.formUtil.selectCheckboxPerCollection(this.form.checkAllMonthly, this.form.monthlyAlerts);"  fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
+                  <@s.checkbox name="monthlyAlerts" onclick="topaz.formUtil.selectCheckboxPerCollection(this.form.checkAllMonthly, this.form.monthlyAlerts);"  fieldValue="${category.key}" value="${isFound(monthlyAlerts, category.key)}"/>
     			</#if>
                   Monthly </label>
               <#else>
@@ -87,6 +87,6 @@
 <#include "submit.ftl">
 
 	</fieldset>
-  </@ww.form>
+  </@s.form>
 
 

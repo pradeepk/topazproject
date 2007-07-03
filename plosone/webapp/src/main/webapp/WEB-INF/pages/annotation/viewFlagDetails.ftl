@@ -17,11 +17,11 @@
           mediator    =${flag.mediator}      <br/>
           type        =${flag.type}          <br/>
 
-          <@ww.url id="createReplyURL" action="createReplySubmit" root="${flag.id}" inReplyTo="${flag.id}" namespace="/annotation/secure"/>
-          <@ww.a href="%{createReplyURL}">create reply</@ww.a> <br/>
+          <@s.url id="createReplyURL" action="createReplySubmit" root="${flag.id}" inReplyTo="${flag.id}" namespace="/annotation/secure"/>
+          <@s.a href="%{createReplyURL}">create reply</@s.a> <br/>
 
-          <@ww.url id="listReplyURL" action="listAllReplies" root="${flag.id}" inReplyTo="${flag.id}"/>
-          <@ww.a href="%{listReplyURL}">list all replies</@ww.a> <br/>
+          <@s.url id="listReplyURL" action="listAllReplies" root="${flag.id}" inReplyTo="${flag.id}"/>
+          <@s.a href="%{listReplyURL}">list all replies</@s.a> <br/>
 
     </fieldset>
 

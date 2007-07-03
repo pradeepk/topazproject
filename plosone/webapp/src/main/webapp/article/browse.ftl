@@ -8,21 +8,21 @@
 		<div class="resultsTab">
   
     <#if (startPage gt 0)>
-     	<@ww.url id="prevPageURL" action="browse" namespace="/article" startPage="${startPage - 1}" pageSize="${pageSize}" includeParams="get"/>
-      <@ww.a href="%{prevPageURL}">&lt; Prev</@ww.a> |
+     	<@s.url id="prevPageURL" action="browse" namespace="/article" startPage="${startPage - 1}" pageSize="${pageSize}" includeParams="get"/>
+      <@s.a href="%{prevPageURL}">&lt; Prev</@s.a> |
     </#if>
     <#list 1..totalPages as pageNumber>
       <#if (startPage == (pageNumber-1))>
       	<strong>${pageNumber}</strong>
       <#else>
-      	<@ww.url id="browsePageURL" action="browse" namespace="/article" startPage="${pageNumber - 1}" pageSize="${pageSize}" field="${field}" includeParams="get"/>
-      	<@ww.a href="%{browsePageURL}">${pageNumber}</@ww.a>
+      	<@s.url id="browsePageURL" action="browse" namespace="/article" startPage="${pageNumber - 1}" pageSize="${pageSize}" field="${field}" includeParams="get"/>
+      	<@s.a href="%{browsePageURL}">${pageNumber}</@s.a>
       </#if>
       <#if pageNumber != totalPages>|</#if>
     </#list>
     <#if (startPage lt totalPages - 1 )>
-     	<@ww.url id="nextPageURL" action="browse" namespace="/article" startPage="${startPage + 1}" pageSize="${pageSize}" field="${field}" includeParams="get"/>
-       <@ww.a href="%{nextPageURL}">Next &gt;</@ww.a> 
+     	<@s.url id="nextPageURL" action="browse" namespace="/article" startPage="${startPage + 1}" pageSize="${pageSize}" field="${field}" includeParams="get"/>
+       <@s.a href="%{nextPageURL}">Next &gt;</@s.a> 
     </#if>
 		</div> <!-- results tab-->
     
@@ -82,8 +82,8 @@
 				<#assign art = articleList[idx]>
 				<li>
 					<span class="date">Published ${art.date?string("dd MMM yyyy")}</span>
-          <@ww.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${art.id}" includeParams="none"/>
-					<span class="article"><@ww.a href="%{fetchArticleURL}" title="Read Open Access Article">${art.title}</@ww.a></span>
+          <@s.url id="fetchArticleURL" action="fetchArticle" namespace="/article" articleURI="${art.id}" includeParams="none"/>
+					<span class="article"><@s.a href="%{fetchArticleURL}" title="Read Open Access Article">${art.title}</@s.a></span>
 					<span class="authors">
 						<#list art.authors as auth><#if auth_index gt 0>, </#if>${auth}</#list>
 					</span>

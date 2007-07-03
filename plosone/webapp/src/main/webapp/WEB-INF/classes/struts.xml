@@ -1,4 +1,7 @@
-<!DOCTYPE xwork PUBLIC "-//OpenSymphony Group//XWork 1.1.1//EN" "http://www.opensymphony.com/xwork/xwork-1.1.1.dtd">
+<!DOCTYPE struts PUBLIC
+    "-//Apache Software Foundation//DTD Struts Configuration 2.0//EN"
+    "http://struts.apache.org/dtds/struts-2.0.dtd">
+
 <!--
   - Copyright (c) 2006 by Topaz, Inc.
   - http://topazproject.org
@@ -6,30 +9,27 @@
   - Licensed under the Educational Community License version 1.0
   - http://opensource.org/licenses/ecl1.php
   -->
-<xwork>
-  <include file="webwork-default.xml" />
+<struts>
+  <include file="struts-default.xml" />
 
-  <package name="default" extends="webwork-default">
+  <package name="default" extends="struts-default">
     <result-types>
       <result-type name="freemarker"
-        class="com.opensymphony.webwork.views.freemarker.FreemarkerResult" default="true">
+        class="org.apache.struts2.views.freemarker.FreemarkerResult" default="true">
       </result-type>
-      <result-type name="plosOneFreemarker"
-        class="org.plos.webwork.PlosOneFreemarkerResult">
+      <result-type name="plosOneFreemarker" class="org.plos.struts2.PlosOneFreemarkerResult">
         <param name="location">/templates/main_template.ftl</param>
       </result-type>
-      <result-type name="plosJournals"
-        class="org.plos.webwork.PlosOneFreemarkerResult">
+      <result-type name="plosJournals" class="org.plos.struts2.PlosOneFreemarkerResult">
         <param name="location">/templates/plos_journals_template.ftl</param>
       </result-type>
-
-      <result-type name="plosStream" class="org.plos.webwork.PlosStreamResult" />
-      <result-type name="ajaxJSON" class="com.opensymphony.webwork.result.AjaxJSONResult">
-        <param name="contentType">text/plain;charset=UTF-8</param>
+      <result-type name="plosStream" class="org.plos.struts2.PlosStreamResult" />
+      <result-type name="ajaxJSON" class="org.plos.struts2.JsonResult">
+        <param name="ignoreHierarchy">false</param>
         <param name="noCache">true</param>
       </result-type>
-      <result-type name="feed" class="org.plos.webwork.PlosOneFeedResult"/>
-      <result-type name="citation" class="org.plos.webwork.CitationResult"/>
+      <result-type name="feed" class="org.plos.struts2.PlosOneFeedResult"/>
+      <result-type name="citation" class="org.plos.struts2.CitationResult"/>
     </result-types>
 
     <interceptors>
@@ -38,7 +38,7 @@
         <param name="roleToCheck">admin</param>
       </interceptor>
       <interceptor name="plosUserLookup" class="org.plos.user.UserAccountsInterceptor"/>
-
+      <interceptor name="json" class="com.googlecode.jsonplugin.JSONInterceptor"/>
       <interceptor-stack name="plosBaseStack">
         <interceptor-ref name="exception">
           <param name="logEnabled">true</param>
@@ -369,20 +369,20 @@
   <package name="rate-secure" extends="default" namespace="/rate/secure">
     <action name="rateArticle" class="org.plos.rating.action.RateAction" method="rateArticle">
       <result name="input" type="ajaxJSON"/>
+      <result name="success" type="ajaxJSON"/>
       <result name="error" type="ajaxJSON"/>
+    </action>
+
+    <action name="createRatingFlagSubmit" class="org.plos.annotation.action.CreateFlagAction" method="createRatingFlag">
+      <result name="input"   type="ajaxJSON"/>
+      <result name="error"   type="ajaxJSON"/>
       <result name="success" type="ajaxJSON"/>
     </action>
 
     <action name="getRatingsForUser" class="org.plos.rating.action.RateAction" method="retrieveRatingsForUser">
       <result name="input" type="ajaxJSON"/>
-      <result name="error" type="ajaxJSON"/>
       <result name="success" type="ajaxJSON"/>
-    </action>
-
-    <action name="createRatingFlagSubmit" class="org.plos.annotation.action.CreateFlagAction" method="createRatingFlag">
-      <result name="input" type="ajaxJSON"/>
       <result name="error" type="ajaxJSON"/>
-      <result name="success" type="ajaxJSON"/>
     </action>
   </package>
 
@@ -923,4 +923,4 @@
   </package>
 
 
-</xwork>
+</struts>

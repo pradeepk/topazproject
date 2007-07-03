@@ -1,7 +1,7 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
@@ -20,9 +20,9 @@ import javax.servlet.http.HttpSession;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.opensymphony.webwork.ServletActionContext;
-import com.opensymphony.xwork.ActionInvocation;
-import com.opensymphony.xwork.interceptor.AroundInterceptor;
+import org.apache.struts2.ServletActionContext;
+import com.opensymphony.xwork2.ActionInvocation;
+import com.opensymphony.xwork2.interceptor.AbstractInterceptor;
 import org.springframework.beans.factory.annotation.Required;
 
 import org.topazproject.otm.OtmException;
@@ -42,7 +42,7 @@ import org.plos.util.TransactionHelper;
  *
  * @author Pradeep Krishnan
  */
-public class UserAccountsInterceptor extends AroundInterceptor {
+public class UserAccountsInterceptor extends AbstractInterceptor {
   private static Log log = LogFactory.getLog(UserAccountsInterceptor.class);
 
   /**
@@ -69,13 +69,23 @@ public class UserAccountsInterceptor extends AroundInterceptor {
   private Session session;
   private boolean wrap = false;
 
-  public void before(ActionInvocation actionInvocation) throws Exception {
+  public String intercept(ActionInvocation invocation) throws Exception {  
+    String result = null;  
+    before(invocation);  
+    result = invocation.invoke();  
+    after(invocation, result);  
+
+    return result;  
+  }  
+
+  
+  private void before(ActionInvocation actionInvocation) throws Exception {
     String user = lookupUser(ServletActionContext.getRequest());
     if (wrap)
       ServletActionContext.setRequest(wrapRequest(ServletActionContext.getRequest(), user));
   }
 
-  public void after(ActionInvocation actionInvocation, String s) {
+  private void after(ActionInvocation actionInvocation, String s) {
   }
 
   /**

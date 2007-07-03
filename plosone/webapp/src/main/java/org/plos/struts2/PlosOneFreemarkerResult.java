@@ -1,21 +1,21 @@
 /* $HeadURL::                                                                            $
  * $Id$
  *
- * Copyright (c) 2006 by Topaz, Inc.
+ * Copyright (c) 2006-2007 by Topaz, Inc.
  * http://topazproject.org
  *
  * Licensed under the Educational Community License version 1.0
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.plos.webwork;
+package org.plos.struts2;
 
 import java.io.IOException;
 
 import javax.servlet.http.HttpServletResponse;
 
-import com.opensymphony.webwork.ServletActionContext;
-import com.opensymphony.webwork.views.freemarker.FreemarkerResult;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.views.freemarker.FreemarkerResult;
 
 import freemarker.template.SimpleHash;
 

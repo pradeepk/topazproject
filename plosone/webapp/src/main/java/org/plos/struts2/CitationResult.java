@@ -8,15 +8,15 @@
  * http://opensource.org/licenses/ecl1.php
  */
 
-package org.plos.webwork;
+package org.plos.struts2;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import javax.servlet.http.HttpServletResponse;
 
-import com.opensymphony.webwork.ServletActionContext;
-import com.opensymphony.webwork.views.freemarker.FreemarkerResult;
+import org.apache.struts2.ServletActionContext;
+import org.apache.struts2.views.freemarker.FreemarkerResult;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;

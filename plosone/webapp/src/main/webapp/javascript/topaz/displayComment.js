@@ -159,7 +159,7 @@ topaz.displayComment = {
     userInfoDiv.className = "userinfo";
     //divTooltip.appendChild(userInfoDiv);
     
-    var d = new Date(jsonObj.annotation.createdAsDate.time);
+    var d = new Date(jsonObj.annotation.createdAsMillis);
 		var MONTH_NAMES = new String('JanFebMarAprMayJunJulAugSepOctNovDec');
     var dayInt = d.getUTCDate();
 	  var day = (dayInt >= 10 ? "" : "0") + dayInt;
@@ -508,11 +508,11 @@ function getComment(obj) {
          
          //alert("jsonObj:\n" + jsonObj.toSource());
          
-         if (jsonObj.actionErrors.list.length > 0) {
+         if (jsonObj.actionErrors.length > 0) {
            var errorMsg = "";
            //alert("jsonObj.actionErrors.list.length = " + jsonObj.actionErrors.list.length);
-           for (var i=0; i<jsonObj.actionErrors.list.length; i++) {
-             errorMsg = errorMsg + jsonObj.actionErrors.list[i] + "\n";
+           for (var i=0; i<jsonObj.actionErrors.length; i++) {
+             errorMsg = errorMsg + jsonObj.actionErrors[i] + "\n";
            }
            
            alert("ERROR [actionErrors]: " + errorMsg);
@@ -525,10 +525,10 @@ function getComment(obj) {
          else if (jsonObj.numFieldErrors > 0) {
            var fieldErrors;
            //alert("jsonObj.numFieldErrors = " + jsonObj.numFieldErrors);
-           for (var item in jsonObj.fieldErrors.map) {
+           for (var item in jsonObj.fieldErrors) {
              var errorString = "";
-             for (var i=0; i<jsonObj.fieldErrors.map[item].list[0].length; i++) {
-               errorString += jsonObj.fieldErrors.map[item].list[0][i];
+             for (var i=0; i<jsonObj.fieldErrors[item].length; i++) {
+               errorString += jsonObj.fieldErrors[item][i];
              }
              fieldErrors = fieldErrors + item + ": " + errorString + "<br/>";
            }
@@ -576,6 +576,3 @@ function getComment(obj) {
     }
 
   }
-  
-  
-  
