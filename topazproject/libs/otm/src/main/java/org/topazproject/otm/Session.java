@@ -41,8 +41,8 @@ import org.topazproject.otm.query.Results;
  * @author Pradeep Krishnan
  */
 public class Session {
-  private static final Log               log            = LogFactory.getLog(Session.class);
-  private final SessionFactory                 sessionFactory;
+  private static final Log                     log            = LogFactory.getLog(Session.class);
+  private SessionFactory                       sessionFactory;
   private       Transaction                    txn            = null;
   private final Map<Id, Object>                cleanMap       = new HashMap<Id, Object>();
   private final Map<Id, Object>                dirtyMap       = new HashMap<Id, Object>();
@@ -51,6 +51,14 @@ public class Session {
   private final Map<Id, Set<Wrapper>>          associations   = new HashMap<Id, Set<Wrapper>>();
   private final Set<Id>                        currentIds     = new HashSet<Id>();
   private final Map<String, Filter>            filters        = new HashMap<String, Filter>();
+
+  /**
+   * Empty constructor for spring scoped proxy.
+   *
+   */
+  
+  public Session() {
+  }
 
   /**
    * Creates a new Session object.
@@ -69,7 +77,7 @@ public class Session {
   public SessionFactory getSessionFactory() {
     return sessionFactory;
   }
-
+  
   /**
    * Begins a new transaction. All session usage is within transaction scope.
    *
