@@ -20,7 +20,7 @@ public class OverrideTest extends TestCase {
   private static Configuration conf = null;
 
   protected void setUp() throws ConfigurationException {
-    System.setProperty(ConfigurationStore.OVERRIDES_URL, "defaults-dev.xml");
+    System.setProperty(ConfigurationStore.OVERRIDES_URL, "org/plos/configuration/defaults-dev.xml");
     System.setProperty("plosconf.test", "goodbye world");
     ConfigurationStore store = ConfigurationStore.getInstance();
     store.loadDefaultConfiguration();

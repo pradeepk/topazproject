@@ -80,7 +80,7 @@ public class ConfigurationStore {
    * Also note that this does not begin with a / as ClassLoader.getResources() does
    * not want this to begin with a /.
    */
-  public static final String DEFAULTS_RESOURCE = "defaults.xml";
+  public static final String DEFAULTS_RESOURCE = "org/plos/configuration/defaults.xml";
 
   /**
    * The name of the global defaults that exist in this library.<p>
@@ -88,7 +88,7 @@ public class ConfigurationStore {
    * It is assumed there is only one of these in the classpath. If somebody defines
    * a second copy of this, the results are undefined. (TODO: Detect this.)
    */
-  public static final String GLOBAL_DEFAULTS_RESOURCE = "/global-defaults.xml";
+  public static final String GLOBAL_DEFAULTS_RESOURCE = "/org/plos/configuration/global-defaults.xml";
 
   /**
    * Create the singleton instance.
