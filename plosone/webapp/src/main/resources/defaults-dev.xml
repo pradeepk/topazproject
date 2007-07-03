@@ -3,7 +3,7 @@
   $HeadURL::                                                                                     $
   $Id$
 
-  Copyright (c) 2006 by Topaz, Inc.
+  Copyright (c) 2006-2007 by Topaz, Inc.
   http://topazproject.org
 
   Licensed under the Educational Community License version 1.0
@@ -24,7 +24,6 @@
         <file>/css/pone_iepc.css</file>
       </css>
       <javascript>
-        <file>/javascript/prototype.js</file>
         <file>/javascript/browserDetection.js</file>
         <file>/javascript/config_default.js</file>
         <file>/javascript/dojo/dojo.js</file>
@@ -62,7 +61,6 @@
     <page>
       <name>/discussion/discussion.ftl</name>
       <javascript>
-        <file>/javascript/prototype.js</file>
         <file>/javascript/browserDetection.js</file>
         <file>/javascript/config_discussion.js</file>
         <file>/javascript/dojo/dojo.js</file>
@@ -80,7 +78,6 @@
     <page>
       <name>/discussion/startDiscussion.ftl</name>
       <javascript>
-        <file>/javascript/prototype.js</file>
         <file>/javascript/browserDetection.js</file>
         <file>/javascript/config_discussion.js</file>
         <file>/javascript/dojo/dojo.js</file>
@@ -126,7 +123,6 @@
         <file>/css/pone_images.css</file>
       </css>
       <javascript>
-        <file>/javascript/prototype.js</file>
         <file>/javascript/browserDetection.js</file>
         <file>/javascript/config_slideshow.js</file>
         <file>/javascript/slideshowReference.ftl</file>
@@ -146,7 +142,6 @@
         <file>/css/pone_images.css</file>
       </css>
       <javascript>
-        <file>/javascript/prototype.js</file>
         <file>/javascript/browserDetection.js</file>
         <file>/javascript/dojo/dojo.js</file>
         <file>/javascript/topaz/topaz.js</file>
@@ -163,7 +158,6 @@
         <file>/css/pone_static.css</file>
       </css>
       <javascript>
-        <file>/javascript/prototype.js</file>
         <file>/javascript/browserDetection.js</file>
         <file>/javascript/dojo/dojo.js</file>
         <file>/javascript/topaz/topaz.js</file>
@@ -177,7 +171,6 @@
     <page>
       <name>/user/createNewUser.ftl</name>
       <javascript>
-        <file>/javascript/prototype.js</file>
         <file>/javascript/browserDetection.js</file>
         <file>/javascript/dojo/dojo.js</file>
         <file>/javascript/topaz/topaz.js</file>
@@ -200,7 +193,6 @@
         <file>/css/pone_static.css</file>
       </css>
       <javascript>
-        <file>/javascript/prototype.js</file>
         <file>/javascript/browserDetection.js</file>
         <file>/javascript/dojo/dojo.js</file>
         <file>/javascript/topaz/topaz.js</file>
@@ -223,7 +215,6 @@
         <file>/css/pone_static.css</file>
       </css>
       <javascript>
-        <file>/javascript/prototype.js</file>
         <file>/javascript/browserDetection.js</file>
         <file>/javascript/dojo/dojo.js</file>
         <file>/javascript/topaz/topaz.js</file>
