@@ -753,6 +753,10 @@ public class Session {
     ClassMetadata cm      = checkClass(o.getClass());
 
     Mapper        idField = cm.getIdField();
+
+    if (idField == null)
+      throw new OtmException("Must have an id field for " + o.getClass());
+
     List          ids     = idField.get(o);
     String        id      = null;
 
@@ -780,6 +784,9 @@ public class Session {
 
     if (cm == null)
       throw new OtmException("No class metadata found for " + clazz);
+
+    if (cm.getModel() == null)
+      throw new OtmException("No graph/model found for " + clazz);
 
     return cm;
   }

@@ -26,6 +26,8 @@ import org.topazproject.otm.annotations.Rdf;
  */
 @Entity(type = Annotea.NS + "Annotation")
 public abstract class Annotation extends Annotea {
+  @Id
+  private URI                                                                       id;
   private URI                                                                       annotates;
   private String                                                                    context;
   @Predicate(uri = Rdf.dc_terms + "replaces")
@@ -46,7 +48,25 @@ public abstract class Annotation extends Annotea {
    * Creates a new Annotation object.
    */
   public Annotation(URI id) {
-    super(id);
+    this.id = id;
+  }
+
+  /**
+   * Get id.
+   *
+   * @return id as URI.
+   */
+  public URI getId() {
+    return id;
+  }
+
+  /**
+   * Set id.
+   *
+   * @param id the value to set.
+   */
+  public void setId(URI id) {
+    this.id = id;
   }
 
   /**

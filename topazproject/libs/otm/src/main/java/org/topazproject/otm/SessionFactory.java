@@ -184,9 +184,6 @@ public class SessionFactory {
    * @throws OtmException on an error
    */
   public void setClassMetadata(ClassMetadata cm) throws OtmException {
-    if (!cm.isEntity())
-      throw new OtmException(cm.toString() + " is not an entity");
-
     if (entitymap.containsKey(cm.getName())
          && !entitymap.get(cm.getName()).getSourceClass().equals(cm.getSourceClass()))
       throw new OtmException("An entity with name '" + cm.getName() + "' already exists.");

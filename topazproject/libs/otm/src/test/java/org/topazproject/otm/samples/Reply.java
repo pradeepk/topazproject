@@ -25,6 +25,8 @@ import org.topazproject.otm.annotations.Rdf;
 @UriPrefix(Reply.NS)
 public class Reply extends Annotea {
   public static final String NS = "http://www.w3.org/2001/03/thread#";
+  @Id
+  private URI  id;
   private URI  root;
   private URI  inReplyTo;
 
@@ -35,8 +37,27 @@ public class Reply extends Annotea {
   }
 
   public Reply(URI id) {
-    super(id);
+    this.id = id;
   }
+
+  /**
+   * Get id.
+   *
+   * @return id as URI.
+   */
+  public URI getId() {
+    return id;
+  }
+
+  /**
+   * Set id.
+   *
+   * @param id the value to set.
+   */
+  public void setId(URI id) {
+    this.id = id;
+  }
+
   /**
    * Get root.
    *

@@ -31,8 +31,6 @@ public class Annotea {
    * DOCUMENT ME!
    */
   public static final String NS = "http://www.w3.org/2000/10/annotation-ns#";
-  @Id
-  private URI                                               id;
   private Date                                              created;
   private String                                            body;
   @Predicate(uri = Rdf.rdf + "type")
@@ -56,13 +54,6 @@ public class Annotea {
    * Creates a new Annotea object.
    */
   public Annotea() {
-  }
-
-  /**
-   * Creates a new Annotea object.
-   */
-  public Annotea(URI id) {
-    this.id = id;
   }
 
   /**
@@ -135,24 +126,6 @@ public class Annotea {
    */
   public void setBody(String body) {
     this.body = body;
-  }
-
-  /**
-   * Get id.
-   *
-   * @return id as URI.
-   */
-  public URI getId() {
-    return id;
-  }
-
-  /**
-   * Set id.
-   *
-   * @param id the value to set.
-   */
-  public void setId(URI id) {
-    this.id = id;
   }
 
   /**

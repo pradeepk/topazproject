@@ -403,6 +403,10 @@ public class ItqlStore implements TripleStore {
       fvalues.get(Rdf.rdf + "type").removeAll(cm.getTypes());
     }
 
+    if (cm.getIdField() == null)
+      throw new OtmException("No id field in class '" + clazz 
+        + "' and therefore cannot be instantiated.");
+
     // pre-process for special constructs (rdf:List, rdf:bag, rdf:Seq, rdf:Alt)
     String modelUri = getModelUri(cm.getModel(), txn);
     for (String p : fvalues.keySet()) {
