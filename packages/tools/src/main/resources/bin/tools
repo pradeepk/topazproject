@@ -12,5 +12,5 @@
 
 # Function to return list of jars
 getJars() {
-    echo `(find /usr/local/topaz/lib -name '*.jar')` | tr ' ' ':'
+    echo "/usr/local/topaz/classes:"`(find /usr/local/topaz/lib -name '*.jar')` | tr ' ' ':'
 }

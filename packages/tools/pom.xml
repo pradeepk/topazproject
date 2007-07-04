@@ -114,6 +114,17 @@
                     </source>
                   </sources>
                 </mapping>
+                <mapping>
+                  <directory>/usr/local/topaz/classes</directory>
+                  <filemode>755</filemode>
+                  <username>topaz</username>
+                  <groupname>topaz</groupname>
+                  <sources>
+                    <source>
+                      <location>src/main/resources/log4j.xml</location>
+                    </source>
+                  </sources>
+                </mapping>
               </mappings>
 
               <preinstallScript>src/main/scripts/preinstall</preinstallScript>
