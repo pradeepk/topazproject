@@ -41,9 +41,10 @@ public class AuthServletContextListener implements ServletContextListener {
     final ServletContext context = event.getServletContext();
 
     Configuration conf = ConfigurationStore.getInstance().getConfiguration();
+    String url = conf.getString("cas.db.url");
 
     final Properties dbProperties = new Properties();
-    dbProperties.setProperty("url", conf.getString("cas.db.url"));
+    dbProperties.setProperty("url", url);
     dbProperties.setProperty("user", conf.getString("cas.db.user"));
     dbProperties.setProperty("password", conf.getString("cas.db.password"));
 
@@ -55,7 +56,7 @@ public class AuthServletContextListener implements ServletContextListener {
               conf.getInt("cas.db.maxActive"),
               conf.getString("cas.db.connectionValidationQuery"));
     } catch (final DatabaseException ex) {
-      log.error("Failed to initialize the database context", ex);
+      throw new Error("Failed to initialize the database context to '" + url + "'", ex);
     }
 
     final UserService userService = new UserService(
