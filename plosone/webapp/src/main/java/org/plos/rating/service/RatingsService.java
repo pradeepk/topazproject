@@ -9,33 +9,28 @@
  */
 package org.plos.rating.service;
 
-import java.io.IOException;
-
 import java.net.URI;
 import java.net.URISyntaxException;
-
-
+import java.rmi.RemoteException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 
-import javax.xml.rpc.ServiceException;
-
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+import org.apache.struts2.ServletActionContext;
 
+import org.plos.ApplicationException;
+import static org.plos.Constants.PLOS_ONE_USER_KEY;
 import static org.plos.annotation.service.Annotation.FLAG_MASK;
 import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
-
+import org.plos.permission.service.PermissionWebService;
 import org.plos.user.PlosOneUser;
-
 import org.plos.models.Rating;
 import org.plos.models.RatingContent;
 import org.plos.models.RatingSummary;
 import org.plos.models.RatingSummaryContent;
-
-import org.plos.permission.service.PermissionWebService;
-
+import org.plos.user.PlosOneUser;
 import org.plos.util.TransactionHelper;
 
 import org.springframework.beans.factory.annotation.Required;
@@ -54,7 +49,18 @@ import org.topazproject.otm.criterion.Restrictions;
 public class RatingsService extends BaseRatingsService {
   private static final Log     log = LogFactory.getLog(RatingsService.class);
   private Session              session;
+  private RatingsPEP           pep;
   private PermissionWebService permissions;
+
+  private RatingsPEP getPEP() {
+    try {
+      if (pep == null)
+        pep = new RatingsPEP();
+    } catch (Exception e) {
+      throw new Error("Failed to create Ratings PEP", e);
+    }
+    return pep;
+  }
 
   /**
    * Initializes the service
@@ -68,7 +74,7 @@ public class RatingsService extends BaseRatingsService {
    * @param user          the user on whose behalf this operation is performed.
    * @param articleURIStr the URI of the article to be rated.
    * @param values        the values with which to initialize the rating
-   *                      whether it is new or to be updated. 
+   *                      whether it is new or to be updated.
    * @return a the new rating id
    * @throws RatingsServiceException
    */
@@ -79,7 +85,6 @@ public class RatingsService extends BaseRatingsService {
     final Date now = Calendar.getInstance().getTime();
 
     try {
-      final URI userURI = new URI(user.getUserId());
       final URI articleURI = new URI(articleURIStr);
       final Rating articleRating;
       final RatingSummary articleRatingSummary;
@@ -216,10 +221,10 @@ public class RatingsService extends BaseRatingsService {
    * Unflag a Rating
    *
    * @param ratingId the identifier of the Rating object to be unflagged
-   * @throws RatingServiceException
+   * @throws ApplicationException
    */
   public void unflagRating(final String ratingId)
-                  throws RatingsServiceException {
+                  throws ApplicationException {
     setPublic(ratingId);
   }
 
@@ -229,85 +234,75 @@ public class RatingsService extends BaseRatingsService {
    * @param ratingId the identifier of the Rating object to be deleted
    * @throws RatingsServiceException
    */
-  private void deleteRating(final String ratingId)
-                         throws RatingsServiceException {
+  public void deleteRating(final String ratingId)
+                         throws ApplicationException {
+
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    try {
-      final Transaction tx = session.beginTransaction();
+    getPEP().checkAccess(RatingsPEP.DELETE_RATINGS, URI.create(ratingId));
 
-      try {
-        List<Rating> ratingsList = session.createCriteria(Rating.class)
-                                          .add(Restrictions.eq("id",ratingId))
-                                          .list();
+    String string =
+      TransactionHelper.doInTxE(session,
+                               new TransactionHelper.ActionE<String, ApplicationException>() {
+          public String run(Transaction tx) throws ApplicationException {
 
-        if (ratingsList.size() <= 0) {
-          final String errorMessage = "No Rating object found with id value of " + ratingId;
-          log.error(errorMessage);
-          throw new RatingsServiceException(errorMessage);
-        }
-        if (ratingsList.size() > 1) {
-          final String errorMessage = "Multiple Rating objects found id value of " + ratingId;
-          log.error(errorMessage);
-          throw new RatingsServiceException(errorMessage);
-        }
+            final Rating articleRating = tx.getSession().get(Rating.class, ratingId);
+            if (articleRating == null) {
+              final String errorMessage= "Failed to get Rating to delete: "+ ratingId;
+              log.error(errorMessage);
+              throw new ApplicationException(errorMessage);
+            }
 
-        final Rating articleRating = ratingsList.get(0);
-        final URI articleURI = articleRating.getAnnotates();
-        final List<RatingSummary> summaryList = session
-                                          .createCriteria(RatingSummary.class)
-                                          .add(Restrictions.eq("annotates",articleURI.toString()))
-                                          .list();
+            final URI articleURI = articleRating.getAnnotates();
+            final List<RatingSummary> summaryList = session
+              .createCriteria(RatingSummary.class)
+              .add(Restrictions.eq("annotates",articleURI.toString()))
+              .list();
 
-        if (summaryList.size() <= 0) {
-          final String errorMessage = "No RatingSummary object found for article " +
-                                      articleURI.toString();
-          log.error(errorMessage);
-          throw new RatingsServiceException(errorMessage);
-        }
-        if (summaryList.size() > 1) {
-          final String errorMessage = "Multiple RatingSummary objects found found " +
-                                      "for article " + articleURI.toString();
-          log.error(errorMessage);
-          throw new RatingsServiceException(errorMessage);
-        }
+            if (summaryList.size() <= 0) {
+              final String errorMessage = "No RatingSummary object found for article " + articleURI.toString();
+              log.error(errorMessage);
+              throw new ApplicationException(errorMessage);
+            }
+            if (summaryList.size() > 1) {
+              final String errorMessage = "Multiple RatingSummary objects found found " +
+                                          "for article " + articleURI.toString();
+              log.error(errorMessage);
+              throw new ApplicationException(errorMessage);
+            }
 
-        final RatingSummary articleRatingSummary = summaryList.get(0);
-        final int newNumberOfRatings = articleRatingSummary.getBody().getNumUsersThatRated() - 1;
-        final int insight = articleRating.getBody().getInsightValue();
-        final int reliability = articleRating.getBody().getReliabilityValue();
-        final int style = articleRating.getBody().getStyleValue();
+            final RatingSummary articleRatingSummary = summaryList.get(0);
+            final int newNumberOfRatings = articleRatingSummary.getBody().getNumUsersThatRated() - 1;
+            final int insight = articleRating.getBody().getInsightValue();
+            final int reliability = articleRating.getBody().getReliabilityValue();
+            final int style = articleRating.getBody().getStyleValue();
 
-        articleRatingSummary.getBody().setNumUsersThatRated(newNumberOfRatings);
-        if (insight > 0) {
-          articleRatingSummary.getBody().removeRating(Rating.INSIGHT_TYPE,insight);
-        }
-        if (reliability > 0) {
-          articleRatingSummary.getBody().removeRating(Rating.RELIABILITY_TYPE,reliability);
-        }
-        if (style > 0) {
-          articleRatingSummary.getBody().removeRating(Rating.STYLE_TYPE,style);
-        }
+            articleRatingSummary.getBody().setNumUsersThatRated(newNumberOfRatings);
+            if (insight > 0) {
+              articleRatingSummary.getBody().removeRating(Rating.INSIGHT_TYPE,insight);
+            }
+            if (reliability > 0) {
+              articleRatingSummary.getBody().removeRating(Rating.RELIABILITY_TYPE,reliability);
+            }
+            if (style > 0) {
+              articleRatingSummary.getBody().removeRating(Rating.STYLE_TYPE,style);
+            }
 
-        session.saveOrUpdate(articleRatingSummary);
-        session.delete(articleRating);
-        tx.commit();
-      } catch (OtmException e) {
-        log.error("",e);
-        tx.rollback();
-      }
-    } catch (OtmException e) {
-      log.error("",e);
-    }
+            session.saveOrUpdate(articleRatingSummary);
+            session.delete(articleRating);
+
+            return "";
+          }
+        });
   }
 
   /**
    * Set the annotation as public.
    *
    * @param ratingId the id of the Rating
-   * @throws RatingsServiceException
+   * @throws ApplicationException
    */
-  public void setPublic(final String ratingId) throws RatingsServiceException {
+  public void setPublic(final String ratingId) throws ApplicationException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
     final Rating result =
@@ -344,6 +339,43 @@ public class RatingsService extends BaseRatingsService {
   }
 
   /**
+   * Get a Rating by Id.
+   *
+   * @param ratingId Rating Id
+   *
+   * @return Rating
+   *
+   * @throws RemoteException RemoteException
+   */
+  public Rating getRating(final String ratingId) throws RemoteException {
+
+    ensureInitGetsCalledWithUsersSessionAttributes();
+
+    Rating rating =
+      TransactionHelper.doInTx(session,
+                               new TransactionHelper.Action<Rating>() {
+          public Rating run(Transaction tx) {
+
+            final Rating rating = tx.getSession().get(Rating.class, ratingId);
+            if (rating == null) {
+              return rating;
+            }
+
+            // touch the Rating to avoid lazy load Exceptions on use
+            String title = rating.getBody().getCommentTitle();
+            return rating;
+          }
+        });
+
+    // the PEP check is against what is rated,
+    // e.g. can this user see the ratings for what is rated?
+    PlosOneUser user = (PlosOneUser) ServletActionContext.getRequest().getSession().getAttribute(PLOS_ONE_USER_KEY);
+    getPEP().checkObjectAccess(RatingsPEP.GET_RATINGS, URI.create(user.getUserId()), rating.getAnnotates());
+
+    return rating;
+  }
+
+  /**
    * List the set of Ratings in a specific administrative state.
    *
    * @param mediator if present only those annotations that match this mediator are returned
@@ -351,16 +383,16 @@ public class RatingsService extends BaseRatingsService {
    *                 in any administrative state
    * @return an array of rating metadata; if no matching annotations are found, an empty array
    *         is returned
-   * @throws RatingsServiceException if some error occurred
+   * @throws ApplicationException if some error occurred
    */
   public RatingInfo[] listRatings(final String mediator,final int state)
-                          throws RatingsServiceException {
+                          throws ApplicationException {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
-    final List<Rating> list =
+    return
       TransactionHelper.doInTx(session,
-                               new TransactionHelper.Action<List<Rating>>() {
-          public List<Rating> run(Transaction tx) {
+                               new TransactionHelper.Action<RatingInfo[]>() {
+          public RatingInfo[] run(Transaction tx) {
             Criteria c = tx.getSession().createCriteria(Rating.class);
 
             if (mediator != null)
@@ -372,17 +404,23 @@ public class RatingsService extends BaseRatingsService {
               c.add(Restrictions.eq("state", "" + state));
             }
 
-            return c.list();
+            List<Rating> ratings = c.list();
+
+            // force a load of RatingContent while in a transaction,
+            // e.g. avoid lazy load OTM Exception downstream
+            final RatingInfo[] ratingInfos = new RatingInfo[ratings.size()];
+            int position = 0;
+            for (Rating rating : ratings) {
+              String title =rating.getBody().getCommentTitle();  // touch
+              ratingInfos[position++] = new RatingInfo(rating);
+              if (log.isDebugEnabled()) {
+                log.debug("adding to RatingInfo[]: " + rating.getBody().getCommentTitle());
+              }
+            }
+
+            return ratingInfos;
           }
         });
-
-    final RatingInfo[] ratingInfos = new RatingInfo[list.size()];
-    int position = 0;
-
-    for (final Rating r : list)
-      ratingInfos[position++] = new RatingInfo(r);
-
-    return ratingInfos;
   }
 
   /**

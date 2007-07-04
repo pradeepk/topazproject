@@ -31,6 +31,8 @@ import com.sun.xacml.ctx.Attribute;
  * @author Ronald Tschalär
  */
 public class RatingsPEP extends AbstractSimplePEP {
+  /** The action that represents the delete-ratings operation in XACML policies. */
+  public static final String DELETE_RATINGS = "ratings:deleteRatings";
   /** The action that represents the set-ratings operation in XACML policies. */
   public static final String SET_RATINGS = "ratings:setRatings";
     /** The action that represents the get-ratings operation in XACML policies. */
@@ -45,6 +47,7 @@ public class RatingsPEP extends AbstractSimplePEP {
 
   /** The list of all supported actions */
   protected static final String[] SUPPORTED_ACTIONS = new String[] {
+                                                           DELETE_RATINGS,
                                                            SET_RATINGS,
                                                            GET_RATINGS,
                                                            GET_STATS,
@@ -53,6 +56,7 @@ public class RatingsPEP extends AbstractSimplePEP {
 
   /** The list of all supported obligations */
   protected static final String[][] SUPPORTED_OBLIGATIONS = new String[][] {
+                                                           null,
                                                            null,
                                                            null,
                                                            null,
@@ -74,9 +78,9 @@ public class RatingsPEP extends AbstractSimplePEP {
     super(pdp, subjAttrs);
   }
 
-  /** 
+  /**
    * Check if the user may perform the requested action on the given object.
-   * 
+   *
    * @param action one of the actions defined above
    * @param userId the ratings owner's internal id
    * @param object the object for which to get/set the ratings; may be null

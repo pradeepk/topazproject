@@ -867,7 +867,11 @@
   	  	<result name="success">/WEB-INF/pages/admin/viewAnnotation.ftl</result>
   	</action>
 
-  	<action name="viewReply" class="org.plos.annotation.action.GetReplyAction">
+  	<action name="viewRating" class="org.plos.admin.action.ViewRatingAction">
+  	  	<result name="success">/WEB-INF/pages/admin/viewRating.ftl</result>
+  	</action>
+
+        <action name="viewReply" class="org.plos.annotation.action.GetReplyAction">
   	  	<result name="success">/WEB-INF/pages/admin/viewReply.ftl</result>
   	</action>
 

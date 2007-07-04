@@ -21,7 +21,6 @@ import org.plos.annotation.FlagUtil;
 import org.plos.permission.service.PermissionWebService;
 import org.plos.rating.service.RatingInfo;
 import org.plos.rating.service.RatingsService;
-import org.plos.rating.service.RatingsServiceException;
 import org.plos.service.BaseConfigurableService;
 import org.plos.user.PlosOneUser;
 import org.plos.util.FileUtils;
@@ -189,11 +188,8 @@ public class AnnotationService extends BaseConfigurableService {
    * @throws ApplicationException
    */
   public void unflagRating(final String ratingId) throws ApplicationException {
-    try {
-      ratingsService.unflagRating(ratingId);
-    } catch (RatingsServiceException e) {
-      throw new ApplicationException(e);
-    }
+
+    ratingsService.unflagRating(ratingId);
   }
 
   /**
@@ -404,12 +400,8 @@ public class AnnotationService extends BaseConfigurableService {
    * @throws ApplicationException
    */
   public RatingInfo[] listFlaggedRatings() throws ApplicationException {
-    try {
-      return ratingsService.listRatings(null,FLAG_MASK | PUBLIC_MASK);
-    } catch (RatingsServiceException e) {
-      log.error("",e);
-      throw new ApplicationException(e);
-    }
+
+    return ratingsService.listRatings(null,FLAG_MASK | PUBLIC_MASK);
   }
 
   public void setAnnotationWebService(final AnnotationWebService annotationWebService) {

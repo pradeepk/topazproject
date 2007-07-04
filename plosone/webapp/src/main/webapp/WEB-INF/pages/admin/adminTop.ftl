@@ -65,18 +65,28 @@
           <#list flaggedComments as flaggedComment>
             <#if flaggedComment.isAnnotation>
               <@s.url id="flagURL" namespace="/admin" action="viewAnnotation" annotationId="${flaggedComment.target}"/>
-            <#else>
+              <#assign deleteLabel = "Delete Comment">
+            <#elseif flaggedComment.isRating>
+              <@s.url id="flagURL" namespace="/admin" action="viewRating" ratingId="${flaggedComment.target}"/>
+              <#assign deleteLabel = "Delete Rating">
+            <#elseif flaggedComment.isReply>
               <@s.url id="flagURL" namespace="/admin" action="viewReply" replyId="${flaggedComment.target}"/>
+              <#assign deleteLabel = "Delete Reply (Sub-thread)">
+            </#if>
+            <#if flaggedComment.targetTitle?exists>
+              <#assign targetTitle = flaggedComment.targetTitle>
+            <#else>
+              <#assign targetTitle = '"Flagged Annotation has no Title"'>
             </#if>
             <tr>
               <td>${flaggedComment.created}</td>
               <td width="20%">${flaggedComment.flagComment}</td>
               <td><a href="../user/displayUser.action?userId=${flaggedComment.creatorid}"/>${flaggedComment.creator}</a></td>
-              <td width="20%"><a href="${flagURL}">${flaggedComment.targetTitle}</a></td>
+              <td width="20%"><a href="${flagURL}">${targetTitle}</a></td>
               <td>${flaggedComment.reasonCode}</td>
               <td>
-                <@s.checkbox name="commentsToDelete" label="Delete Sub-thread" fieldValue="${flaggedComment.root}_${flaggedComment.target}"/><br/>
-                <@s.checkbox name="commentsToUnflag" label="Remove Flag" fieldValue="${flaggedComment.target}_${flaggedComment.flagId}"/>
+                <@s.checkbox name="commentsToUnflag" label="Remove Flag" fieldValue="${flaggedComment.target}_${flaggedComment.flagId}_${flaggedComment.targetType}"/><br/>
+                <@s.checkbox name="commentsToDelete" label="${deleteLabel}" fieldValue="${flaggedComment.root}_${flaggedComment.target}_${flaggedComment.targetType}"/>
               </td>
             </tr>
             <tr><td colspan="6"><hr/></td></tr>

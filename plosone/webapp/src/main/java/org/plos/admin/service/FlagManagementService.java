@@ -14,20 +14,32 @@ import java.rmi.RemoteException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.List;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
 import org.plos.ApplicationException;
-import org.plos.annotation.service.AnnotationInfo;
-import org.plos.annotation.service.ReplyInfo;
-import org.plos.annotation.service.AnnotationWebService;
-import org.plos.annotation.service.AnnotationService;
-import org.plos.annotation.service.Flag;
-import org.plos.annotation.service.ReplyWebService;
 import static org.plos.annotation.service.Annotation.FLAG_MASK;
 import static org.plos.annotation.service.Annotation.PUBLIC_MASK;
+import org.plos.annotation.service.AnnotationInfo;
+import org.plos.annotation.service.AnnotationService;
+import org.plos.annotation.service.AnnotationWebService;
+import org.plos.annotation.service.Flag;
+import org.plos.annotation.service.ReplyInfo;
+import org.plos.annotation.service.ReplyWebService;
+import org.plos.models.Comment;
+import org.plos.models.Rating;
 import org.plos.rating.service.RatingInfo;
 import org.plos.user.service.UserService;
+import org.plos.util.TransactionHelper;
+
+import org.springframework.beans.factory.annotation.Required;
+
+import org.topazproject.otm.Criteria;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.Transaction;
+import org.topazproject.otm.criterion.Restrictions;
 
 /**
  * @author alan
@@ -37,10 +49,11 @@ public class FlagManagementService {
 
   private static final Log log = LogFactory.getLog(FlagManagementService.class);
 
+  private Session session;
+
   private AnnotationWebService annotationWebService;
   private AnnotationService annotationService;
   private ReplyWebService replyWebService;
-
   private UserService userService;
 
   public Collection getFlaggedComments() throws RemoteException, ApplicationException {
@@ -56,19 +69,48 @@ public class FlagManagementService {
     if (log.isDebugEnabled()) {
       log.debug("There are " + ratingInfos.length + " ratings with flags");
       log.debug("There are " + annotationinfos.length + " annotations with flags");
+      for (AnnotationInfo annotationInfo : annotationinfos) {
+        log.debug("\t"+ annotationInfo.toString());
+      }
       log.debug("There are " + replyinfos.length + " replies with flags");
     }
 
     for (final RatingInfo ratingInfo : ratingInfos) {
       flags = annotationService.listFlags(ratingInfo.getId());
-      if (log.isDebugEnabled())
+      if (log.isDebugEnabled()) {
         log.debug("There are " + flags.length + " flags on rating: " + ratingInfo.getId());
+      }
+
+      // if Rating is marked as flagged, and no flag Comments could be found, data issue?
+      if (flags.length == 0) {
+        log.error("Rating " + ratingInfo.getId() + " is marked as flagged and no flag Comments exist.");
+
+        // create a "dummy" record so it appears in admin interface
+        FlaggedCommentRecord fcr =
+          new FlaggedCommentRecord(
+              "", // flag.getId(),
+              ratingInfo.getId(),
+              ratingInfo.getTitle(),
+              "no Flag Comment exists, Rating indicates it is flagged, data issue?",
+              "",
+              "",
+              "",
+              null,
+              "",
+              "Rating");
+        commentrecords.add(fcr);
+
+        // continue w/next RatingInfo
+        continue;
+      }
+
       for (final Flag flag : flags) {
         if (flag.isDeleted()) {
           if (log.isDebugEnabled())
             log.debug("Flag: " + flag.getId() + " is deleted - skipping");
           continue;
         }
+
         try {
           creatorUserName = userService.getUsernameByTopazId(flag.getCreator());
         } catch (ApplicationException ae) { // Bug ?
@@ -84,12 +126,13 @@ public class FlagManagementService {
               creatorUserName,
               flag.getCreator(),
               null,
-              flag.getReasonCode());
+              flag.getReasonCode(),
+              "Rating");
         commentrecords.add(fcr);
       }
     }
 
-    for (AnnotationInfo annotationinfo : annotationinfos) {
+    for (final AnnotationInfo annotationinfo : annotationinfos) {
       flags = annotationService.listFlags((String) annotationinfo.getId());
       if (log.isDebugEnabled())
         log.debug("There are " + flags.length + " flags on annotation: " + annotationinfo.getId());
@@ -114,7 +157,8 @@ public class FlagManagementService {
               creatorUserName,
               flag.getCreator(),
               null,
-              flag.getReasonCode());
+              flag.getReasonCode(),
+              "Comment");
         commentrecords.add(fcr);
       }
     }
@@ -145,7 +189,8 @@ public class FlagManagementService {
               creatorUserName,
               flag.getCreator(),
               replyinfo.getRoot(),
-              flag.getReasonCode());
+              flag.getReasonCode(),
+              "Reply");
         commentrecords.add(fcr);
       }
     }
@@ -168,6 +213,16 @@ public class FlagManagementService {
 
   public void setAnnotationService(AnnotationService annotationService) {
     this.annotationService = annotationService;
+  }
+
+  /**
+   * Set the OTM session. Called by spring's bean wiring.
+   *
+   * @param session the otm session
+   */
+  @Required
+  public void setOtmSession(Session session) {
+    this.session = session;
   }
 
   public void setUserService(UserService userService) {

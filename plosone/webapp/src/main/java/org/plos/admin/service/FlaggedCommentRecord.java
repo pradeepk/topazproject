@@ -21,10 +21,11 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
   private String flagId;
   private String target;
   private String creatorid;
+  private String targetType;
 
   public FlaggedCommentRecord(String flagId, String target, String targetTitle, String flagComment,
       String created, String creator, String creatorid, String root,
-      String reasonCode) {
+      String reasonCode, String targetType) {
     this.target = target;
     this.targetTitle = targetTitle;
     this.root = root;
@@ -34,18 +35,73 @@ public class FlaggedCommentRecord implements Comparable<FlaggedCommentRecord> {
     this.reasonCode = reasonCode;
     this.flagId = flagId;
     this.creatorid = creatorid;
+    this.targetType = targetType;
   }
 
   public String getTargetDisplayURL() {
-    if (null == root) {                 // Annotation
+
+    if (getIsAnnotation()) {
       return "viewAnnotation.action?annotationId=" + target;
-    } else { // Reply
+    } else if (getIsRating()) {
+      return "viewRating.action?ratingId=" + target;
+    } else if (getIsReply()) {
       return "viewReply.action?replyId=" + target;
     }
+
+    // not possible
+    return "";
   }
 
-  public boolean getIsAnnotation () {
-    return (null==root);
+  /**
+   * Get the type, Class name, of the target.
+   *
+   * @return Type of the target.
+   */
+  public String getTargetType() {
+
+    return targetType;
+  }
+
+  /**
+   * Is this a Flag for an Annotation?  (Actually a Comment.)
+   *
+   * @return true if Flag for an Annotation, else false.
+   */
+  public boolean getIsAnnotation() {
+
+    if (targetType.equals("Comment")) {
+      return true;
+    }
+
+    return false;
+  }
+
+  /**
+   * Is this a Flag for a Rating?
+   *
+   * @return true if Flag for a Rating, else false.
+   */
+  public boolean getIsRating() {
+
+    if (targetType.equals("Rating")) {
+      return true;
+    }
+
+    return false;
+}
+
+  /**
+   * Is this a Flag for a Reply?
+   *
+   * @return true if Flag for a Reply, else false.
+   */
+  public boolean getIsReply() {
+
+    if (targetType.equals("Reply")) {
+      return true;
+    }
+
+    return false;
   }
 
   public String getRoot() {

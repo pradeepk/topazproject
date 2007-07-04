@@ -292,7 +292,7 @@ public class AnnotationWebService extends BaseAnnotationService {
           List<Comment> all =
             TransactionHelper.doInTx(session, new TransactionHelper.Action<List<Comment>>() {
               public List<Comment> run(Transaction tx) {
-                // xxx: See trac #357. The previous default was incorrect. 
+                // xxx: See trac #357. The previous default was incorrect.
                 // Support both the old and the new to be compatible. (till data migration)
                 return tx.getSession().createCriteria(Comment.class)
                           .add(Restrictions.eq("mediator", getApplicationId()))
@@ -449,6 +449,12 @@ public class AnnotationWebService extends BaseAnnotationService {
               c.add(Restrictions.ne("state", "0"));
             else
               c.add(Restrictions.eq("state", "" + state));
+
+            // XXX: See trac #357. The previous default was incorrect.
+            // Support both the old and the new to be compatible. (till data migration)
+            c.add(Restrictions.disjunction()
+              .add(Restrictions.eq("type", getDefaultType()))
+              .add(Restrictions.eq("type", PLOSONE_0_6_DEFAULT_TYPE)));
 
             return c.list();
           }

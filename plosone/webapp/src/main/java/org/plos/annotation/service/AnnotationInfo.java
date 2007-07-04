@@ -160,4 +160,16 @@ public class AnnotationInfo {
   public int getState() {
     return ann.getState();
   }
+
+  public String toString() {
+
+      StringBuffer sb = new StringBuffer();
+
+      sb.append("AnnotationInfo:");
+      sb.append(" id=").append(getId());
+      sb.append(" annotates=").append(getAnnotates());
+      sb.append(" title=").append(getTitle());
+
+      return sb.toString();
+  }
 }

@@ -83,7 +83,7 @@
     <property name="doiXrefUrl" value="${pub.spring.crossref.post.url}"/>
   </bean>
 
-  <bean id="flagManagementService" class="org.plos.admin.service.FlagManagementService"/>
+  <bean id="flagManagementService" class="org.plos.admin.service.FlagManagementService" scope="session" />
 
   <bean id="documentManagementService" class="org.plos.admin.service.DocumentManagementService" scope="session">
     <!-- These pathnames are absolute -->
