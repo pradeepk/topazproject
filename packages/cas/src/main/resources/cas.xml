@@ -13,10 +13,13 @@
            (or to webhead FQHN for multibox install) -->
       <cas>localhost</cas> <!-- could set <default> instead, but this is more specific -->
       <mailhost>localhost</mailhost>
+      <default>localhost</default> <!-- Address of webhead (or plosone if no webhead) -->
     </hosts>
     <ports>
-      <!-- If 443, set default to empty -->
+      <!-- If 443, set cas-ssl to empty -->
       <cas-ssl>7443</cas-ssl>
+      <!-- If 80, set default to empty (and/or update registration.plosone.url below) -->
+      <default>8080</default>
     </ports>
   </network>
 
@@ -33,5 +36,9 @@
   <registration>
     <from-email>registration@plosone.org</from-email>
     <from-name>PLoS Registration</from-name>
+    <plosone>
+      <context></context>
+      <url>http://${network.hosts.default}:${network.ports.default}</url>
+    </plosone>
   </registration>
 </config>

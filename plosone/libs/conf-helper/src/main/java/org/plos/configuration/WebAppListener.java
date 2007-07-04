@@ -78,6 +78,9 @@ public class WebAppListener implements ServletContextListener {
       // Now load the config
       log.info("Loading '" + url + "' (" + config.name + ") configured via " + config.source);
       ConfigurationStore.getInstance().loadConfiguration(url);
+
+      // Setup an application scope attribute that something like freemarker or struts might use
+      context.setAttribute("config", ConfigurationStore.getInstance().getConfiguration());
     } catch (MalformedURLException e) {
       // Bad config file url. Try to abort.
       log.fatal(config.name + " defined by " + config.source + " is not a valid URL or resource", e);

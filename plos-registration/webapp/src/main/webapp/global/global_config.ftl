@@ -1,3 +1,3 @@
-<#assign context="/plos-registration">
-<#assign plosOneUrl="http://FQHN:8080">
-<#assign plosOneContext="">
+<#assign context="${config.getString('registration.context')}">
+<#assign plosOneUrl="${config.getString('registration.plosone.url')}">
+<#assign plosOneContext="${config.getString('registration.plosone.context')}">
