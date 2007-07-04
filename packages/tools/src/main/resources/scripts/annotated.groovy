@@ -70,7 +70,8 @@ query = """
           where \$ann <rdf:type> <a:Annotation>
             and \$ann <a:annotates> \$article
             and \$ann <a:created> \$created
-            ${restrict})
+            ${restrict}
+            minus \$ann <rdf:type> <topaz:RatingSummaryAnnotation>)
     from ${RI_MODEL}
     where \$s <rdf:type> <a:Annotation>
       and \$s <a:annotates> \$article
