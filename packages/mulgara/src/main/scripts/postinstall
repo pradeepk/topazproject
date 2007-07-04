@@ -6,6 +6,10 @@ PKG=mulgara
 # Register the mulgara service
 /sbin/chkconfig --add $PKG
 
+# Create directories for mulgara database
+mkdir -p /var/lib/topaz/data
+chown -R topaz:topaz /var/lib/topaz
+
 # Create symbolic link in /usr/local/topaz
 LINK=/usr/local/topaz/$PKG
 rm -f $LINK

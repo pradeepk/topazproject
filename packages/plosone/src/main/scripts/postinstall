@@ -12,6 +12,10 @@ rm -f $LINK
 DIR=`ls -td /usr/local/topaz/*"$PKG"-* 2>/dev/null | head -1`
 [ -n "$DIR" ] && ln -s `basename $DIR` $LINK
 
+# Create directories for search
+mkdir -p /var/lib/topaz/data
+chown -R topaz:topaz /var/lib/topaz
+
 # Dynamically create /etc/sysconfig/... if it doesn't exist
 if [ ! -e /etc/sysconfig/$PKG ]; then
   MEM=`free -mo | grep Mem | awk '{print $2-128}'`
