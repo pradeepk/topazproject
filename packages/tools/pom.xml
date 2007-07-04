@@ -4,7 +4,7 @@
   <groupId>org.topazproject.packages</groupId>
   <artifactId>topaz-tools</artifactId>
   <packaging>pom</packaging>
-  <name>Topaz Tools</name>
+  <name>topaztools</name>
 
   <parent>
     <groupId>org.topazproject.packages</groupId>
