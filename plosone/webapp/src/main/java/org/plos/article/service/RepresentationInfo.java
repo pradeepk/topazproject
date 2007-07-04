@@ -93,18 +93,7 @@ public class RepresentationInfo {
         }
       }
 
-      String url = null;
-      try {
-        url = (new ArticleUtil()).getObjectURL(objectInfo.getId().toString(), format);
-      } catch (MalformedURLException ex) {
-        // TODO: data integ issue
-      } catch (NoSuchObjectIdException ex) {
-        // TODO: data integ issue
-      } catch (ServiceException ex) {
-        // TODO: data integ issue
-      } catch (RemoteException ex) {
-        // TODO: data integ issue
-      }
+      String url = ArticleUtil.getFedoraDataStreamURL(objectInfo.getPid(), format);
 
       RepresentationInfo representationInfo = new RepresentationInfo();
       representationInfo.setContentType(contentType);

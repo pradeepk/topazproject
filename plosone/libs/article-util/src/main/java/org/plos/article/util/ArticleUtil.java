@@ -58,7 +58,7 @@ public class ArticleUtil {
   private final ItqlHelper itql;
   private final FgsOperations[] fgs;
   private final Ingester   ingester;
-  private final URI        fedoraServer;
+  private static final URI        fedoraServer = getFedoraBaseUri();
 
   private static final String ITQL_GET_PID =
       ("select $pid from ${MODEL} where <${uri}> <topaz:isPID> $pid;").
@@ -117,7 +117,6 @@ public class ArticleUtil {
     this.itql     = new ItqlHelper(mulgaraSvc);
     this.fgs      = getFgsOperations();
     this.ingester = new Ingester(itql, apim, uploader, fgs);
-    this.fedoraServer = getFedoraBaseUri();
   }
 
   /**
@@ -144,10 +143,31 @@ public class ArticleUtil {
    * @throws RemoteException if some other error occured
    */
   public void delete(String article) throws NoSuchArticleIdException, RemoteException {
-    String txn = "delete " + article;
+    delete(article, itql, apim, fgs);
+  }
+
+  public static void delete(String article, ItqlHelper itql)
+    throws NoSuchArticleIdException, RemoteException {
+    try {
+      delete(article, itql, APIMStubFactory.create(
+                             new PasswordProtectedService(CONF.getString("topaz.services.fedora.uri"),
+                                      CONF.getString("topaz.services.fedora.userName"),
+                                      CONF.getString("topaz.services.fedora.password"))),
+                            getFgsOperations());
+    } catch (MalformedURLException e) {
+      throw new RemoteException("Bad configuration", e);
+    } catch (ServiceException e) {
+      throw new RemoteException("Failed to load search client stubs", e);
+    }
+  }
+
+  public static void delete(String article, ItqlHelper itql, FedoraAPIM apim,
+                  FgsOperations[] fgs) throws NoSuchArticleIdException, RemoteException {
+    String txn = itql.isInTransaction() ? null : ("delete " + article);
     try {
       // TODO: Remove article via otm
-      itql.beginTxn(txn);
+      if (txn != null)
+        itql.beginTxn(txn);
 
       String[][] objList = findAllObjects(article, itql);
       if (log.isDebugEnabled())
@@ -193,7 +213,8 @@ public class ArticleUtil {
         itql.doUpdate(ItqlHelper.bindValues(ITQL_DELETE_PP, "subj", uri), null);
       }
 
-      itql.commitTxn(txn);
+      if (txn != null)
+        itql.commitTxn(txn);
       txn = null;
     } catch (AnswerException ae) {
       throw new RemoteException("Error querying RDF", ae);
@@ -228,6 +249,11 @@ public class ArticleUtil {
     return fedoraServer.resolve(path).toString();
   }
 
+  public static String getFedoraDataStreamURL(String pid, String ds) {
+    String path = "/fedora/get/" + pid + "/" + ds;
+    return fedoraServer.resolve(path).toString();
+  }
+
   private static FgsOperations[] getFgsOperations() throws ServiceException {
     FgsOperations ops[] = new FgsOperations[FGS_URLS.size()];
     for (int i = 0; i < ops.length; i++) {
@@ -258,7 +284,7 @@ public class ArticleUtil {
     return uri;
   }
 
-  protected String[][] findAllObjects(String subj, ItqlHelper itql)
+  protected static String[][] findAllObjects(String subj, ItqlHelper itql)
       throws NoSuchArticleIdException, RemoteException, AnswerException {
     ItqlHelper.validateUri(subj, "subject");
 

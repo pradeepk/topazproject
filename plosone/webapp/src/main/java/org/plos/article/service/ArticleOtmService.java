@@ -180,31 +180,16 @@ public class ArticleOtmService extends BaseConfigurableService {
     // logged in user is automatically resolved by the ServletActionContextAttribute
     pep.checkAccess(ArticlePEP.GET_OBJECT_URL, URI.create(obj));
 
-    // let the Article utils do the real work
-    ArticleUtil articleUtil = null;
-    try {
-      articleUtil = new ArticleUtil();  // no arg, utils use default config
-    } catch (MalformedURLException ex) {
-      throw new RuntimeException(ex);
-    } catch (ServiceException se) {
-      throw new RemoteException("Failed getting URL for \"" + obj + "\", \"" + rep + "\"", se);
-    }
+    return TransactionHelper.doInTxE(session,
+                              new TransactionHelper.ActionE<String, NoSuchObjectIdException>() {
+      public String run(Transaction tx) throws NoSuchObjectIdException {
+        Article a = tx.getSession().get(Article.class, obj);
+        if (a == null)
+          throw new NoSuchObjectIdException(obj);
 
-    // trap the Exception for better debgging
-    String objectURL = null;
-    try {
-      objectURL= articleUtil.getObjectURL(obj, rep);
-      if (log.isDebugEnabled()) {
-        log.debug("ArticleOtmService.getObjectURL("+obj+", " + rep + ") = " + objectURL);
+        return ArticleUtil.getFedoraDataStreamURL(a.getPid(), rep);
       }
-    } catch (NoSuchObjectIdException nsoe) {
-      if (log.isDebugEnabled()) {
-        log.debug("failed to ArticleOtmService.getObjectURL(" + obj + ", " + rep + ")");
-      }
-      throw nsoe;
-    }
-
-    return objectURL;
+    });
   }
 
   /**
@@ -224,14 +209,21 @@ public class ArticleOtmService extends BaseConfigurableService {
     // logged in user is automatically resolved by the ServletActionContextAttribute
     pep.checkAccess(ArticlePEP.DELETE_ARTICLE, URI.create(article));
 
-    // let the Article utils do the real work
-    ArticleUtil articleUtil = null;
+    Transaction txn = null;
     try {
-     articleUtil = new ArticleUtil();  // no arg, utils use default config
-    } catch (MalformedURLException ex) {
-      throw new RuntimeException(ex);
+      ctx.activate();
+      txn = session.beginTransaction();
+      ItqlHelper itql = ((ItqlStoreConnection)txn.getConnection()).getItqlHelper();
+      ArticleUtil.delete(article, itql);
+      txn = null;
+    } finally {
+      try {
+        if (txn != null)
+          txn.rollback();
+      } catch (Throwable t) {
+        log.debug("rollback failed", t);
+      }
     }
-    articleUtil.delete(article);
   }
 
   /**
