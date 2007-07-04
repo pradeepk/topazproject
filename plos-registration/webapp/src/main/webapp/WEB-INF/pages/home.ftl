@@ -22,13 +22,6 @@
                     <@s.url id="forgotPasswordURL" action="forgotPassword" />
                     <@s.a href="%{forgotPasswordURL}">Forgot Password</@s.a>
                 </p>
-
-                <p>
-                    <@s.action name="constants" namespace="" id="otherConstants"/>
-                    Plosone app url: ${otherConstants.get("mainAppUrl")}
-                </p>
-
-
             </fieldset>
         </p>
     </body>
