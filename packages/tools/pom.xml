@@ -14,8 +14,8 @@
 
   <dependencies>
     <dependency>
-      <groupId>org.topazproject</groupId>
-      <artifactId>topaz-tools-runscripts</artifactId>
+      <groupId>org.plosone</groupId>
+      <artifactId>plosone-runscripts</artifactId>
       <version>${pom.version}</version>
     </dependency>
     <dependency>

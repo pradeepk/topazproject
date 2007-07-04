@@ -18,6 +18,7 @@
     <module>otm-models</module>
     <module>article-util</module>
     <module>conf-helper</module>
+    <module>runscripts</module>
   </modules>
 
   <!-- TODO: Move this up one level - be sure to test! -->
