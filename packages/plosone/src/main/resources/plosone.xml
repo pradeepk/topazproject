@@ -26,7 +26,7 @@
     </ports>
   </network>
 
-  <plosone>
+  <pub>
     <!-- To change network settings, please set the following above:
          - network.hosts.default
          - network.ports.default
@@ -43,7 +43,7 @@
     </search>
 
     <!-- Stuff used by doi-resolver -->
-    <webserver-url>http://${network.hosts.default}:${network.ports.default}${plosone.app-context}/</webserver-url>
+    <webserver-url>http://${network.hosts.default}:${network.ports.default}${pub.app-context}/</webserver-url>
 
     <!-- common display constants -->
     <name>Public Library of Science</name>
@@ -54,7 +54,7 @@
     <feed>
       <title>PLoS ONE Alerts: PLoS ONE Journal</title>
       <tagline>Publishing science, accelerating research</tagline>
-      <icon>${plosone.host}/images/pone_favicon.ico</icon>
+      <icon>${pub.host}/images/pone_favicon.ico</icon>
     </feed>
 
     <spring>
@@ -70,7 +70,7 @@
         <sendToXref>false</sendToXref>       <!-- Set to true to turn on crossref posting -->
       </crossref>
     </spring>
-  </plosone>
+  </pub>
 
   <plos-registration>
     <!-- It is assumed plos-registartion webapp is running on cas. However that can be changed

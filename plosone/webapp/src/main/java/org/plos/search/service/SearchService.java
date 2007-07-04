@@ -31,7 +31,7 @@ public class SearchService {
   private static final Log           log   = LogFactory.getLog(SearchService.class);
   private static final Configuration CONF  = ConfigurationStore.getInstance().getConfiguration();
   private static TemporaryCache      cache = new TemporaryCache(
-                                              CONF.getLong("plosone.search.cacheDuration", 600000L));
+                                              CONF.getLong("pub.search.cacheDuration", 600000L));
 
   private SearchWebService           searchWebService;
   private UserContext                userContext;

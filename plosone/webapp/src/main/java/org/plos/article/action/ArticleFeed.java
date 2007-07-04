@@ -139,14 +139,14 @@ public class ArticleFeed extends BaseActionSupport {
   private WireFeed getFeed(URI uri) throws ApplicationException {
 
     // get default values from config file
-    final String PLOSONE_URI           = configuration.getString("plosone.webserver-url", "http://plosone.org/");
-    final String PLOSONE_NAME          = configuration.getString("plosone.name",          "Public Library of Science");
-    final String PLOSONE_EMAIL_GENERAL = configuration.getString("plosone.email.general", "webmaster@plos.org");
-    final String PLOSONE_COPYRIGHT     = configuration.getString("plosone.copyright",
+    final String PLOSONE_URI           = configuration.getString("pub.webserver-url", "http://plosone.org/");
+    final String PLOSONE_NAME          = configuration.getString("pub.name",          "Public Library of Science");
+    final String PLOSONE_EMAIL_GENERAL = configuration.getString("pub.email.general", "webmaster@plos.org");
+    final String PLOSONE_COPYRIGHT     = configuration.getString("pub.copyright",
       "This work is licensed under a Creative Commons Attribution-Share Alike 3.0 License, http://creativecommons.org/licenses/by-sa/3.0/");
-    final String FEED_TITLE            = configuration.getString("plosone.feed.title",    "PLoS ONE Alerts: PLoS ONE Journal");
-    final String FEED_TAGLINE          = configuration.getString("plosone.feed.tagline",  "Publishing science, accelerating research");
-    final String FEED_ICON             = configuration.getString("plosone.feed.icon",     PLOSONE_URI + "images/pone_favicon.ico");
+    final String FEED_TITLE            = configuration.getString("pub.feed.title",    "PLoS ONE Alerts: PLoS ONE Journal");
+    final String FEED_TAGLINE          = configuration.getString("pub.feed.tagline",  "Publishing science, accelerating research");
+    final String FEED_ICON             = configuration.getString("pub.feed.icon",     PLOSONE_URI + "images/pone_favicon.ico");
 
     // use WebWorks to get Action URIs
     // TODO: WebWorks ActionMapper is broken, hand-code URIs

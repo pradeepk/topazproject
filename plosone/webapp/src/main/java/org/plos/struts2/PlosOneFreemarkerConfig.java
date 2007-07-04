@@ -60,9 +60,9 @@ public class PlosOneFreemarkerConfig {
    */
   public PlosOneFreemarkerConfig() {
     Configuration myConfig = ConfigurationStore.getInstance().getConfiguration();
-    dirPrefix = myConfig.getString("plosone.app-context");
-    subdirPrefix = myConfig.getString("plosone.resource-sub-dir");
-    plosOneHost = myConfig.getString("plosone.host");
+    dirPrefix = myConfig.getString("pub.app-context");
+    subdirPrefix = myConfig.getString("pub.resource-sub-dir");
+    plosOneHost = myConfig.getString("pub.host");
     casLoginURL = myConfig.getString("cas.url.login");
     casLogoutURL = myConfig.getString("cas.url.logout");
     registrationURL = myConfig.getString("plos-registration.url.registration");

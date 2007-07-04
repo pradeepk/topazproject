@@ -89,7 +89,7 @@ public class ResolverServlet extends HttpServlet{
   
   
   private String constructURL (String doi) {
-    StringBuilder redirectURL = new StringBuilder(myConfig.getString("plosone.webserver-url")); 
+    StringBuilder redirectURL = new StringBuilder(myConfig.getString("pub.webserver-url")); 
     String[] rdfTypes;
     
     if (journalRegEx.matcher(doi).matches()) {
@@ -97,7 +97,7 @@ public class ResolverServlet extends HttpServlet{
       if (rdfTypes.length > 0) {
         Arrays.sort(rdfTypes);
         if (Arrays.binarySearch(rdfTypes, RDF_TYPE_ARTICLE) >= 0) {
-          return redirectURL.append(myConfig.getString("plosone.article-action"))
+          return redirectURL.append(myConfig.getString("pub.article-action"))
                             .append("info:doi").append(doi).toString();
         }
       }
@@ -107,21 +107,21 @@ public class ResolverServlet extends HttpServlet{
       if (rdfTypes.length > 0) {
         Arrays.sort(rdfTypes);
         if (Arrays.binarySearch(rdfTypes, RDF_TYPE_ARTICLE) >= 0) {
-          return redirectURL.append(myConfig.getString("plosone.figure-action1"))
+          return redirectURL.append(myConfig.getString("pub.figure-action1"))
                             .append("info:doi").append(possibleArticleDOI)
-                            .append(myConfig.getString("plosone.figure-action2"))
+                            .append(myConfig.getString("pub.figure-action2"))
                             .append("info:doi").append(doi).toString();
         }
       }
     }
-    return myConfig.getString("plosone.webserver-url")+ myConfig.getString("plosone.error-page");
+    return myConfig.getString("pub.webserver-url")+ myConfig.getString("pub.error-page");
     
   }
   
   private void failWithError(HttpServletResponse resp){
     try {
-      resp.sendRedirect(myConfig.getString("plosone.webserver-url")+
-                        myConfig.getString("plosone.error-page"));
+      resp.sendRedirect(myConfig.getString("pub.webserver-url")+
+                        myConfig.getString("pub.error-page"));
     } catch (Exception e) {
       log.warn ("Couldn't redirect user to error page", e);
     }

@@ -45,8 +45,8 @@ public class CASFilterWrapper extends CASFilter {
 
     final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
 
-    final String plosServerHost = configuration.getString("plosone.host");
-    final String plosCallbackUrl = configuration.getString("plosone.url.proxy-callback");
+    final String plosServerHost = configuration.getString("pub.host");
+    final String plosCallbackUrl = configuration.getString("pub.url.proxy-callback");
     final String casProxyValidateUrl = configuration.getString("cas.url.proxy-validate");
     final String casLoginUrl = configuration.getString("cas.url.login");
 

@@ -31,15 +31,15 @@
     </url>
   </cas>
 
-  <plosone>
+  <pub>
     <hostname>${network.hosts.default}</hostname>
     <port>
       <http>${network.ports.default}</http>
       <https>${network.ports.plosone-ssl}</https>
     </port>
-    <host>${plosone.hostname}:${plosone.port.http}</host>
+    <host>${pub.hostname}:${pub.port.http}</host>
 
-    <url><proxy-callback>https://${plosone.hostname}:${plosone.port.https}${plosone.app-context}/CasProxyServlet</proxy-callback></url>
+    <url><proxy-callback>https://${pub.hostname}:${pub.port.https}${pub.app-context}/CasProxyServlet</proxy-callback></url>
 
     <app-context>/plosone-webapp</app-context>
     <resource-sub-dir></resource-sub-dir>
@@ -53,7 +53,7 @@
     </search>
 
     <!-- Stuff used by doi-resolver -->
-    <webserver-url>http://${network.hosts.default}:${network.ports.default}${plosone.app-context}/</webserver-url>
+    <webserver-url>http://${network.hosts.default}:${network.ports.default}${pub.app-context}/</webserver-url>
     <article-action>article/fetchArticle.action?articleURI=</article-action>
     <figure-action1>article/slideshow.action?uri=</figure-action1>
     <figure-action2>&amp;imageURI=</figure-action2>
@@ -68,7 +68,7 @@
     <feed>
       <title>PLoS ONE Alerts: PLoS ONE Journal</title>
       <tagline>Publishing science, accelerating research</tagline>
-      <icon>${plosone.host}/images/pone_favicon.ico</icon>
+      <icon>${pub.host}/images/pone_favicon.ico</icon>
     </feed>
 
     <!-- Define defaults for spring - must be redone soon -->
@@ -83,7 +83,7 @@
         <password>your-password</password>   <!-- crossref password -->
         <area>test</area>
         <sendToXref>false</sendToXref>       <!-- Set to true to turn on crossref posting -->
-        <post><url>http://doi.crossref.org/servlet/deposit?operation=doMDUpload&amp;login_id=${plosone.spring.crossref.login}&amp;login_passwd=${plosone.spring.crossref.password}&amp;area=${plosone.spring.crossref.area}</url></post>
+        <post><url>http://doi.crossref.org/servlet/deposit?operation=doMDUpload&amp;login_id=${pub.spring.crossref.login}&amp;login_passwd=${pub.spring.crossref.password}&amp;area=${pub.spring.crossref.area}</url></post>
       </crossref>
 
       <hostname>${network.hosts.plosone}</hostname>
@@ -103,12 +103,12 @@
         <source>/var/spool/plosone/ingestion-queue</source>
         <destination>/var/spool/plosone/ingested</destination>
       </ingest>
-      <itql><uri>http://${plosone.spring.server.mulgara}/mulgara-service/services/ItqlBeanService</uri></itql>
+      <itql><uri>http://${pub.spring.server.mulgara}/mulgara-service/services/ItqlBeanService</uri></itql>
       <email><feedback>webmaster@plos.org</feedback></email>
       <!-- Temporary default for /etc/topaz/plosone.xml -->
       <hosts><mailhost>${network.hosts.default}</mailhost></hosts>
     </spring>
-  </plosone>
+  </pub>
 
   <plos-registration>
     <hostname>${network.hosts.cas}</hostname>

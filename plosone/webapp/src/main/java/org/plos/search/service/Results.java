@@ -116,11 +116,11 @@ public class Results {
       if (!iter.hasNext()) {
         try {
           String xml = service.find(query, position,
-                                    CONF.getInt("plosone.search.fetchSize", 10),
-                                    CONF.getInt("plosone.search.snippetsMax", 3),
-                                    CONF.getInt("plosone.search.fieldMaxLength", 50),
-                                    CONF.getString("plosone.search.index", "TopazIndex"),
-                                    CONF.getString("plosone.search.resultPage", "copyXml"));
+                                    CONF.getInt("pub.search.fetchSize", 10),
+                                    CONF.getInt("pub.search.snippetsMax", 3),
+                                    CONF.getInt("pub.search.fieldMaxLength", 50),
+                                    CONF.getString("pub.search.index", "TopazIndex"),
+                                    CONF.getString("pub.search.resultPage", "copyXml"));
 
           if (log.isDebugEnabled())
             log.debug("HitIterator: Got results: " + xml);
