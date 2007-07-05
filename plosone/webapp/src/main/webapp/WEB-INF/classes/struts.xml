@@ -24,7 +24,7 @@
         <param name="location">/templates/plos_journals_template.ftl</param>
       </result-type>
       <result-type name="plosStream" class="org.plos.struts2.PlosStreamResult" />
-      <result-type name="ajaxJSON" class="org.plos.struts2.JsonResult">
+      <result-type name="json" class="org.plos.struts2.JsonResult">
         <param name="ignoreHierarchy">false</param>
         <param name="noCache">true</param>
       </result-type>
@@ -368,21 +368,21 @@
 
   <package name="rate-secure" extends="default" namespace="/rate/secure">
     <action name="rateArticle" class="org.plos.rating.action.RateAction" method="rateArticle">
-      <result name="input" type="ajaxJSON"/>
-      <result name="success" type="ajaxJSON"/>
-      <result name="error" type="ajaxJSON"/>
+      <result name="input" type="json"/>
+      <result name="success" type="json"/>
+      <result name="error" type="json"/>
     </action>
 
     <action name="createRatingFlagSubmit" class="org.plos.annotation.action.CreateFlagAction" method="createRatingFlag">
-      <result name="input"   type="ajaxJSON"/>
-      <result name="error"   type="ajaxJSON"/>
-      <result name="success" type="ajaxJSON"/>
+      <result name="input"   type="json"/>
+      <result name="error"   type="json"/>
+      <result name="success" type="json"/>
     </action>
 
     <action name="getRatingsForUser" class="org.plos.rating.action.RateAction" method="retrieveRatingsForUser">
-      <result name="input" type="ajaxJSON"/>
-      <result name="success" type="ajaxJSON"/>
-      <result name="error" type="ajaxJSON"/>
+      <result name="input" type="json"/>
+      <result name="success" type="json"/>
+      <result name="error" type="json"/>
     </action>
   </package>
 
@@ -523,7 +523,7 @@
     </action>
 
     <action name="getAnnotation" class="org.plos.annotation.action.GetAnnotationAction">
-      <result name="success" type="ajaxJSON"/>
+      <result name="success" type="json"/>
     </action>
 
     <action name="listReply" class="org.plos.annotation.action.ListReplyAction">
@@ -562,7 +562,7 @@
     </action>
 
     <action name="getReply" class="org.plos.annotation.action.GetReplyAction">
-      <result name="success" type="ajaxJSON"/>
+      <result name="success" type="json"/>
     </action>
 
     <action name="listFlags" class="org.plos.annotation.action.ListFlagAction">
@@ -570,7 +570,7 @@
     </action>
 
     <action name="getFlag" class="org.plos.annotation.action.GetFlagAction">
-      <result name="success" type="ajaxJSON"/>
+      <result name="success" type="json"/>
     </action>
   </package>
 
@@ -586,15 +586,15 @@
     </action>
 
     <action name="createAnnotationSubmit" class="org.plos.annotation.action.CreateAnnotationAction">
-      <result name="input" type="ajaxJSON"/>
-      <result name="error" type="ajaxJSON"/>
-      <result name="success" type="ajaxJSON"/>
+      <result name="input" type="json"/>
+      <result name="error" type="json"/>
+      <result name="success" type="json"/>
     </action>
 
     <action name="createDiscussionSubmit" class="org.plos.annotation.action.CreateAnnotationAction" method="executeSaveDiscussion">
-      <result name="input" type="ajaxJSON"/>
-      <result name="error" type="ajaxJSON"/>
-      <result name="success" type="ajaxJSON"/>
+      <result name="input" type="json"/>
+      <result name="error" type="json"/>
+      <result name="success" type="json"/>
     </action>
 
     <action name="setAnnotationPublic" class="org.plos.annotation.action.SetAnnotationPublicAction" method="executeSetAnnotationPublic">
@@ -612,9 +612,9 @@
     </action>
 
     <action name="createReplySubmit" class="org.plos.annotation.action.CreateReplyAction">
-      <result name="input" type="ajaxJSON"/>
-      <result name="error" type="ajaxJSON"/>
-      <result name="success" type="ajaxJSON"/>
+      <result name="input" type="json"/>
+      <result name="error" type="json"/>
+      <result name="success" type="json"/>
     </action>
 
     <action name="deleteReply" class="org.plos.annotation.action.DeleteReplyAction" method="deleteReplyWithId">
@@ -627,15 +627,15 @@
     </action>
 
     <action name="createAnnotationFlagSubmit" class="org.plos.annotation.action.CreateFlagAction" method="createAnnotationFlag">
-      <result name="input" type="ajaxJSON"/>
-      <result name="error" type="ajaxJSON"/>
-      <result name="success" type="ajaxJSON"/>
+      <result name="input" type="json"/>
+      <result name="error" type="json"/>
+      <result name="success" type="json"/>
     </action>
 
     <action name="createReplyFlagSubmit" class="org.plos.annotation.action.CreateFlagAction" method="createReplyFlag">
-      <result name="input" type="ajaxJSON"/>
-      <result name="error" type="ajaxJSON"/>
-      <result name="success" type="ajaxJSON"/>
+      <result name="input" type="json"/>
+      <result name="error" type="json"/>
+      <result name="success" type="json"/>
     </action>
 
     <action name="deleteFlag" class="org.plos.annotation.action.DeleteFlagAction">
