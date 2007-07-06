@@ -23,6 +23,8 @@
     <ports>
       <!-- For webhead, set default to empty (not 80) -->
       <default>${network.ports.plosone}</default>
+      <!-- If 443, set cas-ssl to empty -->
+      <cas-ssl>7443</cas-ssl>
     </ports>
   </network>
 
