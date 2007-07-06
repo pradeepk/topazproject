@@ -32,12 +32,11 @@
   </cas>
 
   <pub>
-    <hostname>${network.hosts.default}</hostname>
+    <host>${network.hosts.default}:${network.ports.default}</host>
     <port>
       <http>${network.ports.default}</http>
       <https>${network.ports.plosone-ssl}</https>
     </port>
-    <host>${network.hosts.default}:${network.ports.default}</host>
 
     <url><proxy-callback>https://${network.hosts.plosone}:${network.ports.plosone}${pub.app-context}/CasProxyServlet</proxy-callback></url>
 
@@ -111,7 +110,6 @@
   </pub>
 
   <plos-registration>
-    <hostname>${network.hosts.cas}</hostname>
     <app-context>/plos-registration</app-context>
     <url>
       <base>https://${network.hosts.cas}:${network.ports.cas-ssl}${plos-registration.app-context}</base>

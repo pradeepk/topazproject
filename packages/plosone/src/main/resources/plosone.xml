@@ -75,7 +75,6 @@
   <plos-registration>
     <!-- It is assumed plos-registartion webapp is running on cas. However that can be changed
          by changing the following settings. -->
-    <hostname>${network.hosts.cas}</hostname>
     <app-context>/plos-registration</app-context> <!-- Name of expanded webapp -->
   </plos-registration>
 
