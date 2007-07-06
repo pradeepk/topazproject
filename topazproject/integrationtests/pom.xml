@@ -112,11 +112,12 @@
       <groupId>org.topazproject</groupId>
       <artifactId>otm</artifactId>
     </dependency>
+    <!--
     <dependency>
       <groupId>org.topazproject</groupId>
       <artifactId>object-collections</artifactId>
     </dependency>
-
+    -->
     <!-- topazproject/webservices -->
     <!-- Get IOUtil -->
     <dependency>
@@ -375,7 +376,7 @@
               
               <tasks>
                 <copy todir="${project.build.directory}/generated-sources">
-                  <fileset dir=".." excludes="**/ws-client-it/**"/>
+                  <fileset dir=".." excludes="**/ws-client-it/**, **/object-collections/**"/>
                   <compositemapper>
                     <regexpmapper from="^(.*)/src/it/(.*)" to="src/it/\2"/>
                     <regexpmapper
