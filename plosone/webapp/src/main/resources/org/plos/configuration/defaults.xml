@@ -18,12 +18,8 @@
 -->
 <config>
   <cas>
-    <hostname>${network.hosts.cas}</hostname>
-    <port>
-      <https>${network.ports.cas-ssl}</https>
-    </port>
     <url>
-      <base>https://${cas.hostname}:${cas.port.https}/cas</base>
+      <base>https://${network.hosts.cas}:${network.ports.cas-ssl}/cas</base>
       <login>${cas.url.base}/login</login>
       <logout>${cas.url.base}/logout</logout>
       <proxy-receptor>${cas.url.base}/proxy</proxy-receptor>
