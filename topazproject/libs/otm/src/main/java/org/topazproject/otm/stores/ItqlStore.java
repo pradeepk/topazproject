@@ -76,7 +76,9 @@ public class ItqlStore implements TripleStore {
     //XXX: configure these
     ComparisonCriterionBuilder cc = new ComparisonCriterionBuilder("local:///topazproject#str");
     critBuilders.put("gt", cc);
+    critBuilders.put("ge", cc);
     critBuilders.put("lt", cc);
+    critBuilders.put("le", cc);
   }
 
   public Connection openConnection() {

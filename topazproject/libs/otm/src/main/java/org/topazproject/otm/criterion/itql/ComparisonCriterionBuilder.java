@@ -59,13 +59,8 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
     if (args[1] == null)
       throw new NullPointerException(func + ": argument 2 can not be null");
 
-    if ("gt".equals(func))
-      return new ComparisonCriterion((String) args[0], args[1], "<topaz:gt>", resolverModel);
+    return new ComparisonCriterion((String) args[0], args[1], "<topaz:" + func + ">", resolverModel);
 
-    if ("lt".equals(func))
-      return new ComparisonCriterion((String) args[0], args[1], "<topaz:lt>", resolverModel);
-
-    throw new OtmException("Unknown function '" + func + "'");
   }
 
   /**
@@ -74,7 +69,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
    * @author Eric Brown
    * @author Pradeep Krishnan
    */
-  public static class ComparisonCriterion implements Criterion {
+  public static class ComparisonCriterion extends Criterion {
     private String resolverModel;
     private String name;
     private Object value;
