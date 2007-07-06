@@ -15,6 +15,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
@@ -22,9 +23,16 @@ import org.topazproject.otm.mapping.Mapper;
  *
  * @author Pradeep Krishnan
  */
-public class MinusCriterion implements Criterion {
+@Entity(type = Criterion.RDF_TYPE + "/minus")
+public class MinusCriterion extends Criterion {
   private Criterion minuend;
   private Criterion subtrahend;
+
+  /**
+   * Creates a new MinusCriterion object.
+   */
+  public MinusCriterion() {
+  }
 
   /**
    * Creates a new MinusCriterion object.
@@ -44,5 +52,41 @@ public class MinusCriterion implements Criterion {
                 throws OtmException {
     return "( (" + minuend.toItql(criteria, subjectVar, varPrefix + "m1") + ") minus ("
            + subtrahend.toItql(criteria, subjectVar, varPrefix + "m2") + ") )";
+  }
+
+  /**
+   * Get minuend.
+   *
+   * @return minuend as Criterion.
+   */
+  public Criterion getMinuend() {
+    return minuend;
+  }
+
+  /**
+   * Set minuend.
+   *
+   * @param minuend the value to set.
+   */
+  public void setMinuend(Criterion minuend) {
+    this.minuend = minuend;
+  }
+
+  /**
+   * Get subtrahend.
+   *
+   * @return subtrahend as Criterion.
+   */
+  public Criterion getSubtrahend() {
+    return subtrahend;
+  }
+
+  /**
+   * Set subtrahend.
+   *
+   * @param subtrahend the value to set.
+   */
+  public void setSubtrahend(Criterion subtrahend) {
+    this.subtrahend = subtrahend;
   }
 }

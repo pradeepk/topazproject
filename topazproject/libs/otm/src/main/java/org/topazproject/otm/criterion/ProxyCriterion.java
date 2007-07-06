@@ -22,7 +22,7 @@ import org.topazproject.otm.mapping.Mapper;
  *
  * @author Pradeep Krishnan
  */
-public class ProxyCriterion implements Criterion {
+public class ProxyCriterion extends Criterion {
   private String    func;
   private Object[]  args;
   private Criterion criterion = null;

@@ -22,7 +22,7 @@ import org.topazproject.otm.mapping.Mapper;
  *
  * @author Pradeep Krishnan
  */
-public class PredicateCriterion implements Criterion {
+public class PredicateCriterion extends Criterion {
   private String  name;
   private Object  value;
   private boolean unboundPredicate = false;

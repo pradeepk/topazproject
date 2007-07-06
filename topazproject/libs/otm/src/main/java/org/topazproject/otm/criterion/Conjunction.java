@@ -9,11 +9,14 @@
  */
 package org.topazproject.otm.criterion;
 
+import org.topazproject.otm.annotations.Entity;
+
 /**
  * Conjunction of Criterions.
  *
  * @author Pradeep Krishnan
  */
+@Entity(type = Criterion.RDF_TYPE + "/and")
 public class Conjunction extends Junction {
   /**
    * Creates a new Conjunction object.

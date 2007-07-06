@@ -518,7 +518,7 @@ public class OtmTest extends TestCase {
       assertTrue(id1.equals(a1.getId()) || id1.equals(a2.getId()));
       assertTrue(id2.equals(a1.getId()) || id2.equals(a2.getId()));
 
-      l = session.createCriteria(Annotation.class).add(Restrictions.id(id3.toString())).list();
+      l = session.createCriteria(Annotation.class).add(Restrictions.eq("id", id3)).list();
 
       assertEquals(1, l.size());
 
@@ -527,12 +527,12 @@ public class OtmTest extends TestCase {
       assertTrue(id3.equals(a1.getId()));
 
       l = session.createCriteria(Annotation.class).add(Restrictions.eq("annotates", "foo:1"))
-                  .add(Restrictions.id(id3.toString())).list();
+                  .add(Restrictions.eq("id", id3)).list();
 
       assertEquals(0, l.size());
 
       l = session.createCriteria(Annotation.class).add(Restrictions.eq("annotates", "foo:1"))
-                  .add(Restrictions.id(id1.toString())).list();
+                  .add(Restrictions.eq("id", id1)).list();
 
       assertEquals(1, l.size());
       a1 = (Annotation) l.get(0);
@@ -541,7 +541,7 @@ public class OtmTest extends TestCase {
 
       l = session.createCriteria(Annotation.class)
                   .add(Restrictions.conjunction().add(Restrictions.eq("annotates", "foo:1"))
-                                    .add(Restrictions.id(id1.toString()))).list();
+                                    .add(Restrictions.eq("id", id1))).list();
 
       assertEquals(1, l.size());
       a1 = (Annotation) l.get(0);
@@ -550,7 +550,7 @@ public class OtmTest extends TestCase {
 
       l = session.createCriteria(Annotation.class)
                   .add(Restrictions.disjunction().add(Restrictions.eq("annotates", "foo:1"))
-                                    .add(Restrictions.id(id1.toString()))).list();
+                                    .add(Restrictions.eq("id", id1))).list();
 
       assertEquals(2, l.size());
 
@@ -958,8 +958,9 @@ public class OtmTest extends TestCase {
       assertEquals("user:1", u.get(0));
 
       List<Grants> l =
-        session.createCriteria(Grants.class).add(Restrictions.id("http://localhost/articles/1"))
-                .list();
+        session.createCriteria(Grants.class)
+               .add(Restrictions.eq("resource", "http://localhost/articles/1"))
+               .list();
       assertEquals(1, l.size());
 
       Grants g1 = l.get(0);

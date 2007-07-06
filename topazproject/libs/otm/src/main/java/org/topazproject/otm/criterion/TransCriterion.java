@@ -15,6 +15,7 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
@@ -22,10 +23,8 @@ import org.topazproject.otm.mapping.Mapper;
  *
  * @author Pradeep Krishnan
  */
-public class TransCriterion implements Criterion {
-  private String name;
-  private Object value;
-
+@Entity(type = Criterion.RDF_TYPE + "/trans")
+public class TransCriterion extends AbstractBinaryCriterion {
   /**
    * Creates a new TransCriterion object.
    *
@@ -33,26 +32,7 @@ public class TransCriterion implements Criterion {
    * @param value field/predicate value
    */
   public TransCriterion(String name, Object value) {
-    this.name    = name;
-    this.value   = value;
-  }
-
-  /**
-   * Gets the field/predicate name.
-   *
-   * @return field/predicate name
-   */
-  public String getName() {
-    return name;
-  }
-
-  /**
-   * Gets the field/predicate value.
-   *
-   * @return field/predicate value
-   */
-  public Object getValue() {
-    return value;
+    super(name, value);
   }
 
   /*
@@ -61,15 +41,15 @@ public class TransCriterion implements Criterion {
   public String toItql(Criteria criteria, String subjectVar, String varPrefix)
                 throws OtmException {
     ClassMetadata cm = criteria.getClassMetadata();
-    Mapper        m  = cm.getMapperByName(getName());
+    Mapper        m  = cm.getMapperByName(getFieldName());
 
     if (m == null)
-      throw new OtmException("'" + getName() + "' does not exist in " + cm);
+      throw new OtmException("'" + getFieldName() + "' does not exist in " + cm);
 
     String val;
 
     if (m.typeIsUri())
-      val = "<" + ItqlHelper.validateUri(getValue().toString(), getName()) + ">";
+      val = "<" + ItqlHelper.validateUri(getValue().toString(), getFieldName()) + ">";
     else
       throw new OtmException("Value must be a uri for trans(): field is "
                              + m.getField().toGenericString());

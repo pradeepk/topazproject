@@ -16,7 +16,7 @@ import org.topazproject.otm.Criteria;
  *
  * @author Pradeep Krishnan
  */
-public class SubjectCriterion implements Criterion {
+public class SubjectCriterion extends Criterion {
   private String id;
 
   /**

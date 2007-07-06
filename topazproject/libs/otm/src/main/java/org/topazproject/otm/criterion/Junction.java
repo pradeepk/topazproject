@@ -14,15 +14,17 @@ import java.util.List;
 
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.annotations.Predicate;
 
 /**
  * Base class for junctions on Criterions.
  *
  * @author Pradeep Krishnan
  */
-public class Junction implements Criterion {
-  private List<Criterion> criterions = new ArrayList<Criterion>();
-  private String          op;
+public abstract class Junction extends Criterion {
+  @Predicate(storeAs=Predicate.StoreAs.rdfSeq)
+  private List<Criterion>  criterions = new ArrayList<Criterion>();
+  private transient String op;
 
   /**
    * Creates a new Junction object.
@@ -30,7 +32,7 @@ public class Junction implements Criterion {
    * @param op the operation
    */
   protected Junction(String op) {
-    this.op                          = op;
+    this.op = op;
   }
 
   /**
@@ -56,6 +58,15 @@ public class Junction implements Criterion {
   }
 
   /**
+   * Sets the list of criterions.
+   *
+   * @param criterions the criterions to set
+   */
+  public void setCriterions(List<Criterion> criterions) {
+    this.criterions = criterions;
+  }
+
+  /**
    * Gets the operation.
    *
    * @return the operation
@@ -67,13 +78,14 @@ public class Junction implements Criterion {
   /*
    * inherited javadoc
    */
-  public String toItql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+  public String toItql(Criteria criteria, String subjectVar, String varPrefix)
+                throws OtmException {
     String sep   = "(";
     String query = "";
     int    i     = 0;
 
     for (Criterion c : getCriterions()) {
-      query += sep + c.toItql(criteria, subjectVar, varPrefix + "j" + i++);
+      query += (sep + c.toItql(criteria, subjectVar, varPrefix + "j" + i++));
       sep = " " + getOp() + " ";
     }
 

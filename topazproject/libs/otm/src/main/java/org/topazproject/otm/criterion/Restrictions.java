@@ -16,17 +16,6 @@ package org.topazproject.otm.criterion;
  */
 public class Restrictions {
   /**
-   * Creates a criterion where the id of the retrieved object is known.
-   *
-   * @param value the subject-uri/id of the object
-   *
-   * @return a newly created Criterion object
-   */
-  public static Criterion id(String value) {
-    return new SubjectCriterion(value);
-  }
-
-  /**
    * Creates a criterion where an object property has a known value.
    *
    * @param name the property name
@@ -35,7 +24,89 @@ public class Restrictions {
    * @return a newly created Criterion object
    */
   public static Criterion eq(String name, Object value) {
-    return new PredicateCriterion(name, value);
+    return new EQCriterion(name, value);
+  }
+
+  /**
+   * Apply a "not equals" criterion.
+   *
+   * @param name the property name
+   * @param value its value
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion ne(String name, Object value) {
+    return new NECriterion(name, value);
+  }
+
+  /**
+   * Apply an "exists" criterion.
+   *
+   * @param name the property name
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion exists(String name) {
+    return new ExistsCriterion(name);
+  }
+
+  /**
+   * Apply a "not" criterion.
+   *
+   * @param name the property name
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion notExists(String name) {
+    return new NotExistsCriterion(name);
+  }
+
+  /**
+   * Apply a "greater than" criterion.
+   *
+   * @param name the property name
+   * @param value its value
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion gt(String name, Object value) {
+    return new GTCriterion(name, value);
+  }
+
+  /**
+   * Apply a "less than" criterion.
+   *
+   * @param name the property name
+   * @param value its value
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion lt(String name, Object value) {
+    return new LTCriterion(name, value);
+  }
+
+  /**
+   * Apply a "less than or equals" criterion.
+   *
+   * @param name the property name
+   * @param value its value
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion le(String name, Object value) {
+    return new LECriterion(name, value);
+  }
+
+  /**
+   * Apply a "greater than or equals" criterion.
+   *
+   * @param name the property name
+   * @param value its value
+   *
+   * @return a newly created Criterion object
+   */
+  public static Criterion ge(String name, Object value) {
+    return new GECriterion(name, value);
   }
 
   /**
@@ -58,89 +129,7 @@ public class Restrictions {
    * @return a newly created Criterion object
    */
   public static Criterion not(Criterion criterion) {
-    return minus(new PredicateCriterion(), criterion);
-  }
-
-  /**
-   * Apply a "not equals" criterion.
-   *
-   * @param name the property name
-   * @param value its value
-   *
-   * @return a newly created Criterion object
-   */
-  public static Criterion ne(String name, Object value) {
-    return not(eq(name, value));
-  }
-
-  /**
-   * Apply an "exists" criterion.
-   *
-   * @param name the property name
-   *
-   * @return a newly created Criterion object
-   */
-  public static Criterion exists(String name) {
-    return new PredicateCriterion(name);
-  }
-
-  /**
-   * Apply a "not" criterion.
-   *
-   * @param name the property name
-   *
-   * @return a newly created Criterion object
-   */
-  public static Criterion notExists(String name) {
-    return not(exists(name));
-  }
-
-  /**
-   * Apply a "greater than" criterion.
-   *
-   * @param name the property name
-   * @param value its value
-   *
-   * @return a newly created Criterion object
-   */
-  public static Criterion gt(String name, Object value) {
-    return func("gt", name, value);
-  }
-
-  /**
-   * Apply a "less than" criterion.
-   *
-   * @param name the property name
-   * @param value its value
-   *
-   * @return a newly created Criterion object
-   */
-  public static Criterion lt(String name, Object value) {
-    return func("lt", name, value);
-  }
-
-  /**
-   * Apply a "less than or equals" criterion.
-   *
-   * @param name the property name
-   * @param value its value
-   *
-   * @return a newly created Criterion object
-   */
-  public static Criterion le(String name, Object value) {
-    return minus(new PredicateCriterion(name), gt(name, value));
-  }
-
-  /**
-   * Apply a "greater than or equals" criterion.
-   *
-   * @param name the property name
-   * @param value its value
-   *
-   * @return a newly created Criterion object
-   */
-  public static Criterion ge(String name, Object value) {
-    return minus(new PredicateCriterion(name), lt(name, value));
+    return new NotCriterion(criterion);
   }
 
   /**
