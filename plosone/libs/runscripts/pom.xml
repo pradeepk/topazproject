@@ -25,6 +25,12 @@
     </dependency>
 
     <dependency>
+      <groupId>org.plosone</groupId>
+      <artifactId>otm-models</artifactId>
+      <version>${pom.version}</version>
+    </dependency>
+
+    <dependency>
       <groupId>commons-lang</groupId>
       <artifactId>commons-lang</artifactId>
     </dependency>

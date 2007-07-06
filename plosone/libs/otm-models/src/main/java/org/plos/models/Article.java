@@ -13,6 +13,8 @@ import java.net.URI;
 import java.util.Date;
 import java.util.Set;
 import java.util.HashSet;
+import java.util.List;
+import java.util.ArrayList;
 
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Id;
@@ -63,6 +65,30 @@ public class Article extends ObjectInfo {
   // TODO: Change this to Set<User> once User model is done
   @Predicate(uri = Rdf.topaz + "userIsAuthor")
   private Set<URI> userAuthors = new HashSet<URI>();
+
+  // New for 0.8:
+  @Predicate(uri = Rdf.topaz + "articleType")
+  private String articleType;
+  @Predicate(uri = Rdf.topaz + "volume")
+  private int volume;
+  @Predicate(uri = Rdf.topaz + "issue")
+  private int issue;
+  @Predicate(uri = Rdf.topaz + "journalTitle")
+  private String journalTitle;
+  @Predicate(uri = Rdf.topaz + "publisherName")
+  private String publisherName;
+  @Predicate(uri = Rdf.topaz + "copyrightStatement")
+  private String copyrightStatement;
+  @Predicate(uri = Rdf.topaz + "copyrightYear")
+  private int copyrightYear;
+  @Predicate(uri = Rdf.topaz + "pageCount")
+  private int pageCount;
+  @Predicate(uri = Rdf.topaz + "affiliations")
+  private Set<String> affiliations = new HashSet<String>();
+  @Predicate(uri = Rdf.topaz + "authors", storeAs=Predicate.StoreAs.rdfList)
+  private List<String> orderedAuthors = new ArrayList<String>();
+  @Predicate(uri = Rdf.topaz + "body")
+  private String body;
 
   /**
    * @return the date the article was made available
@@ -216,5 +242,159 @@ public class Article extends ObjectInfo {
    */
   public void setUserAuthors(Set<URI> userAuthors) {
     this.userAuthors = userAuthors;
+  }
+
+  /**
+   * @return the article type
+   */
+  public String getArticleType() {
+    return articleType;
+  }
+
+  /**
+   * @param articleType the article type
+   */
+  public void setArticleType(String articleType) {
+    this.articleType = articleType;
+  }
+
+  /**
+   * @return the volume the article belongs to
+   */
+  public int getVolume() {
+    return volume;
+  }
+
+  /**
+   * @param volume the volume number the article belongs to
+   */
+  public void setVolume(int volume) {
+    this.volume = volume;
+  }
+
+  /**
+   * @return the issue the article belongs to
+   */
+  public int getIssue() {
+    return issue;
+  }
+
+  /**
+   * @param issue the issue the article belongs to
+   */
+  public void setIssue(int issue) {
+    this.issue = issue;
+  }
+
+  /**
+   * @returns the journal title
+   */
+  public String getJournalTitle() {
+    return journalTitle;
+  }
+
+  /**
+   * @param journalTitle the title of the journal
+   */
+  public void setJournalTitle(String journalTitle) {
+    this.journalTitle = journalTitle;
+  }
+
+  /**
+   * @return the name of the publisher
+   */
+  public String getPublisherName() {
+    return publisherName;
+  }
+
+  /**
+   * @param publisherName the name of the publisher
+   */
+  public void setPublisherName(String publisherName) {
+    this.publisherName = publisherName;
+  }
+
+  /**
+   * @return the copyright on the aritcle
+   */
+  public String getCopyrightStatement() {
+    return copyrightStatement;
+  }
+
+  /**
+   * @param copyrightStatement the copyright on the article
+   */
+  public void setCopyrightStatement(String copyrightStatement) {
+    this.copyrightStatement = copyrightStatement;
+  }
+
+  /**
+   * @return the year of the copyright
+   */
+  public int getCopyrightYear() {
+    return copyrightYear;
+  }
+
+  /**
+   * @param copyrightYear the year of the copyright
+   */
+  public void setCopyrightYear(int copyrightYear) {
+    this.copyrightYear = copyrightYear;
+  }
+
+  /**
+   * @return the number of pages in the article
+   */
+  public int getPageCount() {
+    return pageCount;
+  }
+
+  /**
+   * @param pageCount the number of pages in the aritcle
+   */
+  public void setPageCount(int pageCount) {
+    this.pageCount = pageCount;
+  }
+
+  /**
+   * @return a list of affiliations
+   */
+  public Set<String> getAffiliations() {
+    return affiliations;
+  }
+
+  /**
+   * @param affiliations a set of affiliations
+   */
+  public void setAffiliations(Set<String> affiliations) {
+    this.affiliations = affiliations;
+  }
+
+  /**
+   * @return an ordered list of authors
+   */
+  public List<String> getOrderedAuthors() {
+    return orderedAuthors;
+  }
+
+  /**
+   * @param authors the list of authors
+   */
+  public void setOrderedAuthors(List<String> authors) {
+    orderedAuthors = authors;
+  }
+
+  /**
+   * @return the body xml
+   */
+  public String getBody() {
+    return body;
+  }
+
+  /**
+   * @param body the body xml
+   */
+  public void setBody(String body) {
+    this.body = body;
   }
 }
