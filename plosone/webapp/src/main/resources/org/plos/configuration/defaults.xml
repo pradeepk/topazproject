@@ -37,9 +37,9 @@
       <http>${network.ports.default}</http>
       <https>${network.ports.plosone-ssl}</https>
     </port>
-    <host>${pub.hostname}:${pub.port.http}</host>
+    <host>${network.hosts.default}:${network.ports.default}</host>
 
-    <url><proxy-callback>https://${pub.hostname}:${pub.port.https}${pub.app-context}/CasProxyServlet</proxy-callback></url>
+    <url><proxy-callback>https://${network.hosts.plosone}:${network.ports.plosone}${pub.app-context}/CasProxyServlet</proxy-callback></url>
 
     <app-context>/plosone-webapp</app-context>
     <resource-sub-dir></resource-sub-dir>
@@ -68,7 +68,7 @@
     <feed>
       <title>PLoS ONE Alerts: PLoS ONE Journal</title>
       <tagline>Publishing science, accelerating research</tagline>
-      <icon>${pub.host}/images/pone_favicon.ico</icon>
+      <icon>${network.hosts.default}/images/pone_favicon.ico</icon>
     </feed>
 
     <!-- Define defaults for spring - must be redone soon -->
@@ -114,7 +114,7 @@
     <hostname>${network.hosts.cas}</hostname>
     <app-context>/plos-registration</app-context>
     <url>
-      <base>https://${plos-registration.hostname}:${cas.port.https}${plos-registration.app-context}</base>
+      <base>https://${network.hosts.cas}:${network.ports.cas-ssl}${plos-registration.app-context}</base>
       <registration>${plos-registration.url.base}/register.action</registration>
       <change-password>${plos-registration.url.base}/changePassword.action</change-password>
       <change-email>${plos-registration.url.base}/changeEmail.action</change-email>

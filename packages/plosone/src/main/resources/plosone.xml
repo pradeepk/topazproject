@@ -54,7 +54,7 @@
     <feed>
       <title>PLoS ONE Alerts: PLoS ONE Journal</title>
       <tagline>Publishing science, accelerating research</tagline>
-      <icon>${pub.host}/images/pone_favicon.ico</icon>
+      <icon>${network.hosts.default}/images/pone_favicon.ico</icon>
     </feed>
 
     <spring>
