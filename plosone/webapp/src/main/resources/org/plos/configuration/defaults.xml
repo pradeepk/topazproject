@@ -39,6 +39,26 @@
     <app-context>/plosone-webapp</app-context>
     <resource-sub-dir></resource-sub-dir>
 
+    <virtualJournals>
+      <default></default>
+      <!--
+      <journals>clinicalTrials,journalName</journals>
+      <clinicalTrials>
+        <description>display for Admin, etc.</description>
+        <rules>
+          <host>clinicaltrials\..*</host>
+        </rules>
+      </clinicalTrials>
+      <journalName>
+        <description>display for Admin, etc.</description>
+        <rules>
+          <httpHeader>regex to match against HTTP Header value</httpHeader>
+          <httpHeader>regex to match against HTTP Header value</httpHeader>
+        </rules>
+      </journalName>
+      -->
+    </virtualJournals>
+
     <search>
       <snippetsMax>3</snippetsMax>          <!-- Number of snippets to show per document -->
       <fieldMaxLength>50</fieldMaxLength>   <!-- Max chars per indexed field? -->
