@@ -19,6 +19,9 @@ header
  */
 
 package org.topazproject.otm.query;
+
+import java.util.HashSet;
+import java.util.Set;
 }
 
 /**
@@ -47,6 +50,7 @@ tokens {
     OFFSET = "offset";
     REF    = "ref";
     FUNC   = "func";
+    PARAM  = "param";
     EXPR   = "expr";
     SUBQ   = "subquery";
     CAST   = "cast";
@@ -54,6 +58,13 @@ tokens {
     DESC   = "desc";
 }
 
+{
+    private final Set<String> paramNames = new HashSet<String>();
+
+    public Set<String> getParameterNames() {
+      return paramNames;
+    }
+}
 
 query
 { astFactory.setASTNodeClass(OqlAST.class); }
@@ -207,6 +218,11 @@ predicate
 constant
     :   QSTRING ((DHAT URIREF) | (AT ID))?
     |   URIREF
+    |   parameter
+    ;
+
+parameter
+    :   ! COLON! n:ID  { paramNames.add(#n.getText()); #parameter = #([PARAM, "parameter"], n); }
     ;
 
 

@@ -10,9 +10,18 @@
 
 package org.topazproject.otm;
 
+import java.net.URI;
 import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.Map;
+import java.util.Set;
 
+import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.Results;
+
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 
 /** 
  * This represents an OQL query. Instances are obtained via {@link Session#createQuery
@@ -20,10 +29,13 @@ import org.topazproject.otm.query.Results;
  * 
  * @author Ronald Tschalär
  */
-public class Query {
+public class Query implements Parameterizable<Query> {
+  private static final Log log = LogFactory.getLog(Query.class);
+
   private final Session            sess;
-  private final String             query;
+  private final GenericQueryImpl   query;
   private final Collection<Filter> filters;
+  private final Map                paramValues = new HashMap<String, Object>();
 
   /** 
    * Create a new query instance. 
@@ -32,10 +44,12 @@ public class Query {
    * @param query   the oql query string
    * @param filters the filters that should be applied to this query
    */
-  Query(Session sess, String query, Collection<Filter> filters) {
+  Query(Session sess, String query, Collection<Filter> filters) throws OtmException {
     this.sess    = sess;
-    this.query   = query;
     this.filters = filters;
+
+    this.query = new GenericQueryImpl(query, log);
+    this.query.prepareQuery(sess.getSessionFactory());
   }
 
   /** 
@@ -52,6 +66,31 @@ public class Query {
 
     TripleStore store = sess.getSessionFactory().getTripleStore();
 
+    query.applyParameterValues(paramValues);
     return store.doQuery(query, sess.getTransaction());
+  }
+
+  public Set<String> getParameterNames() {
+    return Collections.unmodifiableSet(query.getParameterNames());
+  }
+
+  public Query setParameter(String name, Object val) {
+    paramValues.put(name, val);
+    return this;
+  }
+
+  public Query setUri(String name, URI val) {
+    paramValues.put(name, val);
+    return this;
+  }
+
+  public Query setPlainLiteral(String name, String val, String lang) {
+    paramValues.put(name, new Results.Literal(val, lang, null));
+    return this;
+  }
+
+  public Query setTypedLiteral(String name, String val, URI dataType) {
+    paramValues.put(name, new Results.Literal(val, null, dataType));
+    return this;
   }
 }

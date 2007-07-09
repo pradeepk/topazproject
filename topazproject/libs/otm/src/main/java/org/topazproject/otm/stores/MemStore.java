@@ -37,6 +37,7 @@ import org.topazproject.otm.criterion.Junction;
 import org.topazproject.otm.criterion.PredicateCriterion;
 import org.topazproject.otm.criterion.SubjectCriterion;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -153,7 +154,7 @@ public class MemStore implements TripleStore {
   /*
    * inherited javadoc
    */
-  public Results doQuery(String query, Transaction txn)
+  public Results doQuery(GenericQueryImpl query, Transaction txn)
                   throws OtmException {
     throw new OtmException("OQL queries not supported");
   }
@@ -161,8 +162,7 @@ public class MemStore implements TripleStore {
   /*
    * inherited javadoc
    */
-  public Results doNativeQuery(String query, Transaction txn)
-                        throws OtmException {
+  public Results doNativeQuery(String query, Transaction txn) throws OtmException {
     throw new OtmException("OQL queries not supported");
   }
 

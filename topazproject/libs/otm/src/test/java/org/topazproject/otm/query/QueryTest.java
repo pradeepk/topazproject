@@ -3,6 +3,8 @@ package org.topazproject.otm.query;
 
 import java.io.StringReader;
 import java.net.URI;
+import java.util.Collections;
+import java.util.HashMap;
 
 import antlr.RecognitionException;
 import antlr.collections.AST;
@@ -199,7 +201,7 @@ public class QueryTest extends TestCase {
   public void testPredTransformer() throws Exception {
     //String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = '42' or foobar(a) and pp := a.replies and x:foobar(cast(a.categories, org.topazproject.otm.samples.Reply).type, a.<topaz:hasCategory>, blah(a.replies.creator, pp.creator)) and a.{p: p = a.replies or foo(p) and cast(p, org.topazproject.otm.samples.Reply).title = <foo:bar>} = '42';";
     String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = '42' or pp := a.replies and cast(a.categories, Reply).type = pp and a.{p: p = a.replies or cast(p, Reply).title = <foo:bar>} = '42';";
-    //String qry = "select a from Article a where a = <42> or a = <52>;";
+    //String qry = "select a from Article a where a = <f:42> or a = <f:52>;";
     //String qry = "select ann n from Annotation ann where cast(ann.annotates, Article).title != 'Yo ho ho' order by n;";
     //String qry = "select art a, count(art.publicAnnotations) from Article art where p := art.publicAnnotations order by a;";
 
@@ -210,12 +212,16 @@ public class QueryTest extends TestCase {
     parser.query();
     printErrorsAndWarnings(parser, "parsing query");
 
-    FieldTranslator ft = new FieldTranslator(sess);
+    FieldTranslator ft = new FieldTranslator(sess.getSessionFactory());
     ft.query(parser.getAST());
     printErrorsAndWarnings(ft, "transforming query");
 
+    ParameterResolver pr = new ParameterResolver();
+    pr.query(ft.getAST(), Collections.EMPTY_MAP);
+    printErrorsAndWarnings(pr, "transforming translated query");
+
     ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess);
-    cg.query(ft.getAST());
+    cg.query(pr.getAST());
     printErrorsAndWarnings(cg, "transforming translated query");
 
     ItqlRedux ir = new ItqlRedux();
@@ -250,6 +256,71 @@ public class QueryTest extends TestCase {
     */
 
     assertTrue(qi != null);
+  }
+
+  public void testPerformance() throws Exception {
+    String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = :title or pp := a.replies and cast(a.categories, Reply).type = pp and a.{p: p = a.replies or cast(p, Reply).title = <foo:bar>} = :blah;";
+
+    Session sess = getSession();
+
+    final int iter = 2000;
+
+    long t0 = System.currentTimeMillis();
+    QueryParser parser = null;
+    for (int idx = 0; idx < iter; idx++) {
+      parser = new QueryParser(new QueryLexer(new StringReader(qry)));
+      parser.query();
+    }
+    long t1 = System.currentTimeMillis();
+    System.out.println("parse time: " + (t1 -t0) * 1.0 / iter);
+
+    t0 = System.currentTimeMillis();
+    FieldTranslator ft = null;
+    for (int idx = 0; idx < iter; idx++) {
+      ft = new FieldTranslator(sess.getSessionFactory());
+      ft.query(parser.getAST());
+    }
+    t1 = System.currentTimeMillis();
+    System.out.println("field-resolve time: " + (t1 -t0) * 1.0 / iter);
+
+    t0 = System.currentTimeMillis();
+    ParameterResolver pr = null;
+    HashMap<String, Object> params = new HashMap<String, Object>();
+    params.put("title", "42");
+    params.put("blah", new Results.Literal("42", null, null));
+    for (int idx = 0; idx < iter; idx++) {
+      pr = new ParameterResolver();
+      pr.query(ft.getAST(), params);
+    }
+    t1 = System.currentTimeMillis();
+    System.out.println("param-resolve time: " + (t1 -t0) * 1.0 / iter);
+
+    t0 = System.currentTimeMillis();
+    ItqlConstraintGenerator cg = null;
+    for (int idx = 0; idx < iter; idx++) {
+      cg = new ItqlConstraintGenerator(sess);
+      cg.query(pr.getAST());
+    }
+    t1 = System.currentTimeMillis();
+    System.out.println("constraint-gen time: " + (t1 -t0) * 1.0 / iter);
+
+    t0 = System.currentTimeMillis();
+    ItqlRedux ir = null;
+    for (int idx = 0; idx < iter; idx++) {
+      ir = new ItqlRedux();
+      ir.query(cg.getAST());
+    }
+    t1 = System.currentTimeMillis();
+    System.out.println("itql-redux time: " + (t1 -t0) * 1.0 / iter);
+
+    t0 = System.currentTimeMillis();
+    ItqlWriter wr = null;
+    for (int idx = 0; idx < iter; idx++) {
+      wr = new ItqlWriter();
+      QueryInfo qi = wr.query(ir.getAST());
+    }
+    t1 = System.currentTimeMillis();
+    System.out.println("itql-write time: " + (t1 -t0) * 1.0 / iter);
   }
 
   private static void printErrorsAndWarnings(ErrorCollector ec, String op) {

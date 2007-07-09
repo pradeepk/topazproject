@@ -19,6 +19,7 @@ import java.util.Set;
 
 import org.topazproject.otm.criterion.CriterionBuilder;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.Results;
 
 /**
@@ -100,12 +101,13 @@ public interface TripleStore {
   /**
    * Execute an OQL query.
    *
-   * @param query the OQL query string
-   * @param txn   the transaction context
+   * @param query   the preparsed query
+   * @param txn     the transaction context
    * @return the query results
    * @throws OtmException on an error
    */
-  public Results doQuery(String query, Transaction txn) throws OtmException;
+  public Results doQuery(GenericQueryImpl query, Transaction txn)
+      throws OtmException;
 
   /**
    * Execute a native query.

@@ -50,6 +50,7 @@ import org.topazproject.otm.criterion.PredicateCriterion;
 import org.topazproject.otm.criterion.SubjectCriterion;
 import org.topazproject.otm.criterion.itql.ComparisonCriterionBuilder;
 import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.query.GenericQueryImpl;
 import org.topazproject.otm.query.QueryException;
 import org.topazproject.otm.query.QueryInfo;
 import org.topazproject.otm.query.Results;
@@ -765,9 +766,10 @@ public class ItqlStore implements TripleStore {
       buildOrderBy(cr, orders, subject + "c" + i++);
   }
 
-  public Results doQuery(String query, Transaction txn) throws OtmException {
-    ItqlQuery iq = new ItqlQuery();
-    QueryInfo qi = iq.parseItqlQuery(txn.getSession(), query);
+  public Results doQuery(GenericQueryImpl query, Transaction txn)
+      throws OtmException {
+    ItqlQuery iq = new ItqlQuery(query, txn.getSession());
+    QueryInfo qi = iq.parseItqlQuery();
 
     ItqlStoreConnection isc = (ItqlStoreConnection) txn.getConnection();
     String a;

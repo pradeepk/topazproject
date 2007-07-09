@@ -17,7 +17,7 @@ import org.topazproject.otm.filter.FilterDefinition;
  *
  * @author Ronald Tschalär
  */
-public interface Filter {
+public interface Filter extends Parameterizable<Filter> {
   /**
    * Get the underlying filter definition.
    *
@@ -31,14 +31,4 @@ public interface Filter {
    * @return the name of with this filter
    */
   String getName();
-
-  /** 
-   * Get the class this filter is applied to. This may be either the entity name associated with
-   * the class or the fully qualified class name - see also {@link
-   * org.topazproject.otm.SessionFactory#getClassMetadata(java.lang.String)
-   * SessionFactory.getClassMetadata()}.
-   * 
-   * @return this
-   */
-  Filter setParameter(String name, Object value);
 }

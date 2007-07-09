@@ -29,7 +29,7 @@ import java.util.Set;
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.ModelConfig;
-import org.topazproject.otm.Session;
+import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.mapping.EmbeddedClassMapper;
 import org.topazproject.otm.mapping.EmbeddedClassFieldMapper;
 import org.topazproject.otm.mapping.Mapper;
@@ -59,13 +59,29 @@ options {
     private static final String TMP_VAR_PFX = "oqltmp1_";
 
     private Map<String, ExprType> vars = new HashMap<String, ExprType>();
+    private Map<String, ExprType> prms = new HashMap<String, ExprType>();
     private Set<String>           prjs = new HashSet<String>();
-    private Session               sess;
+    private SessionFactory        sessFactory;
     private int                   varCnt = 0;
 
-    public FieldTranslator(Session session) {
+    /** 
+     * Create a new translator instance.
+     *
+     * @param sessionFactory the session-factory to use to look up class-metatdata, models, etc
+     */
+    public FieldTranslator(SessionFactory sessionFactory) {
       this();
-      sess = session;
+      sessFactory = sessionFactory;
+    }
+
+    /** 
+     * Get the list of parameters found in the query. This is only valid after invoking
+     * <code>query()</code>.
+     *
+     * @return the found parameters; the keys are the parameter names.
+     */
+    public Map<String, ExprType> getParameters() {
+      return prms;
     }
 
     private ExprType getTypeForVar(AST id) throws RecognitionException {
@@ -76,9 +92,9 @@ options {
     }
 
     private ExprType getTypeForClass(AST clazz, String loc) throws RecognitionException {
-      ClassMetadata md = sess.getSessionFactory().getClassMetadata(#clazz.getText());
+      ClassMetadata md = sessFactory.getClassMetadata(clazz.getText());
       if (md == null && loc != null)
-        throw new RecognitionException("unknown class '" + #clazz.getText() + "' in " + loc);
+        throw new RecognitionException("unknown class '" + clazz.getText() + "' in " + loc);
       return ExprType.classType(md, null);
     }
 
@@ -192,7 +208,7 @@ options {
         return null;
 
       ClassMetadata md;
-      if ((md = sess.getSessionFactory().getClassMetadata(m.getComponentType())) != null)
+      if ((md = sessFactory.getClassMetadata(m.getComponentType())) != null)
         return ExprType.classType(md, m.getMapperType());
 
       if (m.typeIsUri())
@@ -217,6 +233,7 @@ options {
 
       if (m != null) {
         a.setIsInverse(m.hasInverseUri());
+        a.setSerializer(m.getSerializer());
         if (m.getModel() != null)
           a.setModel(getModelUri(m.getModel()));
       }
@@ -225,7 +242,7 @@ options {
     }
 
     private String getModelUri(String modelId) throws RecognitionException {
-      ModelConfig mc = sess.getSessionFactory().getModel(modelId);
+      ModelConfig mc = sessFactory.getModel(modelId);
       if (mc == null)
         throw new RecognitionException("Unable to find model '" + modelId + "'");
       return mc.getUri().toString();
@@ -251,6 +268,20 @@ options {
       updateAST(var, type, type, null, true);
     }
 
+    private void addParam(AST param, ExprType type) throws RecognitionException {
+      if (prms.containsKey(param.getText())) {
+        ExprType prev = prms.get(param.getText());
+        if (prev == null)
+          prms.put(param.getText(), type);
+        else if (type != null && !type.equals(prev))
+          reportWarning("type mismatch for parameter '" + param.getText() + "': previous type " +
+                        "was '" + prev + "' but current type is '" + type + "'");
+      } else
+        prms.put(param.getText(), type);
+
+      updateAST(param, null, type, null, false);
+    }
+
     private AST nextVar() {
       String v = TMP_VAR_PFX + varCnt++;
       return #([ID, v]);
@@ -263,7 +294,29 @@ options {
       prjs.add(var);
     }
 
-    private void checkTypeCompatibility(ExprType et1, ExprType et2, AST expr) {
+    private void checkTypeCompatibility(ExprType et1, ExprType et2, AST ex1, AST ex2, AST expr)
+        throws RecognitionException {
+      // handle parameters
+      if (ex1.getType() == PARAM) {
+        if (et2 != null && et2.getType() != ExprType.Type.URI &&
+            et2.getType() != ExprType.Type.UNTYPED_LIT && et2.getType() != ExprType.Type.TYPED_LIT)
+          reportWarning("type mismatch in expression '" + expr.toStringTree() + "': parameter" +
+                        " is not comparable to " + et2);
+
+        et1 = et2;
+        addParam(ex1, et1);
+        return;
+      } else if (ex2.getType() == PARAM) {
+        if (et1 != null && et1.getType() != ExprType.Type.URI &&
+            et1.getType() != ExprType.Type.UNTYPED_LIT && et1.getType() != ExprType.Type.TYPED_LIT)
+          reportWarning("type mismatch in expression '" + expr.toStringTree() + "': parameter" +
+                        " is not comparable to " + et1);
+
+        et2 = et1;
+        addParam(ex2, et2);
+        return;
+      }
+
       // assume unknown type is compatible with anything
       if (et1 == null || et2 == null)
         return;
@@ -349,8 +402,8 @@ expr
         vars.put(#ID.getText(), type);
         updateAST(#ID, null, type, null, true);
       }
-    | #(EQ type=factor type2=factor) { checkTypeCompatibility(type, type2, #expr); }
-    | #(NE type=factor type2=factor) { checkTypeCompatibility(type, type2, #expr); }
+    | #(EQ type=e1:factor type2=e2:factor) { checkTypeCompatibility(type, type2, #e1, #e2, #expr); }
+    | #(NE type=n1:factor type2=n2:factor) { checkTypeCompatibility(type, type2, #n1, #n2, #expr); }
     | factor
     ;
 
@@ -359,7 +412,8 @@ factor returns [ExprType type = null]
         type = (#t != null) ? ExprType.literalType(expandAliases(#t.getText()), null) :
                               ExprType.literalType(null);
       }
-    | URIREF                               { type = ExprType.uriType(null); }
+    | URIREF                 { type = ExprType.uriType(null); }
+    | #(PARAM ID)
     | #(FUNC ID (COLON ID)? (factor)*)
     | #(REF (   v:ID         { updateAST(#v, null, type = getTypeForVar(#v), null, true); }
               | type=c:cast  { updateAST(#c, null, type, null, ((OqlAST) #c).isVar()); }

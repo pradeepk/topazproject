@@ -10,11 +10,12 @@
 
 package org.topazproject.otm.query;
 
-import org.topazproject.otm.metadata.RdfBuilder;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
+import org.topazproject.otm.Query;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.metadata.RdfBuilder;
 import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
@@ -677,6 +678,184 @@ public class OqlTest extends GroovyTestCase {
     }
   }
 
+  void testParameters() {
+    // create data
+    Class cls = rdf.class('Test1') {
+      state (type:'xsd:int')
+      info () {
+        name () {
+          givenName ()
+          surname   ()
+        }
+      }
+      blog (type:'xsd:anyURI')
+    }
+
+    def o1 = cls.newInstance(state:1, info:[name:[givenName:'Bob', surname:'Cutter']],
+                             blog:"http://www.foo.com/".toURI(), id:"foo:1".toURI())
+    def o2 = cls.newInstance(state:2, info:[name:[givenName:'Jack', surname:'Keller']],
+                             blog:"http://www.bar.com/".toURI(), id:"foo:2".toURI())
+    def o3 = cls.newInstance(state:3, info:[name:[givenName:'Billy', surname:'Bob']],
+                             blog:"http://www.baz.com/".toURI(), id:"foo:3".toURI())
+
+    doInTx { s ->
+      s.saveOrUpdate(o1)
+      s.saveOrUpdate(o2)
+      s.saveOrUpdate(o3)
+    }
+
+    // run tests
+    def checker = new ResultChecker(test:this)
+
+    doInTx { s ->
+      // plain literal
+      Query q = s.createQuery("select obj from Test1 obj where obj.info.name.givenName = :name;")
+      assert q.getParameterNames() == ['name'] as Set
+
+      Results r = q.setParameter("name", "Jack").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+      }
+
+      r = q.setPlainLiteral("name", "Jack", null).execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+      }
+
+      r = q.setTypedLiteral("name", "Jack", "xsd:string".toURI()).execute()
+      checker.verify(r, warnings:true) {
+      }
+
+      r = q.setUri("name", "Jack:1".toURI()).execute()
+      checker.verify(r, warnings:true) {
+      }
+
+      assert shouldFail(Exception, {
+        r = q.setUri("name", "Jack".toURI()).execute()
+      }).contains("is not absolute")
+
+      // typed literal
+      q = s.createQuery("select obj from Test1 obj where obj.state = :state;")
+      assert q.getParameterNames() == ['state'] as Set
+
+      r = q.setParameter("state", 1).execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+      }
+
+      r = q.setPlainLiteral("state", "1", null).execute()
+      checker.verify(r, warnings:true) {
+      }
+
+      r = q.setTypedLiteral("state", "1", "xsd:int".toURI()).execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+      }
+
+      r = q.setUri("state", "Jack:1".toURI()).execute()
+      checker.verify(r, warnings:true) {
+      }
+
+      assert shouldFail(Exception, {
+        r = q.setUri("state", "Jack".toURI()).execute()
+      }).contains("is not absolute")
+
+      // uri
+      q = s.createQuery("select obj from Test1 obj where obj.blog = :blog;")
+      assert q.getParameterNames() == ['blog'] as Set
+
+      r = q.setParameter("blog", "http://www.bar.com/").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+      }
+
+      r = q.setParameter("blog", "http://www.bar.com/".toURI()).execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+      }
+
+      r = q.setPlainLiteral("blog", "http://www.bar.com/", null).execute()
+      checker.verify(r, warnings:true) {
+      }
+
+      r = q.setTypedLiteral("blog", "http://www.bar.com/", "xsd:anyURI".toURI()).execute()
+      checker.verify(r, warnings:true) {
+      }
+
+      r = q.setUri("blog", "http://www.bar.com/".toURI()).execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+      }
+
+      assert shouldFail(Exception, {
+        r = q.setUri("blog", "Jack".toURI()).execute()
+      }).contains("is not absolute")
+
+      // class
+      q = s.createQuery("select obj from Test1 obj where obj.info = :info;")
+      assert q.getParameterNames() == ['info'] as Set
+
+      r = q.setParameter("info", o2.info.id).execute()
+      checker.verify(r, warnings:true) {
+        row { object (class:cls, id:o2.id) }
+      }
+
+      q = s.createQuery("select obj from Test1 obj where obj.info.id = :info;")
+      assert q.getParameterNames() == ['info'] as Set
+
+      r = q.setParameter("info", o2.info.id).execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+      }
+
+      // no type
+      q = s.createQuery("select obj from Test1 obj where obj.<topaz:info> = :info;")
+      assert q.getParameterNames() == ['info'] as Set
+
+      assert shouldFail(QueryException, {
+        r = q.setParameter("info", o2.info.id.toString()).execute()
+      })
+
+      r = q.setParameter("info", o2.info.id).execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+      }
+
+      r = q.setUri("info", o2.info.id).execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+      }
+
+      r = q.setPlainLiteral("info", o2.info.id.toString(), null).execute()
+      checker.verify(r) {
+      }
+
+      r = q.setTypedLiteral("info", o2.info.id.toString(), "xsd:anyURI".toURI()).execute()
+      checker.verify(r) {
+      }
+
+      // same parameter twice
+      q = s.createQuery("select obj from Test1 obj where obj.info.name.givenName = :name or obj.info.name.surname = :name order by obj;")
+      assert q.getParameterNames() == ['name'] as Set
+
+      r = q.setParameter("name", "Bob").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+        row { object (class:cls, id:o3.id) }
+      }
+
+      // two parameters
+      q = s.createQuery("select obj from Test1 obj where obj.info.name.givenName = :gname or obj.info.name.surname = :sname order by obj;")
+      assert q.getParameterNames() == ['gname', 'sname'] as Set
+
+      r = q.setParameter("gname", "Bob").setParameter("sname", "Keller").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+        row { object (class:cls, id:o2.id) }
+      }
+    }
+  }
+
   private def doInTx(Closure c) {
     Session s = rdf.sessFactory.openSession()
     s.beginTransaction()
@@ -727,9 +906,13 @@ class ResultChecker extends BuilderSupport {
     switch (name) {
       case 'verify':
         res = value;
-        if (res.warnings)
-          test.log.error "Got warnings: " + res.warnings.join(System.getProperty("line.separator"))
-        test.assertNull(res.warnings);
+        if (attributes?.get('warnings'))
+          test.assertNotNull(res.warnings);
+        else {
+          if (res.warnings)
+            test.log.error "Got warnings: " +res.warnings.join(System.getProperty("line.separator"))
+          test.assertNull(res.warnings);
+        }
         break;
 
       case 'row':
