@@ -19,6 +19,7 @@
       <fedora>${network.hosts.default}</fedora>
       <mulgara>${network.hosts.default}</mulgara>
       <plosone>${network.hosts.default}</plosone>
+      <!-- TODO: Use registration apropriately every where. Pull out doi-resolver (& search?) -->
     </hosts>
     <ports>
       <!-- For webhead, set default to empty (not 80) -->
@@ -29,10 +30,6 @@
   </network>
 
   <pub>
-    <!-- To change network settings, please set the following above:
-         - network.hosts.default
-         - network.ports.default
-         - network.ports.plosone-ssl -->
     <app-context></app-context>
     <resource-sub-dir></resource-sub-dir>
 
@@ -98,7 +95,9 @@
     </utilities>
 
     <search>
+      <!-- Path where lucene search index is stored -->
       <indexpath>/var/lib/topaz/data/lucene</indexpath>
+      <!-- Fields of lucene meta data that are searched by default -->
       <defaultfields>description,title,body,creator</defaultfields>
     </search>
 

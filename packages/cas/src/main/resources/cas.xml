@@ -24,7 +24,9 @@
   </network>
 
   <cas>
-    <!-- This password is only needed on servers running cas -->
+    <!-- The following entries defnine how the java webapp talk to the database.
+         For example, talking to postgresql, you need the database name at the end of the url
+         The user and password are for the database as well. -->
     <db>
       <user>casuser</user>
       <password>caspass</password>

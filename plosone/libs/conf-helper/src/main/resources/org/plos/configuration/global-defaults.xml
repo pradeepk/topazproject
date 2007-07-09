@@ -28,22 +28,27 @@
       <fedora>${network.hosts.default}</fedora>
       <mulgara>${network.hosts.default}</mulgara>
       <plosone>${network.hosts.default}</plosone>
+      <!-- TODO: Use registration apropriately every where. Pull out doi-resolver (& search?) -->
     </hosts>
     <ports>
       <!-- For webhead, set default to empty (not 80) -->
       <default>${network.ports.plosone}</default>
+      <!-- If 443, set cas-ssl to empty -->
+      <cas-ssl>7443</cas-ssl>
 
       <plosone>8080</plosone>
       <plosone-ssl>10443</plosone-ssl>
-      <cas-ssl>7443</cas-ssl>
-      <registration-ssl>${network.ports.cas-ssl}</registration-ssl>
       <fedora>9090</fedora>
       <mulgara>9091</mulgara>
+
+      <registration-ssl>${network.ports.cas-ssl}</registration-ssl>
     </ports>
   </network>
 
   <cas>
-    <!-- This password is only needed on servers running cas -->
+    <!-- The following entries defnine how the java webapp talk to the database.
+         For example, talking to postgresql, you need the database name at the end of the url
+         The user and password are for the database as well. -->
     <db>
       <user>casuser</user>
       <password>caspass</password>
