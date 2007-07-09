@@ -487,10 +487,11 @@ options {
 
 
 query
-    : (any)+ { simplifyQuery(#query, new HashSet<String>()); }
-    ;
-
-any
-    : #(. (any)*)
+    : ! {
+        if (_t == null)         // dummy throws to satisfy compiler
+          throw new RecognitionException();
+        simplifyQuery(_t, new HashSet<String>());
+        #query = _t;
+      }
     ;
 
