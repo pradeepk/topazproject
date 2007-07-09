@@ -18,6 +18,7 @@ import java.util.Set;
 
 import org.apache.commons.logging.Log;
 
+import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
@@ -133,6 +134,22 @@ public class GenericQueryImpl extends QueryImplBase implements Cloneable {
     if (resolvedQuery == null)
       throw new IllegalStateException("applyParameterValues() hasn't been invoked yet");
     return resolvedQuery.getAST();
+  }
+
+  /**
+   * Turn this query into a Criteria, if possible.
+   *
+   * @param sess the session
+   * @throws OtmException if an error occurred
+   */
+  public Criteria toCriteria(Session sess) throws OtmException {
+    CriteriaGenerator cg = doStep("creating criteria", new CriteriaGenerator(sess),
+                                  new QueryStep<CriteriaGenerator>() {
+      public void run(CriteriaGenerator cg) throws Exception {
+        cg.query(parsedQuery.getAST());
+      }
+    });
+    return cg.getCriteria();
   }
 
   @Override

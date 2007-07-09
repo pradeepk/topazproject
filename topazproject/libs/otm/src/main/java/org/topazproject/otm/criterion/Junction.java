@@ -78,14 +78,14 @@ public abstract class Junction extends Criterion {
   /*
    * inherited javadoc
    */
-  public String toItql(Criteria criteria, String subjectVar, String varPrefix)
+  public String toQuery(Criteria criteria, String subjectVar, String varPrefix, QL ql)
                 throws OtmException {
     String sep   = "(";
     String query = "";
     int    i     = 0;
 
     for (Criterion c : getCriterions()) {
-      query += (sep + c.toItql(criteria, subjectVar, varPrefix + "j" + i++));
+      query += (sep + c.toQuery(criteria, subjectVar, varPrefix + "j" + i++, ql));
       sep = " " + getOp() + " ";
     }
 

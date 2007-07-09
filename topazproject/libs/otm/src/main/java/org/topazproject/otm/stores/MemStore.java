@@ -12,6 +12,7 @@ package org.topazproject.otm.stores;
 import java.net.URI;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -23,6 +24,7 @@ import java.util.Set;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Connection;
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.Filter;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.SessionFactory;
@@ -154,7 +156,7 @@ public class MemStore implements TripleStore {
   /*
    * inherited javadoc
    */
-  public Results doQuery(GenericQueryImpl query, Transaction txn)
+  public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Transaction txn)
                   throws OtmException {
     throw new OtmException("OQL queries not supported");
   }

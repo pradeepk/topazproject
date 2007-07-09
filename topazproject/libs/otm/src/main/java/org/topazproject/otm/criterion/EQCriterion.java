@@ -40,7 +40,7 @@ public class EQCriterion extends AbstractBinaryCriterion {
   /*
    * inherited javadoc
    */
-  public String toItql(Criteria criteria, String subjectVar, String varPrefix)
+  public String toQuery(Criteria criteria, String subjectVar, String varPrefix, QL ql)
                 throws OtmException {
     Criterion     impl;
     ClassMetadata cm = criteria.getClassMetadata();
@@ -50,6 +50,6 @@ public class EQCriterion extends AbstractBinaryCriterion {
     else
       impl = new PredicateCriterion(getFieldName(), getValue());
 
-    return impl.toItql(criteria, subjectVar, varPrefix);
+    return impl.toQuery(criteria, subjectVar, varPrefix, ql);
   }
 }

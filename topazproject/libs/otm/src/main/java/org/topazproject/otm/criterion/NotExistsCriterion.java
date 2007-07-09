@@ -53,6 +53,25 @@ public class NotExistsCriterion extends Criterion {
     return impl.toItql(criteria, subjectVar, varPrefix);
   }
 
+  /*
+   * inherited javadoc
+   */
+  public String toOql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+    if (criteria != null)       // always true - dummy for compiler
+      throw new OtmException("'not-exists' is not supported in OQL (yet)");
+
+    String res = subjectVar;
+
+    if (fieldName == null)
+      res += ".{" + varPrefix + "p:}";
+    else
+      res += "." + fieldName;
+
+    res += " == null";
+
+    return res;
+  }
+
   /**
    * Get fieldName.
    *

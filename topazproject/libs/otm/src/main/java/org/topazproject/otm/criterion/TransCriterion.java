@@ -73,4 +73,11 @@ public class TransCriterion extends AbstractBinaryCriterion {
 
     return "(trans(" + triple + ") or " + triple + ")";
   }
+
+  /*
+   * inherited javadoc
+   */
+  public String toOql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+    throw new OtmException("'trans' is not supported by OQL (yet)");
+  }
 }

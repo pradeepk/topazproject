@@ -39,13 +39,15 @@ public abstract class AbstractComparisonCriterion extends AbstractBinaryCriterio
     super(name, value);
   }
 
-  protected String toItql(Criteria criteria, String subjectVar, String varPrefix, String operator)
+  protected String toQuery(Criteria criteria, String subjectVar, String varPrefix, String operator,
+                           QL ql)
                 throws OtmException {
     CriterionBuilder cb =
       criteria.getSession().getSessionFactory().getTripleStore().getCriterionBuilder(operator);
 
     if (cb != null)
-      return cb.create(operator, getFieldName(), getValue()).toItql(criteria, subjectVar, varPrefix);
+      return cb.create(operator, getFieldName(), getValue()).
+                toQuery(criteria, subjectVar, varPrefix, ql);
 
     throw new OtmException("Function " + operator + "' is unsupported by the triple-store");
   }

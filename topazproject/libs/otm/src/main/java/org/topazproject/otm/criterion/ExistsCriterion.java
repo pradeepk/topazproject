@@ -40,11 +40,11 @@ public class ExistsCriterion extends Criterion {
   /*
    * inherited javadoc
    */
-  public String toItql(Criteria criteria, String subjectVar, String varPrefix)
+  public String toQuery(Criteria criteria, String subjectVar, String varPrefix, QL ql)
                 throws OtmException {
     Criterion impl = new PredicateCriterion(fieldName);
 
-    return impl.toItql(criteria, subjectVar, varPrefix);
+    return impl.toQuery(criteria, subjectVar, varPrefix, ql);
   }
 
   /**

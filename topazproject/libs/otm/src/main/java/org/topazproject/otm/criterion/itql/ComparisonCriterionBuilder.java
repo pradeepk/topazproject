@@ -75,14 +75,14 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
     private Object value;
     private String operator;
 
-  /**
-   * Creates a new ComparisonCriterion object.
-   *
-   * @param name field/predicate name
-   * @param value field/predicate value
-   * @param operator the comparison operator
-   * @param resolverModel the model uri for the resolver that implements comparison
-   */
+    /**
+     * Creates a new ComparisonCriterion object.
+     *
+     * @param name field/predicate name
+     * @param value field/predicate value
+     * @param operator the comparison operator
+     * @param resolverModel the model uri for the resolver that implements comparison
+     */
     public ComparisonCriterion(String name, Object value, String operator, String resolverModel) {
       this.name            = name;
       this.value           = value;
@@ -104,18 +104,7 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
       if (m.typeIsUri())
         throw new OtmException("'" + name + "' invalid comparison - cannot compare URIs");
 
-      String val;
-
-      try {
-        val = (m.getSerializer() != null) ? m.getSerializer().serialize(value) : value.toString();
-      } catch (Exception e) {
-        throw new OtmException("Serializer exception", e);
-      }
-
-      val = "'" + ItqlHelper.escapeLiteral(val) + "'";
-
-      if (m.getDataType() != null)
-        val += ("^^<" + m.getDataType() + ">");
+      String val = serializeValue(value, criteria, name);
 
       String model = m.getModel();
 
@@ -136,6 +125,29 @@ public class ComparisonCriterionBuilder implements CriterionBuilder {
 
       return "(" + val + " <" + m.getUri() + "> " + varPrefix + model + " and " + varPrefix + " "
              + operator + " " + subjectVar + " in " + resolverModel + ")";
+    }
+
+    /*
+     * inherited javadoc
+     */
+    public String toOql(Criteria criteria, String subjectVar, String varPrefix)
+                  throws OtmException {
+      String res;
+
+      if (operator.equals("<topaz:gt>"))
+        res = "gt(";
+      else if (operator.equals("<topaz:ge>"))
+        res = "ge(";
+      else if (operator.equals("<topaz:lt>"))
+        res = "lt(";
+      else if (operator.equals("<topaz:le>"))
+        res = "le(";
+      else
+        throw new OtmException("Internal error: unknown operator '" + operator + "'");
+
+      res += subjectVar + "." + name + ", " + serializeValue(value, criteria, name) + ")";
+
+      return res;
     }
   }
 }

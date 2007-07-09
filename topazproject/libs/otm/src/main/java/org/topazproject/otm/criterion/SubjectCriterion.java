@@ -9,6 +9,7 @@
  */
 package org.topazproject.otm.criterion;
 
+import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 
 /**
@@ -42,5 +43,13 @@ public class SubjectCriterion extends Criterion {
    */
   public String toItql(Criteria criteria, String subjectVar, String varPrefix) {
     return subjectVar + " <mulgara:is> <" + id + ">";
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public String toOql(Criteria criteria, String subjectVar, String varPrefix) {
+    ClassMetadata cm = criteria.getClassMetadata();
+    return subjectVar + "." + cm.getIdField().getName() + " = <" + id + ">";
   }
 }

@@ -67,7 +67,7 @@ public class Query implements Parameterizable<Query> {
     TripleStore store = sess.getSessionFactory().getTripleStore();
 
     query.applyParameterValues(paramValues);
-    return store.doQuery(query, sess.getTransaction());
+    return store.doQuery(query, filters, sess.getTransaction());
   }
 
   public Set<String> getParameterNames() {

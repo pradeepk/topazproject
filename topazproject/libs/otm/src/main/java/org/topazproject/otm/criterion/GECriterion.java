@@ -41,8 +41,8 @@ public class GECriterion extends AbstractComparisonCriterion {
   /*
    * inherited javadoc
    */
-  public String toItql(Criteria criteria, String subjectVar, String varPrefix)
+  public String toQuery(Criteria criteria, String subjectVar, String varPrefix, QL ql)
                 throws OtmException {
-    return toItql(criteria, subjectVar, varPrefix, "ge");
+    return toQuery(criteria, subjectVar, varPrefix, "ge", ql);
   }
 }

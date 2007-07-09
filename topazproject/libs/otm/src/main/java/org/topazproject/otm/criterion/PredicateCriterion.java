@@ -95,23 +95,8 @@ public class PredicateCriterion extends Criterion {
 
     if (unboundValue)
       val = varPrefix + "v";
-    else {
-      try {
-        val = (m.getSerializer() != null) ? m.getSerializer().serialize(getValue())
-              : getValue().toString();
-      } catch (Exception e) {
-        throw new OtmException("Serializer exception", e);
-      }
-
-      if (m.typeIsUri())
-        val = "<" + ItqlHelper.validateUri(val, getName()) + ">";
-      else {
-        val = "'" + ItqlHelper.escapeLiteral(val) + "'";
-
-        if (m.getDataType() != null)
-          val += (("^^<" + m.getDataType()) + ">");
-      }
-    }
+    else
+      val = serializeValue(getValue(), criteria, getName());
 
     String query =
       m.hasInverseUri() ? (val + " <" + m.getUri() + "> " + subjectVar)
@@ -132,5 +117,27 @@ public class PredicateCriterion extends Criterion {
       query += model;
 
     return query;
+  }
+
+  /*
+   * inherited javadoc
+   */
+  public String toOql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+    if (unboundValue)
+      throw new OtmException("unbound value not supported in OQL (yet)");
+
+    String res = subjectVar;
+
+    if (unboundPredicate)
+      res += ".{" + varPrefix + "p:}";
+    else
+      res += "." + getName();
+
+    if (unboundValue)
+      res += " != null";
+    else
+      res += " = " + serializeValue(getValue(), criteria, getName());
+
+    return res;
   }
 }

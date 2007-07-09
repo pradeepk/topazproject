@@ -54,6 +54,13 @@ public class MinusCriterion extends Criterion {
            + subtrahend.toItql(criteria, subjectVar, varPrefix + "m2") + ") )";
   }
 
+  /*
+   * inherited javadoc
+   */
+  public String toOql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+    throw new OtmException("'minus' is not supported by OQL");
+  }
+
   /**
    * Get minuend.
    *

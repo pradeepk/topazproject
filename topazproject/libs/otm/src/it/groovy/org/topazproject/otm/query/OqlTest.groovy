@@ -10,11 +10,20 @@
 
 package org.topazproject.otm.query;
 
+import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Query;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.SessionFactory;
+import org.topazproject.otm.criterion.Conjunction;
+import org.topazproject.otm.criterion.Disjunction;
+import org.topazproject.otm.criterion.EQCriterion;
+import org.topazproject.otm.criterion.ProxyCriterion;
+import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.filter.CriteriaFilterDefinition;
+import org.topazproject.otm.filter.FilterDefinition;
+import org.topazproject.otm.filter.OqlFilterDefinition;
 import org.topazproject.otm.metadata.RdfBuilder;
 import org.topazproject.otm.stores.ItqlStore;
 import org.topazproject.otm.samples.Annotation;
@@ -853,6 +862,191 @@ public class OqlTest extends GroovyTestCase {
         row { object (class:cls, id:o1.id) }
         row { object (class:cls, id:o2.id) }
       }
+    }
+  }
+
+  void testFilters() {
+    // create data
+    Class cls = rdf.class('Test1') {
+      state (type:'xsd:int')
+      info () {
+        name () {
+          givenName ()
+          surname   ()
+        }
+      }
+    }
+
+    def o1 = cls.newInstance(id:"foo:1".toURI(), state:1,
+                             info:[name:[givenName:'Bob', surname:'Cutter']])
+    def o2 = cls.newInstance(id:"foo:2".toURI(), state:2,
+                             info:[name:[givenName:'Jack', surname:'Keller']])
+    def o3 = cls.newInstance(id:"foo:3".toURI(), state:3,
+                             info:[name:[givenName:'Billy', surname:'Bob']])
+
+    doInTx { s ->
+      s.saveOrUpdate(o1)
+      s.saveOrUpdate(o2)
+      s.saveOrUpdate(o3)
+    }
+
+    FilterDefinition fd1 =
+        new OqlFilterDefinition('noBob', 'Test1', "o where o.info.name.givenName != 'Bob'")
+    FilterDefinition fd2 =
+        new OqlFilterDefinition('state', 'Test1', 'o where o.state != :state')
+    FilterDefinition fd3 =
+        new OqlFilterDefinition('noJack', o1.info.name.getClass().getName(),
+                                "n where n.givenName != 'Jack'")
+
+    rdf.sessFactory.addFilterDefinition(fd1);
+    rdf.sessFactory.addFilterDefinition(fd2);
+    rdf.sessFactory.addFilterDefinition(fd3);
+
+    // run tests
+    def checker = new ResultChecker(test:this)
+
+    doInTx { s ->
+      // no filters
+      Results r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+        row { object (class:cls, id:o2.id) }
+        row { object (class:cls, id:o3.id) }
+      }
+
+      // with filter(s)
+      s.enableFilter('noBob');
+      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+        row { object (class:cls, id:o3.id) }
+      }
+
+      s.disableFilter('noBob');
+      s.enableFilter('state').setParameter('state', 2);
+      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+        row { object (class:cls, id:o3.id) }
+      }
+
+      s.enableFilter('noBob');
+      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o3.id) }
+      }
+
+      // filter on non-root class
+      s.disableFilter('state');
+      assert s.enableFilter('noJack') != null;
+      r = s.createQuery("select obj from Test1 obj order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+        row { object (class:cls, id:o3.id) }
+      }
+
+      r = s.createQuery("select obj from Test1 obj where obj.info.name.id != <foo:1> order by obj;").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o3.id) }
+      }
+
+      // other constraints
+      s.disableFilter('noBob');
+      r = s.createQuery("select obj from Test1 obj where obj.state = '3'^^<xsd:int> order by obj;").
+            execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o3.id) }
+      }
+
+      r = s.createQuery("select obj from Test1 obj where obj.state = '2'^^<xsd:int> order by obj;").
+            execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o2.id) }
+      }
+
+      r = s.createQuery("select obj.info.name from Test1 obj where obj.state = '2'^^<xsd:int>;").
+            execute()
+      checker.verify(r) {
+      }
+
+      s.disableFilter('noJack');
+      r = s.createQuery("select obj.info.name from Test1 obj where obj.state = '2'^^<xsd:int>;").
+            execute()
+      checker.verify(r) {
+        row { object (class:o2.info.name.getClass(), id:o2.info.name.id) }
+      }
+    }
+  }
+
+  void testFilterDefs() {
+    doInTx { s ->
+      Criteria c = s.createCriteria(Article.class)
+      c.add(Restrictions.disjunction().
+                         add(Restrictions.eq("title", "foo")).
+                         add(Restrictions.eq("authors", "blah"))).
+
+        createCriteria("parts").
+          add(Restrictions.ne("date", new Date("08 Jul 2007"))).
+          add(Restrictions.conjunction().
+                           add(Restrictions.le("state", 2)).
+                           add(Restrictions.gt("rights", "none"))).
+
+        createCriteria("nextObject").
+          add(Restrictions.eq("dc_type", new URI("dc:type"))).
+          add(Restrictions.eq("uri", new URI("foo:bar")))
+
+      FilterDefinition cfd = new CriteriaFilterDefinition("critF", "Article", c)
+      assert cfd.createFilter(s).getQuery().toString() == "select o from Article o where ((o.title = 'foo' or o.authors = 'blah')) and (v1 := o.parts and ((v1.date != '2007-07-08Z'^^<http://www.w3.org/2001/XMLSchema#date>) and ((le(v1.state, '2'^^<http://www.w3.org/2001/XMLSchema#int>) and gt(v1.rights, 'none'^^<http://www.w3.org/1999/02/22-rdf-syntax-ns#XMLLiteral>))) and (v22 := v1.nextObject and ((v22.dc_type = <dc:type>) and (v22.uri = <foo:bar>)))));"
+
+      def qry = "o where (o.title = 'foo' or o.authors = 'blah') and o.nextObject.uri = <foo:bar> and o.nextObject.dc_type = <dc:type> and p := o.parts and q := p.nextObject and (x := 'none' and (q.date = '2007' or q.rights = x and le(q.dc_type, <x:y>)))";
+      FilterDefinition ofd = new OqlFilterDefinition("oqlF", "Article", qry)
+      c = ofd.createFilter(s).getCriteria();
+
+      assert c.criterionList.size() == 1
+      assert c.criterionList[0] instanceof Disjunction
+      assert c.criterionList[0].criterions.size() == 2
+      assert c.criterionList[0].criterions[0] instanceof EQCriterion
+      assert c.criterionList[0].criterions[1] instanceof EQCriterion
+      assert c.criterionList[0].criterions[0].fieldName == 'title'
+      assert c.criterionList[0].criterions[0].value == 'foo'
+      assert c.criterionList[0].criterions[1].fieldName == 'authors'
+      assert c.criterionList[0].criterions[1].value == 'blah'
+
+      assert c.children.size() == 3
+      assert c.children[0].mapping.name == 'parts'
+      assert c.children[1].mapping.name == 'nextObject'
+      assert c.children[2].mapping.name == 'nextObject'
+      assert c.children[0].children.size() == 1
+      assert c.children[1].children.size() == 0
+      assert c.children[2].children.size() == 0
+      assert c.children[0].criterionList.size() == 0
+      assert c.children[1].criterionList.size() == 1
+      assert c.children[2].criterionList.size() == 1
+      assert c.children[1].criterionList[0] instanceof EQCriterion
+      assert c.children[2].criterionList[0] instanceof EQCriterion
+      assert c.children[1].criterionList[0].fieldName == 'uri'
+      assert c.children[1].criterionList[0].value == 'foo:bar'.toURI()
+      assert c.children[2].criterionList[0].fieldName == 'dc_type'
+      assert c.children[2].criterionList[0].value == 'dc:type'.toURI()
+      c = c.children[0].children[0]
+      assert c.mapping.name == 'nextObject'
+      assert c.children.size() == 0
+      assert c.criterionList.size() == 1
+      assert c.criterionList[0] instanceof Disjunction
+      assert c.criterionList[0].criterions.size() == 2
+      assert c.criterionList[0].criterions[0] instanceof EQCriterion
+      assert c.criterionList[0].criterions[1] instanceof Conjunction
+      assert c.criterionList[0].criterions[0].fieldName == 'date'
+      assert c.criterionList[0].criterions[0].value == '2007'
+      assert c.criterionList[0].criterions[1].criterions.size() == 2
+      assert c.criterionList[0].criterions[1].criterions[0] instanceof EQCriterion
+      assert c.criterionList[0].criterions[1].criterions[1] instanceof ProxyCriterion
+      assert c.criterionList[0].criterions[1].criterions[0].fieldName == 'rights'
+      assert c.criterionList[0].criterions[1].criterions[0].value == 'none'
+      assert c.criterionList[0].criterions[1].criterions[1].function == 'le'
+      assert c.criterionList[0].criterions[1].criterions[1].arguments.length == 2
+      assert c.criterionList[0].criterions[1].criterions[1].arguments[0] == 'dc_type'
+      assert c.criterionList[0].criterions[1].criterions[1].arguments[1] == 'x:y'.toURI()
     }
   }
 

@@ -20,20 +20,28 @@ header
 
 package org.topazproject.otm.query;
 
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.topazproject.mulgara.itql.ItqlHelper;
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.ModelConfig;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.stores.ItqlFilter;
 
 import antlr.RecognitionException;
+import antlr.ASTPair;
 import antlr.collections.AST;
 }
 
 /**
- * This generates an iTQL AST from an OQL AST. It is assumed that field-name-to-predicate
- * expansion has already been done.
+ * This generates an iTQL AST from an OQL AST, applying any relevant filters in the process. It is
+ * assumed that field-name-to-predicate expansion and parameter resolution have already been done.
  *
  * <p>Only the select and where clauses are transformed; the resulting AST has the following
  * form:
@@ -55,6 +63,20 @@ import antlr.collections.AST;
  *   cnstr: #(TRIPLE ID ID ID ID?)
  * </pre>
  *
+ * <h2>Filter Processing Notes</h2>
+ *
+ * <p>Filter processing would be simple, if it weren't for casts. Casts mean that a variable may
+ * have different types in different parts of the where clause, and hence the filter constraints
+ * can't just be and'd onto the whole where clause. However, not all variables can be subject to
+ * casting; specifically, generated "internal" variables will always have a single type. Also,
+ * casts are likely to be rare, and cases where a variable ends up with different types even rarer.
+ *
+ * <p>So we use a slightly more elaborate scheme: we find all variables and note their type and
+ * "location" (the parent AND - we also make sure such a thing always exists).  Then we go through
+ * and for all variables with a single type we add filter expressions (if needed) directly to the
+ * where clause's top AND; for variables with multiple types we add the filter expressions (if
+ * needed) to the local AND's.
+ *
  * @author Ronald Tschalär 
  */
 class ItqlConstraintGenerator extends TreeParser("OqlTreeParser");
@@ -74,8 +96,7 @@ tokens {
 }
 
 {
-    private static final String   TMP_VAR_PFX = "oqltmp2_";
-    private static final String   XSD         = "http://www.w3.org/2001/XMLSchema#";
+    private static final String   XSD        = "http://www.w3.org/2001/XMLSchema#";
     private static final String[] DATE_TYPES = {
         XSD + "date", XSD + "dateTime", XSD + "gYear", XSD + "gYearMonth",
     };
@@ -86,39 +107,56 @@ tokens {
         XSD + "unsignedShort", XSD + "unsignedByte", XSD + "positiveInteger",
     };
 
-    private              Session sess;
-    private              int     varCnt = 0;
+    private Session sess;
+    private String  tmpVarPfx;
+    private boolean addTypeConstr;
+    private int     varCnt = 0;
+    private Map<String, Collection<ItqlFilter>> filters =
+                                            new HashMap<String, Collection<ItqlFilter>>();
 
-    public ItqlConstraintGenerator(Session session) {
+    public ItqlConstraintGenerator(Session session, String tmpVarPfx, boolean addTypeConstr,
+                                   Collection<ItqlFilter> filters) {
       this();
-      sess = session;
+      this.sess          = session;
+      this.tmpVarPfx     = tmpVarPfx;
+      this.addTypeConstr = addTypeConstr;
+
+      if (filters != null) {
+        for (ItqlFilter f : filters) {
+          Collection<ItqlFilter> list = this.filters.get(f.getFilteredClass());
+          if (list == null)
+            this.filters.put(f.getFilteredClass(), list = new ArrayList<ItqlFilter>());
+          list.add(f);
+        }
+      }
     }
 
     private OqlAST nextVar() {
-      String v = TMP_VAR_PFX + varCnt++;
+      String v = tmpVarPfx + varCnt++;
       OqlAST res = (OqlAST) #([ID, v]);
       res.setIsVar(true);
       return res;
     }
 
-    private AST addTriple(AST list, AST prevVar, AST prevPred) {
+    private OqlAST addTriple(OqlAST list, OqlAST prevVar, OqlAST prevPred) {
       if (prevPred != null) {
-        AST obj = nextVar();
+        OqlAST obj = nextVar();
+        obj.setExprType(prevPred.getExprType());
         list.addChild(makeTriple(prevVar, prevPred, obj));
         prevVar = obj;
-        ((OqlAST) prevVar).setExprType(((OqlAST) prevPred).getExprType());
       }
       return prevVar;
     }
 
-    private AST[] addColTriples(AST list, AST curVar, OqlAST curPred) throws RecognitionException {
+    private OqlAST[] addColTriples(OqlAST list, OqlAST curVar, OqlAST curPred)
+        throws RecognitionException {
       ExprType type = curPred.getExprType();
       if (type == null)
-        return new AST[] { curVar, curPred };
+        return new OqlAST[] { curVar, curPred };
 
       switch (type.getCollectionType()) {
         case PREDICATE:
-          return new AST[] { curVar, curPred };
+          return new OqlAST[] { curVar, curPred };
 
         case RDFBAG:
         case RDFSEQ:
@@ -132,7 +170,7 @@ tokens {
           // FIXME: avoid hardcoded model-name
           list.addChild(makeTriple(listPred, "<mulgara:prefix>", "<rdf:_>", getModelUri("prefix")));
 
-          return new AST[] { curVar, listPred };
+          return new OqlAST[] { curVar, listPred };
 
         case RDFLIST:
           if (curVar != null)
@@ -150,9 +188,9 @@ tokens {
           listPred = makeID("<rdf:first>");
           listPred.setModel(curPred.getModel());
           listPred.setExprType(curPred.getExprType());
-          ((OqlAST) s).setExprType(curPred.getExprType());
+          s.setExprType(curPred.getExprType());
 
-          return new AST[] { s, listPred };
+          return new OqlAST[] { s, listPred };
 
         case PREDICATE_MAP:
           throw new RecognitionException("Predicate-Map not supported (yet)");
@@ -227,10 +265,12 @@ tokens {
       assert arg.getType() == AND;
 
       // need to equate the expression's end var with the expected result var
+      ((OqlAST) resVar).setExprType(((OqlAST) var).getExprType());
+
       AST pexpr = astFactory.dupTree(arg);
       if (!var.equals(resVar))
         pexpr.addChild(makeTriple(var, "<mulgara:equals>", resVar));
-      ((OqlAST) resVar).setExprType(((OqlAST) var).getExprType());
+      applyFilters(pexpr);
 
       // create subquery
       AST from  = #([FROM, "from"], #([ID, "dummy"]), #([ID, "dummy"]));
@@ -275,15 +315,15 @@ tokens {
       if (isDate(ltype)) {
         pred  = (f.charAt(0) == 'l') ? "<mulgara:before>" : "<mulgara:after>";
         iprd  = (f.charAt(0) != 'l') ? "<mulgara:before>" : "<mulgara:after>";
-        model = "xsd";
+        model = "xsd";  // FIXME: avoid hardcoded model-name
       } else if (isNum(ltype)) {
         pred  = (f.charAt(0) == 'l') ? "<mulgara:lt>" : "<mulgara:gt>";
         iprd  = (f.charAt(0) != 'l') ? "<mulgara:lt>" : "<mulgara:gt>";
-        model = "xsd";
+        model = "xsd";  // FIXME: avoid hardcoded model-name
       } else {
         pred  = (f.charAt(0) == 'l') ? "<topaz:lt>" : "<topaz:gt>";
         iprd  = (f.charAt(0) != 'l') ? "<topaz:lt>" : "<topaz:gt>";
-        model = "str";
+        model = "str";  // FIXME: avoid hardcoded model-name
       }
 
       AST res = #([AND, "and"], astFactory.dupTree(larg), astFactory.dupTree(rarg));
@@ -328,21 +368,133 @@ tokens {
         uri = uri.replace("<" + alias + ":", "<" + ItqlHelper.getDefaultAliases().get(alias));
       return uri.substring(1, uri.length() - 1);
     }
+
+
+    private void applyFilters(AST root) {
+      // avoid work if possible
+      if (filters == null || filters.size() == 0)
+        return;
+
+      // make a note of all variables and their types
+      Map<String, Map<ExprType, Collection<ASTPair>>> varTypes =
+                                          new HashMap<String, Map<ExprType, Collection<ASTPair>>>();
+      findVarsAndTypes(root, new ArrayList<AST>(), varTypes);
+
+      // process each variable
+      for (Map.Entry<String, Map<ExprType, Collection<ASTPair>>> ve : varTypes.entrySet()) {
+        if (ve.getValue().size() == 1) {         // single type - add globally
+          Collection<ItqlFilter> flist = findFilters(ve.getValue().keySet().iterator().next());
+          if (flist == null)
+            continue;
+          for (ItqlFilter f : flist)
+            root.addChild(renameVariable(astFactory.dupTree(f.getDef()), f.getVar(), ve.getKey()));
+
+        } else {                                // multiple types - add locally
+          for (Map.Entry<ExprType, Collection<ASTPair>> te : ve.getValue().entrySet()) {
+            Collection<ItqlFilter> flist = findFilters(te.getKey());
+            if (flist == null)
+              continue;
+            for (ASTPair p : te.getValue()) {
+              if (p.root.getType() != AND)
+                insertAnd(p);
+              for (ItqlFilter f : flist)
+                p.root.addChild(
+                    renameVariable(astFactory.dupTree(f.getDef()), f.getVar(), ve.getKey()));
+            }
+          }
+        }
+      }
+    }
+
+    private void findVarsAndTypes(AST node, List<AST> ancestors,
+                                  Map<String, Map<ExprType, Collection<ASTPair>>> varTypes) {
+      noteType(node, ancestors, varTypes);
+      for (AST n = node.getFirstChild(); n != null; n = n.getNextSibling()) {
+        ancestors.add(node);
+        findVarsAndTypes(n, ancestors, varTypes);
+        ancestors.remove(ancestors.size() - 1);
+      }
+    }
+
+    private void noteType(AST node, List<AST> ancestors,
+                          Map<String, Map<ExprType, Collection<ASTPair>>> varTypes) {
+      // is this thing eligible for filtering?
+      OqlAST n = (OqlAST) node;
+      if (!n.isVar())
+        return;
+
+      // ok, take note of it
+      Map<ExprType, Collection<ASTPair>> types = varTypes.get(n.getText());
+      if (types == null)
+        varTypes.put(n.getText(), types = new HashMap<ExprType, Collection<ASTPair>>());
+
+      Collection<ASTPair> ps = types.get(n.getExprType());
+      if (ps == null)
+        types.put(n.getExprType(), ps = new ArrayList<ASTPair>());
+
+      assert ancestors.get(ancestors.size() - 1).getType() == TRIPLE;
+      ASTPair p = new ASTPair();
+      p.root  = ancestors.get(ancestors.size() - 2);
+      p.child = ancestors.get(ancestors.size() - 1);
+      ps.add(p);
+    }
+
+    private Collection<ItqlFilter> findFilters(ExprType type) {
+      if (type == null ||
+          type.getType() != ExprType.Type.CLASS && type.getType() != ExprType.Type.EMB_CLASS)
+        return null;
+
+      Collection<ItqlFilter> list = filters.get(type.getMeta().getName());
+      if (list == null)
+        list = filters.get(type.getMeta().getSourceClass().getName());
+      return list;
+    }
+
+    private void insertAnd(ASTPair parents) {
+      AST and = #([AND, "and"], parents.child);
+      and.setNextSibling(parents.child.getNextSibling());
+
+      if (parents.root.getFirstChild() == parents.child) {
+        parents.root.setFirstChild(and);
+      } else {
+        AST prev;
+        for (prev = parents.root.getFirstChild(); prev.getNextSibling() != parents.child;
+             prev = prev.getNextSibling())
+          ;
+        prev.setNextSibling(and);
+      }
+
+      parents.root = and;
+    }
+
+    private static AST renameVariable(AST node, String from, String to) {
+      OqlAST n = (OqlAST) node;
+      if (n.isVar()) {
+        if (n.getText().equals(from))
+          n.setText(to);
+      } else {
+        for (AST nn = node.getFirstChild(); nn != null; nn = nn.getNextSibling())
+          renameVariable(nn, from, to);
+      }
+      return node;
+    }
 }
 
 
 query
-{ AST tc = #([AND, "and"]); }
-    :   #(SELECT #(FROM fclause[tc]) #(WHERE w:wclause[tc]) #(PROJ sclause[#w]) (oclause)? (lclause)? (tclause)?)
+{ OqlAST tc = (OqlAST) #([AND, "and"]); }
+    :   #(SELECT #(FROM fclause[tc]) #(WHERE w:wclause[tc]) #(PROJ sclause[#w]) (oclause)?  (lclause)? (tclause)?) {
+          applyFilters(tc);
+        }
     ;
 
 
-fclause[AST tc]
+fclause[OqlAST tc]
     :   #(COMMA fclause[tc] fclause[tc])
     |   cls:ID var:ID {
           ClassMetadata cm   = ((OqlAST) #var).getExprType().getMeta();
           String        type = cm.getType();
-          if (type != null)
+          if (type != null && addTypeConstr)
             tc.addChild(
                     makeTriple(#var, "<rdf:type>", "<" + type + ">", getModelUri(cm.getModel())));
         }
@@ -351,10 +503,10 @@ fclause[AST tc]
 
 sclause[AST w]
     :   #(COMMA sclause[w] sclause[w])
-    |   v:ID pexpr[#v, w]
+    |   v:ID pexpr[(OqlAST) #v, w]
     ;
 
-pexpr[AST var, AST where]
+pexpr[OqlAST var, AST where]
     :   #(SUBQ query)
     |   ! f:factor[var, true] {
           // all expressions except count (which really is a subquery) get added to the where clause
@@ -368,16 +520,16 @@ pexpr[AST var, AST where]
     ;   // pexpr is now either a subquery or the variable
 
 
-wclause[AST tc]
-    : ! (e:expr)? { #wclause = #([AND, "and"], tc, #e); }
+wclause[OqlAST tc]
+    : ! (e:expr)? { tc.addChild(#e); #wclause = tc; }
     ;
 
 expr
-{ AST var; }
+{ OqlAST var; }
     : #(AND (expr)+)
     | #(OR  (expr)+)
 
-    | ! #(ASGN ID af:factor[#ID, false]) { #expr = #af; }
+    | ! #(ASGN ID af:factor[(OqlAST) #ID, false]) { #expr = #af; }
 
     | ! #(EQ { var = nextVar(); } ef1:factor[var, false] ef2:factor[var, false]) {
         #expr = #([AND,"and"], #ef1, #ef2);
@@ -390,13 +542,13 @@ expr
     | fcall[nextVar(), false]
     ;
 
-factor[AST var, boolean isProj]
+factor[OqlAST var, boolean isProj]
     : constant[var]
     | fcall[var, isProj]
-    | deref[var]
+    | deref[var, isProj]
     ;
 
-constant[AST var]
+constant[OqlAST var]
     : ! QSTRING ((DHAT type:URIREF) | (AT lang:ID))? {
           String lit = #QSTRING.getText();
           String dt  = (#type != null) ? expandAliases(#type.getText()) : null;
@@ -407,9 +559,9 @@ constant[AST var]
           #constant = makeTriple(var, "<mulgara:is>", lit);
 
           if (dt != null)
-            ((OqlAST) var).setExprType(ExprType.literalType(dt, null));
+            var.setExprType(ExprType.literalType(dt, null));
           else
-            ((OqlAST) var).setExprType(ExprType.literalType(null));
+            var.setExprType(ExprType.literalType(null));
         }
 
     | ! URIREF {
@@ -418,8 +570,8 @@ constant[AST var]
         }
     ;
 
-fcall[AST var, boolean isProj]
-{ AST args = #([COMMA]), va; }
+fcall[OqlAST var, boolean isProj]
+{ OqlAST args = (OqlAST) #([COMMA]), va; }
     : ! #(FUNC ns:ID (COLON fn:ID)?
                (arg:factor[va = nextVar(), isProj] { args.addChild(#va); args.addChild(#arg); })*) {
           if (#fn == null) {
@@ -428,42 +580,56 @@ fcall[AST var, boolean isProj]
           }
 
           #fcall = handleFunction(#ns, #fn, args, var, isProj);
+          if (!isProj && #fcall.getType() != AND)
+            #fcall = #([AND, "and"], fcall);    // ensure we have a parent AND for filters
         }
     ;
 
-deref[AST var]
-{ AST prevVar, prevPred = null, res = #([AND,"and"]); boolean wantPred = false; }
-    :! #(REF (   v:ID { prevVar = #v; }
-               | r:deref[prevVar = nextVar()] { res.addChild(#r); }
+deref[OqlAST var, boolean isProj]
+{
+OqlAST prevVar, prevPred = null, res = (OqlAST) #([AND,"and"]);
+boolean wantPred = false, isId = false;
+}
+    :! #(REF (   v:ID { prevVar = (OqlAST) #v; }
+               | r:deref[prevVar = nextVar(), isProj] { res.addChild(#r); }
              )
              (   p:URIREF {
-                   prevVar  = addTriple(res, prevVar, prevPred);
-                   AST[] x  = addColTriples(res, prevVar, (OqlAST) #p);
-                   prevVar  = x[0];
-                   prevPred = x[1];
+                   prevVar    = addTriple(res, prevVar, prevPred);
+                   OqlAST[] x = addColTriples(res, prevVar, (OqlAST) #p);
+                   prevVar    = x[0];
+                   prevPred   = x[1];
                  }
                | #(EXPR pv:ID (e:expr)?) {
                    prevVar  = addTriple(res, prevVar, prevPred);
-                   prevPred = #pv;
+                   prevPred = (OqlAST) #pv;
                    res.addChild(#e);
                  }
              )*
-             (STAR {
-                 prevVar  = addTriple(res, prevVar, prevPred);
-                 wantPred = true;
-             }
+             (   STAR {
+                   prevVar  = addTriple(res, prevVar, prevPred);
+                   wantPred = true;
+                 }
+               | ID {
+                   assert #ID.getText().equals(".id");
+                   isId = true;
+                 }
              )?
        ) {
-         if (wantPred) {
+         if (isId && isProj)                    // would like a nicer solution here...
+           var.setExprType(ExprType.uriType(null));
+         else if (wantPred)
+           var.setExprType(ExprType.uriType(null));
+         else if (prevPred != null)
+           var.setExprType(prevPred.getExprType());
+         else
+           var.setExprType(prevVar.getExprType());
+
+         if (wantPred)
            res.addChild(makeTriple(prevVar, var, nextVar()));
-           ((OqlAST) var).setExprType(ExprType.uriType(null));
-         } else if (prevPred != null) {
+         else if (prevPred != null)
            res.addChild(makeTriple(prevVar, prevPred, var));
-           ((OqlAST) var).setExprType(((OqlAST) prevPred).getExprType());
-         } else if (!prevVar.equals(var)) {       // XXX
+         else if (!prevVar.equals(var))         // XXX
            res.addChild(makeTriple(prevVar, "<mulgara:equals>", var));
-           ((OqlAST) var).setExprType(((OqlAST) prevVar).getExprType());
-         }
 
          #deref = res;
       }

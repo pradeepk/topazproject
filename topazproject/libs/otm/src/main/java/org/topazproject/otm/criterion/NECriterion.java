@@ -45,4 +45,20 @@ public class NECriterion extends AbstractBinaryCriterion {
 
     return impl.toItql(criteria, subjectVar, varPrefix);
   }
+
+  /*
+   * inherited javadoc
+   */
+  public String toOql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+    String res = subjectVar;
+
+    if (getFieldName() == null)
+      res += ".{" + varPrefix + "p:}";
+    else
+      res += "." + getFieldName();
+
+    res += " != " + serializeValue(getValue(), criteria, getFieldName());
+
+    return res;
+  }
 }

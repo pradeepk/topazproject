@@ -52,6 +52,13 @@ public class NotCriterion extends Criterion {
     return impl.toItql(criteria, subjectVar, varPrefix);
   }
 
+  /*
+   * inherited javadoc
+   */
+  public String toOql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+    throw new OtmException("'not' is not supported by OQL");
+  }
+
   /**
    * Get criterion.
    *

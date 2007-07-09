@@ -475,6 +475,9 @@ public class Session {
    * @return the enabled filter, or null if no filter definition can be found.
    */
   public Filter enableFilter(String name) {
+    if (filters.containsKey(name))
+      return filters.get(name);
+
     FilterDefinition fd = sessionFactory.getFilterDefinition(name);
     if (fd == null)
       return null;

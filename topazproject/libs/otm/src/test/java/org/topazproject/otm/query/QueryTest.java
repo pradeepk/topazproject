@@ -220,7 +220,7 @@ public class QueryTest extends TestCase {
     pr.query(ft.getAST(), Collections.EMPTY_MAP);
     printErrorsAndWarnings(pr, "transforming translated query");
 
-    ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess);
+    ItqlConstraintGenerator cg = new ItqlConstraintGenerator(sess, "oqltmp2_", true, null);
     cg.query(pr.getAST());
     printErrorsAndWarnings(cg, "transforming translated query");
 
@@ -298,7 +298,7 @@ public class QueryTest extends TestCase {
     t0 = System.currentTimeMillis();
     ItqlConstraintGenerator cg = null;
     for (int idx = 0; idx < iter; idx++) {
-      cg = new ItqlConstraintGenerator(sess);
+      cg = new ItqlConstraintGenerator(sess, "oqltmp2_", true, null);
       cg.query(pr.getAST());
     }
     t1 = System.currentTimeMillis();

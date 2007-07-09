@@ -59,7 +59,7 @@ public class ProxyCriterion extends Criterion {
   /*
    * inherited javadoc
    */
-  public String toItql(Criteria criteria, String subjectVar, String varPrefix)
+  public String toQuery(Criteria criteria, String subjectVar, String varPrefix, QL ql)
                 throws OtmException {
     if (criterion == null) {
       CriterionBuilder cb =
@@ -72,6 +72,6 @@ public class ProxyCriterion extends Criterion {
     if (criterion == null)
       throw new OtmException("Function '" + func + "' is unsupported by the triple-store");
 
-    return criterion.toItql(criteria, subjectVar, varPrefix);
+    return criterion.toQuery(criteria, subjectVar, varPrefix, ql);
   }
 }

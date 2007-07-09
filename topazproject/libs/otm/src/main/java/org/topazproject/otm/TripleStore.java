@@ -12,6 +12,7 @@ package org.topazproject.otm;
 import java.net.URI;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -102,11 +103,12 @@ public interface TripleStore {
    * Execute an OQL query.
    *
    * @param query   the preparsed query
+   * @param filters the list of filters to apply
    * @param txn     the transaction context
    * @return the query results
    * @throws OtmException on an error
    */
-  public Results doQuery(GenericQueryImpl query, Transaction txn)
+  public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Transaction txn)
       throws OtmException;
 
   /**

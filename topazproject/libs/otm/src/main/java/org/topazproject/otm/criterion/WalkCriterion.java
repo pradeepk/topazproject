@@ -87,4 +87,11 @@ public class WalkCriterion extends AbstractBinaryCriterion {
 
     return query;
   }
+
+  /*
+   * inherited javadoc
+   */
+  public String toOql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+    throw new OtmException("'walk' is not supported by OQL (yet)");
+  }
 }

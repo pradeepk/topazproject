@@ -40,11 +40,10 @@ import antlr.collections.AST;
 }
 
 /**
- * This is an AST transformer for OQL that replaces field references by their predicate
- * URI's. It also removes any '.id' elements, resolves away casts, does some checks the
- * variables (duplicate declarations, order by not referencing projections, etc), and
- * creates dummy variables for projections where no variable was specified. And finally
- * it associates types and models with the various nodes.
+ * This is an AST transformer for OQL that replaces field references by their predicate URI's. It
+ * also resolves away casts, does some checks the variables (duplicate declarations, order-by not
+ * referencing projections, etc), and creates dummy variables for projections where no variable was
+ * specified. And finally it associates types and models with the various nodes.
  *
  * @author Ronald Tschalär 
  */
@@ -132,7 +131,11 @@ options {
       m = type.getMeta().getIdField();
       if (m != null && fname.equals(m.getName())) {
         ExprType cType = ExprType.uriType(null);
-        updateAST(getCurAST(cur), type, cType, m, false);
+
+        AST ref = #([ID, ".id"]);
+        updateAST(ref, type, cType, m, false);
+        astFactory.addASTChild(cur, ref);
+
         return cType;
       }
 
