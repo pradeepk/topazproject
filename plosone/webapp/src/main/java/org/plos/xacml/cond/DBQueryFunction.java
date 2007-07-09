@@ -231,15 +231,14 @@ public abstract class DBQueryFunction implements Function {
    *
    * @throws QueryException when there is an error in converting results to return-type
    */
-  protected EvaluationResult makeResult(String[] results)
-                                 throws QueryException {
-    ArrayList        bag         = new ArrayList(results.length);
+  protected EvaluationResult makeResult(List<String> results) throws QueryException {
+    ArrayList        bag         = new ArrayList(results.size());
     AttributeFactory attrFactory = AttributeFactory.getInstance();
     URI              returnType  = getReturnType();
 
     try {
-      for (int i = 0; i < results.length; i++)
-        bag.add(attrFactory.createValue(returnType, results[i]));
+      for (String r : results)
+        bag.add(attrFactory.createValue(returnType, r));
     } catch (UnknownIdentifierException e) {
       throw new QueryException("Invalid return-type", e);
     } catch (ParsingException e) {

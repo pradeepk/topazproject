@@ -150,7 +150,7 @@ public class ItqlQueryFunction extends DBQueryFunction {
       }
     }
 
-    return makeResult((String[]) results.toArray(new String[results.size()]));
+    return makeResult(results);
   }
 
   private String bindStatic(String query, String[] bindings)
