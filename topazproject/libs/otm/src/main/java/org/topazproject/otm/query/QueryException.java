@@ -57,6 +57,18 @@ public class QueryException extends OtmException {
   }
 
   /** 
+   * Create a exception instance with a message and given list of errors. 
+   * 
+   * @param msg    the details about the exception
+   * @param errors the underlying errors that caused this exception
+   * @param cause  the underlying exception that caused this exception
+   */
+  public QueryException(String msg, List<String> errors, Throwable cause) {
+    super(msg, cause);
+    this.errors = Collections.unmodifiableList(errors);
+  }
+
+  /** 
    * Get the list of underlying errors that caused this exception. 
    * 
    * @return the errors, or null
