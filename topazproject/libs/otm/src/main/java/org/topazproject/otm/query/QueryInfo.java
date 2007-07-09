@@ -10,7 +10,6 @@
 
 package org.topazproject.otm.query;
 
-import java.util.ArrayList;
 import java.util.List;
 
 /** 
