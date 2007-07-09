@@ -70,6 +70,7 @@
   <functionFactory name="func" useStandardFunctions="true">
     <condition>
       <function class="org.plos.xacml.cond.ItqlQueryFunction"/>
+      <function class="org.plos.xacml.cond.OqlQueryFunction"/>
       <function class="org.plos.xacml.cond.PermissionFunction$IsGranted"/>
       <function class="org.plos.xacml.cond.PermissionFunction$IsRevoked"/>
       <function class="org.plos.xacml.cond.CachedBagFunction"/>
