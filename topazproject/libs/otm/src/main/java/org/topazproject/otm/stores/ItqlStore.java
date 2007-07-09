@@ -510,7 +510,7 @@ public class ItqlStore implements TripleStore {
     qry.append("$s $p $o and $o <mulgara:is> <").append(id).append(">");
   }
 
-  private static String getModelsExpr(ClassMetadata[] cmList, Transaction txn) {
+  private static String getModelsExpr(ClassMetadata[] cmList, Transaction txn) throws OtmException {
     Set<String> mList = new HashSet<String>();
     for (ClassMetadata cm : cmList) {
       mList.add(cm.getModel());

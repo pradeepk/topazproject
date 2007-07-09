@@ -77,7 +77,8 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
       return q;
     }
 
-    private static void toOql(StringBuilder qry, Criteria criteria, String var, String pfx) {
+    private static void toOql(StringBuilder qry, Criteria criteria, String var, String pfx)
+                            throws OtmException{
       int idx = 0;
       for (Criterion c : criteria.getCriterionList())
         qry.append('(').append(c.toOql(criteria, var, pfx + idx++)).append(") and ");

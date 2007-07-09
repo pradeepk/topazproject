@@ -473,8 +473,9 @@ public class Session {
    * 
    * @param name the name of the filter to enable
    * @return the enabled filter, or null if no filter definition can be found.
+   * @throws OtmException on an error
    */
-  public Filter enableFilter(String name) {
+  public Filter enableFilter(String name) throws OtmException {
     if (filters.containsKey(name))
       return filters.get(name);
 

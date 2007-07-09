@@ -53,7 +53,7 @@ public class OtmTest extends TestCase {
   /**
    * Creates a new OtmTest object.
    */
-  public OtmTest() {
+  public OtmTest() throws OtmException {
     factory.setTripleStore(new ItqlStore(URI.create("http://localhost:9091/mulgara-service/services/ItqlBeanService")));
 
     factory.getTripleStore()
