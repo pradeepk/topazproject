@@ -32,7 +32,7 @@ public abstract class Results {
   public enum Type { CLASS, LITERAL, URI, SUBQ_RESULTS, UNKNOWN };
 
   /** a literal in a result */
-  public class Literal {
+  public static class Literal {
     private final String value;
     private final String lang;
     private final URI    dtype;
