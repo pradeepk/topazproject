@@ -39,23 +39,32 @@
     <app-context>/plosone-webapp</app-context>
     <resource-sub-dir></resource-sub-dir>
 
+    <!-- virtual journal config -->
     <virtualJournals>
-      <default></default>
+      <!-- default values, if specified, values are used w/o further lookup -->
+      <default>
+        <journal></journal>
+        <description></description>
+        <mappingPrefix></mappingPrefix>
+      </default>
+      <!-- entries to config each virtual journal -->
       <!--
-      <journals>clinicalTrials,journalName</journals>
+      <journals>clinicalTrials,${journalName},${list of journal names}</journals>
       <clinicalTrials>
-        <description>display for Admin, etc.</description>
+        <description>Clinical Trials</description>
+        <mappingPrefix>/clinicalTrials</mappingPrefix>
         <rules>
           <host>clinicaltrials\..*</host>
         </rules>
       </clinicalTrials>
-      <journalName>
-        <description>display for Admin, etc.</description>
+      <${journalName}>
+        <description>${display for Admin, etc.}</description>
+        <mappingPrefix>${URI path prefix for virtual journal resources}</mappingPrefix>
         <rules>
-          <httpHeader>regex to match against HTTP Header value</httpHeader>
-          <httpHeader>regex to match against HTTP Header value</httpHeader>
+          <${httpHeader}>${regex to match against HTTP Header value}</${httpHeader}>
+          <${httpHeader}>${regex to match against HTTP Header value}</${httpHeader}>
         </rules>
-      </journalName>
+      </${journalName}>
       -->
     </virtualJournals>
 

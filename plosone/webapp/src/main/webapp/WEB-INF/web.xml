@@ -11,8 +11,16 @@
   <filter>
     <description>Sets the virtual journal context.
 Should be 1st in the chain as other Filters, e.g. caching, may rely on the journal context.</description>
-    <filter-name>VirtualJournalContext</filter-name>
+    <filter-name>VirtualJournalContextFilter</filter-name>
     <filter-class>org.plos.web.VirtualJournalContextFilter</filter-class>
+  </filter>
+
+  <filter>
+    <description>Should immeadiately follow VirtualJournalContext in Filter chain.
+If a virtual journal context is set, check to see if requested resource has a virtual journal override.
+If so, wrap request with virtual journal override values in FilterChain.</description>
+    <filter-name>VirtualJournalMappingFilter</filter-name>
+    <filter-class>org.plos.web.VirtualJournalMappingFilter</filter-class>
   </filter>
 
   <filter>
@@ -93,14 +101,17 @@ Should be 1st in the chain as other Filters, e.g. caching, may rely on the journ
     </init-param>
   </filter>
 
-
-
   <filter-mapping>
-    <filter-name>VirtualJournalContext</filter-name>
+    <filter-name>VirtualJournalContextFilter</filter-name>
     <url-pattern>/*</url-pattern>
   </filter-mapping>
 
-<!--
+  <filter-mapping>
+    <filter-name>VirtualJournalMappingFilter</filter-name>
+    <url-pattern>/*</url-pattern>
+  </filter-mapping>
+
+  <!--
   <filter-mapping >
     <filter-name>DebuggingFilter</filter-name>
     <url-pattern>/*</url-pattern>

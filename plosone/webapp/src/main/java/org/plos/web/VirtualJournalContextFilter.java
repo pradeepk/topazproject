@@ -32,8 +32,8 @@ import org.plos.configuration.ConfigurationStore;
  *
  * Application usage:
  *
- * String virtualJournalContext = ServletRequest.getAttribute(PUB_VIRTUALJOURNAL_CONTEXT);
- * if (virtualJournalContext.equals(PUB_VIRTUALJOURNAL_DEFAULT) {
+ * String virtualJournal = ServletRequest.getAttribute(PUB_VIRTUALJOURNAL_JOURNAL);
+ * if (virtualJournal.equals(PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL) {
  *   // in default context
  * }
  *
@@ -42,18 +42,26 @@ import org.plos.configuration.ConfigurationStore;
 public class VirtualJournalContextFilter implements Filter {
 
   /**
-   * Default virtual journal value.
+   * ServletRequest attribute for the virtual journal name.
    */
-  public static final String PUB_VIRTUALJOURNAL_DEFAULT = "";
+  public static final String PUB_VIRTUALJOURNAL_JOURNAL = "pub.virtualjournal.journal";
+  /**
+   * ServletRequest attribute for the virtual journal mapping prefix.
+   */
+  public static final String PUB_VIRTUALJOURNAL_MAPPINGPREFIX = "pub.virtualjournal.mappingprefix";
 
   /**
-   * ServletRequest attribute for the virtual journal context.
+   * Default virtual journal name.
    */
-  public static final String PUB_VIRTUALJOURNAL_CONTEXT = "pub.virtualjournal.context";
+  public static final String PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL = "";
+  /**
+   * Default virtual journal mapping prefix.
+   */
+  public static final String PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX = "";
 
   private static final String CONF_VIRTUALJOURNALS          = "pub.virtualJournals";
   private static final String CONF_VIRTUALJOURNALS_DEFAULT  = CONF_VIRTUALJOURNALS + ".default";
-  private static final String CONF_VIRTUALJOURNALS_JOURNALS = CONF_VIRTUALJOURNALS + ".journals";
+  public  static final String CONF_VIRTUALJOURNALS_JOURNALS = CONF_VIRTUALJOURNALS + ".journals";
 
   private static final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
 
@@ -88,35 +96,46 @@ public class VirtualJournalContextFilter implements Filter {
       throws ServletException, IOException {
 
     String virtualJournal = null;
+    String mappingPrefix  = null;
 
     // was a simple config <default> specified?
-    virtualJournal = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT);
+    virtualJournal = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".journal");
+    mappingPrefix  = configuration.getString(CONF_VIRTUALJOURNALS_DEFAULT + ".mappingPrefix");
 
     if (log.isDebugEnabled()) {
-      log.debug("virtual journal context default in configuration: \"" + virtualJournal + "\"");
+      log.debug("virtual journal defaults: journal = \"" + virtualJournal + "\""
+        + ", mappingPrefix = \"" + mappingPrefix + "\"");
     }
 
     // need to do <rule> based processing?
     if (virtualJournal == null) {
-      virtualJournal = processVirtualJournalRules(configuration, (HttpServletRequest) request);
+      String[] fromRules = processVirtualJournalRules(configuration, (HttpServletRequest) request);
+      if (fromRules != null) {
+        virtualJournal = fromRules[0];
+        mappingPrefix  = fromRules[1];
+      }
     }
 
     // use system default if not set
     if (virtualJournal == null) {
-      virtualJournal = PUB_VIRTUALJOURNAL_DEFAULT;
+      virtualJournal = PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL;
+      mappingPrefix  = PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX;
 
       if (log.isDebugEnabled()) {
-        log.debug("setting virtual journal context to: \"" + virtualJournal + "\""
-          + " no <default> specified, no <rule>s match");
+        log.debug("setting virtual journal = \"" + virtualJournal + "\""
+          + ", prefixMapping = \"" + mappingPrefix + "\""
+          + ", no <default> specified, no <rule>s match");
       }
     }
 
     if (log.isDebugEnabled()) {
-      log.debug("setting virtual journal context to: \"" + virtualJournal + "\"");
+      log.debug("setting virtual journal context to: journal = \"" + virtualJournal + "\""
+        + ", mappingPrefix = \"" + mappingPrefix + "\"");
     }
 
     // put virtualJournal context in the ServletRequest for webapp to use
-    request.setAttribute(PUB_VIRTUALJOURNAL_CONTEXT, virtualJournal);
+    request.setAttribute(PUB_VIRTUALJOURNAL_JOURNAL, virtualJournal);
+    request.setAttribute(PUB_VIRTUALJOURNAL_MAPPINGPREFIX, mappingPrefix);
 
     // continue the Filter chain ...
     filterChain.doFilter(request, response);
@@ -127,11 +146,12 @@ public class VirtualJournalContextFilter implements Filter {
    *
    * @param configuration <code>Configuration</code> that contains the rules.
    * @param request <code>HttpServletRequest</code> to apply the rules against.
-   * @ return Mathing virtual journal or <code>null</code>.
+   * @ return String[0] = journal, String[1] mappingPrefix of matching virtual journal.  String Values may be <code>null</code>.
    */
-  private String processVirtualJournalRules(Configuration configuration, HttpServletRequest request) {
+  private String[] processVirtualJournalRules(Configuration configuration, HttpServletRequest request) {
 
     String virtualJournal = null;
+    String mappingPrefix  = null;
 
     // process all <virtualjournal><journals> entries looking for a match
     final List<String> journals = configuration.getList(CONF_VIRTUALJOURNALS_JOURNALS);
@@ -165,6 +185,7 @@ public class VirtualJournalContextFilter implements Filter {
         if (reqHttpValue == null) {
           if (httpValue == null) {
             virtualJournal = journal;
+            mappingPrefix = configuration.getString(CONF_VIRTUALJOURNALS + "." + journal + ".mappingPrefix");
             break;
           }
           continue;
@@ -172,12 +193,13 @@ public class VirtualJournalContextFilter implements Filter {
 
         if (reqHttpValue.matches(httpValue)) {
           virtualJournal = journal;
+          mappingPrefix = configuration.getString(CONF_VIRTUALJOURNALS + "." + journal + ".mappingPrefix");
           break;
         }
       }
     }
 
     // return match or null
-    return virtualJournal;
+    return new String[] {virtualJournal, mappingPrefix};
   }
 }
