@@ -263,6 +263,10 @@ options {
 
     private void addVar(AST var, AST clazz) throws RecognitionException {
       ExprType type = (clazz != null) ? getTypeForClass(clazz, "from clause") : null;
+      addVar(var, type);
+    }
+
+    private void addVar(AST var, ExprType type) throws RecognitionException {
       if (vars.containsKey(var.getText()))
         throw new RecognitionException("Duplicate variable declaration: var='" + var.getText() +
                                        "', prev type='" + vars.get(var.getText()) +
@@ -423,7 +427,7 @@ factor returns [ExprType type = null]
             )
             (   ! ID         { type = resolveField(currentAST, type, #ID); }
               | ! URIREF     { type = handlePredicate(currentAST, type, #URIREF); }
-              | #(EXPR pv:ID { addVar(#pv, null); } (expr)?) { type = null; }
+              | #(EXPR pv:ID { addVar(#pv, ExprType.uriType(null)); } (expr)?) { type = null; }
             )*
             (STAR)?
       )
