@@ -29,6 +29,7 @@ import java.util.Map;
 
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
+import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.Junction;
@@ -349,8 +350,14 @@ options {
     private Criteria makeChildren(AST ref, Criteria p, boolean incLast)
         throws RecognitionException {
       AST n = ref.getFirstChild();
-      while ((n = n.getNextSibling()) != null && (incLast || n.getNextSibling() != null))
-        p = p.createCriteria(n.getText());
+      try {
+        while ((n = n.getNextSibling()) != null && (incLast || n.getNextSibling() != null))
+          p = p.createCriteria(n.getText());
+      } catch (OtmException oe) {
+        throw (RecognitionException)
+            new RecognitionException("no field '" + n.getText() + "' in " + p.getClassMetadata() +
+                                     ": " + ref.toStringTree()).initCause(oe);
+      }
       return p;
     }
 
