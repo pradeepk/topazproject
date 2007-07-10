@@ -9,7 +9,6 @@
  */
 package org.topazproject.otm.metadata;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
@@ -22,8 +21,6 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +50,6 @@ import org.topazproject.otm.mapping.FunctionalMapper;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.mapping.PredicateMapMapper;
 import org.topazproject.otm.mapping.Serializer;
-import org.topazproject.otm.mapping.SerializerFactory;
 
 /**
  * Meta information for mapping a class to a set of triples.

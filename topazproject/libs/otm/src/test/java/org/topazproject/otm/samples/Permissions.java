@@ -9,8 +9,6 @@
  */
 package org.topazproject.otm.samples;
 
-import java.net.URI;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

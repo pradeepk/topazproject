@@ -1,6 +1,5 @@
 package org.topazproject.otm.samples;
 
-import org.topazproject.otm.annotations.Embeddable;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.UriPrefix;

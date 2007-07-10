@@ -9,7 +9,6 @@
  */
 package org.topazproject.otm.id;
 
-import java.io.Serializable;
 import org.topazproject.otm.OtmException;
 
 /**

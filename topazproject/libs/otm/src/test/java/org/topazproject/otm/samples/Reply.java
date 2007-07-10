@@ -14,7 +14,6 @@ import java.net.URI;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.UriPrefix;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * Reply meta-data.

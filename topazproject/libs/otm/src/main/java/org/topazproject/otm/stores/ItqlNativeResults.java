@@ -15,9 +15,7 @@ import java.net.URI;
 import org.topazproject.mulgara.itql.AnswerException;
 import org.topazproject.mulgara.itql.AnswerSet;
 import org.topazproject.otm.OtmException;
-import org.topazproject.otm.Session;
 import org.topazproject.otm.query.QueryException;
-import org.topazproject.otm.query.QueryInfo;
 import org.topazproject.otm.query.Results;
 
 /** 

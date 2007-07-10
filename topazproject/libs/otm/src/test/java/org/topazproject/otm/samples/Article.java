@@ -9,7 +9,6 @@
  */
 package org.topazproject.otm.samples;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -18,7 +17,6 @@ import java.util.Set;
 
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Rdf;
-import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 
 /**

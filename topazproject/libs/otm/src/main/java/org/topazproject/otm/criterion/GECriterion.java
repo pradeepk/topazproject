@@ -9,8 +9,6 @@
  */
 package org.topazproject.otm.criterion;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
-
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Entity;

@@ -9,8 +9,6 @@
  */
 package org.topazproject.otm.criterion.itql;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
-
 import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.ModelConfig;

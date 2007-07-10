@@ -9,7 +9,6 @@
  */
 package org.topazproject.otm.mapping;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
@@ -17,7 +16,6 @@ import java.util.AbstractList;
 import java.util.AbstractSequentialList;
 import java.util.AbstractSet;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashSet;

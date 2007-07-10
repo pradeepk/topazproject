@@ -21,7 +21,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.SimpleTimeZone;
-import java.util.TimeZone;
 
 import org.topazproject.otm.SessionFactory;
 import org.topazproject.otm.annotations.Predicate;

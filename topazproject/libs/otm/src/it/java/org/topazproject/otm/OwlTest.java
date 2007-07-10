@@ -17,20 +17,11 @@ import java.util.Arrays;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import org.topazproject.otm.criterion.Order;
-import org.topazproject.otm.Criteria;
-import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Article;
 import org.topazproject.otm.samples.NoRdfType;
 import org.topazproject.otm.samples.PrivateAnnotation;
 import org.topazproject.otm.samples.PublicAnnotation;
-import org.topazproject.otm.samples.Reply;
-import org.topazproject.otm.samples.ReplyThread;
-import org.topazproject.otm.samples.SampleEmbeddable;
 import org.topazproject.otm.stores.ItqlStore;
-import org.topazproject.otm.stores.MemStore;
-import org.topazproject.otm.mapping.Mapper;
-import org.topazproject.otm.mapping.FunctionalMapper;
 
 import org.topazproject.otm.owl.OwlClass;
 import org.topazproject.otm.owl.ObjectProperty;

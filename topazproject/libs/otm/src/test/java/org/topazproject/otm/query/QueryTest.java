@@ -6,9 +6,7 @@ import java.net.URI;
 import java.util.Collections;
 import java.util.HashMap;
 
-import antlr.RecognitionException;
 import antlr.collections.AST;
-import antlr.debug.misc.ASTFrame;
 
 import junit.framework.TestCase;
 

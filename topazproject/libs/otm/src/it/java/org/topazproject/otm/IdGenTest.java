@@ -21,7 +21,6 @@ import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.GeneratedValue;
-import org.topazproject.otm.id.GUIDGenerator;
 
 import org.testng.annotations.Test;
 import org.testng.annotations.BeforeClass;

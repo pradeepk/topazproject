@@ -12,7 +12,6 @@ package org.topazproject.otm.owl;
 import java.net.URI;
 import java.util.List;
 import java.util.ArrayList;
-import java.util.Collection;
 
 import org.topazproject.otm.annotations.Entity;
 import org.topazproject.otm.annotations.Predicate;

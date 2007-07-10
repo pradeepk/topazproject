@@ -9,7 +9,6 @@
  */
 package org.topazproject.otm.criterion;
 
-import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 
 /**

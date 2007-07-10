@@ -15,9 +15,6 @@ import java.lang.reflect.Method;
 import java.net.URI;
 import java.net.URL;
 
-import java.util.List;
-
-import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.id.IdentifierGenerator;

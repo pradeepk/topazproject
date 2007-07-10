@@ -9,14 +9,6 @@
  */
 package org.topazproject.otm.criterion;
 
-import org.topazproject.mulgara.itql.ItqlHelper;
-
-import org.topazproject.otm.ClassMetadata;
-import org.topazproject.otm.Criteria;
-import org.topazproject.otm.ModelConfig;
-import org.topazproject.otm.OtmException;
-import org.topazproject.otm.mapping.Mapper;
-
 /**
  * A base class for all binary operations involving a field and its value. Note that to support
  * persisted Criterions, a serialized value must be set. This is because without knowing the

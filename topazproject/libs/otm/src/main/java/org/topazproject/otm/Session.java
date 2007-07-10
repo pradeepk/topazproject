@@ -11,8 +11,6 @@ package org.topazproject.otm;
 
 import java.lang.reflect.Method;
 
-import java.net.URI;
-
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -30,7 +28,6 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.filter.FilterDefinition;
 import org.topazproject.otm.id.IdentifierGenerator;
-import org.topazproject.otm.mapping.AbstractMapper;
 import org.topazproject.otm.mapping.Mapper;
 import org.topazproject.otm.query.Results;
 

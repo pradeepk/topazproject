@@ -23,7 +23,6 @@ import org.topazproject.otm.samples.Grants;
 import org.topazproject.otm.samples.NoPredicate;
 import org.topazproject.otm.samples.NoRdfType;
 import org.topazproject.otm.samples.ObjectInfo;
-import org.topazproject.otm.samples.Permissions;
 import org.topazproject.otm.samples.PrivateAnnotation;
 import org.topazproject.otm.samples.PublicAnnotation;
 import org.topazproject.otm.samples.Reply;
@@ -32,7 +31,6 @@ import org.topazproject.otm.samples.Revokes;
 import org.topazproject.otm.samples.SampleEmbeddable;
 import org.topazproject.otm.samples.SpecialMappers;
 import org.topazproject.otm.stores.ItqlStore;
-import org.topazproject.otm.stores.MemStore;
 
 import junit.framework.TestCase;
 

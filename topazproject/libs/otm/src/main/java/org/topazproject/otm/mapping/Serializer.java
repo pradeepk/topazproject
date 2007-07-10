@@ -9,11 +9,6 @@
  */
 package org.topazproject.otm.mapping;
 
-import java.lang.reflect.Field;
-import java.lang.reflect.Method;
-
-import java.util.List;
-
 /**
  * A type converter to/from triple store value.
  *

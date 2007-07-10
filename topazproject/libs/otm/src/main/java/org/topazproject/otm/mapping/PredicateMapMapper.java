@@ -9,16 +9,11 @@
  */
 package org.topazproject.otm.mapping;
 
-import java.lang.reflect.Array;
 import java.lang.reflect.Field;
 import java.lang.reflect.Method;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 import org.topazproject.otm.id.IdentifierGenerator;
 import org.topazproject.otm.OtmException;

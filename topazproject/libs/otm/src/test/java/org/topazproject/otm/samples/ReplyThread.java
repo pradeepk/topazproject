@@ -14,7 +14,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.topazproject.otm.annotations.Predicate;
-import org.topazproject.otm.annotations.Rdf;
 
 /**
  * Reply meta-data.
