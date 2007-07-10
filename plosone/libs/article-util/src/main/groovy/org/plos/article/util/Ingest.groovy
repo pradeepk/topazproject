@@ -36,7 +36,7 @@ opt.arguments().each() {
 */
 
   // Zip.DataSource
-  def zip = new Zip.DataSourceZip(new URLDataSource(it));
+  def zip = new Zip.DataSourceZip(new URLDataSource(it.toURL()));
   def doi = util.ingest(zip)
   println "Ingested $it: $doi w/Zip.DataSourceZip"
 
