@@ -405,6 +405,11 @@ options {
           s.setText(r);
         }
 
+        r = repl.get(p.getText());
+        if (r != null) {
+          p.setText(r);
+        }
+
         r = repl.get(o.getText());
         if (r != null) {
           o.setText(r);
@@ -414,6 +419,12 @@ options {
         if (r != null) {
           s.setText(r);
           s.setIsVar(false);
+        }
+
+        r = is.get(p.getText());
+        if (r != null) {
+          p.setText(r);
+          p.setIsVar(false);
         }
 
         r = is.get(o.getText());
