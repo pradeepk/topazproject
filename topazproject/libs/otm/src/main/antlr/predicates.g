@@ -20,6 +20,7 @@ header
 
 package org.topazproject.otm.query;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -55,7 +56,9 @@ options {
 }
 
 {
-    private static final String TMP_VAR_PFX = "oqltmp1_";
+    private static final String   TMP_VAR_PFX = "oqltmp1_";
+    // TODO: get these from the list of registered functions
+    private static final String[] binaryComparisonFuncs = new String[] { "lt", "le", "gt", "ge" };
 
     private Map<String, ExprType> vars = new HashMap<String, ExprType>();
     private Map<String, ExprType> prms = new HashMap<String, ExprType>();
@@ -350,6 +353,14 @@ options {
                     " is not comparable to " + et2);
     }
 
+    private static boolean isBinaryCompare(String fname) {
+      for (String f : binaryComparisonFuncs) {
+        if (f.equals(fname))
+          return true;
+      }
+      return false;
+    }
+
     private String expandAliases(String uri) {
       // TODO: should use aliases in SessionFactory
       for (String alias : (Set<String>) ItqlHelper.getDefaultAliases().keySet())
@@ -421,7 +432,7 @@ factor returns [ExprType type = null]
       }
     | URIREF                 { type = ExprType.uriType(null); }
     | #(PARAM ID)
-    | #(FUNC ID (COLON ID)? (factor)*)
+    | fcall
     | #(REF (   v:ID         { updateAST(#v, null, type = getTypeForVar(#v), null, true); }
               | type=c:cast  { updateAST(#c, null, type, null, ((OqlAST) #c).isVar()); }
             )
@@ -431,6 +442,19 @@ factor returns [ExprType type = null]
             )*
             (STAR)?
       )
+    ;
+
+fcall
+{
+  List<AST> args = new ArrayList<AST>();
+  List<ExprType> types = new ArrayList<ExprType>();
+  ExprType t;
+}
+    : #(FUNC fp:ID (COLON fn:ID)? (t=a:factor { args.add(#a); types.add(t); })*) {
+        String fname = #fp.getText() + (#fn != null ? ":" + #fn.getText() : "");
+        if (args.size() == 2 && isBinaryCompare(fname))
+          checkTypeCompatibility(types.get(0), types.get(1), args.get(0), args.get(1), #fcall);
+      }
     ;
 
 cast returns [ExprType type = null]

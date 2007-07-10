@@ -337,6 +337,16 @@ public class OqlTest extends GroovyTestCase {
         row { string ('John'); string ('John') }
       }
       */
+
+      for (test in [['lt', ['Bob']],  ['le', ['Bob', 'Joe']],
+                    ['gt', ['John']], ['ge', ['Joe', 'John']]]) {
+        r = s.createQuery("select t.name n from Test1 t where ${test[0]}(t.birth, :b) order by n;").
+              setParameter("b", "1970-02-04").execute()
+        checker.verify(r) {
+          for (name in test[1])
+            row { string (name) }
+        }
+      }
     }
   }
 
