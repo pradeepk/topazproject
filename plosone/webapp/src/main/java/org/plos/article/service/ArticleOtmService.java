@@ -58,7 +58,7 @@ import org.topazproject.otm.Transaction;
 import org.topazproject.otm.criterion.Disjunction;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Restrictions;
-import org.topazproject.otm.mapping.Mapper;
+import org.topazproject.otm.Query;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.stores.ItqlStore.ItqlStoreConnection;
 
@@ -267,22 +267,22 @@ public class ArticleOtmService extends BaseConfigurableService {
    * @param ascending  controls the sort order (by date).
    * @return the (possibly empty) list of article ids.
    */
-  public List<String> getArticleIds(String startDate, String endDate, int[] states,
-                                    boolean ascending) throws Exception {
+  public List<String> getArticleIds(final String startDate, final String endDate,
+                                    final int[] states, boolean ascending) throws Exception {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
     final StringBuilder qry = new StringBuilder();
     qry.append("select art.id, art.date d from Article art where ");
 
     if (startDate != null)
-      qry.append("ge(art.date, ").append(fmtLiteral(startDate, "date")).append(" and ");
+      qry.append("ge(art.date, :sd) and ");
     if (endDate != null)
-      qry.append("le(art.date, ").append(fmtLiteral(endDate, "date")).append(" and ");
+      qry.append("le(art.date, :ed) and ");
 
     if (states != null && states.length > 0) {
       qry.append("(");
-      for (int state : states)
-        qry.append("art.state = ").append(fmtLiteral(state, "state")).append(" or ");
+      for (int idx = 0; idx < states.length; idx++)
+        qry.append("art.state = :st").append(idx).append(" or ");
       qry.setLength(qry.length() - 4);
       qry.append(")");
     }
@@ -295,7 +295,15 @@ public class ArticleOtmService extends BaseConfigurableService {
     List<URI> ids = TransactionHelper.doInTx(session, new TransactionHelper.Action<List<URI>>() {
       public List<URI> run(Transaction tx) {
         List<URI> uris = new ArrayList<URI>();
-        Results r = tx.getSession().createQuery(qry.toString()).execute();
+        Query q = tx.getSession().createQuery(qry.toString());
+        if (startDate != null)
+          q.setParameter("sd", startDate);
+        if (endDate != null)
+          q.setParameter("ed", endDate);
+        for (int idx = 0; states != null && idx < states.length; idx++)
+          q.setParameter("st" + idx, states[idx]);
+
+        Results r = q.execute();
         while (r.next())
           uris.add(r.getURI(0));
         return uris;
@@ -314,11 +322,6 @@ public class ArticleOtmService extends BaseConfigurableService {
     }
 
     return res;
-  }
-
-  private String fmtLiteral(Object val, String field) throws Exception {
-    Mapper m = session.getSessionFactory().getClassMetadata(Article.class).getMapperByName(field);
-    return "'" + m.getSerializer().serialize(val) + "'^^<" + m.getDataType() + ">";
   }
 
   /**

@@ -191,8 +191,9 @@ public class UserAccountsInterceptor extends AbstractInterceptor {
 
     return TransactionHelper.doInTx(session, new TransactionHelper.Action<UserAccount>() {
       public UserAccount run(Transaction tx) {
-        Results r = tx.getSession().createQuery(
-          "select ua from UserAccount ua where ua.authIds.value = '" + authId + "';").execute();
+        Results r = tx.getSession().
+            createQuery("select ua from UserAccount ua where ua.authIds.value = :id;").
+            setParameter("id", authId).execute();
 
         if (!r.next()) {
           if (log.isDebugEnabled())

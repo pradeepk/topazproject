@@ -109,8 +109,9 @@ public class UserService extends BaseConfigurableService {
     // check for duplicate
     TransactionHelper.doInTxE(session, new TransactionHelper.ActionE<Void, ApplicationException>() {
       public Void run(Transaction tx) throws ApplicationException {
-        Results r = tx.getSession().createQuery(
-          "select ua.id from UserAccount ua where ua.authIds.value = '" + authId + "';").execute();
+        Results r = tx.getSession().
+            createQuery("select ua.id from UserAccount ua where ua.authIds.value = :id;").
+            setParameter("id", authId).execute();
         if (!r.next() || !r.next())
           return null;
 
@@ -224,9 +225,9 @@ public class UserService extends BaseConfigurableService {
     return TransactionHelper.doInTxE(session,
                                      new TransactionHelper.ActionE<String, ApplicationException>() {
       public String run(Transaction tx) throws ApplicationException {
-        Results r = tx.getSession().createQuery(
-          "select ua.profile.displayName from UserAccount ua where ua = <" + topazUserId + ">;").
-          execute();
+        Results r = tx.getSession().
+            createQuery("select ua.profile.displayName from UserAccount ua where ua = :id;").
+            setParameter("id", topazUserId).execute();
         if (!r.next())
           throw new ApplicationException("No user-account with id '" + topazUserId + "' found");
         return r.getString(0);
@@ -272,8 +273,9 @@ public class UserService extends BaseConfigurableService {
 
     return TransactionHelper.doInTx(session, new TransactionHelper.Action<PlosOneUser>() {
       public PlosOneUser run(Transaction tx) {
-        Results r = tx.getSession().createQuery(
-          "select ua from UserAccount ua where ua.authIds.value = '" + authId + "';").execute();
+        Results r = tx.getSession().
+            createQuery("select ua from UserAccount ua where ua.authIds.value = :id;").
+            setParameter("id", authId).execute();
         if (!r.next())
           return null;
         return new PlosOneUser((UserAccount) r.get(0), applicationId, pep);
@@ -341,8 +343,9 @@ public class UserService extends BaseConfigurableService {
 
     return TransactionHelper.doInTx(session, new TransactionHelper.Action<String>() {
       public String run(Transaction tx) {
-        Results r = tx.getSession().createQuery(
-          "select ua.id from UserAccount ua where ua.authIds.value = '" + authId + "';").execute();
+        Results r = tx.getSession().
+            createQuery("select ua.id from UserAccount ua where ua.authIds.value = :id;").
+            setParameter("id", authId).execute();
         if (!r.next())
           return null;
         return r.getString(0);
@@ -366,9 +369,9 @@ public class UserService extends BaseConfigurableService {
 
     return TransactionHelper.doInTx(session, new TransactionHelper.Action<String>() {
       public String run(Transaction tx) {
-        String v = (value instanceof URI) ? "<" + value + ">" : "'" + value + "'";
-        Results r = tx.getSession().createQuery(
-          "select ua.id from UserAccount ua where ua.profile." + field + " = " + v + ";").execute();
+        Results r = tx.getSession().
+            createQuery("select ua.id from UserAccount ua where ua.profile." + field + " = :v;").
+            setParameter("v", value).execute();
         if (!r.next())
           return null;
         return r.getString(0);
