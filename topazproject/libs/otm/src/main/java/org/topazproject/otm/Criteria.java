@@ -174,6 +174,15 @@ public class Criteria {
   }
 
   /**
+   * Gets the list of Filters.
+   *
+   * @return lis of filters
+   */
+  public Collection<Filter> getFilters() {
+    return filters;
+  }
+
+  /**
    * Gets the position of this order by clause in the root Criteria. Position is determined
    * by the sequence in which the {@link #addOrder} call is made.
    *

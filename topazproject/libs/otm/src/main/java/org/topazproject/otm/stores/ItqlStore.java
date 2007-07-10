@@ -614,8 +614,8 @@ public class ItqlStore implements TripleStore {
   }
 
   public List list(Criteria criteria, Transaction txn) throws OtmException {
-    // do query
-    String qry = buildUserQuery(criteria, txn);
+    ItqlCriteria ic = new ItqlCriteria(criteria);
+    String qry = ic.buildUserQuery();
     log.debug("list: " + qry);
     String a;
     try {
@@ -624,148 +624,7 @@ public class ItqlStore implements TripleStore {
     } catch (RemoteException re) {
       throw new OtmException("error performing query: " + qry, re);
     }
-
-    // parse
-    List results  = new ArrayList();
-    ClassMetadata cm = criteria.getClassMetadata();
-
-    try {
-      AnswerSet ans = new AnswerSet(a);
-
-      // check if we got something useful
-      ans.beforeFirst();
-      if (!ans.next())
-        return null;
-      if (!ans.isQueryResult())
-        throw new OtmException("query failed: " + ans.getMessage());
-
-      // go through the rows and build the results
-      AnswerSet.QueryAnswerSet qa = ans.getQueryResults();
-
-      qa.beforeFirst();
-      while (qa.next()) {
-        String s = qa.getString("s");
-        Object o = txn.getSession().get(cm.getSourceClass(), s);
-        if (o != null)
-          results.add(o);
-      }
-    } catch (AnswerException ae) {
-      throw new OtmException("Error parsing answer", ae);
-    }
-
-    return results;
-  }
-
-  private String buildUserQuery(Criteria criteria, Transaction txn) throws OtmException {
-    StringBuilder qry = new StringBuilder(500);
-    ClassMetadata cm = criteria.getClassMetadata();
-    String model = getModelUri(cm.getModel(), txn);
-
-    qry.append("select $s");
-    int len = qry.length();
-    buildProjections(criteria, qry, "$s");
-    boolean hasOrderBy = len != qry.length();
-
-    qry.append(" from <").append(model).append("> where ");
-
-    len = qry.length();
-    buildWhereClause(criteria, txn, qry, "$s");
-    if (qry.length() == len)
-      throw new OtmException("No criterion list to filter by and the class '" 
-                             + cm + "' does not have an rdf:type.");
-
-    qry.setLength(qry.length() - 4);
-
-    if (hasOrderBy) {
-      qry.append("order by ");
-      List<String> orders = new ArrayList();
-      buildOrderBy(criteria, orders, "$s");
-      for (String o : orders)
-        qry.append(o);
-    }
-
-    if (criteria.getMaxResults() > 0)
-      qry.append(" limit " + criteria.getMaxResults());
-
-    if (criteria.getFirstResult() >= 0)
-      qry.append(" offset " + criteria.getFirstResult());
-
-    qry.append(";");
-
-    return qry.toString();
-  }
-
-  private void buildProjections(Criteria criteria, StringBuilder qry, String subject) {
-    int i = 0;
-    String prefix = " " + subject + "o";
-    for (Order o : criteria.getOrderList())
-      qry.append(prefix + i++);
-
-    i = 0;
-    for (Criteria cr : criteria.getChildren())
-      buildProjections(cr, qry, subject + "c" + i++);
-  }
-
-  private void buildWhereClause(Criteria criteria, Transaction txn, StringBuilder qry,
-                                String subject) throws OtmException {
-    ClassMetadata cm = criteria.getClassMetadata();
-    String model = getModelUri(cm.getModel(), txn);
-
-    if (cm.getType() != null)
-      qry.append(subject).append(" <rdf:type> <").append(cm.getType())
-        .append("> in <").append(model).append("> and ");
-
-    //XXX: there is problem with this auto generated where clause
-    //XXX: it could potentially limit the result set returned by a trans() criteriom
-    int i = 0;
-    String object = subject + "o";
-    for (Order o: criteria.getOrderList())
-      buildPredicateWhere(cm, o.getName(), subject, object + i++, qry, model, txn);
-
-    i = 0;
-    String tmp = subject + "t";
-    for (Criterion c : criteria.getCriterionList())
-      qry.append(c.toItql(criteria, subject, tmp+i++)).append(" and ");
-
-    i = 0;
-    for (Criteria cr : criteria.getChildren()) {
-      String child = subject + "c" + i++;
-      buildPredicateWhere(cm, cr.getMapping().getName(), subject, child, qry, model, txn);
-      buildWhereClause(cr, txn, qry, child);
-    }
-  }
-
-  private void buildPredicateWhere(ClassMetadata cm, String name, String subject, String object, 
-                        StringBuilder qry, String model, Transaction txn) throws OtmException {
-      Mapper m = cm.getMapperByName(name);
-      if (m == null)
-        throw new OtmException("No field with the name '" + name + "' in " + cm);
-
-      String mUri = (m.getModel() != null) ? getModelUri(m.getModel(), txn) : model;
-
-     if (m.hasInverseUri()) {
-        String tmp = object;
-        object = subject;
-        subject = tmp;
-      }
-
-      qry.append(subject).append(" <").append(m.getUri()).append("> ").append(object)
-            .append(" in <").append(mUri).append("> and ");
-  }
-
-  private void buildOrderBy(Criteria criteria, List<String> orders, String subject) {
-    int i = 0;
-    String prefix = subject + "o";
-    for (Order o : criteria.getOrderList()) {
-      int pos = criteria.getOrderPosition(o);
-      while (pos >= orders.size())
-        orders.add("");
-      orders.set(pos, prefix + i++ + (o.isAscending() ? " asc " : " desc "));
-    }
-
-    i = 0;
-    for (Criteria cr : criteria.getChildren())
-      buildOrderBy(cr, orders, subject + "c" + i++);
+    return ic.createResults(a);
   }
 
   public Results doQuery(GenericQueryImpl query, Collection<Filter> filters, Transaction txn)
