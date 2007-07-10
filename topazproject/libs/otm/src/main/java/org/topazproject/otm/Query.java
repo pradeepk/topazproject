@@ -10,11 +10,8 @@
 
 package org.topazproject.otm;
 
-import java.net.URI;
 import java.util.Collection;
 import java.util.Collections;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
 import org.topazproject.otm.query.GenericQueryImpl;
@@ -29,13 +26,13 @@ import org.apache.commons.logging.LogFactory;
  * 
  * @author Ronald Tschalär
  */
-public class Query implements Parameterizable<Query> {
+public class Query extends AbstractParameterizable<Query> {
   private static final Log log = LogFactory.getLog(Query.class);
 
   private final Session            sess;
   private final GenericQueryImpl   query;
   private final Collection<Filter> filters;
-  private final Map                paramValues = new HashMap<String, Object>();
+  private final Set<String>        paramNames;
 
   /** 
    * Create a new query instance. 
@@ -50,6 +47,7 @@ public class Query implements Parameterizable<Query> {
 
     this.query = new GenericQueryImpl(query, log);
     this.query.prepareQuery(sess.getSessionFactory());
+    this.paramNames = Collections.unmodifiableSet(this.query.getParameterNames());
   }
 
   /** 
@@ -71,26 +69,6 @@ public class Query implements Parameterizable<Query> {
   }
 
   public Set<String> getParameterNames() {
-    return Collections.unmodifiableSet(query.getParameterNames());
-  }
-
-  public Query setParameter(String name, Object val) {
-    paramValues.put(name, val);
-    return this;
-  }
-
-  public Query setUri(String name, URI val) {
-    paramValues.put(name, val);
-    return this;
-  }
-
-  public Query setPlainLiteral(String name, String val, String lang) {
-    paramValues.put(name, new Results.Literal(val, lang, null));
-    return this;
-  }
-
-  public Query setTypedLiteral(String name, String val, URI dataType) {
-    paramValues.put(name, new Results.Literal(val, null, dataType));
-    return this;
+    return paramNames;
   }
 }

@@ -10,27 +10,23 @@
 
 package org.topazproject.otm.filter;
 
-import java.net.URI;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.Set;
 
+import org.topazproject.otm.AbstractParameterizable;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.Filter;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.query.GenericQueryImpl;
-import org.topazproject.otm.query.Results;
 
 /**
  * This defines the internal filter-impl interface and implements some common code for all filters.
  *
  * @author Ronald Tschalär
  */
-public abstract class AbstractFilterImpl implements Filter {
+public abstract class AbstractFilterImpl extends AbstractParameterizable<Filter> implements Filter {
   protected final FilterDefinition fd;
   protected final Session          sess;
-  protected final Map              paramValues = new HashMap<String, Object>();
 
   protected AbstractFilterImpl(FilterDefinition fd, Session sess) throws OtmException {
     this.fd   = fd;
@@ -47,26 +43,6 @@ public abstract class AbstractFilterImpl implements Filter {
 
   public Set<String> getParameterNames() {
     return fd.getParameterNames();
-  }
-
-  public Filter setParameter(String name, Object val) {
-    paramValues.put(name, val);
-    return this;
-  }
-
-  public Filter setUri(String name, URI val) {
-    paramValues.put(name, val);
-    return this;
-  }
-
-  public Filter setPlainLiteral(String name, String val, String lang) {
-    paramValues.put(name, new Results.Literal(val, lang, null));
-    return this;
-  }
-
-  public Filter setTypedLiteral(String name, String val, URI dataType) {
-    paramValues.put(name, new Results.Literal(val, null, dataType));
-    return this;
   }
 
   /** 

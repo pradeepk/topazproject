@@ -24,7 +24,7 @@ public interface Parameterizable<T> {
    * 
    * @return the set of names; will be empty if there are no parameters
    */
-  Set<String> getParameterNames();
+  Set<String> getParameterNames() throws OtmException;
 
   /** 
    * Set the given parameter's value. The value will be converted using the appropriate serializer
@@ -34,8 +34,9 @@ public interface Parameterizable<T> {
    * @param name the name of the parameter
    * @param val  the parameter's value
    * @return this (useful for method chaining)
+   * @throws OtmException if <var>name</var> is not a valid parameter name
    */
-  T setParameter(String name, Object val);
+  T setParameter(String name, Object val) throws OtmException;
 
   /** 
    * Set the given parameter's value as a URI.
@@ -43,8 +44,9 @@ public interface Parameterizable<T> {
    * @param name the name of the parameter
    * @param val  the parameter's value
    * @return this (useful for method chaining)
+   * @throws OtmException if <var>name</var> is not a valid parameter name
    */
-  T setUri(String name, URI val);
+  T setUri(String name, URI val) throws OtmException;
 
   /** 
    * Set the given parameter's value as a plain literal.
@@ -53,8 +55,9 @@ public interface Parameterizable<T> {
    * @param val  the parameter's literal value
    * @param lang if not null, the language tag to add
    * @return this (useful for method chaining)
+   * @throws OtmException if <var>name</var> is not a valid parameter name
    */
-  T setPlainLiteral(String name, String val, String lang);
+  T setPlainLiteral(String name, String val, String lang) throws OtmException;
 
   /** 
    * Set the given parameter's value as a datatyped literal.
@@ -63,6 +66,7 @@ public interface Parameterizable<T> {
    * @param val      the parameter's literal value
    * @param dataType the literal's datatype
    * @return this (useful for method chaining)
+   * @throws OtmException if <var>name</var> is not a valid parameter name
    */
-  T setTypedLiteral(String name, String val, URI dataType);
+  T setTypedLiteral(String name, String val, URI dataType) throws OtmException;
 }
