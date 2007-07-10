@@ -85,10 +85,12 @@ public class Article extends ObjectInfo {
   private int pageCount;
   @Predicate(uri = Rdf.topaz + "affiliations")
   private Set<String> affiliations = new HashSet<String>();
-  @Predicate(uri = Rdf.topaz + "authors", storeAs=Predicate.StoreAs.rdfList)
+  @Predicate(uri = Rdf.topaz + "authors", storeAs = Predicate.StoreAs.rdfList)
   private List<String> orderedAuthors = new ArrayList<String>();
   @Predicate(uri = Rdf.topaz + "body")
   private String body;
+  @Predicate(uri = Rdf.topaz + "references", storeAs = Predicate.StoreAs.rdfList)
+  private List<Reference> references = new ArrayList<Reference>();
 
   /**
    * @return the date the article was made available
@@ -396,5 +398,19 @@ public class Article extends ObjectInfo {
    */
   public void setBody(String body) {
     this.body = body;
+  }
+
+  /**
+   * @return list of references for the article
+   */
+  public List<Reference> getReferences() {
+    return references;
+  }
+
+  /**
+   * @param set references for article
+   */
+  public void setReferences(List<Reference> references) {
+    this.references = references;
   }
 }
