@@ -63,11 +63,11 @@ public class PermissionsImpl implements Permissions {
     "<" + CONF.getString("topaz.models.revokes") + ">";
   private static final String PP_MODEL           = "<" + CONF.getString("topaz.models.pp") + ">";
   private static final String GRANTS_MODEL_TYPE  =
-    "<" + CONF.getString("topaz.models.grants[@type]", "tucana:Model") + ">";
+    "<" + CONF.getString("topaz.models.grants[@type]", "mulgara:Model") + ">";
   private static final String REVOKES_MODEL_TYPE =
-    "<" + CONF.getString("topaz.models.revokes[@type]", "tucana:Model") + ">";
+    "<" + CONF.getString("topaz.models.revokes[@type]", "mulgara:Model") + ">";
   private static final String PP_MODEL_TYPE      =
-    "<" + CONF.getString("topaz.models.pp[@type]", "tucana:Model") + ">";
+    "<" + CONF.getString("topaz.models.pp[@type]", "mulgara:Model") + ">";
 
   //
   private static final String IMPLIES    = ItqlHelper.TOPAZ_URI + "implies";
@@ -80,29 +80,29 @@ public class PermissionsImpl implements Permissions {
     "select $o from ${MODEL} where <${s}> <${p}> $o".replaceAll("\\Q${MODEL}", PP_MODEL);
   private static final String ITQL_LIST_PP_TRANS        =
     ("select $o from ${MODEL} where <${s}> <${p}> $o "
-    + " or (trans($s <${p}> $o) and $s <tucana:is> <${s}>);").replaceAll("\\Q${MODEL}", PP_MODEL);
+    + " or (trans($s <${p}> $o) and $s <mulgara:is> <${s}>);").replaceAll("\\Q${MODEL}", PP_MODEL);
   private static final String ITQL_INFER_PERMISSION     =
     ("select $s from ${PP_MODEL} where $s $p $o in ${MODEL} "
-    + "and ($s <tucana:is> <${resource}> or $s <tucana:is> <${ALL}> "
+    + "and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
     + "      or $s <${PP}> <${resource}> "
-    + "      or (trans($s <${PP}> $res) and $res <tucana:is> <${resource}>)) "
-    + "and ($p <tucana:is> <${permission}> or $p <tucana:is> <${ALL}> "
+    + "      or (trans($s <${PP}> $res) and $res <mulgara:is> <${resource}>)) "
+    + "and ($p <mulgara:is> <${permission}> or $p <mulgara:is> <${ALL}> "
     + "      or $p <${IMPLIES}> <${permission}> "
-    + "      or (trans($p <${IMPLIES}> $perm) and $perm <tucana:is> <${permission}>)) "
-    + "and ($o <tucana:is> <${principal}> or $o <tucana:is> <${ALL}>)" //
+    + "      or (trans($p <${IMPLIES}> $perm) and $perm <mulgara:is> <${permission}>)) "
+    + "and ($o <mulgara:is> <${principal}> or $o <mulgara:is> <${ALL}>)" //
     ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
   private static final String ITQL_RESOURCE_PERMISSIONS =
     ("select $p $o from ${PP_MODEL} where ($s $p $o in ${MODEL} " //
-    + "   and ($s <tucana:is> <${resource}> or $s <tucana:is> <${ALL}> "
+    + "   and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
     + "      or $s <${PP}> <${resource}> "
-    + "      or (trans($s <${PP}> $res) and $res <tucana:is> <${resource}>))"
+    + "      or (trans($s <${PP}> $res) and $res <mulgara:is> <${resource}>))"
     + ") or ($s $impliedBy $o in ${MODEL} " //
     + "   and ($impliedBy <${IMPLIES}> $p " //
     + "      or trans($impliedBy <${IMPLIES}> $p)) " //
-    + "   and ($s <tucana:is> <${resource}> or $s <tucana:is> <${ALL}> "
+    + "   and ($s <mulgara:is> <${resource}> or $s <mulgara:is> <${ALL}> "
     + "      or $s <${PP}> <${resource}> "
-    + "      or (trans($s <${PP}> $res) and $res <tucana:is> <${resource}>))" + ")" //
+    + "      or (trans($s <${PP}> $res) and $res <mulgara:is> <${resource}>))" + ")" //
     ).replaceAll("\\Q${PP_MODEL}", PP_MODEL).replaceAll("\\Q${PP}", PROPAGATES)
       .replaceAll("\\Q${IMPLIES}", IMPLIES).replaceAll("\\Q${ALL}", ALL);
 

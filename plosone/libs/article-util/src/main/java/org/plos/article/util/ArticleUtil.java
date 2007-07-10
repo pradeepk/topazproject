@@ -66,12 +66,12 @@ public class ArticleUtil {
 
   private static final String ITQL_DELETE_OBJ =
       ("delete select $s $p $o from ${MODEL} where $s $p $o and " +
-       "  $s <tucana:is> <${subj}> from ${MODEL};").
+       "  $s <mulgara:is> <${subj}> from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL);
 
   private static final String ITQL_DELETE_PP =
       ("delete select $s $p $o from ${MODEL} where $s $p $o and " +
-       "  $s <tucana:is> <${subj}> from ${MODEL};").
+       "  $s <mulgara:is> <${subj}> from ${MODEL};").
       replaceAll("\\Q${MODEL}", MODEL_PP);
 
   private static final String ITQL_FIND_OBJS =
@@ -81,7 +81,7 @@ public class ArticleUtil {
           // find all related objects
        "  <${subj}> <dc_terms:hasPart> $obj or <${subj}> <topaz:hasCategory> $obj " +
           // find the article itself
-       "  or $obj <tucana:is> <${subj}> );").
+       "  or $obj <mulgara:is> <${subj}> );").
       replaceAll("\\Q${MODEL}", MODEL);
 
   /**

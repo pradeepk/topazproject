@@ -32,7 +32,7 @@
           <AttributeValue DataType="http://www.w3.org/2001/XMLSchema#string">
             select $s from &lt;?&gt;
             where ($r &lt;dc:creator&gt; $s or $r &lt;topaz:anonymousCreator&gt; $s) 
-            and ($r &lt;tucana:is&gt; &lt;?&gt; or 
+            and ($r &lt;mulgara:is&gt; &lt;?&gt; or 
                  $r &lt;topaz:propagate-permissions-to&gt; &lt;?&gt; in &lt;?&gt;)
           </AttributeValue>
           <Apply FunctionId="urn:oasis:names:tc:xacml:1.0:function:string-one-and-only">

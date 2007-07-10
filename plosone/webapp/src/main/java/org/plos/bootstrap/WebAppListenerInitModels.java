@@ -73,7 +73,7 @@ public class WebAppListenerInitModels implements ServletContextListener {
           continue;
 
         String model  = conf.getString(key);
-        String type   = conf.getString(key + "[@type]", "tucana:Model");
+        String type   = conf.getString(key + "[@type]", "mulgara:Model");
         String create = "create <" + model + "> <" + type + ">;";
 
         if (log.isDebugEnabled())
