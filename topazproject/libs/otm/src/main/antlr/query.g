@@ -182,7 +182,7 @@ cfarg   // condition function argument
     ;
 
 dexpr   // predicate expression
-    :   LBRACE! var COLON! (oexpr)? RBRACE! { #dexpr = #([EXPR,"expr"], dexpr); }
+    :   LBRACE! var PTR! (oexpr)? RBRACE! { #dexpr = #([EXPR,"expr"], dexpr); }
     ;
 
 
@@ -252,6 +252,7 @@ AT     : '@' ;
 EQ     : '=' ;
 NE     : "!=" ;
 ASGN   : ":=" ;
+PTR    : "->" ;
 NUM    : ('-')? ('0'..'9')+ ;
 ID     : ('a'..'z'|'A'..'Z') ('a'..'z'|'A'..'Z'|'0'..'9'|'_')* ;
 QSTRING: '\'' ('\\' . | ~'\'')* '\'' ;

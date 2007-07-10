@@ -102,11 +102,11 @@ public class QueryTest extends TestCase {
     "select a from Article a where a.uri = '12' or a.bar = x:bar('12') or (true() or '12' = a and (x:bar() or y:foo()));",
 
     // where clauses: predicate expressions
-    "select a from Article a where a.{pred:} = '42';",
-    "select a from Article a where a.{pred: pred = 'id'} = '42';",
-    "select a from Article a where a.{p: x:foo(p)} = '42';",
-    "select a from Article a where a.{p: x:foo(p) = p} = '42';",
-    "select a from Article a where a.{p: x:foo(p) = p and p != '21' or (y:bar(blah(p)) and z:baz(p))} = '42';",
+    "select a from Article a where a.{pred ->} = '42';",
+    "select a from Article a where a.{pred -> pred = 'id'} = '42';",
+    "select a from Article a where a.{p -> x:foo(p)} = '42';",
+    "select a from Article a where a.{p -> x:foo(p) = p} = '42';",
+    "select a from Article a where a.{p -> x:foo(p) = p and p != '21' or (y:bar(blah(p)) and z:baz(p))} = '42';",
 
     // misc
     "select a.timestamp ts, a.uri, " +
@@ -128,8 +128,8 @@ public class QueryTest extends TestCase {
     "select a, b from Article a Foo b where a.uri = '42';",
     "select a, b from Article a, Foo b where a.uri = b.;",
     "select a, b from Article a, Foo b where a.{p} = b.;",
-    "select a, b from Article a, Foo b where a.{p: p} = b.;",
-    "select a, b from Article a, Foo b where a.{p: p. = '42'} = b.;",
+    "select a, b from Article a, Foo b where a.{p -> p} = b.;",
+    "select a, b from Article a, Foo b where a.{p -> p. = '42'} = b.;",
     "select a from Article a where a.uri = '42' order a;",
     "select a from Article a where a.uri = '42' order by 42;",
     "select a from Article a where a.uri = '42' order by a.b;",
@@ -199,8 +199,8 @@ public class QueryTest extends TestCase {
   }
 
   public void testPredTransformer() throws Exception {
-    //String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = '42' or foobar(a) and pp := a.replies and x:foobar(cast(a.categories, org.topazproject.otm.samples.Reply).type, a.<topaz:hasCategory>, blah(a.replies.creator, pp.creator)) and a.{p: p = a.replies or foo(p) and cast(p, org.topazproject.otm.samples.Reply).title = <foo:bar>} = '42';";
-    String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = '42' or pp := a.replies and cast(a.categories, Reply).type = pp and a.{p: p = a.replies or cast(p, Reply).title = <foo:bar>} = '42';";
+    //String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = '42' or foobar(a) and pp := a.replies and x:foobar(cast(a.categories, org.topazproject.otm.samples.Reply).type, a.<topaz:hasCategory>, blah(a.replies.creator, pp.creator)) and a.{p -> p = a.replies or foo(p) and cast(p, org.topazproject.otm.samples.Reply).title = <foo:bar>} = '42';";
+    String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = '42' or pp := a.replies and cast(a.categories, Reply).type = pp and a.{p -> p = a.replies or cast(p, Reply).title = <foo:bar>} = '42';";
     //String qry = "select a from Article a where a = <f:42> or a = <f:52>;";
     //String qry = "select ann n from Annotation ann where cast(ann.annotates, Article).title != 'Yo ho ho' order by n;";
     //String qry = "select art a, count(art.publicAnnotations) from Article art where p := art.publicAnnotations order by a;";
@@ -259,7 +259,7 @@ public class QueryTest extends TestCase {
   }
 
   public void testPerformance() throws Exception {
-    String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = :title or pp := a.replies and cast(a.categories, Reply).type = pp and a.{p: p = a.replies or cast(p, Reply).title = <foo:bar>} = :blah;";
+    String qry = "select a.categories.* cat, count(pp.creator) from Article a where a.title = :title or pp := a.replies and cast(a.categories, Reply).type = pp and a.{p -> p = a.replies or cast(p, Reply).title = <foo:bar>} = :blah;";
 
     Session sess = getSession();
 
