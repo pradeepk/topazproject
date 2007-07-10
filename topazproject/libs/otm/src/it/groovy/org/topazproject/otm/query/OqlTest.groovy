@@ -186,6 +186,59 @@ public class OqlTest extends GroovyTestCase {
     }
   }
 
+  void testPredicateExpressions() {
+    // setup data
+    Class cls = rdf.class('Test1') {
+      name  ()
+      age   (type:'xsd:int')
+      birth (type:'xsd:date')
+    }
+
+    def o1 = cls.newInstance(name:'Bob',  age:5,   birth:new Date("6 Jun 1860"))
+    def o2 = cls.newInstance(name:'Joe',  age:42,  birth:new Date("4 Feb 1970"))
+    def o3 = cls.newInstance(name:'John', age:153, birth:new Date("2 Mar 2002"))
+
+    doInTx { s ->
+      s.saveOrUpdate(o1)
+      s.saveOrUpdate(o2)
+      s.saveOrUpdate(o3)
+    }
+
+    def checker = new ResultChecker(test:this)
+    Results r
+
+    doInTx { s ->
+      r = s.createQuery("select t from Test1 t where t.{p -> p = <topaz:name>} = 'Bob';").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+      }
+
+      r = s.createQuery(
+            "select t from Test1 t where t.{p -> p = <topaz:name> or p = <topaz:age>} = 'Bob';").
+            execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+      }
+
+      r = s.createQuery("select t from Test1 t where t.{p -> p = :p} = 'Bob';").
+            setParameter("p", "topaz:name").execute()
+      checker.verify(r) {
+        row { object (class:cls, id:o1.id) }
+      }
+
+      r = s.createQuery("select n from Test1 t where n := t.{p -> p = :p1 or p = :p2} order by n;").
+            setParameter("p1", "topaz:name").setParameter("p2", "topaz:age").execute()
+      checker.verify(r) {
+        row { string ('5') }
+        row { string ('42') }
+        row { string ('153') }
+        row { string ('Bob') }
+        row { string ('Joe') }
+        row { string ('John') }
+      }
+    }
+  }
+
   void testFunctions() {
     // test lt, gt, le, ge
     Class cls = rdf.class('Test1') {
