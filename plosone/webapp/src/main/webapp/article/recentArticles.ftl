@@ -10,7 +10,7 @@
 								<li>
 									</#if>
 									<@s.url id="articleURL" includeParams="none" namespace="/article" action="fetchArticle" articleURI="${article.id}"/>
-									<a href="${articleURL}" title="Read Open Access Article">${article.title}</a>
+									<a href="${articleURL}" title="Read Open Access Article">${article.dublinCore.title}</a>
 								</li>
 								</#list>
 							</ul>
