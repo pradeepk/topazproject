@@ -738,7 +738,7 @@ public class ItqlStore implements TripleStore {
       if (itql != null) {
         log.warn("Starting a transaction while one is already active - rolling back old one",
                  new Throwable());
-        abort();
+        abort(false);
       }
 
       itql = ItqlStore.getItqlHelper(serverUri);
@@ -770,23 +770,29 @@ public class ItqlStore implements TripleStore {
         return;
       }
 
-      try {
-        itql.rollbackTxn("");
-      } catch (RemoteException re) {
-        throw new OtmException("error rolling back transaction", re);
-      }
-      ItqlStore.returnItqlHelper(serverUri, itql);
-      itql = null;
+      abort(true);
     }
 
-    private void abort() {
+    private void abort(boolean throwEx) throws OtmException {
       try {
         itql.rollbackTxn("");
         ItqlStore.returnItqlHelper(serverUri, itql);
-      } catch (Exception e) {
-        log.warn("Error during rollback", e);
-      } finally {
         itql = null;
+      } catch (RemoteException re) {
+        if (throwEx)
+          throw new OtmException("error rolling back transaction", re);
+        else
+          log.warn("Error during rollback", re);
+      } finally {
+        if (itql != null) {
+          try {
+            itql.close();
+          } catch (RemoteException re) {
+            log.error("Failed to close connection after rollback failure", re);
+          } finally {
+            itql = null;
+          }
+        }
       }
     }
 
@@ -794,7 +800,7 @@ public class ItqlStore implements TripleStore {
       if (itql != null) {
         log.warn("Closing connection with an active transaction - rolling back current one",
                  new Throwable());
-        abort();
+        abort(false);
       }
     }
   }

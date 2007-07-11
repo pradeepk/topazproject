@@ -77,10 +77,12 @@ public class Transaction {
    * @throws OtmException on an error in roll-back
    */
   public void rollback() throws OtmException {
-    if (conn != null)
-      conn.rollback();
-
-    close();
+    try {
+      if (conn != null)
+        conn.rollback();
+    } finally {
+      close();
+    }
   }
 
   private void close() throws OtmException {
