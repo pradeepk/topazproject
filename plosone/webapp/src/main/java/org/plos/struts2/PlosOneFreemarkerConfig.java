@@ -339,25 +339,19 @@ public class PlosOneFreemarkerConfig {
    * @return Returns list of css files given a template name.
    */
   public String[] getCss(String templateName, String journalName) {
-    log.debug("getting css for journal: " + journalName + " and template: " + templateName);
     JournalConfig jc = journals.get(journalName);
     boolean usingDefault = false;
     if (jc == null) {
-      log.debug("1");
       usingDefault = true;
       jc = journals.get(defaultJournalName);
     }
     String[] retVal = jc.getCssFiles().get(templateName);
-    log.debug("2");
     if (retVal == null) {
-      log.debug("3");
       retVal = jc.getDefaultCss();
       if ((retVal == null) && !usingDefault) {
-        log.debug("4");
         jc = journals.get(defaultJournalName);
         retVal = jc.getCssFiles().get(templateName);
         if (retVal == null) {
-          log.debug("5");
           retVal = jc.getDefaultCss();          
         }
       }
@@ -414,6 +408,13 @@ public class PlosOneFreemarkerConfig {
     return getJavaScript (templateName, defaultJournalName);
   }
   
+  
+  /**
+   * Gets meta keywords for journal
+   * 
+   * @param journalName
+   * @return meta keywords
+   */
   public String getMetaKeywords(String journalName) {
     JournalConfig jc = journals.get(journalName);
     boolean usingDefault = false; 
@@ -429,6 +430,12 @@ public class PlosOneFreemarkerConfig {
     return retVal != null ? retVal : "";
   }
 
+  /**
+   * gets meta description for journal
+   * 
+   * @param journalName
+   * @return meta description
+   */
   public String getMetaDescription(String journalName) {
     JournalConfig jc = journals.get(journalName);
     boolean usingDefault = false; 
@@ -444,6 +451,12 @@ public class PlosOneFreemarkerConfig {
     return retVal != null ? retVal : "";
   }
   
+  /**
+   * gets prefix for article title
+   * 
+   * @param journalName
+   * @return article title prefix
+   */
   public String getArticleTitlePrefix (String journalName) {
     JournalConfig jc = journals.get(journalName);
     boolean usingDefault = false; 
