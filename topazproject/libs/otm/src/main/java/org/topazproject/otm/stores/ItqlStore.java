@@ -758,7 +758,7 @@ public class ItqlStore implements TripleStore {
       try {
         itql.commitTxn("");
       } catch (RemoteException re) {
-        throw new OtmException("error starting transaction", re);
+        throw new OtmException("error committing transaction", re);
       }
       ItqlStore.returnItqlHelper(serverUri, itql);
       itql = null;
@@ -773,7 +773,7 @@ public class ItqlStore implements TripleStore {
       try {
         itql.rollbackTxn("");
       } catch (RemoteException re) {
-        throw new OtmException("error starting transaction", re);
+        throw new OtmException("error rolling back transaction", re);
       }
       ItqlStore.returnItqlHelper(serverUri, itql);
       itql = null;
