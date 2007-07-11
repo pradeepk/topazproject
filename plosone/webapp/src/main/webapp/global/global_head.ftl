@@ -1,6 +1,11 @@
+<#if Request[freemarker_config.journalContextAttributeKey]?exists>
+	<#assign journalContext = Request[freemarker_config.journalContextAttributeKey]>
+<#else>
+	<#assign journalContext = "">
+</#if>
 <#assign pgTitle = freemarker_config.getTitle(templateFile)>
 <#if pgTitle = "CODE_ARTICLE_TITLE"> <#--to get article title in w/o a new template for now-->
-	<#assign pgTitle = "PLoS ONE: " + articleInfo.title?replace('</?[a-z]*>', '', 'r')>
+	<#assign pgTitle = freemarker_config.getArticleTitlePrefix(journalContext) + articleInfo.title?replace('</?[a-z]*>', '', 'r')>
 </#if>
 	<title>${pgTitle}</title>
 
@@ -9,14 +14,14 @@
 
 <link rel="shortcut icon" href="${freemarker_config.context}/images/pone_favicon.ico" type="image/x-icon" />
 <link rel="home" title="home" href="http://${freemarker_config.plosOneHost}${freemarker_config.context}"></link>
-<link rel="alternate" type="application/rss+xml" title="PLoS ONE: New Articles" href="http://${freemarker_config.plosOneHost}${freemarker_config.context}/rss/PLoSONE.xml" />
+<link rel="alternate" type="application/rss+xml" title="${freemarker_config.getArticleTitlePrefix(journalContext)} New Articles" href="http://${freemarker_config.plosOneHost}${freemarker_config.context}/rss/PLoSONE.xml" />
 
 <#include "../css/global_css.ftl">
 <#include "../javascript/global_js.ftl">
 
-<meta name="description" content="PLoS ONE: an inclusive, peer-reviewed, open-access resource from the PUBLIC LIBRARY OF SCIENCE. Reports of well-performed scientific studies from all disciplines freely available to the whole world. " />
+<meta name="description" content="${freemarker_config.getMetaDescription(journalContext)}" />
 
-<meta name="keywords" content="PLoS, Public Library of Science, Open Access, Open-Access, Science, Medicine, Biology, Research, Peer-review, Inclusive, Interdisciplinary, Ante-disciplinary, Physics, Chemistry, Engineering" />
+<meta name="keywords" content="${freemarker_config.getMetaKeywords(journalContext)}" />
 
 <@s.url id="pgURL" includeParams="get" includeContext="true" encode="false"/>
 <#assign rdfPgURL = pgURL?replace("&amp;", "&")>

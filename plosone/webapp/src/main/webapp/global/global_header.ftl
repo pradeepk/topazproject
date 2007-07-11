@@ -4,12 +4,12 @@
 	<!-- begin : user controls -->
 	<@s.url id="thisPageURL" includeParams="get" includeContext="true" encode="false"/>
 	<#assign thisPage = thisPageURL?replace("&amp;", "&")?url>
-	<#if Session.PLOS_ONE_USER?exists>
+	<#if Session[freemarker_config.userAttributeKey]?exists>
 	<div id="user">
 		<div>
 		<@s.url id="editProfileURL" includeParams="none" namespace="/user/secure" action="editProfile" tabId="preferences"/>
 				
-					<p>Welcome, <!--<a href="${freemarker_config.context}/user/showUser.action?userId=${Session.PLOS_ONE_USER.userId}" title="You are logged in as ${Session.PLOS_ONE_USER.displayName}">--><strong>${Session.PLOS_ONE_USER.displayName}</strong></a>!</p>
+					<p>Welcome, <!--<a href="${freemarker_config.context}/user/showUser.action?userId=${Session[freemarker_config.userAttributeKey].userId}" title="You are logged in as ${Session[freemarker_config.userAttributeKey].displayName}">--><strong>${Session[freemarker_config.userAttributeKey].displayName}</strong></a>!</p>
 				<ul>
 					<@s.url id="logoutURL" includeParams="none" namespace="/user/secure" action="secureRedirect" goTo="${freemarker_config.casLogoutURL}?service=http://${freemarker_config.plosOneHost}${freemarker_config.context}/logout.action"/>
 					<li><a href="${editProfileURL}" title="Edit your account preferences and alert settings">Preferences</a></li>

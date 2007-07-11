@@ -14,7 +14,7 @@
 	</div>
 	<!-- end : top banner external ad space -->
 	
-	<#if Session.PLOS_ONE_USER?exists>
+	<#if Session[freemarker_config.userAttributeKey]?exists>
 	<!-- begin : header -->
 	<div id="hdr">
   <#else>	

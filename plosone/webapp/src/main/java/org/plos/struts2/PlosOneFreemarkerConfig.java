@@ -97,14 +97,35 @@ public class PlosOneFreemarkerConfig {
         }
         
         if (jc.getDefaultTitle() == null) {
-          String title = oneConfig.getString(journal + ".default.title");
+          final String title = oneConfig.getString(journal + ".default.title");
           if (title != null) {
             jc.setDefaultTitle(title);
           }
         }
         
+        if (jc.getMetaDescription() == null) {
+          final String metaDescription = oneConfig.getString(journal + ".metaDescription");
+          if (metaDescription != null) {
+            jc.setMetaDescription(metaDescription);            
+          }
+        }
+
+        if (jc.getMetaKeywords() == null) {
+          final String metaKeywords= oneConfig.getString(journal + ".metaKeywords");
+          if (metaKeywords!= null) {
+            jc.setMetaKeywords(metaKeywords);            
+          }
+        }
+
+        if (jc.getArticleTitlePrefix() == null) {
+          final String articleTitlePrefix= oneConfig.getString(journal + ".articleTitlePrefix");
+          if (articleTitlePrefix!= null) {
+            jc.setArticleTitlePrefix(articleTitlePrefix);            
+          }
+        }
+
         if (jc.getDefaultCss() == null) {
-          List fileList = oneConfig.getList(journal + ".default.css.file");
+          final List fileList = oneConfig.getList(journal + ".default.css.file");
           String[] defaultCss;
           if (fileList.size() > 0) {
             defaultCss = new String[fileList.size()];
@@ -117,7 +138,7 @@ public class PlosOneFreemarkerConfig {
         }
         
         if (jc.getDefaultJavaScript() == null) {
-          List fileList = oneConfig.getList(journal + ".default.javascript.file");
+          final List fileList = oneConfig.getList(journal + ".default.javascript.file");
           String javascriptFile;
           String[] defaultJavaScript;
           if (fileList.size() > 0) {
@@ -135,7 +156,7 @@ public class PlosOneFreemarkerConfig {
           }
         }
     
-        int numPages = oneConfig.getList(journal + ".page.name").size();
+        final int numPages = oneConfig.getList(journal + ".page.name").size();
         int numCss, numJavaScript, j;
         String pageName, page;
         
@@ -166,14 +187,11 @@ public class PlosOneFreemarkerConfig {
             if (title != null) {
               titles.put(pageName, title);
             }
-            if (log.isDebugEnabled())
-              log.debug("PageName: " + pageName + " and title = " + titles.get(pageName));
           }
 
           if (!cssFiles.containsKey(pageName)) {
-            boolean isDefined;
             Object obj = oneConfig.getProperty(page+".css");
-            isDefined = (obj != null);
+            final boolean isDefined = (obj != null);
             numCss = oneConfig.getList(page + ".css.file").size();
             cssArray = new String[numCss];
             for (j = 0; j < numCss; j++) {
@@ -185,9 +203,8 @@ public class PlosOneFreemarkerConfig {
           }
           
           if (!javaScriptFiles.containsKey(pageName)) {
-            boolean isDefined;
             Object obj = oneConfig.getProperty(page+".javascript");
-            isDefined = (obj != null); 
+            final boolean isDefined = (obj != null); 
             numJavaScript = oneConfig.getList(page + ".javascript.file").size();
             javaScriptArray = new String[numJavaScript];
           
@@ -322,20 +339,25 @@ public class PlosOneFreemarkerConfig {
    * @return Returns list of css files given a template name.
    */
   public String[] getCss(String templateName, String journalName) {
-
+    log.debug("getting css for journal: " + journalName + " and template: " + templateName);
     JournalConfig jc = journals.get(journalName);
     boolean usingDefault = false;
     if (jc == null) {
+      log.debug("1");
       usingDefault = true;
       jc = journals.get(defaultJournalName);
     }
     String[] retVal = jc.getCssFiles().get(templateName);
+    log.debug("2");
     if (retVal == null) {
+      log.debug("3");
       retVal = jc.getDefaultCss();
       if ((retVal == null) && !usingDefault) {
+        log.debug("4");
         jc = journals.get(defaultJournalName);
         retVal = jc.getCssFiles().get(templateName);
         if (retVal == null) {
+          log.debug("5");
           retVal = jc.getDefaultCss();          
         }
       }
@@ -391,7 +413,52 @@ public class PlosOneFreemarkerConfig {
   public String[] getJavaScript (String templateName){
     return getJavaScript (templateName, defaultJournalName);
   }
+  
+  public String getMetaKeywords(String journalName) {
+    JournalConfig jc = journals.get(journalName);
+    boolean usingDefault = false; 
+    if (jc == null) {
+      usingDefault = true; 
+      jc = journals.get(defaultJournalName);
+    }
+    String retVal = jc.getMetaKeywords();
+    if ((retVal == null) && !usingDefault) {
+      jc = journals.get(defaultJournalName);
+      retVal = jc.getMetaKeywords();
+    }
+    return retVal != null ? retVal : "";
+  }
 
+  public String getMetaDescription(String journalName) {
+    JournalConfig jc = journals.get(journalName);
+    boolean usingDefault = false; 
+    if (jc == null) {
+      usingDefault = true; 
+      jc = journals.get(defaultJournalName);
+    }
+    String retVal = jc.getMetaDescription();
+    if ((retVal == null) && !usingDefault) {
+      jc = journals.get(defaultJournalName);
+      retVal = jc.getMetaDescription();
+    }
+    return retVal != null ? retVal : "";
+  }
+  
+  public String getArticleTitlePrefix (String journalName) {
+    JournalConfig jc = journals.get(journalName);
+    boolean usingDefault = false; 
+    if (jc == null) {
+      usingDefault = true; 
+      jc = journals.get(defaultJournalName);
+    }
+    String retVal = jc.getArticleTitlePrefix();
+    if ((retVal == null) && !usingDefault) {
+      jc = journals.get(defaultJournalName);
+      retVal = jc.getArticleTitlePrefix();
+    }
+    return retVal != null ? retVal : "";
+  }
+  
   public String getContext() {
     return dirPrefix + subdirPrefix;
   }
@@ -509,6 +576,20 @@ public class PlosOneFreemarkerConfig {
   public void setChangeEmailURL(String changeEmailURL) {
     this.changeEmailURL = changeEmailURL;
   }
+
+  /**
+   * @return Returns the 
+   */
+  public String getJournalContextAttributeKey() {
+    return org.plos.web.VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_JOURNAL;
+  }
+
+  /**
+   * @return Returns the 
+   */
+  public String getUserAttributeKey() {
+    return org.plos.Constants.PLOS_ONE_USER_KEY;
+  }
   
   private class JournalConfig {
     private HashMap<String, String[]> cssFiles;
@@ -519,6 +600,10 @@ public class PlosOneFreemarkerConfig {
     private String[] defaultJavaScript;
     private String defaultTitle;
 
+    private String metaKeywords;
+    private String metaDescription;
+    private String articleTitlePrefix;
+    
     public JournalConfig () {
     }
     /**
@@ -592,6 +677,42 @@ public class PlosOneFreemarkerConfig {
      */
     public void setTitles(HashMap<String, String> titles) {
       this.titles = titles;
+    }
+    /**
+     * @return Returns the articleTitlePrefix.
+     */
+    public String getArticleTitlePrefix() {
+      return articleTitlePrefix;
+    }
+    /**
+     * @param articleTitlePrefix The articleTitlePrefix to set.
+     */
+    public void setArticleTitlePrefix(String articleTitlePrefix) {
+      this.articleTitlePrefix = articleTitlePrefix;
+    }
+    /**
+     * @return Returns the metaDescription.
+     */
+    public String getMetaDescription() {
+      return metaDescription;
+    }
+    /**
+     * @param metaDescription The metaDescription to set.
+     */
+    public void setMetaDescription(String metaDescription) {
+      this.metaDescription = metaDescription;
+    }
+    /**
+     * @return Returns the metaKeywords.
+     */
+    public String getMetaKeywords() {
+      return metaKeywords;
+    }
+    /**
+     * @param metaKeywords The metaKeywords to set.
+     */
+    public void setMetaKeywords(String metaKeywords) {
+      this.metaKeywords = metaKeywords;
     }
   }
 

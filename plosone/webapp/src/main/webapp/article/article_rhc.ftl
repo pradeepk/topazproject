@@ -27,7 +27,7 @@
 		<div class="commentview">
 			<h6>Commentary</h6>
 			<ol>
-				<#if Session.PLOS_ONE_USER?exists>
+				<#if Session[freemarker_config.userAttributeKey]?exists>
 						<li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here" onmousedown="topaz.annotation.createAnnotationOnMouseDown();">Add your annotation</a>
 			  <#else>
 						<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>
@@ -91,7 +91,7 @@
 		<div class="commentview">
 			<h6>Commentary</h6>
 			<ol>
-				<#if Session.PLOS_ONE_USER?exists>
+				<#if Session[freemarker_config.userAttributeKey]?exists>
 						<li><a href="#" id="addAnnotation" class="addannotation tooltip" title="First select text, then click here" onmousedown="topaz.annotation.createAnnotationOnMouseDown();">Add your annotation</a>
 			  <#else>
 						<li><a href="${freemarker_config.context}/user/secure/secureRedirect.action?goTo=${thisPage}" id="addAnnotation" class="addannotation tooltip">Add your annotation</a>

@@ -1,6 +1,6 @@
 <script type="text/javascript">
   var _namespace="${freemarker_config.getContext()}";
-	<#if Session.PLOS_ONE_USER?exists>
+	<#if Session[freemarker_config.userAttributeKey]?exists>
 		var loggedIn = true;
 	<#else>
   	var loggedIn = false;
@@ -14,7 +14,7 @@
   	baseScriptUri: "${freemarker_config.context}/javascript/dojo/"
 	};
 </script>
-<#list freemarker_config.getJavaScript(templateFile) as x>
+<#list freemarker_config.getJavaScript(templateFile, journalContext) as x>
 	<#if x?ends_with(".ftl")>
 <script type="text/javascript">
 <#include "${x}">

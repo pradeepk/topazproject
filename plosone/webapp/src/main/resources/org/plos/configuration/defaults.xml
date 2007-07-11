@@ -3,7 +3,7 @@
   $HeadURL::                                                                                     $
   $Id$
 
-  Copyright (c) 2006 by Topaz, Inc.
+  Copyright (c) 2007 by Topaz, Inc.
   http://topazproject.org
 
   Licensed under the Educational Community License version 1.0
@@ -43,7 +43,7 @@
     <virtualJournals>
       <!-- default values, if specified, values are used w/o further lookup -->
       <default>
-        <journal></journal>
+        <journal>PLoSONE</journal>
         <description></description>
         <mappingPrefix></mappingPrefix>
       </default>
@@ -202,6 +202,9 @@
     <default-journal-name>PLoSONE</default-journal-name>
     <journal>
       <name>PLoSONE</name>
+      <metaKeywords>PLoS\, Public Library of Science\, Open Access\, Open-Access\, Science\, Medicine\, Biology\, Research\, Peer-review\, Inclusive\, Interdisciplinary\, Ante-disciplinary\, Physics\, Chemistry\, Engineering</metaKeywords>
+      <metaDescription>PLoS ONE: an inclusive\, peer-reviewed\, open-access resource from the PUBLIC LIBRARY OF SCIENCE. Reports of well-performed scientific studies from all disciplines freely available to the whole world.</metaDescription>
+      <articleTitlePrefix>PLoS ONE: </articleTitlePrefix>
       <default>
         <title>PLoS ONE : Publishing science\, accelerating research</title>
         <css>
@@ -689,10 +692,13 @@
         </javascript>
       </page>
     </journal>
-<!--     <journal>
+    <journal>
       <name>PLoSClinicalTrials</name>
+      <metaKeywords>clinical trials\, clinical trial\, trials\, trial\, medical\, plos\, public library of science\, open access\, open-access\, science\, medical research\, clinical research\, trial results\, human studies\, experimental treatment\, disease\, drug\, drugs\, device\, devices\, vaccine\, vaccines\, phase I\, phase II\, phase III\, phase IV\, clinical trials database\, clinical trials databank</metaKeywords>
+      <metaDescription>Clinical Trials @ PLoS: Open-access to peer-reviewed clinical trial results published in the PUBLIC LIBRARY OF SCIENCE journals. Free and immediate access to all articles.</metaDescription>
+      <articleTitlePrefix>Clinical Trials @ PLoS: </articleTitlePrefix>
       <default>
-        <title>PLoS Clinical Trials</title>
+        <title>Clinical Trials @ PLoS</title>
       </default>
       <page>
         <name>/static/information.ftl</name>

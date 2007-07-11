@@ -39,7 +39,7 @@
                 </fieldset>
               </li>
               <li>
-                <#if Session.PLOS_ONE_USER?exists>
+                <#if Session[freemarker_config.userAttributeKey]?exists>
                   <#if hasRated>
                     <a href="javascript:void(0);" onclick="return topaz.rating.show('edit');" class="rating">Edit My Rating</a>
                   <#else>
