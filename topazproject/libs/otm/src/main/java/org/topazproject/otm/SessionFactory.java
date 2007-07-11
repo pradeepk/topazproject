@@ -192,7 +192,8 @@ public class SessionFactory {
     Class c = cm.getSourceClass();
     metadata.put(c, cm);
     cnamemap.put(c.getName(), cm);
-    createProxy(c, cm);
+    if (cm.isEntity())
+      createProxy(c, cm);
 
     String type = cm.getType();
 
