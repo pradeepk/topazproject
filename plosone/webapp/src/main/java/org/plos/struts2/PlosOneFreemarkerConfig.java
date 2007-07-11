@@ -173,7 +173,7 @@ public class PlosOneFreemarkerConfig {
           if (!cssFiles.containsKey(pageName)) {
             boolean isDefined;
             Object obj = oneConfig.getProperty(page+".css");
-            isDefined = (obj == null);
+            isDefined = (obj != null);
             numCss = oneConfig.getList(page + ".css.file").size();
             cssArray = new String[numCss];
             for (j = 0; j < numCss; j++) {
