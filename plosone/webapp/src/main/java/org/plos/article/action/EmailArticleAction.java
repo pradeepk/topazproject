@@ -78,8 +78,8 @@ public class EmailArticleAction extends UserActionSupport {
 
   private void setArticleTitleAndDesc(final String articleURI) throws ApplicationException {
     final ObjectInfo articleInfo = fetchArticleService.getArticleInfo(articleURI);
-    title = articleInfo.getTitle();
-    description = articleInfo.getDescription();
+    title = articleInfo.getDublinCore().getTitle();
+    description = articleInfo.getDublinCore().getDescription();
   }
 
   private boolean validates() {

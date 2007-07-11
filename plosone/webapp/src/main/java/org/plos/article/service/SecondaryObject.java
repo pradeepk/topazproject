@@ -55,17 +55,19 @@ public class SecondaryObject {
   }
 
   /**
-   * @see ObjectInfo#getTitle()
+   * @see DublinCore#getTitle()
    */
   public String getTitle() {
-    return (objectInfo.getTitle() == null) ? "" : objectInfo.getTitle();
+    String title = objectInfo.getDublinCore().getTitle();
+    return (title == null) ? "" : title;
   }
 
   /**
-   * @see ObjectInfo#getDescription()
+   * @see DublinCore#getDescription()
    */
   public String getDescription() {
-    return (objectInfo.getDescription() == null) ? "" : objectInfo.getDescription();
+    String description = objectInfo.getDublinCore().getDescription();
+    return (description == null) ? "" : description;
   }
 
   /**

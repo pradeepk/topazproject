@@ -132,6 +132,7 @@
                 xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
                 xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <rdf:type rdf:resource="http://rdf.topazproject.org/RDF/Article"/>
+    <rdf:type rdf:resource="http://rdf.plos.org/RDF/Object"/>
 
     <dc:identifier><xsl:value-of select="my:doi-to-uri($article-doi)"/></dc:identifier>
     <dc:title rdf:datatype="{$rdf-ns}XMLLiteral"><xsl:call-template name="xml-to-str"><xsl:with-param name="xml" select="$meta/title-group/article-title"/></xsl:call-template></dc:title>
@@ -311,6 +312,7 @@
                 xmlns:dc_terms="http://purl.org/dc/terms/"
                 xmlns:topaz="http://rdf.topazproject.org/RDF/">
     <xsl:variable name="sdoi" select="my:fname-to-doi(@name)"/>
+    <rdf:type rdf:resource="http://rdf.plos.org/RDF/Object"/>
 
     <dc:identifier><xsl:value-of select="my:doi-to-uri($sdoi)"/></dc:identifier>
     <xsl:if test="$meta/pub-date">

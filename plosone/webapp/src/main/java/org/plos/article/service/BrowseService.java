@@ -116,7 +116,7 @@ public class BrowseService {
       Date theDate;
       for (Article art : allArticleList) {
         Set<String> categories = getMainCategories(art);
-        theDate = art.getDate();
+        theDate = art.getDublinCore().getDate();
         theList = articlesByDateMap.get(theDate);
         if (theList == null) {
           theList = new ArrayList<Article>();

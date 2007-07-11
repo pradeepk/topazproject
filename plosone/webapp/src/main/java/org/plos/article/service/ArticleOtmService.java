@@ -246,7 +246,7 @@ public class ArticleOtmService extends BaseConfigurableService {
           throw new NoSuchArticleIdException(article);
 
         a.setState(state);
-        for (ObjectInfo oi : a.getParts())
+        for (ObjectInfo oi : a.getDublinCore().getParts())
           oi.setState(state);
         for (Category c : a.getCategories())
           c.setState(state);
@@ -272,12 +272,12 @@ public class ArticleOtmService extends BaseConfigurableService {
     ensureInitGetsCalledWithUsersSessionAttributes();
 
     final StringBuilder qry = new StringBuilder();
-    qry.append("select art.id, art.date d from Article art where ");
+    qry.append("select art.id, art.dublinCore.date d from Article art where ");
 
     if (startDate != null)
-      qry.append("ge(art.date, :sd) and ");
+      qry.append("ge(art.dublinCore.date, :sd) and ");
     if (endDate != null)
-      qry.append("le(art.date, :ed) and ");
+      qry.append("le(art.dublinCore.date, :ed) and ");
 
     if (states != null && states.length > 0) {
       qry.append("(");
@@ -351,7 +351,7 @@ public class ArticleOtmService extends BaseConfigurableService {
       public Article[] run(Transaction tx) throws ParseException {
         // get a list of Articles that meet the specified Criteria and Restrictions
         Map<String, Boolean> orderBy = new HashMap<String, Boolean>();
-        orderBy.put("date", ascending);
+        orderBy.put("dublinCore.date", ascending);
 
         List<Article> articleList =
             findArticles(startDate, endDate, categories, authors, states, orderBy, 0, tx);
@@ -411,10 +411,10 @@ public class ArticleOtmService extends BaseConfigurableService {
 
     // normalize dates for query
     if (startDate != null) {
-      articleCriteria.add(Restrictions.ge("date", parseDateParam(startDate)));
+      articleCriteria.add(Restrictions.ge("dublinCore.date", parseDateParam(startDate)));
     }
     if (endDate != null) {
-      articleCriteria.add(Restrictions.le("date", parseDateParam(endDate)));
+      articleCriteria.add(Restrictions.le("dublinCore.date", parseDateParam(endDate)));
     }
 
     // match all categories
@@ -428,7 +428,7 @@ public class ArticleOtmService extends BaseConfigurableService {
     // match all authors
     if (authors != null) {
       for (String author : authors) {
-        articleCriteria.add(Restrictions.eq("authors", author));
+        articleCriteria.add(Restrictions.eq("dublinCore.creators", author));
       }
     }
 

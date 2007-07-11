@@ -79,13 +79,13 @@ public class GetArticleRatingsAction extends BaseActionSupport {
     Article article = null;
     if (articleTitle == null) {
       article = articleOtmService.getArticle(URI.create(articleURI));
-      articleTitle = article.getTitle();
+      articleTitle = article.getDublinCore().getTitle();
     }
     if (articleDescription == null) {
       if (article == null) {
         article = articleOtmService.getArticle(URI.create(articleURI));
       }
-      articleDescription = article.getDescription();
+      articleDescription = article.getDublinCore().getDescription();
     }
 
     try {

@@ -18,57 +18,43 @@ import java.util.Set;
 import java.util.HashSet;
 
 import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.Embedded;
 import org.topazproject.otm.annotations.Id;
 import org.topazproject.otm.annotations.Predicate;
 import org.topazproject.otm.annotations.PredicateMap;
 import org.topazproject.otm.annotations.Rdf;
 
 /**
- * Model for the objects that are stored mostly in mulgara and partially in the blob-store
- * (fedora).<p>
- *
- * Much of the structure here mirrors how things were originally stored in fedora.
+ * Model for the generic PLoS object. This is the base class for any PLoS
+ * object that needs to be stored and retrieved.
  *
  * @author Eric Brown
+ * @author Amit Kapoor
  */
-@Entity(model = "ri")
+@Entity(type = PLoS.plos + "Object", model = "ri")
 public class ObjectInfo {
   @Id
   private URI id;
 
-  // dublin-core predicates:
-  @Predicate(uri = Rdf.dc + "title", dataType = Rdf.rdf + "XMLLiteral")
-  private String title;
-  @Predicate(uri = Rdf.dc + "description", dataType = Rdf.rdf + "XMLLiteral")
-  private String description;
-  @Predicate(uri = Rdf.dc + "creator")
-  private Set<String> authors = new HashSet<String>();
-  @Predicate(uri = Rdf.dc + "date", dataType = Rdf.xsd + "date")
-  private Date date;
-  @Predicate(uri = Rdf.dc + "identifier")
-  private String identifier; // looks like a uri -- doi as a uri (for doi to uri conversion?)
-  @Predicate(uri = Rdf.dc + "rights", dataType = Rdf.rdf + "XMLLiteral")
-  private String rights;
-  /** Will be: http://purl.org/dc/dcmitype/{Text|StillImage|Dataset|MovingImage|Sound} */
-  @Predicate(uri = Rdf.dc + "type")
-  private URI dc_type;
-  @Predicate(uri = Rdf.dc + "contributor")
-  private Set<String> contributors = new HashSet<String>();
+  // Dublin Core predicates
+  @Embedded
+  private DublinCore<ObjectInfo> dublinCore = new DublinCore<ObjectInfo>();
 
-  @Predicate(uri = Rdf.dc_terms + "isPartOf")
-  private Article isPartOf;
-
-  // Topaz predicates:
-
+  // PLoS specific predicates:
   @Predicate(uri = Rdf.topaz + "nextObject")
   private ObjectInfo nextObject;
+
   @Predicate(uri = Rdf.topaz + "isPID")
   private String pid;
-  /** The state of this article (or its parts). */
+
+  /** The state of this object (or its parts). */
   @Predicate(uri = Rdf.topaz + "articleState")
   private int state;
+
+  // PDF, TIF, PNG_S, DOC, ....
   @Predicate(uri = Rdf.topaz + "hasRepresentation")
-  private Set<String> representations = new HashSet<String>(); // PDF, TIF, PNG_S, DOC, ...
+  private Set<String> representations = new HashSet<String>();
+
   @Predicate(uri = Rdf.topaz + "contextElement")
   private String contextElement;
 
@@ -86,20 +72,8 @@ public class ObjectInfo {
   private Map<String, List<String>> data = new HashMap<String, List<String>>();
 
   /**
-   * @return the authors
-   */
-  public Set<String> getAuthors() {
-    return authors;
-  }
-
-  /**
-   * @param authors the set of authors for this object
-   */
-  public void setAuthors(Set<String> authors) {
-    this.authors = authors;
-  }
-
-  /**
+   * Return the context for the object
+   *
    * @return the contextElement
    */
   public String getContextElement() {
@@ -107,6 +81,8 @@ public class ObjectInfo {
   }
 
   /**
+   * Set the context for the object
+   *
    * @param contextElement the contextElement to set
    */
   public void setContextElement(String contextElement) {
@@ -114,20 +90,8 @@ public class ObjectInfo {
   }
 
   /**
-   * @return the contributors
-   */
-  public Set<String> getContributors() {
-    return contributors;
-  }
-
-  /**
-   * @param contributors the contributors to set
-   */
-  public void setContributors(Set<String> contributors) {
-    this.contributors = contributors;
-  }
-
-  /**
+   * Return the data
+   *
    * @return the data
    */
   public Map<String, List<String>> getData() {
@@ -135,6 +99,8 @@ public class ObjectInfo {
   }
 
   /**
+   * Set the data
+   *
    * @param data the data to set
    */
   public void setData(Map<String, List<String>> data) {
@@ -142,48 +108,8 @@ public class ObjectInfo {
   }
 
   /**
-   * @return the date
-   */
-  public Date getDate() {
-    return date;
-  }
-
-  /**
-   * @param date the date to set
-   */
-  public void setDate(Date date) {
-    this.date = date;
-  }
-
-  /**
-   * @return the dc_type
-   */
-  public URI getDc_type() {
-    return dc_type;
-  }
-
-  /**
-   * @param dc_type the dc_type to set
-   */
-  public void setDc_type(URI dc_type) {
-    this.dc_type = dc_type;
-  }
-
-  /**
-   * @return the description
-   */
-  public String getDescription() {
-    return description;
-  }
-
-  /**
-   * @param description the description to set
-   */
-  public void setDescription(String description) {
-    this.description = description;
-  }
-
-  /**
+   * Return the identifier of the object
+   *
    * @return the id
    */
   public URI getId() {
@@ -191,6 +117,8 @@ public class ObjectInfo {
   }
 
   /**
+   * Set the identifier of the object
+   *
    * @param id the id to set
    */
   public void setId(URI id) {
@@ -198,34 +126,8 @@ public class ObjectInfo {
   }
 
   /**
-   * @return the identifier
-   */
-  public String getIdentifier() {
-    return identifier;
-  }
-
-  /**
-   * @param identifier the identifier to set
-   */
-  public void setIdentifier(String identifier) {
-    this.identifier = identifier;
-  }
-
-  /**
-   * @return the isPartOf
-   */
-  public Article getIsPartOf() {
-    return isPartOf;
-  }
-
-  /**
-   * @param isPartOf the isPartOf to set
-   */
-  public void setIsPartOf(Article isPartOf) {
-    this.isPartOf = isPartOf;
-  }
-
-  /**
+   * Get the next object
+   *
    * @return the nextObject
    */
   public ObjectInfo getNextObject() {
@@ -233,6 +135,8 @@ public class ObjectInfo {
   }
 
   /**
+   * Set the next object
+   *
    * @param nextObject the nextObject to set
    */
   public void setNextObject(ObjectInfo nextObject) {
@@ -240,6 +144,8 @@ public class ObjectInfo {
   }
 
   /**
+   * Get the PID associated with this
+   *
    * @return the pid
    */
   public String getPid() {
@@ -247,6 +153,8 @@ public class ObjectInfo {
   }
 
   /**
+   * Set the PID associated with this
+   *
    * @param pid the pid to set
    */
   public void setPid(String pid) {
@@ -254,6 +162,8 @@ public class ObjectInfo {
   }
 
   /**
+   * Return the list of representations
+   *
    * @return the representations
    */
   public Set<String> getRepresentations() {
@@ -261,6 +171,8 @@ public class ObjectInfo {
   }
 
   /**
+   * Set the list of representations
+   *
    * @param representations the representations to set
    */
   public void setRepresentations(Set<String> representations) {
@@ -268,20 +180,8 @@ public class ObjectInfo {
   }
 
   /**
-   * @return the rights
-   */
-  public String getRights() {
-    return rights;
-  }
-
-  /**
-   * @param rights the rights to set
-   */
-  public void setRights(String rights) {
-    this.rights = rights;
-  }
-
-  /**
+   * Get the state of the object
+   *
    * @return the state
    */
   public int getState() {
@@ -289,6 +189,8 @@ public class ObjectInfo {
   }
 
   /**
+   * Set the state of the object
+   *
    * @param state the state to set
    */
   public void setState(int state) {
@@ -296,16 +198,20 @@ public class ObjectInfo {
   }
 
   /**
-   * @return the title
+   * Return the dublin core predicate associated with this object
+   *
+   * @return the dublin core predicates
    */
-  public String getTitle() {
-    return title;
+  public DublinCore<ObjectInfo> getDublinCore() {
+    return dublinCore;
   }
 
   /**
-   * @param title the title to set
+   * Set the dublin core predicates associated with this object
+   *
+   * @param dublinCore the dublin core object
    */
-  public void setTitle(String title) {
-    this.title = title;
+  public void setDublinCore(DublinCore<ObjectInfo> dublinCore) {
+    this.dublinCore = dublinCore;
   }
 }

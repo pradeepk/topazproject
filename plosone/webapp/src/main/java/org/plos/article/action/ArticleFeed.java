@@ -57,6 +57,7 @@ import org.plos.article.service.ArticleOtmService;
 import org.plos.article.util.FedoraArticle;
 import org.plos.configuration.ConfigurationStore;
 import org.plos.models.Article;
+import org.plos.models.DublinCore;
 import org.plos.models.Category;
 import org.plos.util.FileUtils;
 
@@ -251,14 +252,15 @@ public class ArticleFeed extends BaseActionSupport {
     List<Entry> entries = new ArrayList();
     for (Article article : articles) {
       Entry entry = new Entry();
+      DublinCore dc = article.getDublinCore();
 
       // TODO: how much more meta-data is possible
       // e.g. article.getDc_type(), article.getFormat(), etc.
 
-      entry.setId(article.getIdentifier());
+      entry.setId(dc.getIdentifier());
 
       // respect Article specific rights
-      String rights = article.getRights();
+      String rights = dc.getRights();
       if (rights != null) {
         entry.setRights(rights);
       } else {
@@ -266,9 +268,9 @@ public class ArticleFeed extends BaseActionSupport {
         entry.setRights(PLOSONE_COPYRIGHT);
       }
 
-      entry.setTitle(article.getTitle());
-      entry.setPublished(article.getAvailable());
-      entry.setUpdated(article.getAvailable());
+      entry.setTitle(dc.getTitle());
+      entry.setPublished(dc.getAvailable());
+      entry.setUpdated(dc.getAvailable());
 
       // links
       List<Link> altLinks = new ArrayList();
@@ -276,8 +278,8 @@ public class ArticleFeed extends BaseActionSupport {
       // must link to self, do it first so link is favored
       Link entrySelf = new Link();
       entrySelf.setRel("alternate");
-      entrySelf.setHref(fetchArticleAction + "?articleURI=" + article.getIdentifier());
-      entrySelf.setTitle(article.getTitle());
+      entrySelf.setHref(fetchArticleAction + "?articleURI=" + dc.getIdentifier());
+      entrySelf.setTitle(dc.getTitle());
       altLinks.add(entrySelf);
 
       // alternative representation links
@@ -285,9 +287,9 @@ public class ArticleFeed extends BaseActionSupport {
       if (representations != null) {
         for (String representation : representations) {
           Link altLink = new Link();
-          altLink.setHref(fetchObjectAttachmentAction + "?uri=" + article.getIdentifier() + "&representation=" + representation);
+          altLink.setHref(fetchObjectAttachmentAction + "?uri=" + dc.getIdentifier() + "&representation=" + representation);
           altLink.setRel("related");
-          altLink.setTitle("(" + representation + ") " + article.getTitle());
+          altLink.setTitle("(" + representation + ") " + dc.getTitle());
           altLink.setType(FileUtils.getContentType(representation));
           altLinks.add(altLink);
         }
@@ -300,7 +302,7 @@ public class ArticleFeed extends BaseActionSupport {
       // use Fedora workaround until database is re-ingested
       FedoraArticle fedoraArticle = null;
       try {
-        fedoraArticle = new FedoraArticle(article.getIdentifier());
+        fedoraArticle = new FedoraArticle(dc.getIdentifier());
       } catch (RuntimeException groovyRuntime) {
         log.warn(groovyRuntime);  // call to attention
         throw groovyRuntime;
@@ -367,7 +369,7 @@ public class ArticleFeed extends BaseActionSupport {
       Content description = new Content();
       description.setType("html");
       try {
-        description.setValue(transformToHtml(article.getDescription()));
+        description.setValue(transformToHtml(dc.getDescription()));
       } catch (Exception e) {
         log.error(e);
         description.setValue("<p>Internal server error.</p>");
