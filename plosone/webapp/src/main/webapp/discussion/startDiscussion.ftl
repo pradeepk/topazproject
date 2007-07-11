@@ -6,7 +6,7 @@
 		<div class="source">
 			<span>On the Article</span>
       <@s.url id="articlePageURL" action="fetchArticle" namespace="/article" articleURI="${articleInfo.id}" includeParams="none"/>
-      <@s.a href="%{articlePageURL}" title="Back to original article" cssClass="article icon">${articleInfo.title}</@s.a>
+      <@s.a href="%{articlePageURL}" title="Back to original article" cssClass="article icon">${articleInfo.dublinCore.title}</@s.a>
 		</div>
 	
 		<div class="original response">

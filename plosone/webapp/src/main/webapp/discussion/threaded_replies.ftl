@@ -52,7 +52,7 @@
 		<h1>Annotation and Responses</h1>
 		<div class="source">
 			<span>Original Article</span>
-			<a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=${baseAnnotation.annotates}&annotationId=${baseAnnotation.id}" title="Back to original article" class="article icon">${articleInfo.title}</a>
+			<a href="${freemarker_config.context}/article/fetchArticle.action?articleURI=${baseAnnotation.annotates}&annotationId=${baseAnnotation.id}" title="Back to original article" class="article icon">${articleInfo.dublinCore.title}</a>
 		</div>
 		<div class="response original">
 			<div class="hd">

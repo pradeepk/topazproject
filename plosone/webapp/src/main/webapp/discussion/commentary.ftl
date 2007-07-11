@@ -4,7 +4,7 @@
 	<@s.url namespace="/annotation/secure" includeParams="none" id="startDiscussionUrl" action="startDiscussion" target="${articleInfo.id}"/>
 
 	<div class="source">
-		<span>Original Article</span><a href="${articleURL}" title="Back to original article" class="article icon">${articleInfo.title}</a>
+		<span>Original Article</span><a href="${articleURL}" title="Back to original article" class="article icon">${articleInfo.dublinCore.title}</a>
 	</div>
 	<table class="directory" cellpadding="0" cellspacing="0">
 	<#if allCommentary?size == 0>
