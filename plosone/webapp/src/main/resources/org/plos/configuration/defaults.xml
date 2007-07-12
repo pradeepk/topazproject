@@ -34,7 +34,7 @@
       <https>${network.ports.plosone-ssl}</https>
     </port>
 
-    <url><proxy-callback>https://${network.hosts.plosone}:${network.ports.plosone}${pub.app-context}/CasProxyServlet</proxy-callback></url>
+    <url><proxy-callback>https://${network.hosts.plosone}:${network.ports.plosone-ssl}${pub.app-context}/CasProxyServlet</proxy-callback></url>
 
     <app-context>/plosone-webapp</app-context>
     <resource-sub-dir></resource-sub-dir>
