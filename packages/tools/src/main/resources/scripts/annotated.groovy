@@ -67,10 +67,10 @@ query = """
     subquery(select \$article \$title from ${RI_MODEL}
              where \$article <dc:title> \$title)
     count(select \$ann from ${RI_MODEL}
-          where \$ann <rdf:type> <a:Annotation>
-            and \$ann <a:annotates> \$article
-            and \$ann <a:created> \$created
-            ${restrict}
+          where (     \$ann <rdf:type> <a:Annotation>
+                  and \$ann <a:annotates> \$article
+                  and \$ann <a:created> \$created
+                  ${restrict} )
             minus \$ann <rdf:type> <topaz:RatingSummaryAnnotation>)
     from ${RI_MODEL}
     where \$s <rdf:type> <a:Annotation>
