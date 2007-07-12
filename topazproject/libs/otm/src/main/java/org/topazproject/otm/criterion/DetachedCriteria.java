@@ -9,6 +9,8 @@
  */
 package org.topazproject.otm.criterion;
 
+import java.net.URI;
+
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -17,6 +19,10 @@ import org.topazproject.otm.ClassMetadata;
 import org.topazproject.otm.Criteria;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.GeneratedValue;
+import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.UriPrefix;
 import org.topazproject.otm.mapping.Mapper;
 
 /**
@@ -25,15 +31,35 @@ import org.topazproject.otm.mapping.Mapper;
  *
  * @author Pradeep Krishnan
  */
+@Entity(type = Criterion.NS + "Criteria", model = Criterion.MODEL)
+@UriPrefix(Criterion.NS)
 public class DetachedCriteria {
-  private final String                 alias;
-  private final DetachedCriteria       parent;
-  private Integer                      maxResults;
-  private Integer                      firstResult;
-  private final List<Criterion>        criterions    = new ArrayList<Criterion>();
-  private final List<Order>            orders        = new ArrayList<Order>();
-  private final List<DetachedCriteria> children      = new ArrayList<DetachedCriteria>();
-  private final List<Order>            orderPosition = new ArrayList();
+  private String           alias;
+  private DetachedCriteria parent;
+  private Integer          maxResults;
+  private Integer          firstResult;
+
+  // FIXME : The following need to be an rdf:Seq or rdf:List
+  // TODO  : rdf:type look-ahead in ItqlStore impl
+  private List<Criterion>        criterionList     = new ArrayList<Criterion>();
+  private List<Order>            orderList         = new ArrayList<Order>();
+  private List<DetachedCriteria> childCriteriaList = new ArrayList<DetachedCriteria>();
+
+  // Only valid in the root criteria
+  private List<Order> rootOrderList = new ArrayList<Order>();
+
+  /**
+   * The id field used for persistence. Ignored otherwise.
+   */
+  @Id
+  @GeneratedValue(uriPrefix = Criterion.NS + "/Criteria/Id/")
+  public URI criteriaId;
+
+  /**
+   * Creates a new DetachedCriteria object.
+   */
+  public DetachedCriteria() {
+  }
 
   /**
    * Creates a new DetachedCriteria object.
@@ -41,8 +67,8 @@ public class DetachedCriteria {
    * @param entity the entity for which this alias is created
    */
   public DetachedCriteria(String alias) {
-    this.alias    = alias;
-    this.parent   = null;
+    this.alias                      = alias;
+    this.parent                     = null;
   }
 
   private DetachedCriteria(DetachedCriteria parent, String path) {
@@ -74,7 +100,7 @@ public class DetachedCriteria {
     Criteria c = session.createCriteria(cm.getSourceClass());
     copyTo(c);
     c.getOrderPositions().clear();
-    c.getOrderPositions().addAll(orderPosition);
+    c.getOrderPositions().addAll(rootOrderList);
 
     return c;
   }
@@ -86,13 +112,13 @@ public class DetachedCriteria {
     if (firstResult != null)
       c.setFirstResult(firstResult);
 
-    for (Criterion cr : criterions)
+    for (Criterion cr : criterionList)
       c.add(cr);
 
-    for (Order or : orders)
+    for (Order or : orderList)
       c.addOrder(or);
 
-    for (DetachedCriteria dc : children)
+    for (DetachedCriteria dc : childCriteriaList)
       dc.copyTo(c.createCriteria(dc.alias));
   }
 
@@ -107,7 +133,7 @@ public class DetachedCriteria {
    */
   public DetachedCriteria createCriteria(String path) throws OtmException {
     DetachedCriteria c = new DetachedCriteria(this, path);
-    children.add(c);
+    childCriteriaList.add(c);
 
     return c;
   }
@@ -122,6 +148,15 @@ public class DetachedCriteria {
   }
 
   /**
+   * Set parent.
+   *
+   * @param alias the value to set.
+   */
+  public void setParent(DetachedCriteria parent) {
+    this.parent = parent;
+  }
+
+  /**
    * Adds a Criterion.
    *
    * @param criterion the criterion to add
@@ -129,7 +164,7 @@ public class DetachedCriteria {
    * @return this for method call chaining
    */
   public DetachedCriteria add(Criterion criterion) {
-    criterions.add(criterion);
+    criterionList.add(criterion);
 
     return this;
   }
@@ -142,8 +177,8 @@ public class DetachedCriteria {
    * @return this for method call chaining
    */
   public DetachedCriteria addOrder(Order order) {
-    orders.add(order);
-    getRoot().orderPosition.add(order);
+    orderList.add(order);
+    getRoot().rootOrderList.add(order);
 
     return this;
   }
@@ -153,8 +188,17 @@ public class DetachedCriteria {
    *
    * @return list of child Criteria
    */
-  public List<DetachedCriteria> getChildren() {
-    return children;
+  public List<DetachedCriteria> getChildCriteriaList() {
+    return childCriteriaList;
+  }
+
+  /**
+   * Sets the list of child Criteria.
+   *
+   * @param list of child Criteria
+   */
+  public void setChildCriteriaList(List<DetachedCriteria> list) {
+    childCriteriaList = list;
   }
 
   /**
@@ -163,7 +207,16 @@ public class DetachedCriteria {
    * @return list of Criterions
    */
   public List<Criterion> getCriterionList() {
-    return criterions;
+    return criterionList;
+  }
+
+  /**
+   * Sets the list of Criterions.
+   *
+   * @param list of Criterions
+   */
+  public void setCriterionList(List<Criterion> list) {
+    criterionList = list;
   }
 
   /**
@@ -172,19 +225,34 @@ public class DetachedCriteria {
    * @return lis of Order dedinitions
    */
   public List<Order> getOrderList() {
-    return orders;
+    return orderList;
   }
 
   /**
-   * Gets the position of this order by clause in the root Criteria. Position is determined
-   * by the sequence in which the {@link #addOrder} call is made.
+   * Sets the list of Order definitions.
    *
-   * @param order a previously added order entry
-   *
-   * @return the position or -1 if the order entry does not exist
+   * @param list of Order dedinitions
    */
-  public int getOrderPosition(Order order) {
-    return getRoot().orderPosition.indexOf(order);
+  public void setOrderList(List<Order> list) {
+    orderList = list;
+  }
+
+  /**
+   * Gets the root order list.
+   *
+   * @return the root order list
+   */
+  public List<Order> getRootOrderList() {
+    return rootOrderList;
+  }
+
+  /**
+   * Gets the root order list.
+   *
+   * @param list the root order list
+   */
+  public void setRootOrderList(List<Order> list) {
+    rootOrderList = list;
   }
 
   /**
@@ -233,5 +301,23 @@ public class DetachedCriteria {
 
   private DetachedCriteria getRoot() {
     return (parent == null) ? this : parent.getRoot();
+  }
+
+  /**
+   * Get alias.
+   *
+   * @return alias as String.
+   */
+  public String getAlias() {
+    return alias;
+  }
+
+  /**
+   * Set alias.
+   *
+   * @param alias the value to set.
+   */
+  public void setAlias(String alias) {
+    this.alias = alias;
   }
 }

@@ -25,7 +25,7 @@ import org.topazproject.otm.annotations.UriPrefix;
  *
  * @see org.topazproject.otm.Parameterizable
  */
-@Entity(type = Criterion.RDF_TYPE + "/Parameter", model = "criterion")
+@Entity(type = Criterion.RDF_TYPE + "/Parameter", model = Criterion.MODEL)
 @UriPrefix(Criterion.NS)
 public class Parameter {
   private String parameterName;

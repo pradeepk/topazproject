@@ -36,16 +36,22 @@ import org.topazproject.otm.mapping.Mapper;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Criterion.RDF_TYPE, model = "criterion")
+@Entity(type = Criterion.RDF_TYPE, model = Criterion.MODEL)
 @UriPrefix(Criterion.NS)
 public abstract class Criterion {
+
   /**
-   * Namespace for all URIs.
+   * The graph/model alias for persistence. Unused otherwise.
+   */
+  public static final String MODEL = "criteria";
+
+  /**
+   * Namespace for all URIs for persistence. Unused otherwise.
    */
   public static final String NS = Rdf.topaz + "otm/";
 
   /**
-   * The base rdf:type and also the namespace for sub-class types.
+   * The base rdf:type and also the namespace for sub-class types for persistence. Unused otherwise/
    */
   public static final String RDF_TYPE = NS + "Criterion";
 

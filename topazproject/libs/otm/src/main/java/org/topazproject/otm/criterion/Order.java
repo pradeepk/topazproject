@@ -9,14 +9,37 @@
  */
 package org.topazproject.otm.criterion;
 
+import java.net.URI;
+
+import org.topazproject.otm.annotations.Entity;
+import org.topazproject.otm.annotations.GeneratedValue;
+import org.topazproject.otm.annotations.Id;
+import org.topazproject.otm.annotations.Predicate;
+
 /**
  * Specification of an order-by on a Criteria.
  *
  * @author Pradeep Krishnan
  */
+@Entity(type = Criterion.RDF_TYPE + "/Order", model = Criterion.MODEL)
 public class Order {
-  private String  name;
-  private boolean ascending;
+  @Predicate(uri = Criterion.NS + "fieldName")
+  private String                                                    name;
+  @Predicate(uri = Criterion.NS + "order/ascending")
+  private boolean                                                   ascending;
+
+  /**
+   * The id field used for persistence. Ignored otherwise.
+   */
+  @Id
+  @GeneratedValue(uriPrefix = Criterion.RDF_TYPE + "/Order/Id/")
+  public URI orderId;
+
+  /**
+   * Creates a new Order object.
+   */
+  public Order() {
+  }
 
   /**
    * Creates a new Order object.
@@ -36,6 +59,15 @@ public class Order {
    */
   public String getName() {
     return name;
+  }
+
+  /**
+   * Set the field name.
+   *
+   * @param name the field name to set
+   */
+  public void setName(String name) {
+    this.name = name;
   }
 
   /**
@@ -67,5 +99,23 @@ public class Order {
    */
   public static Order desc(String name) {
     return new Order(name, false);
+  }
+
+  /**
+   * Get ascending.
+   *
+   * @return ascending as boolean.
+   */
+  public boolean getAscending() {
+    return ascending;
+  }
+
+  /**
+   * Set ascending.
+   *
+   * @param ascending the value to set.
+   */
+  public void setAscending(boolean ascending) {
+    this.ascending = ascending;
   }
 }

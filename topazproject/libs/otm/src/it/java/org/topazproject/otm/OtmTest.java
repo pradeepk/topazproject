@@ -13,10 +13,26 @@ import org.apache.commons.logging.LogFactory;
 
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.context.ThreadLocalSessionContext;
+import org.topazproject.otm.criterion.Conjunction;
+import org.topazproject.otm.criterion.Criterion;
 import org.topazproject.otm.criterion.DetachedCriteria;
+import org.topazproject.otm.criterion.Disjunction;
+import org.topazproject.otm.criterion.EQCriterion;
+import org.topazproject.otm.criterion.ExistsCriterion;
+import org.topazproject.otm.criterion.GECriterion;
+import org.topazproject.otm.criterion.GTCriterion;
+import org.topazproject.otm.criterion.LECriterion;
+import org.topazproject.otm.criterion.LTCriterion;
+import org.topazproject.otm.criterion.MinusCriterion;
+import org.topazproject.otm.criterion.NECriterion;
+import org.topazproject.otm.criterion.NotCriterion;
+import org.topazproject.otm.criterion.NotExistsCriterion;
 import org.topazproject.otm.criterion.Order;
 import org.topazproject.otm.criterion.Parameter;
 import org.topazproject.otm.criterion.Restrictions;
+import org.topazproject.otm.criterion.TransCriterion;
+import org.topazproject.otm.criterion.WalkCriterion;
+
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;
 import org.topazproject.otm.samples.Annotea;
@@ -1362,4 +1378,29 @@ public class OtmTest extends TestCase {
     }
 
   }
+
+  public void test12() throws OtmException {
+    Class classes[] = new Class[] {Conjunction.class,
+      Criterion.class,
+      DetachedCriteria.class,
+      Disjunction.class,
+      EQCriterion.class,
+      ExistsCriterion.class,
+      GECriterion.class,
+      GTCriterion.class,
+      LECriterion.class,
+      LTCriterion.class,
+      MinusCriterion.class,
+      NECriterion.class,
+      NotCriterion.class,
+      NotExistsCriterion.class,
+      Order.class,
+      Parameter.class,
+      TransCriterion.class,
+      WalkCriterion.class,
+    };
+    for (Class c : classes)
+      factory.preload(c);
+  }
+
 }
