@@ -20,11 +20,7 @@ import org.topazproject.otm.mapping.Mapper;
  *
  * @author Pradeep Krishnan
  */
-public class PredicateCriterion extends Criterion {
-  private String  name;
-  private Object  value;
-  private boolean unboundPredicate = false;
-  private boolean unboundValue     = false;
+public class PredicateCriterion extends AbstractBinaryCriterion {
 
   /**
    * Creates a new PredicateCriterion object.
@@ -33,8 +29,7 @@ public class PredicateCriterion extends Criterion {
    * @param value field/predicate value
    */
   public PredicateCriterion(String name, Object value) {
-    this.name    = name;
-    this.value   = value;
+    super(name, value);
   }
 
   /**
@@ -43,8 +38,7 @@ public class PredicateCriterion extends Criterion {
    * @param name field/predicate name
    */
   public PredicateCriterion(String name) {
-    this.name      = name;
-    unboundValue   = true;
+    super(name, null);
   }
 
   /**
@@ -53,9 +47,9 @@ public class PredicateCriterion extends Criterion {
    * @param name field/predicate name
    */
   public PredicateCriterion() {
-    unboundPredicate   = true;
-    unboundValue       = true;
+    super(null, null);
   }
+
 
   /**
    * Gets the field/predicate name.
@@ -63,38 +57,33 @@ public class PredicateCriterion extends Criterion {
    * @return field/predicate name
    */
   public String getName() {
-    return name;
+    return getFieldName();
   }
 
-  /**
-   * Gets the field/predicate value.
-   *
-   * @return field/predicate value
-   */
-  public Object getValue() {
-    return value;
-  }
 
   /*
    * inherited javadoc
    */
   public String toItql(Criteria criteria, String subjectVar, String varPrefix)
                 throws OtmException {
+    boolean unboundPredicate = getFieldName() == null;
+    boolean unboundValue     = getValue() == null;
+
     if (unboundPredicate)
       return subjectVar + " " + varPrefix + "p " + varPrefix + "v";
 
     ClassMetadata cm = criteria.getClassMetadata();
-    Mapper        m  = cm.getMapperByName(getName());
+    Mapper        m  = cm.getMapperByName(getFieldName());
 
     if (m == null)
-      throw new OtmException("'" + getName() + "' does not exist in " + cm);
+      throw new OtmException("'" + getFieldName() + "' does not exist in " + cm);
 
     String val;
 
     if (unboundValue)
       val = varPrefix + "v";
     else
-      val = serializeValue(getValue(), criteria, getName());
+      val = serializeValue(getValue(), criteria, getFieldName());
 
     String query =
       m.hasInverseUri() ? (val + " <" + m.getUri() + "> " + subjectVar)
@@ -121,6 +110,9 @@ public class PredicateCriterion extends Criterion {
    * inherited javadoc
    */
   public String toOql(Criteria criteria, String subjectVar, String varPrefix) throws OtmException {
+    boolean unboundPredicate = getFieldName() == null;
+    boolean unboundValue     = getValue() == null;
+
     if (unboundValue)
       throw new OtmException("unbound value not supported in OQL (yet)");
 
@@ -129,12 +121,12 @@ public class PredicateCriterion extends Criterion {
     if (unboundPredicate)
       res += ".{" + varPrefix + "p:}";
     else
-      res += "." + getName();
+      res += "." + getFieldName();
 
     if (unboundValue)
       res += " != null";
     else
-      res += " = " + serializeValue(getValue(), criteria, getName());
+      res += " = " + serializeValue(getValue(), criteria, getFieldName());
 
     return res;
   }

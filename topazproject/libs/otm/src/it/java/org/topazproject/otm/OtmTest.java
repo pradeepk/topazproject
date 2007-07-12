@@ -14,6 +14,7 @@ import org.apache.commons.logging.LogFactory;
 import org.topazproject.otm.annotations.Rdf;
 import org.topazproject.otm.context.ThreadLocalSessionContext;
 import org.topazproject.otm.criterion.Order;
+import org.topazproject.otm.criterion.Parameter;
 import org.topazproject.otm.criterion.Restrictions;
 import org.topazproject.otm.query.Results;
 import org.topazproject.otm.samples.Annotation;
@@ -684,6 +685,18 @@ public class OtmTest extends TestCase {
       criteria.createCriteria("supersedes").addOrder(Order.desc("creator"))
                .add(Restrictions.eq("annotates", "foo:1"));
       l = criteria.addOrder(Order.desc("annotates")).list();
+      assertEquals(2, l.size());
+      a1   = (Annotation) l.get(0);
+      a2   = (Annotation) l.get(1);
+      assertEquals(id3, a1.getId());
+      assertEquals(id2, a2.getId());
+
+      criteria = session.createCriteria(Annotation.class);
+      criteria.createCriteria("supersedes").addOrder(Order.desc("creator"))
+               .add(Restrictions.eq("annotates", new Parameter("p1")));
+      criteria.addOrder(Order.desc("annotates"));
+      criteria.setParameter("p1", "foo:1");
+      l = criteria.list();
       assertEquals(2, l.size());
       a1   = (Annotation) l.get(0);
       a2   = (Annotation) l.get(1);

@@ -57,15 +57,11 @@ public class WalkCriterion extends AbstractBinaryCriterion {
 
     if (m == null)
       throw new OtmException("'" + getFieldName() + "' does not exist in " + cm);
-
-    String val;
-
-    if (m.typeIsUri())
-      val = "<" + ItqlHelper.validateUri(getValue().toString(), getFieldName()) + ">";
-    else
+    if (!m.typeIsUri())
       throw new OtmException("Value must be a uri for walk(): field is "
                              + m.getField().toGenericString());
 
+    String val = serializeValue(getValue(), criteria, getFieldName());
     String model = m.getModel();
 
     if ((model != null) && !cm.getModel().equals(model)) {

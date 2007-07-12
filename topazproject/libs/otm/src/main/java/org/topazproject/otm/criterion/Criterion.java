@@ -11,6 +11,9 @@ package org.topazproject.otm.criterion;
 
 import java.net.URI;
 
+import java.util.Collections;
+import java.util.Set;
+
 import org.topazproject.mulgara.itql.ItqlHelper;
 
 import org.topazproject.otm.ClassMetadata;
@@ -57,6 +60,7 @@ public abstract class Criterion {
   @Id
   @GeneratedValue(uriPrefix = NS + "Criterion/Id/")
   public URI criterionId;
+
 
   /**
    * Creates an ITQL query 'where clause' fragment. The default implementation calls {@link #toQuery
@@ -132,10 +136,14 @@ public abstract class Criterion {
       throw new OtmException("'" + field + "' does not exist in " + cm);
 
     String val;
-    try {
-      val = (m.getSerializer() != null) ? m.getSerializer().serialize(value) : value.toString();
-    } catch (Exception e) {
-      throw new OtmException("Serializer exception", e);
+    if (value instanceof Parameter)
+      val = criteria.resolveParameter(((Parameter)value).getParameterName(), field);
+    else {
+      try {
+        val = (m.getSerializer() != null) ? m.getSerializer().serialize(value) : value.toString();
+      } catch (Exception e) {
+        throw new OtmException("Serializer exception", e);
+      }
     }
 
     if (m.typeIsUri())
@@ -148,5 +156,17 @@ public abstract class Criterion {
     }
 
     return val;
+  }
+
+  /**
+   * Gets the parameter names that is set on this Criterion.
+   * The default implementation always returns an emptySet.
+   * Sub-classes must override this and return a set if they
+   * are parameterizable.
+   *
+   * @return the parameter names as a set; never null
+   */
+  public Set<String> getParamNames() {
+    return Collections.emptySet();
   }
 }
