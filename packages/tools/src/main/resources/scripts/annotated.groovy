@@ -51,16 +51,21 @@ if (verbose) {
 // Globals
 RI_MODEL='<local:///topazproject#ri>'
 STR_MODEL='<local:///topazproject#str>'
+DATETIME='<http://www.w3.org/2001/XMLSchema#dateTime>'
 
 itql = new ItqlHelper(new URI(mulgaraUri))
 def aliases = ItqlHelper.getDefaultAliases()
 aliases['a'] = 'http://www.w3.org/2000/10/annotation-ns#'
 
 restrict = ""
-if (opt.s)
-  restrict += " and \$created <topaz:ge> '${opt.s}' in ${STR_MODEL}"
-if (opt.e)
-  restrict += " and \$created <topaz:le> '${opt.e}' in ${STR_MODEL}"
+if (opt.s) {
+  restrict += " and (\$created <topaz:ge> '${opt.s}' in ${STR_MODEL} " + 
+                " or \$created <topaz:ge> '${opt.s}T00:00:00'^^${DATETIME} in ${STR_MODEL})"
+}
+if (opt.e) {
+  restrict += " and (\$created <topaz:le> '${opt.e}' in ${STR_MODEL} " +
+               " or \$created <topaz:le> '${opt.e}T00:00:00'^^${DATETIME} in ${STR_MODEL})"
+}
 
 query = """
   select \$article
