@@ -212,6 +212,15 @@ public class Criteria implements Parameterizable<Criteria> {
   }
 
   /**
+   * Gets the list of order by clauses in root.
+   *
+   * @return all order by clauses in order as seen by the root Criteria
+   */
+  public List<Order> getOrderPositions() {
+    return getRoot().orderPosition;
+  }
+
+  /**
    * Set a limit upon the number of objects to be retrieved.
    *
    * @param maxResults the maximum number of results
