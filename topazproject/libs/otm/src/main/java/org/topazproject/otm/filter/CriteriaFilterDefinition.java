@@ -18,20 +18,22 @@ import org.topazproject.otm.Filter;
 import org.topazproject.otm.Session;
 import org.topazproject.otm.OtmException;
 import org.topazproject.otm.criterion.Criterion;
+import org.topazproject.otm.criterion.DetachedCriteria;
 import org.topazproject.otm.query.GenericQueryImpl;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
 /**
- * This represents an OTM filter definition defined via a {@link Criteria Criteria}.
+ * This represents an OTM filter definition defined via a {@link
+ * org.topazproject.otm.criterion.DetachedCriteria DetachedCriteria}.
  *
  * @author Ronald Tschalär
  */
 public class CriteriaFilterDefinition extends AbstractFilterDefinition {
   private static final Log log = LogFactory.getLog(CriteriaFilterDefinition.class);
 
-  private final Criteria crit;
+  private final DetachedCriteria crit;
 
   /** 
    * Create a new filter-definition based on the given criteria.
@@ -40,7 +42,7 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
    * @param filteredClass the entity-name or fully-qualified class name of the class being filtered
    * @param crit          the criteria defining this filter
    */
-  public CriteriaFilterDefinition(String filterName, String filteredClass, Criteria crit) {
+  public CriteriaFilterDefinition(String filterName, String filteredClass, DetachedCriteria crit) {
     super(filterName, filteredClass);
     this.crit = crit;
   }
@@ -54,21 +56,25 @@ public class CriteriaFilterDefinition extends AbstractFilterDefinition {
   }
 
   private static class CriteriaFilter extends AbstractFilterImpl {
-    private final Criteria crit;
+    private final DetachedCriteria crit;
 
-    private CriteriaFilter(FilterDefinition fd, Criteria crit, Session sess) throws OtmException {
+    private CriteriaFilter(FilterDefinition fd, DetachedCriteria crit, Session sess)
+                         throws OtmException {
       super(fd, sess);
       this.crit = crit;
     }
 
-    public Criteria getCriteria() {
-      return crit;
+    public Criteria getCriteria() throws OtmException {
+      Criteria cr = crit.getExecutableCriteria(sess);
+      cr.applyParameterValues(paramValues);
+      return cr;
     }
 
     public GenericQueryImpl getQuery() throws OtmException {
+      Criteria cr = getCriteria();
       StringBuilder qry = new StringBuilder("select o from ");
-      qry.append(crit.getClassMetadata().getName()).append(" o where ");
-      toOql(qry, crit, "o", "v");
+      qry.append(cr.getClassMetadata().getName()).append(" o where ");
+      toOql(qry, cr, "o", "v");
       qry.append(";");
 
       GenericQueryImpl q = new GenericQueryImpl(qry.toString(), CriteriaFilterDefinition.log);

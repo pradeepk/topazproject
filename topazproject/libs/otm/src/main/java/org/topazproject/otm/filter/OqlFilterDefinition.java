@@ -76,8 +76,9 @@ public class OqlFilterDefinition extends AbstractFilterDefinition {
     }
 
     public Criteria getCriteria() throws OtmException {
-      /* query.applyParameterValues(paramValues); XXX */
-      return query.toCriteria(sess);
+      Criteria cr = query.toCriteria(sess); // TODO : generate Parameterized Criteria
+      cr.applyParameterValues(paramValues);
+      return cr;
     }
 
     public GenericQueryImpl getQuery() throws OtmException {
