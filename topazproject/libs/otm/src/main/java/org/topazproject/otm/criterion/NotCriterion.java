@@ -18,7 +18,7 @@ import org.topazproject.otm.annotations.Entity;
  *
  * @author Pradeep Krishnan
  */
-@Entity(type = Criterion.NS + "/not")
+@Entity(type = Criterion.RDF_TYPE + "/not")
 public class NotCriterion extends Criterion {
   private Criterion criterion;
 
