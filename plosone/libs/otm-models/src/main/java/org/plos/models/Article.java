@@ -47,13 +47,6 @@ public class Article extends ObjectInfo {
   private Set<Category> categories = new HashSet<Category>();
 
   /**
-   * The pointer to local profiles (if one exists) for the authors
-   */
-  // TODO: Change this to Set<User> once User model is done
-  @Predicate(uri = Rdf.topaz + "userIsAuthor")
-  private Set<URI> userAuthors = new HashSet<URI>();
-
-  /**
    * Get the list of categories for the article
    *
    * @return the categories
@@ -69,23 +62,5 @@ public class Article extends ObjectInfo {
    */
   public void setCategories(Set<Category> categories) {
     this.categories = categories;
-  }
-
-  /**
-   * Get the authors local profile if they are registered.
-   *
-   * @return the set of users that are authors of this article
-   */
-  public Set<URI> getUserAuthors() {
-    return userAuthors;
-  }
-
-  /**
-   * Set the local profile for the authors
-   *
-   * @param userAuthors the set of users that are also authors of this article
-   */
-  public void setUserAuthors(Set<URI> userAuthors) {
-    this.userAuthors = userAuthors;
   }
 }

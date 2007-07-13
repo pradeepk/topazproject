@@ -101,16 +101,14 @@ public abstract class Citation {
    * also an author field, then the editor field gives the editor of the book
    * or collection in which the reference appears.
    */
-  @Predicate(uri = PLoS.bibtex + "hasEditorList", dataType = Rdf.xsd + "String",
-      storeAs = Predicate.StoreAs.rdfSeq)
-  private List<String> editors = new ArrayList<String>();
+  @Predicate(uri = PLoS.bibtex + "hasEditorList", storeAs = Predicate.StoreAs.rdfSeq)
+  private List<FoafPerson> editors = new ArrayList<FoafPerson>();
 
   /**
    * The name(s) of the author(s), in the format described in the LaTeX book.
    */
-  @Predicate(uri = PLoS.bibtex + "hasAuthorList", dataType = Rdf.xsd + "String",
-      storeAs = Predicate.StoreAs.rdfSeq)
-  private List<String> authors = new ArrayList<String>();
+  @Predicate(uri = PLoS.bibtex + "hasAuthorList", storeAs = Predicate.StoreAs.rdfSeq)
+  private List<FoafPerson> authors = new ArrayList<FoafPerson>();
 
   /**
    * Get id.
@@ -259,28 +257,28 @@ public abstract class Citation {
   /**
    * @return the editors of this citation
    */
-  public List<String> getEditors() {
+  public List<FoafPerson> getEditors() {
     return editors;
   }
 
   /**
    * @param editors the editors of this citation
    */
-  public void setEditors(List<String> editors) {
+  public void setEditors(List<FoafPerson> editors) {
     this.editors = editors;
   }
 
   /**
    * @return the authors of this citation
    */
-  public List<String> getAuthors() {
+  public List<FoafPerson> getAuthors() {
     return authors;
   }
 
   /**
    * @param authors the authors for this citation
    */
-  public void setAuthors(List<String> authors) {
+  public void setAuthors(List<FoafPerson> authors) {
     this.authors = authors;
   }
 }
