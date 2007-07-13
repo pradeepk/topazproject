@@ -25,7 +25,7 @@ import org.apache.commons.logging.LogFactory;
  * <pre>
  *    Foo f =
  *      TransactionHelper.doInTx(session, new TransactionHelper.Action<Foo>() {
- *        public UserAccount run(Transaction tx) {
+ *        public Foo run(Transaction tx) {
  *          List l = tx.getSession().createCriteria(Foo.class)...list();
  *          return (Foo) l(0);
  *        }
