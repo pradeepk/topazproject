@@ -22,8 +22,11 @@ import javax.servlet.ServletResponse;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletRequestWrapper;
 
+import org.apache.commons.configuration.Configuration;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
+
+import org.plos.configuration.ConfigurationStore;
 
 /**
  * A Filter that maps incoming URI Requests to an appropriate virtual journal resource.
@@ -34,6 +37,17 @@ import org.apache.commons.logging.LogFactory;
  */
 public class VirtualJournalMappingFilter implements Filter {
 
+  /**
+   * ServletRequest attribute for the virtual journal mapping prefix.
+   */
+  public static final String PUB_VIRTUALJOURNAL_MAPPINGPREFIX = "pub.virtualjournal.mappingprefix";
+  /**
+   * Default virtual journal mapping prefix.
+   */
+  public static final String PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX = "";
+
+  private static final Configuration configuration = ConfigurationStore.getInstance().getConfiguration();
+
   private static ServletContext servletContext = null;
 
   private static final Log log = LogFactory.getLog(VirtualJournalMappingFilter.class);
@@ -42,6 +56,14 @@ public class VirtualJournalMappingFilter implements Filter {
    * @see javax.servlet.Filter#init
    */
   public void init(final FilterConfig filterConfig) throws ServletException {
+
+    // settings & overrides are in the Configuration
+    if (configuration == null) {
+      // should never happen
+      final String errorMessage = "No Configuration is available to set Virtual Journal mappingPrefix";
+      log.error(errorMessage);
+      throw new ServletException(errorMessage);
+    }
 
     // need ServletContext to get "real" path/file names
     servletContext = filterConfig.getServletContext();
@@ -61,7 +83,6 @@ public class VirtualJournalMappingFilter implements Filter {
   public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
-
     // lookup virtual journal context, mapping, & modify URI of Request if necessary
     String[] virtualJournalResource = lookupVirtualJournalResource((HttpServletRequest) request);
 
@@ -69,8 +90,8 @@ public class VirtualJournalMappingFilter implements Filter {
     if (virtualJournalResource != null) {
       if (log.isDebugEnabled()) {
         log.debug("virtual journal override mapped to: "
-          + "pathInfo=\"" + virtualJournalResource[0] + "\""
-          + ", pathTranslated=\"" + virtualJournalResource[1] + "\"");
+          + "requestUri=\"" + virtualJournalResource[0] + "\""
+          + ", requestServletPath=\"" + virtualJournalResource[1] + "\"");
       }
 
       filterChain.doFilter(wrapRequest((HttpServletRequest) request, virtualJournalResource[0], virtualJournalResource[1]), response);
@@ -78,8 +99,8 @@ public class VirtualJournalMappingFilter implements Filter {
       // continue the Filter chain unmodified
       if (log.isDebugEnabled()) {
         log.debug("no virtual journal override for: "
-          + "pathInfo=\"" + ((HttpServletRequest)request).getPathInfo() + "\""
-          + ", pathTranslated=\"" + ((HttpServletRequest)request).getPathTranslated() + "\"");
+          + "requestUri=\"" + ((HttpServletRequest)request).getRequestURI() + "\""
+          + ", requestServletPath=\"" + ((HttpServletRequest)request).getServletPath() + "\"");
       }
 
       filterChain.doFilter(request, response);
@@ -89,58 +110,77 @@ public class VirtualJournalMappingFilter implements Filter {
   /**
    * Lookup a virtual journal resource.
    *
-   * If resource exists within the virtual journal context, return the pathInfo and pathTranslated for the resource.
+   * If resource exists within the virtual journal context, return the requestUri and requestServletPath for the resource.
    *
    * @param request <code>HttpServletRequest</code> to apply the lookup against.
-   * @return String[] {pathInfo, pathTranslated} or <code>null</code> if virtual journal resource doesn't exist.
+   * @return String[] {requestUri, requestServletPath} or <code>null</code> if virtual journal resource doesn't exist.
    */
 private String[] lookupVirtualJournalResource(final HttpServletRequest request) {
 
-    final String mappingPrefix  = (String) request.getAttribute(VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_MAPPINGPREFIX);
+    // put default mappingPrefix in the Request for others to use in case it isn't overridden
+    request.setAttribute(PUB_VIRTUALJOURNAL_MAPPINGPREFIX, PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX);
 
-    // no modification if mappingPrefix doesn't exist or is == default
-    if ( mappingPrefix == null
-      || mappingPrefix.equals(VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_DEFAULT_MAPPINGPREFIX)) {
+    // lookup virtual journal context
+    final String virtualJournal = (String) request.getAttribute(VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_JOURNAL);
+    if (virtualJournal == null) {
+      return null;
+    }
+
+    if (log.isDebugEnabled()) {
+      log.debug("looking up mappingPrefix for virutalJournal: \"" + virtualJournal + "\"");
+    }
+
+    // lookup mapping prefix
+    String mappingPrefix  = null;
+    if (virtualJournal.equals(VirtualJournalContextFilter.PUB_VIRTUALJOURNAL_DEFAULT_JOURNAL)) {
+      // use <default><mappingPrefix>
+      mappingPrefix  = configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS_DEFAULT + ".mappingPrefix");
+    } else {
+      // use <journals><${journalName}><mappingPrefix>
+      mappingPrefix  = configuration.getString(VirtualJournalContextFilter.CONF_VIRTUALJOURNALS + "." + virtualJournal + ".mappingPrefix");
+    }
+
+    // no modification if mappingPrefix doesn't exist
+    if ( mappingPrefix == null || mappingPrefix.length() == 0) {
       return null;
     }
 
     // what is resource name on filesystem?
-    final String pathInfo       = mappingPrefix + (request.getPathInfo() == null ? "" : request.getPathInfo());
-    final String pathTranslated = servletContext.getRealPath(pathInfo);
-    if (pathTranslated == null) {
-      if (log.isDebugEnabled()) {
-        log.debug("ignoring virtual journal override: ServletContext.getRealPath(" + pathInfo + ") == null");
-      }
-
-      return null;
-    }
+    final String reqUri = mappingPrefix + request.getRequestURI();
+    final String reqServletPath = request.getServletPath().startsWith("/")
+      ? mappingPrefix       + request.getServletPath()
+      : mappingPrefix + "/" + request.getServletPath();
+    final String realPath = servletContext.getRealPath(reqUri);
 
     // does resource actually exist?
-    File virtualJournalFile = new File(pathTranslated);
+    File virtualJournalFile = new File(realPath);
     if (!virtualJournalFile.exists()) {
       if (log.isDebugEnabled()) {
-        log.debug("ignoring virtual journal override: File(" + pathTranslated + ").exists == false");
+        log.debug("ignoring virtual journal override: File(" + realPath + ").exists == false");
       }
 
       return null;
     }
 
     // use virtual journal resource
-    return new String[] {pathInfo, pathTranslated};
+    // put mappingPrefix in the Request for others to use
+    request.setAttribute(PUB_VIRTUALJOURNAL_MAPPINGPREFIX, mappingPrefix);
+
+    return new String[] {reqUri, reqServletPath};
   }
 
-  private HttpServletRequest wrapRequest(HttpServletRequest request, final String pathInfo, final String pathTranslated) {
+  private HttpServletRequest wrapRequest(HttpServletRequest request, final String requestUri, final String requestServletPath) {
 
     return new HttpServletRequestWrapper(request) {
 
-      public String getPathInfo() {
+      public String getRequestURI() {
 
-        return pathInfo;
+        return requestUri;
       }
 
-      public String getPathTranslated() {
+      public String getServletPath() {
 
-        return pathTranslated;
+        return requestServletPath;
       }
     };
   }

@@ -108,7 +108,7 @@ If so, wrap request with virtual journal override values in FilterChain.</descri
 
   <filter-mapping>
     <filter-name>VirtualJournalMappingFilter</filter-name>
-    <url-pattern>/*</url-pattern>
+    <url-pattern>/images/*</url-pattern>
   </filter-mapping>
 
   <!--
