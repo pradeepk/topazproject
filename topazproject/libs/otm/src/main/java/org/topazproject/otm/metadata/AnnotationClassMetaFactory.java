@@ -362,7 +362,7 @@ public class AnnotationClassMetaFactory {
       ParameterizedType ptype = (ParameterizedType) type;
       Type[]            targs = ptype.getActualTypeArguments();
 
-      if (targs.length > 0)
+      if ((targs.length > 0) && (targs[0] instanceof Class))
         result = (Class) targs[0];
     }
 
