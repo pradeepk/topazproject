@@ -38,33 +38,20 @@ public class Article extends ObjectInfo {
   /** Active article states */
   public static final int[] ACTIVE_STATES = {STATE_ACTIVE};
 
+  /**
+   * The categories the article belongs to
+   *
+   * TODO: This needs to be changed.
+   */
   @Predicate(uri = Rdf.topaz + "hasCategory")
   private Set<Category> categories = new HashSet<Category>();
+
+  /**
+   * The pointer to local profiles (if one exists) for the authors
+   */
   // TODO: Change this to Set<User> once User model is done
   @Predicate(uri = Rdf.topaz + "userIsAuthor")
   private Set<URI> userAuthors = new HashSet<URI>();
-  @Predicate(uri = Rdf.topaz + "articleType")
-  private String articleType;
-  @Predicate(uri = Rdf.topaz + "volume")
-  private int volume;
-  @Predicate(uri = Rdf.topaz + "issue")
-  private int issue;
-  @Predicate(uri = Rdf.topaz + "journalTitle")
-  private String journalTitle;
-  @Predicate(uri = Rdf.topaz + "pageCount")
-  private int pageCount;
-  @Predicate(uri = Rdf.topaz + "affiliations")
-  private Set<String> affiliations = new HashSet<String>();
-
-  /*
-   * The DC creator list is not ordered, but there is a hierarchy in the list
-   * of the authors with the most important one being mentioned first in the
-   * original article. That is maintained here.
-   */
-  @Predicate(uri = Rdf.topaz + "authors", storeAs = Predicate.StoreAs.rdfList)
-  private List<String> orderedAuthors = new ArrayList<String>();
-  @Predicate(uri = Rdf.topaz + "body")
-  private String body;
 
   /**
    * Get the list of categories for the article
@@ -100,147 +87,5 @@ public class Article extends ObjectInfo {
    */
   public void setUserAuthors(Set<URI> userAuthors) {
     this.userAuthors = userAuthors;
-  }
-
-  /**
-   * Get the type of the article (this is PLoS specific information)
-   *
-   * @return the article type
-   */
-  public String getArticleType() {
-    return articleType;
-  }
-
-  /**
-   * Set the type of the article
-   *
-   * @param articleType the article type
-   */
-  public void setArticleType(String articleType) {
-    this.articleType = articleType;
-  }
-
-  /**
-   * Return the volume the article belongs to
-   *
-   * @return the volume the article belongs to
-   */
-  public int getVolume() {
-    return volume;
-  }
-
-  /**
-   * Set the volume the article belongs to
-   *
-   * @param volume the volume number the article belongs to
-   */
-  public void setVolume(int volume) {
-    this.volume = volume;
-  }
-
-  /**
-   * Return the issue the article belongs to
-   *
-   * @return the issue the article belongs to
-   */
-  public int getIssue() {
-    return issue;
-  }
-
-  /**
-   * Set the issue the article belongs to
-   *
-   * @param issue the issue the article belongs to
-   */
-  public void setIssue(int issue) {
-    this.issue = issue;
-  }
-
-  /**
-   * Return the journal the article belongs to
-   *
-   * @returns the journal title
-   */
-  public String getJournalTitle() {
-    return journalTitle;
-  }
-
-  /**
-   * Set the journal the article belongs to
-   *
-   * @param journalTitle the title of the journal
-   */
-  public void setJournalTitle(String journalTitle) {
-    this.journalTitle = journalTitle;
-  }
-
-  /**
-   * Get the total number of pages in the article
-   *
-   * @return the number of pages in the article
-   */
-  public int getPageCount() {
-    return pageCount;
-  }
-
-  /**
-   * Set the total number of pages in the article
-   *
-   * @param pageCount the number of pages in the aritcle
-   */
-  public void setPageCount(int pageCount) {
-    this.pageCount = pageCount;
-  }
-
-  /**
-   * Return the list of affiliations
-   *
-   * @return a list of affiliations
-   */
-  public Set<String> getAffiliations() {
-    return affiliations;
-  }
-
-  /**
-   * Set the list of affiliations
-   *
-   * @param affiliations a set of affiliations
-   */
-  public void setAffiliations(Set<String> affiliations) {
-    this.affiliations = affiliations;
-  }
-
-  /**
-   * Return the list of authors in the same order as mentioned in the original
-   * article
-   *
-   * @return an ordered list of authors
-   */
-  public List<String> getOrderedAuthors() {
-    return orderedAuthors;
-  }
-
-  /**
-   * Set the author names in the same order as specified in the original
-   * article.
-   *
-   * @param authors the list of authors
-   */
-  public void setOrderedAuthors(List<String> authors) {
-    orderedAuthors = authors;
-  }
-
-  /**
-   * @return the body xml
-   */
-  public String getBody() {
-    return body;
-  }
-
-  /**
-   * @param body the body xml
-   */
-  public void setBody(String body) {
-    this.body = body;
   }
 }
