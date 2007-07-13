@@ -51,6 +51,12 @@ public class Session {
   private Set<Id>                        currentIds     = new HashSet<Id>();
 
   /**
+   * Empty constructor for spring scoped proxy.
+   */
+  protected Session() {
+  }
+
+  /**
    * Creates a new Session object.
    *
    * @param sessionFactory the session factory that created this session

@@ -391,7 +391,9 @@
       scope="singleton"/>
 
   <bean id="otmSession" factory-bean="otmSessionFactory" factory-method="openSession"
-      destroy-method="close" scope="request"/>
+      destroy-method="close" scope="request">
+    <aop:scoped-proxy/>
+  </bean>
 
   <bean id="browseService" class="org.plos.article.service.BrowseService" scope="session">
     <aop:scoped-proxy/>
