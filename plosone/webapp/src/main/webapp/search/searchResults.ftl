@@ -1,10 +1,10 @@
 <!-- begin : main content wrapper -->
-<#macro renderSearchPaginationLinks totalPages>
+<#macro renderSearchPaginationLinks totalPages, hasMore>
+  <#if (startPage gt 0)>
+    <@s.url id="prevPageURL" action="simpleSearch" namespace="/search" startPage="${startPage - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
+    <@s.a href="%{prevPageURL}">&lt; Prev</@s.a> |
+  </#if>
   <#if (totalPages > 1) >
-    <#if (startPage gt 0)>
-      <@s.url id="prevPageURL" action="simpleSearch" namespace="/search" startPage="${startPage - 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
-      <@s.a href="%{prevPageURL}">&lt; Prev</@s.a> |
-    </#if>
     <#list 1..totalPages as pageNumber>
       <#if (startPage == (pageNumber-1))>
         ${pageNumber}
@@ -14,54 +14,67 @@
       </#if>
       <#if pageNumber != totalPages>|</#if>
     </#list>
-    <#if (startPage lt totalPages - 1 )>
-        <@s.url id="nextPageURL" action="simpleSearch" namespace="/search" startPage="${startPage + 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
-      | <@s.a href="%{nextPageURL}">Next &gt;</@s.a> 
-    </#if>
+  </#if>
+  <#if hasMore == 1>
+    <#if (startPage gt 0)> | </#if>
+    <@s.url id="nextPageURL" action="simpleSearch" namespace="/search" startPage="${startPage + 1}" pageSize="${pageSize}" query="${query}" includeParams="none"/>
+    <@s.a href="%{nextPageURL}">Next &gt;</@s.a> 
   </#if>
 </#macro>
 
 <div id="content" class="static">
 
-  <#assign totalPages=(totalNoOfResults/pageSize)?int>
-  <#if (totalNoOfResults%pageSize > 0) >
+  <#-- We don't really know the total number of hits (or even if we've seen the total
+       number yet. So we will only show the number of pages up to the hit count we've
+       got so far. (This would best be done in code... and we ought to be passing in
+       "knownHits" so when a user goes backward we can still know totoal hits) -->
+  <#assign noOfResults = (startPage + 1) * pageSize>
+  <#if (noOfResults >= totalNoOfResults)>
+    <#assign noOfResults = totalNoOfResults>
+    <#assign hasMore = 0>
+  <#else>
+    <#assign hasMore = 1>
+  </#if>
+
+  <#-- Compute number of pages -->
+  <#assign totalPages = (noOfResults / pageSize)?int>
+  <#if (noOfResults % pageSize > 0) >
     <#assign totalPages = totalPages + 1>
   </#if>
 
   <h1>Search Results</h1>
 
   <div id="search-results">
+<#--  <p>Debug: noOfResults: ${noOfResults}, totalNoOfResults: ${totalNoOfResults}, startPage: ${startPage}, pageSize: ${pageSize}, hasMore: ${hasMore}</p> -->
 
-    <#if totalNoOfResults == 0>
+    <#if noOfResults == 0>
       There are no results for <strong>${query?html}</strong>.
     <#else>
       <#assign startIndex = startPage * pageSize>
       <p>
-      Viewing
+      Viewing results
       <strong>
         ${startIndex + 1} -
 
         <#if startPage == totalPages - 1>
-          ${totalNoOfResults}
+          ${noOfResults}
         <#else>
           ${startIndex + pageSize}
         </#if>
 
       </strong>
-      of
 
-      <#if totalNoOfResults == 0>
-        <strong>${totalNoOfResults}</strong> results,
-      <#elseif totalNoOfResults == 1>
-        <strong>${totalNoOfResults}</strong> result,
+      <#if totalNoOfResults == noOfResults>
+        of <strong>${totalNoOfResults}</strong> results, sorted by relevance,
       <#else>
-        <strong>${totalNoOfResults}</strong> results, sorted by relevance,
+        sorted by relevance,
       </#if>
 
-      for <strong>${query?html}</strong>.</p>
+      for <strong>${query?html}</strong>.
+      </p>
     </#if>
 
-    <div class="resultsTab"><@renderSearchPaginationLinks totalPages/></div>
+    <div class="resultsTab"><@renderSearchPaginationLinks totalPages, hasMore/></div>
 
     <#if totalNoOfResults gt 0>
       <ul>
@@ -81,7 +94,7 @@
           </li>
         </#list>
       </ul>
-      <div class="resultsTab"><@renderSearchPaginationLinks totalPages/></div>
+      <div class="resultsTab"><@renderSearchPaginationLinks totalPages, hasMore/></div>
     </#if>
 
   </div> <!-- search-results -->
