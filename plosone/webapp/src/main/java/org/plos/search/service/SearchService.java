@@ -14,7 +14,9 @@ import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
 import org.plos.web.UserContext;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
+import org.plos.util.TransactionHelper;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.Transaction;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -50,19 +52,28 @@ public class SearchService {
   public SearchResultPage find(final String query, final int startPage, final int pageSize)
       throws ApplicationException {
     try {
-      PlosOneUser user     = (PlosOneUser) userContext.getSessionMap().get(PLOS_ONE_USER_KEY);
-      String      cacheKey = (user == null ? "anon" : user.getUserId()) + "|" + query;
-      Results     results  = (Results) cache.get(cacheKey);
+      PlosOneUser   user     = (PlosOneUser) userContext.getSessionMap().get(PLOS_ONE_USER_KEY);
+      final String  cacheKey = (user == null ? "anon" : user.getUserId()) + "|" + query;
 
-      if (results == null) {
-        results = new Results(query, searchWebService);
-        cache.put(cacheKey, results);
-        if (log.isDebugEnabled())
-          log.debug("Created search cache for '" + cacheKey + "' of " +
-                    results.getTotalHits(otmSession));
-      }
+      /* Wrap all otm checks (that happen in the HitGuard) in one transaction. (Warning:
+       * this means iterator-chain *cannot* be used outside this context.) Session may change
+       * between invocations (and we want to be in a transaction anyway) so session and/or
+       * transaction objects must be passed per call and not in Results constructor.
+       */
+      return TransactionHelper.doInTx(otmSession, new TransactionHelper.Action<SearchResultPage>() {
+          public SearchResultPage run(Transaction tx) {
+            Results results  = (Results) cache.get(cacheKey);
+            if (results == null) {
+              results = new Results(query, searchWebService);
+              cache.put(cacheKey, results);
+              if (log.isDebugEnabled())
+                log.debug("Created search cache for '" + cacheKey + "' of " +
+                          results.getTotalHits(tx.getSession()));
+            }
 
-      return results.getPage(startPage, pageSize, otmSession);
+            return results.getPage(startPage, pageSize, tx.getSession());
+          }
+        });
     } catch (Exception e) {
       throw new ApplicationException("Search failed with exception:", e);
     }

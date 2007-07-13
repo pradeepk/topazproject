@@ -20,10 +20,7 @@ import com.sun.xacml.PDP;
 
 import org.plos.models.Article;
 import org.topazproject.otm.Session;
-import org.topazproject.otm.Transaction;
 import org.topazproject.otm.OtmException;
-import org.plos.util.TransactionHelper;
-import java.lang.reflect.UndeclaredThrowableException;
 
 import java.security.Guard;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -209,29 +206,19 @@ public class Results {
       final String uri = hit.getPid();
 
       try {
+        // Verify xacml allows (initially used for <topaz:articleState> ... but may be more)
         pep.checkAccess(SearchPEP.READ_METADATA, new URI(uri));
 
-        // Just make sure the article is not filtered out by the current OTM filter
-        TransactionHelper.doInTx(otmSession, new TransactionHelper.Action<Boolean>() {
-            public Boolean run(Transaction tx) {
-              try {
-                if (!tx.getSession().createQuery(
-                      "select a.id from Article a where a.id = <" + uri + ">;").execute().next())
-                  throw new UndeclaredThrowableException(
-                    new SecurityException("Article '" + uri + "' not in active session"));
-              } catch (OtmException oe) {
-                throw new UndeclaredThrowableException(
-                  new SecurityException("Error getting article '" + uri + "' from otm")
-                        .initCause(oe));
-              }
-              return true; // unused
-            }
-          });
+        // Verify otm returns one record...
+        if (!otmSession.createQuery("select a.id from Article a where a.id = <" + uri + ">;")
+            .execute().next())
+          throw new SecurityException("Article '" + uri + "' not in active session");
 
         if (log.isDebugEnabled())
           log.debug("HitGuard: Returning unguarded uri '" + uri + "'");
-      } catch (UndeclaredThrowableException ute) {
-        throw (SecurityException)ute.getCause();
+      } catch (OtmException oe) {
+        throw (SecurityException)
+          new SecurityException("Error getting article '" + uri + "' from otm").initCause(oe);
       } catch (URISyntaxException us) {
         throw (SecurityException)
           new SecurityException("HitGuard: Unable to create URI '" + uri + "'").initCause(us);
