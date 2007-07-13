@@ -18,11 +18,12 @@ import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.PDP;
 
-import org.springframework.web.context.support.WebApplicationContextUtils;
-import org.apache.struts2.ServletActionContext;
 import org.plos.models.Article;
 import org.topazproject.otm.Session;
+import org.topazproject.otm.Transaction;
 import org.topazproject.otm.OtmException;
+import org.plos.util.TransactionHelper;
+import java.lang.reflect.UndeclaredThrowableException;
 
 import java.security.Guard;
 import java.lang.reflect.UndeclaredThrowableException;
@@ -55,6 +56,7 @@ public class Results {
   private CachingIterator            cache;
   private String                     query;
   private int                        totalHits = 0;
+  private Session                    otmSession;
 
   /**
    * Construct a search Results object.
@@ -78,12 +80,16 @@ public class Results {
    *
    * @param startPage the page number to return (starts with 0)
    * @param pageSize  the number of entries to return
+   * @param otmSession the current otm session
    * @return The results for one page of a search.
    * @throws UndeclaredThrowableException if there was a problem retrieving the search results.
    *         It likely wraps a RemoteException (talking to the search webapp) or an IOException
    *         parsing the results.
    */
-  public SearchResultPage getPage(int startPage, int pageSize) {
+  public SearchResultPage getPage(int startPage, int pageSize, Session otmSession) {
+    // Stash the otmSession so we can use it in the HitGuard
+    this.otmSession = otmSession;
+
     ArrayList<SearchHit> hits = new ArrayList<SearchHit>(pageSize);
     int                  cnt  = 0; // Actual number of hits retrieved
 
@@ -96,14 +102,22 @@ public class Results {
       cnt++;
     }
 
+    // If we know we're at the end, set our total size
+    if (!cache.hasNext())
+      totalHits = cache.getCurrentSize();
+
     return new SearchResultPage(totalHits, pageSize, hits);
   }
 
   /**
+   * @param otmSession the current otm session
    * @return The total number of records lucene thinks we have. This may be inaccurate if
    *         XACML filters any out.
    */
-  public int getTotalHits() {
+  public int getTotalHits(Session otmSession) {
+    // Stash the otmSession so we can use it in the HitGuard
+    this.otmSession = otmSession;
+
     cache.hasNext(); // Read at least one record to populate totalHits instance variable
     return totalHits;
   }
@@ -193,25 +207,31 @@ public class Results {
     public void checkGuard(Object object) throws SecurityException {
       SearchHit hit = (SearchHit) object;
       String    uri = hit.getPid();
+
       try {
         pep.checkAccess(SearchPEP.READ_METADATA, new URI(uri));
 
         // Just make sure the article is not filtered out by the current OTM filter
-        try {
-          Session s = (Session) WebApplicationContextUtils
-            .getRequiredWebApplicationContext(ServletActionContext.getServletContext())
-            .getBean("otmSession");
-
-          Article a = s.get(Article.class, uri);
-          if (a == null)
-            throw new SecurityException("Article '" + uri + "' not in active session");
-        } catch (OtmException oe) {
-          throw (SecurityException)
-            new SecurityException("Error getting article '" + uri + "' from otm").initCause(oe);
-        }
+        TransactionHelper.doInTx(otmSession, new TransactionHelper.Action<Boolean>() {
+            public Boolean run(Transaction tx) {
+              try {
+                if (!tx.getSession().createQuery(
+                      "select a.id from Article a where a.id = <" + uri + ">;").execute().next())
+                  throw new UndeclaredThrowableException(
+                    new SecurityException("Article '" + uri + "' not in active session"));
+              } catch (OtmException oe) {
+                throw new UndeclaredThrowableException(
+                  new SecurityException("Error getting article '" + uri + "' from otm")
+                        .initCause(oe));
+              }
+              return true; // unused
+            }
+          });
 
         if (log.isDebugEnabled())
           log.debug("HitGuard: Returning unguarded uri '" + uri + "'");
+      } catch (UndeclaredThrowableException ute) {
+        throw (SecurityException)ute.getCause();
       } catch (URISyntaxException us) {
         throw (SecurityException)
           new SecurityException("HitGuard: Unable to create URI '" + uri + "'").initCause(us);

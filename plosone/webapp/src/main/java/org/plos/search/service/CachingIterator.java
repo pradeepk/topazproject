@@ -109,4 +109,14 @@ public class CachingIterator implements Iterator {
   public void remove() {
     throw new UnsupportedOperationException();
   }
+
+  /**
+   * Get the number of items currently in the cache. This can be useful if hasNext()
+   * is returning false.
+   *
+   * @return the number of items currently in the cache
+   */
+  public int getCurrentSize() {
+    return cache.size();
+  }
 }

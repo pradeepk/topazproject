@@ -50,8 +50,10 @@ public class GuardedIterator implements Iterator {
         guard.checkGuard(element);
         return true;
       } catch (SecurityException se) {
-        if (log.isDebugEnabled())
-          log.debug("Guard blocked " + element + ": skipping - " + se);
+        if (se.getCause() != null)
+          log.warn("Guard blocked '" + element + "'", se); // Log exception
+        else if (log.isDebugEnabled())
+          log.debug("Guard blocked '" + element + "' - " + se);
         element = null; // Don't want this element returned
       }
     }

@@ -14,6 +14,7 @@ import org.plos.search.SearchResultPage;
 import org.plos.user.PlosOneUser;
 import org.plos.web.UserContext;
 import static org.plos.Constants.PLOS_ONE_USER_KEY;
+import org.topazproject.otm.Session;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -35,6 +36,7 @@ public class SearchService {
 
   private SearchWebService           searchWebService;
   private UserContext                userContext;
+  private Session                    otmSession;
 
   /**
    * Find the results for a given query.
@@ -56,10 +58,11 @@ public class SearchService {
         results = new Results(query, searchWebService);
         cache.put(cacheKey, results);
         if (log.isDebugEnabled())
-          log.debug("Created search cache for '" + cacheKey + "' of " + results.getTotalHits());
+          log.debug("Created search cache for '" + cacheKey + "' of " +
+                    results.getTotalHits(otmSession));
       }
 
-      return results.getPage(startPage, pageSize);
+      return results.getPage(startPage, pageSize, otmSession);
     } catch (Exception e) {
       throw new ApplicationException("Search failed with exception:", e);
     }
@@ -79,5 +82,9 @@ public class SearchService {
    */
   public void setUserContext(final UserContext userContext) {
     this.userContext = userContext;
+  }
+
+  public void setOtmSession(Session otmSession) {
+    this.otmSession = otmSession;
   }
 }

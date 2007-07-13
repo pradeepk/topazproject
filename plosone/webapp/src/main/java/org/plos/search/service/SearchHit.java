@@ -182,4 +182,8 @@ public class SearchHit {
   public String getTitle() {
     return title;
   }
+
+  public String toString() {
+    return getPid();
+  }
 }
