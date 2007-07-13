@@ -65,8 +65,6 @@ public class Article extends ObjectInfo {
   private List<String> orderedAuthors = new ArrayList<String>();
   @Predicate(uri = Rdf.topaz + "body")
   private String body;
-  @Predicate(uri = Rdf.topaz + "references", storeAs = Predicate.StoreAs.rdfList)
-  private List<Reference> references = new ArrayList<Reference>();
 
   /**
    * Get the list of categories for the article
@@ -244,19 +242,5 @@ public class Article extends ObjectInfo {
    */
   public void setBody(String body) {
     this.body = body;
-  }
-
-  /**
-   * @return list of references for the article
-   */
-  public List<Reference> getReferences() {
-    return references;
-  }
-
-  /**
-   * @param set references for article
-   */
-  public void setReferences(List<Reference> references) {
-    this.references = references;
   }
 }

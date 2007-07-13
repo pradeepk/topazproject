@@ -124,6 +124,14 @@ public class DublinCore<T> {
   private String format;
 
   /**
+   * The described resource may be derived from the related resource in whole
+   * or in part. Recommended best practice is to identify the related resource
+   * by means of a string conforming to a formal identification system.
+   */
+  @Predicate(uri = Rdf.dc + "source")
+  private T source;
+
+  /**
    * Date (often a range) that the resource will become or did become
    * available.
    */
@@ -133,6 +141,8 @@ public class DublinCore<T> {
   /**
    * The described resource includes the referenced resource either physically
    * or logically.
+   *
+   * TODO: This will need to be made Set<T> when OTM can handle this.
    */
   @Predicate(uri = Rdf.dc_terms + "hasPart")
   private Set<ObjectInfo> parts = new HashSet<ObjectInfo>();
@@ -168,6 +178,58 @@ public class DublinCore<T> {
    */
   @Predicate(uri = Rdf.dc_terms + "isPartOf")
   private T isPartOf;
+
+  /**
+   * A summary of the content of the resource.
+   */
+  @Predicate(uri = Rdf.dc_terms + "abstract")
+  private Set<String> summary;
+
+  /**
+   * A bibliographic reference for the resource.
+   */
+  @Predicate(uri = Rdf.dc_terms + "bibliographicCitation")
+  private Citation bibliographicCitation;
+
+  /**
+   * Date of creation of the object
+   */
+  @Predicate(uri = Rdf.dc_terms + "created", dataType = Rdf.xsd + "date")
+  Date created;
+
+  /**
+   * The described resource is supplanted, displaced, or superseded by the
+   * referenced resource.
+   */
+  @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
+  private T replacedBy;
+
+  /**
+   * A legal document giving official permission to do something with the
+   * resource.
+   */
+  @Predicate(uri = Rdf.dc_terms + "license")
+  private Set<License> license;
+
+  /**
+   * Date of modification of the object
+   */
+  @Predicate(uri = Rdf.dc_terms + "modified", dataType = Rdf.xsd + "date")
+  Date modified;
+
+  /**
+   * The described resource references, cites, or otherwise points to the
+   * referenced resource.
+   */
+  @Predicate(uri = Rdf.dc_terms + "references")
+  private Set<Citation> references;
+
+  /**
+   * The described resource supplants, displaces, or supersedes the referenced
+   * resource.
+   */
+  @Predicate(uri = Rdf.dc_terms + "replaces")
+  private T replaces;
 
   /**
    * Empty contructor
@@ -512,5 +574,167 @@ public class DublinCore<T> {
    */
   public void setCopyrightYear(int copyrightYear) {
     this.copyrightYear = copyrightYear;
+  }
+
+  /**
+   * Return the source of the object
+   *
+   * @return the source of the object
+   */
+  public T getSource() {
+    return source;
+  }
+
+  /**
+   * Set the source of the object
+   *
+   * @param source the source of the object
+   */
+  public void setSource(T source) {
+    this.source = source;
+  }
+
+  /**
+   * Return the abstract/summary on the object
+   *
+   * @return the abstract/summary of the object
+   */
+  public Set<String> getSummary() {
+    return summary;
+  }
+
+  /**
+   * Set the abstract/summary of the object
+   *
+   * @param summary the summary/abstract of the object
+   */
+  public void setSummary(Set<String> summary) {
+    this.summary = summary;
+  }
+
+  /**
+   * Return the bibliographic citation for the object
+   *
+   * @return bibliographic citation for the object
+   */
+  public Citation getBibliographicCitation() {
+    return bibliographicCitation;
+  }
+
+  /**
+   * bibliographic citation for the object
+   *
+   * @param bibliographicCitation bibliographic citation for the object
+   */
+  public void setBibliographicCitation(Citation bibliographicCitation) {
+    this.bibliographicCitation = bibliographicCitation;
+  }
+
+  /**
+   * Return the creation date
+   *
+   * @return the creation date
+   */
+  public Date getCreated() {
+    return created;
+  }
+
+  /**
+   * Set the creation date
+   *
+   * @param created the date the object was created
+   */
+  public void setCreated(Date created) {
+    this.created = created;
+  }
+
+  /**
+   * Return the object replacing this
+   *
+   * @return the object replacing this
+   */
+  public T getReplacedBy() {
+    return replacedBy;
+  }
+
+  /**
+   * Set the object replacing this
+   *
+   * @param replacedBy the object replacing this
+   */
+  public void setReplacedBy(T replacedBy) {
+    this.replacedBy = replacedBy;
+  }
+
+  /**
+   * Return the set of licenses for this object
+   *
+   * @return the set of licenses for this object
+   */
+  public Set<License> getLicense() {
+    return license;
+  }
+
+  /**
+   * Set the set of licenses for this object
+   *
+   * @param license the set of licenses governing this object
+   */
+  public void setLicense(Set<License> license) {
+    this.license = license;
+  }
+
+  /**
+   * Return the modified date
+   *
+   * @return the modified date
+   */
+  public Date getModified() {
+    return modified;
+  }
+
+  /**
+   * Set the modified date
+   *
+   * @param modified the date the object was modified
+   */
+  public void setModified(Date modified) {
+    this.modified = modified;
+  }
+
+  /**
+   * Return the set of objects referred to by this object
+   *
+   * @return the set of objects referred to by this object
+   */
+  public Set<Citation> getReferences() {
+    return references;
+  }
+
+  /**
+   * Set the set of objects referred to by this object
+   *
+   * @param references the set of objects referred to by this object
+   */
+  public void setReferences(Set<Citation> references) {
+    this.references = references;
+  }
+
+  /**
+   * Return the object this replaces
+   *
+   * @return the object this replaces
+   */
+  public T getReplaces() {
+    return replaces;
+  }
+
+  /**
+   * Set the object replacing this
+   *
+   * @param replaces the object this replaces
+   */
+  public void setReplaces(T replaces) {
+    this.replaces = replaces;
   }
 }

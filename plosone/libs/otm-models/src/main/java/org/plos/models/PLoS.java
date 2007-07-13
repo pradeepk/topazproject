@@ -16,5 +16,9 @@ package org.plos.models;
  */
 public interface PLoS {
   /** PLoS namespace */
-  public static final String plos    = "http://rdf.plos.org/RDF/";
+  public static final String plos               = "http://rdf.plos.org/RDF/";
+  /** Creative Commons namespace */
+  public static final String creativeCommons    = "http://web.resource.org/cc/";
+  /** Bibtex namespace */
+  public static final String bibtex             = "http://purl.org/net/nknouf/ns/bibtex#";
 }

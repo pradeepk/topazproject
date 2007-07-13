@@ -28,7 +28,7 @@ public class ModelsTest {
                   Annotation.class, Annotea.class, Article.class, AuthenticationId.class,
                   Category.class, Citation.class, Comment.class, DublinCore.class, FoafPerson.class,
                   ObjectInfo.class, PLoS.class, Rating.class, RatingContent.class,
-                  RatingSummary.class, RatingSummaryContent.class, Reference.class, Reply.class,
+                  RatingSummary.class, RatingSummaryContent.class, License.class, Reply.class,
                   ReplyThread.class, UserAccount.class, UserPreference.class, UserPreferences.class,
                   UserProfile.class, UserRole.class
     };
