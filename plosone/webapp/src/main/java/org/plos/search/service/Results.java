@@ -205,8 +205,8 @@ public class Results {
    */
   private class HitGuard implements Guard {
     public void checkGuard(Object object) throws SecurityException {
-      SearchHit hit = (SearchHit) object;
-      String    uri = hit.getPid();
+      SearchHit    hit = (SearchHit) object;
+      final String uri = hit.getPid();
 
       try {
         pep.checkAccess(SearchPEP.READ_METADATA, new URI(uri));
