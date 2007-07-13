@@ -102,13 +102,13 @@ public abstract class Citation {
    * or collection in which the reference appears.
    */
   @Predicate(uri = PLoS.bibtex + "hasEditorList", storeAs = Predicate.StoreAs.rdfSeq)
-  private List<FoafPerson> editors = new ArrayList<FoafPerson>();
+  private List<UserProfile> editors = new ArrayList<UserProfile>();
 
   /**
    * The name(s) of the author(s), in the format described in the LaTeX book.
    */
   @Predicate(uri = PLoS.bibtex + "hasAuthorList", storeAs = Predicate.StoreAs.rdfSeq)
-  private List<FoafPerson> authors = new ArrayList<FoafPerson>();
+  private List<UserProfile> authors = new ArrayList<UserProfile>();
 
   /**
    * Get id.
@@ -257,28 +257,28 @@ public abstract class Citation {
   /**
    * @return the editors of this citation
    */
-  public List<FoafPerson> getEditors() {
+  public List<UserProfile> getEditors() {
     return editors;
   }
 
   /**
    * @param editors the editors of this citation
    */
-  public void setEditors(List<FoafPerson> editors) {
+  public void setEditors(List<UserProfile> editors) {
     this.editors = editors;
   }
 
   /**
    * @return the authors of this citation
    */
-  public List<FoafPerson> getAuthors() {
+  public List<UserProfile> getAuthors() {
     return authors;
   }
 
   /**
    * @param authors the authors for this citation
    */
-  public void setAuthors(List<FoafPerson> authors) {
+  public void setAuthors(List<UserProfile> authors) {
     this.authors = authors;
   }
 }
