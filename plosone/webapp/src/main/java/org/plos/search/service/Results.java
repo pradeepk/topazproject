@@ -18,6 +18,12 @@ import com.sun.xacml.ParsingException;
 import com.sun.xacml.UnknownIdentifierException;
 import com.sun.xacml.PDP;
 
+import org.springframework.web.context.support.WebApplicationContextUtils;
+import org.apache.struts2.ServletActionContext;
+import org.plos.models.Article;
+import org.topazproject.otm.Session;
+import org.topazproject.otm.OtmException;
+
 import java.security.Guard;
 import java.lang.reflect.UndeclaredThrowableException;
 import java.util.Iterator;
@@ -178,8 +184,8 @@ public class Results {
   }
 
   /**
-   * A guard that uses XACML to ensure an article's meta data should be visible to
-   * the current user.
+   * A guard that uses XACML and OTM to ensure an article's meta data should be visible to
+   * the current user in the current journal (OTM filter).
    *
    * @see GuardedIterator
    */
@@ -189,6 +195,20 @@ public class Results {
       String    uri = hit.getPid();
       try {
         pep.checkAccess(SearchPEP.READ_METADATA, new URI(uri));
+
+        // Just make sure the article is not filtered out by the current OTM filter
+        try {
+          Session s = (Session) WebApplicationContextUtils
+            .getRequiredWebApplicationContext(ServletActionContext.getServletContext())
+            .getBean("otmSession");
+
+          Article a = s.get(Article.class, uri);
+          if (a == null)
+            throw new SecurityException("Article '" + uri + "' not in active session");
+        } catch (OtmException oe) {
+          throw (SecurityException)
+            new SecurityException("Error getting article '" + uri + "' from otm").initCause(oe);
+        }
 
         if (log.isDebugEnabled())
           log.debug("HitGuard: Returning unguarded uri '" + uri + "'");
