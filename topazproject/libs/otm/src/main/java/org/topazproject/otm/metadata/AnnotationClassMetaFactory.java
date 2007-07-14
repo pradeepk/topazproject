@@ -142,7 +142,7 @@ public class AnnotationClassMetaFactory {
           fields.add(m);
         else {
           if (idField != null)
-            throw new OtmException("Duplicate @Id field " + f.toGenericString());
+            throw new OtmException("Duplicate @Id field " + toString(f));
 
           idField = m;
         }
@@ -171,13 +171,13 @@ public class AnnotationClassMetaFactory {
 
     if (Modifier.isStatic(mod) || Modifier.isTransient(mod)) {
       if (log.isDebugEnabled())
-        log.debug(f.toGenericString() + " will not be persisted.");
+        log.debug(toString(f) + " will not be persisted.");
 
       return null;
     }
 
     if (Modifier.isFinal(mod))
-      throw new OtmException("'final' field '" + f.toGenericString() + "' can't be persisted.");
+      throw new OtmException("'final' field " + toString(f) + " can't be persisted.");
 
     String n = f.getName();
     n = n.substring(0, 1).toUpperCase() + n.substring(1);
@@ -198,8 +198,8 @@ public class AnnotationClassMetaFactory {
     setMethod = getSetter(invokedOn, "set" + n, type);
 
     if (((getMethod == null) || (setMethod == null)) && !Modifier.isPublic(mod))
-      throw new OtmException("The field '" + f.toGenericString()
-                             + "' is inaccessible and can't be persisted.");
+      throw new OtmException("The field " + toString(f)
+                             + " is inaccessible and can't be persisted.");
 
     // xxx: The above get/set determination is based on 'preload' polymorphic info.
     // xxx: Does not account for run time sub classing. 
@@ -225,7 +225,7 @@ public class AnnotationClassMetaFactory {
       } catch (Throwable t) {
         // Between Class.forName() and newInstance() there are a half-dozen possible excps
         throw new OtmException("Unable to find implementation of '" + gv.generatorClass()
-                               + "' generator for " + f.getName(), t);
+                               + "' generator for " + toString(f), t);
       }
 
       String uriPrefix = gv.uriPrefix();
@@ -241,8 +241,8 @@ public class AnnotationClassMetaFactory {
         // Validate that we have a valid uri
         URI.create(uriPrefix);
       } catch (IllegalArgumentException iae) {
-        throw new OtmException("Illegal uriPrefix '" + gv.uriPrefix() + "' for for "
-                               + clazz.getName() + "." + f.getName(), iae);
+        throw new OtmException("Illegal uriPrefix '" + gv.uriPrefix() + "' for "
+                               + toString(f), iae);
       }
 
       generator.setUriPrefix(uriPrefix);
@@ -250,7 +250,7 @@ public class AnnotationClassMetaFactory {
 
     if (id != null) {
       if (!type.equals(String.class) && !type.equals(URI.class) && !type.equals(URL.class))
-        throw new OtmException("@Id field '" + f.toGenericString()
+        throw new OtmException("@Id field '" + toString(f)
                                + "' must be a String, URI or URL.");
 
       Serializer serializer = sf.getSerializerFactory().getSerializer(type, null);
@@ -266,8 +266,7 @@ public class AnnotationClassMetaFactory {
       return Collections.singletonList(createPredicateMap(f, getMethod, setMethod));
 
     if (!embedded && (uri == null))
-      throw new OtmException("Missing @Predicate for field '" + f.toGenericString() + "' in "
-                             + f.getDeclaringClass());
+      throw new OtmException("Missing @Predicate for field " + toString(f));
 
     boolean isArray      = type.isArray();
     boolean isCollection = Collection.class.isAssignableFrom(type);
@@ -315,22 +314,22 @@ public class AnnotationClassMetaFactory {
     }
 
     if (isArray || isCollection || (serializer != null))
-      throw new OtmException("@Embedded class field '" + f.toGenericString()
-                             + "' can't be an array, collection or a simple field");
+      throw new OtmException("@Embedded class field " + toString(f)
+                             + " can't be an array, collection or a simple field");
 
     ClassMetadata cm;
 
     try {
       cm                         = create(type, type, ns);
     } catch (OtmException e) {
-      throw new OtmException("Could not generate metadata for @Embedded class field '"
-                             + f.toGenericString() + "'", e);
+      throw new OtmException("Could not generate metadata for @Embedded class field "
+                             + toString(f), e);
     }
 
     // xxx: this is a restriction on this API. revisit to allow this case too.
     if (cm.getType() != null)
-      throw new OtmException("@Embedded class '" + type + "' embedded at '" + f.toGenericString()
-                             + "' should not declare an rdf:type of its own. (fix me)");
+      throw new OtmException("@Embedded class '" + type + "' embedded at " + toString(f)
+                             + " should not declare an rdf:type of its own. (fix me)");
 
     EmbeddedClassMapper ecp     = new EmbeddedClassMapper(f, getMethod, setMethod);
 
@@ -424,7 +423,7 @@ public class AnnotationClassMetaFactory {
     }
 
     throw new OtmException("@PredicateMap can be applied to a Map<String, List<String>> field only."
-                           + "It cannot be applied to '" + field.toGenericString() + "'");
+                           + "It cannot be applied to " + toString(field));
   }
 
   private static String getName(Class clazz) {
@@ -477,5 +476,9 @@ public class AnnotationClassMetaFactory {
       return entity.model();
 
     return getModel(clazz.getSuperclass());
+  }
+
+  private static String toString(Field f) {
+    return "'" + f.getName() + "' in " + f.getDeclaringClass();
   }
 }
