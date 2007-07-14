@@ -30,7 +30,8 @@ public class ModelsTest {
                   ObjectInfo.class, PLoS.class, Rating.class, RatingContent.class,
                   RatingSummary.class, RatingSummaryContent.class, License.class, Reply.class,
                   ReplyThread.class, UserAccount.class, UserPreference.class, UserPreferences.class,
-                  UserProfile.class, UserRole.class
+                  UserProfile.class, UserRole.class, Journal.class, Issue.class, Aggregation.class,
+                  EditorialBoard.class
     };
 
   /**
