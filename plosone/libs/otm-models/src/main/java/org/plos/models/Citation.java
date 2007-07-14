@@ -38,8 +38,11 @@ public abstract class Citation {
    * written. Generally it should consist of four numerals, such as 1984,
    * although the standard styles can handle any year whose last four
    * nonpunctuation characters are numerals, such as '(about 1984)'
+   *
+   * TODO: Restore to correct datatype .Stored as double because of bug in
+   * Mulgara
    */
-  @Predicate(uri = PLoS.bibtex + "hasYear", dataType = Rdf.xsd + "nonNegativeInteger")
+  @Predicate(uri = PLoS.bibtex + "hasYear", dataType = Rdf.xsd + "double")
   private int year;
 
   @Predicate(uri = PLoS.bibtex + "hasMonth", dataType = Rdf.xsd + "string")
@@ -47,8 +50,11 @@ public abstract class Citation {
 
   /**
    * The volume of a journal or multivolume book.
+   *
+   * TODO: Restore to correct datatype .Stored as double because of bug in
+   * Mulgara
    */
-  @Predicate(uri = PLoS.bibtex + "hasVolume", dataType = Rdf.xsd + "nonNegativeInteger")
+  @Predicate(uri = PLoS.bibtex + "hasVolume", dataType = Rdf.xsd + "double")
   private int volume;
 
   /**
@@ -109,6 +115,26 @@ public abstract class Citation {
    */
   @Predicate(uri = PLoS.bibtex + "hasAuthorList", storeAs = Predicate.StoreAs.rdfSeq)
   private List<UserProfile> authors = new ArrayList<UserProfile>();
+
+  /**
+   * The WWW Universal Resource Locator that points to the item being
+   * referenced. This often is used for technical reports to point to the ftp
+   * or web site where the postscript source of the report is located.
+   */
+  @Predicate(uri = PLoS.bibtex + "hasURL", dataType = Rdf.xsd + "String")
+  private String url;
+
+  /**
+   * The authors affliation list (in the same order as the author names)
+   */
+  @Predicate(uri = PLoS.bibtex + "hasAffliationList", storeAs = Predicate.StoreAs.rdfSeq)
+  private List<String> affliations = new ArrayList<String>();
+
+  /**
+   * An abstract of the work
+   */
+  @Predicate(uri = PLoS.bibtex + "hasAbstract")
+  private String summary;
 
   /**
    * Get id.
@@ -280,5 +306,51 @@ public abstract class Citation {
    */
   public void setAuthors(List<UserProfile> authors) {
     this.authors = authors;
+  }
+
+  /**
+   * @return the URL for the object
+   */
+  public String getUrl() {
+    return url;
+  }
+
+  /**
+   * @param url the URL for the object
+   */
+  public void setUrl(String url) {
+    this.url = url;
+  }
+
+  /**
+   * @return the affliations for the authors
+   */
+  public List<String> getAffliations() {
+    return affliations;
+  }
+
+  /**
+   * @param affliations the affliations for the authors
+   */
+  public void setAffliations(List<String> affliations) {
+    this.affliations = affliations;
+  }
+
+  /**
+   * Return the abstract/summary on the object
+   *
+   * @return the abstract/summary of the object
+   */
+  public String getSummary() {
+    return summary;
+  }
+
+  /**
+   * Set the abstract/summary of the object
+   *
+   * @param summary the summary/abstract of the object
+   */
+  public void setSummary(String summary) {
+    this.summary = summary;
   }
 }
