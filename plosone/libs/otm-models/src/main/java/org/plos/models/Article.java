@@ -38,6 +38,9 @@ public class Article extends ObjectInfo {
   /** Active article states */
   public static final int[] ACTIVE_STATES = {STATE_ACTIVE};
 
+  @Predicate(uri = Rdf.dc_terms + "hasPart")
+  private Set<ObjectInfo> parts = new HashSet<ObjectInfo>();
+
   /**
    * The categories the article belongs to
    *
@@ -45,6 +48,20 @@ public class Article extends ObjectInfo {
    */
   @Predicate(uri = Rdf.topaz + "hasCategory")
   private Set<Category> categories = new HashSet<Category>();
+
+  /** 
+   * @return the different parts of the article 
+   */
+  public Set<ObjectInfo> getParts() {
+    return parts;
+  }
+
+  /** 
+   * @param parts the different parts of the article 
+   */
+  public void setParts(Set<ObjectInfo> parts) {
+    this.parts = parts;
+  }
 
   /**
    * Get the list of categories for the article

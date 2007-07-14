@@ -139,13 +139,6 @@ public class DublinCore {
   private Date available;
 
   /**
-   * The described resource includes the referenced resource either physically
-   * or logically.
-   */
-  @Predicate(uri = Rdf.dc_terms + "hasPart")
-  private Set<Object> parts = new HashSet<Object>();
-
-  /**
    * Date of formal issuance (e.g., publication) of the resource.
    */
   @Predicate(uri = Rdf.dc_terms + "issued", dataType = Rdf.xsd + "date")
@@ -171,13 +164,6 @@ public class DublinCore {
   private int copyrightYear;
 
   /**
-   * The described resource is a physical or logical part of the referenced
-   * resource.
-   */
-  @Predicate(uri = Rdf.dc_terms + "isPartOf")
-  private Object isPartOf;
-
-  /**
    * A summary of the content of the resource.
    */
   @Predicate(uri = Rdf.dc_terms + "abstract")
@@ -194,13 +180,6 @@ public class DublinCore {
    */
   @Predicate(uri = Rdf.dc_terms + "created", dataType = Rdf.xsd + "date")
   private Date created;
-
-  /**
-   * The described resource is supplanted, displaced, or superseded by the
-   * referenced resource.
-   */
-  @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
-  private Object replacedBy;
 
   /**
    * A legal document giving official permission to do something with the
@@ -221,13 +200,6 @@ public class DublinCore {
    */
   @Predicate(uri = Rdf.dc_terms + "references")
   private Set<Citation> references;
-
-  /**
-   * The described resource supplants, displaces, or supersedes the referenced
-   * resource.
-   */
-  @Predicate(uri = Rdf.dc_terms + "replaces")
-  private Object replaces;
 
   /**
    * Empty contructor
@@ -338,24 +310,6 @@ public class DublinCore {
    */
   public void setIdentifier(String identifier) {
     this.identifier = identifier;
-  }
-
-  /**
-   * Return the object this object is a part of
-   *
-   * @return the isPartOf
-   */
-  public Object getIsPartOf() {
-    return isPartOf;
-  }
-
-  /**
-   * Set the object this object is part of
-   *
-   * @param isPartOf the isPartOf to set
-   */
-  public void setIsPartOf(Object isPartOf) {
-    this.isPartOf = isPartOf;
   }
 
   /**
@@ -482,24 +436,6 @@ public class DublinCore {
    */
   public void setAvailable(Date available) {
     this.available = available;
-  }
-
-  /**
-   * Get the different parts of the object
-   *
-   * @return the different parts of the object
-   */
-  public Set<Object> getParts() {
-    return parts;
-  }
-
-  /**
-   * Set the different parts of the object
-   *
-   * @param parts the different parts of the object
-   */
-  public void setParts(Set<Object> parts) {
-    this.parts = parts;
   }
 
   /**
@@ -647,24 +583,6 @@ public class DublinCore {
   }
 
   /**
-   * Return the object replacing this
-   *
-   * @return the object replacing this
-   */
-  public Object getReplacedBy() {
-    return replacedBy;
-  }
-
-  /**
-   * Set the object replacing this
-   *
-   * @param replacedBy the object replacing this
-   */
-  public void setReplacedBy(Object replacedBy) {
-    this.replacedBy = replacedBy;
-  }
-
-  /**
    * Return the set of licenses for this object
    *
    * @return the set of licenses for this object
@@ -716,23 +634,5 @@ public class DublinCore {
    */
   public void setReferences(Set<Citation> references) {
     this.references = references;
-  }
-
-  /**
-   * Return the object this replaces
-   *
-   * @return the object this replaces
-   */
-  public Object getReplaces() {
-    return replaces;
-  }
-
-  /**
-   * Set the object replacing this
-   *
-   * @param replaces the object this replaces
-   */
-  public void setReplaces(Object replaces) {
-    this.replaces = replaces;
   }
 }

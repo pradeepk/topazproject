@@ -40,8 +40,8 @@ public class Aggregation {
   private EditorialBoard                 editorialBoard;
   @Embedded
   private DublinCore        dublinCore;
-  //@Predicate(uri = Rdf.dc_terms + "hasPart")
-  //private List<URI>                      simpleCollection = new ArrayList();
+  @Predicate(uri = Rdf.dc_terms + "hasPart")
+  private List<URI>                      simpleCollection = new ArrayList();
   @Predicate(uri = PLoS.plos + "smartCollectionRules")
   private List<DetachedCriteria>         smartCollectionRules = new ArrayList();
   @Predicate(uri = Rdf.dc_terms + "replaces")
@@ -90,18 +90,18 @@ public class Aggregation {
    *
    * @return collection of article URI
    */
- // public List<URI> getSimpleCollection() {
- //   return simpleCollection;
- // }
+  public List<URI> getSimpleCollection() {
+    return simpleCollection;
+  }
 
   /**
    * Set simple collection of articles.
    *
    * @param simpleCollection collection of article URI
    */
-  //public void setSimpleCollection(List<URI> simpleCollection) {
-  //  this.simpleCollection = simpleCollection;
-  //}
+  public void setSimpleCollection(List<URI> simpleCollection) {
+    this.simpleCollection = simpleCollection;
+  }
 
   /**
    * Get smart collection rules for articles (and other entities).
@@ -174,5 +174,4 @@ public class Aggregation {
   public void setSupersededBy(Aggregation supersededBy) {
     this.supersededBy = supersededBy;
   }
-
 }

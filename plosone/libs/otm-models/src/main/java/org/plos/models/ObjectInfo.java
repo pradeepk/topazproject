@@ -31,7 +31,7 @@ import org.topazproject.otm.annotations.Rdf;
  * @author Eric Brown
  * @author Amit Kapoor
  */
-@Entity(type = PLoS.plos + "Object", model = "ri")
+@Entity(model = "ri")
 public class ObjectInfo {
   @Id
   private URI id;
@@ -39,6 +39,9 @@ public class ObjectInfo {
   // Dublin Core predicates
   @Embedded
   private DublinCore dublinCore = new DublinCore();
+
+  @Predicate(uri = Rdf.dc_terms + "isPartOf")
+  private Article isPartOf;
 
   // PLoS specific predicates:
   @Predicate(uri = Rdf.topaz + "nextObject")
@@ -123,6 +126,20 @@ public class ObjectInfo {
    */
   public void setId(URI id) {
     this.id = id;
+  }
+
+  /** 
+   * @return the isPartOf 
+   */
+  public Article getIsPartOf() {
+    return isPartOf;
+  }
+
+  /** 
+   * @param isPartOf the isPartOf to set 
+   */
+  public void setIsPartOf(Article isPartOf) {
+    this.isPartOf = isPartOf;
   }
 
   /**
