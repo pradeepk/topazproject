@@ -38,7 +38,7 @@ public class ObjectInfo {
 
   // Dublin Core predicates
   @Embedded
-  private DublinCore<ObjectInfo> dublinCore = new DublinCore<ObjectInfo>();
+  private DublinCore dublinCore = new DublinCore();
 
   // PLoS specific predicates:
   @Predicate(uri = Rdf.topaz + "nextObject")
@@ -202,7 +202,7 @@ public class ObjectInfo {
    *
    * @return the dublin core predicates
    */
-  public DublinCore<ObjectInfo> getDublinCore() {
+  public DublinCore getDublinCore() {
     return dublinCore;
   }
 
@@ -211,7 +211,7 @@ public class ObjectInfo {
    *
    * @param dublinCore the dublin core object
    */
-  public void setDublinCore(DublinCore<ObjectInfo> dublinCore) {
+  public void setDublinCore(DublinCore dublinCore) {
     this.dublinCore = dublinCore;
   }
 }

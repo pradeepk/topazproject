@@ -30,7 +30,7 @@ import org.topazproject.otm.annotations.Rdf;
  *
  * @author Amit Kapoor
  */
-public class DublinCore<T> {
+public class DublinCore {
   /**
    * Typically, a Title will be a name by which the resource is formally
    * known.
@@ -129,7 +129,7 @@ public class DublinCore<T> {
    * by means of a string conforming to a formal identification system.
    */
   @Predicate(uri = Rdf.dc + "source")
-  private T source;
+  private Object source;
 
   /**
    * Date (often a range) that the resource will become or did become
@@ -141,11 +141,9 @@ public class DublinCore<T> {
   /**
    * The described resource includes the referenced resource either physically
    * or logically.
-   *
-   * TODO: This will need to be made Set<T> when OTM can handle this.
    */
   @Predicate(uri = Rdf.dc_terms + "hasPart")
-  private Set<ObjectInfo> parts = new HashSet<ObjectInfo>();
+  private Set<Object> parts = new HashSet<Object>();
 
   /**
    * Date of formal issuance (e.g., publication) of the resource.
@@ -177,7 +175,7 @@ public class DublinCore<T> {
    * resource.
    */
   @Predicate(uri = Rdf.dc_terms + "isPartOf")
-  private T isPartOf;
+  private Object isPartOf;
 
   /**
    * A summary of the content of the resource.
@@ -202,7 +200,7 @@ public class DublinCore<T> {
    * referenced resource.
    */
   @Predicate(uri = Rdf.dc_terms + "isReplacedBy")
-  private T replacedBy;
+  private Object replacedBy;
 
   /**
    * A legal document giving official permission to do something with the
@@ -229,7 +227,7 @@ public class DublinCore<T> {
    * resource.
    */
   @Predicate(uri = Rdf.dc_terms + "replaces")
-  private T replaces;
+  private Object replaces;
 
   /**
    * Empty contructor
@@ -347,7 +345,7 @@ public class DublinCore<T> {
    *
    * @return the isPartOf
    */
-  public T getIsPartOf() {
+  public Object getIsPartOf() {
     return isPartOf;
   }
 
@@ -356,7 +354,7 @@ public class DublinCore<T> {
    *
    * @param isPartOf the isPartOf to set
    */
-  public void setIsPartOf(T isPartOf) {
+  public void setIsPartOf(Object isPartOf) {
     this.isPartOf = isPartOf;
   }
 
@@ -491,7 +489,7 @@ public class DublinCore<T> {
    *
    * @return the different parts of the object
    */
-  public Set<ObjectInfo> getParts() {
+  public Set<Object> getParts() {
     return parts;
   }
 
@@ -500,7 +498,7 @@ public class DublinCore<T> {
    *
    * @param parts the different parts of the object
    */
-  public void setParts(Set<ObjectInfo> parts) {
+  public void setParts(Set<Object> parts) {
     this.parts = parts;
   }
 
@@ -581,7 +579,7 @@ public class DublinCore<T> {
    *
    * @return the source of the object
    */
-  public T getSource() {
+  public Object getSource() {
     return source;
   }
 
@@ -590,7 +588,7 @@ public class DublinCore<T> {
    *
    * @param source the source of the object
    */
-  public void setSource(T source) {
+  public void setSource(Object source) {
     this.source = source;
   }
 
@@ -653,7 +651,7 @@ public class DublinCore<T> {
    *
    * @return the object replacing this
    */
-  public T getReplacedBy() {
+  public Object getReplacedBy() {
     return replacedBy;
   }
 
@@ -662,7 +660,7 @@ public class DublinCore<T> {
    *
    * @param replacedBy the object replacing this
    */
-  public void setReplacedBy(T replacedBy) {
+  public void setReplacedBy(Object replacedBy) {
     this.replacedBy = replacedBy;
   }
 
@@ -725,7 +723,7 @@ public class DublinCore<T> {
    *
    * @return the object this replaces
    */
-  public T getReplaces() {
+  public Object getReplaces() {
     return replaces;
   }
 
@@ -734,7 +732,7 @@ public class DublinCore<T> {
    *
    * @param replaces the object this replaces
    */
-  public void setReplaces(T replaces) {
+  public void setReplaces(Object replaces) {
     this.replaces = replaces;
   }
 }
