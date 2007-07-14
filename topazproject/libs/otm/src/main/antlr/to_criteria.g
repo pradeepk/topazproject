@@ -493,47 +493,6 @@ cast
     : #(CAST factor ID) { throw new RecognitionException("criteria doesn't support casts"); }
     ;
 
-/*
-expr
-    : #(AND (expr)+)
-    | criterion
-    | child
-    ;
-
-criterion
-    : #(AND (criterion)+)
-    | #(OR  (criterion)+)
-    | (EQ deref) => #(EQ deref constant)
-    | #(EQ constant deref)
-    | (NE deref) => #(NE deref constant)
-    | #(NE constant deref)
-    | fcall
-    ;
-
-child
-    : #(ASGN ID deref)
-    ;
-
-factor
-    : constant
-    | deref
-    ;
-
-constant
-    : QSTRING ((DHAT t:URIREF) | (AT ID))?
-    | URIREF
-    | #(PARAM ID)
-    ;
-
-fcall
-    : #(FUNC ID (COLON ID)? (factor)*)
-    ;
-
-deref
-    : #(REF ID ID)
-    ;
-*/
-
 
 oclause
     : #(ORDER (oitem)+)
