@@ -92,7 +92,7 @@ public class GenericQueryImpl extends QueryImplBase implements Cloneable {
     warnings.clear();
     warnings.addAll(prepareWarnings);
 
-    resolvedQuery = doStep("setting parameter values", new ParameterResolver(),
+    resolvedQuery = doStep("setting parameter values for", new ParameterResolver(),
                            new QueryStep<ParameterResolver>() {
       final FieldTranslator pq = preparedQuery;
       public void run(ParameterResolver pr) throws Exception {
@@ -143,7 +143,7 @@ public class GenericQueryImpl extends QueryImplBase implements Cloneable {
    * @throws OtmException if an error occurred
    */
   public Criteria toCriteria(Session sess) throws OtmException {
-    CriteriaGenerator cg = doStep("creating criteria", new CriteriaGenerator(sess),
+    CriteriaGenerator cg = doStep("creating criteria for", new CriteriaGenerator(sess),
                                   new QueryStep<CriteriaGenerator>() {
       public void run(CriteriaGenerator cg) throws Exception {
         cg.query(parsedQuery.getAST());
