@@ -125,12 +125,6 @@ public abstract class Citation {
   private String url;
 
   /**
-   * The authors affliation list (in the same order as the author names)
-   */
-  @Predicate(uri = PLoS.bibtex + "hasAffliationList", storeAs = Predicate.StoreAs.rdfSeq)
-  private List<String> affliations = new ArrayList<String>();
-
-  /**
    * An abstract of the work
    */
   @Predicate(uri = PLoS.bibtex + "hasAbstract")
@@ -320,20 +314,6 @@ public abstract class Citation {
    */
   public void setUrl(String url) {
     this.url = url;
-  }
-
-  /**
-   * @return the affliations for the authors
-   */
-  public List<String> getAffliations() {
-    return affliations;
-  }
-
-  /**
-   * @param affliations the affliations for the authors
-   */
-  public void setAffliations(List<String> affliations) {
-    this.affliations = affliations;
   }
 
   /**
