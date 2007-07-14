@@ -246,8 +246,8 @@ public class ArticleOtmService extends BaseConfigurableService {
           throw new NoSuchArticleIdException(article);
 
         a.setState(state);
-        for (ObjectInfo oi : a.getDublinCore().getParts())
-          oi.setState(state);
+        for (Object oi : a.getDublinCore().getParts())
+          ((ObjectInfo)oi).setState(state);
         for (Category c : a.getCategories())
           c.setState(state);
 
