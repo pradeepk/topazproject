@@ -195,7 +195,7 @@ public class DublinCore<T> {
    * Date of creation of the object
    */
   @Predicate(uri = Rdf.dc_terms + "created", dataType = Rdf.xsd + "date")
-  Date created;
+  private Date created;
 
   /**
    * The described resource is supplanted, displaced, or superseded by the
@@ -215,7 +215,7 @@ public class DublinCore<T> {
    * Date of modification of the object
    */
   @Predicate(uri = Rdf.dc_terms + "modified", dataType = Rdf.xsd + "date")
-  Date modified;
+  private Date modified;
 
   /**
    * The described resource references, cites, or otherwise points to the
