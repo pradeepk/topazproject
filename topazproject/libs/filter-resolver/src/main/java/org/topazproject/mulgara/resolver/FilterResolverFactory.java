@@ -93,8 +93,10 @@ public class FilterResolverFactory implements ResolverFactory {
 
     // load the configuration
     ConfigurationStore store = ConfigurationStore.getInstance();
-    Configuration config = store.getConfiguration();
-    if (config == null) {
+    Configuration config = null;
+    try {
+      config = store.getConfiguration();
+    } catch (RuntimeException e) {
       String fConf = System.getProperty(CONFIG_FACTORY_CONFIG_PROPERTY, DEFAULT_FACTORY_CONFIG);
       URL fConfUrl = null;
       try {
@@ -107,9 +109,11 @@ public class FilterResolverFactory implements ResolverFactory {
         store.loadConfiguration(fConfUrl);
         config = store.getConfiguration();
       } catch (MalformedURLException mue) {
-        throw new InitializerException("Error parsing '" + fConf+ "'", mue);
+        throw new InitializerException("Error parsing '" + fConfUrl + "'", mue);
       } catch (ConfigurationException ce) {
         throw new InitializerException("Error reading '" + fConfUrl + "'", ce);
+      } catch (RuntimeException re) {
+        throw new InitializerException("Configuration error '" + fConfUrl + "'", re);
       }
     }
 
