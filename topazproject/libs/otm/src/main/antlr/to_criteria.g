@@ -217,10 +217,7 @@ options {
       }
 
       // generate criterion
-      AST n;
-      for (n = l.getFirstChild(); n.getNextSibling() != null; n = n.getNextSibling())
-        ;
-      String f = n.getText();
+      String f = getLastChild(l).getText();
       Object val = toValueObject(r);
       Criterion c = (node.getType() == EQ) ? Restrictions.eq(f, val) : Restrictions.ne(f, val);
       addCriterion(parent, c);
@@ -331,12 +328,8 @@ options {
 
       if (parent.getFirstChild() == node)
         parent.setFirstChild(repl);
-      else {
-        AST p;
-        for (p = parent.getFirstChild(); p.getNextSibling() != node; p = p.getNextSibling())
-          ;
-        p.setNextSibling(repl);
-      }
+      else
+        getPreceedingChild(parent, node).setNextSibling(repl);
 
       return repl;
     }
@@ -389,15 +382,22 @@ options {
       }
 
       if (v.getType() == REF) {
-        AST n;
-        for (n = v.getFirstChild(); n.getNextSibling() != null; n = n.getNextSibling())
-          ;
-        return n.getText();
+        return getLastChild(v).getText();
       }
 
       throw new RecognitionException("Internal error: unexpected value node '" + v.getType() + "'");
     }
 
+    private static AST getLastChild(AST n) {
+      return getPreceedingChild(n, null);
+    }
+
+    private static AST getPreceedingChild(AST parent, AST child) {
+      AST n;
+      for (n = parent.getFirstChild(); n.getNextSibling() != child; n = n.getNextSibling())
+        ;
+      return n;
+    }
 
     private void createRootCriteria(AST cls, AST var) throws RecognitionException {
       ClassMetadata cm = sess.getSessionFactory().getClassMetadata(cls.getText());
